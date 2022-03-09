@@ -17,7 +17,7 @@ export class TAuthGuardService implements CanActivate, CanActivateChild {
 
     ) { }
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
-        let isDev = false;//!environment.production;
+        let isDev =!environment.production;
         return new Promise<boolean>((resolve) => {
             if (isDev) {
                 resolve(true);
