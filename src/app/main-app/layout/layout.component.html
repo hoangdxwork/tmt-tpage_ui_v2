@@ -68,7 +68,7 @@
     </div>
     <div class="w-full flex-auto flex">
         <div class="h-full flex-shrink overflow-hidden" [style.min-width.px]="!inlineCollapsed ? 260 : 64" [style.width.px]="!inlineCollapsed ? 260 : 64">
-            <tds-menu [data]="lstMenu" [mode]="'light'" [showLogo]="true" (onOpenChange)="onOpenChange($event)">
+            <tds-menu [data]="lstMenu" [mode]="'light'" (onOpenChange)="onOpenChange($event)">
             </tds-menu>
         </div>
         <div class="flex flex-auto overflow-hidden">
