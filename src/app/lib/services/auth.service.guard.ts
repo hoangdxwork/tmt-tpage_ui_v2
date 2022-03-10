@@ -17,18 +17,18 @@ export class TAuthGuardService implements CanActivate, CanActivateChild {
 
     ) { }
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
-        let isDev =!environment.production;
+        let isDev = false;//!environment.production;
         return new Promise<boolean>((resolve) => {
             if (isDev) {
                 resolve(true);
             } else {
                 if (TDSHelperObject.hasValue(TGlobalConfig.Authen.token) &&
-                    TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.accessToken)) {
+                    TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.access_token)) {
                     resolve(true);
                 } else {
                     this.auth.getCacheToken().subscribe(() => {
                         if (TDSHelperObject.hasValue(TGlobalConfig.Authen.token) &&
-                            TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.accessToken)) {
+                            TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.access_token)) {
                             resolve(true);
                         } else {
                             setTimeout(() => {
@@ -53,13 +53,13 @@ export class TAuthGuardService implements CanActivate, CanActivateChild {
                 resolve(true);
             } else {
                 if (TDSHelperObject.hasValue(TGlobalConfig.Authen.token) &&
-                    TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.accessToken)) {
+                    TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.access_token)) {
                     resolve(true);
                 } else {
                     this.auth.getCacheToken().subscribe(() => {
 
                         if (TDSHelperObject.hasValue(TGlobalConfig.Authen.token) &&
-                            TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.accessToken)) {
+                            TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.access_token)) {
                             resolve(true);
                         } else {
                             setTimeout(() => {

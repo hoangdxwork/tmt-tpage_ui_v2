@@ -1,9 +1,9 @@
 export const environment = {
   production: true,
-  apiApp:"",
-  urlLogin:'',
+  apiApp:"https://test.tpos.dev/",
+  urlLogin:'/account/login',
   apiAccount:{
-    signInPassword:"sign-in/password",
+    signInPassword:"token",
     signInFacebook:"sign-in/facebook",
     signInGoogle:"sign-in/google",
     facebookIntegration:"social-network/facebook/integration",
