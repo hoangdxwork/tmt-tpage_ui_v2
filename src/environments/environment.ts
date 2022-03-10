@@ -4,10 +4,10 @@
 
 export const environment = {
   production: false,
-  urlLogin:'',
-  apiApp:"",
+  urlLogin:'/account/login',
+  apiApp:"https://test.tpos.dev/",
   apiAccount:{
-    signInPassword:"sign-in/password",
+    signInPassword:"token",
     signInFacebook:"sign-in/facebook",
     signInGoogle:"sign-in/google",
     facebookIntegration:"social-network/facebook/integration",

@@ -14,26 +14,24 @@ import { TGlobalConfig } from './global-config';
     providedIn: 'root'
 })
 export class TAuthService {
+    private readonly __keyBearerToken = 'TpageBearerToken';
     constructor(
         private apiService: TCommonService,
         private cacheService: THelperCacheService
     ) {
     }
     //Thực thi việc đăng nhập và lấy token
-    signInPassword(phoneNumber: string, password: string): Observable<TDSSafeAny> {
+    signInPassword(username: string, password: string): Observable<TDSSafeAny> {
         let that = this;
         return new Observable(obs => {
-            const data = new HttpParams({
-                fromObject: {
-                    phoneNumber: phoneNumber,
-                    password: password
-                }
-            });
-            that.apiService.connect(TApiMethodType.post, environment.apiApp + environment.apiAccount.signInPassword, {
-                phoneNumber: phoneNumber,
-                password: password
-            },
-                this.apiService.getHeaderJSon(false, false), false).subscribe((res: TDSSafeAny) => {
+          let data = new URLSearchParams();
+            data.set("client_id", "tmtWebApp");
+            data.set("grant_type", "password");
+            data.set("username", username);
+            data.set("password", password);
+            data.set("scope", "profile");
+            that.apiService.connect(TApiMethodType.post, environment.apiApp + environment.apiAccount.signInPassword, data,
+                this.apiService.getHeaderJSon(false, true), false).subscribe((res: TDSSafeAny) => {
                     if (TDSHelperObject.hasValue(res)) {
                         that.signInSuccess(res).subscribe(
                             s => {
@@ -78,7 +76,7 @@ export class TAuthService {
         return new Observable(observer => {
             const formURL = new HttpParams({
                 fromObject: {
-                    "refreshToken": token?.refreshToken ? token?.refreshToken : ''
+                    "refreshToken": token?.refresh_token ? token?.refresh_token : ''
                 }
             });
             that.apiService.connect(TApiMethodType.post,
@@ -110,13 +108,13 @@ export class TAuthService {
 
         return new Observable(obs => {
             let token: TTokenDTO;
-            this.cacheService.getItem("bearerToken").subscribe(ops => {
+            this.cacheService.getItem(this.__keyBearerToken).subscribe(ops => {
                 if (TDSHelperObject.hasValue(ops)) {
                     token = JSON.parse(ops.value).value;
                 }
                 TGlobalConfig.Authen.token = token;
                 TGlobalConfig.Authen.isLogin = (TDSHelperObject.hasValue(token) &&
-                    TDSHelperString.hasValueString(token.accessToken));
+                    TDSHelperString.hasValueString(token.access_token));
                 obs.next(token);
                 obs.complete();
             });
@@ -125,7 +123,7 @@ export class TAuthService {
     //Thực thi set token vào cache theo function đã được định nghĩa trong authen.service.xxxx.ts
     setCacheToken(token: TTokenDTO): Observable<TDSSafeAny> {
         return new Observable(obs => {
-            this.cacheService.setItem("bearerToken", token);
+            this.cacheService.setItem(this.__keyBearerToken, token);
             obs.next(token);
             obs.complete();
         });
@@ -157,12 +155,12 @@ export class TAuthService {
     addAuthenticationToken(req: HttpRequest<TDSSafeAny>): HttpRequest<TDSSafeAny> {
         if (TDSHelperObject.hasValue(TGlobalConfig.Authen)
             && TDSHelperObject.hasValue(TGlobalConfig.Authen.token)
-            && TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.accessToken)
+            && TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.access_token)
         ) {
             req = req.clone({
                 setHeaders:
                 {
-                    Authorization: "Bearer " + TGlobalConfig.Authen.token?.accessToken,
+                    Authorization: "Bearer " + TGlobalConfig.Authen.token?.access_token,
                 }
             });
         }
@@ -189,8 +187,8 @@ export class TAuthService {
             )
         });
     }
- 
-    redirectLogin(urlLogin: string= environment.urlLogin) {
+
+    redirectLogin(urlLogin: string = environment.urlLogin) {
         setTimeout(() => {
             window.location.href = urlLogin;
         }, 1);

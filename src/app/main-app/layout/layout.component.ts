@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { UserInitDTO } from 'src/app/lib';
+import { TAuthService, UserInitDTO } from 'src/app/lib';
+import { environment } from 'src/environments/environment';
 import { TDSSafeAny } from 'tmt-tang-ui';
 
 @Component({
@@ -58,7 +59,7 @@ export class LayoutComponent implements OnInit {
       icon: "tdsi-facebook-2-fill",
       link: '/facebook',
     },
-     {
+    {
       name: "Thống kê",
       icon: "tdsi-chart-pie-fill",
       link: '/report',
@@ -72,15 +73,15 @@ export class LayoutComponent implements OnInit {
   inlineCollapsed = false;
   shopId!: TDSSafeAny;
   lstShop!: Array<TDSSafeAny>;
-  constructor() { }
+  constructor(private auth: TAuthService,) { }
 
   ngOnInit(): void {
   }
   onSelectShopChange(event: TDSSafeAny) {
-  
+
   }
-  onLogout(){
-   
+  onLogout() {
+    this.auth.logout(environment.urlLogin)
   }
   onOpenChange(e: boolean) {
     this.inlineCollapsed = e;
