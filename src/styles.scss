@@ -1,0 +1,15 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+@import "./assets/scss/cdk";
+@import "./assets/scss/scroll";
+@import "./assets/scss/table.scss";
+@import "./assets/font-icon/style.css";
+// @import "./assets/scss/carousel.scss";
+body{
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
