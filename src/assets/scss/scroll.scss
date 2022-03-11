@@ -1,0 +1,32 @@
+
+html {
+  --tdsScrollbarBG: #f8f9fb;
+  --tdsThumbBG: #cfd8dc;
+}
+
+html .dark {
+  --tdsScrollbarBG: #30363d;
+  --tdsThumbBG: #02040a;
+}
+.tds-custom-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.tds-custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--tdsThumbBG) var(--tdsScrollbarBG);
+}
+.tds-custom-scroll::-webkit-scrollbar-track {
+  background: var(--tdsScrollbarBG);
+}
+.tds-custom-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--tdsThumbBG);
+  border-radius: 6px;
+  border: 0px solid var(--tdsScrollbarBG);
+  height: 50%;
+}
+.tds-select-panel {
+  .cdk-virtual-scroll-content-wrapper {
+    width: 100%;
+  }
+}

@@ -1,0 +1,83 @@
+<div class="w-full h-full text-neutral-1-900 dark:text-d-neutral-1-900 relative overflow-hidden flex flex-col">
+    <div class="w-full dark">
+        <tds-header urlLogoText='assets/images/tpos-text.svg' 
+        >
+            <div class="inline-flex tds-header-toolbar-right items-center">
+                <button tds-button-icon color="primary" class="rounded-full mr-2">
+                    <span class="flex items-center">
+                        <i class="tdsi-plus-fill text-white text-xl leading-5"></i>
+                    </span>
+                </button>
+                <button tds-flat-button-icon size="md" class="mr-2">
+                    <span class="flex items-center">
+                        <i class="tdsi-info-line text-xl leading-5"></i>
+                    </span>
+                </button>
+                <button tds-flat-button-icon size="md" class="mr-2">
+                    <span class="flex items-center">
+                        <i class="tdsi-bell-line text-xl leading-5"></i>
+                    </span>
+                </button>
+                <button tds-flat-button-icon size="md" class="mr-2">
+                    <span class="flex items-center">
+                        <i class="tdsi-expand-line text-xl leading-5"></i>
+                    </span>
+                </button>
+                <div class="w-40">
+                    <tds-select [border]="false" [allowSearch]="false" valueField="id" textField="name" [data]="lstShop" [(ngModel)]="shopId" (selectChange)="onSelectShopChange($event)">
+                    </tds-select>
+                </div>
+                <div class="inline-flex pl-4">
+                    <tds-avatar class="cursor-pointer" tds-dropdown [tdsDropdownMenu]="dropdownAvatar" trigger="click" [tdsSrc]="userInit ? userInit.avatarUrl :''">
+                    </tds-avatar>
+                    <tds-dropdown-menu #dropdownAvatar="tdsDropdownMenu">
+                        <div class="w-56">
+                            <div tds-dropdown-item>
+                                <div class="flex w-full">
+                                    <tds-avatar [shape]="'square'" [tdsSrc]="userInit ? userInit.avatarUrl :''">
+                                    </tds-avatar>
+                                    <div class="flex flex-auto flex-col ml-2">
+                                        <div class="text-body-2 font-semibold">
+                                            TShop
+                                        </div>
+                                        <div class="text-neutral-1-600 text-caption-1 font-regular">
+                                            Admin
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div tds-dropdown-item>
+                                Tài khoản
+                            </div>
+                            <div tds-dropdown-item>
+                                Gói cước
+                            </div>
+                            <div tds-dropdown-item>
+                                Đổi mật khẩu
+                            </div>
+                            <div tds-dropdown-item (click)="onLogout()">
+                                <a class="text-error-400">Đăng xuất</a>
+                            </div>
+                        </div>
+                    </tds-dropdown-menu>
+                </div>
+            </div>
+         
+        
+        </tds-header>
+    </div>
+    <div class="w-full flex-auto flex">
+        <div class="h-full flex-shrink overflow-hidden" [style.min-width.px]="!inlineCollapsed ? 260 : 64" [style.width.px]="!inlineCollapsed ? 260 : 64">
+            <tds-menu [data]="lstMenu" [mode]="'light'" (onOpenChange)="onOpenChange($event)">
+            </tds-menu>
+        </div>
+        <div class="flex flex-auto overflow-hidden">
+            <div class="h-full w-full overflow-auto bg-neutral-3-50" cdkScrollable>
+                <router-outlet>
+                </router-outlet>
+            </div>
+        </div>
+    </div>
+    <!--  -->
+</div>
+

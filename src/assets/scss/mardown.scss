@@ -1,0 +1,346 @@
+tds-markdown {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        @apply text-neutral-1-900;
+        background: none;
+        text-shadow: 0 1px white;
+        font-family: "Roboto Mono", monospace, Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+        font-size: 1em;
+        text-align: left;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        word-wrap: normal;
+        line-height: 1.5;
+
+        -moz-tab-size: 4;
+        -o-tab-size: 4;
+        tab-size: 4;
+
+        -webkit-hyphens: none;
+        -moz-hyphens: none;
+        -ms-hyphens: none;
+        hyphens: none;
+    }
+
+    pre[class*="language-"]::-moz-selection,
+    pre[class*="language-"] ::-moz-selection,
+    code[class*="language-"]::-moz-selection,
+    code[class*="language-"] ::-moz-selection {
+        text-shadow: none;
+        background: #b3d4fc;
+    }
+
+    pre[class*="language-"]::selection,
+    pre[class*="language-"] ::selection,
+    code[class*="language-"]::selection,
+    code[class*="language-"] ::selection {
+        text-shadow: none;
+        background: #b3d4fc;
+    }
+
+    @media print {
+        code[class*="language-"],
+        pre[class*="language-"] {
+            text-shadow: none;
+        }
+    }
+
+    /* Code blocks */
+    pre[class*="language-"] {
+        padding: 1em;
+        margin: 0.5em 0;
+        overflow: auto;
+    }
+
+    :not(pre) > code[class*="language-"],
+    pre[class*="language-"] {
+        @apply bg-neutral-3-50;
+    }
+
+    /* Inline code */
+    :not(pre) > code[class*="language-"] {
+        padding: 0.1em;
+        border-radius: 0.3em;
+        white-space: normal;
+    }
+
+    .token.comment,
+    .token.prolog,
+    .token.doctype,
+    .token.cdata {
+        color: slategray;
+    }
+
+    .token.punctuation {
+        color: #999;
+    }
+
+    .token.namespace {
+        opacity: 0.7;
+    }
+
+    .token.property,
+    .token.tag,
+    .token.boolean,
+    .token.number,
+    .token.constant,
+    .token.symbol,
+    .token.deleted {
+        color: #905;
+    }
+
+    .token.selector,
+    .token.attr-name,
+    .token.string,
+    .token.char,
+    .token.builtin,
+    .token.inserted {
+        color: #690;
+    }
+
+    .token.operator,
+    .token.entity,
+    .token.url,
+    .language-css .token.string,
+    .style .token.string {
+        color: #9a6e3a;
+        /* This background color was intended by the author of this theme. */
+        // background: hsla(0, 0%, 100%, 0.5);
+    }
+
+    .token.atrule,
+    .token.attr-value,
+    .token.keyword {
+        color: #07a;
+    }
+
+    .token.function,
+    .token.class-name {
+        color: #dd4a68;
+    }
+
+    .token.regex,
+    .token.important,
+    .token.variable {
+        color: #e90;
+    }
+
+    .token.important,
+    .token.bold {
+        font-weight: bold;
+    }
+    .token.italic {
+        font-style: italic;
+    }
+
+    .token.entity {
+        cursor: help;
+    }
+    markdown {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            @apply border-none my-0;
+        }
+        h1 {
+            @apply text-heading-1 font-semibold pb-8 pt-12 capitalize;
+        }
+        h2 {
+            @apply text-heading-3 font-semibold pb-6;
+        }
+        h3 {
+            @apply text-header-2 font-semibold pb-6 pl-4;
+        }
+        h4 {
+            @apply text-body-1 font-semibold pb-3 pl-8;
+        }
+        ul {
+            @apply list-disc pl-8;
+        }
+        ol {
+            @apply list-decimal pl-4;
+        }
+        p,
+        blockquote,
+        ul,
+        ol,
+        dl,
+        table,
+        pre {
+            @apply mt-0 mb-4;
+        }
+        a {
+            @apply text-info-500;
+        }
+        img {
+            @apply max-w-full;
+        }
+        table {
+            @apply p-0 border border-solid border-neutral-2-100;
+            tr {
+                @apply border-t border-solid border-neutral-2-100 m-0 p-0;
+                th {
+                    @apply font-semibold border-t border-neutral-2-100 border-solid text-left m-0 p-3;
+                }
+                td {
+                    @apply border-t border-neutral-2-100 border-solid text-left m-0 p-3;
+                }
+            }
+            thead {
+                tr {
+                    @apply bg-neutral-2-100 border-t border-neutral-1-300 border-solid text-neutral-1-900;
+                }
+            }
+        }
+        blockquote {
+            @apply border-l-4 border-solid border-neutral-2-200 px-4;
+        }
+    }
+}
+.dark {
+    tds-markdown {
+        code[class*="language-"],
+        pre[class*="language-"] {
+            @apply text-d-neutral-1-900;
+            background: none;
+            text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+            font-family: "Roboto Mono", monospace, Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+            font-size: 1em;
+            text-align: left;
+            white-space: pre;
+            word-spacing: normal;
+            word-break: normal;
+            word-wrap: normal;
+            line-height: 1.5;
+
+            -moz-tab-size: 4;
+            -o-tab-size: 4;
+            tab-size: 4;
+
+            -webkit-hyphens: none;
+            -moz-hyphens: none;
+            -ms-hyphens: none;
+            hyphens: none;
+        }
+
+        /* Code blocks */
+        pre[class*="language-"] {
+            padding: 1em;
+            margin: 0.5em 0;
+            overflow: auto;
+            border-radius: 0.3em;
+        }
+
+        :not(pre) > code[class*="language-"],
+        pre[class*="language-"] {
+            @apply bg-d-neutral-3-200;
+        }
+
+        /* Inline code */
+        :not(pre) > code[class*="language-"] {
+            padding: 0.1em;
+            border-radius: 0.3em;
+            white-space: normal;
+        }
+
+        .token.comment,
+        .token.prolog,
+        .token.doctype,
+        .token.cdata {
+            color: #8292a2;
+        }
+
+        .token.punctuation {
+            color: #f8f8f2;
+        }
+
+        .token.namespace {
+            opacity: 0.7;
+        }
+
+        .token.property,
+        .token.tag,
+        .token.constant,
+        .token.symbol,
+        .token.deleted {
+            color: #f92672;
+        }
+
+        .token.boolean,
+        .token.number {
+            color: #ae81ff;
+        }
+
+        .token.selector,
+        .token.attr-name,
+        .token.string,
+        .token.char,
+        .token.builtin,
+        .token.inserted {
+            color: #a6e22e;
+        }
+
+        .token.operator,
+        .token.entity,
+        .token.url,
+        .language-css .token.string,
+        .style .token.string,
+        .token.variable {
+            color: #f8f8f2;
+        }
+
+        .token.atrule,
+        .token.attr-value,
+        .token.function,
+        .token.class-name {
+            color: #e6db74;
+        }
+
+        .token.keyword {
+            color: #66d9ef;
+        }
+
+        .token.regex,
+        .token.important {
+            color: #fd971f;
+        }
+
+        .token.important,
+        .token.bold {
+            font-weight: bold;
+        }
+        .token.italic {
+            font-style: italic;
+        }
+
+        .token.entity {
+            cursor: help;
+        }
+        markdown {
+            table {
+                @apply  border-d-neutral-2-100;
+                tr {
+                    @apply  border-d-neutral-2-100;
+                    th {
+                        @apply  border-d-neutral-2-100;
+                    }
+                    td {
+                        @apply  border-d-neutral-2-100;
+                    }
+                }
+                thead {
+                    tr {
+                        @apply bg-d-neutral-2-100  border-d-neutral-1-300 text-d-neutral-1-900;
+                    }
+                }
+            }
+            blockquote {
+                @apply border-l-4 border-solid border-neutral-2-200 px-4;
+            }
+        }
+    }
+}
