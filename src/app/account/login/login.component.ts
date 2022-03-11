@@ -28,8 +28,8 @@ export class LoginComponent implements OnInit {
     let that = this
 
     that.loginForm = this.formBuilder.group({
-      phoneNumber: ['admin', Validators.required],
-      password: ['123123@', Validators.required],
+      phoneNumber: ['', Validators.required],
+      password: ['', Validators.required],
     });
 
     // get return url from route parameters or default to '/'
