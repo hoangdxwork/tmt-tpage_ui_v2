@@ -1,0 +1,62 @@
+<tds-page-header title="Tài Khoản" class="bg-white">
+    <tds-breadcrumb tds-page-header-breadcrumb>
+        <tds-breadcrumb-item>Cá nhân</tds-breadcrumb-item>
+        <tds-breadcrumb-item>
+            <a>Tài khoản</a>
+        </tds-breadcrumb-item>
+    </tds-breadcrumb>
+
+
+    <tds-page-header-content>
+        <div class="w-full flex items-center justify-between">
+            <div class="flex">
+                <tds-tag [checked]="typeChoose=='user'" (checkedChange)="changeType('user')" mode="checkable"
+                    rounded='rounded-full' class="mr-2">
+                    Tài Khoản
+                </tds-tag>
+                <tds-tag [checked]="typeChoose=='data'" (checkedChange)="changeType('data')" mode="checkable"
+                    rounded='rounded-full' class="mr-2">
+                    Gói cước
+                </tds-tag>
+                <tds-tag [checked]="typeChoose=='notify'" (checkedChange)="changeType('notify')" mode="checkable"
+                    rounded='rounded-full'>
+                    Thông báo
+                </tds-tag>
+            </div>
+            <div *ngIf="typeChoose=='user' && isInfo && !isChangeInfo" class="flex gap-x-3">
+                <button tds-button color="primary" (click)="changeInfo()">
+                    <span class="flex items-center">
+                        <i class="tdsi-edit-fill text-lg leading-none mr-2"></i>Thay đổi thông tin
+                    </span>
+                </button>
+            </div>
+            <div *ngIf="typeChoose=='user' && isInfo && isChangeInfo" class="flex gap-x-3">
+                <button  tds-button color="primary" (click)="onSumitInfoUser()">
+                    <span class="flex items-center">
+                        Lưu thông tin
+                    </span>
+                </button>
+                <button tds-button color="secondary"
+                    (click)="cancelChange()">
+                    <span class="flex items-center">
+                        Hủy bỏ
+                    </span>
+                </button>
+            </div>
+            <div *ngIf="typeChoose=='user' && isPass" class="flex gap-x-3">
+                <button  tds-button color="primary">
+                    <span class="flex items-center">
+                        Lưu thông tin
+                    </span>
+                </button>
+                <button  tds-button color="secondary">
+                    <span class="flex items-center">
+                        Hủy bỏ
+                    </span>
+                </button>
+            </div>
+        </div>
+    </tds-page-header-content>
+</tds-page-header>
+<app-info-user [isChangeInfo]="isChangeInfo" (itemIsInfo)="outputChooseItem($event)" (formUser)="outputFormUser($event)" *ngIf="typeChoose=='user'">
+</app-info-user>
