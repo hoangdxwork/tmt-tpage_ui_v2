@@ -4,182 +4,164 @@ import { ObjectDataDTO } from '../conversation/message.dto';
 import { PartnerDTO, PartnerStatus } from '../partner/partner.dto';
 import { StockWarehouseDTO } from '../product/warehouse.dto';
 
-export class SaleOnlineOrderSummaryStatusDTO {
-  public dateStart?: Date;
-  public dateEnd?: Date;
-  public tagIds: string;
-  public searchText: string;
+export interface SaleOnlineOrderSummaryStatusDTO {
+  dateStart?: Date;
+  dateEnd?: Date;
+  tagIds: string;
+  searchText: string;
 }
 
-export class SaleOnline_OrderDTO {
-  public id: string;
-  public code: string;
+export interface SaleOnline_OrderDTO {
+  id: string;
+  code: string;
 
-  public facebook_UserId: string;
-  public facebook_PostId: string;
-  public facebook_ASUserId: string;
-  public facebook_CommentId: string;
-  public facebook_AttachmentId: string;
-  public facebook_UserName: string;
-  public facebook_UserAvatar: string;
-  public facebook_Content: string;
-  private _telephone: string;
+  facebook_UserId: string;
+  facebook_PostId: string;
+  facebook_ASUserId: string;
+  facebook_CommentId: string;
+  facebook_AttachmentId: string;
+  facebook_UserName: string;
+  facebook_UserAvatar: string;
+  facebook_Content: string;
+  _telephone: string;
 
-  public get Telephone() {
-    return this._telephone;
-  }
+  telephone: string;
 
-  public set Telephone(str: string) {
-    this._telephone = str.trim();
-  }
+  address: string;
+  partnerPhone: string;
+  name: string;
+  email: string;
+  note: string;
+  deposit: number;
+  liveCampaignId: string;
+  liveCampaignName: string;
 
-  public address: string;
-  public partnerPhone: string;
-  public name: string;
-  public email: string;
-  public note: string;
-  public deposit: number;
-  public liveCampaignId: string;
-  public liveCampaignName: string;
+  partnerId?: number;
+  partner: PartnerDTO;
+  partnerName: string;
+  partnerStatus: PartnerStatus;
+  partnerStatusText: string;
+  partnerCode: string;
 
-  public partnerId?: number;
-  public partner: PartnerDTO;
-  public partnerName: string;
-  public partnerStatus: PartnerStatus;
-  public partnerStatusText: string;
-  public partnerCode: string;
+  cityCode: string;
+  cityName: string;
+  districtCode: string;
+  districtName: string;
+  wardCode: string;
+  wardName: string;
 
-  public cityCode: string;
-  public cityName: string;
-  public districtCode: string;
-  public districtName: string;
-  public wardCode: string;
-  public wardName: string;
+  totalAmount: number;
+  totalQuantity: number;
 
-  public totalAmount: number;
-  public totalQuantity: number;
+  dateCreated: Date;
+  lastUpdated?: Date;
 
-  public dateCreated: Date;
-  public lastUpdated?: Date;
+  status: SaleOnlineOrderStatusType;
+  statusText: string;
 
-  public status: SaleOnlineOrderStatusType;
-  public statusText: string;
+  facebook_CommentsText: string;
+  facebook_Comments: Array<SaleOnline_Order_FacebookCommentDTO>;
 
-  public facebook_CommentsText: string;
-  public facebook_Comments: Array<SaleOnline_Order_FacebookCommentDTO>;
+  details: Array<SaleOnline_Order_DetailDTO>;
 
-  public details: Array<SaleOnline_Order_DetailDTO>;
-
-  public statusStr: string;
-  public commentIds: Array<string>;
-  public companyId?: number;
-  public partnerNameNosign: string;
-  public sessionIndex: number;
-  public session: number;
-  public source: string;
-  public source_FacebookUserId: string;
-  public source_FacebookMessageId: string;
-  public zaloOrderCode: string;
-  public zaloOrderId: string;
-  public zaloOAId: string;
-  public deliveryInfo: string;
-  public crmTeamId?: number;
-  public matchingId: string;
-  public isCreated: boolean;
-  public isUpdated: boolean;
-  public crmTeamName: string;
+  statusStr: string;
+  commentIds: Array<string>;
+  companyId?: number;
+  partnerNameNosign: string;
+  sessionIndex: number;
+  session: number;
+  source: string;
+  source_FacebookUserId: string;
+  source_FacebookMessageId: string;
+  zaloOrderCode: string;
+  zaloOrderId: string;
+  zaloOAId: string;
+  deliveryInfo: string;
+  crmTeamId?: number;
+  matchingId: string;
+  isCreated: boolean;
+  isUpdated: boolean;
+  crmTeamName: string;
 
   // Hiển thị số lần in
-  public printCount: number;
-  public userId: string;
-  public user: ApplicationUserDTO;
-  public tags: string;
-  public nameNetwork: string;
-  public userName: string;
+  printCount: number;
+  userId: string;
+  user: ApplicationUserDTO;
+  tags: string;
+  nameNetwork: string;
+  userName: string;
 
-  public warehouseId?: number;
-  public warehouseName: string;
-  public warehouse: StockWarehouseDTO;
+  warehouseId?: number;
+  warehouseName: string;
+  warehouse: StockWarehouseDTO;
 
-  public company: CompanyDTO;
-  public companyName: string;
+  company: CompanyDTO;
+  companyName: string;
 
-  public formAction: string;
-
-  constructor() {
-    this.partnerStatus = PartnerStatus.Normal;
-    this.commentIds = new Array<string>();
-    this.facebook_Comments = new Array<SaleOnline_Order_FacebookCommentDTO>();
-    this.details = new Array<SaleOnline_Order_DetailDTO>();
-  }
+  formAction: string;
 }
 
-export class SaleOnline_Order_FacebookCommentDTO {
-  public id: string;
-  public message: string;
-  public created_time: string;
-  public created_time_converted?: Date;
-  public can_hide: boolean;
-  public can_remove: boolean;
-  public like_count: number;
-  public comment_count: number;
-  public view_id: number;
-  public is_hidden: boolean;
-  public post_id: string;
-  public object: ObjectDataDTO;
-  public from: SaleOnline_Facebook_FromDTO;
-  public comments: Array<SaleOnline_Order_FacebookCommentDTO>;
-  public saleOnlineDeliveyInfo: SaleOnlineDeliveryInfoDTO;
-
-  constructor() {
-    this.comments = new Array<SaleOnline_Order_FacebookCommentDTO>();
-    this.saleOnlineDeliveyInfo = new SaleOnlineDeliveryInfoDTO();
-  }
+export interface SaleOnline_Order_FacebookCommentDTO {
+  id: string;
+  message: string;
+  created_time: string;
+  created_time_converted?: Date;
+  can_hide: boolean;
+  can_remove: boolean;
+  like_count: number;
+  comment_count: number;
+  view_id: number;
+  is_hidden: boolean;
+  post_id: string;
+  object: ObjectDataDTO;
+  from: SaleOnline_Facebook_FromDTO;
+  comments: Array<SaleOnline_Order_FacebookCommentDTO>;
+  saleOnlineDeliveyInfo: SaleOnlineDeliveryInfoDTO;
 }
 
-export class SaleOnline_Order_DetailDTO {
-  public id: string;
-  public quantity: number;
-  public price: number;
-  public productId?: number;
-  public productName: string;
-  public productNameGet: string;
-  public productCode: string;
-  public uomId?: number;
-  public uomName: string;
-  public note: string;
-  public dactor?: number;
-  public orderId: string;
+export interface SaleOnline_Order_DetailDTO {
+  id: string;
+  quantity: number;
+  price: number;
+  productId?: number;
+  productName: string;
+  productNameGet: string;
+  productCode: string;
+  uomId?: number;
+  uomName: string;
+  note: string;
+  dactor?: number;
+  orderId: string;
 
   // Thứ tự ưu tiên, thứ tự <= 0 => hiển thị trạng thái hết hàng lúc người dùng cập nhật giỏ hàng
-  public priority: number;
-  public imageUrl: string;
+  priority: number;
+  imageUrl: string;
 }
 
-export class SaleOnlineDeliveryInfoDTO {
-  public carrierName: string;
-  public trackingRef: string;
-  public trackingRefSort: string;
-  public ship_Weight: string;
-  public ship_Fee: number;
-  public cod: string;
-  public isCOD: boolean;
-  public ship_Receiver: ShipReceiverDTO;
+export interface SaleOnlineDeliveryInfoDTO {
+  carrierName: string;
+  trackingRef: string;
+  trackingRefSort: string;
+  ship_Weight: string;
+  ship_Fee: number;
+  cod: string;
+  isCOD: boolean;
+  ship_Receiver: ShipReceiverDTO;
 }
 
-export class ShipReceiverDTO {
-  public name: string;
-  public phone: string;
-  public address: string;
+export interface ShipReceiverDTO {
+  name: string;
+  phone: string;
+  address: string;
 }
 
-export class SaleOnline_Facebook_FromDTO {
-  public id: string;
-  public uid: string;
-  public asid: string;
-  public picture: string;
-  public name: string;
-  public mobile_phone: string;
+export interface SaleOnline_Facebook_FromDTO {
+  id: string;
+  uid: string;
+  asid: string;
+  picture: string;
+  name: string;
+  mobile_phone: string;
 }
 
 export enum SaleOnlineOrderStatusType {

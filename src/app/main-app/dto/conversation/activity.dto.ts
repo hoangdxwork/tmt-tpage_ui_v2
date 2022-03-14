@@ -1,28 +1,24 @@
 import { CRMTeamDTO } from '../team/team.dto';
 
-export class CRMActivityCampaignDTO {
-  public crmTeamId?: number;
-  public details: Array<CRMActivityDTO>;
-  public string: string;
-  public mailTemplateId?: number;
-
-  constructor() {
-    this.details = new Array<CRMActivityDTO>();
-  }
+export interface CRMActivityCampaignDTO {
+  crmTeamId?: number;
+  details: Array<CRMActivityDTO>;
+  string: string;
+  mailTemplateId?: number;
 }
 
-export class CRMActivityDTO {
-  public crmTeamId?: number;
-  public crmTeam: CRMTeamDTO;
-  public facebook_ASId: string;
-  public facebook_CommentId: string;
-  public facebook_PostId: string;
-  public facebook_UserId: string;
-  public facebook_UserName: string;
-  public matchingId: string;
-  public message: string;
-  public partnerId?: number;
-  public typeId: ActivityType;
+export interface CRMActivityDTO {
+  crmTeamId?: number;
+  crmTeam: CRMTeamDTO;
+  facebook_ASId: string;
+  facebook_CommentId: string;
+  facebook_PostId: string;
+  facebook_UserId: string;
+  facebook_UserName: string;
+  matchingId: string;
+  message: string;
+  partnerId?: number;
+  typeId: ActivityType;
 }
 
 export enum ActivityType {

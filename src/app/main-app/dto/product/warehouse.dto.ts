@@ -1,159 +1,111 @@
 import { CompanyDTO } from '../company/company.dto';
 import { ProcurementRuleDTO } from '../rule/rule.dto';
 
-export class StockWarehouseDTO {
-  public id: number;
-  public code: string;
-  public name: string;
-  public companyId: number;
-  public company: CompanyDTO;
+export interface StockWarehouseDTO {
+  id: number;
+  code: string;
+  name: string;
+  companyId: number;
+  company: CompanyDTO;
 
-  public get nameGet(): string {
-    return `[${this.code}] ${this.name}`;
-  }
+  nameGet: string;
 
-  public set nameGet(str: string) {
-    this.nameGet = str;
-  }
-
-  public companyName: string;
+  companyName: string;
 }
 
-export class StockLocationDTO {
-  public id: number;
-  public usage: string;
-  public scrapLocation: boolean;
-  public name: string;
-  public completeName: string;
-  public parentLocationId?: number;
-  public parentLocation: StockLocationDTO;
-  public active: boolean;
-  public parentLeft?: number;
-  public companyId?: number;
-  public company: CompanyDTO;
-  public companyName: string;
+export interface StockLocationDTO {
+  id: number;
+  usage: string;
+  scrapLocation: boolean;
+  name: string;
+  completeName: string;
+  parentLocationId?: number;
+  parentLocation: StockLocationDTO;
+  active: boolean;
+  parentLeft?: number;
+  companyId?: number;
+  company: CompanyDTO;
+  companyName: string;
 
-  public get showUsage(): string {
-    switch (this.usage) {
-      case 'supplier':
-        return 'Địa điểm nhà cung cấp';
-      case 'view':
-        return 'Địa điểm khung nhìn';
-      case 'internal':
-        return 'Địa điểm nội bộ';
-      case 'customer':
-        return 'Địa điểm khách hàng';
-      case 'inventory':
-        return 'Địa điểm điều chỉnh';
-      case 'procurement':
-        return 'Địa điểm cung ứng';
-      case 'production':
-        return 'Địa điểm sản xuất';
-      case 'transit':
-        return 'Địa điểm chuyển tiếp';
-      default:
-        return '';
-    }
-  }
+  showUsage: string;
 
-  public set showUsage(str: string) {
-    this.showUsage = str;
-  }
-
-  public nameGet: string;
-  public nameWarehouse: string;
-
-  constructor() {
-    this.usage = 'internal';
-    this.active = true;
-    this.scrapLocation = false;
-  }
+  nameGet: string;
+  nameWarehouse: string;
 }
 
-export class StockLocationRouteDTO {
-  public id: number;
-  public name: string;
-  public sequence?: number;
-  public productSelectable?: boolean;
-  public productCategSelectable?: boolean;
-  public warehouseSelectable?: boolean;
-  public active?: boolean;
-  public supplierWhId?: number;
-  public companyId?: number;
-  public warehouses: Array<StockWarehouseDTO>;
+export interface StockLocationRouteDTO {
+  id: number;
+  name: string;
+  sequence?: number;
+  productSelectable?: boolean;
+  productCategSelectable?: boolean;
+  warehouseSelectable?: boolean;
+  active?: boolean;
+  supplierWhId?: number;
+  companyId?: number;
+  warehouses: Array<StockWarehouseDTO>;
 
-  public pushRules: Array<StockLocationPathDTO>;
-  public pullRules: Array<ProcurementRuleDTO>;
-
-  constructor() {}
+  pushRules: Array<StockLocationPathDTO>;
+  pullRules: Array<ProcurementRuleDTO>;
 }
 
-export class StockLocationPathDTO {
-  public id: number;
-  public name: string;
-  public routeId?: number;
+export interface StockLocationPathDTO {
+  id: number;
+  name: string;
+  routeId?: number;
 
-  public locationFromId: number;
-  public locationFrom: StockLocationDTO;
+  locationFromId: number;
+  locationFrom: StockLocationDTO;
 
-  public locationDestId: number;
-  public locationDest: StockLocationDTO;
+  locationDestId: number;
+  locationDest: StockLocationDTO;
 
-  public pickingTypeId: number;
-  public pickingType: StockPickingTypeDTO;
+  pickingTypeId: number;
+  pickingType: StockPickingTypeDTO;
 
-  public auto: string;
-  public active?: boolean;
+  auto: string;
+  active?: boolean;
 
-  public warehouseId?: number;
-  public warehouse: StockWarehouseDTO;
+  warehouseId?: number;
+  warehouse: StockWarehouseDTO;
 
-  public sequence?: number;
-  public companyId?: number;
-
-  constructor() {}
+  sequence?: number;
+  companyId?: number;
 }
 
-export class StockPickingTypeDTO {
-  public id: number;
-  public code: string;
-  public sequence: number;
+export interface StockPickingTypeDTO {
+  id: number;
+  code: string;
+  sequence: number;
 
-  public defaultLocationDestId?: number;
-  public defaultLocationDest: StockLocationDTO;
+  defaultLocationDestId?: number;
+  defaultLocationDest: StockLocationDTO;
 
-  public warehouseId?: number;
-  public warehouse: StockWarehouseDTO;
+  warehouseId?: number;
+  warehouse: StockWarehouseDTO;
 
-  public warehouseName: string;
-  public iRSequenceId: number;
+  warehouseName: string;
+  iRSequenceId: number;
 
-  // public IRSequenceModel IRSequence
+  // IRSequenceModel IRSequence
 
-  public active: boolean;
+  active: boolean;
 
-  public name: string;
-  public defaultLocationSrcId?: number;
-  public defaultLocationSrc: StockLocationDTO;
+  name: string;
+  defaultLocationSrcId?: number;
+  defaultLocationSrc: StockLocationDTO;
 
-  public returnPickingTypeId?: number;
-  public returnPickingType: StockPickingTypeDTO;
-  public useCreateLots?: boolean;
-  public useExistingLots?: boolean;
-  public inverseOperation?: boolean;
-  public nameGet: string;
+  returnPickingTypeId?: number;
+  returnPickingType: StockPickingTypeDTO;
+  useCreateLots?: boolean;
+  useExistingLots?: boolean;
+  inverseOperation?: boolean;
+  nameGet: string;
 
-  public countPickingReady: number;
-  public countPickingDraft: number;
-  public countPicking: number;
-  public countPickingWaiting: number;
-  public countPickingLate: number;
-  public countPickingBackOrders: number;
-
-  constructor() {
-    this.active = true;
-    this.useCreateLots = true;
-    this.useExistingLots = true;
-    this.inverseOperation = false;
-  }
+  countPickingReady: number;
+  countPickingDraft: number;
+  countPicking: number;
+  countPickingWaiting: number;
+  countPickingLate: number;
+  countPickingBackOrders: number;
 }

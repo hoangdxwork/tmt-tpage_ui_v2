@@ -1,7 +1,7 @@
-export class MailTemplateDTO {
-  public id: string;
-  public name: string;
-  public postId: string;
-  public crmTeamId?: number;
-  public messageId: string;
+export interface MailTemplateDTO {
+  id: string;
+  name: string;
+  postId: string;
+  crmTeamId?: number;
+  messageId: string;
 }

@@ -1,52 +1,44 @@
 import { SaleOnlineOrderStatusType } from "../saleonlineorder/sale-online-order.dto";
 
-export class  SearchStaffReportDTO {
-  public relationship: number;
-  public dateTo: string;
-  public dateFrom: string;
-  public defaultTime?: TimeReport;
-  public staffId: string;
-  public partnerId?: number;
-  public isNoCustomer: boolean;
-  public endDate?: Date;
-  public beginDate?: Date;
-  public orderType: string;
-  public typeReport: number;
-  public companyId?: number;
+export interface  SearchStaffReportDTO {
+  relationship: number;
+  dateTo: string;
+  dateFrom: string;
+  defaultTime?: TimeReport;
+  staffId: string;
+  partnerId?: number;
+  isNoCustomer: boolean;
+  endDate?: Date;
+  beginDate?: Date;
+  orderType: string;
+  typeReport: number;
+  companyId?: number;
 
-  public shipStatus: string;
-  public state: string;
-  public status: SaleOnlineOrderStatusType;
+  shipStatus: string;
+  state: string;
+  status: SaleOnlineOrderStatusType;
 
-  public q: string;
+  q: string;
 
-  public productId?: number;
-  public companyIds: Array<string>;
-  public list: Array<ColumReportOrderDTO>;
-  public date?: Date;
+  productId?: number;
+  companyIds: Array<string>;
+  list: Array<ColumReportOrderDTO>;
+  date?: Date;
 
   /// <summary>
   /// TypeTab = "T" // Tổng quan
   /// TypeTab = "NV" // Nhân viên
   /// TypeTab = "KH" // Khách hàng
   /// </summary>
-  public typeTab: string;
-  public cityCode: string;
-  public reportBy: string;
-
-  constructor() {
-    this.relationship = 0;
-    this.companyId = -1;
-    this.isNoCustomer = false;
-    this.companyIds = new Array<string>();
-    this.list = new Array<ColumReportOrderDTO>();
-  }
+  typeTab: string;
+  cityCode: string;
+  reportBy: string;
 }
 
-export class ColumReportOrderDTO {
-  public nameColumn: string;
-  public textColumn: string;
-  public location: number;
+export interface ColumReportOrderDTO {
+  nameColumn: string;
+  textColumn: string;
+  location: number;
 }
 
 export enum TimeReport
