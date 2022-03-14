@@ -1,171 +1,171 @@
 import { ProductDTO } from '../product/product.dto';
 
 export class DeliveryCarrierDTO {
-  public IsPrintCustom: boolean;
-  public Id: number;
+  public isPrintCustom: boolean;
+  public id: number;
 
-  public Name: string;
-  public SenderName: string;
+  public name: string;
+  public senderName: string;
 
-  public Sequence?: number;
-  public Active: boolean;
-  public DeliveryType: string;
+  public sequence?: number;
+  public active: boolean;
+  public deliveryType: string;
 
-  public DeliveryTypeGet: string;
+  public deliveryTypeGet: string;
 
-  public ProductId?: number;
-  public Product: ProductDTO;
+  public productId?: number;
+  public product: ProductDTO;
 
-  public FixedPrice?: number;
-  public CompanyId?: number;
-  public Amount?: number;
+  public fixedPrice?: number;
+  public companyId?: number;
+  public amount?: number;
 
-  public FreeOver?: boolean;
+  public freeOver?: boolean;
 
   //This percentage will be added to the shipping price.
-  public Margin?: number;
-  public HCMPTConfigId?: number;
+  public margin?: number;
+  public hcmPTConfigId?: number;
 
-  public GHN_ApiKey: string;
-  public GHN_ClientId: string;
-  public GHN_NoteCode: string;
-  public GHN_PaymentTypeId?: number;
-  public GHN_PackageWidth?: number;
-  public GHN_PackageLength?: number;
-  public GHN_PackageHeight?: number;
-  public GHN_ServiceId: string;
+  public ghn_ApiKey: string;
+  public ghn_ClientId: string;
+  public ghn_NoteCode: string;
+  public ghn_PaymentTypeId?: number;
+  public ghn_PackageWidth?: number;
+  public ghn_PackageLength?: number;
+  public ghn_PackageHeight?: number;
+  public ghn_ServiceId: string;
 
-  public ViettelPost_UserName: string;
-  public ViettelPost_Password: string;
-  public ViettelPost_Token: string;
-  public ViettelPost_ServiceId: string;
-  public ViettelPost_ProductType: string;
-  public ViettelPost_OrderPayment?: number;
+  public viettelPost_UserName: string;
+  public viettelPost_Password: string;
+  public viettelPost_Token: string;
+  public viettelPost_ServiceId: string;
+  public viettelPost_ProductType: string;
+  public viettelPost_OrderPayment?: number;
 
-  public ShipChung_ServiceId: string;
-  public ShipChung_PaymentTypeID?: number;
-  public ShipChung_ApiKey: string;
+  public shipChung_ServiceId: string;
+  public shipChung_PaymentTypeID?: number;
+  public shipChung_ApiKey: string;
 
-  public HCMPost_sI: string;
-  public HCMPost_sK: string;
-  public HCMPost_ShopID: string;
-  public HCMPost_ShopName: string;
-  public HCMPost_ServiceId: string;
+  public hcmPost_sI: string;
+  public hcmPost_sK: string;
+  public hcmPost_ShopID: string;
+  public hcmPost_ShopName: string;
+  public hcmPost_ServiceId: string;
 
-  public TokenShip: string;
+  public tokenShip: string;
 
-  public VNPost_ClientId: string;
-  public VNPost_ServiceId: string;
-  public VNPost_IsContracted: boolean;
-  public VNPost_PickupType: string;
+  public vnPost_ClientId: string;
+  public vnPost_ServiceId: string;
+  public vnPost_IsContracted: boolean;
+  public vnPost_PickupType: string;
 
-  public GHTK_Token: string;
-  public GHTK_ClientId: string;
-  public GHTK_IsFreeShip?: number;
+  public ghtk_Token: string;
+  public ghtk_ClientId: string;
+  public ghtk_IsFreeShip?: number;
 
-  public SuperShip_Token: string;
-  public SuperShip_ClientId: string;
-  public SuperShip_Config: string;
+  public superShip_Token: string;
+  public superShip_ClientId: string;
+  public superShip_Config: string;
 
-  public Config_TransportId: string;
-  public Config_TransportName: string;
+  public config_TransportId: string;
+  public config_TransportName: string;
 
-  public EMS_Service: string;
-  public EMS_Inventory: string;
-  public EMS_Token: string;
+  public ems_Service: string;
+  public ems_Inventory: string;
+  public ems_Token: string;
 
-  public TinToc_Service: string;
-  public TinToc_ServiceCode: string;
+  public tinToc_Service: string;
+  public tinToc_ServiceCode: string;
 
-  public NinjaVan_ClientId: string;
-  public NinjaVan_ClientSecret: string;
-  public NinjaVan_ServiceType: string;
-  public NinjaVan_ServiceLevel: string;
-  public NinjaVan_Token: string;
-  public NinjaVan_BranchId: string;
+  public ninjaVan_ClientId: string;
+  public ninjaVan_ClientSecret: string;
+  public ninjaVan_ServiceType: string;
+  public ninjaVan_ServiceLevel: string;
+  public ninjaVan_Token: string;
+  public ninjaVan_BranchId: string;
 
-  public ZTO_PickupType: string;
-  public ZTO_ProductType: string;
-  public ZTO_SendWayType: string;
-  public ZTO_AppCode: string;
-  public ZTO_SecretKey: string;
+  public zto_PickupType: string;
+  public zto_ProductType: string;
+  public zto_SendWayType: string;
+  public zto_AppCode: string;
+  public zto_SecretKey: string;
 
-  public Config_DefaultFee?: number;
-  public Config_DefaultWeight?: number;
+  public config_DefaultFee?: number;
+  public config_DefaultWeight?: number;
 
-  public ExtrasText: string;
-  public Extras: DeliveryCarrier_ExtraDTO;
+  public extrasText: string;
+  public extras: DeliveryCarrier_ExtraDTO;
 
   constructor() {
-    this.GHTK_IsFreeShip = 1;
-    this.SuperShip_Config = '1';
-    this.GHN_PaymentTypeId = 1;
+    this.ghtk_IsFreeShip = 1;
+    this.superShip_Config = '1';
+    this.ghn_PaymentTypeId = 1;
   }
 }
 
 export class DeliveryCarrier_ExtraDTO {
-  public PickWorkShift: string;
-  public PickWorkShiftName: string;
-  public DeliverWorkShift: string;
-  public DeliverWorkShiftName: string;
+  public pickWorkShift: string;
+  public pickWorkShiftName: string;
+  public deliverWorkShift: string;
+  public deliverWorkShiftName: string;
 
   /// Shop trả/Khách trả
-  public PaymentTypeId: string;
-  public PosId: string;
-  public IsDropoff: boolean;
+  public paymentTypeId: string;
+  public posId: string;
+  public isDropoff: boolean;
 
   /// Khai giá bảo hiểm
-  public IsInsurance: boolean;
-  public InsuranceFee?: number;
+  public isInsurance: boolean;
+  public insuranceFee?: number;
 
   /// Cho xem hàng
-  public IsPackageViewable: boolean;
+  public isPackageViewable: boolean;
 
   /// Hàng dễ vỡ
-  public Is_Fragile: boolean;
-  public PickupAccountId: string;
-  public SoldToAccountId: string;
-  public IsPartSign?: boolean;
+  public is_Fragile: boolean;
+  public pickupAccountId: string;
+  public soldToAccountId: string;
+  public isPartSign?: boolean;
 
   /// Cho thử hàng
-  public IsAllowTryout: boolean;
+  public isAllowTryout: boolean;
 
   /// Cấn trừ tiền COD
-  public IsDeductCod: boolean;
+  public isDeductCod: boolean;
 
   /// Thu tiền xem hàng
-  public IsCollectMoneyGoods: boolean;
+  public isCollectMoneyGoods: boolean;
 
   /// Thu tiền xem hàng
-  public CollectMoneyGoods?: number;
+  public collectMoneyGoods?: number;
 
   /// Không cho xem hàng. Cho thử hàng. Cho xem hàng, không cho thử
-  public ConfirmType: string;
+  public confirmType: string;
 
   /// giao hàng 1 phần
-  public PartialDelivery: string;
+  public partialDelivery: string;
 
   /// Hoàn hàng
-  public IsRefund?: number;
-  public ServiceCustoms: Array<ServiceCustomDTO>;
+  public isRefund?: number;
+  public serviceCustoms: Array<ServiceCustomDTO>;
 
   /// Giá trị tiền bảo hiểm bằng tổng tiền
-  public IsInsuranceEqualTotalAmount?: boolean;
+  public isInsuranceEqualTotalAmount?: boolean;
 
   constructor() {
-    this.ServiceCustoms = new Array<ServiceCustomDTO>();
-    this.IsDropoff = false;
-    this.IsInsurance = false;
-    this.IsPackageViewable = false;
-    this.Is_Fragile = false;
-    this.IsAllowTryout = false;
-    this.IsDeductCod = false;
-    this.IsCollectMoneyGoods = false;
+    this.serviceCustoms = new Array<ServiceCustomDTO>();
+    this.isDropoff = false;
+    this.isInsurance = false;
+    this.isPackageViewable = false;
+    this.is_Fragile = false;
+    this.isAllowTryout = false;
+    this.isDeductCod = false;
+    this.isCollectMoneyGoods = false;
   }
 }
 
 export class ServiceCustomDTO {
-  public ServiceId: string;
-  public Name: string;
-  public IsDefault: boolean;
+  public serviceId: string;
+  public name: string;
+  public isDefault: boolean;
 }

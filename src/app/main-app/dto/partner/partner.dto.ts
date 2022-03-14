@@ -213,12 +213,12 @@ export class PartnerExtDTO {
 }
 
 export class TagPartnerDTO {
-  public Id: number;
-  public TagId: number;
-  public Color: string;
-  public Tags: Array<TagDTO>;
-  public PartnerId: number;
-  public TagName: string;
+  public id: number;
+  public tagId: number;
+  public color: string;
+  public tags: Array<TagDTO>;
+  public partnerId: number;
+  public tagName: string;
 }
 
 export enum PartnerStatus {

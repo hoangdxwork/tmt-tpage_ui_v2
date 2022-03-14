@@ -258,256 +258,256 @@ export class FastSaleOrderDTO {
 }
 
 export class FastSaleOrderLineDTO {
-  public Id: number;
+  public id: number;
 
-  public ProductId: number;
-  public Product: ProductDTO;
+  public productId: number;
+  public product: ProductDTO;
 
-  public ProductUOMId: number;
-  public ProductUOM: ProductUOMDTO;
+  public productUOMId: number;
+  public productUOM: ProductUOMDTO;
 
-  public PriceUnit: number;
-  public ProductUOMQty: number;
+  public priceUnit: number;
+  public productUOMQty: number;
 
   /// Nhân viên
-  public UserId: string;
-  public User: ApplicationUserDTO;
+  public userId: string;
+  public user: ApplicationUserDTO;
 
   /// Chiết khấu %
-  public Discount?: number;
-  public Discount_Fixed?: number;
+  public discount?: number;
+  public discount_Fixed?: number;
 
-  public PriceTotal?: number;
-  public PriceSubTotal?: number;
+  public priceTotal?: number;
+  public priceSubTotal?: number;
 
-  public Weight?: number;
-  public WeightTotal?: number;
+  public weight?: number;
+  public weightTotal?: number;
 
-  public AccountId: number;
-  public Account: AccountDTO;
-  public PriceRecent?: number;
+  public accountId: number;
+  public account: AccountDTO;
+  public priceRecent?: number;
 
-  public Name: string;
-  public IsName: boolean;
-  public ProductName: string;
-  public ProductUOMName: string;
+  public name: string;
+  public isName: boolean;
+  public productName: string;
+  public productUOMName: string;
 
-  public SaleLineIds: Array<number>;
-  public ProductNameGet: string;
+  public saleLineIds: Array<number>;
+  public productNameGet: string;
 
-  public SaleLineId?: number;
+  public saleLineId?: number;
 
   /// percent, fixed
-  public Type: string;
+  public type: string;
 
-  public PromotionProgramId?: number;
-  public Note: string;
-  public ProductBarcode: string;
-  public CompanyId?: number;
-  public PartnerId?: number;
-  public PriceSubTotalSigned?: number;
-  public PromotionProgramComboId?: number;
+  public promotionProgramId?: number;
+  public note: string;
+  public productBarcode: string;
+  public companyId?: number;
+  public partnerId?: number;
+  public priceSubTotalSigned?: number;
+  public promotionProgramComboId?: number;
 
   constructor() {
-    this.User = new ApplicationUserDTO();
+    this.user = new ApplicationUserDTO();
   }
 }
 
 export class SaleOrderDTO {
-  public Id: number;
+  public id: number;
 
-  public DateOrder: Date;
+  public dateOrder: Date;
 
-  public PartnerId: number;
-  public Partner: PartnerDTO;
-  public PartnerDisplayName: string;
+  public partnerId: number;
+  public partner: PartnerDTO;
+  public partnerDisplayName: string;
 
-  public AmountTax?: number;
-  public AmountDeposit?: number;
+  public amountTax?: number;
+  public amountDeposit?: number;
 
-  public AmountUntaxed?: number;
+  public amountUntaxed?: number;
 
-  public AmountTotal?: number;
-  public TotalQuantity: number;
+  public amountTotal?: number;
+  public totalQuantity: number;
 
-  public Note: string;
-  public State: string;
-  public Name: string;
+  public note: string;
+  public state: string;
+  public name: string;
 
-  public WarehouseId: number;
-  public Warehouse: StockWarehouseDTO;
+  public warehouseId: number;
+  public warehouse: StockWarehouseDTO;
 
-  public ProcurementGroupId?: number;
+  public procurementGroupId?: number;
 
-  public CompanyId: number;
-  public Company: CompanyDTO;
-  public CompanyName: string;
+  public companyId: number;
+  public company: CompanyDTO;
+  public companyName: string;
 
-  public UserId: string;
-  public User: ApplicationUserDTO;
-  public UserName: string;
+  public userId: string;
+  public user: ApplicationUserDTO;
+  public userName: string;
 
-  public OrderPolicy: string;
+  public orderPolicy: string;
 
-  public PickingPolicy: string;
+  public pickingPolicy: string;
 
-  public DateConfirm?: Date;
-  public Shipped?: boolean;
+  public dateConfirm?: Date;
+  public shipped?: boolean;
 
-  public PriceListId: number;
-  public PriceList: Product_PriceListDTO;
+  public priceListId: number;
+  public priceList: Product_PriceListDTO;
 
-  public ShowState: string;
-  public ShowFastState: string;
+  public showState: string;
+  public showFastState: string;
 
-  public CurrencyId: number;
-  public Currency: ResCurrencyDTO;
+  public currencyId: number;
+  public currency: ResCurrencyDTO;
 
-  public PaymentJournalId?: number;
-  public PaymentJournal: AccountJournalDTO;
+  public paymentJournalId?: number;
+  public paymentJournal: AccountJournalDTO;
 
-  public OrderLines: Array<SaleOrderLineDTO>;
+  public orderLines: Array<SaleOrderLineDTO>;
 
-  public LoaiDonGia: string;
-  public DeliveryCount: number;
-  public InvoiceCount: number;
-  public InvoiceStatus: string;
-  public ShowInvoiceStatus: string;
-  public TongTrongLuong?: number;
-  public TongTaiTrong?: number;
-  public DonGiaKg?: number;
+  public loaiDonGia: string;
+  public deliveryCount: number;
+  public invoiceCount: number;
+  public invoiceStatus: string;
+  public showInvoiceStatus: string;
+  public tongTrongLuong?: number;
+  public tongTaiTrong?: number;
+  public donGiaKg?: number;
 
-  public DateExpected?: Date;
-  public TransportRef: string;
+  public dateExpected?: Date;
+  public transportRef: string;
 
-  public PartnerInvoiceId: number;
-  public PartnerInvoice: PartnerDTO;
+  public partnerInvoiceId: number;
+  public partnerInvoice: PartnerDTO;
 
-  public PartnerShippingId: number;
-  public PartnerShipping: PartnerDTO;
+  public partnerShippingId: number;
+  public partnerShipping: PartnerDTO;
 
-  public AmountTotalStr: string;
+  public amountTotalStr: string;
 
-  public SearchPartnerId?: number;
+  public searchPartnerId?: number;
 
   /// Công nợ
-  public CongNo?: number;
-  public ProjectId?: number;
-  public ShippingAddress: string;
-  public PhoneNumber: string;
-  public Note2: string;
-  public DateShipped?: Date;
+  public congNo?: number;
+  public projectId?: number;
+  public shippingAddress: string;
+  public phoneNumber: string;
+  public note2: string;
+  public dateShipped?: Date;
 
-  public CarrierId?: number;
-  public Carrier: DeliveryCarrierDTO;
+  public carrierId?: number;
+  public carrier: DeliveryCarrierDTO;
 
-  public DeliveryPrice?: number;
-  public InvoiceShippingOnDelivery?: boolean;
-  public DeliveryRatingSuccess?: boolean;
+  public deliveryPrice?: number;
+  public invoiceShippingOnDelivery?: boolean;
+  public deliveryRatingSuccess?: boolean;
 
-  public DeliveryRatingMessage: string;
-  public PartnerNameNoSign: string;
-  public PriceListName: string;
+  public deliveryRatingMessage: string;
+  public partnerNameNoSign: string;
+  public priceListName: string;
 
-  public PaymentTermId?: number;
+  public paymentTermId?: number;
   // public AccountPaymentTermModel PaymentTerm
-  public IsFast: boolean;
-  public TableSearch: string;
-  public NameTypeOrder: string;
-  public Residual: number;
-  public PartnerPhone: string;
-  public PartnerAddress: string;
+  public isFast: boolean;
+  public tableSearch: string;
+  public nameTypeOrder: string;
+  public residual: number;
+  public partnerPhone: string;
+  public partnerAddress: string;
 }
 
 export class SaleOrderLineDTO {
-  public Id: number;
+  public id: number;
 
-  public ProductUOSQty?: number;
+  public productUOSQty?: number;
 
-  public ProductUOMId: number;
-  public ProductUOM: ProductUOMDTO;
+  public productUOMId: number;
+  public productUOM: ProductUOMDTO;
 
-  public InvoiceUOMId?: number;
-  public InvoiceUOM: ProductUOMDTO;
+  public invoiceUOMId?: number;
+  public invoiceUOM: ProductUOMDTO;
 
-  public InvoiceQty?: number;
-  public Sequence?: number;
-  public PriceUnit: number;
-  public ProductUOMQty: number;
+  public invoiceQty?: number;
+  public sequence?: number;
+  public priceUnit: number;
+  public productUOMQty: number;
 
-  public Name: string;
-  public State: string;
+  public name: string;
+  public state: string;
 
-  public OrderPartnerId?: number;
-  public OrderId: number;
+  public orderPartnerId?: number;
+  public orderId: number;
 
   /// %
-  public Discount?: number;
+  public discount?: number;
 
   //Discount_Fixed
-  public Discount_Fixed?: number;
-  public DiscountType: string;
+  public discount_Fixed?: number;
+  public discountType: string;
 
-  public ProductId?: number;
-  public Product: ProductDTO;
+  public productId?: number;
+  public product: ProductDTO;
 
-  public Invoiced?: boolean;
-  public CompanyId?: number;
+  public invoiced?: boolean;
+  public companyId?: number;
 
-  public PriceTax?: number;
-  public PriceSubTotal?: number;
+  public priceTax?: number;
+  public priceSubTotal?: number;
 
-  public PriceTotal?: number;
-  public PriceRecent?: number;
+  public priceTotal?: number;
+  public priceRecent?: number;
 
-  public Barem?: number;
-  public Tai?: number;
+  public barem?: number;
+  public tai?: number;
 
-  public VirtualAvailable?: number;
-  public QtyAvailable?: number;
-  public PriceOn: string;
-  public KhoiLuongDelivered?: number;
+  public virtualAvailable?: number;
+  public qtyAvailable?: number;
+  public priceOn: string;
+  public khoiLuongDelivered?: number;
 
-  public QtyDelivered?: number;
-  public QtyInvoiced?: number;
+  public qtyDelivered?: number;
+  public qtyInvoiced?: number;
 
-  public KhoiLuong?: number;
-  public Note: string;
-  public HasProcurements: boolean;
-  public WarningMessage: string;
-  public CustomerLead?: number;
+  public khoiLuong?: number;
+  public note: string;
+  public hasProcurements: boolean;
+  public warningMessage: string;
+  public customerLead?: number;
 
   // public SaleLineUOMDomainVM UOMDomain
 
-  public ProductUOMName: string;
-  public Type: string;
-  public POSId?: number;
-  public FastId?: number;
-  public ProductNameGet: string;
-  public ProductName: string;
+  public productUOMName: string;
+  public type: string;
+  public pOSId?: number;
+  public fastId?: number;
+  public productNameGet: string;
+  public productName: string;
 }
 
 export class PaymentInfoContentDTO {
-  public Name: string;
-  public JournalName: string;
-  public Amount?: number;
-  public Currency: string;
-  public Date: Date;
-  public PaymentId: number;
-  public MoveId: number;
-  public Ref: string;
-  public AccountPaymentId?: number;
-  public PaymentPartnerType: string;
+  public name: string;
+  public journalName: string;
+  public amount?: number;
+  public currency: string;
+  public date: Date;
+  public paymentId: number;
+  public moveId: number;
+  public ref: string;
+  public accountPaymentId?: number;
+  public paymentPartnerType: string;
 }
 
 export class FastSaleOrder_ReceiverDTO {
-  public Name: string;
-  public Phone: string;
-  public Street: string;
-  public City: FastSaleOrder_Receiver_NameCodeDTO;
-  public District: FastSaleOrder_Receiver_NameCodeDTO;
-  public Ward: FastSaleOrder_Receiver_NameCodeDTO;
-  public FullAddress: string;
+  public name: string;
+  public phone: string;
+  public street: string;
+  public city: FastSaleOrder_Receiver_NameCodeDTO;
+  public district: FastSaleOrder_Receiver_NameCodeDTO;
+  public ward: FastSaleOrder_Receiver_NameCodeDTO;
+  public fullAddress: string;
 }
 
 export class FastSaleOrder_Receiver_NameCodeDTO {
@@ -517,15 +517,15 @@ export class FastSaleOrder_Receiver_NameCodeDTO {
 
 export class FastSaleOrder_ServiceExtraDTO {
   /// Id dịch vụ
-  public Id: string;
+  public id: string;
   /// Tên dịch vụ
-  public Name: string;
+  public name: string;
   /// Phí dịch vụ
-  public Fee: number;
+  public fee: number;
   /// Loại dịch vụ
-  public Type: string;
+  public type: string;
   /// Phí xem hàng
-  public ExtraMoney?: number;
+  public extraMoney?: number;
   /// Thời gian lấy hàng
-  public OrderTime?: Date;
+  public orderTime?: Date;
 }

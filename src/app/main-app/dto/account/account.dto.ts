@@ -156,34 +156,34 @@ export class AccountTaxDTO {
 }
 
 export class AccountPaymentTermDTO {
-  public Id: number;
+  public id: number;
 
   // Payment Terms
-  public Name: string;
+  public name: string;
 
   // If the active field is set to False, it will allow you to hide the payment term without removing it.
-  public Active?: boolean;
+  public active?: boolean;
 
   // Description on the Invoice
-  public Note: string;
-  public Lines: Array<AccountPaymentTermLineDTO>;
-  public CompanyId: number;
-  public Company: CompanyDTO;
+  public note: string;
+  public lines: Array<AccountPaymentTermLineDTO>;
+  public companyId: number;
+  public company: CompanyDTO;
 }
 
 export class AccountPaymentTermLineDTO {
-  public Id: number;
+  public id: number;
 
   /// Select here the kind of valuation related to this payment term line.
-  public Value: string;
+  public value: string;
 
   /// For percent enter a ratio between 0-100.
-  public ValueAmount?: number;
+  public valueAmount?: number;
 
   /// Number of Days
-  public Days: number;
-  public Option: string;
+  public days: number;
+  public option: string;
 
   /// Gives the sequence order when displaying a list of payment term lines.
-  public Sequence?: number;
+  public sequence?: number;
 }

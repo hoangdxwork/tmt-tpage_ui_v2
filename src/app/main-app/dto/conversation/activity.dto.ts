@@ -1,7 +1,7 @@
 import { CRMTeamDTO } from '../team/team.dto';
 
 export class CRMActivityCampaignDTO {
-  public cRMTeamId?: number;
+  public crmTeamId?: number;
   public details: Array<CRMActivityDTO>;
   public string: string;
   public mailTemplateId?: number;
