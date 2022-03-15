@@ -1,4 +1,4 @@
-export class AddressDTO {
+export interface AddressDTO {
   id: string;
   partnerId?: number;
   cityCode: string;

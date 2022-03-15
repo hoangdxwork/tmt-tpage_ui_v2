@@ -1,171 +1,154 @@
 import { ProductDTO } from '../product/product.dto';
 
-export class DeliveryCarrierDTO {
-  public isPrintCustom: boolean;
-  public id: number;
+export interface DeliveryCarrierDTO {
+  isPrintCustom: boolean;
+  id: number;
 
-  public name: string;
-  public senderName: string;
+  name: string;
+  senderName: string;
 
-  public sequence?: number;
-  public active: boolean;
-  public deliveryType: string;
+  sequence?: number;
+  active: boolean;
+  deliveryType: string;
 
-  public deliveryTypeGet: string;
+  deliveryTypeGet: string;
 
-  public productId?: number;
-  public product: ProductDTO;
+  productId?: number;
+  product: ProductDTO;
 
-  public fixedPrice?: number;
-  public companyId?: number;
-  public amount?: number;
+  fixedPrice?: number;
+  companyId?: number;
+  amount?: number;
 
-  public freeOver?: boolean;
+  freeOver?: boolean;
 
   //This percentage will be added to the shipping price.
-  public margin?: number;
-  public hcmPTConfigId?: number;
+  margin?: number;
+  hcmPTConfigId?: number;
 
-  public ghn_ApiKey: string;
-  public ghn_ClientId: string;
-  public ghn_NoteCode: string;
-  public ghn_PaymentTypeId?: number;
-  public ghn_PackageWidth?: number;
-  public ghn_PackageLength?: number;
-  public ghn_PackageHeight?: number;
-  public ghn_ServiceId: string;
+  ghn_ApiKey: string;
+  ghn_ClientId: string;
+  ghn_NoteCode: string;
+  ghn_PaymentTypeId?: number;
+  ghn_PackageWidth?: number;
+  ghn_PackageLength?: number;
+  ghn_PackageHeight?: number;
+  ghn_ServiceId: string;
 
-  public viettelPost_UserName: string;
-  public viettelPost_Password: string;
-  public viettelPost_Token: string;
-  public viettelPost_ServiceId: string;
-  public viettelPost_ProductType: string;
-  public viettelPost_OrderPayment?: number;
+  viettelPost_UserName: string;
+  viettelPost_Password: string;
+  viettelPost_Token: string;
+  viettelPost_ServiceId: string;
+  viettelPost_ProductType: string;
+  viettelPost_OrderPayment?: number;
 
-  public shipChung_ServiceId: string;
-  public shipChung_PaymentTypeID?: number;
-  public shipChung_ApiKey: string;
+  shipChung_ServiceId: string;
+  shipChung_PaymentTypeID?: number;
+  shipChung_ApiKey: string;
 
-  public hcmPost_sI: string;
-  public hcmPost_sK: string;
-  public hcmPost_ShopID: string;
-  public hcmPost_ShopName: string;
-  public hcmPost_ServiceId: string;
+  hcmPost_sI: string;
+  hcmPost_sK: string;
+  hcmPost_ShopID: string;
+  hcmPost_ShopName: string;
+  hcmPost_ServiceId: string;
 
-  public tokenShip: string;
+  tokenShip: string;
 
-  public vnPost_ClientId: string;
-  public vnPost_ServiceId: string;
-  public vnPost_IsContracted: boolean;
-  public vnPost_PickupType: string;
+  vnPost_ClientId: string;
+  vnPost_ServiceId: string;
+  vnPost_IsContracted: boolean;
+  vnPost_PickupType: string;
 
-  public ghtk_Token: string;
-  public ghtk_ClientId: string;
-  public ghtk_IsFreeShip?: number;
+  ghtk_Token: string;
+  ghtk_ClientId: string;
+  ghtk_IsFreeShip?: number;
 
-  public superShip_Token: string;
-  public superShip_ClientId: string;
-  public superShip_Config: string;
+  superShip_Token: string;
+  superShip_ClientId: string;
+  superShip_Config: string;
 
-  public config_TransportId: string;
-  public config_TransportName: string;
+  config_TransportId: string;
+  config_TransportName: string;
 
-  public ems_Service: string;
-  public ems_Inventory: string;
-  public ems_Token: string;
+  ems_Service: string;
+  ems_Inventory: string;
+  ems_Token: string;
 
-  public tinToc_Service: string;
-  public tinToc_ServiceCode: string;
+  tinToc_Service: string;
+  tinToc_ServiceCode: string;
 
-  public ninjaVan_ClientId: string;
-  public ninjaVan_ClientSecret: string;
-  public ninjaVan_ServiceType: string;
-  public ninjaVan_ServiceLevel: string;
-  public ninjaVan_Token: string;
-  public ninjaVan_BranchId: string;
+  ninjaVan_ClientId: string;
+  ninjaVan_ClientSecret: string;
+  ninjaVan_ServiceType: string;
+  ninjaVan_ServiceLevel: string;
+  ninjaVan_Token: string;
+  ninjaVan_BranchId: string;
 
-  public zto_PickupType: string;
-  public zto_ProductType: string;
-  public zto_SendWayType: string;
-  public zto_AppCode: string;
-  public zto_SecretKey: string;
+  zto_PickupType: string;
+  zto_ProductType: string;
+  zto_SendWayType: string;
+  zto_AppCode: string;
+  zto_SecretKey: string;
 
-  public config_DefaultFee?: number;
-  public config_DefaultWeight?: number;
+  config_DefaultFee?: number;
+  config_DefaultWeight?: number;
 
-  public extrasText: string;
-  public extras: DeliveryCarrier_ExtraDTO;
-
-  constructor() {
-    this.ghtk_IsFreeShip = 1;
-    this.superShip_Config = '1';
-    this.ghn_PaymentTypeId = 1;
-  }
+  extrasText: string;
+  extras: DeliveryCarrier_ExtraDTO;
 }
 
-export class DeliveryCarrier_ExtraDTO {
-  public pickWorkShift: string;
-  public pickWorkShiftName: string;
-  public deliverWorkShift: string;
-  public deliverWorkShiftName: string;
+export interface DeliveryCarrier_ExtraDTO {
+  pickWorkShift: string;
+  pickWorkShiftName: string;
+  deliverWorkShift: string;
+  deliverWorkShiftName: string;
 
   /// Shop trả/Khách trả
-  public paymentTypeId: string;
-  public posId: string;
-  public isDropoff: boolean;
+  paymentTypeId: string;
+  posId: string;
+  isDropoff: boolean;
 
   /// Khai giá bảo hiểm
-  public isInsurance: boolean;
-  public insuranceFee?: number;
+  isInsurance: boolean;
+  insuranceFee?: number;
 
   /// Cho xem hàng
-  public isPackageViewable: boolean;
+  isPackageViewable: boolean;
 
   /// Hàng dễ vỡ
-  public is_Fragile: boolean;
-  public pickupAccountId: string;
-  public soldToAccountId: string;
-  public isPartSign?: boolean;
+  is_Fragile: boolean;
+  pickupAccountId: string;
+  soldToAccountId: string;
+  isPartSign?: boolean;
 
   /// Cho thử hàng
-  public isAllowTryout: boolean;
+  isAllowTryout: boolean;
 
   /// Cấn trừ tiền COD
-  public isDeductCod: boolean;
+  isDeductCod: boolean;
 
   /// Thu tiền xem hàng
-  public isCollectMoneyGoods: boolean;
+  isCollectMoneyGoods: boolean;
 
   /// Thu tiền xem hàng
-  public collectMoneyGoods?: number;
+  collectMoneyGoods?: number;
 
   /// Không cho xem hàng. Cho thử hàng. Cho xem hàng, không cho thử
-  public confirmType: string;
+  confirmType: string;
 
   /// giao hàng 1 phần
-  public partialDelivery: string;
+  partialDelivery: string;
 
   /// Hoàn hàng
-  public isRefund?: number;
-  public serviceCustoms: Array<ServiceCustomDTO>;
+  isRefund?: number;
+  serviceCustoms: Array<ServiceCustomDTO>;
 
   /// Giá trị tiền bảo hiểm bằng tổng tiền
-  public isInsuranceEqualTotalAmount?: boolean;
-
-  constructor() {
-    this.serviceCustoms = new Array<ServiceCustomDTO>();
-    this.isDropoff = false;
-    this.isInsurance = false;
-    this.isPackageViewable = false;
-    this.is_Fragile = false;
-    this.isAllowTryout = false;
-    this.isDeductCod = false;
-    this.isCollectMoneyGoods = false;
-  }
+  isInsuranceEqualTotalAmount?: boolean;
 }
 
-export class ServiceCustomDTO {
-  public serviceId: string;
-  public name: string;
-  public isDefault: boolean;
+export interface ServiceCustomDTO {
+  serviceId: string;
+  name: string;
+  isDefault: boolean;
 }

@@ -1,22 +1,22 @@
 import { CompanyDTO } from '../company/company.dto';
 
-export class IRAttachmentDTO {
-  public id: number;
-  public resModel: string;
-  public resName: string;
-  public dbDatas: any;
-  public fileSize?: number;
-  public companyId?: number;
-  public company: CompanyDTO;
-  public eesId?: number;
-  public type: string;
-  public public?: boolean;
-  public storeFname: string;
-  public description: string;
-  public eesField: string;
-  public mineType: string;
-  public name: string;
-  public url: string;
-  public checksum: string;
-  public datasFname: string;
+export interface IRAttachmentDTO {
+  id: number;
+  resModel: string;
+  resName: string;
+  dbDatas: any;
+  fileSize?: number;
+  companyId?: number;
+  company: CompanyDTO;
+  eesId?: number;
+  type: string;
+  public?: boolean;
+  storeFname: string;
+  description: string;
+  eesField: string;
+  mineType: string;
+  name: string;
+  url: string;
+  checksum: string;
+  datasFname: string;
 }

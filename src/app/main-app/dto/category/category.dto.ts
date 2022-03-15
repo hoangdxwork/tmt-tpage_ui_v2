@@ -1,8 +1,8 @@
-export class POS_CategoryDTO {
-  public id: number;
-  public name: string;
-  public parentId?: number;
-  public parent: POS_CategoryDTO;
-  public sequence?: number;
-  public nameGet: string;
+export interface POS_CategoryDTO {
+  id: number;
+  name: string;
+  parentId?: number;
+  parent: POS_CategoryDTO;
+  sequence?: number;
+  nameGet: string;
 }

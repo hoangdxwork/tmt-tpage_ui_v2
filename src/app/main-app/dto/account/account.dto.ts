@@ -1,189 +1,132 @@
 import { CompanyDTO } from '../company/company.dto';
 
-export class AccountDTO {
-  public id: number;
-  public name: string;
-  public code: string;
-  public userTypeId: number;
-  public userType: AccountTypeDTO;
-  public userTypeName: string;
-  public active?: boolean;
-  public note: string;
-  public companyId: number;
-  public Company: CompanyDTO;
-  public companyName: string;
-  public currencyId: number;
-  public internalType: string;
-  public nameGet: string;
-  public reconcile?: boolean;
-
-  constructor() {
-    this.active = true;
-    this.reconcile = false;
-  }
+export interface AccountDTO {
+  id: number;
+  name: string;
+  code: string;
+  userTypeId: number;
+  userType: AccountTypeDTO;
+  userTypeName: string;
+  active?: boolean;
+  note: string;
+  companyId: number;
+  Company: CompanyDTO;
+  companyName: string;
+  currencyId: number;
+  internalType: string;
+  nameGet: string;
+  reconcile?: boolean;
 }
 
-export class AccountTypeDTO {
-  public id: number;
-  public name: string;
-  public type: string;
-  public note: string;
+export interface AccountTypeDTO {
+  id: number;
+  name: string;
+  type: string;
+  note: string;
 }
 
-export class AccountJournalDTO {
-  public id: number;
-  public code: string;
-  public name: string;
-  public type: string;
+export interface AccountJournalDTO {
+  id: number;
+  code: string;
+  name: string;
+  type: string;
 
-  public get typeGet(): string {
-    switch (this.type) {
-      case 'sale':
-        return 'Bán hàng';
-      case 'purchase':
-        return 'Mua hàng';
-      case 'cash':
-        return 'Tiền mặt';
-      case 'bank':
-        return 'Ngân hàng';
-      case 'general':
-        return 'Hỗn hợp';
-      default:
-        return '';
-    }
-  }
+  typeGet: string;
 
-  public set typeGet(str: string) {
-    this.typeGet = str;
-  }
+  updatePosted?: boolean;
+  currencyId?: number;
 
-  public updatePosted?: boolean;
-  public currencyId?: number;
+  defaultDebitAccountId?: number;
+  defaultDebitAccount: AccountDTO;
 
-  public defaultDebitAccountId?: number;
-  public defaultDebitAccount: AccountDTO;
+  defaultCreditAccountId?: number;
+  defaultCreditAccount: AccountDTO;
 
-  public defaultCreditAccountId?: number;
-  public defaultCreditAccount: AccountDTO;
+  inboundPaymentMethods: Array<AccountPaymentDTO>;
+  outboundPaymentMethods: Array<AccountPaymentDTO>;
 
-  public inboundPaymentMethods: Array<AccountPaymentDTO>;
-  public outboundPaymentMethods: Array<AccountPaymentDTO>;
+  companyId: number;
+  company: CompanyDTO;
+  companyName: string;
+  journalUser?: boolean;
 
-  public companyId: number;
-  public company: CompanyDTO;
-  public companyName: string;
-  public journalUser?: boolean;
+  profitAccountId?: number;
+  profitAccount: AccountDTO;
 
-  public profitAccountId?: number;
-  public profitAccount: AccountDTO;
+  lossAccountId?: number;
+  lossAccount: AccountDTO;
 
-  public lossAccountId?: number;
-  public lossAccount: AccountDTO;
-
-  public amountAuthorizedDiff?: number;
-  public merchantId: string;
-  public merchantCode: string;
+  amountAuthorizedDiff?: number;
+  merchantId: string;
+  merchantCode: string;
 
   // Xác định có nên dùng riêng mã phát sinh trả hàng
-  public dedicatedRefund?: boolean;
-
-  constructor() {
-    this.inboundPaymentMethods = new Array<AccountPaymentDTO>();
-    this.outboundPaymentMethods = new Array<AccountPaymentDTO>();
-    this.updatePosted = false;
-    this.journalUser = false;
-    this.amountAuthorizedDiff = 0;
-    this.type = 'general';
-    this.dedicatedRefund = false;
-  }
+  dedicatedRefund?: boolean;
 }
 
-export class AccountPaymentDTO {
-  public id: number;
-  public name: string;
-  public code: string;
-  public paymentType: string;
+export interface AccountPaymentDTO {
+  id: number;
+  name: string;
+  code: string;
+  paymentType: string;
 }
 
-export class AccountTaxDTO {
-  public id: number;
+export interface AccountTaxDTO {
+  id: number;
 
-  public name: string;
+  name: string;
   // purchase, sale
-  public typeTaxUse: string;
-  public get showTypeTaxUse() {
-    switch (this.typeTaxUse) {
-      case 'sale':
-        return 'Bán hàng';
-      case 'purchase':
-        return 'Mua hàng';
-      case 'none':
-        return 'Không';
-      default:
-        return 'Bán hàng';
-    }
-  }
+  typeTaxUse: string;
+  showTypeTaxUse: string;
 
-  public set showTypeTaxUse(str: string) {
-    this.showTypeTaxUse = str;
-  }
-
-  public amountType: string;
-  public active?: boolean;
-  public sequence: number;
-  public amount: number;
-  public accountId?: number;
-  public account: AccountDTO;
-  public refundAccountId?: number;
-  public refundAccount: AccountDTO;
+  amountType: string;
+  active?: boolean;
+  sequence: number;
+  amount: number;
+  accountId?: number;
+  account: AccountDTO;
+  refundAccountId?: number;
+  refundAccount: AccountDTO;
 
   // Check this if the price you use on the product and invoices includes this tax.
-  public priceInclude?: boolean;
+  priceInclude?: boolean;
 
   // Label on Invoices
-  public description: string;
+  description: string;
 
-  public companyId: number;
-  public companyName: string;
-
-  constructor() {
-    this.typeTaxUse = 'sale';
-    this.active = true;
-    this.amountType = 'percent';
-    this.sequence = 1;
-    this.priceInclude = false;
-  }
+  companyId: number;
+  companyName: string;
 }
 
-export class AccountPaymentTermDTO {
-  public id: number;
+export interface AccountPaymentTermDTO {
+  id: number;
 
   // Payment Terms
-  public name: string;
+  name: string;
 
   // If the active field is set to False, it will allow you to hide the payment term without removing it.
-  public active?: boolean;
+  active?: boolean;
 
   // Description on the Invoice
-  public note: string;
-  public lines: Array<AccountPaymentTermLineDTO>;
-  public companyId: number;
-  public company: CompanyDTO;
+  note: string;
+  lines: Array<AccountPaymentTermLineDTO>;
+  companyId: number;
+  company: CompanyDTO;
 }
 
-export class AccountPaymentTermLineDTO {
-  public id: number;
+export interface AccountPaymentTermLineDTO {
+  id: number;
 
   /// Select here the kind of valuation related to this payment term line.
-  public value: string;
+  value: string;
 
   /// For percent enter a ratio between 0-100.
-  public valueAmount?: number;
+  valueAmount?: number;
 
   /// Number of Days
-  public days: number;
-  public option: string;
+  days: number;
+  option: string;
 
   /// Gives the sequence order when displaying a list of payment term lines.
-  public sequence?: number;
+  sequence?: number;
 }

@@ -1,30 +1,23 @@
 import { StockLocationDTO, StockPickingTypeDTO } from "../product/warehouse.dto";
 
-export class ProcurementRuleDTO {
-  public id: number;
-  public name: string;
-  public action: string;
-  public procureMethod: string;
-  public sequence?: number;
-  public active?: boolean;
+export interface ProcurementRuleDTO {
+  id: number;
+  name: string;
+  action: string;
+  procureMethod: string;
+  sequence?: number;
+  active?: boolean;
 
-  public locationId?: number;
-  public location: StockLocationDTO;
+  locationId?: number;
+  location: StockLocationDTO;
 
-  public locationSrcId?: number;
-  public locationSrc: StockLocationDTO;
+  locationSrcId?: number;
+  locationSrc: StockLocationDTO;
 
-  public pickingTypeId?: number;
-  public pickingType: StockPickingTypeDTO;
+  pickingTypeId?: number;
+  pickingType: StockPickingTypeDTO;
 
-  public warehouseId?: number;
-  public routeId?: number;
-  public companyId?: number;
-
-  constructor() {
-    this.procureMethod = "make_to_stock";
-    this.action = "move";
-    this.active = true;
-    this.sequence = 20;
-  }
+  warehouseId?: number;
+  routeId?: number;
+  companyId?: number;
 }

@@ -1,13 +1,13 @@
-export class TagDTO {
-  public id: number;
-  public name: string;
-  public nameNosign: string;
-  public color: string;
-  public type: string;
+export interface TagDTO {
+  id: number;
+  name: string;
+  nameNosign: string;
+  color: string;
+  type: string;
 }
 
-export class UpdateTagMappingDTO {
-  public pageId: string;
-  public tagId: string;
-  public action: string;
+export interface UpdateTagMappingDTO {
+  pageId: string;
+  tagId: string;
+  action: string;
 }
