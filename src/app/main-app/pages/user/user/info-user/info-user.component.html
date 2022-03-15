@@ -44,7 +44,7 @@
                         <tds-form-field *ngIf="isChangeInfo" class="w-full col-span-2">
                             <input tdsInput autocomplete="off" placeholder="Nhập tên"
                             #name="ngModel"
-                            [(ngModel)]="form.name" name="name" />
+                            [(ngModel)]="form.name" name="name" (change)="toParentUser()"/>
                           </tds-form-field>
                     </div>
                     
@@ -56,7 +56,7 @@
                         <tds-form-field *ngIf="isChangeInfo" class="w-full col-span-2">
                             <input tdsInput autocomplete="off" placeholder="Nhập số điện thoại"
                             #phone="ngModel"
-                            [(ngModel)]="form.phone" name="phone" />
+                            [(ngModel)]="form.phone" name="phone" (change)="toParentUser()" />
                           </tds-form-field>
                     </div>
                 </div>
@@ -67,7 +67,7 @@
                         <tds-form-field *ngIf="isChangeInfo" class="w-full col-span-2">
                             <input tdsInput autocomplete="off" placeholder="Nhập email"
                             #email="ngModel"
-                            [(ngModel)]="form.email" name="email" />
+                            [(ngModel)]="form.email" name="email" (change)="toParentUser()" />
                           </tds-form-field>
                     </div>
                 </div>

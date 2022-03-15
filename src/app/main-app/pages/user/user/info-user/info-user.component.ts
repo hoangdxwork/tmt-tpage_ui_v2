@@ -9,11 +9,11 @@ import { NgForm } from '@angular/forms';
 export class InfoUserComponent implements OnInit {
 
   @Output() itemIsInfo = new EventEmitter<boolean>();
-  @Output() formUser = new EventEmitter<NgForm>();
+  @Output() formUser = new EventEmitter<object>();
   @Input() isChangeInfo = false
   
   isInfo = true
-  form = {
+  form  = {
     name: 'Nguyễn Văn A',
     phone: '0321479652',
     email: 'nguyenvana@gmail.com'
@@ -34,6 +34,8 @@ export class InfoUserComponent implements OnInit {
 
   onSubmit(form: NgForm){
     console.log(form)
-    this.formUser.emit(form)
+  }
+  toParentUser(){
+    this.formUser.emit(this.form)
   }
 }
