@@ -70,6 +70,13 @@ const routes: Routes = [
         },
         loadChildren: () => import('./pages/facebook/facebook.module').then(m => m.FacebookModule)
       },
+      {
+        path: "user",
+        data: {
+          breadcrumb: 'User'
+        },
+        loadChildren: () => import('./pages/user/user.module').then(m => m.UserModule)
+      },
     ]
 
   }
