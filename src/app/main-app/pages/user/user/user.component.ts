@@ -12,7 +12,7 @@ export class UserComponent implements OnInit {
   isPass = false
   isChangeInfo = false
   typeChoose = 'user';
-  form! : NgForm
+  form! : object
 
   constructor() { }
 
@@ -32,7 +32,7 @@ export class UserComponent implements OnInit {
   cancelChange(){
     this.isChangeInfo = false;
   }
-  outputFormUser(form : NgForm){
+  outputFormUser(form :object){
     this.form = form
   }
   onSumitInfoUser(){
