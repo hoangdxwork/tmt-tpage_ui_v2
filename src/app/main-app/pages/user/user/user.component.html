@@ -1,8 +1,9 @@
-<tds-page-header title="Tài Khoản" class="bg-white">
+<div class="h-full w-full">
+    <tds-page-header [title]="typeChoose=='user'?'Tài Khoản':(typeChoose=='data'?'Gói cước':'Thông báo')" class="bg-white">
     <tds-breadcrumb tds-page-header-breadcrumb>
         <tds-breadcrumb-item>Cá nhân</tds-breadcrumb-item>
         <tds-breadcrumb-item>
-            <a>Tài khoản</a>
+            <a>{{typeChoose=='user'?'Tài Khoản':(typeChoose=='data'?'Gói cước':'Thông báo')}}</a>
         </tds-breadcrumb-item>
     </tds-breadcrumb>
 
@@ -23,28 +24,28 @@
                     Thông báo
                 </tds-tag>
             </div>
-            <div *ngIf="typeChoose=='user' && isInfo && !isChangeInfo" class="flex gap-x-3">
-                <button tds-button color="primary" (click)="changeInfo()">
+            <div *ngIf="typeChoose=='user' && isInfoUser && !isChangeInfoUser" class="flex gap-x-3">
+                <button tds-button color="primary" (click)="changeInfoUser()">
                     <span class="flex items-center">
                         <i class="tdsi-edit-fill text-lg leading-none mr-2"></i>Thay đổi thông tin
                     </span>
                 </button>
             </div>
-            <div *ngIf="typeChoose=='user' && isInfo && isChangeInfo" class="flex gap-x-3">
+            <div *ngIf="typeChoose=='user' && isInfoUser && isChangeInfoUser" class="flex gap-x-3">
                 <button  tds-button color="primary" (click)="onSumitInfoUser()">
                     <span class="flex items-center">
                         Lưu thông tin
                     </span>
                 </button>
                 <button tds-button color="secondary"
-                    (click)="cancelChange()">
+                    (click)="cancelChangeUser()">
                     <span class="flex items-center">
                         Hủy bỏ
                     </span>
                 </button>
             </div>
-            <div *ngIf="typeChoose=='user' && isPass" class="flex gap-x-3">
-                <button  tds-button color="primary">
+            <div *ngIf="typeChoose=='user' && isPassUser" class="flex gap-x-3">
+                <button  tds-button color="primary" (click)="onSumitPassword()">
                     <span class="flex items-center">
                         Lưu thông tin
                     </span>
@@ -55,8 +56,46 @@
                     </span>
                 </button>
             </div>
+            <div *ngIf="typeChoose=='data' && isInfoData" class="flex gap-x-3">
+                <button  tds-button color="primary" (click)="chooseExtendData()">
+                    <span class="flex items-center">
+                        Gia hạn
+                    </span>
+                </button>
+                <button  tds-button color="secondary" (click)="chooseUpgradeData()">
+                    <span class="flex items-center">
+                        Nâng cấp gói
+                    </span>
+                </button>
+            </div>
         </div>
     </tds-page-header-content>
 </tds-page-header>
-<app-info-user [isChangeInfo]="isChangeInfo" (itemIsInfo)="outputChooseItem($event)" (formUser)="outputFormUser($event)" *ngIf="typeChoose=='user'">
+<!-- Trang Tài khoản -->
+<app-info-user #pageUser
+    [isChangeInfo]="isChangeInfoUser" 
+    [isCancel]="isCancelUser" 
+    (outputItemIsInfo)="outputChooseItemUser($event)"
+    *ngIf="typeChoose=='user'">
 </app-info-user>
+<!-- Trang gói cước -->
+<div *ngIf="typeChoose=='data'">
+    <app-info-pack-of-data 
+    *ngIf="isInfoData">
+    </app-info-pack-of-data>
+    <app-choose-pack-of-data
+    *ngIf="isUpgradeData"
+    (outputBackInfoData)="outputBackInfoDataFromUpgrade($event)">
+    </app-choose-pack-of-data>
+    <app-extend-pack-of-data
+    *ngIf="isExtendData"
+    (outputBackInfoData)="outputBackInfoDataFromExtend($event)"
+    (outputNextInfoDataPayment)="outputNextInfoDataPayment($event)">
+    </app-extend-pack-of-data>
+    <app-info-payment-pack-of-data
+    *ngIf="isInfoDataPayment"
+    (outputBackPageExtendData)="outputBackPageExtendData($event)">
+    </app-info-payment-pack-of-data>
+</div>
+
+</div>

@@ -27,7 +27,7 @@
         </div>
 
     </div>
-    <div *ngIf="isInfo" class="w-3/4 h-auto p-6 bg-white rounded-md flex flex-col">
+    <div *ngIf="isInfo" class="w-3/4 h-auto p-6 bg-white rounded-md flex flex-col ">
         <div><span class="text-header-2 text-neutral-600 font-semibold">Thông tin cơ bản</span></div>
         <div class="flex h-full mt-6">
             <div class="h-full  pr-6">
@@ -35,46 +35,75 @@
                     tdsSrc="../../../../../../assets/images/Avatar-user.png">
                 </tds-avatar>
             </div>
-            <form #inputForm="ngForm" (submit)="onSubmit(inputForm)" 
-             class="flex flex-col w-full gap-y-4 pl-6 border-l border-neutral-200">
+            <form [formGroup]="formUser" (ngSubmit)="onSubmitUser()"
+                class="flex flex-col w-full gap-y-4 pl-6 border-l border-neutral-200">
                 <div class="flex gap-x-4">
                     <div class="w-1/5"><span class="text-body-2 text-neutral-900 font-regular">Họ & tên:</span></div>
                     <div class="w-4/5">
-                        <span *ngIf="!isChangeInfo" class="text-body-2 text-neutral-900 font-semibold">{{form.name}}</span>
-                        <tds-form-field *ngIf="isChangeInfo" class="w-full col-span-2">
-                            <input tdsInput autocomplete="off" placeholder="Nhập tên"
-                            #name="ngModel"
-                            [(ngModel)]="form.name" name="name" (change)="toParentUser()"/>
-                          </tds-form-field>
+                        <span *ngIf="!isChangeInfo"
+                            class="text-body-2 text-neutral-900 font-semibold">{{formUser.value.name}}</span>
+                        <tds-form-field *ngIf="isChangeInfo" class="w-full">
+                            <input tdsInput autocomplete="off" placeholder="Nhập tên" formControlName="name"
+                                 />
+                        </tds-form-field>
                     </div>
-                    
+
                 </div>
                 <div class="flex gap-x-4">
                     <div class="w-1/5"><span class="text-body-2 text-neutral-900 font-regular">Điện thoại:</span></div>
                     <div class="w-4/5">
-                        <span *ngIf="!isChangeInfo" class="text-body-2 text-neutral-900 font-semibold">{{form.phone}}</span>
-                        <tds-form-field *ngIf="isChangeInfo" class="w-full col-span-2">
-                            <input tdsInput autocomplete="off" placeholder="Nhập số điện thoại"
-                            #phone="ngModel"
-                            [(ngModel)]="form.phone" name="phone" (change)="toParentUser()" />
-                          </tds-form-field>
+                        <span *ngIf="!isChangeInfo"
+                            class="text-body-2 text-neutral-900 font-semibold">{{formUser.value.phone}}</span>
+                        <tds-form-field *ngIf="isChangeInfo" class="w-full">
+                            <input tdsInput autocomplete="off" placeholder="Nhập số điện thoại" formControlName="phone"
+                                 />
+                        </tds-form-field>
                     </div>
                 </div>
                 <div class="flex gap-x-4">
                     <div class="w-1/5"><span class="text-body-2 text-neutral-900 font-regular">Email:</span></div>
                     <div class="w-4/5">
-                        <span *ngIf="!isChangeInfo" class="text-body-2 text-neutral-900 font-semibold">{{form.email}}</span>
-                        <tds-form-field *ngIf="isChangeInfo" class="w-full col-span-2">
-                            <input tdsInput autocomplete="off" placeholder="Nhập email"
-                            #email="ngModel"
-                            [(ngModel)]="form.email" name="email" (change)="toParentUser()" />
-                          </tds-form-field>
+                        <span *ngIf="!isChangeInfo"
+                            class="text-body-2 text-neutral-900 font-semibold">{{formUser.value.email}}</span>
+                        <tds-form-field *ngIf="isChangeInfo" class="w-full">
+                            <input tdsInput autocomplete="off" placeholder="Nhập email" formControlName="email"
+                                 />
+                        </tds-form-field>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-    <div *ngIf="!isInfo" class="w-3/4 h-auto p-6 bg-white rounded-md flex flex-col">
-        Đổi mật khẩu
+    <div *ngIf="!isInfo" class="w-3/4 h-auto p-6 bg-white rounded-md flex flex-col gap-y-4">
+        <div><span class="text-header-2 text-neutral-600 font-semibold">Thay đổi mật khẩu</span></div>
+        <form [formGroup]="formPassword" (ngSubmit)="submitPassword()" class="flex flex-col gap-y-4">
+            <div class="flex gap-x-4">
+                <div class="w-1/6"><span class="text-body-2 text-neutral-900 font-semibold">Mật khẩu cũ:</span></div>
+                <div class="w-5/6">
+                    <tds-form-field class="w-full">
+                        <input tdsInput autocomplete="off" type="password" placeholder="Xác nhận mật khẩu hiện tại"
+                            formControlName="passwordOld" />
+                    </tds-form-field>
+                </div>
+            </div>
+            <div class="flex gap-x-4">
+                <div class="w-1/6"><span class="text-body-2 text-neutral-900 font-semibold">Mật khẩu mới:</span></div>
+                <div class="w-5/6">
+                    <tds-form-field class="w-full">
+                        <input tdsInput autocomplete="off" type="password" placeholder="Nhập mật khẩu mới"
+                            formControlName="passwordNew" />
+                    </tds-form-field>
+                </div>
+            </div>
+            <div class="flex gap-x-4">
+                <div class="w-1/6"><span class="text-body-2 text-neutral-900 font-semibold">Xác nhận mật khẩu mới:</span></div>
+                <div class="w-5/6">
+                    <tds-form-field class="w-full">
+                        <input tdsInput autocomplete="off" type="password" placeholder="Nhập mật khẩu mới"
+                            formControlName="passwordNewConfirm" />
+                    </tds-form-field>
+                </div>
+            </div>
+        </form>
     </div>
 </div>

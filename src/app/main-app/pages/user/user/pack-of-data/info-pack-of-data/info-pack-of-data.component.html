@@ -1,0 +1,49 @@
+<div class="p-4 flex w-full justify-center">
+    <div class="w-3/4 bg-white rounded-md">
+        <tds-card>
+            <tds-card-header class="border-b border-light-200">Thông tin</tds-card-header>
+            <tds-card-content>
+              <div class="p-2 flex flex-col ">
+                  <div class="flex flex-wrap text-body-2 text-neutral-900 gap-y-4">
+                      <div class="w-1/2 flex">
+                          <div class="w-1/3"><span class="font-regular">Địa chỉ gian hàng:</span></div>
+                          <div class="w-2/3"><span class="font-semibold">Test.tpos.dev</span></div>
+                      </div>
+                      <div class="w-1/2 flex">
+                        <div class="w-1/3"><span class="font-regular">Ngày bắt đầu:</span></div>
+                        <div class="w-2/3"><span class="font-semibold">30/06/2022</span></div>
+                    </div>
+                    <div class="w-1/2 flex">
+                        <div class="w-1/3"><span class="font-regular">Gói cước đang dùng:</span></div>
+                        <div class="w-2/3"><span class="font-semibold">Livestream 1000k</span></div>
+                    </div>
+                    <div class="w-1/2 flex">
+                        <div class="w-1/3"><span class="font-regular">Ngày kết thúc:</span></div>
+                        <div class="w-2/3"><span class="font-semibold">30/12/2022</span></div>
+                    </div>
+                    <div class="w-1/2 flex">
+                        <div class="w-1/3"><span class="font-regular">Thời gian sử dụng(Còn):</span></div>
+                        <div class="w-2/3"><span class="font-semibold">6 tháng</span></div>
+                    </div>
+                    <div class="w-1/2 flex">
+                        <div class="w-1/3"><span class="font-regular">Tổng hoá đơn trên tháng:</span></div>
+                        <div class="w-2/3"><span class="font-semibold">80</span></div>
+                    </div>
+                  </div>
+              </div>
+              <div class="border-t border-light-200 mt-8 pt-4">
+                  <div class="flex flex-col">
+                      <div><span class="text-header-2 text-neutral-600 font-semibold">Biểu đồ hóa đơn</span></div>
+                      <div echarts [options]="options" [size]="size"></div>
+                    </div>
+              </div>
+            </tds-card-content>
+            <tds-card-actions>
+                <div class="py-2 justify-end flex">
+                  <button tds-button color="secondary">Trở về</button>
+                  <button tds-button color="success" class="ml-3">Tiếp tục</button>
+                </div>
+              </tds-card-actions>
+          </tds-card>
+    </div>
+</div>

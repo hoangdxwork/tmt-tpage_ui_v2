@@ -1,5 +1,5 @@
-import { NgForm } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { InfoUserComponent } from './info-user/info-user.component';
 
 @Component({
   selector: 'app-user',
@@ -8,12 +8,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UserComponent implements OnInit {
 
-  isInfo = true
-  isPass = false
-  isChangeInfo = false
   typeChoose = 'user';
-  form! : object
-
+  // Biến của trang cá nhân
+  isInfoUser = true
+  isPassUser = false
+  isChangeInfoUser = false
+  isCancelUser = false
+  // Biến của trang gói cước
+  isInfoData = true
+  isExtendData = false
+  isUpgradeData = false
+  isInfoDataPayment = false
+  // Biến của trang thông báo
   constructor() { }
 
   ngOnInit(): void {
@@ -22,20 +28,61 @@ export class UserComponent implements OnInit {
   changeType(type: string){
     this.typeChoose = type;
   }
-  outputChooseItem(item: boolean){
-    this.isInfo= item
-    this.isPass = !this.isInfo
+
+  // Các hàm của trang User
+  outputChooseItemUser(item: boolean){
+    this.isInfoUser= item
+    this.isPassUser = !this.isInfoUser
   }
-  changeInfo(){
-    this.isChangeInfo = true;
+  changeInfoUser(){
+    this.isChangeInfoUser = true;
+    this.isCancelUser = false;
   }
-  cancelChange(){
-    this.isChangeInfo = false;
+  cancelChangeUser(){
+    this.isChangeInfoUser = false;
+    this.isCancelUser = true;
   }
-  outputFormUser(form :object){
-    this.form = form
-  }
+
+  
+  @ViewChild('pageUser') pageUser!: InfoUserComponent;
   onSumitInfoUser(){
-    console.log(this.form)
+    this.isChangeInfoUser = false;
+    this.pageUser.onSubmitUser()
+  }
+  onSumitPassword(){
+    this.pageUser.submitPassword()
+  }
+  // Các hàm của trang gói cước
+  chooseUpgradeData(){
+    this.isUpgradeData = true
+    this.isInfoData = false
+  }
+  outputBackInfoDataFromUpgrade(event: boolean){
+    if(event){
+      this.isUpgradeData = false
+      this.isInfoData = true
+    }
+  }
+  chooseExtendData(){
+    this.isExtendData = true
+    this.isInfoData = false
+  }
+  outputBackInfoDataFromExtend(event: boolean){
+    if(event){
+      this.isExtendData = false
+      this.isInfoData = true
+    }
+  }
+  outputNextInfoDataPayment(event: boolean){
+    if(event){
+      this.isExtendData = false
+      this.isInfoDataPayment = true
+    }
+  }
+  outputBackPageExtendData(event: boolean){
+    if(event){
+      this.isExtendData = true
+      this.isInfoDataPayment = false
+    }
   }
 }
