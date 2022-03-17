@@ -1,41 +1,63 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { NgForm, FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-info-user',
   templateUrl: './info-user.component.html',
   styleUrls: ['./info-user.component.scss']
 })
-export class InfoUserComponent implements OnInit {
+export class InfoUserComponent implements OnInit, OnChanges {
 
-  @Output() itemIsInfo = new EventEmitter<boolean>();
-  @Output() formUser = new EventEmitter<object>();
+  @Output() outputItemIsInfo = new EventEmitter<boolean>();
   @Input() isChangeInfo = false
+  @Input() isCancel = false
   
   isInfo = true
-  form  = {
-    name: 'Nguyễn Văn A',
-    phone: '0321479652',
-    email: 'nguyenvana@gmail.com'
-  };
-  constructor() { }
+  formUser !: FormGroup
+  formPassword!: FormGroup
+  constructor(private fb: FormBuilder) { }
 
   ngOnInit(): void {
+    this.formUser = this.fb.group(
+       {
+        name: new FormControl('Nguyễn Văn A' ),
+        phone: new FormControl('0321479652',Validators.maxLength(10) ),
+        email: new FormControl('nguyenvana@gmail.com', Validators.email )
+      }
+    )
+    this.formPassword = this.fb.group({
+      passwordOld: new FormControl(''),
+      passwordNew: new FormControl(''),
+      passwordNewConfirm: new FormControl('')
+    })
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes.isCancel && changes.isCancel.currentValue !== changes.isCancel.previousValue){
+      this.formUser = this.fb.group(
+        {
+         name: new FormControl('Nguyễn Văn A' ),
+         phone: new FormControl('0321479652',Validators.maxLength(10) ),
+         email: new FormControl('nguyenvana@gmail.com', Validators.email )
+       }
+     )
+    }
   }
 
   chooseInfo(){
     this.isInfo = true
-    this.itemIsInfo.emit(true)
+    this.outputItemIsInfo.emit(true)
   }
   choosePass(){
     this.isInfo = false
-    this.itemIsInfo.emit(false)
+    this.outputItemIsInfo.emit(false)
   }
 
-  onSubmit(form: NgForm){
-    console.log(form)
+  onSubmitUser(){
+    console.log(this.formUser.value)
   }
-  toParentUser(){
-    this.formUser.emit(this.form)
+
+  submitPassword(){
+    console.log(this.formPassword.value)
   }
 }

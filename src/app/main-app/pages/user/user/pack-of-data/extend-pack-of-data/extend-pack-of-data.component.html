@@ -1,0 +1,59 @@
+<div class="p-4 flex w-full justify-center">
+    <div class="w-3/4 bg-white rounded-md">
+        <tds-card>
+            <tds-card-header class="border-b border-light-200">Thông tin gia hạn</tds-card-header>
+            <tds-card-content>
+                <div class="p-2 flex flex-col gap-y-4">
+                    <div class="flex gap-x-4 items-center">
+                        <div><span class="text-body-2 text-neutral-900 font-regular truncate">Mã giảm giá:</span></div>
+                        <tds-form-field class="w-full">
+                            <input tdsInput autocomplete="off" placeholder=""
+                                 />
+                        </tds-form-field>
+                        <button tds-button color="primary">Xác nhận</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-x-12 gap-y-4 text-body-2 text-neutral-900">
+                        <div class="flex gap-x-6">
+                            <div class="w-1/3"><span class="font-regular truncate">Gói hiện tại:</span></div>
+                            <div class="w-2/3"><span class="font-semibold">Livestream 1000k</span></div>
+                        </div>
+                        <div class="flex gap-x-6">
+                            <div class="w-1/3"><span class="font-regular truncate">Ngày bắt đầu:</span></div>
+                            <div class="w-2/3"><span class="font-semibold">30/06/2022</span></div>
+                        </div>
+                        <div class="flex gap-x-6">
+                            <div class="w-1/3"><span class="font-regular truncate">Giá	</span></div>
+                            <div class="w-2/3"><span class="font-semibold">1,000,000 VNĐ</span></div>
+                        </div>
+                        <div class="flex gap-x-6">
+                            <div class="w-1/3"><span class="font-regular truncate">Ngày kết thúc:</span></div>
+                            <div class="w-2/3"><span class="font-semibold">30/12/2022</span></div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3"><span class="font-regular truncate">Số tháng gia hạn:</span></div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <tds-select valueField="id" textField="value" placeholder='select item'
+                                        disabledField="isActive" [formControl]="chooseMonth" 
+                                        [data]="contactOptions" (selectChange)="selectMonthChange()">
+                                    </tds-select>
+                                    <tds-error>Validation message text</tds-error>
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3"><span class="font-regular truncate">Tổng tiền:</span></div>
+                            <div class="w-2/3"><span class="font-semibold text-accent-3">{{this.chooseMonth.value*price | number :'1.0-3'}} VNĐ</span></div>
+                        </div>
+                    </div>
+                </div>
+            </tds-card-content>
+            <tds-card-actions>
+                <div class="py-2 justify-end flex">
+                    <button tds-button color="secondary" (click)="clickBackPageInfoData()">Trở về</button>
+                    <button tds-button color="success" class="ml-3" (click)="clickNextInfoDataPayment()">Tiếp tục</button>
+                </div>
+            </tds-card-actions>
+        </tds-card>
+    </div>
+</div>
