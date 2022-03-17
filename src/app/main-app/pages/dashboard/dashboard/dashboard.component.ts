@@ -19,16 +19,15 @@ export class DashboardComponent implements OnInit {
 
   chartOption = TDSChartOptions();
 
-  dashboardData = true;
-  facebookData = true;
-  labelData = true;
-  revenueData = true;
-  changingData = true;
-  dailyData = true;
-  staffData = true;
-  productData = true;
-  connectPageData = true;
-
+  loadSummaryReport = true;
+  loadFbReport = true;
+  loadLableReport = true;
+  loadRevenueReport = true;
+  loadChangingRateReport = true;
+  loadDailyReport = true;
+  loadStaffReport = true;
+  loadProductReport = true;
+  loadConnectPageReport = true;
   currentFilter = 'Tuần này';
   currentPage = 'Quần áo XK Nhiên...';
 
@@ -602,6 +601,6 @@ export class DashboardComponent implements OnInit {
   }
 
   onChangeFilter(data:any){
-    console.log(data)
+    
   }
 }

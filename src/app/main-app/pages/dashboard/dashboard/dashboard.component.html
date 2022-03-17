@@ -1,4 +1,4 @@
-<div class="w-full h-full flex flex-col overflow-hidden relative">
+<div class="w-full flex flex-col">
     <div class="p-4 w-full bg-white">
       <div class="w-full">
         <h1 class="flex cursor-pointer items-center group whitespace-pre-wrap font-semibold">
@@ -6,9 +6,9 @@
         </h1>
       </div>
     </div>
-    <tds-flex flex="row" class="w-full h-full py-2.5 px-4 overflow-auto">
-        <tds-flex flex="col" class="w-2/3 h-full pr-4">
-            <div class="bg-white w-full h-full mb-4 rounded-md">
+    <tds-flex flex="row" class="w-full pt-2.5 px-4">
+        <tds-flex flex="col" class="w-2/3 pr-4">
+            <div class="bg-white w-full mb-4 rounded-md">
                 <div class="border-b flex flex-row align-center justify-between p-4">
                     <tds-flex flex="row" class="w-full" alignItems="center">
                         <tds-avatar class="bg-primary-1 text-white mr-2.5" icon="tdsi-dashboard-fill"></tds-avatar>
@@ -22,7 +22,7 @@
                         </tds-select>
                     </tds-flex>
                 </div>
-                <div *ngIf="dashboardData;else emptyData" class="flex flex-row justify-between w-full px-4 py-9">
+                <div *ngIf="loadSummaryReport;else emptyData" class="flex flex-row justify-between w-full px-4 py-9">
                     <tds-flex flex="col" alignItems="center" class="pl-24">
                         <span class="flex items-center justify-center bg-gradient-to-r from-[#F25D27] to-[#FB921B] h-10 w-10 rounded-full">
                             <i class="tdsi-email-fill text-xl leading-none text-white"></i>
@@ -53,7 +53,7 @@
                       </tds-flex>
                 </div>
             </div>
-            <div class="bg-white w-full h-full mb-4 rounded-md">
+            <div class="bg-white w-full mb-4 rounded-md">
                 <div class="border-b flex flex-row align-center justify-between p-4">
                     <tds-flex flex="row" class="w-full" alignItems="center">
                         <tds-avatar class="bg-primary-1 text-white mr-2.5" icon="tdsi-facebook-2-fill"></tds-avatar>
@@ -75,7 +75,7 @@
                         </tds-flex>
                         </tds-flex>
                 </div>
-                <div *ngIf="facebookData;else emptyData" class="flex flex-col w-full px-4 py-9">
+                <div *ngIf="loadFbReport;else emptyData" class="flex flex-col w-full px-4 py-9">
                     <div class="flex flex-row justify-between w-full px-[113px]">
                         <tds-flex flex="col" alignItems="center">
                         <span class="text-neutral-1-900 text-body-2 font-regular font-sans text-center py-2">Tổng lượt thích</span>
@@ -103,7 +103,7 @@
                     </div>
                 </div>
             </div>
-            <div class="bg-white w-full h-full mb-4 rounded-md">
+            <div class="bg-white w-full mb-4 rounded-md">
                 <div class="border-b flex flex-row align-center justify-between p-4">
                     <tds-flex flex="row" class="w-full" alignItems="center">
                         <tds-avatar class="bg-primary-1 text-white mr-2.5" icon="tdsi-tag-fill"></tds-avatar>
@@ -117,7 +117,7 @@
                         </tds-select>
                     </tds-flex>
                 </div>
-                <div *ngIf="labelData;else emptyData" class="flex flex-row justify-between w-full px-5 py-6">
+                <div *ngIf="loadLableReport;else emptyData" class="flex flex-row justify-between w-full px-5 py-6">
                   <div class="grid grid-cols-4 gap-y-6 gap-x-9 h-full w-full">
                     <tds-flex flex="col" class="h-[112px]">
                         <tds-flex flex="row" alignItems="center" justifyContent="between" class="w-full h-3/4 px-5 bg-light-50">
@@ -170,7 +170,7 @@
                   </div>
                 </div>
             </div>
-            <div class="bg-white w-full h-full mb-4 rounded-md">
+            <div class="bg-white w-full mb-4 rounded-md">
                 <div class="border-b flex flex-row align-center justify-between p-4">
                     <tds-flex flex="row" class="w-full" alignItems="center">
                         <tds-avatar class="bg-primary-1 text-white mr-2.5" icon="tdsi-report-fill"></tds-avatar>
@@ -184,7 +184,7 @@
                         </tds-select>
                     </tds-flex>
                 </div>
-                <div *ngIf="revenueData;else emptyData">
+                <div *ngIf="loadRevenueReport;else emptyData">
                     <div class="flex flex-row items-center justify-center w-full px-4 py-8">
                         <tds-flex flex="col" alignItems="center" class="pr-24">
                             <span class="text-neutral-1-900 text-body-2 font-regular font-sans text-center py-2">Tổng doanh thu</span>
@@ -198,7 +198,7 @@
                     <div echarts [options]="revenueOption" [size]="['auto',300]"></div>
                 </div>
             </div>
-            <div class="bg-white w-full h-full mb-4 rounded-md">
+            <div class="bg-white w-full mb-4 rounded-md">
                 <div class="border-b flex flex-row align-center justify-between p-4">
                     <tds-flex flex="row" class="w-full" alignItems="center">
                         <tds-avatar class="bg-primary-1 text-white mr-2.5" icon="tdsi-report-fill"></tds-avatar>
@@ -212,7 +212,7 @@
                         </tds-select>
                     </tds-flex>
                 </div>
-                <div *ngIf="changingData;else emptyData">
+                <div *ngIf="loadChangingRateReport;else emptyData">
                     <div class="flex flex-col justify-center w-full px-4 py-9">
                         <div class="flex flex-row items-center justify-center">
                             <tds-flex flex="col" alignItems="center" class="pr-5">
@@ -235,13 +235,13 @@
                 </div>
             </div>
         </tds-flex>
-        <tds-flex flex="col" class="w-1/3  h-full">
-            <div class="bg-white w-full h-full mb-4 rounded-md">
+        <tds-flex flex="col" class="w-1/3">
+            <div class="bg-white w-full mb-4 rounded-md">
                 <div class="border-b flex flex-row align-center items-center p-4">
                     <tds-avatar class="bg-primary-1 text-white mr-2.5" icon="tdsi-report-fill"></tds-avatar>
                     <span class="text-neutral-1-900 text-header-1 font-semibold">THỐNG KÊ TRONG NGÀY</span>
                 </div>
-                <div *ngIf="dailyData;else emptyData" class="border-b flex flex-col p-4">
+                <div *ngIf="loadDailyReport;else emptyData" class="border-b flex flex-col p-4">
                     <span class="px-2">Thống kê lượt tương tác trong ngày</span>
                     <div class="w-full">
                         <div echarts [options]="dailyOption" [size]="['auto',250]"></div>
@@ -288,7 +288,7 @@
                     </tds-flex>
                 </div>
             </div>
-            <div class="bg-white w-full h-full mb-4 rounded-md">
+            <div class="bg-white w-full mb-4 rounded-md">
                 <div class="border-b flex flex-row align-center justify-between p-4">
                     <tds-flex flex="row" class="w-full" alignItems="center">
                         <tds-avatar class="bg-primary-1 text-white mr-2.5" icon="tdsi-report-fill"></tds-avatar>
@@ -302,11 +302,11 @@
                         </tds-select>
                     </tds-flex>
                 </div>
-                <div *ngIf="staffData;else emptyData" class="flex flex-col justify-center w-full px-4 py-9">
+                <div *ngIf="loadStaffReport;else emptyData" class="flex flex-col justify-center w-full px-4 py-9">
                     <div echarts [options]="staffOption" [size]="['auto',400]"></div>
                 </div>
             </div>
-            <div class="bg-white w-full h-full mb-4 rounded-md">
+            <div class="bg-white w-full mb-4 rounded-md">
                 <div class="border-b flex flex-row align-center justify-between p-4">
                     <tds-flex flex="row" class="w-full" alignItems="center">
                         <tds-avatar class="bg-primary-1 text-white mr-2.5" icon="tdsi-report-fill"></tds-avatar>
@@ -320,11 +320,11 @@
                         </tds-select>
                     </tds-flex>
                 </div>
-                <div *ngIf="productData;else emptyData" class="flex flex-col justify-center w-full">
+                <div *ngIf="loadProductReport;else emptyData" class="flex flex-col justify-center w-full">
                   <div echarts [options]="productOption" [size]="['auto',500]"></div>
                 </div>
             </div>
-            <div class="bg-white w-full h-full mb-4 rounded-md">
+            <div class="bg-white w-full mb-4 rounded-md">
                 <div class="border-b flex flex-row align-center justify-between p-4">
                     <tds-flex flex="row" class="w-full" alignItems="center">
                         <tds-avatar class="bg-primary-1 text-white mr-2.5" icon="tdsi-report-fill"></tds-avatar>
@@ -338,7 +338,7 @@
                         </tds-select>
                     </tds-flex>
                 </div>
-                <div *ngIf="connectPageData;else emptyData" class="p-4">
+                <div *ngIf="loadConnectPageReport;else emptyData" class="p-4">
                   <div class="grid grid-cols-2 gap-4">
                     <tds-flex flex="col" class="bg-light-50 h-24">
                         <tds-flex flex="row" alignItems="center" class="h-1/3">
