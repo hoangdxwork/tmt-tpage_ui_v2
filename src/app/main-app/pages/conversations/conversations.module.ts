@@ -7,6 +7,7 @@ import { ConversationPostComponent } from './conversation-post/conversation-post
 import { ConversationPartnerComponent } from './conversation-partner/conversation-partner.component';
 import { ConversationCommentComponent } from './conversation-comment/conversation-comment.component';
 import { ConversationInboxComponent } from './conversation-inbox/conversation-inbox.component';
+import { MainSharedModule } from '../../shared/shared.module';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { ConversationInboxComponent } from './conversation-inbox/conversation-in
   ],
   imports: [
     CommonModule,
-    ConversationsRoutingModule
+    ConversationsRoutingModule,
+    MainSharedModule
   ]
 })
 export class ConversationsModule { }
