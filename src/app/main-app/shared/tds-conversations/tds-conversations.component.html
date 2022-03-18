@@ -1,0 +1,72 @@
+<div class="w-full h-full overflow-hidden flex flex-col p-2">
+    <!-- header -->
+    <div class="bg-white p-3 rounded-xl w-full flex justify-between">
+        <!-- left -->
+        <div class="flex items-center justify-center">
+            <tds-avatar size="lg" tdsSrc="assets/images/Avatar-user.png"></tds-avatar>
+            <div class="flex flex-col pl-2.5">
+                <div class="text-title-1 font-semibold text-neutral-900 dark:text-d-neutral-900">
+                    Nguyễn Bình
+                </div>
+                <div class="text-neutral-1-400 dark:text-d-neutral-400 flex  items-center justify-center">
+                    Gán nhân viên <i class="tdsi-arrow-down-line text-base ml-1.5"></i>
+                </div>
+            </div>
+        </div>
+        <!-- right -->
+        <div class="pl-4 flex items-center justify-end">
+            <tds-avatar class="bg-neutral-3-50 text-neutral-1-400 mr-4 cursor-pointer" icon="tdsi-box-fill"></tds-avatar>
+            <tds-avatar class="bg-neutral-3-50 text-neutral-1-400 cursor-pointer" icon="tdsi-reload-fill"></tds-avatar>           
+        </div>
+    </div>
+    <!-- main -->
+    <div class="flex-auto w-full">
+        <div class="w-full h-full relative bg-blue-500">
+            <div class="absolute inset-0 overflow-hidden overflow-y-auto tds-custom-scroll">
+                <div class="h-96" style="height: 300px;">
+                    dsadds
+                </div>
+                <div class="h-96" style="height: 300px;">
+                    dsadds
+                </div>
+                <div class="h-96" style="height: 300px;">
+                    dsadds
+                </div>
+                <div class="h-96" style="height: 300px;">
+                    dsadds
+                </div>
+
+                <div class="h-96" style="height: 300px;">
+                    dsadds
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- footer  -->
+    <div class="w-full flex flex-col" >
+        <div class="w-full pt-2 pb-3">
+            <tds-avatar class="bg-white text-neutral-1-400 mr-2.5 cursor-pointer" icon="tdsi-box-fill"></tds-avatar>
+            <tds-avatar class="bg-white text-neutral-1-400 cursor-pointer" icon="tdsi-reload-fill"></tds-avatar>  
+        </div>
+        <!-- editer+toolbars -->
+        <div class="flex flex-col w-full p-4 bg-white rounded-xl ">
+            <!-- editer -->
+            <div class="w-full flex">
+                <div class="flex flex-auto">
+                    Nhập nội dung tin nhắn, nhấn [Enter] để gửi
+                </div>
+                <div class="pl-2">
+                    <button tds-button color="primary" class="rounded-xl">
+                        <span class="flex items-center">
+                          <i class="tdsi-send-fill text-lg leading-none mr-1.5"></i> Gửi
+                        </span>
+                      </button>
+                </div>
+            </div>
+            <!-- toolbar -->
+            <div class="w-full flex justify-end items-center">
+                toolbar
+            </div>
+        </div>
+    </div>
+</div>
