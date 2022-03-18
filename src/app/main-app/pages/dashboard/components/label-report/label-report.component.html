@@ -1,0 +1,36 @@
+<div class="bg-white w-full mb-4 rounded-md">
+    <div class="border-b flex flex-row items-baseline justify-between p-4">
+        <tds-flex flex="row" class="w-full" alignItems="center">
+            <tds-avatar class="bg-primary-1 text-white mr-2.5" icon="tdsi-tag-fill"></tds-avatar>
+            <span class="text-neutral-1-900 text-header-1 font-semibold">THỐNG KÊ THEO NHÃN</span>
+        </tds-flex>
+        <tds-flex flex="row" alignItems="baseline">
+            <tds-flex flex="row" alignItems="center" class="border rounded w-[152px]">
+                <i class="tdsi-calendar-fill mx-2 h-5 w-5"></i>
+                <tds-select valueField="name" textField="name" [ngModel]="currentFilter"
+                    [placeholder]="currentFilter" [data]="filterList" [border]="false" class="truncate ..."
+                    (ngModelChange)="onChangeFilter($event)" size="md">
+                </tds-select>
+            </tds-flex>
+        </tds-flex>
+    </div>
+    <div *ngIf="showData;else emptyData" class="flex flex-row justify-between w-full px-5 py-6">
+      <div class="grid grid-cols-4 gap-y-6 gap-x-9 h-full w-full">
+        <div *ngFor="let item of labelData">
+            <tds-flex flex="col" class="h-[112px]">
+                <tds-flex flex="row" alignItems="center" justifyContent="between" class="w-full h-3/4 px-5 bg-light-50">
+                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans">{{item.value}}</span>
+                    <span class="text-body-2 font-normal text-center font-sans" [class]="item.value > 0 ?'text-primary-1':'text-error-400'">{{item.percent}}<i [class]="item.value > 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></i></span>
+                    <span class="text-neutral-1-400 text-body-2 font-normal font-sans text-center">{{currentFilter}}</span>
+                </tds-flex>
+                <tds-flex alignItems="center" class="w-full h-1/4 px-5 bg-{{item.color}} text-white text-body-2 font-normal font-sans">{{item.name}}</tds-flex>
+            </tds-flex>
+        </div>
+      </div>
+    </div>
+</div>
+<ng-template #emptyData>
+    <div class="flex items-center justify-center w-full h-[204px]">
+        <tds-empty notFoundImage="assets/images/Group.svg" [notFoundContent]="null"></tds-empty>
+    </div>
+</ng-template>
