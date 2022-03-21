@@ -1,1 +1,51 @@
-<p>report works!</p>
+<div class="flex flex-row w-full p-4">
+    <div class="w-1/6 h-full bg-white rounded-md py-4 mr-4">
+        <div class="h-[52px] w-full px-4 border-l-3 cursor-pointer" [class]="currentPage.id == 1 ?'border-primary-1 text-neutral-900':'border-transparent text-neutral-500'" 
+            (click)="onChangePage(1)">
+            <span class="flex items-center p-4">
+                <i class="tdsi-chat-fill text-lg leading-none mr-2"></i>
+                <span class="font-semibold text-body-2 font-sans w-full">{{PageList[0].name}}</span>
+            </span>
+        </div>
+        <div class="h-[52px] w-full px-4 border-l-3 cursor-pointer" [class]="currentPage.id == 2 ?'border-primary-1 text-neutral-900':'border-transparent text-neutral-500'" 
+            (click)="onChangePage(2)">
+            <span class="flex items-center p-4">
+                <i class="tdsi-edit-paper-fill text-lg leading-none mr-2"></i>
+                <span class="font-semibold text-body-2 font-sans w-full">{{PageList[1].name}}</span>
+            </span>
+        </div>
+        <div class="h-[52px] w-full px-4 border-l-3 cursor-pointer" [class]="currentPage.id == 3 ?'border-primary-1 text-neutral-900':'border-transparent text-neutral-500'" 
+            (click)="onChangePage(3)">
+            <span class="flex items-center p-4">
+                <i class="tdsi-cart-fill text-lg leading-none mr-2"></i>
+                <span class="font-semibold text-body-2 font-sans w-full">{{PageList[2].name}}</span>
+            </span>
+        </div>
+        <div class="h-[52px] w-full px-4 border-l-3 cursor-pointer" [class]="currentPage.id == 4 ?'border-primary-1 text-neutral-900':'border-transparent text-neutral-500'" 
+            (click)="onChangePage(4)">
+            <span class="flex items-center p-4">
+                <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>
+                <span class="font-semibold text-body-2 font-sans w-full">{{PageList[3].name}}</span>
+            </span>
+        </div>
+        <div class="h-[52px] w-full px-4 border-l-3 cursor-pointer" [class]="currentPage.id == 5 ?'border-primary-1 text-neutral-900':'border-transparent text-neutral-500'" 
+            (click)="onChangePage(5)">
+            <span class="flex items-center p-4">
+                <i class="tdsi-group-people-fill text-lg leading-none mr-2"></i>
+                <span class="font-semibold text-body-2 font-sans w-full">{{PageList[4].name}}</span>
+            </span>
+        </div>
+        <div class="h-[52px] w-full px-4 border-l-3 cursor-pointer" [class]="currentPage.id == 6 ?'border-primary-1 text-neutral-900':'border-transparent text-neutral-500'" 
+            (click)="onChangePage(6)">
+            <span class="flex items-center p-4">
+                <i class="tdsi-tag-fill text-lg leading-none mr-2"></i>
+                <span class="font-semibold text-body-2 font-sans w-full">{{PageList[5].name}}</span>
+            </span>
+        </div>
+    </div>
+    <div class="w-5/6 flex flex-col">
+        <app-conversations *ngIf="currentPage.id == 1"></app-conversations>
+        <app-articles *ngIf="currentPage.id == 2"></app-articles>
+        <app-sales *ngIf="currentPage.id == 3"></app-sales>
+    </div>
+</div>
