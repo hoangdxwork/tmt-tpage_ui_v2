@@ -1,11 +1,16 @@
-<div class="w-full h-full flex items-stretch overflow-hidden">
-        <div class="w-[20%]   h-full">
-dsaddsds
+<div class="w-full h-full flex items-stretch overflow-hidden bg-neutral-3-200">
+        <div class="w-[357px]   h-full ">
+                dsaddsds
         </div>
-        <div class="w-[40%]  h-full overflow-hidden">
-            <tds-conversations></tds-conversations>
+        <div class="flex flex-auto flex-col  h-full overflow-hidden">
+                <tds-conversations>
+                        <ng-container *ngFor="let item of listData" >
+                                   <tds-conversation-item [data]="item"></tds-conversation-item>                        
+                        </ng-container>
+                       
+                </tds-conversations>
         </div>
-        <div class="w-[40%] h-full">
-dsad
+        <div class="w-[576px] h-full ">
+                dsad
         </div>
 </div>
