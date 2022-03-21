@@ -17,7 +17,7 @@ export class FacebookReportComponent implements OnInit {
   showData = true;
 
   pageList = [
-    {id:1, name:'Quần áo XK Nhiên Nhiên'},
+    {id:1, name:'Quần áo XK Nhiên Trung'},
   ]
   currentPage = this.pageList[0].name;
 
@@ -98,7 +98,7 @@ export class FacebookReportComponent implements OnInit {
       tooltip:{
         show:true,
         position:'top',
-        formatter:'<div class="text-white font-body-2 font-regular text-center"><span class="pb-2">{b}/2020<span><br>{c} {a}<div>',
+        formatter:'<span class="pb-2">{b}/2020</span><br>{c} {a}',
         borderColor:'transparent',
         backgroundColor:'rgba(0, 0, 0, 0.8)',
         textStyle:{
