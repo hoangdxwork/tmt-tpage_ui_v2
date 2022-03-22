@@ -86,4 +86,8 @@ export class LayoutComponent implements OnInit {
   onOpenChange(e: boolean) {
     this.inlineCollapsed = e;
   }
+
+  onClickItem(){
+    sessionStorage.removeItem('reportItem')
+  }
 }

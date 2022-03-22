@@ -1,28 +1,28 @@
 import { Color } from 'echarts';
-import { TDSSafeAny, vi_VN } from 'tmt-tang-ui';
-import { TDSBarChartComponent, TDSChartOptions, TDSBarChartDataSeries } from 'tds-report';
-import { Component, OnInit } from '@angular/core';
 import { formatDate } from '@angular/common';
+import { TDSChartOptions, TDSBarChartDataSeries, TDSBarChartComponent } from 'tds-report';
+import { TDSSafeAny } from 'tmt-tang-ui';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-conversations',
-  templateUrl: './conversations.component.html',
-  styleUrls: ['./conversations.component.scss']
+  selector: 'app-report-articles',
+  templateUrl: './report-articles.component.html',
+  styleUrls: ['./report-articles.component.scss']
 })
-export class ConversationsComponent implements OnInit {
+export class ReportArticlesComponent implements OnInit {
   //#region variable
   option:TDSSafeAny;
   chartOption = TDSChartOptions();
-  listOfData:Array<TDSSafeAny> = [];
+  tableData:Array<TDSSafeAny> = [];
   selectList = [
     { id:1, name:'App Quản Lí Bán Hàng TPos 1' },
     { id:2, name:'App Quản Lí Bán Hàng TPos 2' },
     { id:3, name:'App Quản Lí Bán Hàng TPos 3' },
   ];
   selectedItem = this.selectList[0].name;
+  pageData:TDSSafeAny[] = [];
   rangeDate = null;
   //#endregion
-
   constructor() { }
 
   ngOnInit(): void {
@@ -30,35 +30,46 @@ export class ConversationsComponent implements OnInit {
   }
 
   loadData(){
-    this.listOfData = [
+    this.pageData = [
+      { id: 1, name:'Bài viết', value:10 },
+      { id: 2, name:'Bình luận', value:200 },
+      { id: 3, name:'Lượt thích', value:100 },
+      { id: 4, name:'Đơn hàng', value:200 },
+    ];
+
+    this.tableData = [
       {
-        id:1, reportDate:'06/06/2021', conversations:50, messages:30, comments:20, newPhoneNumber:10, responseTime:10, orders:10, completeOrders:2, noReplyMessages:10
+        id:1, reportDate:'06/06/2021', likes:50, views:30, shares:20, comments:10, completeOrders:10
       },
       {
-        id:2, reportDate:'06/06/2021', conversations:50, messages:30, comments:20, newPhoneNumber:10, responseTime:10, orders:10, completeOrders:2, noReplyMessages:10
+        id:2, reportDate:'06/06/2021', likes:50, views:30, shares:20, comments:10, completeOrders:10
       },
       {
-        id:3, reportDate:'06/06/2021', conversations:50, messages:30, comments:20, newPhoneNumber:10, responseTime:10, orders:10, completeOrders:2, noReplyMessages:10
+        id:3, reportDate:'06/06/2021', likes:50, views:30, shares:20, comments:10, completeOrders:10
       },
       {
-        id:4, reportDate:'06/06/2021', conversations:50, messages:30, comments:20, newPhoneNumber:10, responseTime:10, orders:10, completeOrders:2, noReplyMessages:10
+        id:4, reportDate:'06/06/2021', likes:50, views:30, shares:20, comments:10, completeOrders:10
       },
       {
-        id:5, reportDate:'06/06/2021', conversations:50, messages:30, comments:20, newPhoneNumber:10, responseTime:10, orders:10, completeOrders:2, noReplyMessages:10
+        id:5, reportDate:'06/06/2021', likes:50, views:30, shares:20, comments:10, completeOrders:10
       },
     ];
-    let axisData:TDSSafeAny[] = ['06/06','07/06','08/06','09/06','10/06','11/06','12/06','13/06','14/06','15/06','16/06','17/06'];
+    let axisData:TDSSafeAny[] = ['06/06','07/06','08/06','09/06','10/06','11/06'];
     let seriesData:TDSSafeAny[] = [
       {
-        name:'Tin nhắn',
-        data:[1500,2500,2400,1100,1500,2020,850,1950,1650,2450,1900,1900]
+        name:'Bài viết 1',
+        data:[1000,1300,900,1100,700,660]
       },
       {
-        name:'Bình luận',
-        data:[1900,1300,1600,2100,900,1500,1700,2550,2200,1200,1350,950]
+        name:'Bài viết 2',
+        data:[780,850,960,1055,770,950]
+      },
+      {
+        name:'Bài viết 3',
+        data:[500,330,440,356,477,990]
       }
     ];
-    let colors:Color[] = ['#1A6DE3','#28A745'];
+    let colors:Color[] = ['#1A6DE3','#28A745','#F59E0B'];
 
     let component:TDSBarChartComponent = {
       color: colors,
@@ -78,8 +89,8 @@ export class ConversationsComponent implements OnInit {
       tooltip:{
         show:true,
         position:'top',
-        formatter:function(params:any[]){
-          let res = '<span class="text-black text-title-1 font-semibold font-sans pb-2">' + params[0].name + '/2021</span><br>';
+        formatter:function(params:TDSSafeAny[]){
+          let res = '';
           params.forEach(item => {
             res += '<span class="text-black text-body-2 font-semibold font-sans">'+item.seriesName+'</span>'+
                     '<br>'+item.marker+'<span class="text-neutral-1-700 text-body-2 font-regular font-sans">'+item.value+'</span><br>';
@@ -123,7 +134,7 @@ export class ConversationsComponent implements OnInit {
   }
 
   buildChart(chart:TDSBarChartComponent){
-    this.option = this.chartOption.BarChartOption(chart);
+    this.option = this.chartOption.BarChartOption(chart,true);
   }
 
   getSeries(seriesData:TDSSafeAny[]){
@@ -133,7 +144,7 @@ export class ConversationsComponent implements OnInit {
         {
           name: series.name,
           type:'bar',
-          barWidth:26,
+          barWidth:24,
           data: series.data
         }
       );
@@ -141,11 +152,11 @@ export class ConversationsComponent implements OnInit {
     return list;
   }
 
-  onChangeSelect(data:TDSSafeAny){
+  onChangeSelect(data:any){
     this.selectedItem = data;
   }
 
   onChangeDate(result: Date[]): void {
-    
+
   }
 }

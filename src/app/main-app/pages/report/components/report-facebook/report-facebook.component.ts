@@ -1,26 +1,24 @@
 import { Color } from 'echarts';
-import { formatDate } from '@angular/common';
-import { TDSChartOptions, TDSBarChartDataSeries, TDSBarChartComponent } from 'tds-report';
+import { TDSChartOptions, TDSBarChartComponent, TDSBarChartDataSeries } from 'tds-report';
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-articles',
-  templateUrl: './articles.component.html',
-  styleUrls: ['./articles.component.scss']
+  selector: 'app-report-facebook',
+  templateUrl: './report-facebook.component.html',
+  styleUrls: ['./report-facebook.component.scss']
 })
-export class ArticlesComponent implements OnInit {
+export class ReportFacebookComponent implements OnInit {
   //#region variable
   option:TDSSafeAny;
   chartOption = TDSChartOptions();
-  tableData:Array<TDSSafeAny> = [];
+  listOfData:Array<TDSSafeAny> = [];
   selectList = [
     { id:1, name:'App Quản Lí Bán Hàng TPos 1' },
     { id:2, name:'App Quản Lí Bán Hàng TPos 2' },
     { id:3, name:'App Quản Lí Bán Hàng TPos 3' },
   ];
   selectedItem = this.selectList[0].name;
-  pageData:TDSSafeAny[] = [];
   rangeDate = null;
   //#endregion
   constructor() { }
@@ -30,46 +28,43 @@ export class ArticlesComponent implements OnInit {
   }
 
   loadData(){
-    this.pageData = [
-      { id: 1, name:'Bài viết', value:10 },
-      { id: 2, name:'Bình luận', value:200 },
-      { id: 3, name:'Lượt thích', value:100 },
-      { id: 4, name:'Đơn hàng', value:200 },
-    ];
-
-    this.tableData = [
+    this.listOfData = [
       {
-        id:1, reportDate:'06/06/2021', likes:50, views:30, shares:20, comments:10, completeOrders:10
+        id:1, page:'App Quản Lí Bán Hàng Tpos', imageURL:'assets/images/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
       },
       {
-        id:2, reportDate:'06/06/2021', likes:50, views:30, shares:20, comments:10, completeOrders:10
+        id:2, page:'App Quản Lí Bán Hàng Tpos', imageURL:'assets/images/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
       },
       {
-        id:3, reportDate:'06/06/2021', likes:50, views:30, shares:20, comments:10, completeOrders:10
+        id:3, page:'App Quản Lí Bán Hàng Tpos', imageURL:'assets/images/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
       },
       {
-        id:4, reportDate:'06/06/2021', likes:50, views:30, shares:20, comments:10, completeOrders:10
+        id:4, page:'App Quản Lí Bán Hàng Tpos', imageURL:'assets/images/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
       },
       {
-        id:5, reportDate:'06/06/2021', likes:50, views:30, shares:20, comments:10, completeOrders:10
+        id:5, page:'App Quản Lí Bán Hàng Tpos', imageURL:'assets/images/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
       },
     ];
     let axisData:TDSSafeAny[] = ['06/06','07/06','08/06','09/06','10/06','11/06'];
     let seriesData:TDSSafeAny[] = [
       {
-        name:'Bài viết 1',
+        name:'Page 1',
         data:[1000,1300,900,1100,700,660]
       },
       {
-        name:'Bài viết 2',
-        data:[780,850,960,1055,770,950]
+        name:'Page 2',
+        data:[780,850,960,1055,770,250]
       },
       {
-        name:'Bài viết 3',
-        data:[500,330,440,356,477,990]
+        name:'Page 3',
+        data:[500,330,440,356,477,490]
+      },
+      {
+        name:'Page 4',
+        data:[450,310,260,125,566,381]
       }
     ];
-    let colors:Color[] = ['#1A6DE3','#28A745','#F59E0B'];
+    let colors:Color[] = ['#1A6DE3','#28A745','#F59E0B','#0C9AB2'];
 
     let component:TDSBarChartComponent = {
       color: colors,

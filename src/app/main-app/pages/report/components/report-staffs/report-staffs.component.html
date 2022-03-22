@@ -1,0 +1,63 @@
+<div class="bg-white w-full mb-4 rounded-md">
+    <div class="border-b flex flex-row align-center justify-between p-4">
+        <div class="flex flex-row items-center w-full">
+            <tds-avatar class="bg-primary-1 text-white mr-2.5" icon="tdsi-group-people-fill"></tds-avatar>
+            <span class="text-neutral-1-900 text-header-1 font-semibold">THỐNG KÊ THEO NHÂN VIÊN</span>
+        </div>
+        <div class="flex flex-row items-center">
+            <div class="flex flex-row items-center w-[300px] mr-2.5">
+                <tds-avatar tdsSrc="assets/images/Avatar-user.png"></tds-avatar>
+                <tds-select valueField="name" textField="name" [ngModel]="selectedItem"
+                [placeholder]="selectedItem" [data]="selectList" [border]="false" class="truncate ... w-[250px]"
+                (ngModelChange)="onChangeSelect($event)" size="md" classIcon="tdsi-arrow-down-fill">
+                </tds-select>
+            </div>
+            <tds-range-picker [(ngModel)]="rangeDate" (ngModelChange)="onChangeDate($event)" class="w-[266px]"></tds-range-picker>
+        </div>
+    </div>
+    <div class="flex flex-col w-full px-4 py-9">
+        <div class="flex flex-row items-center justify-center w-full">
+            <div echarts [options]="option" [size]="['auto',400]" class="w-full"></div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white w-full rounded-md pb-2">
+    <tds-table #basicTable [listData]="listOfData" [showPagination]="listOfData.length > 10">
+        <thead class="text-neutral-1-900 text-body-2 font-semibold font-sans">
+              <tr>
+                    <th>Page</th>
+                    <th>Tổng hội thoại</th>
+                    <th>Tin nhắn</th>
+                    <th>Bình luận</th>
+                    <th>Khách hàng</th>
+                    <th>Đơn hàng</th>
+                    <th>Thời gian phản hồi TB (phút)</th>
+                    <th>Doanh thu</th>
+                    <th>Tỉ lệ đơn chốt/ KH cũ</th>
+              </tr>
+        </thead>
+        <tbody class="text-neutral-1-900 text-body-2 font-regular font-sans">
+            <ng-template ngFor let-data [ngForOf]="basicTable.data" >
+                <tr>
+                    <td>
+                        <tds-avatar [tdsSrc]="data.imageURL" class="mr-2.5"></tds-avatar>
+                        {{ data.name }}
+                    </td>
+                    <td>{{ data.conversations }}</td>
+                    <td>{{ data.messages }}</td>
+                    <td>{{ data.comments }}</td>
+                    <td>{{ data.customers }}</td>
+                    <td>{{ data.orders }}</td>
+                    <td>{{ data.responseTime }}</td>
+                    <td>{{ data.revenue|number }}</td>
+                    <td>
+                        <span class="text-primary-1">{{ (data.completeOrders/data.oldCustomers)|percent}}</span>
+                        <br>
+                        <span class="text-neutral-1-400">{{data.completeOrders}}/{{data.oldCustomers}}</span>
+                    </td>
+                </tr>
+            </ng-template>
+        </tbody>
+    </tds-table>
+</div>
