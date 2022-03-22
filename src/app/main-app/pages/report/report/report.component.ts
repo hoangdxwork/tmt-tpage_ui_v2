@@ -1,3 +1,5 @@
+import { TDSMenuDTO } from 'tmt-tang-ui';
+import { ReportMenu } from './../report.menu';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -7,23 +9,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ReportComponent implements OnInit {
   //#region variable
-  currentPage = { id:1, name:'Hội thoại' };
-  PageList = [
-    { id:1, name:'Hội thoại' },
-    { id:2, name:'Bài viết' },
-    { id:3, name:'Bán hàng' },
-    { id:4, name:'Trang Facebook' },
-    { id:5, name:'Nhân viên' },
-    { id:6, name:'Nhãn hội thoại' },
-  ]
+  menuData = ReportMenu;
+  currentPage = ReportMenu[0];
   //#endregion
 
   constructor() { }
 
   ngOnInit(): void {
+    let item = sessionStorage.getItem('reportItem');
+    if(item){
+      this.currentPage = JSON.parse(item);
+    }
   }
 
-  onChangePage(page:number){
-    this.currentPage = this.PageList[page-1];
+  onChangePage(page:TDSMenuDTO){
+    this.currentPage = page;
+    sessionStorage.setItem('reportItem',JSON.stringify(page));
   }
 }

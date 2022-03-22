@@ -5,11 +5,11 @@ import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-sales',
-  templateUrl: './sales.component.html',
-  styleUrls: ['./sales.component.scss']
+  selector: 'app-report-sales',
+  templateUrl: './report-sales.component.html',
+  styleUrls: ['./report-sales.component.scss']
 })
-export class SalesComponent implements OnInit {
+export class ReportSalesComponent implements OnInit {
 //#region variable
   option:TDSSafeAny;
   chartOption = TDSChartOptions();
