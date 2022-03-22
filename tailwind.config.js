@@ -83,6 +83,110 @@ const COLORS = {
         1: '#0051CD',
         2: '#3E89FC'
     },
+    base:{
+        red:{
+            50: "#FFE5EA",
+            100: "#FFCAD4",
+            200: "#FFA4B5",
+            300: "#FF7E96",
+            400: "#FA5171",
+            500: "#EA264B",
+            600: "#E4002B",
+            700: "#CB0026",
+            800: "#B00021",
+            900: "#92001F",
+        },
+        orange:{
+            50: "#FFF0E9",
+            100: "#FFE1D2",
+            200: "#FFC2A6",
+            300: "#FFA479",
+            400: "#FF7F44",
+            500: "#FF6720",
+            600: "#E55716",
+            700: "#C9450C",
+            800: "#AD3403",
+            900: "#942601",
+        },
+        yellow:{
+            50: "#FFFAE4",
+            100: "#FFF5CC",
+            200: "#FEEB9E",
+            300: "#FADF73",
+            400: "#FDD840",
+            500: "#F8CC1A",
+            600: "#F8B91A",
+            700: "#E9A800",
+            800: "#CC9200",
+            900: "#A96F00",
+        },
+        green:{
+            50: "#E9F6EC",
+            100: "#D7F5D0",
+            200: "#AEE8A0",
+            300: "#81D973",
+            400: "#52BF50",
+            500: "#28A745",
+            600: "#008E39",
+            700: "#007636",
+            800: "#005A24",
+            900: "#004926",
+        },
+
+        blue:{
+            50: "#ECF6FF",
+            100: "#DBEFFF",
+            200: "#C8E7FF",
+            300: "#A3D7FF",
+            400: "#70B5FF",
+            500: "#3E89FC",
+            600: "#0051CD",
+            700: "#053C9C",
+            800: "#042975",
+            900: "#031F5E",
+        },
+
+        indigo:{
+            50: "#E9EBFF",
+            100: "#CFD5FF",
+            200: "#B2BBFF",
+            300: "#8694FF",
+            400: "#6677FF",
+            500: "#4C60FD",
+            600: "#373EEE",
+            700: "#1E1BC0",
+            800: "#0F0D88",
+            900: "#020061",
+        },
+
+        pink:{
+            50: "#FFECED",
+            100: "#FFDAE6",
+            200: "#FFB2CB",
+            300: "#FF8DB1",
+            400: "#F96594",
+            500: "#EF4379",
+            600: "#DF1D5B",
+            700: "#CA0544",
+            800: "#B1033B",
+            900: "#940131",
+        },
+
+    },
+    background:{
+        1: '#FFE2F3',
+        2: '#FFE7E7',
+        3: '#FFEDEE',
+        4: '#FFF1D7',
+        5: '#FFFAEA',
+        6: '#F2FCF5',
+        7: '#D5F2E8',
+        8: '#C3EAF0',
+        9:'#D7E8FF',
+        10: '#CADDF1',
+        11: '#DFDCF3',
+        12: '#DEE3EC' 
+    },
     'neutral-1': {
         50: "#DDE2E9",
         100: "#CDD3DB",
@@ -205,21 +309,15 @@ const SAFELISTING = [
     // ...colorTDS
 ]
 module.exports = {
-    // mode: 'jit',
     prefix: '',
-    // purge: {
-
-
-    // },
     enabled: process.env.NODE_ENV && process.env.NODE_ENV.trim() === "production",
     content: [
         './src/**/*.{html,ts}',
         './node_modules/tmt-tang-ui/__ivy_ngcc__/fesm2015/tmt-tang-ui.js'
     ],
     safelist: SAFELISTING,
-    darkMode: 'class', // or 'media' or 'class'
+    darkMode: 'class',
     theme: {
-
         extend: {
             zIndex: {
                 '60': 60,
@@ -296,24 +394,5 @@ module.exports = {
             }
         },
     },
-    // variants: {
-    //     extend: {
-    //         opacity: ['disabled'],
-    //         cursor: ['disabled'],
-    //         backgroundColor: ['checked', 'responsive', 'hover', 'focus', 'active', 'disabled'],
-    //         borderColor: ['checked', 'disabled'],
-    //         borderWidth: ['last', 'first'],
-    //         ringWidth: ['hover', 'group-hover'],
-    //         ringColor: ['hover', 'group-hover'],
-    //         ringOpacity: ['hover', 'group-hover'],
-    //         ringOffsetColor: ['hover', 'group-hover'],
-    //         ringOffsetWidth: ['hover', 'group-hover'],
-    //         borderRadius: ['group-hover', 'first', 'last'],
-    //         display: ['group-hover'],
-    //         textColor: ['responsive', 'hover', 'focus', 'active', 'disabled'],
-    //         overflow: ['hover', 'focus'],
-    //         fontWeight: ['dark']
-    //     },
-    // },
-    plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],
+     plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],
 };
