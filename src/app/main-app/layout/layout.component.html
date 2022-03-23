@@ -24,8 +24,16 @@
                     </span>
                 </button>
                 <div class="w-40">
-                    <tds-select [border]="false" [allowSearch]="false" valueField="id" textField="name" [data]="lstShop" [(ngModel)]="shopId" (selectChange)="onSelectShopChange($event)">
-                    </tds-select>
+                    
+                    <!-- <tds-select [border]="false" [allowSearch]="false" valueField="id" textField="name" [data]="lstShop" [(ngModel)]="shopId" (selectChange)="onSelectShopChange($event)">
+                    </tds-select> -->
+                    <tds-avatar class="cursor-pointer" tds-dropdown [tdsDropdownMenu]="dropdownTeam" trigger="click" [tdsSrc]="userInit ? userInit.avatarUrl :''">
+                    </tds-avatar>
+                    <tds-dropdown-menu #dropdownTeam="tdsDropdownMenu">
+                        <div class="w-56">
+                            <tpage-team-dropdown></tpage-team-dropdown>
+                        </div>
+                    </tds-dropdown-menu>
                 </div>
                 <div class="inline-flex pl-4">
                     <tds-avatar class="cursor-pointer" tds-dropdown [tdsDropdownMenu]="dropdownAvatar" trigger="click" [tdsSrc]="userInit ? userInit.avatarUrl :''">
