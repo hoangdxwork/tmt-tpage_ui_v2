@@ -137,6 +137,9 @@ export class LayoutComponent implements OnInit {
         link: `/configs?teamId=${data?.Id}`,
       }
     ];
+  }
 
+  onClickItem() {
+    sessionStorage.removeItem('reportItem')
   }
 }
