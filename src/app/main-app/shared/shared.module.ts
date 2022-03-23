@@ -4,14 +4,16 @@ import { FormsModule } from '@angular/forms';
 import { TDSAvatarModule, TDSButtonModule, TDSOutletModule, TDSScrollIntoViewModule } from 'tmt-tang-ui';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TpageTeamDropdownComponent } from './tpage-team-dropdown/tpage-team-dropdown.component';
+import { TpageBaseComponent } from './tpage-base/tpage-base.component';
 
 
 const cmp =[
-  TpageTeamDropdownComponent
+  TpageTeamDropdownComponent,
+  TpageBaseComponent
 ]
 @NgModule({
   declarations: [  
-    ...cmp
+    ...cmp, 
   ],
   imports: [
     CommonModule,

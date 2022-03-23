@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { da } from 'date-fns/locale';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
@@ -16,8 +16,9 @@ export class CRMTeamService extends BaseSevice {
   table: string = "CRMTeam";
   baseRestApi: string = "rest/v1.0/crmteam";
   private readonly __keyCacheTeamId = 'nearestTeamId';
-  private listFaceBook$ = new BehaviorSubject<PagedList2<CRMTeamDTO> | null>(null);
-  private currentTeam$ = new BehaviorSubject<CRMTeamDTO | null>(null);
+  private listFaceBook$ = new ReplaySubject<PagedList2<CRMTeamDTO> | null>(1);
+  private currentTeam$ = new ReplaySubject<CRMTeamDTO | null>(1);
+  private _currentTeam!: CRMTeamDTO | null;
   constructor(private apiService: TCommonService, private caheApi: THelperCacheService) {
     super(apiService)
   }
@@ -34,6 +35,9 @@ export class CRMTeamService extends BaseSevice {
   }
   onUpdateListFaceBook(data: PagedList2<CRMTeamDTO> | null) {
     this.listFaceBook$.next(data);
+  }
+  getCurrentTeam(): CRMTeamDTO | null {
+    return this._currentTeam;
   }
   // xử lý teasm
   getCacheTeamId(): Observable<string | null> {
@@ -54,6 +58,7 @@ export class CRMTeamService extends BaseSevice {
   }
   onUpdateTeam(data: CRMTeamDTO | null) {
     this.setCacheTeamId(data ? data.Id : null);
+    this._currentTeam = data;
     this.currentTeam$.next(data);
   }
   onChangeTeam() {

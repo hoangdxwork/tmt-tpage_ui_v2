@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMenuDTO, TDSSafeAny } from 'tmt-tang-ui';
 import { CRMTeamDTO } from '../dto/team/team.dto';
 import { CRMTeamService } from '../services/crm-team.service';
+import { TPageHelperService } from '../services/helper.service';
 
 @Component({
   selector: 'app-layout',
@@ -21,12 +22,11 @@ export class LayoutComponent implements OnInit {
   constructor(private auth: TAuthService, public crmService: CRMTeamService) { }
 
   ngOnInit(): void {
-    this.getAllFacebook();
     this.crmService.onChangeTeam().subscribe(res => {
-      debugger
-      this.lstMenu = this.setMenu(res);
-      debugger
+      this.lstMenu = this.setMenu(res);      
     })
+    this.getAllFacebook();
+
   }
   onSelectShopChange(event: TDSSafeAny) {
 
@@ -46,37 +46,21 @@ export class LayoutComponent implements OnInit {
           let team!: CRMTeamDTO;
           this.crmService.onUpdateListFaceBook(dataTeam);
           this.crmService.getCacheTeamId().subscribe((teamId: string | null) => {
-            if (TDSHelperString.hasValueString(teamId)) {
-              for (let index = 0; index < dataTeam.Items.length; index++) {
-                const item = dataTeam.Items[index];
-                for (let index = 0; index < item.Childs.length; index++) {
-                  const child = item.Childs[index];
-                  if (teamId == child.Id) {
-                    team = child;
-                    break;
-                  }
-                }
-              }
-              this.crmService.onUpdateTeam(team || null);
-            } else {
-              const firstItem = dataTeam.Items.find(res => {
-                return res.Childs.length > 0
-              });
-              this.crmService.onUpdateTeam(firstItem || null);
-            }
-
-
+           const team = TPageHelperService.findTeamById(dataTeam.Items,teamId,true)
+           this.crmService.onUpdateTeam(team);
           })
         } else {
           this.crmService.onUpdateListFaceBook(null);
           this.crmService.onUpdateTeam(null);
         }
       }, err => {
+        
         this.crmService.onUpdateListFaceBook(null);
         this.crmService.onUpdateTeam(null);
       })
   }
   setMenu(data: CRMTeamDTO | null): Array<TDSMenuDTO> {
+    let hidden = TDSHelperObject.hasValue(data) ? false : true;
     return [
       {
         name: "Tổng quan",
@@ -86,55 +70,113 @@ export class LayoutComponent implements OnInit {
       {
         name: "Tất cả",
         icon: "tdsi-drawer-fill",
-        link: `/conversation/all?teamId=${data?.Id}&type=all`,
+        link: '/conversation/all',
+        linkProps: {
+          queryParams: {
+            'teamId': data?.Id,
+            'type': 'all',
+          },
+        },
+        hidden: hidden
       },
       {
         name: "Tin nhắn",
         icon: "tdsi-email-fill",
-        link: `/conversation/inbox?teamId=${data?.Id}&type=message`,
+        link: '/conversation/inbox',
+        linkProps: {
+          queryParams: {
+            'teamId': data?.Id,
+            'type': 'message',
+          },
+        },
+        hidden:hidden,
       },
 
       {
         name: "Bình luận",
         icon: "tdsi-comment-fill",
-        link: `/conversation/comment?teamId=${data?.Id}&type=comment`,
+        link: `/conversation/comment`,
+        linkProps: {
+          queryParams: {
+            'teamId': data?.Id,
+            'type': 'comment',
+          },
+        },
+        hidden:hidden,
       },
 
       {
         name: "Bài viết",
         icon: "tdsi-edit-paper-fill",
-        link: `/conversation/post?teamId=${data?.Id}&type=post`,
+        link: `/conversation/post`,
+        linkProps: {
+          queryParams: {
+            'teamId': data?.Id,
+            'type': 'post',
+          },
+        },
+        hidden:hidden,
       },
 
       {
         name: "Đơn hàng",
         icon: "tdsi-bag-fill",
-        link: `/order?teamId=${data?.Id}`,
+        link: `/order`,
+        linkProps: {
+          queryParams: {
+            'teamId': data?.Id,
+          },
+        },
       },
       {
         name: "Phiếu bán hàng",
         icon: "tdsi-dataset-fill",
-        link: `/bill?teamId=${data?.Id}`,
+        link: `/bill`,
+        linkProps: {
+          queryParams: {
+            'teamId': data?.Id,
+          },
+        },
       },
       {
         name: "Khách hàng",
         icon: "tdsi-user-fill",
-        link: `/partner?teamId=${data?.Id}`,
+        link: `/partner`,
+        linkProps: {
+          queryParams: {
+            'teamId': data?.Id,
+          },
+        },
       },
       {
         name: "Kênh kết nối",
         icon: "tdsi-facebook-2-fill",
-        link: `/facebook?teamId=${data?.Id}`,
+        link: `/facebook`,
+        linkProps: {
+          queryParams: {
+            'teamId': data?.Id,
+          },
+        },
       },
       {
         name: "Thống kê",
         icon: "tdsi-chart-pie-fill",
-        link: `/report?teamId=${data?.Id}`,
+        link: `/report`,
+        linkProps: {
+          queryParams: {
+            'teamId': data?.Id,
+          },
+        },
       },
       {
         name: "Cấu hình",
         icon: "tdsi-gear-line",
-        link: `/configs?teamId=${data?.Id}`,
+        link: `/configs`,
+        linkProps: {
+          queryParams: {
+            'teamId': data?.Id,
+          },
+        },
       }
     ];
   }

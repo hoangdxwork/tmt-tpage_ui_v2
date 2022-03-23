@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FacebookGraphMessageDTO } from 'src/app/main-app/dto/conversation/message.dto';
+import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
+import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { TDSSafeAny } from 'tmt-tang-ui';
 
 @Component({
@@ -7,18 +10,18 @@ import { TDSSafeAny } from 'tmt-tang-ui';
   templateUrl: './conversation-all.component.html',
   styleUrls: ['./conversation-all.component.scss']
 })
-export class ConversationAllComponent implements OnInit {
-  listData:Array<TDSSafeAny> = []
-  constructor() { }
-
-  ngOnInit(): void {
-   this.listData= this.getData()
-    // .forEach(f=>{
-
-    // })
+export class ConversationAllComponent extends TpageBaseComponent {
+  
+  listData: Array<TDSSafeAny> = []
+  constructor(public crmService: CRMTeamService, public activatedRoute: ActivatedRoute, public router: Router) {
+    super(crmService, activatedRoute, router);
+    this.type ="all"
   }
-  getData()
-  {
+  onInit(): void {
+    console.log("onInit")
+    this.listData = this.getData();
+  }
+  getData() {
     return [
       {
         "id": "tpos_e97e79e6-f649-45c7-ad73-2d6f2bd5b147",
