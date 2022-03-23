@@ -1,0 +1,50 @@
+<div class="bg-white flex flex-col rounded-xl px-4">
+    <div class="flex flex-row items-center justify-between border-b border-neutral-2-200 py-4">
+        <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Thống kê trong ngày</span>
+        <button class="bg-primary-3 text-primary-1 h-[34px] w-[34px] flex items-center justify-center rounded-xl">
+            <span class="flex items-center">
+                <i class="tdsi-reload-fill"></i>
+            </span>
+        </button>
+    </div>
+    <div class="flex flex-col items-center">
+        <div class="flex flex-row items-center justify-center w-full py-6">
+            <div class="flex flex-col justify-center w-full">
+                <span class="text-neutral-1-900 text-body-2 font-regular text-left font-sans py-2">Hội thoại</span>
+                <div class="flex flex-row items-center">
+                    <span class="text-neutral-1-900 text-heading-3 font-semibold font-sans pr-2">{{labelData.newComments.value|number}}</span>
+                    <span class="text-caption-2 font-regular font-sans text-center py-0.5 px-2 rounded-full" 
+                        [class]="labelData.conversations.decrease ? 'bg-error-100 text-error-400' : 'bg-primary-3 text-success-400' ">
+                        {{labelData.conversations.percent}}%
+                        <i [class]="labelData.conversations.decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
+                    </span>
+                </div>
+            </div>
+            <div class="flex flex-col justify-center w-full">
+                <span class="text-neutral-1-900 text-body-2 font-regular text-left font-sans py-2">Tin nhắn mới</span>
+                <div class="flex flex-row items-center">
+                    <span class="text-neutral-1-900 text-heading-3 font-semibold font-sans pr-2">{{labelData.newComments.value|number}}</span>
+                    <span class="text-caption-2 font-regular font-sans text-center py-0.5 px-2 rounded-full" 
+                        [class]="labelData.newMessages.decrease ? 'bg-error-100 text-error-400' : 'bg-primary-3 text-success-400' ">
+                        {{labelData.newMessages.percent}}%
+                        <i [class]="labelData.newMessages.decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
+                    </span>
+                </div>
+            </div>
+            <div class="flex flex-col justify-center w-full">
+                <span class="text-neutral-1-900 text-body-2 font-regular text-left font-sans py-2">Bình luận mới</span>
+                <div class="flex flex-row items-center">
+                    <span class="text-neutral-1-900 text-heading-3 font-semibold font-sans pr-2">{{labelData.newComments.value|number}}</span>
+                    <span class="text-caption-2 font-regular font-sans text-center py-0.5 px-2 rounded-full" 
+                        [class]="labelData.newComments.decrease ? 'bg-error-100 text-error-400' : 'bg-primary-3 text-success-400' ">
+                        {{labelData.newComments.percent}}%
+                        <i [class]="labelData.newComments.decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="w-full pb-6">
+            <div echarts [options]="dailyOption" [size]="['auto',245]"></div>
+        </div>
+    </div>
+</div>

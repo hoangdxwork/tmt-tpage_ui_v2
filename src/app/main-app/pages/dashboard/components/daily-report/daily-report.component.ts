@@ -67,6 +67,7 @@ export class DailyReportComponent implements OnInit {
       tooltip:{
         show:true,
         position:'top',
+        trigger: 'axis',
         formatter:'<div class="text-white font-body-2 font-regular text-center"><span class="pb-2">{b}:00<span><br>{c} {a}<br> 5 bình luận<div>',
         borderColor:'transparent',
         backgroundColor:'rgba(0, 0, 0, 0.8)',
