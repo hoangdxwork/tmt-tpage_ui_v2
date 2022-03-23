@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TDSEchartsModule } from 'tds-report';
-import { TDSAvatarModule, TDSCardModule, TDSFlexModule, TDSSelectModule, TDSTabsModule, TDSFormFieldModule, TDSEmptyModule } from 'tmt-tang-ui';
+import { TDSAvatarModule, TDSCardModule, TDSFlexModule, TDSSelectModule, TDSTabsModule, TDSFormFieldModule, TDSEmptyModule, TDSTableModule } from 'tmt-tang-ui';
 import { OverviewComponent } from './components/overview/overview.component';
 import { FacebookReportComponent } from './components/facebook-report/facebook-report.component';
 import { LabelReportComponent } from './components/label-report/label-report.component';
@@ -15,6 +15,11 @@ import { DailyReportComponent } from './components/daily-report/daily-report.com
 import { StaffReportComponent } from './components/staff-report/staff-report.component';
 import { ProductReportComponent } from './components/product-report/product-report.component';
 import { ConnectPageReportComponent } from './components/connect-page-report/connect-page-report.component';
+import { DashboardOverviewComponent } from './components/dashboard-overview/dashboard-overview.component';
+import { DashboardFacebookReportComponent } from './components/dashboard-facebook-report/dashboard-facebook-report.component';
+import { DashboardTagReportComponent } from './components/dashboard-tag-report/dashboard-tag-report.component';
+import { DashboardRevenueReportComponent } from './components/dashboard-revenue-report/dashboard-revenue-report.component';
+import { DashboardDailyReportComponent } from './components/dashboard-daily-report/dashboard-daily-report.component';
 
 
 @NgModule({
@@ -28,7 +33,12 @@ import { ConnectPageReportComponent } from './components/connect-page-report/con
     DailyReportComponent,
     StaffReportComponent,
     ProductReportComponent,
-    ConnectPageReportComponent
+    ConnectPageReportComponent,
+    DashboardOverviewComponent,
+    DashboardFacebookReportComponent,
+    DashboardTagReportComponent,
+    DashboardRevenueReportComponent,
+    DashboardDailyReportComponent
   ],
   imports: [
     CommonModule,
@@ -44,7 +54,8 @@ import { ConnectPageReportComponent } from './components/connect-page-report/con
     TDSAvatarModule,
     TDSSelectModule,
     TDSFormFieldModule,
-    TDSEmptyModule
+    TDSEmptyModule,
+    TDSTableModule
   ]
 })
 export class DashboardModule { }
