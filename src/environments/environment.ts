@@ -5,16 +5,16 @@
 export const environment = {
   production: false,
   urlLogin:'/account/login',
-  apiApp:"https://test.tpos.dev/",
+  apiApp:"https://demoprod01.tpos.vn",
   apiAccount:{
-    signInPassword:"token",
-    signInFacebook:"sign-in/facebook",
-    signInGoogle:"sign-in/google",
-    facebookIntegration:"social-network/facebook/integration",
-    googleIntegration:"social-network/google/integration",
-    signInVerifyOtpsms:"app-user/reset-password/verify-otpsms",
-    refreshToken:"sign-in/refresh-token",
-    userInit:"app-user/init"    
+    signInPassword:"/token",
+    signInFacebook:"/sign-in/facebook",
+    signInGoogle:"/sign-in/google",
+    facebookIntegration:"/social-network/facebook/integration",
+    googleIntegration:"/social-network/google/integration",
+    signInVerifyOtpsms:"/app-user/reset-password/verify-otpsms",
+    refreshToken:"/sign-in/refresh-token",
+    userInit:"/app-user/init"    
   },
 };
 

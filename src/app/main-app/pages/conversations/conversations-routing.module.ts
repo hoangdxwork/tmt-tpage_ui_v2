@@ -6,12 +6,7 @@ import { ConversationInboxComponent } from './conversation-inbox/conversation-in
 import { ConversationPostComponent } from './conversation-post/conversation-post.component';
 
 const routes: Routes = [
-  {
-    path: '',
-    redirectTo: '/all',
-    pathMatch: 'full',
-  },
-  {
+    {
     path: 'all',
     component: ConversationAllComponent
   },
