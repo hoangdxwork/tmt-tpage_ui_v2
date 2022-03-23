@@ -11,7 +11,7 @@ import { PageLoadingService } from './shared/services/page-loading.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'source';
+  title = 'T-Page';
   public isLoaded: boolean = false;
   constructor(
     public libCommon: TCommonService,

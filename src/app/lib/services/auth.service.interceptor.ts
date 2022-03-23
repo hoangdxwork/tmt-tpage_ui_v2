@@ -4,7 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { TAuthService } from './auth.service';
 import { TCommonService } from './common.service';
 import { environment } from 'src/environments/environment';
-import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 import { catchError, filter, switchMap, take } from "rxjs/operators";
 import { TGlobalConfig } from './global-config';
 
@@ -24,7 +24,7 @@ export class TAuthInterceptorService implements HttpInterceptor {
             environment.apiAccount.signInGoogle,
             environment.apiAccount.signInVerifyOtpsms,
         ];
-
+        req = this.addAuthenticationToken(req)
         return next.handle(req).pipe(catchError(err => {
             //Lỗi do đăng nhập chưa xóa dữ liệu trên cache
             if (lstUrlLogin.indexOf(req.url) > -1) {
@@ -75,8 +75,8 @@ export class TAuthInterceptorService implements HttpInterceptor {
                         return next.handle(that.auth.addAuthenticationToken(req));
                     },
                         error => {
-                            that.auth.clearToken("AuthInterceptor");
-                            that.auth.redirectLogin();
+                            // that.auth.clearToken("AuthInterceptor");
+                            // that.auth.redirectLogin();
                             return throwError(error);
                         });
                 }
@@ -87,6 +87,22 @@ export class TAuthInterceptorService implements HttpInterceptor {
                 );
             }
         }));
+    }
+    addAuthenticationToken = (req: HttpRequest<any>): HttpRequest<any> => {
+        if (TDSHelperObject.hasValue(TGlobalConfig.Authen)
+            && TDSHelperObject.hasValue(TGlobalConfig.Authen.token)
+            && TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.access_token)
+        ) {
+            
+            req = req.clone({
+                setHeaders:
+                {
+                    Authorization: "Bearer " + TGlobalConfig.Authen.token?.access_token,
+                }
+            });
+
+        }
+        return req;
     }
 }
 

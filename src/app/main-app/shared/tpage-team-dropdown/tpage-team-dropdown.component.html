@@ -1,0 +1,7 @@
+<div class="w-full py-1">
+    <ng-container *ngIf="data$ | async as data">
+        {{
+            data | json
+        }}
+    </ng-container>
+</div>

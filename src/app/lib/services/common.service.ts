@@ -92,7 +92,7 @@ export class TCommonService {
     //Lấy dữ liệu
     public getData<T>(api: TAPIDTO, param: any): Observable<T> {
         let that = this;
-        return that.connectWithAuthFormURL<T>(api.method, api.url, param);
+        return that.connect<T>(api.method, api.url, param,that.getHeaderJSon());
     }
     //Tạo mới dữ liệu
     public create<T>(api: TAPIDTO, param: any): Observable<T> {
