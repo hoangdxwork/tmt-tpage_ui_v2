@@ -1,7 +1,7 @@
+import { partnerDto } from './../../partner/partner.component';
 import { ModalPaymentComponent } from './../modal-payment/modal-payment.component';
 import { TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
 import { Component, OnInit, Input, ViewContainerRef } from '@angular/core';
-import { partnerDto } from '../partner.component';
 interface orderDTO{
   code: string;
   createdDate: string;

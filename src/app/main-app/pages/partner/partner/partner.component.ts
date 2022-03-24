@@ -1,9 +1,10 @@
-import { ModalBirthdayPartnerComponent } from './modal-birthday-partner/modal-birthday-partner.component';
-import { ModalSendMessageComponent } from './modal-send-message/modal-send-message.component';
-import { ModalConvertPartnerComponent } from './modal-convert-partner/modal-convert-partner.component';
-import { ModalResetPointComponent } from './modal-reset-point/modal-reset-point.component';
-import { ModalEditPartnerComponent } from './modal-edit-partner/modal-edit-partner.component';
-import { ModalAddPartnerComponent } from './modal-add-partner/modal-add-partner.component';
+import { ModalBirthdayPartnerComponent } from './../components/modal-birthday-partner/modal-birthday-partner.component';
+import { ModalSendMessageComponent } from './../components/modal-send-message/modal-send-message.component';
+import { ModalConvertPartnerComponent } from './../components/modal-convert-partner/modal-convert-partner.component';
+import { ModalResetPointComponent } from './../components/modal-reset-point/modal-reset-point.component';
+import { ModalEditPartnerComponent } from './../components/modal-edit-partner/modal-edit-partner.component';
+import { ModalAddPartnerComponent } from './../components/modal-add-partner/modal-add-partner.component';
+
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { number } from 'echarts';
 import { TDSModalService, TDSSafeAny, TDSHelperObject } from 'tmt-tang-ui';

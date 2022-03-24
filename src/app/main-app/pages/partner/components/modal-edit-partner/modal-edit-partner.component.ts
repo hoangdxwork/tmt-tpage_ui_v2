@@ -1,8 +1,8 @@
+import { partnerDto } from './../../partner/partner.component';
 import { ModalAddAddressComponent } from '../modal-add-address/modal-add-address.component';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { TDSModalRef, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
-import { partnerDto } from '../partner.component';
 @Component({
   selector: 'app-modal-edit-partner',
   templateUrl: './modal-edit-partner.component.html',

@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { ModalSampleMessageComponent } from './modal-sample-message/modal-sample-message.component';
+import { ModalSampleMessageComponent } from '../modal-sample-message/modal-sample-message.component';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { TDSModalRef, TDSModalService, TDSHelperObject, TDSTabsCanDeactivateFn } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
