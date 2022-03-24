@@ -14,13 +14,17 @@ export class ReportArticlesComponent implements OnInit {
   option:TDSSafeAny;
   chartOption = TDSChartOptions();
   tableData:Array<TDSSafeAny> = [];
+  pageData:TDSSafeAny[] = [];
+  axisData:TDSSafeAny[] = [];
+  seriesData:TDSSafeAny[] = [];
+  colors:Color[] = [];
+
   selectList = [
     { id:1, name:'App Quản Lí Bán Hàng TPos 1' },
     { id:2, name:'App Quản Lí Bán Hàng TPos 2' },
     { id:3, name:'App Quản Lí Bán Hàng TPos 3' },
   ];
   selectedItem = this.selectList[0].name;
-  pageData:TDSSafeAny[] = [];
   rangeDate = null;
   //#endregion
   constructor() { }
@@ -54,8 +58,8 @@ export class ReportArticlesComponent implements OnInit {
         id:5, reportDate:'06/06/2021', likes:50, views:30, shares:20, comments:10, completeOrders:10
       },
     ];
-    let axisData:TDSSafeAny[] = ['06/06','07/06','08/06','09/06','10/06','11/06'];
-    let seriesData:TDSSafeAny[] = [
+    this.axisData = ['06/06','07/06','08/06','09/06','10/06','11/06'];
+    this.seriesData = [
       {
         name:'Bài viết 1',
         data:[1000,1300,900,1100,700,660]
@@ -69,17 +73,26 @@ export class ReportArticlesComponent implements OnInit {
         data:[500,330,440,356,477,990]
       }
     ];
-    let colors:Color[] = ['#1A6DE3','#28A745','#F59E0B'];
+    this.colors = ['#1A6DE3','#28A745','#F59E0B'];
 
     let component:TDSBarChartComponent = {
-      color: colors,
+      color: this.colors,
       legend:{
         show:true,
-        right:-240,
-        bottom:-8,
         itemHeight:16,
         itemWidth:24,
-        itemGap:-224,
+        itemGap:16,
+        left:'right',
+        top:'bottom',
+        textStyle:{
+          color:'#424752',
+          fontFamily:'Segoe UI',
+          fontSize:12,
+          fontStyle:'normal',
+          lineHeight:16,
+          fontWeight:400,
+          align:'center'
+        }
       },
       grid:{
         left:'5%',
@@ -109,12 +122,19 @@ export class ReportArticlesComponent implements OnInit {
               show:false
             },
             axisLabel:{
-              margin:16
+              margin:16,
+              color:'#6B7280',
+              fontFamily:'Segoe UI',
+              fontWeight:400,
+              fontSize:14,
+              lineHeight:20,
+              fontStyle:'normal',
+              align:'center'
             },
             axisLine:{
               show:false
             },
-            data:axisData
+            data: this.axisData
           }
         ],
         yAxis:[
@@ -122,12 +142,18 @@ export class ReportArticlesComponent implements OnInit {
             interval:500,
             axisLabel:{
               margin:24,
+              color:'#6B7280',
+              fontFamily:'Segoe UI',
+              fontWeight:400,
+              fontSize:14,
+              lineHeight:20,
+              fontStyle:'normal',
               align:'right'
             }
           }
         ]
       },
-      series:this.getSeries(seriesData)
+      series:this.getSeries(this.seriesData)
     }
 
     this.buildChart(component);

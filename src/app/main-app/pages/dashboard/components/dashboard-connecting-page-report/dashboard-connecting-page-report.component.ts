@@ -2,11 +2,11 @@ import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-dashboard-overview',
-  templateUrl: './dashboard-overview.component.html',
-  styleUrls: ['./dashboard-overview.component.scss']
+  selector: 'app-dashboard-connecting-page-report',
+  templateUrl: './dashboard-connecting-page-report.component.html',
+  styleUrls: ['./dashboard-connecting-page-report.component.scss']
 })
-export class DashboardOverviewComponent implements OnInit {
+export class DashboardConnectingPageReportComponent implements OnInit {
   //#region variable
   filterList= [
     {id:1, name:'Tuần này'},
@@ -15,7 +15,7 @@ export class DashboardOverviewComponent implements OnInit {
   currentFilter = this.filterList[0].name;
   labelData:TDSSafeAny;
   //#endregion
-  
+
   constructor() { }
 
   ngOnInit(): void {
@@ -24,21 +24,13 @@ export class DashboardOverviewComponent implements OnInit {
 
   loadData(){
     this.labelData = {
-      customer:{
-        value:25,
+      personalAccounts:{
+        value:150,
         percent:20,
         decrease:false
       },
-      reaction:{
-        value:140000,
-        percent:20
-      },
-      bill:{
-        value:25,
-        percent:20
-      },
-      order:{
-        value:3,
+      fanpages:{
+        value:150,
         percent:20
       },
     }

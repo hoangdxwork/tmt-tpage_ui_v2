@@ -13,7 +13,8 @@ export class ReportLabelsComponent implements OnInit {
 //#region variable
   option:TDSSafeAny;
   chartOption = TDSChartOptions();
-  listOfData:Array<TDSSafeAny> = [];
+  tableData:Array<TDSSafeAny> = [];
+
   selectList = [
     { id:1, name:'App Quản Lí Bán Hàng TPos 1' },
     { id:2, name:'App Quản Lí Bán Hàng TPos 2' },
@@ -30,7 +31,7 @@ export class ReportLabelsComponent implements OnInit {
   }
 
   loadData(){
-    this.listOfData = [
+    this.tableData = [
       {
         id:1, 
         labelName:'Bom hàng', 

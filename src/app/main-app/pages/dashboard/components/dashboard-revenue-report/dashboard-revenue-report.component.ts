@@ -59,11 +59,11 @@ export class DashboardRevenueReportComponent implements OnInit {
       color:this.colors,
       legend:{
         show:true,
-        bottom:0,
-        right:-240,
         itemHeight:16,
         itemWidth:24,
-        itemGap:-220,
+        itemGap:16,
+        left:'right',
+        top:'bottom',
         textStyle:{
           color:'#424752',
           fontFamily:'Segoe UI',
@@ -92,7 +92,8 @@ export class DashboardRevenueReportComponent implements OnInit {
       grid:{
         top:16,
         left:'6%',
-        right:0
+        right:0,
+        bottom:86
       },
       axis:{
         xAxis:[
@@ -149,6 +150,10 @@ export class DashboardRevenueReportComponent implements OnInit {
 
   buildChartDemo(chart : TDSBarChartComponent ){
     this.revenueOption = this.chartOption.BarChartOption(chart,true);
+    let seriesList = this.revenueOption.series as TDSSafeAny[];
+    this.revenueOption.series[seriesList.length-1].itemStyle = {
+      borderRadius:[4,4,0,0]
+    };
   }
 
   getSeries(seriesData:TDSSafeAny[]){

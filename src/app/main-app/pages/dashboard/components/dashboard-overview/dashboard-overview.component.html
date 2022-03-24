@@ -1,10 +1,10 @@
 <div class="bg-white flex flex-col rounded-xl px-4">
-    <div class="flex flex-row items-center justify-between border-b border-neutral-2-200 py-4">
+    <div class="flex flex-row items-center justify-between py-4">
         <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Tổng quan</span>
         <div class="flex flex-row items-center">
             <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị:</span>
             <tds-select valueField="name" textField="name" [ngModel]="currentFilter" [border]="false"
-                [data]="filterList" size="md" class="text-primary-1 text-body-2 font-semibold font-sans w-[120px] truncate ..."
+                [data]="filterList" size="md" class="tds-dashboard-filter w-[120px] truncate ..."
                 (ngModelChange)="onChangeFilter($event)" classIcon="tdsi-arrow-down-fill">
             </tds-select>
         </div>

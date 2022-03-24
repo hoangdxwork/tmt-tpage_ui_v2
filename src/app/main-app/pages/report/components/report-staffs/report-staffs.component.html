@@ -8,7 +8,7 @@
             <div class="flex flex-row items-center w-[300px] mr-2.5">
                 <tds-avatar tdsSrc="assets/images/Avatar-user.png"></tds-avatar>
                 <tds-select valueField="name" textField="name" [ngModel]="selectedItem"
-                [placeholder]="selectedItem" [data]="selectList" [border]="false" class="truncate ... w-[250px]"
+                [placeholder]="selectedItem" [data]="selectList" [border]="false" class="truncate ... w-[250px] tds-report-filter"
                 (ngModelChange)="onChangeSelect($event)" size="md" classIcon="tdsi-arrow-down-fill">
                 </tds-select>
             </div>
@@ -22,8 +22,8 @@
     </div>
 </div>
 
-<div class="bg-white w-full rounded-md pb-2">
-    <tds-table #basicTable [listData]="listOfData" [showPagination]="listOfData.length > 10">
+<div class="bg-white w-full rounded-md">
+    <tds-table #basicTable [listData]="tableData" [showPagination]="false" class="tds-report-table">
         <thead class="text-neutral-1-900 text-body-2 font-semibold font-sans">
               <tr>
                     <th>Page</th>
