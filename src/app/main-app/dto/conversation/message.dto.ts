@@ -1,6 +1,8 @@
 import { MailTemplateDTO } from "../mailtemplate/mail-template.dto";
 import { ProductInnerDTO } from "../product/product.dto";
+import { FacebookGraphCommentMessageTagDTO, FacebookGraphStoryAttachmentDTO, FacebookGraphUserSimpleDTO, FacebookInnerDataListDTO, FacebookInnerListDTO, FacebookInnerUserSimpleDTO, ObjectDataDTO } from "./inner.dto";
 
+// Facebook_Graph_Message
 export interface FacebookGraphMessageDTO {
   id: string;
   message: string;
@@ -11,9 +13,28 @@ export interface FacebookGraphMessageDTO {
   attachments: FacebookInnerDataListDTO<FacebookGraphAttachmentDTO>;
 }
 
-export interface FacebookInnerUserSimpleDTO {
+// Facebook_Graph_Comment
+export interface FacebookGraphCommentDTO {
   id: string;
-  name: string;
+  parent: ObjectDataDTO;
+  is_hidden: boolean;
+  can_hide: boolean;
+  can_remove: boolean;
+  can_like: boolean;
+  can_reply_privately: boolean;
+  comment_count: number;
+  message: string;
+  message_formatted: string;
+  phone: string;
+  user_likes: boolean;
+  created_time: Date;
+
+  /// Đối tượng của comment: post, photo, video
+  object: ObjectDataDTO;
+  from: FacebookGraphUserSimpleDTO;
+  comments: FacebookInnerDataListDTO<FacebookGraphCommentDTO>;
+  attachment: FacebookGraphStoryAttachmentDTO;
+  message_tags: Array<FacebookGraphCommentMessageTagDTO>;
 }
 
 export interface FacebookGraphAttachmentDTO {
@@ -27,46 +48,4 @@ export interface ImageData {
 
 export interface VideoData {
   url: string;
-}
-
-export interface FacebookGraphUserSimpleDTO {
-  id: string;
-  name: string;
-  uid: string;
-}
-
-export interface FacebookInnerListDTO<T> {
-  data: Array<T>;
-}
-
-export interface FacebookInnerDataListDTO<T> {
-  data: Array<T>;
-  paging: FacebookInnerPagingDTO;
-}
-
-export interface FacebookInnerPagingDTO {
-  cursors: FacebookInnerCursorDTO;
-  next: string;
-  previous: string;
-}
-
-export interface FacebookInnerCursorDTO {
-  before: string;
-  after: string;
-}
-
-export interface ObjectDataDTO {
-  id: string;
-}
-
-export interface GenerateMessageDTO {
-  orderIds: Array<string>;
-  saleIds: Array<number>;
-  template: MailTemplateDTO;
-}
-
-export interface AddTemplateMessageDTO {
-  page_id: string;
-  to_id: string;
-  product: ProductInnerDTO;
 }

@@ -209,6 +209,12 @@ export interface TagPartnerDTO {
   tagName: string;
 }
 
+export interface ResRevenueCustomerDTO { // /odata/Partner/OdataService.GetPartnerRevenueById?key=14
+  revenue: number;
+  revenueBegan: number;
+  revenueTotal: number;
+}
+
 export enum PartnerStatus {
   Undefined = -1, // Không xác định
   Normal = 0, // Bình thường

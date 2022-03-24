@@ -5,6 +5,15 @@ import { PartnerCategoryDTO, PartnerDTO, PartnerExtDTO } from '../partner/partne
 import { ProcurementRuleDTO } from '../rule/rule.dto';
 import { StockLocationRouteDTO } from './warehouse.dto';
 
+export interface GetInventoryDTO { // /rest/v1.0/product/getinventory
+  [key: number]: ValueGetInventoryDTO
+}
+
+export interface ValueGetInventoryDTO { // /rest/v1.0/product/getinventory
+  qtyAvailable: number;
+  virtualAvailable: number;
+}
+
 export interface ProductDTO {
   id: number;
   eAN13: string;

@@ -8,7 +8,21 @@ import { StockWarehouseDTO } from '../product/warehouse.dto';
 import { SearchStaffReportDTO } from '../staff/staff.dto';
 import { CRMTeamDTO } from '../team/team.dto';
 
-export interface FastSaleOrderDTO {
+export interface GetSummaryStatusDTO { // /rest/v1.0/fastsaleorder/getsummarystatusfastsaleonline (output)
+  total: number;
+  type: string;
+}
+
+export interface GetSummaryStatusInputDTO {// /rest/v1.0/fastsaleorder/getsummarystatusfastsaleonline (input)
+  dateEnd?: Date;
+  dateStart?: Date;
+  deliveryType: string;
+  searchText: string;
+  tagIds: string;
+  trackingRef: string;
+}
+
+export interface FastSaleOrderDTO { // /odata/FastSaleOrder(10139)?$expand= (GET, PUT, POST)
   id: number;
 
   name: string;
@@ -250,6 +264,15 @@ export interface FastSaleOrderDTO {
   applyPromotion?: boolean;
   timeLock?: number;
   pageName: string;
+}
+
+export interface FastSaleOrderInvoiceOpenResDTO { //  /odata/FastSaleOrder/OdataService.ActionInvoiceOpen
+  success: boolean;
+  warning: string;
+  error: string;
+  errors: Array<string>;
+  orderId?: number;
+  ids: Array<number>;
 }
 
 export interface FastSaleOrderLineDTO {
@@ -519,4 +542,33 @@ export interface FastSaleOrder_ServiceExtraDTO {
   extraMoney?: number;
   /// Thời gian lấy hàng
   orderTime?: Date;
+}
+
+//
+
+export interface PaymentInfoContentDTO { // /odata/FastSaleOrder(10139)/OdataService.GetPaymentInfoJson
+  name: string;
+  journalName: string;
+  amount?: number;
+  currency: string;
+  date: Date;
+  paymentId: number;
+  moveId: number;
+  ref: string;
+  accountPaymentId?: number;
+  paymentPartnerType: string;
+}
+
+export interface HistoryFastSaleOrderDTO { // /odata/FastSaleOrder(51122)/ODataService.Histories
+  id?: number;
+  objectType: string;
+  objectName: string;
+  objectAction: string;
+  objectId: string;
+  content: string;
+  jsonData: string;
+  userName: string;
+  avatar: string;
+  name: string;
+  dateCreated?: Date;
 }
