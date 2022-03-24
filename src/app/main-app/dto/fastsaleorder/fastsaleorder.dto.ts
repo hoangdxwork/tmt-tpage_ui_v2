@@ -8,6 +8,11 @@ import { StockWarehouseDTO } from '../product/warehouse.dto';
 import { SearchStaffReportDTO } from '../staff/staff.dto';
 import { CRMTeamDTO } from '../team/team.dto';
 
+export interface GetSummaryStatusDTO { // /rest/v1.0/fastsaleorder/getsummarystatusfastsaleonline
+  total: number;
+  type: string;
+}
+
 export interface FastSaleOrderDTO {
   id: number;
 

@@ -1,3 +1,4 @@
+import { number } from "echarts";
 import { AccountDTO, AccountJournalDTO } from "../account/account.dto";
 import { PartnerCityDTO, PartnerDistrictDTO, PartnerDTO, PartnerWardDTO, ResCurrencyDTO } from "../partner/partner.dto";
 import { StockWarehouseDTO } from "../product/warehouse.dto";
@@ -59,4 +60,23 @@ export interface CompanyDTO {
   quatityDecimal?: number;
   extRegexPhone: string;
   imageUrl: string;
+}
+
+export interface ResCompanyCurrentDTO { // /api/common/getcompanycurrent
+  companyId: number;
+  partnerId?: number;
+  productId?: number;
+  companyName: string;
+  quantityDecimal: number;
+  dateServer: Date;
+  configs: string;
+  baseUrlShip: string;
+  requestLimit: number;
+  symbolPrice: string;
+  roundingPrice?: number;
+  isMultiCompany: boolean;
+  defaultWarehouseId?: number;
+  shipDefault?: number;
+  weightDefault?: number;
+  defaultWarehouseName: string;
 }
