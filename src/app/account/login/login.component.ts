@@ -71,12 +71,15 @@ export class LoginComponent implements OnInit {
     this.authen.signInPassword(phoneNumber, password)
       .subscribe(
         data => {
+          setTimeout(() => {
+            this.isSubmit = false;
+            this.loader.hidden();
+          }, 100);
           that.router.navigate([that.returnUrl]);
-          this.isSubmit = false;
-          this.loader.hidden();
+       
         },
         (error: TDSSafeAny) => {
-          this.message.error(error.error.message);
+          this.message.error("Tài khoản hoặc mật khẩu không đúng");
           this.isSubmit = false;
           this.loader.hidden();
         }
