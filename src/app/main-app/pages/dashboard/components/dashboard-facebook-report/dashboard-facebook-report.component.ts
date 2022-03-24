@@ -56,11 +56,11 @@ export class DashboardFacebookReportComponent implements OnInit {
       color:this.colors,
       legend:{
         show:true,
-        bottom:0,
-        right:-240,
         itemHeight:16,
         itemWidth:24,
-        itemGap:-220,
+        itemGap:16,
+        top:'bottom',
+        left:'right',
         textStyle:{
           color:'#2C333A',
           fontFamily:'Segoe UI',
@@ -87,9 +87,10 @@ export class DashboardFacebookReportComponent implements OnInit {
         }
       },
       grid:{
-        top:16,
+        top:24,
         left:'6%',
-        right:0
+        right:0,
+        bottom:86
       },
       axis:{
         xAxis:[
@@ -137,6 +138,13 @@ export class DashboardFacebookReportComponent implements OnInit {
 
   buildChartDemo(chart : TDSBarChartComponent ){
     this.fbReportOption = this.chartOption.BarChartOption(chart);
+    let seriesList = this.fbReportOption.series as any[];
+    seriesList.forEach(series => {
+      series.itemStyle = {
+        borderRadius:[4,4,0,0]
+      };
+    });
+    this.fbReportOption.series = seriesList;
   }
 
   getSeries(seriesData:TDSSafeAny[]){

@@ -12,7 +12,10 @@ export class ReportStaffsComponent implements OnInit {
 //#region variable
   option:TDSSafeAny;
   chartOption = TDSChartOptions();
-  listOfData:Array<TDSSafeAny> = [];
+  tableData:Array<TDSSafeAny> = [];
+  seriesData:TDSSafeAny[] = [];
+  colors:Color[] = [];
+
   selectList = [
     { id:1, name:'App Quản Lí Bán Hàng TPos 1' },
     { id:2, name:'App Quản Lí Bán Hàng TPos 2' },
@@ -21,6 +24,7 @@ export class ReportStaffsComponent implements OnInit {
   selectedItem = this.selectList[0].name;
   rangeDate = null;
   //#endregion
+  
   constructor() { }
 
   ngOnInit(): void {
@@ -28,7 +32,7 @@ export class ReportStaffsComponent implements OnInit {
   }
 
   loadData(){
-    this.listOfData = [
+    this.tableData = [
       {
         id:1, name:'Nguyễn Bính', imageURL:'assets/images/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
       },
@@ -46,7 +50,7 @@ export class ReportStaffsComponent implements OnInit {
       },
     ];
 
-    let seriesData:TDSSafeAny[] = [
+    this.seriesData = [
       {
         name:'Nguyễn Bính',
         value:80
@@ -68,18 +72,26 @@ export class ReportStaffsComponent implements OnInit {
         value:30
       }
     ];
-    let colors:Color[] = ['#2684FF','#28A745','#FF8900','#0C9AB2','#FFC400'];
+    this.colors = ['#2684FF','#28A745','#FF8900','#0C9AB2','#FFC400'];
 
     let component:TDSPieChartComponent = {
-      color: colors,
+      color: this.colors,
       legend:{
         show:true,
         itemHeight:16,
         itemWidth:24,
+        itemGap:16,
         top:'bottom',
-        width: 1800,
-        itemGap:-150,
-        left:'20%'
+        left:'center',
+        textStyle:{
+          color:'#424752',
+          fontFamily:'Segoe UI',
+          fontSize:12,
+          fontStyle:'normal',
+          lineHeight:16,
+          fontWeight:400,
+          align:'center'
+        }
       },
       tooltip:{
         show:true,
@@ -95,11 +107,14 @@ export class ReportStaffsComponent implements OnInit {
         {
           type:'pie',
           center:['50%','40%'],
-          data:seriesData,
+          data: this.seriesData,
           avoidLabelOverlap:false,
           label:{
-            show:false,
+            show:true,
             position:'center',
+            padding:[40,30],
+            backgroundColor:'#F6FBFF',
+            borderRadius:999,
             rich: {
               header:{
                 color:'#2C333A',
@@ -140,6 +155,9 @@ export class ReportStaffsComponent implements OnInit {
               }
             }
           },
+          emphasis:{
+            scale:false
+          },
         }
       ]
     }
@@ -155,7 +173,6 @@ export class ReportStaffsComponent implements OnInit {
 
   buildChart(chart:TDSPieChartComponent){
     this.option = this.chartOption.DonutChartOption(chart,150,120);
-    this.option.series[0].LegendHoverLink = false;
   }
 
   onChangeSelect(data:any){

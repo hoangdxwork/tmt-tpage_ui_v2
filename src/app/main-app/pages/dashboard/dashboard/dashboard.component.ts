@@ -1,12 +1,10 @@
-import { vi_VN, TDSSafeAny } from 'tmt-tang-ui';
-import { formatPercent } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { TDSBarChartComponent, TDSChartOptions, TDSLineChartComponent, TDSPieChartComponent, TruncateString } from 'tds-report';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class DashboardComponent implements OnInit {
   

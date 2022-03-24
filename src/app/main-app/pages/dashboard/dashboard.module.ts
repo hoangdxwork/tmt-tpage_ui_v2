@@ -20,6 +20,9 @@ import { DashboardFacebookReportComponent } from './components/dashboard-faceboo
 import { DashboardTagReportComponent } from './components/dashboard-tag-report/dashboard-tag-report.component';
 import { DashboardRevenueReportComponent } from './components/dashboard-revenue-report/dashboard-revenue-report.component';
 import { DashboardDailyReportComponent } from './components/dashboard-daily-report/dashboard-daily-report.component';
+import { DashboardStaffReportComponent } from './components/dashboard-staff-report/dashboard-staff-report.component';
+import { DashboardConnectingPageReportComponent } from './components/dashboard-connecting-page-report/dashboard-connecting-page-report.component';
+import { DashboardProductReportComponent } from './components/dashboard-product-report/dashboard-product-report.component';
 
 
 @NgModule({
@@ -38,7 +41,10 @@ import { DashboardDailyReportComponent } from './components/dashboard-daily-repo
     DashboardFacebookReportComponent,
     DashboardTagReportComponent,
     DashboardRevenueReportComponent,
-    DashboardDailyReportComponent
+    DashboardDailyReportComponent,
+    DashboardStaffReportComponent,
+    DashboardConnectingPageReportComponent,
+    DashboardProductReportComponent
   ],
   imports: [
     CommonModule,
