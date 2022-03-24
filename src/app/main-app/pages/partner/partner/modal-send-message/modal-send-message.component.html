@@ -1,0 +1,147 @@
+<div class="rounded-xl border border-light-50">
+    <tds-tabset class="" [onCanDeactivate]="canDeactivate">
+        <tds-tab *ngFor="let tab of tabs" [title]="tab.name">
+            <!-- Trang gửi tin nhắn facbook -->
+            <form *ngIf="tab.id==0 && !isTableSendMessageFacebook" [formGroup]="formSendMessageFacebook"
+                (ngSubmit)="submitConvert()" class="flex flex-col gap-y-4">
+                <tds-form-field>
+                    <tds-label>Tiêu đề</tds-label>
+                    <input tdsInput autocomplete="off" placeholder="Nhập tiêu đề" formControlName="title" />
+                </tds-form-field>
+                <tds-form-field>
+                    <tds-label>Nội dung</tds-label>
+                    <textarea tdsInput formControlName="content" placeholder="Nhập nội dung"></textarea>
+                </tds-form-field>
+            </form>
+            <div *ngIf="tab.id==0 && isTableSendMessageFacebook ">
+                <tds-table #basicTable [listData]="listSendMessageFacebook" [showPagination]="false">
+                    <thead>
+                        <tr>
+                            <th>Tên khách hàng</th>
+                            <th>Tên Facebook</th>
+                            <th>Nội dung tin nhắn</th>
+                            <th>Page Facebook</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-template ngFor let-data [ngForOf]="basicTable.data">
+                            <tr>
+                                <td>{{ data.namePartner }}</td>
+                                <td>{{ data.nameFacebook }}</td>
+                                <td>{{ data.contentMessage }}</td>
+                                <td>
+                                    <div>
+                                        <tds-button-split color="secondary">
+                                            <span class="js-label truncate">
+                                                <tds-avatar class="bg-accent-4 mr-2 text-white" size="sm"
+                                                    tdsSrc="https://randomuser.me/api/portraits/women/68.jpg">
+                                                </tds-avatar> {{data.pageFacebook}}
+                                            </span>
+                                            <div class="js-content">
+                                                <button tds-button-menu-item>Item 0</button>
+                                                <button tds-button-menu-item>Item 2</button>
+                                            </div>
+                                        </tds-button-split>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </tbody>
+                </tds-table>
+            </div>
+            <!-- Trang gửi tin nhắn SMS -->
+            <form *ngIf="tab.id==1 && !isTableSendMessageSMS" [formGroup]="formSendMessageSMS"
+                (ngSubmit)="submitConvert()" class="flex flex-col gap-y-4">
+                <tds-form-field>
+                    <tds-label>Nội dung</tds-label>
+                    <textarea tdsInput formControlName="content" placeholder="Nhập nội dung"></textarea>
+                </tds-form-field>
+            </form>
+            <div *ngIf="tab.id==1 && isTableSendMessageSMS" class="flex flex-col gap-y-4">
+                <tds-form-field>
+                    <tds-label>Dịch vụ</tds-label>
+                    <tds-select valueField="id" textField="name" placeholder='Chọn dịch vụ'
+                        [allowClear]="true" [data]="dvSMS">
+                    </tds-select>
+                </tds-form-field>
+                <tds-table #basicTable [listData]="listSendMessageFacebook" [showPagination]="false">
+                    <thead>
+                        <tr>
+                            <th>Tên khách hàng</th>
+                            <th>Số điện thoại</th>
+                            <th>Nội dung tin nhắn</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-template ngFor let-data [ngForOf]="basicTable.data">
+                            <tr>
+                                <td>{{ data.namePartner }}</td>
+                                <td>{{ data.phone}}</td>
+                                <td>{{ data.contentMessage }}</td>
+                            </tr>
+                        </ng-template>
+                    </tbody>
+                </tds-table>
+            </div>
+        </tds-tab>
+    </tds-tabset>
+    <div class="flex justify-between px-4 pb-4" *ngIf="indexTab == 0 && !isTableSendMessageFacebook">
+        <div class="">
+            <tds-tag class="mr-2" status='secondary' type="outline" rounded="rounded-full">Tên KH</tds-tag>
+            <tds-tag class="mr-2" status='secondary' type="outline" rounded="rounded-full">Mã KH</tds-tag>
+            <tds-tag class="mr-2" status='secondary' type="outline" rounded="rounded-full">Điện thoại KH</tds-tag>
+            <tds-tag status='secondary' type="outline" rounded="rounded-full">Dịa chỉ KH</tds-tag>
+        </div>
+        <div>
+            <button tds-button color="secondary" (click)="showModalSampleMessage()">
+                <span class="flex items-center">
+                    <i class="tdsi-conversation-fill text-lg leading-none mr-2"></i>Nội dung mẫu
+                </span>
+            </button>
+        </div>
+    </div>
+    <div class="flex justify-between px-4 pb-4" *ngIf="indexTab == 1 && !isTableSendMessageSMS">
+        <div class="">
+            <tds-tag class="mr-2" status='secondary' type="outline" rounded="rounded-full">Tên KH</tds-tag>
+            <tds-tag class="mr-2" status='secondary' type="outline" rounded="rounded-full">Mã KH</tds-tag>
+            <tds-tag class="mr-2" status='secondary' type="outline" rounded="rounded-full">Điện thoại KH</tds-tag>
+            <tds-tag status='secondary' type="outline" rounded="rounded-full">Dịa chỉ KH</tds-tag>
+        </div>
+        <div>
+            <button tds-button color="secondary" (click)="showModalSampleMessage()">
+                <span class="flex items-center">
+                    <i class="tdsi-conversation-fill text-lg leading-none mr-2"></i>Nội dung mẫu
+                </span>
+            </button>
+        </div>
+    </div>
+</div>
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button *ngIf="indexTab == 0 && !isTableSendMessageFacebook" class="mr-2" type="button" color="secondary"
+        (click)="close()">Đóng</button>
+    <button tds-button *ngIf=" indexTab == 0 && !isTableSendMessageFacebook" type="submit" color="primary"
+        (click)="save()">
+        Bước tiếp theo
+    </button>
+    <button tds-button *ngIf="indexTab == 0 &&isTableSendMessageFacebook" class="mr-2" type="button" color="secondary"
+        (click)="cancel()">Hủy</button>
+    <button tds-button *ngIf="indexTab == 0 && isTableSendMessageFacebook" type="submit" color="primary"
+        (click)="sendMessage()">
+        <span class="flex items-center">
+            <i class="tdsi-send-fill mr-2"></i>Gửi tin nhắn
+        </span>
+    </button>
+    <button tds-button *ngIf="indexTab == 1 && !isTableSendMessageSMS" class="mr-2" type="button" color="secondary"
+        (click)="close()">Đóng</button>
+    <button tds-button *ngIf=" indexTab == 1 && !isTableSendMessageSMS" type="submit" color="primary" (click)="save()">
+        Bước tiếp theo
+    </button>
+    <button tds-button *ngIf="indexTab == 1 &&isTableSendMessageSMS" class="mr-2" type="button" color="secondary"
+        (click)="cancel()">Hủy</button>
+    <button tds-button *ngIf="indexTab == 1 && isTableSendMessageSMS" type="submit" color="primary"
+        (click)="sendMessage()">
+        <span class="flex items-center">
+            <i class="tdsi-send-fill mr-2"></i>Gửi tin nhắn
+        </span>
+    </button>
+</div>
