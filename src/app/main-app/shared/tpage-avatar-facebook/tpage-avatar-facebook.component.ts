@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, OnInit, SimpleChanges } from '@angular/core';
-import { ButtonSize, TDSSafeAny } from 'tmt-tang-ui';
+import { ButtonSize, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 
 @Component({
   selector: 'tpage-avatar-facebook',
@@ -26,7 +26,8 @@ export class TpageAvatarFacebookComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.url = `https://graph.facebook.com/${this.fbid}/picture?type=large&access_token=${this.token}`;
+   this.buildUrl(this.fbid,this.token);
+  
     // this.imageService.getImage(url).subscribe(res => {
     //   this.nativeElement.style.setProperty('background-image', `url('${res}')`);
 
@@ -36,9 +37,16 @@ export class TpageAvatarFacebookComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["fbid"] && !changes["fbid"].firstChange) {
-      this.url = `https://graph.facebook.com/${changes["fbid"].currentValue}/picture?type=large&access_token=${this.token}`;
-      // this.nativeElement.style.setProperty('background-image', `url('${url}')`);
+      // this.url = `https://graph.facebook.com/${changes["fbid"].currentValue}/picture?type=large&access_token=${this.token}`;
+      this.buildUrl(changes["fbid"].currentValue,this.token);
     }
   }
-
+  buildUrl(fbid:string,token:string){
+    if(TDSHelperString.hasValueString(fbid) && TDSHelperString.hasValueString(token))
+    {
+      this.url = `https://graph.facebook.com/${fbid}/picture?type=large&access_token=${token}`;
+    }else{
+      this.url ='';
+    }
+  }
 }
