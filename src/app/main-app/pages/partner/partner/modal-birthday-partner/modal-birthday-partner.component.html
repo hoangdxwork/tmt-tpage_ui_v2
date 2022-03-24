@@ -1,0 +1,67 @@
+<div>
+    <div class="text-body-2 to-neutral-900 rounded-md border border-neutral-2-200 flex flex-col gap-y-2.5 p-4">
+        <div class="flex justify-between">
+            <h1 class="text-header-1 font-semibol flex items-center">Tổng: 3</h1>
+            <div class="flex gap-x-2">
+                <button tds-button color="primary" [disabled]="setOfCheckedId.size==0">
+                    <span class="flex items-center">
+                        <i class="tdsi-send-fill mr-2"></i>Gửi tin nhắn
+                    </span>
+                </button>
+                <button tds-button color="secondary" size="md">
+                    <span class="flex items-center">
+                        <i class="tdsi-excel-fill text-lg leading-none mr-2 text-neutral-500"></i>Xuất Excel
+                    </span>
+                </button>
+                <tds-button-group>
+                    <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
+                        <span class="flex items-center">
+                            Hôm nay <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                        </span>
+                    </button>
+                    <tds-dropdown-menu #menu="tdsDropdownMenu">
+                        <div class="w-full">
+                            <div tds-dropdown-item>
+                                <a> Item 1 </a>
+                            </div>
+                            <div tds-dropdown-item>
+                                <a> Item 2 </a>
+                            </div>
+                        </div>
+                    </tds-dropdown-menu>
+                </tds-button-group>
+            </div>
+        </div>
+        <div>
+            <tds-table #rowSelectionTable showSizeChanger [listData]="listOfData" [showPagination]="false"
+                (currentPageDataChange)="onCurrentPageDataChange($event)">
+                <thead>
+                    <tr>
+                        <th class="w-24" [(checked)]="checked"
+                            [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)">
+                        </th>
+                        <th>Khách hàng</th>
+                        <th>Điện thoại</th>
+                        <th>Địa chỉ</th>
+                        <th>Ngày sinh</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd'>
+                        <tr>
+                            <td [checked]="setOfCheckedId.has(data.id)"
+                                (checkedChange)="onItemChecked(data.id, $event)"></td>
+                            <td>{{ data.namePartner }}</td>
+                            <td>{{ data.phone }}</td>
+                            <td>{{ data.address }}</td>
+                            <td>{{ data.birthday }}</td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </tds-table>
+        </div>
+    </div>
+    <div class="w-full flex justify-end p-4" *tdsModalFooter>
+        <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">Đóng</button>
+    </div>
+</div>
