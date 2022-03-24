@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { environment } from 'src/environments/environment';
@@ -14,19 +15,22 @@ import { TPageHelperService } from '../services/helper.service';
 })
 export class LayoutComponent implements OnInit {
   userInit!: UserInitDTO;
-
+  currentTeam!: CRMTeamDTO | null;
   lstMenu!: TDSSafeAny;
   inlineCollapsed = false;
-  shopId!: TDSSafeAny;
-  lstShop!: Array<TDSSafeAny>;
-  constructor(private auth: TAuthService, public crmService: CRMTeamService) { }
+  params!: TDSSafeAny;
+  constructor(private auth: TAuthService, public crmService: CRMTeamService, private activatedRoute: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
     this.crmService.onChangeTeam().subscribe(res => {
-      this.lstMenu = this.setMenu(res);      
+      this.lstMenu = this.setMenu(res);
+      this.currentTeam = res;
     })
     this.getAllFacebook();
-
+    this.loadUserInfo();
+    this.activatedRoute.queryParams.subscribe(res => {
+      this.params = res;
+    })
   }
   onSelectShopChange(event: TDSSafeAny) {
 
@@ -46,15 +50,15 @@ export class LayoutComponent implements OnInit {
           let team!: CRMTeamDTO;
           this.crmService.onUpdateListFaceBook(dataTeam);
           this.crmService.getCacheTeamId().subscribe((teamId: string | null) => {
-           const team = TPageHelperService.findTeamById(dataTeam.Items,teamId,true)
-           this.crmService.onUpdateTeam(team);
+            const team = TPageHelperService.findTeamById(dataTeam.Items, teamId, true)
+            this.crmService.onUpdateTeam(team);
           })
         } else {
           this.crmService.onUpdateListFaceBook(null);
           this.crmService.onUpdateTeam(null);
         }
       }, err => {
-        
+
         this.crmService.onUpdateListFaceBook(null);
         this.crmService.onUpdateTeam(null);
       })
@@ -89,7 +93,7 @@ export class LayoutComponent implements OnInit {
             'type': 'message',
           },
         },
-        hidden:hidden,
+        hidden: hidden,
       },
 
       {
@@ -102,7 +106,7 @@ export class LayoutComponent implements OnInit {
             'type': 'comment',
           },
         },
-        hidden:hidden,
+        hidden: hidden,
       },
 
       {
@@ -115,73 +119,65 @@ export class LayoutComponent implements OnInit {
             'type': 'post',
           },
         },
-        hidden:hidden,
+        hidden: hidden,
       },
 
       {
         name: "Đơn hàng",
         icon: "tdsi-bag-fill",
         link: `/order`,
-        linkProps: {
-          queryParams: {
-            'teamId': data?.Id,
-          },
-        },
+
       },
       {
         name: "Phiếu bán hàng",
         icon: "tdsi-dataset-fill",
         link: `/bill`,
-        linkProps: {
-          queryParams: {
-            'teamId': data?.Id,
-          },
-        },
+
       },
       {
         name: "Khách hàng",
         icon: "tdsi-user-fill",
         link: `/partner`,
-        linkProps: {
-          queryParams: {
-            'teamId': data?.Id,
-          },
-        },
+
       },
       {
         name: "Kênh kết nối",
         icon: "tdsi-facebook-2-fill",
         link: `/facebook`,
-        linkProps: {
-          queryParams: {
-            'teamId': data?.Id,
-          },
-        },
+
       },
       {
         name: "Thống kê",
         icon: "tdsi-chart-pie-fill",
         link: `/report`,
-        linkProps: {
-          queryParams: {
-            'teamId': data?.Id,
-          },
-        },
+
       },
       {
         name: "Cấu hình",
         icon: "tdsi-gear-line",
         link: `/configs`,
-        linkProps: {
-          queryParams: {
-            'teamId': data?.Id,
-          },
-        },
+
       }
     ];
   }
 
   onClickItem() {
     sessionStorage.removeItem('reportItem')
+  }
+  //load thông tin user
+  loadUserInfo() {
+    this.auth.getUserInit().subscribe(res => {
+      this.userInit = res || {};
+    })
+  }
+  onClickTeam(data: CRMTeamDTO) {
+    if (this.params?.teamId) {
+      let url = this.router.url.split("?")[0];
+      const params = { ...this.params };
+      params.teamId = data.Id;
+      this.router.navigate([url], { queryParams: params })
+    } else {
+      this.crmService.onUpdateTeam(data);
+    }
   }
 }
