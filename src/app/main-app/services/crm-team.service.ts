@@ -12,13 +12,16 @@ import { BaseSevice } from './base.service';
   providedIn: 'root'
 })
 export class CRMTeamService extends BaseSevice {
+
   prefix: string = "odata";
   table: string = "CRMTeam";
   baseRestApi: string = "rest/v1.0/crmteam";
   private readonly __keyCacheTeamId = 'nearestTeamId';
+
   private listFaceBook$ = new ReplaySubject<PagedList2<CRMTeamDTO> | null>(1);
   private currentTeam$ = new ReplaySubject<CRMTeamDTO | null>(1);
   private _currentTeam!: CRMTeamDTO | null;
+
   constructor(private apiService: TCommonService, private caheApi: THelperCacheService) {
     super(apiService)
   }
@@ -30,15 +33,19 @@ export class CRMTeamService extends BaseSevice {
     }
     return this.apiService.getData<PagedList2<CRMTeamDTO>>(api, null);
   }
+
   onChangeListFaceBook() {
     return this.listFaceBook$.asObservable();
   }
+
   onUpdateListFaceBook(data: PagedList2<CRMTeamDTO> | null) {
     this.listFaceBook$.next(data);
   }
+
   getCurrentTeam(): CRMTeamDTO | null {
     return this._currentTeam;
   }
+
   // xử lý teasm
   getCacheTeamId(): Observable<string | null> {
     return new Observable(obs => {
