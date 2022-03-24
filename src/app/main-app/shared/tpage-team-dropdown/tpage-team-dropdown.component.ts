@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
@@ -12,13 +13,31 @@ import { CRMTeamService } from '../../services/crm-team.service';
   styleUrls: ['./tpage-team-dropdown.component.scss']
 })
 export class TpageTeamDropdownComponent implements OnInit {
-  data$!:Observable<PagedList2<CRMTeamDTO> | null>;
+  data$!: Observable<PagedList2<CRMTeamDTO> | null>;
+  currentTeam!: CRMTeamDTO | null;
+  visible=false;
+  @Output() readonly tdsClickItem = new EventEmitter<CRMTeamDTO>();
   constructor(private crmTeamService: CRMTeamService) { }
 
   ngOnInit(): void {
     this.loadListTeam()
+    this.crmTeamService.onChangeTeam().subscribe(res => {
+      this.currentTeam = res;
+    });
+    
   }
-  loadListTeam(){
+  loadListTeam() {
     this.data$ = this.crmTeamService.onChangeListFaceBook();
+  }
+  onClick(e: MouseEvent, data: CRMTeamDTO) {
+    e.stopPropagation();
+    if (data.Id == this.currentTeam?.Id) {     
+      return
+    }else{
+      this.visible =false;
+      this.tdsClickItem.emit(data);
+    }    
+    
+   
   }
 }

@@ -1,55 +1,33 @@
 <div class="w-full h-full text-neutral-1-900 dark:text-d-neutral-1-900 relative overflow-hidden flex flex-col">
     <div class="w-full dark">
-        <tds-header urlLogoText='assets/images/tpos-text.svg' 
-        >
+        <tds-header urlLogoText='assets/images/tpos-text.svg'>
             <div class="inline-flex tds-header-toolbar-right items-center">
-                <button tds-button-icon color="primary" class="rounded-full mr-2">
-                    <span class="flex items-center">
-                        <i class="tdsi-plus-fill text-white text-xl leading-5"></i>
-                    </span>
-                </button>
-                <button tds-flat-button-icon size="md" class="mr-2">
-                    <span class="flex items-center">
-                        <i class="tdsi-info-line text-xl leading-5"></i>
-                    </span>
-                </button>
-                <button tds-flat-button-icon size="md" class="mr-2">
+           
+                <div>
+                    <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)"></tpage-team-dropdown>
+                </div>
+              
+                <button tds-flat-button-icon size="md"  class="ml-2 mr-4">
                     <span class="flex items-center">
                         <i class="tdsi-bell-line text-xl leading-5"></i>
                     </span>
                 </button>
-                <button tds-flat-button-icon size="md" class="mr-2">
-                    <span class="flex items-center">
-                        <i class="tdsi-expand-line text-xl leading-5"></i>
-                    </span>
-                </button>
-                <div class="w-40">
-                    
-                    <!-- <tds-select [border]="false" [allowSearch]="false" valueField="id" textField="name" [data]="lstShop" [(ngModel)]="shopId" (selectChange)="onSelectShopChange($event)">
-                    </tds-select> -->
-                    <tds-avatar class="cursor-pointer" tds-dropdown [tdsDropdownMenu]="dropdownTeam" trigger="click" [tdsSrc]="userInit ? userInit.avatarUrl :''">
-                    </tds-avatar>
-                    <tds-dropdown-menu #dropdownTeam="tdsDropdownMenu">
-                        <div class="w-56">
-                            <tpage-team-dropdown></tpage-team-dropdown>
-                        </div>
-                    </tds-dropdown-menu>
-                </div>
                 <div class="inline-flex pl-4">
-                    <tds-avatar class="cursor-pointer" tds-dropdown [tdsDropdownMenu]="dropdownAvatar" trigger="click" [tdsSrc]="userInit ? userInit.avatarUrl :''">
+                    <tds-avatar class="cursor-pointer" tds-dropdown [tdsDropdownMenu]="dropdownAvatar" trigger="click"
+                        [tdsSrc]="userInit ? userInit.Avatar :''">
                     </tds-avatar>
                     <tds-dropdown-menu #dropdownAvatar="tdsDropdownMenu">
                         <div class="w-56">
                             <div tds-dropdown-item>
                                 <div class="flex w-full">
-                                    <tds-avatar [shape]="'square'" [tdsSrc]="userInit ? userInit.avatarUrl :''">
+                                    <tds-avatar [shape]="'square'" [tdsSrc]="userInit?.Avatar">
                                     </tds-avatar>
                                     <div class="flex flex-auto flex-col ml-2">
                                         <div class="text-body-2 font-semibold">
-                                            TShop
+                                            {{userInit?.Name}}
                                         </div>
                                         <div class="text-neutral-1-600 text-caption-1 font-regular">
-                                            Admin
+                                            {{userInit?.UserName}}
                                         </div>
                                     </div>
                                 </div>
@@ -70,13 +48,15 @@
                     </tds-dropdown-menu>
                 </div>
             </div>
-         
-        
+
+
         </tds-header>
     </div>
     <div class="w-full h-full flex-auto flex overflow-hidden">
-        <div class="h-full flex-shrink overflow-hidden" [style.min-width.px]="!inlineCollapsed ? 260 : 64" [style.width.px]="!inlineCollapsed ? 260 : 64">
-            <tds-menu [data]="lstMenu" [mode]="'light'" (onOpenChange)="onOpenChange($event)" (onClickItem)="onClickItem()">
+        <div class="h-full flex-shrink overflow-hidden" [style.min-width.px]="!inlineCollapsed ? 260 : 64"
+            [style.width.px]="!inlineCollapsed ? 260 : 64">
+            <tds-menu [data]="lstMenu" [mode]="'light'" (onOpenChange)="onOpenChange($event)"
+                (onClickItem)="onClickItem()">
             </tds-menu>
         </div>
         <div class="flex flex-auto h-full overflow-hidden">
@@ -88,4 +68,3 @@
     </div>
     <!--  -->
 </div>
-
