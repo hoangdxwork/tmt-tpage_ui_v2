@@ -21,6 +21,7 @@ export interface CRMActivityDTO {
   typeId: ActivityType;
 }
 
+
 export enum ActivityType {
   All = -1,
   General = 0,
