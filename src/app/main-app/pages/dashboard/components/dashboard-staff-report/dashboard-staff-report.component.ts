@@ -105,6 +105,10 @@ export class DashboardStaffReportComponent implements OnInit {
           emphasis:{
             scale:false
           },
+          itemStyle:{
+            borderWidth:2,
+            borderColor:'#fff',
+          },
           data: this.staffsData
         }
       ]
