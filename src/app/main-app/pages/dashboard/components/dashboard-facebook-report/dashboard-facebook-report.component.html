@@ -12,29 +12,29 @@
     <div class="flex flex-col items-center">
         <div class="flex flex-row items-center justify-center w-full divide-x py-4">
             <div class="flex flex-col items-center justify-center w-full">
-                <tds-avatar class="bg-accent-9 text-white" icon="tdsi-like-fill"></tds-avatar>
+                <img src="assets/images/dashboard-like-icon.svg" alt="">
                 <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng lượt thích</span>
-                <span class="text-accent-9 text-heading-4 font-semibold font-sans text-center">{{labelData.likes}}</span>
+                <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData.likes)}}</span>
             </div>
             <div class="flex flex-col items-center justify-center w-full">
-                <tds-avatar class="bg-accent-9 text-white" icon="tdsi-comment-on-fill"></tds-avatar>
+                <img src="assets/images/dashboard-comment-icon.svg" alt="">
                 <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng bình luận</span>
-                <span class="text-accent-9 text-heading-4 font-semibold font-sans text-center">{{labelData.comments}}</span>
+                <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData.comments.toLocaleString())}}</span>
             </div>
             <div class="flex flex-col items-center justify-center w-full">
-                <tds-avatar class="bg-accent-9 text-white" icon="tdsi-message-fill"></tds-avatar>
+                <img src="assets/images/dashboard-chat-icon.svg" alt="">
                 <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng tin nhắn</span>
-                <span class="text-accent-9 text-heading-4 font-semibold font-sans text-center">{{labelData.messages}}</span>
+                <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData.messages)}}</span>
             </div>
             <div class="flex flex-col items-center justify-center w-full">
-                <tds-avatar class="bg-accent-9 text-white" icon="tdsi-paper-fill"></tds-avatar>
+                <img src="assets/images/dashboard-note-icon.svg" alt="">
                 <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng bài viết</span>
-                <span class="text-secondary-1 text-heading-4 font-semibold font-sans text-center">{{labelData.articles}}</span>
+                <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData.articles)}}</span>
             </div>
             <div class="flex flex-col items-center justify-center w-full">
-                <tds-avatar class="bg-accent-9 text-white" icon="tdsi-conversation-fill"></tds-avatar>
+                <img src="assets/images/dashboard-conversation-icon.svg" alt="">
                 <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Hội thoại</span>
-                <span class="text-accent-9 text-heading-4 font-semibold font-sans text-center">{{labelData.conversations}}</span>
+                <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData.conversations)}}</span>
             </div>
         </div>
         <div class="w-full pb-6">
