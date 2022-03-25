@@ -7,7 +7,6 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 })
 export class InfoPaymentPackOfDataComponent implements OnInit {
 
-  @Output() outputBackPageExtendData = new EventEmitter<boolean>()
   isPaymentInfoData=true
   isNextPaymentQR = false
   constructor() { }
@@ -16,14 +15,12 @@ export class InfoPaymentPackOfDataComponent implements OnInit {
   }
 
   clickBackPageExtendData(){
-    this.outputBackPageExtendData.emit(true)
   }
   clickNextPaymentQR(){
     this.isPaymentInfoData = false
     this.isNextPaymentQR = true
   }
   clickBackPageInfoPaymentData(){
-    this.isPaymentInfoData = true
-    this.isNextPaymentQR = false
+ 
   }
 }

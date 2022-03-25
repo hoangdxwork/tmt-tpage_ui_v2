@@ -1,5 +1,5 @@
 <div class="p-4 flex w-full justify-center">
-    <div class="w-3/4 bg-white rounded-md">
+    <div class="w-3/4 bg-white rounded-xl">
         <tds-card>
             <tds-card-header class="border-b border-light-200">Chọn gói dịch vụ sản phẩm phù hợp với nhu cầu của bạn.
             </tds-card-header>
@@ -28,14 +28,14 @@
                             <div class="flex justify-center">
                                 <a class="text-caption-2 group-hover:text-white text-info-500" routerLink="">Xem chi tiết sản phẩm</a>
                             </div>
-                            <button tds-button color="secondary" class="group-hover:text-primary-1">Đăng ký</button>
+                            <button tds-button color="secondary" class="group-hover:text-primary-1" routerLink="/user/pack-of-data/extend">Đăng ký</button>
                         </div>
                     </div>
                 </div>
             </tds-card-content>
             <tds-card-actions>
                 <div class="py-2 justify-end flex">
-                  <button tds-button color="secondary" (click)="clickBackPageInfoData()">Trở về</button>
+                  <button tds-button color="secondary" (click)="clickBackPageInfoData()" routerLink="/user/pack-of-data/info">Trở về</button>
                 </div>
               </tds-card-actions>
         </tds-card>
