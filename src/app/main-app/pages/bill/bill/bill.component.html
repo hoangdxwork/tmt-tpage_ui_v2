@@ -1,198 +1,248 @@
 <div class="w-full h-full flex flex-col">
-  <div class="p-4 w-full bg-white">
-    <div class="w-full flex justify-between">
-      <h1 class="flex cursor-pointer items-center group whitespace-pre-wrap font-semibold">
-        <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Phiếu bán hàng</span>
-      </h1>
-      <div class="flex gap-x-2">
-        <button tds-button color="primary" size="md" (click)="onCreate()">
-          <span class="flex items-center">
-            <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
-          </span>
-        </button>
-      </div>
-    </div>
-  </div>
-  <div class="p-4 h-full">
-    <div class="bg-white w-full h-full rounded-md border border-neutral-200 flex flex-col">
-      <div class="flex h-full justify-between">
-        <tds-tabset [tabBarExtraContent]="extraTemplate">
-          <tds-tab *ngFor="let tab of tabsPartner" [title]="titleTemplate" class="h-full !p-0">
-            <ng-template #titleTemplate let-active="active">
-              <div class="p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center"
-                [ngClass]='{"border-primary-1":active,"border-transparent text-neutral-1-400  hover:border-primary-1":!active}'>
-                <span class="mr-2">{{ tab.name }}</span>
-                <div class="text-caption-2 font-semibold py-0.5 px-1.5 rounded-full flex"
-                  [ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 bg-neutral-3-100 group-hover:text-white group-hover:bg-primary-1':!active}">
-                  {{tab.count}}
-                </div>
-              </div>
-            </ng-template>
-            <tds-table *ngIf="tab.id==0" #rowSelectionTable showSizeChanger [listData]="listOfData"
-              [scroll]="{y:'auto'}" (currentPageDataChange)="onCurrentPageDataChange($event)">
-              <thead>
-                <tr>
-                  <th width="50px"></th>
-                  <th width="42px" [(checked)]="checked" [indeterminate]="indeterminate"
-                    (checkedChange)="onAllChecked($event)">
-                  </th>
-                  <th width="12%">Tên</th>
-                  <th width="8%">Điện thoại</th>
-                  <th width="10%">Email</th>
-                  <th width="22%">Địa chỉ</th>
-                  <th width="8%">Trạng thái</th>
-                  <th width="10%">Nhãn</th>
-                  <th width="7.5%" class="text-right">Nợ hiện tại</th>
-                  <th width="7.5%" class="text-center">Hiệu lực</th>
-                  <th width="9%">Thao tác</th>
-                </tr>
-              </thead>
-              <tbody>
-                <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd'>
-                  <tr class="text-body-2 text-neutral-900 font-regular"
-                    [ngClass]="setOfCheckedId.has(data.id)?'bg-[#F2FCF5]':''">
-                    <td [expand]="expandSet.has(data.id)" (expandChange)="onExpandChange(data.id, $event)"></td>
-                    <td [checked]="setOfCheckedId.has(data.id)" (checkedChange)="onItemChecked(data.id, $event)"
-                      class="border-l border-r text-center border-neutral-200"></td>
-                    <td class=" border-r border-neutral-200">
-                      <div class="flex flex-col">
-                        <span>{{data.code +' '+ data.name}}</span>
-                      </div>
-                    </td>
-                    <td class=" border-r border-neutral-200">
-                      <div class="flex flex-col">
-                        <span>{{data.phone}}</span>
-                        <tds-tag
-                          [status]="checkPhone(data.phone)=='Viettel'?'error':(checkPhone(data.phone)=='Mobifone'?'success':'info')"
-                          type="outline">
-                          {{checkPhone(data.phone)}}
-                        </tds-tag>
-                      </div>
-                    </td>
-                    <td class="border-r border-neutral-200">{{ data.email }}</td>
-                    <td class="border-r border-neutral-200 ">
-                      <div class="w-full flex ">
-                        <span class="">{{ data.address }}</span>
-                      </div>
-                    </td>
-                    <td class="border-r border-neutral-200 ">
-                      <div class="w-full flex ">
-                        <tds-badge class="truncate"
-                          [status]="data.status==0?'error':(data.status==1?'secondary':'success')"
-                          [text]="data.status==0?'Bom hàng':(data.status==1?'Bình thường':'Thân thiết')">
-                        </tds-badge>
-                      </div>
-                    </td>
-                    <td class="border-r border-neutral-200">
-                      <div class="flex w-full gap-x-2 items-center">
-                        <div class="flex w-full flex-wrap gap-2" *ngIf="data.tag.length!=0">
-                          <tds-tag class=" truncate" *ngFor="let item of data.tag" status='primary'>
-                            {{item}}</tds-tag>
-                        </div>
-                        <button (click)="addTag(data.id)" tds-button-icon tds-popover
-                          [popoverVisible]="indClickTag==data.id" popoverTrigger="click" [popoverFooter]="footerAddTag"
-                          [popoverContent]="contentAddtag" popoverPlacement="left" color="secondary" size="sm"
-                          class=" border-0">
-                          <span class="flex items-center relative">
-                            <i class="tdsi-tag-fill "></i>
-                            <i
-                              class="h-2.5 w-2.5 tdsi-plus-circle-fill text-xs leading-4 text-primary-1 absolute right-0 bottom-0"></i>
-                          </span>
-                        </button>
-                        <!-- button thêm nhãn -->
-                        <ng-template #contentAddtag>
-                          <div class="w-96">
-                            <tds-form-field>
-                              <tds-select valueField="id" textField="name" placeholder='select item'
-                                [(ngModel)]="listSelectedTag" [allowClear]="true" [valuePrimitive]="false"
-                                [data]="listDataTag" (change)="onChange($event)" mode="multiple">
-                              </tds-select>
-                            </tds-form-field>
-                          </div>
-                        </ng-template>
-                        <ng-template #footerAddTag>
-                          <div class="flex justify-end pt-2">
-                            <button tds-button-icon color="secondary" class="mr-2" size="sm" (click)="close()">
-                              <span class="flex items-center">
-                                <i class="tdsi-close-fill"></i>
-                              </span>
-                            </button>
-                            <button tds-button-icon size="sm" (click)="apply()">
-                              <span class="flex items-center">
-                                <i class="tdsi-tick-fill"></i>
-                              </span>
-                            </button>
-                          </div>
-                        </ng-template>
-                      </div>
-                    </td>
-                    <td class="border-r border-neutral-200 text-right">{{ data.debt |
-                      number :'1.0-3'}}</td>
-                    <td class="border-r border-neutral-200">
-                      <div class="flex items-center justify-center">
-                        <div class="">
-                          <span
-                            [ngClass]="data.effect?'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400'"
-                            class="text-xl leading-5"></span>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="flex gap-x-2">
-                        <button tds-button-icon color="secondary" size="sm" (click)="openDrawerMessage(data.facebook)">
-                          <span class="flex items-center">
-                            <i class="tdsi-messenger-fill"></i>
-                          </span>
-                        </button>
-                        <button tds-button-icon color="secondary" size="sm">
-                          <span class="flex items-center">
-                            <i class="tdsi-edit-fill"></i>
-                          </span>
-                        </button>
-                        <button tds-button-icon color="secondary" size="sm">
-                          <span class="flex items-center">
-                            <i class="tdsi-trash-fill"></i>
-                          </span>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                </ng-template>
-              </tbody>
-            </tds-table>
-          </tds-tab>
-        </tds-tabset>
-        <ng-template #extraTemplate>
-          <div class="flex items-center gap-x-2">
-            <tds-button-group>
-              <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
-                <span class="flex items-center">
-                  Thao tác <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
-                </span>
-              </button>
-              <tds-dropdown-menu #menu="tdsDropdownMenu">
-                <div class="w-full">
-                  <div tds-dropdown-item>
-                    <a> Item 1 </a>
-                  </div>
-                  <div tds-dropdown-item>
-                    <a> Item 2 </a>
-                  </div>
-                </div>
-              </tds-dropdown-menu>
-            </tds-button-group>
-            <tds-form-field class="w-full">
-              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" />
-              <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-            </tds-form-field>
-            <button tds-button-icon color="secondary">
-              <span class="flex items-center">
-                <i class="tdsi-column-setting-fill text-lg leading-none"></i>
-              </span>
-            </button>
-          </div>
-        </ng-template>
-      </div>
-    </div>
-  </div>
+	<div class="p-4 w-full bg-white">
+		<div class="w-full flex justify-between">
+			<h1 class="flex cursor-pointer items-center group whitespace-pre-wrap font-semibold">
+				<span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Phiếu bán hàng</span>
+			</h1>
+			<div class="flex gap-x-2">
+				<button tds-button color="primary" size="md" (click)="onCreate()">
+					<span class="flex items-center">
+						<i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
+					</span>
+				</button>
+			</div>
+		</div>
+	</div>
+	<div class="p-4 h-full">
+		<div class="bg-white w-full h-full rounded-md border border-neutral-200 flex flex-col">
+			<div class="flex h-full justify-between">
+				<tds-tabset [tabBarExtraContent]="extraTemplate" *ngIf="tabNavs">
+					<tds-tab *ngFor="let tab of tabNavs" [title]="titleTemplate" class="h-full !p-0">
+						<ng-template #titleTemplate let-active="active">
+							<div class="p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center"
+								(click)="onChangeTab(tab)"
+								[ngClass]='{"border-primary-1":active,"border-transparent text-neutral-1-400  hover:border-primary-1":!active}'>
+								<span class="mr-2">{{tab.Name}}</span>
+								<div class="text-caption-2 font-semibold py-0.5 px-1.5 rounded-full flex"
+									[ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 bg-neutral-3-100 group-hover:text-white group-hover:bg-primary-1':!active}">
+									{{tab.Total}}
+								</div>
+							</div>
+						</ng-template>
+						<tds-table *ngIf="tabIndex" #rowSelectionTable showSizeChanger [listData]="lstOfData"
+							[scroll]="{y:'auto', x: 'auto'}" (currentPageDataChange)="onCurrentPageDataChange($event)">
+							<thead>
+								<tr>
+									<th class="text-center w-[30px]"></th>
+									<th [(checked)]="checked" [indeterminate]="indeterminate"
+										class="text-center w-[30px]" (checkedChange)="onAllChecked($event)"></th>
+									<th class="w-[40px]">Thao tác</th>
+									<th class="">Số HĐ</th>
+									<th class="">Khách hàng</th>
+									<th class="">Kênh kết nối</th>
+									<th class="">Ngày hóa đơn</th>
+									<th class="">Còn nợ</th>
+									<th class="">Trạng thái</th>
+									<th class="">Đối tác GH</th>
+									<th class="">Mã vận đơn</th>
+									<th class="">Trạng thái GH</th>
+									<th class="">Tiền thu hộ</th>
+									<th class="">Phí ship GH</th>
+									<th class="">Đơn hàng trả</th>
+								</tr>
+							</thead>
+							<tbody>
+								<ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd'>
+									<tr class="text-body-2 text-neutral-900 font-regular"
+										[ngClass]="setOfCheckedId.has(data.Id)?'bg-[#F2FCF5]':''">
+
+										<td [expand]="expandSet.has(data.Id)" class="text-center w-[30px]"
+											(expandChange)="onExpandChange(data.Id, $event)">
+										</td>
+										<td [checked]="setOfCheckedId.has(data.Id)"
+											(checkedChange)="onItemChecked(data.Id, $event)"
+											class="border-l border-r text-center border-neutral-200 w-[30px]">
+										</td>
+										<td class="w-[40px]">
+											<div class="flex gap-x-2">
+												<button tds-button-icon color="secondary" size="sm">
+													<span class="flex items-center">
+														<i class="tdsi-messenger-fill"></i>
+													</span>
+												</button>
+												<button tds-button-icon color="secondary" size="sm">
+													<span class="flex items-center">
+														<i class="tdsi-edit-fill"></i>
+													</span>
+												</button>
+												<button tds-button-icon color="secondary" size="sm">
+													<span class="flex items-center">
+														<i class="tdsi-trash-fill"></i>
+													</span>
+												</button>
+											</div>
+										</td>
+										<td>
+											<div class="w-full flex ">
+												<span [ngClass]="data.Number ? '' : 'text-error-500'">{{data.Number ||
+													'N/A'}}</span>
+											</div>
+											<!-- Nhãn -->
+											<div class="flex w-full gap-x-2 items-center">
+												<div class="flex w-full flex-wrap gap-2">
+													<tds-tag class="truncate"
+														*ngFor="let item of data.Tags | prettyjson" status='primary'>
+														{{item.Name}}</tds-tag>
+												</div>
+												<button (click)="openTag(data.Id, data.Tags)" tds-button-icon
+													tds-popover [popoverVisible]="indClickTag == data.Id"
+													popoverTrigger="click" [popoverFooter]="footerAddTag"
+													[popoverContent]="contentAddtag" popoverPlacement="left"
+													color="secondary" size="sm" class=" border-0">
+													<span class="flex items-center relative">
+														<i class="tdsi-tag-fill "></i>
+														<i
+															class="h-2.5 w-2.5 tdsi-plus-circle-fill text-xs leading-4 text-primary-1 absolute right-0 bottom-0"></i>
+													</span>
+												</button>
+												<!-- button thêm nhãn -->
+												<ng-template #contentAddtag>
+													<div class="w-96">
+														<tds-form-field>
+															<tds-select valueField="Id" textField="Name"
+																placeholder='select item' [(ngModel)]="modelTags"
+																[allowClear]="true" [valuePrimitive]="false"
+																[data]="lstDataTag" mode="multiple">
+															</tds-select>
+														</tds-form-field>
+													</div>
+												</ng-template>
+												<ng-template #footerAddTag>
+													<div class="flex justify-end pt-2">
+														<button tds-button-icon color="secondary" class="mr-2" size="sm"
+															(click)="closeTag()">
+															<span class="flex items-center">
+																<i class="tdsi-close-fill"></i>
+															</span>
+														</button>
+														<button tds-button-icon size="sm"
+															(click)="assignTags(data.Id, modelTags)">
+															<span class="flex items-center">
+																<i class="tdsi-tick-fill"></i>
+															</span>
+														</button>
+													</div>
+												</ng-template>
+											</div>
+										</td>
+										<td class="relative">
+											<div class="w-full">
+												<p>{{data.PartnerDisplayName}}</p>
+												<p class="text-[#929DAA]">{{data.Phone}}</p>
+												<div class="absolute bottom-0 right-[4px] text-primary-1">
+													<span *ngIf="data.PrintDeliveryCount > 0"
+														class="tdsi-print-fill text-[15px]"
+														title="Đã in phiếu giao hàng"></span>
+													<span *ngIf="data.PrintShipCount > 0"
+														class="tdsi-shipper-line text-[16px]"
+														title="Đã in phiếu ship"></span>
+												</div>
+											</div>
+										</td>
+										<td>
+											<div class="w-full flex">
+												<span class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
+												<span>{{data.CRMTeamName}}</span>
+											</div>
+										</td>
+										<td>
+											<div class="w-full">
+												<span>{{data.DateInvoice | date:"dd-MM-yyyy HH:mm:ss"}}</span>
+											</div>
+										</td>
+										<td>
+											<div class="w-full">
+												<span>{{data.Residual | number :'1.0-3'}} đ</span>
+											</div>
+										</td>
+										<td>
+											<div class="w-full">
+												<p>{{data.ShowState}}</p>
+												<p *ngIf="data.PaymentMessageCount" class="text-[#929DAA]  text-[12px]">
+													Đã gửi y/c thanh toán</p>
+											</div>
+										</td>
+										<td>
+											<div class="w-full">
+												<span>{{data.CarrierName}}</span>
+											</div>
+										</td>
+										<td>
+											<div class="w-full">
+												<span>{{data.TrackingRef}}</span>
+											</div>
+										</td>
+										<td>
+											<div class="w-full">
+												<span>{{data.ShipPaymentStatus}}</span>
+											</div>
+										</td>
+										<td>
+											<div class="w-full">
+												<span>{{data.CashOnDelivery | number: '1.0-3'}} đ</span>
+											</div>
+										</td>
+										<td>
+											<div class="w-full">
+												<span>{{data.CustomerDeliveryPrice | number: '1.0-3'}} đ</span>
+											</div>
+										</td>
+										<td>
+											<div class="w-full">
+												<span
+													[ngClass]="data.IsRefund ? 'tdsi-success-fill text-success-400' : 'tdsi-error-fill text-error-400'"
+													class="text-xl leading-5"></span>
+											</div>
+										</td>
+									</tr>
+								</ng-template>
+							</tbody>
+						</tds-table>
+					</tds-tab>
+				</tds-tabset>
+
+				<!-- TODO: Thao tác -->
+				<ng-template #extraTemplate>
+					<div class="flex items-center gap-x-2">
+						<tds-button-group>
+							<button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
+								<span class="flex items-center">
+									Thao tác <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+								</span>
+							</button>
+							<tds-dropdown-menu #menu="tdsDropdownMenu">
+								<div class="w-full">
+									<div tds-dropdown-item>
+										<a> Item 1 </a>
+									</div>
+									<div tds-dropdown-item>
+										<a> Item 2 </a>
+									</div>
+								</div>
+							</tds-dropdown-menu>
+						</tds-button-group>
+						<tds-form-field class="w-full">
+							<input tdsInput placeholder="Tìm kiếm" autocomplete="off" />
+							<span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+						</tds-form-field>
+						<button tds-button-icon color="secondary">
+							<span class="flex items-center">
+								<i class="tdsi-column-setting-fill text-lg leading-none"></i>
+							</span>
+						</button>
+					</div>
+				</ng-template>
+			</div>
+		</div>
+	</div>
 </div>

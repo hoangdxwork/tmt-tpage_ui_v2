@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { da } from 'date-fns/locale';
-import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+import {  Observable, ReplaySubject } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
 import { PagedList2 } from '../dto/pagedlist2.dto';
@@ -22,7 +20,7 @@ export class CRMTeamService extends BaseSevice {
   private currentTeam$ = new ReplaySubject<CRMTeamDTO | null>(1);
   private _currentTeam!: CRMTeamDTO | null;
 
-  constructor(private apiService: TCommonService, private caheApi: THelperCacheService) {
+  constructor(private apiService: TCommonService, public caheApi: THelperCacheService) {
     super(apiService)
   }
 

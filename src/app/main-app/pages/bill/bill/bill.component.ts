@@ -1,73 +1,59 @@
-
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
-import { number } from 'echarts';
+import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { SortEnum } from 'src/app/lib/enum/sort.enum';
+import { TCommonService } from 'src/app/lib/services';
+import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
-import { TDSModalService, TDSSafeAny, TDSHelperObject } from 'tmt-tang-ui';
+import { OdataFastSaleOrderService } from 'src/app/main-app/services/mock-odata/odata-fastsaleorder.service';
+import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperString, TDSI18nService, ToastrService } from 'tmt-tang-ui';
 import { partnerDto } from '../../partner/partner/partner.component';
+import { addDays, getISODay } from 'date-fns/esm';
+import { TagService } from 'src/app/main-app/services/tag.service';
 
 @Component({
   selector: 'app-bill',
   templateUrl: './bill.component.html',
   styleUrls: ['./bill.component.scss']
 })
+
 export class BillComponent implements OnInit {
 
+  lstOfData: Array<TDSSafeAny> = [];
+  pageSize = 20;
+  pageIndex = 1;
+  total = 0;
+
+  public filterObj: TDSSafeAny = {
+    tags: [],
+    status: null,
+    bill: null,
+    deliveryType: {},
+    searchText: "",
+    dateRange: {
+        startDate: addDays(new Date(), -30),
+        endDate: new Date(),
+    }
+  }
+
+  public tabNavs: Array<TDSSafeAny> = [];
+  public modelTags: Array<TDSSafeAny> = [];
+
+  sort: Array<SortDataRequestDTO>= [{
+      field: "DateInvoice",
+      dir: SortEnum.desc,
+  }];
 
   isOpenMessageFacebook = false
   indClickTag = -1
-  listSelectedTag = [
-    { id: 1, name: 'Tag1' },
-    { id: 2, name: 'Tag2' },
-  ];
+  tabIndex: number = 1;
 
-  public listDataTag = [
-    { id: 1, name: 'Tag1' },
-    { id: 2, name: 'Tag2' },
-    { id: 3, name: 'Tag3' },
-    { id: 4, name: 'Tag4' }
-  ]
-
-  firstPhone = ['097', '098', '038', '039', '037', '036', '035', '034', '090', '093', '077', '082']
-  namePhone = ['Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Mobifone', 'Mobifone', 'Mobifone', 'Vinaphone']
-
-  tabsPartner = [
-    {
-      id: 0,
-      name: 'Tất cả',
-      count: 99,
-      content: [
-
-      ]
-    },
-    {
-      id: 1,
-      name: 'Thân thiết',
-      count: 85,
-      content: "Content of Tab Pane 2"
-    },
-    {
-      id: 2,
-      name: 'Bình thường',
-      count: 80,
-      content: "Content of Tab Pane 3"
-    },
-    {
-      id: 3,
-      name: 'Khách vip',
-      count: 80,
-      content: "Content of Tab Pane 3"
-    },
-    {
-      id: 4,
-      name: 'Bom hàng',
-      count: 80,
-      content: "Content of Tab Pane 3"
-    }
-  ];
-
+  public lstDataTag: Array<TDSSafeAny> = [];
   expandSet = new Set<number>();
 
   constructor(private modalService: TDSModalService,
+    private  odataFastSaleOrderService: OdataFastSaleOrderService,
+      private libcommon: TCommonService,
+      private tagService: TagService,
       private fastSaleOrderService :FastSaleOrderService,
       private viewContainerRef: ViewContainerRef){
   }
@@ -75,7 +61,6 @@ export class BillComponent implements OnInit {
   checked = false;
   indeterminate = false;
   listOfCurrentPageData: readonly partnerDto[] = [];
-  listOfData: readonly partnerDto[] = [];
   setOfCheckedId = new Set<number>();
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -108,41 +93,87 @@ export class BillComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     this.loadData();
     this.loadSummaryStatus();
-
-    this.listOfData = new Array(200).fill(0).map((_, index) => ({
-      id: index,
-      code: `[KH0${index}]`,
-      name: 'Trang Nguyen',
-      phone: this.setPhone(index),
-      email: '123123@gmail.com',
-      tag: [],
-      address: `77 Âu Cơ, Quận Tân Bình, Thành phố Hồ Chí Minh. ${index}`,
-      birthday: '13/07/2021',
-      zalo: '',
-      facebook: 'facebook.com/100010187620290',
-      debt: 12000000000,
-      status: this.addStatus(index),
-      effect: this.addEffect(index)
-    }));
+    this.loadTags();
   }
 
   loadData() {
+    let filters = this.odataFastSaleOrderService.buildFilter(this.filterObj);
+    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
 
+    this.odataFastSaleOrderService.getView(params, this.filterObj).subscribe((res: TDSSafeAny) => {
+        this.lstOfData = [...res.value];
+    });
   }
 
   loadSummaryStatus(){
-    const model = {
-
+    let model = {
+        DateStart: this.filterObj.dateRange.startDate,
+        DateEnd: this.filterObj.dateRange.endDate,
+        SearchText: this.filterObj.searchText,
+        TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+        TrackingRef: this.filterObj.bill,
+        DeliveryType: this.filterObj.deliveryType ? this.filterObj.deliveryType.value : null,
     };
-    this.fastSaleOrderService.getSummaryStatus(model).subscribe((res: TDSSafeAny) => {
 
+    this.fastSaleOrderService.getSummaryStatus(model).subscribe((res: TDSSafeAny) => {
+        var total = 0;
+        res.map((x: TDSSafeAny) => {
+            total = total + x.Total;
+            switch(x.Type) {
+                case "cancel" :
+                    this.tabNavs.push({  Name: "Hủy bỏ", Index: 5, Type: x.Type, Total: x.Total })
+                  break;
+                case "paid" :
+                    this.tabNavs.push({ Name: "Đã thanh toán",  Index: 4, Type: x.Type, Total: x.Total })
+                  break;
+                case "open" :
+                    this.tabNavs.push({ Name: "Đã xác nhận", Index: 3, Type: x.Type,Total: x.Total })
+                  break;
+                case "draft" :
+                    this.tabNavs.push({Name: "Nháp", Index: 2,Type: x.Type, Total: x.Total })
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        this.tabNavs.push({ Name: "Tất cả",  Type: null, Index: 1,   Total: total });
+        this.tabNavs.sort((a, b) => a.Index - b.Index);
     })
   }
 
+  loadTags(){
+    let type = "fastsaleorder";
+    this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
+        this.lstDataTag = res.value;
+    })
+  }
+
+  onChangeTab(item: TDSSafeAny) {
+
+    this.tabIndex = item.Index;
+    this.pageIndex = 1;
+    this.pageSize = 20;
+
+    this.filterObj = {
+      tags: [],
+      status: item.Type,
+      bill: null,
+      deliveryType: {},
+      searchText: "",
+      dateRange: {
+          startDate: addDays(new Date(), -30),
+          endDate: new Date(),
+      }
+    };
+
+    this.loadData();
+  }
+
   onCreate() {}
+
   onExpandChange(id: number, checked: boolean): void {
     if (checked) {
       this.expandSet.add(id);
@@ -151,58 +182,30 @@ export class BillComponent implements OnInit {
     }
   }
 
-  addEffect(id: number) {
-    if (id % 2 == 0)
-      return true
-    return false
-  }
-  addStatus(id: number) {
-    if (id % 3 == 0)
-      return 0
-    else if (id % 4) {
-      return 1
-    }
-    return 2
-  }
-  setPhone(id: number) {
-    if (id % 2 == 0)
-      return '0369847894'
-    else if (id % 3) {
-      return '0908910425'
-    }
-    return '0822303039'
-  }
-  checkPhone(phone: string) {
-    for (var i = 0; i < this.firstPhone.length; i++) {
-      if (phone.indexOf(this.firstPhone[i]) == 0)
-        return this.namePhone[i]
-    }
-    return
-  }
-
-  // Add tag
-  addTag(id: number) {
+  openTag(id: number, data: TDSSafeAny) {
+    this.modelTags = [];
     this.indClickTag = id;
-  }
-  close(): void {
-    this.indClickTag = -1
-    this.listSelectedTag = [{ id: 1, name: 'Tag1' },
-    { id: 2, name: 'Tag2' },]
+    this.modelTags = JSON.parse(data);
   }
 
-  apply(): void {
-    this.listSelectedTag.forEach(element => {
-      this.listOfData[this.listOfData.findIndex(x => x.id == this.indClickTag)].tag.push(element.name)
+  closeTag(): void {
+    this.indClickTag = -1
+  }
+
+  assignTags(id: number, tags: TDSSafeAny) {
+    let model = {  OrderId: id, Tags: tags };
+    this.fastSaleOrderService.assignTagFastSaleOrder(model)
+      .subscribe((res: TDSSafeAny) => {
+          var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
+          if(exits) {
+            exits.Tags = JSON.stringify(tags)
+          }
+
+          this.indClickTag = -1;
+          this.modelTags = [];
+    }, error => {
+      this.indClickTag = -1;
     });
-    this.indClickTag = -1
-    this.listSelectedTag = [
-      { id: 1, name: 'Tag1' },
-      { id: 2, name: 'Tag2' },];
-  }
-
-  onChange(e: TDSSafeAny) {
-
-    console.log(e)
   }
 
   // Drawer tin nhắn facebook

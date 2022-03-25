@@ -1,12 +1,13 @@
+import { format } from "date-fns";
 import { TDSHelperArray, TDSHelperObject } from "tmt-tang-ui";
 import { DataRequestDTO, FilterDataRequestDTO, FilterItemDataRequestDTO, SortDataRequestDTO } from "../dto/dataRequest.dto";
 
 // @dynamic
 export class THelperDataRequest {
-    private static readonly _maxResultCount = "maxResultCount";
-    private static readonly _skipCount = "skipCount";
-    private static readonly _filter = "filter";
-    private static readonly _sorting = "sorting";
+    private static readonly _maxResultCount = "$top";
+    private static readonly _skipCount = "$skip";
+    private static readonly _filter = "$filter";
+    private static readonly _sorting = "$orderby";
     /**
      * convertDataRequestToString
      * {
@@ -26,7 +27,6 @@ export class THelperDataRequest {
      */
     public static convertDataRequest(pageSize: number, pageIndex: number, filter?: FilterDataRequestDTO, sorting?: Array<SortDataRequestDTO>): DataRequestDTO {
 
-
         let maxResultCount: number = pageSize;
         let skipCount: number = (pageIndex - 1) * pageSize;
         let result: DataRequestDTO = {
@@ -38,38 +38,46 @@ export class THelperDataRequest {
         }
         if (TDSHelperObject.hasValue(sorting)) {
             result.sorting = this.convertSortToString(sorting!)
-
         }
         return result;
     }
+
     public static convertDataRequestToString(pageSize: number, pageIndex: number, filter?: FilterDataRequestDTO, sorting?: Array<SortDataRequestDTO>): string {
 
         let result = '';
         let maxResultCount: number = pageSize;
         let skipCount: number = (pageIndex - 1) * pageSize;
+
         if (TDSHelperObject.hasValue(maxResultCount)) {
             result = `${this._maxResultCount}=${maxResultCount}`
         }
+
         if (TDSHelperObject.hasValue(skipCount)) {
             if (result.length > 0) {
                 result += '&'
             }
             result += `${this._skipCount}=${skipCount}`
         }
+
         if (TDSHelperObject.hasValue(filter)) {
             if (result.length > 0) {
                 result += '&'
             }
-            result += `${this._filter}=${this.convertFilterToString(filter!)}`
+
+            result += `${this._filter}=(${this.convertFilterToString(filter!)})`;
+
         }
+
         if (TDSHelperObject.hasValue(sorting)) {
             if (result.length > 0) {
                 result += '&'
             }
             result += `${this._sorting}=${this.convertSortToString(sorting!)}`
         }
+
         return result;
     }
+
     static convertFilterToString(filter: FilterDataRequestDTO) {
         let str = '';
         str = filter.filters.map((f: FilterDataRequestDTO | FilterItemDataRequestDTO) => {
@@ -79,27 +87,34 @@ export class THelperDataRequest {
                 return this.p_convertFilterItemToString(f as FilterItemDataRequestDTO);
             }
             return `(${this.convertFilterToString(f as FilterDataRequestDTO)})`;
-        }).join(`~${filter.logic}~`)
+        }).join(`%20${filter.logic}%20`)
         return str;
     }
+
     private static p_convertFilterItemToString(filter: FilterItemDataRequestDTO) {
         let str = '';
         const value = filter.value;
-        if (typeof value === 'string') {         
-            str = `${filter.field}~${filter.operator}~'${value}'`
+        if (typeof value === 'string') {
+            str = `${filter.field}%20${filter.operator}%20'${value}'`
+        }
+        else if(value instanceof Date) {
+          let date =format(value, "yyyy-MM-dd'T'HH:mm:ss'Z'");
+          str=`${filter.field}%20${filter.operator}%20${date}`
+
         }
         else {
             //field~gte~10
-            str = `${filter.field}~${filter.operator}~${value}`
+            str = `${filter.field}%20${filter.operator}%20${value}`
         }
         return str;
     }
+
     static convertSortToString(sorts: Array<SortDataRequestDTO>) {
         return sorts.map(
             s => {
-                return `${s.field}-${s.dir}`
+                return `${s.field} ${s.dir}`
             }
-        ).join('~')
+        ).join('%20')
     }
 
 }

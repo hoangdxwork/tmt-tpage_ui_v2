@@ -6,11 +6,22 @@ import { MainSharedModule } from '../../shared/shared.module';
 import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule } from 'tmt-tang-ui';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
+import { OdataFastSaleOrderService } from '../../services/mock-odata/odata-fastsaleorder.service';
+import { TagService } from '../../services/tag.service';
+import { PipeModule } from '../../shared/pipe/pipe.module';
+
+const SERVICES = [
+  FastSaleOrderService,
+  OdataFastSaleOrderService,
+  TagService,
+
+]
 
 @NgModule({
   declarations: [
     BillComponent
   ],
+
   imports: [
     CommonModule,
     BillRoutingModule,
@@ -38,9 +49,10 @@ import { FastSaleOrderService } from '../../services/fast-sale-order.service';
     TDSButtonSpitModule,
     TDSAvatarModule,
     TDSDrawerModule,
+    PipeModule
   ],
   providers: [
-    FastSaleOrderService
-  ]
+   ...SERVICES,
+  ],
 })
 export class BillModule { }
