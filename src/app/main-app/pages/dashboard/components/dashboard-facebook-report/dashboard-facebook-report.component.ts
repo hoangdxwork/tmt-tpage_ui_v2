@@ -1,6 +1,7 @@
+import { formatNumber } from '@angular/common';
 import { Color } from 'echarts';
 import { TDSChartOptions, TDSBarChartComponent, TDSBarChartDataSeries } from 'tds-report';
-import { TDSSafeAny } from 'tmt-tang-ui';
+import { TDSSafeAny, vi_VN } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -160,6 +161,10 @@ export class DashboardFacebookReportComponent implements OnInit {
       );
     });
     return list;
+  }
+
+  formatValue(value:number){
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   }
 
   onChangeFilter(data:any){
