@@ -51,7 +51,6 @@ import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TD
     FormsModule,
     TDSToolTipModule,
     TDSModalModule,
-    FormsModule,
     ReactiveFormsModule,
     TDSRadioModule,
     TDSDatePickerModule,

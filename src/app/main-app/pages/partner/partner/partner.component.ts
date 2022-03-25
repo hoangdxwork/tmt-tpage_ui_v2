@@ -212,7 +212,7 @@ export class PartnerComponent implements OnInit {
     modal.afterClose.subscribe(result => {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-        
+
       }
     });
   }
@@ -233,7 +233,7 @@ export class PartnerComponent implements OnInit {
     modal.afterClose.subscribe(result => {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-        
+
       }
     });
   }
@@ -245,14 +245,14 @@ export class PartnerComponent implements OnInit {
       size: "md",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        
+
     }
     });
     modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
     modal.afterClose.subscribe(result => {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-        
+
       }
     });
   }
@@ -266,14 +266,14 @@ export class PartnerComponent implements OnInit {
       size: "md",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        
+
     }
     });
     modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
     modal.afterClose.subscribe(result => {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-        
+
       }
     });
   }
@@ -286,19 +286,19 @@ export class PartnerComponent implements OnInit {
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        
+
     }
     });
     modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
     modal.afterClose.subscribe(result => {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-        
+
       }
     });
   }
 
-  // Modal sinh nhật của khách hàng 
+  // Modal sinh nhật của khách hàng
   showModalBirthday(){
     const modal = this.modalService.create({
       title: 'Sinh nhật khách hàng',
@@ -306,22 +306,23 @@ export class PartnerComponent implements OnInit {
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        
+
     }
     });
     modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
     modal.afterClose.subscribe(result => {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-        
+
       }
     });
   }
 
-  // Drawer tin nhắn facebook 
+  // Drawer tin nhắn facebook
   openDrawerMessage(linkFacebook: string){
     this.isOpenMessageFacebook = true;
   }
+
   closeDrawerMessage(ev: boolean){
     this.isOpenMessageFacebook = false;
   }

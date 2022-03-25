@@ -1,6 +1,6 @@
 import { ApplicationUserDTO } from '../account/application-user.dto';
 import { CompanyDTO } from '../company/company.dto';
-import { ObjectDataDTO } from '../conversation/message.dto';
+import { ObjectDataDTO } from '../conversation/inner.dto';
 import { PartnerDTO, PartnerStatus } from '../partner/partner.dto';
 import { StockWarehouseDTO } from '../product/warehouse.dto';
 
