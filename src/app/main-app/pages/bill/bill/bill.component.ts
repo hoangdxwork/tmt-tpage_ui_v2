@@ -1,14 +1,15 @@
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib/enum/sort.enum';
 import { TCommonService } from 'src/app/lib/services';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { OdataFastSaleOrderService } from 'src/app/main-app/services/mock-odata/odata-fastsaleorder.service';
-import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperString, TDSI18nService, ToastrService } from 'tmt-tang-ui';
+import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperString, TDSI18nService, ToastrService, toArray } from 'tmt-tang-ui';
 import { partnerDto } from '../../partner/partner/partner.component';
 import { addDays, getISODay } from 'date-fns/esm';
 import { TagService } from 'src/app/main-app/services/tag.service';
+import { THelperCacheService } from 'src/app/lib';
 
 @Component({
   selector: 'app-bill',
@@ -16,19 +17,21 @@ import { TagService } from 'src/app/main-app/services/tag.service';
   styleUrls: ['./bill.component.scss']
 })
 
-export class BillComponent implements OnInit {
+export class BillComponent implements OnInit{
 
   lstOfData: Array<TDSSafeAny> = [];
   pageSize = 20;
   pageIndex = 1;
   total = 0;
+  isLoading: boolean = false;
+  count: number = 0;
 
   public filterObj: TDSSafeAny = {
     tags: [],
-    status: null,
+    status: '',
     bill: null,
-    deliveryType: {},
-    searchText: "",
+    deliveryType: '',
+    searchText: '',
     dateRange: {
         startDate: addDays(new Date(), -30),
         endDate: new Date(),
@@ -50,9 +53,25 @@ export class BillComponent implements OnInit {
   public lstDataTag: Array<TDSSafeAny> = [];
   expandSet = new Set<number>();
 
+  public hiddenColumns: any[] = [];
+  public columns: any[] = [
+    {value: 'Number', name: 'Số HĐ'},
+    {value: 'CRMTeamName', name: 'Kênh kết nối'},
+    {value: 'DateInvoice', name: 'Ngày bán'},
+    {value: 'PartnerDisplayName', name: 'Khách hàng'},
+    {value: 'AmountTotal', name: 'Tổng tiền'},
+    {value: 'Residual', name: 'Còn nợ'},
+    {value: 'ShowState', name: 'Trạng thái'},
+    {value: 'CarrierName', name: 'Đối tác giao hàng'},
+    {value: 'TrackingRef', name: 'Mã vận đơn'},
+    {value: 'ShipPaymentStatus', name: 'Trạng thái GH'},
+    {value: 'CashOnDelivery', name: 'Tiền thu hộ'},
+    {value: 'IsRefund', name: 'Đơn hàng trả'},
+    {value: 'CustomerDeliveryPrice', name: 'Phí ship giao hàng'}
+  ];
+
   constructor(private modalService: TDSModalService,
     private  odataFastSaleOrderService: OdataFastSaleOrderService,
-      private libcommon: TCommonService,
       private tagService: TagService,
       private fastSaleOrderService :FastSaleOrderService,
       private viewContainerRef: ViewContainerRef){
@@ -60,7 +79,6 @@ export class BillComponent implements OnInit {
 
   checked = false;
   indeterminate = false;
-  listOfCurrentPageData: readonly partnerDto[] = [];
   setOfCheckedId = new Set<number>();
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -69,7 +87,6 @@ export class BillComponent implements OnInit {
     } else {
       this.setOfCheckedId.delete(id);
     }
-    console.log(this.setOfCheckedId)
   }
 
   onItemChecked(id: number, checked: boolean): void {
@@ -78,18 +95,16 @@ export class BillComponent implements OnInit {
   }
 
   onAllChecked(value: boolean): void {
-    this.listOfCurrentPageData.forEach(item => this.updateCheckedSet(item.id, value));
+    this.lstOfData.forEach((x: any) => this.updateCheckedSet(x.Id, value));
     this.refreshCheckedStatus();
   }
 
   onCurrentPageDataChange($event: readonly partnerDto[]): void {
-    this.listOfCurrentPageData = $event;
-    this.refreshCheckedStatus();
   }
 
   refreshCheckedStatus(): void {
-    this.checked = this.listOfCurrentPageData.every(item => this.setOfCheckedId.has(item.id));
-    this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedId.has(item.id)) && !this.checked;
+    this.checked = this.lstOfData.every(x => this.setOfCheckedId.has(x.Id));
+    this.indeterminate = this.lstOfData.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
   }
 
   ngOnInit(): void {
@@ -99,11 +114,40 @@ export class BillComponent implements OnInit {
   }
 
   loadData() {
+    this.isLoading = true;
     let filters = this.odataFastSaleOrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
 
     this.odataFastSaleOrderService.getView(params, this.filterObj).subscribe((res: TDSSafeAny) => {
+        this.count = res['@odata.count'] as number;debugger
         this.lstOfData = [...res.value];
+
+
+
+
+
+
+          // Id: _.Id,
+          // Number: _.Number,
+          // Tags: x.Tags,
+          // PartnerDisplayName: x.PartnerDisplayName,
+          // PrintDeliveryCount: x.PrintDeliveryCount,
+          // PrintShipCount: x.PrintShipCount,
+          // CRMTeamName: x.CRMTeamName,
+          // DateInvoice: x.DateInvoice,
+          // AmountTotal: x.AmountTotal,
+          // Residual: x.Residual,
+          // PaymentMessageCount: x.PaymentMessageCount,
+          // State: x.State,
+          // ShowState: x.ShowState,
+          // CarrierName: x.CarrierName,
+          // TrackingRef: x.TrackingRef,
+          // ShipPaymentStatus: x.ShipPaymentStatus,
+          // CashOnDelivery: x.CashOnDelivery,
+          // IsRefund: x.IsRefund,
+          // CustomerDeliveryPrice: x.CustomerDeliveryPrice,
+
+        this.isLoading = false;
     });
   }
 
@@ -129,10 +173,10 @@ export class BillComponent implements OnInit {
                     this.tabNavs.push({ Name: "Đã thanh toán",  Index: 4, Type: x.Type, Total: x.Total })
                   break;
                 case "open" :
-                    this.tabNavs.push({ Name: "Đã xác nhận", Index: 3, Type: x.Type,Total: x.Total })
+                    this.tabNavs.push({ Name: "Đã xác nhận", Index: 3, Type: x.Type, Total: x.Total })
                   break;
                 case "draft" :
-                    this.tabNavs.push({Name: "Nháp", Index: 2,Type: x.Type, Total: x.Total })
+                    this.tabNavs.push({Name: "Nháp", Index: 2, Type: x.Type, Total: x.Total })
                     break;
                 default:
                     break;
@@ -152,7 +196,6 @@ export class BillComponent implements OnInit {
   }
 
   onChangeTab(item: TDSSafeAny) {
-
     this.tabIndex = item.Index;
     this.pageIndex = 1;
     this.pageSize = 20;
@@ -160,9 +203,9 @@ export class BillComponent implements OnInit {
     this.filterObj = {
       tags: [],
       status: item.Type,
-      bill: null,
-      deliveryType: {},
-      searchText: "",
+      bill: '',
+      deliveryType: '',
+      searchText: '',
       dateRange: {
           startDate: addDays(new Date(), -30),
           endDate: new Date(),
@@ -193,7 +236,7 @@ export class BillComponent implements OnInit {
   }
 
   assignTags(id: number, tags: TDSSafeAny) {
-    let model = {  OrderId: id, Tags: tags };
+    let model = { OrderId: id, Tags: tags };
     this.fastSaleOrderService.assignTagFastSaleOrder(model)
       .subscribe((res: TDSSafeAny) => {
           var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
@@ -206,6 +249,73 @@ export class BillComponent implements OnInit {
     }, error => {
       this.indClickTag = -1;
     });
+  }
+
+  applyFilter(event: TDSSafeAny)  {
+    this.tabIndex = 1;
+    this.pageIndex = 1;
+    this.pageSize = 20;
+
+    this.filterObj.searchText = event.target.value;
+    this.loadData();
+  }
+
+  onLoadOption(event: any): void {
+    this.tabIndex = 1;
+    this.pageIndex = 1;
+    this.pageSize = 20;
+
+    this.filterObj = {
+        tags: event.tags,
+        status: event.status,
+        bill: event.bill,
+        deliveryType: event.deliveryType,
+        searchText: event.searchText,
+        dateRange: {
+            startDate: event.dateRange.startDate,
+            endDate: event.dateRange.endDate,
+        }
+    }
+    this.loadData();
+  }
+
+  public isHidden(columnName: string): boolean {
+    return this.hiddenColumns.indexOf(columnName) > -1;
+  }
+
+  public isDisabled(columnName: string): boolean {
+      let key = this.fastSaleOrderService._keyCacheGrid;
+      var jsColumns = JSON.parse(localStorage.getItem(key) as string) as any;
+
+      if(jsColumns && jsColumns.columnsConfig) {
+        this.hiddenColumns = jsColumns.columnsConfig.map((x: any) => x.value);
+          return this.columns.length - this.hiddenColumns.length === 1 && !this.isHidden(columnName);
+      }
+      else {
+          return this.columns.length - this.hiddenColumns.length === 1 && !this.isHidden(columnName);
+      }
+  }
+
+  public hideColumn(columnName: string): void {
+    const hiddenColumns = this.hiddenColumns;
+
+    if (!this.isHidden(columnName)) {
+      hiddenColumns.push(columnName);
+    } else {
+      hiddenColumns.splice(hiddenColumns.indexOf(columnName), 1);
+    }
+
+    const gridConfig = {
+      columnsConfig: hiddenColumns.map((x: string) => {
+        return <any> {
+          name: (this.columns.filter((a: any) => a.value === x)[0]).name,
+          value: x
+        }
+      })
+    }
+
+    const key = this.fastSaleOrderService._keyCacheGrid;
+    localStorage.setItem(key, JSON.stringify(gridConfig));
   }
 
   // Drawer tin nhắn facebook

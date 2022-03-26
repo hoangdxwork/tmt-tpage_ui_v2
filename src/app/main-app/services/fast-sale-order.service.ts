@@ -16,9 +16,10 @@ export class FastSaleOrderService extends BaseSevice {
   prefix: string = "odata";
   table: string = "FastSaleOrder";
   baseRestApi: string = "rest/v1.0/fastsaleorder";
-  private readonly __keyCacheTeamId = 'nearestTeamId';
 
-  constructor(private apiService: TCommonService, private caheApi: THelperCacheService) {
+  public _keyCacheGrid: string = 'orderbill-page:grid_orderbill:settings';
+
+  constructor(private apiService: TCommonService) {
     super(apiService)
   }
 

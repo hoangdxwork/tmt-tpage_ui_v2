@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { TDSHelperArray, TDSHelperObject } from "tmt-tang-ui";
 import { DataRequestDTO, FilterDataRequestDTO, FilterItemDataRequestDTO, SortDataRequestDTO } from "../dto/dataRequest.dto";
+import { OperatorEnum } from "../enum";
 
 // @dynamic
 export class THelperDataRequest {
@@ -65,7 +66,6 @@ export class THelperDataRequest {
             }
 
             result += `${this._filter}=(${this.convertFilterToString(filter!)})`;
-
         }
 
         if (TDSHelperObject.hasValue(sorting)) {
@@ -95,7 +95,11 @@ export class THelperDataRequest {
         let str = '';
         const value = filter.value;
         if (typeof value === 'string') {
-            str = `${filter.field}%20${filter.operator}%20'${value}'`
+            if(filter.operator === OperatorEnum.contains) {
+                str =`${filter.operator}(${filter.field},%27${value}%27)`
+            } else {
+                str = `${filter.field}%20${filter.operator}%20'${value}'`
+            }
         }
         else if(value instanceof Date) {
           let date =format(value, "yyyy-MM-dd'T'HH:mm:ss'Z'");

@@ -7,7 +7,7 @@ export enum OperatorEnum {
     /**
      * không bằng !=
      */
-    neq = 'neq',
+    neq = 'ne',
     /**
      * nhỏ hơn <
      */

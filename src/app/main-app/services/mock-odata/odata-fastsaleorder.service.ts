@@ -1,22 +1,16 @@
-import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
-import format from 'date-fns/format';
-import { da } from 'date-fns/locale';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
-import { DataRequestDTO, FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
-import { TDSHelperObject, TDSHelperString, TDSI18nService, TDSSafeAny } from 'tmt-tang-ui';
-import { PagedList2 } from '../../dto/pagedlist2.dto';
-import { CRMTeamDTO } from '../../dto/team/team.dto';
+import { FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { TDSHelperString,  TDSSafeAny } from 'tmt-tang-ui';
 import { BaseSevice } from '../base.service';
 
 export interface FilterObjDTO  {
     tags: Array<TDSSafeAny>,
-    status: null,
+    status: '',
     bill: null,
-    deliveryType: TDSSafeAny,
-    searchText: "",
+    deliveryType: '',
+    searchText: '',
     dateRange: {
         startDate: Date,
         endDate: Date
@@ -36,16 +30,8 @@ export class OdataFastSaleOrderService extends BaseSevice {
   }
 
   getView(params: string, filterObj: FilterObjDTO): Observable<TDSSafeAny>{
-
-    var tags = null;
-    if (filterObj.tags.length > 0) {
-        tags = filterObj.tags.map((x: TDSSafeAny) => x.Id);
-    }
-
-    var deliveryType = filterObj.deliveryType.value;
-
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${tags != null ? tags : ''}&deliveryType=${deliveryType != null ? deliveryType : ''}&${params}&$count=true`,
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&deliveryType=${filterObj.deliveryType}&${params}&$count=true`,
         method: TApiMethodType.get,
     }
 
@@ -59,49 +45,49 @@ export class OdataFastSaleOrderService extends BaseSevice {
         filters: [],
     }
 
-    let type: FilterItemDataRequestDTO = { field: "Type", operator: OperatorEnum.eq, value: "invoice" };
-    dataFilter.filters.push(type);
+    dataFilter.filters.push({ field: "Type", operator: OperatorEnum.eq, value: "invoice"})
+    dataFilter.logic = "and";
 
     if (filterObj.dateRange && filterObj.dateRange.startDate && filterObj.dateRange.endDate) {
-
-        let startDate: FilterItemDataRequestDTO = { field: "DateInvoice", operator: OperatorEnum.gte, value: new Date(filterObj.dateRange.startDate)};
-        let endDate: FilterItemDataRequestDTO = { field: "DateInvoice", operator: OperatorEnum.lte, value: new Date(filterObj.dateRange.endDate) };
-
-        dataFilter.filters.push(startDate);
-        dataFilter.filters.push(endDate);
-        //TODO: gán logic
-        dataFilter.logic = "and";
+        dataFilter.filters.push({
+            filters: [
+              { field: "DateInvoice", operator: OperatorEnum.gte, value: new Date(filterObj.dateRange.startDate) },
+              { field: "DateInvoice", operator: OperatorEnum.lte, value: new Date(filterObj.dateRange.endDate) }
+            ],
+            logic: 'and'
+        })
     }
 
     if (TDSHelperString.hasValueString(filterObj.searchText)) {
-
-        let displayName: FilterItemDataRequestDTO = { field: "PartnerDisplayName", operator: OperatorEnum.contains, value: filterObj.searchText };
-        let address: FilterItemDataRequestDTO = { field: "Address", operator: OperatorEnum.contains, value: filterObj.searchText };
-        let number: FilterItemDataRequestDTO = { field: "Number", operator: OperatorEnum.contains, value: filterObj.searchText };
-        let state: FilterItemDataRequestDTO = { field: "State", operator: OperatorEnum.contains, value: filterObj.searchText };
-        let phone: FilterItemDataRequestDTO = { field: "Phone", operator: OperatorEnum.contains, value: filterObj.searchText };
-        let nameNoSign: FilterItemDataRequestDTO = { field: "PartnerNameNoSign", operator: OperatorEnum.contains, value: filterObj.searchText };
-
-        dataFilter.filters.push(displayName);
-        dataFilter.filters.push(address);
-        dataFilter.filters.push(number);
-        dataFilter.filters.push(state);
-        dataFilter.filters.push(phone);
-        dataFilter.filters.push(nameNoSign);
-        //TODO: gán logic
-        dataFilter.logic = "or";
+        dataFilter.filters.push( {
+            filters: [
+              { field: "PartnerDisplayName", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "Phone", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "Address", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "Number", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "State", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "Phone", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "PartnerNameNoSign", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "CarrierName", operator: OperatorEnum.contains, value: filterObj.searchText},
+              { field: "TrackingRef", operator: OperatorEnum.contains, value: filterObj.searchText}
+            ],
+            logic: 'or'
+        })
     }
 
-    if(filterObj.bill) {
+    if(TDSHelperString.hasValueString(filterObj.bill)) {
       if(filterObj.bill === "isCode"){
-
+          dataFilter.filters.push({ field: "TrackingRef", operator: OperatorEnum.neq, value: null })
+          dataFilter.logic = "and";
+      }
+      if(filterObj.bill === "noCode"){
+        dataFilter.filters.push({ field: "TrackingRef", operator: OperatorEnum.eq, value: null })
+        dataFilter.logic = "and";
       }
     }
 
     if (TDSHelperString.hasValueString(filterObj.status)) {
-      let status: FilterItemDataRequestDTO = { field: "State", operator: OperatorEnum.eq, value: filterObj.status };
-      dataFilter.filters.push(status);
-      //TODO: gán logic
+      dataFilter.filters.push({ field: "State", operator: OperatorEnum.eq, value: filterObj.status })
       dataFilter.logic = "and";
     }
 

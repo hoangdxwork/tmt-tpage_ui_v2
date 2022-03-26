@@ -11,7 +11,7 @@ export interface DataRequestDTO {
 }
 export interface FilterDataRequestDTO {
     logic:'and'|'or' | string,
-    filters:Array<FilterDataRequestDTO | FilterItemDataRequestDTO> ,
+    filters: Array<FilterDataRequestDTO | FilterItemDataRequestDTO> ,
 }
 export interface FilterItemDataRequestDTO {
     field: string,
