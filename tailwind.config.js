@@ -185,7 +185,7 @@ const COLORS = {
         9:'#D7E8FF',
         10: '#CADDF1',
         11: '#DFDCF3',
-        12: '#DEE3EC' 
+        12: '#DEE3EC'
     },
     'neutral-1': {
         50: "#DDE2E9",

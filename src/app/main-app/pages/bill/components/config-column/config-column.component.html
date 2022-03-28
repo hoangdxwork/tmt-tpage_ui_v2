@@ -1,0 +1,40 @@
+<tds-button-group>
+  <button tds-button-icon color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
+    <span class="flex items-center">
+      <i class="tdsi-column-setting-fill text-lg leading-none"></i>
+    </span>
+  </button>
+  <tds-dropdown-menu #menu="tdsDropdownMenu">
+    <div class="w-full">
+      <div class="p-4">
+        <a *ngFor="let column of columns" (click)="hideColumn(column.value)">
+          <div class="mt-2 mb-2" *ngIf="column.value != 'ShipPaymentStatus' && column.value != 'CashOnDelivery' && column.value != 'IsRefund' && column.value != 'CustomerDeliveryPrice'">
+            <input type="checkbox" id="{{column.value}}" class="rounded "
+              [disabled]="isDisabled(column.value)" [checked]="!isHidden(column.value)" />
+            <span class="ml-2">{{column.name}}</span>
+          </div>
+          <div class="mt-2 mb-2" *ngIf="column.value == 'ShipPaymentStatus'">
+            <input type="checkbox" id="{{column.value}}" class="rounded "
+              [disabled]="isDisabled(column.value)" [checked]="isHidden(column.value)" />
+            <span class="ml-2">{{column.name}}</span>
+          </div>
+          <div class="mt-2 mb-2" *ngIf="column.value == 'CashOnDelivery'">
+            <input type="checkbox" id="{{column.value}}" class="rounded" [disabled]="isDisabled(column.value)"
+              [checked]="isHidden(column.value)" />
+            <span class="ml-2">{{column.name}}</span>
+          </div>
+          <div class="mt-2 mb-2" *ngIf="column.value == 'IsRefund'">
+            <input type="checkbox" id="{{column.value}}" class="rounded "
+              [disabled]="isDisabled(column.value)" [checked]="isHidden(column.value)" />
+            <span class="ml-2">{{column.name}}</span>
+          </div>
+          <div class="mt-2 mb-2" *ngIf="column.value == 'CustomerDeliveryPrice'">
+            <input type="checkbox" id="{{column.value}}" class="rounded "
+              [disabled]="isDisabled(column.value)" [checked]="isHidden(column.value)" />
+            <span class="ml-2">{{column.name}}</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </tds-dropdown-menu>
+</tds-button-group>
