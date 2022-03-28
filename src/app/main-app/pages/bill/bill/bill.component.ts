@@ -5,7 +5,7 @@ import { TCommonService } from 'src/app/lib/services';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { OdataFastSaleOrderService } from 'src/app/main-app/services/mock-odata/odata-fastsaleorder.service';
-import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperString, TDSI18nService, ToastrService, toArray } from 'tmt-tang-ui';
+import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperString, TDSI18nService, ToastrService, toArray, TDSTableQueryParams } from 'tmt-tang-ui';
 import { partnerDto } from '../../partner/partner/partner.component';
 import { addDays, getISODay } from 'date-fns/esm';
 import { TagService } from 'src/app/main-app/services/tag.service';
@@ -20,11 +20,10 @@ import { THelperCacheService } from 'src/app/lib';
 export class BillComponent implements OnInit{
 
   lstOfData: Array<TDSSafeAny> = [];
-  pageSize = 20;
+  pageSize = 10;
   pageIndex = 1;
-  total = 0;
   isLoading: boolean = false;
-  count: number = 0;
+  count: number = 1;
 
   public filterObj: TDSSafeAny = {
     tags: [],
@@ -81,6 +80,10 @@ export class BillComponent implements OnInit{
   indeterminate = false;
   setOfCheckedId = new Set<number>();
 
+  isHidden(columnName: string) {
+     return false;
+  }
+
   updateCheckedSet(id: number, checked: boolean): void {
     if (checked) {
       this.setOfCheckedId.add(id);
@@ -119,8 +122,9 @@ export class BillComponent implements OnInit{
     let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
 
     this.odataFastSaleOrderService.getView(params, this.filterObj).subscribe((res: TDSSafeAny) => {
-        this.count = res['@odata.count'] as number;debugger
-        this.lstOfData = [...res.value];
+
+        this.count = res['@odata.count'] as number //260
+        this.lstOfData = res.value;
 
 
 
@@ -195,7 +199,7 @@ export class BillComponent implements OnInit{
     })
   }
 
-  onChangeTab(item: TDSSafeAny) {
+  onSelectChange(item: TDSSafeAny) {
     this.tabIndex = item.Index;
     this.pageIndex = 1;
     this.pageSize = 20;
@@ -279,50 +283,18 @@ export class BillComponent implements OnInit{
     this.loadData();
   }
 
-  public isHidden(columnName: string): boolean {
-    return this.hiddenColumns.indexOf(columnName) > -1;
-  }
-
-  public isDisabled(columnName: string): boolean {
-      let key = this.fastSaleOrderService._keyCacheGrid;
-      var jsColumns = JSON.parse(localStorage.getItem(key) as string) as any;
-
-      if(jsColumns && jsColumns.columnsConfig) {
-        this.hiddenColumns = jsColumns.columnsConfig.map((x: any) => x.value);
-          return this.columns.length - this.hiddenColumns.length === 1 && !this.isHidden(columnName);
-      }
-      else {
-          return this.columns.length - this.hiddenColumns.length === 1 && !this.isHidden(columnName);
-      }
-  }
-
-  public hideColumn(columnName: string): void {
-    const hiddenColumns = this.hiddenColumns;
-
-    if (!this.isHidden(columnName)) {
-      hiddenColumns.push(columnName);
-    } else {
-      hiddenColumns.splice(hiddenColumns.indexOf(columnName), 1);
-    }
-
-    const gridConfig = {
-      columnsConfig: hiddenColumns.map((x: string) => {
-        return <any> {
-          name: (this.columns.filter((a: any) => a.value === x)[0]).name,
-          value: x
-        }
-      })
-    }
-
-    const key = this.fastSaleOrderService._keyCacheGrid;
-    localStorage.setItem(key, JSON.stringify(gridConfig));
-  }
-
   // Drawer tin nhắn facebook
   openDrawerMessage(linkFacebook: string){
     this.isOpenMessageFacebook = true;
   }
   closeDrawerMessage(ev: boolean){
     this.isOpenMessageFacebook = false;
+  }
+  onQueryParamsChange(params: TDSTableQueryParams) {
+    //console.log('params',params)
+    // this.listSort = params.sort.filter(f=> f.value != null).map(s=>{
+    //   return {field:s.key, dir: s.value == 'descend' ? SortEnum.desc  : SortEnum.asc}
+    // }).reverse();
+    this.loadData();
   }
 }
