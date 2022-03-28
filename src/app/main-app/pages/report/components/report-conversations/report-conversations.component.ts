@@ -13,7 +13,11 @@ export class ReportConversationsComponent implements OnInit {
   //#region variable
   option:TDSSafeAny;
   chartOption = TDSChartOptions();
-  listOfData:Array<TDSSafeAny> = [];
+  tableData:Array<TDSSafeAny> = [];
+  axisData:TDSSafeAny[] = [];
+  seriesData:TDSSafeAny[] = [];
+  colors:Color[] = [];
+
   selectList = [
     { id:1, name:'App Quản Lí Bán Hàng TPos 1' },
     { id:2, name:'App Quản Lí Bán Hàng TPos 2' },
@@ -30,7 +34,7 @@ export class ReportConversationsComponent implements OnInit {
   }
 
   loadData(){
-    this.listOfData = [
+    this.tableData = [
       {
         id:1, reportDate:'06/06/2021', conversations:50, messages:30, comments:20, newPhoneNumber:10, responseTime:10, orders:10, completeOrders:2, noReplyMessages:10
       },
@@ -47,8 +51,8 @@ export class ReportConversationsComponent implements OnInit {
         id:5, reportDate:'06/06/2021', conversations:50, messages:30, comments:20, newPhoneNumber:10, responseTime:10, orders:10, completeOrders:2, noReplyMessages:10
       },
     ];
-    let axisData:TDSSafeAny[] = ['06/06','07/06','08/06','09/06','10/06','11/06','12/06','13/06','14/06','15/06','16/06','17/06'];
-    let seriesData:TDSSafeAny[] = [
+    this.axisData = ['06/06','07/06','08/06','09/06','10/06','11/06','12/06','13/06','14/06','15/06','16/06','17/06'];
+    this.seriesData = [
       {
         name:'Tin nhắn',
         data:[1500,2500,2400,1100,1500,2020,850,1950,1650,2450,1900,1900]
@@ -58,17 +62,26 @@ export class ReportConversationsComponent implements OnInit {
         data:[1900,1300,1600,2100,900,1500,1700,2550,2200,1200,1350,950]
       }
     ];
-    let colors:Color[] = ['#1A6DE3','#28A745'];
+    this.colors = ['#1A6DE3','#28A745'];
 
     let component:TDSBarChartComponent = {
-      color: colors,
+      color: this.colors,
       legend:{
         show:true,
-        right:-240,
-        bottom:-8,
         itemHeight:16,
         itemWidth:24,
-        itemGap:-224,
+        itemGap:16,
+        top:'bottom',
+        left:'right',
+        textStyle:{
+          color:'#424752',
+          fontFamily:'Segoe UI',
+          fontSize:12,
+          fontStyle:'normal',
+          lineHeight:16,
+          fontWeight:400,
+          align:'center'
+        }
       },
       grid:{
         left:'5%',
@@ -98,12 +111,19 @@ export class ReportConversationsComponent implements OnInit {
               show:false
             },
             axisLabel:{
-              margin:16
+              margin:16,
+              color:'#6B7280',
+              fontFamily:'Segoe UI',
+              fontWeight:400,
+              fontSize:14,
+              lineHeight:20,
+              fontStyle:'normal',
+              align:'center'
             },
             axisLine:{
               show:false
             },
-            data:axisData
+            data: this.axisData
           }
         ],
         yAxis:[
@@ -111,12 +131,18 @@ export class ReportConversationsComponent implements OnInit {
             interval:500,
             axisLabel:{
               margin:24,
+              color:'#6B7280',
+              fontFamily:'Segoe UI',
+              fontWeight:400,
+              fontSize:14,
+              lineHeight:20,
+              fontStyle:'normal',
               align:'right'
             }
           }
         ]
       },
-      series:this.getSeries(seriesData)
+      series:this.getSeries(this.seriesData)
     }
 
     this.buildChart(component);

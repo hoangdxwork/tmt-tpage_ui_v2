@@ -1,0 +1,44 @@
+<div>
+    <form [formGroup]="formPayment" (ngSubmit)="submitPayment()" class="text-body-2 to-neutral-900 flex flex-col gap-y-4">
+        <div class="flex">
+            <div class="w-1/6"><span class="font-semibold">Khách hàng</span></div>
+            <div class="w-5/6"><span class="text-primary-1 font-semibold">[KH0013] Phạm Nhi</span></div>
+        </div>
+        <div class="flex">
+            <div class="w-1/6"><span class="font-semibold">Phương thức</span></div>
+            <div class="w-5/6">
+                <tds-select valueField="id" textField="name" formControlName="methodPayment" placeholder='Chọn phương thức thanh toán' [data]="listData">
+                </tds-select>
+            </div>
+        </div>
+        <div class="flex">
+            <div class="w-1/6"><span class="font-semibold">Số tiền</span></div>
+            <div class="w-5/6">
+                <tds-input-number [(ngModel)]="price" [min]='1' [step]="1" formControlName="price"  inputMode="decimal">
+                </tds-input-number>
+            </div>
+        </div>
+        <div class="flex">
+            <div class="w-1/6"><span class="font-semibold">Ngày thanh toán</span></div>
+            <div class="w-5/6">
+                <tds-date-picker formControlName="datePayment">
+                </tds-date-picker>
+            </div>
+        </div>
+        <div class="flex">
+            <div class="w-1/6"><span class="font-semibold">Nội dung</span></div>
+            <tds-form-field class="w-5/6">
+                <textarea class="resize-none" tdsInput formControlName="content" placeholder="Nhập nội dung"></textarea>
+            </tds-form-field>
+        </div>
+    </form>
+    <div class="w-full flex justify-end p-4" *tdsModalFooter>
+        <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">Đóng</button>
+        <button tds-button class="mr-2" type="submit" color="primary" (click)="paymentAndPrint()">
+            Thanh toán và in
+        </button>
+        <button tds-button type="submit" color="primary" (click)="payment()">
+            Thanh toán
+        </button>
+    </div>
+</div>

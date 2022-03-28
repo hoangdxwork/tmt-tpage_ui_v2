@@ -63,6 +63,13 @@ export class DashboardDailyReportComponent implements OnInit {
         show:true,
         position:'top',
         trigger: 'axis',
+        axisPointer:{
+          type:'line',
+          lineStyle:{
+            color:'#C4C4C4',
+            type:'solid'
+          }
+        },
         formatter:'<div class="flex flex-row rounded-xl p-2">'+
                     '<div class="bg-white rounded-full flex items-center justify-center h-[34px] w-[34px]">'+
                       '<i class="tdsi-time-fill text-primary-1"></i>'+

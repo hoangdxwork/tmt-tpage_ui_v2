@@ -15,6 +15,7 @@ export class DashboardOverviewComponent implements OnInit {
   currentFilter = this.filterList[0].name;
   labelData:TDSSafeAny;
   //#endregion
+  
   constructor() { }
 
   ngOnInit(): void {

@@ -341,7 +341,8 @@ module.exports = {
                 'warning': '0px 0px 0px 3px rgba(255, 193, 7, 0.2)',
                 '1-lg': '0px 1px 10px rgba(29, 45, 73, 0.102)',
                 '1-sm': '0px 1px 3px rgba(29, 45, 73, 0.102)',
-                '1-md': '0px 1px 3px rgba(29, 45, 73, 0.102)'
+                '1-md': '0px 1px 3px rgba(29, 45, 73, 0.102)',
+                '1-xl': '0px 1px 15px rgba(29, 45, 73, 0.14)',
             },
             minWidth: {
                 '5': '1.25rem',

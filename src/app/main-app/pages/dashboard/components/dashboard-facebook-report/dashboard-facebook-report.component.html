@@ -1,35 +1,40 @@
 <div class="bg-white flex flex-col rounded-xl px-4 mb-4">
-    <div class="flex flex-row items-center justify-between border-b border-neutral-2-200 py-4">
+    <div class="flex flex-row items-center justify-between py-4">
         <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Thống kê trang Facebook</span>
         <div class="flex flex-row items-center">
             <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị:</span>
             <tds-select valueField="name" textField="name" [ngModel]="currentFilter" [border]="false"
-                [data]="filterList" size="md" class="text-primary-1 text-body-2 font-semibold font-sans w-[120px] truncate ..."
+                [data]="filterList" size="md" class="tds-dashboard-filter w-[120px] truncate ..."
                 (ngModelChange)="onChangeFilter($event)" classIcon="tdsi-arrow-down-fill">
             </tds-select>
         </div>
     </div>
     <div class="flex flex-col items-center">
-        <div class="flex flex-row items-center justify-center w-full divide-x py-8">
+        <div class="flex flex-row items-center justify-center w-full divide-x py-4">
             <div class="flex flex-col items-center justify-center w-full">
+                <img src="assets/images/dashboard-like-icon.svg" alt="">
                 <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng lượt thích</span>
-                <span class="text-accent-9 text-heading-4 font-semibold font-sans text-center">{{labelData.likes}}</span>
+                <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData.likes)}}</span>
             </div>
             <div class="flex flex-col items-center justify-center w-full">
+                <img src="assets/images/dashboard-comment-icon.svg" alt="">
                 <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng bình luận</span>
-                <span class="text-accent-9 text-heading-4 font-semibold font-sans text-center">{{labelData.comments}}</span>
+                <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData.comments.toLocaleString())}}</span>
             </div>
             <div class="flex flex-col items-center justify-center w-full">
+                <img src="assets/images/dashboard-chat-icon.svg" alt="">
                 <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng tin nhắn</span>
-                <span class="text-accent-9 text-heading-4 font-semibold font-sans text-center">{{labelData.messages}}</span>
+                <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData.messages)}}</span>
             </div>
             <div class="flex flex-col items-center justify-center w-full">
+                <img src="assets/images/dashboard-note-icon.svg" alt="">
                 <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng bài viết</span>
-                <span class="text-secondary-1 text-heading-4 font-semibold font-sans text-center">{{labelData.articles}}</span>
+                <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData.articles)}}</span>
             </div>
             <div class="flex flex-col items-center justify-center w-full">
+                <img src="assets/images/dashboard-conversation-icon.svg" alt="">
                 <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Hội thoại</span>
-                <span class="text-accent-9 text-heading-4 font-semibold font-sans text-center">{{labelData.conversations}}</span>
+                <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData.conversations)}}</span>
             </div>
         </div>
         <div class="w-full pb-6">

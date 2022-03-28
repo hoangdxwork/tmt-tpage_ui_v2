@@ -4,7 +4,7 @@
         <div class="flex flex-row items-center">
             <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị:</span>
             <tds-select valueField="name" textField="name" [ngModel]="currentFilter" [border]="false"
-                [data]="filterList" size="md" class="text-primary-1 text-body-2 font-semibold font-sans w-[120px] truncate ..."
+                [data]="filterList" size="md" class="tds-dashboard-filter w-[120px] truncate ..."
                 (ngModelChange)="onChangeFilter($event)" classIcon="tdsi-arrow-down-fill">
             </tds-select>
         </div>
@@ -15,14 +15,14 @@
                 <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng doanh thu</span>
                 <span class="text-primary-1 text-heading-4 font-semibold font-sans text-center">
                     {{labelData.revenue.value|number}}
-                    <i [class]="labelData.revenue.decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
+                    <i [class]="labelData.revenue.decrease ? 'tdsi-chart-down-line text-error-400' : 'tdsi-chart-up-line text-success-400' "></i>
                 </span>
             </div>
             <div class="flex flex-col items-center justify-center w-full">
                 <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng lợi nhuận</span>
                 <span class="text-accent-10 text-heading-4 font-semibold font-sans text-center">
                     {{labelData.profit.value|number}}
-                    <i [class]="labelData.profit.decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
+                    <i [class]="labelData.profit.decrease ? 'tdsi-chart-down-line text-error-400' : 'tdsi-chart-up-line text-success-400' "></i>
                 </span>
             </div>
         </div>
