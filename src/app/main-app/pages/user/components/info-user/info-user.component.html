@@ -26,17 +26,17 @@
             <div class="flex h-full">
                 <div class="h-full  pr-6">
                     <tds-avatar class="bg-accent-4  text-white " [size]="104"
-                        tdsSrc="../../../../../../assets/images/Avatar-user.png">
+                        [tdsSrc]="userInit?.Avatar">
                     </tds-avatar>
                 </div>
-                <form [formGroup]="formUser" (ngSubmit)="onSubmitUser()"
+                <form *ngIf="formUser" [formGroup]="formUser" (ngSubmit)="onSubmitUser()"
                     class="flex flex-col w-full gap-y-4 pl-6 border-l border-neutral-200">
                     <div class="flex gap-x-4">
                         <div class="w-1/5"><span class="text-body-2 text-neutral-900 font-regular">Họ & tên:</span>
                         </div>
                         <div class="w-4/5">
                             <span *ngIf="!isChangeInfoUser"
-                                class="text-body-2 text-neutral-900 font-semibold">{{formUser.value.name}}</span>
+                                class="text-body-2 text-neutral-900 font-semibold">{{formUser?.value?.name}}</span>
                             <tds-form-field *ngIf="isChangeInfoUser" class="w-full">
                                 <input tdsInput autocomplete="off" placeholder="Nhập tên" formControlName="name" />
                             </tds-form-field>
@@ -48,7 +48,7 @@
                         </div>
                         <div class="w-4/5">
                             <span *ngIf="!isChangeInfoUser"
-                                class="text-body-2 text-neutral-900 font-semibold">{{formUser.value.phone}}</span>
+                                class="text-body-2 text-neutral-900 font-semibold">{{formUser?.value?.phone}}</span>
                             <tds-form-field *ngIf="isChangeInfoUser" class="w-full">
                                 <input tdsInput autocomplete="off" placeholder="Nhập số điện thoại"
                                     formControlName="phone" />
@@ -59,7 +59,7 @@
                         <div class="w-1/5"><span class="text-body-2 text-neutral-900 font-regular">Email:</span></div>
                         <div class="w-4/5">
                             <span *ngIf="!isChangeInfoUser"
-                                class="text-body-2 text-neutral-900 font-semibold">{{formUser.value.email}}</span>
+                                class="text-body-2 text-neutral-900 font-semibold">{{formUser?.value?.email}}</span>
                             <tds-form-field *ngIf="isChangeInfoUser" class="w-full">
                                 <input tdsInput autocomplete="off" placeholder="Nhập email" formControlName="email" />
                             </tds-form-field>

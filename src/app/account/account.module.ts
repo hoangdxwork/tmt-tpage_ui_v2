@@ -22,6 +22,7 @@ import { TDSButtonModule, TDSCheckBoxModule, TDSFormFieldModule, TDSInputModule,
     TDSCheckBoxModule,
     TDSMessageModule,
     TDSSpinnerModule,
+    TDSSpinnerModule,
   ]
 })
 export class AccountModule { }

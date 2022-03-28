@@ -40,29 +40,42 @@
                 </div>
             </div>
         </div>
-        <div class="w-1/2 bg-white flex flex-col justify-between px-9 py-7">
-            <div class="flex justify-center"><span class="text-heading-3 font-semibold pt-2.5">Đăng nhập</span></div>
-            <form [formGroup]="loginForm" action="" class="mb-20" (ngSubmit)="onSubmit()">
-                <tds-form-field class="mt-4">
-                    <tds-label>Username</tds-label>
-                    <input tdsInput autocomplete="off" formControlName="phoneNumber" placeholder="Nhập username" />
-                    <tds-error>Vui lòng nhập Username</tds-error>
-                </tds-form-field>
-                <tds-form-field class="mt-4">
-                    <tds-label>Password</tds-label>
-                    <input tdsInput autocomplete="off" formControlName="password" type="password" placeholder="Nhập password" />
-                    <tds-error>Vui lòng nhập password</tds-error>
-                </tds-form-field>
-                <div class="mt-4">
-                    <tds-checkbox class="text-neutral-900">Nhớ mật khẩu</tds-checkbox>
+        <div class="w-1/2 bg-white flex relative">
+            <div *ngIf="isLoading" class="absolute top-0 left-0 z-20 w-full h-full box-border m-0 p-0 text-center flex flex-col items-center justify-center tds-spin-spinning opacity-100">
+                <div class="flex items-center justify-center flex-col">
+                    <div class="flex">
+                        <tds-spinner color="primary" class="h-8 w-8"></tds-spinner>           
+                    </div>
+                    <div class="mt-3"> 
+                        loading.........
+                    </div>
                 </div>
-                <button class="mt-4 w-full" tds-button (click)="onSubmit()">Đăng nhập</button>
-            </form>
-            <div class="flex gap-x-2 justify-center text-body-2">
-                <a routerLink="" class="text-neutral-400">Quên mật khẩu?</a>
-                <a routerLink="" class="text-primary-1 font-semibold">Đăng ký</a>
             </div>
-            
+            <div [ngClass]="isLoading?'opacity-50':''" class="w-full bg-white flex flex-col justify-between px-9 py-7">
+                <div class="flex justify-center"><span class="text-heading-3 font-semibold pt-2.5">Đăng nhập</span>
+                </div>
+                <form [formGroup]="loginForm" action="" class="mb-20" (ngSubmit)="onSubmit()">
+                    <tds-form-field class="mt-4">
+                        <tds-label>Username</tds-label>
+                        <input tdsInput autocomplete="off" formControlName="phoneNumber" placeholder="Nhập username" />
+                        <tds-error>Vui lòng nhập Username</tds-error>
+                    </tds-form-field>
+                    <tds-form-field class="mt-4">
+                        <tds-label>Password</tds-label>
+                        <input tdsInput autocomplete="off" formControlName="password" type="password"
+                            placeholder="Nhập password" />
+                        <tds-error>Vui lòng nhập password</tds-error>
+                    </tds-form-field>
+                    <div class="mt-4">
+                        <tds-checkbox class="text-neutral-900">Nhớ mật khẩu</tds-checkbox>
+                    </div>
+                    <button class="mt-4 w-full" tds-button (click)="onSubmit()">Đăng nhập</button>
+                </form>
+                <div class="flex gap-x-2 justify-center text-body-2">
+                    <a routerLink="" class="text-neutral-400">Quên mật khẩu?</a>
+                    <a routerLink="" class="text-primary-1 font-semibold">Đăng ký</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
