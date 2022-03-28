@@ -21,7 +21,7 @@ import { ColumnTableDTO } from '../components/config-column/config-column.compon
 export class BillComponent implements OnInit{
 
   lstOfData: Array<TDSSafeAny> = [];
-  pageSize = 10;
+  pageSize = 20;
   pageIndex = 1;
   isLoading: boolean = false;
   count: number = 1;
@@ -188,6 +188,7 @@ export class BillComponent implements OnInit{
                 case "draft" :
                     this.tabNavs.push({Name: "Nháp", Index: 2, Type: x.Type, Total: x.Total })
                     break;
+                    
                 default:
                     break;
             }
@@ -205,14 +206,15 @@ export class BillComponent implements OnInit{
     })
   }
 
-  onSelectChange(item: TDSSafeAny) {
-    this.tabIndex = item.Index;
+  onSelectChange(Index: TDSSafeAny) {
+    // this.tabIndex = item.Index;
+    const dataItem =  this.tabNavs.find(f=>{return f.Index == Index})
     this.pageIndex = 1;
-    this.pageSize = 20;
-
+    // this.pageSize = 20;
+    this.indClickTag = -1;
     this.filterObj = {
       tags: [],
-      status: item.Type,
+      status: dataItem?.Type,
       bill: '',
       deliveryType: '',
       searchText: '',
@@ -264,7 +266,7 @@ export class BillComponent implements OnInit{
   applyFilter(event: TDSSafeAny)  {
     this.tabIndex = 1;
     this.pageIndex = 1;
-    this.pageSize = 20;
+    // this.pageSize = 20;
 
     this.filterObj.searchText = event.target.value;
     this.loadData();
@@ -302,5 +304,9 @@ export class BillComponent implements OnInit{
     //   return {field:s.key, dir: s.value == 'descend' ? SortEnum.desc  : SortEnum.asc}
     // }).reverse();
     this.loadData();
+  }
+  configDefault(){
+    this.pageIndex =1;
+    this.indClickTag = -1;
   }
 }
