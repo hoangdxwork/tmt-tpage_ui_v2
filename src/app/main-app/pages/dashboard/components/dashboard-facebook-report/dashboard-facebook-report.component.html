@@ -9,36 +9,41 @@
             </tds-select>
         </div>
     </div>
-    <div class="flex flex-col items-center">
-        <div class="flex flex-row items-center justify-center w-full divide-x py-4">
-            <div class="flex flex-col items-center justify-center w-full">
-                <img src="assets/images/dashboard-like-icon.svg" alt="">
-                <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng lượt thích</span>
-                <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData.likes)}}</span>
+    <div *ngIf="!emptyData;else emptyTmp">
+        <div class="flex flex-col items-center">
+            <div class="flex flex-row items-center justify-center w-full divide-x py-4">
+                <div class="flex flex-col items-center justify-center w-full">
+                    <img src="assets/images/dashboard/like-icon.svg">
+                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng lượt thích</span>
+                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData[0])}}</span>
+                </div>
+                <div class="flex flex-col items-center justify-center w-full">
+                    <img src="assets/images/dashboard/comment-icon.svg">
+                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng bình luận</span>
+                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData[1])}}</span>
+                </div>
+                <div class="flex flex-col items-center justify-center w-full">
+                    <img src="assets/images/dashboard/chat-icon.svg">
+                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng tin nhắn</span>
+                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData[2])}}</span>
+                </div>
+                <div class="flex flex-col items-center justify-center w-full">
+                    <img src="assets/images/dashboard/note-icon.svg">
+                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng bài viết</span>
+                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData[3])}}</span>
+                </div>
+                <div class="flex flex-col items-center justify-center w-full">
+                    <img src="assets/images/dashboard/conversation-icon.svg">
+                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Hội thoại</span>
+                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData[4])}}</span>
+                </div>
             </div>
-            <div class="flex flex-col items-center justify-center w-full">
-                <img src="assets/images/dashboard-comment-icon.svg" alt="">
-                <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng bình luận</span>
-                <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData.comments.toLocaleString())}}</span>
+            <div class="w-full pb-6">
+                <div echarts [options]="fbReportOption" [size]="['auto',446]"></div>
             </div>
-            <div class="flex flex-col items-center justify-center w-full">
-                <img src="assets/images/dashboard-chat-icon.svg" alt="">
-                <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng tin nhắn</span>
-                <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData.messages)}}</span>
-            </div>
-            <div class="flex flex-col items-center justify-center w-full">
-                <img src="assets/images/dashboard-note-icon.svg" alt="">
-                <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng bài viết</span>
-                <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData.articles)}}</span>
-            </div>
-            <div class="flex flex-col items-center justify-center w-full">
-                <img src="assets/images/dashboard-conversation-icon.svg" alt="">
-                <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Hội thoại</span>
-                <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData.conversations)}}</span>
-            </div>
-        </div>
-        <div class="w-full pb-6">
-            <div echarts [options]="fbReportOption" [size]="['auto',446]"></div>
         </div>
     </div>
 </div>
+<ng-template #emptyTmp>
+    <app-dashboard-empty-data></app-dashboard-empty-data>
+</ng-template>

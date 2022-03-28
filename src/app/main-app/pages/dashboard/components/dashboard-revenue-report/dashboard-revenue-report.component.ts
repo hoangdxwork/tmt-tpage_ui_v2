@@ -12,7 +12,7 @@ export class DashboardRevenueReportComponent implements OnInit {
   //#region variable
   revenueOption:TDSSafeAny;
   chartOption = TDSChartOptions();
-  labelData:TDSSafeAny;
+  labelData:TDSSafeAny[] = [];
   axisData:TDSSafeAny[] = [];
   seriesData:TDSSafeAny[] = [];
   colors:Color[] = [];
@@ -22,6 +22,7 @@ export class DashboardRevenueReportComponent implements OnInit {
     {id:2, name:'Tháng này'}
   ]
   currentFilter = this.filterList[0].name;
+  emptyData = false;
   //#endregion
   constructor() { }
 
@@ -31,16 +32,16 @@ export class DashboardRevenueReportComponent implements OnInit {
 
   
   loadData(){
-    this.labelData = {
-      revenue:{
+    this.labelData = [
+      {
         value:500000000,
         decrease:false
       },
-      profit:{
+      {
         value:200000000,
         decrease:false
       },
-    };
+    ];
 
     this.axisData = ['1','2','3','4','5','6'];
     this.seriesData = [
@@ -54,6 +55,10 @@ export class DashboardRevenueReportComponent implements OnInit {
       }
     ];
     this.colors = ['#28A745','#1A6DE3','#F59E0B','#F33240'];
+
+    if(this.labelData.length < 2 || this.seriesData.length == 0 || this.axisData.length == 0){
+      this.emptyData = true;
+    }
 
     let chart:TDSBarChartComponent ={
       color:this.colors,

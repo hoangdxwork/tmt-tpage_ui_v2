@@ -1,4 +1,4 @@
-<div class="flex flex-row items-baseline w-full">
+<div *ngIf="!emptyData" class="flex flex-row items-baseline w-full mb-4">
     <div class="bg-white rounded-md flex flex-row w-full py-4 px-5 mr-4">
         <div class="flex flex-col w-3/4">
             <div class="w-full flex flex-row items-center pb-2">
@@ -104,7 +104,7 @@
     </div>
 </div>
 
-<div class="bg-white w-full mb-4 rounded-md mt-4">
+<div class="bg-white w-full mb-4 rounded-md">
     <div class="border-b flex flex-row align-center justify-between p-4">
         <div class="flex flex-row items-center w-full">
             <tds-avatar class="bg-primary-1 text-white mr-2.5" icon="tdsi-cart-fill"></tds-avatar>
@@ -121,23 +121,25 @@
             <tds-range-picker [(ngModel)]="rangeDate" (ngModelChange)="onChangeDate($event)" class="w-[266px]"></tds-range-picker>
         </div>
     </div>
-    <div class="flex flex-col w-full px-4 py-9">
-        <div class="flex flex-row items-center justify-center w-full">
-            <div echarts [options]="option" [size]="['auto',400]" class="w-full"></div>
+    <div *ngIf="!emptyData; else emptyTmp">
+        <div class="flex flex-col w-full px-4 py-9">
+            <div class="flex flex-row items-center justify-center w-full">
+                <div echarts [options]="option" [size]="['auto',400]" class="w-full"></div>
+            </div>
         </div>
     </div>
 </div>
 
 <div class="bg-white w-full rounded-md">
-    <tds-table #basicTable [listData]="tableData" [showPagination]="false" class="tds-report-table">
+    <tds-table #basicTable [listData]="tableData" [showPagination]="false" class="tds-report-table" [noResult]="emptyTable">
         <thead class="text-neutral-1-900 text-body-2 font-semibold font-sans">
               <tr>
                     <th>Thời gian</th>
-                    <th>Doanh thu</th>
                     <th>Đơn hàng</th>
                     <th>Khách hàng mới</th>
                     <th>Khách hàng cũ</th>
                     <th>Số đơn chốt</th>
+                    <th>Doanh thu</th>
                     <th>Tỉ lệ đơn chốt/ KH mới</th>
                     <th>Tỉ lệ đơn chốt/ KH cũ</th>
               </tr>
@@ -146,23 +148,36 @@
             <ng-template ngFor let-data [ngForOf]="basicTable.data" >
                 <tr>
                     <td>{{ data.reportDate }}</td>
-                    <td>{{ data.revenue }}</td>
-                    <td>{{ data.orders }}</td>
-                    <td>{{ data.newCustomers }}</td>
-                    <td>{{ data.oldCustomers }}</td>
-                    <td>{{ data.completeOrders }}</td>
+                    <td>{{ data.orders|number }}</td>
+                    <td>{{ data.newCustomers|number }}</td>
+                    <td>{{ data.oldCustomers|number }}</td>
+                    <td>{{ data.completeOrders|number }}</td>
+                    <td>{{ data.revenue|number }}</td>
                     <td>
                         <span class="text-primary-1">{{ (data.completeOrders/data.newCustomers)|percent}}</span>
                         <br>
-                        <span class="text-neutral-1-400">{{data.completeOrders}}/{{data.newCustomers}}</span>
+                        <span class="text-neutral-1-400">{{data.completeOrders|number}}/{{data.newCustomers|number}}</span>
                     </td>
                     <td>
                         <span class="text-primary-1">{{ (data.completeOrders/data.oldCustomers)|percent}}</span>
                         <br>
-                        <span class="text-neutral-1-400">{{data.completeOrders}}/{{data.oldCustomers}}</span>
+                        <span class="text-neutral-1-400">{{data.completeOrders|number}}/{{data.oldCustomers|number}}</span>
                     </td>
                 </tr>
             </ng-template>
         </tbody>
     </tds-table>
 </div>
+
+<!-- empty -->
+<ng-template #emptyTmp>
+    <div class="h-[434px]">
+        <app-report-empty-data></app-report-empty-data>
+    </div>
+</ng-template>
+
+<ng-template #emptyTable>
+    <div class="h-[344px]">
+        <app-report-empty-data></app-report-empty-data>
+    </div>
+</ng-template>

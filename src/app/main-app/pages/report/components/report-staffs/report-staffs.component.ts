@@ -23,6 +23,7 @@ export class ReportStaffsComponent implements OnInit {
   ];
   selectedItem = this.selectList[0].name;
   rangeDate = null;
+  emptyData = false;
   //#endregion
   
   constructor() { }
@@ -73,6 +74,10 @@ export class ReportStaffsComponent implements OnInit {
       }
     ];
     this.colors = ['#2684FF','#28A745','#FF8900','#0C9AB2','#FFC400'];
+
+    if(this.tableData.length == 0 || this.seriesData.length == 0){
+      this.emptyData = true;
+    }
 
     let component:TDSPieChartComponent = {
       color: this.colors,

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BillComponent } from './bill.component';
+import { DashboardEmptyDataComponent } from './dashboard-empty-data.component';
 
-describe('BillComponent', () => {
-  let component: BillComponent;
-  let fixture: ComponentFixture<BillComponent>;
+describe('DashboardEmptyDataComponent', () => {
+  let component: DashboardEmptyDataComponent;
+  let fixture: ComponentFixture<DashboardEmptyDataComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BillComponent ]
+      declarations: [ DashboardEmptyDataComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BillComponent);
+    fixture = TestBed.createComponent(DashboardEmptyDataComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

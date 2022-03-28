@@ -1,6 +1,6 @@
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TDSEchartsModule } from 'tds-report';
-import { TDSAvatarModule, TDSDatePickerModule, TDSMenuModule, TDSSelectModule, TDSTableModule, TDSButtonModule } from 'tmt-tang-ui';
+import { TDSAvatarModule, TDSDatePickerModule, TDSMenuModule, TDSSelectModule, TDSTableModule, TDSButtonModule, TDSCollapseModule, TDSDropDownModule, TDSModalModule, TDSBadgeModule, TDSFormFieldModule, TDSEmptyModule } from 'tmt-tang-ui';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -12,6 +12,7 @@ import { ReportSalesComponent } from './components/report-sales/report-sales.com
 import { ReportFacebookComponent } from './components/report-facebook/report-facebook.component';
 import { ReportStaffsComponent } from './components/report-staffs/report-staffs.component';
 import { ReportLabelsComponent } from './components/report-labels/report-labels.component';
+import { ReportEmptyDataComponent } from './components/report-empty-data/report-empty-data.component';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { ReportLabelsComponent } from './components/report-labels/report-labels.
     ReportSalesComponent,
     ReportFacebookComponent,
     ReportStaffsComponent,
-    ReportLabelsComponent
+    ReportLabelsComponent,
+    ReportEmptyDataComponent,
   ],
   imports: [
     CommonModule,
@@ -37,7 +39,13 @@ import { ReportLabelsComponent } from './components/report-labels/report-labels.
     TDSSelectModule,
     TDSTableModule,
     TDSDatePickerModule,
-    TDSButtonModule
+    TDSButtonModule,
+    TDSCollapseModule,
+    TDSDropDownModule,
+    TDSModalModule,
+    TDSBadgeModule,
+    TDSFormFieldModule,
+    TDSEmptyModule
   ]
 })
 export class ReportModule { }
