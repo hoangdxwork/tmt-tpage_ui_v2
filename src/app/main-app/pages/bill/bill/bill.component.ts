@@ -5,11 +5,12 @@ import { TCommonService } from 'src/app/lib/services';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { OdataFastSaleOrderService } from 'src/app/main-app/services/mock-odata/odata-fastsaleorder.service';
-import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperString, TDSI18nService, ToastrService, toArray, TDSTableQueryParams } from 'tmt-tang-ui';
+import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperString, TDSI18nService, ToastrService, toArray, TDSTableQueryParams, TDSHelperArray } from 'tmt-tang-ui';
 import { partnerDto } from '../../partner/partner/partner.component';
 import { addDays, getISODay } from 'date-fns/esm';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { THelperCacheService } from 'src/app/lib';
+import { ColumnTableDTO } from '../components/config-column/config-column.component';
 
 @Component({
   selector: 'app-bill',
@@ -37,6 +38,23 @@ export class BillComponent implements OnInit{
     }
   }
 
+  public hiddenColumns = new Array<ColumnTableDTO>();
+  public columns: any[] = [
+    {value: 'Number', name: 'Số HĐ', isChecked: true},
+    {value: 'CRMTeamName', name: 'Kênh kết nối', isChecked: true},
+    {value: 'DateInvoice', name: 'Ngày bán', isChecked: true},
+    {value: 'PartnerDisplayName', name: 'Khách hàng', isChecked: true},
+    {value: 'AmountTotal', name: 'Tổng tiền', isChecked: true},
+    {value: 'Residual', name: 'Còn nợ', isChecked: true},
+    {value: 'ShowState', name: 'Trạng thái', isChecked: true},
+    {value: 'CarrierName', name: 'Đối tác giao hàng', isChecked: true},
+    {value: 'TrackingRef', name: 'Mã vận đơn', isChecked: true},
+    {value: 'ShipPaymentStatus', name: 'Trạng thái GH', isChecked: false},
+    {value: 'CashOnDelivery', name: 'Tiền thu hộ', isChecked: false},
+    {value: 'IsRefund', name: 'Đơn hàng trả', isChecked: false},
+    {value: 'CustomerDeliveryPrice', name: 'Phí ship giao hàng', isChecked: false},
+  ];
+
   public tabNavs: Array<TDSSafeAny> = [];
   public modelTags: Array<TDSSafeAny> = [];
 
@@ -52,36 +70,56 @@ export class BillComponent implements OnInit{
   public lstDataTag: Array<TDSSafeAny> = [];
   expandSet = new Set<number>();
 
-  public hiddenColumns: any[] = [];
-  public columns: any[] = [
-    {value: 'Number', name: 'Số HĐ'},
-    {value: 'CRMTeamName', name: 'Kênh kết nối'},
-    {value: 'DateInvoice', name: 'Ngày bán'},
-    {value: 'PartnerDisplayName', name: 'Khách hàng'},
-    {value: 'AmountTotal', name: 'Tổng tiền'},
-    {value: 'Residual', name: 'Còn nợ'},
-    {value: 'ShowState', name: 'Trạng thái'},
-    {value: 'CarrierName', name: 'Đối tác giao hàng'},
-    {value: 'TrackingRef', name: 'Mã vận đơn'},
-    {value: 'ShipPaymentStatus', name: 'Trạng thái GH'},
-    {value: 'CashOnDelivery', name: 'Tiền thu hộ'},
-    {value: 'IsRefund', name: 'Đơn hàng trả'},
-    {value: 'CustomerDeliveryPrice', name: 'Phí ship giao hàng'}
-  ];
-
-  constructor(private modalService: TDSModalService,
-    private  odataFastSaleOrderService: OdataFastSaleOrderService,
-      private tagService: TagService,
-      private fastSaleOrderService :FastSaleOrderService,
-      private viewContainerRef: ViewContainerRef){
-  }
-
   checked = false;
   indeterminate = false;
   setOfCheckedId = new Set<number>();
 
+  constructor(private modalService: TDSModalService,
+    private  odataFastSaleOrderService: OdataFastSaleOrderService,
+      private tagService: TagService,
+      private cacheApi: THelperCacheService,
+      private fastSaleOrderService :FastSaleOrderService,
+      private viewContainerRef: ViewContainerRef) {
+  }
+
+  ngOnInit(): void {
+    this.loadData();
+    this.loadSummaryStatus();
+    this.loadTags();
+
+    this.loadGridConfig();
+  }
+
+  loadGridConfig() {
+    const key = this.fastSaleOrderService._keyCacheGrid;
+    this.cacheApi.getItem(key).subscribe((res: TDSSafeAny) => {
+      var jsColumns = JSON.parse(res.value) as any;
+
+      if(jsColumns.value && jsColumns.value.columnConfig) {
+        this.hiddenColumns = jsColumns.value.columnConfig;
+      }
+      else {
+        this.hiddenColumns = this.columns;
+      }
+    })
+  }
+
   isHidden(columnName: string) {
-     return false;
+      return this.hiddenColumns.find(x => x.value == columnName)?.isChecked;
+  }
+
+  columnsChange(event: Array<ColumnTableDTO>) {
+    this.hiddenColumns = event;
+    if(event && event.length > 0) {
+      const gridConfig = {
+          columnConfig: event
+      };
+
+      const key = this.fastSaleOrderService._keyCacheGrid;
+      this.cacheApi.setItem(key, gridConfig);
+
+      event.forEach(column => { this.isHidden(column.value) });
+    }
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -110,12 +148,6 @@ export class BillComponent implements OnInit{
     this.indeterminate = this.lstOfData.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
   }
 
-  ngOnInit(): void {
-    this.loadData();
-    this.loadSummaryStatus();
-    this.loadTags();
-  }
-
   loadData() {
     this.isLoading = true;
     let filters = this.odataFastSaleOrderService.buildFilter(this.filterObj);
@@ -125,32 +157,6 @@ export class BillComponent implements OnInit{
 
         this.count = res['@odata.count'] as number //260
         this.lstOfData = res.value;
-
-
-
-
-
-
-          // Id: _.Id,
-          // Number: _.Number,
-          // Tags: x.Tags,
-          // PartnerDisplayName: x.PartnerDisplayName,
-          // PrintDeliveryCount: x.PrintDeliveryCount,
-          // PrintShipCount: x.PrintShipCount,
-          // CRMTeamName: x.CRMTeamName,
-          // DateInvoice: x.DateInvoice,
-          // AmountTotal: x.AmountTotal,
-          // Residual: x.Residual,
-          // PaymentMessageCount: x.PaymentMessageCount,
-          // State: x.State,
-          // ShowState: x.ShowState,
-          // CarrierName: x.CarrierName,
-          // TrackingRef: x.TrackingRef,
-          // ShipPaymentStatus: x.ShipPaymentStatus,
-          // CashOnDelivery: x.CashOnDelivery,
-          // IsRefund: x.IsRefund,
-          // CustomerDeliveryPrice: x.CustomerDeliveryPrice,
-
         this.isLoading = false;
     });
   }

@@ -10,7 +10,6 @@ import { CRMTeamDTO } from '../dto/team/team.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable()
-
 export class FastSaleOrderService extends BaseSevice {
 
   prefix: string = "odata";
