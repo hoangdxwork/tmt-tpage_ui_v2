@@ -15,22 +15,26 @@
             <tds-range-picker [(ngModel)]="rangeDate" (ngModelChange)="onChangeDate($event)" class="w-[266px]"></tds-range-picker>
         </div>
     </div>
-    <div class="flex flex-col w-full px-4 py-9">
-        <div class="grid grid-cols-4 gap-y-6 gap-x-4 h-full w-full">
-            <div *ngFor="let item of tableData">
-                <div class="flex flex-col h-[150px] border rounded-md border-neutral-2-200 shadow-1-sm">
-                    <div class="flex flex-row items-center w-full h-1/3 px-5 pt-2 rounded-t-md">
-                        <span class="text-body-2 font-normal text-center font-sans pr-2" [class]="item.value > 0 ?'text-primary-1':'text-error-400'">{{item.percent}}<i [class]="item.value > 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></i></span>
-                        <span class="text-neutral-1-400 text-body-2 font-normal font-sans text-center">{{item.filter}}</span>
+
+    <div *ngIf="!emptyData; else emptyTmp">
+        <div class="flex flex-col w-full px-4 py-9">
+            <div class="grid grid-cols-4 gap-y-6 gap-x-4 h-full w-full">
+                <div *ngFor="let item of tableData">
+                    <div class="flex flex-col h-[150px] border rounded-md border-neutral-2-200 shadow-1-sm">
+                        <div class="flex flex-row items-center w-full h-1/3 px-5 pt-2 rounded-t-md">
+                            <span class="text-body-2 font-normal text-center font-sans pr-2" [class]="item.value > 0 ?'text-primary-1':'text-error-400'">{{item.percent}}<i [class]="item.value > 0 ? 'tdsi-chart-up-line':'tdsi-chart-down-line'"></i></span>
+                            <span class="text-neutral-1-400 text-body-2 font-normal font-sans text-center">{{item.filter}}</span>
+                        </div>
+                        <div class="flex items-center w-full h-1/3 px-5 pb-3 text-neutral-1-900 text-heading-4 font-semibold font-sans">{{item.value}}</div>
+                        <div class="flex items-center w-full h-1/3 px-5 rounded-b-md bg-{{item.color}} text-white text-body-2 font-normal font-sans">{{item.labelName}}</div>
                     </div>
-                    <div class="flex items-center w-full h-1/3 px-5 pb-3 text-neutral-1-900 text-heading-4 font-semibold font-sans">{{item.value}}</div>
-                    <div class="flex items-center w-full h-1/3 px-5 rounded-b-md bg-{{item.color}} text-white text-body-2 font-normal font-sans">{{item.labelName}}</div>
                 </div>
-            </div>
-          </div>
+              </div>
+        </div>
     </div>
 </div>
-<div class="bg-white w-full rounded-md">
+
+<div *ngIf="!emptyData" class="bg-white w-full rounded-md">
     <tds-table #basicTable [listData]="tableData" [showPagination]="false" class="tds-report-table">
         <thead class="text-neutral-1-900 text-body-2 font-semibold font-sans">
               <tr>
@@ -56,3 +60,10 @@
         </tbody>
     </tds-table>
 </div>
+
+<!-- empty -->
+<ng-template #emptyTmp>
+    <div class="h-[434px]">
+        <app-report-empty-data></app-report-empty-data>
+    </div>
+</ng-template>

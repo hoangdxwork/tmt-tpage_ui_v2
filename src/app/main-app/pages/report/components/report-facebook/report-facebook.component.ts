@@ -24,6 +24,7 @@ export class ReportFacebookComponent implements OnInit {
   ];
   selectedItem = this.selectList[0].name;
   rangeDate = null;
+  emptyData = false;
   //#endregion
   constructor() { }
 
@@ -34,19 +35,74 @@ export class ReportFacebookComponent implements OnInit {
   loadData(){
     this.tableData = [
       {
-        id:1, page:'App Quản Lí Bán Hàng Tpos', imageURL:'assets/images/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
+        id:1, 
+        page:'App Quản Lí Bán Hàng Tpos', 
+        imageURL:'assets/images/Avatar-user.png', 
+        conversations:30,
+         messages:20, 
+         comments:50, 
+         customers:50, 
+         oldCustomers:30, 
+         orders:40, 
+         completeOrders:20, 
+         responseTime:10, 
+         revenue:5000000
       },
       {
-        id:2, page:'App Quản Lí Bán Hàng Tpos', imageURL:'assets/images/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
+        id:2, 
+        page:'App Quản Lí Bán Hàng Tpos', 
+        imageURL:'assets/images/Avatar-user.png', 
+        conversations:30,
+         messages:20, 
+         comments:50, 
+         customers:50, 
+         oldCustomers:30, 
+         orders:40, 
+         completeOrders:20, 
+         responseTime:10, 
+         revenue:5000000
       },
       {
-        id:3, page:'App Quản Lí Bán Hàng Tpos', imageURL:'assets/images/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
+        id:3, 
+        page:'App Quản Lí Bán Hàng Tpos', 
+        imageURL:'assets/images/Avatar-user.png', 
+        conversations:30,
+         messages:20, 
+         comments:50, 
+         customers:50, 
+         oldCustomers:30, 
+         orders:40, 
+         completeOrders:20, 
+         responseTime:10, 
+         revenue:5000000
       },
       {
-        id:4, page:'App Quản Lí Bán Hàng Tpos', imageURL:'assets/images/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
+        id:4, 
+        page:'App Quản Lí Bán Hàng Tpos', 
+        imageURL:'assets/images/Avatar-user.png', 
+        conversations:30,
+         messages:20, 
+         comments:50, 
+         customers:50, 
+         oldCustomers:30, 
+         orders:40, 
+         completeOrders:20, 
+         responseTime:10, 
+         revenue:5000000
       },
       {
-        id:5, page:'App Quản Lí Bán Hàng Tpos', imageURL:'assets/images/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
+        id:5, 
+        page:'App Quản Lí Bán Hàng Tpos', 
+        imageURL:'assets/images/Avatar-user.png', 
+        conversations:30,
+         messages:20, 
+         comments:50, 
+         customers:50, 
+         oldCustomers:30, 
+         orders:40, 
+         completeOrders:20, 
+         responseTime:10, 
+         revenue:5000000
       },
     ];
     this.axisData = ['06/06','07/06','08/06','09/06','10/06','11/06'];
@@ -69,6 +125,10 @@ export class ReportFacebookComponent implements OnInit {
       }
     ];
     this.colors = ['#1A6DE3','#28A745','#F59E0B','#0C9AB2'];
+
+    if(this.axisData.length == 0 || this.seriesData.length == 0){
+      this.emptyData = true;
+    }
 
     let component:TDSBarChartComponent = {
       color: this.colors,

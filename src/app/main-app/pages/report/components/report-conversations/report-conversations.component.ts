@@ -14,17 +14,122 @@ export class ReportConversationsComponent implements OnInit {
   option:TDSSafeAny;
   chartOption = TDSChartOptions();
   tableData:Array<TDSSafeAny> = [];
+  modalData:Array<TDSSafeAny> = [];
   axisData:TDSSafeAny[] = [];
   seriesData:TDSSafeAny[] = [];
   colors:Color[] = [];
 
-  selectList = [
-    { id:1, name:'App Quản Lí Bán Hàng TPos 1' },
-    { id:2, name:'App Quản Lí Bán Hàng TPos 2' },
-    { id:3, name:'App Quản Lí Bán Hàng TPos 3' },
+  showModal = false;
+  ItemList = [
+    { 
+      id:1, 
+      name:'Quần áo XK Nhiên Trung 1', 
+      image:'assets/images/Avatar-user.png',
+      active:false,
+      children:[
+        {
+          id:1, 
+          name:'Quản Lý TPos 1',
+          image:'assets/images/Avatar-user.png',
+          active:false,
+          conversationList:[
+            { id:1, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+            { id:2, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
+            { id:3, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+            { id:4, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
+            { id:5, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
+            { id:6, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+            { id:7, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
+            { id:8, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+            { id:9, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
+            { id:10, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+            { id:11, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+            { id:12, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+          ]
+        },
+        {
+          id:2, 
+          name:'Quản Lý TPos 2',
+          image:'assets/images/Avatar-user.png',
+          active:false,
+          conversationList:[
+            { id:1, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+            { id:2, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
+            { id:3, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+            { id:4, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
+            { id:5, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
+          ]
+        }
+      ] 
+    },
+    { 
+      id:2, 
+      name:'Quần áo XK Nhiên Trung 2', 
+      image:'assets/images/Avatar-user.png',
+      active:false,
+      children:[
+        {
+          id:1, 
+          name:'Quản Lý TPos 1',
+          image:'assets/images/Avatar-user.png',
+          active:false,
+          conversationList:[
+            { id:1, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+            { id:2, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
+            { id:3, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+            { id:4, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
+            { id:5, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
+            { id:6, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+            { id:7, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
+          ]
+        },
+        {
+          id:2, 
+          name:'Quản Lý TPos 2',
+          image:'assets/images/Avatar-user.png',
+          active:false,
+          conversationList:[
+            { id:1, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+            { id:2, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
+          ]
+        }
+      ] 
+    },
+    { 
+      id:3, 
+      name:'Quần áo XK Nhiên Trung 3', 
+      image:'assets/images/Avatar-user.png',
+      active:false,
+      children:[
+        {
+          id:1, 
+          name:'Quản Lý TPos 1',
+          image:'assets/images/Avatar-user.png',
+          active:false,
+          conversationList:[
+            { id:1, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+            { id:2, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
+            { id:3, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+            { id:4, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
+            { id:5, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
+            { id:6, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+          ]
+        },
+        {
+          id:2, 
+          name:'Quản Lý TPos 2',
+          image:'assets/images/Avatar-user.png',
+          active:false,
+          conversationList:[
+            { id:1, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
+          ]
+        }
+      ] 
+    },
   ];
-  selectedItem = this.selectList[0].name;
+  selectedItem = this.ItemList[0].name;
   rangeDate = null;
+  emptyData = false;
   //#endregion
 
   constructor() { }
@@ -36,19 +141,64 @@ export class ReportConversationsComponent implements OnInit {
   loadData(){
     this.tableData = [
       {
-        id:1, reportDate:'06/06/2021', conversations:50, messages:30, comments:20, newPhoneNumber:10, responseTime:10, orders:10, completeOrders:2, noReplyMessages:10
+        id:1, 
+        reportDate:'06/06/2021', 
+        conversations:50, 
+        messages:30, 
+        comments:20, 
+        newPhoneNumber:10, 
+        responseTime:10, 
+        orders:10, 
+        completeOrders:2,
+        noReplyMessages:10, 
       },
       {
-        id:2, reportDate:'06/06/2021', conversations:50, messages:30, comments:20, newPhoneNumber:10, responseTime:10, orders:10, completeOrders:2, noReplyMessages:10
+        id:2, 
+        reportDate:'06/06/2021', 
+        conversations:50, 
+        messages:30, 
+        comments:20, 
+        newPhoneNumber:10, 
+        responseTime:10, 
+        orders:10, 
+        completeOrders:2, 
+        noReplyMessages:10
       },
       {
-        id:3, reportDate:'06/06/2021', conversations:50, messages:30, comments:20, newPhoneNumber:10, responseTime:10, orders:10, completeOrders:2, noReplyMessages:10
+        id:3, 
+        reportDate:'06/06/2021', 
+        conversations:50, 
+        messages:30, 
+        comments:20, 
+        newPhoneNumber:10, 
+        responseTime:10, 
+        orders:10, 
+        completeOrders:2, 
+        noReplyMessages:10
       },
       {
-        id:4, reportDate:'06/06/2021', conversations:50, messages:30, comments:20, newPhoneNumber:10, responseTime:10, orders:10, completeOrders:2, noReplyMessages:10
+        id:4, 
+        reportDate:'06/06/2021', 
+        conversations:50, 
+        messages:30, 
+        comments:20, 
+        newPhoneNumber:10, 
+        responseTime:10, 
+        orders:10, 
+        completeOrders:2, 
+        noReplyMessages:10
       },
       {
-        id:5, reportDate:'06/06/2021', conversations:50, messages:30, comments:20, newPhoneNumber:10, responseTime:10, orders:10, completeOrders:2, noReplyMessages:10
+        id:5, 
+        reportDate:'06/06/2021', 
+        conversations:50, 
+        messages:30, 
+        comments:20, 
+        newPhoneNumber:10, 
+        responseTime:10, 
+        orders:10, 
+        completeOrders:2, 
+        noReplyMessages:10
       },
     ];
     this.axisData = ['06/06','07/06','08/06','09/06','10/06','11/06','12/06','13/06','14/06','15/06','16/06','17/06'];
@@ -63,6 +213,10 @@ export class ReportConversationsComponent implements OnInit {
       }
     ];
     this.colors = ['#1A6DE3','#28A745'];
+
+    if(this.axisData.length == 0 || this.seriesData.length == 0){
+      this.emptyData = true;
+    }
 
     let component:TDSBarChartComponent = {
       color: this.colors,
@@ -167,11 +321,37 @@ export class ReportConversationsComponent implements OnInit {
     return list;
   }
 
-  onChangeSelect(data:TDSSafeAny){
+  getConversations(data:TDSSafeAny,parent:TDSSafeAny){
     this.selectedItem = data;
+    this.ItemList.forEach(item => {
+      item.children.forEach(child => {
+        if(child.name === data.name && item.id == parent.id){
+          child.active = true;
+          this.onShowModal(child.conversationList);
+        }else{
+          child.active = false;
+        }
+      });
+    });
+  }
+
+  onClose(event:TDSSafeAny){
+
   }
 
   onChangeDate(result: Date[]): void {
     
+  }
+
+  onShowModal(modalData:Array<TDSSafeAny>){
+    setTimeout(()=>{
+      this.showModal = true;
+    },500);
+
+    this.modalData = modalData;
+  }
+
+  handleCancel(): void {
+      this.showModal = false;
   }
 }

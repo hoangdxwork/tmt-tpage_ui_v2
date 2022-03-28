@@ -9,54 +9,59 @@
             </tds-select>
         </div>
     </div>
-    <div class="flex flex-row w-full py-8 px-2">
-        <div echarts [options]="staffOption" [size]="[270,270]" class="mr-6"></div>
-        <div class="flex flex-col w-full divide-y divide-neutral-2-200">
-            <div class="w-full py-6">
-                <div class="flex flex-row items-center justify-between w-full">
-                    <div class="flex flex-row items-center">
-                        <span class="flex items-center justify-center border border-transparent bg-neutral-3-100 rounded-md text-neutral-1-900 text-caption-2 font-semibold font-sans text-center h-4 w-4">
-                            1
-                        </span>
-                        <span class="text-neutral-1-900 text-title-1 font-semibold font-sans pl-2">{{staffsData[0].name}}</span>
+    <div *ngIf="!emptyData;else emptyTmp">
+        <div class="flex flex-row w-full py-8 px-2">
+            <div echarts [options]="staffOption" [size]="[270,270]" class="mr-6"></div>
+            <div class="flex flex-col w-full divide-y divide-neutral-2-200">
+                <div *ngIf="staffsData.length > 0" class="w-full py-6">
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <div class="flex flex-row items-center">
+                            <span class="flex items-center justify-center border border-transparent bg-neutral-3-100 rounded-md text-neutral-1-900 text-caption-2 font-semibold font-sans text-center h-4 w-4">
+                                1
+                            </span>
+                            <span class="text-neutral-1-900 text-title-1 font-semibold font-sans pl-2">{{staffsData[0].name}}</span>
+                        </div>
+                        <span class="h-4 w-4 bg-primary-1 rounded-md"></span>
                     </div>
-                    <span class="h-4 w-4 bg-primary-1 rounded-md"></span>
-                </div>
-                <div class="flex flex-row items-center justify-between e-full">
-                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans">{{staffsData[0].value|number:'2.0-2'}} tương tác</span>
-                    <span class="text-primary-1 text-body-2 font-semibold font-sans">{{staffsData[0].value/100|percent:'1.0-2'}}</span>
-                </div>
-            </div>
-            <div class="w-full py-6">
-                <div class="flex flex-row items-center justify-between w-full">
-                    <div class="flex flex-row items-center">
-                        <span class="flex items-center justify-center border border-transparent bg-neutral-3-100 rounded-md text-neutral-1-900 text-caption-2 font-semibold font-sans text-center h-4 w-4">
-                            2
-                        </span>
-                        <span class="text-neutral-1-900 text-title-1 font-semibold font-sans pl-2">{{staffsData[1].name}}</span>
+                    <div class="flex flex-row items-center justify-between e-full">
+                        <span class="text-neutral-1-400 text-body-2 font-regular font-sans">{{staffsData[0].value|number:'2.0-2'}} tương tác</span>
+                        <span class="text-primary-1 text-body-2 font-semibold font-sans">{{staffsData[0].value/100|percent:'1.0-2'}}</span>
                     </div>
-                    <span class="h-4 w-4 bg-accent-4 rounded-md"></span>
                 </div>
-                <div class="flex flex-row items-center justify-between e-full">
-                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans">{{staffsData[1].value|number:'2.0-2'}} tương tác</span>
-                    <span class="text-accent-4 text-body-2 font-semibold font-sans">{{staffsData[1].value/100|percent:'1.0-2'}}</span>
-                </div>
-            </div>
-            <div class="w-full py-6">
-                <div class="flex flex-row items-center justify-between w-full">
-                    <div class="flex flex-row items-center">
-                        <span class="flex items-center justify-center border border-transparent bg-neutral-3-100 rounded-md text-neutral-1-900 text-caption-2 font-semibold font-sans text-center h-4 w-4">
-                            3
-                        </span>
-                        <span class="text-neutral-1-900 text-title-1 font-semibold font-sans pl-2">{{staffsData[2].name}}</span>
+                <div *ngIf="staffsData.length > 1" class="w-full py-6">
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <div class="flex flex-row items-center">
+                            <span class="flex items-center justify-center border border-transparent bg-neutral-3-100 rounded-md text-neutral-1-900 text-caption-2 font-semibold font-sans text-center h-4 w-4">
+                                2
+                            </span>
+                            <span class="text-neutral-1-900 text-title-1 font-semibold font-sans pl-2">{{staffsData[1].name}}</span>
+                        </div>
+                        <span class="h-4 w-4 bg-accent-4 rounded-md"></span>
                     </div>
-                    <span class="h-4 w-4 bg-accent-9 rounded-md"></span>
+                    <div class="flex flex-row items-center justify-between e-full">
+                        <span class="text-neutral-1-400 text-body-2 font-regular font-sans">{{staffsData[1].value|number:'2.0-2'}} tương tác</span>
+                        <span class="text-accent-4 text-body-2 font-semibold font-sans">{{staffsData[1].value/100|percent:'1.0-2'}}</span>
+                    </div>
                 </div>
-                <div class="flex flex-row items-center justify-between e-full">
-                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans">{{staffsData[2].value|number:'2.0-2'}} tương tác</span>
-                    <span class="text-accent-9 text-body-2 font-semibold font-sans">{{staffsData[2].value/100|percent:'1.0-2'}}</span>
+                <div *ngIf="staffsData.length > 2" class="w-full py-6">
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <div class="flex flex-row items-center">
+                            <span class="flex items-center justify-center border border-transparent bg-neutral-3-100 rounded-md text-neutral-1-900 text-caption-2 font-semibold font-sans text-center h-4 w-4">
+                                3
+                            </span>
+                            <span class="text-neutral-1-900 text-title-1 font-semibold font-sans pl-2">{{staffsData[2].name}}</span>
+                        </div>
+                        <span class="h-4 w-4 bg-accent-9 rounded-md"></span>
+                    </div>
+                    <div class="flex flex-row items-center justify-between e-full">
+                        <span class="text-neutral-1-400 text-body-2 font-regular font-sans">{{staffsData[2].value|number:'2.0-2'}} tương tác</span>
+                        <span class="text-accent-9 text-body-2 font-semibold font-sans">{{staffsData[2].value/100|percent:'1.0-2'}}</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<ng-template #emptyTmp>
+    <app-dashboard-empty-data></app-dashboard-empty-data>
+</ng-template>
