@@ -45,51 +45,66 @@ export class PartnerComponent implements OnInit {
     { id: 4, name: 'Tag4' }
   ]
 
-  firstPhone = ['097', '098', '038', '039', '037', '036', '035', '034', '090', '093', '077', '082']
-  namePhone = ['Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Mobifone', 'Mobifone', 'Mobifone', 'Vinaphone']
-  tabsPartner = [
+  // '097', '098', '038', '039', '037', '035', '034',
+  // 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel',
+  firstPhone = ['036', '090', '093', '077', '082']
+  namePhone = ['Viettel',  'Mobifone', 'Mobifone', 'Mobifone', 'Vinaphone']
+  
+  selected = 0;
+  isLoadingTable = false
+  dataFillterPartner = [
     {
-      id: 0,
       name: 'Tất cả',
+      value: 0,
       count: 99,
-      content: [
-
-      ]
+      disabled: false
     },
     {
-      id: 1,
       name: 'Thân thiết',
+      value: 1,
       count: 85,
-      content: "Content of Tab Pane 2"
+      disabled: false
     },
     {
-      id: 2,
       name: 'Bình thường',
+      value: 2,
       count: 80,
-      content: "Content of Tab Pane 3"
+      disabled: false
     },
     {
-      id: 3,
       name: 'Khách vip',
+      value: 3,
       count: 80,
-      content: "Content of Tab Pane 3"
+      disabled: false
     },
     {
-      id: 4,
       name: 'Bom hàng',
+      value: 4,
       count: 80,
-      content: "Content of Tab Pane 3"
+      disabled: false
     }
   ];
-
-  expandSet = new Set<number>();
-  constructor(private modalService: TDSModalService, private viewContainerRef: ViewContainerRef) { }
 
   checked = false;
   indeterminate = false;
   listOfCurrentPageData: readonly partnerDto[] = [];
   listOfData: readonly partnerDto[] = [];
   setOfCheckedId = new Set<number>();
+
+  expandSet = new Set<number>();
+  constructor(private modalService: TDSModalService, private viewContainerRef: ViewContainerRef) { }
+
+  // Click fillter Status
+  onSelectChange(value: TDSSafeAny) {
+    this.isLoadingTable = true
+    setTimeout(() => {
+      this.isLoadingTable = false
+    }, 500);
+  }
+  onModelChange(value: TDSSafeAny) {
+
+    console.log('ngModelChange', value)
+  }
 
   updateCheckedSet(id: number, checked: boolean): void {
     if (checked) {

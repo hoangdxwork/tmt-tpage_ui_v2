@@ -15,6 +15,7 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   returnUrl!: string;
   isSubmit: boolean = false;
+  isLoading: boolean = false;
   constructor(private formBuilder: FormBuilder,
     private router: Router,
     private authen: TAuthService,
@@ -43,7 +44,7 @@ export class LoginComponent implements OnInit {
     this.authen.getCacheToken().subscribe(
       data => {
         if (TDSHelperObject.hasValue(data) &&
-          TDSHelperString.hasValueString(data.accessToken)) {
+          TDSHelperString.hasValueString(data.access_token)) {
           that.router.navigate([that.returnUrl]);
           this.isSubmit = false;
           
@@ -65,7 +66,8 @@ export class LoginComponent implements OnInit {
       return
     }
     this.isSubmit = true;
-    this.loader.show()
+    this.isLoading = true;
+    //this.loader.show()
     const { phoneNumber, password } = this.loginForm.value;
 
     this.authen.signInPassword(phoneNumber, password)
@@ -73,7 +75,8 @@ export class LoginComponent implements OnInit {
         data => {
           setTimeout(() => {
             this.isSubmit = false;
-            this.loader.hidden();
+            this.isLoading = false;
+            //this.loader.hidden();
           }, 100);
           that.router.navigate([that.returnUrl]);
        
@@ -81,7 +84,8 @@ export class LoginComponent implements OnInit {
         (error: TDSSafeAny) => {
           this.message.error("Tài khoản hoặc mật khẩu không đúng");
           this.isSubmit = false;
-          this.loader.hidden();
+          this.isLoading = false;
+          //this.loader.hidden();
         }
       );
 

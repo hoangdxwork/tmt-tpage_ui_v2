@@ -1,3 +1,4 @@
+import { UserInitDTO, TAuthService } from 'src/app/lib';
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { NgForm, FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 
@@ -9,6 +10,7 @@ import { NgForm, FormGroup, FormBuilder, FormControl, Validators } from '@angula
 export class InfoUserComponent implements OnInit, OnChanges {
 
   @Output() outputItemIsInfo = new EventEmitter<boolean>();
+  userInit!: UserInitDTO;
   isChangeInfoUser = false
   isCancelInfoUser = false
 
@@ -16,14 +18,12 @@ export class InfoUserComponent implements OnInit, OnChanges {
 
   formUser !: FormGroup
   formPassword!: FormGroup
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder,
+    private auth: TAuthService,
+  ) { }
 
   ngOnInit(): void {
-    this.formUser = this.fb.group({
-      name: new FormControl('Nguyễn Văn A'),
-      phone: new FormControl('0321479652', Validators.maxLength(10)),
-      email: new FormControl('nguyenvana@gmail.com', Validators.email)
-    })
+    this.loadUserInfo()
     this.formPassword = this.fb.group({
       passwordOld: new FormControl(''),
       passwordNew: new FormControl(''),
@@ -41,6 +41,18 @@ export class InfoUserComponent implements OnInit, OnChanges {
         }
       )
     }
+  }
+  loadUserInfo() {
+    this.auth.getUserInit().subscribe(res => {
+      this.userInit = res || {};
+      this.formUser = this.fb.group({
+        name: new FormControl(this.userInit?.Name),
+        phone: new FormControl(this.userInit?.PhoneNumber, Validators.maxLength(10)),
+        email: new FormControl(this.userInit?.Email, Validators.email)
+      })
+    })
+
+
   }
   changeInfoUser() {
     this.isChangeInfoUser = true
