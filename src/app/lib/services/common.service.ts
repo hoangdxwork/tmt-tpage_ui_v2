@@ -55,11 +55,11 @@ export class TCommonService {
             reportProgress?: boolean,
             responseType?: any,
             withCredentials?: boolean
-        } = { 
-            headers: headers, 
-            withCredentials: withCredent, 
-            observe: observe, 
-            responseType: responseType 
+        } = {
+            headers: headers,
+            withCredentials: withCredent,
+            observe: observe,
+            responseType: responseType
         };
         let result: Observable<T>;
         switch (pmethod) {
@@ -94,6 +94,7 @@ export class TCommonService {
         let that = this;
         return that.connect<T>(api.method, api.url, param,that.getHeaderJSon());
     }
+
     //Tạo mới dữ liệu
     public create<T>(api: TAPIDTO, param: any): Observable<T> {
         let that = this;
@@ -109,6 +110,15 @@ export class TCommonService {
         let that = this;
         return that.connect<T>(api.method, api.url, param, that.getHeaderJSon());
     }
+
+
+    public getExFile<T>(api: TAPIDTO, param: any): Observable<T> {debugger
+        let that = this;
+        let options = that.getHeaderJSon();
+
+        return that.connect<T>(api.method, api.url, param,options,true,'body','text');
+    }
+
     //Thực thi redirect trang login
     // public redirectLogin(urlLogin: string): void {
     //     if (TDSHelperObject.hasValue(TCoreFunction.redirectLogin)) {
@@ -118,6 +128,7 @@ export class TCommonService {
     //     }
     // }
     //Thực thi lấy header
+
     getHeaderJSon(isAuthorize: boolean = true, istoken: boolean = false): HttpHeaders {
 
         if (isAuthorize) {

@@ -6,72 +6,30 @@
   </button>
   <tds-dropdown-menu #menu="tdsDropdownMenu">
     <div class="w-full">
-      <div tds-dropdown-item>
-        <a>Gửi yêu cầu thanh toán </a>
-      </div>
-      <div tds-dropdown-item>
-        <a> In phiếu </a>
-      </div>
-      <div tds-dropdown-item>
-        <a> In phiếu ship </a>
-      </div>
-      <div tds-dropdown-item>
-        <a> In phiếu giao hàng </a>
-      </div>
-      <div tds-dropdown-item>
-        <a (click)="exportExcel('excels')"> Xuất excel </a>
-      </div>
-      <div tds-dropdown-item>
-        <a (click)="exportExcel('details')"> Xuất excel chi tiết </a>
-      </div>
-      <div tds-dropdown-item>
-        <a>Xuất excel chi tiết sản phẩm </a>
-      </div>
-      <div tds-dropdown-item>
-        <a>Gửi tin nhắn Facebook </a>
-      </div>
-      <div tds-dropdown-item>
-        <a>Gửi lại mã vận đơn </a>
-      </div>
-      <div tds-dropdown-item>
-        <a>Xác nhận bán hàng </a>
-      </div>
-      <div tds-dropdown-item>
-        <a>Xác nhận thanh toán </a>
-      </div>
-      <div tds-dropdown-item>
-        <a>Thanh toán </a>
-      </div>
-      <div tds-dropdown-item>
-        <a>Trả hàng hành loạt </a>
-      </div>
-      <div tds-dropdown-item>
-        <a>Cập nhật đối soát giao hàng từ file </a>
-      </div>
-      <div tds-dropdown-item>
-        <a>Cập nhật thông tin giao hàng từ file</a>
-      </div>
-      <div tds-dropdown-item>
-        <a>Cập nhật mã vận đơn từ file</a>
-      </div>
-      <div tds-dropdown-item>
-        <a>Chọn và cập nhật trạng thái giao hàng</a>
-      </div>
-      <div tds-dropdown-item>
-        <a>Chọn và cập nhật trạng thái đối soát</a>
-      </div>
-      <div tds-dropdown-item>
+      <div tds-dropdown-item>Gửi yêu cầu thanh toán</div>
+      <div tds-dropdown-item (click)="print('print')">In phiếu</div>
+      <div tds-dropdown-item (click)="print('printShips')"> In phiếu ship </div>
+      <div tds-dropdown-item (click)="print('printDeliveries')">In phiếu giao hàng</div>
+      <div tds-dropdown-item>Xuất excel </div>
+      <div tds-dropdown-item>Xuất excel chi tiết</div>
+      <div tds-dropdown-item>Xuất excel chi tiết sản phẩm </div>
+      <div tds-dropdown-item>Gửi tin nhắn Facebook</div>
+      <div tds-dropdown-item>Gửi lại mã vận đơn</div>
+      <div tds-dropdown-item>Xác nhận bán hàng</div>
+      <div tds-dropdown-item>Xác nhận thanh toán</div>
+      <div tds-dropdown-item>Thanh toán</div>
+      <div tds-dropdown-item>Trả hàng hành loạt</div>
+      <div tds-dropdown-item>Cập nhật đối soát giao hàng từ file</div>
+      <div tds-dropdown-item>Cập nhật thông tin giao hàng từ file</div>
+      <div tds-dropdown-item>Cập nhật mã vận đơn từ file</div>
+      <div tds-dropdown-item>Chọn và cập nhật trạng thái giao hàng</div>
+      <div tds-dropdown-item>Chọn và cập nhật trạng thái đối soát</div>
+      <!-- <div tds-dropdown-item>
         <a>Lịch sử đối soát</a>
-      </div>
-      <div tds-dropdown-item>
-        <a>Hủy vận đơn</a>
-      </div>
-      <div tds-dropdown-item>
-        <a>Hủy hóa đơn</a>
-      </div>
-      <div tds-dropdown-item>
-        <a>Xóa</a>
-      </div>
+      </div> -->
+      <div tds-dropdown-item (click)="cancelDelivery()">Hủy vận đơn </div>
+      <div tds-dropdown-item (click)="cancelInvoice()">Hủy hóa đơn </div>
+      <div tds-dropdown-item (click)="unLink()">Xóa</div>
     </div>
   </tds-dropdown-menu>
 </tds-button-group>

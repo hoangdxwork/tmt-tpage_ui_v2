@@ -1,6 +1,7 @@
 import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { Observable} from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
+import { PageLoadingService } from 'src/app/shared/services/page-loading.service';
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { BaseSevice } from './base.service';
 
@@ -13,6 +14,7 @@ export class PrinterService extends BaseSevice {
   public renderer: Renderer2;
 
   constructor(private apiService: TCommonService,
+      private loader: PageLoadingService,
       public rendererFactory: RendererFactory2) {
 
     super(apiService);
@@ -20,8 +22,8 @@ export class PrinterService extends BaseSevice {
   }
 
   printHtml(html: string) {
-      var body = document.querySelector('body');
-      var iframe = this.renderer.createElement("iframe");
+      let body = document.querySelector('body');
+      let iframe = this.renderer.createElement("iframe");
       this.renderer.setStyle(iframe, "visibility", "hidden");
       //gán vào body
       this.renderer.appendChild(body, iframe);
@@ -33,19 +35,22 @@ export class PrinterService extends BaseSevice {
           iframe.remove();
       }
 
-      var doc = iframe.contentWindow.document.open("text/html", "replace");
-
+      let doc = iframe.contentWindow.document.open("text/html", "replace");
       doc.write(html);
       doc.close();
   }
 
-  printUrl(url: string): Observable<TDSSafeAny> {
+  printUrl(url: string) {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${url}`,
         method: TApiMethodType.get
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, { responseType: "text"});
+    this.loader.show();
+    this.apiService.getExFile<TDSSafeAny>(api, null).subscribe((res: TDSSafeAny) => {
+        this.loader.hidden();
+        return this.printHtml(res);
+    })
   }
 
   printUrlAsync(url: string): Observable<any> {
@@ -56,7 +61,7 @@ export class PrinterService extends BaseSevice {
             method: TApiMethodType.get,
         }
 
-        this.apiService.getData<TDSSafeAny>(api, { responseType: 'text' }).subscribe((res: TDSSafeAny) => {
+        this.apiService.getExFile<TDSSafeAny>(api,null).subscribe((res: TDSSafeAny) => {
             this.printHtml(res);
 
             observer.next(res);

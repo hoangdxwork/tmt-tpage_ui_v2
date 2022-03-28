@@ -93,12 +93,10 @@ export class BillComponent implements OnInit{
   loadGridConfig() {
     const key = this.fastSaleOrderService._keyCacheGrid;
     this.cacheApi.getItem(key).subscribe((res: TDSSafeAny) => {
-      var jsColumns = JSON.parse(res.value) as any;
-
-      if(jsColumns.value && jsColumns.value.columnConfig) {
+      if(res && res.value) {
+        var jsColumns = JSON.parse(res.value) as any;
         this.hiddenColumns = jsColumns.value.columnConfig;
-      }
-      else {
+      } else {
         this.hiddenColumns = this.columns;
       }
     })
@@ -188,7 +186,7 @@ export class BillComponent implements OnInit{
                 case "draft" :
                     this.tabNavs.push({Name: "Nháp", Index: 2, Type: x.Type, Total: x.Total })
                     break;
-                    
+
                 default:
                     break;
             }
@@ -208,10 +206,10 @@ export class BillComponent implements OnInit{
 
   onSelectChange(Index: TDSSafeAny) {
     // this.tabIndex = item.Index;
-    const dataItem =  this.tabNavs.find(f=>{return f.Index == Index})
+    const dataItem =  this.tabNavs.find(f =>{ return f.Index == Index })
     this.pageIndex = 1;
-    // this.pageSize = 20;
     this.indClickTag = -1;
+
     this.filterObj = {
       tags: [],
       status: dataItem?.Type,
@@ -266,7 +264,6 @@ export class BillComponent implements OnInit{
   applyFilter(event: TDSSafeAny)  {
     this.tabIndex = 1;
     this.pageIndex = 1;
-    // this.pageSize = 20;
 
     this.filterObj.searchText = event.target.value;
     this.loadData();
@@ -295,9 +292,11 @@ export class BillComponent implements OnInit{
   openDrawerMessage(linkFacebook: string){
     this.isOpenMessageFacebook = true;
   }
+
   closeDrawerMessage(ev: boolean){
     this.isOpenMessageFacebook = false;
   }
+
   onQueryParamsChange(params: TDSTableQueryParams) {
     //console.log('params',params)
     // this.listSort = params.sort.filter(f=> f.value != null).map(s=>{
@@ -305,8 +304,28 @@ export class BillComponent implements OnInit{
     // }).reverse();
     this.loadData();
   }
-  configDefault(){
-    this.pageIndex =1;
+
+  pageIndexChange(event: any): void {
+    this.pageIndex = 2;
+    this.loadData();
+  }
+
+  refreshData(){
+    this.pageIndex = 1;
     this.indClickTag = -1;
+
+    this.filterObj = {
+      tags: [],
+      status: '',
+      bill: null,
+      deliveryType: '',
+      searchText: '',
+      dateRange: {
+          startDate: addDays(new Date(), -30),
+          endDate: new Date(),
+      }
+    }
+
+    this.loadData();
   }
 }

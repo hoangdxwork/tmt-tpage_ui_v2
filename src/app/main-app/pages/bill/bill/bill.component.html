@@ -36,15 +36,13 @@
       </div>
       <div class="flex-auto w-full py-4">
         <tds-table #rowSelectionTable
-        [showSizeChanger]="true"
-        [frontPagination]="false"   
-        [listData]="lstOfData" 
-        [(pageSize)]="pageSize" 
-        [(pageIndex)]="pageIndex"
-        [total]="count"
-          [scroll]="{y:'auto', x: 'auto'}" [loading]="isLoading"
-          (clickRefresh)="loadData()"
-          (queryParams)="onQueryParamsChange($event)">
+          [showSizeChanger]="true"
+          [frontPagination]="false"
+          [listData]="lstOfData"
+          [(pageSize)]="pageSize"
+          [(pageIndex)]="pageIndex"
+          [total]="count" [scroll]="{y:'auto', x: 'auto'}" [loading]="isLoading"
+          (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
           <thead>
             <tr>
               <th class="text-center" width="50px"></th>
