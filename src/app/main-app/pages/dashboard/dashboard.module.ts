@@ -23,6 +23,7 @@ import { DashboardDailyReportComponent } from './components/dashboard-daily-repo
 import { DashboardStaffReportComponent } from './components/dashboard-staff-report/dashboard-staff-report.component';
 import { DashboardConnectingPageReportComponent } from './components/dashboard-connecting-page-report/dashboard-connecting-page-report.component';
 import { DashboardProductReportComponent } from './components/dashboard-product-report/dashboard-product-report.component';
+import { DashboardEmptyDataComponent } from './components/dashboard-empty-data/dashboard-empty-data.component';
 
 
 @NgModule({
@@ -44,7 +45,8 @@ import { DashboardProductReportComponent } from './components/dashboard-product-
     DashboardDailyReportComponent,
     DashboardStaffReportComponent,
     DashboardConnectingPageReportComponent,
-    DashboardProductReportComponent
+    DashboardProductReportComponent,
+    DashboardEmptyDataComponent
   ],
   imports: [
     CommonModule,

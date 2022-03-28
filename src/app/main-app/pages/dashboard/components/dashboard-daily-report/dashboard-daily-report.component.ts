@@ -15,7 +15,9 @@ export class DashboardDailyReportComponent implements OnInit {
     {id:2, name:'Tháng này'}
   ]
   currentFilter = this.filterList[0].name;
-  labelData:TDSSafeAny;
+  labelData:TDSSafeAny[] = [];
+  emptyData = false;
+
   dailyOption:any;
   chartOption = TDSChartOptions();
   axisData:TDSSafeAny[] = [];
@@ -30,23 +32,23 @@ export class DashboardDailyReportComponent implements OnInit {
   }
 
   loadData(){
-    this.labelData = {
-      conversations:{
+    this.labelData = [
+      {
         value:300,
         percent:20,
         decrease:false
       },
-      newMessages:{
+      {
         value:300,
         percent:20,
         decrease:true
       },
-      newComments:{
+      {
         value:300,
         percent:20,
         decrease:false
       }
-    };
+    ];
 
     this.axisData = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23'];
     this.seriesData = [
@@ -56,6 +58,10 @@ export class DashboardDailyReportComponent implements OnInit {
       }
     ];
     this.colors = ['#28A745','#1A6DE3','#F59E0B','#F33240'];
+
+    if(this.labelData.length < 3 || this.axisData.length == 0 || this.seriesData.length == 0){
+      this.emptyData = true;
+    }
 
     let chart:TDSLineChartComponent ={
       color:this.colors,

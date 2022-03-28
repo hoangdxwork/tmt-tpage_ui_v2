@@ -13,7 +13,8 @@ export class DashboardOverviewComponent implements OnInit {
     {id:2, name:'Tháng này'}
   ]
   currentFilter = this.filterList[0].name;
-  labelData:TDSSafeAny;
+  labelData:TDSSafeAny[] = [];
+  emptyData = false;
   //#endregion
   
   constructor() { }
@@ -23,24 +24,28 @@ export class DashboardOverviewComponent implements OnInit {
   }
 
   loadData(){
-    this.labelData = {
-      customer:{
+    this.labelData = [
+      {
         value:25,
         percent:20,
         decrease:false
       },
-      reaction:{
+      {
         value:140000,
         percent:20
       },
-      bill:{
+      {
         value:25,
         percent:20
       },
-      order:{
+      {
         value:3,
         percent:20
-      },
+      }
+    ];
+
+    if(this.labelData.length < 4){
+      this.emptyData = true;
     }
   }
 

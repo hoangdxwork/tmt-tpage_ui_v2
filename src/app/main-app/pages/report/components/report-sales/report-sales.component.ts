@@ -26,6 +26,7 @@ export class ReportSalesComponent implements OnInit {
   selectedItem = this.selectList[0].name;
   pageData:TDSSafeAny[] = [];
   rangeDate = null;
+  emptyData = false;
   //#endregion
   constructor() { }
 
@@ -43,19 +44,19 @@ export class ReportSalesComponent implements OnInit {
 
     this.tableData = [
       {
-        id:1, reportDate:'06/06/2021', revenue:50, orders:30, newCustomers:20, oldCustomers:50, completeOrders:10,
+        id:1, reportDate:'06/06/2021', revenue:5000000, orders:30, newCustomers:20, oldCustomers:50, completeOrders:10,
       },
       {
-        id:2, reportDate:'06/06/2021', revenue:50, orders:30, newCustomers:20, oldCustomers:50, completeOrders:10,
+        id:2, reportDate:'06/06/2021', revenue:5000000, orders:30, newCustomers:20, oldCustomers:50, completeOrders:10,
       },
       {
-        id:3, reportDate:'06/06/2021', revenue:50, orders:30, newCustomers:20, oldCustomers:50, completeOrders:10,
+        id:3, reportDate:'06/06/2021', revenue:5000000, orders:30, newCustomers:20, oldCustomers:50, completeOrders:10,
       },
       {
-        id:4, reportDate:'06/06/2021', revenue:50, orders:30, newCustomers:20, oldCustomers:50, completeOrders:10,
+        id:4, reportDate:'06/06/2021', revenue:5000000, orders:30, newCustomers:20, oldCustomers:50, completeOrders:10,
       },
       {
-        id:5, reportDate:'06/06/2021', revenue:50, orders:30, newCustomers:20, oldCustomers:50, completeOrders:10,
+        id:5, reportDate:'06/06/2021', revenue:5000000, orders:30, newCustomers:20, oldCustomers:50, completeOrders:10,
       },
     ];
     this.axisData = ['06/06','07/06','08/06','09/06','10/06','11/06'];
@@ -74,6 +75,10 @@ export class ReportSalesComponent implements OnInit {
       }
     ];
     this.colors = ['#1A6DE3','#28A745','#F59E0B'];
+
+    if(this.tableData.length == 0 || this.axisData.length == 0 || this.seriesData.length == 0 || this.pageData.length == 0){
+      this.emptyData = true;
+    }
 
     let component:TDSBarChartComponent = {
       color: this.colors,

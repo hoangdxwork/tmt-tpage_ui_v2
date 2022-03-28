@@ -18,9 +18,9 @@ export class DashboardStaffReportComponent implements OnInit {
     {id:2, name:'Tháng này'}
   ]
   currentFilter = this.filterList[0].name;
-  labelData:TDSSafeAny;
   colors:Color[] = [];
   staffsData:TDSSafeAny[] = [];
+  emptyData = false;
   //#endregion
 
   constructor() { }
@@ -34,9 +34,13 @@ export class DashboardStaffReportComponent implements OnInit {
       { id:1, name:'Nguyễn Bính', value:70 },
       { id:2, name:'Nguyễn Thuần', value:15 },
       { id:3, name:'Nguyễn jolie', value:15 },
-    ]
+    ];
 
     this.colors= ['#28A745','#2684FF','#FF8900'];
+
+    if(this.staffsData.length == 0){
+      this.emptyData = true;
+    }
 
     let chart:TDSPieChartComponent = {
       color:this.colors,

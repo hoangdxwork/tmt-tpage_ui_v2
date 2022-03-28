@@ -14,6 +14,7 @@ export class ReportLabelsComponent implements OnInit {
   option:TDSSafeAny;
   chartOption = TDSChartOptions();
   tableData:Array<TDSSafeAny> = [];
+  emptyData = false;
 
   selectList = [
     { id:1, name:'App Quản Lí Bán Hàng TPos 1' },
@@ -217,6 +218,10 @@ export class ReportLabelsComponent implements OnInit {
         usedTime:24
       }
     ];
+
+    if(this.tableData.length == 0){
+      this.emptyData = true;
+    }
   }
 
   onChangeSelect(data:TDSSafeAny){

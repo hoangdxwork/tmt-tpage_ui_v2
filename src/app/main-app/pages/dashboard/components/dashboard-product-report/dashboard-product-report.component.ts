@@ -21,6 +21,7 @@ export class DashboardProductReportComponent implements OnInit {
     {id:2, name:'Tháng này'}
   ]
   currentFilter = this.filterList[0].name;
+  emptyData = false;
   //#endregion
 
   constructor() { }
@@ -33,6 +34,10 @@ export class DashboardProductReportComponent implements OnInit {
     this.axisData = ['[SP0557] GIẤY K80','[SP0761] Ginkgo Biloba','[SP0318] Máy in','[AZPNJ] Chỉ Vàng PNJ','[SP0557] GIẤY K80','[SP0761] Ginkgo Biloba','[SP0318] Máy in','[SJC] Vàng SJC','[SP0557] GIẤY K80','[AZ100] 100 gr Vàng SJC'];
     this.seriesData = [15000,18000,21000,23000,27000,33000,42000,44000,52000,58000];
     this.colors = ['#28A745','rgba(40, 167, 69, 0.1)'];
+
+    if(this.axisData.length == 0 || this.seriesData.length == 0){
+      this.emptyData = true;
+    }
 
     let chart:TDSBarChartComponent = {
       grid:{
