@@ -1,101 +1,27 @@
-<div class="h-full w-full">
-    <tds-page-header [title]="typeChoose=='user'?'Tài Khoản':(typeChoose=='data'?'Gói cước':'Thông báo')" class="bg-white">
-    <tds-breadcrumb tds-page-header-breadcrumb>
-        <tds-breadcrumb-item>Cá nhân</tds-breadcrumb-item>
-        <tds-breadcrumb-item>
-            <a>{{typeChoose=='user'?'Tài Khoản':(typeChoose=='data'?'Gói cước':'Thông báo')}}</a>
-        </tds-breadcrumb-item>
-    </tds-breadcrumb>
-
-
-    <tds-page-header-content>
-        <div class="w-full flex items-center justify-between">
-            <div class="flex">
-                <tds-tag [checked]="typeChoose=='user'" (checkedChange)="changeType('user')" mode="checkable"
-                    rounded='rounded-full' class="mr-2">
-                    Tài Khoản
-                </tds-tag>
-                <tds-tag [checked]="typeChoose=='data'" (checkedChange)="changeType('data')" mode="checkable"
-                    rounded='rounded-full' class="mr-2">
-                    Gói cước
-                </tds-tag>
-                <tds-tag [checked]="typeChoose=='notify'" (checkedChange)="changeType('notify')" mode="checkable"
-                    rounded='rounded-full'>
-                    Thông báo
-                </tds-tag>
-            </div>
-            <div *ngIf="typeChoose=='user' && isInfoUser && !isChangeInfoUser" class="flex gap-x-3">
-                <button tds-button color="primary" (click)="changeInfoUser()">
-                    <span class="flex items-center">
-                        <i class="tdsi-edit-fill text-lg leading-none mr-2"></i>Thay đổi thông tin
-                    </span>
-                </button>
-            </div>
-            <div *ngIf="typeChoose=='user' && isInfoUser && isChangeInfoUser" class="flex gap-x-3">
-                <button  tds-button color="primary" (click)="onSumitInfoUser()">
-                    <span class="flex items-center">
-                        Lưu thông tin
-                    </span>
-                </button>
-                <button tds-button color="secondary"
-                    (click)="cancelChangeUser()">
-                    <span class="flex items-center">
-                        Hủy bỏ
-                    </span>
-                </button>
-            </div>
-            <div *ngIf="typeChoose=='user' && isPassUser" class="flex gap-x-3">
-                <button  tds-button color="primary" (click)="onSumitPassword()">
-                    <span class="flex items-center">
-                        Lưu thông tin
-                    </span>
-                </button>
-                <button  tds-button color="secondary">
-                    <span class="flex items-center">
-                        Hủy bỏ
-                    </span>
-                </button>
-            </div>
-            <div *ngIf="typeChoose=='data' && isInfoData" class="flex gap-x-3">
-                <button  tds-button color="primary" (click)="chooseExtendData()">
-                    <span class="flex items-center">
-                        Gia hạn
-                    </span>
-                </button>
-                <button  tds-button color="secondary" (click)="chooseUpgradeData()">
-                    <span class="flex items-center">
-                        Nâng cấp gói
-                    </span>
-                </button>
+<div class="h-full w-full flex flex-col">
+    <div class="w-full flex flex-col bg-white">
+        <div class="p-4 w-full border-b border-neutral-200">
+            <div class="w-full flex justify-between">
+                <h1 class="flex items-center">
+                    <span class="text-neutral-1-900 text-header-1 font-semibold">Thông báo</span>
+                </h1>
             </div>
         </div>
-    </tds-page-header-content>
-</tds-page-header>
-<!-- Trang Tài khoản -->
-<app-info-user #pageUser
-    [isChangeInfo]="isChangeInfoUser" 
-    [isCancel]="isCancelUser" 
-    (outputItemIsInfo)="outputChooseItemUser($event)"
-    *ngIf="typeChoose=='user'">
-</app-info-user>
-<!-- Trang gói cước -->
-<div *ngIf="typeChoose=='data'">
-    <app-info-pack-of-data 
-    *ngIf="isInfoData">
-    </app-info-pack-of-data>
-    <app-choose-pack-of-data
-    *ngIf="isUpgradeData"
-    (outputBackInfoData)="outputBackInfoDataFromUpgrade($event)">
-    </app-choose-pack-of-data>
-    <app-extend-pack-of-data
-    *ngIf="isExtendData"
-    (outputBackInfoData)="outputBackInfoDataFromExtend($event)"
-    (outputNextInfoDataPayment)="outputNextInfoDataPayment($event)">
-    </app-extend-pack-of-data>
-    <app-info-payment-pack-of-data
-    *ngIf="isInfoDataPayment"
-    (outputBackPageExtendData)="outputBackPageExtendData($event)">
-    </app-info-payment-pack-of-data>
-</div>
-
+        <div class="p-4">
+            <div class="w-full flex items-center justify-between">
+                <div class="flex">
+                    <button *ngFor="let item of menuData"
+                        [routerLink]="item.link"
+                        [ngClass]="currentPage.name==item.name?'bg-primary-1 text-white hover:bg-primary-2':'bg-white text-neutral-1-700'" (click)="onChangePageUser(item)" 
+                        class="mr-2 text-body-2 rounded-full hover:bg-neutral-3-50 border border-neutral-2-200 font-semibold focus:outline-none py-1.5 px-4">
+                        <span class="flex items-center">
+                            <i [class]="item.icon + ' mr-2'"></i>{{item.name}}
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Trang Tài khoản -->
+    <router-outlet></router-outlet>
 </div>

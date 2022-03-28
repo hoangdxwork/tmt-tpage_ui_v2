@@ -1,5 +1,5 @@
 <div class="p-4 flex w-full justify-center">
-    <div class="w-3/4 bg-white rounded-md">
+    <div class="w-3/4 bg-white rounded-xl">
         <tds-card>
             <tds-card-header class="border-b border-light-200">Thông tin gói cước</tds-card-header>
             <tds-card-content>
@@ -72,10 +72,10 @@
                 <div class="py-2 justify-end flex">
                     <button tds-button color="secondary"
                     *ngIf="isPaymentInfoData" 
-                    (click)="clickBackPageExtendData()">Trở về</button>
+                    (click)="clickBackPageExtendData()" routerLink="/user/pack-of-data/extend">Trở về</button>
                     <button tds-button color="secondary"
                     *ngIf="isNextPaymentQR" 
-                    (click)="clickBackPageInfoPaymentData()">Trở về</button>
+                    (click)="clickBackPageInfoPaymentData()" routerLink="/user/pack-of-data/extend">Trở về</button>
                     <button tds-button color="success" class="ml-3" 
                     *ngIf="isPaymentInfoData"
                     (click)="clickNextPaymentQR()">Tiếp tục</button>

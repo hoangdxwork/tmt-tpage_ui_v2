@@ -8,8 +8,6 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 })
 export class ExtendPackOfDataComponent implements OnInit {
 
-  @Output() outputBackInfoData = new EventEmitter<boolean>();
-  @Output() outputNextInfoDataPayment = new EventEmitter<boolean>();
   price = 1000000
   public contactOptions = [
     { id: 1, value: 1 },
@@ -37,10 +35,8 @@ chooseMonth!: FormControl;
   }
 
   clickBackPageInfoData(){
-    this.outputBackInfoData.emit(true)
   }
 
   clickNextInfoDataPayment(){
-    this.outputNextInfoDataPayment.emit(true)
   }
 }

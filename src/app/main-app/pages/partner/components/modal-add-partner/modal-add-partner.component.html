@@ -75,7 +75,7 @@
                             <tds-form-field class="w-full">
                                 <input tdsInput placeholder="Số nhà, đường..." formControlName="numberStreet" />
                             </tds-form-field>
-                            <button tds-button-icon color="primary" size="sm" type="button">
+                            <button tds-button-icon color="primary" type="button">
                                 <span class="flex items-center">
                                     <i class="tdsi-location-line"></i>
                                 </span>
@@ -104,12 +104,13 @@
                     <div class="col-span-2 flex">
                         <tds-form-field class="w-full rounded-br-none rounded-tr-none">
                             <input tdsInput placeholder="Nhập số điện thoại" formControlName="phone" />
+                            <button tds-button-icon type="button" tdsAddOnRight size="md" color="secondary" size="md" class="">
+                                <span class="flex items-center text-neutral-1-900">
+                                    <i class="tdsi-search-fill"></i>
+                                </span>
+                            </button>
                         </tds-form-field>
-                        <button tds-button-icon color="secondary" size="md" class="">
-                            <span class="flex items-center">
-                                <i class="tdsi-search-fill"></i>
-                            </span>
-                        </button>
+                       
                     </div>
                 </div>
                 <div class="grid grid-cols-3 gap-x-4 mt-4">
@@ -157,7 +158,7 @@
                         <tds-label>Active</tds-label>
                     </div>
                     <div class="col-span-2 flex">
-                        <tds-checkbox formControlName="active">default</tds-checkbox>
+                        <tds-checkbox formControlName="active"></tds-checkbox>
                     </div>
                 </div>
             </div>

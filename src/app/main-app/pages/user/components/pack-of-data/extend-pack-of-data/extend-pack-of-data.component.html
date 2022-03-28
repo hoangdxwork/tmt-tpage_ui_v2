@@ -1,5 +1,5 @@
 <div class="p-4 flex w-full justify-center">
-    <div class="w-3/4 bg-white rounded-md">
+    <div class="w-3/4 bg-white rounded-xl">
         <tds-card>
             <tds-card-header class="border-b border-light-200">Thông tin gia hạn</tds-card-header>
             <tds-card-content>
@@ -50,8 +50,8 @@
             </tds-card-content>
             <tds-card-actions>
                 <div class="py-2 justify-end flex">
-                    <button tds-button color="secondary" (click)="clickBackPageInfoData()">Trở về</button>
-                    <button tds-button color="success" class="ml-3" (click)="clickNextInfoDataPayment()">Tiếp tục</button>
+                    <button tds-button color="secondary" (click)="clickBackPageInfoData()" routerLink="/user/pack-of-data/info">Trở về</button>
+                    <button tds-button color="success" class="ml-3" (click)="clickNextInfoDataPayment()" routerLink="/user/pack-of-data/payment">Tiếp tục</button>
                 </div>
             </tds-card-actions>
         </tds-card>

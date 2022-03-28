@@ -7,7 +7,6 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 })
 export class ChoosePackOfDataComponent implements OnInit {
 
-  @Output() outputBackInfoData = new EventEmitter<boolean>();
   array = [0,1,2,3]
   isIndex = -1
   constructor() { }
@@ -18,6 +17,5 @@ export class ChoosePackOfDataComponent implements OnInit {
     this.isIndex = idx
   }
   clickBackPageInfoData(){
-    this.outputBackInfoData.emit(true)
   }
 }
