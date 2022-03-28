@@ -13,12 +13,16 @@ import { DeliveryCarrierService } from '../../services/delivery-carrier-order.se
 import { ActionDropdownComponent } from './components/action-dropdown/action-dropdown.component';
 import { FilterOptionsComponent } from './components/filter-option/filter-options.component';
 import { ConfigColumComponent } from './components/config-column/config-column.component';
+import { PrinterService } from '../../services/printer.service';
+import { ExcelExportService } from '../../services/excel-export.service';
 
 const SERVICES = [
   FastSaleOrderService,
   OdataFastSaleOrderService,
   TagService,
-  DeliveryCarrierService
+  DeliveryCarrierService,
+  PrinterService,
+  ExcelExportService
 ]
 
 @NgModule({
@@ -63,4 +67,5 @@ const SERVICES = [
    ...SERVICES,
   ],
 })
+
 export class BillModule { }

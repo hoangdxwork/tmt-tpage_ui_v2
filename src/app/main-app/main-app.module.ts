@@ -14,6 +14,7 @@ import {
   TDSHeaderModule,
   TDSInputModule,
   TDSMenuModule,
+  TDSMessageModule,
   TDSSelectModule
 } from 'tmt-tang-ui';
 
@@ -38,6 +39,7 @@ import { PipeModule } from './shared/pipe/pipe.module';
     TDSInputModule,
     TDSAvatarModule,
     TDSDropDownModule,
+    TDSMessageModule ,
     PipeModule
   ],
   providers:[
