@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BillRoutingModule } from './bill-routing.module';
 import { BillComponent } from './bill/bill.component';
 import { MainSharedModule } from '../../shared/shared.module';
-import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSContextMenuService, TDSFilterStatusModule } from 'tmt-tang-ui';
+import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSContextMenuService, TDSFilterStatusModule, TDSSpinnerModule } from 'tmt-tang-ui';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
 import { OdataFastSaleOrderService } from '../../services/mock-odata/odata-fastsaleorder.service';
@@ -62,6 +62,7 @@ const SERVICES = [
     TDSDrawerModule,
     TDSFilterStatusModule,
     PipeModule,
+    TDSSpinnerModule
   ],
   providers: [
    ...SERVICES,
