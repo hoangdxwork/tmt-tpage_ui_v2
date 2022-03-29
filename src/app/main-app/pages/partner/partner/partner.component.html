@@ -154,10 +154,15 @@
                                                     {{item}}</tds-tag>
                                             </div>
                                             <button (click)="addTag(data.id)" tds-button-icon tds-popover
-                                                [popoverVisible]="indClickTag==data.id" popoverTrigger="click"
-                                                [popoverFooter]="footerAddTag" [popoverContent]="contentAddtag"
-                                                popoverPlacement="left" color="secondary" size="sm"
-                                                popoverOverlayClassName="rounded-md" [popoverBackdrop]="true"
+                                                [popoverVisible]="indClickTag==data.id" 
+                                                popoverTrigger="click"
+                                                [popoverFooter]="footerAddTag" 
+                                                [popoverContent]="contentAddtag"
+                                                popoverPlacement="left" 
+                                                color="secondary" size="sm"
+                                                [popoverAutoClose]="false"
+                                                popoverOverlayClassName="rounded-md" 
+                                                [popoverBackdrop]="true"
                                                 class="border-0">
                                                 <div class="w-5 h-5 relative">
                                                     <i
