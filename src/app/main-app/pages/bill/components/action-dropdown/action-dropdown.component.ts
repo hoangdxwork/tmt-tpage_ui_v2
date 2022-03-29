@@ -1,15 +1,12 @@
 import { filter } from 'rxjs/operators';
-import { Component, Input, OnInit, ViewContainerRef } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit, ViewContainerRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Component, Input, OnDestroy, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { OperatorEnum } from "src/app/lib";
 import { ExcelExportService } from "src/app/main-app/services/excel-export.service";
 import { FastSaleOrderService } from "src/app/main-app/services/fast-sale-order.service";
 import { PrinterService } from "src/app/main-app/services/printer.service";
-import { TDSMessageService, TDSModalService, TDSSafeAny } from "tmt-tang-ui";
 import { PaymentRequestComponent } from '../payment-request/payment-request.component';
 import { TDSHelperObject, TDSMessageService, TDSModalService, TDSSafeAny } from "tmt-tang-ui";
 
@@ -44,8 +41,6 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         this.params = res;
     })
   }
-
-  ngOnInit(): void { }
 
   exportExcel(type: string): any {
     if (this.isProcessing) {
@@ -260,6 +255,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
       });
     }
   }
+
   ngOnDestroy(): void {
     this._destroy.next();
     this._destroy.complete();
