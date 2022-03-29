@@ -318,6 +318,10 @@ export class BillComponent implements OnInit{
     this.pageIndex = 1;
     this.indClickTag = -1;
 
+    this.checked = false;
+    this.indeterminate = false;
+    this.setOfCheckedId = new Set<number>();
+
     this.filterObj = {
       tags: [],
       status: '',

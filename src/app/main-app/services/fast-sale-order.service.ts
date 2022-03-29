@@ -66,10 +66,49 @@ export class FastSaleOrderService extends BaseSevice {
 
   sendPaymentRequest(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/fastsaleorder/sendpaymentrequest`,
+        url: `${this._BASE_URL}/${this.baseRestApi}/sendpaymentrequest`,
         method: TApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
+  getOrderSendShipIds(data: TDSSafeAny): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrderSendShipIds?$expand=Partner`,
+        method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  actionSendDelivery(data: TDSSafeAny): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/actionSendDelivery`,
+        method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  actionInvoiceOpen(data: TDSSafeAny): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.ActionInvoiceOpen`,
+        method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  getRegisterPaymentMulti(data: TDSSafeAny): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetRegisterPaymentMulti?$expand=Partner`,
+        method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  getWithCompanyPayment(): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/AccountJournal/OdataService.GetWithCompany?format=json&$filter=(Type eq 'bank') or (Type eq 'cash')`,
+        method: TApiMethodType.get
+    }
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
 }
