@@ -1,10 +1,12 @@
-import { Component, Input, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
+import { filter } from 'rxjs/operators';
+import { Component, Input, OnInit, ViewContainerRef } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
 import { OperatorEnum } from "src/app/lib";
 import { ExcelExportService } from "src/app/main-app/services/excel-export.service";
 import { FastSaleOrderService } from "src/app/main-app/services/fast-sale-order.service";
 import { PrinterService } from "src/app/main-app/services/printer.service";
 import { TDSMessageService, TDSModalService, TDSSafeAny } from "tmt-tang-ui";
+import { PaymentRequestComponent } from '../payment-request/payment-request.component';
 
 @Component({
   selector: 'action-dropdown',
@@ -15,23 +17,33 @@ export class ActionDropdownComponent implements OnInit{
 
   @Input() filterObj: any;
   @Input() setOfCheckedId: any = [];
+  @Input() lstOfData: any = [];
 
   tagIds: any = [];
   idsModel: any = [];
+  params!: TDSSafeAny;
 
   constructor(private router: Router,
-    private modal: TDSModalService,
-    private fastSaleOrderService: FastSaleOrderService,
-    private message: TDSMessageService,
-    private excelExportService: ExcelExportService,
-    private printerService: PrinterService) {
+      private activatedRoute: ActivatedRoute,
+      private modal: TDSModalService,
+      private fastSaleOrderService: FastSaleOrderService,
+      private message: TDSMessageService,
+      private viewContainerRef: ViewContainerRef,
+      private excelExportService: ExcelExportService,
+      private printerService: PrinterService) {
   }
 
-  ngOnInit(): void {}
+  ngOnInit() {
+    this.activatedRoute.queryParams.subscribe(res => {
+        this.params = res;
+    })
+  }
 
   exportExcel(type: string): any {
     let dateStart = this.filterObj.dateRange.startDate;
     let dateEnd =  this.filterObj.dateRange.endDate;
+
+    this.tagIds = this.filterObj.tags;
 
     let data = {
       filter: {
@@ -55,9 +67,15 @@ export class ActionDropdownComponent implements OnInit{
         if(this.checkValueEmpty() == 1) {
           this.excelExportService.exportPost(`/fastsaleorder/ExportFileDetail?TagIds=${this.tagIds}`,
             { data: JSON.stringify(data), ids: this.idsModel }, "ban-hang-chi-tiet");
-
         }
       break;
+      case "products":
+        if(this.checkValueEmpty() == 1) {
+          this.excelExportService.exportPost(`/fastsaleorder/ExportFileOrderDetailByStatus?TagIds=${this.tagIds}`,
+            { data: JSON.stringify(data), ids: this.idsModel }, "danh-sach-san-pham-don-hang");
+        }
+      break;
+
       default:
           break;
     }
@@ -89,6 +107,49 @@ export class ActionDropdownComponent implements OnInit{
     }
 
     return 1;
+  }
+
+  sendPaymentRequest() {
+    if (this.checkValueEmpty() == 1) {
+      let state = 1;
+      let dataPayment: any[] = [];
+      let params = { ...this.params };
+
+      this.idsModel.forEach((x: number) => {
+          var exits = this.lstOfData.filter((a: any) => a.Id == x)[0];
+          if(exits && exits.State != 'open') {
+              this.message.error('Chỉ gửi yêu cầu thanh toán với phiếu bán hàng có trạng thái đã xác nhận.');
+              state = 0;
+              return;
+          }
+          if(exits && exits.State == 'open') {
+              let item = {
+                  Id: exits.Id,
+                  Number: exits.Number,
+                  PartnerDisplayName: exits.PartnerDisplayName,
+                  PaymentMethod: 'ZaloPay',
+                  AmountTotal: exits.AmountTotal as number,
+                  PartnerId: exits.PartnerId,
+                  TeamId: exits.TeamId || parseInt(params.teamId),
+                  DateCreated: exits.DateCreated as Date
+              }
+
+              dataPayment.push(item);
+          }
+      });
+
+      if(state == 1) {
+        this.modal.create({
+            title: 'Yêu cầu thanh toán',
+            content: PaymentRequestComponent,
+            size: 'xl',
+            viewContainerRef: this.viewContainerRef,
+            componentParams: {
+              dataPayment: dataPayment
+            }
+        });
+      }
+    }
   }
 
   cancelDelivery() {

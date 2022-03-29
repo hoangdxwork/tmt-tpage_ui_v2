@@ -27,7 +27,7 @@ export class FilterOptionsComponent implements OnInit {
     }
   }
 
-  rangeDate: any = [];
+  datePicker: any = [addDays(new Date(), -30), new Date()];
 
   trackingRefs = [
     { text: 'Chưa có mã vận đơn', value: 'noCode' },
@@ -69,10 +69,10 @@ export class FilterOptionsComponent implements OnInit {
   }
 
   onChangeDate(event: any[]) {
-    this.rangeDate = [];
+    this.datePicker = [];
     if(event) {
       event.forEach(x => {
-         this.rangeDate.push(x);
+          this.datePicker.push(x);
       })
     }
   }
@@ -92,7 +92,7 @@ export class FilterOptionsComponent implements OnInit {
     this.selectTags = [];
     if(event){
       event.forEach(x => {
-        this.selectTags.push(x);
+          this.selectTags.push(x);
       })
     }
   }
@@ -123,12 +123,12 @@ export class FilterOptionsComponent implements OnInit {
         deliveryType:  this.modelCarrier ? this.modelCarrier.DeliveryType : '',
         searchText: '',
         dateRange: {
-          startDate: addDays(new Date(), -30),
-          endDate: new Date(),
+            startDate: this.datePicker[0],
+            endDate: this.datePicker[1]
         }
     }
 
-    this.onLoadOption.emit(this.filterObj);
+    this.onLoadOption.emit(this.filterObj);debugger
     if(this.currentStatus != 'all' && this.currentTracking && this.modelCarrier && this.selectTags.length > 0) {
       this.isActive = true;
     } else {
@@ -141,7 +141,7 @@ export class FilterOptionsComponent implements OnInit {
   onCancel() {
     this.currentStatus = 'all';
     this.currentTracking = '';
-    this.rangeDate = [];
+    this.datePicker = [addDays(new Date(), -30), new Date()];
     this.selectTags = [];
     this.modelCarrier = null;
 

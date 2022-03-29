@@ -60,12 +60,13 @@ export class PrinterService extends BaseSevice {
             url: `${this._BASE_URL}/${url}`,
             method: TApiMethodType.get,
         }
-
+        this.loader.show();
         this.apiService.getExFile<TDSSafeAny>(api,null).subscribe((res: TDSSafeAny) => {
             this.printHtml(res);
 
             observer.next(res);
             observer.complete();
+            this.loader.show();
 
             return res;
         }, error => {

@@ -6,13 +6,13 @@
   </button>
   <tds-dropdown-menu #menu="tdsDropdownMenu">
     <div class="w-full">
-      <div tds-dropdown-item>Gửi yêu cầu thanh toán</div>
+      <div tds-dropdown-item (click)="sendPaymentRequest()">Gửi yêu cầu thanh toán</div>
       <div tds-dropdown-item (click)="print('print')">In phiếu</div>
       <div tds-dropdown-item (click)="print('printShips')"> In phiếu ship </div>
       <div tds-dropdown-item (click)="print('printDeliveries')">In phiếu giao hàng</div>
-      <div tds-dropdown-item>Xuất excel </div>
-      <div tds-dropdown-item>Xuất excel chi tiết</div>
-      <div tds-dropdown-item>Xuất excel chi tiết sản phẩm </div>
+      <div tds-dropdown-item (click)="exportExcel('excels')">Xuất excel </div>
+      <div tds-dropdown-item (click)="exportExcel('details')">Xuất excel chi tiết</div>
+      <div tds-dropdown-item (click)="exportExcel('products')">Xuất excel chi tiết sản phẩm </div>
       <div tds-dropdown-item>Gửi tin nhắn Facebook</div>
       <div tds-dropdown-item>Gửi lại mã vận đơn</div>
       <div tds-dropdown-item>Xác nhận bán hàng</div>

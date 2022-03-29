@@ -25,7 +25,7 @@
 
         <!-- TODO: Thao tác -->
         <div class="flex items-center gap-x-2 pr-4">
-          <action-dropdown [filterObj]="filterObj"  [setOfCheckedId]=[setOfCheckedId]></action-dropdown>
+          <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]></action-dropdown>
           <tds-form-field class="w-full">
             <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keydown.enter)="applyFilter($event)" />
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
@@ -53,6 +53,7 @@
               <th *ngIf="isHidden('PartnerDisplayName')" width="280px">Khách hàng</th>
               <th *ngIf="isHidden('CRMTeamName')" width="280px">Kênh kết nối</th>
               <th *ngIf="isHidden('DateInvoice')" class="text-center" width="240px">Ngày hóa đơn</th>
+              <th *ngIf="isHidden('DateCreated')" class="text-center" width="240px">Ngày tạo</th>
               <th *ngIf="isHidden('AmountTotal')" class="text-right" width="240px">Tổng tiền</th>
               <th *ngIf="isHidden('Residual')" class="text-right" width="240px">Còn nợ</th>
               <th *ngIf="isHidden('ShowState')" width="240px">Trạng thái</th>
@@ -96,8 +97,7 @@
                 </td>
                 <td *ngIf="isHidden('Number')">
                   <div class="w-full flex ">
-                    <span [ngClass]="data.Number ? '' : 'text-error-500'">{{data.Number ||
-                     'N/A'}}</span>
+                    <span [ngClass]="data.Number ? '' : 'text-error-500'">{{data.Number || 'N/A'}}</span>
                   </div>
                   <!-- Nhãn -->
                   <div class="flex w-full gap-x-2 items-center">
@@ -161,7 +161,12 @@
                 </td>
                 <td *ngIf="isHidden('DateInvoice')" class="text-center">
                   <div class="w-full">
-                    <span>{{data.DateInvoice | date:"dd-MM-yyyy HH:mm:ss"}}</span>
+                    <span>{{data.DateInvoice | date:"dd-MM-yyyy HH:mm"}}</span>
+                  </div>
+                </td>
+                <td *ngIf="isHidden('DateCreated')" class="text-center">
+                  <div class="w-full">
+                    <span>{{data.DateCreated | date:"dd-MM-yyyy HH:mm"}}</span>
                   </div>
                 </td>
                 <td *ngIf="isHidden('AmountTotal')" class="text-right">
