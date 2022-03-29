@@ -1,9 +1,14 @@
+
+
 <tds-button-group>
-  <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
-    <span class="flex items-center">
-      Thao tác <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
-    </span>
-  </button>
+  <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate" >
+    <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
+      <span class="flex items-center">
+        Thao tác <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+      </span>
+    </button>
+  </tds-spin>
+ 
   <tds-dropdown-menu #menu="tdsDropdownMenu">
     <div class="w-full">
       <div tds-dropdown-item (click)="sendPaymentRequest()">Gửi yêu cầu thanh toán</div>
@@ -33,3 +38,6 @@
     </div>
   </tds-dropdown-menu>
 </tds-button-group>
+ <ng-template #indicatorTemplate>
+  <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>      
+</ng-template>
