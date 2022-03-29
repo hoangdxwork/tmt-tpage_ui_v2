@@ -2,12 +2,12 @@
 export enum OperatorEnum {
     /**
      *  bằng =
-     */   
+     */
     eq = 'eq',
     /**
      * không bằng !=
      */
-    neq = 'neq',
+    neq = 'ne',
     /**
      * nhỏ hơn <
      */
@@ -15,15 +15,15 @@ export enum OperatorEnum {
     /**
      * nhỏ hơn hoặc bằng <=
      */
-    lte = 'lte',
+    lte = 'le',
     /**
      * lớn hơn >
      */
     gt = 'gt',
     /**
-     * lớn hơn hoặc bằng >= 
-     */ 
-    gte = 'gte',
+     * lớn hơn hoặc bằng >=
+     */
+    gte = 'ge',
     /**
      *  bắt đầu bởi StartsWith
      */
@@ -34,14 +34,14 @@ export enum OperatorEnum {
     endswith = 'endswith',
     /**
      * chứa chuỗi Contains
-     */ 
+     */
     contains = 'contains',
     /**
      *  không chứa chuỗi
      */
     doesnotcontain = 'doesnotcontain',
     /**
-     * == null 
+     * == null
      */
     isnull = 'isnull',
     /**
@@ -58,7 +58,7 @@ export enum OperatorEnum {
     isnotempty = 'isnotempty',
     /**
      * không null và không rỗng
-     */ 
+     */
     hasvalue = 'hasvalue',
     /**
      * null hoặc rỗng

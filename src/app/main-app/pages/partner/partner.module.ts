@@ -15,7 +15,7 @@ import { CommonModule } from '@angular/common';
 
 import { PartnerRoutingModule } from './partner-routing.module';
 import { PartnerComponent } from './partner/partner.component';
-import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule } from 'tmt-tang-ui';
+import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSFilterStatusModule, TDSSpinnerModule } from 'tmt-tang-ui';
 
 
 
@@ -59,6 +59,9 @@ import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TD
     TDSButtonSpitModule,
     TDSAvatarModule,
     TDSDrawerModule,
+    TDSFilterStatusModule,
+    TDSSpinnerModule,
+    
   ]
 })
 export class PartnerModule { }

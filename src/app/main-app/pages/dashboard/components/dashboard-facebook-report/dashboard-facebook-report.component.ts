@@ -1,6 +1,7 @@
+import { formatNumber } from '@angular/common';
 import { Color } from 'echarts';
 import { TDSChartOptions, TDSBarChartComponent, TDSBarChartDataSeries } from 'tds-report';
-import { TDSSafeAny } from 'tmt-tang-ui';
+import { TDSSafeAny, vi_VN } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -12,7 +13,7 @@ export class DashboardFacebookReportComponent implements OnInit {
   //#region variable
   fbReportOption:TDSSafeAny;
   chartOption = TDSChartOptions();
-  labelData:TDSSafeAny;
+  labelData:TDSSafeAny[] = [];
   axisData:TDSSafeAny[] = [];
   seriesData:TDSSafeAny[] = [];
   colors:Color[] = [];
@@ -22,6 +23,7 @@ export class DashboardFacebookReportComponent implements OnInit {
     {id:2, name:'Tháng này'}
   ]
   currentFilter = this.filterList[0].name;
+  emptyData = false;
   //#endregion
 
   constructor() { }
@@ -31,13 +33,7 @@ export class DashboardFacebookReportComponent implements OnInit {
   }
 
   loadData(){
-    this.labelData = {
-      likes:60000,
-      comments:60000,
-      messages:60000,
-      articles:60000,
-      conversations:60000
-    };
+    this.labelData = [60000,60000,60000,60000,60000];
 
     this.axisData = ['06/06','07/06','08/06','09/06','10/06','11/06','12/06'];
     this.seriesData = [
@@ -51,6 +47,10 @@ export class DashboardFacebookReportComponent implements OnInit {
       }
     ];
     this.colors = ['#28A745','#1A6DE3','#F59E0B','#F33240'];
+
+    if(this.labelData.length < 5 || this.axisData.length == 0 || this.seriesData.length == 0){
+      this.emptyData = true;
+    }
 
     let chart:TDSBarChartComponent ={
       color:this.colors,
@@ -160,6 +160,10 @@ export class DashboardFacebookReportComponent implements OnInit {
       );
     });
     return list;
+  }
+
+  formatValue(value:number){
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   }
 
   onChangeFilter(data:any){

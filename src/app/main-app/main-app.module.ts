@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MainAppRoutingModule } from './main-app-routing.module';
 import { LayoutComponent } from './layout/layout.component';
 import { MainSharedModule } from './shared/shared.module';
+
 import {
   TDSAvatarModule,
   TDSButtonModule,
@@ -13,10 +14,11 @@ import {
   TDSHeaderModule,
   TDSInputModule,
   TDSMenuModule,
+  TDSMessageModule,
   TDSSelectModule
 } from 'tmt-tang-ui';
 
-
+import { PipeModule } from './shared/pipe/pipe.module';
 
 @NgModule({
   declarations: [
@@ -37,6 +39,8 @@ import {
     TDSInputModule,
     TDSAvatarModule,
     TDSDropDownModule,
+    TDSMessageModule ,
+    PipeModule
   ],
   providers:[
     // TAuthGuardService

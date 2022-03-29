@@ -1,6 +1,7 @@
 
 import { TDSSafeAny } from "tmt-tang-ui";
-import { OperatorEnum, SortEnum } from "../enum";
+import { OperatorEnum } from "../enum/operator.enum";
+import { SortEnum } from "../enum/sort.enum";
 
 export interface DataRequestDTO {
     maxResultCount?: number,
@@ -10,12 +11,12 @@ export interface DataRequestDTO {
 }
 export interface FilterDataRequestDTO {
     logic:'and'|'or' | string,
-    filters:Array<FilterDataRequestDTO | FilterItemDataRequestDTO> ,
+    filters: Array<FilterDataRequestDTO | FilterItemDataRequestDTO> ,
 }
 export interface FilterItemDataRequestDTO {
     field: string,
     operator: OperatorEnum | string,
-    value: TDSSafeAny;    
+    value: TDSSafeAny;
 }
 export interface SortDataRequestDTO {
     field: string,

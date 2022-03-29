@@ -7,44 +7,49 @@
             </span>
         </button>
     </div>
-    <div class="flex flex-col items-center">
-        <div class="flex flex-row items-center justify-center w-full py-6">
-            <div class="flex flex-col justify-center w-full">
-                <span class="text-neutral-1-900 text-body-2 font-regular text-left font-sans py-2">Hội thoại</span>
-                <div class="flex flex-row items-center">
-                    <span class="text-neutral-1-900 text-heading-3 font-semibold font-sans pr-2">{{labelData.newComments.value|number}}</span>
-                    <span class="text-caption-2 font-regular font-sans text-center py-0.5 px-2 rounded-full" 
-                        [class]="labelData.conversations.decrease ? 'bg-error-100 text-error-400' : 'bg-primary-3 text-success-400' ">
-                        {{labelData.conversations.percent}}%
-                        <i [class]="labelData.conversations.decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
-                    </span>
+    <div *ngIf="!emptyData;else emptyTmp">
+        <div class="flex flex-col items-center">
+            <div class="flex flex-row items-center justify-center w-full py-6">
+                <div class="flex flex-col justify-center w-full">
+                    <span class="text-neutral-1-900 text-body-2 font-regular text-left font-sans py-2">Hội thoại</span>
+                    <div class="flex flex-row items-center">
+                        <span class="text-neutral-1-900 text-heading-3 font-semibold font-sans pr-2">{{labelData[0].value|number}}</span>
+                        <span class="text-caption-2 font-regular font-sans text-center py-0.5 px-2 rounded-full" 
+                            [class]="labelData[0].decrease ? 'bg-error-100 text-error-400' : 'bg-primary-3 text-success-400' ">
+                            {{labelData[0].percent}}%
+                            <i [class]="labelData[0].decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="flex flex-col justify-center w-full">
+                    <span class="text-neutral-1-900 text-body-2 font-regular text-left font-sans py-2">Tin nhắn mới</span>
+                    <div class="flex flex-row items-center">
+                        <span class="text-neutral-1-900 text-heading-3 font-semibold font-sans pr-2">{{labelData[1].value|number}}</span>
+                        <span class="text-caption-2 font-regular font-sans text-center py-0.5 px-2 rounded-full" 
+                            [class]="labelData[1].decrease ? 'bg-error-100 text-error-400' : 'bg-primary-3 text-success-400' ">
+                            {{labelData[1].percent}}%
+                            <i [class]="labelData[1].decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="flex flex-col justify-center w-full">
+                    <span class="text-neutral-1-900 text-body-2 font-regular text-left font-sans py-2">Bình luận mới</span>
+                    <div class="flex flex-row items-center">
+                        <span class="text-neutral-1-900 text-heading-3 font-semibold font-sans pr-2">{{labelData[2].value|number}}</span>
+                        <span class="text-caption-2 font-regular font-sans text-center py-0.5 px-2 rounded-full" 
+                            [class]="labelData[2].decrease ? 'bg-error-100 text-error-400' : 'bg-primary-3 text-success-400' ">
+                            {{labelData[2].percent}}%
+                            <i [class]="labelData[2].decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
+                        </span>
+                    </div>
                 </div>
             </div>
-            <div class="flex flex-col justify-center w-full">
-                <span class="text-neutral-1-900 text-body-2 font-regular text-left font-sans py-2">Tin nhắn mới</span>
-                <div class="flex flex-row items-center">
-                    <span class="text-neutral-1-900 text-heading-3 font-semibold font-sans pr-2">{{labelData.newComments.value|number}}</span>
-                    <span class="text-caption-2 font-regular font-sans text-center py-0.5 px-2 rounded-full" 
-                        [class]="labelData.newMessages.decrease ? 'bg-error-100 text-error-400' : 'bg-primary-3 text-success-400' ">
-                        {{labelData.newMessages.percent}}%
-                        <i [class]="labelData.newMessages.decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
-                    </span>
-                </div>
+            <div class="w-full pb-6">
+                <div echarts [options]="dailyOption" [size]="['auto',245]"></div>
             </div>
-            <div class="flex flex-col justify-center w-full">
-                <span class="text-neutral-1-900 text-body-2 font-regular text-left font-sans py-2">Bình luận mới</span>
-                <div class="flex flex-row items-center">
-                    <span class="text-neutral-1-900 text-heading-3 font-semibold font-sans pr-2">{{labelData.newComments.value|number}}</span>
-                    <span class="text-caption-2 font-regular font-sans text-center py-0.5 px-2 rounded-full" 
-                        [class]="labelData.newComments.decrease ? 'bg-error-100 text-error-400' : 'bg-primary-3 text-success-400' ">
-                        {{labelData.newComments.percent}}%
-                        <i [class]="labelData.newComments.decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="w-full pb-6">
-            <div echarts [options]="dailyOption" [size]="['auto',245]"></div>
         </div>
     </div>
 </div>
+<ng-template #emptyTmp>
+    <app-dashboard-empty-data></app-dashboard-empty-data>
+</ng-template>

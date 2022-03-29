@@ -14,6 +14,7 @@ export class DashboardTagReportComponent implements OnInit {
   ]
   currentFilter = this.filterList[0].name;
   tableData:Array<TDSSafeAny> = [];
+  emptyData = false;
   //#endregion
   constructor() { }
 
@@ -64,7 +65,11 @@ export class DashboardTagReportComponent implements OnInit {
         rateOfAppearance:20,
         color:'accent-4'
       }
-    ]
+    ];
+
+    if(this.tableData.length == 0){
+      this.emptyData = true;
+    }
   }
 
   onChangeFilter(data:any){

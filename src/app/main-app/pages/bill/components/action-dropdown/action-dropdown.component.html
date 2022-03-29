@@ -1,0 +1,35 @@
+<tds-button-group>
+  <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
+    <span class="flex items-center">
+      Thao tác <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+    </span>
+  </button>
+  <tds-dropdown-menu #menu="tdsDropdownMenu">
+    <div class="w-full">
+      <div tds-dropdown-item>Gửi yêu cầu thanh toán</div>
+      <div tds-dropdown-item (click)="print('print')">In phiếu</div>
+      <div tds-dropdown-item (click)="print('printShips')"> In phiếu ship </div>
+      <div tds-dropdown-item (click)="print('printDeliveries')">In phiếu giao hàng</div>
+      <div tds-dropdown-item>Xuất excel </div>
+      <div tds-dropdown-item>Xuất excel chi tiết</div>
+      <div tds-dropdown-item>Xuất excel chi tiết sản phẩm </div>
+      <div tds-dropdown-item>Gửi tin nhắn Facebook</div>
+      <div tds-dropdown-item>Gửi lại mã vận đơn</div>
+      <div tds-dropdown-item>Xác nhận bán hàng</div>
+      <div tds-dropdown-item>Xác nhận thanh toán</div>
+      <div tds-dropdown-item>Thanh toán</div>
+      <div tds-dropdown-item>Trả hàng hành loạt</div>
+      <div tds-dropdown-item>Cập nhật đối soát giao hàng từ file</div>
+      <div tds-dropdown-item>Cập nhật thông tin giao hàng từ file</div>
+      <div tds-dropdown-item>Cập nhật mã vận đơn từ file</div>
+      <div tds-dropdown-item>Chọn và cập nhật trạng thái giao hàng</div>
+      <div tds-dropdown-item>Chọn và cập nhật trạng thái đối soát</div>
+      <!-- <div tds-dropdown-item>
+        <a>Lịch sử đối soát</a>
+      </div> -->
+      <div tds-dropdown-item (click)="cancelDelivery()">Hủy vận đơn </div>
+      <div tds-dropdown-item (click)="cancelInvoice()">Hủy hóa đơn </div>
+      <div tds-dropdown-item (click)="unLink()">Xóa</div>
+    </div>
+  </tds-dropdown-menu>
+</tds-button-group>

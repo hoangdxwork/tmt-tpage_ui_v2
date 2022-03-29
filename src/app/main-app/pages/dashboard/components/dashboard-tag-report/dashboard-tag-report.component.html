@@ -1,6 +1,6 @@
 <div class="bg-white flex flex-col rounded-xl mb-4">
     <div class="flex flex-row items-center justify-between p-4">
-        <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Thống kê theo nhãn</span>
+        <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Thống kê nhãn sử dụng nhiều nhất</span>
         <div class="flex flex-row items-center">
             <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị:</span>
             <tds-select valueField="name" textField="name" [ngModel]="currentFilter" [border]="false"
@@ -9,36 +9,41 @@
             </tds-select>
         </div>
     </div>
-    <div class="flex flex-row items-center justify-between">
-        <tds-table #basicTable [listData]="tableData" [showPagination]="false" class="tds-dashboard-table">
-            <thead>
-                  <tr class="text-neutral-1-900 text-body-2 font-semibold font-sans">
-                        <th>STT dùng nhiều nhất </th>
-                        <th>Lượt gán</th>
-                        <th>Loại thẻ</th>
-                        <th>Tỷ lệ sử dụng</th>
-                  </tr>
-            </thead>
-            <tbody>
-                <ng-template ngFor let-data [ngForOf]="basicTable.data">
-                    <tr class="text-neutral-1-900 text-body-2 font-regular font-sans">
-                        <td>{{ data.position }}</td>
-                        <td>{{ data.numberOfTag }}</td>
-                        <td>
-                            <span class="bg-{{data.color}} text-white text-caption-2 font-semibold font-sans rounded px-2 py-1">
-                                {{ data.tagName }}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="text-caption-2 font-regular text-center py-1 px-2 rounded" 
-                                [class]="data.decrease ?  'text-error-400 bg-[#FCE6EA]' : 'text-success-400 bg-[#F2FCF5]' ">
-                                {{ data.rateOfAppearance }}%
-                                <i [class]="data.decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
-                            </span>
-                        </td>
-                    </tr>
-                </ng-template>
-            </tbody>
-        </tds-table>
+    <div *ngIf="!emptyData;else emptyTmp">
+        <div class="flex flex-row items-center justify-between">
+            <tds-table #basicTable [listData]="tableData" [showPagination]="false" class="tds-dashboard-table">
+                <thead>
+                      <tr class="text-neutral-1-900 text-body-2 font-semibold font-sans">
+                            <th>STT dùng nhiều nhất </th>
+                            <th>Lượt gán</th>
+                            <th>Loại thẻ</th>
+                            <th>Tỷ lệ sử dụng</th>
+                      </tr>
+                </thead>
+                <tbody>
+                    <ng-template ngFor let-data [ngForOf]="basicTable.data">
+                        <tr class="text-neutral-1-900 text-body-2 font-regular font-sans">
+                            <td>{{ data.position }}</td>
+                            <td>{{ data.numberOfTag }}</td>
+                            <td>
+                                <span class="bg-{{data.color}} text-white text-caption-2 font-semibold font-sans rounded px-2 py-1">
+                                    {{ data.tagName }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-caption-2 font-regular text-center py-1 px-2 rounded" 
+                                    [class]="data.decrease ?  'text-error-400 bg-[#FCE6EA]' : 'text-success-400 bg-[#F2FCF5]' ">
+                                    {{ data.rateOfAppearance }}%
+                                    <i [class]="data.decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
+                                </span>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </tds-table>
+        </div>
     </div>
 </div>
+<ng-template #emptyTmp>
+    <app-dashboard-empty-data></app-dashboard-empty-data>
+</ng-template>

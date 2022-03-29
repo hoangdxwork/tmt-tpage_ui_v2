@@ -1,58 +1,56 @@
 <div class="bg-white flex flex-col rounded-xl px-4 mb-4">
     <div class="flex flex-row items-center justify-between py-4">
         <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Thống kê số trang kết nối</span>
-        <!-- <div class="flex flex-row items-center">
-            <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị:</span>
-            <tds-select valueField="name" textField="name" [ngModel]="currentFilter" [border]="false"
-                [data]="filterList" size="md" class="tds-dashboard-filter w-[120px] truncate ..."
-                (ngModelChange)="onChangeFilter($event)" classIcon="tdsi-arrow-down-fill">
-            </tds-select>
-        </div> -->
     </div>
-    <div class="flex flex-col w-full pt-4 pb-6 px-2">
-        <div class="flex flex-row w-full items-center rounded-xl bg-info-100 p-4 mb-4">
-            <div class="border-r border-info-200 py-2.5 pr-4">
-                <div class="flex items-center justify-center bg-info-200 rounded h-10 w-10">
-                    <img src="assets/images/dashboard-facebook.svg">
+    <div *ngIf="!emptyData; else emptyTmp" class="w-full">
+        <div class="flex flex-col w-full pt-4 pb-6 px-2">
+            <div class="flex flex-row w-full items-center rounded-xl bg-info-100 p-4 mb-4">
+                <div class="border-r border-info-200 py-2.5 pr-4">
+                    <div class="flex items-center justify-center bg-info-200 rounded h-10 w-10">
+                        <img src="assets/images/dashboard/facebook-icon.svg">
+                    </div>
+                </div>
+                <div class="flex flex-col w-full pl-4">
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <span class="text-white bg-info-400 rounded-xl py-0.5 px-2 text-center font-semibold text-caption-2 font-sans">
+                            Cá nhân
+                        </span>
+                        <span class="text-body-2 font-regular font-sans text-center bg-white rounded-full px-2" [class]="labelData[0].decrease ? 'text-error-400' : 'text-success-400' ">
+                            {{labelData[0].percent}}%
+                            <i [class]="labelData[0].decrease ? 'tdsi-chart-down-line text-error-400' : 'tdsi-chart-up-line text-success-400' "></i>
+                        </span>
+                    </div>
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <span class="text-neutral-1-900 text-header-2 font-semibold font-sans">Tổng tài khoản kết nối</span>
+                        <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans">{{labelData[0].value}}</span>
+                    </div>
                 </div>
             </div>
-            <div class="flex flex-col w-full pl-4">
-                <div class="flex flex-row items-center justify-between w-full">
-                    <span class="text-white bg-info-400 rounded-xl py-0.5 px-2 text-center font-semibold text-caption-2 font-sans">
-                        Cá nhân
-                    </span>
-                    <span class="text-body-2 font-regular font-sans text-center bg-white rounded-full px-2" [class]="labelData.personalAccounts.decrease ? 'text-error-400' : 'text-success-400' ">
-                        {{labelData.personalAccounts.percent}}%
-                        <i [class]="labelData.personalAccounts.decrease ? 'tdsi-chart-down-line text-error-400' : 'tdsi-chart-up-line text-success-400' "></i>
-                    </span>
+            <div class="flex flex-row w-full items-center rounded-xl bg-warning-100 p-4">
+                <div class="border-r border-warning-200 py-2.5 pr-4">
+                    <div class="flex items-center justify-center bg-warning-200 rounded h-10 w-10">
+                        <img src="assets/images/dashboard/flag-icon.svg">
+                    </div>
                 </div>
-                <div class="flex flex-row items-center justify-between w-full">
-                    <span class="text-neutral-1-900 text-header-2 font-semibold font-sans">Tổng tài khoản kết nối</span>
-                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans">{{labelData.personalAccounts.value}}</span>
-                </div>
-            </div>
-        </div>
-        <div class="flex flex-row w-full items-center rounded-xl bg-warning-100 p-4">
-            <div class="border-r border-warning-200 py-2.5 pr-4">
-                <div class="flex items-center justify-center bg-warning-200 rounded h-10 w-10">
-                    <img src="assets/images/dashboard-flag.svg">
-                </div>
-            </div>
-            <div class="flex flex-col w-full pl-4">
-                <div class="flex flex-row items-center justify-between w-full">
-                    <span class="text-white bg-warning-400 rounded-xl py-0.5 px-2 text-center font-semibold text-caption-2 font-sans">
-                        FanPage
-                    </span>
-                    <span class="text-body-2 font-regular font-sans text-center bg-white rounded-full px-2" [class]="labelData.fanpages.decrease ? 'text-error-400' : 'text-success-400' ">
-                        {{labelData.fanpages.percent}}%
-                        <i [class]="labelData.fanpages.decrease ? 'tdsi-chart-down-line text-error-400' : 'tdsi-chart-up-line text-success-400' "></i>
-                    </span>
-                </div>
-                <div class="flex flex-row items-center justify-between w-full">
-                    <span class="text-neutral-1-900 text-header-2 font-semibold font-sans">Số Page kết nối</span>
-                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans">{{labelData.fanpages.value}}</span>
+                <div class="flex flex-col w-full pl-4">
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <span class="text-white bg-warning-400 rounded-xl py-0.5 px-2 text-center font-semibold text-caption-2 font-sans">
+                            FanPage
+                        </span>
+                        <span class="text-body-2 font-regular font-sans text-center bg-white rounded-full px-2" [class]="labelData[1].decrease ? 'text-error-400' : 'text-success-400' ">
+                            {{labelData[1].percent}}%
+                            <i [class]="labelData[1].decrease ? 'tdsi-chart-down-line text-error-400' : 'tdsi-chart-up-line text-success-400' "></i>
+                        </span>
+                    </div>
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <span class="text-neutral-1-900 text-header-2 font-semibold font-sans">Số Page kết nối</span>
+                        <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans">{{labelData[1].value}}</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<ng-template #emptyTmp>
+    <app-dashboard-empty-data></app-dashboard-empty-data>
+</ng-template>

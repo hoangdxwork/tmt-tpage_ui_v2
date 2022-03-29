@@ -13,7 +13,8 @@ export class DashboardConnectingPageReportComponent implements OnInit {
     {id:2, name:'Tháng này'}
   ]
   currentFilter = this.filterList[0].name;
-  labelData:TDSSafeAny;
+  labelData:TDSSafeAny[] = [];
+  emptyData = false;
   //#endregion
 
   constructor() { }
@@ -23,16 +24,20 @@ export class DashboardConnectingPageReportComponent implements OnInit {
   }
 
   loadData(){
-    this.labelData = {
-      personalAccounts:{
+    this.labelData = [
+      {
         value:150,
         percent:20,
         decrease:false
       },
-      fanpages:{
+      {
         value:150,
         percent:20
-      },
+      }
+    ]
+
+    if(this.labelData.length < 2){
+      this.emptyData = true;
     }
   }
 
