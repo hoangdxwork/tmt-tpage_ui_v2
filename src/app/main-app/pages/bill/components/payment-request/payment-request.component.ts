@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
 import { FastSaleOrderService } from "src/app/main-app/services/fast-sale-order.service";
-import { TDSHelperArray, TDSMessageService, TDSModalRef, TDSSafeAny } from "tmt-tang-ui";
+import { TDSMessageService, TDSModalRef } from "tmt-tang-ui";
 
 @Component({
   selector: 'payment-request',
@@ -13,7 +12,6 @@ export class PaymentRequestComponent implements OnInit{
   @Input() dataPayment: any[] = []
   data: any[] = [];
   team: any = {};
-  params!: TDSSafeAny;
 
   lstPaymentRequest = [
       {value: "MoMo", text: "MoMo"},
@@ -23,6 +21,7 @@ export class PaymentRequestComponent implements OnInit{
   ];
 
   constructor( private fastSaleOrderService: FastSaleOrderService,
+    private modal: TDSModalRef,
     private message: TDSMessageService,) {
   }
 
@@ -51,9 +50,15 @@ export class PaymentRequestComponent implements OnInit{
     });
 
     this.fastSaleOrderService.sendPaymentRequest(model).subscribe((res: any) => {
+        this.modal.destroy(null);
         this.message.success('Gửi thanh toán thành công!');
     }, error => {
+        this.modal.destroy(null);
         this.message.error('Gửi thanh toán thất bại!');
     })
+  }
+
+  onCancel(){
+    this.modal.destroy(null);
   }
 }

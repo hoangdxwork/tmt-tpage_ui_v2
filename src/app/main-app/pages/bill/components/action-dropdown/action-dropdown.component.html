@@ -8,7 +8,7 @@
       </span>
     </button>
   </tds-spin>
- 
+
   <tds-dropdown-menu #menu="tdsDropdownMenu">
     <div class="w-full">
       <div tds-dropdown-item (click)="sendPaymentRequest()">Gửi yêu cầu thanh toán</div>
@@ -19,9 +19,9 @@
       <div tds-dropdown-item (click)="exportExcel('details')">Xuất excel chi tiết</div>
       <div tds-dropdown-item (click)="exportExcel('products')">Xuất excel chi tiết sản phẩm </div>
       <div tds-dropdown-item>Gửi tin nhắn Facebook</div>
-      <div tds-dropdown-item>Gửi lại mã vận đơn</div>
-      <div tds-dropdown-item>Xác nhận bán hàng</div>
-      <div tds-dropdown-item>Xác nhận thanh toán</div>
+      <div tds-dropdown-item (click)="sendDelivery()">Gửi lại mã vận đơn</div>
+      <div tds-dropdown-item (click)="approveOrder()">Xác nhận bán hàng</div>
+      <div tds-dropdown-item (click)="registerPaymentMulti()">Xác nhận thanh toán</div>
       <div tds-dropdown-item>Thanh toán</div>
       <div tds-dropdown-item>Trả hàng hành loạt</div>
       <div tds-dropdown-item>Cập nhật đối soát giao hàng từ file</div>
@@ -39,5 +39,5 @@
   </tds-dropdown-menu>
 </tds-button-group>
  <ng-template #indicatorTemplate>
-  <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>      
+  <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
 </ng-template>

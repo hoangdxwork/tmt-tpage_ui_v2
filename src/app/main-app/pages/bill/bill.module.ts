@@ -16,6 +16,11 @@ import { ConfigColumComponent } from './components/config-column/config-column.c
 import { PrinterService } from '../../services/printer.service';
 import { ExcelExportService } from '../../services/excel-export.service';
 import { PaymentRequestComponent } from './components/payment-request/payment-request.component';
+import { SendDeliveryComponent } from './components/send-delivery/send-delivery.component';
+import {  TDSAlertModule } from 'tmt-tang-ui';
+import { PaymentMultipComponent } from './components/payment-multip/payment-multip.component';
+import { TDSNotificationModule } from 'tmt-tang-ui';
+import { AccountRegisterPaymentService } from '../../services/account-register-payment..service';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -23,7 +28,8 @@ const SERVICES = [
   TagService,
   DeliveryCarrierService,
   PrinterService,
-  ExcelExportService
+  ExcelExportService,
+  AccountRegisterPaymentService
 ]
 
 @NgModule({
@@ -32,7 +38,9 @@ const SERVICES = [
     ActionDropdownComponent,
     FilterOptionsComponent,
     ConfigColumComponent,
-    PaymentRequestComponent
+    PaymentRequestComponent,
+    SendDeliveryComponent,
+    PaymentMultipComponent
   ],
 
   imports: [
@@ -64,7 +72,9 @@ const SERVICES = [
     TDSDrawerModule,
     TDSFilterStatusModule,
     PipeModule,
-    TDSSpinnerModule
+    TDSSpinnerModule,
+    TDSNotificationModule,
+    TDSAlertModule
   ],
   providers: [
    ...SERVICES,

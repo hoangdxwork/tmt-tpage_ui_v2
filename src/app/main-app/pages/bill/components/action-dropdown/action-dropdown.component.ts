@@ -1,4 +1,3 @@
-import { filter } from 'rxjs/operators';
 import { Component, Input, OnDestroy, OnInit, ViewContainerRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subject } from "rxjs";
@@ -8,7 +7,9 @@ import { ExcelExportService } from "src/app/main-app/services/excel-export.servi
 import { FastSaleOrderService } from "src/app/main-app/services/fast-sale-order.service";
 import { PrinterService } from "src/app/main-app/services/printer.service";
 import { PaymentRequestComponent } from '../payment-request/payment-request.component';
-import { TDSHelperObject, TDSMessageService, TDSModalService, TDSSafeAny } from "tmt-tang-ui";
+import { TDSHelperArray, TDSHelperObject, TDSMessageService, TDSModalService, TDSSafeAny } from "tmt-tang-ui";
+import { SendDeliveryComponent } from "../send-delivery/send-delivery.component";
+import { PaymentMultipComponent } from "../payment-multip/payment-multip.component";
 
 @Component({
   selector: 'action-dropdown',
@@ -16,6 +17,7 @@ import { TDSHelperObject, TDSMessageService, TDSModalService, TDSSafeAny } from 
 })
 
 export class ActionDropdownComponent implements OnInit, OnDestroy {
+
   private _destroy = new Subject<void>();
   @Input() filterObj: any;
   @Input() setOfCheckedId: any = [];
@@ -84,7 +86,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
       case "products":
         if(this.checkValueEmpty() == 1) {
           this.excelExportService.exportPost(`/fastsaleorder/ExportFileOrderDetailByStatus?TagIds=${this.tagIds}`,
-            { data: JSON.stringify(data), ids: this.idsModel }, "danh-sach-san-pham-don-hang");
+            { data: JSON.stringify(data), ids: this.idsModel }, "danh-sach-san-pham-don-hang", callBackFn);
         }
       break;
 
@@ -135,34 +137,35 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     return 1;
   }
 
-  sendPaymentRequest() {
+  sendPaymentRequest(): any {
     if (this.checkValueEmpty() == 1) {
       let state = 1;
       let dataPayment: any[] = [];
       let params = { ...this.params };
 
-      this.idsModel.forEach((x: number) => {
-          var exits = this.lstOfData.filter((a: any) => a.Id == x)[0];
-          if(exits && exits.State != 'open') {
-              this.message.error('Chỉ gửi yêu cầu thanh toán với phiếu bán hàng có trạng thái đã xác nhận.');
-              state = 0;
-              return;
-          }
-          if(exits && exits.State == 'open') {
-              let item = {
-                  Id: exits.Id,
-                  Number: exits.Number,
-                  PartnerDisplayName: exits.PartnerDisplayName,
-                  PaymentMethod: 'ZaloPay',
-                  AmountTotal: exits.AmountTotal as number,
-                  PartnerId: exits.PartnerId,
-                  TeamId: exits.TeamId || parseInt(params.teamId),
-                  DateCreated: exits.DateCreated as Date
-              }
+      for (let i = 0; i < this.idsModel.length;i++) {
 
-              dataPayment.push(item);
-          }
-      });
+        var exits = this.lstOfData.filter((a: any) => a.Id == this.idsModel[i])[0];
+        if(exits && exits.State != 'open') {
+          state = 0;
+          return this.message.error('Chỉ gửi yêu cầu thanh toán với PBH có trạng thái đã xác nhận.');
+        }
+
+        if(exits && exits.State == 'open') {
+            let item = {
+                Id: exits.Id,
+                Number: exits.Number,
+                PartnerDisplayName: exits.PartnerDisplayName,
+                PaymentMethod: 'ZaloPay',
+                AmountTotal: exits.AmountTotal as number,
+                PartnerId: exits.PartnerId,
+                TeamId: exits.TeamId || parseInt(params.teamId),
+                DateCreated: exits.DateCreated as Date
+            }
+
+            dataPayment.push(item);
+        }
+      }
 
       if(state == 1) {
         this.modal.create({
@@ -200,7 +203,8 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         },
         onCancel: () => { that.isProcessing = false; },
         okText: "Xác nhận",
-        cancelText: "Đóng"
+        cancelText: "Đóng",
+        confirmViewType:"compact"
       });
     }
   }
@@ -225,7 +229,8 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         },
         onCancel: () => { that.isProcessing = false; },
         okText: "Xác nhận",
-        cancelText: "Đóng"
+        cancelText: "Đóng",
+        confirmViewType:"compact"
       });
     }
   }
@@ -251,8 +256,80 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         },
         onCancel: () => { that.isProcessing = false; },
         okText: "Xác nhận",
-        cancelText: "Đóng"
+        cancelText: "Đóng",
+        confirmViewType:"compact"
       });
+    }
+  }
+
+  sendDelivery() {
+    if (this.isProcessing) {
+      return
+    }
+
+    if (this.checkValueEmpty() == 1) {
+      this.modal.create({
+          title: 'Danh sách phù hợp gửi lại mã vận đơn',
+          content: SendDeliveryComponent,
+          size: 'xl',
+          viewContainerRef: this.viewContainerRef,
+          componentParams: {
+            ids: this.idsModel
+          }
+      });
+    }
+  }
+
+  approveOrder() {
+    if (this.isProcessing) {
+      return
+    }
+
+    if (this.checkValueEmpty() == 1) {
+      let that = this;
+      that.isProcessing = true;
+
+      this.modal.success({
+        title: 'Xác nhận bán hàng',
+        content: 'Bạn có muốn xác nhận bán hàng',
+        onOk: () => {
+            that.fastSaleOrderService.actionInvoiceOpen({ ids: that.idsModel }).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+                that.message.success('Xác nhận bán hàng thành công!');
+                that.isProcessing = false;
+            }, error => {
+                that.message.error(`${error?.error.message}`);
+                that.isProcessing = false;
+            })
+        },
+        onCancel: () => { that.isProcessing = false; },
+        okText: "Xác nhận",
+        cancelText: "Đóng",
+        confirmViewType:"compact"
+      });
+    }
+  }
+
+  registerPaymentMulti(): any{
+    if (this.isProcessing) {
+      return
+    }
+
+    if (this.checkValueEmpty() == 1) {
+      this.fastSaleOrderService.getRegisterPaymentMulti({ids: this.idsModel}).subscribe((res: any) => {
+        if(res && TDSHelperArray.isArray(res.value)) {
+            this.modal.create({
+                title: 'Xác nhận thanh toán',
+                content: PaymentMultipComponent,
+                size: 'lg',
+                viewContainerRef: this.viewContainerRef,
+                componentParams: {
+                    lstCustomer: res.value
+                }
+            });
+        }
+      }, error => {
+        this.message.error(`${error.error.message}`);
+      })
     }
   }
 
