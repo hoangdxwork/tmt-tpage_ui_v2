@@ -1,0 +1,35 @@
+<div>
+    <div class="w-full" *ngIf="dataPayment">
+      <tds-table #rowSelectionTable  [listData]="dataPayment">
+          <thead>
+              <tr class="bg-neutral-3-50" >
+                  <th>Khách hàng</th>
+                  <th>Số hóa đơn</th>
+                  <th>Tổng tiền</th>
+                  <th>Ngày tạo</th>
+                  <th>PT Thanh toán</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr *ngFor="let item of dataPayment">
+                  <td>{{ item.PartnerDisplayName }}</td>
+                  <td>{{ item.Number }}</td>
+                  <td>{{ item.AmountTotal || 0 | number : '1.0-3'}}</td>
+                  <td>{{ item.DateCreated | date:"dd-MM-yyyy HH:mm"}}</td>
+                  <td>
+                    <tds-form-field>
+                        <tds-select valueField="value" textField="text" placeholder='select item'
+                            [(ngModel)]="item.PaymentMethod" [allowClear]="true" [valuePrimitive]="false"
+                            [data]="lstPaymentRequest" (ngModelChange)="onChangePayment($event, item)" >
+                        </tds-select>
+                    </tds-form-field>
+                  </td>
+              </tr>
+          </tbody>
+      </tds-table>
+    </div>
+    <div class="w-full flex justify-end p-4" *tdsModalFooter>
+        <button tds-button class="mr-2" type="button" color="secondary">Đóng</button>
+        <button tds-button type="submit" color="primary" (click)="onSave()">Thanh toán</button>
+    </div>
+</div>

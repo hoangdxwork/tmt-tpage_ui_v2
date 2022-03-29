@@ -15,6 +15,7 @@ import { FilterOptionsComponent } from './components/filter-option/filter-option
 import { ConfigColumComponent } from './components/config-column/config-column.component';
 import { PrinterService } from '../../services/printer.service';
 import { ExcelExportService } from '../../services/excel-export.service';
+import { PaymentRequestComponent } from './components/payment-request/payment-request.component';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -30,7 +31,8 @@ const SERVICES = [
     BillComponent,
     ActionDropdownComponent,
     FilterOptionsComponent,
-    ConfigColumComponent
+    ConfigColumComponent,
+    PaymentRequestComponent
   ],
 
   imports: [

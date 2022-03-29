@@ -41,7 +41,7 @@ export class LayoutComponent implements OnInit {
   onOpenChange(e: boolean) {
     this.inlineCollapsed = e;
   }
-  //lay danh sách facebook 
+  //lay danh sách facebook
   getAllFacebook() {
     this.crmService.getAllFacebooks()
       .subscribe(dataTeam => {
@@ -132,6 +132,12 @@ export class LayoutComponent implements OnInit {
         name: "Phiếu bán hàng",
         icon: "tdsi-dataset-fill",
         link: `/bill`,
+        linkProps: {
+          queryParams: {
+            'teamId': data?.Id,
+          },
+        },
+        hidden: hidden,
 
       },
       {
