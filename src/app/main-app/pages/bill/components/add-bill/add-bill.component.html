@@ -1,0 +1,702 @@
+<div class="flex flex-col w-full h-full">
+    <div class="bg-white flex justify-between items-center">
+        <div class="flex flex-col gap-y-1">
+            <tds-breadcrumb tds-page-header-breadcrumb>
+                <tds-breadcrumb-item>Phiếu bán hàng</tds-breadcrumb-item>
+                <tds-breadcrumb-item>Thêm mới</tds-breadcrumb-item>
+            </tds-breadcrumb>
+            <div class="pl-4 pb-2.5">
+                <span class="text-header-1 text-neutral-1-900 font-semibold">Thêm mới phiếu bán hàng</span>
+            </div>
+        </div>
+
+        <div class="flex gap-x-2">
+            <button tds-button color="primary" class="mr-2">Lưu lại</button>
+
+            <button tds-button color="secondary" class="mr-2">Quay lại</button>
+        </div>
+    </div>
+    <div class="flex flex-col h-full gap-y-4 p-4">
+        <div class="bg-white rounded-xl">
+            <tds-tabset class="w-full">
+                <tds-tab *ngFor="let tab of tabsAddBill; let idx = index" [title]="tab.name">
+                    <!-- tab thông tin -->
+                    <div *ngIf="idx ==0"
+                        class="grid grid-cols-3 grid-rows-3 gap-x-8 gap-y-4 text-body-2 text-neutral-1-900">
+                        <div class="flex col-span-1 row-span-2">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Chọn khách hàng</span>
+                            </div>
+                            <div class="w-2/3 flex flex-col gap-y-2">
+                                <tds-form-field>
+                                    <tds-select valueField="id" textField="name" placeholder='Chọn tên khách hàng'
+                                        disabledField="isActive" [data]="optionsInfoNamePartner" [allowClear]="true">
+                                    </tds-select>
+                                </tds-form-field>
+                                <div class="flex justify-between">
+                                    <tds-button-group>
+                                        <button tds-dropdown trigger="click" [tdsDropdownMenu]="menu1">
+                                            <span class="flex items-center font-semibold text-primary-1">
+                                                Bình thường <i
+                                                    class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                                            </span>
+                                        </button>
+                                        <tds-dropdown-menu #menu1="tdsDropdownMenu">
+                                            <div class="w-full">
+                                                <div tds-dropdown-item>
+                                                    <a> Bình thường</a>
+                                                </div>
+                                                <div tds-dropdown-item>
+                                                    <a> Khóa </a>
+                                                </div>
+
+                                            </div>
+                                        </tds-dropdown-menu>
+                                    </tds-button-group>
+                                    <div class="flex gap-x-2">
+                                        <button tds-button-icon color="secondary">
+                                            <span class="flex items-center">
+                                                <i class="tdsi-edit-fill"></i>
+                                            </span>
+                                        </button>
+                                        <button tds-button-icon color="secondary">
+                                            <span class="flex items-center">
+                                                <i class="tdsi-search-fill"></i>
+                                            </span>
+                                        </button>
+                                        <button tds-button-icon color="primary" (click)="showModalSearchPartner()">
+                                            <span class="flex items-center">
+                                                <i class="tdsi-plus-fill"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Bảng giá</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <tds-select valueField="id" textField="name" placeholder='Chọn tên khách hàng'
+                                        disabledField="isActive" [data]="optionsPriceList" [allowClear]="true">
+                                    </tds-select>
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Người giao hàng</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <input tdsInput autocomplete="off" placeholder="Nhập tên người giao hàng" />
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Số tiền trả</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <tds-input-number [min]='1' [step]="1">
+                                    </tds-input-number>
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Kho hàng</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <input tdsInput autocomplete="off" placeholder="Nhập kho hàng" />
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Nợ cũ</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">0</span>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Phương thức</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <tds-select valueField="id" textField="name" placeholder='Chọn tên Phương thức'
+                                        disabledField="isActive" [data]="optionsPricemethod" [allowClear]="true">
+                                    </tds-select>
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Kênh</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <input tdsInput autocomplete="off" placeholder="Nhập kênh" />
+                                </tds-form-field>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- tab thông tin giao hàng -->
+                    <div *ngIf="idx ==1" class="grid grid-cols-3 gap-x-8 gap-y-4 text-body-2 text-neutral-1-900">
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Đối tác giao hàng</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <tds-select valueField="id" textField="name" placeholder='Chọn đối tác giao hàng'
+                                        disabledField="isActive" [data]="optionsDelivery" [allowClear]="true">
+                                    </tds-select>
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Phí giao hàng</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <tds-input-number [min]='1' [step]="1" placeholder="Nhập Phí">
+                                    </tds-input-number>
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Tiền cọc</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <input tdsInput autocomplete="off" placeholder="Nhập tiền cọc" />
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Giao hàng thu tiền</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <tds-input-number [min]='1' [step]="1" placeholder="Nhập tiền">
+                                    </tds-input-number>
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Khối lượng ship (g)</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <tds-input-number [min]='1' [step]="1" placeholder="Nhập khối lượng">
+                                    </tds-input-number>
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Ghi chú giao hàng</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <input tdsInput autocomplete="off" placeholder="Nhập ghi chú" />
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class="col-span-3">
+                            <tds-collapse accordion="true">
+                                <tds-collapse-panel header="Thông tin nâng cao" [active]="true" [disabled]=false
+                                    [expandedIcon]="'tdsi-arrow-up-line'">
+                                    <div class="w-2/3 flex flex-col gap-y-4">
+                                        <div class="flex gap-x-6">
+                                            <div class="w-1/6">
+                                                <span class="font-semibold">Tên</span>
+                                            </div>
+                                            <div class="w-5/6">
+                                                <tds-form-field>
+                                                    <input tdsInput autocomplete="off" placeholder="Nhập Tên" />
+                                                </tds-form-field>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-x-6">
+                                            <div class="w-1/6">
+                                                <span class="font-semibold">Điện thoại</span>
+                                            </div>
+                                            <div class="w-5/6">
+                                                <tds-form-field>
+                                                    <input tdsInput autocomplete="off"
+                                                        placeholder="Nhập số điện thoại" />
+                                                </tds-form-field>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-x-6">
+                                            <div class="w-1/6">
+                                                <span class="font-semibold">địa chỉ</span>
+                                            </div>
+                                            <div class="w-5/6 flex flex-col gap-y-4">
+                                                <div class="w-full flex gap-x-2">
+                                                    <tds-form-field class="w-full">
+                                                        <input tdsInput autocomplete="off" placeholder="Nhập địa chỉ" />
+                                                    </tds-form-field>
+                                                    <button tds-button-icon color="primary">
+                                                        <span class="flex items-center">
+                                                            <i class="tdsi-location-fill"></i>
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                                <div class="w-full">
+                                                    <tds-form-field>
+                                                        <input tdsInput autocomplete="off" placeholder="Tỉnh/Thành" />
+                                                    </tds-form-field>
+                                                </div>
+                                                <div class="w-full">
+                                                    <tds-form-field>
+                                                        <input tdsInput autocomplete="off" placeholder="Quận/Huyện" />
+                                                    </tds-form-field>
+                                                </div>
+                                                <div class="w-full">
+                                                    <tds-form-field>
+                                                        <input tdsInput autocomplete="off" placeholder="Phường/Xã" />
+                                                    </tds-form-field>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </tds-collapse-panel>
+                            </tds-collapse>
+                        </div>
+                    </div>
+                    <!-- tab thông tin người nhận -->
+                    <div *ngIf="idx ==2" class="grid grid-cols-3 gap-x-8 gap-y-4 text-body-2 text-neutral-1-900">
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Tên người nhận</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <input tdsInput autocomplete="off" placeholder="Nhập tên người nhận" />
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Điện thoại</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <input tdsInput autocomplete="off" placeholder="Nhập tên điện thoại" />
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Ghi chú</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <input tdsInput autocomplete="off" placeholder="Nhập ghi chú" />
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Địa chỉ giao hàng</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <input tdsInput autocomplete="off" placeholder="Nhập địa chỉ giao hàng" />
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Địa chỉ giao hàng</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-date-picker showTime></tds-date-picker>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- tab thông tin khác -->
+                    <div *ngIf="idx ==3" class="grid grid-cols-3 gap-x-8 gap-y-4 text-body-2 text-neutral-1-900">
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Địa chỉ giao hàng</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <tds-select valueField="id" textField="name" placeholder='Chọn đối tác giao hàng'
+                                        disabledField="isActive" [data]="optionsSeller" [allowClear]="true">
+                                    </tds-select>
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Số hóa đơn đỏ</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <input tdsInput autocomplete="off" placeholder="Nhập số hóa đơn đỏ" />
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Trạng thái</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">Nháp</span>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Ngày hóa đơn</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-date-picker></tds-date-picker>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Ngày hóa đơn đỏ</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-date-picker></tds-date-picker>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Ghi chú ĐH</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <input tdsInput autocomplete="off" placeholder="Nhập ghi chú" />
+                                </tds-form-field>
+                            </div>
+                        </div>
+                        <div class=" col-span-1 flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span class="font-semibold">Seri</span>
+                            </div>
+                            <div class="w-2/3">
+                                <tds-form-field>
+                                    <input tdsInput autocomplete="off" placeholder="Nhập Seri" />
+                                </tds-form-field>
+                            </div>
+                        </div>
+                    </div>
+                </tds-tab>
+            </tds-tabset>
+        </div>
+        <div class="flex h-full gap-x-4">
+            <div class="w-1/3 h-full overflow-hidden flex ">
+                <div class="rounded-xl bg-white pt-2 px-3 flex h-full flex-col gap-y-2">
+                    <div class="flex gap-x-2">
+                        <tds-form-field class="w-full">
+                            <input tdsInput placeholder="search.." autocomplete="off" />
+                            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                        </tds-form-field>
+                        <tds-button-group>
+                            <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
+                                <span class="flex items-center">
+                                    Tất cả <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                                </span>
+                            </button>
+                            <tds-dropdown-menu #menu="tdsDropdownMenu">
+                                <div class="w-full">
+                                    <div tds-dropdown-item>
+                                        <a> Item 1 </a>
+                                    </div>
+                                    <div tds-dropdown-item>
+                                        <a> Item 2 </a>
+                                    </div>
+                                </div>
+                            </tds-dropdown-menu>
+                        </tds-button-group>
+                        <tds-button-group>
+                            <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
+                                <span class="flex items-center">
+                                    Theo tên <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                                </span>
+                            </button>
+                            <tds-dropdown-menu #menu="tdsDropdownMenu">
+                                <div class="w-full">
+                                    <div tds-dropdown-item>
+                                        <a> Item 1 </a>
+                                    </div>
+                                    <div tds-dropdown-item>
+                                        <a> Item 2 </a>
+                                    </div>
+                                </div>
+                            </tds-dropdown-menu>
+                        </tds-button-group>
+                        <button tds-button-icon color="primary" (click)="showModalAddProduct()">
+                            <span class="flex items-center">
+                                <i class="tdsi-plus-fill"></i>
+                            </span>
+                        </button>
+                        <button tds-button-icon color="info">
+                            <span class="flex items-center">
+                                <i class="tdsi-reload-fill"></i>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="w-full h-full">
+                        <tds-table templateMode #basicTable [listData]="listProduct" [scroll]="{y:'auto'}" [showPagination]="false">
+                            <thead>
+                                <tr>
+                                    <th width="60px">Ảnh</th>
+                                    <th width="220px">Tên sản Phẩm</th>
+                                    <th width="80px">Đơn vị</th>
+                                    <th width="96px">Giá</th>
+                                    <th width="45px"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-template ngFor let-data [ngForOf]="basicTable.data">
+                                    <tr class="group">
+                                        <td>
+                                            <div class="">
+                                                <tds-avatar [shape]="'square'" [size]="'lg'" [tdsSrc]="data.urlLink">
+                                                </tds-avatar>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="flex flex-col">
+                                                <span>{{ data.name }}</span>
+                                                <span class="text-neutral-1-400 font-regular">Tồn kho: <span
+                                                        class="text-primary-1">10</span> - Tồn dự báo: <span
+                                                        class="text-primary-1">5</span></span>
+                                            </div>
+                                        </td>
+                                        <td>{{ data.unit }}</td>
+                                        <td>{{ data.price | number: '1.0-3'}}</td>
+                                        <td>
+                                            <button class="group-hover:block hidden" tds-button-icon color="primary"
+                                                size="sm">
+                                                <span class="flex items-center">
+                                                    <i class="tdsi-arrow-right-line"></i>
+                                                </span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </tbody>
+                        </tds-table>
+                    </div>
+                </div>
+            </div>
+            <div class="w-2/3 h-full overflow-hidden">
+                <div
+                    class="rounded-xl pt-2 px-3 bg-white flex h-full w-full flex-col gap-y-2 text-body-2 text-neutral-1-900">
+                    <tds-table templateMode #TableAddBill [listData]="createBill" [scroll]="{y:'auto'}" [showPagination]="false">
+                        <thead>
+                            <tr>
+                                <th width="50px">STT</th>
+                                <th width="220px">Sản Phẩm</th>
+                                <th width="80px">Số lượng</th>
+                                <th width="96px">Đơn giá</th>
+                                <th width="96px">Giá gần đây</th>
+                                <th width="96px">Giảm giá</th>
+                                <th width="100px" class="truncate">Khối lượng(g)</th>
+                                <th width="96px">Thành tiền</th>
+                                <th width="90px">
+                                    <div class="flex items-center justify-center">
+                                        <button tds-button-icon color="error" size="sm">
+                                            <span class="flex items-center">
+                                                <i class="tdsi-trash-fill"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-template ngFor let-data [ngForOf]="TableAddBill.data">
+                                <tr>
+                                    <td>{{data.id}}</td>
+                                    <td>
+                                        <div class="flex flex-col">
+                                            <span class="font-semibold">{{data.product}}</span>
+                                            <span class="text-neutral-1-400">Đơn vị: Cái</span>
+                                            <span class="text-neutral-1-400">
+                                                <i class="tdsi-edit-fill mr-2"></i> Nhập ghi chú
+                                            </span>
+                                            <span class="text-info-500 font-semibold">
+                                                <i class="tdsi-user-fill mr-2 "></i> Chọn nhân viên
+                                            </span>
+
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <tds-input-number [(ngModel)]="data.quantity" [min]="1" [max]="100" [step]="1"
+                                            (ngModelChange)="onChangeQuantity($event)">
+                                        </tds-input-number>
+                                    </td>
+                                    <td>
+                                        <tds-input-number [(ngModel)]="data.priceUnit" [min]="1" [max]="100" [step]="1"
+                                            (ngModelChange)="onChangePriceUnit($event)">
+                                        </tds-input-number>
+                                    </td>
+                                    <td>{{ data.priceOld | number: '1.0-3'}}</td>
+                                    <td>
+                                        <span class="underline decoration-dotted text-neutral-1-400">
+                                            {{data.discount <=1 ? (data.discount | percent): (data.discount
+                                                |number: '1.0-3' )}} </span>
+                                    </td>
+                                    <td>{{data.weight}}</td>
+                                    <td>{{data.price}}</td>
+                                    <td>
+                                        <div class="flex gap-x-2">
+                                            <button tds-button-icon color="primary" size="sm">
+                                                <span class="flex items-center">
+                                                    <i class="tdsi-copy-fill"></i>
+                                                </span>
+                                            </button>
+                                            <button tds-button-icon color="error" size="sm">
+                                                <span class="flex items-center">
+                                                    <i class="tdsi-trash-fill"></i>
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                            <tr class="hover:bg-white border-b-0">
+                                <td colspan="9">
+                                    <div class="flex w-full justify-end">
+                                        <div class="w-1/3 flex justify-end">
+                                            <div class="w-full grid grid-cols-3 gap-2 text-right font-semibold">
+                                                <div><span class="font-regular">Tổng số lượng</span></div>
+                                                <div class="col-span-2"><span>{{createBill.length}}</span></div>
+
+                                                <button tds-button color="secondary" tds-popover popoverTrigger="click"
+                                                    (click)="openPopoverDiscount()"
+                                                    [(popoverVisible)]="visiblePopoverDiscount"
+                                                    [popoverContent]="popoverContentDiscount"
+                                                    [popoverFooter]="popoverFooterDiscount" [popoverAutoClose]="false"
+                                                    [popoverBackdrop]="true" popoverPlacement="left">
+                                                    <span class="flex items-center justify-center">
+                                                        <i
+                                                            class="tdsi-revenue-fill  text-neutral-1-500 text-lg leading-none mr-2"></i>Giảm
+                                                        giá
+                                                    </span>
+                                                </button>
+                                                <div class="col-span-2"><span>5,000đ - CK:5%</span></div>
+
+                                                <button tds-button color="secondary" tds-popover popoverTrigger="click"
+                                                    (click)="openPopoverTax()" [(popoverVisible)]="visiblePopoverTax"
+                                                    [popoverContent]="popoverContentTax"
+                                                    [popoverFooter]="popoverFooterTax" [popoverAutoClose]="false"
+                                                    [popoverBackdrop]="true" popoverPlacement="left">
+                                                    <span class="flex items-center justify-center">
+                                                        <i
+                                                            class="tdsi-receipt-fill  text-neutral-1-500 text-lg leading-none mr-2"></i>thuế
+                                                    </span>
+                                                </button>
+                                                <div class="col-span-2"><span>0%</span></div>
+
+                                                <div><span>Tổng tiền</span></div>
+                                                <div class="col-span-2"><span>200,000</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </tds-table>
+                    <!-- popover button giảm giá -->
+                    <ng-template #popoverContentDiscount>
+                        <div
+                            class="w-[376px] grid grid-cols-3 gap-x-6 gap-y-2 text-body-2 to-neutral-1-900 font-semibold">
+                            <div>
+                                <span>CK (%)</span>
+                            </div>
+                            <div class="col-span-2">
+                                <tds-input-number [min]="1" [max]="100" [step]="1"
+                                    (ngModelChange)="onChangeQuantity($event)">
+                                </tds-input-number>
+                            </div>
+
+                            <div>
+                                <span>Tiền giảm</span>
+                            </div>
+                            <div class="col-span-2">
+                                <tds-input-number [min]="1" [max]="100" [step]="1"
+                                    (ngModelChange)="onChangeQuantity($event)">
+                                </tds-input-number>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template #popoverFooterDiscount>
+                        <div class="flex justify-end gap-x-2 mt-2">
+                            <button tds-button-icon color="secondary" (click)="closePopoverDiscount()">
+                                <span class="flex items-center">
+                                    <i class="tdsi-close-fill"></i>
+                                </span>
+                            </button>
+                            <button tds-button-icon color="primary" (click)="applyPopoverDiscount()">
+                                <span class="flex items-center">
+                                    <i class="tdsi-tick-fill"></i>
+                                </span>
+                            </button>
+                        </div>
+                    </ng-template>
+
+                    <!-- popover button Thuế -->
+                    <ng-template #popoverContentTax>
+                        <div class="flex gap-x-2">
+                            <button tds-button color="secondary">
+                                <span class="flex items-center">
+                                    Không thuế
+                                </span>
+                            </button>
+                            <button tds-button color="primary">
+                                <span class="flex items-center">
+                                    Thuế GTGT 5%
+                                </span>
+                            </button>
+                            <button tds-button color="secondary">
+                                <span class="flex items-center">
+                                    Thuế GTGT 8%
+                                </span>
+                            </button>
+                            <button tds-button color="secondary">
+                                <span class="flex items-center">
+                                    Thuế GTGT 10%
+                                </span>
+                            </button>
+                        </div>
+                    </ng-template>
+                    <ng-template #popoverFooterTax>
+                        <div class="flex justify-end gap-x-2 mt-2">
+                            <button tds-button-icon color="secondary" (click)="closePopoverTax()">
+                                <span class="flex items-center">
+                                    <i class="tdsi-close-fill"></i>
+                                </span>
+                            </button>
+                            <button tds-button-icon color="primary" (click)="applyPopoverTax()">
+                                <span class="flex items-center">
+                                    <i class="tdsi-tick-fill"></i>
+                                </span>
+                            </button>
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
