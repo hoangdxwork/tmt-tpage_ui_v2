@@ -10,21 +10,11 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 })
 export class ReportComponent implements OnInit {
   //#region variable
-  menuData = ReportMenu;
-  currentPage = ReportMenu[0];
+  reportMenuData = ReportMenu;
   //#endregion
 
   constructor() { }
 
   ngOnInit(): void {
-    let item = sessionStorage.getItem('reportItem');
-    if(item){
-      this.currentPage = JSON.parse(item);
-    }
-  }
-
-  onChangePage(page:TDSMenuDTO){
-    this.currentPage = page;
-    sessionStorage.setItem('reportItem',JSON.stringify(page));
   }
 }
