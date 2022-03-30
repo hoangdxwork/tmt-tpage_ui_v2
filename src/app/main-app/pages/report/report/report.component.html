@@ -1,4 +1,4 @@
-<div class="w-full flex flex-col">
+<div class="w-full h-full flex flex-col overflow-hidden">
     <div class="p-4 w-full bg-white">
       <div class="w-full flex flex-row items-center justify-between">
         <h1 class="flex cursor-pointer items-center group whitespace-pre-wrap font-semibold">
@@ -18,22 +18,13 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-row w-full p-4">
-        <div class="w-1/6 h-full bg-white rounded-md py-4 mr-4">
-            <div *ngFor="let item of menuData">
-                <div class="h-[52px] w-full px-4 border-l-3 cursor-pointer hover:bg-light-50" [class]="currentPage.name === item.name ?'border-primary-1 text-neutral-900':'border-transparent text-neutral-500'" 
-                (click)="onChangePage(item)" [routerLink]="item.link">
-                <span class="flex items-center p-4">
-                    <i class="{{item.icon}} text-lg leading-none mr-2"></i>
-                    <span class="font-semibold text-body-2 font-sans w-full">{{item.name}}</span>
-                </span>
-            </div>
-            </div>
-        </div>
-        <div class="w-5/6 flex flex-col">
-            <router-outlet>
-            </router-outlet>
-        </div>
-    </div>
+    <div class="p-4 overflow-auto tds-custom-scroll h-full">
+      <tpage-menu-layout [menuData]="reportMenuData" class="fixed top-19"></tpage-menu-layout>
+      <div class="flex flex-row justify-end">
+          <div class="w-5/6 pl-8">
+              <router-outlet></router-outlet>
+          </div>
+      </div>
+  </div>
 </div>
 
