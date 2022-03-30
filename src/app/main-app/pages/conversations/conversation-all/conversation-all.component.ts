@@ -11,7 +11,19 @@ import { TDSSafeAny } from 'tmt-tang-ui';
   styleUrls: ['./conversation-all.component.scss']
 })
 export class ConversationAllComponent extends TpageBaseComponent {
-  
+  // select Page QAXK Nhiên Trung
+  public contact:number = 1;
+  public contactOptions = [
+      { id: 1, name: 'Page QAXK Nhiên Trung' },
+      { id: 2, name: 'Elvis Presley' },
+      { id: 3, name: 'Paul McCartney' },
+      { id: 4, name: 'Elton John' },
+      { id: 5, name: 'Elvis Presley' },
+      { id: 6, name: 'Paul McCartney' }
+  ]
+  // search
+  inputValue?: string;
+
   listData: Array<TDSSafeAny> = []
   constructor(public crmService: CRMTeamService, public activatedRoute: ActivatedRoute, public router: Router) {
     super(crmService, activatedRoute, router);
