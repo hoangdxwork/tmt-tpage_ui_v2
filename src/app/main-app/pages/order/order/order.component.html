@@ -68,17 +68,19 @@
                         </thead>
                         <tbody>
                             <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd'>
-                                <tr class="text-body-2 text-neutral-900 font-regular"
-                                    [ngClass]="setOfCheckedId.has(data.id)?'bg-[#F2FCF5]':''">
+                                <tr class="text-body-2 text-neutral-900 font-regular" [ngClass]="setOfCheckedId.has(data.id)?'bg-[#F2FCF5]':''">
+
                                     <!-- Mở rộng -->
                                     <td [expand]="expandSet.has(data.id)"
                                         (expandChange)="onExpandChange(data.id, $event)">
                                     </td>
+
                                     <!-- checked -->
                                     <td [checked]="setOfCheckedId.has(data.id)"
                                         (checkedChange)="onItemChecked(data.id, $event)"
                                         class="border-l border-r text-center border-neutral-200">
                                     </td>
+
                                     <!-- Thao tác -->
                                     <td>
                                         <div class="flex gap-x-2">
@@ -101,10 +103,12 @@
                                             </button>
                                         </div>
                                     </td>
+
                                     <!-- STT -->
                                     <td class="border-l border-r text-center border-neutral-200">
                                       1
                                     </td>
+
                                     <!-- Mã -->
                                     <td class="border-r border-neutral-200">
                                       <div class="flex w-full gap-x-2 items-center">
@@ -158,16 +162,22 @@
                                           </ng-template>
                                       </div>
                                     </td>
+
                                     <!-- Kênh kết nối -->
                                     <td class="border-r border-neutral-200">{{ data.crmTeamName }}</td>
+
                                     <!-- Tên -->
                                     <td class="border-r border-neutral-200">{{ data.email }}</td>
+
                                     <!-- Tổng tiền -->
                                     <td class="border-r border-neutral-200">{{ data.email }}</td>
+
                                     <!-- Tổng SL -->
                                     <td class="border-r border-neutral-200">{{ data.email }}</td>
+
                                     <!-- Ngày tạo đơn -->
                                     <td class="border-r border-neutral-200">{{ data.email }}</td>
+
                                     <!-- Trạng thái -->
                                     <td class="border-r border-neutral-200 ">
                                         <div class="w-full flex ">
@@ -177,6 +187,7 @@
                                             </tds-badge>
                                         </div>
                                     </td>
+
                                     <!-- Nhân viên -->
                                     <td class="border-r border-neutral-200">{{ data.email }}</td>
 

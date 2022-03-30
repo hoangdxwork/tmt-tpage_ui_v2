@@ -1,7 +1,11 @@
+import { addDays } from 'date-fns/esm';
 import { Component, OnInit } from '@angular/core';
 import { SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TDSHelperObject, TDSModalService } from 'tmt-tang-ui';
+import { TDSHelperObject, TDSModalService, TDSSafeAny } from 'tmt-tang-ui';
+import { ColumnTableDTO } from 'src/app/main-app/dto/common/table.dto';
+import { SortEnum } from 'src/app/lib';
+import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 
 @Component({
   selector: 'app-order',
@@ -9,6 +13,50 @@ import { TDSHelperObject, TDSModalService } from 'tmt-tang-ui';
   styleUrls: ['./order.component.scss']
 })
 export class OrderComponent implements OnInit {
+
+  lstOfData: Array<TDSSafeAny> = [];
+  pageSize = 20;
+  pageIndex = 1;
+  isLoading: boolean = false;
+  count: number = 1;
+
+  public filterObj: TDSSafeAny = {
+    tags: [],
+    status: '',
+    bill: null,
+    deliveryType: '',
+    searchText: '',
+    dateRange: {
+        startDate: addDays(new Date(), -30),
+        endDate: new Date(),
+    }
+  }
+
+  public hiddenColumns = new Array<ColumnTableDTO>();
+  public columns: any[] = [
+    {value: 'Code', name: 'Code', isChecked: true},
+    { value: 'Name', name: 'Tên', isChecked: true },
+    { value: 'CRMTeamName', name: 'Kênh kết nối', isChecked: true },
+    { value: 'Address', name: 'Địa chỉ', isChecked: false },
+    { value: 'TotalAmount', name: 'Tổng tiền', isChecked: true },
+    { value: 'TotalQuantity', name: 'Tổng SL', isChecked: true },
+    { value: 'StatusText', name: 'Trạng thái', isChecked: true },
+    { value: 'UserName', name: 'Nhân viên', isChecked: true },
+    { value: 'DateCreated', name: 'Ngày tạo', isChecked: false }
+  ];
+
+  public tabNavs: Array<TDSSafeAny> = [];
+  public modelTags: Array<TDSSafeAny> = [];
+
+  sort: Array<SortDataRequestDTO>= [{
+    field: "DateInvoice",
+    dir: SortEnum.desc,
+  }];
+
+
+  public lstDataTag: Array<TDSSafeAny> = [];
+
+  //////////////////////
 
   listSelectedTag = [
     { id: 1, name: 'Tag1' },
@@ -89,6 +137,19 @@ export class OrderComponent implements OnInit {
 
   ngOnInit(): void {
     this.getView();
+  }
+
+  loadData() {
+    this.isLoading = true;
+    let filters = this.odataFastSaleOrderService.buildFilter(this.filterObj);
+    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
+
+    this.odataFastSaleOrderService.getView(params, this.filterObj).subscribe((res: TDSSafeAny) => {
+
+        this.count = res['@odata.count'] as number //260
+        this.lstOfData = res.value;
+        this.isLoading = false;
+    });
   }
 
   onExpandChange(id: string, checked: boolean): void {
