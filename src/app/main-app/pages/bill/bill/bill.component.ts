@@ -5,7 +5,7 @@ import { TCommonService } from 'src/app/lib/services';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { OdataFastSaleOrderService } from 'src/app/main-app/services/mock-odata/odata-fastsaleorder.service';
-import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperString, TDSI18nService, ToastrService, toArray, TDSTableQueryParams, TDSHelperArray } from 'tmt-tang-ui';
+import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperString, TDSI18nService, ToastrService, toArray, TDSTableQueryParams, TDSHelperArray, TDSMessageService } from 'tmt-tang-ui';
 import { partnerDto } from '../../partner/partner/partner.component';
 import { addDays, getISODay } from 'date-fns/esm';
 import { TagService } from 'src/app/main-app/services/tag.service';
@@ -43,6 +43,7 @@ export class BillComponent implements OnInit{
     {value: 'Number', name: 'Số HĐ', isChecked: true},
     {value: 'CRMTeamName', name: 'Kênh kết nối', isChecked: true},
     {value: 'DateInvoice', name: 'Ngày bán', isChecked: true},
+    {value: 'DateCreated', name: 'Ngày tạo', isChecked: true},
     {value: 'PartnerDisplayName', name: 'Khách hàng', isChecked: true},
     {value: 'AmountTotal', name: 'Tổng tiền', isChecked: true},
     {value: 'Residual', name: 'Còn nợ', isChecked: true},
@@ -78,6 +79,7 @@ export class BillComponent implements OnInit{
     private  odataFastSaleOrderService: OdataFastSaleOrderService,
       private tagService: TagService,
       private cacheApi: THelperCacheService,
+      private message: TDSMessageService,
       private fastSaleOrderService :FastSaleOrderService,
       private viewContainerRef: ViewContainerRef) {
   }
@@ -136,9 +138,6 @@ export class BillComponent implements OnInit{
   onAllChecked(value: boolean): void {
     this.lstOfData.forEach((x: any) => this.updateCheckedSet(x.Id, value));
     this.refreshCheckedStatus();
-  }
-
-  onCurrentPageDataChange($event: readonly partnerDto[]): void {
   }
 
   refreshCheckedStatus(): void {
@@ -249,6 +248,7 @@ export class BillComponent implements OnInit{
     let model = { OrderId: id, Tags: tags };
     this.fastSaleOrderService.assignTagFastSaleOrder(model)
       .subscribe((res: TDSSafeAny) => {
+        if(res && res.OrderId) {
           var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
           if(exits) {
             exits.Tags = JSON.stringify(tags)
@@ -256,8 +256,12 @@ export class BillComponent implements OnInit{
 
           this.indClickTag = -1;
           this.modelTags = [];
+          this.message.success('Gán nhãn thành công!');
+        }
+
     }, error => {
       this.indClickTag = -1;
+      this.message.error('Gán nhãn thất bại!');
     });
   }
 
@@ -313,6 +317,10 @@ export class BillComponent implements OnInit{
   refreshData(){
     this.pageIndex = 1;
     this.indClickTag = -1;
+
+    this.checked = false;
+    this.indeterminate = false;
+    this.setOfCheckedId = new Set<number>();
 
     this.filterObj = {
       tags: [],

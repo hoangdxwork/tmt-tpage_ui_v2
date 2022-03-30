@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BillRoutingModule } from './bill-routing.module';
 import { BillComponent } from './bill/bill.component';
 import { MainSharedModule } from '../../shared/shared.module';
-import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSContextMenuService, TDSFilterStatusModule } from 'tmt-tang-ui';
+import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSContextMenuService, TDSFilterStatusModule, TDSSpinnerModule } from 'tmt-tang-ui';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
 import { OdataFastSaleOrderService } from '../../services/mock-odata/odata-fastsaleorder.service';
@@ -15,6 +15,12 @@ import { FilterOptionsComponent } from './components/filter-option/filter-option
 import { ConfigColumComponent } from './components/config-column/config-column.component';
 import { PrinterService } from '../../services/printer.service';
 import { ExcelExportService } from '../../services/excel-export.service';
+import { PaymentRequestComponent } from './components/payment-request/payment-request.component';
+import { SendDeliveryComponent } from './components/send-delivery/send-delivery.component';
+import {  TDSAlertModule } from 'tmt-tang-ui';
+import { PaymentMultipComponent } from './components/payment-multip/payment-multip.component';
+import { TDSNotificationModule } from 'tmt-tang-ui';
+import { AccountRegisterPaymentService } from '../../services/account-register-payment..service';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -22,7 +28,8 @@ const SERVICES = [
   TagService,
   DeliveryCarrierService,
   PrinterService,
-  ExcelExportService
+  ExcelExportService,
+  AccountRegisterPaymentService
 ]
 
 @NgModule({
@@ -30,7 +37,10 @@ const SERVICES = [
     BillComponent,
     ActionDropdownComponent,
     FilterOptionsComponent,
-    ConfigColumComponent
+    ConfigColumComponent,
+    PaymentRequestComponent,
+    SendDeliveryComponent,
+    PaymentMultipComponent
   ],
 
   imports: [
@@ -62,6 +72,9 @@ const SERVICES = [
     TDSDrawerModule,
     TDSFilterStatusModule,
     PipeModule,
+    TDSSpinnerModule,
+    TDSNotificationModule,
+    TDSAlertModule
   ],
   providers: [
    ...SERVICES,
