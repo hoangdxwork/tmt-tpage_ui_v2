@@ -1,13 +1,21 @@
 import { ModalBirthdayPartnerComponent } from './../components/modal-birthday-partner/modal-birthday-partner.component';
 import { ModalSendMessageComponent } from './../components/modal-send-message/modal-send-message.component';
 import { ModalConvertPartnerComponent } from './../components/modal-convert-partner/modal-convert-partner.component';
-import { ModalResetPointComponent } from './../components/modal-reset-point/modal-reset-point.component';
 import { ModalEditPartnerComponent } from './../components/modal-edit-partner/modal-edit-partner.component';
 import { ModalAddPartnerComponent } from './../components/modal-add-partner/modal-add-partner.component';
 
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
-import { number } from 'echarts';
-import { TDSModalService, TDSSafeAny, TDSHelperObject } from 'tmt-tang-ui';
+import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
+import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperArray, TDSMessageService, TDSTableQueryParams, TDSHelperString } from 'tmt-tang-ui';
+import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
+import { OperatorEnum, SortEnum, THelperCacheService } from 'src/app/lib';
+import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
+import { CommonService } from 'src/app/main-app/services/common.service';
+import { PartnerService } from 'src/app/main-app/services/partner.service';
+import { TagService } from 'src/app/main-app/services/tag.service';
+import { ColumnTableDTO } from '../../bill/components/config-column/config-column.component';
+import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 export interface partnerDto {
   id: number;
@@ -24,86 +32,73 @@ export interface partnerDto {
   status: number;
   effect: boolean;
 }
+
 @Component({
   selector: 'app-partner',
   templateUrl: './partner.component.html',
   styleUrls: ['./partner.component.scss']
 })
-export class PartnerComponent implements OnInit {
+
+export class PartnerComponent implements OnInit, OnDestroy {
+
+  lstOfData: Array<TDSSafeAny> = [];
+  pageSize = 20;
+  pageIndex = 1;
+  isLoading: boolean = false;
+  count: number = 1;
+
+  public filterObj: TDSSafeAny = {
+    tags: [],
+    searchText: '',
+    statusText: null
+  }
+
+  tabIndex = null;
+  partnerStatusReport: any[] = [];
 
   isOpenMessageFacebook = false
-  indClickTag = -1
-  listSelectedTag = [
-    { id: 1, name: 'Tag1' },
-    { id: 2, name: 'Tag2' },
-  ];
+  indClickTag = -1;
 
-  public listDataTag = [
-    { id: 1, name: 'Tag1' },
-    { id: 2, name: 'Tag2' },
-    { id: 3, name: 'Tag3' },
-    { id: 4, name: 'Tag4' }
-  ]
+  public modelTags: Array<TDSSafeAny> = [];
+  public lstDataTag: Array<TDSSafeAny> = [];
 
-  // '097', '098', '038', '039', '037', '035', '034',
-  // 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel',
-  firstPhone = ['036', '090', '093', '077', '082']
-  namePhone = ['Viettel',  'Mobifone', 'Mobifone', 'Mobifone', 'Vinaphone']
-  
   selected = 0;
   isLoadingTable = false
-  dataFillterPartner = [
-    {
-      name: 'Tất cả',
-      value: 0,
-      count: 99,
-      disabled: false
-    },
-    {
-      name: 'Thân thiết',
-      value: 1,
-      count: 85,
-      disabled: false
-    },
-    {
-      name: 'Bình thường',
-      value: 2,
-      count: 80,
-      disabled: false
-    },
-    {
-      name: 'Khách vip',
-      value: 3,
-      count: 80,
-      disabled: false
-    },
-    {
-      name: 'Bom hàng',
-      value: 4,
-      count: 80,
-      disabled: false
-    }
-  ];
+  isProcessing: boolean = false;
+  idsModel: any = [];
 
   checked = false;
   indeterminate = false;
-  listOfCurrentPageData: readonly partnerDto[] = [];
   listOfData: readonly partnerDto[] = [];
   setOfCheckedId = new Set<number>();
 
+  public hiddenColumns = new Array<ColumnTableDTO>();
+  public columns: any[] = [
+    {value: 'DisplayName', name: 'Tên', isChecked: true},
+    {value: 'Phone', name: 'Điện thoại', isChecked: true},
+    {value: 'Email', name: 'Email', isChecked: false},
+    {value: 'Street', name: 'Địa chỉ', isChecked: true},
+    {value: 'StatusText', name: 'Trạng thái', isChecked: true},
+    {value: 'Credit', name: 'Nợ hiện tại', isChecked: true},
+    {value: 'FacebookId', name: 'Facebook', isChecked: false},
+    {value: 'Zalo', name: 'Zalo', isChecked: false},
+    {value: 'Active', name: 'Hiệu lực', isChecked: true},
+    {value: 'DateCreated', name: 'Ngày tạo', isChecked: true}
+  ];
+
   expandSet = new Set<number>();
-  constructor(private modalService: TDSModalService, private viewContainerRef: ViewContainerRef) { }
+  private _destroy = new Subject<void>();
 
-  // Click fillter Status
-  onSelectChange(value: TDSSafeAny) {
-    this.isLoadingTable = true
-    setTimeout(() => {
-      this.isLoadingTable = false
-    }, 500);
-  }
-  onModelChange(value: TDSSafeAny) {
-
-    console.log('ngModelChange', value)
+  constructor(private modalService: TDSModalService,
+      private odataPartnerService: OdataPartnerService,
+      private cacheApi: THelperCacheService,
+      private commonService: CommonService,
+      private message: TDSMessageService,
+      private tagService: TagService,
+      private modal: TDSModalService,
+      private excelExportService: ExcelExportService,
+      private partnerService: PartnerService,
+      private viewContainerRef: ViewContainerRef) {
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -112,7 +107,6 @@ export class PartnerComponent implements OnInit {
     } else {
       this.setOfCheckedId.delete(id);
     }
-    console.log(this.setOfCheckedId)
   }
 
   onItemChecked(id: number, checked: boolean): void {
@@ -121,37 +115,103 @@ export class PartnerComponent implements OnInit {
   }
 
   onAllChecked(value: boolean): void {
-    this.listOfCurrentPageData.forEach(item => this.updateCheckedSet(item.id, value));
-    this.refreshCheckedStatus();
-  }
-
-  onCurrentPageDataChange($event: readonly partnerDto[]): void {
-    this.listOfCurrentPageData = $event;
+    this.lstOfData.forEach((x: any) => this.updateCheckedSet(x.Id, value));
     this.refreshCheckedStatus();
   }
 
   refreshCheckedStatus(): void {
-    this.checked = this.listOfCurrentPageData.every(item => this.setOfCheckedId.has(item.id));
-    this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedId.has(item.id)) && !this.checked;
+    this.checked = this.lstOfData.every(x => this.setOfCheckedId.has(x.Id));
+    this.indeterminate = this.lstOfData.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
   }
 
   ngOnInit(): void {
-    this.listOfData = new Array(200).fill(0).map((_, index) => ({
-      id: index,
-      code: `[KH0${index}]`,
-      name: 'Trang Nguyen',
-      phone: this.setPhone(index),
-      email: '123123@gmail.com',
-      tag: [],
-      address: `77 Âu Cơ, Quận Tân Bình, Thành phố Hồ Chí Minh. ${index}`,
-      birthday: '13/07/2021',
-      zalo: '',
-      facebook: 'facebook.com/100010187620290',
-      debt: 12000000000,
-      status: this.addStatus(index),
-      effect: this.addEffect(index)
-    }));
+    this.loadData();
+    this.loadTags();
+    this.loadGridConfig();
+    this.loadPartnerStatusReport();
   }
+
+  loadGridConfig() {
+    const key = this.partnerService._keyCacheGrid;
+    this.cacheApi.getItem(key).subscribe((res: TDSSafeAny) => {
+      if(res && res.value) {
+        var jsColumns = JSON.parse(res.value) as any;
+        this.hiddenColumns = jsColumns.value.columnConfig;
+      } else {
+        this.hiddenColumns = this.columns;
+      }
+    })
+  }
+
+  loadData() {
+    this.isLoading = true;
+    let filters = this.odataPartnerService.buildFilter(this.filterObj);
+    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
+    this.odataPartnerService.getView(params, this.filterObj).subscribe((res: TDSSafeAny) => {
+
+      this.count = res['@odata.count'];
+      this.lstOfData = res.value;
+      this.isLoading = false;
+
+    }, error => {
+        this.isLoading = false;
+        this.message.error('Tải dữ liệu khách hàng thất bại!');
+    });
+  }
+
+  onSelectChange(value: TDSSafeAny) {
+    this.pageIndex = 1;
+    this.indClickTag = -1;
+    this.tabIndex = value;
+
+    this.filterObj = {
+        tags: [],
+        searchText: '',
+        statusText: value
+    };
+
+    this.loadData();
+  }
+
+  loadTags() {
+    let type = "partner";
+    this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
+        this.lstDataTag = res.value;
+    })
+  }
+
+  loadPartnerStatusReport() {
+    this.commonService.getPartnerStatusReport().subscribe((res: any) => {
+      if(res && TDSHelperArray.isArray(res.item)) {
+          this.partnerStatusReport = res.item;
+      }
+    }, error => {
+      this.message.error('Tải dữ liệu trạng thái khách hàng thất bại!');
+    })
+  }
+
+  refreshData() {
+    this.pageIndex = 1;
+    this.indClickTag = -1;
+    this.tabIndex = null;
+
+    this.checked = false;
+    this.indeterminate = false;
+    this.setOfCheckedId = new Set<number>();
+
+    this.filterObj = {
+        tags: [],
+        searchText: '',
+        statusText: null
+    }
+
+    this.loadData();
+  }
+
+  onQueryParamsChange(params: TDSTableQueryParams) {
+    this.loadData();
+  }
+
   onExpandChange(id: number, checked: boolean): void {
     if (checked) {
       this.expandSet.add(id);
@@ -160,58 +220,154 @@ export class PartnerComponent implements OnInit {
     }
   }
 
-  addEffect(id: number) {
-    if (id % 2 == 0)
-      return true
-    return false
-  }
-  addStatus(id: number) {
-    if (id % 3 == 0)
-      return 0
-    else if (id % 4) {
-      return 1
+  checkStatusText(text: string) {
+    var exits = this.partnerStatusReport.filter(x => x.StatusText.toLowerCase() == text.toLowerCase())[0] as any;
+    if(exits) {
+        return exits.StatusStyle;
     }
-    return 2
   }
-  setPhone(id: number) {
-    if (id % 2 == 0)
-      return '0369847894'
-    else if (id % 3) {
-      return '0908910425'
+
+  checkNameNetwork(type: string) {
+    switch (type) {
+      case "Viettel":
+        return "error"
+      case "Mobifone":
+        return "success"
+      case "Vinaphone":
+        return "info"
+      default:
+        return "info"
     }
-    return '0822303039'
-  }
-  checkPhone(phone: string) {
-    for (var i = 0; i < this.firstPhone.length; i++) {
-      if (phone.indexOf(this.firstPhone[i]) == 0)
-        return this.namePhone[i]
-    }
-    return
   }
 
   // Add tag
   addTag(id: number) {
     this.indClickTag = id;
   }
-  close(): void {
-    this.indClickTag = -1
-    this.listSelectedTag = [{ id: 1, name: 'Tag1' },
-    { id: 2, name: 'Tag2' },]
+
+  openTag(id: number, data: TDSSafeAny) {
+    this.modelTags = [];
+    this.indClickTag = id;
+    this.modelTags = JSON.parse(data);
   }
 
-  apply(): void {
-    this.listSelectedTag.forEach(element => {
-      this.listOfData[this.listOfData.findIndex(x => x.id == this.indClickTag)].tag.push(element.name)
+  closeTag() {
+    this.indClickTag = -1;
+  }
+
+  assignTags(id: number, tags: TDSSafeAny) {
+    let model = { PartnerId: id, Tags: tags };
+    this.partnerService.assignTagPartner(model).subscribe((res: TDSSafeAny) => {
+        if(res && res.PartnerId) {
+          var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
+          if(exits) {
+            exits.Tags = JSON.stringify(tags)
+          }
+
+          this.indClickTag = -1;
+          this.modelTags = [];
+
+          this.message.success('Gán nhãn thành công!');
+        }
+    }, error => {
+        this.indClickTag = -1;
+        this.message.error('Gán nhãn thất bại!');
     });
-    this.indClickTag = -1
-    this.listSelectedTag = [
-      { id: 1, name: 'Tag1' },
-      { id: 2, name: 'Tag2' },];
   }
 
-  onChange(e: TDSSafeAny) {
+  applyFilter(event: TDSSafeAny) {
+    this.tabIndex = null;
+    this.pageIndex = 1;
+    this.indClickTag = -1;
 
-    console.log(e)
+    this.filterObj.searchText = event.target.value;
+    this.loadData();
+  }
+
+  isHidden(columnName: string) {
+      return this.hiddenColumns.find(x => x.value == columnName)?.isChecked;
+  }
+
+  columnsChange(event: Array<ColumnTableDTO>) {
+    this.hiddenColumns = event;
+    if(event && event.length > 0) {
+      const gridConfig = {
+          columnConfig: event
+      };
+
+      const key = this.partnerService._keyCacheGrid;
+      this.cacheApi.setItem(key, gridConfig);
+
+      event.forEach(column => { this.isHidden(column.value) });
+    }
+  }
+
+  exportExcel() {
+    if (this.isProcessing) { return }
+
+    let state = {
+        skip: 0,
+        take: 20,
+        filter: {
+          filters: [
+            { field: "Customer", operator: OperatorEnum.eq, value: true },
+            { field: "Active", operator: OperatorEnum.eq, value: true },
+          ],
+          logic: "and",
+        }
+    };
+
+    let data = { customer: true, data : JSON.stringify(state) }
+
+    let that = this;
+    let callBackFn = () => {
+      that.isProcessing = false;
+    }
+
+    this.excelExportService.exportPost('/Partner/ExportFile',{data: JSON.stringify(data)}, 'danh-sach-kh', callBackFn);
+  }
+
+  setActive(type: string) {
+    if (this.checkValueEmpty() == 1) {
+      switch(type) {
+        case "active":
+          let model1 = {  Active: true, Ids: this.idsModel }
+          this.partnerService.setActive({model: model1}).subscribe((res: TDSSafeAny) => {
+              this.message.success('Đã mở hiệu lực thành công!');
+              setTimeout(() => {
+                this.loadData();
+              }, 350)
+          }, error => {
+            this.message.error('Mở hiệu lực thất bại!');
+          })
+          break;
+
+        case "unactive":
+          let model2 = {  Active: false, Ids: this.idsModel }
+          this.partnerService.setActive({model: model2}).subscribe((res: TDSSafeAny) => {
+              this.message.success('Đóng hiệu lực thành công!');
+              setTimeout(() => {
+                this.loadData();
+              }, 350)
+          }, error => {
+            this.message.error('Đóng hiệu lực thất bại!');
+          })
+          break;
+
+        default: break;
+      }
+    }
+  }
+
+  checkValueEmpty() {
+    let ids: any[] = [...this.setOfCheckedId];
+    this.idsModel = ids;
+
+    if (ids.length == 0) {
+      this.message.error('Vui lòng chọn tối thiểu một dòng!');
+      return 0;
+    }
+    return 1;
   }
 
   // modal add Partner
@@ -227,7 +383,7 @@ export class PartnerComponent implements OnInit {
     modal.afterClose.subscribe(result => {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-        
+
       }
     });
   }
@@ -248,48 +404,48 @@ export class PartnerComponent implements OnInit {
     modal.afterClose.subscribe(result => {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-        
+
       }
     });
   }
-  // modal reset điểm tích lũy
-  showModalResetPoint(){
-    const modal = this.modalService.create({
+
+  resetLoyaltyPoint(){
+    let that = this;
+    if (this.isProcessing) {
+      return
+    }
+
+    let ids: any = [...this.setOfCheckedId];
+    that.isProcessing = true;
+
+    this.modal.success({
       title: 'Reset điểm tích lũy',
-      content: ModalResetPointComponent,
-      size: "md",
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-        
-    }
-    });
-    modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
-    modal.afterClose.subscribe(result => {
-      console.log('[afterClose] The result is:', result);
-      if (TDSHelperObject.hasValue(result)) {
-        
-      }
+      content: 'Bạn muốn chắc chắn reset điểm khách hàng này?',
+      onOk: () => {
+        that.partnerService.resetLoyaltyPoint({ ids: ids }).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+            that.message.success('Thao tác thành công!');
+            that.isProcessing = false;
+        }, error => {
+            that.message.error(`${error?.error?.message}`);
+            that.isProcessing = false;
+        })
+      },
+      onCancel: () => { that.isProcessing = false; },
+      okText: "Xác nhận",
+      cancelText: "Đóng",
+      confirmViewType:"compact"
     });
   }
 
-  // Modal chuyển đổi khách hàng
-
-  showModalConvertPartner(){
-    const modal = this.modalService.create({
-      title: 'Chuyển đổi khách hàng',
-      content: ModalConvertPartnerComponent,
-      size: "md",
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-        
-    }
-    });
-    modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
-    modal.afterClose.subscribe(result => {
-      console.log('[afterClose] The result is:', result);
-      if (TDSHelperObject.hasValue(result)) {
-        
-      }
+  openTransferPartner(){
+    this.modalService.create({
+        title: 'Chuyển đổi khách hàng',
+        content: ModalConvertPartnerComponent,
+        size: "md",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+            lstOfData: this.lstOfData
+        }
     });
   }
 
@@ -301,19 +457,19 @@ export class PartnerComponent implements OnInit {
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        
+
     }
     });
     modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
     modal.afterClose.subscribe(result => {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-        
+
       }
     });
   }
 
-  // Modal sinh nhật của khách hàng 
+  // Modal sinh nhật của khách hàng
   showModalBirthday(){
     const modal = this.modalService.create({
       title: 'Sinh nhật khách hàng',
@@ -321,23 +477,28 @@ export class PartnerComponent implements OnInit {
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        
+
     }
     });
     modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
     modal.afterClose.subscribe(result => {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-        
+
       }
     });
   }
 
-  // Drawer tin nhắn facebook 
+  // Drawer tin nhắn facebook
   openDrawerMessage(linkFacebook: string){
     this.isOpenMessageFacebook = true;
   }
   closeDrawerMessage(ev: boolean){
     this.isOpenMessageFacebook = false;
+  }
+
+  ngOnDestroy(): void {
+    this._destroy.next();
+    this._destroy.complete();
   }
 }

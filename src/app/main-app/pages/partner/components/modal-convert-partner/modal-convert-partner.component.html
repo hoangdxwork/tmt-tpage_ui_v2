@@ -1,22 +1,22 @@
 
 <div>
-    <form [formGroup]="formConvertPartner" (ngSubmit)="submitConvert()" class="flex flex-col gap-y-4">
+    <form class="flex flex-col gap-y-4">
         <tds-form-field>
             <tds-label>Khách hàng nguồn</tds-label>
-            <tds-select valueField="id" textField="name" placeholder='Chọn khách hàng' disabledField="isActive"
-                formControlName="partnerSource" [data]="contactOptions">
+            <tds-select valueField="Id" textField="Name" placeholder='Chọn khách hàng' disabledField="isActive" (selectChange)="changeFrom($event)"
+               [(ngModel)]="fromPartner"  [data]="lstOfData">
             </tds-select>
         </tds-form-field>
         <tds-form-field>
             <tds-label>Khách hàng đích</tds-label>
-            <tds-select valueField="id" textField="name" placeholder='Chọn khách hàng' disabledField="isActive"
-                formControlName="partnerSource" [data]="contactOptions">
+            <tds-select valueField="Id" textField="Name" placeholder='Chọn khách hàng' disabledField="isActive" (selectChange)="changeTo($event)"
+              [(ngModel)]="toPartner" [data]="lstOfData">
             </tds-select>
         </tds-form-field>
     </form>
     <div class="w-full flex justify-end p-4" *tdsModalFooter>
-        <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">Đóng</button>
-        <button tds-button type="submit" color="primary" (click)="save()">
+        <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+        <button tds-button type="submit" color="primary" (click)="onSave()">
             Chuyển đổi
         </button>
     </div>
