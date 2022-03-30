@@ -4,7 +4,6 @@ import { ModalBirthdayPartnerComponent } from './components/modal-birthday-partn
 import { ModalSampleMessageComponent } from './components/modal-sample-message/modal-sample-message.component';
 import { ModalSendMessageComponent } from './components/modal-send-message/modal-send-message.component';
 import { ModalConvertPartnerComponent } from './components/modal-convert-partner/modal-convert-partner.component';
-import { ModalResetPointComponent } from './components/modal-reset-point/modal-reset-point.component';
 import { ModalEditPartnerComponent } from './components/modal-edit-partner/modal-edit-partner.component';
 import { ModalAddAddressComponent } from './components/modal-add-address/modal-add-address.component';
 import { ModalAddPartnerComponent } from './components/modal-add-partner/modal-add-partner.component';
@@ -15,9 +14,26 @@ import { CommonModule } from '@angular/common';
 
 import { PartnerRoutingModule } from './partner-routing.module';
 import { PartnerComponent } from './partner/partner.component';
-import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSFilterStatusModule, TDSSpinnerModule } from 'tmt-tang-ui';
+import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSFilterStatusModule, TDSSpinnerModule, TDSAlertModule, TDSNotificationModule } from 'tmt-tang-ui';
+import { OdataPartnerService } from '../../services/mock-odata/odata-partner.service';
+import { CommonService } from '../../services/common.service';
+import { TDSMessageModule } from 'tmt-tang-ui';
+import { PipeModule } from '../../shared/pipe/pipe.module';
+import { PartnerService } from '../../services/partner.service';
+import { TagService } from '../../services/tag.service';
+import { ConfigColumPartnerComponent } from './components/config-column/config-column-partner.component';
+import { MainSharedModule } from '../../shared/shared.module';
+import { PrinterService } from '../../services/printer.service';
+import { ExcelExportService } from '../../services/excel-export.service';
 
-
+const SERVICES = [
+  OdataPartnerService,
+  CommonService,
+  PartnerService,
+  TagService,
+  PrinterService,
+  ExcelExportService,
+]
 
 @NgModule({
   declarations: [
@@ -26,13 +42,13 @@ import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TD
     ModalAddPartnerComponent,
     ModalAddAddressComponent,
     ModalEditPartnerComponent,
-    ModalResetPointComponent,
     ModalConvertPartnerComponent,
     ModalSendMessageComponent,
     ModalSampleMessageComponent,
     ModalBirthdayPartnerComponent,
     ModalPaymentComponent,
     DrawerMessageComponent,
+    ConfigColumPartnerComponent
   ],
   imports: [
     CommonModule,
@@ -62,7 +78,17 @@ import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TD
     TDSDrawerModule,
     TDSFilterStatusModule,
     TDSSpinnerModule,
-    
-  ]
+    TDSMessageModule,
+    PipeModule,
+    TDSSpinnerModule,
+    TDSNotificationModule,
+    TDSAlertModule,
+    CommonModule,
+    MainSharedModule,
+
+  ],
+  providers: [
+    ...SERVICES,
+   ],
 })
 export class PartnerModule { }
