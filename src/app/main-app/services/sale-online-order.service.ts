@@ -6,12 +6,6 @@ import { PagedList2 } from "../dto/pagedlist2.dto";
 import { BaseSevice } from "./base.service";
 
 
-
-
-
-
-
-
 @Injectable({
   providedIn: 'root'
 })
@@ -20,16 +14,37 @@ export class SaleOnline_OrderService extends BaseSevice {
   table: string = "SaleOnline_Order";
   baseRestApi: string = "rest/v1.0/saleonline_order";
 
+  public _keyCacheGrid: string = 'saleonline_order-page:grid_saleonline_order:settings';
+
   constructor(private apiService: TCommonService) {
     super(apiService)
   }
 
-  getView(): Observable<TDSSafeAny> {
-    let api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetView?$skip=0&$top=20`,
-      method: TApiMethodType.get
+  getSummaryStatus(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/getsummarystatussaleonline`,
+        method: TApiMethodType.post,
     }
-    return this.apiService.getData<TDSSafeAny>(api, null);
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  assignSaleOnlineOrder(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/TagSaleOnlineOrder/ODataService.AssignTag`,
+        method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  updateStatusTextSaleOnline(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.UpdateStatusTextSaleOnline`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
 }

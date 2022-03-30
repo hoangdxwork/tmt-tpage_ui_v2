@@ -64,6 +64,9 @@ export enum OperatorEnum {
      * null hoặc rỗng
      */
     hasnovalue = 'hasnovalue',
-
+    /**
+    * sort by
+    */
+    orderby = 'orderby',
 
 }

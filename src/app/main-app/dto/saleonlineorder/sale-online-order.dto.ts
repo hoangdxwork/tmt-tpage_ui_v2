@@ -12,93 +12,93 @@ export interface SaleOnlineOrderSummaryStatusDTO {
 }
 
 export interface SaleOnline_OrderDTO {
-  id: string;
-  code: string;
+  Id: string;
+  Code: string;
 
-  facebook_UserId: string;
-  facebook_PostId: string;
-  facebook_ASUserId: string;
-  facebook_CommentId: string;
-  facebook_AttachmentId: string;
-  facebook_UserName: string;
-  facebook_UserAvatar: string;
-  facebook_Content: string;
+  Facebook_UserId: string;
+  Facebook_PostId: string;
+  Facebook_ASUserId: string;
+  Facebook_CommentId: string;
+  Facebook_AttachmentId: string;
+  Facebook_UserName: string;
+  Facebook_UserAvatar: string;
+  Facebook_Content: string;
   _telephone: string;
 
-  telephone: string;
+  Telephone: string;
 
-  address: string;
-  partnerPhone: string;
-  name: string;
-  email: string;
-  note: string;
-  deposit: number;
-  liveCampaignId: string;
-  liveCampaignName: string;
+  Address: string;
+  PartnerPhone: string;
+  Name: string;
+  Email: string;
+  Note: string;
+  Deposit: number;
+  LiveCampaignId: string;
+  LiveCampaignName: string;
 
-  partnerId?: number;
-  partner: PartnerDTO;
-  partnerName: string;
-  partnerStatus: PartnerStatus;
-  partnerStatusText: string;
-  partnerCode: string;
+  PartnerId?: number;
+  Partner: PartnerDTO;
+  PartnerName: string;
+  PartnerStatus: PartnerStatus;
+  PartnerStatusText: string;
+  PartnerCode: string;
 
-  cityCode: string;
-  cityName: string;
-  districtCode: string;
-  districtName: string;
-  wardCode: string;
-  wardName: string;
+  CityCode: string;
+  CityName: string;
+  DistrictCode: string;
+  DistrictName: string;
+  WardCode: string;
+  WardName: string;
 
-  totalAmount: number;
-  totalQuantity: number;
+  TotalAmount: number;
+  TotalQuantity: number;
 
-  dateCreated: Date;
-  lastUpdated?: Date;
+  DateCreated: Date;
+  LastUpdated?: Date;
 
-  status: SaleOnlineOrderStatusType;
-  statusText: string;
+  Status: SaleOnlineOrderStatusType;
+  StatusText: string;
 
-  facebook_CommentsText: string;
-  facebook_Comments: Array<SaleOnline_Order_FacebookCommentDTO>;
+  Facebook_CommentsText: string;
+  Facebook_Comments: Array<SaleOnline_Order_FacebookCommentDTO>;
 
-  details: Array<SaleOnline_Order_DetailDTO>;
+  Details: Array<SaleOnline_Order_DetailDTO>;
 
-  statusStr: string;
-  commentIds: Array<string>;
-  companyId?: number;
-  partnerNameNosign: string;
-  sessionIndex: number;
-  session: number;
-  source: string;
-  source_FacebookUserId: string;
-  source_FacebookMessageId: string;
-  zaloOrderCode: string;
-  zaloOrderId: string;
-  zaloOAId: string;
-  deliveryInfo: string;
-  crmTeamId?: number;
-  matchingId: string;
-  isCreated: boolean;
-  isUpdated: boolean;
-  crmTeamName: string;
+  StatusStr: string;
+  CommentIds: Array<string>;
+  CompanyId?: number;
+  PartnerNameNosign: string;
+  SessionIndex: number;
+  Session: number;
+  Source: string;
+  Source_FacebookUserId: string;
+  Source_FacebookMessageId: string;
+  ZaloOrderCode: string;
+  ZaloOrderId: string;
+  ZaloOAId: string;
+  DeliveryInfo: string;
+  CRMTeamId?: number;
+  MatchingId: string;
+  IsCreated: boolean;
+  IsUpdated: boolean;
+  CRMTeamName: string;
 
   // Hiển thị số lần in
-  printCount: number;
-  userId: string;
-  user: ApplicationUserDTO;
-  tags: string;
-  nameNetwork: string;
-  userName: string;
+  PrintCount: number;
+  UserId: string;
+  User: ApplicationUserDTO;
+  Tags: string;
+  NameNetwork: string;
+  UserName: string;
 
-  warehouseId?: number;
-  warehouseName: string;
-  warehouse: StockWarehouseDTO;
+  WarehouseId?: number;
+  WarehouseName: string;
+  Warehouse: StockWarehouseDTO;
 
-  company: CompanyDTO;
-  companyName: string;
+  Company: CompanyDTO;
+  CompanyName: string;
 
-  formAction: string;
+  FormAction: string;
 }
 
 export interface SaleOnline_Order_FacebookCommentDTO {
@@ -162,6 +162,14 @@ export interface SaleOnline_Facebook_FromDTO {
   picture: string;
   name: string;
   mobile_phone: string;
+}
+
+export interface UpdateStatusTextSaleOnlineDTO { // /odata/SaleOnline_Order/ODataService.UpdateStatusTextSaleOnline
+  Code: string;
+  Id: string;
+  Name: string;
+  StatusText: string;
+  TotalAmount: number;
 }
 
 export enum SaleOnlineOrderStatusType {

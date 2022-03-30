@@ -8,20 +8,18 @@ import { BaseSevice } from '../base.service';
 export interface FilterObjDTO  {
     tags: Array<TDSSafeAny>,
     status: '',
-    bill: null,
-    deliveryType: '',
     searchText: '',
     dateRange: {
-        startDate: Date,
-        endDate: Date
-    }
+      startDate: Date,
+      endDate: Date
+  }
 }
 
 @Injectable()
-export class OdataSaleOnlineOrderService extends BaseSevice {
+export class OdataSaleOnline_OrderService extends BaseSevice {
 
   prefix: string = "odata";
-  table: string = "SaleOnlineOrder";
+  table: string = "SaleOnline_Order";
   baseRestApi: string = "rest/v1.0/saleonlineorder";
 
   constructor(
@@ -33,11 +31,20 @@ export class OdataSaleOnlineOrderService extends BaseSevice {
 
   getView(params: string, filterObj: FilterObjDTO): Observable<TDSSafeAny>{
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&deliveryType=${filterObj.deliveryType}&${params}&$count=true`,
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&${params}&$count=true`,
         method: TApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  removeIds(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.RemoveIds`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   public buildFilter(filterObj: FilterObjDTO) {
@@ -47,14 +54,11 @@ export class OdataSaleOnlineOrderService extends BaseSevice {
         filters: [],
     }
 
-    dataFilter.filters.push({ field: "Type", operator: OperatorEnum.eq, value: "invoice"})
-    dataFilter.logic = "and";
-
     if (filterObj.dateRange && filterObj.dateRange.startDate && filterObj.dateRange.endDate) {
         dataFilter.filters.push({
             filters: [
-              { field: "DateInvoice", operator: OperatorEnum.gte, value: new Date(filterObj.dateRange.startDate) },
-              { field: "DateInvoice", operator: OperatorEnum.lte, value: new Date(filterObj.dateRange.endDate) }
+              { field: "DateCreated", operator: OperatorEnum.gte, value: new Date(filterObj.dateRange.startDate) },
+              { field: "DateCreated", operator: OperatorEnum.lte, value: new Date(filterObj.dateRange.endDate) }
             ],
             logic: 'and'
         })
@@ -63,33 +67,22 @@ export class OdataSaleOnlineOrderService extends BaseSevice {
     if (TDSHelperString.hasValueString(filterObj.searchText)) {
         dataFilter.filters.push( {
             filters: [
-              { field: "PartnerDisplayName", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Phone", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "Code", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "Telephone", operator: OperatorEnum.contains, value: filterObj.searchText },
               { field: "Address", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Number", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "State", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Phone", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "PartnerNameNoSign", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "CarrierName", operator: OperatorEnum.contains, value: filterObj.searchText},
-              { field: "TrackingRef", operator: OperatorEnum.contains, value: filterObj.searchText}
+              { field: "PartnerName", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "PartnerNameNosign", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "StatusText", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "CRMTeamName", operator: OperatorEnum.contains, value: filterObj.searchText},
+              { field: "UserName", operator: OperatorEnum.contains, value: filterObj.searchText}
             ],
             logic: 'or'
         })
     }
 
-    if(TDSHelperString.hasValueString(filterObj.bill)) {
-      if(filterObj.bill === "isCode"){
-          dataFilter.filters.push({ field: "TrackingRef", operator: OperatorEnum.neq, value: null })
-          dataFilter.logic = "and";
-      }
-      if(filterObj.bill === "noCode"){
-        dataFilter.filters.push({ field: "TrackingRef", operator: OperatorEnum.eq, value: null })
-        dataFilter.logic = "and";
-      }
-    }
-
     if (TDSHelperString.hasValueString(filterObj.status)) {
-      dataFilter.filters.push({ field: "State", operator: OperatorEnum.eq, value: filterObj.status })
+      dataFilter.filters.push({ field: "Status", operator: OperatorEnum.eq, value: filterObj.status })
       dataFilter.logic = "and";
     }
 

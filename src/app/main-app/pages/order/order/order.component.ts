@@ -1,11 +1,14 @@
 import { addDays } from 'date-fns/esm';
 import { Component, OnInit } from '@angular/core';
-import { SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
+import { SaleOnlineOrderSummaryStatusDTO, SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TDSHelperObject, TDSModalService, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSSafeAny, TDSTableQueryParams, TDSTagStatusType } from 'tmt-tang-ui';
 import { ColumnTableDTO } from 'src/app/main-app/dto/common/table.dto';
-import { SortEnum } from 'src/app/lib';
+import { SortEnum, THelperCacheService } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { OdataSaleOnline_OrderService } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
+import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
+import { TagService } from 'src/app/main-app/services/tag.service';
 
 @Component({
   selector: 'app-order',
@@ -23,8 +26,6 @@ export class OrderComponent implements OnInit {
   public filterObj: TDSSafeAny = {
     tags: [],
     status: '',
-    bill: null,
-    deliveryType: '',
     searchText: '',
     dateRange: {
         startDate: addDays(new Date(), -30),
@@ -34,7 +35,7 @@ export class OrderComponent implements OnInit {
 
   public hiddenColumns = new Array<ColumnTableDTO>();
   public columns: any[] = [
-    {value: 'Code', name: 'Code', isChecked: true},
+    { value: 'Code', name: 'Code', isChecked: true },
     { value: 'Name', name: 'Tên', isChecked: true },
     { value: 'CRMTeamName', name: 'Kênh kết nối', isChecked: true },
     { value: 'Address', name: 'Địa chỉ', isChecked: false },
@@ -49,58 +50,28 @@ export class OrderComponent implements OnInit {
   public modelTags: Array<TDSSafeAny> = [];
 
   sort: Array<SortDataRequestDTO>= [{
-    field: "DateInvoice",
+    field: "DateCreated",
     dir: SortEnum.desc,
   }];
 
+  tabIndex: number = 1;
 
   public lstDataTag: Array<TDSSafeAny> = [];
 
-  //////////////////////
-
-  listSelectedTag = [
-    { id: 1, name: 'Tag1' },
-    { id: 2, name: 'Tag2' },
-  ];
-
-  tabsOrder = [
-    {
-      id: 0,
-      name: 'Tất cả',
-      count: 99,
-      content: [
-
-      ]
-    },
-    {
-      id: 1,
-      name: 'Thân thiết',
-      count: 85,
-      content: "Content of Tab Pane 2"
-    },
-    {
-      id: 2,
-      name: 'Bình thường',
-      count: 80,
-      content: "Content of Tab Pane 3"
-    },
-    {
-      id: 3,
-      name: 'Khách vip',
-      count: 80,
-      content: "Content of Tab Pane 3"
-    },
-    {
-      id: 4,
-      name: 'Bom hàng',
-      count: 80,
-      content: "Content of Tab Pane 3"
-    }
-  ];
+  // '097', '098', '038', '039', '037', '035', '034',
+  // 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel',
+  firstPhone = ['036', '090', '093', '077', '082']
+  namePhone = ['Viettel',  'Mobifone', 'Mobifone', 'Mobifone', 'Vinaphone']
 
   expandSet = new Set<string>();
 
-  constructor(private saleOnline_OrderService: SaleOnline_OrderService) { }
+  constructor(
+    private tagService: TagService,
+    private message: TDSMessageService,
+    private saleOnline_OrderService: SaleOnline_OrderService,
+    private odataSaleOnline_OrderService: OdataSaleOnline_OrderService,
+    private cacheApi: THelperCacheService,
+  ) { }
 
   isOpenMessageFacebook = false;
   indClickTag = "";
@@ -117,7 +88,7 @@ export class OrderComponent implements OnInit {
     } else {
       this.setOfCheckedId.delete(id);
     }
-    console.log(this.setOfCheckedId)
+    console.log(this.setOfCheckedId);
   }
 
   onItemChecked(id: string, checked: boolean): void {
@@ -126,29 +97,88 @@ export class OrderComponent implements OnInit {
   }
 
   onAllChecked(value: boolean): void {
-    this.listOfCurrentPageData.forEach(item => this.updateCheckedSet(item.id, value));
+    this.listOfCurrentPageData.forEach(item => this.updateCheckedSet(item.Id, value));
     this.refreshCheckedStatus();
   }
 
   refreshCheckedStatus(): void {
-    this.checked = this.listOfCurrentPageData.every(item => this.setOfCheckedId.has(item.id));
-    this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedId.has(item.id)) && !this.checked;
+    this.checked = this.listOfCurrentPageData.every(item => this.setOfCheckedId.has(item.Id));
+    this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedId.has(item.Id)) && !this.checked;
   }
 
   ngOnInit(): void {
-    this.getView();
+    this.loadData();
+    this.loadSummaryStatus();
+
+    this.loadTags();
+
+    this.loadGridConfig();
   }
 
   loadData() {
     this.isLoading = true;
-    let filters = this.odataFastSaleOrderService.buildFilter(this.filterObj);
+    let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
 
-    this.odataFastSaleOrderService.getView(params, this.filterObj).subscribe((res: TDSSafeAny) => {
+    this.odataSaleOnline_OrderService.getView(params, this.filterObj).subscribe((res: TDSSafeAny) => {
 
-        this.count = res['@odata.count'] as number //260
+        console.log("view:", res);
+        this.count = res['@odata.count'] as number;
         this.lstOfData = res.value;
         this.isLoading = false;
+    });
+  }
+
+  loadSummaryStatus() {
+    let model : SaleOnlineOrderSummaryStatusDTO = {
+      dateStart: this.filterObj.dateRange.startDate,
+      dateEnd: this.filterObj.dateRange.endDate,
+      searchText: this.filterObj.searchText,
+      tagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+    }
+
+    this.saleOnline_OrderService.getSummaryStatus(model).subscribe((res: Array<TDSSafeAny>) => {
+      var total = 0;
+
+      res.map((x: TDSSafeAny) => {
+        total += x.Total;
+        switch(x.StatusText) {
+          case "Nháp" :
+            this.tabNavs.push({  Name: "Nháp", Index: 2, Total: x.Total });
+          break;
+          case "Đã xác nhận" :
+            this.tabNavs.push({  Name: "Đã xác nhận", Index: 3, Total: x.Total });
+          break;
+          case "Đã thanh toán" :
+            this.tabNavs.push({  Name: "Đã thanh toán", Index: 4, Total: x.Total });
+          break;
+          case "Hủy bỏ" :
+            this.tabNavs.push({  Name: "Hủy bỏ", Index: 5, Total: x.Total });
+          break;
+        }
+      });
+
+      this.tabNavs.push({ Name: "Tất cả", Index: 1,   Total: total });
+      this.tabNavs.sort((a, b) => a.Index - b.Index);
+    });
+  }
+
+  loadGridConfig() {
+    const key = this.saleOnline_OrderService._keyCacheGrid;
+    this.cacheApi.getItem(key).subscribe((res: TDSSafeAny) => {
+      if(res && res.value) {
+        var jsColumns = JSON.parse(res.value) as any;
+        this.hiddenColumns = jsColumns.value.columnConfig;
+      } else {
+        this.hiddenColumns = this.columns;
+      }
+    });
+  }
+
+  loadTags() {
+    let type = "saleonline";
+    this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
+        this.lstDataTag = res.value;
     });
   }
 
@@ -172,41 +202,38 @@ export class OrderComponent implements OnInit {
 
   }
 
+  checkPhone(phone: string) {
+    if(TDSHelperString.hasValueString(phone)) {
+      for (var i = 0; i < this.firstPhone.length; i++) {
+        if (phone.indexOf(this.firstPhone[i]) == 0)
+          return this.namePhone[i];
+      }
+    }
+
+    return 'Chưa xác định';
+  }
+
   onCurrentPageDataChange($event: readonly SaleOnline_OrderDTO[]): void {
 
   }
 
-  getView() {
-    this.saleOnline_OrderService.getView().subscribe(res => {
-
-      this.listOfData = res.value;
-
-      console.log("Order get view: ", this.listOfData);
-
-    });
-  }
-
-  // Add tag
-  addTag(id: string) {
-    this.indClickTag = id;
-  }
-
-  close(): void {
-    this.indClickTag = "";
-    this.listSelectedTag = [{ id: 1, name: 'Tag1' },
-    { id: 2, name: 'Tag2' },]
-  }
-
-  apply(): void {
-    this.listSelectedTag.forEach(element => {
-      // this.listOfData[this.listOfData.findIndex(x => x.id == this.indClickTag)].tags.push(element.name)
-    });
-
+  onSelectChange(Index: TDSSafeAny) {
+    // this.tabIndex = item.Index;
+    const dataItem =  this.tabNavs.find(f =>{ return f.Index == Index })
+    this.pageIndex = 1;
     this.indClickTag = "";
 
-    this.listSelectedTag = [
-      { id: 1, name: 'Tag1' },
-      { id: 2, name: 'Tag2' },];
+    this.filterObj = {
+      tags: [],
+      status: '',
+      searchText: '',
+      dateRange: {
+          startDate: addDays(new Date(), -30),
+          endDate: new Date(),
+      }
+    };
+
+    this.loadData();
   }
 
   // Drawer tin nhắn facebook
@@ -214,26 +241,129 @@ export class OrderComponent implements OnInit {
     this.isOpenMessageFacebook = true;
   }
 
-  // modal edit order
-  showModalEditOrder(id: string){
-    // const modal = this.modalService.create({
-    //   title: 'Sửa Khách hàng',
-    //   content: ModalEditPartnerComponent,
-    //   size: "xl",
-    //   viewContainerRef: this.viewContainerRef,
-    //   centered: true,
-    //   componentParams: {
-    //     data: this.listOfData.find(x=>x.id == id)
-    // }
-    // });
-    // modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
-    // modal.afterClose.subscribe(result => {
-    //   console.log('[afterClose] The result is:', result);
-    //   if (TDSHelperObject.hasValue(result)) {
-
-    //   }
-    // });
+  openTag(id: string, data: TDSSafeAny) {
+    this.modelTags = [];
+    this.indClickTag = id;
+    this.modelTags = JSON.parse(data);
   }
 
+  closeTag(): void {
+    this.indClickTag = "";
+  }
+
+  assignTags(id: number, tags: TDSSafeAny) {
+    let model = { OrderId: id, Tags: tags };
+    this.saleOnline_OrderService.assignSaleOnlineOrder(model)
+      .subscribe((res: TDSSafeAny) => {
+        if(res && res.OrderId) {
+          var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
+          if(exits) {
+            exits.Tags = JSON.stringify(tags)
+          }
+
+          this.indClickTag = "";
+          this.modelTags = [];
+          this.message.success('Gán nhãn thành công!');
+        }
+
+    }, error => {
+      this.indClickTag = "";
+      this.message.error('Gán nhãn thất bại!');
+    });
+  }
+
+  getColorStatusText(status: string): TDSTagStatusType {
+    switch(status) {
+      case "Nháp":
+        return "info";
+      case "Đơn hàng":
+        return "success";
+      case "Hủy":
+        return "error";
+      default:
+        return "warning";
+    }
+  }
+
+  isHidden(columnName: string) {
+    return this.hiddenColumns.find(x => x.value == columnName)?.isChecked;
+  }
+
+  onQueryParamsChange(params: TDSTableQueryParams) {
+    this.loadData();
+  }
+
+  applyFilter(event: TDSSafeAny)  {
+    this.tabIndex = 1;
+    this.pageIndex = 1;
+
+    this.filterObj.searchText = event.target.value;
+    this.loadData();
+  }
+
+  refreshData(){
+    this.pageIndex = 1;
+    this.indClickTag = "";
+
+    this.checked = false;
+    this.indeterminate = false;
+    this.setOfCheckedId = new Set<string>();
+
+    this.filterObj = {
+      tags: [],
+      status: '',
+      searchText: '',
+      dateRange: {
+          startDate: addDays(new Date(), -30),
+          endDate: new Date(),
+      }
+    }
+
+    this.loadData();
+  }
+
+  onLoadOption(event: any): void {
+    this.tabIndex = 1;
+    this.pageIndex = 1;
+    this.pageSize = 20;
+
+    // this.filterObj = {
+    //     tags: event.tags,
+    //     status: event.status,
+    //     bill: event.bill,
+    //     deliveryType: event.deliveryType,
+    //     searchText: event.searchText,
+    //     dateRange: {
+    //         startDate: event.dateRange.startDate,
+    //         endDate: event.dateRange.endDate,
+    //     }
+    // }
+
+    this.filterObj = {
+      tags: [],
+      status: '',
+      searchText: '',
+      dateRange: {
+          startDate: addDays(new Date(), -30),
+          endDate: new Date(),
+      }
+    }
+
+    this.loadData();
+  }
+
+  columnsChange(event: Array<ColumnTableDTO>) {
+    this.hiddenColumns = event;
+    if(event && event.length > 0) {
+      const gridConfig = {
+          columnConfig: event
+      };
+
+      const key = this.saleOnline_OrderService._keyCacheGrid;
+      this.cacheApi.setItem(key, gridConfig);
+
+      event.forEach(column => { this.isHidden(column.value) });
+    }
+  }
 
 }

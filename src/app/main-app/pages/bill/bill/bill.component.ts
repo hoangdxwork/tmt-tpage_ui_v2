@@ -64,7 +64,7 @@ export class BillComponent implements OnInit{
       dir: SortEnum.desc,
   }];
 
-  isOpenMessageFacebook = false
+  isOpenMessageFacebook = false;
   indClickTag = -1
   tabIndex: number = 1;
 
