@@ -8,8 +8,9 @@ import { ConversationPartnerComponent } from './conversation-partner/conversatio
 import { ConversationCommentComponent } from './conversation-comment/conversation-comment.component';
 import { ConversationInboxComponent } from './conversation-inbox/conversation-inbox.component';
 import { MainSharedModule } from '../../shared/shared.module';
-import { TDSScrollIntoViewModule } from 'tmt-tang-ui';
+import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSFormFieldModule, TDSInputModule, TDSPopoverModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTagModule } from 'tmt-tang-ui';
 import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conversations.module';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -24,7 +25,16 @@ import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conve
     CommonModule,
     ConversationsRoutingModule,
     MainSharedModule,
-    TDSConversationsModule
+    TDSConversationsModule,
+    FormsModule,
+    TDSAvatarModule,
+    TDSSelectModule,
+    TDSFormFieldModule,
+    TDSInputModule,
+    TDSAutocompleteModule,
+    TDSBadgeModule,
+    TDSTagModule,
+    TDSPopoverModule
   ]
 })
 export class ConversationsModule { }
