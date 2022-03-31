@@ -3,7 +3,9 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { OdataSaleOnline_OrderService } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
+import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-mesage/send-message.component';
 import { TDSMessageService, TDSModalService, TDSSafeAny } from 'tmt-tang-ui';
+import { DuplicateUserComponent } from '../duplicate-user/duplicate-user.component';
 import { UpdateStatusOrderComponent } from '../update-status-order/update-status-order.component';
 
 @Component({
@@ -71,16 +73,38 @@ export class ActionDropdownComponent implements OnInit {
         componentParams: {
           listData: listData
         }
-    });
+      });
     }
   }
 
   checkDuplicateASIdPhoneUId() {
-
+    if (this.checkValueEmpty() == 1) {
+      let listData = this.lstOfData.filter((a: any) => this.idsModel.includes(a.Id));
+      this.modal.create({
+        title: 'Danh sách khách hàng trùng',
+        content: DuplicateUserComponent,
+        size: 'xl',
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          // listData: listData
+        }
+      });
+    }
   }
 
   sendMessage() {
-
+    if (this.checkValueEmpty() == 1) {
+      let listData = this.lstOfData.filter((a: any) => this.idsModel.includes(a.Id));
+      this.modal.create({
+        title: 'Gửi tin nhắn nhanh',
+        content: SendMessageComponent,
+        size: 'lg',
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          // listData: listData
+        }
+      });
+    }
   }
 
   getUpdateUIds() {

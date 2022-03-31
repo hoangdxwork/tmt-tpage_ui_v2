@@ -66,6 +66,7 @@ export class UpdateStatusOrderComponent implements OnInit {
 
     this.saleOnline_OrderService.updateStatusTextSaleOnline({model: model}).subscribe(res => {
       this.message.success("Cập nhật thành công.");
+      this.onCancel();
     });
   }
 

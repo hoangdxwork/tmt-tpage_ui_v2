@@ -15,6 +15,7 @@ import { MainSharedModule } from '../../shared/shared.module';
 import { PipeModule } from '../../shared/pipe/pipe.module';
 import { TagService } from '../../services/tag.service';
 import { DeliveryCarrierService } from '../../services/delivery-carrier-order.service';
+import { DuplicateUserComponent } from './components/duplicate-user/duplicate-user.component';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -30,7 +31,8 @@ const SERVICES = [
     ActionDropdownComponent,
     FilterOptionsComponent,
     ConfigColumnComponent,
-    UpdateStatusOrderComponent
+    UpdateStatusOrderComponent,
+    DuplicateUserComponent
   ],
   imports: [
     CommonModule,

@@ -79,7 +79,6 @@ export class OrderComponent implements OnInit {
   checked = false;
   indeterminate = false;
   listOfCurrentPageData: readonly SaleOnline_OrderDTO[] = [];
-  listOfData: readonly SaleOnline_OrderDTO[] = [];
   setOfCheckedId = new Set<string>();
 
   updateCheckedSet(id: string, checked: boolean): void {
@@ -97,17 +96,17 @@ export class OrderComponent implements OnInit {
   }
 
   onAllChecked(value: boolean): void {
-    this.listOfCurrentPageData.forEach(item => this.updateCheckedSet(item.Id, value));
+    this.lstOfData.forEach(item => this.updateCheckedSet(item.Id, value));
     this.refreshCheckedStatus();
   }
 
   refreshCheckedStatus(): void {
-    this.checked = this.listOfCurrentPageData.every(item => this.setOfCheckedId.has(item.Id));
-    this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedId.has(item.Id)) && !this.checked;
+    this.checked = this.lstOfData.every(item => this.setOfCheckedId.has(item.Id));
+    this.indeterminate = this.lstOfData.some(item => this.setOfCheckedId.has(item.Id)) && !this.checked;
   }
 
   ngOnInit(): void {
-    this.loadData();
+    // this.loadData(this.pageIndex, this.pageSize);
     this.loadSummaryStatus();
 
     this.loadTags();
@@ -115,10 +114,10 @@ export class OrderComponent implements OnInit {
     this.loadGridConfig();
   }
 
-  loadData() {
+  loadData(pageSize: number, pageIndex: number) {
     this.isLoading = true;
     let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
-    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
     this.odataSaleOnline_OrderService.getView(params, this.filterObj).subscribe((res: TDSSafeAny) => {
 
@@ -233,7 +232,7 @@ export class OrderComponent implements OnInit {
       }
     };
 
-    this.loadData();
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   // Drawer tin nhắn facebook
@@ -290,7 +289,7 @@ export class OrderComponent implements OnInit {
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
-    this.loadData();
+    this.loadData(params.pageSize, params.pageIndex);
   }
 
   applyFilter(event: TDSSafeAny)  {
@@ -298,7 +297,7 @@ export class OrderComponent implements OnInit {
     this.pageIndex = 1;
 
     this.filterObj.searchText = event.target.value;
-    this.loadData();
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   refreshData(){
@@ -319,7 +318,7 @@ export class OrderComponent implements OnInit {
       }
     }
 
-    this.loadData();
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   onLoadOption(event: any): void {
@@ -349,7 +348,7 @@ export class OrderComponent implements OnInit {
       }
     }
 
-    this.loadData();
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   columnsChange(event: Array<ColumnTableDTO>) {
