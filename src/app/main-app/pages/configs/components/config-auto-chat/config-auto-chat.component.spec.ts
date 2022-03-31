@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReportLabelsComponent } from './report-labels.component';
+import { ConfigAutoChatComponent } from './config-auto-chat.component';
 
-describe('ReportLabelsComponent', () => {
-  let component: ReportLabelsComponent;
-  let fixture: ComponentFixture<ReportLabelsComponent>;
+describe('ConfigAutoChatComponent', () => {
+  let component: ConfigAutoChatComponent;
+  let fixture: ComponentFixture<ConfigAutoChatComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ReportLabelsComponent ]
+      declarations: [ ConfigAutoChatComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ReportLabelsComponent);
+    fixture = TestBed.createComponent(ConfigAutoChatComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

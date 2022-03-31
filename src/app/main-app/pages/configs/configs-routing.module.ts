@@ -8,7 +8,7 @@ import { ConfigActivitiesComponent } from './components/config-activities/config
 import { ConfigProductsComponent } from './components/config-products/config-products.component';
 import { ConfigProductFormsComponent } from './components/config-product-forms/config-product-forms.component';
 import { ConfigSmsMessagesComponent } from './components/config-sms-messages/config-sms-messages.component';
-import { ConfigQuickRepliesComponent } from './components/config-quick-replies/config-quick-replies.component';
+import { ConfigAutoChatComponent } from './components/config-auto-chat/config-auto-chat.component';
 import { ConfigOverviewComponent } from './components/config-overview/config-overview.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
@@ -38,8 +38,8 @@ const routes: Routes = [
         component: ConfigConversationTagsComponent
       },
       {
-        path:'quick-replies',
-        component: ConfigQuickRepliesComponent
+        path:'auto-chat',
+        component: ConfigAutoChatComponent
       },
       {
         path:'sms-messages',

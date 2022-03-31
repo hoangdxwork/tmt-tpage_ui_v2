@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ReportConversationsComponent } from './report-conversations.component';
 
-describe('ConversationsComponent', () => {
+describe('ReportConversationsComponent', () => {
   let component: ReportConversationsComponent;
   let fixture: ComponentFixture<ReportConversationsComponent>;
 
