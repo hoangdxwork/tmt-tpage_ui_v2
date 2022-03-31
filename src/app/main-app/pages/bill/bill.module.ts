@@ -1,9 +1,11 @@
+import { DetailBillComponent } from './detail-bill/detail-bill.component';
+import { AddBillComponent } from './add-bill/add-bill.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BillRoutingModule } from './bill-routing.module';
 import { BillComponent } from './bill/bill.component';
 import { MainSharedModule } from '../../shared/shared.module';
-import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSContextMenuService, TDSFilterStatusModule, TDSSpinnerModule, TDSPageHeaderModule, TDSBreadCrumbModule, TDSCollapseModule } from 'tmt-tang-ui';
+import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSContextMenuService, TDSFilterStatusModule, TDSSpinnerModule, TDSPageHeaderModule, TDSBreadCrumbModule, TDSCollapseModule, TDSStepsModule } from 'tmt-tang-ui';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
 import { OdataFastSaleOrderService } from '../../services/mock-odata/odata-fastsaleorder.service';
@@ -21,9 +23,8 @@ import {  TDSAlertModule } from 'tmt-tang-ui';
 import { PaymentMultipComponent } from './components/payment-multip/payment-multip.component';
 import { TDSNotificationModule } from 'tmt-tang-ui';
 import { AccountRegisterPaymentService } from '../../services/account-register-payment..service';
-import { AddBillComponent } from './components/add-bill/add-bill.component';
-import { ModalSearchPartnerComponent } from './components/add-bill/components/modal-search-partner/modal-search-partner.component';
-import { ModalAddProductComponent } from './components/add-bill/components/modal-add-product/modal-add-product.component';
+import { ModalSearchPartnerComponent } from './components/modal-search-partner/modal-search-partner.component';
+import { ModalAddProductComponent } from './components/modal-add-product/modal-add-product.component';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -46,7 +47,8 @@ const SERVICES = [
     PaymentMultipComponent,
     AddBillComponent,
     ModalSearchPartnerComponent,
-    ModalAddProductComponent
+    ModalAddProductComponent,
+    DetailBillComponent,
   ],
 
   imports: [
@@ -84,7 +86,9 @@ const SERVICES = [
     TDSPageHeaderModule,
     TDSBreadCrumbModule,
     TDSTabsModule,
-    TDSCollapseModule
+    TDSCollapseModule,
+    TDSStepsModule,
+    TDSButtonSpitModule
   ],
   providers: [
    ...SERVICES,

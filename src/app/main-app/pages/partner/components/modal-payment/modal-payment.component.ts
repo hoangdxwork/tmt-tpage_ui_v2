@@ -38,7 +38,7 @@ export class ModalPaymentComponent implements OnInit {
   }
   payment() {
     this.submitPayment()
-    this.modal.destroy(null);
+    this.modal.destroy(true);
   }
   paymentAndPrint(){
     this.modal.destroy(null);
