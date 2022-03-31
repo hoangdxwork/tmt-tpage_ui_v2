@@ -1,43 +1,47 @@
 <div>
-    <form [formGroup]="formPayment" (ngSubmit)="submitPayment()" class="text-body-2 to-neutral-900 flex flex-col gap-y-4">
+    <form class="text-body-2 to-neutral-900 flex flex-col gap-y-4" *ngIf="data">
         <div class="flex">
-            <div class="w-1/6"><span class="font-semibold">Khách hàng</span></div>
-            <div class="w-5/6"><span class="text-primary-1 font-semibold">[KH0013] Phạm Nhi</span></div>
+            <div class="w-1/6"><span class="font-semibold">{{data.PartnerType == 'customer' ? 'Khách hàng' : 'Nhà cung cấp'}}</span></div>
+            <div class="w-5/6"><span class="text-primary-1 font-semibold">{{data.Partner?.DisplayName}}</span></div>
         </div>
         <div class="flex">
             <div class="w-1/6"><span class="font-semibold">Phương thức</span></div>
             <div class="w-5/6">
-                <tds-select valueField="id" textField="name" formControlName="methodPayment" placeholder='Chọn phương thức thanh toán' [data]="listData">
-                </tds-select>
+              <tds-select valueField="Id" textField="Name" placeholder='select item'[ngModelOptions]="{standalone: true}"
+                  [(ngModel)]="modelForm.acJournal" [allowClear]="true" [valuePrimitive]="false"
+                  [data]="lstAcJournal" (ngModelChange)="onChangeAcJournal($event)" >
+              </tds-select>
             </div>
         </div>
         <div class="flex">
             <div class="w-1/6"><span class="font-semibold">Số tiền</span></div>
             <div class="w-5/6">
-                <tds-input-number [(ngModel)]="price" [min]='1' [step]="1" formControlName="price"  inputMode="decimal">
+                <tds-input-number [min]='1' [step]="1" inputMode="decimal" [ngModelOptions]="{standalone: true}"
+                 [(ngModel)]="modelForm.amount" (ngModelChange)="changeAmount($event)">
                 </tds-input-number>
             </div>
         </div>
         <div class="flex">
             <div class="w-1/6"><span class="font-semibold">Ngày thanh toán</span></div>
             <div class="w-5/6">
-                <tds-date-picker formControlName="datePayment">
-                </tds-date-picker>
+                <tds-date-picker [(ngModel)]="modelForm.paymentDate" [ngModelOptions]="{standalone: true}"
+                 (calendarChange)="calendarChange($event)"></tds-date-picker>
             </div>
         </div>
         <div class="flex">
             <div class="w-1/6"><span class="font-semibold">Nội dung</span></div>
             <tds-form-field class="w-5/6">
-                <textarea class="resize-none" tdsInput formControlName="content" placeholder="Nhập nội dung"></textarea>
+                <textarea class="resize-none" [ngModelOptions]="{standalone: true}"
+                [(ngModel)]="modelForm.communication" tdsInput placeholder="Nhập nội dung"></textarea>
             </tds-form-field>
         </div>
     </form>
     <div class="w-full flex justify-end p-4" *tdsModalFooter>
         <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">Đóng</button>
-        <button tds-button class="mr-2" type="submit" color="primary" (click)="paymentAndPrint()">
+        <button tds-button class="mr-2" type="submit" color="primary" (click)="onSave('print')">
             Thanh toán và in
         </button>
-        <button tds-button type="submit" color="primary" (click)="payment()">
+        <button tds-button type="submit" color="primary" (click)="onSave('null')">
             Thanh toán
         </button>
     </div>

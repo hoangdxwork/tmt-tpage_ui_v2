@@ -8,7 +8,7 @@ import { BaseSevice } from './base.service';
 
 export class CommonService extends BaseSevice {
 
-  prefix: string = "";
+  prefix: string = "odata";
   table: string = "";
   baseRestApi: string = "api/common";
   private readonly __keyCacheTeamId = 'nearestTeamId';
@@ -20,6 +20,24 @@ export class CommonService extends BaseSevice {
   getPartnerStatusReport(): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/getpartnerstatusreport`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api,null);
+  }
+
+  getPartnerStatus(): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/GetPartnerStatus`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api,null);
+  }
+
+  getPriceListAvailable(date: any): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/Product_PriceList/OdataService.GetPriceListAvailable?date=${date}`,
         method: TApiMethodType.get,
     }
 

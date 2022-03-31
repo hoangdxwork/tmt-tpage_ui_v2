@@ -1,7 +1,10 @@
-import { partnerDto } from './../../partner/partner.component';
 import { ModalPaymentComponent } from './../modal-payment/modal-payment.component';
-import { TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
-import { Component, OnInit, Input, ViewContainerRef } from '@angular/core';
+import { TDSModalService, TDSHelperObject, TDSSafeAny, TDSTableQueryParams, TDSMessageService } from 'tmt-tang-ui';
+import { Component, OnInit, Input, ViewContainerRef, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
+import { PartnerService } from 'src/app/main-app/services/partner.service';
+import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
+
 interface orderDTO{
   code: string;
   createdDate: string;
@@ -36,84 +39,105 @@ interface infoPartnerDto {
 @Component({
   selector: 'app-info-order-debt-of-partner',
   templateUrl: './info-order-debt-of-partner.component.html',
-  styleUrls: ['./info-order-debt-of-partner.component.scss']
+  styleUrls: ['./info-order-debt-of-partner.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
 export class InfoOrderDebtOfPartnerComponent implements OnInit {
 
-  @Input() dataPartner!: partnerDto
-  ListOrder !: orderDTO[]
-  listdebtDetail !: debtDetailDTO[]
-  tabsDetailPartner = [
-    {
-      id: 0,
-      name: 'Thông tin',
-    },
-    {
-      id: 1,
-      name: 'Hóa đơn',
-    },
-    {
-      id: 2,
-      name: 'Chi tiết nợ',
-    }
-  ];
+  lstCreditDebit: Array<TDSSafeAny> = [];
+  pageSize1 = 20;
+  pageIndex1 = 1;
+  pageSize2 = 20;
+  pageIndex2 = 1;
+  isLoading: boolean = false;
+  countDebit: number = 1;
 
-  infoPartner !: infoPartnerDto
+  lstInvocie: Array<TDSSafeAny> = [];
+  countInvocie: number = 1;
+  revenues: any = {};
+
+  @Input() dataPartner: any = {};
+
   constructor(private modalService: TDSModalService,
-    private viewContainerRef: ViewContainerRef,
-    ) { }
+    private odataPartnerService: OdataPartnerService,
+    private partnerService: PartnerService,
+    private cdr: ChangeDetectorRef,
+    private message: TDSMessageService,
+    private viewContainerRef: ViewContainerRef) {
+  }
 
   ngOnInit(): void {
-    this.infoPartner= {
-      code: this.dataPartner.code,
-      name: this.dataPartner.name,
-      phone: this.dataPartner.phone,
-      email: this.dataPartner.email,
-      birthday: this.dataPartner.birthday,
-      address: this.dataPartner.address,
-      facebook: this.dataPartner.facebook,
-      zalo: '',
-      groupPartner: 'Nhóm 1',
-      codeTax: '',
-      status: this.dataPartner.status,
-      saleFirst: 0,
-      sale : 37653003,
-      totalSale: 37653003,
+    this.partnerService.getPartnerRevenueById(this.dataPartner.Id).subscribe((res: TDSSafeAny) => {
+      this.revenues = res;
+    }, error => {
+       this.message.error('Load doanh số đã xảy ra lỗi!')
+    })
+  }
+
+  loadInvoice(partnerId: number, pageSize: number, pageIndex: number) {
+    this.isLoading = true;
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
+    this.odataPartnerService.getInvoicePartner(partnerId, params).subscribe((res: any) => {
+
+        this.countInvocie = res['@odata.count'];
+        this.lstInvocie = res.value;
+        this.isLoading = false;
+        this.cdr.markForCheck();
+    })
+  }
+
+  loadCreditDebit(partnerId: number, pageSize: number, pageIndex: number) {
+    this.isLoading = true;
+
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
+    this.odataPartnerService.getCreditDebitPartner(partnerId, params).subscribe((res: any) => {
+
+        this.countDebit = res['@odata.count'];
+        this.lstCreditDebit = res.value;
+        this.isLoading = false;
+        this.cdr.markForCheck();
+    })
+  }
+
+  refreshCreditDebit() {
+    this.pageIndex1 = 1;
+    this.loadCreditDebit(this.dataPartner.Id, this.pageSize1, this.pageIndex1 );
+  }
+
+  onQueryParamsChangeCreditDebit(params: TDSTableQueryParams) {
+    if(this.dataPartner.Id) {
+      this.loadCreditDebit(this.dataPartner.Id, params.pageSize, params.pageIndex);
     }
-    this.ListOrder = [
-      {code: 'INV/2021/0241', createdDate: '11/06/2021', type:'Bán hàng',creator:'TMTHIHIHI',source:'TPOS',status:2,totalPrice:25000000},
-      {code: 'INV/2021/0241', createdDate: '11/06/2021', type:'Bán hàng',creator:'TMTHIHIHI',source:'TPOS',status:0,totalPrice:25000000},
-      {code: 'INV/2021/0241', createdDate: '11/06/2021', type:'Bán hàng',creator:'TMTHIHIHI',source:'TPOS',status:1,totalPrice:25000000},
-      {code: 'INV/2021/0241', createdDate: '11/06/2021', type:'Bán hàng',creator:'TMTHIHIHI',source:'TPOS',status:3,totalPrice:25000000},
-      {code: 'INV/2021/0241', createdDate: '11/06/2021', type:'Bán hàng',creator:'TMTHIHIHI',source:'TPOS',status:0,totalPrice:25000000},
-    ]
-    this.listdebtDetail =[
-      {date:'11/06/2021',invoiceVoucher:'CSH1/2020/0024 - pos2/0444: - POS/2020/02/18/130 - POS/2020/02/18/130',debt:2500000},
-      {date:'11/06/2021',invoiceVoucher:'CSH1/2020/0024 - pos2/0444: - POS/2020/02/18/130 - POS/2020/02/18/130',debt:2500000},
-      {date:'11/06/2021',invoiceVoucher:'CSH1/2020/0024 - pos2/0444: - POS/2020/02/18/130 - POS/2020/02/18/130',debt:2500000},
-      {date:'11/06/2021',invoiceVoucher:'CSH1/2020/0024 - pos2/0444: - POS/2020/02/18/130 - POS/2020/02/18/130',debt:2500000},
-      {date:'11/06/2021',invoiceVoucher:'CSH1/2020/0024 - pos2/0444: - POS/2020/02/18/130 - POS/2020/02/18/130',debt:2500000},
-      {date:'11/06/2021',invoiceVoucher:'CSH1/2020/0024 - pos2/0444: - POS/2020/02/18/130 - POS/2020/02/18/130',debt:2500000},
-      {date:'11/06/2021',invoiceVoucher:'CSH1/2020/0024 - pos2/0444: - POS/2020/02/18/130 - POS/2020/02/18/130',debt:2500000},
-    ]
+  }
+
+  refreshInvoice() {
+    this.pageIndex2 = 1;
+    this.loadInvoice(this.dataPartner.Id, this.pageSize2, this.pageIndex2 );
+  }
+
+  onQueryParamsChangeInvocie(params: TDSTableQueryParams) {
+    if(this.dataPartner.Id) {
+      this.loadInvoice(this.dataPartner.Id, params.pageSize, params.pageIndex);
+    }
   }
 
   showModalPayment(){
-    const modal = this.modalService.create({
-      title: 'Đăng ký thanh toán',
-      content: ModalPaymentComponent,
-      size: "lg",
-      viewContainerRef: this.viewContainerRef,
-      componentParams:{
-        //data : this.infoPartner 
-      }
-    });
-    modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
-    modal.afterClose.subscribe(result => {
-      console.log('[afterClose] The result is:', result);
-      if (TDSHelperObject.hasValue(result)) {
-
-      }
-    });
+    this.partnerService.getRegisterPaymentPartner({id: this.dataPartner.Id}).subscribe((res: any) => {
+       if(res) {
+        delete res['@odata.context'];
+        this.modalService.create({
+            title: 'Đăng ký thanh toán',
+            content: ModalPaymentComponent,
+            size: "lg",
+            viewContainerRef: this.viewContainerRef,
+            componentParams:{
+              data : res
+            }
+        });
+       }
+    }, error => {
+      this.message.error(`${error?.error.message}`)
+    })
   }
 }

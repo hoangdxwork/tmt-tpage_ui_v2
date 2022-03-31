@@ -1,4 +1,4 @@
-<form class="flex flex-col" [formGroup]="formAddPartner" (ngSubmit)="submitAddPartner()">
+<form class="flex flex-col"[formGroup]="_form" >
     <div action="" class="grid grid-cols-1">
         <div class="w-full grid grid-cols-2  gap-x-8">
             <div class="flex gap-x-4">
@@ -8,17 +8,12 @@
                 <div class="w-2/3 flex flex-col gap-y-4">
                     <tds-form-field>
                         <tds-label>Tên Khách hàng</tds-label>
-                        <input tdsInput autocomplete="off" placeholder="Nhập tên săn phẩn" [required]='true'
-                            formControlName="namePartner" />
+                        <input tdsInput autocomplete="off" placeholder="Nhập tên săn phẩn" [required]='true' formControlName="Name" />
                         <tds-error>Vui lòng nhập tên khách hàng</tds-error>
                     </tds-form-field>
-                    <tds-radio-group formControlName="personalOrCompany">
-                        <label class="mr-10" tds-radio value="personal">
-                            Cá nhân
-                        </label>
-                        <label class="" tds-radio value="company">
-                            Công ty
-                        </label>
+                    <tds-radio-group formControlName="CompanyType">
+                        <label class="mr-10" tds-radio value="person"> Cá nhân </label>
+                        <label class="" tds-radio value="company">Công ty </label>
                     </tds-radio-group>
                 </div>
             </div>
@@ -31,7 +26,7 @@
                     </div>
                     <div class="col-span-2">
                         <tds-form-field>
-                            <input tdsInput placeholder="Để trống sẽ phát sinh tự động" formControlName="code" />
+                            <input tdsInput placeholder="Để trống sẽ phát sinh tự động" formControlName="Ref" />
                         </tds-form-field>
                     </div>
                 </div>
@@ -40,7 +35,7 @@
                         <tds-label>Ngày sinh</tds-label>
                     </div>
                     <div class="col-span-2">
-                        <tds-date-picker formControlName="birthday" placeholder="Chọn ngày"
+                        <tds-date-picker formControlName="BirthDay" placeholder="Chọn ngày"
                             (ngModelChange)="onChange($event)">
                         </tds-date-picker>
                     </div>
@@ -50,9 +45,13 @@
                         <tds-label>Group</tds-label>
                     </div>
                     <div class="col-span-2">
-                        <tds-select valueField="id" textField="value" placeholder='Chọn nhóm' formControlName="group"
-                            disabledField="isActive" [data]="dataGroupPartner" [allowClear]="true">
+                      <tds-form-field>
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm'
+                            formControlName="Categories" mode="multiple"
+                            (FocusChange)="openCategory($event)"  [valuePrimitive]="false"
+                            disabledField="isActive" [data]="lstCategory" [allowClear]="true">
                         </tds-select>
+                      </tds-form-field>
                     </div>
                 </div>
                 <div class="grid grid-cols-3 gap-x-4 mt-4">
@@ -60,8 +59,9 @@
                         <tds-label>Trạng thái</tds-label>
                     </div>
                     <div class="col-span-2">
-                        <tds-select valueField="id" textField="value" placeholder='Chọn trạng thái'
-                            formControlName="status" disabledField="isActive" [data]="dataStatusPartner"
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn trạng thái'
+                            (FocusChange)="openStatus($event)" [valuePrimitive]="false" [allowClear]="true"
+                            formControlName="StatusText" disabledField="isActive" [data]="lstStatus"
                             [allowClear]="true">
                         </tds-select>
                     </div>
@@ -70,7 +70,7 @@
                     <div class="flex ">
                         <tds-label>Địa chỉ</tds-label>
                     </div>
-                    <div class="col-span-2">
+                    <!-- <div class="col-span-2">
                         <div class="flex gap-x-2">
                             <tds-form-field class="w-full">
                                 <input tdsInput placeholder="Số nhà, đường..." formControlName="numberStreet" />
@@ -93,7 +93,7 @@
                             formControlName="wards" disabledField="isActive" [data]="dataStatusPartner"
                             [allowClear]="true">
                         </tds-select>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <div>
@@ -103,7 +103,7 @@
                     </div>
                     <div class="col-span-2 flex">
                         <tds-form-field class="w-full rounded-br-none rounded-tr-none">
-                            <input tdsInput placeholder="Nhập số điện thoại" formControlName="phone" />
+                            <input tdsInput placeholder="Nhập số điện thoại" formControlName="Phone" />
                             <button tds-button-icon type="button" tdsAddOnRight size="md" color="secondary" size="md" class="">
                                 <span class="flex items-center text-neutral-1-900">
                                     <i class="tdsi-search-fill"></i>
@@ -118,7 +118,7 @@
                     </div>
                     <div class="col-span-2 flex">
                         <tds-form-field class="w-full rounded-br-none rounded-tr-none">
-                            <input tdsInput placeholder="Nhập email" formControlName="email" />
+                            <input tdsInput placeholder="Nhập email" formControlName="Email" />
                         </tds-form-field>
                     </div>
                 </div>
@@ -128,7 +128,7 @@
                     </div>
                     <div class="col-span-2 flex">
                         <tds-form-field class="w-full rounded-br-none rounded-tr-none">
-                            <input tdsInput placeholder="Nhập zalo" formControlName="zalo" />
+                            <input tdsInput placeholder="Nhập zalo" formControlName="Zalo" />
                         </tds-form-field>
                     </div>
                 </div>
@@ -138,7 +138,7 @@
                     </div>
                     <div class="col-span-2 flex">
                         <tds-form-field class="w-full rounded-br-none rounded-tr-none">
-                            <input tdsInput placeholder="Nhập facebook" formControlName="facebook" />
+                            <input tdsInput placeholder="Nhập facebook" formControlName="Facebook" />
                         </tds-form-field>
                     </div>
                 </div>
@@ -148,7 +148,7 @@
                     </div>
                     <div class="col-span-2 flex">
                         <tds-form-field class="w-full rounded-br-none rounded-tr-none">
-                            <input tdsInput placeholder="Nhập website" formControlName="website" />
+                            <input tdsInput placeholder="Nhập website" formControlName="Website" />
                         </tds-form-field>
                     </div>
                 </div>
@@ -157,7 +157,7 @@
                         <tds-label>Active</tds-label>
                     </div>
                     <div class="col-span-2 flex">
-                        <tds-checkbox formControlName="active">default</tds-checkbox>
+                        <tds-checkbox formControlName="Active"></tds-checkbox>
                     </div>
                 </div>
             </div>
@@ -176,7 +176,7 @@
                                 <tds-label>Là khách hàng</tds-label>
                             </div>
                             <div class="col-span-3">
-                                <tds-checkbox formControlName="isCustomer"></tds-checkbox>
+                                <tds-checkbox formControlName="Customer"></tds-checkbox>
                             </div>
                         </div>
                         <div class="grid grid-cols-5 gap-x-4 mt-4">
@@ -184,10 +184,11 @@
                                 <tds-label>Bảng giá</tds-label>
                             </div>
                             <div class="col-span-3">
-                                <tds-select valueField="id" textField="value" placeholder='Chọn nhóm'
-                                    formControlName="priceList" disabledField="isActive" [data]="dataGroupPartner"
-                                    [allowClear]="true">
-                                </tds-select>
+                              <tds-select valueField="Id" textField="Name" placeholder='Chọn bảng giá'
+                                  (FocusChange)="openlstPrice($event)" [valuePrimitive]="false" [allowClear]="true"
+                                  formControlName="PropertyProductPricelist" disabledField="isActive" [data]="lstPrice"
+                                  [allowClear]="true">
+                              </tds-select>
                             </div>
                         </div>
                         <div class="grid grid-cols-5 gap-x-4 mt-4">
@@ -196,7 +197,7 @@
                             </div>
                             <div class="col-span-3">
                                 <tds-input-number [min]="1" [max]="100" [step]="1"
-                                    formControlName="defaultDiscountByPercent" [formatter]="formatterPercent"
+                                    formControlName="Discount" [formatter]="formatterPercent"
                                     [parser]="parserPercent">
                                 </tds-input-number>
                             </div>
@@ -206,7 +207,7 @@
                                 <tds-label>Chiết khấu mặc định (số tiền)</tds-label>
                             </div>
                             <div class="col-span-3">
-                                <tds-input-number [min]="1" [step]="1" [formControlName]="'defaultDiscountByMoney' "
+                                <tds-input-number [min]="1" [step]="1" [formControlName]="'AmountDiscount' "
                                     [formatter]="formatterVND" [parser]="parserVND">
                                 </tds-input-number>
                             </div>
@@ -221,13 +222,13 @@
                                 <tds-label>Là nhà cung cấp</tds-label>
                             </div>
                             <div class="col-span-3">
-                                <tds-checkbox formControlName="isSupplier"></tds-checkbox>
+                                <tds-checkbox formControlName="Supplier"></tds-checkbox>
                             </div>
                         </div>
                     </div>
                 </div>
             </tds-tab>
-            <tds-tab title="Danh sách địa chỉ">
+            <!-- <tds-tab title="Danh sách địa chỉ">
                 <div class="flex flex-col gap-y-4">
                     <div>
                         <button tds-button color="primary" type="button" (click)="showModalAddAddress()">
@@ -271,14 +272,11 @@
                         </tds-table>
                     </div>
                 </div>
-            </tds-tab>
+            </tds-tab> -->
         </tds-tabset>
     </div>
     <div class="w-full flex justify-end p-4" *tdsModalFooter>
-        <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">Hủy</button>
-        <button tds-button type="submit" color="primary" 
-            (click)="save()">
-            Áp dụng
-        </button>
+        <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Hủy</button>
+        <button tds-button type="button" color="primary" (click)="onSave()"> Áp dụng </button>
     </div>
 </form>

@@ -22,7 +22,7 @@ export class PaymentMultipComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this.fastSaleOrderService.getWithCompanyPayment().subscribe((res: any) => {
+    this.registerPaymentService.getWithCompanyPayment().subscribe((res: any) => {
         this.lstAcJournal = res.value;
         this.acJournal = res.value[0];
     })

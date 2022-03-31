@@ -51,4 +51,12 @@ export class AccountRegisterPaymentService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api,data);
   }
 
+  getWithCompanyPayment(): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/AccountJournal/OdataService.GetWithCompany?format=json&$filter=(Type eq 'bank') or (Type eq 'cash')`,
+        method: TApiMethodType.get
+    }
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
 }

@@ -6,7 +6,6 @@ import { TDSHelperString,  TDSSafeAny } from 'tmt-tang-ui';
 import { BaseSevice } from '../base.service';
 
 export interface FilterObjDTO  {
-    tags: Array<TDSSafeAny>,
     searchText: '',
     statusText: null
 }
@@ -62,5 +61,23 @@ export class OdataPartnerService extends BaseSevice {
 
     return dataFilter;
   }
+
+  getCreditDebitPartner(partnerId: any, params: any) {
+      const api: TAPIDTO = {
+          url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.CreditDebitCustomerDetail?partnerId=${partnerId}&${params}&$count=true`,
+          method: TApiMethodType.get,
+      }
+
+      return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  getInvoicePartner(partnerId: any, params: any) {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/AccountInvoice/OdataService.GetInvoicePartner?partnerId=${partnerId}&${params}&$count=true`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
+}
 
 }
