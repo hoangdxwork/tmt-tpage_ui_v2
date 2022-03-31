@@ -1,6 +1,3 @@
-<a href="http://localhost:4200/conversation/all?teamId=9&type=all">
-        dasdsd
-</a>
 <div class="w-full h-full flex items-stretch overflow-hidden bg-neutral-3-200">
         <div class="w-[357px] h-full ">
                 <div class="w-full flex flex-col gap-1 p-1 h-full">
@@ -8,7 +5,7 @@
 						<div class="border-2 border-2-50 border-solid rounded-lg py-2.5 px-3.5 flex justify-between items-center">
 							<div class="flex items-center">
 								<div>
-									<tds-avatar class="bg-accent-4  text-white" size="lg" text="P"></tds-avatar>
+									<tds-avatar class="bg-accent-4  text-white" size="md" text="P"></tds-avatar>
 								</div>
 								<div class="w-52">
 									<tds-select [border]='false' valueField="id" textField="name" [data]="contactOptions" [(ngModel)]="contact">
@@ -71,7 +68,7 @@
 								</div>
 							</div> 
 							<!-- Message Item Trạng thái: active -->
-							<div class="p-3.5 bg-[#F6FBFF] w-full border-l-4 border-blue-500 border-solid">
+							<div class="p-3.5 bg-secondary-3 w-full border-l-4 border-blue-500 border-solid">
 								<div class="flex gap-3">
 									<tds-avatar [shape]="'square'" [size]="'xl'"  tdsSrc="/assets/images/conversation/avatar-notimage-messenger.svg">
 									</tds-avatar> 

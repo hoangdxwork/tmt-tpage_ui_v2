@@ -59,7 +59,8 @@ const COLORS = {
     },
     secondary: {
         1: '#3E89FC',
-        2: '#70B5FF'
+        2: '#70B5FF',
+        3: '#F6FBFF',
     },
     tertiary: {
         1: '#F59E0B',
