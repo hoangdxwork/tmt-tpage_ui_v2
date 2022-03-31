@@ -1,6 +1,8 @@
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { Message } from 'src/app/lib/consts/message.const';
+import { GenerateMessageTypeEnum } from 'src/app/main-app/dto/conversation/message.dto';
 import { OdataSaleOnline_OrderService } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-mesage/send-message.component';
@@ -57,7 +59,7 @@ export class ActionDropdownComponent implements OnInit {
         onCancel: () => { that.isProcessing = false; },
         okText: "Xác nhận",
         cancelText: "Đóng",
-        // confirmViewType:"compact"
+        confirmViewType:"compact"
       });
     }
   }
@@ -79,7 +81,6 @@ export class ActionDropdownComponent implements OnInit {
 
   checkDuplicateASIdPhoneUId() {
     if (this.checkValueEmpty() == 1) {
-      let listData = this.lstOfData.filter((a: any) => this.idsModel.includes(a.Id));
       this.modal.create({
         title: 'Danh sách khách hàng trùng',
         content: DuplicateUserComponent,
@@ -94,21 +95,27 @@ export class ActionDropdownComponent implements OnInit {
 
   sendMessage() {
     if (this.checkValueEmpty() == 1) {
-      let listData = this.lstOfData.filter((a: any) => this.idsModel.includes(a.Id));
+      let orderIds = this.lstOfData.filter((a: any) => this.idsModel.includes(a.Id)).map((x: any) => x.Id);
       this.modal.create({
         title: 'Gửi tin nhắn nhanh',
         content: SendMessageComponent,
         size: 'lg',
+        centered: true,
         viewContainerRef: this.viewContainerRef,
         componentParams: {
           // listData: listData
+          orderIds: orderIds,
+          messageType: GenerateMessageTypeEnum.Order
         }
       });
     }
   }
 
   getUpdateUIds() {
-
+    this.saleOnline_OrderService.getUpdateUIds().subscribe(res => {
+      this.message.success(Message.ManipulationSuccessful);
+      this.saleOnline_OrderService.eventReloadData.emit();
+    });
   }
 
   checkValueEmpty() {

@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { EventEmitter, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tmt-tang-ui";
@@ -15,6 +15,8 @@ export class SaleOnline_OrderService extends BaseSevice {
   baseRestApi: string = "rest/v1.0/saleonline_order";
 
   public _keyCacheGrid: string = 'saleonline_order-page:grid_saleonline_order:settings';
+
+  public eventReloadData: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private apiService: TCommonService) {
     super(apiService)
@@ -45,6 +47,24 @@ export class SaleOnline_OrderService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  previewMessages(data: TDSSafeAny): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/previewmessages`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  getUpdateUIds() {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.UpdateUIds`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
 }

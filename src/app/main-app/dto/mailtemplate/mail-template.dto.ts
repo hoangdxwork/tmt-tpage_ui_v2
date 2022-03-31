@@ -5,3 +5,10 @@ export interface MailTemplateDTO {
   crmTeamId?: number;
   messageId: string;
 }
+
+export interface MailTemplateUpdateDTO {
+  Name: string;
+  BodyPlain: string;
+  TypeId: string;
+  Active: boolean;
+}

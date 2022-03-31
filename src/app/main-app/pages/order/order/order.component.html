@@ -69,6 +69,7 @@
               <th *ngIf="isHidden('Code')" class="text-left" width="200px">Mã</th>
               <th *ngIf="isHidden('CRMTeamName')" class="text-left" width="160px">Kênh kết nối</th>
               <th *ngIf="isHidden('Name')" class="text-left" width="240px">Tên</th>
+              <th *ngIf="isHidden('Address')" class="text-left" width="240px">Địa chỉ</th>
               <th *ngIf="isHidden('TotalAmount')" class="text-left" width="140px">Tổng tiền</th>
               <th *ngIf="isHidden('TotalQuantity')" class="text-left" width="140px">Tổng SL</th>
               <th *ngIf="isHidden('DateCreated')" class="text-center" width="140px">Ngày hóa đơn</th>
@@ -176,6 +177,12 @@
                         </span>
                       </button>
                     </div>
+                  </div>
+                </td>
+
+                <td *ngIf="isHidden('Address')" class="text-left">
+                  <div class="w-full">
+                    <span>{{data.Address}}</span>
                   </div>
                 </td>
 

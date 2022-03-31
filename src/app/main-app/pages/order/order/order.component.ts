@@ -9,6 +9,8 @@ import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { OdataSaleOnline_OrderService } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { TagService } from 'src/app/main-app/services/tag.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-order',
@@ -22,6 +24,8 @@ export class OrderComponent implements OnInit {
   pageIndex = 1;
   isLoading: boolean = false;
   count: number = 1;
+
+  private _destroy = new Subject<void>();
 
   public filterObj: TDSSafeAny = {
     tags: [],
@@ -106,12 +110,15 @@ export class OrderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.loadData(this.pageIndex, this.pageSize);
     this.loadSummaryStatus();
-
     this.loadTags();
 
     this.loadGridConfig();
+
+    this.saleOnline_OrderService.eventReloadData
+      .pipe(takeUntil(this._destroy)).subscribe(res => {
+        this.refreshData();
+      });
   }
 
   loadData(pageSize: number, pageIndex: number) {
@@ -143,21 +150,24 @@ export class OrderComponent implements OnInit {
         total += x.Total;
         switch(x.StatusText) {
           case "Nháp" :
-            this.tabNavs.push({  Name: "Nháp", Index: 2, Total: x.Total });
-          break;
+            this.tabNavs.push({ Name: "Nháp", Index: 2, Total: x.Total });
+            break;
           case "Đã xác nhận" :
-            this.tabNavs.push({  Name: "Đã xác nhận", Index: 3, Total: x.Total });
-          break;
+            this.tabNavs.push({ Name: "Đã xác nhận", Index: 3, Total: x.Total });
+            break;
+          case "Đơn hàng" :
+            this.tabNavs.push({ Name: "Đơn hàng", Index: 3, Total: x.Total });
+            break;
           case "Đã thanh toán" :
-            this.tabNavs.push({  Name: "Đã thanh toán", Index: 4, Total: x.Total });
-          break;
-          case "Hủy bỏ" :
-            this.tabNavs.push({  Name: "Hủy bỏ", Index: 5, Total: x.Total });
-          break;
+            this.tabNavs.push({ Name: "Đã thanh toán", Index: 4, Total: x.Total });
+            break;
+          case "Hủy" :
+            this.tabNavs.push({ Name: "Hủy", Index: 5, Total: x.Total });
+            break;
         }
       });
 
-      this.tabNavs.push({ Name: "Tất cả", Index: 1,   Total: total });
+      this.tabNavs.push({ Name: "Tất cả", Index: 1, Total: total });
       this.tabNavs.sort((a, b) => a.Index - b.Index);
     });
   }
@@ -217,14 +227,13 @@ export class OrderComponent implements OnInit {
   }
 
   onSelectChange(Index: TDSSafeAny) {
-    // this.tabIndex = item.Index;
     const dataItem =  this.tabNavs.find(f =>{ return f.Index == Index })
     this.pageIndex = 1;
     this.indClickTag = "";
 
     this.filterObj = {
       tags: [],
-      status: '',
+      status: dataItem?.Name != 'Tất cả' ? dataItem?.Name : null,
       searchText: '',
       dateRange: {
           startDate: addDays(new Date(), -30),
@@ -313,8 +322,8 @@ export class OrderComponent implements OnInit {
       status: '',
       searchText: '',
       dateRange: {
-          startDate: addDays(new Date(), -30),
-          endDate: new Date(),
+        startDate: addDays(new Date(), -30),
+        endDate: new Date(),
       }
     }
 
@@ -326,25 +335,13 @@ export class OrderComponent implements OnInit {
     this.pageIndex = 1;
     this.pageSize = 20;
 
-    // this.filterObj = {
-    //     tags: event.tags,
-    //     status: event.status,
-    //     bill: event.bill,
-    //     deliveryType: event.deliveryType,
-    //     searchText: event.searchText,
-    //     dateRange: {
-    //         startDate: event.dateRange.startDate,
-    //         endDate: event.dateRange.endDate,
-    //     }
-    // }
-
     this.filterObj = {
-      tags: [],
-      status: '',
-      searchText: '',
+      tags: event.tags,
+      status: event?.status != 'Tất cả' ? event?.status : null,
+      searchText: event.searchText,
       dateRange: {
-          startDate: addDays(new Date(), -30),
-          endDate: new Date(),
+        startDate: event.dateRange.startDate,
+        endDate: event.dateRange.endDate,
       }
     }
 
@@ -363,6 +360,11 @@ export class OrderComponent implements OnInit {
 
       event.forEach(column => { this.isHidden(column.value) });
     }
+  }
+
+  ngOnDestroy(): void {
+    this._destroy.next();
+    this._destroy.complete();
   }
 
 }

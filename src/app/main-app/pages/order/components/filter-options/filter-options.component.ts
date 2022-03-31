@@ -82,9 +82,11 @@ export class FilterOptionsComponent implements OnInit {
   }
 
   onApply() {
+    let textStatus = this.status.filter(x => x.value === this.currentStatus)[0].text as TDSSafeAny;
+
     this.filterObj = {
         tags: this.selectTags,
-        status: this.currentStatus == 'all' ? '' : this.currentStatus,
+        status: textStatus == 'Tất cả' ? '' : textStatus,
         searchText: '',
         dateRange: {
             startDate: this.datePicker[0],
@@ -92,7 +94,7 @@ export class FilterOptionsComponent implements OnInit {
         }
     }
 
-    this.onLoadOption.emit(this.filterObj);debugger
+    this.onLoadOption.emit(this.filterObj);
 
     this.tdsContextMenuService.close();
   }

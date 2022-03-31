@@ -50,7 +50,7 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
   public buildFilter(filterObj: FilterObjDTO) {
 
     let dataFilter: FilterDataRequestDTO = {
-        logic: "or",
+        logic: "and",
         filters: [],
     }
 
@@ -82,7 +82,7 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
     }
 
     if (TDSHelperString.hasValueString(filterObj.status)) {
-      dataFilter.filters.push({ field: "Status", operator: OperatorEnum.eq, value: filterObj.status })
+      dataFilter.filters.push({ field: "StatusText", operator: OperatorEnum.eq, value: filterObj.status })
       dataFilter.logic = "and";
     }
 
