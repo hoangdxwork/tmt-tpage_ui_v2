@@ -268,6 +268,7 @@ export class BillComponent implements OnInit{
   applyFilter(event: TDSSafeAny)  {
     this.tabIndex = 1;
     this.pageIndex = 1;
+    this.indClickTag = -1;
 
     this.filterObj.searchText = event.target.value;
     this.loadData();
@@ -302,10 +303,6 @@ export class BillComponent implements OnInit{
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
-    //console.log('params',params)
-    // this.listSort = params.sort.filter(f=> f.value != null).map(s=>{
-    //   return {field:s.key, dir: s.value == 'descend' ? SortEnum.desc  : SortEnum.asc}
-    // }).reverse();
     this.loadData();
   }
 

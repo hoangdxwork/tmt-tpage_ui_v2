@@ -1,1 +1,8 @@
-<p>config works!</p>
+<div class="p-4">
+    <tpage-menu-layout [menuData]="configMenuData" class="fixed top-19"></tpage-menu-layout>
+    <div class="flex flex-row justify-end">
+        <div class="w-5/6 h-full pl-8">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

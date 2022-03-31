@@ -2,8 +2,338 @@
         dasdsd
 </a>
 <div class="w-full h-full flex items-stretch overflow-hidden bg-neutral-3-200">
-        <div class="w-[357px]   h-full ">
-                dsaddsds
+        <div class="w-[357px] h-full ">
+                <div class="w-full flex flex-col gap-1 p-1 h-full">
+                    <div class="bg-white p-2.5">
+						<div class="border-2 border-2-50 border-solid rounded-lg py-2.5 px-3.5 flex justify-between items-center">
+							<div class="flex items-center">
+								<div>
+									<tds-avatar class="bg-accent-4  text-white" size="lg" text="P"></tds-avatar>
+								</div>
+								<div class="w-52">
+									<tds-select [border]='false' valueField="id" textField="name" [data]="contactOptions" [(ngModel)]="contact">
+									</tds-select>  
+								</div>
+							</div>
+							<div class="tdsi-reload-fill text-3xl text-neutral-1-200"></div>
+						</div> 
+						<div class="pt-4 flex gap-1 items-center">
+							<div>
+								<tds-form-field class="w-full bg-neutral-3-50">
+									<input aria-colspan="" class="placeholder-neutral-1-400" 
+										placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput [(ngModel)]="inputValue" />
+									<span tdsPrefix ><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
+								</tds-form-field>
+							</div>
+							<div class="flex gap-0.5"> 
+								<div>
+									<tds-badge [count]="iconTemplate">
+										<div class="tdsi-filter-2-line text-2xl text-neutral-1-500 p-2"></div>
+									</tds-badge>
+									<ng-template #iconTemplate>
+										<span class="tdsi-success-fill text-primary-1 text-lg absolute top-4 right-2 inline-block transform translate-x-1/2 -translate-y-1/2 ">
+										</span>
+									</ng-template>
+								</div> 
+								<div class="tdsi-sort-up-down-fill text-2xl text-neutral-1-500 p-2"></div>
+								<div class="tdsi-success-line text-2xl text-neutral-1-500 p-2"></div>
+							</div>
+						</div>
+					</div> 
+					<div class="overflow-hidden overflow-y-auto tds-custom-scroll flex flex-auto flex-col gap-1 pb-10">
+							<!-- Badge khi có tin nhắn mới ,Item đang được xem -->
+							<div class="p-3.5 bg-white flex flex-col gap-2 w-full">
+								<div class="flex gap-3">
+									<tds-avatar [shape]="'square'" [size]="'xl'"  tdsSrc="/assets/images/conversation/avatar-notimage-messenger.svg">
+									</tds-avatar> 
+									<div class="w-full flex flex-col gap-1">
+										<div class="flex justify-between items-center">
+											<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
+											<div class="flex items-center gap-2">
+												<tds-badge [standalone]="true" [count]="33" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
+												<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
+											</div>
+										</div>
+										<div class="text-body-2 font-regular font-sans text-neutral-1-900">
+											Giao trong giờ hành chính giúp...Giao trong giờ hành chính giúp...Giao trong giờ h hành chính giúp...Giao tron <span class="text-info-500"> Xem thêm</span>
+										</div>
+									</div>
+								</div>
+								<div class="flex justify-end flex-col gap-2">
+									<div class="flex justify-end gap-1.5">
+										<div class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
+										<div class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
+									</div>
+									<div class="flex justify-end gap-1 items-center">
+										<div class="tdsi-flash-on-fill text-accent-3 px-1 text-2xl"></div>
+										<div class="text-accent-3 text-caption-1 font-regular font-sans">Quản lý Shop ly đang xem  03:45</div>
+									</div>
+								</div>
+							</div> 
+							<!-- Message Item Trạng thái: active -->
+							<div class="p-3.5 bg-[#F6FBFF] w-full border-l-4 border-blue-500 border-solid">
+								<div class="flex gap-3">
+									<tds-avatar [shape]="'square'" [size]="'xl'"  tdsSrc="/assets/images/conversation/avatar-notimage-messenger.svg">
+									</tds-avatar> 
+									<div class="w-full flex flex-col gap-1">
+										<div class="flex justify-between items-center">
+											<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
+											<div class="flex items-center gap-2">
+												<tds-badge [standalone]="true" [count]="33" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
+												<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
+											</div>
+										</div>
+										<div class="text-body-2 font-regular font-sans text-neutral-1-900">
+											Giao trong giờ hành chính giúp...Giao trong giờ hành chính giúp...Giao trong giờ h hành chính giúp...Giao tron <span class="text-info-500"> Xem thêm</span>
+										</div>
+									</div>
+								</div>
+							</div> 
+							<!-- Tin nhắn chưa lưu trên hệ thống -->
+							<div class="p-3.5 bg-white w-full">
+								<div class="flex gap-3">
+									<tds-avatar [shape]="'square'" [size]="'xl'"  tdsSrc="/assets/images/conversation/avatar-nosave.svg">
+									</tds-avatar> 
+									<div class="w-full flex flex-col gap-1">
+										<div class="flex justify-between items-center">
+											<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh ngọc Tường V...</div>
+											<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
+										</div>
+										<div class="text-body-2 font-regular font-sans text-neutral-1-900">
+											Giao trong giờ hành chính giúp...Giao trong giờ hành chính giúp...Giao trong giờ h hành chính giúp...Giao tronGiao trong giờ hành chính giúp...Giao trong giờ hành chính giúp...Giao trong giờ h hành chính giúp...Giao tron Giao trong giờ h hành chính giúp...Giao tron <span class="text-info-500"> Thu gọn</span>
+										</div>
+									</div>
+								</div>
+							</div> 
+							<!-- Message Item Trạng thái: hover -->
+							<div class="p-3.5 bg-white w-full hover:bg-neutral-3-50 cursor-default flex flex-col gap-2">
+								<div class="flex gap-3 items-center">
+									<tds-avatar [shape]="'square'" [size]="'xl'"  tdsSrc="/assets/images/conversation/avatar-image-messenger.svg">
+									</tds-avatar> 
+									<div class="w-full flex flex-col gap-1">
+										<div class="flex justify-between items-center">
+											<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
+											<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
+										</div>
+										<div class="text-body-2 font-regular font-sans text-neutral-1-900">
+											Giao trong giờ hành ch
+										</div>
+									</div>
+								</div> 
+								<div class="flex justify-end gap-x-1.5">
+									<div class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
+									<div class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
+								</div>
+							</div> 
+							<!-- Bình luận bài viết FB có nhãn-->
+							<div class="p-3.5 bg-white w-full flex flex-col gap-2">
+								<div class="flex gap-3 items-center">
+									<tds-avatar [shape]="'square'" [size]="'xl'"  tdsSrc="/assets/images/conversation/avatar-image-facebook.svg">
+									</tds-avatar> 
+									<div class="w-full flex flex-col gap-1">
+										<div class="flex justify-between items-center">
+											<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
+											<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
+										</div>
+										<div class="text-body-2 font-regular font-sans text-neutral-1-900">
+											Giao trong giờ hành chGiao trong giờ
+										</div>
+									</div>
+								</div> 
+								<div class="flex justify-end gap-1.5">
+									<div class="tdsi-bag-fill text-md text-white bg-blue-500 p-0.5 rounded-md"></div>
+									<div class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
+									<div class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
+								</div> 
+							</div> 
+							<!-- Bình luận bài viết FB-->
+							<div class="p-3.5 bg-white w-full">
+								<div class="flex gap-3 items-center">
+									<tds-avatar [shape]="'square'" [size]="'xl'"  tdsSrc="/assets/images/conversation/avatar-image-facebook.svg">
+									</tds-avatar> 
+									<div class="w-full flex flex-col gap-1">
+										<div class="flex justify-between items-center">
+											<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
+											<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
+										</div>
+										<div class="text-body-2 font-regular font-sans text-neutral-1-900">
+											Giao trong giờ hành chGiao trong giờ
+										</div>
+									</div>
+								</div> 
+							</div> 
+							<!-- Badge khi có tin nhắn mới ,Item đang được xem , nhiều nhãn -->
+							<div class="p-3.5 bg-white flex flex-col gap-2 w-full">
+								<div class="flex gap-3">
+									<tds-avatar [shape]="'square'" [size]="'xl'"  tdsSrc="/assets/images/conversation/avatar-notimage-messenger.svg">
+									</tds-avatar> 
+									<div class="w-full flex flex-col gap-1">
+										<div class="flex justify-between items-center">
+											<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
+											<div class="flex items-center gap-2">
+												<tds-badge [standalone]="true" [count]="33" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
+												<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
+											</div>
+										</div>
+										<div class="text-body-2 font-regular font-sans text-neutral-1-900">
+											Giao trong giờ hành chính giúp...Giao trong giờ hành chính giúp...Giao trong giờ h hành chính giúp...Giao tron <span class="text-info-500"> Xem thêm</span>
+										</div>
+									</div>
+								</div>
+								<div class="flex justify-end flex-col gap-2">
+									<div class="flex gap-1 items-center">
+										<div class="bg-[#F2FCF5] py-0.5 px-1 text-caption-2 font-regular text-neutral-1-900 rounded">
+											<tds-badge status="success" text="Khách hàng cũ"></tds-badge>
+										</div>
+										<div class="bg-[#FFEDEE] py-0.5 px-1 text-caption-2 font-regular text-neutral-1-900 rounded">
+											<tds-badge status="error" text="Bom hàng"></tds-badge>
+										</div>
+										<div class="bg-[#FFF1D7] py-0.5 pl-1 text-caption-2 font-regular text-neutral-1-900 rounded ">
+											<tds-badge status="bg-yellow-500"  text="bon"></tds-badge>
+										</div>
+										<div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded">
+											+3
+										</div>
+										<div class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
+										<div class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
+									</div>
+									<div class="flex justify-end gap-1 items-center">
+										<div class="tdsi-flash-on-fill text-accent-3 px-1 text-2xl"></div>
+										<div class="text-accent-3 text-caption-1 font-regular font-sans">Quản lý Shop ly đang xem  03:45</div>
+									</div>
+								</div>
+							</div>  
+							<!-- Message nhiều nhãn -->
+							<div class="p-3.5 bg-white flex flex-col gap-2 w-full">
+								<div class="flex gap-3">
+									<tds-avatar [shape]="'square'" [size]="'xl'"  tdsSrc="/assets/images/conversation/avatar-notimage-messenger.svg">
+									</tds-avatar> 
+									<div class="w-full flex flex-col gap-1">
+										<div class="flex justify-between items-center">
+											<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
+											<div class="flex items-center gap-2">
+												<tds-badge [standalone]="true" [count]="33" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
+												<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
+											</div>
+										</div>
+										<div class="text-body-2 font-regular font-sans text-neutral-1-900">
+											Giao trong giờ hành chính giúp
+										</div>
+									</div>
+								</div>
+								<div class="flex justify-end flex-col gap-2">
+									<div class="flex gap-1 items-center">
+										<div class="bg-[#F2FCF5] py-0.5 px-1.5 text-caption-2 font-regular text-neutral-1-900 rounded">
+											<tds-badge status="success" text="Khách hàng cũ"></tds-badge>
+										</div>
+										<div class="bg-[#FFEDEE] py-0.5 px-1.5 text-caption-2 font-regular text-neutral-1-900 rounded">
+											<tds-badge status="error" text="Bom hàng"></tds-badge>
+										</div>
+										<div class="bg-[#FFF1D7] py-0.5 px-1.5 text-caption-2 font-regular text-neutral-1-900 rounded ">
+											<tds-badge status="bg-yellow-500"  text="Bom hàng"></tds-badge>
+										</div>
+										<div class="px-1.5 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded cursor-default" tds-popover [popoverContent]="popoverContent" popoverPlacement="topRight">
+											+3
+										</div>
+										<ng-template #popoverContent>
+											<div class="flex gap-1">
+												<div class="bg-[#FFE2F3] py-0.5 px-2 text-caption-2 font-regular text-neutral-1-900 rounded">
+													<tds-badge status="bg-pink-500" text="Khách hàng cũ"></tds-badge>
+												</div>
+												<div class="bg-[#FFFAEA] py-0.5 px-2 text-caption-2 font-regular text-neutral-1-900 rounded">
+													<tds-badge status="warning" text="Bom hàng"></tds-badge>
+												</div>
+												<div class="bg-[#D5F2E8] py-0.5 px-2 text-caption-2 font-regular text-neutral-1-900 rounded ">
+													<tds-badge status="bg-accent-7"  text="Bom hàng"></tds-badge>
+												</div>
+											</div>
+										</ng-template>
+									</div>
+								
+								</div>
+							</div> 
+							<!--Hội thoại đánh dấu đã xong-->
+							<div class="w-full relative">
+								<div class="p-3.5 bg-white w-full flex flex-col gap-2">
+									<div class="flex gap-3 items-center">
+										<tds-avatar [shape]="'square'" [size]="'xl'"  tdsSrc="/assets/images/conversation/avatar-image-facebook.svg">
+										</tds-avatar> 
+										<div class="w-full flex flex-col gap-1">
+											<div class="flex justify-between items-center">
+												<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
+												<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
+											</div>
+											<div class="text-body-2 font-regular font-sans text-neutral-1-900">
+												Giao trong giờ hành chGiao trong giờ
+											</div>
+										</div>
+									</div> 
+									<div class="flex justify-end gap-1.5">
+										<div class="tdsi-bag-fill text-md text-white bg-blue-500 p-0.5 rounded-md"></div>
+										<div class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
+										<div class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
+									</div> 
+								</div> 
+								<div class="absolute top-0 right-0">
+									<div class="w-0 h-0 border-t-[41px] border-t-green-400 border-l-[41px] border-l-transparent border-solid">
+									</div>
+								</div>
+								<div class="absolute top-0 right-0">
+									<div class="tdsi-tick-fill text-white text-lg px-1"></div>
+								</div>
+							</div>							
+							<!-- Hội thoại đánh dấu đã xong ,Item đang được xem , nhiều nhãn -->
+							<div class="w-full relative">
+								<div class="p-3.5 bg-white flex flex-col gap-2 w-full">
+									<div class="flex gap-3">
+										<tds-avatar [shape]="'square'" [size]="'xl'"  tdsSrc="/assets/images/conversation/avatar-notimage-messenger.svg">
+										</tds-avatar> 
+										<div class="w-full flex flex-col gap-1">
+											<div class="flex justify-between items-center">
+												<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
+												<div class="flex items-center gap-2">
+													<tds-badge [standalone]="true" [count]="33" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
+													<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
+												</div>
+											</div>
+											<div class="text-body-2 font-regular font-sans text-neutral-1-900">
+												Giao trong giờ hành chính giúp...Giao trong giờ hành chính giúp...Giao trong giờ h hành chính giúp...Giao tron <span class="text-info-500"> Xem thêm</span>
+											</div>
+										</div>
+									</div>
+									<div class="flex justify-end flex-col gap-2">
+										<div class="flex gap-1 items-center">
+											<div class="bg-[#F2FCF5] py-0.5 px-1 text-caption-2 font-regular text-neutral-1-900 rounded">
+												<tds-badge status="success" text="Khách hàng cũ"></tds-badge>
+											</div>
+											<div class="bg-[#FFEDEE] py-0.5 px-1 text-caption-2 font-regular text-neutral-1-900 rounded">
+												<tds-badge status="error" text="Bom hàng"></tds-badge>
+											</div>
+											<div class="bg-[#FFF1D7] py-0.5 pl-1 text-caption-2 font-regular text-neutral-1-900 rounded ">
+												<tds-badge status="bg-yellow-500"  text="bon"></tds-badge>
+											</div>
+											<div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded">
+												+3
+											</div>
+											<div class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
+											<div class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
+										</div>
+										<div class="flex justify-end gap-1 items-center">
+											<div class="tdsi-flash-on-fill text-accent-3 px-1 text-2xl"></div>
+											<div class="text-accent-3 text-caption-1 font-regular font-sans">Quản lý Shop ly đang xem  03:45</div>
+										</div>
+									</div>
+								</div>  
+								<div class="absolute top-0 right-0">
+									<div class="w-0 h-0 border-t-[41px] border-t-green-400 border-l-[41px] border-l-transparent border-solid">
+									</div>
+								</div>
+								<div class="absolute top-0 right-0">
+									<div class="tdsi-tick-fill text-white text-lg px-1"></div>
+								</div>
+							</div>
+					</div>
+                </div>
         </div>
         <div class="flex flex-auto flex-col  h-full overflow-hidden">
                 <tds-conversations>

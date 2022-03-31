@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ModalResetPointComponent } from './modal-reset-point.component';
+import { ConfigActivitiesComponent } from './config-activities.component';
 
-describe('ModalResetPointComponent', () => {
-  let component: ModalResetPointComponent;
-  let fixture: ComponentFixture<ModalResetPointComponent>;
+describe('ConfigActivitiesComponent', () => {
+  let component: ConfigActivitiesComponent;
+  let fixture: ComponentFixture<ConfigActivitiesComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ModalResetPointComponent ]
+      declarations: [ ConfigActivitiesComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ModalResetPointComponent);
+    fixture = TestBed.createComponent(ConfigActivitiesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

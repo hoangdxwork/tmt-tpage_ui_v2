@@ -6,10 +6,11 @@ import { OperatorEnum } from "src/app/lib";
 import { ExcelExportService } from "src/app/main-app/services/excel-export.service";
 import { FastSaleOrderService } from "src/app/main-app/services/fast-sale-order.service";
 import { PrinterService } from "src/app/main-app/services/printer.service";
-import { PaymentRequestComponent } from '../payment-request/payment-request.component';
 import { TDSHelperArray, TDSHelperObject, TDSMessageService, TDSModalService, TDSSafeAny } from "tmt-tang-ui";
-import { SendDeliveryComponent } from "../send-delivery/send-delivery.component";
 import { PaymentMultipComponent } from "../payment-multip/payment-multip.component";
+import { PaymentRequestComponent } from "../payment-request/payment-request.component";
+import { SendDeliveryComponent } from "../send-delivery/send-delivery.component";
+
 
 @Component({
   selector: 'action-dropdown',
@@ -64,10 +65,12 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         logic: "and",
       },
     };
+
     let that = this;
     let callBackFn = () => {
       that.isProcessing = false;
     }
+
     switch (type) {
       case "excels":
         this.isProcessing = true;
@@ -126,7 +129,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   }
 
   checkValueEmpty() {
-    var ids: any[] = [...this.setOfCheckedId][0];
+    let ids: any[] = [...this.setOfCheckedId][0];
     this.idsModel = [...ids];
 
     if (this.idsModel.length == 0) {
@@ -331,6 +334,14 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         this.message.error(`${error.error.message}`);
       })
     }
+  }
+
+  registerPayment(): any {
+    if (this.isProcessing) {
+      return
+    }
+
+
   }
 
   ngOnDestroy(): void {

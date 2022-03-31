@@ -1,3 +1,4 @@
+import { MainSharedModule } from './../../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TDSEchartsModule } from 'tds-report';
 import { TDSAvatarModule, TDSDatePickerModule, TDSMenuModule, TDSSelectModule, TDSTableModule, TDSButtonModule, TDSCollapseModule, TDSDropDownModule, TDSModalModule, TDSBadgeModule, TDSFormFieldModule, TDSEmptyModule } from 'tmt-tang-ui';
@@ -34,6 +35,7 @@ import { ReportEmptyDataComponent } from './components/report-empty-data/report-
     TDSEchartsModule.forRoot({
       echarts: () => import('echarts')
     }),
+    MainSharedModule,
     TDSMenuModule,
     TDSAvatarModule,
     TDSSelectModule,
@@ -45,7 +47,7 @@ import { ReportEmptyDataComponent } from './components/report-empty-data/report-
     TDSModalModule,
     TDSBadgeModule,
     TDSFormFieldModule,
-    TDSEmptyModule
+    TDSEmptyModule,
   ]
 })
 export class ReportModule { }

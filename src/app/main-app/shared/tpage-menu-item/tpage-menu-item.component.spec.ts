@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PartnerComponent } from './partner.component';
+import { TpageMenuItemComponent } from './tpage-menu-item.component';
 
-describe('PartnerComponent', () => {
-  let component: PartnerComponent;
-  let fixture: ComponentFixture<PartnerComponent>;
+describe('TpageMenuItemComponent', () => {
+  let component: TpageMenuItemComponent;
+  let fixture: ComponentFixture<TpageMenuItemComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PartnerComponent ]
+      declarations: [ TpageMenuItemComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PartnerComponent);
+    fixture = TestBed.createComponent(TpageMenuItemComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
