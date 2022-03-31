@@ -1,8 +1,7 @@
-import { ModalAddProductComponent } from './components/modal-add-product/modal-add-product.component';
-import { ModalSearchPartnerComponent } from './components/modal-search-partner/modal-search-partner.component';
 import { TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
-import { ProductDTO } from './../../../../dto/product/product.dto';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { ModalAddProductComponent } from '../components/modal-add-product/modal-add-product.component';
+import { ModalSearchPartnerComponent } from '../components/modal-search-partner/modal-search-partner.component';
 
 @Component({
   selector: 'app-add-bill',
