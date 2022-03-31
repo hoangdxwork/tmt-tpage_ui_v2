@@ -37,6 +37,12 @@ export interface FacebookGraphCommentDTO {
   message_tags: Array<FacebookGraphCommentMessageTagDTO>;
 }
 
+export enum GenerateMessageTypeEnum {
+  Default = 0,
+  Order = 1,
+  Bill = 2
+}
+
 export interface FacebookGraphAttachmentDTO {
   image_data: ImageData;
   video_data: VideoData;
@@ -48,4 +54,11 @@ export interface ImageData {
 
 export interface VideoData {
   url: string;
+}
+
+export interface SendCRMActivityCampaignDTO { // /rest/v1.0/crmactivitycampaign/order-campaign
+  CRMTeamId?: number;
+  Details: any,
+  Note: string,
+  MailTemplateId?: number;
 }

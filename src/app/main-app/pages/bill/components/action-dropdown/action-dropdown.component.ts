@@ -207,7 +207,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         onCancel: () => { that.isProcessing = false; },
         okText: "Xác nhận",
         cancelText: "Đóng",
-        confirmViewType:"compact"
+        // confirmViewType:"compact"
       });
     }
   }
@@ -233,7 +233,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         onCancel: () => { that.isProcessing = false; },
         okText: "Xác nhận",
         cancelText: "Đóng",
-        confirmViewType:"compact"
+        // confirmViewType:"compact"
       });
     }
   }
@@ -260,7 +260,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         onCancel: () => { that.isProcessing = false; },
         okText: "Xác nhận",
         cancelText: "Đóng",
-        confirmViewType:"compact"
+        // confirmViewType:"compact"
       });
     }
   }
@@ -307,7 +307,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         onCancel: () => { that.isProcessing = false; },
         okText: "Xác nhận",
         cancelText: "Đóng",
-        confirmViewType:"compact"
+        // confirmViewType:"compact"
       });
     }
   }

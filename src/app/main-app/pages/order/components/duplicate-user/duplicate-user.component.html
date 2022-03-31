@@ -1,0 +1,21 @@
+<tds-tabset>
+  <tds-tab title="Trùng SĐT">
+      <div class="w-full">
+        Trùng SĐT
+      </div>
+  </tds-tab>
+  <tds-tab title="Trùng ASID">
+    <div class="w-full">
+      Trùng ASID
+    </div>
+  </tds-tab>
+  <tds-tab title="Trùng UID">
+    <div class="w-full">
+      Trùng UID
+    </div>
+  </tds-tab>
+</tds-tabset>
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+  <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+  <button tds-button type="submit" color="primary" (click)="onSave()">Lưu</button>
+</div>

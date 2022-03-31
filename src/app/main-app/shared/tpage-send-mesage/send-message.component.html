@@ -1,0 +1,122 @@
+<div class="w-full flex flex-col h-[calc(100vh-182px)]">
+  <div class="flex gap-4" *ngIf="currentTab == getTabs().List">
+    <tds-form-field class="w-full w-5/6">
+      <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keydown.enter)="onSearch($event)" />
+      <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+    </tds-form-field>
+
+    <button class="w-1/6" tds-button color="primary" size="md" (click)="onAddTemplate()">
+      <span class="flex items-center">
+        <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i> Thêm mẫu mới
+      </span>
+    </button>
+  </div>
+
+  <div class="flex flex-col pt-4 flex-auto">
+    <div class="w-full h-full border rounded relative" *ngIf="currentTab == getTabs().List">
+        <div class="absolute inset-0 overflow-y-auto tds-custom-scroll">
+          <div class="h-10 px-3 hover:bg-neutral-3-50 cursor-pointer" *ngFor="let item of lstMessage">
+            <div class="border-neutral-2-200 border-b h-full py-3" (click)="onMessage(item)">
+              <div class="text-sm"> {{item.Name}} </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="w-full h-full rounded relative" *ngIf="currentTab == getTabs().Send && messageSelect">
+      <div  class="absolute inset-0 overflow-y-auto tds-custom-scroll">
+        <div>
+          <p class="text-neutral-1-600 text-lg font-semibold">Nội dung mẫu: {{messageSelect.Name}}</p>
+          <div class="text-sm font-normal bg-neutral-3-50 mt-4 p-4">
+              {{messageSelect.BodyPlain}}
+          </div>
+        </div>
+        <div class="mt-4" *ngFor="let item of messageContent; let index = index">
+          <p class="font-semibold">{{index + 1}}. {{item.PartnerName}}</p>
+          <span >{{item.OrderCode}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-full h-full rounded relative" *ngIf="currentTab == getTabs().Add">
+      <div  class="absolute inset-0 overflow-y-auto tds-custom-scroll">
+        <div class="">
+          <p class="text-neutral-1-600 text-lg font-semibold">Thêm mẫu mới</p>
+        </div>
+
+        <form [formGroup]="formAddTemplate">
+          <div class="mt-4 grid grid-cols-1">
+            <div class="grid grid-cols-3 gap-x-4 mt-4">
+              <div class="">
+                <tds-label> Loại </tds-label>
+              </div>
+              <div class="col-span-2">
+                <p class="text-info-400 font-semibold"> Messenger </p>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-x-4 mt-4">
+              <div class="">
+                <tds-label> Tên mô tả </tds-label>
+              </div>
+              <div class="col-span-2">
+                <tds-form-field>
+                  <input tdsInput placeholder="Tên mô tả" formControlName="Name" />
+              </tds-form-field>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-x-4 mt-4">
+              <div class="">
+                <tds-label> Nội dung mẫu </tds-label>
+              </div>
+              <div class="col-span-2">
+                <tds-form-field>
+                  <div class="flex items-start h-16">
+                    <input tdsInput autocomplete="off" placeholder="Nội dung mẫu" formControlName="BodyPlain"/>
+                  </div>
+                </tds-form-field>
+              </div>
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="w-full flex justify-end p-4" *tdsModalFooter >
+  <div class=" justify-end" *ngIf="currentTab == getTabs().List">
+      <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+  </div>
+
+  <div class="w-full flex justify-between" *ngIf="currentTab == getTabs().Send">
+    <div>
+      <button tds-button class="mr-2" type="button" color="secondary" (click)="onBack()">
+        <span class="flex items-center gap-x-2">
+          <i class="tdsi-back-fill text-xl leading-5"></i> Quay lại
+        </span>
+      </button>
+    </div>
+    <div>
+      <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+      <button tds-button type="submit" color="primary" (click)="onSendMessage()">Gửi</button>
+    </div>
+  </div>
+
+  <div class="w-full flex justify-between" *ngIf="currentTab == getTabs().Add">
+    <div>
+      <button tds-button class="mr-2" type="button" color="secondary" (click)="onBack()">
+        <span class="flex items-center gap-x-2">
+          <i class="tdsi-back-fill text-xl leading-5"></i> Quay lại danh sách
+        </span>
+      </button>
+    </div>
+    <div>
+      <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+      <button tds-button [disabled]="!formAddTemplate.valid" class="mr-2" type="submit" color="primary" (click)="onSave()">Lưu mẫu mới</button>
+      <button tds-button [disabled]="!formAddTemplate.valid" type="button" color="primary" (click)="onSave('use')">Lưu mẫu và chọn</button>
+    </div>
+  </div>
+</div>
+
