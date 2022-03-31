@@ -6,7 +6,6 @@ import { ModalSendMessageComponent } from './components/modal-send-message/modal
 import { ModalConvertPartnerComponent } from './components/modal-convert-partner/modal-convert-partner.component';
 import { ModalEditPartnerComponent } from './components/modal-edit-partner/modal-edit-partner.component';
 import { ModalAddAddressComponent } from './components/modal-add-address/modal-add-address.component';
-import { ModalAddPartnerComponent } from './components/modal-add-partner/modal-add-partner.component';
 import { InfoOrderDebtOfPartnerComponent } from './components/info-order-debt-of-partner/info-order-debt-of-partner.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
@@ -25,6 +24,8 @@ import { ConfigColumPartnerComponent } from './components/config-column/config-c
 import { MainSharedModule } from '../../shared/shared.module';
 import { PrinterService } from '../../services/printer.service';
 import { ExcelExportService } from '../../services/excel-export.service';
+import { AccountRegisterPaymentService } from '../../services/account-register-payment..service';
+import { FilterOptionPartnerComponent } from './components/filter-option-partner/filter-option-partner.component';
 
 const SERVICES = [
   OdataPartnerService,
@@ -33,13 +34,13 @@ const SERVICES = [
   TagService,
   PrinterService,
   ExcelExportService,
+  AccountRegisterPaymentService
 ]
 
 @NgModule({
   declarations: [
     PartnerComponent,
     InfoOrderDebtOfPartnerComponent,
-    ModalAddPartnerComponent,
     ModalAddAddressComponent,
     ModalEditPartnerComponent,
     ModalConvertPartnerComponent,
@@ -48,7 +49,8 @@ const SERVICES = [
     ModalBirthdayPartnerComponent,
     ModalPaymentComponent,
     DrawerMessageComponent,
-    ConfigColumPartnerComponent
+    ConfigColumPartnerComponent,
+    FilterOptionPartnerComponent
   ],
   imports: [
     CommonModule,

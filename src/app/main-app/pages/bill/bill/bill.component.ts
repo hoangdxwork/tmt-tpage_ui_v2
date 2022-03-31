@@ -6,7 +6,6 @@ import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { OdataFastSaleOrderService } from 'src/app/main-app/services/mock-odata/odata-fastsaleorder.service';
 import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperString, TDSI18nService, ToastrService, toArray, TDSTableQueryParams, TDSHelperArray, TDSMessageService } from 'tmt-tang-ui';
-import { partnerDto } from '../../partner/partner/partner.component';
 import { addDays, getISODay } from 'date-fns/esm';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { THelperCacheService } from 'src/app/lib';
@@ -85,7 +84,7 @@ export class BillComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this.loadData();
+    //this.loadData();
     this.loadSummaryStatus();
     this.loadTags();
 
@@ -145,10 +144,10 @@ export class BillComponent implements OnInit{
     this.indeterminate = this.lstOfData.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
   }
 
-  loadData() {
+  loadData(pageSize : number, pageIndex: number) {
     this.isLoading = true;
     let filters = this.odataFastSaleOrderService.buildFilter(this.filterObj);
-    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
     this.odataFastSaleOrderService.getView(params, this.filterObj).subscribe((res: TDSSafeAny) => {
 
@@ -221,7 +220,7 @@ export class BillComponent implements OnInit{
       }
     };
 
-    this.loadData();
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   onCreate() {}
@@ -271,13 +270,13 @@ export class BillComponent implements OnInit{
     this.indClickTag = -1;
 
     this.filterObj.searchText = event.target.value;
-    this.loadData();
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   onLoadOption(event: any): void {
     this.tabIndex = 1;
     this.pageIndex = 1;
-    this.pageSize = 20;
+    this.indClickTag = -1;
 
     this.filterObj = {
         tags: event.tags,
@@ -290,7 +289,7 @@ export class BillComponent implements OnInit{
             endDate: event.dateRange.endDate,
         }
     }
-    this.loadData();
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   // Drawer tin nhắn facebook
@@ -303,12 +302,7 @@ export class BillComponent implements OnInit{
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
-    this.loadData();
-  }
-
-  pageIndexChange(event: any): void {
-    this.pageIndex = 2;
-    this.loadData();
+    this.loadData(params.pageSize, params.pageIndex);
   }
 
   refreshData(){
@@ -331,6 +325,6 @@ export class BillComponent implements OnInit{
       }
     }
 
-    this.loadData();
+    this.loadData(this.pageSize, this.pageIndex);
   }
 }

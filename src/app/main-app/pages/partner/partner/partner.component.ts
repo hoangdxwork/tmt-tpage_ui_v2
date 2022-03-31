@@ -1,8 +1,8 @@
+import { da } from 'date-fns/locale';
 import { ModalBirthdayPartnerComponent } from './../components/modal-birthday-partner/modal-birthday-partner.component';
 import { ModalSendMessageComponent } from './../components/modal-send-message/modal-send-message.component';
 import { ModalConvertPartnerComponent } from './../components/modal-convert-partner/modal-convert-partner.component';
 import { ModalEditPartnerComponent } from './../components/modal-edit-partner/modal-edit-partner.component';
-import { ModalAddPartnerComponent } from './../components/modal-add-partner/modal-add-partner.component';
 
 import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
 import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperArray, TDSMessageService, TDSTableQueryParams, TDSHelperString } from 'tmt-tang-ui';
@@ -16,22 +16,6 @@ import { ColumnTableDTO } from '../../bill/components/config-column/config-colum
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-
-export interface partnerDto {
-  id: number;
-  code: string;
-  name: string;
-  phone: string;
-  email: string;
-  address: string;
-  birthday: string;
-  facebook: string;
-  zalo:string;
-  tag: string[];
-  debt: number;
-  status: number;
-  effect: boolean;
-}
 
 @Component({
   selector: 'app-partner',
@@ -48,7 +32,6 @@ export class PartnerComponent implements OnInit, OnDestroy {
   count: number = 1;
 
   public filterObj: TDSSafeAny = {
-    tags: [],
     searchText: '',
     statusText: null
   }
@@ -61,6 +44,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
 
   public modelTags: Array<TDSSafeAny> = [];
   public lstDataTag: Array<TDSSafeAny> = [];
+  public lstBirtdays: Array<TDSSafeAny> = [];
 
   selected = 0;
   isLoadingTable = false
@@ -69,7 +53,6 @@ export class PartnerComponent implements OnInit, OnDestroy {
 
   checked = false;
   indeterminate = false;
-  listOfData: readonly partnerDto[] = [];
   setOfCheckedId = new Set<number>();
 
   public hiddenColumns = new Array<ColumnTableDTO>();
@@ -125,10 +108,11 @@ export class PartnerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.loadData();
+    // this.loadData() >Đã load đầu tiên khi sử dụng queryParams
     this.loadTags();
     this.loadGridConfig();
     this.loadPartnerStatusReport();
+    this.loadBirtdays();
   }
 
   loadGridConfig() {
@@ -143,10 +127,10 @@ export class PartnerComponent implements OnInit, OnDestroy {
     })
   }
 
-  loadData() {
+  loadData(pageSize: number, pageIndex: number) {
     this.isLoading = true;
     let filters = this.odataPartnerService.buildFilter(this.filterObj);
-    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
     this.odataPartnerService.getView(params, this.filterObj).subscribe((res: TDSSafeAny) => {
 
       this.count = res['@odata.count'];
@@ -165,12 +149,11 @@ export class PartnerComponent implements OnInit, OnDestroy {
     this.tabIndex = value;
 
     this.filterObj = {
-        tags: [],
         searchText: '',
         statusText: value
     };
 
-    this.loadData();
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   loadTags() {
@@ -200,16 +183,15 @@ export class PartnerComponent implements OnInit, OnDestroy {
     this.setOfCheckedId = new Set<number>();
 
     this.filterObj = {
-        tags: [],
         searchText: '',
         statusText: null
     }
 
-    this.loadData();
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
-    this.loadData();
+    this.loadData(params.pageSize, params.pageIndex);
   }
 
   onExpandChange(id: number, checked: boolean): void {
@@ -281,7 +263,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
     this.indClickTag = -1;
 
     this.filterObj.searchText = event.target.value;
-    this.loadData();
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   isHidden(columnName: string) {
@@ -300,6 +282,18 @@ export class PartnerComponent implements OnInit, OnDestroy {
 
       event.forEach(column => { this.isHidden(column.value) });
     }
+  }
+
+  onLoadOption(event: any) {
+    this.pageIndex = 1;
+    this.indClickTag = -1;
+
+    this.filterObj = {
+        statusText: event.statusText,
+        searchText: event.searchText,
+    }
+
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   exportExcel() {
@@ -335,7 +329,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
           this.partnerService.setActive({model: model1}).subscribe((res: TDSSafeAny) => {
               this.message.success('Đã mở hiệu lực thành công!');
               setTimeout(() => {
-                this.loadData();
+                this.loadData(this.pageSize, this.pageIndex);
               }, 350)
           }, error => {
             this.message.error('Mở hiệu lực thất bại!');
@@ -347,7 +341,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
           this.partnerService.setActive({model: model2}).subscribe((res: TDSSafeAny) => {
               this.message.success('Đóng hiệu lực thành công!');
               setTimeout(() => {
-                this.loadData();
+                this.loadData(this.pageSize, this.pageIndex);
               }, 350)
           }, error => {
             this.message.error('Đóng hiệu lực thất bại!');
@@ -370,42 +364,52 @@ export class PartnerComponent implements OnInit, OnDestroy {
     return 1;
   }
 
-  // modal add Partner
-  showModalAddPartner(){
-    const modal = this.modalService.create({
-      title: 'Thêm Khách hàng',
-      content: ModalAddPartnerComponent,
-      size: "xl",
-      viewContainerRef: this.viewContainerRef,
-      centered: true,
-    });
-    modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
-    modal.afterClose.subscribe(result => {
-      console.log('[afterClose] The result is:', result);
-      if (TDSHelperObject.hasValue(result)) {
+  onDelete(data :any) {
+    let that = this;
+    if (this.isProcessing) {
+      return
+    }
 
-      }
+    this.modal.success({
+      title: 'Xóa khách hàng',
+      content: 'Bạn muốn chắc xóa khách hàng này?',
+      onOk: () => {
+          this.partnerService.delete(data.Id).subscribe((res: TDSSafeAny) => {
+            this.message.success('Xóa thành công!')
+          }, error => {
+            this.message.error(`${error.error.message}`)
+          })
+      },
+      onCancel: () => { that.isProcessing = false; },
+      okText: "Xác nhận",
+      cancelText: "Đóng",
+      confirmViewType:"compact"
     });
   }
 
-  // modal edit partner
-  showModalEditPartner(id: number){
+  editPartner(data: any){
     const modal = this.modalService.create({
-      title: 'Sửa Khách hàng',
-      content: ModalEditPartnerComponent,
-      size: "xl",
-      viewContainerRef: this.viewContainerRef,
-      centered: true,
-      componentParams: {
-        data: this.listOfData.find(x=>x.id == id)
-    }
+        title: 'Sửa Khách hàng',
+        content: ModalEditPartnerComponent,
+        size: "xl",
+        viewContainerRef: this.viewContainerRef,
+        centered: true,
+        componentParams: {
+          partnerId: data.Id
+        }
     });
-    modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
-    modal.afterClose.subscribe(result => {
-      console.log('[afterClose] The result is:', result);
-      if (TDSHelperObject.hasValue(result)) {
+  }
 
-      }
+  createPartner(){
+    const modal = this.modalService.create({
+        title: 'Thêm mới khách hàng',
+        content: ModalEditPartnerComponent,
+        size: "xl",
+        viewContainerRef: this.viewContainerRef,
+        centered: true,
+        componentParams: {
+          partnerId: null
+        }
     });
   }
 
@@ -458,35 +462,28 @@ export class PartnerComponent implements OnInit, OnDestroy {
       viewContainerRef: this.viewContainerRef,
       componentParams: {
 
-    }
-    });
-    modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
-    modal.afterClose.subscribe(result => {
-      console.log('[afterClose] The result is:', result);
-      if (TDSHelperObject.hasValue(result)) {
-
       }
     });
   }
 
   // Modal sinh nhật của khách hàng
   showModalBirthday(){
-    const modal = this.modalService.create({
+    this.modalService.create({
       title: 'Sinh nhật khách hàng',
       content: ModalBirthdayPartnerComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
-      componentParams: {
-
-    }
-    });
-    modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
-    modal.afterClose.subscribe(result => {
-      console.log('[afterClose] The result is:', result);
-      if (TDSHelperObject.hasValue(result)) {
-
+        componentParams: {
+           data: this.lstBirtdays
       }
     });
+  }
+
+  loadBirtdays() {
+    let type = "day";
+    this.partnerService.getPartnerBirthday(type).subscribe((res: any) => {
+        this.lstBirtdays = res;
+    })
   }
 
   // Drawer tin nhắn facebook

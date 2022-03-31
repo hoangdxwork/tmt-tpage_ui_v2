@@ -1,26 +1,37 @@
 import { TDSModalRef } from 'tmt-tang-ui';
-import { Component, OnInit } from '@angular/core';
-interface infoBrithdayPartner {
-  id: number;
-  namePartner: string;
-  phone: string;
-  address: string;
-  birthday: string;
-}
+import { Component, Input, OnInit } from '@angular/core';
+import { PartnerService } from 'src/app/main-app/services/partner.service';
+import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
+
 @Component({
   selector: 'app-modal-birthday-partner',
   templateUrl: './modal-birthday-partner.component.html',
   styleUrls: ['./modal-birthday-partner.component.scss']
 })
+
 export class ModalBirthdayPartnerComponent implements OnInit {
 
-  constructor(    private modal: TDSModalRef,
-    ) { }
+    @Input() data: any = [];
+
     checked = false;
     indeterminate = false;
-    listOfCurrentPageData: readonly infoBrithdayPartner[] = [];
-    listOfData: readonly infoBrithdayPartner[] = [];
     setOfCheckedId = new Set<number>();
+
+    times: any = [
+        {text: 'Hôm nay', value: 'day'},
+        {text: 'Tuần này', value: 'week'},
+        {text: 'Tháng này', value: 'month'}
+    ];
+
+    currentTime: any = {text: 'Hôm nay', value: 'day'};
+
+    constructor(private modal: TDSModalRef,
+      private excelExportService: ExcelExportService,
+        private partnerService: PartnerService) {
+    }
+
+    ngOnInit(): void {
+    }
 
     updateCheckedSet(id: number, checked: boolean): void {
         if (checked) {
@@ -36,30 +47,33 @@ export class ModalBirthdayPartnerComponent implements OnInit {
     }
 
     onAllChecked(value: boolean): void {
-        this.listOfCurrentPageData.forEach(item => this.updateCheckedSet(item.id, value));
-        this.refreshCheckedStatus();
-    }
-
-    onCurrentPageDataChange($event: readonly infoBrithdayPartner[]): void {
-        this.listOfCurrentPageData = $event;
+        this.data.forEach((item: any) => this.updateCheckedSet(item.Id, value));
         this.refreshCheckedStatus();
     }
 
     refreshCheckedStatus(): void {
-        this.checked = this.listOfCurrentPageData.every(item => this.setOfCheckedId.has(item.id));
-        this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedId.has(item.id)) && !this.checked;
+        this.checked = this.data.every((item: any)  => this.setOfCheckedId.has(item.Id));
+        this.indeterminate = this.data.some((item: any)  => this.setOfCheckedId.has(item.Id)) && !this.checked;
     }
 
-    ngOnInit(): void {
-        this.listOfData =[
-          {id:0, namePartner: 'Phạm Nhi', phone:'0901234567', address:'172 Nguyễn Đình Chiểu, Phường 6, Quận 3, Thành phố Hồ Chí Minh', birthday:'19/09/1998'},
-          {id:1, namePartner: 'Hoàng Minh', phone:'0903017371', address:'172 Nguyễn Đình Chiểu, Phường 6, Quận 3, Thành phố Hồ Chí Minh', birthday:'19/09/1998'},
-          {id:2, namePartner: 'Hoàng Hải', phone:'0901737103', address:'371 Nguyễn Kiệm, Phường 3, Quận Gò Vấp, Thành phố Hồ Chí Minh', birthday:'19/09/1998'},
-
-        ]
+    cancel() {
+      this.modal.destroy(null);
     }
-  cancel() {
-    this.modal.destroy(null);
-  }
+
+    selectTime(time: any) {
+      this.currentTime = time;
+      this.partnerService.getPartnerBirthday(time.value).subscribe((res: any) => {
+          this.data = res;
+      })
+    }
+
+    exportExcel() {
+        let type = this.currentTime.value;
+        this.excelExportService.exportGet(`/Partner/ExcelPartnerBirthDay?type=${type}`, `sinh-nhat-khach-hang`);
+    }
+
+    sendMessage() {
+      let ids: any[] = [...this.setOfCheckedId];debugger
+    }
 
 }
