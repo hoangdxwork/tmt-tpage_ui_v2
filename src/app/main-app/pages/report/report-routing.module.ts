@@ -1,4 +1,4 @@
-import { ReportLabelsComponent } from './components/report-labels/report-labels.component';
+import { ReportTagsComponent } from './components/report-tags/report-tags.component';
 import { ReportStaffsComponent } from './components/report-staffs/report-staffs.component';
 import { ReportFacebookComponent } from './components/report-facebook/report-facebook.component';
 import { ReportSalesComponent } from './components/report-sales/report-sales.component';
@@ -40,7 +40,7 @@ const routes: Routes = [
       },
       {
         path: 'labels',
-        component: ReportLabelsComponent,
+        component: ReportTagsComponent,
       },
     ]
   },

@@ -26,7 +26,7 @@
                             <td>{{ data.position }}</td>
                             <td>{{ data.numberOfTag }}</td>
                             <td>
-                                <span class="bg-{{data.color}} text-white text-caption-2 font-semibold font-sans rounded px-2 py-1">
+                                <span class="text-white text-caption-2 font-semibold font-sans rounded px-2 py-1" [style.background-color]="data.color">
                                     {{ data.tagName }}
                                 </span>
                             </td>

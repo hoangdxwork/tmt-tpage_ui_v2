@@ -5,11 +5,11 @@ import { Component, OnInit } from '@angular/core';
 import { formatDate } from '@angular/common';
 
 @Component({
-  selector: 'app-report-labels',
-  templateUrl: './report-labels.component.html',
-  styleUrls: ['./report-labels.component.scss']
+  selector: 'app-report-tags',
+  templateUrl: './report-tags.component.html',
+  styleUrls: ['./report-tags.component.scss']
 })
-export class ReportLabelsComponent implements OnInit {
+export class ReportTagsComponent implements OnInit {
 //#region variable
   option:TDSSafeAny;
   chartOption = TDSChartOptions();
@@ -38,7 +38,7 @@ export class ReportLabelsComponent implements OnInit {
         labelName:'Bom hàng', 
         value:100,
         percent:'20%',
-        color:'error-400',
+        color:'#EB3B5B',
         filter:'Tháng trước',
         data:[
           {
@@ -84,7 +84,7 @@ export class ReportLabelsComponent implements OnInit {
         labelName:'Khách mới', 
         value:100,
         percent:'20%',
-        color:'info-400',
+        color:'#2395FF',
         filter:'Tháng trước',
         data:[
           {
@@ -130,7 +130,7 @@ export class ReportLabelsComponent implements OnInit {
         labelName:'Khách thân thiết', 
         value:100,
         percent:'20%',
-        color:'success-400',
+        color:'#28A745',
         filter:'Tháng trước',
         data:[
           {
@@ -176,7 +176,7 @@ export class ReportLabelsComponent implements OnInit {
         labelName:'Thẻ khác',
         value:100,
         percent:'20%',
-        color:'neutral-1-300',
+        color:'#A1ACB8',
         filter:'Tháng trước',
         data:[
           {

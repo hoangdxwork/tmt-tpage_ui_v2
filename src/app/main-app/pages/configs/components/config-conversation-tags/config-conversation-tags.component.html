@@ -1,0 +1,72 @@
+<div class="w-full h-full pb-4 px-4">
+    <div class="flex flex-col w-full h-full bg-white rounded-xl">
+        <div class="flex flex-row items-center justify-between px-4 py-3">
+            <div class="flex flex-row items-center">
+                <tds-avatar class="bg-primary-1 text-white" icon="tdsi-tag-fill"></tds-avatar>
+                <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">KẾT NỐI/ CẤU HÌNH IN ĐƠN HÀNG</span>
+            </div>
+            <div class="flex flex-row items-center w-1/2">
+                <tds-form-field size='md' class="mr-4 w-3/4">
+                    <div tdsAddOnLeft size="md">
+                        <i class="tdsi-search-fill text-xl leading-none"></i>
+                    </div>
+                    <input tdsInput placeholder="Tìm thẻ hội thoại" (keyup)="doFilter($event)"/>
+                </tds-form-field>
+                <button tds-button color="primary" (click)="onAddNewTag($event)">
+                    <span class="flex items-center">
+                      <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+                      <span class="text-body-2 font-semibold">Thêm mới</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div class="flex flex-auto pb-2.5">
+            <tds-table #basicTable 
+                [listData]="TagList" 
+                [showSizeChanger]="true" 
+                [loading]="isLoading" 
+                [scroll]="{y:'auto'}"
+                [pageSize]="20"
+                [total]="TagList.length" 
+                >
+                <thead>
+                      <tr class="text-neutral-1-900 text-body-2 font-semibold">
+                            <th [width]="'100px'">STT</th>
+                            <th>Tên thẻ</th>
+                            <th>Màu sắc</th>
+                            <th>Lượt gán</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                      </tr>
+                </thead>
+                <tbody>
+                    <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
+                        <tr class="text-neutral-1-900 text-body-2 font-regular">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ data.name }}</td>
+                            <td>
+                                <div class="w-16 h-6 rounded-full" [style.background-color]="data.color"></div>
+                            </td>
+                            <td>{{ data.usedTime }}</td>
+                            <td>
+                                <tds-switch [(ngModel)]="data.status"></tds-switch>
+                            </td>
+                            <td>
+                                <button tds-button color="secondary" size="sm" class=" mr-2" (click)="showEditModal(i)">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-edit-fill text-xl leading-none"></i>
+                                    </span>
+                                </button>
+                                <button tds-button color="secondary" size="sm">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-trash-fill text-xl leading-none"></i>
+                                    </span>
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </tds-table>
+        </div>
+    </div>
+</div>

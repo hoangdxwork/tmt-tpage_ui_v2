@@ -1,0 +1,108 @@
+<div class="w-full h-full pb-4 px-4">
+    <div class="flex flex-col w-full h-full bg-white rounded-xl">
+        <div class="flex flex-row items-center justify-between px-4 py-3">
+            <div class="flex flex-row items-center">
+                <tds-avatar class="bg-primary-1 text-white" icon="tdsi-chat-fill"></tds-avatar>
+                <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">TRẢ LỜI NHANH</span>
+            </div>
+            <div class="flex flex-row items-center w-1/2">
+                <tds-form-field size='md' class="mr-4 w-3/4">
+                    <div tdsAddOnLeft size="md">
+                        <i class="tdsi-search-fill text-xl leading-none"></i>
+                    </div>
+                    <input tdsInput placeholder="Tìm mẫu trả lời nhanh" (keyup)="doFilter($event)"/>
+                </tds-form-field>
+                <button tds-button color="primary" (click)="onAddNewTag($event)">
+                    <span class="flex items-center">
+                      <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+                      <span class="text-body-2 font-semibold">Thêm mới</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div class="flex flex-auto pb-2.5">
+            <tds-table #basicTable 
+                [listData]="AutoChatList" 
+                [showSizeChanger]="true" 
+                [loading]="isLoading" 
+                [scroll]="{y:'auto'}"
+                [pageSize]="20"
+                [total]="AutoChatList.length" 
+
+                >
+                <thead>
+                      <tr class="text-neutral-1-900 text-body-2 font-semibold">
+                            <th>Tên mẫu</th>
+                            <th>Nội dung</th>
+                            <th>Phím tắt</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                      </tr>
+                </thead>
+                <tbody>
+                    <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
+                        <tr class="text-neutral-1-900 text-body-2 font-regular group">
+                            <td>
+                                <div class="flex flex-col">
+                                    {{ data.name }}
+                                    <div class="hidden group-hover:inline-block">
+                                        <button tds-flat-button-icon size="sm" tds-tooltip tooltipTitle="Đơn hàng mặc định"
+                                            tooltipPlacement="top" class="mr-1"
+                                            (click)="onChangeSetting(1,i)">
+                                            <span class="flex items-center">
+                                                <i class="tdsi-order-fill text-xl leading-5 text-tertiary-1"></i>
+                                            </span>
+                                        </button>
+                                        <button tds-flat-button-icon size="sm" tds-tooltip tooltipTitle="Hóa đơn mặc định" 
+                                            tooltipPlacement="top"
+                                            (click)="onChangeSetting(2,i)">
+                                            <span class="flex items-center">
+                                                <i class="tdsi-quotation-fill text-xl leading-5 text-primary-1"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ data.content }}</td>
+                            <td>{{ data.shortcut }}</td>
+                            <td>
+                                <tds-switch [(ngModel)]="data.status" (ngModelChange)="onChangeStatus($event,i)"></tds-switch>
+                            </td>
+                            <td>
+                                <button tds-button-icon color="secondary" size="sm" class="mr-2"
+                                    (click)="onEditRow($event,i)">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-edit-fill text-xl leading-none"></i>
+                                    </span>
+                                </button>
+                                <button tds-button-icon color="secondary" size="sm" class="mr-2"
+                                    (click)="onRemoveRow(i)">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-trash-fill text-xl leading-none"></i>
+                                    </span>
+                                </button>
+                                <button size="sm" tds-button-icon color="secondary" [tdsbuttonMenuTriggerFor]="menu" [tbuttonMenuTriggerRestoreFocus]="false">
+                                    <span class="flex items-center">
+                                        <i class="tdsi-three-dots-horizon-fill"></i>
+                                    </span>
+                                </button>
+                                <tbutton-menu #menu="TDSButtonMenu">
+                                    <button tds-button-menu-item (click)="onChangeSetting(1,i)">
+                                        <span class="flex items-center">
+                                            <i class="tdsi-order-fill text-xl leading-5 text-tertiary-1 mr-2"></i>Chọn làm đơn hàng mặc định
+                                        </span>
+                                    </button>
+                                    <button tds-button-menu-item>
+                                        <span class="flex items-center" (click)="onChangeSetting(2,i)">
+                                            <i class="tdsi-quotation-fill text-xl leading-5 text-primary-1 mr-2"></i>Chọn làm hóa đơn mặc định
+                                        </span>
+                                    </button>
+                                </tbutton-menu>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </tds-table>
+        </div>
+    </div>
+</div>

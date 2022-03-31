@@ -26,7 +26,7 @@
                             <span class="text-neutral-1-400 text-body-2 font-normal font-sans text-center">{{item.filter}}</span>
                         </div>
                         <div class="flex items-center w-full h-1/3 px-5 pb-3 text-neutral-1-900 text-heading-4 font-semibold font-sans">{{item.value}}</div>
-                        <div class="flex items-center w-full h-1/3 px-5 rounded-b-md bg-{{item.color}} text-white text-body-2 font-normal font-sans">{{item.labelName}}</div>
+                        <div class="flex items-center w-full h-1/3 px-5 rounded-b-md text-white text-body-2 font-normal font-sans" [style.background-color]="item.color">{{item.labelName}}</div>
                     </div>
                 </div>
               </div>
@@ -48,7 +48,7 @@
         <tbody class="text-neutral-1-900 text-body-2 font-regular font-sans">
             <ng-template ngFor let-item [ngForOf]="basicTable.data">
                 <tr>
-                    <td><span class="bg-{{item.color}} rounded-md text-white text-caption-2 font-semibold px-2 py-1">{{ item.labelName }}</span></td>
+                    <td><span class="rounded-md text-white text-caption-2 font-semibold px-2 py-1" [style.background-color]="item.color">{{ item.labelName }}</span></td>
                     <ng-template ngFor let-data [ngForOf]="item.data" >
                         <td>{{ data.value }}</td>
                     </ng-template>

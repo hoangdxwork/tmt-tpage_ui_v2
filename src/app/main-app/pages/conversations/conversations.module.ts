@@ -34,7 +34,7 @@ import { FormsModule } from '@angular/forms';
     TDSAutocompleteModule,
     TDSBadgeModule,
     TDSTagModule,
-    TDSPopoverModule
+    TDSPopoverModule,
   ]
 })
 export class ConversationsModule { }
