@@ -1,56 +1,58 @@
-<div class="w-full h-full bg-white rounded-xl">
-    <div class="flex flex-row items-center justify-between px-4 py-3">
-        <div class="flex flex-row items-center">
-            <tds-avatar class="bg-primary-1 text-white" icon="tdsi-setting-print-fill"></tds-avatar>
-            <span class="text-neutral-1-900 text-header-1 font-sans font-semibold pl-2.5">KẾT NỐI/ CẤU HÌNH IN ĐƠN HÀNG</span>
+<div class="w-full h-full px-4 overflow-auto tds-custom-scroll">
+    <div class="w-full bg-white rounded-xl">
+        <div class="flex flex-row items-center justify-between px-4 py-3">
+            <div class="flex flex-row items-center">
+                <tds-avatar class="bg-primary-1 text-white" icon="tdsi-setting-print-fill"></tds-avatar>
+                <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">KẾT NỐI/ CẤU HÌNH IN ĐƠN HÀNG</span>
+            </div>
+            <button tds-button color="primary" (click)="onSaveConfig($event)">
+                <span class="flex items-center">
+                  <i class="tdsi-save-fill text-lg leading-none mr-2"></i>
+                  <span class="text-body-2 font-semibold">Lưu cấu hình</span>
+                </span>
+            </button>
         </div>
-        <button tds-button color="primary" (click)="onSaveConfig($event)">
-            <span class="flex items-center">
-              <i class="tdsi-save-fill text-lg leading-none mr-2"></i>
-              <span class="text-body-2 font-semibold">Lưu cấu hình</span>
-            </span>
-        </button>
-    </div>
-    <div class="p-4">
-        <tds-tabset>
-            <tds-tab title="Kết nối in">
-                <div class="flex flex-row items-center pt-6 pb-4">
-                    <tds-switch size="md" [(ngModel)]="enablePrintSwitch" (ngModelChange)="onPrintSwitchChange($event)"></tds-switch>
-                    <span class="text-neutral-1-900 text-body-2 font-semibold font-sans pl-2">Bật in</span>
-                </div>
-                <button tds-button color="primary" class="mb-4" (click)="onConnectPrinter($event)">
-                    <span class="flex items-center">
-                      <i class="tdsi-setting-print-fill text-lg leading-none mr-2"></i>
-                      <span class="text-body-2 font-semibold">Kết nối máy in</span>
-                    </span>
-                </button>
-                <div class="flex flex-col">
-                    <span class="text-neutral-1-900 text-title-1 font-semibold font-sans py-4">Danh sách kết nối</span>
-                    <div *ngFor="let item of printerList; let i= index">
-                        <div class="flex flex-row items-center justify-between pb-4">
-                            <div class="flex flex-row items-center">
-                                <div class="py-2 px-4 bg-neutral-3-50 rounded-md relative">
-                                    <img src="assets/images/config/config-printer.svg">
-                                    <span class="tdsi-success-fill leading-4 text-primary-1 h-4 w-4 absolute bottom-1 right-1 {{item.status == 1 ? '' : 'hidden'}}"></span>
+        <div class="p-4">
+            <tds-tabset>
+                <tds-tab title="Kết nối in">
+                    <div class="flex flex-row items-center pt-6 pb-4">
+                        <tds-switch size="md" [(ngModel)]="enablePrintSwitch" (ngModelChange)="onPrintSwitchChange($event)"></tds-switch>
+                        <span class="text-neutral-1-900 text-body-2 font-semibold pl-2">Bật in</span>
+                    </div>
+                    <button tds-button color="primary" class="mb-4" (click)="onConnectPrinter($event)">
+                        <span class="flex items-center">
+                          <i class="tdsi-setting-print-fill text-lg leading-none mr-2"></i>
+                          <span class="text-body-2 font-semibold">Kết nối máy in</span>
+                        </span>
+                    </button>
+                    <div class="flex flex-col">
+                        <span class="text-neutral-1-900 text-title-1 font-semibold py-4">Danh sách kết nối</span>
+                        <div *ngFor="let item of printerList; let i= index">
+                            <div class="flex flex-row items-center justify-between pb-4">
+                                <div class="flex flex-row items-center">
+                                    <div class="py-2 px-4 bg-neutral-3-50 rounded-md relative">
+                                        <img src="assets/images/config/config-printer.svg">
+                                        <span class="tdsi-success-fill leading-4 text-primary-1 h-4 w-4 absolute bottom-1 right-1 {{item.status == 1 ? '' : 'hidden'}}"></span>
+                                    </div>
+                                    <div class="flex flex-col pl-3">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold">HP LaserJet Pro MFP M428FDN Printer W1A29A</span>
+                                        <span class="text-neutral-1-400 text-body-2 font-regular">{{item.status == 1 ? 'Đã kết nối' : 'Chưa kết nối'}}</span>
+                                    </div>
                                 </div>
-                                <div class="flex flex-col pl-3">
-                                    <span class="text-neutral-1-900 text-body-2 font-semibold font-sans">HP LaserJet Pro MFP M428FDN Printer W1A29A</span>
-                                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans">{{item.status == 1 ? 'Đã kết nối' : 'Chưa kết nối'}}</span>
-                                </div>
+                                <button tds-flat-button (click)="onRemovePrinter($event,i)">
+                                    <span class="flex items-center text-error-400 text-caption-1 font-semibold">
+                                        <i class="tdsi-trash-line leading-none mr-2"></i>
+                                        Xoá thiết bị
+                                    </span>
+                                </button>
                             </div>
-                            <button tds-flat-button (click)="onRemovePrinter($event,i)">
-                                <span class="flex items-center text-error-400 text-caption-1 font-semibold font-sans">
-                                    <i class="tdsi-trash-line leading-none mr-2"></i>
-                                    Xoá thiết bị
-                                </span>
-                            </button>
                         </div>
                     </div>
-                </div>
-            </tds-tab>
-            <tds-tab title="Lịch sử đơn hàng đã in">
-
-            </tds-tab>
-        </tds-tabset>
+                </tds-tab>
+                <tds-tab title="Lịch sử đơn hàng đã in">
+    
+                </tds-tab>
+            </tds-tabset>
+        </div>
     </div>
 </div>

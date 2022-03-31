@@ -12,7 +12,7 @@ import { ReportArticlesComponent } from './components/report-articles/report-art
 import { ReportSalesComponent } from './components/report-sales/report-sales.component';
 import { ReportFacebookComponent } from './components/report-facebook/report-facebook.component';
 import { ReportStaffsComponent } from './components/report-staffs/report-staffs.component';
-import { ReportLabelsComponent } from './components/report-labels/report-labels.component';
+import { ReportTagsComponent } from './components/report-tags/report-tags.component';
 import { ReportEmptyDataComponent } from './components/report-empty-data/report-empty-data.component';
 
 
@@ -24,7 +24,7 @@ import { ReportEmptyDataComponent } from './components/report-empty-data/report-
     ReportSalesComponent,
     ReportFacebookComponent,
     ReportStaffsComponent,
-    ReportLabelsComponent,
+    ReportTagsComponent,
     ReportEmptyDataComponent,
   ],
   imports: [

@@ -1,8 +1,7 @@
-<div class="p-4">
-    <tpage-menu-layout [menuData]="configMenuData" class="fixed top-19"></tpage-menu-layout>
-    <div class="flex flex-row justify-end">
-        <div class="w-5/6 h-full pl-8">
-            <router-outlet></router-outlet>
-        </div>
+<div class="flex flex-row w-full h-full pl-4 pt-4 overflow-hidden">
+    <tpage-menu-layout [menuData]="configMenuData"></tpage-menu-layout>
+    <div class="w-full font-sans">
+        <router-outlet></router-outlet>
     </div>
+    
 </div>

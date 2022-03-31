@@ -19,7 +19,7 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
     {
         name: "Trả lời nhanh",
         icon: "tdsi-chat-fill",
-        link: '/configs/quick-replies',
+        link: '/configs/auto-chat',
     },
     {
         name: "Tin nhắn SMS",

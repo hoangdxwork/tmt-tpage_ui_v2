@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ConfigQuickRepliesComponent } from './config-quick-replies.component';
+import { EditDataModalComponent } from './edit-data-modal.component';
 
-describe('ConfigQuickRepliesComponent', () => {
-  let component: ConfigQuickRepliesComponent;
-  let fixture: ComponentFixture<ConfigQuickRepliesComponent>;
+describe('EditDataModalComponent', () => {
+  let component: EditDataModalComponent;
+  let fixture: ComponentFixture<EditDataModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ConfigQuickRepliesComponent ]
+      declarations: [ EditDataModalComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ConfigQuickRepliesComponent);
+    fixture = TestBed.createComponent(EditDataModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

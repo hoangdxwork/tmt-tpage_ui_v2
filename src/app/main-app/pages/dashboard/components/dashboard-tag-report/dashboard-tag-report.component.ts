@@ -30,7 +30,7 @@ export class DashboardTagReportComponent implements OnInit {
         position:1,
         numberOfTag:60,
         rateOfAppearance:20,
-        color:'error-400',
+        color:'#EB3B5B',
         decrease:false
       },
       {
@@ -39,7 +39,7 @@ export class DashboardTagReportComponent implements OnInit {
         position:2,
         numberOfTag:48,
         rateOfAppearance:20,
-        color:'info-400'
+        color:'#2395FF'
       },
       {
         id:3,
@@ -47,7 +47,7 @@ export class DashboardTagReportComponent implements OnInit {
         position:3,
         numberOfTag:40,
         rateOfAppearance:20,
-        color:'success-400'
+        color:'#28A745'
       },
       {
         id:4,
@@ -55,7 +55,7 @@ export class DashboardTagReportComponent implements OnInit {
         position:4,
         numberOfTag:32,
         rateOfAppearance:20,
-        color:'warning-400'
+        color:'#FFC107'
       },
       {
         id:5,
@@ -63,7 +63,7 @@ export class DashboardTagReportComponent implements OnInit {
         position:5,
         numberOfTag:26,
         rateOfAppearance:20,
-        color:'accent-4'
+        color:'#FF8900'
       }
     ];
 
