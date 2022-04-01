@@ -69,7 +69,6 @@ const SERVICES = [
     FormsModule,
     TDSToolTipModule,
     TDSModalModule,
-    FormsModule,
     ReactiveFormsModule,
     TDSRadioModule,
     TDSDatePickerModule,

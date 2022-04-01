@@ -1,1 +1,441 @@
-<p>facebook works!</p>
+<div class="w-full h-full bg-neutral-3-200">
+    <div class="bg-white pt-4">
+        <tds-page-header  title="Kênh kết nối" >
+            <tds-page-header-extra>
+                <button class="bg-secondary-1 mr-2 flex rounded-md items-center px-2.5 py-1.5 cursor-pointer w-[180px]"> 
+                    <div class="pr-2"><img src="/assets/images/conversation/facebook.svg"></div>
+                    <div class="text-white text-body-2 font-semibold">Kết nối với facebook</div>
+                </button>
+                
+                <button tds-button color="primary" class="mr-2">
+                    <span class="flex items-center">
+                      <i class="tdsi-copy-fill text-lg leading-none mr-2"></i>Gộp Page
+                    </span>
+                </button>         
+
+                <tds-button-group class="mr-2">
+                    <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" (click)="onClickDropdown($event)" placement ="bottomRight">
+                        <span class="text-neutral-1-900 flex  items-center justify-center text-body-2 font-semibold">
+                            {{listsfieldListAll.name}} <i class="tdsi-arrow-down-fill text-base leading-none ml-1.5 text-neutral-1-900"></i>
+                        </span>
+                    </button>
+                    <tds-dropdown-menu #menu="tdsDropdownMenu">
+                        <div class="w-full">
+                            <ng-template ngFor let-item [ngForOf]="listAll">
+                                <div tds-dropdown-item (click)="onClickFieldListAll(item)">
+                                        <a class="text-primary-1 flex items-center"> 
+                                             <div class="pl-2 text-neutral-1-900">{{item.name}}</div>
+                                        </a>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </tds-dropdown-menu>
+                </tds-button-group> 
+              
+                <tds-form-field>
+                    <input aria-colspan="" class="placeholder-neutral-1-400" 
+                        placeholder="Search..." tdsInput [(ngModel)]="inputValue"/>
+                    <span tdsPrefix ><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
+                </tds-form-field>
+
+            </tds-page-header-extra>
+        </tds-page-header>
+    </div>
+    <div class="xl:container mx-auto p-4 flex flex-col gap-4">
+        <tds-collapse [expandIconPosition]="'right'" class="bg-white rounded-xl w-full">
+            <tds-collapse-panel [header]="header" [active]="true" [disabled]=false 
+            [expandedIcon]="icon">
+                <ng-template #header>
+                    <div class="flex gap-4 items-center">
+                        <tds-badge class="mr-3" [count]="iconTemplate1">
+                            <tds-avatar size="xl" tdsSrc="https://randomuser.me/api/portraits/women/68.jpg">
+                            </tds-avatar>
+                        </tds-badge>
+                        <ng-template #iconTemplate1>
+                            <div class="absolute top-5 right-2  transform translate-x-1.5 translate-y-full rounded-full  bg-white flex items-center justify-center">
+                                <span class="p-0.5"><img src="/assets/images/conversation/facebook-circle.svg"></span>
+                            </div>
+                        </ng-template>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex gap-2 items-center">
+                                <div class="text-title-1 font-sans font-semibold">Nguyễn Thành Công</div>
+                                <div class="flex gap-1 text-white py-0.5 px-2.5 bg-success-400 rounded-full items-center">
+                                    <div class="tdsi-eye-open-fill"></div>
+                                    <div class="text-white text-caption-2 font-sans font-semibold">Trang đang hiện</div> 
+                                </div> 
+                                <div class="flex items-center pl-2">
+                                    <div class="bg-white p-0.5 rounded-full">
+                                        <tds-avatar size="sm" tdsSrc="https://randomuser.me/api/portraits/women/68.jpg">
+                                        </tds-avatar>
+                                    </div>
+                                    <div class="-ml-3 bg-white relative z-[2] p-0.5 rounded-full">
+                                        <tds-avatar size="sm" class="bg-accent-4  text-white text-[11px] font-semibold" text="AD">
+                                        </tds-avatar>
+                                    </div>
+                                    <div class="-ml-3 bg-white relative z-[3] p-0.5 rounded-full">
+                                        <tds-avatar  size="sm" tdsSrc="error-link"></tds-avatar>
+                                    </div>
+                                    <div class="-ml-3 bg-white relative z-[4] p-0.5 rounded-full">
+                                        <tds-avatar size="sm" class="bg-primary-3  text-primary-1 text-[10px] font-semibold" text="+5">
+                                        </tds-avatar>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-body-2 font-regular font-sans text-neutral-1-400">Chọn trang bạn muốn kết nối TPage với Page của bạn trên Facebook</div>
+                        </div>
+                    </div>   
+                </ng-template>
+                <ng-template #icon> 
+                    <div class="flex gap-4">
+                        <tds-button-group>
+                            <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" (click)="onClickDropdown($event)" placement ="bottomRight">
+                                <span class="text-neutral-1-900 flex  items-center justify-center text-body-2 font-semibold">
+                                    {{listsfieldListSetting.name}} <i class="tdsi-arrow-down-fill text-base leading-none ml-1.5 text-neutral-1-900"></i>
+                                </span>
+                            </button>
+                            <tds-dropdown-menu #menu="tdsDropdownMenu">
+                                <div class="w-full">
+                                    <ng-template ngFor let-item [ngForOf]="listSetting">
+                                        <div tds-dropdown-item (click)="onClickFieldListSetting(item)">
+                                                <a class="text-primary-1 flex items-center"> 
+                                                    <div class="pl-2 text-neutral-1-900">{{item.name}}</div>
+                                                </a>
+                                        </div>
+                                    </ng-template>
+                                </div>
+                            </tds-dropdown-menu>
+                        </tds-button-group> 
+
+                        <div class="border border-neutral-2-200 border-solid rounded-md">
+                            <div class="tdsi-arrow-up-line p-2 text-neutral-1-500"></div>
+                        </div>
+                    </div>
+                    
+                    
+                </ng-template>
+               <div class="flex justify-center w-full">
+                    <div class="w-64 ">
+                        <div class="px-2">
+                            <img src="/assets/images/conversation/img-connect-1.svg">
+                        </div>
+                        <div class="pt-4 text-header-1 font-sans font-semibold">Bạn chưa sử dụng FanPage!</div>
+                        <div class="text-body-2 text-center pt-2 text-neutral-1-300">Hãy tạo một FanPage trên Facebook và bắt đầu quản lý trang của bạn nhé.</div>
+                        <div class="flex justify-center pt-6">
+                            <button tds-button color="success">
+                                <span class="flex items-center">
+                                  <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>Tạo FanPage Facebook
+                                </span>
+                            </button>
+                        </div>
+
+                    </div>
+               </div>
+            </tds-collapse-panel>
+        </tds-collapse> 
+
+        <tds-collapse [expandIconPosition]="'right'" class="bg-white rounded-xl w-full">
+            <tds-collapse-panel [header]="header" [active]="true" [disabled]=false 
+            [expandedIcon]="icon" bordered="false"> 
+               <div class="flex flex-col w-full p-4 gap-4 rounded-md border border-neutral-2-200 border-solid">
+                   <div class="flex justify-between items-center pb-4 border-b border-neutral-2-200 border-solid">
+                        <div class="flex gap-4 items-center">
+                            <tds-badge class="mr-3" [count]="iconTemplate2">
+                                <tds-avatar size="lg" tdsSrc="https://randomuser.me/api/portraits/women/68.jpg">
+                                </tds-avatar>
+                            </tds-badge>
+                            <ng-template #iconTemplate2>
+                                <div class="absolute top-4 right-0  transform translate-x-1.5 translate-y-full rounded-full  bg-white flex items-center justify-center">
+                                    <span><img src="/assets/images/conversation/union.svg"></span>
+                                </div>
+                            </ng-template> 
+                            <div>
+                                <div class="text-body-2 text-neutral-1-900 font-sans font-semibold">Mèo nhạt nhẽo</div>
+                                <div class="flex gap-2 items-center">
+                                    <div class="tdsi-success-fill text-primary-1 text-xl"></div>
+                                    <div class="text-body-2 text-neutral-1-900 font-regular">Đã kết nối</div>
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="flex gap-3 items-center"> 
+                            <button tds-button color="secondary" class="!rounded-full mr-2"  (click)="error()">
+                                <span class="flex items-center">
+                                  <i class="tdsi-break-link-fill text-lg leading-none mr-2 text-neutral-1-500"></i>Hủy kết nối
+                                </span>
+                            </button>
+                            
+                            <div class="flex gap-2">
+                                <tds-switch size="md"></tds-switch>
+                                <div lass="text-body-2 font-regular text-neutral-1-900">Ẩn/ Hiện Page</div>
+                            </div>
+
+                        </div>
+                   </div> 
+
+                   <div class="flex justify-between items-center pb-4 border-b border-neutral-2-200 border-solid">
+                        <div class="flex gap-4 items-center">
+                            <tds-badge class="mr-3" [count]="iconTemplate3">
+                                <tds-avatar size="lg" class="bg-accent-4  text-white" text="AD">
+                                </tds-avatar>
+                            </tds-badge>
+                            <ng-template #iconTemplate3>
+                                <div class="absolute top-4 right-0  transform translate-x-1.5 translate-y-full rounded-full  bg-white flex items-center justify-center">
+                                    <span><img src="/assets/images/conversation/union.svg"></span>
+                                </div>
+                            </ng-template> 
+                            <div>
+                                <div class="text-body-2 text-neutral-1-900 font-sans font-semibold">Mèo nhạt nhẽo</div>
+                                <div class="flex gap-2 items-center">
+                                    <div class="tdsi-success-fill text-primary-1 text-xl"></div>
+                                    <div class="text-body-2 text-neutral-1-900 font-regular">Đã kết nối</div>
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="flex gap-3 items-center">
+                            <button tds-button color="secondary" class="!rounded-full mr-2">
+                                <span class="flex items-center">
+                                  <i class="tdsi-break-link-fill text-lg leading-none mr-2 text-neutral-1-500"></i>Hủy kết nối
+                                </span>
+                            </button>
+                            
+                            <div class="flex gap-2">
+                                <tds-switch size="md" [checked]='true'></tds-switch>
+                                <div lass="text-body-2 font-regular text-neutral-1-900">Ẩn/ Hiện Page</div>
+                            </div>
+
+                        </div>
+                    </div> 
+
+                    <div class="flex justify-between items-center pb-4 border-b border-neutral-2-200 border-solid">
+                        <div class="flex gap-4 items-center">
+                            <tds-badge class="mr-3" [count]="iconTemplate3">
+                                <tds-avatar size="lg" class="bg-accent-4  text-white" text="AD">
+                                </tds-avatar>
+                            </tds-badge>
+                            <ng-template #iconTemplate3>
+                                <div class="absolute top-4 right-0  transform translate-x-1.5 translate-y-full rounded-full  bg-white flex items-center justify-center">
+                                    <span><img src="/assets/images/conversation/union.svg"></span>
+                                </div>
+                            </ng-template> 
+                            <div>
+                                <div class="text-body-2 text-neutral-1-900 font-sans font-semibold">Mèo nhạt nhẽo</div>
+                                <div class="flex gap-2 items-center">
+                                    <div class="tdsi-link-fill text-neutral-1-500 text-xl"></div>
+                                    <div class="text-neutral-1-500 text-body-2 font-regular">Chưa kết nối</div>
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="flex gap-3 items-center">
+                            <button tds-button color="primary" (click)="showModalAddPage()">Kết nối</button>
+                        </div>
+                    </div> 
+
+                    <div class="flex justify-between items-center">
+                        <div class="flex gap-4 items-center">
+                            <tds-badge class="mr-3" [count]="iconTemplate3">
+                                <tds-avatar size="lg" class="bg-accent-4  text-white" text="AD">
+                                </tds-avatar>
+                            </tds-badge>
+                            <ng-template #iconTemplate3>
+                                <div class="absolute top-4 right-0  transform translate-x-1.5 translate-y-full rounded-full  bg-white flex items-center justify-center">
+                                    <span><img src="/assets/images/conversation/union.svg"></span>
+                                </div>
+                            </ng-template> 
+                            <div>
+                                <div class="text-body-2 text-neutral-1-900 font-sans font-semibold">Mèo nhạt nhẽo</div>
+                                <div class="flex gap-2 items-center">
+                                    <div class="tdsi-link-fill text-neutral-1-500 text-xl"></div>
+                                    <div class="text-neutral-1-500 text-body-2 font-regular">Chưa kết nối</div>
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="flex gap-3 items-center">
+                            <button tds-button color="primary">Kết nối</button>
+                        </div>
+                    </div>
+               </div>
+            </tds-collapse-panel>
+        </tds-collapse> 
+
+        <tds-collapse [expandIconPosition]="'right'" class="bg-white rounded-xl w-full">
+            <tds-collapse-panel [header]="header" [active]="false" [disabled]=false 
+            [expandedIcon]="icon">
+                <ng-template #header>
+                    <div class="flex gap-4 items-center">
+                        <tds-badge class="mr-3" [count]="iconTemplate1">
+                            <tds-avatar size="xl" tdsSrc="https://randomuser.me/api/portraits/women/68.jpg">
+                            </tds-avatar>
+                        </tds-badge>
+                        <ng-template #iconTemplate1>
+                            <div class="absolute top-5 right-2  transform translate-x-1.5 translate-y-full rounded-full  bg-white flex items-center justify-center">
+                                <span class="p-0.5"><img src="/assets/images/conversation/facebook-circle.svg"></span>
+                            </div>
+                        </ng-template>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex gap-2 items-center">
+                                <div class="text-title-1 font-sans font-semibold">Nguyễn Thành Công</div>
+                                <div class="flex gap-1 text-white py-0.5 px-2.5 bg-success-400 rounded-full items-center">
+                                    <div class="tdsi-eye-open-fill"></div>
+                                    <div class="text-white text-caption-2 font-sans font-semibold">Trang đang hiện</div> 
+                                </div> 
+                                <div class="flex items-center pl-2">
+                                    <div class="bg-white p-0.5 rounded-full">
+                                        <tds-avatar size="sm" tdsSrc="https://randomuser.me/api/portraits/women/68.jpg">
+                                        </tds-avatar>
+                                    </div>
+                                    <div class="-ml-3 bg-white relative z-[2] p-0.5 rounded-full">
+                                        <tds-avatar size="sm" class="bg-accent-4  text-white text-[11px] font-semibold" text="AD">
+                                        </tds-avatar>
+                                    </div>
+                                    <div class="-ml-3 bg-white relative z-[3] p-0.5 rounded-full">
+                                        <tds-avatar  size="sm" tdsSrc="error-link"></tds-avatar>
+                                    </div>
+                                    <div class="-ml-3 bg-white relative z-[4] p-0.5 rounded-full">
+                                        <tds-avatar size="sm" class="bg-primary-3  text-primary-1 text-[10px] font-semibold" text="+5">
+                                        </tds-avatar>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-body-2 font-regular font-sans text-neutral-1-400">Chọn trang bạn muốn kết nối TPage với Page của bạn trên Facebook</div>
+                        </div>
+                    </div>   
+                </ng-template>
+                <ng-template #icon> 
+                    <div class="flex gap-4">
+                        <tds-button-group>
+                            <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" (click)="onClickDropdown($event)" placement ="bottomRight">
+                                <span class="text-neutral-1-900 flex  items-center justify-center text-body-2 font-semibold">
+                                    {{listsfieldListSetting.name}} <i class="tdsi-arrow-down-fill text-base leading-none ml-1.5 text-neutral-1-900"></i>
+                                </span>
+                            </button>
+                            <tds-dropdown-menu #menu="tdsDropdownMenu">
+                                <div class="w-full">
+                                    <ng-template ngFor let-item [ngForOf]="listSetting">
+                                        <div tds-dropdown-item (click)="onClickFieldListSetting(item)">
+                                                <a class="text-primary-1 flex items-center"> 
+                                                    <div class="pl-2 text-neutral-1-900">{{item.name}}</div>
+                                                </a>
+                                        </div>
+                                    </ng-template>
+                                </div>
+                            </tds-dropdown-menu>
+                        </tds-button-group> 
+
+                        <div class="border border-neutral-2-200 border-solid rounded-md">
+                            <div class="tdsi-arrow-up-line p-2 text-neutral-1-500"></div>
+                        </div>
+                    </div>
+                    
+                    
+                </ng-template>
+               <div class="flex justify-center w-full">
+                    <div class="w-64 ">
+                        <div class="px-2">
+                            <img src="/assets/images/conversation/img-connect-1.svg">
+                        </div>
+                        <div class="pt-4 text-header-1 font-sans font-semibold">Bạn chưa sử dụng FanPage!</div>
+                        <div class="text-body-2 text-center pt-2 text-neutral-1-300">Hãy tạo một FanPage trên Facebook và bắt đầu quản lý trang của bạn nhé.</div>
+                        <div class="flex justify-center pt-6">
+                            <button tds-button color="success">
+                                <span class="flex items-center">
+                                  <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>Tạo FanPage Facebook
+                                </span>
+                            </button>
+                        </div>
+
+                    </div>
+               </div>
+            </tds-collapse-panel>
+        </tds-collapse> 
+
+        <tds-collapse [expandIconPosition]="'right'" class="bg-white rounded-xl w-full">
+            <tds-collapse-panel [header]="header1" [active]="false" [disabled]=false 
+            [expandedIcon]="icon">
+                <ng-template #header1>
+                    <div class="flex gap-4 items-center">
+                        <tds-badge class="mr-3" [count]="iconTemplate1">
+                            <tds-avatar size="xl" tdsSrc="https://randomuser.me/api/portraits/women/68.jpg">
+                            </tds-avatar>
+                        </tds-badge>
+                        <ng-template #iconTemplate1>
+                            <div class="absolute top-5 right-2  transform translate-x-1.5 translate-y-full rounded-full  bg-white flex items-center justify-center">
+                                <span class="p-0.5"><img src="/assets/images/conversation/facebook-circle.svg"></span>
+                            </div>
+                        </ng-template>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex gap-2 items-center">
+                                <div class="text-title-1 font-sans font-semibold">Nguyễn Thành Công</div>
+                                <div class="flex gap-1 text-white py-0.5 px-2.5 bg-neutral-1-300 rounded-full items-center">
+                                    <div class="tdsi-eye-close-fill"></div>
+                                    <div class="text-white text-caption-2 font-sans font-semibold">Trang đang ẩn</div> 
+                                </div> 
+                                <div class="flex items-center pl-2">
+                                    <div class="bg-white p-0.5 rounded-full">
+                                        <tds-avatar size="sm" tdsSrc="https://randomuser.me/api/portraits/women/68.jpg">
+                                        </tds-avatar>
+                                    </div>
+                                    <div class="-ml-3 bg-white relative z-[2] p-0.5 rounded-full">
+                                        <tds-avatar size="sm" class="bg-accent-4  text-white text-[11px] font-semibold" text="AD">
+                                        </tds-avatar>
+                                    </div>
+                                    <div class="-ml-3 bg-white relative z-[3] p-0.5 rounded-full">
+                                        <tds-avatar  size="sm" tdsSrc="error-link"></tds-avatar>
+                                    </div>
+                                    <div class="-ml-3 bg-white relative z-[4] p-0.5 rounded-full">
+                                        <tds-avatar size="sm" class="bg-primary-3  text-primary-1 text-[10px] font-semibold" text="+5">
+                                        </tds-avatar>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-body-2 font-regular font-sans text-neutral-1-400">Chọn trang bạn muốn kết nối TPage với Page của bạn trên Facebook</div>
+                        </div>
+                    </div>   
+                </ng-template>
+                <ng-template #icon> 
+                    <div class="flex gap-4">
+                        <tds-button-group>
+                            <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" (click)="onClickDropdown($event)" placement ="bottomRight">
+                                <span class="text-neutral-1-900 flex  items-center justify-center text-body-2 font-semibold">
+                                    {{listsfieldListSetting.name}} <i class="tdsi-arrow-down-fill text-base leading-none ml-1.5 text-neutral-1-900"></i>
+                                </span>
+                            </button>
+                            <tds-dropdown-menu #menu="tdsDropdownMenu">
+                                <div class="w-full">
+                                    <ng-template ngFor let-item [ngForOf]="listSetting">
+                                        <div tds-dropdown-item (click)="onClickFieldListSetting(item)">
+                                                <a class="text-primary-1 flex items-center"> 
+                                                    <div class="pl-2 text-neutral-1-900">{{item.name}}</div>
+                                                </a>
+                                        </div>
+                                    </ng-template>
+                                </div>
+                            </tds-dropdown-menu>
+                        </tds-button-group> 
+
+                        <div class="border border-neutral-2-200 border-solid rounded-md">
+                            <div class="tdsi-arrow-up-line p-2 text-neutral-1-500"></div>
+                        </div>
+                    </div>
+                    
+                    
+                </ng-template>
+               <div class="flex justify-center w-full">
+                    <div class="w-64 ">
+                        <div class="px-2">
+                            <img src="/assets/images/conversation/img-connect-1.svg">
+                        </div>
+                        <div class="pt-4 text-header-1 font-sans font-semibold">Bạn chưa sử dụng FanPage!</div>
+                        <div class="text-body-2 text-center pt-2 text-neutral-1-300">Hãy tạo một FanPage trên Facebook và bắt đầu quản lý trang của bạn nhé.</div>
+                        <div class="flex justify-center pt-6">
+                            <button tds-button color="success">
+                                <span class="flex items-center">
+                                  <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>Tạo FanPage Facebook
+                                </span>
+                            </button>
+                        </div>
+
+                    </div>
+               </div>
+            </tds-collapse-panel>
+        </tds-collapse> 
+    </div>
+</div>

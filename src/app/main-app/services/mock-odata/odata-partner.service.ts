@@ -34,7 +34,7 @@ export class OdataPartnerService extends BaseSevice {
   public buildFilter(filterObj: FilterObjDTO) {
 
     let dataFilter: FilterDataRequestDTO = {
-        logic: "or",
+        logic: "and",
         filters: [],
     }
 
