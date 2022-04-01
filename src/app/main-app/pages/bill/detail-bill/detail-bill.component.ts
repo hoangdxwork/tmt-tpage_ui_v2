@@ -1,6 +1,7 @@
 import { TDSModalService, TDSHelperObject, TDSStatusType } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ModalPaymentComponent } from '../../partner/components/modal-payment/modal-payment.component';
+export declare type stagePaymentType = 'draft' | 'confirmed' | 'paymentDone' | 'cancelPayment';
 
 @Component({
   selector: 'app-detail-bill',
@@ -9,11 +10,8 @@ import { ModalPaymentComponent } from '../../partner/components/modal-payment/mo
 })
 export class DetailBillComponent implements OnInit {
 
-  statusStringBill: string = 'Nháp';
-  isCancelPayment: boolean = false;
-  isPaymentDone: boolean = false;
   isStatusStep: TDSStatusType = 'process';
-  isButtonComfirm: boolean = false;
+  stagePayment : stagePaymentType = 'draft';
   listOfDataProduct = [
     { id: 1, nameProduct: '[SP09621] Bánh mì cao su', unit: 'Cái', quantity: 1, unitPrice: 2500000, discount: 250000, totalPrice: 2500000 },
     { id: 2, nameProduct: '[SP09621] Bánh mì cao su', unit: 'Cái', quantity: 1, unitPrice: 2500000, discount: 250000, totalPrice: 2500000 },
@@ -28,11 +26,11 @@ export class DetailBillComponent implements OnInit {
   }
 
   onClickButton(e: MouseEvent) {
-    alert('click Button text ');
+
   }
+
   comfirmAndPrint() {
-    this.isButtonComfirm = true
-    this.statusStringBill = 'Đã xác nhận'
+    this.stagePayment = 'confirmed';
   }
   showModalRegisterPayment() {
     const modal = this.modalService.create({
@@ -45,10 +43,9 @@ export class DetailBillComponent implements OnInit {
     modal.afterClose.subscribe(result => {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-      this.isPaymentDone = true
-      this.isButtonComfirm = false
-      this.statusStringBill = 'Đã thanh toán'
       }
+      // test layout
+      this.stagePayment = 'paymentDone';
     });
   }
   cancelBill() {
@@ -56,10 +53,8 @@ export class DetailBillComponent implements OnInit {
       title: 'Xác nhận hủy',
       content: 'Bạn có muốn hủy hóa đơn, thông tin về đơn hàng này sẽ được xóa',
       onOk: () => {
-        this.isButtonComfirm = false,
-        this.isCancelPayment = true
         this.isStatusStep = 'error'
-        this.statusStringBill = 'Đã hủy'
+        this.stagePayment = 'cancelPayment';
       },
       onCancel: () => { console.log('cancel') },
       okText: "Hủy hóa đơn",
@@ -70,10 +65,7 @@ export class DetailBillComponent implements OnInit {
 
   }
   editBill(){
-    this.statusStringBill = 'Nháp';
-    this.isCancelPayment = false;
-    this.isPaymentDone = false;
+    this.stagePayment = 'draft';
     this.isStatusStep = 'process';
-    this.isButtonComfirm = false;
   }
 }
