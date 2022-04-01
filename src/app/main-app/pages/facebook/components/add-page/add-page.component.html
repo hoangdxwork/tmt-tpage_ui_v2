@@ -1,0 +1,40 @@
+
+<form novalidate #inputForm="ngForm"  autocomplete="off" (ngSubmit)="onSubmit(inputForm)">
+    <div class="w-full flex flex-col gap-8">
+        <tds-form-field >
+            <tds-label>Facebook</tds-label>
+            <input tdsInput class="bg-neutral-3-50"
+            [required]='true' #fullname="ngModel"
+            [(ngModel)]="form.fullname" name="fullname"  [disabled]="true"
+            />
+        </tds-form-field> 
+
+        <tds-form-field >
+            <tds-label>Page</tds-label>
+            <input tdsInput class="bg-neutral-3-50"
+            [required]='true' #page="ngModel"
+            [(ngModel)]="form.page" name="page"  [disabled]="true"
+            />
+        </tds-form-field>
+
+        <tds-form-field >
+            <tds-label>Tên</tds-label>
+            <input tdsInput placeholder="Mèo nhạt nhẽo"
+            [required]='true' #name="ngModel"
+            [(ngModel)]="form.name" name="name" 
+            />
+        </tds-form-field>
+
+    </div>
+</form>
+
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button color="secondary" (click)="cancel()" class="mr-4">
+        Hủy bỏ
+      </button>
+    <button tds-button color="success" [disabled]="!inputForm.valid" type="submit">
+        Hoàn tất
+      </button>
+    
+</div>
+
