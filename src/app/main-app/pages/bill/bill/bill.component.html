@@ -59,6 +59,8 @@
               <th *ngIf="isHidden('ShowState')" width="240px">Trạng thái</th>
               <th *ngIf="isHidden('CarrierName')" width="240px">Đối tác GH</th>
               <th *ngIf="isHidden('TrackingRef')" width="240px">Mã vận đơn</th>
+              <th *ngIf="isHidden('UserName')" width="240px">Nhân viên</th>
+              <th *ngIf="isHidden('CreateByName')" width="240px">Người lập</th>
               <th *ngIf="isHidden('ShipPaymentStatus')" width="240px">Trạng thái GH</th>
               <th *ngIf="isHidden('CashOnDelivery')" class="text-right" width="240px">Tiền thu hộ</th>
               <th *ngIf="isHidden('CustomerDeliveryPrice')" lass="text-right" width="240px">Phí ship GH</th>
@@ -83,12 +85,12 @@
                         <i class="tdsi-messenger-fill"></i>
                       </span>
                     </button>
-                    <button tds-button-icon color="secondary" size="sm">
+                    <button tds-button-icon type="button" color="secondary" size="sm" (click)="onView(data)">
                       <span class="flex items-center">
                         <i class="tdsi-edit-fill"></i>
                       </span>
                     </button>
-                    <button tds-button-icon color="secondary" size="sm">
+                    <button tds-button-icon color="secondary" size="sm" (click)="onDelete(data)">
                       <span class="flex items-center">
                         <i class="tdsi-trash-fill"></i>
                       </span>
@@ -194,6 +196,16 @@
                 <td *ngIf="isHidden('TrackingRef')">
                   <div class="w-full">
                     <span>{{data.TrackingRef}}</span>
+                  </div>
+                </td>
+                <td *ngIf="isHidden('UserName')">
+                  <div class="w-full">
+                    <span>{{data.UserName}}</span>
+                  </div>
+                </td>
+                <td *ngIf="isHidden('CreateByName')">
+                  <div class="w-full">
+                    <span>{{data.CreateByName}}</span>
                   </div>
                 </td>
                 <td *ngIf="isHidden('ShipPaymentStatus')">

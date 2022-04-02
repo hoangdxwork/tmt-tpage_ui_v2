@@ -10,6 +10,7 @@ import { addDays, getISODay } from 'date-fns/esm';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { THelperCacheService } from 'src/app/lib';
 import { ColumnTableDTO } from '../components/config-column/config-column.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-bill',
@@ -53,6 +54,8 @@ export class BillComponent implements OnInit{
     {value: 'CashOnDelivery', name: 'Tiền thu hộ', isChecked: false},
     {value: 'IsRefund', name: 'Đơn hàng trả', isChecked: false},
     {value: 'CustomerDeliveryPrice', name: 'Phí ship giao hàng', isChecked: false},
+    {value: 'UserName', name: 'Nhân viên', isChecked: false},
+    {value: 'CreateByName', name: 'Người lập', isChecked: false},
   ];
 
   public tabNavs: Array<TDSSafeAny> = [];
@@ -74,9 +77,10 @@ export class BillComponent implements OnInit{
   indeterminate = false;
   setOfCheckedId = new Set<number>();
 
-  constructor(private modalService: TDSModalService,
-    private  odataFastSaleOrderService: OdataFastSaleOrderService,
+  constructor( private  odataFastSaleOrderService: OdataFastSaleOrderService,
       private tagService: TagService,
+      private router: Router,
+      private modal: TDSModalService,
       private cacheApi: THelperCacheService,
       private message: TDSMessageService,
       private fastSaleOrderService :FastSaleOrderService,
@@ -326,5 +330,27 @@ export class BillComponent implements OnInit{
     }
 
     this.loadData(this.pageSize, this.pageIndex);
+  }
+
+  onView(data: any) {
+    this.router.navigateByUrl(`bill/detail/${data.Id}`);
+  }
+
+  onDelete(data: any) {
+    this.modal.success({
+      title: 'Xóa hóa đơn',
+      content: 'Bạn có muốn xóa hóa đơn',
+      onOk: () => {
+        this.fastSaleOrderService.delete(data.Id).subscribe((res: TDSSafeAny) => {
+            this.message.success('Xóa hóa đơn thành công!');
+            this.loadData(this.pageSize, this.pageIndex);
+        }, error => {
+            this.message.error(`${error?.error?.message}`);
+        })
+      },
+      onCancel: () => { },
+      okText: "Xác nhận",
+      cancelText: "Đóng",
+    });
   }
 }
