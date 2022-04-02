@@ -11,3 +11,13 @@ export interface AddressDTO {
   street: string;
   address: string;
 }
+
+export interface DataSuggestionDTO {
+  Street: string;
+  CityCode?: number;
+  CityName: string;
+  DistrictCode?: number;
+  DistrictName: string;
+  WardCode?: number;
+  WardName: string;
+}

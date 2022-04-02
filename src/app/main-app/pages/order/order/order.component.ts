@@ -1,5 +1,5 @@
 import { addDays } from 'date-fns/esm';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { SaleOnlineOrderSummaryStatusDTO, SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSSafeAny, TDSTableQueryParams, TDSTagStatusType } from 'tmt-tang-ui';
@@ -11,6 +11,7 @@ import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { EditOrderComponent } from '../components/edit-order/edit-order.component';
 
 @Component({
   selector: 'app-order',
@@ -71,7 +72,9 @@ export class OrderComponent implements OnInit {
 
   constructor(
     private tagService: TagService,
+    private modal: TDSModalService,
     private message: TDSMessageService,
+    private viewContainerRef: ViewContainerRef,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private odataSaleOnline_OrderService: OdataSaleOnline_OrderService,
     private cacheApi: THelperCacheService,
@@ -360,6 +363,19 @@ export class OrderComponent implements OnInit {
 
       event.forEach(column => { this.isHidden(column.value) });
     }
+  }
+
+  onEdit(id: string) {
+    console.log("edit id: ", id);
+      this.modal.create({
+        title: 'Sửa đơn hàng',
+        content: EditOrderComponent,
+        size: 'xl',
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          idOrder: id
+        }
+      });
   }
 
   ngOnDestroy(): void {

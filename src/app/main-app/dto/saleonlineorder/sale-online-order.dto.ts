@@ -183,3 +183,46 @@ export enum SaleOnlineOrderStatusType {
   Returned, // Trả hàng
   Confirmed, //Xác nhận
 }
+
+export interface SaleOnlineFacebookCommentFilterResultDTO { // rest/v1.0/SaleOnline_Facebook_Comment/GetCommentsByUserAndPost
+  id: string;
+  post_id: string;
+  message: string;
+  like_count?: number;
+  comment_count?: number;
+  created_time: string;
+  from: SaleOnlineFacebookFromDTO;
+  comments: Array<SaleOnlineFacebookCommentChildFilterResultDTO>;
+  selected?: boolean;
+}
+
+export interface SaleOnlineFacebookCommentChildFilterResultDTO {
+  id: string;
+  post_id: string;
+  message: string;
+  like_count?: number;
+  comment_count?: number;
+  created_time: string;
+  from: SaleOnlineFacebookFromDTO;
+}
+
+export interface SaleOnlineFacebookFromDTO {
+  id: string;
+  uid: string;
+  asid: string;
+  picture: string;
+  name: string;
+  last_name: string;
+  first_name: string;
+  middle_name: string;
+  mobile_phone: string;
+  email: string;
+  gender: string;
+  locale: string;
+  age_range: SaleOnlineFacebookFromAgeRangeDTO;
+}
+
+export interface SaleOnlineFacebookFromAgeRangeDTO {
+  min?: number;
+  max?: number;
+}

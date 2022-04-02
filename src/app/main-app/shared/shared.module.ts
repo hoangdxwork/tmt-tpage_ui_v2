@@ -9,7 +9,7 @@ import { TpageBaseComponent } from './tpage-base/tpage-base.component';
 import { TpageAvatarFacebookComponent } from './tpage-avatar-facebook/tpage-avatar-facebook.component';
 import { TpageMenuLayoutComponent } from './tpage-menu-layout/tpage-menu-layout.component';
 import { TpageMenuItemComponent } from './tpage-menu-item/tpage-menu-item.component';
-import { SendMessageComponent } from './tpage-send-mesage/send-message.component';
+import { SendMessageComponent } from './tpage-send-message/send-message.component';
 import { PipeModule } from './pipe/pipe.module';
 import { BrowserModule } from '@angular/platform-browser';
 

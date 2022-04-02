@@ -1,9 +1,9 @@
 export interface TagDTO { // /odata/Tag/ODataService.GetByType?type=fastsaleorder
-  id: number;
-  name: string;
-  nameNosign: string;
-  color: string;
-  type: string;
+  Id: number;
+  Name: string;
+  NameNosign: string;
+  Color: string;
+  Type: string;
 }
 
 export interface UpdateTagMappingDTO {

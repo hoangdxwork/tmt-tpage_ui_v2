@@ -10,8 +10,8 @@ export interface GetInventoryDTO { // /rest/v1.0/product/getinventory
 }
 
 export interface ValueGetInventoryDTO { // /rest/v1.0/product/getinventory
-  qtyAvailable: number;
-  virtualAvailable: number;
+  QtyAvailable: number;
+  VirtualAvailable: number;
 }
 
 export interface ProductDTO {
