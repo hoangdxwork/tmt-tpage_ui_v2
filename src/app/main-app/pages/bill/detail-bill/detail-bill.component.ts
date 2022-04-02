@@ -151,11 +151,11 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   }
 
   onClickButton(e: MouseEvent) {
-    alert('click Button text ');
+
   }
+
   comfirmAndPrint() {
-    this.isButtonComfirm = true
-    this.statusStringBill = 'Đã xác nhận'
+    this.stagePayment = 'confirmed';
   }
 
   showModalRegisterPayment() {
@@ -169,10 +169,9 @@ export class DetailBillComponent implements OnInit, OnDestroy{
     modal.afterClose.subscribe(result => {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-      this.isPaymentDone = true
-      this.isButtonComfirm = false
-      this.statusStringBill = 'Đã thanh toán'
       }
+      // test layout
+      this.stagePayment = 'paymentDone';
     });
   }
   cancelBill() {
@@ -180,10 +179,8 @@ export class DetailBillComponent implements OnInit, OnDestroy{
       title: 'Xác nhận hủy',
       content: 'Bạn có muốn hủy hóa đơn, thông tin về đơn hàng này sẽ được xóa',
       onOk: () => {
-        this.isButtonComfirm = false,
-        this.isCancelPayment = true
         this.isStatusStep = 'error'
-        this.statusStringBill = 'Đã hủy'
+        this.stagePayment = 'cancelPayment';
       },
       onCancel: () => { console.log('cancel') },
       okText: "Hủy hóa đơn",
@@ -194,11 +191,8 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   }
   editBill(){
-    this.statusStringBill = 'Nháp';
-    this.isCancelPayment = false;
-    this.isPaymentDone = false;
+    this.stagePayment = 'draft';
     this.isStatusStep = 'process';
-    this.isButtonComfirm = false;
   }
 
   ngOnDestroy(): void {
