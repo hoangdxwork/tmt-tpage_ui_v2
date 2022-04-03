@@ -59,7 +59,7 @@ export class ActionDropdownComponent implements OnInit {
         onCancel: () => { that.isProcessing = false; },
         okText: "Xác nhận",
         cancelText: "Đóng",
-        // confirmViewType:"compact"
+        confirmViewType:"compact"
       });
     }
   }

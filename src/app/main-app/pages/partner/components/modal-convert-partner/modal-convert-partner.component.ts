@@ -55,7 +55,7 @@ export class ModalConvertPartnerComponent implements OnInit {
                 onCancel: () => { },
                 okText: "Xác nhận",
                 cancelText: "Đóng",
-                // confirmViewType:"compact"
+                confirmViewType:"compact"
             });
         }
 

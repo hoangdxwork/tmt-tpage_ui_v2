@@ -383,7 +383,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
       onCancel: () => { that.isProcessing = false; },
       okText: "Xác nhận",
       cancelText: "Đóng",
-      // confirmViewType:"compact"
+      confirmViewType:"compact"
     });
   }
 
