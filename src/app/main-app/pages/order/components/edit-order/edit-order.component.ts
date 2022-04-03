@@ -1,16 +1,19 @@
 import { DeliveryCarrierDTO } from './../../../../dto/carrier/delivery-carrier.dto';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { TAuthService } from 'src/app/lib';
 import { UserInitDTO } from 'src/app/lib/dto';
-import { DataSuggestionDTO } from 'src/app/main-app/dto/address/address.dto';
+import { CheckAddressDTO, DataSuggestionDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SaleOnlineFacebookCommentFilterResultDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier-order.service';
 import { SaleOnline_FacebookCommentService } from 'src/app/main-app/services/sale-online-facebook-comment.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TDSModalRef } from 'tmt-tang-ui';
+import { TDSModalRef, TDSModalService, TDSSafeAny } from 'tmt-tang-ui';
 import { ProductService } from 'src/app/main-app/services/product.server';
 import { GetInventoryDTO, ValueGetInventoryDTO } from 'src/app/main-app/dto/product/product.dto';
+import { ApplicationUserService } from 'src/app/main-app/services/application-user.server';
+import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
+import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-product/tpage-add-product.component';
 
 @Component({
   selector: 'edit-order',
@@ -31,21 +34,26 @@ export class EditOrderComponent implements OnInit {
 
   lstDeliveryCarrier!: Array<DeliveryCarrierDTO>;
   lstInventory!: GetInventoryDTO;
+  lstUser!: Array<ApplicationUserDTO>;
 
   constructor(
-    private modal: TDSModalRef,
+    private modal: TDSModalService,
+    private modalRef: TDSModalRef,
     private fb: FormBuilder,
     private auth: TAuthService,
+    private viewContainerRef: ViewContainerRef,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private saleOnline_FacebookCommentService: SaleOnline_FacebookCommentService,
     private deliveryCarrierService: DeliveryCarrierService,
-    private productService: ProductService
+    private productService: ProductService,
+    private applicationUserService: ApplicationUserService
   ) { }
 
   ngOnInit(): void {
     this.createForm();
     this.loadUserInfo();
     this.loadDeliveryCarrier();
+    this.loadUser();
 
     this.loadData();
   }
@@ -84,6 +92,12 @@ export class EditOrderComponent implements OnInit {
     });
   }
 
+  loadUser() {
+    this.applicationUserService.getActive().subscribe(res => {
+      this.lstUser = res.value;
+    });
+  }
+
   log(str: string) {
     console.log(str);
   }
@@ -93,7 +107,14 @@ export class EditOrderComponent implements OnInit {
   }
 
   onAddProduct() {
-
+    this.modal.create({
+      title: 'Thêm sản phẩm',
+      content: TpageAddProductComponent,
+      size: 'xl',
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+      }
+    });
   }
 
   updateSuggestion(data: any) {
@@ -120,7 +141,7 @@ export class EditOrderComponent implements OnInit {
     formControls["Telephone"].setValue(data.Telephone);
     formControls["Email"].setValue(data.Email);
     formControls["Address"].setValue(data.Address);
-    formControls["AmountDeposit"].setValue(data.AmountDeposit);
+    formControls["AmountDeposit"].setValue(data.AmountDeposit || 0);
 
     formControls["Company"].setValue(this.userInit?.Company);
     formControls["CompanyId"].setValue(this.userInit?.Company?.Id);
@@ -140,7 +161,7 @@ export class EditOrderComponent implements OnInit {
       name: data.WardName,
     });
 
-    formControls["User"].setValue(data.User);
+    formControls["User"].setValue([data.User]);
     formControls["Note"].setValue(data.Note);
     formControls["TotalAmount"].setValue(data.TotalAmount);
 
@@ -161,6 +182,29 @@ export class EditOrderComponent implements OnInit {
 
       console.log(this.lstComment);
     });
+  }
+
+  onChangeAddress(event: CheckAddressDTO) {
+    let formControls = this.formEditOrder.controls;
+
+    formControls["Address"].setValue(event.street);
+
+    formControls["City"].setValue( event.city ? {
+      code: event.city?.code,
+      name: event.city?.name
+    } : null);
+
+    formControls["District"].setValue( event.district ? {
+      code: event.district?.code,
+      name: event.district?.name,
+    } : null);
+
+    formControls["Ward"].setValue( event.ward ? {
+      code: event.ward?.code,
+      name: event.ward?.name,
+    } : null);
+
+    console.log(this.formEditOrder.value);
   }
 
   createForm() {
@@ -205,7 +249,7 @@ export class EditOrderComponent implements OnInit {
   }
 
   onCancel() {
-    this.modal.destroy(null);
+    this.modalRef.destroy(null);
   }
 
 }

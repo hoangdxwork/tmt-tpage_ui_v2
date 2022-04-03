@@ -1,0 +1,41 @@
+<div class="grid w-fyll grid-cols-1">
+  <form [formGroup]="formAddress" class="flex flex-col gap-y-3">
+    <div class="w-full flex gap-x-2 justify-between">
+      <tds-form-field class="w-full">
+          <input tdsInput placeholder="Số nhà, đường,..." formControlName="street" />
+      </tds-form-field>
+      <button tds-button color="primary" (click)="onSelectStreet()">
+        <span class="flex items-center">
+          <i class="tdsi-location-fill"></i>
+        </span>
+      </button>
+    </div>
+    <div class="w-full flex">
+      <tds-form-field class="w-full">
+        <tds-select valueField="code" textField="name" placeholder='Tỉnh/Thành'
+          [valuePrimitive]="false" [allowClear]="true"
+          formControlName="city" disabledField="isActive" [data]="lstCity"
+          [allowClear]="true" (selectChange)="onSelectCity($event)">
+        </tds-select>
+      </tds-form-field>
+    </div>
+    <div class="w-full flex">
+      <tds-form-field class="w-full">
+        <tds-select valueField="code" textField="name" placeholder='Quận/Huyện'
+          [valuePrimitive]="false" [allowClear]="true"
+          formControlName="district" disabledField="isActive" [data]="lstDistrict"
+          [allowClear]="true" (selectChange)="onSelectDistrict($event)">
+        </tds-select>
+      </tds-form-field>
+    </div>
+    <div class="w-full flex">
+      <tds-form-field class="w-full">
+        <tds-select valueField="code" textField="name" placeholder='Phường/Xã'
+          [valuePrimitive]="false" [allowClear]="true"
+          formControlName="ward" disabledField="isActive" [data]="lstWard"
+          [allowClear]="true" (selectChange)="onSelectWard($event)">
+        </tds-select>
+      </tds-form-field>
+    </div>
+  </form>
+</div>

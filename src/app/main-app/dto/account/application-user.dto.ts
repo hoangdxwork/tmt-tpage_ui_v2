@@ -2,40 +2,44 @@ import { CompanyDTO } from '../company/company.dto';
 import { CRMTeam_UserDTO } from '../team/team.dto';
 
 export interface ApplicationUserDTO {
-  id: string;
-  avatar: string;
-  email: string;
-  name: string;
-  userName: string;
-  passwordNew: string;
-  companyId: number;
-  company: CompanyDTO;
-  companyName: string;
-  image: string;
-  subffix: string;
+  Id: string;
+  Avatar: string;
+  Email: string;
+  Name: string;
+  UserName: string;
+  PasswordNew: string;
+  CompanyId: number;
+  Company: CompanyDTO;
+  CompanyName: string;
+  Image: string;
+  Subffix: string;
 
-  companies: Array<CompanyDTO>;
-  active?: boolean;
-  barcode: string;
-  posSecurityPin: string;
+  Companies: Array<CompanyDTO>;
+  Active?: boolean;
+  Barcode: string;
+  PosSecurityPin: string;
 
-  roles: Array<ApplicationUserRolesDTO>;
-  userShifts: Array<ApplicationUserShiftDTO>;
+  Roles: Array<ApplicationUserRolesDTO>;
+  UserShifts: Array<ApplicationUserShiftDTO>;
 
-  crmTeam_Users: Array<CRMTeam_UserDTO>;
+  CRMTeam_Users: Array<CRMTeam_UserDTO>;
 
-  inGroupPartnerManager: boolean;
-  partnerId?: number;
-  lastUpdated?: Date;
-  phoneNumber: string;
-}
+  InGroupPartnerManager: boolean;
+  PartnerId?: number;
+  LastUpdated?: Date;
+  PhoneNumber: string;
+
+  Fields: Array<any>;
+  Functions: Array<any>;
+  GroupRefs: Array<any>;
+  }
 
 export interface ApplicationUserShiftDTO {
-  id: number;
-  userId: string;
-  shiftId: number;
-  workingDay: Date;
-  shifts: Array<ShiftDTO>;
+  Id: number;
+  UserId: string;
+  ShiftId: number;
+  WorkingDay: Date;
+  Shifts: Array<ShiftDTO>;
 }
 
 export interface ShiftDTO {
@@ -46,6 +50,6 @@ export interface ShiftDTO {
 }
 
 export interface ApplicationUserRolesDTO {
-  userId: string;
-  roleId: string;
+  UserId: string;
+  RoleId: string;
 }

@@ -126,39 +126,39 @@ export interface PartnerTitleDTO {
 }
 
 export interface PartnerCategoryDTO {
-  id: number;
-  name: string;
-  parentId?: number;
-  parent: PartnerCategoryDTO;
-  completeName: string;
-  active?: boolean;
-  parentLeft?: number;
-  parentRight?: number;
-  discount?: number;
+  Id: number;
+  Name: string;
+  ParentId?: number;
+  Parent: PartnerCategoryDTO;
+  CompleteName: string;
+  Active?: boolean;
+  ParentLeft?: number;
+  ParentRight?: number;
+  Discount?: number;
 }
 
 export interface PartnerCityDTO {
   name: string;
   nameNoSign: string;
-  code: string;
+  code?: number;
 }
 
 export interface PartnerDistrictDTO {
   name: string;
   nameNoSign: string;
-  code: string;
+  code?: number;
   cityName: string;
-  cityCode: string;
+  cityCode?: number;
 }
 
 export interface PartnerWardDTO {
   name: string;
   nameNoSign: string;
-  code: string;
+  code?: number;
   cityName: string;
-  cityCode: string;
+  cityCode?: number;
   districtName: string;
-  districtCode: string;
+  districtCode?: number;
 }
 
 export class ResCurrencyDTO {
@@ -179,40 +179,37 @@ export class ResCurrencyDTO {
 
 }
 
-export interface PartnerExtDTO {
-  id: number;
-  name: string;
-  nameNoSign: string;
-  code: string;
-
-  /// <summary>
-  /// Nhà sản xuất : NSX
-  /// Nhà nhập khẩu: NNK
-  /// Nhà phân phối: NPP
-  /// </summary>
-
-  type: string;
-  address: string;
-  phone: string;
-  email: string;
-  active: boolean;
-  dateCreated?: Date;
-  note: string;
-}
-
 export interface TagPartnerDTO {
-  id: number;
-  tagId: number;
-  color: string;
-  tags: Array<TagDTO>;
-  partnerId: number;
-  tagName: string;
+  Id: number;
+  TagId: number;
+  Color: string;
+  Tags: Array<TagDTO>;
+  PartnerId: number;
+  TagName: string;
 }
 
 export interface ResRevenueCustomerDTO { // /odata/Partner/OdataService.GetPartnerRevenueById?key=14
   revenue: number;
   revenueBegan: number;
   revenueTotal: number;
+}
+
+
+export interface PartnerExtDTO {
+  Id: number;
+  Name: string;
+  NameNoSign: string;
+  Code: string;
+  /// Nhà sản xuất : NSX
+  /// Nhà nhập khẩu: NNK
+  /// Nhà phân phối: NPP
+  Type: string;
+  Address: string;
+  Phone: string;
+  Email: string;
+  Active: boolean;
+  DateCreated?: Date;
+  Note: string;
 }
 
 export enum PartnerStatus {

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { OrderRoutingModule } from './order-routing.module';
 import { OrderComponent } from './order/order.component';
-import { TDSBadgeModule, TDSButtonModule, TDSCheckBoxModule, TDSContextMenuService, TDSDatePickerModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormField, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalService, TDSPopoverModule, TDSSelectModule, TDSSpinnerModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSModalModule, TDSAvatarComponent, TDSAvatarModule } from 'tmt-tang-ui';
+import { TDSBadgeModule, TDSButtonModule, TDSCheckBoxModule, TDSContextMenuService, TDSDatePickerModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormField, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalService, TDSPopoverModule, TDSSelectModule, TDSSpinnerModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSModalModule, TDSAvatarComponent, TDSAvatarModule, TDSCollapseModule } from 'tmt-tang-ui';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SaleOnline_OrderService } from '../../services/sale-online-order.service';
 import { OdataSaleOnline_OrderService } from '../../services/mock-odata/odata-saleonlineorder.service';
@@ -59,7 +59,8 @@ const SERVICES = [
     TDSDatePickerModule,
     TDSCheckBoxModule,
     TDSModalModule,
-    TDSAvatarModule
+    TDSAvatarModule,
+    TDSCollapseModule
   ],
   providers: [
     ...SERVICES,

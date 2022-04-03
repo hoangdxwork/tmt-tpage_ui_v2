@@ -3,6 +3,7 @@ import { IRAttachmentDTO } from '../attachment/attachment.dto';
 import { POS_CategoryDTO } from '../category/category.dto';
 import { PartnerCategoryDTO, PartnerDTO, PartnerExtDTO } from '../partner/partner.dto';
 import { ProcurementRuleDTO } from '../rule/rule.dto';
+import { ProductCategoryDTO } from './product-category.dto';
 import { StockLocationRouteDTO } from './warehouse.dto';
 
 export interface GetInventoryDTO { // /rest/v1.0/product/getinventory
@@ -15,462 +16,419 @@ export interface ValueGetInventoryDTO { // /rest/v1.0/product/getinventory
 }
 
 export interface ProductDTO {
-  id: number;
-  eAN13: string;
-  defaultCode: string;
+  Id: number;
+  EAN13: string;
+  DefaultCode: string;
 
-  nameTemplate: string;
-  nameNoSign: string;
+  NameTemplate: string;
+  NameNoSign: string;
 
-  productTmplId: number;
+  ProductTmplId: number;
 
-  uOMId: number;
-  uOM: ProductUOMDTO;
-  uOMName: string;
+  UOMId: number;
+  UOM: ProductUOMDTO;
+  UOMName: string;
 
-  uOMPOId: number;
-  uOMPO: ProductUOMDTO;
+  UOMPOId: number;
+  UOMPO: ProductUOMDTO;
 
-  qtyAvailable: number;
-  virtualAvailable: number;
-  outgoingQty?: number;
-  incomingQty?: number;
-  nameGet: string;
-  pOSCategId?: number;
-  pOSCateg: POS_CategoryDTO;
-  price?: number;
-  barcode: string;
-  image: string;
+  QtyAvailable: number;
+  VirtualAvailable: number;
+  OutgoingQty?: number;
+  IncomingQty?: number;
+  NameGet: string;
+  POSCategId?: number;
+  POSCateg: POS_CategoryDTO;
+  Price?: number;
+  Barcode: string;
+  Image: string;
 
-  images: Array<IRAttachmentDTO>;
+  Images: Array<IRAttachmentDTO>;
 
-  imageUrl: string;
-  priceVariant?: number;
-  saleOK: boolean;
-  purchaseOK: boolean;
-  displayAttributeValues: string;
-  lstPrice?: number;
-  active: boolean;
+  ImageUrl: string;
+  PriceVariant?: number;
+  SaleOK: boolean;
+  PurchaseOK: boolean;
+  DisplayAttributeValues: string;
+  LstPrice?: number;
+  Active: boolean;
 
-  listPrice?: number;
-  purchasePrice?: number;
-  discountSale?: number;
-  discountPurchase?: number;
-  standardPrice?: number;
-  weight?: number;
-  oldPrice?: number;
-  isDiscount: boolean;
-  productTmplEnableAll: boolean;
+  ListPrice?: number;
+  PurchasePrice?: number;
+  DiscountSale?: number;
+  DiscountPurchase?: number;
+  StandardPrice?: number;
+  Weight?: number;
+  OldPrice?: number;
+  IsDiscount: boolean;
+  ProductTmplEnableAll: boolean;
 
   // version
-  version: number;
-  description: string;
+  Version: number;
+  Description: string;
 
-  attributeValues: Array<ProductAttributeValueDTO>;
+  AttributeValues: Array<ProductAttributeValueDTO>;
 
-  lastUpdated?: Date;
-  type: string;
+  LastUpdated?: Date;
+  Type: string;
 
-  uomLines: Array<ProductTemplateUOMLineDTO>;
+  UOMLines: Array<ProductTemplateUOMLineDTO>;
 
-  categId: number;
-  categ: ProductCategoryDTO;
-  costMethod: string;
-  invoicePolicy: string;
-  variant_TeamId: number;
-  name: string;
+  CategId: number;
+  Categ: ProductCategoryDTO;
+  CostMethod: string;
+  InvoicePolicy: string;
+  Variant_TeamId: number;
+  Name: string;
 
-  propertyCostMethod: string;
-  propertyValuation: string;
-  purchaseMethod: string;
-  saleDelay?: number;
-  tracking: string;
-  valuation: string;
-  availableInPOS?: boolean;
-  companyId?: number;
-  isCombo?: boolean;
-  nameTemplateNoSign: string;
-  taxesIds: Array<number>;
-  stockValue?: number;
-  saleValue?: number;
+  PropertyCostMethod: string;
+  PropertyValuation: string;
+  PurchaseMethod: string;
+  SaleDelay?: number;
+  Tracking: string;
+  Valuation: string;
+  AvailableInPOS?: boolean;
+  CompanyId?: number;
+  IsCombo?: boolean;
+  NameTemplateNoSign: string;
+  TaxesIds: Array<number>;
+  StockValue?: number;
+  SaleValue?: number;
 
   // Số lượng bán ở điểm bán hàng
-  posSalesCount?: number;
-  dactor?: number;
-  categName: string;
-  amountTotal?: number;
-  nameCombos: Array<string>;
-  rewardName: string;
-  product_UOMId: string;
-  tags: string;
-  dateCreated?: Date;
+  PosSalesCount?: number;
+  Dactor?: number;
+  CategName: string;
+  AmountTotal?: number;
+  NameCombos: Array<string>;
+  RewardName: string;
+  Product_UOMId: string;
+  Tags: string;
+  DateCreated?: Date;
 }
 
 export interface Product_PriceListDTO {
-  id: number;
-  name: string;
-  currencyId: number;
-  currencyName: string;
-  active?: boolean;
-  companyId: number;
-  items: Array<Product_PriceList_ItemDTO>;
-  partnerCategories: PartnerCategoryDTO;
-  partnerCateName: string;
-  sequence?: number;
-  dateStart?: Date;
-  dateEnd?: Date;
-  nameGet: string;
+  Id: number;
+  Name: string;
+  CurrencyId: number;
+  CurrencyName: string;
+  Active?: boolean;
+  CompanyId: number;
+  Items: Array<Product_PriceList_ItemDTO>;
+  PartnerCategories: PartnerCategoryDTO;
+  PartnerCateName: string;
+  Sequence?: number;
+  DateStart?: Date;
+  DateEnd?: Date;
+  NameGet: string;
 }
 
 export interface Product_PriceList_ItemDTO {
-  id: number;
-  productTmplId?: number;
-  productTmpl: ProductTemplateDTO;
+  Id: number;
+  ProductTmplId?: number;
+  ProductTmpl: ProductTemplateDTO;
 
-  productId?: number;
-  product: ProductDTO;
+  ProductId?: number;
+  Product: ProductDTO;
 
-  uomId?: number;
-  uom: ProductUOMDTO;
+  UOMId?: number;
+  UOM: ProductUOMDTO;
 
-  categId?: number;
-  categ: ProductCategoryDTO;
+  CategId?: number;
+  Categ: ProductCategoryDTO;
 
-  priceListId?: number;
-  priceList: Product_PriceListDTO;
+  PriceListId?: number;
+  PriceList: Product_PriceListDTO;
 
-  appliedOn: string;
-  minQuantity: number;
-  sequence: number;
-  base: string;
-  basePriceListId?: number;
-  basePriceList: Product_PriceListDTO;
+  AppliedOn: string;
+  MinQuantity: number;
+  Sequence: number;
+  Base: string;
+  BasePriceListId?: number;
+  BasePriceList: Product_PriceListDTO;
 
-  priceSurcharge?: number;
-  priceDiscount?: number;
-  priceRound?: number;
-  priceMinMargin?: number;
-  priceMaxMargin?: number;
+  PriceSurcharge?: number;
+  PriceDiscount?: number;
+  PriceRound?: number;
+  PriceMinMargin?: number;
+  PriceMaxMargin?: number;
 
-  dateStart?: Date;
-  dateEnd?: Date;
-  computePrice: string;
-  fixedPrice?: number;
-  priceDefault?: number;
-  priceRecent?: number;
-  percentPrice?: number;
-  price: string;
-  name: string;
-  productName: string;
-  uomMName: string;
-  productNameNoSign: string;
+  DateStart?: Date;
+  DateEnd?: Date;
+  ComputePrice: string;
+  FixedPrice?: number;
+  PriceDefault?: number;
+  PriceRecent?: number;
+  PercentPrice?: number;
+  Price: string;
+  Name: string;
+  ProductName: string;
+  UOMMName: string;
+  ProductNameNoSign: string;
 }
 
 export interface ProductTemplateDTO {
-  id: number;
-  name: string;
-  nameNoSign: string;
-  description: string;
-  type: string;
+  Id: number;
+  Name: string;
+  NameNoSign: string;
+  Description: string;
+  Type: string;
 
-  showType: string;
+  ShowType: string;
 
-  listPrice?: number;
-  discountSale?: number;
-  discountPurchase?: number;
-  purchasePrice?: number;
-  standardPrice?: number;
-  saleOK: boolean;
-  purchaseOK: boolean;
-  active: boolean;
+  ListPrice?: number;
+  DiscountSale?: number;
+  DiscountPurchase?: number;
+  PurchasePrice?: number;
+  StandardPrice?: number;
+  SaleOK: boolean;
+  PurchaseOK: boolean;
+  Active: boolean;
 
-  uomId: number;
-  uom: ProductUOMDTO;
-  uomName: string;
+  UOMId: number;
+  UOM: ProductUOMDTO;
+  UOMName: string;
 
-  uomPOId: number;
-  uomPO: ProductUOMDTO;
-  uomPOName: string;
+  UOMPOId: number;
+  UOMPO: ProductUOMDTO;
+  UOMPOName: string;
 
-  uosId: number;
-  uos: ProductUOMDTO;
+  UOSId: number;
+  UOS: ProductUOMDTO;
 
-  isProductVariant: boolean;
+  IsProductVariant: boolean;
 
   //related to display product product information if is_product_variant
-  ean13: string;
+  Ean13: string;
 
   //[RegularExpression(@"(^[a-zA-Z0-9]*$)", ErrorMessage = "Mã sản phẩm là tiếng việt không dấu và không được chứa các kí tự đặc biệt")]
-  defaultCode: string;
-  routes: Array<StockLocationRouteDTO>;
-  qtyAvailable: number;
-  virtualAvailable: number;
-  outgoingQty: number;
-  incomingQty: number;
-  propertyCostMethod: string;
-  categId: number;
-  categ: ProductCategoryDTO;
-  categCompleteName: string;
-  categName: string;
-  weight?: number;
-  tracking: string;
-  descriptionPurchase: string;
-  descriptionSale: string;
-  companyId?: number;
-  nameGet: string;
-  propertyStockProductionId?: number;
-  saleDelay?: number;
-  invoicePolicy: string;
-  purchaseMethod: string;
-  propertyValuation: string;
-  valuation: string;
+  DefaultCode: string;
+  Routes: Array<StockLocationRouteDTO>;
+  QtyAvailable: number;
+  VirtualAvailable: number;
+  OutgoingQty: number;
+  IncomingQty: number;
+  PropertyCostMethod: string;
+  CategId: number;
+  Categ: ProductCategoryDTO;
+  CategCompleteName: string;
+  CategName: string;
+  Weight?: number;
+  Tracking: string;
+  DescriptionPurchase: string;
+  DescriptionSale: string;
+  CompanyId?: number;
+  NameGet: string;
+  PropertyStockProductionId?: number;
+  SaleDelay?: number;
+  InvoicePolicy: string;
+  PurchaseMethod: string;
+  PropertyValuation: string;
+  Valuation: string;
 
   // Check if you want this product to appear in the Point of Sale
-  availableInPOS?: boolean;
-  posCategId?: number;
-  posCateg: POS_CategoryDTO;
+  AvailableInPOS?: boolean;
+  PosCategId?: number;
+  PosCateg: POS_CategoryDTO;
 
-  costMethod: string;
+  CostMethod: string;
 
   // [RegularExpression(@"(^[a-zA-Z0-9]*$)", ErrorMessage = "Mã barcode là tiếng việt không dấu và không được chứa các kí tự đặc biệt")]
-  barcode: string;
+  Barcode: string;
 
-  image: string;
-  imageUrl: string;
+  Image: string;
+  ImageUrl: string;
 
-  attributeLines: Array<ProductAttributeLineDTO>;
-  productVariantCount: number;
-  lastUpdated?: Date;
-  items: Array<Product_PriceList_ItemDTO>;
+  AttributeLines: Array<ProductAttributeLineDTO>;
+  ProductVariantCount: number;
+  LastUpdated?: Date;
+  Items: Array<Product_PriceList_ItemDTO>;
 
-  uomCategId?: number;
-  uomCateg: ProductUOMCategDTO;
+  UOMCategId?: number;
+  UOMCateg: ProductUOMCategDTO;
 
-  uomLines: Array<ProductTemplateUOMLineDTO>;
+  UOMLines: Array<ProductTemplateUOMLineDTO>;
   // ProductSupplierInfos
-  productSupplierInfos: Array<ProductSupplierInfoDTO>;
-  bOMCount: number;
+  ProductSupplierInfos: Array<ProductSupplierInfoDTO>;
+  BOMCount: number;
 
-  volume?: number;
-  categNameNoSign: string;
-  uomNameNoSign: string;
-  uomPONameNoSign: string;
+  Volume?: number;
+  CategNameNoSign: string;
+  UOMNameNoSign: string;
+  UOMPONameNoSign: string;
 
-  isCombo?: boolean;
-  enableAll: boolean;
+  IsCombo?: boolean;
+  EnableAll: boolean;
 
-  comboPurchased?: boolean;
-  comboProducts: Array<ProductComboDTO>;
-  taxes: Array<AccountTaxDTO>;
-  supplierTaxes: Array<AccountTaxDTO>;
-  product_Teams: Array<Product_TeamsDTO>;
-  images: Array<IRAttachmentDTO>;
-  productVariants: Array<ProductDTO>;
+  ComboPurchased?: boolean;
+  ComboProducts: Array<ProductComboDTO>;
+  Taxes: Array<AccountTaxDTO>;
+  SupplierTaxes: Array<AccountTaxDTO>;
+  Product_Teams: Array<Product_TeamsDTO>;
+  Images: Array<IRAttachmentDTO>;
+  ProductVariants: Array<ProductDTO>;
 
-  version: number;
-  variantFirstId?: number;
-  variantFistId?: number;
-  zaloProductId: string;
-  companyName: string;
-  companyNameNoSign: string;
-  dateCreated?: Date;
+  Version: number;
+  VariantFirstId?: number;
+  VariantFistId?: number;
+  AaloProductId: string;
+  CompanyName: string;
+  CompanyNameNoSign: string;
+  DateCreated?: Date;
 
-  initInventory?: number;
-  uomViewId?: number;
-  uomView: ProductUOMDTO;
+  InitInventory?: number;
+  UOMViewId?: number;
+  UOMView: ProductUOMDTO;
 
-  importerId?: number;
-  importer: PartnerExtDTO;
+  ImporterId?: number;
+  Importer: PartnerExtDTO;
 
-  importerName: string;
-  importerAddress: string;
+  ImporterName: string;
+  ImporterAddress: string;
 
-  producerId?: number;
-  producer: PartnerExtDTO;
+  ProducerId?: number;
+  Producer: PartnerExtDTO;
 
-  producerName: string;
-  producerAddress: string;
-  distributorId?: number;
-  distributor: PartnerExtDTO;
-  distributorName: string;
-  distributorAddress: string;
+  ProducerName: string;
+  ProducerAddress: string;
+  DistributorId?: number;
+  Distributor: PartnerExtDTO;
+  DistributorName: string;
+  DistributorAddress: string;
 
-  originCountryId?: number;
-  originCountry: OriginCountryDTO;
+  OriginCountryId?: number;
+  OriginCountry: OriginCountryDTO;
 
-  originCountryName: string;
-  infoWarning: string;
-  element: string;
-  yearOfManufacture?: number;
-  specifications: string;
-  tags: string;
-  createdByName: string;
-}
-
-export interface ProductCategoryDTO {
-  id: number;
-  name: string;
-  completeName: string;
-
-  parentId?: number;
-  parent: ProductCategoryDTO;
-  parentCompleteName: string;
-
-  parentLeft?: number;
-  parentRight?: number;
-  sequence?: number;
-  type: string;
-
-  accountIncomeCategId?: number;
-  accountIncomeCateg: AccountDTO;
-
-  accountExpenseCategId?: number;
-  accountExpenseCateg: AccountDTO;
-
-  stockJournalId?: number;
-  stockJournal: AccountJournalDTO;
-
-  stockAccountInputCategId?: number;
-  stockAccountInputCateg: AccountDTO;
-
-  stockAccountOutputCategId?: number;
-  stockAccountOutputCateg: AccountDTO;
-
-  stockValuationAccountId?: number;
-  stockValuationAccount: AccountDTO;
-
-  propertyValuation: string;
-
-  propertyCostMethod: string;
-
-  routes: Array<ProcurementRuleDTO>;
-  nameNoSign: string;
-  isPos: boolean;
-  version?: number;
-  isDelete: boolean;
+  OriginCountryName: string;
+  InfoWarning: string;
+  Element: string;
+  YearOfManufacture?: number;
+  Specifications: string;
+  Tags: string;
+  CreatedByName: string;
 }
 
 export interface ProductUOMDTO {
-  id: number;
-  name: string;
-  nameNoSign: string;
-  rounding: number;
-  active?: boolean;
-  factor: number;
-  factorInv: number;
-  uomType: string;
+  Id: number;
+  Name: string;
+  NameNoSign: string;
+  Rounding: number;
+  Active?: boolean;
+  Factor: number;
+  FactorInv: number;
+  UOMType: string;
 
-  categoryId: number;
-  category: ProductUOMCategDTO;
-  categoryName: string;
-  description: string;
+  CategoryId: number;
+  Category: ProductUOMCategDTO;
+  CategoryName: string;
+  Description: string;
 
-  showUOMType: string;
+  ShowUOMType: string;
 
-  nameGet: string;
+  NameGet: string;
 
-  showFactor: number;
+  ShowFactor: number;
 }
 
 export interface ProductUOMCategDTO {
-  id: number;
-  name: string;
+  Id: number;
+  Name: string;
 }
 
 export interface ProductAttributeValueDTO {
-  id: number;
-  name: string;
-  code: string;
-  sequence?: number;
-  attributeId: number;
-  attribute: ProductAttributeDTO;
-  attributeName: string;
-  priceExtra?: number;
-  nameGet: string;
+  Id: number;
+  Name: string;
+  Code: string;
+  Sequence?: number;
+  AttributeId: number;
+  Attribute: ProductAttributeDTO;
+  AttributeName: string;
+  PriceExtra?: number;
+  NameGet: string;
 }
 
 export interface ProductAttributeDTO {
-  id: number;
-  name: string;
-  code: string;
-  sequence?: number;
-  createVariant?: boolean;
+  Id: number;
+  Name: string;
+  Code: string;
+  Sequence?: number;
+  CreateVariant?: boolean;
 }
 
 export interface ProductTemplateUOMLineDTO {
-  id: number;
-  productTmplId: number;
-  productTmplListPrice?: number;
+  Id: number;
+  ProductTmplId: number;
+  ProductTmplListPrice?: number;
 
-  uomId: number;
-  uom: ProductUOMDTO;
+  UOMId: number;
+  UOM: ProductUOMDTO;
 
-  templateUOMFactor: number;
-  listPrice?: number;
-  barcode: string;
-  price?: number;
+  TemplateUOMFactor: number;
+  ListPrice?: number;
+  Barcode: string;
+  Price?: number;
 
   //Ext
-  productId: number;
-  uomName: string;
-  nameGet: string;
+  ProductId: number;
+  UOMName: string;
+  NameGet: string;
 
-  factor: number;
+  Factor: number;
 }
 
 export interface ProductAttributeLineDTO {
-  id: number;
-  productTmplId: number;
+  Id: number;
+  ProductTmplId: number;
 
-  attributeId: number;
-  attribute: ProductAttributeDTO;
+  AttributeId: number;
+  Attribute: ProductAttributeDTO;
 
-  values: Array<ProductAttributeValueDTO>;
+  Values: Array<ProductAttributeValueDTO>;
 }
 
 export interface ProductSupplierInfoDTO {
-  id: number;
-  supplierId: number;
-  supplier: PartnerDTO;
-  sequence?: number;
-  productName: string;
-  productCode: string;
-  minQty: number;
-  price: number;
-  productTmplId: number;
-  productTmpl: ProductTemplateDTO;
-  companyId?: number;
+  Id: number;
+  SupplierId: number;
+  Supplier: PartnerDTO;
+  Sequence?: number;
+  ProductName: string;
+  ProductCode: string;
+  MinQty: number;
+  Price: number;
+  ProductTmplId: number;
+  ProductTmpl: ProductTemplateDTO;
+  CompanyId?: number;
 
-  dateStart?: Date;
-  dateEnd?: Date;
+  DateStart?: Date;
+  DateEnd?: Date;
 
-  productId?: number;
-  delay: number;
+  ProductId?: number;
+  Delay: number;
 }
 
 export interface ProductComboDTO {
-  id: number;
-  productId: number;
-  product: ProductDTO;
-  quantity: number;
+  Id: number;
+  ProductId: number;
+  Product: ProductDTO;
+  Quantity: number;
 }
 
 export interface Product_TeamsDTO {
-  id: number;
-  productTmplId: number;
-  crmTeamsId: number;
-  crmTeamsName: string;
-  productTeamId: string;
-  type: string;
+  Id: number;
+  ProductTmplId: number;
+  CRMTeamsId: number;
+  CRMTeamsName: string;
+  ProductTeamId: string;
+  Type: string;
 }
 
 export interface OriginCountryDTO {
-  id: number;
-  name: string;
-  code: string;
-  nameNoSign: string;
-  note: string;
-  dateCreated?: Date;
+  Id: number;
+  Name: string;
+  Code: string;
+  NameNoSign: string;
+  Note: string;
+  DateCreated?: Date;
   lastUpdated?: Date;
 }
 
@@ -487,3 +445,6 @@ export interface ProductInnerDTO {
   picture: string;
   price?: number;
 }
+
+export const ProductType = ["Có thể lưu trữ", "Có thể tiêu thụ", "Dịch vụ"];
+

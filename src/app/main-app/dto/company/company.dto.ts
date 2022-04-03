@@ -4,62 +4,62 @@ import { PartnerCityDTO, PartnerDistrictDTO, PartnerDTO, PartnerWardDTO, ResCurr
 import { StockWarehouseDTO } from "../product/warehouse.dto";
 
 export interface CompanyDTO {
-  id: number;
-  name: string;
-  sender: string;
-  moreInfo: string;
-  partnerId: number;
-  productId?: number;
-  partner: PartnerDTO;
-  email: string;
-  phone: string;
-  currencyId: number;
-  currency: ResCurrencyDTO;
-  fax: string;
-  street: string;
-  depositAccountId?: number;
+  Id: number;
+  Name: string;
+  Sender: string;
+  MoreInfo: string;
+  PartnerId: number;
+  ProductId?: number;
+  Partner: PartnerDTO;
+  Email: string;
+  Phone: string;
+  CurrencyId: number;
+  Currency: ResCurrencyDTO;
+  Fax: string;
+  Street: string;
+  DepositAccountId?: number;
 
-  currencyExchangeJournalId?: number;
-  currencyExchangeJournal: AccountJournalDTO;
+  CurrencyExchangeJournalId?: number;
+  CurrencyExchangeJournal: AccountJournalDTO;
 
-  incomeCurrencyExchangeAccountId?: number;
-  incomeCurrencyExchangeAccount: AccountDTO;
+  IncomeCurrencyExchangeAccountId?: number;
+  IncomeCurrencyExchangeAccount: AccountDTO;
 
-  expenseCurrencyExchangeAccountId?: number;
-  expenseCurrencyExchangeAccount: AccountDTO;
+  ExpenseCurrencyExchangeAccountId?: number;
+  ExpenseCurrencyExchangeAccount: AccountDTO;
 
-  securityLead?: number;
-  logo: string;
-  lastUpdated?: Date;
-  transferAccountId?: number;
-  transferAccount: AccountDTO;
-  city: PartnerCityDTO;
-  district: PartnerDistrictDTO;
-  ward: PartnerWardDTO;
+  SecurityLead?: number;
+  Logo: string;
+  LastUpdated?: Date;
+  TransferAccountId?: number;
+  TransferAccount: AccountDTO;
+  City: PartnerCityDTO;
+  District: PartnerDistrictDTO;
+  Ward: PartnerWardDTO;
 
   // Default Terms and Conditions
-  saleNote: string;
-  taxCode: string;
-  warehouseId?: number;
-  warehouse: StockWarehouseDTO;
+  SaleNote: string;
+  TaxCode: string;
+  WarehouseId?: number;
+  Warehouse: StockWarehouseDTO;
 
   // Create Sale Orders when buying to this company
-  soFromPO?: boolean;
+  SoFromPO?: boolean;
 
   // Create Purchase Orders when selling to this company
-  poFromSO?: boolean;
+  PoFromSO?: boolean;
 
   // When a Sale Order or a Purchase Order is created by a multi company rule for this company, it will automatically validate it
-  autoValidation?: boolean;
-  customer?: boolean;
-  supplier?: boolean;
-  active?: boolean;
+  AutoValidation?: boolean;
+  Customer?: boolean;
+  Supplier?: boolean;
+  Active?: boolean;
 
   // Khóa sổ, chỉ có quyền kế toán/cố vấn mới có thể chỉnh sửa sổ sách
-  periodLockDate?: Date;
-  quatityDecimal?: number;
-  extRegexPhone: string;
-  imageUrl: string;
+  PeriodLockDate?: Date;
+  QuatityDecimal?: number;
+  ExtRegexPhone: string;
+  ImageUrl: string;
 }
 
 export interface ResCompanyCurrentDTO { // /api/common/getcompanycurrent
