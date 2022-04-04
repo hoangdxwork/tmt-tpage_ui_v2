@@ -1,101 +1,101 @@
 import { CompanyDTO } from '../company/company.dto';
 
 export interface AccountDTO {
-  id: number;
-  name: string;
-  code: string;
-  userTypeId: number;
-  userType: AccountTypeDTO;
-  userTypeName: string;
-  active?: boolean;
-  note: string;
-  companyId: number;
+  Id: number;
+  Name: string;
+  Code: string;
+  UserTypeId: number;
+  UserType: AccountTypeDTO;
+  UserTypeName: string;
+  Active?: boolean;
+  Note: string;
+  CompanyId: number;
   Company: CompanyDTO;
-  companyName: string;
-  currencyId: number;
-  internalType: string;
-  nameGet: string;
+  CompanyName: string;
+  CurrencyId: number;
+  InternalType: string;
+  NameGet: string;
   reconcile?: boolean;
 }
 
 export interface AccountTypeDTO {
-  id: number;
-  name: string;
-  type: string;
-  note: string;
+  Id: number;
+  Name: string;
+  Type: string;
+  Note: string;
 }
 
 export interface AccountJournalDTO {
-  id: number;
-  code: string;
-  name: string;
-  type: string;
+  Id: number;
+  Code: string;
+  Name: string;
+  Type: string;
 
-  typeGet: string;
+  TypeGet: string;
 
-  updatePosted?: boolean;
-  currencyId?: number;
+  UpdatePosted?: boolean;
+  CurrencyId?: number;
 
-  defaultDebitAccountId?: number;
-  defaultDebitAccount: AccountDTO;
+  DefaultDebitAccountId?: number;
+  DefaultDebitAccount: AccountDTO;
 
-  defaultCreditAccountId?: number;
-  defaultCreditAccount: AccountDTO;
+  DefaultCreditAccountId?: number;
+  DefaultCreditAccount: AccountDTO;
 
-  inboundPaymentMethods: Array<AccountPaymentDTO>;
-  outboundPaymentMethods: Array<AccountPaymentDTO>;
+  InboundPaymentMethods: Array<AccountPaymentDTO>;
+  OutboundPaymentMethods: Array<AccountPaymentDTO>;
 
-  companyId: number;
-  company: CompanyDTO;
-  companyName: string;
-  journalUser?: boolean;
+  CompanyId: number;
+  Company: CompanyDTO;
+  CompanyName: string;
+  JournalUser?: boolean;
 
-  profitAccountId?: number;
-  profitAccount: AccountDTO;
+  ProfitAccountId?: number;
+  ProfitAccount: AccountDTO;
 
-  lossAccountId?: number;
-  lossAccount: AccountDTO;
+  LossAccountId?: number;
+  LossAccount: AccountDTO;
 
-  amountAuthorizedDiff?: number;
-  merchantId: string;
-  merchantCode: string;
+  AmountAuthorizedDiff?: number;
+  MerchantId: string;
+  MerchantCode: string;
 
   // Xác định có nên dùng riêng mã phát sinh trả hàng
-  dedicatedRefund?: boolean;
+  DedicatedRefund?: boolean;
 }
 
 export interface AccountPaymentDTO {
-  id: number;
-  name: string;
-  code: string;
-  paymentType: string;
+  Id: number;
+  Name: string;
+  Code: string;
+  PaymentType: string;
 }
 
 export interface AccountTaxDTO {
-  id: number;
+  Id: number;
 
-  name: string;
+  Name: string;
   // purchase, sale
-  typeTaxUse: string;
-  showTypeTaxUse: string;
+  TypeTaxUse: string;
+  ShowTypeTaxUse: string;
 
-  amountType: string;
-  active?: boolean;
-  sequence: number;
-  amount: number;
-  accountId?: number;
-  account: AccountDTO;
-  refundAccountId?: number;
-  refundAccount: AccountDTO;
+  AmountType: string;
+  Active?: boolean;
+  Sequence: number;
+  Amount: number;
+  AccountId?: number;
+  Account: AccountDTO;
+  RefundAccountId?: number;
+  RefundAccount: AccountDTO;
 
   // Check this if the price you use on the product and invoices includes this tax.
-  priceInclude?: boolean;
+  PriceInclude?: boolean;
 
   // Label on Invoices
-  description: string;
+  Description: string;
 
-  companyId: number;
-  companyName: string;
+  CompanyId: number;
+  CompanyName: string;
 }
 
 export interface AccountPaymentTermDTO {

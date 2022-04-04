@@ -1,23 +1,23 @@
 import { StockLocationDTO, StockPickingTypeDTO } from "../product/warehouse.dto";
 
 export interface ProcurementRuleDTO {
-  id: number;
-  name: string;
-  action: string;
-  procureMethod: string;
-  sequence?: number;
-  active?: boolean;
+  Id: number;
+  Name: string;
+  Action: string;
+  ProcureMethod: string;
+  Sequence?: number;
+  Active?: boolean;
 
-  locationId?: number;
-  location: StockLocationDTO;
+  LocationId?: number;
+  Location: StockLocationDTO;
 
-  locationSrcId?: number;
-  locationSrc: StockLocationDTO;
+  LocationSrcId?: number;
+  LocationSrc: StockLocationDTO;
 
-  pickingTypeId?: number;
-  pickingType: StockPickingTypeDTO;
+  PickingTypeId?: number;
+  PickingType: StockPickingTypeDTO;
 
-  warehouseId?: number;
-  routeId?: number;
-  companyId?: number;
+  WarehouseId?: number;
+  RouteId?: number;
+  CompanyId?: number;
 }

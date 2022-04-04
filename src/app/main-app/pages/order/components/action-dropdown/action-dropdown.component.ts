@@ -5,7 +5,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { GenerateMessageTypeEnum } from 'src/app/main-app/dto/conversation/message.dto';
 import { OdataSaleOnline_OrderService } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-mesage/send-message.component';
+import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { TDSMessageService, TDSModalService, TDSSafeAny } from 'tmt-tang-ui';
 import { DuplicateUserComponent } from '../duplicate-user/duplicate-user.component';
 import { UpdateStatusOrderComponent } from '../update-status-order/update-status-order.component';

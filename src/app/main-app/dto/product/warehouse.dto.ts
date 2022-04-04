@@ -2,110 +2,109 @@ import { CompanyDTO } from '../company/company.dto';
 import { ProcurementRuleDTO } from '../rule/rule.dto';
 
 export interface StockWarehouseDTO {
-  id: number;
-  code: string;
-  name: string;
-  companyId: number;
-  company: CompanyDTO;
+  Id: number;
+  Code: string;
+  Name: string;
+  CompanyId: number;
+  Company: CompanyDTO;
 
-  nameGet: string;
+  NameGet: string;
 
-  companyName: string;
+  CompanyName: string;
 }
 
 export interface StockLocationDTO {
-  id: number;
-  usage: string;
-  scrapLocation: boolean;
-  name: string;
-  completeName: string;
-  parentLocationId?: number;
-  parentLocation: StockLocationDTO;
-  active: boolean;
-  parentLeft?: number;
-  companyId?: number;
-  company: CompanyDTO;
-  companyName: string;
+  Id: number;
+  Usage: string;
+  ScrapLocation: boolean;
+  Name: string;
+  CompleteName: string;
+  ParentLocationId?: number;
+  ParentLocation: StockLocationDTO;
+  Active: boolean;
+  ParentLeft?: number;
+  CompanyId?: number;
+  Company: CompanyDTO;
+  CompanyName: string;
 
-  showUsage: string;
+  ShowUsage: string;
 
-  nameGet: string;
-  nameWarehouse: string;
+  NameGet: string;
+  NameWarehouse: string;
 }
 
 export interface StockLocationRouteDTO {
-  id: number;
-  name: string;
-  sequence?: number;
-  productSelectable?: boolean;
-  productCategSelectable?: boolean;
-  warehouseSelectable?: boolean;
-  active?: boolean;
-  supplierWhId?: number;
-  companyId?: number;
-  warehouses: Array<StockWarehouseDTO>;
+  Id: number;
+  Name: string;
+  Sequence?: number;
+  ProductSelectable?: boolean;
+  ProductCategSelectable?: boolean;
+  WarehouseSelectable?: boolean;
+  Active?: boolean;
+  SupplierWhId?: number;
+  CompanyId?: number;
+  Warehouses: Array<StockWarehouseDTO>;
 
-  pushRules: Array<StockLocationPathDTO>;
-  pullRules: Array<ProcurementRuleDTO>;
+  PushRules: Array<StockLocationPathDTO>;
+  PullRules: Array<ProcurementRuleDTO>;
 }
 
 export interface StockLocationPathDTO {
-  id: number;
-  name: string;
-  routeId?: number;
+  Id: number;
+  Name: string;
+  RouteId?: number;
 
-  locationFromId: number;
-  locationFrom: StockLocationDTO;
+  LocationFromId: number;
+  LocationFrom: StockLocationDTO;
 
-  locationDestId: number;
-  locationDest: StockLocationDTO;
+  LocationDestId: number;
+  LocationDest: StockLocationDTO;
 
-  pickingTypeId: number;
-  pickingType: StockPickingTypeDTO;
+  PickingTypeId: number;
+  PickingType: StockPickingTypeDTO;
 
-  auto: string;
-  active?: boolean;
+  Auto: string;
+  Active?: boolean;
 
-  warehouseId?: number;
-  warehouse: StockWarehouseDTO;
+  WarehouseId?: number;
+  Warehouse: StockWarehouseDTO;
 
-  sequence?: number;
-  companyId?: number;
+  Sequence?: number;
+  CompanyId?: number;
 }
 
 export interface StockPickingTypeDTO {
-  id: number;
-  code: string;
-  sequence: number;
+  Id: number;
+  Code: string;
+  Sequence: number;
 
-  defaultLocationDestId?: number;
-  defaultLocationDest: StockLocationDTO;
+  DefaultLocationDestId?: number;
+  DefaultLocationDest: StockLocationDTO;
 
-  warehouseId?: number;
-  warehouse: StockWarehouseDTO;
+  WarehouseId?: number;
+  Warehouse: StockWarehouseDTO;
 
-  warehouseName: string;
-  iRSequenceId: number;
+  WarehouseName: string;
+  IRSequenceId: number;
 
   // IRSequenceModel IRSequence
+  Active: boolean;
 
-  active: boolean;
+  Name: string;
+  DefaultLocationSrcId?: number;
+  DefaultLocationSrc: StockLocationDTO;
 
-  name: string;
-  defaultLocationSrcId?: number;
-  defaultLocationSrc: StockLocationDTO;
+  ReturnPickingTypeId?: number;
+  ReturnPickingType: StockPickingTypeDTO;
+  UseCreateLots?: boolean;
+  UseExistingLots?: boolean;
+  InverseOperation?: boolean;
+  NameGet: string;
 
-  returnPickingTypeId?: number;
-  returnPickingType: StockPickingTypeDTO;
-  useCreateLots?: boolean;
-  useExistingLots?: boolean;
-  inverseOperation?: boolean;
-  nameGet: string;
-
-  countPickingReady: number;
-  countPickingDraft: number;
-  countPicking: number;
-  countPickingWaiting: number;
-  countPickingLate: number;
-  countPickingBackOrders: number;
+  CountPickingReady: number;
+  CountPickingDraft: number;
+  CountPicking: number;
+  CountPickingWaiting: number;
+  CountPickingLate: number;
+  CountPickingBackOrders: number;
 }

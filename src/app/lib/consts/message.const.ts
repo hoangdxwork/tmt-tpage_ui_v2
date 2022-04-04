@@ -17,5 +17,14 @@ export const Message = {
   },
   Template: {
     EmptyContent: 'Vui lòng nhập đủ tên và nội dung'
+  },
+  Product: {
+    InsertSuccess: 'Thêm sản phẩm thành công.'
+  },
+  ProductCategory: {
+    InsertSuccess: 'Thêm nhóm sản phẩm thành công.'
+  },
+  ProductUOM: {
+    InsertSuccess: 'Thêm đơn vị tính thành công.'
   }
 }

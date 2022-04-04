@@ -22,6 +22,15 @@ export class SaleOnline_OrderService extends BaseSevice {
     super(apiService)
   }
 
+  getById(id: string): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})?$expand=Details,User,Partner`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
   getSummaryStatus(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/getsummarystatussaleonline`,
@@ -29,6 +38,15 @@ export class SaleOnline_OrderService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  getUpdateUIds() {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.UpdateUIds`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   assignSaleOnlineOrder(data: TDSSafeAny): Observable<TDSSafeAny> {
@@ -56,15 +74,6 @@ export class SaleOnline_OrderService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
-  }
-
-  getUpdateUIds() {
-    const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.UpdateUIds`,
-      method: TApiMethodType.post,
-    }
-
-    return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
 }

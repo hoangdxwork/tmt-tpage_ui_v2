@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { OrderRoutingModule } from './order-routing.module';
 import { OrderComponent } from './order/order.component';
-import { TDSBadgeModule, TDSButtonModule, TDSCheckBoxModule, TDSContextMenuService, TDSDatePickerModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormField, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalService, TDSPopoverModule, TDSSelectModule, TDSSpinnerModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSModalModule } from 'tmt-tang-ui';
+import { TDSBadgeModule, TDSButtonModule, TDSCheckBoxModule, TDSContextMenuService, TDSDatePickerModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormField, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalService, TDSPopoverModule, TDSSelectModule, TDSSpinnerModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSModalModule, TDSAvatarComponent, TDSAvatarModule, TDSCollapseModule } from 'tmt-tang-ui';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SaleOnline_OrderService } from '../../services/sale-online-order.service';
 import { OdataSaleOnline_OrderService } from '../../services/mock-odata/odata-saleonlineorder.service';
@@ -16,6 +16,7 @@ import { PipeModule } from '../../shared/pipe/pipe.module';
 import { TagService } from '../../services/tag.service';
 import { DeliveryCarrierService } from '../../services/delivery-carrier-order.service';
 import { DuplicateUserComponent } from './components/duplicate-user/duplicate-user.component';
+import { EditOrderComponent } from './components/edit-order/edit-order.component';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -32,7 +33,8 @@ const SERVICES = [
     FilterOptionsComponent,
     ConfigColumnComponent,
     UpdateStatusOrderComponent,
-    DuplicateUserComponent
+    DuplicateUserComponent,
+    EditOrderComponent
   ],
   imports: [
     CommonModule,
@@ -56,7 +58,9 @@ const SERVICES = [
     TDSInputModule,
     TDSDatePickerModule,
     TDSCheckBoxModule,
-    TDSModalModule
+    TDSModalModule,
+    TDSAvatarModule,
+    TDSCollapseModule
   ],
   providers: [
     ...SERVICES,
