@@ -264,5 +264,9 @@ export class ConversationAllComponent extends TpageBaseComponent {
         "CreatedBy": null
       }
     ];
-  }
+  } 
+// dropdown-customer
+  log(str: any){
+    console.log(str)
+}
 }
