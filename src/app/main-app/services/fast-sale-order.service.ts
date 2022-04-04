@@ -22,6 +22,24 @@ export class FastSaleOrderService extends BaseSevice {
     super(apiService)
   }
 
+  delete(key: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
+        method: TApiMethodType.delete,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api,null);
+  }
+
+  getById(key: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})?$expand=Partner,User,Warehouse,Company,PriceList,RefundOrder,Account,Journal,PaymentJournal,Carrier,Tax,SaleOrder,OrderLines($expand=Product,ProductUOM,Account,SaleLine,User),Ship_ServiceExtras,Team`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api,null);
+  }
+
   getSummaryStatus(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/getsummarystatusfastsaleonline`,
@@ -102,6 +120,14 @@ export class FastSaleOrderService extends BaseSevice {
         method: TApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  getPaymentInfoJson(key: TDSSafeAny): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})/OdataService.GetPaymentInfoJson`,
+        method: TApiMethodType.get
+    }
+    return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
 

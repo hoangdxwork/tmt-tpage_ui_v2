@@ -18,6 +18,7 @@ export class ModalEditPartnerComponent implements OnInit {
 
   @Input() partnerId: any;
   data: any = {};
+  isLoading: boolean = false;
 
   _form!: FormGroup;
   lstCategory: any = [];
@@ -90,14 +91,13 @@ export class ModalEditPartnerComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
-    // this.partnerService.getPartnerCategory().subscribe((res: any) =>  {
-    //     this.lstCategory = res.value;
-    // })
   }
 
   loadData() {
     if(this.partnerId) {
       let id = this.partnerId;
+      this.isLoading = true;
+
       this.partnerService.getById(id).subscribe((res: any) => {
           this.data = res;
 
@@ -106,7 +106,10 @@ export class ModalEditPartnerComponent implements OnInit {
           }
 
           this.updateForm(this.data);
+          this.isLoading = false;
+
       }, error => {
+          this.isLoading = false;
           this.message.error('Tải dữ liệu khách hàng thất bại');
       })
     }
@@ -162,18 +165,24 @@ export class ModalEditPartnerComponent implements OnInit {
     }
 
     if(this.partnerId) {
+      this.isLoading = true;
       this.partnerService.update(this.partnerId, model).subscribe((res: any) => {
+          this.isLoading = false;
           this.message.success('Cập nhật khách hàng thành công!');
           this.modal.destroy(null);
       }, error => {
+          this.isLoading = false;
           this.message.error('Cập nhật khách hàng thất bại!');
           this.modal.destroy(null);
       })
     } else {
+      this.isLoading = false;
       this.partnerService.insert(model).subscribe((res: any) => {
+          this.isLoading = false;
           this.message.success('Thêm mới khách hàng thành công!');
           this.modal.destroy(null);
       }, error => {
+          this.isLoading = false;
           this.message.error('Thêm mới khách hàng thất bại!');
           this.modal.destroy(null);
       })

@@ -51,6 +51,7 @@ export class FilterOptionsComponent implements OnInit {
   selectTags:  Array<TDSSafeAny> = [];
 
   isActive: boolean = false;
+  isVisible: boolean = false;
 
   constructor(private tagService: TagService,
       private tdsContextMenuService: TDSContextMenuService,
@@ -162,7 +163,7 @@ export class FilterOptionsComponent implements OnInit {
   }
 
   closeMenu() {
-    this.tdsContextMenuService.close();
+    this.isVisible = false;
   }
 
 }
