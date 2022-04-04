@@ -1,11 +1,12 @@
 import { TDSModalService, TDSHelperObject, TDSStatusType, TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
 import { ModalPaymentComponent } from '../../partner/components/modal-payment/modal-payment.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { CommonService } from 'src/app/main-app/services/common.service';
 
 @Component({
   selector: 'app-detail-bill',
@@ -35,6 +36,8 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   isButtonComfirm: boolean = false;
 
   constructor(private route: ActivatedRoute,
+      private router: Router,
+      private commonService: CommonService,
       private fastSaleOrderService: FastSaleOrderService,
       private modalService: TDSModalService,
       private printerService: PrinterService,
@@ -45,10 +48,14 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get("id");
     this.loadData();
+  }
+
+  loadData(): void {
+    this.loadBill();
     this.loadPaymentInfoJson();
   }
 
-  loadData() {
+  loadBill() {
     this.isLoading = true;
     this.fastSaleOrderService.getById(this.id).subscribe((res: any) => {
         if (res.DateCreated) {
@@ -136,7 +143,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
         obs = this.printerService.printUrl(`/fastsaleorder/PrintDelivery?ids=${this.dataModel.Id}`);
         break;
       case "ship":
-        obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${this.dataModel.Id}${this.dataModel.CarrierId}`);
+        obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${this.dataModel.Id}${this.dataModel.Carrier.Id}`);
         break;
       default:
         break;
@@ -150,49 +157,214 @@ export class DetailBillComponent implements OnInit, OnDestroy{
     }
   }
 
+  sendToShipper() {
+    if (this.isProcessing) {
+      return
+    }
+
+    let that = this;
+    that.isProcessing = true;
+
+    this.modalService.success({
+      title: 'Gửi vận đơn',
+      content: 'Bạn có muốn gửi vận đơn',
+      onOk: () => {
+          let model = { id: parseInt(that.id) }
+
+          that.fastSaleOrderService.getSendToShipper(model).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+              that.message.success('Xác nhận gửi vận đơn thành công!');
+              that.isProcessing = false;
+              that.loadData();
+          }, error => {
+              that.message.error(`${error?.error.message}`);
+              that.isProcessing = false;
+          })
+      },
+      onCancel: () => { that.isProcessing = false; },
+      okText: "Xác nhận",
+      cancelText: "Đóng",
+    });
+  }
+
+  actionCancel() {
+    if (this.isProcessing) {
+      return
+    }
+
+    let that = this;
+    that.isProcessing = true;
+
+    this.modalService.success({
+      title: 'Hủy hóa đơn',
+      content: 'Bạn có muốn xác nhận hủy hóa đơn',
+      onOk: () => {
+          let model = {
+            ids: [parseInt(that.id)]
+          }
+
+          that.fastSaleOrderService.getActionCancel(model).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+              that.message.success('Xác nhận hủy hóa đơn thành công!');
+              that.isProcessing = false;
+              this.loadData();
+          }, error => {
+              that.message.error(`${error?.error.message}`);
+              that.isProcessing = false;
+          })
+      },
+      onCancel: () => { that.isProcessing = false; },
+      okText: "Xác nhận",
+      cancelText: "Đóng",
+    });
+  }
+
   onClickButton(e: MouseEvent) {
 
   }
 
   comfirmAndPrint() {
-    this.stagePayment = 'confirmed';
   }
 
   showModalRegisterPayment() {
-    const modal = this.modalService.create({
-      title: 'Đăng ký thanh toán',
-      content: ModalPaymentComponent,
-      size: "lg",
-      viewContainerRef: this.viewContainerRef,
-    });
-    modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
-    modal.afterClose.subscribe(result => {
-      console.log('[afterClose] The result is:', result);
-      if (TDSHelperObject.hasValue(result)) {
-      }
-      // test layout
-      this.stagePayment = 'paymentDone';
-    });
+    let model = { ids: [parseInt(this.id)] };
+    this.fastSaleOrderService.getRegisterPayment(model).subscribe((res: any) => {
+        delete res["@odata.context"];
+        this.modalService.create({
+            title: 'Đăng ký thanh toán',
+            content: ModalPaymentComponent,
+            size: "lg",
+            viewContainerRef: this.viewContainerRef,
+            componentParams:{ data : res }
+        });
+    }, error => {
+        this.message.error(`${error.error.message}`);
+    })
   }
+
   cancelBill() {
     this.modalService.error({
       title: 'Xác nhận hủy',
       content: 'Bạn có muốn hủy hóa đơn, thông tin về đơn hàng này sẽ được xóa',
       onOk: () => {
         this.isStatusStep = 'error'
-        this.stagePayment = 'cancelPayment';
       },
       onCancel: () => { console.log('cancel') },
       okText: "Hủy hóa đơn",
       cancelText: "Đóng"
     });
   }
-  sendBill(){
 
+  actionRefund() {
+    if (this.isProcessing) {
+      return
+    }
+
+    let that = this;
+    that.isProcessing = true;
+
+    this.modalService.success({
+      title: 'Tạo trả hàng',
+      content: 'Bạn có muốn xác nhận tạo trả hàng',
+      onOk: () => {
+          let model = { id: parseInt(that.id) };
+
+          that.fastSaleOrderService.getActionRefund(model).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+              that.message.success('Tạo trả hàng thành công!');
+              that.isProcessing = false;
+              this.loadData();
+          }, error => {
+              that.message.error(`${error?.error.message}`);
+              that.isProcessing = false;
+          })
+      },
+      onCancel: () => { that.isProcessing = false; },
+      okText: "Xác nhận",
+      cancelText: "Đóng",
+    });
   }
-  editBill(){
-    this.stagePayment = 'draft';
-    this.isStatusStep = 'process';
+
+  onSavePrint(type: string) {
+    if (this.isProcessing) {
+      return
+    }
+
+    let that = this;
+    that.isProcessing = true;
+
+    that.modalService.success({
+      title: 'Xác nhận bán hàng',
+      content: 'Bạn có muốn xác nhận bán hàng',
+      onOk: () => {
+        let model = { ids: [parseInt(that.id)] };
+        this.isLoading = true;
+        that.fastSaleOrderService.actionInvoiceOpen(model).subscribe((res: any) => {
+          if(res && res.Success) {
+
+              that.message.success('Xác nhận bán hàng thành công!');
+
+              let obs: TDSSafeAny;
+              switch (type) {
+                case "print":
+                  obs = that.printerService.printUrl(`/fastsaleorder/print?ids=${that.id}`);
+                  break;
+
+                case "printship":
+                  if(this.dataModel.Carrier) {
+                    obs = that.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=` + `${that.id}` + "&carrierid=" + `${that.dataModel.Carrier.Id}`);
+                  } else {
+                    obs = that.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${that.id}`);
+                  }
+                  break;
+                default: break;
+              }
+
+              if (TDSHelperObject.hasValue(obs)) {
+                that.isProcessing = true;
+                obs.pipe(takeUntil(that._destroy)).subscribe((res: TDSSafeAny) => {
+                  that.printerService.printHtml(res);
+                  that.isProcessing = false;
+                  this.isLoading = false;
+                })
+              }
+
+              this.loadData();
+              this.loadInventoryIds();
+          }
+        }, error => {
+            this.isLoading = false;
+            that.message.error(`${error.error.message || 'Xác nhận bán hàng thất bại'}`);
+        })
+      },
+      onCancel: () => { that.isProcessing = false; },
+      okText: "Xác nhận",
+      cancelText: "Đóng",
+    });
+  }
+
+  loadInventoryIds(){
+    let ids: any = [];
+    let data = this.dataModel.OrderLines;
+    if(data) {
+      data.forEach((x: any) => {
+        if (!ids.includes(x.ProductId)) {
+            ids.push(x.ProductId);
+        }
+      });
+    }
+
+    let warehouseId = this.dataModel.WarehouseId;
+    this.commonService.getInventoryByIds(warehouseId, ids).subscribe((res: any) => {
+      this.message.success('Cập nhật tồn kho thành công!');
+    }, error => {
+      this.message.error(`${error.error.message || 'Cập nhật tồn kho thất bại'}`);
+    })
+  }
+
+  onCreate(){
+    this.router.navigateByUrl('bill/create');
+  }
+
+  onEdit(){
+    this.router.navigateByUrl(`bill/edit/${this.id}`);
   }
 
   ngOnDestroy(): void {
