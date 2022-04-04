@@ -130,5 +130,36 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
+  getActionCancel(data: TDSSafeAny): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.ActionCancel`,
+        method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  getActionRefund(data: TDSSafeAny): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.ActionRefund`,
+        method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  getSendToShipper(data: TDSSafeAny): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.SendToShipper`,
+        method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  getRegisterPayment(data: TDSSafeAny): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.getRegisterPayment?$expand=Partner`,
+        method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
 
 }

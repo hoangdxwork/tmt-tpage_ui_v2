@@ -12,25 +12,27 @@
                   </div>
               </div>
               <div class="flex gap-x-2">
-                  <button tds-button color="primary" *ngIf="dataModel.State == 'draft'"
+                  <button tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" (click)="onSavePrint('print')"
                       class="mr-2" (click)="comfirmAndPrint()">Xác nhận và in (F9)</button>
-                  <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'"
+                  <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button"  (click)="onSavePrint('printship')"
                       class="mr-2" (click)="comfirmAndPrint()">Xác nhận và in ship</button>
-                  <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'"
+                  <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button"  (click)="onSavePrint('confirm')"
                       class="mr-2" (click)="comfirmAndPrint()">Xác nhận và xem (F8)</button>
-                  <button  tds-button color="primary" *ngIf="dataModel.State == 'open'"
+
+                  <button  tds-button color="primary" *ngIf="dataModel.State == 'open'" type="button"
                       class="mr-2" (click)="showModalRegisterPayment()">
                       <span class="flex items-center">
                           <i class="tdsi-revenue-fill text-lg leading-none mr-2"></i>Thanh toán
                       </span>
                   </button>
-                  <button tds-button color="primary"  *ngIf="dataModel.State !== 'cancel' && dataModel.State !== 'draft' && !dataModel.TrackingRef"
-                      class="mr-2" (click)="sendBill()">
+                  <button tds-button type="button" color="primary"  *ngIf="dataModel.State !== 'cancel' && dataModel.State !== 'draft' && dataModel.Carrier != null && !dataModel.TrackingRef"
+                      class="mr-2" (click)="sendToShipper()">
                       <span class="flex items-center">
                           <i class="tdsi-transport-fill text-lg leading-none mr-2"></i>Gửi vận đơn
                       </span>
                   </button>
-                  <button tds-button color="primary" class="mr-2" *ngIf="!(dataModel.Type  =='refund' || ['open', 'paid'].indexOf(dataModel.State) === -1)">
+                  <button type="button"  tds-button color="primary" class="mr-2"  (click)="actionRefund()"
+                  *ngIf="!(dataModel.Type  =='refund' || ['open', 'paid'].indexOf(dataModel.State) === -1)">
                       <span class="flex items-center">
                           <i class="tdsi-reply-fill text-lg leading-none mr-2"></i>Tạo trả hàng
                       </span>
@@ -41,21 +43,19 @@
                       </span>
                   </button> -->
 
-                  <button tds-button color="info" class="mr-2" routerLink="/bill/create">
+                  <button type="button" tds-button color="info" class="mr-2" (click)="onCreate()">
                       <span class="flex items-center">
                           <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
                       </span>
                   </button>
-                  <button tds-button color="secondary" class="mr-2" (click)="editBill()" *ngIf="dataModel.State !== 'draft' || dataModel.State !== 'cancel'">
+                  <button type="button"  tds-button color="secondary" class="mr-2" (click)="onEdit()" *ngIf="dataModel.State !== 'draft' || dataModel.State !== 'cancel'">
                       <span class="flex items-center">
                           <i class="tdsi-edit-fill text-lg leading-none mr-2"></i>Chỉnh sửa
                       </span>
                   </button>
-                  <button tds-button color="error" *ngIf="dataModel.State =='open' || dataModel.State === 'paid'"
-                      class="mr-2" (click)="cancelBill()">
-                      <span class="flex items-center">
-                          Hủy hóa đơn
-                      </span>
+                  <button type="button"  tds-button color="error" *ngIf="dataModel.State =='open' || dataModel.State === 'paid'"
+                      class="mr-2" (click)="actionCancel()">
+                      <span class="flex items-center"> Hủy hóa đơn </span>
                   </button>
               </div>
           </div>
@@ -75,7 +75,7 @@
                       <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In giao hàng
                   </span>
               </button>
-              <button tds-button color="secondary" class="mr-2" *ngIf="dataModel.Type === 'invoice'" (click)="print('ship')">
+              <button tds-button color="secondary" class="mr-2" *ngIf="dataModel.Type === 'invoice' && dataModel.Carrier" (click)="print('ship')">
                   <span class="flex items-center">
                       <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In phiếu ship
                   </span>
@@ -290,7 +290,7 @@
                           </div>
                           <div class="flex mb-5" *ngFor="let payment of payments">
                               <span class="w-1/2 flex items-center  justify-end" >
-                                  <span class="tdsi-information-fill mr-2 text-info-500 text-xl leading-5"
+                                  <span class="tdsi-information-fill mr-2 text-info-500 text-xl leading-5" type="button"
                                       tds-button tds-popover popoverTrigger="click" popoverTitle="Thông tin thanh toán"
                                       [(popoverVisible)]="popoverVisible" [popoverContent]="infoPricePay">
                                   </span>

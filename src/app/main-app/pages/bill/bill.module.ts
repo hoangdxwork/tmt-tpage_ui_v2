@@ -25,6 +25,7 @@ import { TDSNotificationModule } from 'tmt-tang-ui';
 import { AccountRegisterPaymentService } from '../../services/account-register-payment..service';
 import { ModalSearchPartnerComponent } from './components/modal-search-partner/modal-search-partner.component';
 import { ModalAddProductComponent } from './components/modal-add-product/modal-add-product.component';
+import { CommonService } from '../../services/common.service';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -33,7 +34,8 @@ const SERVICES = [
   DeliveryCarrierService,
   PrinterService,
   ExcelExportService,
-  AccountRegisterPaymentService
+  AccountRegisterPaymentService,
+  CommonService,
 ]
 
 @NgModule({
