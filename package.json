@@ -24,7 +24,7 @@
     "echarts": "^5.2.2",
     "rxjs": "~6.6.0",
     "tds-report": "https://tang-ui.tpos.dev/lib/tds-report-1.1.0.tgz",
-    "tmt-tang-ui": "https://tang-ui.tpos.dev/lib/tmt-tang-ui-1.2.1.tgz",
+    "tmt-tang-ui": "https://tang-ui.tpos.dev/lib/tmt-tang-ui-1.2.2.tgz",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },
