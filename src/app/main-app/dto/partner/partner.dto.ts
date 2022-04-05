@@ -1,123 +1,61 @@
-import { AccountDTO, AccountPaymentTermDTO } from '../account/account.dto';
-import { AddressDTO } from '../address/address.dto';
-import { StockLocationDTO } from '../product/warehouse.dto';
-import { TagDTO } from '../tag/tag.dto';
+
+export interface ODataPartnerDTO {
+  "@odata.context"?: string,
+  "@odata.count"?: number,
+  value: Array<PartnerDTO>
+}
 
 export interface PartnerDTO {
-  id: number;
-  name: string;
-  displayName: string;
-  street: string;
-  website: string;
-  _phone: string;
-
-  addresses: Array<AddressDTO>;
-
-  phone: string;
-  phoneReport?: boolean;
-  mobile: string;
-  fax: string;
-  email: string;
-  supplier?: boolean;
-  customer?: boolean;
-  isContact?: boolean;
-  isCompany?: boolean;
-  companyId?: number;
-  ref: string;
-  comment: string;
-
-  //salesperson
-  userId: string;
-  active?: boolean;
-  employee?: boolean;
-
-  // Mã số thuế
-  taxCode: string;
-  parentId?: number;
-  purchaseCurrencyId?: number;
-  purchaseCurrency: ResCurrencyDTO;
-
-  // Tổng số tiền khách hàng này nợ bạn.
-  credit?: number;
-
-  //Tổng số tiền bạn phải trả cho nhà cung cấp này.
-  debit?: number;
-  titleId?: number;
-  title: PartnerTitleDTO;
-  function: string;
-  type: string;
-  companyType: string;
-  childs: Array<PartnerDTO>;
-  categories: Array<PartnerCategoryDTO>;
-  accountReceivableId?: number;
-  accountReceivable: AccountDTO;
-  accountPayableId?: number;
-  accountPayable: AccountDTO;
-  stockCustomerId?: number;
-  stockCustomer: StockLocationDTO;
-  stockSupplierId?: number;
-  stockSupplier: StockLocationDTO;
-  city: PartnerCityDTO;
-  district: PartnerDistrictDTO;
-  ward: PartnerWardDTO;
-  barcode: string;
-  overCredit: boolean;
-  creditLimit?: number;
-  propertyProductPricelistId?: number;
-  propertyProductPricelist?: number;
-
-  // Social Network
-  zalo: string;
-  facebook: string;
-  facebookId: string;
-  facebookASIds: string;
-  facebookPSId: string;
-
-  ///string base 64
-  image: string;
-  imageUrl: string;
-  lastUpdated?: Date;
-
-  loyaltyPoints?: number;
-  discount?: number;
-  amountDiscount?: number;
-
-  categoryNames: string;
-
-  partnerCategoryId?: number;
-  partnerCategoryName: string;
-  nameNoSign: string;
-
-  // Customer Payment Term
-  propertyPaymentTerm: AccountPaymentTermDTO;
-  propertyPaymentTermId?: number;
-
-  /// Supplier Payment Term
-  propertySupplierPaymentTerm: AccountPaymentTermDTO;
-  propertySupplierPaymentTermId?: number;
-  categoryId: number;
-  dateCreated?: Date;
-  birthDay?: Date;
-  depositAmount?: number;
-
-  status: PartnerStatus;
-
-  // Description Status
-  statusText: string;
-
-  statusStyle: string;
-  zaloUserId: string;
-  zaloUserName: string;
-
-  cityCode: string;
-  cityName: string;
-  districtCode: string;
-  districtName: string;
-  wardCode: string;
-  wardName: string;
-
-  fullAddress: string;
-
+  NameNetwork: string;
+  FullAddress: string;
+  Ward_District_City: string;
+  Tags: string;
+  Id: number;
+  Name: string;
+  DisplayName: string;
+  Street: string;
+  Website: string;
+  Phone: string;
+  Fax?: any;
+  Email: string;
+  Supplier: boolean;
+  Customer: boolean;
+  IsContact?: any;
+  IsCompany: boolean;
+  CompanyId: number;
+  Ref: string;
+  Comment: string;
+  UserId?: any;
+  Active: boolean;
+  TaxCode?: any;
+  Credit: number;
+  Debit: number;
+  Type: string;
+  CompanyType: string;
+  CityName: string;
+  CityCode: string;
+  DistrictName: string;
+  DistrictCode: string;
+  WardName: string;
+  WardCode: string;
+  Zalo: string;
+  Facebook: string;
+  FacebookId: string;
+  FacebookASIds?: any;
+  ImageUrl: string;
+  LastUpdated: Date;
+  LoyaltyPoints?: any;
+  Discount: number;
+  PartnerCategoryId?: number;
+  NameNoSign: string;
+  DateCreated: Date;
+  BirthDay?: Date;
+  Status: string;
+  StatusText: string;
+  ZaloUserId?: any;
+  ZaloUserName?: any;
+  PartnerCategoryName: string;
+  CreatedByName: string;
 }
 
 export interface PartnerTitleDTO {
@@ -176,16 +114,6 @@ export class ResCurrencyDTO {
     }
     return 0;
   }
-
-}
-
-export interface TagPartnerDTO {
-  Id: number;
-  TagId: number;
-  Color: string;
-  Tags: Array<TagDTO>;
-  PartnerId: number;
-  TagName: string;
 }
 
 export interface ResRevenueCustomerDTO { // /odata/Partner/OdataService.GetPartnerRevenueById?key=14
@@ -221,5 +149,10 @@ export enum PartnerStatus {
   Vip1 = 4, // Khách sỉ
   Primary = 5, // Vip
   Info = 6, // Thân thiết
+}
+
+export interface StatusDTO {
+  value: string;
+  text: string;
 }
 

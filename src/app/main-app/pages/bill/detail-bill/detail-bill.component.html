@@ -48,7 +48,7 @@
                           <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
                       </span>
                   </button>
-                  <button type="button"  tds-button color="secondary" class="mr-2" (click)="onEdit()" *ngIf="dataModel.State !== 'draft' || dataModel.State !== 'cancel'">
+                  <button type="button"  tds-button color="secondary" class="mr-2" (click)="onEdit()" *ngIf="dataModel.State != ('draft' ||  'cancel')">
                       <span class="flex items-center">
                           <i class="tdsi-edit-fill text-lg leading-none mr-2"></i>Chỉnh sửa
                       </span>
@@ -160,7 +160,7 @@
                               <span>Phí giao hàng</span>
                           </div>
                           <div class="w-2/3 flex gap-x-6">
-                              <span class="font-semibold">{{dataModel.PriceList?.DeliveryPrice || 0 | number :'1.0-3'}} đ</span>
+                              <span class="font-semibold">{{dataModel.DeliveryPrice || 0 | number :'1.0-3'}} đ</span>
                               <div class="rounded-full bg-info-200 px-2 " *ngIf="dataModel.ShipWeight">
                                   <span class="text-info-500 font-semibold flex items-center">
                                       <svg class="mr-1" width="17" height="16" viewBox="0 0 17 16" fill="none"
@@ -179,7 +179,7 @@
                               <span>Số tiền trả</span>
                           </div>
                           <div class="w-2/3">
-                              <span class="font-semibold">{{dataModel.PriceList?.PaymentAmount || 0 | number :'1.0-3'}} đ</span>
+                              <span class="font-semibold">{{dataModel.PaymentAmount || 0 | number :'1.0-3'}} đ</span>
                           </div>
                       </div>
                       <div class="flex gap-x-6 items-center">
@@ -219,7 +219,7 @@
                               <span>Tham chiếu</span>
                           </div>
                           <div class="w-2/3">
-                              <span class="font-semibold">{{dataModel.Team?.Reference}}</span>
+                              <span class="font-semibold">{{dataModel.Reference}}</span>
                           </div>
                       </div>
                   </div>

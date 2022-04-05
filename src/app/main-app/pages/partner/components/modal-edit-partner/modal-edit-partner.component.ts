@@ -4,9 +4,11 @@ import { FormGroup, FormBuilder, FormControl, FormArray } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { TDSModalRef, TDSModalService, TDSHelperObject, TDSMessageService } from 'tmt-tang-ui';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { format } from 'date-fns';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { formatDate } from '@angular/common';
+import { CheckAddressDTO, DataSuggestionDTO } from 'src/app/main-app/dto/address/address.dto';
+import { PartnerDetailDTO } from 'src/app/main-app/dto/partner/partner-detail.dto';
+import { PartnerCategoryDTO, StatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 
 @Component({
   selector: 'app-modal-edit-partner',
@@ -17,38 +19,23 @@ import { formatDate } from '@angular/common';
 export class ModalEditPartnerComponent implements OnInit {
 
   @Input() partnerId: any;
-  data: any = {};
+
+  data!: PartnerDetailDTO;
   isLoading: boolean = false;
 
   _form!: FormGroup;
-  lstCategory: any = [];
-  lstStatus: any = [];
-  lstPrice: any = [];
+  lstCategory: Array<PartnerCategoryDTO> = [];
+  lstStatus: Array<StatusDTO> = [];
+  lstPrice: Array<PartnerCategoryDTO> = [];
 
   formAddPartner!: FormGroup
-  dataGroupPartner = [
-    { id: 1, value: 'nhóm 1' },
-    { id: 2, value: 'nhóm 2' },
-    { id: 3, value: 'nhóm 3' },
-  ]
-  dataStatusPartner = [
-    { id: 1, value: 'status 1' },
-    { id: 2, value: 'status 2' },
-  ]
+  dataSuggestion!: DataSuggestionDTO;
 
   formatterPercent = (value: number) => `${value} %`;
   parserPercent = (value: string) => value.replace(' %', '');
   formatterVND = (value: number) => `${value} VNĐ`;
   parserVND = (value: string) => value.replace(' VNĐ', '');
 
-  listDataAddress = [{
-    id: 1,
-    address: '12 CN1, Phường Sơn Kỳ, Quận Tân Phú, Thành phố Hồ Chí Minh'
-  },
-  {
-    id: 2,
-    address: 'Lô III - 26, Đường 19/5A, Nhóm CN III, Khu công nghiệp, Tân Bình, Tân Phú, Thành phố Hồ Chí Minh'
-  }]
   constructor(private fb: FormBuilder,
     private modal: TDSModalRef,
     private message: TDSMessageService,
@@ -99,6 +86,7 @@ export class ModalEditPartnerComponent implements OnInit {
       this.isLoading = true;
 
       this.partnerService.getById(id).subscribe((res: any) => {
+          delete res['@odata.context'];
           this.data = res;
 
           if(this.data.BirthDay) {
@@ -144,12 +132,6 @@ export class ModalEditPartnerComponent implements OnInit {
     })
   }
 
-  submitAddPartner() {
-    if (!this.formAddPartner.invalid) {
-      this.modal.destroy(this.formAddPartner.value);
-      console.log(this.formAddPartner.value)
-    }
-  }
   onChange(result: Date): void {
     console.log('onChange: ', result);
   }
@@ -206,6 +188,40 @@ export class ModalEditPartnerComponent implements OnInit {
     });
   }
 
+  updateSuggestion(data: any) {
+    let model: DataSuggestionDTO = {
+      Street: data.Street,
+      CityCode: data.CityCode,
+      CityName: data.CityName,
+      DistrictCode: data.DistrictCode,
+      DistrictName: data.DistrictName,
+      WardCode: data.WardCode,
+      WardName: data.WardName,
+    }
+
+    this.dataSuggestion = model;
+  }
+
+  onChangeAddress(event: CheckAddressDTO) {
+    const formModel = this._form.controls;
+    formModel["Street"].setValue(event.street);
+
+    formModel["City"].setValue( event.city ? {
+      code: event.city?.code,
+      name: event.city?.name
+    } : null);
+
+    formModel["District"].setValue( event.district ? {
+      code: event.district?.code,
+      name: event.district?.name,
+    } : null);
+
+    formModel["Ward"].setValue( event.ward ? {
+      code: event.ward?.code,
+      name: event.ward?.name,
+    } : null);
+  }
+
   prepareModel() {
     const formModel = this._form.value;
 
@@ -234,7 +250,7 @@ export class ModalEditPartnerComponent implements OnInit {
         this.data['Active'] = formModel.Active as boolean;
     }
     if(formModel.Phone != null) {
-        this.data['Phone'] =formModel.Phone as boolean;
+        this.data['Phone'] = formModel.Phone as string;
     }
     if(formModel.Email != null) {
         this.data['Email'] = formModel.Email;

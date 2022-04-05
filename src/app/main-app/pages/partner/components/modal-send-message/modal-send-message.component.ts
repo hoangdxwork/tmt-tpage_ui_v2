@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { ModalSampleMessageComponent } from '../modal-sample-message/modal-sample-message.component';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { TDSModalRef, TDSModalService, TDSHelperObject, TDSTabsCanDeactivateFn } from 'tmt-tang-ui';
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 
 @Component({
   selector: 'app-modal-send-message',
@@ -10,6 +10,9 @@ import { Component, OnInit, ViewContainerRef } from '@angular/core';
   styleUrls: ['./modal-send-message.component.scss']
 })
 export class ModalSendMessageComponent implements OnInit {
+
+  @Input() ids: any[] = []
+
   formSendMessageFacebook!: FormGroup
   formSendMessageSMS!: FormGroup
   isTableSendMessageFacebook = false
@@ -28,12 +31,10 @@ export class ModalSendMessageComponent implements OnInit {
   listSendMessageFacebook = [
     {namePartner: 'Nhi Pham', phone:'0908910425', nameFacebook: 'Nhi Pham', contentMessage: 'Tổng đơn hàng cuả bạn là: {order.total_amount}', pageFacebook: 'le`S Page'}
   ]
-  constructor(
-    private modal: TDSModalRef,
+  constructor(private modal: TDSModalRef,
     private fb: FormBuilder,
     private modalService: TDSModalService,
-    private viewContainerRef: ViewContainerRef
-  ) { }
+    private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
     this.formSendMessageFacebook = this.fb.group({
@@ -92,10 +93,10 @@ export class ModalSendMessageComponent implements OnInit {
   }
 
   // xử lý gửi tin nhắn facebook
-  
+
   // xử lý chọn title tab
   canDeactivate: TDSTabsCanDeactivateFn = (fromIndex: number, toIndex: number) => {
-    
+
     switch (fromIndex) {
       case 0:{
         this.indexTab =1

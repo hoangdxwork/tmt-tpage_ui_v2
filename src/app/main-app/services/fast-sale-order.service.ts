@@ -5,6 +5,8 @@ import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { DataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
+import { FastSaleOrderSummaryStatusDTO } from '../dto/bill/bill.dto';
+import { ODataPaymentJsonDTO } from '../dto/bill/payment-json.dto';
 import { PagedList2 } from '../dto/pagedlist2.dto';
 import { CRMTeamDTO } from '../dto/team/team.dto';
 import { BaseSevice } from './base.service';
@@ -46,7 +48,7 @@ export class FastSaleOrderService extends BaseSevice {
         method: TApiMethodType.post,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api,data);
+    return this.apiService.getData<Array<FastSaleOrderSummaryStatusDTO>>(api,data);
   }
 
   assignTagFastSaleOrder(data: TDSSafeAny): Observable<TDSSafeAny> {
@@ -122,12 +124,12 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  getPaymentInfoJson(key: TDSSafeAny): Observable<any> {
+  getPaymentInfoJson(key: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})/OdataService.GetPaymentInfoJson`,
         method: TApiMethodType.get
     }
-    return this.apiService.getData<TDSSafeAny>(api, null);
+    return this.apiService.getData<ODataPaymentJsonDTO>(api, null);
   }
 
   getActionCancel(data: TDSSafeAny): Observable<any> {

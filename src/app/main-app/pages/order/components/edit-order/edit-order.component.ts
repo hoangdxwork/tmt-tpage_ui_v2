@@ -36,8 +36,7 @@ export class EditOrderComponent implements OnInit {
   lstInventory!: GetInventoryDTO;
   lstUser!: Array<ApplicationUserDTO>;
 
-  constructor(
-    private modal: TDSModalService,
+  constructor(private modal: TDSModalService,
     private modalRef: TDSModalRef,
     private fb: FormBuilder,
     private auth: TAuthService,
@@ -46,8 +45,7 @@ export class EditOrderComponent implements OnInit {
     private saleOnline_FacebookCommentService: SaleOnline_FacebookCommentService,
     private deliveryCarrierService: DeliveryCarrierService,
     private productService: ProductService,
-    private applicationUserService: ApplicationUserService
-  ) { }
+    private applicationUserService: ApplicationUserService) { }
 
   ngOnInit(): void {
     this.createForm();
