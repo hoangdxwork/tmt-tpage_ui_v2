@@ -1,5 +1,6 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
-import { Component, OnInit } from '@angular/core';
+import { AutoChatAddDataModalComponent } from './auto-chat-add-data-modal/auto-chat-add-data-modal.component';
+import { TDSSafeAny, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
+import { Component, OnInit, ViewContainerRef } from '@angular/core';
 
 @Component({
   selector: 'app-config-auto-chat',
@@ -11,7 +12,8 @@ export class ConfigAutoChatComponent implements OnInit {
   expandBtnList:Array<boolean> = [];
   isLoading = false;
 
-  constructor() { }
+  constructor(private modalService: TDSModalService, 
+    private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
     this.loadData();
@@ -148,8 +150,25 @@ export class ConfigAutoChatComponent implements OnInit {
     
   }
 
-  onAddNewTag(data:TDSSafeAny){
+  onAddNewData(data:TDSSafeAny){
+    const modal = this.modalService.create({
+      title: 'Thêm mới trả lời nhanh',
+      content: AutoChatAddDataModalComponent,
+      viewContainerRef: this.viewContainerRef,
+      size:'lg',
+      componentParams: {
+          data: {}
+      }
+    });
+    modal.afterOpen.subscribe(() => {
 
+    });
+    // Return a result when closed
+    modal.afterClose.subscribe(result => {
+        if (TDSHelperObject.hasValue(result)) {
+          this.AutoChatList.push(result);
+        }
+    });
   }
 
   onChangeStatus(value:boolean,index:number){

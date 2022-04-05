@@ -62,7 +62,8 @@ export class EditDataModalComponent implements OnInit {
 
     onSubmit() {
         if (!this.editForm.invalid) {
-            this.modal.destroy(this.editForm.value);
+            this.data.name = this.editForm.value.name
+            this.modal.destroy(this.data);
         }
     }
 

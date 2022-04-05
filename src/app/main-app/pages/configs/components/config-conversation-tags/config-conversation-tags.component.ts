@@ -1,3 +1,4 @@
+import { FormControl } from '@angular/forms';
 import { EditDataModalComponent } from './edit-data-modal/edit-data-modal.component';
 import { TDSSafeAny, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
@@ -8,6 +9,8 @@ import { Component, OnInit, ViewContainerRef } from '@angular/core';
   styleUrls: ['./config-conversation-tags.component.scss']
 })
 export class ConfigConversationTagsComponent implements OnInit {
+  filterForm!:FormControl;
+  TableData:Array<TDSSafeAny> = [];
   TagList:Array<TDSSafeAny> = [];
   colorList:string[] = [];
   isLoading = false;
@@ -15,6 +18,7 @@ export class ConfigConversationTagsComponent implements OnInit {
   constructor(private modalService: TDSModalService,private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
+    this.filterForm = new FormControl('');
     this.loadData();
   }
 
@@ -147,6 +151,8 @@ export class ConfigConversationTagsComponent implements OnInit {
         status:true,
       },
     ];
+
+    this.TableData = this.TagList;
   }
 
   showEditModal(index:number): void {
@@ -156,20 +162,39 @@ export class ConfigConversationTagsComponent implements OnInit {
         content: EditDataModalComponent,
         viewContainerRef: this.viewContainerRef,
         componentParams: {
+            //send data to edit modal
             data: {
               name:data.name,
               color:data.color,
             },
         }
     });
-    // modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
-    // // Return a result when closed
-    // modal.afterClose.subscribe(result => {
-    //     console.log('[afterClose] The result is:', result);
-    //     if (TDSHelperObject.hasValue(result)) {
-    //         this.colorList = Object.assign(this.colorList, result);
-    //     }
-    // });
+    modal.afterOpen.subscribe(() => {
+
+    });
+    //receive result from edit modal after close modal
+    modal.afterClose.subscribe(result => {
+        if (TDSHelperObject.hasValue(result)) {
+          //get new changed value
+            this.TagList[index] = Object.assign(this.TagList[index],result);
+        }
+    });
+  }
+
+  showRemoveModal(index:number): void {
+    const modal = this.modalService.error({
+        title: 'Xác nhận xóa thẻ',
+        content: 'Bạn có chắc muốn xóa thẻ này không?',
+        iconType:'tdsi-trash-fill',
+        onOk: () => {
+          //remove item
+        },
+        onCancel:()=>{
+          modal.close();
+        },
+        okText:"Xác nhận",
+        cancelText:"Hủy bỏ"
+    });
   }
 
   doFilter(event:TDSSafeAny){
