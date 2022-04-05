@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FacebookGraphMessageDTO } from 'src/app/main-app/dto/conversation/message.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -11,6 +12,55 @@ import { TDSSafeAny } from 'tmt-tang-ui';
   styleUrls: ['./conversation-all.component.scss']
 })
 export class ConversationAllComponent extends TpageBaseComponent {
+  selectedIndex = 2;
+  // Đơn hàng 
+  name = new FormControl('', [Validators.required]);
+  phoneNumber = new FormControl('', [Validators.required, Validators.pattern(/^[0-9]{10}$/i)]);
+  email = new FormControl('', [Validators.required, Validators.email]);
+  nameSelect = new FormControl('', [Validators.required]);
+  note = new FormControl('', [Validators.required]);
+  noteProduct = new FormControl('', [Validators.required]);
+  soLuongProduct = new FormControl('', [Validators.required]);
+  giaBanProduct = new FormControl('', [Validators.required]);
+  giamGia = new FormControl('', [Validators.required]);
+  thue = new FormControl('', [Validators.required]);
+  tienCoc = new FormControl('', [Validators.required]);
+  khuyenMai = new FormControl('', [Validators.required]);
+  thanhToan = new FormControl('', [Validators.required]);
+  DTGH = new FormControl('', [Validators.required]);
+  dichVu = new FormControl('', [Validators.required]);
+  khoiLuong = new FormControl('', [Validators.required]);
+  phiGH = new FormControl('', [Validators.required]);
+  tienThuHo = new FormControl('', [Validators.required]);
+  notGH = new FormControl('', [Validators.required]);
+  // select đối tác giao hàng
+  public listDTGiaoHang = [
+    { id: 1, name: 'DHL' },
+    { id: 2, name: 'Elvis Presley' },
+    { id: 3, name: 'Paul McCartney' },
+    {id: 4, name: 'Elton John' },
+    { id: 5, name: 'Elvis Presley' },
+    { id: 6, name: 'Paul McCartney' },
+]
+  // select dich vu
+  public listDichVu = [
+    { id: 1, name: 'Giao hàng tiêu chuẩn' },
+    { id: 2, name: 'Elvis Presley' },
+    { id: 3, name: 'Paul McCartney' },
+    {id: 4, name: 'Elton John' },
+    { id: 5, name: 'Elvis Presley' },
+    { id: 6, name: 'Paul McCartney' },
+]
+
+  // select thông tin khách hàng
+  public contactCustomer = [
+    { id: 1, name: 'Nguyen Binh' },
+    { id: 2, name: 'Elvis Presley' },
+    { id: 3, name: 'Paul McCartney' },
+    { id: 4, name: 'Elton John' },
+    { id: 5, name: 'Elvis Presley' },
+    { id: 6, name: 'Paul McCartney' },
+]
   // select Page QAXK Nhiên Trung
   public contact:number = 1;
   public contactOptions = [
@@ -23,9 +73,73 @@ export class ConversationAllComponent extends TpageBaseComponent {
   ]
   // search
   inputValue?: string;
+  // Đơn hàng
+// table đơn hàng
+listOfData = [
+  {
+    id: '1',
+    name: '[SP0748] Gạo (Bao)',
+    color: 'text-info-500',
+    text: 'Ghi chú',
+    icon: '',
+    style:'not-italic',
+  }, 
+  {
+    id: '2',
+    name: '[SP0748] Gạo (Bao)',
+    color: 'text-neutral-1-400',
+    text: 'Ghi chú sản phẩm',
+    icon: 'tdsi-edit-line',
+    style:'italic',
+  },
+  {
+    id: '3',
+    name: '[SP0748] Gạo (Bao)',
+    color: 'text-info-500',
+    text: 'Ghi chú',
+    icon: '',
+    style:'not-italic',
+  }, 
+  {
+    id: '4',
+    name: '[SP0748] Gạo (Bao)',
+    color: 'text-info-500',
+    text: 'Ghi chú',
+    icon: '',
+    style:'not-italic',
+  }, 
+  {
+    id: '5',
+    name: '[SP0748] Gạo (Bao)',
+    color: 'text-neutral-1-400',
+    text: 'Ghi chú sản phẩm',
+    icon: 'tdsi-edit-line',
+    style:'italic',
+  },
+  {
+    id: '6',
+    name: '[SP0748] Gạo (Bao)',
+    color: 'text-info-500',
+    text: 'Ghi chú',
+    icon: '',
+    style:'not-italic',
+  },    
+];
 
+editNoteProduct: string | null = null;
+startEdit(id: string): void {
+  this.editNoteProduct = id;
+}
+
+stopEdit(): void {
+  this.editNoteProduct = null;
+}
+// 
   listData: Array<TDSSafeAny> = []
-  constructor(public crmService: CRMTeamService, public activatedRoute: ActivatedRoute, public router: Router) {
+
+  constructor(public crmService: CRMTeamService, 
+              public activatedRoute: ActivatedRoute, 
+              public router: Router,private fb: FormBuilder) {
     super(crmService, activatedRoute, router);
     this.type ="all"
   }
@@ -268,5 +382,6 @@ export class ConversationAllComponent extends TpageBaseComponent {
 // dropdown-customer
   log(str: any){
     console.log(str)
-}
+  }
+
 }

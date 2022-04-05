@@ -8,9 +8,9 @@ import { ConversationPartnerComponent } from './conversation-partner/conversatio
 import { ConversationCommentComponent } from './conversation-comment/conversation-comment.component';
 import { ConversationInboxComponent } from './conversation-inbox/conversation-inbox.component';
 import { MainSharedModule } from '../../shared/shared.module';
-import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSButtonMenuModule, TDSButtonModule, TDSCollapseModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSPopoverModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTabsModule, TDSTagModule } from 'tmt-tang-ui';
+import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSPopoverModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTabsModule, TDSTagModule } from 'tmt-tang-ui';
 import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conversations.module';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -26,6 +26,7 @@ import { FormsModule } from '@angular/forms';
     ConversationsRoutingModule,
     MainSharedModule,
     TDSConversationsModule,
+    ReactiveFormsModule,
     FormsModule,
     TDSAvatarModule,
     TDSSelectModule,
@@ -40,7 +41,9 @@ import { FormsModule } from '@angular/forms';
     TDSButtonMenuModule,
     TDSDropDownModule,
     TDSCollapseModule,
-    TDSFilterStatusModule
+    TDSFilterStatusModule,
+    TDSTableModule,
+    TDSCheckBoxModule
   ]
 })
 export class ConversationsModule { }
