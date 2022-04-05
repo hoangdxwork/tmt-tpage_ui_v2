@@ -1,15 +1,15 @@
 export interface AddressDTO {
-  id: string;
-  partnerId?: number;
-  cityCode: string;
-  cityName: string;
-  districtCode: string;
-  districtName: string;
-  wardCode: string;
-  wardName: string;
-  isDefault?: boolean;
-  street: string;
-  address: string;
+  Id: string;
+  PartnerId?: number;
+  CityCode: string;
+  CityName: string;
+  DistrictCode: string;
+  DistrictName: string;
+  WardCode: string;
+  WardName: string;
+  IsDefault?: boolean;
+  Street: string;
+  Address: string;
 }
 
 export interface DataSuggestionDTO {
@@ -23,10 +23,10 @@ export interface DataSuggestionDTO {
 }
 
 export interface CheckAddressDTO {
-  street: string;
-  city?: CityDTO;
-  district?: DistrictDTO;
-  ward?: WardDTO;
+  Street: string;
+  City?: CityDTO;
+  District?: DistrictDTO;
+  Ward?: WardDTO;
 }
 
 export interface CityDTO {

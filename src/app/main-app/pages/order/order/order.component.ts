@@ -12,6 +12,9 @@ import { TagService } from 'src/app/main-app/services/tag.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { EditOrderComponent } from '../components/edit-order/edit-order.component';
+import { CreateBillFastComponent } from '../components/create-bill-fast/create-bill-fast.component';
+import { CreateBillDefaultComponent } from '../components/create-bill-default/create-bill-default.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-order',
@@ -72,6 +75,7 @@ export class OrderComponent implements OnInit {
 
   constructor(
     private tagService: TagService,
+    private router: Router,
     private modal: TDSModalService,
     private message: TDSMessageService,
     private viewContainerRef: ViewContainerRef,
@@ -210,8 +214,40 @@ export class OrderComponent implements OnInit {
 
   }
 
-  onCreateInvoice() {
+  onCreateBillFast() {
+    if (this.checkValueEmpty() == 1) {
+      let ids = [...this.setOfCheckedId];
+      this.modal.create({
+        title: 'Tạo hóa đơn nhanh',
+        content: CreateBillFastComponent,
+        centered: true,
+        size: 'xl',
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          ids: ids,
+        }
+      });
+    }
+  }
 
+  onCreateBillDefault() {
+    if (this.checkValueEmpty() == 1) {
+      let ids = [...this.setOfCheckedId];
+      this.modal.create({
+        title: 'Tạo hóa đơn với sản phẩm mặc định',
+        content: CreateBillDefaultComponent,
+        centered: true,
+        size: 'xl',
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          ids: ids,
+        }
+      });
+    }
+  }
+
+  onUrlCreateInvoiceFast() {
+    this.router.navigateByUrl(`bill/create-default`);
   }
 
   checkPhone(phone: string) {
@@ -376,6 +412,17 @@ export class OrderComponent implements OnInit {
           idOrder: id
         }
       });
+  }
+
+  checkValueEmpty() {
+    let ids = [...this.setOfCheckedId];
+
+    if (ids.length == 0) {
+      this.message.error('Vui lòng chọn tối thiểu một dòng!');
+      return 0;
+    }
+
+    return 1;
   }
 
   ngOnDestroy(): void {

@@ -18,7 +18,6 @@ import { TpageAddCategoryComponent } from './tpage-add-category/tpage-add-catego
 import { TpageSearchUOMComponent } from './tpage-search-uom/tpage-search-uom.component';
 import { TpageAddUOMComponent } from './tpage-add-uom/tpage-add-uom.component';
 
-
 const cmp =[
   TpageTeamDropdownComponent,
   TpageBaseComponent,

@@ -44,4 +44,13 @@ export class CommonService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api,null);
   }
 
+  getConfigs(): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/getsaleconfig`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api,null);
+  }
+
 }

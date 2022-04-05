@@ -22,6 +22,19 @@ export class FastSaleOrderService extends BaseSevice {
     super(apiService)
   }
 
+  defaultGet(): Observable<any> {
+    let typeInvoice = { "model": { "Type": "invoice" } };
+
+    let expand = `Warehouse,User,PriceList,Company,Journal,PaymentJournal,Partner,Carrier,Tax,SaleOrder`;
+
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.DefaultGet?$expand=${expand}`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, typeInvoice);
+  }
+
   getSummaryStatus(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/getsummarystatusfastsaleonline`,
@@ -29,6 +42,51 @@ export class FastSaleOrderService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api,data);
+  }
+
+  getListOrderIds(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetListOrderIds?$expand=OrderLines,Partner,Carrier`,
+        method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  create(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/create`,
+        method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  insertListOrderModel(data: TDSSafeAny, isForce = false) {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertListOrderModel?isForce=${isForce}&$expand=DataErrorFast($expand=Partner,%20OrderLines)`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  insertOrderProductDefault(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertOrderProductDefault?$expand=DataErrorDefault($expand=Partner)`,
+        method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  insertOrderProductDefaultWithForce(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/InsertOrderProductDefault?isForce=true`,
+        method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   assignTagFastSaleOrder(data: TDSSafeAny): Observable<TDSSafeAny> {
@@ -45,6 +103,7 @@ export class FastSaleOrderService extends BaseSevice {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.CancelShipIds`,
         method: TApiMethodType.post
     }
+
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
@@ -53,6 +112,7 @@ export class FastSaleOrderService extends BaseSevice {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.ActionCancel`,
         method: TApiMethodType.post
     }
+
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
@@ -61,6 +121,7 @@ export class FastSaleOrderService extends BaseSevice {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.Unlink`,
         method: TApiMethodType.post
     }
+
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
@@ -69,6 +130,7 @@ export class FastSaleOrderService extends BaseSevice {
         url: `${this._BASE_URL}/${this.baseRestApi}/sendpaymentrequest`,
         method: TApiMethodType.post
     }
+
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
@@ -77,6 +139,7 @@ export class FastSaleOrderService extends BaseSevice {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrderSendShipIds?$expand=Partner`,
         method: TApiMethodType.post
     }
+
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
@@ -85,6 +148,7 @@ export class FastSaleOrderService extends BaseSevice {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/actionSendDelivery`,
         method: TApiMethodType.post
     }
+
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
@@ -93,12 +157,22 @@ export class FastSaleOrderService extends BaseSevice {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.ActionInvoiceOpen`,
         method: TApiMethodType.post
     }
+
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   getRegisterPaymentMulti(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetRegisterPaymentMulti?$expand=Partner`,
+        method: TApiMethodType.post
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  calculateFeeV2(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/calculatefee`,
         method: TApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
