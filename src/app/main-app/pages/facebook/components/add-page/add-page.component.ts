@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
 
 @Component({
@@ -8,22 +8,25 @@ import { TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
   styleUrls: ['./add-page.component.scss']
 })
 export class AddPageComponent implements OnInit { 
-  @Input() data: TDSSafeAny;
-  form = {
-    fullname:"Nguyễn Thành Công",
-    page: 'Mèo nhạt nhẽo',
-    name: '',
-  };
+  @Input() data: TDSSafeAny; 
 
-  constructor(private modal: TDSModalRef) { }
+  addPageForm!: FormGroup;
 
-  ngOnInit(): void {
+  constructor(private modal: TDSModalRef , private fb: FormBuilder ) {
+    this.addPageForm = this.fb.group({
+      fullname :[{value: 'Nguyễn Thành Công', disabled: true}, Validators.required],
+      page : [{value: 'Mèo nhạt nhẽo', disabled: true}, Validators.required],
+      name:['' , Validators.required],
+    })
+   }
+
+  ngOnInit(): void { 
+    
   }
 
-
-  onSubmit(form: NgForm): void {
-    console.log(form);
-    form.resetForm();
+  onSubmit(): void {
+    console.log(this.addPageForm);
+    this.modal.destroy(null);
   }
 
   cancel() {
