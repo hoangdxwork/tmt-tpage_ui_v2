@@ -4,6 +4,9 @@ import { Component, OnInit, Input, ViewContainerRef, OnChanges, SimpleChanges, C
 import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
+import { PartnerInvoiceDTO } from 'src/app/main-app/dto/partner/partner-invocie.dto';
+import { CreditDebitDTO } from 'src/app/main-app/dto/partner/partner-creditdebit.dto';
+import { ODataRegisterPartnerDTO } from 'src/app/main-app/dto/partner/partner-register-payment.dto';
 
 interface orderDTO{
   code: string;
@@ -45,7 +48,7 @@ interface infoPartnerDto {
 
 export class InfoOrderDebtOfPartnerComponent implements OnInit {
 
-  lstCreditDebit: Array<TDSSafeAny> = [];
+  lstCreditDebit: Array<CreditDebitDTO> = [];
   pageSize1 = 20;
   pageIndex1 = 1;
   pageSize2 = 20;
@@ -53,7 +56,7 @@ export class InfoOrderDebtOfPartnerComponent implements OnInit {
   isLoading: boolean = false;
   countDebit: number = 1;
 
-  lstInvocie: Array<TDSSafeAny> = [];
+  lstInvocie: Array<PartnerInvoiceDTO> = [];
   countInvocie: number = 1;
   revenues: any = {};
 
@@ -123,18 +126,17 @@ export class InfoOrderDebtOfPartnerComponent implements OnInit {
   }
 
   showModalPayment(){
-    this.partnerService.getRegisterPaymentPartner({id: this.dataPartner.Id}).subscribe((res: any) => {
-       if(res) {
-        delete res['@odata.context'];
-        this.modalService.create({
-            title: 'Đăng ký thanh toán',
-            content: ModalPaymentComponent,
-            size: "lg",
-            viewContainerRef: this.viewContainerRef,
-            componentParams:{
-              data : res
-            }
-        });
+    this.partnerService.getRegisterPaymentPartner({id: this.dataPartner.Id}).subscribe((res: ODataRegisterPartnerDTO) => {
+        if(res) {
+          this.modalService.create({
+              title: 'Đăng ký thanh toán',
+              content: ModalPaymentComponent,
+              size: "lg",
+              viewContainerRef: this.viewContainerRef,
+              componentParams:{
+                data : res
+              }
+          });
        }
     }, error => {
       this.message.error(`${error?.error.message}`)

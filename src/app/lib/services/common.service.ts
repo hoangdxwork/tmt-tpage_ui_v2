@@ -112,7 +112,7 @@ export class TCommonService {
     }
 
 
-    public getExFile<T>(api: TAPIDTO, param: any): Observable<T> {debugger
+    public getExFile<T>(api: TAPIDTO, param: any): Observable<T> {
         let that = this;
         let options = that.getHeaderJSon();
 

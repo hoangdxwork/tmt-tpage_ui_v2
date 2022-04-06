@@ -6,6 +6,7 @@ import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'sr
 import { DataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
 import { PagedList2 } from '../dto/pagedlist2.dto';
+import { ODataTagsPartnerDTO } from '../dto/partner/partner-tags.dto';
 import { CRMTeamDTO } from '../dto/team/team.dto';
 import { BaseSevice } from './base.service';
 
@@ -34,7 +35,7 @@ export class TagService extends BaseSevice {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetByType?type=${type}`,
         method: TApiMethodType.get
     }
-    return this.apiService.getData<TDSSafeAny>(api, null);
+    return this.apiService.getData<ODataTagsPartnerDTO>(api, null);
   }
 
 }

@@ -11,6 +11,7 @@ import { TagService } from 'src/app/main-app/services/tag.service';
 import { THelperCacheService } from 'src/app/lib';
 import { ColumnTableDTO } from '../components/config-column/config-column.component';
 import { Router } from '@angular/router';
+import { FastSaleOrderDTO, FastSaleOrderSummaryStatusDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/bill/bill.dto';
 
 @Component({
   selector: 'app-bill',
@@ -20,7 +21,7 @@ import { Router } from '@angular/router';
 
 export class BillComponent implements OnInit{
 
-  lstOfData: Array<TDSSafeAny> = [];
+  lstOfData: Array<FastSaleOrderDTO> = [];
   pageSize = 20;
   pageIndex = 1;
   isLoading: boolean = false;
@@ -153,7 +154,7 @@ export class BillComponent implements OnInit{
     let filters = this.odataFastSaleOrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.odataFastSaleOrderService.getView(params, this.filterObj).subscribe((res: TDSSafeAny) => {
+    this.odataFastSaleOrderService.getView(params, this.filterObj).subscribe((res: ODataFastSaleOrderDTO) => {
 
         this.count = res['@odata.count'] as number //260
         this.lstOfData = res.value;
@@ -171,7 +172,7 @@ export class BillComponent implements OnInit{
         DeliveryType: this.filterObj.deliveryType ? this.filterObj.deliveryType.value : null,
     };
 
-    this.fastSaleOrderService.getSummaryStatus(model).subscribe((res: TDSSafeAny) => {
+    this.fastSaleOrderService.getSummaryStatus(model).subscribe((res: Array<FastSaleOrderSummaryStatusDTO>) => {
         var total = 0;
         res.map((x: TDSSafeAny) => {
             total = total + x.Total;
@@ -341,7 +342,7 @@ export class BillComponent implements OnInit{
       title: 'Xóa hóa đơn',
       content: 'Bạn có muốn xóa hóa đơn',
       onOk: () => {
-        this.fastSaleOrderService.delete(data.Id).subscribe((res: TDSSafeAny) => {
+        this.fastSaleOrderService.delete(data.Id).subscribe(() => {
             this.message.success('Xóa hóa đơn thành công!');
             this.loadData(this.pageSize, this.pageIndex);
         }, error => {

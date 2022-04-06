@@ -9,6 +9,7 @@ import { AccountRegisterPaymentService } from 'src/app/main-app/services/account
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { ODataRegisterPartnerDTO } from 'src/app/main-app/dto/partner/partner-register-payment.dto';
 
 @Component({
   selector: 'app-modal-payment',
@@ -17,7 +18,7 @@ import { Subject } from 'rxjs';
 })
 export class ModalPaymentComponent implements OnInit {
 
-  @Input() data: any;
+  @Input() data!: ODataRegisterPartnerDTO;
 
   isProcessing: boolean = false;
   lstAcJournal: any = [];
@@ -77,6 +78,8 @@ export class ModalPaymentComponent implements OnInit {
     if(!TDSHelperObject.hasValue(this.modelForm.acJournal)) {
         this.message.error('Vui lòng chọn phương thức thanh toán!')
     }
+
+    delete this.data['@odata.context'];
 
     this.data.Amount = this.modelForm.amount;
     this.data.PaymentDate = this.modelForm.paymentDate;

@@ -16,6 +16,10 @@ import { ColumnTableDTO } from '../../bill/components/config-column/config-colum
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { ODataPartnerDTO, PartnerDTO, } from 'src/app/main-app/dto/partner/partner.dto';
+import { ODataTagsPartnerDTO, TagsPartnerDTO } from 'src/app/main-app/dto/partner/partner-tags.dto';
+import { PartnerStatusReport, PartnerStatusReportDTO } from 'src/app/main-app/dto/partner/partner-status-report.dto';
+import { PartnerBirthdayDTO } from 'src/app/main-app/dto/partner/partner-birthday.dto';
 
 @Component({
   selector: 'app-partner',
@@ -25,7 +29,7 @@ import { Subject } from 'rxjs';
 
 export class PartnerComponent implements OnInit, OnDestroy {
 
-  lstOfData: Array<TDSSafeAny> = [];
+  lstOfData: Array<PartnerDTO> = [];
   pageSize = 20;
   pageIndex = 1;
   isLoading: boolean = false;
@@ -37,14 +41,14 @@ export class PartnerComponent implements OnInit, OnDestroy {
   }
 
   tabIndex = null;
-  partnerStatusReport: any[] = [];
+  partnerStatusReport: Array<PartnerStatusReportDTO> = [];
 
   isOpenMessageFacebook = false
   indClickTag = -1;
 
-  public modelTags: Array<TDSSafeAny> = [];
-  public lstDataTag: Array<TDSSafeAny> = [];
-  public lstBirtdays: Array<TDSSafeAny> = [];
+  public modelTags: Array<TagsPartnerDTO> = [];
+  public lstDataTag: Array<TagsPartnerDTO> = [];
+  public lstBirtdays: Array<PartnerBirthdayDTO> = [];
 
   selected = 0;
   isLoadingTable = false
@@ -56,7 +60,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
   setOfCheckedId = new Set<number>();
 
   public hiddenColumns = new Array<ColumnTableDTO>();
-  public columns: any[] = [
+  public columns: Array<ColumnTableDTO> = [
     {value: 'DisplayName', name: 'Tên', isChecked: true},
     {value: 'Phone', name: 'Điện thoại', isChecked: true},
     {value: 'Email', name: 'Email', isChecked: false},
@@ -131,9 +135,9 @@ export class PartnerComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     let filters = this.odataPartnerService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
-    this.odataPartnerService.getView(params, this.filterObj).subscribe((res: TDSSafeAny) => {
+    this.odataPartnerService.getView(params, this.filterObj).subscribe((res: ODataPartnerDTO) => {
 
-      this.count = res['@odata.count'];
+      this.count = res['@odata.count'] as number;
       this.lstOfData = res.value;
       this.isLoading = false;
 
@@ -158,13 +162,13 @@ export class PartnerComponent implements OnInit, OnDestroy {
 
   loadTags() {
     let type = "partner";
-    this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
+    this.tagService.getByType(type).subscribe((res: ODataTagsPartnerDTO) => {
         this.lstDataTag = res.value;
     })
   }
 
   loadPartnerStatusReport() {
-    this.commonService.getPartnerStatusReport().subscribe((res: any) => {
+    this.commonService.getPartnerStatusReport().subscribe((res: PartnerStatusReport) => {
       if(res && TDSHelperArray.isArray(res.item)) {
           this.partnerStatusReport = res.item;
       }
@@ -237,7 +241,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
     this.indClickTag = -1;
   }
 
-  assignTags(id: number, tags: TDSSafeAny) {
+  assignTags(id: number, tags: Array<TagsPartnerDTO>) {
     let model = { PartnerId: id, Tags: tags };
     this.partnerService.assignTagPartner(model).subscribe((res: TDSSafeAny) => {
         if(res && res.PartnerId) {
@@ -426,7 +430,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
       title: 'Reset điểm tích lũy',
       content: 'Bạn muốn chắc chắn reset điểm khách hàng này?',
       onOk: () => {
-        that.partnerService.resetLoyaltyPoint({ ids: ids }).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+        that.partnerService.resetLoyaltyPoint({ ids: ids }).pipe(takeUntil(this._destroy)).subscribe(() => {
             that.message.success('Thao tác thành công!');
             that.isProcessing = false;
         }, error => {
@@ -455,14 +459,15 @@ export class PartnerComponent implements OnInit, OnDestroy {
 
   //Modal gửi tin nhắn đến khách hàng
   showModalSendMessage(){
-    const modal = this.modalService.create({
-      title: 'Gửi tin nhắn tới khách hàng',
-      content: ModalSendMessageComponent,
-      size: "lg",
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-
-      }
+    let ids: any = [...this.setOfCheckedId];
+    this.modalService.create({
+        title: 'Gửi tin nhắn tới khách hàng',
+        content: ModalSendMessageComponent,
+        size: "lg",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+            ids: ids
+        }
     });
   }
 
@@ -481,13 +486,13 @@ export class PartnerComponent implements OnInit, OnDestroy {
 
   loadBirtdays() {
     let type = "day";
-    this.partnerService.getPartnerBirthday(type).subscribe((res: any) => {
+    this.partnerService.getPartnerBirthday(type).subscribe((res: Array<PartnerBirthdayDTO>) => {
         this.lstBirtdays = res;
     })
   }
 
   // Drawer tin nhắn facebook
-  openDrawerMessage(linkFacebook: string){
+  openDrawerMessage(){
     this.isOpenMessageFacebook = true;
   }
 

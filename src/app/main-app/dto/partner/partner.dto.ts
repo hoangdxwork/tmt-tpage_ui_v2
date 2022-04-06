@@ -1,123 +1,61 @@
-import { AccountDTO, AccountPaymentTermDTO } from '../account/account.dto';
-import { AddressDTO } from '../address/address.dto';
-import { StockLocationDTO } from '../product/warehouse.dto';
-import { TagDTO } from '../tag/tag.dto';
+
+export interface ODataPartnerDTO {
+  "@odata.context"?: string,
+  "@odata.count"?: number,
+  value: Array<PartnerDTO>
+}
 
 export interface PartnerDTO {
+  NameNetwork: string;
+  FullAddress: string;
+  Ward_District_City: string;
+  Tags: string;
   Id: number;
   Name: string;
   DisplayName: string;
   Street: string;
   Website: string;
-  // _phone: string;
-
-  Addresses: Array<AddressDTO>;
-
   Phone: string;
-  PhoneReport?: boolean;
-  Mobile: string;
-  Fax: string;
+  Fax?: any;
   Email: string;
-  Supplier?: boolean;
-  Customer?: boolean;
-  IsContact?: boolean;
-  IsCompany?: boolean;
-  CompanyId?: number;
+  Supplier: boolean;
+  Customer: boolean;
+  IsContact?: any;
+  IsCompany: boolean;
+  CompanyId: number;
   Ref: string;
   Comment: string;
-
-  //salesperson
-  UserId: string;
-  Active?: boolean;
-  Employee?: boolean;
-
-  // Mã số thuế
-  TaxCode: string;
-  ParentId?: number;
-  PurchaseCurrencyId?: number;
-  PurchaseCurrency: ResCurrencyDTO;
-
-  // Tổng số tiền khách hàng này nợ bạn.
-  Credit?: number;
-
-  //Tổng số tiền bạn phải trả cho nhà cung cấp này.
-  Debit?: number;
-  TitleId?: number;
-  Title: PartnerTitleDTO;
-  // Function: string;
+  UserId?: any;
+  Active: boolean;
+  TaxCode?: any;
+  Credit: number;
+  Debit: number;
   Type: string;
   CompanyType: string;
-  Childs: Array<PartnerDTO>;
-  Categories: Array<PartnerCategoryDTO>;
-  AccountReceivableId?: number;
-  AccountReceivable: AccountDTO;
-  AccountPayableId?: number;
-  AccountPayable: AccountDTO;
-  StockCustomerId?: number;
-  StockCustomer: StockLocationDTO;
-  StockSupplierId?: number;
-  StockSupplier: StockLocationDTO;
-  City: PartnerCityDTO;
-  District: PartnerDistrictDTO;
-  Ward: PartnerWardDTO;
-  Barcode: string;
-  OverCredit: boolean;
-  CreditLimit?: number;
-  // PropertyProductPricelistId?: number;
-  // PropertyProductPricelist?: number;
-
-  // Social Network
-  // zalo: string;
+  CityName: string;
+  CityCode: string;
+  DistrictName: string;
+  DistrictCode: string;
+  WardName: string;
+  WardCode: string;
+  Zalo: string;
   Facebook: string;
   FacebookId: string;
-  FacebookASIds: string;
-  FacebookPSId: string;
-
-  ///string base 64
-  Image: string;
+  FacebookASIds?: any;
   ImageUrl: string;
-  LastUpdated?: Date;
-
-  LoyaltyPoints?: number;
-  Discount?: number;
-  AmountDiscount?: number;
-
-  CategoryNames: string;
-
+  LastUpdated: Date;
+  LoyaltyPoints?: any;
+  Discount: number;
   PartnerCategoryId?: number;
-  PartnerCategoryName: string;
   NameNoSign: string;
-
-  // Customer Payment Term
-  PropertyPaymentTerm: AccountPaymentTermDTO;
-  PropertyPaymentTermId?: number;
-
-  /// Supplier Payment Term
-  PropertySupplierPaymentTerm: AccountPaymentTermDTO;
-  PropertySupplierPaymentTermId?: number;
-  CategoryId: number;
-  DateCreated?: Date;
+  DateCreated: Date;
   BirthDay?: Date;
-  DepositAmount?: number;
-
-  Status: PartnerStatus;
-
-  // Description Status
+  Status: string;
   StatusText: string;
-
-  StatusStyle: string;
-  ZaloUserId: string;
-  ZaloUserName: string;
-
-  CityCode: string;
-  CityName: string;
-  DistrictCode: string;
-  DistrictName: string;
-  WardCode: string;
-  WardName: string;
-
-  FullAddress: string;
-
+  ZaloUserId?: any;
+  ZaloUserName?: any;
+  PartnerCategoryName: string;
+  CreatedByName: string;
 }
 
 export interface PartnerTitleDTO {
@@ -181,16 +119,6 @@ export class ResCurrencyDTO {
     }
     return 0;
   }
-
-}
-
-export interface TagPartnerDTO {
-  Id: number;
-  TagId: number;
-  Color: string;
-  Tags: Array<TagDTO>;
-  PartnerId: number;
-  TagName: string;
 }
 
 export interface ResRevenueCustomerDTO { // /odata/Partner/OdataService.GetPartnerRevenueById?key=14
@@ -226,5 +154,10 @@ export enum PartnerStatus {
   Vip1 = 4, // Khách sỉ
   Primary = 5, // Vip
   Info = 6, // Thân thiết
+}
+
+export interface StatusDTO {
+  value: string;
+  text: string;
 }
 

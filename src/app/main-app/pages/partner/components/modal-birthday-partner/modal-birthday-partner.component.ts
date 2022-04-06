@@ -73,7 +73,7 @@ export class ModalBirthdayPartnerComponent implements OnInit {
     }
 
     sendMessage() {
-      let ids: any[] = [...this.setOfCheckedId];debugger
+      let ids: any[] = [...this.setOfCheckedId];
     }
 
 }

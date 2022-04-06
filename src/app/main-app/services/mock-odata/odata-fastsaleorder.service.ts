@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperString,  TDSSafeAny } from 'tmt-tang-ui';
+import { ODataFastSaleOrderDTO } from '../../dto/bill/bill.dto';
 import { BaseSevice } from '../base.service';
 
 export interface FilterObjDTO  {
@@ -35,7 +36,7 @@ export class OdataFastSaleOrderService extends BaseSevice {
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, null);
+    return this.apiService.getData<ODataFastSaleOrderDTO>(api, null);
   }
 
   public buildFilter(filterObj: FilterObjDTO) {

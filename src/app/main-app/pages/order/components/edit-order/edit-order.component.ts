@@ -63,8 +63,7 @@ export class EditOrderComponent implements OnInit {
   lstUser!: Array<ApplicationUserDTO>;
   lstPartnerStatus!: Array<PartnerStatusDTO>;
 
-  constructor(
-    private modal: TDSModalService,
+  constructor(private modal: TDSModalService,
     private modalRef: TDSModalRef,
     private fb: FormBuilder,
     private auth: TAuthService,

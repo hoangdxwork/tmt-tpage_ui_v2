@@ -129,7 +129,7 @@ export class FilterOptionsComponent implements OnInit {
         }
     }
 
-    this.onLoadOption.emit(this.filterObj);debugger
+    this.onLoadOption.emit(this.filterObj);
     if(this.currentStatus != 'all' && this.currentTracking && this.modelCarrier && this.selectTags.length > 0) {
       this.isActive = true;
     } else {

@@ -72,30 +72,15 @@
                       <div class="flex ">
                           <tds-label>Địa chỉ</tds-label>
                       </div>
-                      <!-- <div class="col-span-2">
-                          <div class="flex gap-x-2">
-                              <tds-form-field class="w-full">
-                                  <input tdsInput placeholder="Số nhà, đường..." formControlName="numberStreet" />
-                              </tds-form-field>
-                              <button tds-button-icon color="primary" type="button">
-                                  <span class="flex items-center">
-                                      <i class="tdsi-location-line"></i>
-                                  </span>
-                              </button>
-                          </div>
-                          <tds-select class="mt-4" valueField="id" textField="value" placeholder='Tỉnh/Thành'
-                              formControlName="province" disabledField="isActive" [data]="dataStatusPartner"
-                              [allowClear]="true">
-                          </tds-select>
-                          <tds-select class="mt-4" valueField="id" textField="value" placeholder='Quận/Huyện'
-                              formControlName="district" disabledField="isActive" [data]="dataStatusPartner"
-                              [allowClear]="true">
-                          </tds-select>
-                          <tds-select class="mt-4" valueField="id" textField="value" placeholder='Phường/Xã'
-                              formControlName="wards" disabledField="isActive" [data]="dataStatusPartner"
-                              [allowClear]="true">
-                          </tds-select>
-                      </div> -->
+                      <div class="col-span-2">
+                        <tpage-check-address
+                          [streetText]="_form.controls['Street'].value"
+                          [city]="_form.controls['City'].value"
+                          [district]="_form.controls['District'].value"
+                          [ward]="_form.controls['Ward'].value"
+                          (onChangeAddress)="onChangeAddress($event)">
+                        </tpage-check-address>
+                      </div>
                   </div>
               </div>
               <div>

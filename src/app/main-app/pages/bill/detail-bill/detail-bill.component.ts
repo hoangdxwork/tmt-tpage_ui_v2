@@ -7,6 +7,8 @@ import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { CommonService } from 'src/app/main-app/services/common.service';
+import { BillDetailDTO } from 'src/app/main-app/dto/bill/bill-detail.dto';
+import { PaymentJsonDTO } from 'src/app/main-app/dto/bill/payment-json.dto';
 
 @Component({
   selector: 'app-detail-bill',
@@ -16,9 +18,9 @@ import { CommonService } from 'src/app/main-app/services/common.service';
 export class DetailBillComponent implements OnInit, OnDestroy{
 
   id: any;
-  dataModel: any = {};
+  dataModel!: BillDetailDTO;
   isLoading: boolean = false;
-  payments: any = [];
+  payments: Array<PaymentJsonDTO> = [];
 
   productUOMQtyTotal: number = 0;
   productPriceTotal: number = 0;
@@ -57,7 +59,9 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   loadBill() {
     this.isLoading = true;
-    this.fastSaleOrderService.getById(this.id).subscribe((res: any) => {
+    this.fastSaleOrderService.getById(this.id).subscribe((res: BillDetailDTO) => {
+        delete res['@odata.context'];
+
         if (res.DateCreated) {
           res.DateCreated = new Date(res.DateCreated);
         }
@@ -70,6 +74,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
         if (res.ReceiverDate) {
           res.ReceiverDate = new Date(res.ReceiverDate);
         }
+
         this.dataModel = res;
         this.isLoading = false;
 
@@ -151,8 +156,8 @@ export class DetailBillComponent implements OnInit, OnDestroy{
     if (TDSHelperObject.hasValue(obs)) {
       this.isProcessing = true;
       obs.pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
-        that.printerService.printHtml(res);
-        that.isProcessing = false;
+          that.printerService.printHtml(res);
+          that.isProcessing = false;
       })
     }
   }
@@ -202,7 +207,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
             ids: [parseInt(that.id)]
           }
 
-          that.fastSaleOrderService.getActionCancel(model).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+          that.fastSaleOrderService.getActionCancel(model).pipe(takeUntil(this._destroy)).subscribe(() => {
               that.message.success('Xác nhận hủy hóa đơn thành công!');
               that.isProcessing = false;
               this.loadData();

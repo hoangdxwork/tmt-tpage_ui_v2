@@ -1,8 +1,12 @@
+import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperString,  TDSSafeAny } from 'tmt-tang-ui';
+import { ODataCreditDebitDTO } from '../../dto/partner/partner-creditdebit.dto';
+import { ODataPartnerInvoiceDTO } from '../../dto/partner/partner-invocie.dto';
+import { ODataPartnerDTO } from '../../dto/partner/partner.dto';
 import { BaseSevice } from '../base.service';
 
 export interface FilterObjDTO  {
@@ -28,7 +32,7 @@ export class OdataPartnerService extends BaseSevice {
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, null);
+    return this.apiService.getData<ODataPartnerDTO>(api, null);
   }
 
   public buildFilter(filterObj: FilterObjDTO) {
@@ -62,22 +66,22 @@ export class OdataPartnerService extends BaseSevice {
     return dataFilter;
   }
 
-  getCreditDebitPartner(partnerId: any, params: any) {
+  getCreditDebitPartner(partnerId: any, params: any): Observable<TDSSafeAny> {
       const api: TAPIDTO = {
           url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.CreditDebitCustomerDetail?partnerId=${partnerId}&${params}&$count=true`,
           method: TApiMethodType.get,
       }
 
-      return this.apiService.getData<TDSSafeAny>(api, null);
+      return this.apiService.getData<ODataCreditDebitDTO>(api, null);
   }
 
-  getInvoicePartner(partnerId: any, params: any) {
+  getInvoicePartner(partnerId: any, params: any): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/AccountInvoice/OdataService.GetInvoicePartner?partnerId=${partnerId}&${params}&$count=true`,
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, null);
-}
+    return this.apiService.getData<ODataPartnerInvoiceDTO>(api, null);
+  }
 
 }

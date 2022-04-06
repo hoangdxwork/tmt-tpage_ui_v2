@@ -2,6 +2,10 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tmt-tang-ui';
+import { PartnerBirthdayDTO } from '../dto/partner/partner-birthday.dto';
+import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
+import { PartnerDetailDTO } from '../dto/partner/partner-detail.dto';
+import { ODataRegisterPartnerDTO } from '../dto/partner/partner-register-payment.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable()
@@ -17,16 +21,16 @@ export class PartnerService extends BaseSevice {
     super(apiService)
   }
 
-  getById(id: TDSSafeAny): Observable<TDSSafeAny> {
+  getById(id: number): Observable<any> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})?$expand=PurchaseCurrency,Categories,AccountPayable,AccountReceivable,StockCustomer,StockSupplier,Title,PropertyProductPricelist,PropertySupplierPaymentTerm,PropertyPaymentTerm,Addresses`,
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api,null);
+    return this.apiService.getData<PartnerDetailDTO>(api,null);
   }
 
-  insert(data: TDSSafeAny): Observable<TDSSafeAny> {
+  insert(data: PartnerDetailDTO): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
         method: TApiMethodType.post,
@@ -35,8 +39,7 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api,data);
   }
 
-
-  update(key: number, data: TDSSafeAny): Observable<TDSSafeAny> {
+  update(key: number, data: PartnerDetailDTO): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
         method: TApiMethodType.put,
@@ -105,25 +108,25 @@ export class PartnerService extends BaseSevice {
         method: TApiMethodType.post,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, data);
+    return this.apiService.getData<ODataRegisterPartnerDTO>(api, data);
   }
 
-  getPartnerBirthday(type: string): Observable<TDSSafeAny> {
+  getPartnerBirthday(type: string): Observable<any> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/api/common/getpartnerbirthday?type=${type}`,
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, null);
+    return this.apiService.getData<PartnerBirthdayDTO>(api, null);
   }
 
-  getPartnerCategory(): Observable<TDSSafeAny> {
+  getPartnerCategory(): Observable<any> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/PartnerCategory?$orderby=ParentLeft&$count=true`,
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, null);
+    return this.apiService.getData<ODataPartnerCategoryDTO>(api, null);
   }
 
 }
