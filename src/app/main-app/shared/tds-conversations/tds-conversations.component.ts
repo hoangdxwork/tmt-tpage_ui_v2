@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewContainerRef } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { TDSHelperObject, TDSModalService } from 'tmt-tang-ui';
+import { ModalImageStoreComponent } from '../../pages/conversations/components/modal-image-store/modal-image-store.component';
 
 @Component({
   selector: 'tds-conversations',
@@ -60,12 +62,14 @@ export class TDSConversationsComponent implements OnInit {
     },
   ]
 
-  constructor() { }
+  constructor(private modalService: TDSModalService, 
+              private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
     setTimeout(() => {
       
     }, 2000);
+    this.showImageStore()
   }
 
   onClickFieldListAll(str: string) {
@@ -74,6 +78,26 @@ export class TDSConversationsComponent implements OnInit {
 
   onClickDropdown(e: MouseEvent) {
     e.stopPropagation();
-  }
+  } 
+
+  showImageStore(): void {
+    const modal = this.modalService.create({
+        title: 'Kho hình ảnh',
+        content: ModalImageStoreComponent,
+        size: "xl",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+            // data: this.person
+        }
+    });
+    // modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
+    // Return a result when closed
+    // modal.afterClose.subscribe(result => {
+    //     console.log('[afterClose] The result is:', result);
+    //     if (TDSHelperObject.hasValue(result)) {
+    //         this.person = Object.assign(this.person, result);
+    //     }
+    // });
+}
 
 }
