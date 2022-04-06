@@ -204,21 +204,21 @@ export class ModalEditPartnerComponent implements OnInit {
 
   onChangeAddress(event: CheckAddressDTO) {
     const formModel = this._form.controls;
-    formModel["Street"].setValue(event.street);
+    formModel["Street"].setValue(event.Street);
 
-    formModel["City"].setValue( event.city ? {
-      code: event.city?.code,
-      name: event.city?.name
+    formModel["City"].setValue( event.City ? {
+      code: event.City?.code,
+      name: event.City?.name
     } : null);
 
-    formModel["District"].setValue( event.district ? {
-      code: event.district?.code,
-      name: event.district?.name,
+    formModel["District"].setValue( event.District ? {
+      code: event.District?.code,
+      name: event.District?.name,
     } : null);
 
-    formModel["Ward"].setValue( event.ward ? {
-      code: event.ward?.code,
-      name: event.ward?.name,
+    formModel["Ward"].setValue( event.Ward ? {
+      code: event.Ward?.code,
+      name: event.Ward?.name,
     } : null);
   }
 
