@@ -31,6 +31,15 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
+  getLines(id: string): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetLines?key=${id}`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
   getSummaryStatus(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/getsummarystatussaleonline`,
@@ -47,6 +56,15 @@ export class SaleOnline_OrderService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  getDefaultOrderIds(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetDefaultOrderIds?$expand=Lines($expand=Partner),Carrier`,
+        method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   assignSaleOnlineOrder(data: TDSSafeAny): Observable<TDSSafeAny> {
@@ -67,7 +85,16 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  previewMessages(data: TDSSafeAny): Observable<any> {
+  update(key: string, data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
+      method: TApiMethodType.put,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  previewMessages(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/previewmessages`,
       method: TApiMethodType.post,

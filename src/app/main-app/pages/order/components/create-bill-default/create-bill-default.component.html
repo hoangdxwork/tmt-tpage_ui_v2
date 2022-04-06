@@ -1,0 +1,129 @@
+<div class="flex flex-col gap-x-6">
+  <div class="flex items-center gap-x-6 justify-between">
+    <div class="">
+      <tds-label style="width: max-content;">Đối tác giao hàng</tds-label>
+    </div>
+    <div class="w-full flex flex-col">
+      <tds-form-field>
+        <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng'
+            [allowClear]="true" [valuePrimitive]="false" [(ngModel)]="carrier"
+            [data]="lstCarriers">
+        </tds-select>
+      </tds-form-field>
+      <span class="flex text-info-500" *ngIf="carrier">
+        *Phần mềm sẽ tự chọn đối tác với số tiền ship thấp nhất</span>
+    </div>
+    <div class="">
+      <button tds-button color="primary" (click)="onAddCarrier()">Áp dụng tất cả</button>
+    </div>
+  </div>
+
+  <div class="w-full mt-4 rounded-md h-[240px]">
+    <div class="w-full h-full ">
+      <tds-table class="tds-table-rounded" #basicTable [bordered]="true" [listData]="lstLine" [showPagination]="false">
+        <thead class="rounded">
+            <tr>
+                <th width="5%">STT</th>
+                <th width="25%">Khách hàng</th>
+                <th width="17%">Đối tác giao hàng</th>
+                <th width="12%">Tiền hàng</th>
+                <th width="12%">Phí ship</th>
+                <th width="12%">KL ship (g)</th>
+                <th width="9%">Thanh toán</th>
+                <th width="8%">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+          <ng-template ngFor let-data [ngForOf]="basicTable.data" let-index="index">
+              <tr>
+                  <td class="align-top"> {{ index + 1 }} </td>
+                  <!-- Khách hàng -->
+                  <td class="align-top">
+                    <div class="flex flex-col gap-y-2 text-sm">
+                      <div class="flex">
+                        {{ data.Partner.Name }}
+                      </div>
+                      <div class="flex items-baseline gap-x-2">
+                        <span class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></span>
+                        <span>{{data.Partner.Phone}}</span>
+                      </div>
+                      <div class="flex items-baseline gap-x-2">
+                        <span class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></span>
+                        <span>{{data.Partner.Street}}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <!-- Đối tác -->
+                  <td class="align-top">
+                    <tds-form-field>
+                      <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác'
+                          [allowClear]="true" [valuePrimitive]="false"
+                          [data]="lstCarriers" (onChange)="onChangeCarrier($event, data)">
+                      </tds-select>
+                    </tds-form-field>
+                  </td>
+                  <!-- Tiền hàng -->
+                  <td class="align-top">
+                    <tds-form-field>
+                      <tds-input-number [min]="0" [step]="1000"
+                        [(ngModel)]="data.AmountTotal" [ngModelOptions]="{standalone: true}">
+                      </tds-input-number>
+                    </tds-form-field>
+                  </td>
+                  <!-- Phí ship -->
+                  <td class="align-top">
+                    <tds-form-field>
+                      <tds-input-number [min]="0" [step]="1000"
+                        [(ngModel)]="data.ShipAmount" [ngModelOptions]="{standalone: true}">
+                      </tds-input-number>
+                    </tds-form-field>
+                  </td>
+                  <!-- Khối lượng -->
+                  <td class="align-top">
+                    <tds-form-field>
+                      <tds-input-number [min]="0" [step]="1"
+                        [(ngModel)]="data.ShipWeight" [ngModelOptions]="{standalone: true}">
+                      </tds-input-number>
+                    </tds-form-field>
+                  </td>
+                  <!-- Thanh toán -->
+                  <td class="align-top">
+                    <tds-checkbox></tds-checkbox>
+                  </td>
+                  <!-- Thao tác -->
+                  <td class="align-top">
+                    <div class="flex gap-x-2">
+                      <button tds-button-icon color="secondary" size="sm" (click)="onEdit(data.Id)">
+                        <span class="flex items-center">
+                          <i class="tdsi-edit-fill"></i>
+                        </span>
+                      </button>
+                      <button tds-button-icon color="secondary" size="sm">
+                        <span class="flex items-center">
+                          <i class="tdsi-trash-fill"></i>
+                        </span>
+                      </button>
+                    </div>
+                  </td>
+              </tr>
+          </ng-template>
+        </tbody>
+      </tds-table>
+    </div>
+  </div>
+
+  <div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <div class="flex justify-between gap-x-2">
+      <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+          <button tds-button class="w-[126px]" type="submit" color="info" (click)="onSave(saveType.billPrint)">
+              <span class="tdsi-print-fill"></span>
+              Lưu và in
+          </button>
+          <button tds-button class="w-[170px]" type="submit" color="info" (click)="onSave(saveType.billPrintShip)">
+              <span class="tdsi-print-fill"></span>
+              Lưu và in phiếu ship
+          </button>
+          <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave(saveType.billSave)">Lưu</button>
+    </div>
+  </div>
+</div>

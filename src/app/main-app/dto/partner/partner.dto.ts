@@ -59,8 +59,8 @@ export interface PartnerDTO {
 }
 
 export interface PartnerTitleDTO {
-  id: number;
-  name: string;
+  Id: number;
+  Name: string;
 }
 
 export interface PartnerCategoryDTO {
@@ -76,41 +76,46 @@ export interface PartnerCategoryDTO {
 }
 
 export interface PartnerCityDTO {
-  name: string;
-  nameNoSign: string;
-  code?: number;
+  Name: string;
+  NameNoSign: string;
+  Code?: number;
 }
 
 export interface PartnerDistrictDTO {
-  name: string;
-  nameNoSign: string;
-  code?: number;
-  cityName: string;
-  cityCode?: number;
+  Name: string;
+  NameNoSign: string;
+  Code?: number;
+  CityName: string;
+  CityCode?: number;
 }
 
 export interface PartnerWardDTO {
-  name: string;
-  nameNoSign: string;
-  code?: number;
-  cityName: string;
-  cityCode?: number;
-  districtName: string;
-  districtCode?: number;
+  Name: string;
+  NameNoSign: string;
+  Code?: number;
+  CityName: string;
+  CityCode?: number;
+  DistrictName: string;
+  DistrictCode?: number;
+}
+
+export interface PartnerStatusDTO {
+  text: string;
+  value: string;
 }
 
 export class ResCurrencyDTO {
-  public id?: number;
-  public name?: string;
-  public rounding?: number;
-  public symbol?: string;
-  public active?: boolean;
-  public position?: string;
-  public rate?: number;
+  public Id?: number;
+  public Name?: string;
+  public Rounding?: number;
+  public Symbol?: string;
+  public Active?: boolean;
+  public Position?: string;
+  public Rate?: number;
 
   get decimalPlaces(): number {
-    if (this.rounding && this.rounding > 0 && this.rounding < 1) {
-      return Math.ceil(Math.log10(1 / this.rounding));
+    if (this.Rounding && this.Rounding > 0 && this.Rounding < 1) {
+      return Math.ceil(Math.log10(1 / this.Rounding));
     }
     return 0;
   }

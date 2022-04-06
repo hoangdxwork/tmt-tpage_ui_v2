@@ -5,17 +5,17 @@
             <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Đơn hàng</span>
         </h1>
         <div class="flex gap-x-2">
-            <button tds-button color="primary" size="md" (click)="onCreateInvoice()">
+            <button tds-button color="primary" size="md" (click)="onCreateBillFast()">
                 <span class="flex items-center">
                     <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Tạo HĐ (F9)
                 </span>
             </button>
-            <button tds-button color="secondary" size="md" (click)="showModelCreateOrderDefault()">
+            <button tds-button color="secondary" size="md" (click)="onCreateBillDefault()">
                 <span class="flex items-center">
                     <i class="tdsi-in-out-fill text-lg leading-none mr-2 text-neutral-500"></i>Tạo HĐ SP mặc định (F8)
                 </span>
             </button>
-            <button tds-button color="secondary" size="md" (click)="showModelCreateInvoiceFast()">
+            <button tds-button color="secondary" size="md" (click)="onUrlCreateInvoiceFast()">
                 <span class="flex items-center">
                     <i class="tdsi-reload-fill text-lg leading-none mr-2 text-neutral-500"></i>Tạo nhanh HĐ (F10)
                 </span>
@@ -243,8 +243,14 @@
                     </button>
                   </div>
                 </td>
-
               </tr>
+
+              <!-- expand order details -->
+              <tr [expand]="expandSet.has(data.Id)"
+              class="border-b border-neutral-2-100 text-neutral-1-900 bg-light-50">
+              <info-order-debt *ngIf="expandSet.has(data.Id)" [dataOrder]="data">
+              </info-order-debt>
+            </tr>
             </ng-template>
           </tbody>
         </tds-table>
