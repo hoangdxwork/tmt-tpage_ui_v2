@@ -218,20 +218,14 @@ export class EditOrderComponent implements OnInit {
     this.model.Address = formValue.Address;
     this.model.Note = formValue.Note;
 
-    if (formValue.City) {
-      this.model.CityCode = formValue.City.Code || "";
-      this.model.CityName = formValue.City.Name || "";
-    }
+    this.model.CityCode = formValue.City?.Code ? formValue.City.Code : null;
+    this.model.CityName = formValue.City?.Name ? formValue.City.Name : null;
 
-    if (formValue.District) {
-      this.model.DistrictCode = formValue.District.Code || "";
-      this.model.DistrictName = formValue.District.Name || "";
-    }
+    this.model.DistrictCode = formValue.District?.Code ? formValue.District.Code : null;
+    this.model.DistrictName = formValue.District?.Name ? formValue.District.Name : null;
 
-    if (formValue.Ward) {
-      this.model.WardCode = formValue.Ward.Code || "";
-      this.model.WardName = formValue.Ward.Name || "";
-    }
+    this.model.WardCode = formValue.Ward?.Code ? formValue.Ward.Code : null;
+    this.model.WardName = formValue.Ward?.Name ? formValue.Ward.Name : null;
 
     if (formValue.User) {
       this.model.User = formValue.User;
@@ -664,17 +658,17 @@ export class EditOrderComponent implements OnInit {
 
     formControls["Address"].setValue(event.Street);
 
-    formControls["City"].setValue( event.City ? {
+    formControls["City"].setValue( event.City?.Code ? {
       Code: event.City?.Code,
       Name: event.City?.Name
     } : null);
 
-    formControls["District"].setValue( event.District ? {
+    formControls["District"].setValue( event.District?.Code ? {
       Code: event.District?.Code,
       Name: event.District?.Name,
     } : null);
 
-    formControls["Ward"].setValue( event.Ward ? {
+    formControls["Ward"].setValue( event.Ward?.Code ? {
       Code: event.Ward?.Code,
       Name: event.Ward?.Name,
     } : null);
