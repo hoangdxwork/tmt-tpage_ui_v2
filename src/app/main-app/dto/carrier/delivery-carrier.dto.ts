@@ -1,154 +1,154 @@
 import { ProductDTO } from '../product/product.dto';
 
 export interface DeliveryCarrierDTO {
-  isPrintCustom: boolean;
-  id: number;
+  IsPrintCustom: boolean;
+  Id: number;
 
-  name: string;
-  senderName: string;
+  Name: string;
+  SenderName: string;
 
-  sequence?: number;
-  active: boolean;
-  deliveryType: string;
+  Sequence?: number;
+  Active: boolean;
+  DeliveryType: string;
 
-  deliveryTypeGet: string;
+  DeliveryTypeGet: string;
 
-  productId?: number;
-  product: ProductDTO;
+  ProductId?: number;
+  Product: ProductDTO;
 
-  fixedPrice?: number;
-  companyId?: number;
-  amount?: number;
+  FixedPrice?: number;
+  CompanyId?: number;
+  Amount?: number;
 
-  freeOver?: boolean;
+  FreeOver?: boolean;
 
   //This percentage will be added to the shipping price.
-  margin?: number;
+  Margin?: number;
   hcmPTConfigId?: number;
 
-  ghn_ApiKey: string;
-  ghn_ClientId: string;
-  ghn_NoteCode: string;
-  ghn_PaymentTypeId?: number;
-  ghn_PackageWidth?: number;
-  ghn_PackageLength?: number;
-  ghn_PackageHeight?: number;
-  ghn_ServiceId: string;
+  GHN_ApiKey: string;
+  GHN_ClientId: string;
+  GHN_NoteCode: string;
+  GHN_PaymentTypeId?: number;
+  GHN_PackageWidth?: number;
+  GHN_PackageLength?: number;
+  GHN_PackageHeight?: number;
+  GHN_ServiceId: string;
 
-  viettelPost_UserName: string;
-  viettelPost_Password: string;
-  viettelPost_Token: string;
-  viettelPost_ServiceId: string;
-  viettelPost_ProductType: string;
-  viettelPost_OrderPayment?: number;
+  ViettelPost_UserName: string;
+  ViettelPost_Password: string;
+  ViettelPost_Token: string;
+  ViettelPost_ServiceId: string;
+  ViettelPost_ProductType: string;
+  ViettelPost_OrderPayment?: number;
 
-  shipChung_ServiceId: string;
-  shipChung_PaymentTypeID?: number;
-  shipChung_ApiKey: string;
+  ShipChung_ServiceId: string;
+  ShipChung_PaymentTypeID?: number;
+  ShipChung_ApiKey: string;
 
-  hcmPost_sI: string;
-  hcmPost_sK: string;
-  hcmPost_ShopID: string;
-  hcmPost_ShopName: string;
-  hcmPost_ServiceId: string;
+  HCMPost_sI: string;
+  HCMPost_sK: string;
+  HCMPost_ShopID: string;
+  HCMPost_ShopName: string;
+  HCMPost_ServiceId: string;
 
   tokenShip: string;
 
-  vnPost_ClientId: string;
-  vnPost_ServiceId: string;
-  vnPost_IsContracted: boolean;
-  vnPost_PickupType: string;
+  VNPost_ClientId: string;
+  VNPost_ServiceId: string;
+  VNPost_IsContracted: boolean;
+  VNPost_PickupType: string;
 
-  ghtk_Token: string;
-  ghtk_ClientId: string;
-  ghtk_IsFreeShip?: number;
+  GHTK_Token: string;
+  GHTK_ClientId: string;
+  GHTK_IsFreeShip?: number;
 
-  superShip_Token: string;
-  superShip_ClientId: string;
-  superShip_Config: string;
+  SuperShip_Token: string;
+  SuperShip_ClientId: string;
+  SuperShip_Config: string;
 
-  config_TransportId: string;
-  config_TransportName: string;
+  Config_TransportId: string;
+  Config_TransportName: string;
 
-  ems_Service: string;
-  ems_Inventory: string;
-  ems_Token: string;
+  EMS_Service: string;
+  EMS_Inventory: string;
+  EMS_Token: string;
 
-  tinToc_Service: string;
-  tinToc_ServiceCode: string;
+  TinToc_Service: string;
+  TinToc_ServiceCode: string;
 
-  ninjaVan_ClientId: string;
-  ninjaVan_ClientSecret: string;
-  ninjaVan_ServiceType: string;
-  ninjaVan_ServiceLevel: string;
-  ninjaVan_Token: string;
-  ninjaVan_BranchId: string;
+  NinjaVan_ClientId: string;
+  NinjaVan_ClientSecret: string;
+  NinjaVan_ServiceType: string;
+  NinjaVan_ServiceLevel: string;
+  NinjaVan_Token: string;
+  NinjaVan_BranchId: string;
 
-  zto_PickupType: string;
-  zto_ProductType: string;
-  zto_SendWayType: string;
-  zto_AppCode: string;
-  zto_SecretKey: string;
+  ZTO_PickupType: string;
+  ZTO_ProductType: string;
+  ZTO_SendWayType: string;
+  ZTO_AppCode: string;
+  ZTO_SecretKey: string;
 
-  config_DefaultFee?: number;
-  config_DefaultWeight?: number;
+  Config_DefaultFee?: number;
+  Config_DefaultWeight?: number;
 
-  extrasText: string;
-  extras: DeliveryCarrier_ExtraDTO;
+  ExtrasText: string;
+  Extras: DeliveryCarrier_ExtraDTO;
 }
 
 export interface DeliveryCarrier_ExtraDTO {
-  pickWorkShift: string;
-  pickWorkShiftName: string;
-  deliverWorkShift: string;
-  deliverWorkShiftName: string;
+  PickWorkShift: string;
+  PickWorkShiftName: string;
+  DeliverWorkShift: string;
+  DeliverWorkShiftName: string;
 
   /// Shop trả/Khách trả
-  paymentTypeId: string;
-  posId: string;
-  isDropoff: boolean;
+  PaymentTypeId: string;
+  PosId: string;
+  IsDropoff: boolean;
 
   /// Khai giá bảo hiểm
-  isInsurance: boolean;
-  insuranceFee?: number;
+  IsInsurance: boolean;
+  InsuranceFee?: number;
 
   /// Cho xem hàng
-  isPackageViewable: boolean;
+  IsPackageViewable: boolean;
 
   /// Hàng dễ vỡ
-  is_Fragile: boolean;
-  pickupAccountId: string;
-  soldToAccountId: string;
-  isPartSign?: boolean;
+  Is_Fragile: boolean;
+  PickupAccountId: string;
+  SoldToAccountId: string;
+  IsPartSign?: boolean;
 
   /// Cho thử hàng
-  isAllowTryout: boolean;
+  IsAllowTryout: boolean;
 
   /// Cấn trừ tiền COD
-  isDeductCod: boolean;
+  IsDeductCod: boolean;
 
   /// Thu tiền xem hàng
-  isCollectMoneyGoods: boolean;
+  IsCollectMoneyGoods: boolean;
 
   /// Thu tiền xem hàng
-  collectMoneyGoods?: number;
+  CollectMoneyGoods?: number;
 
   /// Không cho xem hàng. Cho thử hàng. Cho xem hàng, không cho thử
-  confirmType: string;
+  ConfirmType: string;
 
   /// giao hàng 1 phần
-  partialDelivery: string;
+  PartialDelivery: string;
 
   /// Hoàn hàng
-  isRefund?: number;
-  serviceCustoms: Array<ServiceCustomDTO>;
+  IsRefund?: number;
+  ServiceCustoms: Array<ServiceCustomDTO>;
 
   /// Giá trị tiền bảo hiểm bằng tổng tiền
-  isInsuranceEqualTotalAmount?: boolean;
+  IsInsuranceEqualTotalAmount?: boolean;
 }
 
 export interface ServiceCustomDTO {
-  serviceId: string;
-  name: string;
-  isDefault: boolean;
+  ServiceId: string;
+  Name: string;
+  IsDefault: boolean;
 }

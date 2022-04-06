@@ -24,17 +24,8 @@
                             </button>
                             <tds-dropdown-menu #menu="tdsDropdownMenu">
                                 <div class="w-full">
-                                    <div (click)="log('1st menu item')" tds-dropdown-item>
-                                        <a> Item 1 </a>
-                                    </div>
-                                    <div (click)="log('2 menu item')" tds-dropdown-item>
-                                        <a> Item 2 </a>
-                                    </div>
-                                    <div (click)="log('3 menu item')" tds-dropdown-item>
-                                        <a> Item 3 </a>
-                                    </div>
-                                    <div (click)="log('4 menu item')" tds-dropdown-item>
-                                        <a> Item 4 </a>
+                                    <div tds-dropdown-item *ngFor="let status of lstPartnerStatus">
+                                        <a> {{ status.text }} </a>
                                     </div>
                                 </div>
                             </tds-dropdown-menu>
@@ -224,97 +215,175 @@
 
     </tds-tab>
 
-    <tds-tab title="Thông tin giao hàng" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
+    <tds-tab title="Thông tin giao hàng" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px" [disabled]="!isEnableCreateOrder">
+      <ng-template tds-tab>
         <div class="w-full">
-            <div class="grid grid-cols-2 gap-x-8">
-                <div>
-                    <div class="grid grid-cols-3 gap-x-4 mt-4">
-                        <div class="flex items-center">
-                          <tds-label>Đối tác giao hàng</tds-label>
-                        </div>
-                        <div class="col-span-2">
-                          <tds-form-field>
-                            <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng'
-                              formControlName="Carrier" mode="multiple"
-                              [valuePrimitive]="false"
-                              disabledField="isActive" [data]="lstDeliveryCarrier" [allowClear]="true">
-                            </tds-select>
-                          </tds-form-field>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-3 gap-x-4 mt-4">
+          <div class="grid grid-cols-2 gap-x-8">
+              <div>
+                  <div class="grid grid-cols-3 gap-x-4 mt-4">
                       <div class="flex items-center">
-                        <tds-label>Giao hàng thu tiền</tds-label>
+                        <tds-label>Đối tác giao hàng</tds-label>
                       </div>
                       <div class="col-span-2">
                         <tds-form-field>
-                          <tds-input-number [min]="1" [step]="1000"
-                            formControlName="CashOnDelivery" [formatter]="numberWithCommas"
-                            [parser]="parserComas">
-                          </tds-input-number>
+                          <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng'
+                            [valuePrimitive]="false" [allowClear]="true" disabledField="isActive" [data]="lstDeliveryCarrier"
+                            [(ngModel)]="defaultBill.Carrier" [ngModelOptions]="{standalone: true}"
+                            [allowClear]="true" (selectChange)="onSelectCarrier($event)">
+                          </tds-select>
                         </tds-form-field>
                       </div>
+                  </div>
+
+                  <div class="grid grid-cols-3 gap-x-4 mt-4" *ngIf="defaultBill.Carrier && shipServices.length > 0">
+                    <div class="flex mt-1">
+                      <tds-label>Dịch vụ:</tds-label>
                     </div>
-                    <div class="grid grid-cols-3 gap-x-4 mt-4">
+                    <div class="col-span-2">
+                        <tds-form-field>
+                          <tds-select valueField="ServiceId" textField="ServiceName" placeholder='Chọn dịch vụ'
+                            [valuePrimitive]="false" [allowClear]="true"
+                            formControlName="Ship_ServiceId" disabledField="isActive" [data]="shipServices"
+                            [allowClear]="true" (selectChange)="onSelectShipServices($event)">
+
+                            <ng-template tds-label-tmp let-item="item">
+                                {{ item.data.ServiceName }}: {{ item.data.TotalFee | number }}
+                            </ng-template>
+
+                            <ng-template tds-option-tmp let-label='label' let-item="item"
+                                let-value='value' let-selected="selected">
+                                <span [ngClass]="{'text-primary-1':selected}">
+                                  {{ item.ServiceName }}: {{ item.TotalFee | number }}
+                                </span>
+                            </ng-template>
+
+                          </tds-select>
+                        </tds-form-field>
+                        <div class="flex flex-col space-y-1 mt-2 w-full" *ngIf="shipExtraServices.length > 0">
+                            <div *ngFor="let service of shipExtraServices; let indexService = index" class="flex items-center gap-x-2">
+                              <tds-checkbox [(ngModel)]="service.IsSelected" [ngModelOptions]="{standalone: true}"> {{ service.ServiceName }} </tds-checkbox>
+
+                              <div *ngIf="formEditOrder.controls['Carrier'].value?.DeliveryType == 'ViettelPost' && service.ServiceId == 'XMG' && service.IsSelected == true"
+                                class="w-[120px]">
+                                <tds-form-field>
+                                  <tds-input-number [min]="1" [step]="1000"
+                                    [(ngModel)]="service.ExtraMoney" [formatter]="numberWithCommas" [ngModelOptions]="{standalone: true}"
+                                      [parser]="parserComas">
+                                  </tds-input-number>
+                                </tds-form-field>
+                              </div>
+                            </div>
+                        </div>
+                        <div class="flex mt-1 w-full items-center text-info-500" *ngIf="defaultBill.Carrier && !existDeliveryTypes(defaultBill.Carrier.DeliveryType)">
+                            <tds-label class="text-info-500">Phí ship (đối tác):</tds-label>
+                            <span class="ttext-info-500 mr-2 font-semibold">
+                              &nbsp;{{defaultBill.CustomerDeliveryPrice || 0 | number}} đ</span>
+                            <button tds-button color="secondary" type="button" size="sm" (click)="calcFee()">
+                              <span class="tdsi-undo-line text-info-500"></span>
+                            </button>
+                        </div>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-3 gap-x-4 mt-4">
+                    <div class="flex items-center">
+                      <tds-label>Giao hàng thu tiền</tds-label>
+                    </div>
+                    <div class="col-span-2">
+                      <tds-form-field>
+                        <tds-input-number [min]="1" [step]="1000"
+                          formControlName="CashOnDelivery" [formatter]="numberWithCommas"
+                          [parser]="parserComas">
+                        </tds-input-number>
+                      </tds-form-field>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-x-4 mt-4">
+                    <div class="flex items-center">
+                      <tds-label>Tiền cọc</tds-label>
+                    </div>
+                    <div class="col-span-2">
+                      <tds-form-field>
+                        <tds-input-number [min]="0" [step]="1000"
+                          formControlName="AmountDeposit" [formatter]="numberWithCommas"
+                          [parser]="parserComas">
+                        </tds-input-number>
+                      </tds-form-field>
+                    </div>
+                  </div>
+              </div>
+              <div>
+                  <div class="grid grid-cols-3 gap-x-4 mt-4">
                       <div class="flex items-center">
-                        <tds-label>Tiền cọc</tds-label>
+                          <tds-label>Phí giao hàng</tds-label>
                       </div>
                       <div class="col-span-2">
                         <tds-form-field>
                           <tds-input-number [min]="0" [step]="1000"
-                            formControlName="AmountDeposit" [formatter]="numberWithCommas"
+                            formControlName="DeliveryPrice" [formatter]="numberWithCommas"
                             [parser]="parserComas">
                           </tds-input-number>
                         </tds-form-field>
                       </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-x-4 mt-4">
+                    <div class="flex items-center">
+                        <tds-label>Khối lượng ship(g)</tds-label>
                     </div>
-                </div>
-                <div>
-                    <div class="grid grid-cols-3 gap-x-4 mt-4">
-                        <div class="flex items-center">
-                            <tds-label>Phí giao hàng</tds-label>
-                        </div>
-                        <div class="col-span-2">
-                          <tds-form-field>
-                            <tds-input-number [min]="0" [step]="1000"
-                              formControlName="DeliveryPrice" [formatter]="numberWithCommas"
-                              [parser]="parserComas">
-                            </tds-input-number>
-                          </tds-form-field>
-                        </div>
+                    <div class="col-span-2">
+                      <tds-form-field>
+                        <tds-input-number [min]="0" [step]="100"
+                          formControlName="ShipWeight" [formatter]="numberWithCommas"
+                          [parser]="parserComas">
+                        </tds-input-number>
+                      </tds-form-field>
                     </div>
-                    <div class="grid grid-cols-3 gap-x-4 mt-4">
-                      <div class="flex items-center">
-                          <tds-label>Khối lượng ship(g)</tds-label>
-                      </div>
-                      <div class="col-span-2">
+                  </div>
+                  <div class="grid grid-cols-3 gap-x-4 mt-4">
+                    <div class="flex items-center">
+                        <tds-label>Ghi chú giao hàng</tds-label>
+                    </div>
+                    <div class="col-span-2">
                         <tds-form-field>
-                          <tds-input-number [min]="0" [step]="100"
-                            formControlName="ShipWeight" [formatter]="numberWithCommas"
-                            [parser]="parserComas">
-                          </tds-input-number>
+                          <input tdsInput placeholder="Nhập ghi chú giao hàng" formControlName="DeliveryNote" />
                         </tds-form-field>
-                      </div>
                     </div>
-                    <div class="grid grid-cols-3 gap-x-4 mt-4">
-                      <div class="flex items-center">
-                          <tds-label>Ghi chú giao hàng</tds-label>
-                      </div>
-                      <div class="col-span-2">
-                          <tds-form-field>
-                            <input tdsInput placeholder="Nhập ghi chú giao hàng" formControlName="DeliveryNote" />
-                          </tds-form-field>
-                      </div>
-                    </div>
-                </div>
-            </div>
+                  </div>
+              </div>
+          </div>
         </div>
+      </ng-template>
     </tds-tab>
 
   </tds-tabset>
 
-  <div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-    <button tds-button type="submit" color="primary" (click)="onSave()">Lưu</button>
+  <div class="w-full flex justify-between p-4" *tdsModalFooter>
+      <div class="flex">
+          <tds-checkbox [(ngModel)]="isEnableCreateOrder" [ngModelOptions]="{standalone: true}" (change)="onEnableCreateOrder($event)">
+            Tạo phiếu bán hàng
+          </tds-checkbox>
+      </div>
+
+      <div class="flex gap-x-2" *ngIf="!isEnableCreateOrder">
+          <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+          <button tds-button class="w-[126px]" type="submit" color="info" (click)="onSave(saveType.orderPrint)">
+              <span class="tdsi-print-fill"></span>
+              Lưu và in
+          </button>
+          <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave(saveType.orderSave)">Lưu</button>
+      </div>
+
+      <div class="flex gap-x-2" *ngIf="isEnableCreateOrder">
+          <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+          <button tds-button class="w-[126px]" type="submit" color="info" (click)="onSave(saveType.billPrint)">
+              <span class="tdsi-print-fill"></span>
+              Lưu và in
+          </button>
+          <button tds-button class="w-[170px]" type="submit" color="info" (click)="onSave(saveType.billPrintShip)">
+              <span class="tdsi-print-fill"></span>
+              Lưu và in phiếu ship
+          </button>
+          <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave(saveType.billSave)">Lưu</button>
+    </div>
   </div>
 </form>

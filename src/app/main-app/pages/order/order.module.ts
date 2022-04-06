@@ -1,3 +1,4 @@
+import { CommonService } from 'src/app/main-app/services/common.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -17,13 +18,26 @@ import { TagService } from '../../services/tag.service';
 import { DeliveryCarrierService } from '../../services/delivery-carrier-order.service';
 import { DuplicateUserComponent } from './components/duplicate-user/duplicate-user.component';
 import { EditOrderComponent } from './components/edit-order/edit-order.component';
+import { FastSaleOrderService } from '../../services/fast-sale-order.service';
+import { SaleOnline_OrderHandler } from '../../services/handlers/sale-online-order.handler';
+import { CreateBillFastComponent } from './components/create-bill-fast/create-bill-fast.component';
+import { CreateBillFastErrorComponent } from './components/create-bill-fast-error/create-bill-fast-error.component';
+import { CreateBillDefaultComponent } from './components/create-bill-default/create-bill-default.component';
+import { CreateBillDefaultErrorComponent } from './components/create-bill-default-error/create-bill-default-error.component';
+import { InfoOrderDebtComponent } from './components/info-order-debt/info-order-debt.component';
+import { InfoPartnerComponent } from './components/info-partner/info-partner.component';
+import { PartnerService } from '../../services/partner.service';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
   SaleOnline_OrderService,
   TDSModalService,
   TagService,
-  DeliveryCarrierService
+  DeliveryCarrierService,
+  CommonService,
+  FastSaleOrderService,
+  PartnerService,
+  SaleOnline_OrderHandler
 ]
 
 @NgModule({
@@ -34,7 +48,13 @@ const SERVICES = [
     ConfigColumnComponent,
     UpdateStatusOrderComponent,
     DuplicateUserComponent,
-    EditOrderComponent
+    EditOrderComponent,
+    CreateBillFastComponent,
+    CreateBillFastErrorComponent,
+    CreateBillDefaultComponent,
+    CreateBillDefaultErrorComponent,
+    InfoOrderDebtComponent,
+    InfoPartnerComponent
   ],
   imports: [
     CommonModule,

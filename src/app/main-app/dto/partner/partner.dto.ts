@@ -4,125 +4,125 @@ import { StockLocationDTO } from '../product/warehouse.dto';
 import { TagDTO } from '../tag/tag.dto';
 
 export interface PartnerDTO {
-  id: number;
-  name: string;
-  displayName: string;
-  street: string;
-  website: string;
-  _phone: string;
+  Id: number;
+  Name: string;
+  DisplayName: string;
+  Street: string;
+  Website: string;
+  // _phone: string;
 
-  addresses: Array<AddressDTO>;
+  Addresses: Array<AddressDTO>;
 
-  phone: string;
-  phoneReport?: boolean;
-  mobile: string;
-  fax: string;
-  email: string;
-  supplier?: boolean;
-  customer?: boolean;
-  isContact?: boolean;
-  isCompany?: boolean;
-  companyId?: number;
-  ref: string;
-  comment: string;
+  Phone: string;
+  PhoneReport?: boolean;
+  Mobile: string;
+  Fax: string;
+  Email: string;
+  Supplier?: boolean;
+  Customer?: boolean;
+  IsContact?: boolean;
+  IsCompany?: boolean;
+  CompanyId?: number;
+  Ref: string;
+  Comment: string;
 
   //salesperson
-  userId: string;
-  active?: boolean;
-  employee?: boolean;
+  UserId: string;
+  Active?: boolean;
+  Employee?: boolean;
 
   // Mã số thuế
-  taxCode: string;
-  parentId?: number;
-  purchaseCurrencyId?: number;
-  purchaseCurrency: ResCurrencyDTO;
+  TaxCode: string;
+  ParentId?: number;
+  PurchaseCurrencyId?: number;
+  PurchaseCurrency: ResCurrencyDTO;
 
   // Tổng số tiền khách hàng này nợ bạn.
-  credit?: number;
+  Credit?: number;
 
   //Tổng số tiền bạn phải trả cho nhà cung cấp này.
-  debit?: number;
-  titleId?: number;
-  title: PartnerTitleDTO;
-  function: string;
-  type: string;
-  companyType: string;
-  childs: Array<PartnerDTO>;
-  categories: Array<PartnerCategoryDTO>;
-  accountReceivableId?: number;
-  accountReceivable: AccountDTO;
-  accountPayableId?: number;
-  accountPayable: AccountDTO;
-  stockCustomerId?: number;
-  stockCustomer: StockLocationDTO;
-  stockSupplierId?: number;
-  stockSupplier: StockLocationDTO;
-  city: PartnerCityDTO;
-  district: PartnerDistrictDTO;
-  ward: PartnerWardDTO;
-  barcode: string;
-  overCredit: boolean;
-  creditLimit?: number;
-  propertyProductPricelistId?: number;
-  propertyProductPricelist?: number;
+  Debit?: number;
+  TitleId?: number;
+  Title: PartnerTitleDTO;
+  // Function: string;
+  Type: string;
+  CompanyType: string;
+  Childs: Array<PartnerDTO>;
+  Categories: Array<PartnerCategoryDTO>;
+  AccountReceivableId?: number;
+  AccountReceivable: AccountDTO;
+  AccountPayableId?: number;
+  AccountPayable: AccountDTO;
+  StockCustomerId?: number;
+  StockCustomer: StockLocationDTO;
+  StockSupplierId?: number;
+  StockSupplier: StockLocationDTO;
+  City: PartnerCityDTO;
+  District: PartnerDistrictDTO;
+  Ward: PartnerWardDTO;
+  Barcode: string;
+  OverCredit: boolean;
+  CreditLimit?: number;
+  // PropertyProductPricelistId?: number;
+  // PropertyProductPricelist?: number;
 
   // Social Network
-  zalo: string;
-  facebook: string;
-  facebookId: string;
-  facebookASIds: string;
-  facebookPSId: string;
+  // zalo: string;
+  Facebook: string;
+  FacebookId: string;
+  FacebookASIds: string;
+  FacebookPSId: string;
 
   ///string base 64
-  image: string;
-  imageUrl: string;
-  lastUpdated?: Date;
+  Image: string;
+  ImageUrl: string;
+  LastUpdated?: Date;
 
-  loyaltyPoints?: number;
-  discount?: number;
-  amountDiscount?: number;
+  LoyaltyPoints?: number;
+  Discount?: number;
+  AmountDiscount?: number;
 
-  categoryNames: string;
+  CategoryNames: string;
 
-  partnerCategoryId?: number;
-  partnerCategoryName: string;
-  nameNoSign: string;
+  PartnerCategoryId?: number;
+  PartnerCategoryName: string;
+  NameNoSign: string;
 
   // Customer Payment Term
-  propertyPaymentTerm: AccountPaymentTermDTO;
-  propertyPaymentTermId?: number;
+  PropertyPaymentTerm: AccountPaymentTermDTO;
+  PropertyPaymentTermId?: number;
 
   /// Supplier Payment Term
-  propertySupplierPaymentTerm: AccountPaymentTermDTO;
-  propertySupplierPaymentTermId?: number;
-  categoryId: number;
-  dateCreated?: Date;
-  birthDay?: Date;
-  depositAmount?: number;
+  PropertySupplierPaymentTerm: AccountPaymentTermDTO;
+  PropertySupplierPaymentTermId?: number;
+  CategoryId: number;
+  DateCreated?: Date;
+  BirthDay?: Date;
+  DepositAmount?: number;
 
-  status: PartnerStatus;
+  Status: PartnerStatus;
 
   // Description Status
-  statusText: string;
+  StatusText: string;
 
-  statusStyle: string;
-  zaloUserId: string;
-  zaloUserName: string;
+  StatusStyle: string;
+  ZaloUserId: string;
+  ZaloUserName: string;
 
-  cityCode: string;
-  cityName: string;
-  districtCode: string;
-  districtName: string;
-  wardCode: string;
-  wardName: string;
+  CityCode: string;
+  CityName: string;
+  DistrictCode: string;
+  DistrictName: string;
+  WardCode: string;
+  WardName: string;
 
-  fullAddress: string;
+  FullAddress: string;
 
 }
 
 export interface PartnerTitleDTO {
-  id: number;
-  name: string;
+  Id: number;
+  Name: string;
 }
 
 export interface PartnerCategoryDTO {
@@ -138,41 +138,46 @@ export interface PartnerCategoryDTO {
 }
 
 export interface PartnerCityDTO {
-  name: string;
-  nameNoSign: string;
-  code?: number;
+  Name: string;
+  NameNoSign: string;
+  Code?: number;
 }
 
 export interface PartnerDistrictDTO {
-  name: string;
-  nameNoSign: string;
-  code?: number;
-  cityName: string;
-  cityCode?: number;
+  Name: string;
+  NameNoSign: string;
+  Code?: number;
+  CityName: string;
+  CityCode?: number;
 }
 
 export interface PartnerWardDTO {
-  name: string;
-  nameNoSign: string;
-  code?: number;
-  cityName: string;
-  cityCode?: number;
-  districtName: string;
-  districtCode?: number;
+  Name: string;
+  NameNoSign: string;
+  Code?: number;
+  CityName: string;
+  CityCode?: number;
+  DistrictName: string;
+  DistrictCode?: number;
+}
+
+export interface PartnerStatusDTO {
+  text: string;
+  value: string;
 }
 
 export class ResCurrencyDTO {
-  public id?: number;
-  public name?: string;
-  public rounding?: number;
-  public symbol?: string;
-  public active?: boolean;
-  public position?: string;
-  public rate?: number;
+  public Id?: number;
+  public Name?: string;
+  public Rounding?: number;
+  public Symbol?: string;
+  public Active?: boolean;
+  public Position?: string;
+  public Rate?: number;
 
   get decimalPlaces(): number {
-    if (this.rounding && this.rounding > 0 && this.rounding < 1) {
-      return Math.ceil(Math.log10(1 / this.rounding));
+    if (this.Rounding && this.Rounding > 0 && this.Rounding < 1) {
+      return Math.ceil(Math.log10(1 / this.Rounding));
     }
     return 0;
   }

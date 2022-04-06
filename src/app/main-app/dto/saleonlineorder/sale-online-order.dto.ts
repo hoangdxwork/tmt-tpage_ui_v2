@@ -86,7 +86,7 @@ export interface SaleOnline_OrderDTO {
   // Hiển thị số lần in
   PrintCount: number;
   UserId: string;
-  User: ApplicationUserDTO;
+  User?: ApplicationUserDTO;
   Tags: string;
   NameNetwork: string;
   UserName: string;
