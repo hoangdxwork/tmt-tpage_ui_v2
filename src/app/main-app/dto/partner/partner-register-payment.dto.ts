@@ -23,12 +23,26 @@ export interface City {
   code?: any;
 }
 
+export interface CityDTO {
+  Name?: any;
+  NameNoSign?: any;
+  Code?: any;
+}
+
 export interface District {
   name?: any;
   nameNoSign?: any;
   code?: any;
   cityName?: any;
   cityCode?: any;
+}
+
+export interface DistrictDTO {
+  Name?: any;
+  NameNoSign?: any;
+  Code?: any;
+  CityName?: any;
+  CityCode?: any;
 }
 
 export interface Ward {
@@ -39,6 +53,16 @@ export interface Ward {
   cityCode?: any;
   districtName?: any;
   districtCode?: any;
+}
+
+export interface WardDTO {
+  Name?: any;
+  NameNoSign?: any;
+  Code?: any;
+  CityName?: any;
+  CityCode?: any;
+  DistrictName?: any;
+  DistrictCode?: any;
 }
 
 export interface Partner {

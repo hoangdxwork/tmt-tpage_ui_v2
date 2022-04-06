@@ -12,7 +12,7 @@
     </div>
     <div class="w-full flex">
       <tds-form-field class="w-full">
-        <tds-select valueField="code" textField="name" placeholder='Tỉnh/Thành'
+        <tds-select valueField="Code" textField="Name" placeholder='Tỉnh/Thành'
           [valuePrimitive]="false" [allowClear]="true"
           formControlName="city" disabledField="isActive" [data]="lstCity"
           [allowClear]="true" (selectChange)="onSelectCity($event)">
@@ -21,7 +21,7 @@
     </div>
     <div class="w-full flex">
       <tds-form-field class="w-full">
-        <tds-select valueField="code" textField="name" placeholder='Quận/Huyện'
+        <tds-select valueField="Code" textField="Name" placeholder='Quận/Huyện'
           [valuePrimitive]="false" [allowClear]="true"
           formControlName="district" disabledField="isActive" [data]="lstDistrict"
           [allowClear]="true" (selectChange)="onSelectDistrict($event)">
@@ -30,7 +30,7 @@
     </div>
     <div class="w-full flex">
       <tds-form-field class="w-full">
-        <tds-select valueField="code" textField="name" placeholder='Phường/Xã'
+        <tds-select valueField="Code" textField="Name" placeholder='Phường/Xã'
           [valuePrimitive]="false" [allowClear]="true"
           formControlName="ward" disabledField="isActive" [data]="lstWard"
           [allowClear]="true" (selectChange)="onSelectWard($event)">

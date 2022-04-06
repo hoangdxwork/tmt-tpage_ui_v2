@@ -11,7 +11,7 @@
   </tds-form-field>
 </div>
 
-<tds-tabset class="bg-white w-full border rounded-md">
+<tds-tabset class="bg-white w-full border rounded-md mt-4">
   <tds-tab [title]="'Thông tin'">
     <div class="grid grid-cols-2 gap-x-4">
       <div>
@@ -86,7 +86,8 @@
     </div>
   </tds-tab>
   <tds-tab [title]="'Hóa đơn'">
-    <tds-table #rowSelectionTable
+    <ng-template tds-tab>
+      <tds-table #rowSelectionTable
       [showSizeChanger]="true"
       [frontPagination]="false"
       [listData]="lstOfDataOrder"
@@ -96,20 +97,20 @@
       (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
       <thead>
         <tr>
-          <th class="text-left">Số HĐ</th>
-          <th class="text-left">Ngày hóa đơn</th>
-          <th class="text-left">Trạng thái</th>
-          <th class="text-left">Tổng tiền</th>
-          <th class="text-left">Còn nợ</th>
+          <th class="text-left" width="20%">Số HĐ</th>
+          <th class="text-left" width="20%">Ngày hóa đơn</th>
+          <th class="text-left" width="20%">Trạng thái</th>
+          <th class="text-left" width="20%">Tổng tiền</th>
+          <th class="text-left" width="20%">Còn nợ</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="text-sm">
         <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd' let-index="index">
           <tr>
             <!-- Số HĐ -->
             <td class="text-left">
               <div class="w-full">
-                <span>{{data.Code}}</span>
+                <span>{{data.Code}} {{data.PartnerId}}</span>
               </div>
             </td>
             <!-- Ngày hóa đơn -->
@@ -139,10 +140,52 @@
           </tr>
         </ng-template>
       </tbody>
-    </tds-table>
+      </tds-table>
+    </ng-template>
   </tds-tab>
   <tds-tab [title]="'Chi tiết nợ'">
-
+    <ng-template tds-tab>
+      <tds-table #rowCreditDebitTable
+      [showSizeChanger]="true"
+      [frontPagination]="false"
+      [listData]="lstDebitDetails"
+      [(pageSize)]="pageSize"
+      [(pageIndex)]="pageIndex"
+      [total]="count" [scroll]="{y:'450px', x: 'auto'}" [loading]="isLoading"
+      (clickRefresh)="refreshCreditDebit()" (queryParams)="onQueryParamsChangeCreditDebit($event)">
+      <thead>
+        <tr>
+          <th class="text-left" width="33%">Ngày</th>
+          <th class="text-left" width="33%">Chứng từ / Hóa đơn</th>
+          <th class="text-left" width="33%">Còn nợ</th>
+        </tr>
+      </thead>
+      <tbody class="text-sm">
+        <ng-template ngFor let-data [ngForOf]="rowCreditDebitTable.data" let-odd='odd' let-index="index">
+          <tr>
+            <!-- Ngày -->
+            <td class="text-left">
+              <div class="w-full">
+                <span>{{data.Date | date: 'dd/MM/yyyy'}}</span>
+              </div>
+            </td>
+            <!-- Chứng từ / Hóa đơn -->
+            <td class="text-left">
+              <div class="w-full">
+                <span>{{data.DisplayedName}}</span>
+              </div>
+            </td>
+            <!-- Còn nợ -->
+            <td class="text-left">
+              <div class="w-full">
+                <span>{{data.AmountResidual | number}}</span>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </tbody>
+      </tds-table>
+    </ng-template>
   </tds-tab>
 </tds-tabset>
 
