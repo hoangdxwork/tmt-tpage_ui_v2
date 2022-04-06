@@ -53,4 +53,13 @@ export class CommonService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api,null);
   }
 
+  getInventoryByIds(warehouseId: number, ids: any): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/rest/v1.0/product/getinventorybyids?WarehouseId=${warehouseId}&ProductIds=${ids}`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api,null);
+  }
+
 }

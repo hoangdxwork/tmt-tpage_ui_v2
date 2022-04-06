@@ -12,6 +12,8 @@ export class FilterOptionPartnerComponent implements OnInit {
   @Output() onLoadOption = new EventEmitter<TDSSafeAny>();
   @Input() status: any = [];
 
+  isVisible: boolean = false;
+
   public filterObj: TDSSafeAny = {
       searchText: '',
       statusText: null
@@ -62,7 +64,7 @@ export class FilterOptionPartnerComponent implements OnInit {
   }
 
   closeMenu() {
-    this.tdsContextMenuService.close();
+    this.isVisible = false;
   }
 
 }

@@ -14,7 +14,7 @@ const routes: Routes = [
     component: AddBillComponent
   },
   {
-    path: 'detail',
+    path: 'detail/:id',
     component: DetailBillComponent
   },
 ];

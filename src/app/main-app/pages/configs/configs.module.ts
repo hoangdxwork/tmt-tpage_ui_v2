@@ -1,5 +1,5 @@
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TDSAvatarModule, TDSButtonModule, TDSSwitchModule, TDSTabsModule, TDSBadgeModule, TDSInputModule, TDSSelectModule, TDSFormFieldModule, TDSTableModule, TDSToolTipModule, TDSButtonMenuModule, TDSModalService } from 'tmt-tang-ui';
+import { TDSAvatarModule, TDSButtonModule, TDSSwitchModule, TDSTabsModule, TDSBadgeModule, TDSInputModule, TDSSelectModule, TDSFormFieldModule, TDSTableModule, TDSToolTipModule, TDSButtonMenuModule, TDSModalService, TDSModalModule, TDSRadioModule, TDSBreadCrumbModule, TDSImageModule, TDSUploadModule } from 'tmt-tang-ui';
 import { MainSharedModule } from './../../shared/shared.module';
 
 import { NgModule } from '@angular/core';
@@ -22,6 +22,7 @@ import { ConfigPagesBasicComponent } from './components/config-pages/config-page
 import { ConfigPagesDivideTaskComponent } from './components/config-pages/config-pages-divide-task/config-pages-divide-task.component';
 import { ConfigPrintBillsComponent } from './components/config-print-bills/config-print-bills.component';
 import { EditDataModalComponent } from './components/config-conversation-tags/edit-data-modal/edit-data-modal.component';
+import { AutoChatAddDataModalComponent } from './components/config-auto-chat/auto-chat-add-data-modal/auto-chat-add-data-modal.component';
 
 
 @NgModule({
@@ -42,6 +43,7 @@ import { EditDataModalComponent } from './components/config-conversation-tags/ed
     ConfigPagesDivideTaskComponent,
     ConfigPrintBillsComponent,
     EditDataModalComponent,
+    AutoChatAddDataModalComponent,
   ],
   imports: [
     CommonModule,
@@ -60,6 +62,11 @@ import { EditDataModalComponent } from './components/config-conversation-tags/ed
     TDSTableModule,
     TDSToolTipModule,
     TDSButtonMenuModule,
+    TDSModalModule,
+    TDSRadioModule,
+    TDSBreadCrumbModule,
+    TDSImageModule,
+    TDSUploadModule
   ],
   providers:[TDSModalService]
 })

@@ -44,7 +44,9 @@ export class ModalPaymentComponent implements OnInit {
       this.registerPaymentService.getWithCompanyPayment().subscribe((res: any) => {
           this.lstAcJournal = res.value;
           this.modelForm.acJournal = res.value[0];
-      })
+      });
+
+      this.modelForm.amount = this.data.Amount;
     }
   }
 
@@ -87,6 +89,7 @@ export class ModalPaymentComponent implements OnInit {
       let model = {
         id: res.Id
       }
+
       this.registerPaymentService.createPayment(model).subscribe((x: any) => {
         let obs: TDSSafeAny;
 
@@ -101,6 +104,9 @@ export class ModalPaymentComponent implements OnInit {
         }
         this.message.success('Thanh toán thành công!');
         this.modal.destroy(null);
+      }, error => {
+        this.modal.destroy(null);
+        // this.message.error(`${error?.error.message}`)
       })
 
     }, error => {
