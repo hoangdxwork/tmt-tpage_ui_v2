@@ -387,7 +387,7 @@
 	</div>
 	<div class="w-[576px] h-full flex flex-col">
 		<tds-tabset class="bg-white border border-neutral-2-200 h-full" [clsTab]="'flex-1'"
-			[tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex">
+			[tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
 			<tds-tab [title]="titleCustomer" clsContent="border-t border-neutral-2-200 -mt-px h-full flex flex-col">
 				<ng-template #titleCustomer let-active="active">
 					<div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 py-4 pr-4 relative  group"
@@ -1117,7 +1117,7 @@
 										<div class="text-body-2 font-semibold font-sans text-neutral-1-900 pb-2">Đối tác giao hàng</div>
 										<tds-form-field>
 											<tds-select valueField="id" textField="name" placeholder='DHL'
-												formControlName="DTGH" disabledField="isActive" [data]="listDTGiaoHang"
+											[formControl]="DTGH" disabledField="isActive" [data]="listDTGiaoHang"
 												[allowClear]="true" [required]="true">
 											</tds-select>
 										</tds-form-field>
@@ -1126,7 +1126,7 @@
 										<div class="text-body-2 font-semibold font-sans text-neutral-1-900 pb-2">Giao hàng tiêu chuẩn</div>
 										<tds-form-field>
 											<tds-select valueField="id" textField="name" placeholder='DHL'
-												formControlName="dichVu" disabledField="isActive" [data]="listDichVu"
+											[formControl]="dichVu" disabledField="isActive" [data]="listDichVu"
 												[allowClear]="true" [required]="true">
 											</tds-select>
 										</tds-form-field>

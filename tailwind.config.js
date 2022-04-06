@@ -358,7 +358,8 @@ module.exports = {
                 '7': '1.75rem',
             },
             opacity: {
-                '65': '.65'
+                '65': '.65',
+                '9' : '.09',
             },
             fontSize: {
                 'heading-1': ['40px', '53px'],
