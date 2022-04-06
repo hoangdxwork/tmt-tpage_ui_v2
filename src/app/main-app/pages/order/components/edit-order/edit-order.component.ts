@@ -2,7 +2,7 @@ import { FastSaleOrderHandler } from './../../../../services/handlers/fast-sale-
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { DeliveryCarrierDTO } from './../../../../dto/carrier/delivery-carrier.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { TAuthService } from 'src/app/lib';
 import { UserInitDTO } from 'src/app/lib/dto';
 import { CheckAddressDTO, DataSuggestionDTO } from 'src/app/main-app/dto/address/address.dto';
@@ -39,6 +39,7 @@ export class EditOrderComponent implements OnInit {
   lstComment: SaleOnlineFacebookCommentFilterResultDTO[] = [];
   isEnableCreateOrder: boolean = false;
   enableInsuranceFee: boolean = false;
+  isLoadCarrier: boolean = false;
 
   model!: SaleOnline_OrderDTO;
   defaultBill!: FastSaleOrderDTO;
@@ -92,12 +93,13 @@ export class EditOrderComponent implements OnInit {
   }
 
   onSave(type: TDSSafeAny) {
+    debugger;
     let model = this.prepareOrderModel();
 
     this.saleOnline_OrderService.update(this.idOrder, model).subscribe((res: any) => {
       if(type == this.saveType.orderSave) {
         this.message.success(Message.Order.UpdateSuccess);
-        this.onCancel();
+        this.onCancelSuccess(res);
       }
       else if(type == this.saveType.orderPrint) {
         // TODO: in
@@ -121,6 +123,8 @@ export class EditOrderComponent implements OnInit {
               else if(type == this.saveType.billPrintShip) {
 
               }
+
+              this.onCancelSuccess(data);
 
             } else {
               this.message.error(data.Message);
@@ -209,8 +213,6 @@ export class EditOrderComponent implements OnInit {
   prepareOrderModel() {
     let formValue = this.formEditOrder.value;
 
-    debugger;
-
     this.model.Partner = formValue.Partner;
     this.model.Name = formValue.Name;
     this.model.Telephone = formValue.Telephone;
@@ -267,8 +269,6 @@ export class EditOrderComponent implements OnInit {
     this.defaultBill.Ship_Extras = formValue.Ship_Extras;
     this.defaultBill.CompanyId = formValue.Company.Id;
     this.defaultBill.AmountTotal = formValue.AmountTotal;
-    debugger;
-
 
     if(formValue.Ship_Receiver) {
       this.defaultBill.Ship_Receiver = formValue.Ship_Receiver;
@@ -372,6 +372,9 @@ export class EditOrderComponent implements OnInit {
     this.shipExtraServices.length = 0;
     this.shipServices.length = 0;
     this.enableInsuranceFee = false;
+    this.isLoadCarrier = true;
+
+    debugger;
 
     this.saleOnline_OrderHandler.changeCarrier(this.defaultBill, this.formEditOrder, event, this.shipExtraServices).subscribe(res => {
       this.enableInsuranceFee = res.EnableInsuranceFee;
@@ -381,12 +384,12 @@ export class EditOrderComponent implements OnInit {
         this.initNinjaVan();
       }
 
-      debugger;
-
       console.log(this.shipServices);
       console.log(this.defaultBill);
 
       this.updateFormByBillDefault(this.defaultBill);
+
+      this.isLoadCarrier = false;
 
     }, error => {
       console.log(error);
@@ -396,6 +399,10 @@ export class EditOrderComponent implements OnInit {
       else {
         this.message.error(JSON.stringify(error));
       }
+
+      this.updateFormByBillDefault(this.defaultBill);
+
+      this.isLoadCarrier = false;
     });
   }
 
@@ -452,8 +459,6 @@ export class EditOrderComponent implements OnInit {
   updateForm(data: any) {
     let formControls = this.formEditOrder.controls;
 
-    debugger;
-
     formControls["Facebook_UserName"].setValue(data.Facebook_UserName);
     formControls["Facebook_UserId"].setValue(data.Facebook_UserId);
     formControls["Name"].setValue(data.Name);
@@ -489,8 +494,6 @@ export class EditOrderComponent implements OnInit {
       formControls["DeliveryPrice"].value +
       formControls["TotalAmount"].value
     );
-
-    debugger;
 
     // if (formControls["Address"].value) {
     //   formControls["Ship_Receiver"].setValue({
@@ -651,6 +654,57 @@ export class EditOrderComponent implements OnInit {
     });
   }
 
+  onChangeProductPrice() {
+    this.updateTotalAmount();
+    this.updateTotalQuantity();
+    this.updateCoDAmount();
+  }
+
+  onChangeProductQuantity() {
+    this.updateTotalAmount();
+    this.updateTotalQuantity();
+    this.updateCoDAmount();
+  }
+
+  onRemoveProduct(product: TDSSafeAny, index: number) {
+    (this.formEditOrder.controls["Details"] as FormArray).removeAt(index);
+
+    this.updateTotalAmount();
+    this.updateTotalQuantity();
+    this.updateCoDAmount();
+  }
+
+  updateTotalAmount() {
+    let lstDetail = this.formEditOrder.controls["Details"].value;
+
+    let total: number = 0;
+
+    lstDetail.forEach((detail: TDSSafeAny) => {
+      total += detail.Quantity * detail.Price;
+    });
+
+    this.formEditOrder.controls["TotalAmount"].setValue(total);
+  }
+
+  updateTotalQuantity() {
+    let lstDetail = this.formEditOrder.controls["Details"].value;
+
+    let quantity: number = 0;
+
+    lstDetail.forEach((detail: TDSSafeAny) => {
+      quantity += detail.Quantity;
+    });
+
+    this.formEditOrder.controls["TotalQuantity"].setValue(quantity);
+  }
+
+  updateCoDAmount() {
+    if (this.defaultBill && this.isEnableCreateOrder) {
+      let coDAmount = this.formEditOrder.controls["TotalAmount"].value + this.formEditOrder.controls["DeliveryPrice"].value;
+      this.formEditOrder.controls["CashOnDelivery"].setValue(coDAmount);
+    }
+  }
+
   onChangeAddress(event: CheckAddressDTO) {
     let formControls = this.formEditOrder.controls;
 
@@ -719,6 +773,10 @@ export class EditOrderComponent implements OnInit {
 
   onCancel() {
     this.modalRef.destroy(null);
+  }
+
+  onCancelSuccess(data: TDSSafeAny) {
+    this.modalRef.destroy(data);
   }
 
 }

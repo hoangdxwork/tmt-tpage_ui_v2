@@ -403,16 +403,23 @@ export class OrderComponent implements OnInit {
   }
 
   onEdit(id: string) {
-    console.log("edit id: ", id);
-      this.modal.create({
-        title: 'Sửa đơn hàng',
-        content: EditOrderComponent,
-        size: 'xl',
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          idOrder: id
-        }
-      });
+    const modal = this.modal.create({
+      title: 'Sửa đơn hàng',
+      content: EditOrderComponent,
+      size: 'xl',
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        idOrder: id
+      }
+    });
+
+    // modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
+    modal.afterClose.subscribe((result: TDSSafeAny) => {
+      console.log('[afterClose] The result is:', result);
+      if (TDSHelperObject.hasValue(result)) {
+        this.loadData(this.pageSize, this.pageIndex);
+      }
+    });
   }
 
   onRemove(id: string, code: string) {

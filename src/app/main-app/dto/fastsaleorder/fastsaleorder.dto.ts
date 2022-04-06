@@ -513,8 +513,8 @@ export interface FastSaleOrder_ReceiverDTO {
 }
 
 export interface FastSaleOrder_Receiver_NameCodeDTO {
-  name: string;
-  code: TDSSafeAny;
+  Name: string;
+  Code: TDSSafeAny;
 }
 
 export interface FastSaleOrder_ServiceExtraDTO {

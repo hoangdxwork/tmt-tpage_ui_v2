@@ -27,6 +27,7 @@ import { CreateBillDefaultErrorComponent } from './components/create-bill-defaul
 import { InfoOrderDebtComponent } from './components/info-order-debt/info-order-debt.component';
 import { InfoPartnerComponent } from './components/info-partner/info-partner.component';
 import { PartnerService } from '../../services/partner.service';
+import { UpdateInfoPartnerComponent } from './components/update-info-partner/update-info-partner.component';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -54,7 +55,8 @@ const SERVICES = [
     CreateBillDefaultComponent,
     CreateBillDefaultErrorComponent,
     InfoOrderDebtComponent,
-    InfoPartnerComponent
+    InfoPartnerComponent,
+    UpdateInfoPartnerComponent
   ],
   imports: [
     CommonModule,

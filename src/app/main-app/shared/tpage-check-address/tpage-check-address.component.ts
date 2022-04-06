@@ -37,8 +37,6 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges {
     this.createForm();
     this.initForm();
 
-    debugger;
-
     this.district && this.loadDistrict(this.city?.Code);
     this.ward && this.loadWard(this.district?.Code);
   }
@@ -58,7 +56,6 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges {
   }
 
   initForm() {
-    debugger;
     if(TDSHelperString.hasValueString(this.streetText)) {
       this.formAddress.controls["street"].setValue(this.streetText);
     }

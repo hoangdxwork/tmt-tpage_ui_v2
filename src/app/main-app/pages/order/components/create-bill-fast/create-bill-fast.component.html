@@ -7,10 +7,10 @@
       <tds-form-field>
         <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng'
             [allowClear]="true" [valuePrimitive]="false" formControlName="carrier"
-            [data]="lstCarriers">
+            [data]="lstCarriers" (selectChange)="changeCarrierAll()">
         </tds-select>
       </tds-form-field>
-      <span class="flex text-info-500" *ngIf="formCreateBillFast.controls['carrier'].value">
+      <span class="flex text-info-500 text-xs pt-1" *ngIf="formCreateBillFast.controls['carrier'].value">
         *Phần mềm sẽ tự chọn đối tác với số tiền ship thấp nhất</span>
     </div>
     <div class="w-2/5">
@@ -93,12 +93,12 @@
                   <!-- Thao tác -->
                   <td class="align-top">
                     <div class="flex gap-x-2">
-                      <button tds-button-icon color="secondary" size="sm" (click)="onEdit(data.Id)">
+                      <button tds-button-icon color="secondary" size="sm" (click)="onEdit(index)">
                         <span class="flex items-center">
                           <i class="tdsi-edit-fill"></i>
                         </span>
                       </button>
-                      <button tds-button-icon color="secondary" size="sm">
+                      <button tds-button-icon color="secondary" size="sm" (click)="onRemoveLine(index)">
                         <span class="flex items-center">
                           <i class="tdsi-trash-fill"></i>
                         </span>
@@ -134,7 +134,7 @@
                               <!-- Số lượng -->
                               <td>
                                 <tds-form-field>
-                                  <tds-input-number [min]="0" [step]="1000"
+                                  <tds-input-number [min]="0" [step]="1000" (ngModelChange)="changeQuantityProduct($event,i,index)"
                                     [(ngModel)]="orderLines.ProductUOMQty" [ngModelOptions]="{standalone: true}">
                                   </tds-input-number>
                                 </tds-form-field>
@@ -142,32 +142,35 @@
                               <!-- Số tiền -->
                               <td>
                                 <tds-form-field>
-                                  <tds-input-number [min]="0" [step]="1000"
+                                  <tds-input-number [min]="0" [step]="1000" (ngModelChange)="changePriceProduct($event, index, i)"
                                     [(ngModel)]="orderLines.PriceUnit" [ngModelOptions]="{standalone: true}">
                                   </tds-input-number>
                                 </tds-form-field>
                               </td>
                               <!-- Tổng tiền -->
                               <td>
-                                <tds-form-field>
+                                <!-- <tds-form-field>
                                   <tds-input-number [min]="0" [step]="1000"
                                     [(ngModel)]="orderLines.PriceSubTotal" [ngModelOptions]="{standalone: true}">
                                   </tds-input-number>
-                                </tds-form-field>
+                                </tds-form-field> -->
+                                {{ orderLines.PriceSubTotal }}
                               </td>
                               <!-- Ghi chú -->
-                              <tds-form-field>
-                                <input tdsInput autocomplete="off" placeholder="Nhập ghi chú" [(ngModel)]="orderLines.Note" [ngModelOptions]="{standalone: true}" />
-                              </tds-form-field>
+                              <td>
+                                <tds-form-field>
+                                  <input tdsInput autocomplete="off" placeholder="Nhập ghi chú" [(ngModel)]="orderLines.Note" [ngModelOptions]="{standalone: true}" />
+                                </tds-form-field>
+                              </td>
                               <!-- Thao tác -->
                               <td>
                                 <div class="flex gap-x-2">
-                                  <button tds-button-icon color="secondary" size="sm" (click)="onEditLine(orderLines.Id)">
+                                  <!-- <button tds-button-icon color="secondary" size="sm">
                                     <span class="flex items-center">
                                       <i class="tdsi-edit-fill"></i>
                                     </span>
-                                  </button>
-                                  <button tds-button-icon color="secondary" size="sm">
+                                  </button> -->
+                                  <button tds-button-icon color="secondary" size="sm" (click)="onRemoveProduct(index, i)">
                                     <span class="flex items-center">
                                       <i class="tdsi-trash-fill"></i>
                                     </span>
