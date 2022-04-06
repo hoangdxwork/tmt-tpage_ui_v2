@@ -1,7 +1,7 @@
 export interface City {
   name: string;
   nameNoSign?: any;
-  code: string;
+  code: any;
 }
 
 export interface District {
@@ -15,7 +15,7 @@ export interface District {
 export interface Ward {
   name: string;
   nameNoSign?: any;
-  code: string;
+  code: any;
   cityName?: any;
   cityCode?: any;
   districtName?: any;

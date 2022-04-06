@@ -1,4 +1,5 @@
-import { TDSHelperString } from 'tmt-tang-ui';
+import { map } from 'rxjs/operators';
+import { TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 import { Component, Input, OnInit, EventEmitter, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CheckAddressDTO, CityDTO, DataSuggestionDTO, DistrictDTO, ResultCheckAddressDTO, WardDTO } from '../../dto/address/address.dto';
@@ -38,8 +39,8 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges {
 
     debugger;
 
-    this.district && this.loadDistrict(this.city?.code);
-    this.ward && this.loadWard(this.district?.code);
+    this.district && this.loadDistrict(this.city?.Code);
+    this.ward && this.loadWard(this.district?.Code);
   }
 
   ngOnInit(): void {
@@ -61,33 +62,33 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges {
     if(TDSHelperString.hasValueString(this.streetText)) {
       this.formAddress.controls["street"].setValue(this.streetText);
     }
-    if(this.city?.code) {
+    if(this.city?.Code) {
       this.formAddress.controls["city"].setValue(this.city);
     }
-    if(this.district?.code) {
+    if(this.district?.Code) {
       this.formAddress.controls["district"].setValue(this.district);
     }
-    if(this.ward?.code) {
+    if(this.ward?.Code) {
       this.formAddress.controls["ward"].setValue(this.ward);
     }
   }
 
   loadCity() {
-    this.addressService.getCities().subscribe(res => {
+    this.addressService.getCities().subscribe((res: TDSSafeAny) => {
       this.lstCity = res;
     });
   }
 
   loadDistrict(cityCode: number | undefined) {
     if(!cityCode) return;
-    this.addressService.getDistricts(cityCode).subscribe(res => {
+    this.addressService.getDistricts(cityCode).subscribe((res: TDSSafeAny) => {
       this.lstDistrict = res;
     });
   }
 
   loadWard(districtCode: number | undefined) {
     if(!districtCode) return;
-    this.addressService.getWards(districtCode).subscribe(res => {
+    this.addressService.getWards(districtCode).subscribe((res: TDSSafeAny) => {
       this.lstWard = res;
     });
   }
@@ -95,13 +96,13 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges {
   onSelectCity(event: CityDTO) {
     this.formAddress.controls["district"].setValue(null);
     this.formAddress.controls["ward"].setValue(null);
-    this.loadDistrict(event.code);
+    this.loadDistrict(event.Code);
     this.prepareAddress();
   }
 
   onSelectDistrict(event: DistrictDTO) {
     this.formAddress.controls["ward"].setValue(null);
-    this.loadWard(event.code);
+    this.loadWard(event.Code);
     this.prepareAddress();
   }
 
@@ -113,7 +114,7 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges {
   onSelectStreet() {
     let value = this.formAddress.controls["street"].value;
 
-    this.addressService.checkAddress(value).subscribe(res => {
+    this.addressService.checkAddress(value).subscribe((res: TDSSafeAny) => {
       res.success && (this.lstResultCheck = res.data);
       res.success && this.setValueSelect(res.data[0]);
     });

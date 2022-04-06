@@ -7,12 +7,14 @@ export const Message = {
   DeleteFail: 'Xóa thất bại.',
   ManipulationSuccessful: 'Thao tác thành công.',
   EmptyData: 'Không có dữ liệu',
+  SelectOneLine: 'Vui lòng chọn tối thiểu 1 dòng!',
   Error: {
     SeverError: 'Lỗi máy chủ. Vui lòng thử lại sau.'
   },
   Order: {
     UpdateSuccess: 'Cập nhật đơn hàng thành công.',
-    EmptyProduct: 'Hãy nhập sản phẩm!'
+    EmptyProduct: 'Hãy nhập sản phẩm!',
+    DeleteSuccess: 'Xóa thành công đơn hàng',
   },
   Bill: {
     InsertSuccess: 'Tạo hóa đơn thành công.',

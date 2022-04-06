@@ -89,4 +89,56 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
     return dataFilter;
   }
 
+  public buildFilterByPartner(filterObj: FilterObjDTO, partnerId: TDSSafeAny) {
+
+    let dataFilter: FilterDataRequestDTO = {
+        logic: "and",
+        filters: [],
+    }
+
+    if (TDSHelperString.hasValueString(partnerId)) {
+        dataFilter.filters.push( {
+            filters: [
+              { field: "PartnerId", operator: OperatorEnum.eq, value: partnerId}
+
+            ],
+            logic: 'and'
+        })
+    }
+
+    if (filterObj.dateRange && filterObj.dateRange.startDate && filterObj.dateRange.endDate) {
+        dataFilter.filters.push({
+            filters: [
+              { field: "DateCreated", operator: OperatorEnum.gte, value: new Date(filterObj.dateRange.startDate) },
+              { field: "DateCreated", operator: OperatorEnum.lte, value: new Date(filterObj.dateRange.endDate) }
+            ],
+            logic: 'and'
+        })
+    }
+
+    if (TDSHelperString.hasValueString(filterObj.searchText)) {
+        dataFilter.filters.push( {
+            filters: [
+              { field: "Code", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "Telephone", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "Address", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "PartnerName", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "PartnerNameNosign", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "StatusText", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "CRMTeamName", operator: OperatorEnum.contains, value: filterObj.searchText},
+              { field: "UserName", operator: OperatorEnum.contains, value: filterObj.searchText}
+            ],
+            logic: 'or'
+        })
+    }
+
+    if (TDSHelperString.hasValueString(filterObj.status)) {
+      dataFilter.filters.push({ field: "StatusText", operator: OperatorEnum.eq, value: filterObj.status })
+      dataFilter.logic = "and";
+    }
+
+    return dataFilter;
+  }
+
 }

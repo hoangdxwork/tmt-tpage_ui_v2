@@ -207,18 +207,18 @@ export class ModalEditPartnerComponent implements OnInit {
     formModel["Street"].setValue(event.Street);
 
     formModel["City"].setValue( event.City ? {
-      code: event.City?.code,
-      name: event.City?.name
+      code: event.City?.Code,
+      name: event.City?.Name
     } : null);
 
     formModel["District"].setValue( event.District ? {
-      code: event.District?.code,
-      name: event.District?.name,
+      code: event.District?.Code,
+      name: event.District?.Name,
     } : null);
 
     formModel["Ward"].setValue( event.Ward ? {
-      code: event.Ward?.code,
-      name: event.Ward?.name,
+      code: event.Ward?.Code,
+      name: event.Ward?.Name,
     } : null);
   }
 
