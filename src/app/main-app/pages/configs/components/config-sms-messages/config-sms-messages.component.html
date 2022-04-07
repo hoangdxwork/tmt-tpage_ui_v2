@@ -1,1 +1,58 @@
-<p>config-sms-messages works!</p>
+<div class="w-full h-full pb-4 px-4">
+    <div class="flex flex-col w-full h-full bg-white rounded-xl">
+        <div class="flex flex-row items-center justify-between px-4 py-3">
+            <div class="flex flex-row items-center">
+                <tds-avatar class="bg-primary-1 text-white" icon="tdsi-email-fill"></tds-avatar>
+                <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">DANH SÁCH ĐỐI TÁC SMS</span>
+            </div>
+            <button tds-button color="primary" (click)="onAddNewData($event)">
+                <span class="flex items-center">
+                  <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+                  <span class="text-body-2 font-semibold">Thêm mới</span>
+                </span>
+            </button>
+        </div>
+        <div class="flex flex-auto pb-2.5">
+            <tds-table #basicTable 
+                [listData]="TableData" 
+                [showSizeChanger]="true" 
+                [loading]="isLoading" 
+                [scroll]="{y:'auto'}"
+                [pageSize]="20"
+                [total]="TableData.length" 
+                >
+                <thead>
+                      <tr class="text-neutral-1-900 text-body-2 font-semibold">
+                            <th [width]="'100px'">#</th>
+                            <th>Đối tác</th>
+                            <th>API Key</th>
+                            <th>Loại dịch vụ</th>
+                            <th>Thao tác</th>
+                      </tr>
+                </thead>
+                <tbody>
+                    <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
+                        <tr class="text-neutral-1-900 text-body-2 font-regular">
+                            <td>{{ data.id }}</td>
+                            <td>{{ data.partner }}</td>
+                            <td>{{ data.APIKey }}</td>
+                            <td>{{ data.service }}</td>
+                            <td>
+                                <button tds-button-icon color="secondary" size="sm" class=" mr-2" (click)="showEditModal(i)">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-edit-fill text-xl leading-none"></i>
+                                    </span>
+                                </button>
+                                <button tds-button-icon color="secondary" size="sm" (click)="showRemoveModal(i)">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-trash-fill text-xl leading-none"></i>
+                                    </span>
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </tds-table>
+        </div>
+    </div>
+</div>

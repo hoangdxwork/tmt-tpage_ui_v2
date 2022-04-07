@@ -1,0 +1,52 @@
+<form [formGroup]="serviceForm" autocomplete="off" (ngSubmit)="onSubmit()">
+    <div class="flex flex-col w-full">
+        <tds-form-field class="mb-4">
+            <tds-label>Đối tác</tds-label>
+            <tds-select valueField="id" textField="partner" placeholder='Chọn'
+                disabledField="isActive" formControlName="partner"
+                [data]="partnerData" [allowClear]="true"
+                (selectChange)="onselectPartner($event)">
+            </tds-select>
+            <tds-error>
+                Vui lòng chọn tên đối tác
+            </tds-error>
+        </tds-form-field>
+
+        <tds-form-field class="mb-4">
+            <tds-label>API Key</tds-label>
+            <input tdsInput formControlName="apiKey" placeholder="######" class="text-neutral-1-900 text-body-2 font-regular" [required]='true'/>
+            <tds-error>
+                Vui lòng nhập API key
+            </tds-error>
+        </tds-form-field>
+
+        <tds-form-field class="mb-4">
+            <tds-label>Secret Key</tds-label>
+            <input tdsInput formControlName="secretKey" placeholder="######" class="text-neutral-1-900 text-body-2 font-regular"/>
+            <tds-error>
+                Vui lòng nhập secret key
+            </tds-error>
+        </tds-form-field>
+
+        <tds-form-field>
+            <tds-label>Loại dịch vụ</tds-label>
+            <tds-select valueField="id" textField="name" placeholder='Chọn'
+                disabledField="isActive" formControlName="service"
+                [data]="serviceData" [allowClear]="true">
+            </tds-select>
+            <tds-error>
+                Vui lòng chọn loại dịch vụ
+            </tds-error>
+        </tds-form-field>
+    </div>
+</form>
+
+<!-- footer -->
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2" color="secondary" (click)="cancel()">
+        Hủy bỏ
+    </button>
+    <button tds-button type="submit" [disabled]="!serviceForm.valid" color="primary" (click)="save()">
+        Thêm mới
+    </button>
+</div>

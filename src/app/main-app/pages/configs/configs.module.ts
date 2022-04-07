@@ -1,5 +1,5 @@
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TDSAvatarModule, TDSButtonModule, TDSSwitchModule, TDSTabsModule, TDSBadgeModule, TDSInputModule, TDSSelectModule, TDSFormFieldModule, TDSTableModule, TDSToolTipModule, TDSButtonMenuModule, TDSModalService, TDSModalModule, TDSRadioModule, TDSBreadCrumbModule, TDSImageModule, TDSUploadModule } from 'tmt-tang-ui';
+import { TDSAvatarModule, TDSButtonModule, TDSSwitchModule, TDSTabsModule, TDSBadgeModule, TDSInputModule, TDSSelectModule, TDSFormFieldModule, TDSTableModule, TDSToolTipModule, TDSButtonMenuModule, TDSModalService, TDSModalModule, TDSRadioModule, TDSBreadCrumbModule, TDSImageModule, TDSUploadModule, TDSDropDownModule, TDSCheckBoxModule, TDSInputNumberModule } from 'tmt-tang-ui';
 import { MainSharedModule } from './../../shared/shared.module';
 
 import { NgModule } from '@angular/core';
@@ -11,7 +11,7 @@ import { ConfigOverviewComponent } from './components/config-overview/config-ove
 import { ConfigAutoChatComponent } from './components/config-auto-chat/config-auto-chat.component';
 import { ConfigConversationTagsComponent } from './components/config-conversation-tags/config-conversation-tags.component';
 import { ConfigSmsMessagesComponent } from './components/config-sms-messages/config-sms-messages.component';
-import { ConfigProductFormsComponent } from './components/config-product-forms/config-product-forms.component';
+import { ConfigProductVariantComponent } from './components/config-product-variant/config-product-variant.component';
 import { ConfigProductsComponent } from './components/config-products/config-products.component';
 import { ConfigActivitiesComponent } from './components/config-activities/config-activities.component';
 import { ConfigPromotionsComponent } from './components/config-promotions/config-promotions.component';
@@ -23,6 +23,10 @@ import { ConfigPagesDivideTaskComponent } from './components/config-pages/config
 import { ConfigPrintBillsComponent } from './components/config-print-bills/config-print-bills.component';
 import { EditDataModalComponent } from './components/config-conversation-tags/edit-data-modal/edit-data-modal.component';
 import { AutoChatAddDataModalComponent } from './components/config-auto-chat/auto-chat-add-data-modal/auto-chat-add-data-modal.component';
+import { AddServiceModalComponent } from './components/config-sms-messages/add-service-modal/add-service-modal.component';
+import { TableTemplateProductVariantComponent } from './components/config-product-variant/table-template-product-variant/table-template-product-variant.component';
+import { ProductVariantEditTableModalComponent } from './components/config-product-variant/product-variant-edit-table-modal/product-variant-edit-table-modal.component';
+import { AddProductVariantComponent } from './components/config-product-variant/add-product-variant/add-product-variant.component';
 
 
 @NgModule({
@@ -32,7 +36,7 @@ import { AutoChatAddDataModalComponent } from './components/config-auto-chat/aut
     ConfigAutoChatComponent,
     ConfigConversationTagsComponent,
     ConfigSmsMessagesComponent,
-    ConfigProductFormsComponent,
+    ConfigProductVariantComponent,
     ConfigProductsComponent,
     ConfigActivitiesComponent,
     ConfigPromotionsComponent,
@@ -44,6 +48,10 @@ import { AutoChatAddDataModalComponent } from './components/config-auto-chat/aut
     ConfigPrintBillsComponent,
     EditDataModalComponent,
     AutoChatAddDataModalComponent,
+    AddServiceModalComponent,
+    TableTemplateProductVariantComponent,
+    ProductVariantEditTableModalComponent,
+    AddProductVariantComponent,
   ],
   imports: [
     CommonModule,
@@ -59,6 +67,7 @@ import { AutoChatAddDataModalComponent } from './components/config-auto-chat/aut
     TDSSelectModule,
     TDSFormFieldModule,
     TDSInputModule,
+    TDSInputNumberModule,
     TDSTableModule,
     TDSToolTipModule,
     TDSButtonMenuModule,
@@ -66,7 +75,10 @@ import { AutoChatAddDataModalComponent } from './components/config-auto-chat/aut
     TDSRadioModule,
     TDSBreadCrumbModule,
     TDSImageModule,
-    TDSUploadModule
+    TDSUploadModule,
+    TDSDropDownModule,
+    MainSharedModule,
+    TDSCheckBoxModule
   ],
   providers:[TDSModalService]
 })
