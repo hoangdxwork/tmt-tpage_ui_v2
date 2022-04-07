@@ -1,0 +1,93 @@
+<div class="rounded-xl bg-white pt-2 px-3 flex h-full flex-col gap-y-2">
+  <div class="flex gap-x-2">
+      <tds-form-field class="w-full">
+          <input tdsInput placeholder="search.." autocomplete="off" #innerText />
+          <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+      </tds-form-field>
+      <tds-button-group>
+          <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu1">
+              <span class="flex items-center" *ngIf="currentOption">
+                  {{currentOption.text}} <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+              </span>
+          </button>
+          <tds-dropdown-menu #menu1="tdsDropdownMenu">
+              <div class="w-full">
+                  <div tds-dropdown-item *ngFor="let item of options" (click)="selectOption(item)">{{item.text}}</div>
+              </div>
+          </tds-dropdown-menu>
+      </tds-button-group>
+      <tds-button-group>
+          <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu2">
+              <span class="flex items-center" *ngIf="currentType">
+                {{currentType.text}} <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+              </span>
+          </button>
+          <tds-dropdown-menu #menu2="tdsDropdownMenu">
+              <div class="w-full">
+                  <div tds-dropdown-item *ngFor="let item of types" (click)="selectType(item)">{{item.text}}</div>
+              </div>
+          </tds-dropdown-menu>
+      </tds-button-group>
+      <button tds-button-icon color="primary" (click)="showModalAddProduct()">
+          <span class="flex items-center">
+              <i class="tdsi-plus-fill"></i>
+          </span>
+      </button>
+      <button tds-button-icon color="info" type="button" (click)="reloadIndexDB()">
+          <span class="flex items-center">
+              <i class="tdsi-reload-fill"></i>
+          </span>
+      </button>
+  </div>
+  <div class="w-full h-full">
+      <tds-table  #basicTable
+          [listData]="lstOfData"
+          [scroll]="{y:'100%',x:'hidden'}"
+          [showPagination]="false"
+          [frontPagination]="false"
+          [virtualItemSize]="20"
+          [virtualForTrackBy]="trackByIndex">
+          <thead>
+              <tr>
+                  <th width="60px">Ảnh</th>
+                  <th width="220px">Tên sản Phẩm</th>
+                  <th width="80px">Đơn vị</th>
+                  <th width="96px">Giá</th>
+                  <th width="45px"></th>
+              </tr>
+          </thead>
+          <tbody>
+              <ng-template tds-virtual-scroll let-data let-index="index" >
+                  <tr class="group" *ngIf="data">
+                      <td>
+                          <div class="">
+                              <tds-avatar [shape]="'square'" [size]="'lg'" [tdsSrc]="data.ImageUrl">
+                              </tds-avatar>
+                          </div>
+                      </td>
+                      <td>
+                          <div class="flex flex-col">
+                              <span class="text-body-2">{{ data.NameGet }}</span>
+                              <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
+                                <span class="text-primary-1" *ngIf="inventories[data.Id]">{{inventories[data.Id] ? inventories[data.Id].QtyAvailable : 0}}</span>
+                              </span>
+                              <span class="text-neutral-1-400 font-regular text-body-2"> Tồn dự báo:
+                                <span class="text-primary-1" *ngIf="inventories[data.Id]">{{inventories[data.Id] ? inventories[data.Id].VirtualAvailable : 0}}</span>
+                              </span>
+                          </div>
+                      </td>
+                      <td class="text-body-2">{{ data.UOMName }}</td>
+                      <td class="text-body-2">{{ data.Price | number: '1.0-3'}} đ</td>
+                      <td>
+                          <button class="group-hover:block hidden" tds-button-icon color="primary" size="sm">
+                              <span class="flex items-center">
+                                  <i class="tdsi-arrow-right-line"></i>
+                              </span>
+                          </button>
+                      </td>
+                  </tr>
+              </ng-template>
+          </tbody>
+      </tds-table>
+  </div>
+</div>

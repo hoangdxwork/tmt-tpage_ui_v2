@@ -28,16 +28,12 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges {
 
   lstResultCheck: ResultCheckAddressDTO[] = [];
 
-  constructor(
-    private fb: FormBuilder,
-    private addressService: AddressService
-  ) { }
+  constructor(private fb: FormBuilder,
+    private addressService: AddressService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.createForm();
     this.initForm();
-
-    debugger;
 
     this.district && this.loadDistrict(this.city?.Code);
     this.ward && this.loadWard(this.district?.Code);
@@ -58,7 +54,6 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges {
   }
 
   initForm() {
-    debugger;
     if(TDSHelperString.hasValueString(this.streetText)) {
       this.formAddress.controls["street"].setValue(this.streetText);
     }

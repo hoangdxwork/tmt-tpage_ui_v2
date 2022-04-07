@@ -260,9 +260,9 @@ export class SaleOnline_OrderHandler extends BaseSevice {
         Name: orderValue.PartnerName,
         Street: orderValue.Street || orderValue.Address,
         Phone: orderValue.Telephone,
-        City: orderValue.City ? { name: orderValue.City.name, code: orderValue.City.code } : null,
-        District: orderValue.District ? { name: orderValue.District.name, code: orderValue.District.code } : null,
-        Ward: orderValue.Ward ? { name: orderValue.Ward.name, code: orderValue.Ward.code } : null
+        City: orderValue.City ? { name: orderValue.City.Name, code: orderValue.City.Code } : null,
+        District: orderValue.District ? { name: orderValue.District.Name, code: orderValue.District.Code } : null,
+        Ward: orderValue.Ward ? { name: orderValue.Ward.Name, code: orderValue.Ward.Code } : null
       };
     }
 

@@ -2,7 +2,7 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TDSAvatarModule, TDSBadgeModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSOutletModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTagModule, TDSTypographyModule } from 'tmt-tang-ui';
+import { TDSAvatarModule, TDSBadgeModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSOutletModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTagModule, TDSTypographyModule, TDSUploadModule } from 'tmt-tang-ui';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TpageTeamDropdownComponent } from './tpage-team-dropdown/tpage-team-dropdown.component';
 import { TpageBaseComponent } from './tpage-base/tpage-base.component';
@@ -17,6 +17,10 @@ import { TpageAddProductComponent } from './tpage-add-product/tpage-add-product.
 import { TpageAddCategoryComponent } from './tpage-add-category/tpage-add-category.component';
 import { TpageSearchUOMComponent } from './tpage-search-uom/tpage-search-uom.component';
 import { TpageAddUOMComponent } from './tpage-add-uom/tpage-add-uom.component';
+import { ListProductTmpComponent } from './list-product-tmp/list-product-tmp.component';
+import { GeneralConfigsFacade } from '../services/facades/general-config.facade';
+import { SharedService } from '../services/shared.service';
+import { ProductIndexDBService } from '../services/product-indexDB.service';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -29,8 +33,16 @@ const cmp =[
   TpageAddProductComponent,
   TpageAddCategoryComponent,
   TpageSearchUOMComponent,
-  TpageAddUOMComponent
+  TpageAddUOMComponent,
+  ListProductTmpComponent
 ]
+
+const SERVICES = [
+  ProductIndexDBService,
+  GeneralConfigsFacade,
+  SharedService
+]
+
 @NgModule({
   declarations: [
     ...cmp
@@ -53,10 +65,15 @@ const cmp =[
     TDSTableModule,
     TDSBadgeModule,
     TDSTagModule,
-    TDSTypographyModule 
+    TDSTypographyModule,
+    TDSUploadModule,
+    TDSTypographyModule
   ],
   exports:[
    ...cmp
-  ]
+  ],
+  providers: [
+    ...SERVICES,
+   ],
 })
 export class MainSharedModule { }

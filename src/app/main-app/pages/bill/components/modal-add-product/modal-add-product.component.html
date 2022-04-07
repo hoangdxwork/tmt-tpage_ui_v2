@@ -1,4 +1,4 @@
-<div class="w-full text-body-2 text-neutral-1-900">
+<form [formGroup]="_form" class="w-full text-body-2 text-neutral-1-900">
     <div class="grid grid-cols-2 gap-x-8 gap-y-4">
         <div class="col-span-1 row-span-2 flex gap-x-6 items-center">
             <div class="px-4">
@@ -9,21 +9,21 @@
             <div class="w-full">
                 <tds-form-field>
                     <tds-label>Tên sản phẩm</tds-label>
-                    <input tdsInput autocomplete="off" placeholder="Nhập tên sản phẩm" />
+                    <input tdsInput autocomplete="off" placeholder="Nhập tên sản phẩm"  formControlName="Name"/>
                 </tds-form-field>
             </div>
         </div>
         <div class="flex items-center">
-            <tds-label class="w-1/3">Tên sản phẩm</tds-label>
+            <tds-label class="w-1/3">Giá bán</tds-label>
             <div class="w-2/3">
-                <tds-input-number [min]="1" [max]="100" [step]="1">
+                <tds-input-number [min]="1" [max]="100" [step]="1" formControlName="ListPrice">
                 </tds-input-number>
             </div>
         </div>
         <div class="flex items-center">
             <tds-label class="w-1/3">Chiết khấu bán (%)</tds-label>
             <div class="w-2/3">
-                <tds-input-number [min]="1" [max]="100" [step]="1">
+                <tds-input-number [min]="1" [max]="100" [step]="1" formControlName="DiscountSale">
                 </tds-input-number>
             </div>
         </div>
@@ -31,8 +31,8 @@
             <tds-label class="w-1/3">Loại sản phẩm</tds-label>
             <div class="w-2/3">
                 <tds-form-field>
-                    <tds-select valueField="id" textField="name" placeholder='Chọn loại sản phẩm'
-                        disabledField="isActive" [required]='true' [data]="optionsProduct" [allowClear]="true">
+                    <tds-select placeholder='Chọn loại sản phẩm'  formControlName="Type" (ngModelChange)="changeType($event)"
+                        disabledField="isActive" [required]='true' [data]="types" [allowClear]="true">
                     </tds-select>
                 </tds-form-field>
             </div>
@@ -40,7 +40,7 @@
         <div class="flex items-center">
             <tds-label class="w-1/3">Giá mua mặc định</tds-label>
             <div class="w-2/3">
-                <tds-input-number [min]="1" [max]="100" [step]="1">
+                <tds-input-number [min]="1" [max]="100" [step]="1" formControlName="PurchasePrice">
                 </tds-input-number>
             </div>
         </div>
@@ -48,14 +48,14 @@
             <tds-label class="w-1/3">Mã sản phẩm</tds-label>
             <div class="w-2/3">
                 <tds-form-field>
-                    <input tdsInput autocomplete="off" placeholder="Để trống sẽ phát sinh tự động" />
+                    <input tdsInput autocomplete="off" placeholder="Để trống sẽ phát sinh tự động" formControlName="PurchasePrice"/>
                 </tds-form-field>
             </div>
         </div>
         <div class="flex items-center">
             <tds-label class="w-1/3">Chiết khấu mua (%)</tds-label>
             <div class="w-2/3">
-                <tds-input-number [min]="1" [max]="100" [step]="1">
+                <tds-input-number [min]="1" [max]="100" [step]="1" formControlName="DiscountPurchase">
                 </tds-input-number>
             </div>
         </div>
@@ -63,14 +63,14 @@
             <tds-label class="w-1/3">Mã vạch</tds-label>
             <div class="w-2/3">
                 <tds-form-field>
-                <input tdsInput autocomplete="off" placeholder="Nhập mã vạch" />
+                <input tdsInput autocomplete="off" placeholder="Nhập mã vạch" formControlName="Barcode" />
                 </tds-form-field>
             </div>
         </div>
         <div class="flex items-center">
             <tds-label class="w-1/3">Giá vốn</tds-label>
             <div class="w-2/3">
-                <tds-input-number [min]="1" [max]="100" [step]="1">
+                <tds-input-number [min]="1" [max]="100" [step]="1" formControlName="StandardPrice" >
                 </tds-input-number>
             </div>
         </div>
@@ -79,8 +79,8 @@
             <div class="w-2/3 flex gap-x-2">
                 <div class="w-full">
                     <tds-form-field>
-                        <tds-select valueField="id" textField="name" placeholder='Chọn nhóm sản phẩm'
-                            disabledField="isActive" [required]='true' [data]="optionsProduct" [allowClear]="true">
+                        <tds-select valueField="Id" textField="CompleteName" placeholder='Chọn nhóm sản phẩm' formControlName="Categ"
+                            disabledField="isActive" [required]='true' [data]="lstCateg" [allowClear]="true" (FocusChange)="changeCateg()">
                         </tds-select>
                     </tds-form-field>
                 </div>
@@ -96,8 +96,8 @@
             <div class="w-2/3 flex gap-x-2">
                 <div class="w-full">
                     <tds-form-field>
-                        <tds-select valueField="id" textField="name" placeholder='Chọn đơn vị mặc định'
-                            disabledField="isActive" [required]='true' [data]="optionsProduct" [allowClear]="true">
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn đơn vị mặc định' formControlName="UOM"
+                            disabledField="isActive" [required]='true' [data]="lstUOM" [allowClear]="true" (FocusChange)="changeUOM()">
                         </tds-select>
                     </tds-form-field>
                 </div>
@@ -111,7 +111,7 @@
         <div class="flex items-center">
             <tds-label class="w-1/3">Khối lượng (kg)</tds-label>
             <div class="w-2/3">
-                <tds-input-number [min]="1" [max]="100" [step]="1">
+                <tds-input-number [min]="1" [max]="100" [step]="1" formControlName="Weight">
                 </tds-input-number>
             </div>
         </div>
@@ -120,8 +120,8 @@
             <div class="w-2/3 flex gap-x-2">
                 <div class="w-full">
                     <tds-form-field>
-                        <tds-select valueField="id" textField="name" placeholder='Chọn đơn vị mua'
-                            disabledField="isActive" [required]='true' [data]="optionsProduct" [allowClear]="true">
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn đơn vị mua' formControlName="UOMPO"
+                            disabledField="isActive" [required]='true' [data]="lstUOMPO" [allowClear]="true" (FocusChange)="changeUOMPO()">
                         </tds-select>
                     </tds-form-field>
                 </div>
@@ -135,6 +135,6 @@
     </div>
     <div class="w-full flex justify-end p-4" *tdsModalFooter>
         <button tds-button class="mr-2" color="secondary" (click)="cancel()">Đóng</button>
-        <button tds-button type="submit" color="primary" (click)="save()">Xác nhận</button>
+        <button tds-button type="submit" color="primary" (click)="onSave()">Xác nhận</button>
     </div>
-</div>
+</form>

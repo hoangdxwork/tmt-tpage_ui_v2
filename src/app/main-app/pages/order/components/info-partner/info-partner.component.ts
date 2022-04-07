@@ -1,4 +1,4 @@
-import { TDSSafeAny, TDSModalRef, TDSTableQueryParams } from 'tmt-tang-ui';
+import { TDSSafeAny, TDSModalRef, TDSTableQueryParams, TDSHelperString } from 'tmt-tang-ui';
 import { Component, Input, OnInit } from '@angular/core';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { FormControl } from '@angular/forms';
@@ -17,7 +17,7 @@ export class InfoPartnerComponent implements OnInit {
   @Input() dataOrder: TDSSafeAny;
   @Input() partnerId: TDSSafeAny;
 
-  data: TDSSafeAny;
+  data: TDSSafeAny = {};
   revenue: TDSSafeAny;
 
   lstOfDataOrder: TDSSafeAny[] = [];
@@ -29,6 +29,10 @@ export class InfoPartnerComponent implements OnInit {
   countDebitDetails: number = 0;
 
   formDate = new FormControl(null);
+  rangeDate: TDSSafeAny;
+
+  selectedIndex!: number;
+  textSearch: string = '';
 
   public filterObj: TDSSafeAny = {
     tags: [],
@@ -58,8 +62,13 @@ export class InfoPartnerComponent implements OnInit {
     this.loadPartnerRevenueById();
   }
 
+  onSelectedTab(event: TDSSafeAny) {
+    this.selectedIndex = event;
+  }
+
   loadPartner() {
     this.partnerService.getById(this.partnerId).subscribe((res: any) => {
+      console.log(res);
       this.data = res;
     });
   }
@@ -108,7 +117,41 @@ export class InfoPartnerComponent implements OnInit {
   }
 
   onSearch(event: TDSSafeAny) {
+    console.log(this.selectedIndex);
+    console.log(this.rangeDate);
 
+    let startDate = (this.rangeDate && this.rangeDate[0]) ? new Date(this.rangeDate[0]) : addDays(new Date(), -30);
+    let endDate = (this.rangeDate && this.rangeDate[1]) ? new Date(this.rangeDate[1]) : new Date();
+
+    if(this.selectedIndex == 1) {
+      this.filterObj.searchText = event.target.value;
+      this.filterObj.dateRange = {
+        startDate: startDate,
+        endDate: endDate,
+      }
+
+      this.loadOrder(this.pageSize, this.pageIndex);
+    }
+    else if(this.selectedIndex == 2) {
+
+    }
+  }
+
+  onChangeRangePicker(event: TDSSafeAny) {
+    if(this.selectedIndex == 1) {
+      console.log(this.textSearch);
+
+      let startDate = (this.rangeDate && this.rangeDate[0]) ? new Date(this.rangeDate[0]) : addDays(new Date(), -30);
+      let endDate = (this.rangeDate && this.rangeDate[1]) ? new Date(this.rangeDate[1]) : new Date();
+
+      this.filterObj.searchText = this.textSearch;
+      this.filterObj.dateRange = {
+        startDate: startDate,
+        endDate: endDate,
+      };
+
+      this.loadOrder(this.pageSize, this.pageIndex);
+    }
   }
 
   loadCreditDebitCustomerDetail(pageSize: number, pageIndex: number) {

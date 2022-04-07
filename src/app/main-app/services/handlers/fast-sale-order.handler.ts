@@ -108,13 +108,13 @@ export class FastSaleOrderHandler {
     if(!model.Ship_Receiver) {
       result = "Chưa có địa chỉ giao hàng";
     }
-    else if(!model.Ship_Receiver?.City?.code) {
+    else if(!model.Ship_Receiver?.City?.Code) {
       result = "Chưa có tỉnh/thành phố";
     }
-    else if(!model.Ship_Receiver?.District?.code) {
+    else if(!model.Ship_Receiver?.District?.Code) {
       result = "Chưa có quận/huyện";
     }
-    else if(!model.Ship_Receiver?.Ward?.code) {
+    else if(!model.Ship_Receiver?.Ward?.Code) {
       result = "Chưa có phường/xã";
     }
 

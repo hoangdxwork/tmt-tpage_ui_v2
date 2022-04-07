@@ -40,5 +40,9 @@ export const Message = {
   },
   Carrier: {
     EmptyCarrier: "Vui lòng chọn đối tác giao hàng."
+  },
+  Upload: {
+    Failed: 'Tải tệp không thành công',
+    Success: 'Tải tập thành công.'
   }
 }

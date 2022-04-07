@@ -16,6 +16,7 @@ import { CreateBillFastComponent } from '../components/create-bill-fast/create-b
 import { CreateBillDefaultComponent } from '../components/create-bill-default/create-bill-default.component';
 import { Router } from '@angular/router';
 import { Message } from 'src/app/lib/consts/message.const';
+import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
 
 @Component({
   selector: 'app-order',
@@ -83,6 +84,7 @@ export class OrderComponent implements OnInit {
     private saleOnline_OrderService: SaleOnline_OrderService,
     private odataSaleOnline_OrderService: OdataSaleOnline_OrderService,
     private cacheApi: THelperCacheService,
+    private excelExportService: ExcelExportService
   ) { }
 
   isOpenMessageFacebook = false;
@@ -403,16 +405,23 @@ export class OrderComponent implements OnInit {
   }
 
   onEdit(id: string) {
-    console.log("edit id: ", id);
-      this.modal.create({
-        title: 'Sửa đơn hàng',
-        content: EditOrderComponent,
-        size: 'xl',
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          idOrder: id
-        }
-      });
+    const modal = this.modal.create({
+      title: 'Sửa đơn hàng',
+      content: EditOrderComponent,
+      size: 'xl',
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        idOrder: id
+      }
+    });
+
+    // modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
+    modal.afterClose.subscribe((result: TDSSafeAny) => {
+      console.log('[afterClose] The result is:', result);
+      if (TDSHelperObject.hasValue(result)) {
+        this.loadData(this.pageSize, this.pageIndex);
+      }
+    });
   }
 
   onRemove(id: string, code: string) {
@@ -442,6 +451,31 @@ export class OrderComponent implements OnInit {
     }
 
     return 1;
+  }
+
+  onExportExcel() {
+    let filter = {
+      logic: 'and',
+      filters: [
+        {
+          field: "DateCreated",
+          operator: "gte",
+          value: addDays(new Date(), -30).toISOString()
+        },
+        {
+          field: "DateCreated",
+          operator: "lte",
+          value: new Date().toISOString()
+        }
+    ]};
+
+    let model = {
+      data: JSON.stringify({Filter: filter}),
+      ids: [...this.setOfCheckedId]
+    }
+
+    this.excelExportService.exportPost(`/SaleOnline_Order/ExportFile`,
+     model,`don_hang_online`);
   }
 
   ngOnDestroy(): void {

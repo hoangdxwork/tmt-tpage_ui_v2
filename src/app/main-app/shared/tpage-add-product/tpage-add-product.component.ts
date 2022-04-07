@@ -1,6 +1,7 @@
-import { TDSSafeAny, TDSModalRef, TDSMessageService, TDSModalService } from 'tmt-tang-ui';
+import { Observable, Subscriber, Subscription } from 'rxjs';
+import { TDSSafeAny, TDSModalRef, TDSMessageService, TDSModalService, TDSUploadChangeParam, TDSUploadXHRArgs, TDSHelperObject } from 'tmt-tang-ui';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit, Output, EventEmitter, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone } from '@angular/core';
 import { ProductTemplateDTO, ProductType, ProductUOMDTO } from '../../dto/product/product.dto';
 import { ProductTemplateService } from '../../services/product-template.service';
 import { ProductCategoryService } from '../../services/product-category.service';
@@ -9,6 +10,8 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { ProductCategoryDTO } from '../../dto/product/product-category.dto';
 import { TpageAddCategoryComponent } from '../tpage-add-category/tpage-add-category.component';
 import { TpageSearchUOMComponent } from '../tpage-search-uom/tpage-search-uom.component';
+import { CommonService } from '../../services/common.service';
+import { TCommonService, TAPIDTO, TApiMethodType } from 'src/app/lib';
 
 @Component({
   selector: 'tpage-add-product',
@@ -36,10 +39,13 @@ export class TpageAddProductComponent implements OnInit {
     private modalRef: TDSModalRef,
     private message: TDSMessageService,
     private viewContainerRef: ViewContainerRef,
-    private productTemplateService: ProductTemplateService,
+    public productTemplateService: ProductTemplateService,
     private productCategoryService: ProductCategoryService,
-    private productUOMService: ProductUOMService
-  ) { }
+    private productUOMService: ProductUOMService,
+    public zone: NgZone,
+  ) {
+
+   }
 
   ngOnInit(): void {
     this.createForm();
@@ -47,6 +53,7 @@ export class TpageAddProductComponent implements OnInit {
     this.loadCategory();
     this.loadUOMCateg();
     this.loadDefault();
+
   }
 
   loadDefault() {
@@ -74,20 +81,25 @@ export class TpageAddProductComponent implements OnInit {
     let model = this.prepareModel();
 
     this.productTemplateService.insert(model).subscribe(res => {
+      delete res['@odata.context'];
+
       this.message.success(Message.Product.InsertSuccess);
 
       if(type == "select") {
-        this.onLoadedProductSelect.emit(res);
+        this.onCancel(res);
+      }
+      else {
+        this.onCancel(null);
       }
     });
   }
 
-  onCancel() {
-    this.modalRef.close();
+  onCancel(result: TDSSafeAny) {
+    this.modalRef.destroy(result);
   }
 
   onAddCateg() {
-    this.modal.create({
+    const modal = this.modal.create({
       title: 'Thêm nhóm sản phẩm',
       content: TpageAddCategoryComponent,
       size: 'lg',
@@ -95,10 +107,16 @@ export class TpageAddProductComponent implements OnInit {
       componentParams: {
       }
     });
+
+    modal.afterClose.subscribe(result => {
+      if(TDSHelperObject.hasValue(result)) {
+        this.loadCategory();
+      }
+    });
   }
 
   onSearchUOM() {
-    this.modal.create({
+    const modal = this.modal.create({
       title: 'Tìm kiếm đơn vị tính',
       content: TpageSearchUOMComponent,
       size: 'lg',
@@ -106,6 +124,39 @@ export class TpageAddProductComponent implements OnInit {
       componentParams: {
       }
     });
+
+    modal.afterClose.subscribe(result => {
+      if(TDSHelperObject.hasValue(result)) {
+        this.loadUOMCateg();
+      }
+    });
+  }
+
+  handleChangeImage(info: TDSUploadChangeParam) {
+    console.log(info);
+    if (info.file.status === 'done') {
+      this.message.success(`${info.file.name} ${Message.Upload.Success}`);
+    } else if (info.file.status === 'error') {
+      this.message.error(`${info.file.name} ${Message.Upload.Failed}`);
+    }
+  }
+
+  handleUpload(item: TDSUploadXHRArgs) {
+    // return new Subscription();
+
+    let formData: any = new FormData();
+    formData.append("files", item.file as any, item.file.name);
+    formData.append('id', '0000000000000051');
+
+    let that = this;
+    // this.zone.runOutsideAngular(()=>{
+    //   this.productTemplateService.getImageProduct(formData).subscribe(res => {
+    //     debugger;
+    //   });
+    // })
+
+
+    return new Subscription();
   }
 
   prepareModel() {

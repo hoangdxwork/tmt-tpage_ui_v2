@@ -7,18 +7,18 @@
       <tds-form-field>
         <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng'
             [allowClear]="true" [valuePrimitive]="false" formControlName="carrier"
-            [data]="lstCarriers">
+            [data]="lstCarriers" (selectChange)="changeCarrierAll()">
         </tds-select>
+        <span class="flex text-info-500 text-xs pt-1 absolute" *ngIf="formCreateBillFast.controls['carrier'].value">
+          *Phần mềm sẽ tự chọn đối tác với số tiền ship thấp nhất</span>
       </tds-form-field>
-      <span class="flex text-info-500" *ngIf="formCreateBillFast.controls['carrier'].value">
-        *Phần mềm sẽ tự chọn đối tác với số tiền ship thấp nhất</span>
     </div>
     <div class="w-2/5">
       <tds-checkbox formControlName="isPromotion">Áp dụng khuyến mãi</tds-checkbox>
     </div>
   </div>
 
-  <div class="w-full mt-4 rounded-md h-[240px]">
+  <div class="w-full mt-[30px] rounded-md h-[240px]">
     <div class="w-full h-full ">
       <tds-table class="tds-table-rounded" #productTable [bordered]="true" [listData]="lstData" [showPagination]="false">
         <thead class="rounded">
@@ -45,11 +45,13 @@
                       </div>
                       <div class="flex items-baseline gap-x-2">
                         <span class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></span>
-                        <span>{{data.Partner.Phone}}</span>
+                        <span *ngIf="data?.Partner?.Phone">{{data.Partner.Phone}}</span>
+                        <span *ngIf="!data?.Partner?.Phone" class="text-neutral-1-400 italic text-xs">(Chưa có số điện thoại)</span>
                       </div>
                       <div class="flex items-baseline gap-x-2">
                         <span class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></span>
-                        <span>{{data.Partner.Street}}</span>
+                        <span *ngIf="data?.Partner?.Street">{{data.Partner.Street}}</span>
+                        <span *ngIf="!data?.Partner?.Street" class="text-neutral-1-400 italic text-xs">(Chưa có địa chỉ)</span>
                       </div>
                     </div>
                   </td>
@@ -93,12 +95,12 @@
                   <!-- Thao tác -->
                   <td class="align-top">
                     <div class="flex gap-x-2">
-                      <button tds-button-icon color="secondary" size="sm" (click)="onEdit(data.Id)">
+                      <button tds-button-icon color="secondary" size="sm" (click)="onEdit(index)">
                         <span class="flex items-center">
                           <i class="tdsi-edit-fill"></i>
                         </span>
                       </button>
-                      <button tds-button-icon color="secondary" size="sm">
+                      <button tds-button-icon color="secondary" size="sm" (click)="onRemoveLine(index)">
                         <span class="flex items-center">
                           <i class="tdsi-trash-fill"></i>
                         </span>
@@ -134,7 +136,7 @@
                               <!-- Số lượng -->
                               <td>
                                 <tds-form-field>
-                                  <tds-input-number [min]="0" [step]="1000"
+                                  <tds-input-number [min]="0" [step]="1000" (ngModelChange)="changeQuantityProduct($event, index, i)"
                                     [(ngModel)]="orderLines.ProductUOMQty" [ngModelOptions]="{standalone: true}">
                                   </tds-input-number>
                                 </tds-form-field>
@@ -142,32 +144,35 @@
                               <!-- Số tiền -->
                               <td>
                                 <tds-form-field>
-                                  <tds-input-number [min]="0" [step]="1000"
+                                  <tds-input-number [min]="0" [step]="1000" (ngModelChange)="changePriceProduct($event, index, i)"
                                     [(ngModel)]="orderLines.PriceUnit" [ngModelOptions]="{standalone: true}">
                                   </tds-input-number>
                                 </tds-form-field>
                               </td>
                               <!-- Tổng tiền -->
                               <td>
-                                <tds-form-field>
+                                <!-- <tds-form-field>
                                   <tds-input-number [min]="0" [step]="1000"
                                     [(ngModel)]="orderLines.PriceSubTotal" [ngModelOptions]="{standalone: true}">
                                   </tds-input-number>
-                                </tds-form-field>
+                                </tds-form-field> -->
+                                {{ orderLines.PriceSubTotal }}
                               </td>
                               <!-- Ghi chú -->
-                              <tds-form-field>
-                                <input tdsInput autocomplete="off" placeholder="Nhập ghi chú" [(ngModel)]="orderLines.Note" [ngModelOptions]="{standalone: true}" />
-                              </tds-form-field>
+                              <td>
+                                <tds-form-field>
+                                  <input tdsInput autocomplete="off" placeholder="Nhập ghi chú" [(ngModel)]="orderLines.Note" [ngModelOptions]="{standalone: true}" />
+                                </tds-form-field>
+                              </td>
                               <!-- Thao tác -->
                               <td>
                                 <div class="flex gap-x-2">
-                                  <button tds-button-icon color="secondary" size="sm" (click)="onEditLine(orderLines.Id)">
+                                  <!-- <button tds-button-icon color="secondary" size="sm">
                                     <span class="flex items-center">
                                       <i class="tdsi-edit-fill"></i>
                                     </span>
-                                  </button>
-                                  <button tds-button-icon color="secondary" size="sm">
+                                  </button> -->
+                                  <button tds-button-icon color="secondary" size="sm" (click)="onRemoveProduct(index, i)">
                                     <span class="flex items-center">
                                       <i class="tdsi-trash-fill"></i>
                                     </span>
@@ -186,10 +191,10 @@
     </div>
   </div>
 
-  <div class="w-full flex justify-between p-4" *tdsModalFooter>
+  <div class="w-full flex justify-between p-4 items-center" *tdsModalFooter>
     <div class="flex justify-between gap-x-2">
-      <tds-checkbox formControlName="isPrint">In phiếu</tds-checkbox>
-      <tds-checkbox formControlName="isPrintShip">In phiếu ship</tds-checkbox>
+      <tds-checkbox [(ngModel)]="isPrint" [ngModelOptions]="{standalone: true}" (ngModelChange)="changePrint('isPrint')">In phiếu</tds-checkbox>
+      <tds-checkbox [(ngModel)]="isPrintShip" [ngModelOptions]="{standalone: true}" (ngModelChange)="changePrint('isPrintShip')">In phiếu ship</tds-checkbox>
     </div>
     <div class="flex justify-between gap-x-2">
       <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>

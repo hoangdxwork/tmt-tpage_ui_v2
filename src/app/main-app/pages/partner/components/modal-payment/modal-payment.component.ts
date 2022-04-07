@@ -5,7 +5,7 @@ import { TDSHelperObject, TDSMessageService, TDSModalRef, TDSSafeAny } from 'tmt
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
-import { AccountRegisterPaymentService } from 'src/app/main-app/services/account-register-payment..service';
+import { AccountRegisterPaymentService } from 'src/app/main-app/services/account-register-payment.service';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';

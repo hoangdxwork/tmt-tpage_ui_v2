@@ -27,6 +27,9 @@ import { CreateBillDefaultErrorComponent } from './components/create-bill-defaul
 import { InfoOrderDebtComponent } from './components/info-order-debt/info-order-debt.component';
 import { InfoPartnerComponent } from './components/info-partner/info-partner.component';
 import { PartnerService } from '../../services/partner.service';
+import { UpdateInfoPartnerComponent } from './components/update-info-partner/update-info-partner.component';
+import { PrinterService } from '../../services/printer.service';
+import { ExcelExportService } from '../../services/excel-export.service';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -37,6 +40,8 @@ const SERVICES = [
   CommonService,
   FastSaleOrderService,
   PartnerService,
+  PrinterService,
+  ExcelExportService,
   SaleOnline_OrderHandler
 ]
 
@@ -54,7 +59,8 @@ const SERVICES = [
     CreateBillDefaultComponent,
     CreateBillDefaultErrorComponent,
     InfoOrderDebtComponent,
-    InfoPartnerComponent
+    InfoPartnerComponent,
+    UpdateInfoPartnerComponent
   ],
   imports: [
     CommonModule,

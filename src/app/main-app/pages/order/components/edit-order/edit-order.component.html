@@ -13,7 +13,7 @@
                         <div class="col-span-3 flex flex-col gap-y-2">
                           <tds-form-field>
                               <tds-label>Tên Khách hàng</tds-label>
-                              <input tdsInput autocomplete="off" placeholder="Nhập tên khách hàng" [required]='true' formControlName="Name" />
+                                <input tdsInput autocomplete="off" placeholder="Nhập tên khách hàng" [required]='true' formControlName="Name" />
                               <tds-error>Vui lòng nhập tên khách hàng</tds-error>
                           </tds-form-field>
                           <tds-button-group>
@@ -181,14 +181,14 @@
                       </td>
                       <td>
                         <tds-form-field>
-                          <tds-input-number [min]="0" [step]="1"
+                          <tds-input-number [min]="0" [step]="1" (change)="onChangeProductQuantity()"
                             [(ngModel)]="data.Quantity" [ngModelOptions]="{standalone: true}">
                           </tds-input-number>
                         </tds-form-field>
                       </td>
                       <td>
                         <tds-form-field>
-                          <tds-input-number [min]="0" [step]="1000"
+                          <tds-input-number [min]="0" [step]="1000" (change)="onChangeProductPrice()"
                             [(ngModel)]="data.Price" [ngModelOptions]="{standalone: true}">
                           </tds-input-number>
                         </tds-form-field>
@@ -198,9 +198,9 @@
                           <input tdsInput autocomplete="off" placeholder="Nhập ghi chú" [(ngModel)]="data.Note" [ngModelOptions]="{standalone: true}" />
                         </tds-form-field>
                       </td>
-                      <td> {{ data.Price * data.Quantity }} </td>
+                      <td> {{ data.Price * data.Quantity | number }} </td>
                       <td>
-                        <button tds-button-icon color="secondary" size="sm">
+                        <button tds-button-icon color="secondary" size="sm" (click)="onRemoveProduct(data, index)">
                           <span class="flex items-center">
                             <i class="tdsi-trash-fill"></i>
                           </span>
@@ -208,6 +208,14 @@
                       </td>
                   </tr>
               </ng-template>
+              <tr>
+                <td colspan="7">
+                  <div class="flex items-center gap-x-4 justify-end">
+                    <tds-label class="text-sm">Tổng tiền:</tds-label>
+                    <tds-label class="text-xl text-success-400"> {{ formEditOrder.controls['TotalAmount'].value | number }} </tds-label>
+                  </div>
+                </td>
+              </tr>
           </tbody>
           </tds-table>
         </div>
@@ -226,7 +234,7 @@
                       </div>
                       <div class="col-span-2">
                         <tds-form-field>
-                          <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng'
+                          <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng' [disabled]="isLoadCarrier"
                             [valuePrimitive]="false" [allowClear]="true" disabledField="isActive" [data]="lstDeliveryCarrier"
                             [(ngModel)]="defaultBill.Carrier" [ngModelOptions]="{standalone: true}"
                             [allowClear]="true" (selectChange)="onSelectCarrier($event)">

@@ -19,19 +19,19 @@
     <tds-table #rowSelectionTable [listData]="listData">
         <thead>
             <tr class="bg-neutral-3-50" >
-                <th class="text-[14px]">STT</th>
-                <th class="text-[14px]">Khách hàng</th>
-                <th class="text-[14px]">Mã</th>
-                <th class="text-[14px]">Số tiền</th>
-                <th class="text-[14px]">Trạng thái đơn hàng</th>
+                <th class="text-body-2">STT</th>
+                <th class="text-body-2">Khách hàng</th>
+                <th class="text-body-2">Mã</th>
+                <th class="text-body-2">Số tiền</th>
+                <th class="text-body-2">Trạng thái đơn hàng</th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let item of listData; let index = index">
-                <td class="text-[14px]">{{ index + 1 }}</td>
-                <td class="text-[14px]">{{ item.PartnerName }}</td>
-                <td class="text-[14px]">{{ item.Code }}</td>
-                <td class="text-[14px]">{{ item.AmountTotal || 0 | number : '1.0-3'}}</td>
+                <td class="text-body-2">{{ index + 1 }}</td>
+                <td class="text-body-2">{{ item.PartnerName }}</td>
+                <td class="text-body-2">{{ item.Code }}</td>
+                <td class="text-body-2">{{ item.AmountTotal || 0 | number : '1.0-3'}}</td>
                 <td>
                   <tds-form-field>
                       <tds-select valueField="value" textField="text" placeholder='Chọn trạng thái'

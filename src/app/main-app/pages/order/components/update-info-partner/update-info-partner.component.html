@@ -1,0 +1,42 @@
+<form [formGroup]="formUpdateInfo">
+  <div class="flex flex-col gap-y-6">
+    <div class="flex items-center gap-x-4">
+      <div class="w-1/3">
+        <tds-label>Tên</tds-label>
+      </div>
+      <div class="w-2/3">
+        <tds-form-field>
+          <input tdsInput autocomplete="off" placeholder="Nhập tên khách hàng" [required]='true' formControlName="Name" />
+        </tds-form-field>
+      </div>
+    </div>
+    <div class="flex items-center gap-x-4">
+      <div class="w-1/3">
+        <tds-label>Số điện thoại</tds-label>
+      </div>
+      <div class="w-2/3">
+        <tds-form-field>
+          <input tdsInput autocomplete="off" placeholder="Nhập số điện thoại khách hàng" formControlName="Phone" />
+        </tds-form-field>
+      </div>
+    </div>
+    <div class="flex w-full">
+      <tpage-check-address class="w-full"
+        [streetText]="formUpdateInfo.controls['Street'].value"
+        [city]="formUpdateInfo.controls['City'].value"
+        [district]="formUpdateInfo.controls['District'].value"
+        [ward]="formUpdateInfo.controls['Ward'].value"
+        (onChangeAddress)="onChangeAddress($event)">
+      </tpage-check-address>
+    </div>
+  </div>
+</form>
+
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+  <button tds-button class="mr-2" color="secondary" (click)="onCancel()">
+      Hủy
+  </button>
+  <button tds-button type="submit"
+      color="primary" (click)="save()">Lưu
+  </button>
+</div>
