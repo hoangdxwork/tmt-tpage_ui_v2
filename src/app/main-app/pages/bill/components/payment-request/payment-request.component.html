@@ -3,19 +3,19 @@
       <tds-table #rowSelectionTable  [listData]="dataPayment">
           <thead>
               <tr class="bg-neutral-3-50" >
-                  <th class="text-[14px]">Khách hàng</th>
-                  <th class="text-[14px]">Số hóa đơn</th>
-                  <th class="text-[14px]">Tổng tiền</th>
-                  <th class="text-[14px]">Ngày tạo</th>
-                  <th class="text-[14px]">PT Thanh toán</th>
+                  <th class="text-body-2">Khách hàng</th>
+                  <th class="text-body-2">Số hóa đơn</th>
+                  <th class="text-body-2">Tổng tiền</th>
+                  <th class="text-body-2">Ngày tạo</th>
+                  <th class="text-body-2">PT Thanh toán</th>
               </tr>
           </thead>
           <tbody>
               <tr *ngFor="let item of dataPayment">
-                  <td class="text-[14px]">{{ item.PartnerDisplayName }}</td>
-                  <td class="text-[14px]">{{ item.Number }}</td>
-                  <td class="text-[14px]">{{ item.AmountTotal || 0 | number : '1.0-3'}}</td>
-                  <td class="text-[14px]">{{ item.DateCreated | date:"dd-MM-yyyy HH:mm"}}</td>
+                  <td class="text-body-2">{{ item.PartnerDisplayName }}</td>
+                  <td class="text-body-2">{{ item.Number }}</td>
+                  <td class="text-body-2">{{ item.AmountTotal || 0 | number : '1.0-3'}}</td>
+                  <td class="text-body-2">{{ item.DateCreated | date:"dd-MM-yyyy HH:mm"}}</td>
                   <td>
                     <tds-form-field>
                         <tds-select valueField="value" textField="text" placeholder='select item'

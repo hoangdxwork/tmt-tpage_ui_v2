@@ -3,30 +3,30 @@
       <tds-table #rowSelectionTable  [listData]="orders">
           <thead>
               <tr class="bg-neutral-3-50" >
-                  <th class="text-[14px]" width="5%">STT</th>
-                  <th class="text-[14px]" width="15%">Mã hóa đơn</th>
-                  <th class="text-[14px]" width="40%">Khách hàng</th>
-                  <th class="text-[14px]" width="10%">Đối tác</th>
-                  <th class="text-[14px] text-right"width="15%">Tiền thu hộ</th>
-                  <th class="text-[14px] text-right" width="15%">Tổng tiền</th>
+                  <th class="text-body-2" width="5%">STT</th>
+                  <th class="text-body-2" width="15%">Mã hóa đơn</th>
+                  <th class="text-body-2" width="40%">Khách hàng</th>
+                  <th class="text-body-2" width="10%">Đối tác</th>
+                  <th class="text-body-2 text-right"width="15%">Tiền thu hộ</th>
+                  <th class="text-body-2 text-right" width="15%">Tổng tiền</th>
               </tr>
           </thead>
           <tbody>
               <tr *ngFor="let item of orders; let i = index">
-                  <td class="text-[14px]">{{i + 1}}</td>
-                  <td class="text-[14px]">{{ item.Number }}</td>
+                  <td class="text-body-2">{{i + 1}}</td>
+                  <td class="text-body-2">{{ item.Number }}</td>
                   <td>
-                      <p class="text-[14px]">{{ item.Partner?.Name }}</p>
-                      <p class="text-[14px]">
+                      <p class="text-body-2">{{ item.Partner?.Name }}</p>
+                      <p class="text-body-2">
                         <span class="tdsi-call-fill"></span>
                         {{ item.Partner?.Phone ? item.Partner?.Phone : 'Chưa có SĐT' }}</p>
-                      <p class="text-[14px]">
+                      <p class="text-body-2">
                         <span class="tdsi-pin-fill"></span>
                         {{ item.Partner?.Street ? item.Partner?.Street: 'Chưa có địa chỉ' }}</p>
                   </td>
-                  <td class="text-[14px]">{{ item.CarrierName }}</td>
-                  <td class="text-[14px] text-right">{{ item.CashOnDelivery || 0 | number : '1.0-3'}} đ</td>
-                  <td class="text-[14px] text-right">{{ item.AmountTotal || 0 | number : '1.0-3'}} đ</td>
+                  <td class="text-body-2">{{ item.CarrierName }}</td>
+                  <td class="text-body-2 text-right">{{ item.CashOnDelivery || 0 | number : '1.0-3'}} đ</td>
+                  <td class="text-body-2 text-right">{{ item.AmountTotal || 0 | number : '1.0-3'}} đ</td>
               </tr>
           </tbody>
       </tds-table>

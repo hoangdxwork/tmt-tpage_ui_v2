@@ -28,10 +28,8 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges {
 
   lstResultCheck: ResultCheckAddressDTO[] = [];
 
-  constructor(
-    private fb: FormBuilder,
-    private addressService: AddressService
-  ) { }
+  constructor(private fb: FormBuilder,
+    private addressService: AddressService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.createForm();

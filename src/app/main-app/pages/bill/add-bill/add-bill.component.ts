@@ -54,30 +54,13 @@ export class AddBillComponent implements OnInit {
     { id: 1, name: 'Tpos.vn' },
     { id: 2, name: 'hihi' }
   ]
-  // danh sách sản phẩm
-  listProduct = [
-    {urlLink: 'assets/images/sneakerJodan.png', name: '[SP2141] Giày thể thao', unit: 'Cái', price: 100000 },
-    {urlLink: 'assets/images/sneakerJodan.png', name: '[SP2141] Giày thể thao', unit: 'Cái', price: 100000 },
-    {urlLink: 'assets/images/sneakerJodan.png', name: '[SP2141] Giày thể thao', unit: 'Cái', price: 100000 },
-    {urlLink: 'assets/images/sneakerJodan.png', name: '[SP2141] Giày thể thao', unit: 'Cái', price: 100000 },
-    {urlLink: 'assets/images/sneakerJodan.png', name: '[SP2141] Giày thể thao', unit: 'Cái', price: 100000 },
-    {urlLink: 'assets/images/sneakerJodan.png', name: '[SP2141] Giày thể thao', unit: 'Cái', price: 100000 },
-    {urlLink: 'assets/images/sneakerJodan.png', name: '[SP2141] Giày thể thao', unit: 'Cái', price: 100000 },
-    {urlLink: 'assets/images/sneakerJodan.png', name: '[SP2141] Giày thể thao', unit: 'Cái', price: 100000 },
-    {urlLink: 'assets/images/sneakerJodan.png', name: '[SP2141] Giày thể thao', unit: 'Cái', price: 100000 },
-    {urlLink: 'assets/images/sneakerJodan.png', name: '[SP2141] Giày thể thao', unit: 'Cái', price: 100000 },
-    {urlLink: 'assets/images/sneakerJodan.png', name: '[SP2141] Giày thể thao', unit: 'Cái', price: 100000 },
-    {urlLink: 'assets/images/sneakerJodan.png', name: '[SP2141] Giày thể thao', unit: 'Cái', price: 100000 },
-    {urlLink: 'assets/images/sneakerJodan.png', name: '[SP2141] Giày thể thao', unit: 'Cái', price: 100000 },
-    {urlLink: 'assets/images/sneakerJodan.png', name: '[SP2141] Giày thể thao', unit: 'Cái', price: 100000 },
 
-  ]
   createBill = [
     {id:1 , product:'[SP1128A] Sách Harry Potter', quantity: 1, priceUnit: 100000, priceOld: 200000, discount: 0.05, weight: 100, price: 100000},
     {id:1 , product:'[SP1128A] Sách Harry Potter', quantity: 1, priceUnit: 100000, priceOld: 200000, discount: 200000, weight: 100, price: 100000}
   ]
-  constructor( 
-    private modalService: TDSModalService, 
+  constructor(
+    private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
@@ -121,7 +104,7 @@ export class AddBillComponent implements OnInit {
     modal.afterClose.subscribe(result => {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-        
+
       }
     });
   }
@@ -136,7 +119,7 @@ export class AddBillComponent implements OnInit {
     modal.afterClose.subscribe(result => {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-        
+
       }
     });
   }

@@ -48,3 +48,34 @@ export interface ProductCategoryDTO {
   Version?: number;
   IsDelete: boolean;
 }
+
+
+export interface ProductCategoryDTOV2 {
+  Id: number;
+  Name: string;
+  CompleteName: string;
+  ParentId?: number;
+  ParentCompleteName: string;
+  ParentLeft?: any;
+  ParentRight?: any;
+  Sequence?: number;
+  Type: string;
+  AccountIncomeCategId?: any;
+  AccountExpenseCategId?: any;
+  StockJournalId?: any;
+  StockAccountInputCategId?: any;
+  StockAccountOutputCategId?: any;
+  StockValuationAccountId?: any;
+  PropertyValuation?: any;
+  PropertyCostMethod: string;
+  NameNoSign: string;
+  IsPos: boolean;
+  Version?: any;
+  IsDelete: boolean;
+}
+
+export interface ODataProductCategoryDTOV2 {
+  "@odata.context": string;
+  "@odata.count": number;
+  value: ProductCategoryDTOV2[];
+}

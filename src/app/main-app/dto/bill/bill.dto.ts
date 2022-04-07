@@ -1,7 +1,7 @@
 export interface ODataFastSaleOrderDTO {
-  "@odata.context"?: string,
-  "@odata.count"?: number;
-  value: Array<FastSaleOrderDTO>
+    "@odata.context"?: string,
+    "@odata.count"?: number;
+    value: Array<FastSaleOrderDTO>
 }
 
 export interface FastSaleOrderDTO {

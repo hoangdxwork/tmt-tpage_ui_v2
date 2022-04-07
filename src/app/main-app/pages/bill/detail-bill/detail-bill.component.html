@@ -300,24 +300,24 @@
                               <ng-template #infoPricePay>
                                   <div class="w-w-full text-left flex flex-col">
                                       <div class="flex mb-3">
-                                          <span class="w-1/3 text-[14px]"> Tên</span>
-                                          <span class="w-2/3 text-[14px]"> {{payment.Name}}</span>
+                                          <span class="w-1/3 text-body-2"> Tên</span>
+                                          <span class="w-2/3 text-body-2"> {{payment.Name}}</span>
                                       </div>
                                       <div class="flex mb-3">
-                                          <span class="w-1/3 text-[14px]"> Ngày</span>
-                                          <span class="w-2/3 text-[14px]"> {{payment.Date | date:"dd-MM-yyyy"}}</span>
+                                          <span class="w-1/3 text-body-2"> Ngày</span>
+                                          <span class="w-2/3 text-body-2"> {{payment.Date | date:"dd-MM-yyyy"}}</span>
                                       </div>
                                       <div class="flex mb-3">
-                                          <span class="w-1/3 text-[14px]"> Phương thức</span>
-                                          <span class="w-2/3 text-[14px]"> {{payment.JournalName}}</span>
+                                          <span class="w-1/3 text-body-2"> Phương thức</span>
+                                          <span class="w-2/3 text-body-2"> {{payment.JournalName}}</span>
                                       </div>
                                       <div class="flex mb-3">
-                                          <span class="w-1/3 text-[14px]">Tham chiếu</span>
-                                          <span class="w-2/3 text-[14px] text-[#0184FF]">{{payment.Ref}}</span>
+                                          <span class="w-1/3 text-body-2">Tham chiếu</span>
+                                          <span class="w-2/3 text-body-2 text-[#0184FF]">{{payment.Ref}}</span>
                                       </div>
                                       <div class="flex mb-3">
-                                          <span class="w-1/3 text-[14px]">Số tiền</span>
-                                          <span class="w-2/3 text-[14px]">{{payment.Amount || 0 | number : '1.0-3'}} đ</span>
+                                          <span class="w-1/3 text-body-2">Số tiền</span>
+                                          <span class="w-2/3 text-body-2">{{payment.Amount || 0 | number : '1.0-3'}} đ</span>
                                       </div>
                                   </div>
                               </ng-template>

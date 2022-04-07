@@ -12,7 +12,6 @@ import { TDSSafeAny } from 'tmt-tang-ui';
   styleUrls: ['./conversation-all.component.scss']
 })
 export class ConversationAllComponent extends TpageBaseComponent {
-  selectedIndex = 2;
   // Đơn hàng 
   name = new FormControl('', [Validators.required]);
   phoneNumber = new FormControl('', [Validators.required, Validators.pattern(/^[0-9]{10}$/i)]);

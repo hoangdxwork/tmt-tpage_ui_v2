@@ -15,8 +15,8 @@ import { AddPageComponent } from './components/add-page/add-page.component';
   ],
   imports: [
     CommonModule,
-    FormsModule,
     ReactiveFormsModule,
+    FormsModule,
     FacebookRoutingModule,
     TDSPageHeaderModule,
     TDSBreadCrumbModule,
