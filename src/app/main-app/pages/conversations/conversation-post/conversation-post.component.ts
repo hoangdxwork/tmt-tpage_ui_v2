@@ -16,9 +16,19 @@ export class ConversationPostComponent implements OnInit {
       { id: 5, name: 'Elvis Presley' },
       { id: 6, name: 'Paul McCartney' }
   ]
+  listOfDataOrder=[
+    {name: 'DCX (Cái)', price: '200000', quantity: '3', totalPrice: '600000', status: 1},
+    {name: 'DCX (Cái)', price: '200000', quantity: '3', totalPrice: '600000', status: 0},
+    {name: 'DCX (Cái)', price: '200000', quantity: '3', totalPrice: '600000', status: 0},
+
+  ]
   constructor() { }
 
   ngOnInit(): void {
   }
+
+  counter(i: number) {
+    return new Array(i);
+}
 
 }
