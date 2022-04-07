@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ConfigProductFormsComponent } from './config-product-forms.component';
+import { AddProductVariantComponent } from './add-product-variant.component';
 
-describe('ConfigProductFormsComponent', () => {
-  let component: ConfigProductFormsComponent;
-  let fixture: ComponentFixture<ConfigProductFormsComponent>;
+describe('AddProductVariantComponent', () => {
+  let component: AddProductVariantComponent;
+  let fixture: ComponentFixture<AddProductVariantComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ConfigProductFormsComponent ]
+      declarations: [ AddProductVariantComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ConfigProductFormsComponent);
+    fixture = TestBed.createComponent(AddProductVariantComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

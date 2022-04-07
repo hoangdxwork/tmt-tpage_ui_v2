@@ -15,7 +15,7 @@ export class ConfigConversationTagsComponent implements OnInit {
   colorList:string[] = [];
   isLoading = false;
 
-  constructor(private modalService: TDSModalService,private viewContainerRef: ViewContainerRef) { }
+  constructor(private modalService: TDSModalService, private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
     this.filterForm = new FormControl('');
@@ -177,6 +177,7 @@ export class ConfigConversationTagsComponent implements OnInit {
         if (TDSHelperObject.hasValue(result)) {
           //get new changed value
             this.TagList[index] = Object.assign(this.TagList[index],result);
+            //edit item here
         }
     });
   }
@@ -187,7 +188,7 @@ export class ConfigConversationTagsComponent implements OnInit {
         content: 'Bạn có chắc muốn xóa thẻ này không?',
         iconType:'tdsi-trash-fill',
         onOk: () => {
-          //remove item
+          //remove item here
         },
         onCancel:()=>{
           modal.close();
@@ -198,7 +199,7 @@ export class ConfigConversationTagsComponent implements OnInit {
   }
 
   doFilter(event:TDSSafeAny){
-    
+    this.TableData = this.TagList;
   }
 
   onAddNewTag(data:TDSSafeAny){

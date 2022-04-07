@@ -6,7 +6,7 @@ import { ConfigUsersOperationComponent } from './components/config-users/config-
 import { ConfigPromotionsComponent } from './components/config-promotions/config-promotions.component';
 import { ConfigActivitiesComponent } from './components/config-activities/config-activities.component';
 import { ConfigProductsComponent } from './components/config-products/config-products.component';
-import { ConfigProductFormsComponent } from './components/config-product-forms/config-product-forms.component';
+import { ConfigProductVariantComponent } from './components/config-product-variant/config-product-variant.component';
 import { ConfigSmsMessagesComponent } from './components/config-sms-messages/config-sms-messages.component';
 import { ConfigAutoChatComponent } from './components/config-auto-chat/config-auto-chat.component';
 import { ConfigOverviewComponent } from './components/config-overview/config-overview.component';
@@ -47,7 +47,7 @@ const routes: Routes = [
       },
       {
         path:'product-forms',
-        component: ConfigProductFormsComponent
+        component: ConfigProductVariantComponent
       },
       {
         path:'products',

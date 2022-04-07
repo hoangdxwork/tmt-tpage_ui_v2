@@ -18,13 +18,11 @@
         </div>
       </div>
     </div>
-    <div class="p-4 overflow-auto tds-custom-scroll h-full">
-      <tpage-menu-layout [menuData]="reportMenuData" class="fixed top-19"></tpage-menu-layout>
-      <div class="flex flex-row justify-end">
-          <div class="w-5/6 pl-8">
-              <router-outlet></router-outlet>
-          </div>
+    <div class="flex flex-row w-full h-full pl-4 pt-4 overflow-hidden">
+      <tpage-menu-layout [menuData]="reportMenuData"></tpage-menu-layout>
+      <div class="w-full font-sans overflow-auto tds-custom-scroll h-full px-4">
+          <router-outlet></router-outlet>
       </div>
-  </div>
+    </div>
 </div>
 
