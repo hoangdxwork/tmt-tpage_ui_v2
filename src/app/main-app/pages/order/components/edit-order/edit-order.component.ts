@@ -219,18 +219,18 @@ export class EditOrderComponent implements OnInit {
     this.model.Note = formValue.Note;
 
     if (formValue.City) {
-      this.model.CityCode = formValue.City.code || "";
-      this.model.CityName = formValue.City.name || "";
+      this.model.CityCode = formValue.City.Code || "";
+      this.model.CityName = formValue.City.Name || "";
     }
 
     if (formValue.District) {
-      this.model.DistrictCode = formValue.District.code || "";
-      this.model.DistrictName = formValue.District.name || "";
+      this.model.DistrictCode = formValue.District.Code || "";
+      this.model.DistrictName = formValue.District.Name || "";
     }
 
     if (formValue.Ward) {
-      this.model.WardCode = formValue.Ward.code || "";
-      this.model.WardName = formValue.Ward.name || "";
+      this.model.WardCode = formValue.Ward.Code || "";
+      this.model.WardName = formValue.Ward.Name || "";
     }
 
     if (formValue.User) {
@@ -473,18 +473,18 @@ export class EditOrderComponent implements OnInit {
     formControls["CompanyId"].setValue(this.userInit?.Company?.Id);
 
     formControls["City"].setValue({
-      code: data.CityCode,
-      name: data.CityName,
+      Code: data.CityCode,
+      Name: data.CityName,
     });
 
     formControls["District"].setValue({
-      code: data.DistrictCode,
-      name: data.DistrictName,
+      Code: data.DistrictCode,
+      Name: data.DistrictName,
     });
 
     formControls["Ward"].setValue({
-      code: data.WardCode,
-      name: data.WardName,
+      Code: data.WardCode,
+      Name: data.WardName,
     });
 
     formControls["User"].setValue(data.User);
@@ -665,18 +665,18 @@ export class EditOrderComponent implements OnInit {
     formControls["Address"].setValue(event.Street);
 
     formControls["City"].setValue( event.City ? {
-      code: event.City?.code,
-      name: event.City?.name
+      Code: event.City?.Code,
+      Name: event.City?.Name
     } : null);
 
     formControls["District"].setValue( event.District ? {
-      code: event.District?.code,
-      name: event.District?.name,
+      Code: event.District?.Code,
+      Name: event.District?.Name,
     } : null);
 
     formControls["Ward"].setValue( event.Ward ? {
-      code: event.Ward?.code,
-      name: event.Ward?.name,
+      Code: event.Ward?.Code,
+      Name: event.Ward?.Name,
     } : null);
 
     console.log(this.formEditOrder.value);

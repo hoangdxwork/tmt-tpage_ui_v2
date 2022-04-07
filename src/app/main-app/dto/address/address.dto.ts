@@ -30,24 +30,24 @@ export interface CheckAddressDTO {
 }
 
 export interface CityDTO {
-  code?: number;
-  name: string;
+  Code?: number;
+  Name: string;
 }
 
 export interface DistrictDTO {
-  cityCode?: number;
-  cityName?: string;
-  code?: number;
-  name: string;
+  CityCode?: number;
+  CityName?: string;
+  Code?: number;
+  Name: string;
 }
 
 export interface WardDTO {
-  cityCode?: number;
-  cityName?: string;
-  districtCode?: number;
-  districtName?: string;
-  code?: number;
-  name: string;
+  CityCode?: number;
+  CityName?: string;
+  DistrictCode?: number;
+  DistrictName?: string;
+  Code?: number;
+  Name: string;
 }
 
 export interface ResultCheckAddressDTO {

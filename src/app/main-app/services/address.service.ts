@@ -1,9 +1,12 @@
+import { District } from './../dto/partner/partner-register-payment.dto';
 import { Injectable } from '@angular/core';
 import { Observable} from 'rxjs';
-import { shareReplay } from 'rxjs/operators';
+import { shareReplay, map } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { BaseSevice } from './base.service';
+import { CityDTO, DistrictDTO, WardDTO } from '../dto/address/address.dto';
+import { City, Ward } from '../dto/partner/partner-detail.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +37,17 @@ export class AddressService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null)
-      .pipe(shareReplay(1));
+      .pipe(shareReplay(1), map((res: Array<City>) => {
+        let result = res.map((x: City) => {
+          let item: CityDTO = {
+            Code: x.code,
+            Name: x.name,
+          };
+          return item;
+        });
+
+        return result;
+      }));
   }
 
   getDistricts(cityCode: number | undefined): Observable<any> {
@@ -44,7 +57,19 @@ export class AddressService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null)
-      .pipe(shareReplay(1));
+      .pipe(shareReplay(1), map((res: Array<District>) => {
+        let result = res.map((x: District) => {
+          let item: DistrictDTO = {
+            CityCode: x.cityCode,
+            CityName: x.cityName,
+            Code: x.code,
+            Name: x.name,
+          };
+          return item;
+        });
+
+        return result;
+      }));
   }
 
   getWards(districtCode: number | undefined): Observable<any> {
@@ -54,7 +79,21 @@ export class AddressService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null)
-      .pipe(shareReplay(1));
+      .pipe(shareReplay(1), map((res: Array<Ward>) => {
+        let result = res.map((x: Ward) => {
+          let item: WardDTO = {
+            Code: x.code,
+            Name: x.name,
+            DistrictCode: x.districtCode,
+            DistrictName: x.districtName,
+            CityCode: x.cityCode,
+            CityName: x.cityName
+          };
+          return item;
+        });
+
+        return result;
+      }));
   }
 
   checkAddress(street: string): Observable<any> {

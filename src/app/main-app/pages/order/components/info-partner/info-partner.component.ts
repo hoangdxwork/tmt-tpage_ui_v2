@@ -25,6 +25,9 @@ export class InfoPartnerComponent implements OnInit {
   pageIndex = 1;
   count: number = 0;
 
+  lstDebitDetails: TDSSafeAny[] = [];
+  countDebitDetails: number = 0;
+
   formDate = new FormControl(null);
 
   public filterObj: TDSSafeAny = {
@@ -53,8 +56,6 @@ export class InfoPartnerComponent implements OnInit {
   ngOnInit(): void {
     this.loadPartner();
     this.loadPartnerRevenueById();
-
-    this.refreshData();
   }
 
   loadPartner() {
@@ -71,7 +72,8 @@ export class InfoPartnerComponent implements OnInit {
 
   loadOrder(pageSize: number, pageIndex: number) {
     this.isLoading = true;
-    let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
+
+    let filters = this.odataSaleOnline_OrderService.buildFilterByPartner(this.filterObj, this.partnerId);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
     this.odataSaleOnline_OrderService.getView(params, this.filterObj).subscribe((res: TDSSafeAny) => {
@@ -80,6 +82,8 @@ export class InfoPartnerComponent implements OnInit {
         this.count = res['@odata.count'] as number;
         this.lstOfDataOrder = res.value;
         this.isLoading = false;
+    }, (error: TDSSafeAny) => {
+      this.isLoading = false;
     });
   }
 
@@ -105,6 +109,26 @@ export class InfoPartnerComponent implements OnInit {
 
   onSearch(event: TDSSafeAny) {
 
+  }
+
+  loadCreditDebitCustomerDetail(pageSize: number, pageIndex: number) {
+    // TODO: mặc định lấy 20 đơn đầu, do tính năng ít dùng, dữ liệu ít
+    this.isLoading = true;
+    this.partnerService.getCreditDebitCustomerDetail(this.partnerId, pageIndex, pageSize).subscribe((res: any) => {
+        this.lstDebitDetails = res.value;
+        this.countDebitDetails = res.count;
+        this.isLoading = false;
+    }, (error: TDSSafeAny) => {
+      this.isLoading = false;
+    });
+  }
+
+  refreshCreditDebit() {
+    this.loadCreditDebitCustomerDetail(0, 20);
+  }
+
+  onQueryParamsChangeCreditDebit(params: TDSTableQueryParams) {
+    this.loadCreditDebitCustomerDetail(params.pageSize, params.pageIndex);
   }
 
   onCancel() {

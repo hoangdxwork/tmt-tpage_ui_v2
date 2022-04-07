@@ -129,4 +129,13 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<ODataPartnerCategoryDTO>(api, null);
   }
 
+  getCreditDebitCustomerDetail(partnerId: TDSSafeAny, skip: number, take: number): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.CreditDebitCustomerDetail?partnerId=${partnerId}&$skip=${skip}&$top=${take}&$count=true`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<ODataPartnerCategoryDTO>(api, null);
+  }
+
 }

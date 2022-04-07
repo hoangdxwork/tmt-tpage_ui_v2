@@ -94,6 +94,16 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
+  remove(id: string): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})`,
+      method: TApiMethodType.delete,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+
   previewMessages(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/previewmessages`,

@@ -15,6 +15,7 @@ import { EditOrderComponent } from '../components/edit-order/edit-order.componen
 import { CreateBillFastComponent } from '../components/create-bill-fast/create-bill-fast.component';
 import { CreateBillDefaultComponent } from '../components/create-bill-default/create-bill-default.component';
 import { Router } from '@angular/router';
+import { Message } from 'src/app/lib/consts/message.const';
 
 @Component({
   selector: 'app-order',
@@ -123,7 +124,7 @@ export class OrderComponent implements OnInit {
     this.loadGridConfig();
 
     this.saleOnline_OrderService.eventReloadData
-      .pipe(takeUntil(this._destroy)).subscribe(res => {
+      .pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
         this.refreshData();
       });
   }
@@ -313,7 +314,7 @@ export class OrderComponent implements OnInit {
           this.message.success('Gán nhãn thành công!');
         }
 
-    }, error => {
+    }, (error: TDSSafeAny) => {
       this.indClickTag = "";
       this.message.error('Gán nhãn thất bại!');
     });
@@ -414,11 +415,29 @@ export class OrderComponent implements OnInit {
       });
   }
 
+  onRemove(id: string, code: string) {
+    this.modal.error({
+      title: 'Xác nhận',
+      content: 'Bạn có chắc muốn xóa đơn hàng',
+      onOk: () => this.remove(id, code),
+      onCancel:()=>{console.log('cancel')},
+      okText:"Xóa",
+      cancelText:"Hủy"
+    });
+  }
+
+  remove(id: string, code: string) {
+    this.saleOnline_OrderService.remove(id).subscribe((res: TDSSafeAny) => {
+      this.message.info(`${Message.Order.DeleteSuccess} ${code}`);
+      this.refreshData();
+    });
+  }
+
   checkValueEmpty() {
     let ids = [...this.setOfCheckedId];
 
     if (ids.length == 0) {
-      this.message.error('Vui lòng chọn tối thiểu một dòng!');
+      this.message.error(Message.SelectOneLine);
       return 0;
     }
 
