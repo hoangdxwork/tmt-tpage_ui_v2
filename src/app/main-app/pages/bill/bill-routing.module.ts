@@ -10,7 +10,7 @@ const routes: Routes = [
     component: BillComponent
   },
   {
-    path: 'add-new',
+    path: 'create',
     component: AddBillComponent
   },
   {

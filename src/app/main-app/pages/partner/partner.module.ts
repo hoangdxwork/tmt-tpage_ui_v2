@@ -24,8 +24,8 @@ import { ConfigColumPartnerComponent } from './components/config-column/config-c
 import { MainSharedModule } from '../../shared/shared.module';
 import { PrinterService } from '../../services/printer.service';
 import { ExcelExportService } from '../../services/excel-export.service';
-import { AccountRegisterPaymentService } from '../../services/account-register-payment..service';
 import { FilterOptionPartnerComponent } from './components/filter-option-partner/filter-option-partner.component';
+import { AccountRegisterPaymentService } from '../../services/account-register-payment.service';
 
 const SERVICES = [
   OdataPartnerService,

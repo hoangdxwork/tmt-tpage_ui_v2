@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { AccountRegisterPaymentService } from "src/app/main-app/services/account-register-payment..service";
+import { AccountRegisterPaymentService } from "src/app/main-app/services/account-register-payment.service";
 import { FastSaleOrderService } from "src/app/main-app/services/fast-sale-order.service";
 import { TDSMessageService, TDSModalRef } from "tmt-tang-ui";
 

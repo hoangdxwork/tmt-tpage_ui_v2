@@ -2,7 +2,7 @@
     <div class="w-full" *ngIf="lstCustomer">
       <div class="mb-4">
          <div class="flex" style="align-items: center;">
-            <p class="text-[14px] mb-0 mr-3">Phương thức thanh toán</p>
+            <p class="text-body-2 mb-0 mr-3">Phương thức thanh toán</p>
             <div class="w-[200px]">
                 <tds-form-field>
                   <tds-select valueField="Id" textField="Name" placeholder='select item'
@@ -16,16 +16,16 @@
       <tds-table #rowSelectionTable [listData]="lstCustomer">
           <thead>
               <tr class="bg-neutral-3-50" >
-                  <th class="text-[14px]">Khách hàng</th>
-                  <th class="text-[14px]">Số ĐT</th>
-                  <th class="text-[14px] text-right">Số tiền thanh toán</th>
+                  <th class="text-body-2">Khách hàng</th>
+                  <th class="text-body-2">Số ĐT</th>
+                  <th class="text-body-2 text-right">Số tiền thanh toán</th>
               </tr>
           </thead>
           <tbody>
               <tr *ngFor="let item of lstCustomer">
-                  <td class="text-[14px]">{{ item.Partner?.DisplayName }}</td>
-                  <td class="text-[14px]">{{ item.Partner?.Phone }}</td>
-                  <td class="text-[14px] text-right">{{ item.Amount || 0 | number : '1.0-3'}} đ</td>
+                  <td class="text-body-2">{{ item.Partner?.DisplayName }}</td>
+                  <td class="text-body-2">{{ item.Partner?.Phone }}</td>
+                  <td class="text-body-2 text-right">{{ item.Amount || 0 | number : '1.0-3'}} đ</td>
               </tr>
           </tbody>
       </tds-table>

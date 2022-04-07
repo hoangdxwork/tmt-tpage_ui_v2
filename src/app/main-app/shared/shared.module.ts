@@ -17,6 +17,10 @@ import { TpageAddProductComponent } from './tpage-add-product/tpage-add-product.
 import { TpageAddCategoryComponent } from './tpage-add-category/tpage-add-category.component';
 import { TpageSearchUOMComponent } from './tpage-search-uom/tpage-search-uom.component';
 import { TpageAddUOMComponent } from './tpage-add-uom/tpage-add-uom.component';
+import { ListProductTmpComponent } from './list-product-tmp/list-product-tmp.component';
+import { GeneralConfigsFacade } from '../services/facades/general-config.facade';
+import { SharedService } from '../services/shared.service';
+import { ProductIndexDBService } from '../services/product-indexDB.service';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -29,8 +33,16 @@ const cmp =[
   TpageAddProductComponent,
   TpageAddCategoryComponent,
   TpageSearchUOMComponent,
-  TpageAddUOMComponent
+  TpageAddUOMComponent,
+  ListProductTmpComponent
 ]
+
+const SERVICES = [
+  ProductIndexDBService,
+  GeneralConfigsFacade,
+  SharedService
+]
+
 @NgModule({
   declarations: [
     ...cmp
@@ -53,10 +65,13 @@ const cmp =[
     TDSTableModule,
     TDSBadgeModule,
     TDSTagModule,
-    TDSTypographyModule 
+    TDSTypographyModule
   ],
   exports:[
    ...cmp
-  ]
+  ],
+  providers: [
+    ...SERVICES,
+   ],
 })
 export class MainSharedModule { }

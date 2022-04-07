@@ -221,14 +221,16 @@ export class BillComponent implements OnInit{
       searchText: '',
       dateRange: {
           startDate: addDays(new Date(), -30),
-          endDate: new Date(),
+          endDate: new Date()
       }
     };
 
     this.loadData(this.pageSize, this.pageIndex);
   }
 
-  onCreate() {}
+  onCreate() {
+      this.router.navigateByUrl('bill/create');
+  }
 
   onExpandChange(id: number, checked: boolean): void {
     if (checked) {

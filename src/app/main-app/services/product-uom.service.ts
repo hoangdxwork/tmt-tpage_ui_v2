@@ -10,6 +10,7 @@ import { BaseSevice } from "./base.service";
   providedIn: 'root'
 })
 export class ProductUOMService extends BaseSevice {
+
   prefix: string = "odata";
   table: string = "ProductUOM";
   baseRestApi: string = "";

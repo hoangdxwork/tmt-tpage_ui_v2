@@ -1,15 +1,16 @@
-import { EventEmitter, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tmt-tang-ui";
-import { PagedList2 } from "../dto/pagedlist2.dto";
+import { ODataProductCategoryDTOV2 } from "../dto/product/product-category.dto";
 import { BaseSevice } from "./base.service";
-
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class ProductCategoryService extends BaseSevice {
+
   prefix: string = "odata";
   table: string = "ProductCategory";
   baseRestApi: string = "";
@@ -20,11 +21,11 @@ export class ProductCategoryService extends BaseSevice {
 
   get(): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}?%24format=json&%24orderby=ParentLeft&%24count=true`,
       method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
   getDefault(): Observable<TDSSafeAny> {

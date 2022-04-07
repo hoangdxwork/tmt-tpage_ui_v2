@@ -111,12 +111,11 @@ export class TCommonService {
         return that.connect<T>(api.method, api.url, param, that.getHeaderJSon());
     }
 
-
     public getExFile<T>(api: TAPIDTO, param: any): Observable<T> {
         let that = this;
         let options = that.getHeaderJSon();
 
-        return that.connect<T>(api.method, api.url, param,options,true,'body','text');
+        return that.connect<T>(api.method, api.url, param, options, true, 'body', 'text');
     }
 
     //Thực thi redirect trang login
