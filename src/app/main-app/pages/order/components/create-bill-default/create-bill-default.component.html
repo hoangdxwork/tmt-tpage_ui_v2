@@ -9,16 +9,16 @@
             [allowClear]="true" [valuePrimitive]="false" [(ngModel)]="carrier"
             [data]="lstCarriers">
         </tds-select>
+        <span class="flex text-info-500 text-xs pt-1 absolute" *ngIf="carrier">
+          *Phần mềm sẽ tự chọn đối tác với số tiền ship thấp nhất</span>
       </tds-form-field>
-      <span class="flex text-info-500 text-xs pt-1" *ngIf="carrier">
-        *Phần mềm sẽ tự chọn đối tác với số tiền ship thấp nhất</span>
     </div>
     <div class="">
-      <button tds-button color="primary" (click)="onAddCarrier()">Áp dụng tất cả</button>
+      <button tds-button color="primary" (click)="changeCarrierAll()">Áp dụng tất cả</button>
     </div>
   </div>
 
-  <div class="w-full mt-4 rounded-md h-[240px]">
+  <div class="w-full mt-[30px] rounded-md h-[240px]">
     <div class="w-full h-full ">
       <tds-table class="tds-table-rounded" #basicTable [bordered]="true" [listData]="lstLine" [showPagination]="false">
         <thead class="rounded">
@@ -56,8 +56,8 @@
                   <!-- Đối tác -->
                   <td class="align-top">
                     <tds-form-field>
-                      <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác'
-                          [allowClear]="true" [valuePrimitive]="false"
+                      <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác' [allowClear]="true" [valuePrimitive]="false"
+                          [(ngModel)]="data.CarrierId" [ngModelOptions]="{standalone: true}"
                           [data]="lstCarriers" (onChange)="onChangeCarrier($event, data)">
                       </tds-select>
                     </tds-form-field>
@@ -66,7 +66,7 @@
                   <td class="align-top">
                     <tds-form-field>
                       <tds-input-number [min]="0" [step]="1000"
-                        [(ngModel)]="data.AmountTotal" [ngModelOptions]="{standalone: true}">
+                        [(ngModel)]="data.TotalAmount" [ngModelOptions]="{standalone: true}">
                       </tds-input-number>
                     </tds-form-field>
                   </td>
@@ -93,12 +93,12 @@
                   <!-- Thao tác -->
                   <td class="align-top">
                     <div class="flex gap-x-2">
-                      <button tds-button-icon color="secondary" size="sm" (click)="onEdit(data.Id)">
+                      <button tds-button-icon color="secondary" size="sm" (click)="onEdit(index)">
                         <span class="flex items-center">
                           <i class="tdsi-edit-fill"></i>
                         </span>
                       </button>
-                      <button tds-button-icon color="secondary" size="sm">
+                      <button tds-button-icon color="secondary" size="sm" (click)="onRemove(index)">
                         <span class="flex items-center">
                           <i class="tdsi-trash-fill"></i>
                         </span>

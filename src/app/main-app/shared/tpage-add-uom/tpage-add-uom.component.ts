@@ -12,8 +12,6 @@ import { ProductUOMDTO } from '../../dto/product/product-uom.dto';
 })
 export class TpageAddUOMComponent implements OnInit {
 
-  @Output() onLoadedProductUOM = new EventEmitter<TDSSafeAny>();
-
   formAddUOM!: FormGroup;
 
   lstUOMCategory!: Array<ProductUOMDTO>;
@@ -48,12 +46,12 @@ export class TpageAddUOMComponent implements OnInit {
 
     this.productUOMService.insert(model).subscribe(res => {
       this.message.success(Message.ProductUOM.InsertSuccess);
-      this.onLoadedProductUOM.emit(res);
+      this.onCancel(res);
     });
   }
 
-  onCancel() {
-    this.modalRef.destroy(null);
+  onCancel(result: TDSSafeAny) {
+    this.modalRef.destroy(result);
   }
 
   prepareModel() {

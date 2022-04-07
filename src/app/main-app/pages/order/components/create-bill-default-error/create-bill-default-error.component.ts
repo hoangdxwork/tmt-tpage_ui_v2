@@ -12,7 +12,6 @@ export class CreateBillDefaultErrorComponent implements OnInit {
 
   @Input() model: TDSSafeAny;
   @Input() lstError!: TDSSafeAny[];
-  @Input() typePrint!: TDSSafeAny;
 
   lstErrorSelected: TDSSafeAny[] = [];
 
@@ -35,27 +34,15 @@ export class CreateBillDefaultErrorComponent implements OnInit {
     }
   }
 
-  onCancel() {
-    this.modalRef.destroy(null);
+  onCancel(result: TDSSafeAny) {
+    this.modalRef.destroy(result);
   }
 
   onSave() {
     this.fastSaleOrderService.insertOrderProductDefaultWithForce({model: this.model}).subscribe(res => {
       this.message.success(Message.Bill.InsertSuccess);
-
-      if(res && res.Ids && res.Ids.length > 0) {
-        res.Ids.forEach((id: TDSSafeAny) => {
-          if(this.typePrint == "billPrint") {
-            // TODO: in
-          }
-          else if(this.typePrint == "billPrintShip") {
-            // TODO: in
-          }
-        });
-      }
-
-      this.onCancel();
-    });
+      this.onCancel(res);
+    }, error => this.onCancel(null));
   }
 
 }

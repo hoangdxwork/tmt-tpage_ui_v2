@@ -1,5 +1,5 @@
 import { ProductUOMDTO } from './../../dto/product/product-uom.dto';
-import { TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
+import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSHelperString } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ProductUOMService } from '../../services/product-uom.service';
 import { TpageAddUOMComponent } from '../tpage-add-uom/tpage-add-uom.component';
@@ -12,6 +12,7 @@ import { TpageAddUOMComponent } from '../tpage-add-uom/tpage-add-uom.component';
 export class TpageSearchUOMComponent implements OnInit {
 
   lstProductUOM!: Array<ProductUOMDTO>;
+  lstSearch!: Array<ProductUOMDTO> | null;
 
   constructor(
     private modal: TDSModalService,
@@ -30,7 +31,7 @@ export class TpageSearchUOMComponent implements OnInit {
   }
 
   onAddUOM() {
-    this.modal.create({
+    const modal = this.modal.create({
       title: 'Thêm đơn vị tính',
       content: TpageAddUOMComponent,
       size: 'md',
@@ -38,10 +39,23 @@ export class TpageSearchUOMComponent implements OnInit {
       componentParams: {
       }
     });
+
+    modal.afterClose.subscribe(result => {
+      if(TDSHelperObject.hasValue(result)) {
+        this.loadProductUOM();
+      }
+    });
   }
 
   onSearch(event: TDSSafeAny) {
+    let text = event.target?.value.toLowerCase();
 
+    if(!TDSHelperString.hasValueString(text)) {
+      this.lstSearch = null;
+      return;
+    }
+
+    this.lstSearch = this.lstProductUOM.filter(x => (x.Name).toLowerCase().indexOf(text) !== -1 || (x.ShowUOMType).toLowerCase().indexOf(text) !== -1);
   }
 
 }

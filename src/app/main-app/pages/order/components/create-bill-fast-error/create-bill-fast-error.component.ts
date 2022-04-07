@@ -33,8 +33,8 @@ export class CreateBillFastErrorComponent implements OnInit {
     }
   }
 
-  onCancel() {
-    this.modalRef.destroy(null);
+  onCancel(result: TDSSafeAny) {
+    this.modalRef.destroy(result);
   }
 
   onSave() {
@@ -50,8 +50,8 @@ export class CreateBillFastErrorComponent implements OnInit {
 
     this.fastSaleOrderService.insertListOrderModel(model, true).subscribe(res =>{
       this.message.success(Message.Bill.InsertSuccess);
-      this.onCancel();
-    });
+      this.onCancel(res);
+    }, error => this.onCancel(null));
   }
 
 }

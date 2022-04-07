@@ -1,8 +1,9 @@
+import { TDSHelperObject } from 'tmt-tang-ui';
 import { FastSaleOrderHandler } from './../../../../services/handlers/fast-sale-order.handler';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { DeliveryCarrierDTO } from './../../../../dto/carrier/delivery-carrier.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 import { TAuthService } from 'src/app/lib';
 import { UserInitDTO } from 'src/app/lib/dto';
 import { CheckAddressDTO, DataSuggestionDTO } from 'src/app/main-app/dto/address/address.dto';
@@ -200,12 +201,41 @@ export class EditOrderComponent implements OnInit {
   }
 
   onAddProduct() {
-    this.modal.create({
+    const modal = this.modal.create({
       title: 'Thêm sản phẩm',
       content: TpageAddProductComponent,
       size: 'xl',
       viewContainerRef: this.viewContainerRef,
       componentParams: {
+      }
+    });
+
+    modal.afterClose.subscribe(result => {
+      if(TDSHelperObject.hasValue(result)) {
+        let details = this.formEditOrder.controls['Details'];
+
+        let productAdd = {
+          Factor: 1,
+          Id: this.idOrder,
+          ImageUrl: result.ImageUrl,
+          Note: '',
+          OrderId: '',
+          Price: result.ListPrice,
+          Priority: 0,
+          ProductCode: result.Barcode,
+          ProductId: result.Id,
+          ProductName: result.Name,
+          ProductNameGet: result.NameGet,
+          Quantity: 1,
+          UOMId: result.UOMId,
+          UOMName: result.UOMName
+        };
+
+        (details as FormArray).push(new FormControl(productAdd));
+
+        this.updateTotalAmount();
+        this.updateTotalQuantity();
+        this.updateCoDAmount();
       }
     });
   }

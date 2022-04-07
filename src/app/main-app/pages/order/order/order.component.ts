@@ -16,6 +16,7 @@ import { CreateBillFastComponent } from '../components/create-bill-fast/create-b
 import { CreateBillDefaultComponent } from '../components/create-bill-default/create-bill-default.component';
 import { Router } from '@angular/router';
 import { Message } from 'src/app/lib/consts/message.const';
+import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
 
 @Component({
   selector: 'app-order',
@@ -83,6 +84,7 @@ export class OrderComponent implements OnInit {
     private saleOnline_OrderService: SaleOnline_OrderService,
     private odataSaleOnline_OrderService: OdataSaleOnline_OrderService,
     private cacheApi: THelperCacheService,
+    private excelExportService: ExcelExportService
   ) { }
 
   isOpenMessageFacebook = false;
@@ -449,6 +451,31 @@ export class OrderComponent implements OnInit {
     }
 
     return 1;
+  }
+
+  onExportExcel() {
+    let filter = {
+      logic: 'and',
+      filters: [
+        {
+          field: "DateCreated",
+          operator: "gte",
+          value: addDays(new Date(), -30).toISOString()
+        },
+        {
+          field: "DateCreated",
+          operator: "lte",
+          value: new Date().toISOString()
+        }
+    ]};
+
+    let model = {
+      data: JSON.stringify({Filter: filter}),
+      ids: [...this.setOfCheckedId]
+    }
+
+    this.excelExportService.exportPost(`/SaleOnline_Order/ExportFile`,
+     model,`don_hang_online`);
   }
 
   ngOnDestroy(): void {

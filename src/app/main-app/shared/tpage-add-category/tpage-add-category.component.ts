@@ -12,8 +12,6 @@ import { ProductCategoryService } from '../../services/product-category.service'
 })
 export class TpageAddCategoryComponent implements OnInit {
 
-  @Output() onLoadedCategory = new EventEmitter<TDSSafeAny>();
-
   formAddCategory!: FormGroup;
 
   defaultGet!: ProductCategoryDTO;
@@ -60,12 +58,12 @@ export class TpageAddCategoryComponent implements OnInit {
 
     this.productCategoryService.insert(model).subscribe(res => {
       this.message.success(Message.ProductCategory.InsertSuccess);
-      this.onLoadedCategory.emit(res);
+      this.onCancel(res);
     });
   }
 
-  onCancel() {
-    this.modal.close();
+  onCancel(result: TDSSafeAny) {
+    this.modal.destroy(result);
   }
 
   prepareModel() {

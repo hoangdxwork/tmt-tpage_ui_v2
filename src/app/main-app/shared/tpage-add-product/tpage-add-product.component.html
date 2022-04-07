@@ -3,9 +3,13 @@
     <div class="grid grid-cols-2 gap-x-8 gap-y-4">
         <div class="col-span-1 row-span-2 flex gap-x-6 items-center">
             <div class="px-4">
-                <tds-avatar class="rounded-lg" [shape]="'square'" [size]="84"
+                <!-- <tds-avatar class="rounded-lg" [shape]="'square'" [size]="84"
                     tdsSrc="{{imageUrl}}">
-                </tds-avatar>
+                </tds-avatar> -->
+                <tds-upload type="drag" [multiple]="true" (uploadChange)="handleChangeImage($event)"
+                    [customRequest]="handleUpload">
+                    <img [src]="imageUrl" [ngStyle]="{ width: '100%' }" />
+                </tds-upload>
             </div>
             <div class="w-full">
                 <tds-form-field>
@@ -141,7 +145,7 @@
         </div>
     </div>
     <div class="w-full flex justify-end p-4" *tdsModalFooter>
-        <button tds-button class="mr-4 w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
+        <button tds-button class="mr-4 w-[100px]" color="secondary" (click)="onCancel(null)">Đóng</button>
         <button tds-button class="mr-4 w-[100px]" color="info" (click)="onSave('select')">Lưu và chọn</button>
         <button tds-button type="submit" class="w-[100px]" color="primary" (click)="onSave()">Lưu</button>
     </div>

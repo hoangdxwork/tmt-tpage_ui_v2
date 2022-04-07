@@ -1,17 +1,17 @@
 <div class="flex items-center justify-between gap-x-2">
   <tds-form-field class="w-full w-5/6">
-    <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keydown.enter)="onSearch($event)" />
+    <input tdsInput placeholder="Tìm kiếm" autocomplete="off"  [(ngModel)]="textSearch" (keydown.enter)="onSearch($event)"/>
     <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
   </tds-form-field>
 
   <tds-form-field>
-    <tds-date-picker [formControl]="formDate" [required]='true'>
-    </tds-date-picker>
+    <tds-range-picker [(ngModel)]="rangeDate" size="sm" (ngModelChange)="onChangeRangePicker($event)">
+    </tds-range-picker>
     <!-- <tds-error *ngIf="formDate.invalid">Validation message text</tds-error> -->
   </tds-form-field>
 </div>
 
-<tds-tabset class="bg-white w-full border rounded-md mt-4">
+<tds-tabset class="bg-white w-full border rounded-md mt-4" (selectedIndexChange)="onSelectedTab($event)">
   <tds-tab [title]="'Thông tin'">
     <div class="grid grid-cols-2 gap-x-4">
       <div>

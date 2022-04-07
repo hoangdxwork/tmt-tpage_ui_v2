@@ -40,19 +40,19 @@ export class UpdateInfoPartnerComponent implements OnInit {
       this.formUpdateInfo.controls["Phone"].setValue(this.partner.Phone);
       this.formUpdateInfo.controls["Street"].setValue(this.partner.Street || this.partner.Address);
 
-      this.formUpdateInfo.controls["City"].setValue( this.partner?.City?.Code ? {
-        Code: this.partner.City.Code,
-        Name: this.partner.City.Name,
+      this.formUpdateInfo.controls["City"].setValue( this.partner?.City?.code ? {
+        Code: this.partner.City.code,
+        Name: this.partner.City.name,
       } : null);
 
-      this.formUpdateInfo.controls["District"].setValue( this.partner?.District?.Code ? {
-        Code: this.partner.District.Code,
-        Name: this.partner.District.Name,
+      this.formUpdateInfo.controls["District"].setValue( this.partner?.District?.code ? {
+        Code: this.partner.District.code,
+        Name: this.partner.District.name,
       } : null);
 
-      this.formUpdateInfo.controls["Ward"].setValue( this.partner?.Ward?.Code ? {
-        Code: this.partner.Ward.Code,
-        Name: this.partner.Ward.Name,
+      this.formUpdateInfo.controls["Ward"].setValue( this.partner?.Ward?.code ? {
+        Code: this.partner.Ward.code,
+        Name: this.partner.Ward.name,
       } : null);
 
     }
@@ -72,9 +72,9 @@ export class UpdateInfoPartnerComponent implements OnInit {
       Name: formValue["Name"],
       Phone: formValue["Phone"],
       Street: formValue["Street"],
-      City: formValue["City"],
-      District: formValue["District"],
-      Ward: formValue["Ward"],
+      City: formValue["City"]?.Code ? {code: formValue["City"].Code, name: formValue["City"].Name } : null,
+      District: formValue["District"]?.Code ? {code: formValue["District"].Code, name: formValue["District"].Name } : null,
+      Ward: formValue["Ward"]?.Code ? {code: formValue["Ward"].Code, name: formValue["Ward"].Name } : null,
     };
 
     return model;
@@ -99,6 +99,10 @@ export class UpdateInfoPartnerComponent implements OnInit {
       Code: event.Ward?.Code,
       Name: event.Ward?.Name,
     } : null);
+  }
+
+  onCancel() {
+    this.modalRef.destroy(null);
   }
 
 
