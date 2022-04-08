@@ -2,6 +2,7 @@ import { TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ModalAddProductComponent } from '../components/modal-add-product/modal-add-product.component';
 import { ModalSearchPartnerComponent } from '../components/modal-search-partner/modal-search-partner.component';
+import { ProductTemplateV2DTO } from 'src/app/main-app/dto/producttemplate/product-tempalte.dto';
 
 @Component({
   selector: 'app-add-bill',
@@ -110,15 +111,13 @@ export class AddBillComponent implements OnInit {
   }
   showModalAddProduct(){
     const modal = this.modalService.create({
-      title: 'Thêm sản phẩm',
-      content: ModalAddProductComponent,
-      size: "xl",
-      viewContainerRef: this.viewContainerRef,
+        title: 'Thêm sản phẩm',
+        content: ModalAddProductComponent,
+        size: "xl",
+        viewContainerRef: this.viewContainerRef,
     });
-    modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
-    modal.afterClose.subscribe(result => {
-      console.log('[afterClose] The result is:', result);
-      if (TDSHelperObject.hasValue(result)) {
+    modal.afterClose.subscribe((res: ProductTemplateV2DTO) => {
+      if (TDSHelperObject.hasValue(res)) {
 
       }
     });

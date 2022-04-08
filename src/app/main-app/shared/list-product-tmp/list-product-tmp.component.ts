@@ -1,5 +1,4 @@
 import { SaleConfigsDTO, SaleSettingDTO } from './../../dto/configs/sale-config.dto';
-
 import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { THelperCacheService } from 'src/app/lib';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSSafeAny, TDSTableComponent } from 'tmt-tang-ui';
@@ -9,9 +8,10 @@ import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { CompanyCurrentDTO } from '../../dto/configs/company-current.dto';
 import { CommonService } from '../../services/common.service';
 import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
-import { fromEvent, Subject } from 'rxjs';
+import { fromEvent, Observable, Subject, Subscription } from 'rxjs';
 import * as _ from "lodash";
 import { ModalAddProductComponent } from '../../pages/bill/components/modal-add-product/modal-add-product.component';
+import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
 
 @Component({
   selector: 'list-product-tmp',
@@ -32,6 +32,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
 
   roleConfigs!: SaleSettingDTO;
   inventories!: TDSSafeAny;
+  isLoading: boolean = false;
 
   options: Array<TDSSafeAny> = [
     { text: 'Tất cả', value: 'all'},
@@ -76,19 +77,18 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
             this.cacheVersion = cacheDB.cacheVersion;
             this.cacheCount = cacheDB.cacheCount;
         }
-        this.loadProductPouchDB(this.cacheVersion, this.cacheCount);
+        this.loadProductIndexDB(this.cacheVersion, this.cacheCount);
     })
   }
 
-  loadProductPouchDB(productCount: number, version: number) {
-    this.productIndexDBService.facadeLastVersionV2(productCount, version).subscribe((data: ProductPouchDBDTO) => {
+  loadProductIndexDB(productCount: number, version: number) {
+    this.isLoading = true;
+    this.productIndexDBService.facadeLastVersionV2(productCount, version).subscribe((data: ProductPouchDBDTO) => {debugger
 
         if(TDSHelperArray.hasListValue(data.Datas)) {
           this.cacheDbStorage = data.Datas;
-
           this.loadDataTable();
         }
-
         //TODO: check số version
         let versions = data.Datas.map((x: DataPouchDBDTO) => x.Version);
         let lastVersion = Math.max(...versions);
@@ -99,6 +99,11 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
             this.cacheVersion = lastVersion;
             this.mappingCacheDB();
         }
+
+        this.isLoading = false;
+    }, error => {
+      this.isLoading = false;
+      this.message.error('Load danh sách sản phẩm đã xảy ra lỗi!');
     })
   }
 
@@ -115,6 +120,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
 
   loadDataTable() {
     let data = this.cacheDbStorage;
+
     if(TDSHelperObject.hasValue(this.currentOption)) {
         if(TDSHelperString.hasValueString(this.innerText)) {
           this.keyFilter = TDSHelperString.stripSpecialChars(this.keyFilter);
@@ -123,24 +129,29 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
         switch(this.currentOption.value) {
           case "all":
             data = data.filter((x: DataPouchDBDTO) =>
-                (x.DefaultCode && x.DefaultCode.toLowerCase().indexOf(this.keyFilter) !== -1) ||  (x.Barcode && x.Barcode.toLowerCase().indexOf(this.keyFilter) !== -1) ||
-                (x.NameNoSign && x.NameNoSign.toLowerCase().indexOf(this.keyFilter) !== -1) || (x.NameGet && x.NameGet.toLowerCase().indexOf(this.keyFilter) !== -1));
+              (x.DefaultCode && TDSHelperString.stripSpecialChars(x.DefaultCode.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1) ||
+              (x.Barcode && TDSHelperString.stripSpecialChars(x.Barcode.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1) ||
+              (x.NameNoSign && TDSHelperString.stripSpecialChars(x.NameNoSign.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1) ||
+              (x.NameGet && TDSHelperString.stripSpecialChars(x.NameGet.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1));
             break;
 
           case "code":
-            data =  data.filter((x: DataPouchDBDTO) =>
-                (x.DefaultCode && x.DefaultCode.toLowerCase().indexOf(this.keyFilter) !== -1));
+            data = data.filter((x: DataPouchDBDTO) =>
+              (x.DefaultCode && TDSHelperString.stripSpecialChars(x.DefaultCode.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1));
             break;
 
           case "barcode":
             data = data.filter((x: DataPouchDBDTO) =>
-               (x.Barcode && x.Barcode.toLowerCase().indexOf(this.keyFilter) !== -1));
+              (x.Barcode && TDSHelperString.stripSpecialChars(x.Barcode.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1));
             break;
 
           case "name":
             data = data.filter((x: DataPouchDBDTO) =>
-                (x.NameNoSign && x.NameNoSign.toLowerCase().indexOf(this.keyFilter) !== -1) || (x.NameGet && x.NameGet.toLowerCase().indexOf(this.keyFilter) !== -1));
+              (x.NameNoSign && TDSHelperString.stripSpecialChars(x.NameNoSign.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1) ||
+              (x.NameGet && TDSHelperString.stripSpecialChars(x.NameGet.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1));
             break;
+
+          default: break;
         }
     }
 
@@ -151,20 +162,22 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
           break;
 
           case 'Name':
-            data = _.orderBy(data, ["Name"], ["asc"]);
+            data = _.orderBy(data, ["Name"], ["desc"]);
           break;
 
           case 'DefaultCode':
-            data = _.orderBy(data, ["DefaultCode"], ["asc"]);
+            data = _.orderBy(data, ["DefaultCode"], ["desc"]);
           break;
 
           case 'PosSalesCount':
             data = _.orderBy(data, ["PosSalesCount"], "desc");
           break;
+
+          default: break;
         }
     }
 
-    this.lstOfData = data;
+    return this.lstOfData = data;
   }
 
   selectType(item: any): void {
@@ -200,17 +213,28 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
 
   showModalAddProduct() {
     const modal = this.modalService.create({
-      title: 'Thêm sản phẩm',
-      content: ModalAddProductComponent,
-      size: "xl",
-      viewContainerRef: this.viewContainerRef,
+        title: 'Thêm sản phẩm',
+        content: ModalAddProductComponent,
+        size: "xl",
+        viewContainerRef: this.viewContainerRef,
     });
 
-    modal.afterClose.subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
-
+    modal.afterClose.subscribe((res: ProductTemplateV2DTO) => {
+      if(TDSHelperObject.hasValue(res)) {
+          this.pushToIndexDB(res);
       }
     });
+  }
+
+  pushToIndexDB(data: ProductTemplateV2DTO) {
+    let version = this.cacheVersion;
+    let productCount = this.cacheCount;
+
+    this.keyFilter = '';
+    this.innerText.nativeElement.value = '';
+    this.currentType = { text: "Mới nhất", value: "Id" };
+
+    this.loadProductIndexDB(productCount, version);
   }
 
   reloadIndexDB() {
@@ -219,8 +243,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
     this.innerText.nativeElement.value = '';
     this.keyFilter = '';
 
-    this.lstOfData = this.cacheDbStorage;
-    this.loadDataTable();
+    this.loadProductIndexDB(this.cacheCount, this.cacheVersion);
   }
 
   ngAfterViewInit(): void {
@@ -233,7 +256,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
         return event.target.value
       })
       , debounceTime(750), distinctUntilChanged()).subscribe((text: string) => {
-        this.keyFilter = text.toLowerCase();
+        this.keyFilter = text;
         this.loadDataTable();
     });
   }
@@ -247,3 +270,4 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
     this.destroy$.complete();
   }
 }
+

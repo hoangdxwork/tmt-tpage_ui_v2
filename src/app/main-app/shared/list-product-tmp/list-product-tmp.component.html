@@ -46,6 +46,7 @@
           [showPagination]="false"
           [frontPagination]="false"
           [virtualItemSize]="20"
+          [loading]="isLoading"
           [virtualForTrackBy]="trackByIndex">
           <thead>
               <tr>
@@ -69,10 +70,10 @@
                           <div class="flex flex-col">
                               <span class="text-body-2">{{ data.NameGet }}</span>
                               <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
-                                <span class="text-primary-1" *ngIf="inventories[data.Id]">{{inventories[data.Id] ? inventories[data.Id].QtyAvailable : 0}}</span>
+                                <span class="text-primary-1" *ngIf="inventories[data.Id]">{{inventories[data.Id].QtyAvailable || 0}}</span>
                               </span>
                               <span class="text-neutral-1-400 font-regular text-body-2"> Tồn dự báo:
-                                <span class="text-primary-1" *ngIf="inventories[data.Id]">{{inventories[data.Id] ? inventories[data.Id].VirtualAvailable : 0}}</span>
+                                <span class="text-primary-1" *ngIf="inventories[data.Id]">{{inventories[data.Id].VirtualAvailable || 0}}</span>
                               </span>
                           </div>
                       </td>

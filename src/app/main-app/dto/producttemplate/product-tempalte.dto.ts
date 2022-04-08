@@ -58,7 +58,6 @@ export interface UOMPO {
 }
 
 export interface ProductTemplateV2DTO {
-    "@odata.context"?: string;
     Id: number;
     Name?: any;
     NameNoSign?: any;
