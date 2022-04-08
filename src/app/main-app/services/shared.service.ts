@@ -24,7 +24,7 @@ export class SharedService extends BaseSevice {
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<SaleConfigsDTO>(api, null);
+    return this.apiService.getCacheData<SaleConfigsDTO>(api, null);
   }
 
   getCurrentCompany(): Observable<TDSSafeAny> {

@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders} from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 import { TAPICacheDTO, TAPIDTO, TIDictionary } from '../dto';
 import { THelperCacheService } from '../utility';
 import { TApiMethodType } from '../enum';
-import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 
 
 @Injectable({
@@ -22,7 +22,7 @@ export class TCommonService {
     public init(): Observable<boolean> {
         let that = this;
         return new Observable<boolean>(o => {
-            this.cache.init().subscribe((s:TDSSafeAny )=> {
+            this.cache.init().subscribe((s: TDSSafeAny) => {
                 let keys: Array<string> = this.cache.apiGetKeys();
                 keys.forEach(val => {
                     that._dicData[val] = new Subject<any>();
@@ -92,7 +92,7 @@ export class TCommonService {
     //Lấy dữ liệu
     public getData<T>(api: TAPIDTO, param: any): Observable<T> {
         let that = this;
-        return that.connect<T>(api.method, api.url, param,that.getHeaderJSon());
+        return that.connect<T>(api.method, api.url, param, that.getHeaderJSon());
     }
 
     //Tạo mới dữ liệu
@@ -119,12 +119,15 @@ export class TCommonService {
     }
 
     public getFileUpload<T>(api: TAPIDTO, param: any): Observable<T> {
-      let that = this;
-      let options = new HttpHeaders({ 'Access-Control-Allow-Origin': '*'}) ;
+        let that = this;
+        let options = new HttpHeaders({ 'Access-Control-Allow-Origin': '*' });
 
-      return that.connect<T>(api.method, api.url, param, options);
-  }
-
+        return that.connect<T>(api.method, api.url, param, options);
+    }
+    public getCacheData<T>(api: TAPIDTO, param: any, strKey: string | undefined = undefined): Observable<T> {
+        let that = this;
+        return that.connectWithCache<T>(api.method, api.url, param, strKey);
+    }
     //Thực thi redirect trang login
     // public redirectLogin(urlLogin: string): void {
     //     if (TDSHelperObject.hasValue(TCoreFunction.redirectLogin)) {
@@ -158,20 +161,22 @@ export class TCommonService {
         }
     }
     //lấy dữ liệu trên cache/server với việc truyền vào form để xác nhận phân quyền
-    private connectWithAuthFormURL<T>(
+    private connectWithCache<T>(
         pmethod: TApiMethodType,
         URL: string,
         data: any,
+        keyCache: string | undefined = undefined,
     ): Observable<T> {
         let that = this;
-        let strkey: string = JSON.stringify(pmethod) + JSON.stringify(data) + URL;
+        let strkey: string = keyCache || (pmethod.toString() + JSON.stringify(data) + URL);
+        // let 
         let headers = this.getHeaderJSon();
         if (TDSHelperObject.hasValue(that._dicData[strkey])) {
 
             if (that._dicRunning[strkey]) {
                 return that._dicData[strkey];
             } else {
-                that.cache.apiGet(strkey).subscribe((obs:TDSSafeAny) => {
+                that.cache.apiGet(strkey).subscribe((obs: TDSSafeAny) => {
                     let flag: Boolean = false;
                     if (obs != null) {
                         let itemCache: TAPICacheDTO = Object.assign(new TAPICacheDTO(), obs);
@@ -228,5 +233,12 @@ export class TCommonService {
             );
             return that._dicData[strkey];
         }
+    }
+    private replaceKey(key: string, replaceStr: string = '_') {
+        let lstChar = ['/', '%', '$', '(', ')', ':', '?', '&', '"', "'"];
+        lstChar.forEach(str => {
+            key = TDSHelperString.replaceAll(key, str, replaceStr);
+        });
+        return key;
     }
 }
