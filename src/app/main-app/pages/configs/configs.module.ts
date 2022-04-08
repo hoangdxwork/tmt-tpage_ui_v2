@@ -1,5 +1,5 @@
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TDSAvatarModule, TDSButtonModule, TDSSwitchModule, TDSTabsModule, TDSBadgeModule, TDSInputModule, TDSSelectModule, TDSFormFieldModule, TDSTableModule, TDSToolTipModule, TDSButtonMenuModule, TDSModalService, TDSModalModule, TDSRadioModule, TDSBreadCrumbModule, TDSImageModule, TDSUploadModule } from 'tmt-tang-ui';
+import { TDSAvatarModule, TDSButtonModule, TDSSwitchModule, TDSTabsModule, TDSBadgeModule, TDSInputModule, TDSSelectModule, TDSFormFieldModule, TDSTableModule, TDSToolTipModule, TDSButtonMenuModule, TDSModalService, TDSModalModule, TDSRadioModule, TDSBreadCrumbModule, TDSImageModule, TDSUploadModule, TDSDropDownModule, TDSCheckBoxModule, TDSInputNumberModule, TDSPopoverModule, TDSTagModule } from 'tmt-tang-ui';
 import { MainSharedModule } from './../../shared/shared.module';
 
 import { NgModule } from '@angular/core';
@@ -7,22 +7,26 @@ import { CommonModule } from '@angular/common';
 
 import { ConfigsRoutingModule } from './configs-routing.module';
 import { ConfigComponent } from './config/config.component';
-import { ConfigOverviewComponent } from './components/config-overview/config-overview.component';
-import { ConfigAutoChatComponent } from './components/config-auto-chat/config-auto-chat.component';
-import { ConfigConversationTagsComponent } from './components/config-conversation-tags/config-conversation-tags.component';
-import { ConfigSmsMessagesComponent } from './components/config-sms-messages/config-sms-messages.component';
-import { ConfigProductFormsComponent } from './components/config-product-forms/config-product-forms.component';
-import { ConfigProductsComponent } from './components/config-products/config-products.component';
-import { ConfigActivitiesComponent } from './components/config-activities/config-activities.component';
-import { ConfigPromotionsComponent } from './components/config-promotions/config-promotions.component';
-import { ConfigUsersOperationComponent } from './components/config-users/config-users-operation/config-users-operation.component';
-import { ConfigUsersDivideTaskComponent } from './components/config-users/config-users-divide-task/config-users-divide-task.component';
-import { ConfigUsersShiftComponent } from './components/config-users/config-users-shift/config-users-shift.component';
-import { ConfigPagesBasicComponent } from './components/config-pages/config-pages-basic/config-pages-basic.component';
-import { ConfigPagesDivideTaskComponent } from './components/config-pages/config-pages-divide-task/config-pages-divide-task.component';
-import { ConfigPrintBillsComponent } from './components/config-print-bills/config-print-bills.component';
-import { EditDataModalComponent } from './components/config-conversation-tags/edit-data-modal/edit-data-modal.component';
-import { AutoChatAddDataModalComponent } from './components/config-auto-chat/auto-chat-add-data-modal/auto-chat-add-data-modal.component';
+import { ConfigOverviewComponent } from './config-overview/config-overview.component';
+import { ConfigAutoChatComponent } from './config-auto-chat/config-auto-chat.component';
+import { ConfigConversationTagsComponent } from './config-conversation-tags/config-conversation-tags.component';
+import { ConfigSmsMessagesComponent } from './config-sms-messages/config-sms-messages.component';
+import { ConfigProductVariantComponent } from './config-product-variant/config-product-variant.component';
+import { ConfigProductsComponent } from './config-products/config-products.component';
+import { ConfigActivitiesComponent } from './config-activities/config-activities.component';
+import { ConfigPromotionsComponent } from './config-promotions/config-promotions.component';
+import { ConfigUsersOperationComponent } from './config-users/config-users-operation/config-users-operation.component';
+import { ConfigUsersDivideTaskComponent } from './config-users/config-users-divide-task/config-users-divide-task.component';
+import { ConfigUsersShiftComponent } from './config-users/config-users-shift/config-users-shift.component';
+import { ConfigPagesBasicComponent } from './config-pages/config-pages-basic/config-pages-basic.component';
+import { ConfigPagesDivideTaskComponent } from './config-pages/config-pages-divide-task/config-pages-divide-task.component';
+import { ConfigPrintBillsComponent } from './config-print-bills/config-print-bills.component';
+import { AutoChatEditTagDataModalComponent } from './components/auto-chat-edit-tag-data-modal/auto-chat-edit-tag-data-modal.component';
+import { AutoChatAddDataModalComponent } from './components/auto-chat-add-data-modal/auto-chat-add-data-modal.component';
+import { SMSMessagesAddServiceModalComponent } from './components/sms-messages-add-service-modal/sms-messages-add-service-modal.component';
+import { TableTemplateProductVariantComponent } from './components/table-template-product-variant/table-template-product-variant.component';
+import { ProductVariantEditTableModalComponent } from './components/product-variant-edit-table-modal/product-variant-edit-table-modal.component';
+import { AddProductVariantComponent } from './config-product-variant/add-product-variant/add-product-variant.component';
 
 
 @NgModule({
@@ -32,7 +36,7 @@ import { AutoChatAddDataModalComponent } from './components/config-auto-chat/aut
     ConfigAutoChatComponent,
     ConfigConversationTagsComponent,
     ConfigSmsMessagesComponent,
-    ConfigProductFormsComponent,
+    ConfigProductVariantComponent,
     ConfigProductsComponent,
     ConfigActivitiesComponent,
     ConfigPromotionsComponent,
@@ -42,8 +46,12 @@ import { AutoChatAddDataModalComponent } from './components/config-auto-chat/aut
     ConfigPagesBasicComponent,
     ConfigPagesDivideTaskComponent,
     ConfigPrintBillsComponent,
-    EditDataModalComponent,
+    AutoChatEditTagDataModalComponent,
     AutoChatAddDataModalComponent,
+    SMSMessagesAddServiceModalComponent,
+    TableTemplateProductVariantComponent,
+    ProductVariantEditTableModalComponent,
+    AddProductVariantComponent,
   ],
   imports: [
     CommonModule,
@@ -59,6 +67,7 @@ import { AutoChatAddDataModalComponent } from './components/config-auto-chat/aut
     TDSSelectModule,
     TDSFormFieldModule,
     TDSInputModule,
+    TDSInputNumberModule,
     TDSTableModule,
     TDSToolTipModule,
     TDSButtonMenuModule,
@@ -66,7 +75,12 @@ import { AutoChatAddDataModalComponent } from './components/config-auto-chat/aut
     TDSRadioModule,
     TDSBreadCrumbModule,
     TDSImageModule,
-    TDSUploadModule
+    TDSUploadModule,
+    TDSDropDownModule,
+    MainSharedModule,
+    TDSCheckBoxModule,
+    TDSPopoverModule,
+    TDSTagModule
   ],
   providers:[TDSModalService]
 })

@@ -1,19 +1,19 @@
-import { ConfigPrintBillsComponent } from './components/config-print-bills/config-print-bills.component';
-import { ConfigPagesBasicComponent } from './components/config-pages/config-pages-basic/config-pages-basic.component';
-import { ConfigUsersShiftComponent } from './components/config-users/config-users-shift/config-users-shift.component';
-import { ConfigPagesDivideTaskComponent } from './components/config-pages/config-pages-divide-task/config-pages-divide-task.component';
-import { ConfigUsersOperationComponent } from './components/config-users/config-users-operation/config-users-operation.component';
-import { ConfigPromotionsComponent } from './components/config-promotions/config-promotions.component';
-import { ConfigActivitiesComponent } from './components/config-activities/config-activities.component';
-import { ConfigProductsComponent } from './components/config-products/config-products.component';
-import { ConfigProductFormsComponent } from './components/config-product-forms/config-product-forms.component';
-import { ConfigSmsMessagesComponent } from './components/config-sms-messages/config-sms-messages.component';
-import { ConfigAutoChatComponent } from './components/config-auto-chat/config-auto-chat.component';
-import { ConfigOverviewComponent } from './components/config-overview/config-overview.component';
+import { ConfigPrintBillsComponent } from './config-print-bills/config-print-bills.component';
+import { ConfigPagesBasicComponent } from './config-pages/config-pages-basic/config-pages-basic.component';
+import { ConfigUsersShiftComponent } from './config-users/config-users-shift/config-users-shift.component';
+import { ConfigPagesDivideTaskComponent } from './config-pages/config-pages-divide-task/config-pages-divide-task.component';
+import { ConfigUsersOperationComponent } from './config-users/config-users-operation/config-users-operation.component';
+import { ConfigPromotionsComponent } from './config-promotions/config-promotions.component';
+import { ConfigActivitiesComponent } from './config-activities/config-activities.component';
+import { ConfigProductsComponent } from './config-products/config-products.component';
+import { ConfigProductVariantComponent } from './config-product-variant/config-product-variant.component';
+import { ConfigSmsMessagesComponent } from './config-sms-messages/config-sms-messages.component';
+import { ConfigAutoChatComponent } from './config-auto-chat/config-auto-chat.component';
+import { ConfigOverviewComponent } from './config-overview/config-overview.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ConfigComponent } from './config/config.component';
-import { ConfigConversationTagsComponent } from './components/config-conversation-tags/config-conversation-tags.component';
+import { ConfigConversationTagsComponent } from './config-conversation-tags/config-conversation-tags.component';
 
 const routes: Routes = [
   {
@@ -46,8 +46,8 @@ const routes: Routes = [
         component: ConfigSmsMessagesComponent
       },
       {
-        path:'product-forms',
-        component: ConfigProductFormsComponent
+        path:'product-variant',
+        component: ConfigProductVariantComponent
       },
       {
         path:'products',

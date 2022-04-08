@@ -1,0 +1,59 @@
+<ng-container *ngIf="currentComponent == 1" [ngTemplateOutlet]="main"></ng-container>
+<ng-container *ngIf="currentComponent == 2" [ngTemplateOutlet]="newProduct"></ng-container>
+
+<ng-template #main>
+    <div class="w-full h-full pb-4 px-4">
+        <div class="flex flex-col w-full h-full bg-white rounded-xl">
+            <div class="flex flex-row items-center justify-between px-4 py-3">
+                <div class="flex flex-row items-center">
+                    <tds-avatar class="bg-primary-1 text-white" icon="tdsi-variant-fill"></tds-avatar>
+                    <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">BIẾN THỂ SẢN PHẨM</span>
+                </div>
+                <button tds-button color="primary" (click)="addNewData($event)">
+                    <span class="flex items-center">
+                      <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+                      <span class="text-body-2 font-semibold">Thêm mới</span>
+                    </span>
+                </button>
+            </div>
+            <div class="w-full h-full relative">
+                <tds-tabset class="h-full tds-tab-config">
+                    <tds-tab title="Tất cả" class="h-full">
+                        <div class="flex flex-auto h-full pb-2.5">
+                            <table-template-product-variant [TableData]="TableDataTab1"></table-template-product-variant>
+                        </div>
+                    </tds-tab>
+                    <tds-tab title="Kênh kết nối (Wiki Bot)">
+                        <div class="flex flex-auto h-full pb-2.5">
+                            <table-template-product-variant [TableData]="TableDataTab2"></table-template-product-variant>
+                        </div>
+                    </tds-tab>
+                </tds-tabset>
+                <div class="absolute top-0 right-4 pt-3 w-1/3 flex flex-row items-center justify-end">
+                    <tds-button-group class="mr-2">
+                        <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" [placement]="'bottomRight'">
+                            <span class="flex items-center">
+                                Thao tác<i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                            </span>
+                        </button>
+                        <tds-dropdown-menu #menu="tdsDropdownMenu">
+                            <div *ngFor="let item of dropdownList" class="w-full">
+                                <div tds-dropdown-item class="px-3 py-4">
+                                    <a class="text-neutral-1-900 text-body-2 font-regular">{{item.name}}</a>
+                                </div>
+                            </div>
+                        </tds-dropdown-menu>
+                    </tds-button-group>
+                    <tds-form-field class="w-2/3">
+                        <input tdsInput class="text-neutral-1-900" placeholder="Tìm kiếm sản phẩm" autocomplete="off"/>
+                        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                    </tds-form-field>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #newProduct>
+    <app-add-product-variant (getComponent)="getCurrentComponent($event)"></app-add-product-variant>
+</ng-template>

@@ -1,0 +1,55 @@
+<tds-table #rowSelectionTable 
+    [listData]="TableData" 
+    [showSizeChanger]="true" 
+    [loading]="loading" 
+    [scroll]="{y:'auto'}" 
+    [pageSize]="20" 
+    [total]="TableData.length" 
+    (currentPageDataChange)="onCurrentPageDataChange($event)">
+    <thead>
+        <tr class="text-neutral-1-900 text-body-2 font-semibold">
+              <th width="44px" class="hover:bg-neutral-3-100" [checked]="checked" 
+                  [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)">
+              </th>
+              <th width="68px">Ảnh</th>
+              <th>Tên</th>
+              <th>Đơn vị</th>
+              <th>Mã vạch</th>
+              <th>Giá bán</th>
+              <th>Hiệu lực</th>
+              <th>Thao tác</th>
+        </tr>
+  </thead>
+  <tbody>
+      <ng-template ngFor let-data let-i="index" [ngForOf]="rowSelectionTable.data" let-odd='odd'>
+          <tr class="text-neutral-1-900 text-body-2 font-regular {{setOfCheckedId.has(data.id) ? 'bg-background-6':''}}">
+              <td [checked]="setOfCheckedId.has(data.id)" [disabled]="data.disabled"
+                  (checkedChange)="onItemChecked(data.id, $event)"></td>
+              <td>
+                  <img [src]="data.imageURL" class="rounded-lg">
+              </td>
+              <td>{{ data.name }}</td>
+              <td>{{ data.unit.name }}</td>
+              <td>{{ data.QRCode }}</td>
+              <td>{{ data.productPrice|number }}</td>
+              <td>
+                  <span class="flex items-center">
+                      <i class="{{ data.active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
+                  </span>
+              </td>
+              <td>
+                  <button tds-button-icon color="secondary" size="sm" class=" mr-2" (click)="showEditModal(i)">
+                      <span class="flex items-center">
+                        <i class="tdsi-edit-fill text-xl leading-none"></i>
+                      </span>
+                  </button>
+                  <button tds-button-icon color="secondary" size="sm" (click)="showRemoveModal(i)">
+                      <span class="flex items-center">
+                        <i class="tdsi-trash-fill text-xl leading-none"></i>
+                      </span>
+                  </button>
+              </td>
+          </tr>
+      </ng-template>
+  </tbody>
+</tds-table>
