@@ -94,16 +94,16 @@ export class EditOrderComponent implements OnInit {
   }
 
   onSave(type: TDSSafeAny) {
-    debugger;
     let model = this.prepareOrderModel();
 
     this.saleOnline_OrderService.update(this.idOrder, model).subscribe((res: any) => {
       if(type == this.saveType.orderSave) {
         this.message.success(Message.Order.UpdateSuccess);
-        this.onCancelSuccess(res);
+        this.onCancel(true);
       }
       else if(type == this.saveType.orderPrint) {
         // TODO: in
+        this.onCancel(true);
       }
       else if(this.isEnableCreateOrder) {
         let modelSale = this.prepareSaleModel();
@@ -125,7 +125,7 @@ export class EditOrderComponent implements OnInit {
 
               }
 
-              this.onCancelSuccess(data);
+              this.onCancel(data);
 
             } else {
               this.message.error(data.Message);
@@ -404,8 +404,6 @@ export class EditOrderComponent implements OnInit {
     this.enableInsuranceFee = false;
     this.isLoadCarrier = true;
 
-    debugger;
-
     this.saleOnline_OrderHandler.changeCarrier(this.defaultBill, this.formEditOrder, event, this.shipExtraServices).subscribe(res => {
       this.enableInsuranceFee = res.EnableInsuranceFee;
       this.shipServices = res.ShipServices;
@@ -618,8 +616,6 @@ export class EditOrderComponent implements OnInit {
     this.initOkieLa();
     this.initNinjaVan();
 
-    debugger;
-
     this.defaultBill.Address = formValue.Address || formValue.Street;
 
     if (formValue["Address"]) {
@@ -738,8 +734,6 @@ export class EditOrderComponent implements OnInit {
   onChangeAddress(event: CheckAddressDTO) {
     let formControls = this.formEditOrder.controls;
 
-    debugger;
-
     formControls["Address"].setValue(event.Street);
 
     formControls["City"].setValue( event.City?.Code ? {
@@ -801,12 +795,8 @@ export class EditOrderComponent implements OnInit {
     });
   }
 
-  onCancel() {
-    this.modalRef.destroy(null);
-  }
-
-  onCancelSuccess(data: TDSSafeAny) {
-    this.modalRef.destroy(data);
+  onCancel(result: TDSSafeAny) {
+    this.modalRef.destroy(result);
   }
 
 }

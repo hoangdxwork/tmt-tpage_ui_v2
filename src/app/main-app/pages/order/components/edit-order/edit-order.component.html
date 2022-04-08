@@ -365,7 +365,7 @@
 
   </tds-tabset>
 
-  <div class="w-full flex justify-between p-4" *tdsModalFooter>
+  <div class="w-full flex justify-between p-4 items-center" *tdsModalFooter>
       <div class="flex">
           <tds-checkbox [(ngModel)]="isEnableCreateOrder" [ngModelOptions]="{standalone: true}" (change)="onEnableCreateOrder($event)">
             Tạo phiếu bán hàng
@@ -373,7 +373,7 @@
       </div>
 
       <div class="flex gap-x-2" *ngIf="!isEnableCreateOrder">
-          <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+          <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
           <button tds-button class="w-[126px]" type="submit" color="info" (click)="onSave(saveType.orderPrint)">
               <span class="tdsi-print-fill"></span>
               Lưu và in
@@ -382,7 +382,7 @@
       </div>
 
       <div class="flex gap-x-2" *ngIf="isEnableCreateOrder">
-          <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+          <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
           <button tds-button class="w-[126px]" type="submit" color="info" (click)="onSave(saveType.billPrint)">
               <span class="tdsi-print-fill"></span>
               Lưu và in

@@ -120,7 +120,7 @@ export class OrderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadSummaryStatus();
+    // this.loadSummaryStatus();
     this.loadTags();
 
     this.loadGridConfig();
@@ -142,6 +142,8 @@ export class OrderComponent implements OnInit {
         this.count = res['@odata.count'] as number;
         this.lstOfData = res.value;
         this.isLoading = false;
+
+        this.loadSummaryStatus();
     });
   }
 
@@ -155,6 +157,8 @@ export class OrderComponent implements OnInit {
 
     this.saleOnline_OrderService.getSummaryStatus(model).subscribe((res: Array<TDSSafeAny>) => {
       var total = 0;
+
+      this.tabNavs.length = 0;
 
       res.map((x: TDSSafeAny) => {
         total += x.Total;
@@ -209,14 +213,6 @@ export class OrderComponent implements OnInit {
     }
   }
 
-  showModelCreateInvoiceFast() {
-
-  }
-
-  showModelCreateOrderDefault() {
-
-  }
-
   onCreateBillFast() {
     if (this.checkValueEmpty() == 1) {
       let ids = [...this.setOfCheckedId];
@@ -250,7 +246,7 @@ export class OrderComponent implements OnInit {
   }
 
   onUrlCreateInvoiceFast() {
-    this.router.navigateByUrl(`bill/create-default`);
+    this.router.navigateByUrl(`bill/create`);
   }
 
   checkPhone(phone: string) {
@@ -262,10 +258,6 @@ export class OrderComponent implements OnInit {
     }
 
     return 'Chưa xác định';
-  }
-
-  onCurrentPageDataChange($event: readonly SaleOnline_OrderDTO[]): void {
-
   }
 
   onSelectChange(Index: TDSSafeAny) {
@@ -417,6 +409,7 @@ export class OrderComponent implements OnInit {
 
     // modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
     modal.afterClose.subscribe((result: TDSSafeAny) => {
+      debugger;
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
         this.loadData(this.pageSize, this.pageIndex);

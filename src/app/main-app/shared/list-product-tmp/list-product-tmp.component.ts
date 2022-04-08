@@ -10,7 +10,7 @@ import { CompanyCurrentDTO } from '../../dto/configs/company-current.dto';
 import { CommonService } from '../../services/common.service';
 import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { fromEvent, Subject } from 'rxjs';
-import * as _ from "lodash";
+// import * as _ from "lodash";
 import { ModalAddProductComponent } from '../../pages/bill/components/modal-add-product/modal-add-product.component';
 
 @Component({
@@ -146,21 +146,21 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
 
     if(TDSHelperObject.hasValue(this.currentType)) {
         switch(this.currentType.value) {
-          case 'Id':
-            data = _.orderBy(data, ["Id"], ["desc"]);
-          break;
+          // case 'Id':
+          //   data = _.orderBy(data, ["Id"], ["desc"]);
+          // break;
 
-          case 'Name':
-            data = _.orderBy(data, ["Name"], ["asc"]);
-          break;
+          // case 'Name':
+          //   data = _.orderBy(data, ["Name"], ["asc"]);
+          // break;
 
-          case 'DefaultCode':
-            data = _.orderBy(data, ["DefaultCode"], ["asc"]);
-          break;
+          // case 'DefaultCode':
+          //   data = _.orderBy(data, ["DefaultCode"], ["asc"]);
+          // break;
 
-          case 'PosSalesCount':
-            data = _.orderBy(data, ["PosSalesCount"], "desc");
-          break;
+          // case 'PosSalesCount':
+          //   data = _.orderBy(data, ["PosSalesCount"], "desc");
+          // break;
         }
     }
 
