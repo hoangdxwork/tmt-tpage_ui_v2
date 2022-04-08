@@ -12,7 +12,7 @@ import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 })
 
 export class TCommonService {
-    private _dicData: TIDictionary<Subject<any>> = {};
+    private _dicData: TIDictionary<Subject<any>>  = {};
     private _dicRunning: TIDictionary<Boolean> = {};
 
     constructor(
@@ -174,25 +174,25 @@ export class TCommonService {
         if (TDSHelperObject.hasValue(that._dicData[strkey])) {
 
             if (that._dicRunning[strkey]) {
-                return that._dicData[strkey];
+                return that._dicData[strkey] as Observable<T>;
             } else {
                 that.cache.apiGet(strkey).subscribe((obs: TDSSafeAny) => {
                     let flag: Boolean = false;
                     if (obs != null) {
                         let itemCache: TAPICacheDTO = Object.assign(new TAPICacheDTO(), obs);
-                        if (itemCache.Expire > (new Date()).getTime()) {
+                        if (!itemCache.checkExpire()) {
                             flag = true;
-                            that._dicData[strkey].next(itemCache.Data);
-                            that._dicData[strkey].complete();
+                            that._dicData[strkey]?.next(itemCache.Data);
+                            that._dicData[strkey]?.complete();
                             that._dicData[strkey] = new Subject<T>();
                         }
                     }
                     if (flag == false && that._dicRunning[strkey] == false) {
                         that._dicRunning[strkey] = true;
                         that.connect<T>(pmethod, URL, data, headers).subscribe(res => {
-                            that._dicData[strkey].next(res);
+                            that._dicData[strkey]?.next(res);
                             that._dicRunning[strkey] = false;
-                            that._dicData[strkey].complete();
+                            that._dicData[strkey]?.complete();
                             that._dicData[strkey] = new Subject<T>();
                             let item: TAPICacheDTO = new TAPICacheDTO();
                             if (item.build(res) == true) {
@@ -200,24 +200,24 @@ export class TCommonService {
                             }
                         },
                             f => {
-                                that._dicData[strkey].error(f);
+                                that._dicData[strkey]?.error(f);
                                 that._dicRunning[strkey] = false;
-                                that._dicData[strkey].complete();
+                                that._dicData[strkey]?.complete();
                                 that._dicData[strkey] = new Subject<T>();
                             });
                     }
                 }
                 );
-                return that._dicData[strkey];
+                return that._dicData[strkey] as Observable<T>;
             }
         } else {
             that._dicData[strkey] = new Subject<T>();
             that._dicRunning[strkey] = true;
             that.connect<T>(pmethod, URL, data, headers).subscribe(
                 res => {
-                    that._dicData[strkey].next(res);
+                    that._dicData[strkey]?.next(res);
                     that._dicRunning[strkey] = false;
-                    that._dicData[strkey].complete();
+                    that._dicData[strkey]?.complete();
                     that._dicData[strkey] = new Subject<T>();
                     let item: TAPICacheDTO = new TAPICacheDTO();
                     if (item.build(res) == true) {
@@ -225,20 +225,20 @@ export class TCommonService {
                     }
                 },
                 f => {
-                    that._dicData[strkey].error(f);
+                    that._dicData[strkey]?.error(f);
                     that._dicRunning[strkey] = false;
-                    that._dicData[strkey].complete();
+                    that._dicData[strkey]?.complete();
                     that._dicData[strkey] = new Subject<T>();
                 }
             );
-            return that._dicData[strkey];
+            return that._dicData[strkey] as Observable<T>;
         }
     }
-    private replaceKey(key: string, replaceStr: string = '_') {
-        let lstChar = ['/', '%', '$', '(', ')', ':', '?', '&', '"', "'"];
-        lstChar.forEach(str => {
-            key = TDSHelperString.replaceAll(key, str, replaceStr);
-        });
-        return key;
+    removeCacheAPI(strKey:string){
+        if(this._dicData[strKey])
+        {
+            this._dicData[strKey] = null;
+            this.cache.apiRemove(strKey);
+        }
     }
 }
