@@ -515,7 +515,7 @@ export class ConfigProductVariantComponent implements OnInit {
   }
 
   
-  onAddNewData(data:TDSSafeAny){
+  addNewData(data:TDSSafeAny){
     this.currentComponent = 2;
   }
 

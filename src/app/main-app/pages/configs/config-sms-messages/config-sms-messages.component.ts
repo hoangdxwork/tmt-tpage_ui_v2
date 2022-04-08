@@ -1,4 +1,4 @@
-import { AddServiceModalComponent } from './add-service-modal/add-service-modal.component';
+import { SMSMessagesAddServiceModalComponent } from '../components/sms-messages-add-service-modal/sms-messages-add-service-modal.component';
 import { TDSSafeAny, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 
@@ -50,7 +50,7 @@ export class ConfigSmsMessagesComponent implements OnInit {
   onAddNewData(data:TDSSafeAny){
     const modal = this.modalService.create({
         title: 'Thêm mới dịch vụ SMS',
-        content: AddServiceModalComponent,
+        content: SMSMessagesAddServiceModalComponent,
         viewContainerRef: this.viewContainerRef,
         size:'md'
     });

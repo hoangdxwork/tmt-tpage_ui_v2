@@ -1,4 +1,4 @@
-import { AutoChatAddDataModalComponent } from './auto-chat-add-data-modal/auto-chat-add-data-modal.component';
+import { AutoChatAddDataModalComponent } from '../components/auto-chat-add-data-modal/auto-chat-add-data-modal.component';
 import { TDSSafeAny, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 

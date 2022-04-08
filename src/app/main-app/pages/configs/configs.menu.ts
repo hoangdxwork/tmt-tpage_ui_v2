@@ -29,7 +29,7 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
     {
         name: "Biến thể sản phẩm",
         icon: "tdsi-variant-fill",
-        link: '/configs/product-forms',
+        link: '/configs/product-variant',
     },
     {
         name: "Sản phẩm",
