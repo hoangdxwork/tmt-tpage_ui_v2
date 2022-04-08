@@ -1,5 +1,5 @@
 import { FormControl } from '@angular/forms';
-import { EditDataModalComponent } from './edit-data-modal/edit-data-modal.component';
+import { AutoChatEditTagDataModalComponent } from '../components/auto-chat-edit-tag-data-modal/auto-chat-edit-tag-data-modal.component';
 import { TDSSafeAny, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 
@@ -159,7 +159,7 @@ export class ConfigConversationTagsComponent implements OnInit {
     let data = this.TagList[index];
     const modal = this.modalService.create({
         title: 'Chỉnh sửa thẻ hội thoại',
-        content: EditDataModalComponent,
+        content: AutoChatEditTagDataModalComponent,
         viewContainerRef: this.viewContainerRef,
         componentParams: {
             //send data to edit modal

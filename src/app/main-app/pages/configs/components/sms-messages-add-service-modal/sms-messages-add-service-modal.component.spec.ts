@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AddServiceModalComponent } from './add-service-modal.component';
+import { SMSMessagesAddServiceModalComponent } from './sms-messages-add-service-modal.component';
 
 describe('AddServiceModalComponent', () => {
-  let component: AddServiceModalComponent;
-  let fixture: ComponentFixture<AddServiceModalComponent>;
+  let component: SMSMessagesAddServiceModalComponent;
+  let fixture: ComponentFixture<SMSMessagesAddServiceModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AddServiceModalComponent ]
+      declarations: [ SMSMessagesAddServiceModalComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AddServiceModalComponent);
+    fixture = TestBed.createComponent(SMSMessagesAddServiceModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

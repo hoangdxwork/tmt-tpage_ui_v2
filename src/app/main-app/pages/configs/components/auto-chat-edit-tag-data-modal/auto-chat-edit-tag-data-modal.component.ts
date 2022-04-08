@@ -3,13 +3,13 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { TDSModalRef } from 'tmt-tang-ui';
 
 @Component({
-    selector: 'app-edit-data-modal',
-    templateUrl: './edit-data-modal.component.html',
+    selector: 'app-auto-chat-edit-tag-data-modal',
+    templateUrl: './auto-chat-edit-tag-data-modal.component.html',
     host: {
         class: "flex w-full"
     }
 })
-export class EditDataModalComponent implements OnInit {
+export class AutoChatEditTagDataModalComponent implements OnInit {
     @Input() data!:{name:string,color:string};
 
     public editForm: FormGroup = new FormGroup({}) ;
