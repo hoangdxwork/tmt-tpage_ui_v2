@@ -7,6 +7,7 @@ import { DataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
 import { FastSaleOrderSummaryStatusDTO } from '../dto/bill/bill.dto';
 import { ODataPaymentJsonDTO } from '../dto/bill/payment-json.dto';
+import { FastSaleOrder_DefaultDTOV2 } from '../dto/fastsaleorder/fastsaleorder-default.dto';
 import { PagedList2 } from '../dto/pagedlist2.dto';
 import { CRMTeamDTO } from '../dto/team/team.dto';
 import { BaseSevice } from './base.service';
@@ -26,7 +27,6 @@ export class FastSaleOrderService extends BaseSevice {
 
   defaultGet(): Observable<any> {
     let typeInvoice = { "model": { "Type": "invoice" } };
-
     let expand = `Warehouse,User,PriceList,Company,Journal,PaymentJournal,Partner,Carrier,Tax,SaleOrder`;
 
     const api: TAPIDTO = {
@@ -34,7 +34,16 @@ export class FastSaleOrderService extends BaseSevice {
       method: TApiMethodType.post,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, typeInvoice);
+    return this.apiService.getData<any>(api, typeInvoice);
+  }
+
+  defaultGetV2(data: any): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.DefaultGet?$expand=Warehouse,User,PriceList,Company,Journal,PaymentJournal,Partner,Carrier,Tax,SaleOrder`,
+        method: TApiMethodType.post,
+    }
+
+    return this.apiService.getCacheData<FastSaleOrder_DefaultDTOV2>(api,data);
   }
 
   delete(key: TDSSafeAny): Observable<TDSSafeAny> {

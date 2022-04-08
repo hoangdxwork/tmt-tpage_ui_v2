@@ -3,7 +3,6 @@ import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChi
 import { THelperCacheService } from 'src/app/lib';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSSafeAny, TDSTableComponent } from 'tmt-tang-ui';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO,  ProductPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
-import { GeneralConfigsFacade } from '../../services/facades/general-config.facade';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { CompanyCurrentDTO } from '../../dto/configs/company-current.dto';
 import { CommonService } from '../../services/common.service';
@@ -12,6 +11,7 @@ import { fromEvent, Observable, Subject, Subscription } from 'rxjs';
 import * as _ from "lodash";
 import { ModalAddProductComponent } from '../../pages/bill/components/modal-add-product/modal-add-product.component';
 import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
+import { SharedService } from '../../services/shared.service';
 
 @Component({
   selector: 'list-product-tmp',
@@ -53,9 +53,9 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
   keyFilter: string = '';
 
   constructor(private productIndexDBService: ProductIndexDBService,
-      private generalConfigsFacade: GeneralConfigsFacade,
       private cacheApi: THelperCacheService,
       private modalService: TDSModalService,
+      private sharedService: SharedService,
       private message: TDSMessageService,
       private commonService: CommonService,
       private viewContainerRef: ViewContainerRef) {
@@ -83,7 +83,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
 
   loadProductIndexDB(productCount: number, version: number) {
     this.isLoading = true;
-    this.productIndexDBService.facadeLastVersionV2(productCount, version).subscribe((data: ProductPouchDBDTO) => {debugger
+    this.productIndexDBService.getLastVersionV2(productCount, version).subscribe((data: ProductPouchDBDTO) => {
 
         if(TDSHelperArray.hasListValue(data.Datas)) {
           this.cacheDbStorage = data.Datas;
@@ -191,13 +191,13 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   loadConfig() {
-    this.generalConfigsFacade.getSaleConfigs().subscribe((res: SaleConfigsDTO) => {
+    this.sharedService.getConfigs().subscribe((res: SaleConfigsDTO) => {
         this.roleConfigs = res.SaleSetting;
     }, error => {
         this.message.error('Load thông tin cấu hình mặc định đã xảy ra lỗi!');
     });
 
-    this.generalConfigsFacade.getCurrentCompany().subscribe((res: CompanyCurrentDTO) => {
+    this.sharedService.getCurrentCompany().subscribe((res: CompanyCurrentDTO) => {
       if(res.DefaultWarehouseId) {
           let warehouseId = res.DefaultWarehouseId;
           this.commonService.getInventoryWarehouseId(warehouseId).subscribe((obj: any) => {

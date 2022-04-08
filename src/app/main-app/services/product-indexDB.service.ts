@@ -29,15 +29,15 @@ export class ProductIndexDBService extends BaseSevice {
       method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<ProductPouchDBDTO>(api, null);
+    return this.apiService.getCacheData<ProductPouchDBDTO>(api, null);
   }
 
-  facadeLastVersionV2(countIndex: number, version: number) {
-    if(!this.productIndexDB$) {
-        this.productIndexDB$ = this.getLastVersionV2(countIndex, version).pipe(shareReplay(1));
-    }
+  // facadeLastVersionV2(countIndex: number, version: number) {
+  //   if(!this.productIndexDB$) {
+  //       this.productIndexDB$ = this.getLastVersionV2(countIndex, version).pipe(shareReplay(1));
+  //   }
 
-    return this.productIndexDB$;
-  }
+  //   return this.productIndexDB$;
+  // }
 
 }

@@ -33,7 +33,7 @@ export class SharedService extends BaseSevice {
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<CompanyCurrentDTO>(api, null);
+    return this.apiService.getCacheData<CompanyCurrentDTO>(api, null);
   }
 
 }

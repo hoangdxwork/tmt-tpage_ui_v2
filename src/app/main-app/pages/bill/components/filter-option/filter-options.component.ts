@@ -1,7 +1,7 @@
 import { formatDate } from "@angular/common";
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import { addDays, format } from "date-fns";
-import { DeliveryCarrierService } from "src/app/main-app/services/delivery-carrier-order.service";
+import { DeliveryCarrierService } from "src/app/main-app/services/delivery-carrier.service";
 import { TagService } from "src/app/main-app/services/tag.service";
 import { TDSContextMenuService, TDSSafeAny } from "tmt-tang-ui";
 

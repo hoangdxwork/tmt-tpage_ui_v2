@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tmt-tang-ui';
+import { ODataCustomerDTO } from '../dto/partner/customer.dto';
 import { PartnerBirthdayDTO } from '../dto/partner/partner-birthday.dto';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
 import { PartnerDetailDTO } from '../dto/partner/partner-detail.dto';
@@ -136,6 +137,20 @@ export class PartnerService extends BaseSevice {
     }
 
     return this.apiService.getData<ODataPartnerCategoryDTO>(api, null);
+  }
+
+  getCustomers(page: number, limit: number, keyword: string): Observable<any> {
+    let filter = "";
+    if (keyword) {
+      filter = `and (contains(NameNoSign,'${keyword}') or contains(DisplayName,'${keyword}') or contains(Phone,'${keyword}'))`
+    }
+
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/?$format=json&$top=${page * limit}&$skip=${(page - 1) * limit}&$filter=(Customer eq true and Active eq true)${filter}&$count=true`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<ODataCustomerDTO>(api, null);
   }
 
 }
