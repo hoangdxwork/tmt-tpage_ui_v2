@@ -118,6 +118,13 @@ export class TCommonService {
         return that.connect<T>(api.method, api.url, param, options, true, 'body', 'text');
     }
 
+    public getFileUpload<T>(api: TAPIDTO, param: any): Observable<T> {
+      let that = this;
+      let options = new HttpHeaders({ 'Access-Control-Allow-Origin': '*'}) ;
+
+      return that.connect<T>(api.method, api.url, param, options);
+  }
+
     //Thực thi redirect trang login
     // public redirectLogin(urlLogin: string): void {
     //     if (TDSHelperObject.hasValue(TCoreFunction.redirectLogin)) {
