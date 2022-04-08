@@ -120,7 +120,6 @@ export class OrderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.loadSummaryStatus();
     this.loadTags();
 
     this.loadGridConfig();
@@ -364,6 +363,17 @@ export class OrderComponent implements OnInit {
     this.loadData(this.pageSize, this.pageIndex);
   }
 
+  // Refresh nhưng không refresh lại Tab, Index
+  refreshDataCurrent() {
+    this.indClickTag = "";
+
+    this.checked = false;
+    this.indeterminate = false;
+    this.setOfCheckedId = new Set<string>();
+
+    this.loadData(this.pageSize, this.pageIndex);
+  }
+
   onLoadOption(event: any): void {
     this.tabIndex = 1;
     this.pageIndex = 1;
@@ -409,7 +419,6 @@ export class OrderComponent implements OnInit {
 
     // modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
     modal.afterClose.subscribe((result: TDSSafeAny) => {
-      debugger;
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
         this.loadData(this.pageSize, this.pageIndex);
@@ -431,7 +440,7 @@ export class OrderComponent implements OnInit {
   remove(id: string, code: string) {
     this.saleOnline_OrderService.remove(id).subscribe((res: TDSSafeAny) => {
       this.message.info(`${Message.Order.DeleteSuccess} ${code}`);
-      this.refreshData();
+      this.refreshDataCurrent();
     });
   }
 

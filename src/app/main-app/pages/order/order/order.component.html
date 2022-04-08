@@ -41,7 +41,8 @@
 
         <!-- TODO: Thao tác -->
         <div class="flex items-center gap-x-2 pr-4">
-          <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]></action-dropdown>
+          <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]
+          (onRefreshData)="refreshDataCurrent()"></action-dropdown>
           <tds-form-field class="w-full">
             <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keydown.enter)="applyFilter($event)" />
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
@@ -149,8 +150,18 @@
                         </button>
                       </div>
                     </ng-template>
-
                   </div>
+
+                  <div class="flex mt-1">
+                    <div class="flex text-xs text-error-500" *ngIf="!data.PrintCount || data.PrintCount == 0">
+                      Chưa in
+                    </div>
+
+                    <div class="flex text-xs text-success-500" *ngIf="data.PrintCount && data.PrintCount > 0">
+                      Đã in: {{data.PrintCount}}
+                    </div>
+                  </div>
+
                 </td>
 
                 <!-- Kênh kết nối -->

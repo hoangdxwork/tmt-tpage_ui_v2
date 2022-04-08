@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnInit, Output, ViewContainerRef, EventEmitter } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -6,7 +6,7 @@ import { GenerateMessageTypeEnum } from 'src/app/main-app/dto/conversation/messa
 import { OdataSaleOnline_OrderService } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
-import { TDSMessageService, TDSModalService, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSMessageService, TDSModalService, TDSSafeAny, TDSHelperObject } from 'tmt-tang-ui';
 import { DuplicateUserComponent } from '../duplicate-user/duplicate-user.component';
 import { UpdateStatusOrderComponent } from '../update-status-order/update-status-order.component';
 
@@ -20,6 +20,8 @@ export class ActionDropdownComponent implements OnInit {
   @Input() filterObj: any;
   @Input() setOfCheckedId: any = [];
   @Input() lstOfData: any = [];
+
+  @Output() onRefreshData =new EventEmitter<any>();
 
   isProcessing: boolean = false;
   idsModel: any = [];
@@ -51,6 +53,7 @@ export class ActionDropdownComponent implements OnInit {
           that.odataSaleOnline_OrderService.removeIds({ ids: that.idsModel }).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
             that.message.success('Xóa đơn thành công!');
             that.isProcessing = false;
+            this.onRefreshData.emit(true);
           }, error => {
             that.message.error(`${error?.error?.message}`);
             that.isProcessing = false;
@@ -67,13 +70,19 @@ export class ActionDropdownComponent implements OnInit {
   openUpdateStatusText() {
     if (this.checkValueEmpty() == 1) {
       let listData = this.lstOfData.filter((a: any) => this.idsModel.includes(a.Id));
-      this.modal.create({
+      const modal = this.modal.create({
         title: 'Cập nhật trạng thái đơn hàng',
         content: UpdateStatusOrderComponent,
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
         componentParams: {
           listData: listData
+        }
+      });
+
+      modal.afterClose.subscribe(result => {
+        if(TDSHelperObject.hasValue(result)) {
+          this.onRefreshData.emit(true);
         }
       });
     }

@@ -138,4 +138,13 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<ODataPartnerCategoryDTO>(api, null);
   }
 
+  updateStatus(id: number, data: TDSSafeAny) {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})/OdataService.UpdateStatus`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
 }

@@ -24,6 +24,7 @@ import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.
 import { SaleOnline_OrderHandler } from 'src/app/main-app/services/handlers/sale-online-order.handler';
 import { Observable } from 'rxjs';
 import { CarrierHandler } from 'src/app/main-app/services/handlers/carier.handler';
+import { PartnerService } from 'src/app/main-app/services/partner.service';
 
 @Component({
   selector: 'edit-order',
@@ -80,7 +81,8 @@ export class EditOrderComponent implements OnInit {
     private fastSaleOrderService: FastSaleOrderService,
     private saleOnline_OrderHandler: SaleOnline_OrderHandler,
     private fastSaleOrderHandler: FastSaleOrderHandler,
-    private carrierHandler: CarrierHandler
+    private carrierHandler: CarrierHandler,
+    private partnerService: PartnerService
   ) { }
 
   ngOnInit(): void {
@@ -177,6 +179,7 @@ export class EditOrderComponent implements OnInit {
 
   loadPartnerStatus() {
     this.commonService.getPartnerStatus().subscribe(res => {
+      console.log(res);
       this.lstPartnerStatus = res;
     });
   }
@@ -793,6 +796,34 @@ export class EditOrderComponent implements OnInit {
       Ship_Receiver: [null],
       AmountDeposit: [0]
     });
+  }
+
+  getStatusColor(): string {
+    let partner = this.formEditOrder.controls["Partner"].value;
+
+    if(partner) {
+      let value = this.lstPartnerStatus.find(x => x.text == partner.StatusText);
+      if(value) return value.value;
+      else return '#e5e7eb';
+    }
+
+    else return '#e5e7eb';
+  }
+
+  selectStatus(status: PartnerStatusDTO) {
+    let partner = this.formEditOrder.controls["Partner"].value;
+
+    if(partner) {
+      let data = {
+        status: `${status.value}_${status.text}`
+      }
+
+      this.partnerService.updateStatus(partner.Id, data).subscribe(res => {
+        this.message.success(Message.Partner.UpdateStatus);
+        partner.StatusText = status.text;
+        this.formEditOrder.controls["Partner"].setValue(partner);
+      });
+    }
   }
 
   onCancel(result: TDSSafeAny) {
