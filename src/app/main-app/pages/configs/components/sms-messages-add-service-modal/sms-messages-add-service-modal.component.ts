@@ -3,11 +3,11 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
 
 @Component({
-  selector: 'app-add-service-modal',
-  templateUrl: './add-service-modal.component.html',
-  styleUrls: ['./add-service-modal.component.scss']
+  selector: 'app-sms-messages-add-service-modal',
+  templateUrl: './sms-messages-add-service-modal.component.html',
+  styleUrls: ['./sms-messages-add-service-modal.component.scss']
 })
-export class AddServiceModalComponent implements OnInit {
+export class SMSMessagesAddServiceModalComponent implements OnInit {
   SMSServiceData:Array<TDSSafeAny> = [];
   responseData:Array<TDSSafeAny> = [];
   partnerData:Array<TDSSafeAny> = [];

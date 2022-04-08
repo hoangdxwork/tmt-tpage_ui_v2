@@ -1,6 +1,6 @@
 import { filter } from 'rxjs/operators';
 import { HttpRequest, HttpResponse, HttpClient } from '@angular/common/http';
-import { ConfigProductVariantService } from './../config-product-variant.service';
+import { ConfigProductVariantService } from '../../config-product-variant/config-product-variant.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { TDSModalRef, TDSSafeAny, TDSUploadFile, TDSUploadChangeParam, TDSMessageService } from 'tmt-tang-ui';

@@ -1,25 +1,58 @@
-import { ProductVariantEditTableModalComponent } from './../product-variant-edit-table-modal/product-variant-edit-table-modal.component';
-import { TDSSafeAny, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
-import { Component, OnInit, Input, ViewContainerRef } from '@angular/core';
+import { TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
+import { Component, OnInit, ViewContainerRef } from '@angular/core';
 
 @Component({
-  selector: 'table-template-product-variant',
-  templateUrl: './table-template-product-variant.component.html',
-  styleUrls: ['./table-template-product-variant.component.scss']
+  selector: 'app-config-products',
+  templateUrl: './config-products.component.html',
+  styleUrls: ['./config-products.component.scss']
 })
-export class TableTemplateProductVariantComponent implements OnInit {
-  @Input() TableData:Array<TDSSafeAny> = [];
-
+export class ConfigProductsComponent implements OnInit {
+  TableData:Array<TDSSafeAny> = [];
+  dropdownList:Array<TDSSafeAny> = [];
+  
+  expandSet = new Set<number>();
   setOfCheckedId = new Set<number>();
   listOfCurrentPageData: readonly TDSSafeAny[] = [];
  
   checked = false;
   indeterminate = false;
   loading = false;
+  pageSize = 20;
+  pageIndex = 1;
 
-  constructor(private modalService: TDSModalService, private viewContainerRef: ViewContainerRef) {}
+  configTags:Array<TDSSafeAny> = [];
+  configTagList:Array<TDSSafeAny> = [];
+  clickingTag = -1;
 
-  ngOnInit(): void {}
+  constructor(private modalService: TDSModalService, private viewContainerRef: ViewContainerRef) { 
+    this.dropdownList = [
+      {
+        id:1,
+        name:'Xuất excel kiểm kho'
+      },
+      {
+        id:2,
+        name:'Mở hiệu lực'
+      },
+      {
+        id:3,
+        name:'Hết hiệu lực'
+      },
+      {
+        id:4,
+        name:'Thêm SP vào Page'
+      },
+    ];
+  }
+
+  ngOnInit(): void {
+  }
+
+  loadData() {
+    this.TableData = [
+
+    ]
+  }
 
   updateCheckedSet(id: number, checked: boolean): void {
         if (checked) {
@@ -63,25 +96,38 @@ export class TableTemplateProductVariantComponent implements OnInit {
       }, 1000);
   }
 
-  showEditModal(i:number){
-    let editData =  this.TableData[i];
-    const modal = this.modalService.create({
-      title: 'Cập nhật biến thể sản phẩm',
-      content: ProductVariantEditTableModalComponent,
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-        data: editData
-      }
-    });
-    modal.afterOpen.subscribe(() => {
+  onExpandChange(id: number, checked: boolean): void {
+    if (checked) {
+      this.expandSet.add(id);
+    } else {
+      this.expandSet.delete(id);
+    }
+  }
 
-    });
-    //receive result from modal after close modal
-    modal.afterClose.subscribe(result => {
-        if (TDSHelperObject.hasValue(result)) {
-          //get new changed value here
-        }
-    });
+  openTag(id: number, data: TDSSafeAny) {
+    this.configTags = [];
+    this.clickingTag = id;
+    this.configTagList = JSON.parse(data);
+  }
+
+  assignTags(id: number, tags: Array<TDSSafeAny>){
+
+  }
+
+  closeTag() {
+    this.clickingTag = -1;
+  }
+
+  addNewData(data:TDSSafeAny){
+    
+  }
+
+  refreshData(){
+
+  }
+
+  showEditModal(i:number){
+    
   }
 
   showRemoveModal(i:number){
