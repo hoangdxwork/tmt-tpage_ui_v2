@@ -45,7 +45,7 @@ export class ProductTemplateService extends BaseSevice {
       method: TApiMethodType.post,
     }
 
-    return this.apiService.getExFile(api, param);
+    return this.apiService.getFileUpload(api, param);
   }
 
 

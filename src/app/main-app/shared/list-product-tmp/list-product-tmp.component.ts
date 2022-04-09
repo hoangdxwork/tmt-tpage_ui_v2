@@ -170,9 +170,9 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
 
     if(TDSHelperObject.hasValue(this.currentType)) {
         switch(this.currentType.value) {
-          case 'Id':
-            data = _.orderBy(data, ["Id"], ["desc"]);
-          break;
+          // case 'Id':
+          //   data = _.orderBy(data, ["Id"], ["desc"]);
+          // break;
 
           case 'Name':
             data = _.orderBy(data, ["Name"], ["desc"]);

@@ -42,7 +42,10 @@ export const Message = {
     EmptyCarrier: "Vui lòng chọn đối tác giao hàng."
   },
   Upload: {
-    Failed: 'Tải tệp không thành công',
+    Failed: 'Tải tệp không thành công.',
     Success: 'Tải tập thành công.'
+  },
+  Partner: {
+    UpdateStatus: 'Cập nhật trạng thái khách hàng thành công.'
   }
 }
