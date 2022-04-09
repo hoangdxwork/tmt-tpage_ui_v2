@@ -90,7 +90,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
 
   loadProductIndexDB(productCount: number, version: number) {
     this.isLoading = true;
-    this.productIndexDBService.getLastVersionV2(productCount, version).subscribe((data: ProductPouchDBDTO) => {debugger
+    this.productIndexDBService.getLastVersionV2(productCount, version).subscribe((data: ProductPouchDBDTO) => {
 
         if(TDSHelperArray.hasListValue(data.Datas) && productCount == -1 && version == 0) {
             this.indexDbStorage = data.Datas;

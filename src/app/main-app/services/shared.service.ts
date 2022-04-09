@@ -41,4 +41,14 @@ export class SharedService extends BaseSevice {
     this.apiService.removeCacheAPI(this._keyCacheConfigs);
   }
 
+  saveImageV2(param: any): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/api/upload/saveimagev2`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getFileUpload(api, param);
+  }
+
+
 }

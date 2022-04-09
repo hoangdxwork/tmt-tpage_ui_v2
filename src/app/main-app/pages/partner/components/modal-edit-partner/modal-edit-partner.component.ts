@@ -1,4 +1,4 @@
-import { TDSHelperArray, TDSHelperString } from 'tmt-tang-ui';
+import { TDSHelperArray, TDSHelperString, TDSUploadFile } from 'tmt-tang-ui';
 import { ModalAddAddressComponent } from '../modal-add-address/modal-add-address.component';
 import { FormGroup, FormBuilder, FormControl, FormArray } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef, Input, OnChanges, SimpleChanges } from '@angular/core';
@@ -6,9 +6,12 @@ import { TDSModalRef, TDSModalService, TDSHelperObject, TDSMessageService } from
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { formatDate } from '@angular/common';
-import { CheckAddressDTO, DataSuggestionDTO } from 'src/app/main-app/dto/address/address.dto';
+import { CheckAddressDTO, CityDTO, DataSuggestionDTO, DistrictDTO, WardDTO } from 'src/app/main-app/dto/address/address.dto';
 import { PartnerDetailDTO } from 'src/app/main-app/dto/partner/partner-detail.dto';
 import { PartnerCategoryDTO, StatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
+import { SharedService } from 'src/app/main-app/services/shared.service';
+import { Message } from 'src/app/lib/consts/message.const';
+import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 
 @Component({
   selector: 'app-modal-edit-partner',
@@ -19,7 +22,6 @@ import { PartnerCategoryDTO, StatusDTO } from 'src/app/main-app/dto/partner/part
 export class ModalEditPartnerComponent implements OnInit {
 
   @Input() partnerId: any;
-
   data!: PartnerDetailDTO;
   isLoading: boolean = false;
 
@@ -27,9 +29,12 @@ export class ModalEditPartnerComponent implements OnInit {
   lstCategory: Array<PartnerCategoryDTO> = [];
   lstStatus: Array<StatusDTO> = [];
   lstPrice: Array<PartnerCategoryDTO> = [];
+  fileList: TDSUploadFile[] = [];
 
-  formAddPartner!: FormGroup
-  dataSuggestion!: DataSuggestionDTO;
+  _cities!: SuggestCitiesDTO;
+  _districts!: SuggestDistrictsDTO;
+  _wards!: SuggestWardsDTO;
+  _street!: string;
 
   formatterPercent = (value: number) => `${value} %`;
   parserPercent = (value: string) => value.replace(' %', '');
@@ -42,6 +47,7 @@ export class ModalEditPartnerComponent implements OnInit {
     private partnerService: PartnerService,
     private commonService: CommonService,
     private modalService: TDSModalService,
+    private sharedService: SharedService,
     private viewContainerRef: ViewContainerRef) {
       this.createForm();
   }
@@ -50,6 +56,7 @@ export class ModalEditPartnerComponent implements OnInit {
     this._form = this.fb.group({
         Id: [null],
         Name: [null],
+        Image: [null],
         ImageUrl: [null],
         Ref: [null],
         BirthDay: [null],
@@ -82,10 +89,9 @@ export class ModalEditPartnerComponent implements OnInit {
 
   loadData() {
     if(this.partnerId) {
-      let id = this.partnerId;
       this.isLoading = true;
 
-      this.partnerService.getById(id).subscribe((res: any) => {
+      this.partnerService.getById(this.partnerId).subscribe((res: any) => {
           delete res['@odata.context'];
           this.data = res;
 
@@ -96,11 +102,35 @@ export class ModalEditPartnerComponent implements OnInit {
           this.updateForm(this.data);
           this.isLoading = false;
 
+          this.mappingAddress(res);
+
       }, error => {
           this.isLoading = false;
           this.message.error('Tải dữ liệu khách hàng thất bại');
       })
     }
+  }
+
+  mappingAddress(data: PartnerDetailDTO) {
+    this._cities = {
+        code: data.CityCode,
+        name: data.CityName
+    }
+    this._districts = {
+        cityCode: data.CityCode,
+        cityName: data.CityName,
+        code: data.DistrictCode,
+        name: data.DistrictName
+    }
+    this._wards = {
+        cityCode: data.CityCode,
+        cityName: data.CityName,
+        districtCode: data.DistrictCode,
+        districtName: data.DistrictName,
+        code: data.WardCode,
+        name: data.WardName
+    }
+    this._street = data.Street;
   }
 
   updateForm(data: any) {
@@ -188,18 +218,22 @@ export class ModalEditPartnerComponent implements OnInit {
     });
   }
 
+  onLoadSuggestion(data: any) {
+
+  }
+
   updateSuggestion(data: any) {
     let model: DataSuggestionDTO = {
-      Street: data.Street,
-      CityCode: data.CityCode,
-      CityName: data.CityName,
-      DistrictCode: data.DistrictCode,
-      DistrictName: data.DistrictName,
-      WardCode: data.WardCode,
-      WardName: data.WardName,
+        Street: data.Street,
+        CityCode: data.CityCode,
+        CityName: data.CityName,
+        DistrictCode: data.DistrictCode,
+        DistrictName: data.DistrictName,
+        WardCode: data.WardCode,
+        WardName: data.WardName,
     }
 
-    this.dataSuggestion = model;
+    // this.dataSuggestion = model;
   }
 
   onChangeAddress(event: CheckAddressDTO) {
@@ -222,6 +256,29 @@ export class ModalEditPartnerComponent implements OnInit {
     } : null);
   }
 
+  beforeUpload = (file: TDSUploadFile): boolean => {
+    this.fileList = this.fileList.concat(file);
+
+    this.handleUpload(file);
+    return false;
+  };
+
+  handleUpload(file: TDSUploadFile) {
+    let formData: any = new FormData();
+    formData.append("files", file as any, file.name);
+    formData.append('id', '0000000000000051');
+
+    return this.sharedService.saveImageV2(formData).subscribe((res: any) => {
+      this.message.success(Message.Upload.Success);
+      if(this.partnerId) {
+        this._form.controls["ImageUrl"].setValue(res[0].urlImageProxy);
+      }
+
+    }, error => {
+      this.message.error('Upload Image đã xảy ra lỗi!')
+    });
+  }
+
   prepareModel() {
     const formModel = this._form.value;
 
@@ -229,7 +286,7 @@ export class ModalEditPartnerComponent implements OnInit {
         this.data['Name'] = formModel.Name;
     }
     if(formModel.Image != null && !this.partnerId) {
-        // this.data['Image'] = this.commontService.urlBase64;
+        this.data['Image'] =  formModel.ImageUrl
     }
     if(formModel.ImageUrl != null && this.partnerId) {
         this.data['ImageUrl'] = formModel.ImageUrl;

@@ -12,6 +12,7 @@ import { TpageAddCategoryComponent } from '../tpage-add-category/tpage-add-categ
 import { TpageSearchUOMComponent } from '../tpage-search-uom/tpage-search-uom.component';
 import { CommonService } from '../../services/common.service';
 import { TCommonService, TAPIDTO, TApiMethodType } from 'src/app/lib';
+import { SharedService } from '../../services/shared.service';
 
 @Component({
   selector: 'tpage-add-product',
@@ -35,7 +36,7 @@ export class TpageAddProductComponent implements OnInit {
 
   fileList: TDSUploadFile[] = [];
 
-  constructor(
+  constructor(private sharedService: SharedService,
     private fb: FormBuilder,
     private modal: TDSModalService,
     private modalRef: TDSModalRef,
@@ -155,8 +156,7 @@ export class TpageAddProductComponent implements OnInit {
     formData.append("files", file as any, file.name);
     formData.append('id', '0000000000000051');
 
-    return this.productTemplateService.getImageProduct(formData).subscribe(res => {
-      debugger;
+    return this.sharedService.saveImageV2(formData).subscribe((res: any) => {
       this.message.success(Message.Upload.Success);
       this.formAddProduct.controls["ImageUrl"].setValue(res[0].urlImageProxy);
     }, error => {
