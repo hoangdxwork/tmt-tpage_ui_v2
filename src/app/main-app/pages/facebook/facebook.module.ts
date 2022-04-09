@@ -3,10 +3,16 @@ import { CommonModule } from '@angular/common';
 
 import { FacebookRoutingModule } from './facebook-routing.module';
 import { FacebookComponent } from './facebook/facebook.component';
-import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCollapseModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSModalModule, TDSPageHeaderModule, TDSSwitchModule } from 'tmt-tang-ui';
+import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCollapseModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSModalModule, TDSPageHeaderModule, TDSSpinnerModule, TDSSwitchModule } from 'tmt-tang-ui';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AddPageComponent } from './components/add-page/add-page.component';
+import { MainSharedModule } from '../../shared/shared.module';
+import { FacebookGraphService } from '../../services/facebook-graph.service';
+import { PipeModule } from '../../shared/pipe/pipe.module';
 
+const SERVICES = [
+  FacebookGraphService
+]
 
 @NgModule({
   declarations: [
@@ -16,6 +22,7 @@ import { AddPageComponent } from './components/add-page/add-page.component';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    MainSharedModule,
     FormsModule,
     FacebookRoutingModule,
     TDSPageHeaderModule,
@@ -30,7 +37,12 @@ import { AddPageComponent } from './components/add-page/add-page.component';
     TDSAvatarModule,
     TDSBadgeModule,
     TDSSwitchModule,
-    TDSModalModule
-  ]
+    TDSModalModule,
+    PipeModule,
+    TDSSpinnerModule
+  ],
+  providers: [
+    ...SERVICES,
+  ],
 })
 export class FacebookModule { }

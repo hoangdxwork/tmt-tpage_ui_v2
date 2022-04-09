@@ -32,6 +32,22 @@ export class CRMTeamService extends BaseSevice {
     return this.apiService.getData<PagedList2<CRMTeamDTO>>(api, null);
   }
 
+  getAllChannels(): Observable<Array<CRMTeamDTO>> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/getallchannels`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<Array<CRMTeamDTO>>(api, null);
+  }
+
+  insert(data: TDSSafeAny): Observable<Array<CRMTeamDTO>> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<Array<CRMTeamDTO>>(api, data);
+  }
+
   onChangeListFaceBook() {
     return this.listFaceBook$.asObservable();
   }
@@ -58,15 +74,35 @@ export class CRMTeamService extends BaseSevice {
     });
 
   }
+
   setCacheTeamId(data: TDSSafeAny) {
     this.caheApi.setItem(this.__keyCacheTeamId, data);
   }
+
   onUpdateTeam(data: CRMTeamDTO | null) {
     this.setCacheTeamId(data ? data.Id : null);
     this._currentTeam = data;
     this.currentTeam$.next(data);
   }
+
   onChangeTeam() {
     return this.currentTeam$.asObservable();
   }
+
+  updateActive(id: number): Observable<TDSSafeAny> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${id}/active`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  delete(key: any): Observable<TDSSafeAny> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
+      method: TApiMethodType.delete
+    }
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
 }

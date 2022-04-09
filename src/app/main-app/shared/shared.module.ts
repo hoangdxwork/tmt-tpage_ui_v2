@@ -21,6 +21,7 @@ import { ListProductTmpComponent } from './list-product-tmp/list-product-tmp.com
 import { GeneralConfigsFacade } from '../services/facades/general-config.facade';
 import { SharedService } from '../services/shared.service';
 import { ProductIndexDBService } from '../services/product-indexDB.service';
+import { ImageFacade } from '../services/facades/image.facade';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -40,7 +41,8 @@ const cmp =[
 const SERVICES = [
   ProductIndexDBService,
   GeneralConfigsFacade,
-  SharedService
+  SharedService,
+  ImageFacade
 ]
 
 @NgModule({
