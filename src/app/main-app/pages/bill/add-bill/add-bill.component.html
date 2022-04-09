@@ -16,7 +16,7 @@
             <button tds-button color="secondary" class="mr-2">Quay lại</button>
         </div>
     </div>
-    <form  [formGroup]="_form" class="flex flex-col h-full gap-y-4 p-4">
+    <div  class="flex flex-col h-full gap-y-4 p-4">
         <div class="bg-white rounded-xl">
             <tds-tabset class="w-full">
                 <tds-tab title="Thông tin">
@@ -29,7 +29,7 @@
                             <div class="w-2/3 flex flex-col gap-y-2">
                                 <tds-form-field>
                                     <tds-select valueField="Id" textField="DisplayName"
-                                        formControlName="Partner" placeholder='Chọn tên khách hàng'
+                                         placeholder='Chọn tên khách hàng'
                                         disabledField="isActive" [data]="lstCustomers" [allowClear]="true">
                                     </tds-select>
                                 </tds-form-field>
@@ -37,7 +37,7 @@
                                     <tds-button-group>
                                         <button tds-dropdown trigger="click" [tdsDropdownMenu]="menu1">
                                             <span class="flex items-center font-semibold text-primary-1">
-                                              {{_form.controls["Partner"].value ?  _form.controls["Partner"].value.StatusText : "N/A" }}
+                                              <!-- {{_form.controls["Partner"].value ?  _form.controls["Partner"].value.StatusText : "N/A" }} -->
                                               <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
                                             </span>
                                         </button>
@@ -612,5 +612,5 @@
                 </div>
             </div>
         </div>
-    </form>
+    </div>
 </div>

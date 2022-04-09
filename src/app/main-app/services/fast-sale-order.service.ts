@@ -20,6 +20,7 @@ export class FastSaleOrderService extends BaseSevice {
   baseRestApi: string = "rest/v1.0/fastsaleorder";
 
   public _keyCacheGrid: string = 'orderbill-page:grid_orderbill:settings';
+  public _keyCacheDefaultGetV2: string = '_keycache_default_getV2';
 
   constructor(private apiService: TCommonService) {
     super(apiService)
@@ -43,7 +44,11 @@ export class FastSaleOrderService extends BaseSevice {
         method: TApiMethodType.post,
     }
 
-    return this.apiService.getCacheData<FastSaleOrder_DefaultDTOV2>(api,data);
+    return this.apiService.getCacheData<FastSaleOrder_DefaultDTOV2>(api, data);
+  }
+
+  deleteKeyCacheDefaultGetV2() {
+    this.apiService.removeCacheAPI(this._keyCacheDefaultGetV2);
   }
 
   delete(key: TDSSafeAny): Observable<TDSSafeAny> {

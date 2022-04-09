@@ -13,6 +13,7 @@ export class SharedService extends BaseSevice {
   prefix: string = "";
   table: string = "";
   baseRestApi: string = "";
+  _keyCacheConfigs = "_keycache_configs";
 
   constructor(private apiService: TCommonService) {
     super(apiService)
@@ -34,6 +35,10 @@ export class SharedService extends BaseSevice {
     }
 
     return this.apiService.getCacheData<CompanyCurrentDTO>(api, null);
+  }
+
+  deleteKeyCacheConfigs() {
+    this.apiService.removeCacheAPI(this._keyCacheConfigs);
   }
 
 }

@@ -28,7 +28,7 @@
               </div>
           </tds-dropdown-menu>
       </tds-button-group>
-      <button tds-button-icon color="primary" (click)="showModalAddProduct()">
+      <button tds-button-icon color="primary" (click)="showModalAddProduct()" type="button">
           <span class="flex items-center">
               <i class="tdsi-plus-fill"></i>
           </span>
@@ -62,7 +62,7 @@
                   <tr class="group" *ngIf="data">
                       <td>
                           <div class="">
-                              <tds-avatar [shape]="'square'" [size]="'lg'" [tdsSrc]="data.ImageUrl">
+                              <tds-avatar [isAvatar]="false" [shape]="'square'" [size]="'lg'" [tdsSrc]="data.ImageUrl">
                               </tds-avatar>
                           </div>
                       </td>

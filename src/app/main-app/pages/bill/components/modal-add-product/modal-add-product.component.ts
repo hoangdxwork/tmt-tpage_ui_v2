@@ -8,6 +8,7 @@ import { ProductCategoryService } from 'src/app/main-app/services/product-catego
 import { ODataProductCategoryDTOV2, ProductCategoryDTO, ProductCategoryDTOV2 } from 'src/app/main-app/dto/product/product-category.dto';
 import { ProductUOMService } from 'src/app/main-app/services/product-uom.service';
 import { OdataProductUOMDTOV2, ProductUOMDTOV2 } from 'src/app/main-app/dto/product/product-uom.dto';
+import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
 
 @Component({
   selector: 'app-modal-add-product',
@@ -27,6 +28,7 @@ export class ModalAddProductComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
       private message: TDSMessageService,
+      private productIndexDBService: ProductIndexDBService,
       private productUOMService: ProductUOMService,
       private productCategoryService: ProductCategoryService,
       private productTemplateService: ProductTemplateService,
@@ -96,8 +98,9 @@ export class ModalAddProductComponent implements OnInit {
   onSave() {
       let model = this.prepareModel();
       this.productTemplateService.insert(model).subscribe((res: ProductTemplateV2DTO) => {
-            this.message.success('Thêm sản phẩm thành công!');
-            this.modal.destroy(res);
+          this.message.success('Thêm sản phẩm thành công!');
+          this.modal.destroy(res);
+
       }, error => {
           this.message.error('Thêm sản phẩm đã xảy ra lỗi!');
           this.modal.destroy(null);

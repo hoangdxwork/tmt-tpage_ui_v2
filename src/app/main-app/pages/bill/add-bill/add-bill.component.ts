@@ -2,19 +2,19 @@ import { TDSModalService, TDSHelperObject, TDSMessageService } from 'tmt-tang-ui
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ModalSearchPartnerComponent } from '../components/modal-search-partner/modal-search-partner.component';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
-import { FastSaleOrder_DefaultDTOV2 } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
 import { SaleConfigsDTO, SaleSettingDTO } from 'src/app/main-app/dto/configs/sale-config.dto';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
-import { DeliveryCarrierDTOV2, ODataDeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto';
 import { AccountRegisterPaymentService } from 'src/app/main-app/services/account-register-payment.service';
-import { AccountJournalPaymentDTO, ODataAccountJournalPaymentDTO } from 'src/app/main-app/dto/register-payment/register-payment.dto';
 import { formatDate } from '@angular/common';
 import { ODataPartnerCategoryDTO, PartnerCategoryDTO } from 'src/app/main-app/dto/partner/partner-category.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
+import { FastSaleOrder_DefaultDTOV2 } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
+import { DeliveryCarrierDTOV2, ODataDeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto';
+import { AccountJournalPaymentDTO, ODataAccountJournalPaymentDTO } from 'src/app/main-app/dto/register-payment/register-payment.dto';
 import { CustomerDTO, ODataCustomerDTO } from 'src/app/main-app/dto/partner/customer.dto';
+import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 
 @Component({
   selector: 'app-add-bill',
@@ -111,6 +111,7 @@ export class AddBillComponent implements OnInit {
   createForm() {
     this._form = this.fb.group({
         Partner: [null],
+
     });
   }
 
@@ -119,17 +120,17 @@ export class AddBillComponent implements OnInit {
     this.fastSaleOrderService.defaultGetV2({model: model}).subscribe((data: any) => {
         delete data['@odata.context'];
 
-        if (this.dataModel.DateCreated) {
-          this.dataModel.DateCreated = new Date(this.dataModel.DateCreated);
+        if (data.DateCreated) {
+          data.DateCreated = new Date(data.DateCreated);
         }
-        if (this.dataModel.DateInvoice) {
-          this.dataModel.DateInvoice = new Date(this.dataModel.DateInvoice);
+        if (data.DateInvoice) {
+          data.DateInvoice = new Date(data.DateInvoice);
         }
-        if (this.dataModel.DateOrderRed) {
-          this.dataModel.DateOrderRed = new Date(this.dataModel.DateOrderRed);
+        if (data.DateOrderRed) {
+          data.DateOrderRed = new Date(data.DateOrderRed);
         }
-        if (this.dataModel.ReceiverDate) {
-          this.dataModel.ReceiverDate = new Date(this.dataModel.ReceiverDate);
+        if (data.ReceiverDate) {
+          data.ReceiverDate = new Date(data.ReceiverDate);
         }
 
         this.dataModel = data;
