@@ -12,7 +12,7 @@ export class ConfigAutoChatComponent implements OnInit {
   expandBtnList:Array<boolean> = [];
   isLoading = false;
 
-  constructor(private modalService: TDSModalService, 
+  constructor(private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
@@ -147,7 +147,7 @@ export class ConfigAutoChatComponent implements OnInit {
   }
 
   doFilter(event:TDSSafeAny){
-    
+
   }
 
   onAddNewData(data:TDSSafeAny){
@@ -176,7 +176,7 @@ export class ConfigAutoChatComponent implements OnInit {
   }
 
   onChangeSetting(data:TDSSafeAny,index:number){
-    
+
   }
 
   onEditRow(data:TDSSafeAny,index:number){

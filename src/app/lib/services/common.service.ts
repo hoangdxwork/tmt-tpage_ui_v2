@@ -169,7 +169,7 @@ export class TCommonService {
     ): Observable<T> {
         let that = this;
         let strkey: string = keyCache || (pmethod.toString() + JSON.stringify(data) + URL);
-        // let 
+        // let
         let headers = this.getHeaderJSon();
         if (TDSHelperObject.hasValue(that._dicData[strkey])) {
 

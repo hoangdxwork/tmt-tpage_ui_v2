@@ -1,7 +1,6 @@
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TDSAvatarModule, TDSButtonModule, TDSSwitchModule, TDSTabsModule, TDSBadgeModule, TDSInputModule, TDSSelectModule, TDSFormFieldModule, TDSTableModule, TDSToolTipModule, TDSButtonMenuModule, TDSModalService, TDSModalModule, TDSRadioModule, TDSBreadCrumbModule, TDSImageModule, TDSUploadModule, TDSDropDownModule, TDSCheckBoxModule, TDSInputNumberModule, TDSPopoverModule, TDSTagModule } from 'tmt-tang-ui';
 import { MainSharedModule } from './../../shared/shared.module';
-
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -27,7 +26,22 @@ import { SMSMessagesAddServiceModalComponent } from './components/sms-messages-a
 import { TableTemplateProductVariantComponent } from './components/table-template-product-variant/table-template-product-variant.component';
 import { ProductVariantEditTableModalComponent } from './components/product-variant-edit-table-modal/product-variant-edit-table-modal.component';
 import { AddProductVariantComponent } from './config-product-variant/add-product-variant/add-product-variant.component';
+import { OdataCRMTagService } from '../../services/mock-odata/odata-crmtag.service';
+import { QuickReplyService } from '../../services/quick-reply.service';
+import { OdataQuickReplyService } from '../../services/mock-odata/odata-quick-reply.service';
+import { RestSMSService } from '../../services/sms.service';
+import { ProductService } from '../../services/product.service';
+import { OdataProductService } from '../../services/mock-odata/odata-product.service';
 
+const SERVICES = [
+    TDSModalService,
+    OdataCRMTagService,
+    OdataQuickReplyService,
+    QuickReplyService,
+    RestSMSService,
+    OdataProductService,
+    ProductService,
+]
 
 @NgModule({
   declarations: [
@@ -82,6 +96,8 @@ import { AddProductVariantComponent } from './config-product-variant/add-product
     TDSPopoverModule,
     TDSTagModule
   ],
-  providers:[TDSModalService]
+  providers:[
+    ...SERVICES
+  ]
 })
 export class ConfigsModule { }

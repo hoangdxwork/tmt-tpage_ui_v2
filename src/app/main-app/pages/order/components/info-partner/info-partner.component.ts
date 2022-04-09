@@ -26,6 +26,7 @@ export class InfoPartnerComponent implements OnInit {
   count: number = 0;
 
   lstDebitDetails: TDSSafeAny[] = [];
+  lstDebitDetailsSearch!: TDSSafeAny;
   countDebitDetails: number = 0;
 
   formDate = new FormControl(null);
@@ -117,14 +118,13 @@ export class InfoPartnerComponent implements OnInit {
   }
 
   onSearch(event: TDSSafeAny) {
-    console.log(this.selectedIndex);
-    console.log(this.rangeDate);
+    let textSearch = event.target.value;
 
     let startDate = (this.rangeDate && this.rangeDate[0]) ? new Date(this.rangeDate[0]) : addDays(new Date(), -30);
     let endDate = (this.rangeDate && this.rangeDate[1]) ? new Date(this.rangeDate[1]) : new Date();
 
     if(this.selectedIndex == 1) {
-      this.filterObj.searchText = event.target.value;
+      this.filterObj.searchText = textSearch;
       this.filterObj.dateRange = {
         startDate: startDate,
         endDate: endDate,
@@ -133,17 +133,23 @@ export class InfoPartnerComponent implements OnInit {
       this.loadOrder(this.pageSize, this.pageIndex);
     }
     else if(this.selectedIndex == 2) {
+      if(!TDSHelperString.hasValueString(textSearch) && (!this.rangeDate || this.rangeDate.length < 2)) {
+        delete this.lstDebitDetailsSearch;
+        return;
+      }
 
+      let textLowerCase = textSearch.toLowerCase();
+
+      this.lstDebitDetailsSearch = this.lstDebitDetails.filter(x => x.DisplayedName.toLowerCase().indexOf(textLowerCase) !== -1 &&
+      (new Date(x.Date)).getTime() >= startDate.getTime() && (new Date(x.Date)).getTime() <= endDate.getTime())
     }
   }
 
   onChangeRangePicker(event: TDSSafeAny) {
+    let startDate = (this.rangeDate && this.rangeDate[0]) ? new Date(this.rangeDate[0]) : addDays(new Date(), -30);
+    let endDate = (this.rangeDate && this.rangeDate[1]) ? new Date(this.rangeDate[1]) : new Date();
+
     if(this.selectedIndex == 1) {
-      console.log(this.textSearch);
-
-      let startDate = (this.rangeDate && this.rangeDate[0]) ? new Date(this.rangeDate[0]) : addDays(new Date(), -30);
-      let endDate = (this.rangeDate && this.rangeDate[1]) ? new Date(this.rangeDate[1]) : new Date();
-
       this.filterObj.searchText = this.textSearch;
       this.filterObj.dateRange = {
         startDate: startDate,
@@ -151,6 +157,17 @@ export class InfoPartnerComponent implements OnInit {
       };
 
       this.loadOrder(this.pageSize, this.pageIndex);
+    }
+    else if(this.selectedIndex == 2) {
+      if(!TDSHelperString.hasValueString(this.textSearch) && (!this.rangeDate || this.rangeDate.length < 2)) {
+        delete this.lstDebitDetailsSearch;
+        return;
+      }
+
+      let textLowerCase = this.textSearch.toLowerCase();
+
+      this.lstDebitDetailsSearch = this.lstDebitDetails.filter(x => x.DisplayedName.toLowerCase().indexOf(textLowerCase) !== -1 &&
+      (new Date(x.Date)).getTime() >= startDate.getTime() && (new Date(x.Date)).getTime() <= endDate.getTime())
     }
   }
 

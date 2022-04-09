@@ -20,13 +20,13 @@
             </div>
         </div>
         <div class="flex flex-auto pb-2.5">
-            <tds-table #basicTable 
-                [listData]="AutoChatList" 
-                [showSizeChanger]="true" 
-                [loading]="isLoading" 
+            <tds-table #basicTable
+                [listData]="AutoChatList"
+                [showSizeChanger]="true"
+                [loading]="isLoading"
                 [scroll]="{y:'auto'}"
                 [pageSize]="20"
-                [total]="AutoChatList.length" 
+                [total]="AutoChatList.length"
 
                 >
                 <thead>
@@ -52,7 +52,7 @@
                                                 <i class="tdsi-order-fill text-xl leading-5 text-tertiary-1"></i>
                                             </span>
                                         </button>
-                                        <button tds-flat-button-icon size="sm" tds-tooltip tooltipTitle="Hóa đơn mặc định" 
+                                        <button tds-flat-button-icon size="sm" tds-tooltip tooltipTitle="Hóa đơn mặc định"
                                             tooltipPlacement="top"
                                             (click)="onChangeSetting(2,i)">
                                             <span class="flex items-center">

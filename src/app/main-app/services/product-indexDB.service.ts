@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable } from "@angular/core";
+import { EventEmitter, Injectable, Output } from "@angular/core";
 import { Observable } from "rxjs";
 import { shareReplay } from "rxjs/operators";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
@@ -17,7 +17,6 @@ export class ProductIndexDBService extends BaseSevice {
   baseRestApi: string = "rest/v1.0/product";
 
   _keyCacheProductIndexDB: string = "_product_UOMLine_V2";
-  public productIndexDB$!: Observable<any>;
 
   constructor(private apiService: TCommonService) {
       super(apiService);
@@ -30,14 +29,6 @@ export class ProductIndexDBService extends BaseSevice {
     }
 
     return this.apiService.getData<ProductPouchDBDTO>(api, null);
-  }
-
-  facadeLastVersionV2(countIndex: number, version: number) {
-    if(!this.productIndexDB$) {
-        this.productIndexDB$ = this.getLastVersionV2(countIndex, version).pipe(shareReplay(1));
-    }
-
-    return this.productIndexDB$;
   }
 
 }

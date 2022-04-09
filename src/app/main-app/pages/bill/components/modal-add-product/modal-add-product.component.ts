@@ -8,6 +8,7 @@ import { ProductCategoryService } from 'src/app/main-app/services/product-catego
 import { ODataProductCategoryDTOV2, ProductCategoryDTO, ProductCategoryDTOV2 } from 'src/app/main-app/dto/product/product-category.dto';
 import { ProductUOMService } from 'src/app/main-app/services/product-uom.service';
 import { OdataProductUOMDTOV2, ProductUOMDTOV2 } from 'src/app/main-app/dto/product/product-uom.dto';
+import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
 
 @Component({
   selector: 'app-modal-add-product',
@@ -27,6 +28,7 @@ export class ModalAddProductComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
       private message: TDSMessageService,
+      private productIndexDBService: ProductIndexDBService,
       private productUOMService: ProductUOMService,
       private productCategoryService: ProductCategoryService,
       private productTemplateService: ProductTemplateService,
@@ -53,12 +55,11 @@ export class ModalAddProductComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.productTemplateService.getDefault().subscribe((res: ProductTemplateV2DTO) => {
+    this.productTemplateService.getDefault().subscribe((res: any) => {
+        delete res['@odata.context'];
         this.updateForm(res);
 
         this.modelDefault = res;
-        delete this.modelDefault['@odata.context'];
-
     }, error => {
        this.message.error('Load thông tin sản phẩm mặc định đã xảy ra lỗi!');
     })
@@ -75,9 +76,9 @@ export class ModalAddProductComponent implements OnInit {
   }
 
   changeUOM() {
-      this.productUOMService.get().subscribe((res: OdataProductUOMDTOV2) => {
-        this.lstUOM = res.value;
-      });
+    this.productUOMService.get().subscribe((res: OdataProductUOMDTOV2) => {
+      this.lstUOM = res.value;
+    });
   }
 
   changeUOMPO() {
@@ -96,9 +97,10 @@ export class ModalAddProductComponent implements OnInit {
 
   onSave() {
       let model = this.prepareModel();
-      this.productTemplateService.insert(model).subscribe((res: any) => {
-            this.message.success('Thêm sản phẩm thành công!');
-            this.modal.destroy(res);
+      this.productTemplateService.insert(model).subscribe((res: ProductTemplateV2DTO) => {
+          this.message.success('Thêm sản phẩm thành công!');
+          this.modal.destroy(res);
+
       }, error => {
           this.message.error('Thêm sản phẩm đã xảy ra lỗi!');
           this.modal.destroy(null);
@@ -106,8 +108,6 @@ export class ModalAddProductComponent implements OnInit {
   }
 
   prepareModel() {
-    delete this.modelDefault['@odata.context'];
-
     let formModel = this._form.value;
 
     this.modelDefault["Name"] = formModel.Name;
