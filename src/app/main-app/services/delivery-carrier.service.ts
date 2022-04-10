@@ -6,7 +6,7 @@ import { PartnerBirthdayDTO } from '../dto/partner/partner-birthday.dto';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
 import { PartnerDetailDTO } from '../dto/partner/partner-detail.dto';
 import { BaseSevice } from './base.service';
-// import { groupBy as _groupBy } from 'lodash';
+import { groupBy as _groupBy } from 'lodash';
 import { ODataDeliveryCarrierDTOV2 } from '../dto/delivery-carrier.dto';
 
 @Injectable()
@@ -38,8 +38,8 @@ export class DeliveryCarrierService extends BaseSevice {
           this.dataCarrierActive = res.value;
           this.dataCarrierActive$.next(this.dataCarrierActive);
 
-          // let deliveriesTypes = _groupBy(res.value, 'DeliveryType');
-          // this.apiDeliveries = Object.keys(deliveriesTypes);
+          let deliveriesTypes = _groupBy(res.value, 'DeliveryType');
+          this.apiDeliveries = Object.keys(deliveriesTypes);
       });
     }
   }
