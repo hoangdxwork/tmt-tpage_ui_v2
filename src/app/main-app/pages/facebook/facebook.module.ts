@@ -9,9 +9,11 @@ import { AddPageComponent } from './components/add-page/add-page.component';
 import { MainSharedModule } from '../../shared/shared.module';
 import { FacebookGraphService } from '../../services/facebook-graph.service';
 import { PipeModule } from '../../shared/pipe/pipe.module';
+import { FacebookService } from '../../services/facebook.service';
 
 const SERVICES = [
-  FacebookGraphService
+  FacebookGraphService,
+  FacebookService
 ]
 
 @NgModule({
