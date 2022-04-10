@@ -1,6 +1,9 @@
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { FacebookUser } from './../../../../lib/dto/facebook.dto';
+import { AfterViewInit, Component, OnInit, ViewContainerRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Message } from 'src/app/lib/consts/message.const';
+import { FacebookAuth, FacebookAuthResponse } from 'src/app/lib/dto/facebook.dto';
+import { FacebookService } from 'src/app/lib/services/facebook.service';
 import { PagedList2 } from 'src/app/main-app/dto/pagedlist2.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { UserPageDTO } from 'src/app/main-app/dto/team/user-page.dto';
@@ -18,7 +21,7 @@ export interface PageNotConnectDTO { // /rest/v1.0/product/getinventory
   templateUrl: './facebook.component.html',
   styleUrls: ['./facebook.component.scss']
 })
-export class FacebookComponent implements OnInit {
+export class FacebookComponent implements OnInit, AfterViewInit {
 
   data: CRMTeamDTO[] = [];
   dataSearch?: CRMTeamDTO[];
@@ -28,6 +31,8 @@ export class FacebookComponent implements OnInit {
   lstPageNotConnect: PageNotConnectDTO = {};
 
   inputValue?: string;
+  userFBLogin?: FacebookUser;
+  userFBAuth?: FacebookAuth;
 
   listsFieldListAll: any = {
     id: 1,
@@ -69,23 +74,36 @@ export class FacebookComponent implements OnInit {
   ]
 
   fieldListSetting: any = {};
+  iconCollapse: TDSSafeAny = {"0": true};
 
-  addPage:TDSSafeAny = [
-    {
-      'id': '5a15b13c2340978ec3d2c0ea',
-      'fullname': 'Nguyễn Thành Công',
-      'page': 'Mèo nhạt nhẽo',
-      'name': 'Mèo nhạt nhẽo',
-    }
-  ]
+  isLoading: boolean = true;
 
   constructor(private modal: TDSModalService,
       private modalService: TDSModalService,
       private crmTeamService: CRMTeamService,
       private message: TDSMessageService,
       private facebookGraphService: FacebookGraphService,
-      private viewContainerRef: ViewContainerRef
+      private viewContainerRef: ViewContainerRef,
+      private facebookService: FacebookService
   ) { }
+
+  ngAfterViewInit(): void {
+    this.facebookService.init().subscribe(sdk => {
+      this.facebookService.getLoginStatus().subscribe((res: FacebookAuthResponse) => {
+        if (res.status === "connected") {
+          this.userFBAuth = res.authResponse;
+          this.getMe();
+        }
+        this.isLoading = false;
+      }, (error) => {
+        this.userFBLogin = undefined;
+        this.isLoading = false;
+      });
+    }, error => {
+      this.userFBLogin = undefined;
+      this.isLoading = false;
+    });
+  }
 
   ngOnInit(): void {
     this.loadListTeam();
@@ -94,7 +112,85 @@ export class FacebookComponent implements OnInit {
     });
   }
 
+  facebookSignIn(): void {
+    this.isLoading = true;
+    this.facebookService.login().subscribe((res: FacebookAuth) => {
+      this.userFBAuth = res;
+      this.getMe();
+      this.sortByFbLogin(this.userFBLogin?.id);
+      this.isLoading = false;
+      console.log(res);
+    }, (error) => {
+        console.log(error);
+        this.isLoading = false;
+      }
+    );
+  }
+
+  facebookSignOut() {
+    this.isLoading = true;
+    this.facebookService.logout().subscribe(() => {
+      this.userFBLogin = undefined;
+      this.isLoading = false;
+    },
+      (error) => {
+      this.isLoading = false;
+        console.log(error);
+      }
+    );
+  }
+
+  onFacebookConnected() {
+    let channel = this.data.find(x => x.Facebook_UserId == this.userFBLogin?.id);
+
+    if(channel || !this.userFBLogin) {
+      this.message.error(Message.ConnectionChannel.ChannelExist);
+    }
+
+    this.insertUserChannel(this.userFBAuth?.accessToken);
+  }
+
+  insertUserChannel(accessToken: string | undefined) {
+    this.isLoading = true;
+
+    let model = {
+      fb_exchange_token: accessToken,
+      grant_type: 'fb_exchange_token',
+    }
+
+    this.crmTeamService.getLongLiveToken(model).subscribe(res => {
+      let team  = {
+        Facebook_ASUserId: this.userFBLogin?.id,
+        Facebook_TypeId: "User",
+        Facebook_UserAvatar: this.userFBLogin?.picture.data.url,
+        Facebook_UserName: this.userFBLogin?.name,
+        Facebook_UserToken: res,
+        Facebook_UserId: this.userFBLogin?.id,
+        IsConverted: true,
+        IsDefault: true,
+        Name: this.userFBLogin?.name,
+        Type: "Facebook"
+      };
+
+      this.crmTeamService.insert(team).subscribe(res => {
+        this.message.success(Message.InsertSuccess);
+        this.loadListTeam();
+      }, error => this.isLoading = false);
+    }, error => this.isLoading = false);
+  }
+
+  getMe() {
+    this.facebookService.getMe().subscribe((res: FacebookUser) => {
+      this.userFBLogin = res;
+
+      if(this.data && this.data.length > 0) {
+        this.sortByFbLogin(this.userFBLogin?.id);
+      }
+    }, error => this.userFBLogin = undefined);
+  }
+
   loadListTeam() {
+    this.isLoading = true;
     this.crmTeamService.getAllChannels().subscribe((res: TDSSafeAny) => {
       this.data = res;
 
@@ -102,8 +198,25 @@ export class FacebookComponent implements OnInit {
         this.fieldListSetting[a.Id] = this.listSetting[0];
         this.fieldListSetting[b.Id] = this.listSetting[0];
 
-        if(a.Active) return -1; return 1})
-    });
+        if(a.Active) return -1; return 1;
+      });
+
+      if(this.userFBLogin) {
+        this.sortByFbLogin(this.userFBLogin.id);
+      }
+      this.isLoading = false;
+    }, error =>  this.isLoading = false);
+  }
+
+  sortByFbLogin(userId: string | undefined | null) {
+    let item = this.data.find(x => (x.Facebook_UserId && x.Facebook_UserId == userId));
+
+    console.log(item);
+
+    if(item) {
+      this.data.splice(this.data.indexOf(item), 1);
+      this.data.unshift(item);
+    }
   }
 
   onClickFieldListSetting(value: TDSSafeAny, id: number) {
@@ -209,5 +322,17 @@ export class FacebookComponent implements OnInit {
     }, error => {
       this.message.error(Message.ConnectionChannel.TokenExpires);
     });
+  }
+
+  onChangeCollapse(index: number, event: TDSSafeAny) {
+    console.log(index);
+    console.log(event);
+
+    this.iconCollapse[index] = event;
+  }
+
+  getIsIconCollapse(index: number) {
+    if(this.iconCollapse[index] && this.iconCollapse[index] === true) return true;
+    return false;
   }
 }

@@ -1,10 +1,37 @@
-<div class="w-full h-full bg-neutral-3-200">
+<tds-spin tip="Loading..." [spinning]="isLoading">
+  <div class="w-full h-full bg-neutral-3-200">
     <div class="bg-white pt-4">
-        <tds-page-header  title="Kênh kết nối" >
+        <tds-page-header title="Kênh kết nối">
             <tds-page-header-extra>
-                <button class="bg-secondary-1 mr-2 flex rounded-md items-center px-2.5 py-1.5 cursor-pointer w-[180px]">
+                <button *ngIf="!userFBLogin || !userFBLogin.id" class="bg-secondary-1 mr-2 flex rounded-md items-center px-2.5 py-1.5 cursor-pointer w-[180px]">
                     <div class="pr-2"><img src="/assets/images/conversation/facebook.svg"></div>
-                    <div class="text-white text-body-2 font-semibold">Kết nối với facebook</div>
+                    <div class="text-white text-body-2 font-semibold" (click)="facebookSignIn()">Kết nối với facebook</div>
+                </button>
+
+                <button *ngIf="userFBLogin && userFBLogin.id" class="bg-secondary-1 mr-2 gap-x-1 flex rounded-md items-center px-2.5 py-1.5 cursor-pointer w-[210px]">
+                    <div class="pr-2"><img src="/assets/images/conversation/facebook.svg"></div>
+                    <div class="w-full flex items-center justify-center p-0"
+                      tds-dropdown [tdsDropdownMenu]="dropdownFacebook" trigger="click">
+                        <tds-avatar class="w-[20px] h-[20px]" size="sm" [tdsSrc]="userFBLogin?.picture?.data.url" [shape]="'circle'">
+                        </tds-avatar>
+                        <div class="px-2 flex-auto text-white text-body-2 font-regular truncate">
+                            {{userFBLogin?.name}}
+                        </div>
+                        <div>
+                            <i class="text-base text-white leading-4 tdsi-arrow-down-fill"></i>
+                        </div>
+                    </div>
+
+                    <tds-dropdown-menu #dropdownFacebook="tdsDropdownMenu">
+                      <div class="w-56">
+                          <div tds-dropdown-item (click)="onFacebookConnected()">
+                              Kết nối
+                          </div>
+                          <div tds-dropdown-item>
+                              <a class="text-error-400" (click)="facebookSignOut()">Đăng xuất</a>
+                          </div>
+                      </div>
+                    </tds-dropdown-menu>
                 </button>
 
                 <button tds-button color="primary" class="mr-2">
@@ -47,7 +74,7 @@
         <ng-template ngFor let-team [ngForOf]="dataSearch || data" let-i="index">
           <tds-collapse [expandIconPosition]="'right'" class="bg-white rounded-xl w-full">
             <tds-collapse-panel [header]="header" [active]="!i ? true : false" [disabled]=false
-            [expandedIcon]="icon" bordered="false">
+            [expandedIcon]="icon" bordered="false" (activeChange)="onChangeCollapse(i, $event)">
 
             <ng-template #header>
               <div class="flex gap-4 items-center">
@@ -72,7 +99,14 @@
                             <div class="text-white text-caption-2 font-sans font-semibold">Trang đang ẩn</div>
                           </div>
                           <div class="flex items-center pl-2">
-                              <div class="bg-white p-0.5 rounded-full">
+
+                              <div *ngFor="let child of team.Childs; let iChild = index" class="bg-white p-0.5 rounded-full"
+                                [ngClass]="iChild ? '-ml-3 relative z-[{{iChild+1}}]' : ''">
+                                <tpage-avatar-facebook [fbid]="child?.Facebook_PageId" [token]="child?.Facebook_PageToken" [size]="'sm'">
+                                </tpage-avatar-facebook>
+                              </div>
+
+                              <!-- <div class="bg-white p-0.5 rounded-full">
                                   <tds-avatar size="sm" tdsSrc="https://randomuser.me/api/portraits/women/68.jpg">
                                   </tds-avatar>
                               </div>
@@ -86,7 +120,8 @@
                               <div class="-ml-3 bg-white relative z-[4] p-0.5 rounded-full">
                                   <tds-avatar size="sm" class="bg-primary-3  text-primary-1 text-[10px] font-semibold" text="+5">
                                   </tds-avatar>
-                              </div>
+                              </div> -->
+
                           </div>
                       </div>
                       <div class="text-body-2 font-regular font-sans text-neutral-1-400">Chọn trang bạn muốn kết nối TPage với Page của bạn trên Facebook</div>
@@ -115,7 +150,8 @@
                       </tds-dropdown-menu>
                   </tds-button-group>
                   <div class="border border-neutral-2-200 border-solid rounded-md">
-                      <div class="tdsi-arrow-up-line p-2 text-neutral-1-500"></div>
+                      <div *ngIf="!getIsIconCollapse(i)" class="tdsi-arrow-up-line p-2 text-neutral-1-500"></div>
+                      <div *ngIf="getIsIconCollapse(i)" class="tdsi-arrow-down-line p-2 text-neutral-1-500"></div>
                   </div>
               </div>
             </ng-template>
@@ -214,4 +250,6 @@
         </ng-template>
       </ng-container>
     </div>
-</div>
+  </div>
+</tds-spin>
+

@@ -75,6 +75,14 @@ export class CRMTeamService extends BaseSevice {
 
   }
 
+  getLongLiveToken(data: TDSSafeAny): Observable<TDSSafeAny> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/rest/v1.0/facebook/getlonglivetoken`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
   setCacheTeamId(data: TDSSafeAny) {
     this.caheApi.setItem(this.__keyCacheTeamId, data);
   }
