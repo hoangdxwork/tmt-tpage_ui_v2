@@ -14,8 +14,12 @@ export const environment = {
     googleIntegration:"/social-network/google/integration",
     signInVerifyOtpsms:"/app-user/reset-password/verify-otpsms",
     refreshToken:"/sign-in/refresh-token",
-    userInit:"/rest/v1.0/user/info"    
+    userInit:"/rest/v1.0/user/info"
   },
+  facebook: {
+    appId: '327268081110321',
+    appVersion: 'v6.0',
+  }
 };
 
 /*
