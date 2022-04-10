@@ -1,6 +1,5 @@
 import { filter, takeUntil } from 'rxjs/operators';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier-order.service';
 import { TDSModalService, TDSSafeAny, TDSModalRef, TDSHelperString, TDSMessageService, TDSHelperObject } from 'tmt-tang-ui';
 import { Component, Input, OnInit, ViewContainerRef, OnDestroy } from '@angular/core';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
@@ -10,6 +9,7 @@ import { EditOrderComponent } from '../edit-order/edit-order.component';
 import { UpdateInfoPartnerComponent } from '../update-info-partner/update-info-partner.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { Subject } from 'rxjs';
+import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 
 @Component({
   selector: 'create-bill-fast',
@@ -60,7 +60,7 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
   }
 
   loadCarrier() {
-    this.carrierService.get().subscribe(res => {
+    this.carrierService.get().subscribe((res: any) => {
       this.lstCarriers = res.value;
     });
   }

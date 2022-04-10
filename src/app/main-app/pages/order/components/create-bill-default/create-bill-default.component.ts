@@ -1,12 +1,12 @@
 import { TDSMessageService, TDSModalRef, TDSSafeAny, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
-import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier-order.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { CreateBillDefaultErrorComponent } from '../create-bill-default-error/create-bill-default-error.component';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { UpdateInfoPartnerComponent } from '../update-info-partner/update-info-partner.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
+import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 
 @Component({
   selector: 'app-create-bill-default',
@@ -56,7 +56,7 @@ export class CreateBillDefaultComponent implements OnInit {
   }
 
   loadCarrier() {
-    this.carrierService.get().subscribe(res => {
+    this.carrierService.get().subscribe((res: any) => {
       this.lstCarriers = res.value;
     });
   }

@@ -8,11 +8,10 @@ import { TAuthService } from 'src/app/lib';
 import { UserInitDTO } from 'src/app/lib/dto';
 import { CheckAddressDTO, DataSuggestionDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SaleOnlineFacebookCommentFilterResultDTO, SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
-import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier-order.service';
 import { SaleOnline_FacebookCommentService } from 'src/app/main-app/services/sale-online-facebook-comment.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { TDSModalRef, TDSModalService, TDSSafeAny, TDSMessageService, TACheckboxChange, TDSHelperString } from 'tmt-tang-ui';
-import { ProductService } from 'src/app/main-app/services/product.server';
+import { ProductService } from 'src/app/main-app/services/product.service';
 import { GetInventoryDTO, ValueGetInventoryDTO } from 'src/app/main-app/dto/product/product.dto';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.server';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
@@ -65,6 +64,7 @@ export class EditOrderComponent implements OnInit {
   lstInventory!: GetInventoryDTO;
   lstUser!: Array<ApplicationUserDTO>;
   lstPartnerStatus!: Array<PartnerStatusDTO>;
+  deliveryCarrierService: any;
 
   constructor(private modal: TDSModalService,
     private modalRef: TDSModalRef,
@@ -74,7 +74,6 @@ export class EditOrderComponent implements OnInit {
     private viewContainerRef: ViewContainerRef,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private saleOnline_FacebookCommentService: SaleOnline_FacebookCommentService,
-    private deliveryCarrierService: DeliveryCarrierService,
     private productService: ProductService,
     private applicationUserService: ApplicationUserService,
     private commonService: CommonService,
@@ -160,7 +159,7 @@ export class EditOrderComponent implements OnInit {
   }
 
   loadDeliveryCarrier() {
-    this.deliveryCarrierService.get().subscribe(res => {
+    this.deliveryCarrierService.get().subscribe((res: any) => {
       this.lstDeliveryCarrier = res.value;
     });
   }
