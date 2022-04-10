@@ -3,7 +3,6 @@ import { AfterViewInit, Component, OnInit, ViewContainerRef } from '@angular/cor
 import { Observable } from 'rxjs';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FacebookAuth, FacebookAuthResponse } from 'src/app/lib/dto/facebook.dto';
-import { FacebookService } from 'src/app/lib/services/facebook.service';
 import { PagedList2 } from 'src/app/main-app/dto/pagedlist2.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { UserPageDTO } from 'src/app/main-app/dto/team/user-page.dto';
@@ -11,6 +10,7 @@ import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { TDSHelperObject, TDSModalService, TDSSafeAny, TDSMessageService, TDSHelperString } from 'tmt-tang-ui';
 import { AddPageComponent } from '../components/add-page/add-page.component';
+import { FacebookService } from 'src/app/main-app/services/facebook.service';
 
 export interface PageNotConnectDTO { // /rest/v1.0/product/getinventory
   [key: string]: Array<UserPageDTO>

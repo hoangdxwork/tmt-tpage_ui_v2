@@ -5,7 +5,7 @@ import { Observable, ReplaySubject } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
-import { Facebook, FacebookApiMethod, FacebookApiParams, FacebookAuth, FacebookAuthResponse, FacebookInitParams, FacebookLoginOptions, FacebookUser } from '../dto/facebook.dto';
+import { Facebook, FacebookApiMethod, FacebookApiParams, FacebookAuth, FacebookAuthResponse, FacebookInitParams, FacebookLoginOptions, FacebookUser } from '../../lib/dto/facebook.dto';
 
 export const FACEBOOK_DEFAULTS: FacebookInitParams = {
   xfbml: false,
