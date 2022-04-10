@@ -9,7 +9,7 @@ import { ODataProductDTOV2 } from '../../dto/product/odata-product.dto';
 import { BaseSevice } from '../base.service';
 
 export interface FilterObjDTO  {
-    searchText: '',
+    searchText: string,
 }
 
 @Injectable()

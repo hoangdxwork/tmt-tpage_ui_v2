@@ -9,7 +9,7 @@ import { CompanyCurrentDTO } from '../../dto/configs/company-current.dto';
 import { CommonService } from '../../services/common.service';
 import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { fromEvent, Observable, Subject, Subscription } from 'rxjs';
-import * as _ from "lodash";
+// import * as _ from "lodash";
 import { ModalAddProductComponent } from '../../pages/bill/components/modal-add-product/modal-add-product.component';
 import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
 import { SharedService } from '../../services/shared.service';
@@ -174,17 +174,17 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
           //   data = _.orderBy(data, ["Id"], ["desc"]);
           // break;
 
-          case 'Name':
-            data = _.orderBy(data, ["Name"], ["desc"]);
-          break;
+          // case 'Name':
+          //   data = _.orderBy(data, ["Name"], ["desc"]);
+          // break;
 
-          case 'DefaultCode':
-            data = _.orderBy(data, ["DefaultCode"], ["desc"]);
-          break;
+          // case 'DefaultCode':
+          //   data = _.orderBy(data, ["DefaultCode"], ["desc"]);
+          // break;
 
-          case 'PosSalesCount':
-            data = _.orderBy(data, ["PosSalesCount"], "desc");
-          break;
+          // case 'PosSalesCount':
+          //   data = _.orderBy(data, ["PosSalesCount"], "desc");
+          // break;
 
           default: break;
         }
