@@ -75,166 +75,169 @@
             <tds-collapse-panel [header]="header" [active]="!i ? true : false" [disabled]=false
             [expandedIcon]="icon" bordered="false" (activeChange)="onChangeCollapse(i, $event)">
 
-            <ng-template #header>
-              <div class="flex gap-4 items-center">
-                <tds-badge class="mr-3" [count]="iconTemplate1">
-                    <tpage-avatar-facebook [size]="'xl'" [fbid]="team?.Facebook_ASUserId" [token]="team?.Facebook_UserToken">
-                    </tpage-avatar-facebook>
-                </tds-badge>
-                <ng-template #iconTemplate1>
-                    <div class="absolute top-5 right-2  transform translate-x-1.5 translate-y-full rounded-full  bg-white flex items-center justify-center">
-                        <span class="p-0.5"><img src="/assets/images/conversation/facebook-circle.svg"></span>
-                    </div>
-                </ng-template>
-                <div class="flex flex-col gap-1">
-                    <div class="flex gap-2 items-center">
-                        <div class="text-title-1 font-sans font-semibold"> {{team?.Name}} </div>
-                        <div class="flex gap-1 text-white py-0.5 px-2.5 bg-success-400 rounded-full items-center" *ngIf="team.Active">
-                            <div class="tdsi-eye-open-fill"></div>
-                            <div class="text-white text-caption-2 font-sans font-semibold">Trang đang hiện</div>
-                        </div>
-                        <div class="flex gap-1 text-white py-0.5 px-2.5 bg-neutral-1-300 rounded-full items-center" *ngIf="!team.Active">
-                          <div class="tdsi-eye-close-fill"></div>
-                          <div class="text-white text-caption-2 font-sans font-semibold">Trang đang ẩn</div>
-                        </div>
-                        <div class="flex items-center pl-2">
-
-                            <!-- [ngClass]="iChild ? '-ml-3 relative z-[{{iChild+1}}]' : ''"> -->
-                            <div *ngFor="let child of team.Childs; let iChild = index" class="bg-white p-0.5 rounded-full"
-                              [ngClass]="iChild ? '-ml-3 relative' : ''">
-                              <tpage-avatar-facebook [fbid]="child?.Facebook_PageId" [token]="child?.Facebook_PageToken" [size]="'sm'">
-                              </tpage-avatar-facebook>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="text-body-2 font-regular font-sans text-neutral-1-400">Chọn trang bạn muốn kết nối TPage với Page của bạn trên Facebook</div>
-                </div>
-            </div>
-            </ng-template>
-
-            <ng-template #icon>
-              <div class="flex gap-4">
-                  <tds-button-group>
-                      <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" (click)="onClickDropdown($event)" placement ="bottomRight">
-                          <span class="text-neutral-1-900 flex  items-center justify-center text-body-2 font-semibold">
-                              {{ fieldListSetting[team.Id].name }} <i class="tdsi-arrow-down-fill text-base leading-none ml-1.5 text-neutral-1-900"></i>
-                          </span>
-                      </button>
-                      <tds-dropdown-menu #menu="tdsDropdownMenu">
-                          <div class="w-full">
-                              <ng-template ngFor let-item [ngForOf]="listSetting">
-                                  <div tds-dropdown-item (click)="onClickFieldListSetting(item, team.Id)">
-                                      <a class="text-primary-1 flex items-center">
-                                          <div class="pl-2 text-neutral-1-900">{{ item.name }}</div>
-                                      </a>
-                                  </div>
-                              </ng-template>
+              <!-- Header -->
+              <ng-template #header>
+                <div class="flex gap-4 items-center">
+                  <tds-badge class="mr-3" [count]="iconTemplate1">
+                      <tpage-avatar-facebook [size]="'xl'" [fbid]="team?.Facebook_ASUserId" [token]="team?.Facebook_UserToken">
+                      </tpage-avatar-facebook>
+                  </tds-badge>
+                  <ng-template #iconTemplate1>
+                      <div class="absolute top-5 right-2  transform translate-x-1.5 translate-y-full rounded-full  bg-white flex items-center justify-center">
+                          <span class="p-0.5"><img src="/assets/images/conversation/facebook-circle.svg"></span>
+                      </div>
+                  </ng-template>
+                  <div class="flex flex-col gap-1">
+                      <div class="flex gap-2 items-center">
+                          <div class="text-title-1 font-sans font-semibold"> {{team?.Name}} </div>
+                          <div class="flex gap-1 text-white py-0.5 px-2.5 bg-success-400 rounded-full items-center" *ngIf="team.Active">
+                              <div class="tdsi-eye-open-fill"></div>
+                              <div class="text-white text-caption-2 font-sans font-semibold">Trang đang hiện</div>
                           </div>
-                      </tds-dropdown-menu>
-                  </tds-button-group>
-                  <div class="border border-neutral-2-200 border-solid rounded-md">
-                      <div *ngIf="!getIsIconCollapse(i)" class="tdsi-arrow-up-line p-2 text-neutral-1-500"></div>
-                      <div *ngIf="getIsIconCollapse(i)" class="tdsi-arrow-down-line p-2 text-neutral-1-500"></div>
+                          <div class="flex gap-1 text-white py-0.5 px-2.5 bg-neutral-1-300 rounded-full items-center" *ngIf="!team.Active">
+                            <div class="tdsi-eye-close-fill"></div>
+                            <div class="text-white text-caption-2 font-sans font-semibold">Trang đang ẩn</div>
+                          </div>
+                          <div class="flex items-center pl-2">
+                              <div *ngFor="let child of team.Childs; let iChild = index" class="bg-white p-0.5 rounded-full"
+                                [ngClass]="iChild ? '-ml-3 relative' : ''">
+                                <tpage-avatar-facebook [fbid]="child?.Facebook_PageId" [token]="child?.Facebook_PageToken" [size]="'sm'">
+                                </tpage-avatar-facebook>
+                              </div>
+
+                          </div>
+                      </div>
+                      <div class="text-body-2 font-regular font-sans text-neutral-1-400">Chọn trang bạn muốn kết nối TPage với Page của bạn trên Facebook</div>
                   </div>
               </div>
-            </ng-template>
+              </ng-template>
 
-            <div *ngIf="(team.Childs && team.Childs.length > 0) || (lstPageNotConnect && lstPageNotConnect[team.Facebook_UserId])" class="flex flex-col w-full p-4 gap-4 rounded-md border border-neutral-2-200 border-solid">
-              <div *ngFor="let child of team.Childs">
-                  <div class="flex justify-between items-center pb-4 border-b border-neutral-2-200 border-solid">
-                    <div class="flex gap-4 items-center">
-                        <tds-badge class="mr-3" [count]="iconTemplate2">
-                            <tpage-avatar-facebook [fbid]="child?.Facebook_PageId" [token]="child?.Facebook_PageToken" [size]="'lg'">
-                            </tpage-avatar-facebook>
-                        </tds-badge>
-                        <ng-template #iconTemplate2>
-                            <div class="absolute top-4 right-0  transform translate-x-1.5 translate-y-full rounded-full  bg-white flex items-center justify-center">
-                                <span><img src="/assets/images/conversation/union.svg"></span>
-                            </div>
-                        </ng-template>
-                        <div>
-                            <div class="text-body-2 text-neutral-1-900 font-sans font-semibold">{{ child.Name }}</div>
-                            <div class="flex gap-2 items-center">
-                                <div class="tdsi-success-fill text-primary-1 text-xl"></div>
-                                <div class="text-body-2 text-neutral-1-900 font-regular">Đã kết nối</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex gap-3 items-center">
-                        <button tds-button color="secondary" class="!rounded-full mr-2" (click)="unConnected(child.Id, team.Facebook_UserId)">
-                            <span class="flex items-center">
-                              <i class="tdsi-break-link-fill text-lg leading-none mr-2 text-neutral-1-500"></i>Hủy kết nối
+              <!-- Header Icon -->
+              <ng-template #icon>
+                <div class="flex gap-4">
+                    <tds-button-group>
+                        <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" (click)="onClickDropdown($event)" placement ="bottomRight">
+                            <span class="text-neutral-1-900 flex  items-center justify-center text-body-2 font-semibold">
+                                {{ fieldListSetting[team.Id].name }} <i class="tdsi-arrow-down-fill text-base leading-none ml-1.5 text-neutral-1-900"></i>
                             </span>
                         </button>
+                        <tds-dropdown-menu #menu="tdsDropdownMenu">
+                            <div class="w-full">
+                                <ng-template ngFor let-item [ngForOf]="listSetting">
+                                    <div tds-dropdown-item (click)="onClickFieldListSetting(item, team.Id)">
+                                        <a class="text-primary-1 flex items-center">
+                                            <div class="pl-2 text-neutral-1-900">{{ item.name }}</div>
+                                        </a>
+                                    </div>
+                                </ng-template>
+                            </div>
+                        </tds-dropdown-menu>
+                    </tds-button-group>
+                    <div class="border border-neutral-2-200 border-solid rounded-md">
+                        <div *ngIf="!getIsIconCollapse(i)" class="tdsi-arrow-up-line p-2 text-neutral-1-500"></div>
+                        <div *ngIf="getIsIconCollapse(i)" class="tdsi-arrow-down-line p-2 text-neutral-1-500"></div>
+                    </div>
+                </div>
+              </ng-template>
 
-                        <div class="flex gap-2">
-                            <tds-switch [(ngModel)]="child.Active" size="md" (change)="hideChannel(child.Id)"></tds-switch>
-                            <div lass="text-body-2 font-regular text-neutral-1-900">Ẩn/ Hiện Page</div>
-                        </div>
+              <div *ngIf="(team.Childs && team.Childs.length > 0) || (lstPageNotConnect?.[team.Facebook_UserId])"
+                class="flex flex-col w-full p-4 gap-4 rounded-md border border-neutral-2-200 border-solid">
+                <!-- Page đã kết nối -->
+                <div class="flex flex-col gap-4" *ngIf="getFieldListSetting(team.Id) !== 4">
+                  <div *ngFor="let child of team.Childs">
+                    <div class="flex justify-between items-center pb-4 border-b border-neutral-2-200 border-solid">
+                      <div class="flex gap-4 items-center">
+                          <tds-badge class="mr-3" [count]="iconTemplate2">
+                              <tpage-avatar-facebook [fbid]="child?.Facebook_PageId" [token]="child?.Facebook_PageToken" [size]="'lg'">
+                              </tpage-avatar-facebook>
+                          </tds-badge>
+                          <ng-template #iconTemplate2>
+                              <div class="absolute top-4 right-0  transform translate-x-1.5 translate-y-full rounded-full  bg-white flex items-center justify-center">
+                                  <span><img src="/assets/images/conversation/union.svg"></span>
+                              </div>
+                          </ng-template>
+                          <div>
+                              <div class="text-body-2 text-neutral-1-900 font-sans font-semibold">{{ child.Name }}</div>
+                              <div class="flex gap-2 items-center">
+                                  <div class="tdsi-success-fill text-primary-1 text-xl"></div>
+                                  <div class="text-body-2 text-neutral-1-900 font-regular">Đã kết nối</div>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="flex gap-3 items-center">
+                          <button tds-button color="secondary" class="!rounded-full mr-2" (click)="unConnected(child.Id, team.Facebook_UserId)">
+                              <span class="flex items-center">
+                                <i class="tdsi-break-link-fill text-lg leading-none mr-2 text-neutral-1-500"></i>Hủy kết nối
+                              </span>
+                          </button>
+
+                          <div class="flex gap-2">
+                              <tds-switch [(ngModel)]="child.Active" size="md" (change)="hideChannel(child.Id)"></tds-switch>
+                              <div lass="text-body-2 font-regular text-neutral-1-900">Ẩn/ Hiện Page</div>
+                          </div>
+                      </div>
                     </div>
                   </div>
-              </div>
-
-              <div *ngIf="fieldListSetting[team.Id].id !== 2 && fieldListSetting[team.Id].id !== 3" class="flex flex-col gap-4">
-                <div *ngIf="!lstPageNotConnect || !lstPageNotConnect[team.Facebook_UserId]; else templatePageNotConnect">
-                    <span class="italic cursor-pointer text-success-400 text-xs" (click)="loadPageNotConnect(team)">Xem thêm kênh chưa kết nối</span>
                 </div>
 
-                <ng-template #templatePageNotConnect>
-                  <div *ngFor="let pageNot of lstPageNotConnect[team.Facebook_UserId] as lstPageNotConnects; let index = index"
-                  class="flex justify-between items-center pb-4" [ngClass]="index == lstPageNotConnects.length - 1 ? '' : 'border-b border-neutral-2-200 border-solid'">
-                    <div class="flex gap-4 items-center">
-                        <tds-badge class="mr-3" [count]="iconTemplate3">
-                            <tds-avatar size="lg" class="bg-accent-4 text-white" text="AD" tdsSrc="{{ pageNot?.picture?.data?.url }}">
-                            </tds-avatar>
-                        </tds-badge>
-                        <ng-template #iconTemplate3>
-                            <div class="absolute top-4 right-0 transform translate-x-1.5 translate-y-full rounded-full bg-white flex items-center justify-center">
-                                <span><img src="/assets/images/conversation/union.svg"></span>
-                            </div>
-                        </ng-template>
-                        <div>
-                            <div class="text-body-2 text-neutral-1-900 font-sans font-semibold"> {{ pageNot.name }} </div>
-                            <div class="flex gap-2 items-center">
-                                <div class="tdsi-link-fill text-neutral-1-500 text-xl"></div>
-                                <div class="text-neutral-1-500 text-body-2 font-regular">Chưa kết nối</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex gap-3 items-center">
-                        <button tds-button color="primary" (click)="showModalAddPage(pageNot, team)">Kết nối</button>
-                    </div>
+                <!-- Page chưa kết nối -->
+                <div *ngIf="getFieldListSetting(team.Id) !== 2 && getFieldListSetting(team.Id) !== 3" class="flex flex-col gap-4">
+                  <div *ngIf="!lstPageNotConnect || !lstPageNotConnect[team.Facebook_UserId]; else templatePageNotConnect">
+                      <span class="italic cursor-pointer text-success-400 text-xs" (click)="loadPageNotConnect(team)">Xem thêm kênh chưa kết nối</span>
                   </div>
-                </ng-template>
+
+                  <ng-template #templatePageNotConnect>
+                    <div *ngFor="let pageNot of lstPageNotConnect[team.Facebook_UserId] as lstPageNotConnects; let index = index"
+                    class="flex justify-between items-center pb-4" [ngClass]="index == lstPageNotConnects.length - 1 ? '' : 'border-b border-neutral-2-200 border-solid'">
+                      <div class="flex gap-4 items-center">
+                          <tds-badge class="mr-3" [count]="iconTemplate3">
+                              <tds-avatar size="lg" class="bg-accent-4 text-white" text="AD" tdsSrc="{{ pageNot?.picture?.data?.url }}">
+                              </tds-avatar>
+                          </tds-badge>
+                          <ng-template #iconTemplate3>
+                              <div class="absolute top-4 right-0 transform translate-x-1.5 translate-y-full rounded-full bg-white flex items-center justify-center">
+                                  <span><img src="/assets/images/conversation/union.svg"></span>
+                              </div>
+                          </ng-template>
+                          <div>
+                              <div class="text-body-2 text-neutral-1-900 font-sans font-semibold"> {{ pageNot.name }} </div>
+                              <div class="flex gap-2 items-center">
+                                  <div class="tdsi-link-fill text-neutral-1-500 text-xl"></div>
+                                  <div class="text-neutral-1-500 text-body-2 font-regular">Chưa kết nối</div>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="flex gap-3 items-center">
+                          <button tds-button color="primary" (click)="showModalAddPage(pageNot, team)">Kết nối</button>
+                      </div>
+                    </div>
+                  </ng-template>
+                </div>
               </div>
 
-            </div>
+              <!-- Chưa có Page nào được kết nối -->
+              <div *ngIf="(!team.Childs || team.Childs.length < 1) && (!lstPageNotConnect?.[team.Facebook_UserId])" class="flex justify-center w-full">
+                <div class="w-64 ">
+                    <div class="px-2">
+                        <img src="/assets/images/conversation/img-connect-1.svg">
+                    </div>
+                    <div class="pt-4 text-header-1 font-sans font-semibold">Bạn chưa sử dụng FanPage!</div>
+                    <div class="text-body-2 text-center pt-2 text-neutral-1-300">Hãy tạo một FanPage trên Facebook và bắt đầu quản lý trang của bạn nhé.</div>
+                    <div class="flex justify-center pt-6">
+                        <button tds-button color="success">
+                            <span class="flex items-center" (click)="loadPageNotConnect(team)">
+                              <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>Hiển thị FanPage
+                            </span>
+                        </button>
+                    </div>
 
-            <div *ngIf="(!team.Childs || team.Childs.length < 1) && (!lstPageNotConnect || !lstPageNotConnect[team.Facebook_UserId])" class="flex justify-center w-full">
-              <div class="w-64 ">
-                  <div class="px-2">
-                      <img src="/assets/images/conversation/img-connect-1.svg">
-                  </div>
-                  <div class="pt-4 text-header-1 font-sans font-semibold">Bạn chưa sử dụng FanPage!</div>
-                  <div class="text-body-2 text-center pt-2 text-neutral-1-300">Hãy tạo một FanPage trên Facebook và bắt đầu quản lý trang của bạn nhé.</div>
-                  <div class="flex justify-center pt-6">
-                      <button tds-button color="success">
-                          <span class="flex items-center" (click)="loadPageNotConnect(team)">
-                            <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>Hiển thị FanPage
-                          </span>
-                      </button>
-                  </div>
-
+                </div>
               </div>
-            </div>
 
-          </tds-collapse-panel>
+            </tds-collapse-panel>
           </tds-collapse>
         </ng-template>
       </ng-container>
     </div>
   </div>
 </tds-spin>
-
-
