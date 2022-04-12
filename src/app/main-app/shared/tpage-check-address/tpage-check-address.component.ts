@@ -74,14 +74,14 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges {
     });
   }
 
-  loadDistrict(cityCode: number | undefined) {
+  loadDistrict(cityCode: string | undefined) {
     if(!cityCode) return;
     this.addressService.getDistricts(cityCode).subscribe((res: TDSSafeAny) => {
       this.lstDistrict = res;
     });
   }
 
-  loadWard(districtCode: number | undefined) {
+  loadWard(districtCode: string | undefined) {
     if(!districtCode) return;
     this.addressService.getWards(districtCode).subscribe((res: TDSSafeAny) => {
       this.lstWard = res;
@@ -91,6 +91,7 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges {
   onSelectCity(event: CityDTO) {
     this.formAddress.controls["district"].setValue(null);
     this.formAddress.controls["ward"].setValue(null);
+
     this.loadDistrict(event.Code);
     this.prepareAddress();
   }

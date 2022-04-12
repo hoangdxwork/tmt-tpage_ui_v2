@@ -20,6 +20,8 @@ import { TpageAddUOMComponent } from './tpage-add-uom/tpage-add-uom.component';
 import { ListProductTmpComponent } from './list-product-tmp/list-product-tmp.component';
 import { SharedService } from '../services/shared.service';
 import { ProductIndexDBService } from '../services/product-indexDB.service';
+import { SuggestAddressComponent } from './suggest-address/suggest-address.component';
+import { SuggestAddressService } from '../services/suggest-address.service';
 import { ImageFacade } from '../services/facades/image.facade';
 
 const cmp =[
@@ -29,6 +31,7 @@ const cmp =[
   TpageMenuLayoutComponent,
   SendMessageComponent,
   TpageCheckAddressComponent,
+  SuggestAddressComponent,
   TpageMenuItemComponent,
   TpageAddProductComponent,
   TpageAddCategoryComponent,
@@ -39,9 +42,9 @@ const cmp =[
 
 const SERVICES = [
   ProductIndexDBService,
-  // GeneralConfigsFacade,
-  SharedService,
-  ImageFacade
+  SuggestAddressService,
+    SharedService,
+    ImageFacade
 ]
 
 @NgModule({
