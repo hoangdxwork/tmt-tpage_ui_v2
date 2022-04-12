@@ -231,10 +231,10 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
         size: "xl",
         viewContainerRef: this.viewContainerRef,
     });
-    modal.afterClose.subscribe(() => {})
+
     modal.afterClose.subscribe((res: ProductTemplateV2DTO) => {
       if(TDSHelperObject.hasValue(res)) {
-       //   this.pusToIndexDb();
+          this.pusToIndexDb();
       }
     });
   }

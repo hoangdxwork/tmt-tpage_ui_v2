@@ -1,4 +1,4 @@
-import { TDSHelperString } from 'tmt-tang-ui';
+import { TDSHelperArray, TDSHelperString, TDSMessageService } from 'tmt-tang-ui';
 import { Component, Input, OnInit, EventEmitter, Output, SimpleChanges, OnChanges } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
@@ -24,6 +24,9 @@ export class SuggestAddressComponent implements  OnChanges {
   lstWards!: Array<SuggestWardsDTO>;
   innerText: string = '';
 
+  isExpanded: boolean = false;
+  tempAddresses: any = [];
+
   private citySubject = new BehaviorSubject<SuggestCitiesDTO[]>([]);
   private districtSubject = new BehaviorSubject<SuggestDistrictsDTO[]>([]);
   private wardSubject = new BehaviorSubject<SuggestWardsDTO[]>([]);
@@ -31,6 +34,7 @@ export class SuggestAddressComponent implements  OnChanges {
   @Output() onLoadSuggestion: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private fb: FormBuilder,
+      private message: TDSMessageService,
       private suggestService: SuggestAddressService) {
         this.createForm();
         this.loadCity();
@@ -125,6 +129,31 @@ export class SuggestAddressComponent implements  OnChanges {
       this._form.controls['Ward'].setValue(null);
       this.innerText = '';
     }
+  }
+
+  expanded() {
+     this.isExpanded = !this.isExpanded;
+  }
+
+  checkAddress(event: string) {
+    if(!TDSHelperString.hasValueString(event)) {
+        this.message.error('Vui lòng nhập dữ liệu trước khi kiểm tra!');
+    }
+
+    event = encodeURIComponent(event);
+    this.suggestService.checkAddress(event).subscribe((res: any) => {
+      if (res.success && TDSHelperArray.isArray(res.data)) {
+          this.tempAddresses = res.data;
+          this.selectAddress(res.data[0], 0);
+      }
+      else {
+        this.message.error('Không tìm thấy kết quả phù hợp!');
+      }
+    })
+  }
+
+  selectAddress(item: any, index: number) {
+
   }
 
   changeWard(event: any) {

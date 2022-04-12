@@ -61,4 +61,13 @@ export class SuggestAddressService extends BaseSevice {
       this.apiService.removeCacheAPI(this._keyCacheWards);
   }
 
+  checkAddress(value: string): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/checkaddress?address=${value}`,
+        method: TApiMethodType.get
+    }
+
+    return this.apiService.getCacheData<TDSSafeAny>(api, null);
+  }
+
 }
