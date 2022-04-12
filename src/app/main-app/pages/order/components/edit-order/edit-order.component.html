@@ -375,24 +375,24 @@
 
       <div class="flex gap-x-2" *ngIf="!isEnableCreateOrder">
           <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
-          <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave(saveType.orderPrint)">
+          <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave(saveType.orderPrint)" [disabled]="!formEditOrder?.valid">
               <span class="tdsi-print-fill"></span>
               Lưu và in
           </button>
-          <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave(saveType.orderSave)">Lưu</button>
+          <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave(saveType.orderSave)" [disabled]="!formEditOrder?.valid">Lưu</button>
       </div>
 
       <div class="flex gap-x-2" *ngIf="isEnableCreateOrder">
           <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
-          <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave(saveType.billPrint)">
+          <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave(saveType.billPrint)" [disabled]="!formEditOrder?.valid">
               <span class="tdsi-print-fill"></span>
               Lưu và in
           </button>
-          <button tds-button class="w-[170px]" type="button" color="info" (click)="onSave(saveType.billPrintShip)">
+          <button tds-button class="w-[170px]" type="button" color="info" (click)="onSave(saveType.billPrintShip)" [disabled]="!formEditOrder?.valid">
               <span class="tdsi-print-fill"></span>
               Lưu và in phiếu ship
           </button>
-          <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave(saveType.billSave)">Lưu</button>
+          <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave(saveType.billSave)" [disabled]="!formEditOrder?.valid">Lưu</button>
     </div>
   </div>
 </form>

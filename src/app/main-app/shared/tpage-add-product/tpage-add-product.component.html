@@ -7,7 +7,7 @@
                     tdsSrc="{{imageUrl}}">
                 </tds-avatar> -->
                 <tds-upload [beforeUpload]="beforeUpload" [showUploadList]="false">
-                  <tds-avatar class="rounded-lg" [shape]="'square'" [size]="84"
+                  <tds-avatar [isAvatar]="false" class="rounded-lg" [shape]="'square'" [size]="84"
                     tdsSrc="{{ formAddProduct.controls['ImageUrl'].value }}">
                   </tds-avatar>
                 </tds-upload>
@@ -15,14 +15,9 @@
             <div class="w-full">
                 <tds-form-field>
                     <tds-label>Tên sản phẩm</tds-label>
-                    <input tdsInput autocomplete="off" placeholder="Nhập tên sản phẩm" formControlName="Name" />
+                    <input tdsInput autocomplete="off" placeholder="Nhập tên sản phẩm" [required]='true' formControlName="Name" />
+                    <tds-error>Vui lòng nhập tên sản phẩm</tds-error>
                 </tds-form-field>
-                <div class="mt-1" *ngIf="formAddProduct.controls['Name'].invalid && (formAddProduct.controls['Name'].dirty ||
-                    formAddProduct.controls['Name'].touched)">
-                      <span class="text-error-500" *ngIf="formAddProduct.controls['Name'].errors?.required">
-                          Nhập tên
-                      </span>
-                </div>
             </div>
         </div>
         <div class="flex items-center">
@@ -147,8 +142,8 @@
     </div>
     <div class="w-full flex justify-end p-4" *tdsModalFooter>
         <button tds-button class="mr-4 w-[100px]" color="secondary" (click)="onCancel(null)">Đóng</button>
-        <button tds-button class="mr-4 w-[120px]" color="info" (click)="onSave('select')">Lưu và chọn</button>
-        <button tds-button type="submit" class="w-[100px]" color="primary" (click)="onSave()">Lưu</button>
+        <button tds-button class="mr-4 w-[120px]" color="info" (click)="onSave('select')" [disabled]="!formAddProduct?.valid">Lưu và chọn</button>
+        <button tds-button type="submit" class="w-[100px]" color="primary" (click)="onSave()" [disabled]="!formAddProduct?.valid">Lưu</button>
     </div>
   </div>
 </form>
