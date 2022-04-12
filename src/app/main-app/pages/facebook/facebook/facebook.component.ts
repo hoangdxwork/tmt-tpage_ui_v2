@@ -325,9 +325,6 @@ export class FacebookComponent implements OnInit, AfterViewInit {
   }
 
   onChangeCollapse(index: number, event: TDSSafeAny) {
-    console.log(index);
-    console.log(event);
-
     this.iconCollapse[index] = event;
   }
 
