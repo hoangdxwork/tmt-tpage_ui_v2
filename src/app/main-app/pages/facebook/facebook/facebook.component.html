@@ -50,9 +50,9 @@
                         <div class="w-full">
                             <ng-template ngFor let-item [ngForOf]="listAll">
                                 <div tds-dropdown-item (click)="onClickFieldListAll(item)">
-                                        <a class="text-primary-1 flex items-center">
-                                             <div class="pl-2 text-neutral-1-900">{{item.name}}</div>
-                                        </a>
+                                    <a class="text-primary-1 flex items-center">
+                                        <div class="pl-2 text-neutral-1-900">{{item.name}}</div>
+                                    </a>
                                 </div>
                             </ng-template>
                         </div>
@@ -140,11 +140,11 @@
                 </div>
               </ng-template>
 
-              <div *ngIf="(team.Childs && team.Childs.length > 0) || (lstPageNotConnect?.[team.Facebook_UserId])"
-                class="flex flex-col w-full p-4 gap-4 rounded-md border border-neutral-2-200 border-solid">
+              <div *ngIf="((lstData[team.Id].data.length > 0) || (lstData[team.Id].notConnected.length > 0)); else notPageConnected"
+                class="flex flex-col w-full gap-4 p-4 rounded-md border border-neutral-2-200 border-solid">
                 <!-- Page đã kết nối -->
-                <div class="flex flex-col gap-4" *ngIf="getFieldListSetting(team.Id) !== 4">
-                  <div *ngFor="let child of team.Childs">
+                <div class="flex flex-col gap-4">
+                  <div *ngFor="let child of lstData[team.Id].data">
                     <div class="flex justify-between items-center pb-4 border-b border-neutral-2-200 border-solid">
                       <div class="flex gap-4 items-center">
                           <tds-badge class="mr-3" [count]="iconTemplate2">
@@ -181,14 +181,14 @@
                 </div>
 
                 <!-- Page chưa kết nối -->
-                <div *ngIf="getFieldListSetting(team.Id) !== 2 && getFieldListSetting(team.Id) !== 3" class="flex flex-col gap-4">
-                  <div *ngIf="!lstPageNotConnect || !lstPageNotConnect[team.Facebook_UserId]; else templatePageNotConnect">
+                <div class="flex flex-col gap-4">
+                  <div *ngIf="lstData[team.Id].notConnected < 1; else templatePageNotConnect">
                       <span class="italic cursor-pointer text-success-400 text-xs" (click)="loadPageNotConnect(team)">Xem thêm kênh chưa kết nối</span>
                   </div>
 
                   <ng-template #templatePageNotConnect>
-                    <div *ngFor="let pageNot of lstPageNotConnect[team.Facebook_UserId] as lstPageNotConnects; let index = index"
-                    class="flex justify-between items-center pb-4" [ngClass]="index == lstPageNotConnects.length - 1 ? '' : 'border-b border-neutral-2-200 border-solid'">
+                    <div *ngFor="let pageNot of lstData[team.Id].notConnected as lstPageNotConnects; let index = index"
+                    class="flex justify-between items-center" [ngClass]="index == lstPageNotConnects.length - 1 ? '' : 'border-b border-neutral-2-200 border-solid pb-4'">
                       <div class="flex gap-4 items-center">
                           <tds-badge class="mr-3" [count]="iconTemplate3">
                               <tds-avatar size="lg" class="bg-accent-4 text-white" text="AD" tdsSrc="{{ pageNot?.picture?.data?.url }}">
@@ -216,8 +216,9 @@
               </div>
 
               <!-- Chưa có Page nào được kết nối -->
-              <div *ngIf="(!team.Childs || team.Childs.length < 1) && (!lstPageNotConnect?.[team.Facebook_UserId])" class="flex justify-center w-full">
-                <div class="w-64 ">
+              <ng-template #notPageConnected>
+                <div class="flex justify-center w-full">
+                  <div class="w-64 ">
                     <div class="px-2">
                         <img src="/assets/images/conversation/img-connect-1.svg">
                     </div>
@@ -230,9 +231,9 @@
                             </span>
                         </button>
                     </div>
-
+                  </div>
                 </div>
-              </div>
+              </ng-template>
 
             </tds-collapse-panel>
           </tds-collapse>
