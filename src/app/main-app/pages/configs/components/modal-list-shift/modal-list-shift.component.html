@@ -1,0 +1,48 @@
+<div>
+    <div>
+        <tds-table #basicTable [listData]="listOfDataShift" [showPagination]="false">
+            <thead>
+                  <tr>
+                        <th>STT</th>
+                        <th>Tên ca làm việc</th>
+                        <th>Thời gian bắt đầu</th>
+                        <th>Thời gian kết thúc</th>
+                        <th>Thao tacs</th>
+                  </tr>
+            </thead>
+            <tbody>
+                <ng-template ngFor let-data [ngForOf]="basicTable.data" >
+                    <tr>
+                        <td>{{ data.id }}</td>
+                        <td>{{ data.name }}</td>
+                        <td>{{ data.timeStart }}</td>
+                        <td>{{ data.timeEnd }}</td>
+                        <td>
+                            <div class="flex gap-x-2" >
+                                <button tds-button-icon color="secondary" size="sm" (click)="showModalUpdateShift(data)">
+                                    <span class="flex items-center">
+                                        <i class="tdsi-edit-fill"></i>
+                                    </span>
+                                </button>
+                                <button tds-button-icon color="secondary" size="sm" (click)="showModalRemove(data.id)">
+                                    <span class="flex items-center">
+                                        <i class="tdsi-trash-fill"></i>
+                                    </span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </tbody>
+        </tds-table>
+    </div>
+    <div class="w-full flex justify-between p-4" *tdsModalFooter>
+        <button tds-button color="primary" (click)="showModalAddShift()">
+            <span class="flex items-center">
+                <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+                <span class="text-body-2 font-semibold">Thêm mới</span>
+            </span>
+        </button>
+        <button tds-button class="mr-2" color="secondary" (click)="cancel()">Hủy bỏ</button>
+    </div>
+</div>
