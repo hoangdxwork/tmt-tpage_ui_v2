@@ -6,7 +6,7 @@ import { TDSModalRef, TDSModalService, TDSHelperObject, TDSMessageService } from
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { formatDate } from '@angular/common';
-import { CheckAddressDTO, CityDTO, DataSuggestionDTO, DistrictDTO, WardDTO } from 'src/app/main-app/dto/address/address.dto';
+import { CheckAddressDTO, CityDTO, DataSuggestionDTO, DistrictDTO, ResultCheckAddressDTO, WardDTO } from 'src/app/main-app/dto/address/address.dto';
 import { PartnerDetailDTO } from 'src/app/main-app/dto/partner/partner-detail.dto';
 import { PartnerCategoryDTO, StatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { SharedService } from 'src/app/main-app/services/shared.service';
@@ -218,22 +218,28 @@ export class ModalEditPartnerComponent implements OnInit {
     });
   }
 
-  onLoadSuggestion(data: any) {
-
-  }
-
-  updateSuggestion(data: any) {
-    let model: DataSuggestionDTO = {
-        Street: data.Street,
-        CityCode: data.CityCode,
-        CityName: data.CityName,
-        DistrictCode: data.DistrictCode,
-        DistrictName: data.DistrictName,
-        WardCode: data.WardCode,
-        WardName: data.WardName,
-    }
-
-    // this.dataSuggestion = model;
+  onLoadSuggestion(item: ResultCheckAddressDTO) {
+      if(item && item.Address) {
+        this._form.controls['Street'].setValue(item.Address);
+      }
+      if(item && item.CityCode) {
+        this._form.controls['City'].patchValue({
+            code: item.CityCode,
+            name: item.CityName
+        });
+      }
+      if(item && item.DistrictCode) {
+        this._form.controls['District'].patchValue({
+              code: item.DistrictCode,
+              name: item.DistrictName
+          });
+      }
+      if(item && item.WardCode) {
+        this._form.controls['Ward'].patchValue({
+              code: item.WardCode,
+              name: item.WardName
+          });
+      }
   }
 
   onChangeAddress(event: CheckAddressDTO) {
