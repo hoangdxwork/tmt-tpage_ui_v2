@@ -20,6 +20,7 @@ import { TpageAddUOMComponent } from './tpage-add-uom/tpage-add-uom.component';
 import { ListProductTmpComponent } from './list-product-tmp/list-product-tmp.component';
 import { SharedService } from '../services/shared.service';
 import { ProductIndexDBService } from '../services/product-indexDB.service';
+import { ImageFacade } from '../services/facades/image.facade';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -38,7 +39,9 @@ const cmp =[
 
 const SERVICES = [
   ProductIndexDBService,
-  SharedService
+  // GeneralConfigsFacade,
+  SharedService,
+  ImageFacade
 ]
 
 @NgModule({

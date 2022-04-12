@@ -1,5 +1,7 @@
 import { Component, ElementRef, Input, OnInit, SimpleChanges } from '@angular/core';
+import { shareReplay } from 'rxjs/operators';
 import { ButtonSize, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
+import { ImageFacade } from '../../services/facades/image.facade';
 
 @Component({
   selector: 'tpage-avatar-facebook',
@@ -20,33 +22,33 @@ export class TpageAvatarFacebookComponent implements OnInit {
   private nativeElement: HTMLElement;
 
   constructor(element: ElementRef,
+    private imageFacade: ImageFacade
   ) {
     this.nativeElement = element.nativeElement;
   }
 
   ngOnInit(): void {
-
-   this.buildUrl(this.fbid,this.token);
-  
-    // this.imageService.getImage(url).subscribe(res => {
-    //   this.nativeElement.style.setProperty('background-image', `url('${res}')`);
-
-    // });
-
+    this.buildUrl(this.fbid, this.token);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["fbid"] && !changes["fbid"].firstChange) {
-      // this.url = `https://graph.facebook.com/${changes["fbid"].currentValue}/picture?type=large&access_token=${this.token}`;
       this.buildUrl(changes["fbid"].currentValue,this.token);
     }
   }
+
   buildUrl(fbid:string,token:string){
     if(TDSHelperString.hasValueString(fbid) && TDSHelperString.hasValueString(token))
     {
-      this.url = `https://graph.facebook.com/${fbid}/picture?type=large&access_token=${token}`;
-    }else{
-      this.url ='';
+      let url = `https://graph.facebook.com/${fbid}/picture?type=large&access_token=${token}`;
+
+      this.imageFacade.getImage(url)
+      .pipe(shareReplay(1))
+      .subscribe(res => {
+        this.url = res;
+      });
+    } else{
+      this.url = '';
     }
   }
 }
