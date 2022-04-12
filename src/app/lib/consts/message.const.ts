@@ -8,6 +8,7 @@ export const Message = {
   ManipulationSuccessful: 'Thao tác thành công.',
   EmptyData: 'Không có dữ liệu',
   SelectOneLine: 'Vui lòng chọn tối thiểu 1 dòng!',
+  ErrorOccurred: 'Đã có lỗi xảy ra',
   Error: {
     SeverError: 'Lỗi máy chủ. Vui lòng thử lại sau.'
   },
@@ -42,7 +43,15 @@ export const Message = {
     EmptyCarrier: "Vui lòng chọn đối tác giao hàng."
   },
   Upload: {
-    Failed: 'Tải tệp không thành công',
+    Failed: 'Tải tệp không thành công.',
     Success: 'Tải tập thành công.'
+  },
+  Partner: {
+    UpdateStatus: 'Cập nhật trạng thái khách hàng thành công.'
+  },
+  ConnectionChannel: {
+    NotFoundUserPage: 'Không tìm thấy kênh kết nối nào',
+    TokenExpires: 'Kết nối trang hết hạn',
+    ChannelExist: 'Kênh đã tồn tại.',
   }
 }

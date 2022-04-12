@@ -1,0 +1,68 @@
+<div class="grid w-fyll grid-cols-1">
+  <form [formGroup]="_form" class="flex flex-col gap-y-3" novalidate>
+      <div class="w-full flex gap-x-2 justify-between">
+        <tds-form-field class="w-full">
+            <input  tdsInput placeholder="Số nhà, đường,..." formControlName="Street" (change)="changeStreet($event)"/>
+        </tds-form-field>
+        <button tds-button color="primary" (click)="expanded()">
+            <span class="flex items-center">
+              <i class="tdsi-move-line"></i>
+            </span>
+        </button>
+      </div>
+      <!-- <div *ngIf="(suggestions$ | async) as suggestions">
+          <ul class="list-group list-group-sm">
+              <a class="list-group-item" type="button" *ngFor="let item of suggestions; let i = index"
+                  id="KEY{{arrowkeyLocation}}" [class.active]="i == arrowkeyLocation" (click)="selectAddress(item, -1)">
+                  <span> {{item.Address}} </span>
+              </a>
+          </ul>
+      </div> -->
+      <div *ngIf="isExpanded">
+          <div class="w-full flex mb-2">
+              <tds-form-field class="w-full">
+                  <tds-select valueField="code" textField="name" placeholder='Tỉnh/Thành'
+                      [valuePrimitive]="false" [allowClear]="true" (onSearch)="handleCityFilter($event)"
+                      formControlName="City" disabledField="isActive" [data]="lstCities"
+                      [allowClear]="true" (selectChange)="changeCity($event)">
+                  </tds-select>
+              </tds-form-field>
+          </div>
+          <div class="w-full flex mb-2">
+              <tds-form-field class="w-full">
+                  <tds-select valueField="code" textField="name" placeholder='Quận/Huyện'
+                      [valuePrimitive]="false" [allowClear]="true" (onSearch)="handleFilterDistrict($event)"
+                      formControlName="District" disabledField="isActive" [data]="lstDistricts"
+                      [allowClear]="true" (selectChange)="changeDistrict($event)">
+                  </tds-select>
+              </tds-form-field>
+          </div>
+          <div class="w-full flex mb-2">
+              <tds-form-field class="w-full">
+                  <tds-select valueField="code" textField="name" placeholder='Phường/Xã'
+                      [valuePrimitive]="false" [allowClear]="true" (onSearch)="handleFilterWard($event)"
+                      formControlName="Ward" disabledField="isActive" [data]="lstWards"
+                      [allowClear]="true"  (selectChange)="changeWard($event)">
+                  </tds-select>
+              </tds-form-field>
+          </div>
+          <div class="w-full flex gap-x-2 justify-between mb-2">
+              <tds-form-field class="w-full">
+                  <input tdsInput placeholder="Số nhà, đường,..." [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}"/>
+              </tds-form-field>
+              <button tds-button color="primary" type="button" (click)="checkAddress($event)">
+                  <span class="flex items-center">
+                    <i class="tdsi-location-line"></i>
+                  </span>
+              </button>
+          </div>
+          <div *ngIf="tempAddresses" >
+              <ul class="">
+                  <li *ngFor="let item of tempAddresses; index as i" class="{{index == i ? 'bg-primary-1 text-white' : 'bg-white'}}  flex tds-form-field-control w-full max-w-full border border-neutral-2-200 dark:bg-d-neutral-3-50 dark:border-d-neutral-2-200 p-2 cursor-pointer">
+                      <a class="text-body-2" (click)="selectAddress(item, i)">{{item.Address}}</a>
+                  </li>
+              </ul>
+          </div>
+      </div>
+  </form>
+</div>

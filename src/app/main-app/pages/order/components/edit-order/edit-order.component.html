@@ -18,14 +18,15 @@
                           </tds-form-field>
                           <tds-button-group>
                             <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" style="border: none">
-                                <span class="flex items-center">
-                                    Bình thường <i class="tdsi-arrow-down-fill text-lg leading-none"></i>
+                                <span class="flex items-center" [ngStyle]="{'color': getStatusColor() }">
+                                    {{formEditOrder.controls["Partner"].value?.StatusText}}
+                                    <i class="tdsi-arrow-down-fill text-lg leading-none"></i>
                                 </span>
                             </button>
                             <tds-dropdown-menu #menu="tdsDropdownMenu">
                                 <div class="w-full">
-                                    <div tds-dropdown-item *ngFor="let status of lstPartnerStatus">
-                                        <a> {{ status.text }} </a>
+                                    <div tds-dropdown-item *ngFor="let status of lstPartnerStatus" (click)="selectStatus(status)">
+                                        <a [ngStyle]="{'color': status.value }"> {{ status.text }} </a>
                                     </div>
                                 </div>
                             </tds-dropdown-menu>
@@ -137,7 +138,7 @@
             <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" (keydown.enter)="onSearchProduct($event)">
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
           </tds-form-field>
-          <button tds-button size="md" color="primary" (click)="onAddProduct()">
+          <button tds-button type="button" size="md" color="primary" (click)="onAddProduct()">
             <span class="flex items-center">
               <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i> Thêm mẫu mới
             </span>
@@ -365,7 +366,7 @@
 
   </tds-tabset>
 
-  <div class="w-full flex justify-between p-4" *tdsModalFooter>
+  <div class="w-full flex justify-between p-4 items-center" *tdsModalFooter>
       <div class="flex">
           <tds-checkbox [(ngModel)]="isEnableCreateOrder" [ngModelOptions]="{standalone: true}" (change)="onEnableCreateOrder($event)">
             Tạo phiếu bán hàng
@@ -373,25 +374,25 @@
       </div>
 
       <div class="flex gap-x-2" *ngIf="!isEnableCreateOrder">
-          <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-          <button tds-button class="w-[126px]" type="submit" color="info" (click)="onSave(saveType.orderPrint)">
+          <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
+          <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave(saveType.orderPrint)" [disabled]="!formEditOrder?.valid">
               <span class="tdsi-print-fill"></span>
               Lưu và in
           </button>
-          <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave(saveType.orderSave)">Lưu</button>
+          <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave(saveType.orderSave)" [disabled]="!formEditOrder?.valid">Lưu</button>
       </div>
 
       <div class="flex gap-x-2" *ngIf="isEnableCreateOrder">
-          <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-          <button tds-button class="w-[126px]" type="submit" color="info" (click)="onSave(saveType.billPrint)">
+          <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
+          <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave(saveType.billPrint)" [disabled]="!formEditOrder?.valid">
               <span class="tdsi-print-fill"></span>
               Lưu và in
           </button>
-          <button tds-button class="w-[170px]" type="submit" color="info" (click)="onSave(saveType.billPrintShip)">
+          <button tds-button class="w-[170px]" type="button" color="info" (click)="onSave(saveType.billPrintShip)" [disabled]="!formEditOrder?.valid">
               <span class="tdsi-print-fill"></span>
               Lưu và in phiếu ship
           </button>
-          <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave(saveType.billSave)">Lưu</button>
+          <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave(saveType.billSave)" [disabled]="!formEditOrder?.valid">Lưu</button>
     </div>
   </div>
 </form>

@@ -148,7 +148,7 @@
       <tds-table #rowCreditDebitTable
       [showSizeChanger]="true"
       [frontPagination]="false"
-      [listData]="lstDebitDetails"
+      [listData]="lstDebitDetailsSearch || lstDebitDetails"
       [(pageSize)]="pageSize"
       [(pageIndex)]="pageIndex"
       [total]="count" [scroll]="{y:'450px', x: 'auto'}" [loading]="isLoading"

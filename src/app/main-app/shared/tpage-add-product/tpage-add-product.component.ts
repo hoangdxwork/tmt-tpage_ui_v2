@@ -1,5 +1,5 @@
 import { Observable, Subscriber, Subscription } from 'rxjs';
-import { TDSSafeAny, TDSModalRef, TDSMessageService, TDSModalService, TDSUploadChangeParam, TDSUploadXHRArgs, TDSHelperObject } from 'tmt-tang-ui';
+import { TDSSafeAny, TDSModalRef, TDSMessageService, TDSModalService, TDSUploadChangeParam, TDSUploadXHRArgs, TDSHelperObject, TDSUploadFile } from 'tmt-tang-ui';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone } from '@angular/core';
 import { ProductTemplateDTO, ProductType, ProductUOMDTO } from '../../dto/product/product.dto';
@@ -12,6 +12,7 @@ import { TpageAddCategoryComponent } from '../tpage-add-category/tpage-add-categ
 import { TpageSearchUOMComponent } from '../tpage-search-uom/tpage-search-uom.component';
 import { CommonService } from '../../services/common.service';
 import { TCommonService, TAPIDTO, TApiMethodType } from 'src/app/lib';
+import { SharedService } from '../../services/shared.service';
 
 @Component({
   selector: 'tpage-add-product',
@@ -33,7 +34,9 @@ export class TpageAddProductComponent implements OnInit {
 
   public readonly lstProductType = ProductType;
 
-  constructor(
+  fileList: TDSUploadFile[] = [];
+
+  constructor(private sharedService: SharedService,
     private fb: FormBuilder,
     private modal: TDSModalService,
     private modalRef: TDSModalRef,
@@ -141,22 +144,24 @@ export class TpageAddProductComponent implements OnInit {
     }
   }
 
-  handleUpload(item: TDSUploadXHRArgs) {
-    // return new Subscription();
+  beforeUpload = (file: TDSUploadFile): boolean => {
+    this.fileList = this.fileList.concat(file);
 
+    this.handleUpload(file);
+    return false;
+  };
+
+  handleUpload(file: TDSUploadFile) {
     let formData: any = new FormData();
-    formData.append("files", item.file as any, item.file.name);
+    formData.append("files", file as any, file.name);
     formData.append('id', '0000000000000051');
 
-    let that = this;
-    // this.zone.runOutsideAngular(()=>{
-    //   this.productTemplateService.getImageProduct(formData).subscribe(res => {
-    //     debugger;
-    //   });
-    // })
-
-
-    return new Subscription();
+    return this.sharedService.saveImageV2(formData).subscribe((res: any) => {
+      this.message.success(Message.Upload.Success);
+      this.formAddProduct.controls["ImageUrl"].setValue(res[0].urlImageProxy);
+    }, error => {
+      console.log(error);
+    });
   }
 
   prepareModel() {
@@ -185,7 +190,7 @@ export class TpageAddProductComponent implements OnInit {
       this.defaultGet["UOMPO"] = formModel.UOMPO;
       this.defaultGet["UOMPOId"] = formModel.UOMPO.Id;
     }
-    this.defaultGet["ImageUrl"] = this.imageUrl;
+    this.defaultGet["ImageUrl"] = formModel.ImageUrl;
 
     return this.defaultGet;
   }
@@ -197,6 +202,7 @@ export class TpageAddProductComponent implements OnInit {
     formControls["Categ"].setValue(data.Categ);
     formControls["UOM"].setValue(data.UOM);
     formControls["UOMPO"].setValue(data.UOMPO);
+    formControls["ImageUrl"].setValue(data.ImageUrl);
 
     formControls["Name"].setValue(data.Name);
     formControls["DefaultCode"].setValue(data.DefaultCode);
@@ -230,6 +236,7 @@ export class TpageAddProductComponent implements OnInit {
         PurchasePrice: [0],
         DiscountPurchase: [0],
         StandardPrice: [0],
+        ImageUrl: [null],
         UOM: [null, Validators.required],
         UOMPO: [null, Validators.required]
     });

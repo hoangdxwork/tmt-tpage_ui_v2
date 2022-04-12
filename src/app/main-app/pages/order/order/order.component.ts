@@ -120,7 +120,6 @@ export class OrderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadSummaryStatus();
     this.loadTags();
 
     this.loadGridConfig();
@@ -142,6 +141,8 @@ export class OrderComponent implements OnInit {
         this.count = res['@odata.count'] as number;
         this.lstOfData = res.value;
         this.isLoading = false;
+
+        this.loadSummaryStatus();
     });
   }
 
@@ -155,6 +156,8 @@ export class OrderComponent implements OnInit {
 
     this.saleOnline_OrderService.getSummaryStatus(model).subscribe((res: Array<TDSSafeAny>) => {
       var total = 0;
+
+      this.tabNavs.length = 0;
 
       res.map((x: TDSSafeAny) => {
         total += x.Total;
@@ -209,14 +212,6 @@ export class OrderComponent implements OnInit {
     }
   }
 
-  showModelCreateInvoiceFast() {
-
-  }
-
-  showModelCreateOrderDefault() {
-
-  }
-
   onCreateBillFast() {
     if (this.checkValueEmpty() == 1) {
       let ids = [...this.setOfCheckedId];
@@ -250,7 +245,7 @@ export class OrderComponent implements OnInit {
   }
 
   onUrlCreateInvoiceFast() {
-    this.router.navigateByUrl(`bill/create-default`);
+    this.router.navigateByUrl(`bill/create`);
   }
 
   checkPhone(phone: string) {
@@ -262,10 +257,6 @@ export class OrderComponent implements OnInit {
     }
 
     return 'Chưa xác định';
-  }
-
-  onCurrentPageDataChange($event: readonly SaleOnline_OrderDTO[]): void {
-
   }
 
   onSelectChange(Index: TDSSafeAny) {
@@ -372,6 +363,17 @@ export class OrderComponent implements OnInit {
     this.loadData(this.pageSize, this.pageIndex);
   }
 
+  // Refresh nhưng không refresh lại Tab, Index
+  refreshDataCurrent() {
+    this.indClickTag = "";
+
+    this.checked = false;
+    this.indeterminate = false;
+    this.setOfCheckedId = new Set<string>();
+
+    this.loadData(this.pageSize, this.pageIndex);
+  }
+
   onLoadOption(event: any): void {
     this.tabIndex = 1;
     this.pageIndex = 1;
@@ -438,7 +440,7 @@ export class OrderComponent implements OnInit {
   remove(id: string, code: string) {
     this.saleOnline_OrderService.remove(id).subscribe((res: TDSSafeAny) => {
       this.message.info(`${Message.Order.DeleteSuccess} ${code}`);
-      this.refreshData();
+      this.refreshDataCurrent();
     });
   }
 
