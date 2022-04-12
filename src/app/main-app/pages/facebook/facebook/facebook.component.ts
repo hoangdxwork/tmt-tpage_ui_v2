@@ -332,4 +332,10 @@ export class FacebookComponent implements OnInit, AfterViewInit {
     if(this.iconCollapse[index] && this.iconCollapse[index] === true) return true;
     return false;
   }
+
+  getFieldListSetting(teamId: number): number {
+    let id = this.fieldListSetting?.[teamId]?.id;
+    if(id) return id;
+    return 0;
+  }
 }
