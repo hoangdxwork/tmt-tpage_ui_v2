@@ -1,1 +1,125 @@
-<p>config-users-operation works!</p>
+<ng-container *ngIf="currentComponent == 1" [ngTemplateOutlet]="main"></ng-container>
+<ng-container *ngIf="currentComponent == 2" [ngTemplateOutlet]="decentralizeManagementPage"></ng-container>
+
+<ng-template #main>
+
+    <div class="w-full h-full pb-4 px-4">
+        <div class="flex flex-col w-full h-full bg-white rounded-xl">
+            <div class="flex flex-row items-center justify-between px-4 py-3">
+                <div class="flex flex-row items-center">
+                    <tds-avatar class="bg-primary-1 text-white" icon="tdsi-group-people-fill"></tds-avatar>
+                    <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">QUẢN LÝ NGƯỜI DÙNG</span>
+                </div>
+                <div class="flex gap-x-2">
+                    <button tds-button color="secondary" (click)="decentralizePageManagement($event)">
+                        <span class="flex items-center">
+                            Phân quyền quản lý Page
+                        </span>
+                    </button>
+                    <button tds-button color="primary" (click)="showModalAddUser()">
+                        <span class="flex items-center">
+                            <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+                            <span class="text-body-2 font-semibold">Thêm mới</span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <div class="w-full h-full pb-4">
+                <tds-table #tableUser [listData]="listOfDataUser" showPagination showSizeChanger [scroll]="{y:'auto'} ">
+                    <thead>
+                        <tr>
+                            <th>Người dùng</th>
+                            <th>Phân quyền</th>
+                            <th>Page quản lý</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-template ngFor let-data [ngForOf]="tableUser.data">
+                            <tr>
+                                <td>{{ data.name }}</td>
+                                <td>{{ data.decentralization }}</td>
+                                <td>
+                                    <div class="flex items-center pl-2"
+                                        *ngIf="data.id == 2 || data.id == 3; else isOne">
+                                        <div class="bg-white p-0.5 rounded-full" tds-tooltip tooltipTitle="Page test">
+                                            <tds-avatar class="bg-white  text-white" [size]="44"
+                                                tdsSrc="assets/images/config/SP1120.png">
+                                            </tds-avatar>
+                                        </div>
+                                        <div class="-ml-3 bg-white relative z-[2] p-0.5 rounded-full">
+                                            <tds-avatar class="bg-accent-4  text-white" [size]="44" text="AD">
+                                            </tds-avatar>
+                                        </div>
+                                        <div class="-ml-3 bg-white relative z-[3] p-0.5 rounded-full">
+                                            <tds-avatar size="sm" tdsSrc="error-link" [size]="44"></tds-avatar>
+                                        </div>
+                                        <div class="-ml-3 bg-white relative z-[4] p-0.5 rounded-full" tds-popover
+                                            popoverPlacement="bottomLeft" [popoverContent]="popoverPageFacebook">
+                                            <tds-avatar class="bg-primary-3  text-primary-1" [size]="44" text="+5">
+                                            </tds-avatar>
+                                        </div>
+
+                                        <ng-template #popoverPageFacebook>
+                                            <div class="w-[217px] flex flex-col gap-y-4">
+                                                <div class="flex gap-x-4 items-center">
+                                                    <tds-avatar class="bg-white  text-white"
+                                                        tdsSrc="assets/images/config/SP1120.png">
+                                                    </tds-avatar>
+                                                    <div>
+                                                        <span>Nguyen Binh</span>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-x-4 items-center">
+                                                    <tds-avatar class="bg-white  text-white"
+                                                        tdsSrc="assets/images/config/SP1120.png">
+                                                    </tds-avatar>
+                                                    <div>
+                                                        <span>Nguyen Binh</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </div>
+                                    <ng-template #isOne>
+                                        <div class="flex">
+                                            <div class="bg-white p-0.5 rounded-full" tds-tooltip
+                                                tooltipTitle="Page test">
+                                                <tds-avatar class="bg-white  text-white" [size]="44"
+                                                    tdsSrc="assets/images/config/SP1120.png">
+                                                </tds-avatar>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </td>
+                                <td>
+                                    <tds-switch [checked]="data.status" size="md"></tds-switch>
+                                </td>
+                                <td>
+                                    <div class="flex gap-x-2">
+                                        <button tds-button-icon color="secondary" size="sm" (click)="showModalUpdateUser()">
+                                            <span class="flex items-center">
+                                                <i class="tdsi-edit-fill text-lg leading-none"></i>
+                                            </span>
+                                        </button>
+                                        <button tds-button-icon color="secondary" size="sm">
+                                            <span class="flex items-center">
+                                                <i class="tdsi-trash-fill text-lg leading-none"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </tbody>
+                </tds-table>
+            </div>
+        </div>
+    </div>
+
+</ng-template>
+
+<ng-template #decentralizeManagementPage>
+    <app-decentralize-page-management (getComponent)="getCurrentComponent($event)"></app-decentralize-page-management>
+</ng-template>

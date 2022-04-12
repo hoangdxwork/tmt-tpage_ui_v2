@@ -1,5 +1,5 @@
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TDSAvatarModule, TDSButtonModule, TDSSwitchModule, TDSTabsModule, TDSBadgeModule, TDSInputModule, TDSSelectModule, TDSFormFieldModule, TDSTableModule, TDSToolTipModule, TDSButtonMenuModule, TDSModalService, TDSModalModule, TDSRadioModule, TDSBreadCrumbModule, TDSImageModule, TDSUploadModule, TDSDropDownModule, TDSCheckBoxModule, TDSInputNumberModule, TDSPopoverModule, TDSTagModule } from 'tmt-tang-ui';
+import { TDSAvatarModule, TDSButtonModule, TDSSwitchModule, TDSTabsModule, TDSBadgeModule, TDSInputModule, TDSSelectModule, TDSFormFieldModule, TDSTableModule, TDSToolTipModule, TDSButtonMenuModule, TDSModalService, TDSModalModule, TDSRadioModule, TDSBreadCrumbModule, TDSImageModule, TDSUploadModule, TDSDropDownModule, TDSCheckBoxModule, TDSInputNumberModule, TDSPopoverModule, TDSTagModule, TDSSpinnerModule, TDSTimePickerModule } from 'tmt-tang-ui';
 import { MainSharedModule } from './../../shared/shared.module';
 
 import { NgModule } from '@angular/core';
@@ -27,6 +27,13 @@ import { SMSMessagesAddServiceModalComponent } from './components/sms-messages-a
 import { TableTemplateProductVariantComponent } from './components/table-template-product-variant/table-template-product-variant.component';
 import { ProductVariantEditTableModalComponent } from './components/product-variant-edit-table-modal/product-variant-edit-table-modal.component';
 import { AddProductVariantComponent } from './config-product-variant/add-product-variant/add-product-variant.component';
+import { ModalUpdateUserComponent } from './components/modal-update-user/modal-update-user.component';
+import { ModalChangePasswordUserComponent } from './components/modal-change-password-user/modal-change-password-user.component';
+import { DecentralizePageManagementComponent } from './config-users/config-users-operation/decentralize-page-management/decentralize-page-management.component';
+import { ModalAddUserComponent } from './components/modal-add-user/modal-add-user.component';
+import { ModalListShiftComponent } from './components/modal-list-shift/modal-list-shift.component';
+import { ModalAddShiftComponent } from './components/modal-add-shift/modal-add-shift.component';
+import { ModalUpdateShiftComponent } from './components/modal-update-shift/modal-update-shift.component';
 
 
 @NgModule({
@@ -52,6 +59,13 @@ import { AddProductVariantComponent } from './config-product-variant/add-product
     TableTemplateProductVariantComponent,
     ProductVariantEditTableModalComponent,
     AddProductVariantComponent,
+    ModalUpdateUserComponent,
+    ModalChangePasswordUserComponent,
+    DecentralizePageManagementComponent,
+    ModalAddUserComponent,
+    ModalListShiftComponent,
+    ModalAddShiftComponent,
+    ModalUpdateShiftComponent,
   ],
   imports: [
     CommonModule,
@@ -80,7 +94,9 @@ import { AddProductVariantComponent } from './config-product-variant/add-product
     MainSharedModule,
     TDSCheckBoxModule,
     TDSPopoverModule,
-    TDSTagModule
+    TDSTagModule,
+    TDSSpinnerModule,
+    TDSTimePickerModule
   ],
   providers:[TDSModalService]
 })

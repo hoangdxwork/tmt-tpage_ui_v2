@@ -1,3 +1,4 @@
+import { ConfigUsersDivideTaskComponent } from './config-users/config-users-divide-task/config-users-divide-task.component';
 import { ConfigPrintBillsComponent } from './config-print-bills/config-print-bills.component';
 import { ConfigPagesBasicComponent } from './config-pages/config-pages-basic/config-pages-basic.component';
 import { ConfigUsersShiftComponent } from './config-users/config-users-shift/config-users-shift.component';
@@ -70,7 +71,7 @@ const routes: Routes = [
           },
           {
             path:'divide-task',
-            component: ConfigPagesDivideTaskComponent
+            component: ConfigUsersDivideTaskComponent
           },
           {
             path:'shift',
