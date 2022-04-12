@@ -70,4 +70,13 @@ export class SuggestAddressService extends BaseSevice {
     return this.apiService.getCacheData<TDSSafeAny>(api, null);
   }
 
+  suggest(value: string): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/suggest?q=${value}`,
+        method: TApiMethodType.get
+    }
+
+    return this.apiService.getCacheData<TDSSafeAny>(api, null);
+  }
+
 }

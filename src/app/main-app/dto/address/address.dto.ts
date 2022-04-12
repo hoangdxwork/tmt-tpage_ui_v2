@@ -51,9 +51,9 @@ export interface WardDTO {
 }
 
 export interface ResultCheckAddressDTO {
-  Telephone: string;
-  Address: string | undefined;
-  ShortAddress: string | undefined;
+  Telephone?: any;
+  Address: string;
+  ShortAddress: string;
   CityCode: string;
   CityName: string;
   DistrictCode: string;
