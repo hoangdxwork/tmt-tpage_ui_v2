@@ -30,6 +30,8 @@ export class FacebookComponent implements OnInit, AfterViewInit {
 
   lstPageNotConnect: PageNotConnectDTO = {};
 
+  lstData: TDSSafeAny = {};
+
   inputValue?: string;
   userFBLogin?: FacebookUser;
   userFBAuth?: FacebookAuth;
@@ -175,6 +177,7 @@ export class FacebookComponent implements OnInit, AfterViewInit {
       this.crmTeamService.insert(team).subscribe(res => {
         this.message.success(Message.InsertSuccess);
         this.loadListTeam();
+        this.isLoading = false;
       }, error => this.isLoading = false);
     }, error => this.isLoading = false);
   }
@@ -195,10 +198,12 @@ export class FacebookComponent implements OnInit, AfterViewInit {
       this.data = res;
 
       res.sort((a: any, b: any) => {
-        this.fieldListSetting[a.Id] = this.listSetting[0];
-        this.fieldListSetting[b.Id] = this.listSetting[0];
-
         if(a.Active) return -1; return 1;
+      });
+
+      res.forEach((item: any) => {
+        this.fieldListSetting[item.Id] = this.listSetting[0];
+        this.getListData(item.Id);
       });
 
       if(this.userFBLogin) {
@@ -211,8 +216,6 @@ export class FacebookComponent implements OnInit, AfterViewInit {
   sortByFbLogin(userId: string | undefined | null) {
     let item = this.data.find(x => (x.Facebook_UserId && x.Facebook_UserId == userId));
 
-    console.log(item);
-
     if(item) {
       this.data.splice(this.data.indexOf(item), 1);
       this.data.unshift(item);
@@ -221,6 +224,7 @@ export class FacebookComponent implements OnInit, AfterViewInit {
 
   onClickFieldListSetting(value: TDSSafeAny, id: number) {
     this.fieldListSetting[id] = value;
+    this.getListData(id);
   }
 
   onClickFieldListAll(value: TDSSafeAny) {
@@ -287,8 +291,8 @@ export class FacebookComponent implements OnInit, AfterViewInit {
         console.log('[afterClose] The result is:', result);
         if (TDSHelperObject.hasValue(result)) {
             this.loadListTeam();
-            if(this.lstPageNotConnect[user.Facebook_UserId]) {
-              this.lstPageNotConnect[user.Facebook_UserId] = this.lstPageNotConnect[user.Facebook_UserId].filter(x => x.id != data.id);
+            if(this.lstPageNotConnect[user.Id]) {
+              this.lstPageNotConnect[user.Id] = this.lstPageNotConnect[user.Id].filter(x => x.id != data.id);
             }
         }
     });
@@ -316,8 +320,9 @@ export class FacebookComponent implements OnInit, AfterViewInit {
         this.message.info(Message.ConnectionChannel.NotFoundUserPage);
       }
       else {
-        this.lstPageNotConnect[user.Facebook_UserId] = res.data.filter(item => !pageIdConnected.includes(item.id));
-        this.message.success(`Tìm thấy ${this.lstPageNotConnect[user.Facebook_UserId]?.length || 0} kênh mới.`);
+        this.lstPageNotConnect[user.Id] = res.data.filter(item => !pageIdConnected.includes(item.id));
+        this.lstData[user.Id]["notConnected"] = this.lstPageNotConnect[user.Id];
+        this.message.success(`Tìm thấy ${this.lstPageNotConnect[user.Id]?.length || 0} kênh mới.`);
       }
     }, error => {
       this.message.error(Message.ConnectionChannel.TokenExpires);
@@ -336,6 +341,41 @@ export class FacebookComponent implements OnInit, AfterViewInit {
   getFieldListSetting(teamId: number): number {
     let id = this.fieldListSetting?.[teamId]?.id;
     if(id) return id;
-    return 0;
+    return 1;
   }
+
+  getListData(teamId: number) {
+    let field = this.getFieldListSetting(teamId);
+    let channel = this.data.find(x => x.Id == teamId);
+
+    if(!channel) {
+      this.message.error(Message.ConnectionChannel.NotFoundUserPage);
+      return;
+    }
+
+    if(field == 1) {
+      this.lstData[teamId] = this.lstData[teamId] || {};
+      this.lstData[teamId]["data"] = channel?.Childs || [];
+      this.lstData[teamId]["notConnected"] = this.lstPageNotConnect[teamId] || [];
+    }
+    else if(field == 2) {
+      this.lstData[teamId] = this.lstData[teamId] || {};
+      this.lstData[teamId]["data"] = channel?.Childs.filter(x => x.Active);
+      this.lstData[teamId]["notConnected"] = [];
+    }
+    else if(field == 3) {
+      this.lstData[teamId] = this.lstData[teamId] || {};
+      this.lstData[teamId]["data"] = channel?.Childs.filter(x => !x.Active);
+      this.lstData[teamId]["notConnected"] = [];
+    }
+    else if(field == 4) {
+      this.lstData[teamId] = this.lstData[teamId] || {};
+      this.lstData[teamId]["data"] = [];
+      this.lstData[teamId]["notConnected"] = this.lstPageNotConnect[teamId] || [];
+    }
+
+    console.log(this.lstData[teamId]["data"]);
+    console.log(this.lstData[teamId]["notConnected"]);
+  }
+
 }

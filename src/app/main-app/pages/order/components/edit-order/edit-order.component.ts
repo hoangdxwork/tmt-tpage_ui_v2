@@ -26,6 +26,7 @@ import { Observable } from 'rxjs';
 import { CarrierHandler } from 'src/app/main-app/services/handlers/carier.handler';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
+import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 
 @Component({
   selector: 'edit-order',
@@ -66,7 +67,6 @@ export class EditOrderComponent implements OnInit {
   lstInventory!: GetInventoryDTO;
   lstUser!: Array<ApplicationUserDTO>;
   lstPartnerStatus!: Array<PartnerStatusDTO>;
-  deliveryCarrierService: any;
 
   constructor(private modal: TDSModalService,
     private modalRef: TDSModalRef,
@@ -84,7 +84,8 @@ export class EditOrderComponent implements OnInit {
     private fastSaleOrderHandler: FastSaleOrderHandler,
     private carrierHandler: CarrierHandler,
     private partnerService: PartnerService,
-    private odataProductService: OdataProductService
+    private odataProductService: OdataProductService,
+    private deliveryCarrierService: DeliveryCarrierService,
   ) { }
 
   ngOnInit(): void {
