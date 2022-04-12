@@ -1,3 +1,4 @@
+import { FilterObjDTO, OdataProductService } from './../../../../services/mock-odata/odata-product.service';
 import { TDSHelperObject } from 'tmt-tang-ui';
 import { FastSaleOrderHandler } from './../../../../services/handlers/fast-sale-order.handler';
 import { CommonService } from 'src/app/main-app/services/common.service';
@@ -24,6 +25,7 @@ import { SaleOnline_OrderHandler } from 'src/app/main-app/services/handlers/sale
 import { Observable } from 'rxjs';
 import { CarrierHandler } from 'src/app/main-app/services/handlers/carier.handler';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
+import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 
 @Component({
   selector: 'edit-order',
@@ -81,7 +83,8 @@ export class EditOrderComponent implements OnInit {
     private saleOnline_OrderHandler: SaleOnline_OrderHandler,
     private fastSaleOrderHandler: FastSaleOrderHandler,
     private carrierHandler: CarrierHandler,
-    private partnerService: PartnerService
+    private partnerService: PartnerService,
+    private odataProductService: OdataProductService
   ) { }
 
   ngOnInit(): void {
@@ -92,6 +95,22 @@ export class EditOrderComponent implements OnInit {
     this.loadPartnerStatus();
 
     this.loadData();
+  }
+
+  loadProduct(textSearch: string) {
+    let filterObj: FilterObjDTO = {
+      searchText: textSearch,
+    }
+
+    let pageSize = 20;
+    let pageIndex = 1;
+
+    let filters = this.odataProductService.buildFilter(filterObj);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
+
+    this.odataProductService.getView(params).subscribe((res: TDSSafeAny) => {
+        console.log("view product:", res);
+    });
   }
 
   onSave(type: TDSSafeAny) {
@@ -199,7 +218,9 @@ export class EditOrderComponent implements OnInit {
   }
 
   onSearchProduct(event: any) {
+    let text = event.target.value;
 
+    this.loadProduct(text);
   }
 
   onAddProduct() {

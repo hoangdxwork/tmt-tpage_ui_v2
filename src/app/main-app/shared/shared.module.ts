@@ -22,6 +22,7 @@ import { SharedService } from '../services/shared.service';
 import { ProductIndexDBService } from '../services/product-indexDB.service';
 import { SuggestAddressComponent } from './suggest-address/suggest-address.component';
 import { SuggestAddressService } from '../services/suggest-address.service';
+import { ImageFacade } from '../services/facades/image.facade';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -42,7 +43,8 @@ const cmp =[
 const SERVICES = [
   ProductIndexDBService,
   SuggestAddressService,
-  SharedService
+    SharedService,
+    ImageFacade
 ]
 
 @NgModule({

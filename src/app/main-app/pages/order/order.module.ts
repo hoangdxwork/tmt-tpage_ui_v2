@@ -30,6 +30,7 @@ import { UpdateInfoPartnerComponent } from './components/update-info-partner/upd
 import { PrinterService } from '../../services/printer.service';
 import { ExcelExportService } from '../../services/excel-export.service';
 import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
+import { OdataProductService } from '../../services/mock-odata/odata-product.service';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -42,7 +43,8 @@ const SERVICES = [
   PartnerService,
   PrinterService,
   ExcelExportService,
-  SaleOnline_OrderHandler
+  SaleOnline_OrderHandler,
+  OdataProductService
 ]
 
 @NgModule({
