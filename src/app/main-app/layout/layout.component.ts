@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Component, Injector, OnInit } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular/router';
+import { throttle } from 'lodash';
+import { Observable, Subject } from 'rxjs';
+import { debounceTime, filter, map, mergeMap, startWith, takeUntil } from 'rxjs/operators';
 import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { environment } from 'src/environments/environment';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMenuDTO, TDSSafeAny } from 'tmt-tang-ui';
@@ -19,9 +21,28 @@ export class LayoutComponent implements OnInit {
   lstMenu!: TDSSafeAny;
   inlineCollapsed = false;
   params!: TDSSafeAny;
-  constructor(private auth: TAuthService, public crmService: CRMTeamService, private activatedRoute: ActivatedRoute, private router: Router) { }
+  private destroy$ = new Subject<void>();
+  constructor(private auth: TAuthService, public crmService: CRMTeamService, private activatedRoute: ActivatedRoute, private router: Router) {
+    router.events.pipe(
+      takeUntil(this.destroy$),
+      filter(event => event instanceof NavigationEnd), // Only get the event of NavigationEnd
+      map(() => activatedRoute), // Listen to activateRoute
+      map(route => {
+        while (route.firstChild) {
+          route = route.firstChild;
+        }
+        return route;
+      }),
+      filter(route => route.outlet === 'primary'),
+      mergeMap(route => route.data) ,
+    // get the data
+    ).subscribe(res=>{
+      this.inlineCollapsed = res.collapse;
+    })
+  }
 
   ngOnInit(): void {
+    
     this.crmService.onChangeTeam().subscribe(res => {
       this.lstMenu = this.setMenu(res);
       this.currentTeam = res;
@@ -30,7 +51,8 @@ export class LayoutComponent implements OnInit {
     this.loadUserInfo();
     this.activatedRoute.queryParams.subscribe(res => {
       this.params = res;
-    })
+    });
+  
   }
   onSelectShopChange(event: TDSSafeAny) {
 
@@ -167,9 +189,7 @@ export class LayoutComponent implements OnInit {
     ];
   }
 
-  onClickItem() {
-    sessionStorage.removeItem('reportItem')
-  }
+  
   //load thông tin user
   loadUserInfo() {
     this.auth.getUserInit().subscribe(res => {
@@ -186,4 +206,5 @@ export class LayoutComponent implements OnInit {
       this.crmService.onUpdateTeam(data);
     }
   }
+
 }
