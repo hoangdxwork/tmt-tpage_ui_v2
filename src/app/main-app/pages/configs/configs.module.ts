@@ -1,5 +1,5 @@
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TDSAvatarModule, TDSButtonModule, TDSSwitchModule, TDSTabsModule, TDSBadgeModule, TDSInputModule, TDSSelectModule, TDSFormFieldModule, TDSTableModule, TDSToolTipModule, TDSButtonMenuModule, TDSModalService, TDSModalModule, TDSRadioModule, TDSBreadCrumbModule, TDSImageModule, TDSUploadModule, TDSDropDownModule, TDSCheckBoxModule, TDSInputNumberModule, TDSPopoverModule, TDSTagModule } from 'tmt-tang-ui';
+import { TDSAvatarModule, TDSButtonModule, TDSSwitchModule, TDSTabsModule, TDSBadgeModule, TDSInputModule, TDSSelectModule, TDSFormFieldModule, TDSTableModule, TDSToolTipModule, TDSButtonMenuModule, TDSModalService, TDSModalModule, TDSRadioModule, TDSBreadCrumbModule, TDSImageModule, TDSUploadModule, TDSDropDownModule, TDSCheckBoxModule, TDSInputNumberModule, TDSPopoverModule, TDSTagModule, TDSDatePickerModule } from 'tmt-tang-ui';
 import { MainSharedModule } from './../../shared/shared.module';
 
 import { NgModule } from '@angular/core';
@@ -27,6 +27,10 @@ import { SMSMessagesAddServiceModalComponent } from './components/sms-messages-a
 import { TableTemplateProductVariantComponent } from './components/table-template-product-variant/table-template-product-variant.component';
 import { ProductVariantEditTableModalComponent } from './components/product-variant-edit-table-modal/product-variant-edit-table-modal.component';
 import { AddProductVariantComponent } from './config-product-variant/add-product-variant/add-product-variant.component';
+import { ConfigAddPromotionComponent } from './config-promotions/config-add-promotion/config-add-promotion.component';
+import { ConfigAddPromotionAllComponent } from './config-promotions/config-add-promotion-all/config-add-promotion-all.component';
+import { ConfigAddPromotionGroupComponent } from './config-promotions/config-add-promotion-group/config-add-promotion-group.component';
+import { ConfigAddPromotionComboComponent } from './config-promotions/config-add-promotion-combo/config-add-promotion-combo.component';
 
 
 @NgModule({
@@ -52,6 +56,10 @@ import { AddProductVariantComponent } from './config-product-variant/add-product
     TableTemplateProductVariantComponent,
     ProductVariantEditTableModalComponent,
     AddProductVariantComponent,
+    ConfigAddPromotionComponent,
+    ConfigAddPromotionAllComponent,
+    ConfigAddPromotionGroupComponent,
+    ConfigAddPromotionComboComponent,
   ],
   imports: [
     CommonModule,
@@ -61,6 +69,7 @@ import { AddProductVariantComponent } from './config-product-variant/add-product
     MainSharedModule,
     TDSAvatarModule,
     TDSButtonModule,
+    TDSButtonMenuModule,
     TDSTabsModule,
     TDSSwitchModule,
     TDSBadgeModule,
@@ -80,7 +89,8 @@ import { AddProductVariantComponent } from './config-product-variant/add-product
     MainSharedModule,
     TDSCheckBoxModule,
     TDSPopoverModule,
-    TDSTagModule
+    TDSTagModule,
+    TDSDatePickerModule
   ],
   providers:[TDSModalService]
 })
