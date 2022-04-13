@@ -1,36 +1,19 @@
-<form [formGroup]="formAddAddress" (ngSubmit)="submitAddress()" class="grid grid-cols-3 gap-x-4 mt-4">
-    <div class="flex ">
+<div class="grid">
+    <div class="flex mb-4">
         <tds-label>Địa chỉ</tds-label>
     </div>
-    <div class="col-span-2">
-        <div class="flex gap-x-2">
-            <tds-form-field class="w-full">
-                <input tdsInput placeholder="Số nhà, đường..." formControlName="numberStreet" />
-            </tds-form-field>
-            <button tds-button-icon color="primary" size="sm" type="button">
-                <span class="flex items-center">
-                    <i class="tdsi-location-line"></i>
-                </span>
-            </button>
-        </div>
-        <tds-select class="mt-4" valueField="id" textField="value" placeholder='Tỉnh/Thành'
-            formControlName="province" disabledField="isActive" [data]="dataAddress"
-            [allowClear]="true">
-        </tds-select>
-        <tds-select class="mt-4" valueField="id" textField="value" placeholder='Quận/Huyện'
-            formControlName="district" disabledField="isActive" [data]="dataAddress"
-            [allowClear]="true">
-        </tds-select>
-        <tds-select class="mt-4" valueField="id" textField="value" placeholder='Phường/Xã'
-            formControlName="wards" disabledField="isActive" [data]="dataAddress"
-            [allowClear]="true">
-        </tds-select>
+    <div>
+        <suggest-address
+          [_isExpanded]="true"
+          [_cities]="_cities"
+          [_districts]="_districts"
+          [_wards]="_wards"
+          [_street]="_street"
+          (onLoadSuggestion)="onLoadSuggestion($event)">
+        </suggest-address>
     </div>
     <div class="w-full flex justify-end p-4" *tdsModalFooter>
-        <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">Đóng</button>
-        <button tds-button type="submit" color="primary"
-            (click)="save()">
-            Lưu
-        </button>
+        <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+        <button tds-button type="button" color="primary"(click)="onSave()"> Lưu </button>
     </div>
-</form>
+</div>

@@ -78,6 +78,20 @@ export interface PropertyProductPricelist {
   DateEnd?: any;
 }
 
+export interface AddressesV2 {
+  Id: number;
+  PartnerId: number;
+  CityCode: string;
+  CityName: string;
+  DistrictCode: string;
+  DistrictName: string;
+  WardCode: string;
+  WardName: string;
+  IsDefault?: any;
+  Street: string;
+  Address: string;
+}
+
 export interface PartnerDetailDTO {
   Id: number;
   Name: string;
@@ -160,5 +174,5 @@ export interface PartnerDetailDTO {
   PropertyProductPricelist: PropertyProductPricelist;
   PropertySupplierPaymentTerm?: any;
   PropertyPaymentTerm?: any;
-  Addresses: any[];
+  Addresses: AddressesV2[];
 }
