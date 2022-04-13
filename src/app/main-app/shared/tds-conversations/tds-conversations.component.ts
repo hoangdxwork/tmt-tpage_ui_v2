@@ -85,7 +85,8 @@ export class TDSConversationsComponent implements OnInit {
         title: 'Kho hình ảnh',
         content: ModalImageStoreComponent,
         size: "xl",
-        viewContainerRef: this.viewContainerRef,
+        centered: true,
+        viewContainerRef: this.viewContainerRef,      
         componentParams: {
             // data: this.person
         }
