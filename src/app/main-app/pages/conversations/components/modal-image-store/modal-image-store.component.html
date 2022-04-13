@@ -25,8 +25,8 @@
                         </span>
                       </button>
                 </div> 
-                <div class="h-[640px] w-full overflow-y-auto tds-custom-scroll">
-                    <div class="grid grid-cols-4 gap-5 ">
+                <div class="max-h-[calc(100vh-375px)] w-full overflow-y-auto tds-custom-scroll">
+                    <div class="grid grid-cols-4 gap-5 h-full w-full">
                         <ng-template ngFor let-data [ngForOf]="listImage">
                             <div *ngIf="data.choose === false; else noActive">
                                 <div class="relative rounded-lg border border-transparent border-solid group"> 
@@ -98,7 +98,7 @@
                         </span>
                       </button>
                 </div> 
-                <div class="h-[620px] w-full overflow-y-auto tds-custom-scroll">
+                <div class="max-h-[calc(100vh-375px)] w-full overflow-y-auto tds-custom-scroll">
                     <div class="grid grid-cols-3 gap-5 ">
                         <ng-template ngFor let-data [ngForOf]="listCollect">
                             <div *ngIf="data.choose === false; else noCollectActive">
