@@ -1,0 +1,41 @@
+<tds-tabset>
+    <tds-tab title="Thông tin chương trình">
+        <div class="grid grid-cols-2 gap-y-4 gap-x-8">
+            <span class="text-neutral-1-600 text-header-2 font-semibold">Điều kiện áp dụng</span>
+            <span class="text-neutral-1-600 text-header-2 font-semibold">Giá trị</span>
+            <!-- time out -->
+            <div class="flex flex-row items-center justify-between">
+                <span class="text-neutral-1-900 text-body-2 font-semibold">
+                    Thời gian chờ:
+                </span>
+                <tds-form-field class="w-2/3">
+                    <tds-input-number formControlName="timeOut" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                    <tds-error>
+                        Vui lòng nhập thời gian chờ
+                    </tds-error>
+                </tds-form-field>
+            </div>
+            <!-- Pos group -->
+            <div class="flex flex-row items-center justify-between">
+                <span class="text-neutral-1-900 text-body-2 font-semibold">
+                    Nhóm Pos:
+                </span>
+                <tds-form-field class="w-2/3">
+                    <tds-select valueField="id" textField="name" placeholder='Chọn nhóm Pos'
+                        disabledField="isActive" formControlName="PosGroup" [required]='true'
+                        [data]="companyList" [allowClear]="true">
+                    </tds-select>
+                    <tds-error>
+                        Vui lòng chọn nhóm Pos
+                    </tds-error>
+                </tds-form-field>
+            </div>
+        </div>
+    </tds-tab>
+    <tds-tab title="Chi tiết khuyến mãi">
+
+    </tds-tab>
+    <tds-tab title="Danh sách coupon">
+
+    </tds-tab>
+</tds-tabset>

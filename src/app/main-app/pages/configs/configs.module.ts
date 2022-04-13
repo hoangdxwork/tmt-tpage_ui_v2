@@ -1,5 +1,4 @@
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TDSAvatarModule, TDSButtonModule, TDSSwitchModule, TDSTabsModule, TDSBadgeModule, TDSInputModule, TDSSelectModule, TDSFormFieldModule, TDSTableModule, TDSToolTipModule, TDSButtonMenuModule, TDSModalService, TDSModalModule, TDSRadioModule, TDSBreadCrumbModule, TDSImageModule, TDSUploadModule, TDSDropDownModule, TDSCheckBoxModule, TDSInputNumberModule, TDSPopoverModule, TDSTagModule, TDSSpinnerModule } from 'tmt-tang-ui';
 import { MainSharedModule } from './../../shared/shared.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -26,19 +25,24 @@ import { SMSMessagesAddServiceModalComponent } from './components/sms-messages-a
 import { TableTemplateProductVariantComponent } from './components/table-template-product-variant/table-template-product-variant.component';
 import { ProductVariantEditTableModalComponent } from './components/product-variant-edit-table-modal/product-variant-edit-table-modal.component';
 import { AddProductVariantComponent } from './config-product-variant/add-product-variant/add-product-variant.component';
+import { ConfigAddPromotionComponent } from './config-promotions/config-add-promotion/config-add-promotion.component';
+import { ConfigAddPromotionAllComponent } from './config-promotions/config-add-promotion-all/config-add-promotion-all.component';
+import { ConfigAddPromotionGroupComponent } from './config-promotions/config-add-promotion-group/config-add-promotion-group.component';
+import { ConfigAddPromotionComboComponent } from './config-promotions/config-add-promotion-combo/config-add-promotion-combo.component';
 import { OdataCRMTagService } from '../../services/mock-odata/odata-crmtag.service';
 import { QuickReplyService } from '../../services/quick-reply.service';
 import { OdataQuickReplyService } from '../../services/mock-odata/odata-quick-reply.service';
 import { RestSMSService } from '../../services/sms.service';
 import { ProductService } from '../../services/product.service';
 import { OdataProductService } from '../../services/mock-odata/odata-product.service';
-import { DecentralizePageManagementComponent } from './config-users/config-users-operation/decentralize-page-management/decentralize-page-management.component';
 import { ModalUpdateUserComponent } from './components/modal-update-user/modal-update-user.component';
-import { ModalUpdateShiftComponent } from './components/modal-update-shift/modal-update-shift.component';
-import { ModalListShiftComponent } from './components/modal-list-shift/modal-list-shift.component';
 import { ModalChangePasswordUserComponent } from './components/modal-change-password-user/modal-change-password-user.component';
-import { ModalAddShiftComponent } from './components/modal-add-shift/modal-add-shift.component';
+import { DecentralizePageManagementComponent } from './config-users/config-users-operation/decentralize-page-management/decentralize-page-management.component';
 import { ModalAddUserComponent } from './components/modal-add-user/modal-add-user.component';
+import { ModalListShiftComponent } from './components/modal-list-shift/modal-list-shift.component';
+import { ModalAddShiftComponent } from './components/modal-add-shift/modal-add-shift.component';
+import { ModalUpdateShiftComponent } from './components/modal-update-shift/modal-update-shift.component';
+import { TDSAvatarModule, TDSBadgeModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSDatePickerModule, TDSDropDownModule, TDSFormFieldModule, TDSImageModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSModalService, TDSPopoverModule, TDSRadioModule, TDSSelectModule, TDSSpinnerModule, TDSSwitchModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTimePickerModule, TDSToolTipModule, TDSUploadModule } from 'tmt-tang-ui';
 
 const SERVICES = [
     TDSModalService,
@@ -73,13 +77,17 @@ const SERVICES = [
     TableTemplateProductVariantComponent,
     ProductVariantEditTableModalComponent,
     AddProductVariantComponent,
-    DecentralizePageManagementComponent,
+    ConfigAddPromotionComponent,
+    ConfigAddPromotionAllComponent,
+    ConfigAddPromotionGroupComponent,
+    ConfigAddPromotionComboComponent,
     ModalUpdateUserComponent,
-    ModalUpdateShiftComponent,
-    ModalListShiftComponent,
     ModalChangePasswordUserComponent,
+    DecentralizePageManagementComponent,
+    ModalAddUserComponent,
+    ModalListShiftComponent,
     ModalAddShiftComponent,
-    ModalAddUserComponent
+    ModalUpdateShiftComponent,
   ],
   imports: [
     CommonModule,
@@ -89,6 +97,7 @@ const SERVICES = [
     MainSharedModule,
     TDSAvatarModule,
     TDSButtonModule,
+    TDSButtonMenuModule,
     TDSTabsModule,
     TDSSwitchModule,
     TDSBadgeModule,
@@ -109,7 +118,9 @@ const SERVICES = [
     TDSCheckBoxModule,
     TDSPopoverModule,
     TDSTagModule,
-    TDSSpinnerModule
+    TDSDatePickerModule,
+    TDSSpinnerModule,
+    TDSTimePickerModule
   ],
   providers:[
     ...SERVICES
