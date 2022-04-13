@@ -21,7 +21,7 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit {
   // @ViewChild('streetInput') streetInput!: ElementRef;
 
   _form!: FormGroup;
-
+  @Input() _isExpanded!: boolean;
   @Input() _street!: string;
   @Input() _cities!: SuggestCitiesDTO;
   @Input() _districts!: SuggestDistrictsDTO;
@@ -32,7 +32,6 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit {
   lstWards!: Array<SuggestWardsDTO>;
   innerText: string = '';
 
-  isExpanded: boolean = false;
   tempAddresses: Array<ResultCheckAddressDTO> = [];
   index: number = 0;
 
@@ -213,7 +212,7 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit {
   }
 
   expanded() {
-     this.isExpanded = !this.isExpanded;
+     this._isExpanded = !this._isExpanded;
   }
 
   ngAfterViewInit(): void {
@@ -271,7 +270,6 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit {
 
   selectAddress(item: ResultCheckAddressDTO, index: number) {
       this.index = index;
-      this.innerText = this.innerText;
       this._form.controls['Street'].setValue(item.Address);
       if(item.CityCode) {
           this._form.controls['City'].patchValue({
