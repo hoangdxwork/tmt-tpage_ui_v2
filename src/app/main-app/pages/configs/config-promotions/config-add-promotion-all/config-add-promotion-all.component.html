@@ -1,0 +1,229 @@
+<form [formGroup]="data" autocomplete="off">
+    <tds-tabset>
+        <tds-tab title="Thông tin chương trình">
+            <div class="grid grid-cols-2 gap-y-4 gap-x-8">
+                <span class="text-neutral-1-600 text-header-2 font-semibold">Điều kiện áp dụng</span>
+                <span class="text-neutral-1-600 text-header-2 font-semibold">Giá trị</span>
+                <!-- quantity -->
+                <div class="flex flex-row items-center justify-between">
+                    <span class="text-neutral-1-900 text-body-2 font-semibold">
+                        Số lượng
+                    </span>
+                    <tds-form-field class="w-2/3">
+                        <tds-input-number formControlName="quantity" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"
+                            (ngModelChange)="getData()"></tds-input-number>
+                        <tds-error>
+                            Vui lòng nhập số lượng
+                        </tds-error>
+                    </tds-form-field>
+                </div>
+                <!-- use for -->
+                <div class="flex flex-row items-center justify-between">
+                    <span class="text-neutral-1-900 text-body-2 font-semibold">
+                        Sử dụng cho
+                    </span>
+                    <tds-form-field class="w-2/3">
+                        <tds-input-number formControlName="useFor" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"
+                        (ngModelChange)="getData()"></tds-input-number>
+                        <tds-error>
+                            Vui lòng nhập giá trị
+                        </tds-error>
+                    </tds-form-field>
+                </div>
+                <!-- minimum Price -->
+                <div class="flex flex-row items-center justify-between">
+                    <span class="text-neutral-1-900 text-body-2 font-semibold">
+                        Số tiền tối thiểu
+                    </span>
+                    <tds-form-field class="w-2/3">
+                        <tds-input-number formControlName="minimumPrice" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"
+                        (ngModelChange)="getData()"></tds-input-number>
+                        <tds-error>
+                            Vui lòng nhập số tiền tối thiểu
+                        </tds-error>
+                    </tds-form-field>
+                </div>
+                <!-- Start Date -->
+                <div class="flex flex-row items-center justify-between">
+                    <span class="text-neutral-1-900 text-body-2 font-semibold">
+                        Ngày bắt đầu
+                    </span>
+                    <tds-form-field class="w-2/3">
+                        <tds-input-number formControlName="StartDate" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"
+                        (ngModelChange)="getData()"></tds-input-number>
+                        <tds-error>
+                            Vui lòng nhập ngày bắt đầu
+                        </tds-error>
+                    </tds-form-field>
+                </div>
+                <!-- company name -->
+                <div class="flex flex-row items-center justify-between">
+                    <span class="text-neutral-1-900 text-body-2 font-semibold">
+                        Công ty
+                    </span>
+                    <tds-form-field class="w-2/3">
+                        <tds-select valueField="id" textField="name" placeholder='Chọn công ty'
+                            disabledField="isActive" formControlName="companyName" [required]='true'
+                            [data]="companyList" [allowClear]="true"
+                            (ngModelChange)="getData()">
+                        </tds-select>
+                        <tds-error>
+                            Chọn công ty
+                        </tds-error>
+                    </tds-form-field>
+                </div>
+                <!-- end date -->
+                <div class="flex flex-row items-center justify-between">
+                    <span class="text-neutral-1-900 text-body-2 font-semibold">
+                        Ngày kết thúc
+                    </span>
+                    <tds-form-field class="w-2/3">
+                        <tds-select valueField="id" textField="name" placeholder='Chọn ngày kết thúc'
+                            disabledField="isActive" formControlName="endDate" [required]='true'
+                            [data]="companyList" [allowClear]="true"
+                            (ngModelChange)="getData()">
+                        </tds-select>
+                        <tds-error>
+                            Vui lòng chọn ngày kết thúc
+                        </tds-error>
+                    </tds-form-field>
+                </div>
+                <div></div>
+                <!-- active -->
+                <div class="flex flex-row items-center justify-between">
+                    <span class="text-neutral-1-900 text-body-2 font-semibold">
+                        Hiệu lực
+                    </span>
+                    <div class="flex items-center w-2/3">
+                        <tds-switch size="md" formControlName="active"></tds-switch>
+                    </div>
+                </div>
+            </div>
+        </tds-tab>
+        <tds-tab title="Chi tiết khuyến mãi">
+            <div class="grid grid-cols-1 gap-y-4">
+                <!-- bonus type -->
+                <div class="flex flex-row items-start justify-between w-1/2">
+                    <span class="text-neutral-1-900 text-body-2 font-semibold">
+                        Loại phần thưởng
+                    </span>
+                    <tds-radio-group class="flex flex-row w-2/3" formControlName="bonusType">
+                        <label tds-radio value="1" class="w-1/2">Chiết khấu</label>
+                        <label tds-radio value="2" class="w-1/2">Quà tặng</label>
+                    </tds-radio-group>
+                </div>
+                <!-- apply for -->
+                <div class="flex flex-row items-start justify-between w-1/2">
+                    <span class="text-neutral-1-900 text-body-2 font-semibold">
+                        Áp dụng
+                    </span>
+                    <tds-radio-group class="flex flex-row w-2/3" formControlName="applyFor">
+                        <label tds-radio value="1" class="w-1/2">Áp dụng trên đơn hàng hiện tại</label>
+                    </tds-radio-group>
+                </div>
+                <!-- apply for -->
+                <div class="flex flex-row items-center justify-between w-1/2">
+                    <span class="text-neutral-1-900 text-body-2 font-semibold">
+                        Áp dụng chiết khấu
+                    </span>
+                    <div class="flex flex-row items-center w-2/3">
+                        <div class="w-1/2 pr-4">
+                            <tds-form-field class="w-full">
+                                <tds-select valueField="id" textField="name" placeholder='Chọn loại chiết khấu'
+                                    disabledField="isActive" formControlName="applyDiscountType" [required]='true'
+                                    [data]="discountTypeList" [allowClear]="true">
+                                </tds-select>
+                                <tds-error>
+                                    Vui lòng chọn loại chiết khấu
+                                </tds-error>
+                            </tds-form-field>
+                        </div>
+                        <tds-form-field class="w-1/2">
+                            <tds-input-number formControlName="applyDiscountValue" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                            <tds-error>
+                                Vui lòng nhập giá trị chiết khấu
+                            </tds-error>
+                        </tds-form-field>
+                    </div>
+                </div>
+                <!-- apply for -->
+                <div class="flex flex-row items-center justify-between w-1/2">
+                    <span class="text-neutral-1-900 text-body-2 font-semibold">
+                        Tiền chiết khấu tối đa
+                    </span>
+                    <tds-form-field class="w-2/3">
+                        <tds-input-number formControlName="maximumDiscountValue" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                        <tds-error>
+                            Vui lòng nhập giá trị chiết khấu tối đa
+                        </tds-error>
+                    </tds-form-field>
+                </div>
+                <!-- discount on -->
+                <div class="flex flex-row items-start justify-between w-1/2">
+                    <span class="text-neutral-1-900 text-body-2 font-semibold">
+                        Chiết khấu trên
+                    </span>
+                    <tds-radio-group class="flex flex-row w-2/3" formControlName="discountOn">
+                        <label tds-radio value="1" class="w-1/2">Trên đơn hàng</label>
+                        <label tds-radio value="2" class="w-1/2">Trên sản phẩm cụ thể</label>
+                    </tds-radio-group>
+                </div>
+
+                <div class="h-full">
+                    <tds-table #basicTable [listData]="data.value.discountOnProduct" [showPagination]="false" [outerBordered]="true">
+                        <thead>
+                              <tr>
+                                    <th>STT</th>
+                                    <th>Sản phẩm</th>
+                                    <th>Giá sản phẩm</th>
+                                    <th>Giá sau giảm</th>
+                                    <th [align]="'right'">Thao tác</th>
+                              </tr>
+                        </thead>
+                        <tbody>
+                            <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
+                                <tr>
+                                    <td [width]="'48px'">{{ data.id }}</td>
+                                    <td [width]="'560px'">
+                                        <tds-form-field class="w-full">
+                                            <tds-select valueField="id" textField="name" placeholder='Chọn sản phẩm' [placeholder]="productList[0].name"
+                                                disabledField="isActive" [required]='true'
+                                                [data]="productList" [allowClear]="true"
+                                                (selectChange)="onSelectProduct($event,i)">
+                                            </tds-select>
+                                            <tds-error>
+                                                Vui lòng chọn sản phẩm
+                                            </tds-error>
+                                        </tds-form-field>
+                                    </td>
+                                    <td>{{ data.price | number }}</td>
+                                    <td>{{ data.applyDiscountPrice | number }}</td>
+                                    <td [align]="'right'">
+                                        <button tds-button-icon color="secondary">
+                                            <span class="flex items-center">
+                                              <i class="tdsi-trash-fill text-lg leading-none"></i>
+                                            </span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                            <tr>
+                                <td colspan="5">
+                                    <button tds-button color="primary" (click)="addNewDiscountProduct()">
+                                        <span class="flex items-center">
+                                          <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+                                          <span class="text-body-2 font-semibold">Thêm mới</span>
+                                        </span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </tds-table>
+                </div>
+            </div>
+        </tds-tab>
+        <tds-tab title="Danh sách coupon">
+    
+        </tds-tab>
+    </tds-tabset>
+</form>
