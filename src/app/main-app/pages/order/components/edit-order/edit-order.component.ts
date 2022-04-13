@@ -1,3 +1,4 @@
+import { FilterObjDTO, OdataProductService } from './../../../../services/mock-odata/odata-product.service';
 import { TDSHelperObject } from 'tmt-tang-ui';
 import { FastSaleOrderHandler } from './../../../../services/handlers/fast-sale-order.handler';
 import { CommonService } from 'src/app/main-app/services/common.service';
@@ -8,11 +9,10 @@ import { TAuthService } from 'src/app/lib';
 import { UserInitDTO } from 'src/app/lib/dto';
 import { CheckAddressDTO, DataSuggestionDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SaleOnlineFacebookCommentFilterResultDTO, SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
-import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier-order.service';
 import { SaleOnline_FacebookCommentService } from 'src/app/main-app/services/sale-online-facebook-comment.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { TDSModalRef, TDSModalService, TDSSafeAny, TDSMessageService, TACheckboxChange, TDSHelperString } from 'tmt-tang-ui';
-import { ProductService } from 'src/app/main-app/services/product.server';
+import { ProductService } from 'src/app/main-app/services/product.service';
 import { GetInventoryDTO, ValueGetInventoryDTO } from 'src/app/main-app/dto/product/product.dto';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.server';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
@@ -24,6 +24,9 @@ import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.
 import { SaleOnline_OrderHandler } from 'src/app/main-app/services/handlers/sale-online-order.handler';
 import { Observable } from 'rxjs';
 import { CarrierHandler } from 'src/app/main-app/services/handlers/carier.handler';
+import { PartnerService } from 'src/app/main-app/services/partner.service';
+import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
+import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 
 @Component({
   selector: 'edit-order',
@@ -73,14 +76,16 @@ export class EditOrderComponent implements OnInit {
     private viewContainerRef: ViewContainerRef,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private saleOnline_FacebookCommentService: SaleOnline_FacebookCommentService,
-    private deliveryCarrierService: DeliveryCarrierService,
     private productService: ProductService,
     private applicationUserService: ApplicationUserService,
     private commonService: CommonService,
     private fastSaleOrderService: FastSaleOrderService,
     private saleOnline_OrderHandler: SaleOnline_OrderHandler,
     private fastSaleOrderHandler: FastSaleOrderHandler,
-    private carrierHandler: CarrierHandler
+    private carrierHandler: CarrierHandler,
+    private partnerService: PartnerService,
+    private odataProductService: OdataProductService,
+    private deliveryCarrierService: DeliveryCarrierService,
   ) { }
 
   ngOnInit(): void {
@@ -93,17 +98,33 @@ export class EditOrderComponent implements OnInit {
     this.loadData();
   }
 
+  loadProduct(textSearch: string) {
+    let filterObj: FilterObjDTO = {
+      searchText: textSearch,
+    }
+
+    let pageSize = 20;
+    let pageIndex = 1;
+
+    let filters = this.odataProductService.buildFilter(filterObj);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
+
+    this.odataProductService.getView(params).subscribe((res: TDSSafeAny) => {
+        console.log("view product:", res);
+    });
+  }
+
   onSave(type: TDSSafeAny) {
-    debugger;
     let model = this.prepareOrderModel();
 
     this.saleOnline_OrderService.update(this.idOrder, model).subscribe((res: any) => {
       if(type == this.saveType.orderSave) {
         this.message.success(Message.Order.UpdateSuccess);
-        this.onCancelSuccess(res);
+        this.onCancel(true);
       }
       else if(type == this.saveType.orderPrint) {
         // TODO: in
+        this.onCancel(true);
       }
       else if(this.isEnableCreateOrder) {
         let modelSale = this.prepareSaleModel();
@@ -125,7 +146,7 @@ export class EditOrderComponent implements OnInit {
 
               }
 
-              this.onCancelSuccess(data);
+              this.onCancel(data);
 
             } else {
               this.message.error(data.Message);
@@ -158,7 +179,7 @@ export class EditOrderComponent implements OnInit {
   }
 
   loadDeliveryCarrier() {
-    this.deliveryCarrierService.get().subscribe(res => {
+    this.deliveryCarrierService.get().subscribe((res: any) => {
       this.lstDeliveryCarrier = res.value;
     });
   }
@@ -177,6 +198,7 @@ export class EditOrderComponent implements OnInit {
 
   loadPartnerStatus() {
     this.commonService.getPartnerStatus().subscribe(res => {
+      console.log(res);
       this.lstPartnerStatus = res;
     });
   }
@@ -197,7 +219,9 @@ export class EditOrderComponent implements OnInit {
   }
 
   onSearchProduct(event: any) {
+    let text = event.target.value;
 
+    this.loadProduct(text);
   }
 
   onAddProduct() {
@@ -403,8 +427,6 @@ export class EditOrderComponent implements OnInit {
     this.shipServices.length = 0;
     this.enableInsuranceFee = false;
     this.isLoadCarrier = true;
-
-    debugger;
 
     this.saleOnline_OrderHandler.changeCarrier(this.defaultBill, this.formEditOrder, event, this.shipExtraServices).subscribe(res => {
       this.enableInsuranceFee = res.EnableInsuranceFee;
@@ -618,8 +640,6 @@ export class EditOrderComponent implements OnInit {
     this.initOkieLa();
     this.initNinjaVan();
 
-    debugger;
-
     this.defaultBill.Address = formValue.Address || formValue.Street;
 
     if (formValue["Address"]) {
@@ -738,8 +758,6 @@ export class EditOrderComponent implements OnInit {
   onChangeAddress(event: CheckAddressDTO) {
     let formControls = this.formEditOrder.controls;
 
-    debugger;
-
     formControls["Address"].setValue(event.Street);
 
     formControls["City"].setValue( event.City?.Code ? {
@@ -801,12 +819,36 @@ export class EditOrderComponent implements OnInit {
     });
   }
 
-  onCancel() {
-    this.modalRef.destroy(null);
+  getStatusColor(): string {
+    let partner = this.formEditOrder.controls["Partner"].value;
+
+    if(partner) {
+      let value = this.lstPartnerStatus.find(x => x.text == partner.StatusText);
+      if(value) return value.value;
+      else return '#e5e7eb';
+    }
+
+    else return '#e5e7eb';
   }
 
-  onCancelSuccess(data: TDSSafeAny) {
-    this.modalRef.destroy(data);
+  selectStatus(status: PartnerStatusDTO) {
+    let partner = this.formEditOrder.controls["Partner"].value;
+
+    if(partner) {
+      let data = {
+        status: `${status.value}_${status.text}`
+      }
+
+      this.partnerService.updateStatus(partner.Id, data).subscribe(res => {
+        this.message.success(Message.Partner.UpdateStatus);
+        partner.StatusText = status.text;
+        this.formEditOrder.controls["Partner"].setValue(partner);
+      });
+    }
+  }
+
+  onCancel(result: TDSSafeAny) {
+    this.modalRef.destroy(result);
   }
 
 }

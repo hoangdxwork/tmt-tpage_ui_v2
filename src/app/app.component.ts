@@ -53,8 +53,8 @@ export class AppComponent {
         refreshTokenSubject: new BehaviorSubject<any>(null),
       },
       cache: {
-        timerPermission: 0,
-        timerApi: 0,
+        timerPermission: 100,
+        timerApi: 100,
         companyid: "1"
       }
     };

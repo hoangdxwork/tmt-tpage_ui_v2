@@ -13,6 +13,7 @@ export class SharedService extends BaseSevice {
   prefix: string = "";
   table: string = "";
   baseRestApi: string = "";
+  _keyCacheConfigs = "_keycache_configs";
 
   constructor(private apiService: TCommonService) {
     super(apiService)
@@ -24,7 +25,7 @@ export class SharedService extends BaseSevice {
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<SaleConfigsDTO>(api, null);
+    return this.apiService.getCacheData<SaleConfigsDTO>(api, null);
   }
 
   getCurrentCompany(): Observable<TDSSafeAny> {
@@ -33,7 +34,21 @@ export class SharedService extends BaseSevice {
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<CompanyCurrentDTO>(api, null);
+    return this.apiService.getCacheData<CompanyCurrentDTO>(api, null);
   }
+
+  deleteKeyCacheConfigs() {
+    this.apiService.removeCacheAPI(this._keyCacheConfigs);
+  }
+
+  saveImageV2(param: any): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/api/upload/saveimagev2`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getFileUpload(api, param);
+  }
+
 
 }

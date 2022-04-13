@@ -15,7 +15,6 @@ import { UpdateStatusOrderComponent } from './components/update-status-order/upd
 import { MainSharedModule } from '../../shared/shared.module';
 import { PipeModule } from '../../shared/pipe/pipe.module';
 import { TagService } from '../../services/tag.service';
-import { DeliveryCarrierService } from '../../services/delivery-carrier-order.service';
 import { DuplicateUserComponent } from './components/duplicate-user/duplicate-user.component';
 import { EditOrderComponent } from './components/edit-order/edit-order.component';
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
@@ -30,6 +29,8 @@ import { PartnerService } from '../../services/partner.service';
 import { UpdateInfoPartnerComponent } from './components/update-info-partner/update-info-partner.component';
 import { PrinterService } from '../../services/printer.service';
 import { ExcelExportService } from '../../services/excel-export.service';
+import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
+import { OdataProductService } from '../../services/mock-odata/odata-product.service';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -42,7 +43,8 @@ const SERVICES = [
   PartnerService,
   PrinterService,
   ExcelExportService,
-  SaleOnline_OrderHandler
+  SaleOnline_OrderHandler,
+  OdataProductService
 ]
 
 @NgModule({

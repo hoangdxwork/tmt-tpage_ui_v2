@@ -1,7 +1,7 @@
 import { SaleOnline_OrderDTO, UpdateStatusTextSaleOnlineDTO } from './../../../../dto/saleonlineorder/sale-online-order.dto';
 import { Component, Input, OnInit } from '@angular/core';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TDSMessageService, TDSModalRef } from 'tmt-tang-ui';
+import { TDSMessageService, TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
 
 @Component({
   selector: 'update-status-order',
@@ -66,12 +66,12 @@ export class UpdateStatusOrderComponent implements OnInit {
 
     this.saleOnline_OrderService.updateStatusTextSaleOnline({model: model}).subscribe(res => {
       this.message.success("Cập nhật thành công.");
-      this.onCancel();
+      this.onCancel(true);
     });
   }
 
-  onCancel() {
-    this.modal.destroy(null);
+  onCancel(result: TDSSafeAny) {
+    this.modal.destroy(result);
   }
 
 }

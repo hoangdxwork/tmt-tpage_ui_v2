@@ -11,7 +11,6 @@ import { FastSaleOrderService } from '../../services/fast-sale-order.service';
 import { OdataFastSaleOrderService } from '../../services/mock-odata/odata-fastsaleorder.service';
 import { TagService } from '../../services/tag.service';
 import { PipeModule } from '../../shared/pipe/pipe.module';
-import { DeliveryCarrierService } from '../../services/delivery-carrier-order.service';
 import { ActionDropdownComponent } from './components/action-dropdown/action-dropdown.component';
 import { FilterOptionsComponent } from './components/filter-option/filter-options.component';
 import { ConfigColumComponent } from './components/config-column/config-column.component';
@@ -26,6 +25,8 @@ import { AccountRegisterPaymentService } from '../../services/account-register-p
 import { ModalSearchPartnerComponent } from './components/modal-search-partner/modal-search-partner.component';
 import { ModalAddProductComponent } from './components/modal-add-product/modal-add-product.component';
 import { CommonService } from '../../services/common.service';
+import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
+import { PartnerService } from '../../services/partner.service';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -36,6 +37,7 @@ const SERVICES = [
   ExcelExportService,
   AccountRegisterPaymentService,
   CommonService,
+  PartnerService
 ]
 
 @NgModule({

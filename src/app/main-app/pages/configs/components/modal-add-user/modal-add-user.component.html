@@ -1,0 +1,68 @@
+<tds-spin [spinning]="isLoading">
+
+    <form [formGroup]="formUpdateUser" (ngSubmit)="onSubmitUpdateUser()" class="flex flex-col gap-y-6">
+        <div class="flex gap-x-8 w-full items-center">
+            <div>
+                <tds-avatar class="bg-white  text-white" [size]="108"
+                    tdsSrc="assets/images/config/ImgUserModalUpdate.png">
+                </tds-avatar>
+            </div>
+            <div class="flex flex-col w-full gap-y-4">
+                <tds-form-field class="w-full">
+                    <tds-label>Tên nhân viên</tds-label>
+                    <input formGroupName="nameUser" tdsInput autocomplete="off" [required]="true"
+                        placeholder="Nhập tên nhân viên" />
+                    <tds-error>Vui lòng nhập tên nhân viên</tds-error>
+                </tds-form-field>
+                <div class="flex items-center gap-x-2">
+                    <tds-switch formControlName="status" size="md" [checked]="true"></tds-switch>
+                    <span>Trạng thái</span>
+                </div>
+            </div>
+        </div>
+        <div class="w-full grid grid-cols-2 gap-x-12 gap-y-4">
+            <tds-form-field class="w-full">
+                <tds-label>Số điện thoại</tds-label>
+                <input formControlName="phone" tdsInput autocomplete="off" [required]="true"
+                    placeholder="Nhập tên nhân viên" />
+                <tds-error>Vui lòng nhập số điện thoại</tds-error>
+            </tds-form-field>
+            <tds-form-field class="w-full">
+                <tds-label>Email</tds-label>
+                <input formControlName="email" tdsInput autocomplete="off" [required]="true" placeholder="Nhập email" />
+                <tds-error>Vui lòng email</tds-error>
+            </tds-form-field>
+            <tds-form-field class="col-span-2">
+                <tds-label>Tài khoản</tds-label>
+                <input formControlName="userName" [disabled]="true" [required]="true" tdsInput autocomplete="off"
+                    placeholder="Nhập tên tài khoản" />
+                <tds-error>Vui lòng nhập tên tài khoản</tds-error>
+            </tds-form-field>
+            <tds-form-field class="w-full">
+                <tds-label>Mật Khẩu</tds-label>
+                <input formControlName="password" [disabled]="true" [required]="true" type="password" tdsInput
+                    placeholder="Nhập mật khẩu" autocomplete="off" />
+                <tds-error>Vui lòng nhập mật khẩu</tds-error>
+
+            </tds-form-field>
+            <tds-form-field class="w-full">
+                <tds-label>Nhập lại mật Khẩu</tds-label>
+                <input formControlName="passwordConfirm" [disabled]="true" [required]="true" type="password" tdsInput
+                    placeholder="Nhập lại mật khẩu" autocomplete="off" />
+                <tds-error>Vui lòng nhập lại mật khẩu</tds-error>
+
+            </tds-form-field>
+            <tds-form-field class="col-span-2">
+                <tds-label> Phân quyền </tds-label>
+                <tds-select formControlName="decentralization" valueField="id" textField="name" [required]="true"
+                    placeholder='Chọn' (ngModelChange)="onModelChange($event)" [data]="listData" mode="multiple">
+                </tds-select>
+            </tds-form-field>
+        </div>
+        <div class="w-full flex justify-end p-4" *tdsModalFooter>
+            <button tds-button class="mr-2" color="secondary" (click)="cancel()">Hủy bỏ</button>
+            <button tds-button type="submit" color="primary" [disabled]="formUpdateUser.invalid" (click)="save()">Lưu
+                thay đổi</button>
+        </div>
+    </form>
+</tds-spin>

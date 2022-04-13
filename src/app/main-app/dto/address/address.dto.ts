@@ -1,60 +1,58 @@
 export interface AddressDTO {
   Id: string;
-  PartnerId?: number;
+  PartnerId: number;
   CityCode: string;
   CityName: string;
   DistrictCode: string;
   DistrictName: string;
   WardCode: string;
   WardName: string;
-  IsDefault?: boolean;
+  IsDefault: boolean;
   Street: string;
-  Address: string;
+  Address: string | undefined;
 }
 
 export interface DataSuggestionDTO {
   Street: string;
-  CityCode?: number;
+  CityCode: string;
   CityName: string;
-  DistrictCode?: number;
+  DistrictCode: string;
   DistrictName: string;
-  WardCode?: number;
+  WardCode: string;
   WardName: string;
 }
 
 export interface CheckAddressDTO {
-  Street: string;
+  Street?: string;
   City?: CityDTO;
   District?: DistrictDTO;
   Ward?: WardDTO;
 }
 
 export interface CityDTO {
-  Code?: number;
-  Name: string;
+  Code?: string | undefined;
+  Name?: string | undefined;
 }
 
 export interface DistrictDTO {
-  CityCode?: number;
+  CityCode?: string;
   CityName?: string;
-  Code?: number;
-  Name: string;
+  Code?: string;
+  Name?: string;
 }
 
 export interface WardDTO {
-  CityCode?: number;
+  CityCode?: string;
   CityName?: string;
-  DistrictCode?: number;
+  DistrictCode?: string;
   DistrictName?: string;
-  Code?: number;
-  Name: string;
+  Code?: string;
+  Name?: string;
 }
 
 export interface ResultCheckAddressDTO {
-  Telephone: string;
-
+  Telephone?: any;
   Address: string;
-
   ShortAddress: string;
   CityCode: string;
   CityName: string;
@@ -62,6 +60,5 @@ export interface ResultCheckAddressDTO {
   DistrictName: string;
   WardCode: string;
   WardName: string;
-
-  Score?: number;
+  Score: number;
 }

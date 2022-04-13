@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ConfigAutoChatComponent } from './config-auto-chat.component';
+import { ModalUpdateShiftComponent } from './modal-update-shift.component';
 
-describe('ConfigAutoChatComponent', () => {
-  let component: ConfigAutoChatComponent;
-  let fixture: ComponentFixture<ConfigAutoChatComponent>;
+describe('ModalUpdateShiftComponent', () => {
+  let component: ModalUpdateShiftComponent;
+  let fixture: ComponentFixture<ModalUpdateShiftComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ConfigAutoChatComponent ]
+      declarations: [ ModalUpdateShiftComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ConfigAutoChatComponent);
+    fixture = TestBed.createComponent(ModalUpdateShiftComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

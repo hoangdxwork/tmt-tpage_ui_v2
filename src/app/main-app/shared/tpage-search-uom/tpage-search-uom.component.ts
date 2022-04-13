@@ -1,5 +1,5 @@
 import { ProductUOMDTO } from './../../dto/product/product-uom.dto';
-import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSHelperString } from 'tmt-tang-ui';
+import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSHelperString, TDSModalRef } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ProductUOMService } from '../../services/product-uom.service';
 import { TpageAddUOMComponent } from '../tpage-add-uom/tpage-add-uom.component';
@@ -16,6 +16,7 @@ export class TpageSearchUOMComponent implements OnInit {
 
   constructor(
     private modal: TDSModalService,
+    private modalRef: TDSModalRef,
     private viewContainerRef: ViewContainerRef,
     private productUOMService: ProductUOMService
   ) { }
@@ -56,6 +57,10 @@ export class TpageSearchUOMComponent implements OnInit {
     }
 
     this.lstSearch = this.lstProductUOM.filter(x => (x.Name).toLowerCase().indexOf(text) !== -1 || (x.ShowUOMType).toLowerCase().indexOf(text) !== -1);
+  }
+
+  onCancel(result: TDSSafeAny) {
+    this.modalRef.destroy(result);
   }
 
 }

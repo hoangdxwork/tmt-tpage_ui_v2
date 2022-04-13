@@ -50,7 +50,7 @@ export class AddressService extends BaseSevice {
       }));
   }
 
-  getDistricts(cityCode: number | undefined): Observable<any> {
+  getDistricts(cityCode: string | undefined): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getdistricts(${cityCode})`,
       method: TApiMethodType.post,
@@ -72,7 +72,7 @@ export class AddressService extends BaseSevice {
       }));
   }
 
-  getWards(districtCode: number | undefined): Observable<any> {
+  getWards(districtCode: string | undefined): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getwards(${districtCode})`,
       method: TApiMethodType.post,

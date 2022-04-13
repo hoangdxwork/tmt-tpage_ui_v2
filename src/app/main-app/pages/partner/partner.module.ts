@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 
 import { PartnerRoutingModule } from './partner-routing.module';
 import { PartnerComponent } from './partner/partner.component';
-import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSFilterStatusModule, TDSSpinnerModule, TDSAlertModule, TDSNotificationModule } from 'tmt-tang-ui';
+import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSFilterStatusModule, TDSSpinnerModule, TDSAlertModule, TDSNotificationModule, TDSUploadModule } from 'tmt-tang-ui';
 import { OdataPartnerService } from '../../services/mock-odata/odata-partner.service';
 import { CommonService } from '../../services/common.service';
 import { TDSMessageModule } from 'tmt-tang-ui';
@@ -63,6 +63,7 @@ const SERVICES = [
     TDSTableModule,
     TDSTagModule,
     TDSAvatarModule,
+    TDSUploadModule,
     TDSBadgeModule,
     TDSPopoverModule,
     TDSSelectModule ,
