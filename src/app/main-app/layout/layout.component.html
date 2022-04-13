@@ -2,12 +2,12 @@
     <div class="w-full dark">
         <tds-header urlLogoText='assets/images/tpos-text.svg'>
             <div class="inline-flex tds-header-toolbar-right items-center">
-           
+
                 <div>
                     <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)"></tpage-team-dropdown>
                 </div>
-              
-                <button tds-flat-button-icon size="md"  class="ml-2 mr-4">
+
+                <button tds-flat-button-icon size="md" class="ml-2 mr-4">
                     <span class="flex items-center">
                         <i class="tdsi-bell-line text-xl leading-5"></i>
                     </span>
@@ -55,8 +55,8 @@
     <div class="w-full h-full flex-auto flex overflow-hidden">
         <div class="h-full flex-shrink overflow-hidden" [style.min-width.px]="!inlineCollapsed ? 260 : 64"
             [style.width.px]="!inlineCollapsed ? 260 : 64">
-            <tds-menu [data]="lstMenu" [mode]="'light'" (onOpenChange)="onOpenChange($event)"
-                (onClickItem)="onClickItem()">
+            <tds-menu [data]="lstMenu" [mode]="'light'" [inlineCollapsed]="inlineCollapsed"
+                (onOpenChange)="onOpenChange($event)">
             </tds-menu>
         </div>
         <div class="flex flex-auto h-full overflow-hidden">
