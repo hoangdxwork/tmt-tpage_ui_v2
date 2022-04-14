@@ -4,7 +4,7 @@ import { ModalSendMessageComponent } from './../components/modal-send-message/mo
 import { ModalConvertPartnerComponent } from './../components/modal-convert-partner/modal-convert-partner.component';
 import { ModalEditPartnerComponent } from './../components/modal-edit-partner/modal-edit-partner.component';
 
-import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef, ElementRef } from '@angular/core';
 import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperArray, TDSMessageService, TDSTableQueryParams, TDSHelperString } from 'tmt-tang-ui';
 import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
 import { OperatorEnum, SortEnum, THelperCacheService } from 'src/app/lib';
@@ -75,7 +75,10 @@ export class PartnerComponent implements OnInit, OnDestroy {
 
   expandSet = new Set<number>();
   private _destroy = new Subject<void>();
-
+  widthTable: number = 0
+  widthClass!: string
+  @ViewChild('setWidth') setWidth!:ElementRef
+  
   constructor(private modalService: TDSModalService,
       private odataPartnerService: OdataPartnerService,
       private cacheApi: THelperCacheService,
@@ -204,6 +207,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
     } else {
       this.expandSet.delete(id);
     }
+    this.widthTable = this.setWidth.nativeElement.offsetWidth - 32
   }
 
   checkStatusText(text: string) {
