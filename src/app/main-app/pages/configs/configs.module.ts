@@ -37,11 +37,11 @@ import { ProductService } from '../../services/product.service';
 import { OdataProductService } from '../../services/mock-odata/odata-product.service';
 import { ModalUpdateUserComponent } from './components/modal-update-user/modal-update-user.component';
 import { ModalChangePasswordUserComponent } from './components/modal-change-password-user/modal-change-password-user.component';
-import { DecentralizePageManagementComponent } from './config-users/config-users-operation/decentralize-page-management/decentralize-page-management.component';
 import { ModalAddUserComponent } from './components/modal-add-user/modal-add-user.component';
 import { ModalListShiftComponent } from './components/modal-list-shift/modal-list-shift.component';
 import { ModalAddShiftComponent } from './components/modal-add-shift/modal-add-shift.component';
 import { ModalUpdateShiftComponent } from './components/modal-update-shift/modal-update-shift.component';
+import { ConfigDecentralizePageComponent } from './config-users/config-decentralize-page/config-decentralize-page.component';
 import { TDSAvatarModule, TDSBadgeModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSDatePickerModule, TDSDropDownModule, TDSFormFieldModule, TDSImageModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSModalService, TDSPopoverModule, TDSRadioModule, TDSSelectModule, TDSSpinnerModule, TDSSwitchModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTimePickerModule, TDSToolTipModule, TDSUploadModule } from 'tmt-tang-ui';
 import { OdataTPosLoggingService } from '../../services/mock-odata/odata-tpos-logging.service';
 import { OdataSaleCouponProgramService } from '../../services/mock-odata/odata-sale-coupon-program.service';
@@ -89,11 +89,11 @@ const SERVICES = [
     ConfigAddPromotionComboComponent,
     ModalUpdateUserComponent,
     ModalChangePasswordUserComponent,
-    DecentralizePageManagementComponent,
     ModalAddUserComponent,
     ModalListShiftComponent,
     ModalAddShiftComponent,
     ModalUpdateShiftComponent,
+    ConfigDecentralizePageComponent
   ],
   imports: [
     CommonModule,

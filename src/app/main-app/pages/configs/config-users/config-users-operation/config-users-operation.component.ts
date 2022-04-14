@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { ModalAddUserComponent } from './../../components/modal-add-user/modal-add-user.component';
 import { TDSModalService, TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
@@ -21,7 +22,8 @@ export class ConfigUsersOperationComponent implements OnInit {
   listOfDataUser: readonly DataUser[] = [];
   constructor(
     private modalService: TDSModalService,
-    private viewContainerRef: ViewContainerRef
+    private viewContainerRef: ViewContainerRef,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -66,8 +68,9 @@ export class ConfigUsersOperationComponent implements OnInit {
     });
   }
 
-  decentralizePageManagement(data:TDSSafeAny){
-    this.currentComponent = 2;
+  decentralizePageManagement(){
+    var returnUrl = '/configs/users/decentralize'
+    this.router.navigate([returnUrl]);
   }
 
   getCurrentComponent(i:number){
