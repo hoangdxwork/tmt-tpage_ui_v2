@@ -27,7 +27,7 @@
                                 </span>
                             </button>
                             <tds-dropdown-menu #menu="tdsDropdownMenu">
-                                <div *ngFor="let item of dropdownList" class="w-full">
+                                <div *ngFor="let item of dropdownList" class="w-full" (click)="onActive(item)">
                                     <div tds-dropdown-item class="px-3 py-4">
                                         <a class="text-neutral-1-900 text-body-2 font-regular">{{item.name}}</a>
                                     </div>
@@ -35,25 +35,27 @@
                             </tds-dropdown-menu>
                         </tds-button-group>
                         <tds-form-field class="w-3/4">
-                            <input tdsInput class="text-neutral-1-900" placeholder="Tìm kiếm sản phẩm" autocomplete="off"/>
+                            <input tdsInput class="text-neutral-1-900" placeholder="Tìm kiếm sản phẩm" autocomplete="off" (keyup.enter)="onSearch($event)" />
                             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
                         </tds-form-field>
                     </div>
                 </div>
                 <div class="w-full h-full pb-2.5">
-                    <tds-table #rowSelectionTable 
-                        [listData]="TableData" 
-                        [showSizeChanger]="true" 
-                        [loading]="loading" 
-                        [scroll]="{y:'auto'}" 
-                        [pageSize]="20" 
-                        [total]="TableData.length" 
+                    <tds-table #rowSelectionTable
+                        [listData]="lstData"
+                        [showSizeChanger]="true"
+                        [loading]="loading"
+                        [scroll]="{y:'auto'}"
+                        [pageSize]="20"
+                        [total]="count"
+                        [loading]="isLoading"
+                        (clickRefresh)="refreshData()"
                         (currentPageDataChange)="onCurrentPageDataChange($event)"
                         class="tds-promotion-table">
                         <thead>
                             <tr class="text-neutral-1-900 text-body-2 font-semibold">
                                 <th width="32px" [align]="'center'"></th>
-                                <th width="44px" [align]="'center'" class="hover:bg-neutral-3-100" [checked]="checked" 
+                                <th width="44px" [align]="'center'" class="hover:bg-neutral-3-100" [checked]="checked"
                                     [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)">
                                 </th>
                                 <th>Tên</th>
@@ -64,64 +66,65 @@
                     </thead>
                     <tbody>
                         <ng-template ngFor let-data let-i="index" [ngForOf]="rowSelectionTable.data" let-odd='odd'>
-                            <tr class="text-neutral-1-900 text-body-2 font-regular {{setOfCheckedId.has(data.id) ? 'bg-background-6':''}}">
-                                <td [expand]="expandSet.has(data.id)" (expandChange)="onExpandChange(data.id, $event)"></td>
-                                <td [checked]="setOfCheckedId.has(data.id)" [disabled]="data.disabled"
-                                    (checkedChange)="onItemChecked(data.id, $event)"></td>
-                                <td>{{ data.name }}</td>
+                            <tr class="text-neutral-1-900 text-body-2 font-regular {{setOfCheckedId.has(data.Id) ? 'bg-background-6':''}}">
+                                <td [expand]="expandSet.has(data.Id)" (expandChange)="onExpandChange(data.Id, $event)"></td>
+                                <td [checked]="setOfCheckedId.has(data.Id)"
+                                    (checkedChange)="onItemChecked(data.Id, $event)"></td>
+                                <td>{{ data.Name }}</td>
                                 <td>
                                     <span class="flex items-center">
-                                        <i class="{{ data.active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
+                                        <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
                                     </span>
                                 </td>
-                                <td>{{ data.createdDate | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                                <td>{{ data.DateCreated | date:'dd/MM/yyyy HH:mm:ss' }}</td>
                                 <td>
                                     <button tds-button-icon color="secondary" size="sm" class=" mr-2" (click)="showEditModal(i)">
                                         <span class="flex items-center">
                                             <i class="tdsi-edit-fill text-xl leading-none"></i>
                                         </span>
                                     </button>
-                                    <button tds-button-icon color="secondary" size="sm" (click)="showRemoveModal(i)">
+                                    <button tds-button-icon color="secondary" size="sm" (click)="showRemoveModal(data.Id)">
                                         <span class="flex items-center">
                                             <i class="tdsi-trash-fill text-xl leading-none"></i>
                                         </span>
                                     </button>
                                 </td>
                             </tr>
-                            <tr [expand]="expandSet.has(data.id)"
+                            <tr [expand]="expandSet.has(data.Id)"
                                 class="border-b border-neutral-2-100 text-neutral-1-900 bg-neutral-3-50">
-                                <div class="bg-white rounded-xl">
-                                    <tds-tabset class="w-full">
-                                        <tds-tab title="Chi tiết coupon">
-                                            <tds-table #basicTable [listData]="data.coupon" [showPagination]="false" class="w-full">
+                                <div class="bg-white rounded-xl p-4">
+                                  <span class="italic text-xs text-success-400"> Chức năng chưa phát triển </span>
+                                    <!-- <tds-tabset class="w-full">
+                                        <tds-tab title="Chi tiết coupon" *ngIf="data.Details">
+                                            <tds-table #basicTable [listData]="data.Details" [showPagination]="false" class="w-full">
                                                 <thead>
                                                       <tr>
-                                                            <th width="185px">Tên</th>
-                                                            <th width="185px">Ngày hết hạn</th>
-                                                            <th width="100%">Chương trình</th>
-                                                            <th width="185px">Khách hàng</th>
-                                                            <th width="185px">Tham chiếu ĐH </th>
-                                                            <th width="185px">ĐH áp dụng</th>
-                                                            <th width="185px">Trạng thái</th>
+                                                          <th width="185px">Tên</th>
+                                                          <th width="185px">Ngày hết hạn</th>
+                                                          <th width="100%">Chương trình</th>
+                                                          <th width="185px">Khách hàng</th>
+                                                          <th width="185px">Tham chiếu ĐH </th>
+                                                          <th width="185px">ĐH áp dụng</th>
+                                                          <th width="185px">Trạng thái</th>
                                                       </tr>
                                                 </thead>
                                                 <tbody>
                                                     <ng-template ngFor let-data [ngForOf]="basicTable.data" >
                                                         <tr>
-                                                            <td>{{ data.couponCode }}</td>
+                                                            <td>{{ data.Reward }}</td>
                                                             <td>{{ data.expiredDate | date:'dd/MM/yyyy HH:mm:ss' }}</td>
                                                             <td>{{ data.couponName }}</td>
                                                             <td>{{ data.customer }}</td>
                                                             <td>{{ data.referenceOrder }}</td>
                                                             <td>{{ data.appliedOrder }}</td>
-                                                            <td>{{ data.status ? 'còn giá trị' : 'hết hiệu lực' }}</td>
+                                                            <td>{{ data.Active ? 'còn giá trị' : 'hết hiệu lực' }}</td>
                                                         </tr>
                                                     </ng-template>
                                                 </tbody>
                                             </tds-table>
                                         </tds-tab>
-    
-                                    </tds-tabset>
+
+                                    </tds-tabset> -->
                                 </div>
                             </tr>
                         </ng-template>
