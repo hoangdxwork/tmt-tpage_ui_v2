@@ -3,15 +3,16 @@ import { Observable } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperString,  TDSSafeAny } from 'tmt-tang-ui';
+import { SaleCouponProgramDTO } from '../../dto/configs/sale-coupon-program.dto';
 import { ODataCRMTagDTO } from '../../dto/crm-tag/odata-crmtag.dto';
-import { CTMTagFilterObjDTO } from '../../dto/odata/odata.dto';
+import { CTMTagFilterObjDTO, ODataResponsesDTO, SaleCouponProgramFilterObjDTO, TposLoggingFilterObjDTO } from '../../dto/odata/odata.dto';
 import { BaseSevice } from '../base.service';
 
 @Injectable()
-export class OdataCRMTagService extends BaseSevice {
+export class OdataSaleCouponProgramService extends BaseSevice {
 
   prefix: string = "odata";
-  table: string = "CRMTag";
+  table: string = "SaleCouponProgram";
   baseRestApi: string = "";
 
   constructor(private apiService: TCommonService,
@@ -20,16 +21,16 @@ export class OdataCRMTagService extends BaseSevice {
     super(apiService)
   }
 
-  getView(params: string): Observable<TDSSafeAny>{
+  getView(params: string): Observable<ODataResponsesDTO<SaleCouponProgramDTO>>{
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}?${params}&$count=true`,
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<ODataCRMTagDTO>(api, null);
+    return this.apiService.getData<ODataResponsesDTO<SaleCouponProgramDTO>>(api, null);
   }
 
-  public buildFilter(filterObj: CTMTagFilterObjDTO) {
+  public buildFilter(filterObj: SaleCouponProgramFilterObjDTO) {
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",
         filters: []
@@ -41,6 +42,15 @@ export class OdataCRMTagService extends BaseSevice {
               { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText }
             ],
             logic: 'or'
+        })
+    }
+
+    if(TDSHelperString.hasValueString(filterObj.programType)) {
+        dataFilter.filters.push( {
+          filters: [
+            { field: "ProgramType", operator: OperatorEnum.eq, value: filterObj.programType }
+          ],
+          logic: 'and'
         })
     }
 

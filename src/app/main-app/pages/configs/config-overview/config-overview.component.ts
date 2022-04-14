@@ -1,6 +1,9 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
-import { FormControl, Validators } from '@angular/forms';
+import { TDSSafeAny, TDSMessageService } from 'tmt-tang-ui';
+import { FormControl, Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
+import { GeneralConfigService } from 'src/app/main-app/services/general-config.service';
+import { AutoInteractionDTO, GeneralConfigUpdateDTO, ShippingStatuesDTO } from 'src/app/main-app/dto/configs/general-config.dto';
+import { Message } from 'src/app/lib/consts/message.const';
 
 @Component({
   selector: 'app-config-overview',
@@ -36,10 +39,26 @@ export class ConfigOverviewComponent implements OnInit {
   areaText2:string = '';
   areaText3:string = '';
 
-  constructor() { }
+  formGeneralConfig!: FormGroup;
+  formInteraction!: FormGroup;
+
+  lstShippingStatues: ShippingStatuesDTO[] = [];
+
+  constructor(
+    private fb: FormBuilder,
+    private generalConfigService: GeneralConfigService,
+    private message: TDSMessageService
+  ) { }
 
   ngOnInit(): void {
+    this.createFormGeneralConfig();
+    this.createFormInteraction();
+
+    this.loadShippingStatues();
+
     this.loadData();
+    this.loadInteraction();
+    this.loadInteraction();
   }
 
   loadData(){
@@ -87,7 +106,7 @@ export class ConfigOverviewComponent implements OnInit {
         name:'KH 2'
       },
     ];
-  
+
     this.deliveryStatusList = [
       {
         id:1,
@@ -131,6 +150,55 @@ export class ConfigOverviewComponent implements OnInit {
     this.areaText3 = 'Xin chào {partner.name}, hoá đơn có mã {bill.code} đã được cập nhật trạng thái giao hàng.\n{shipping.details}';
   }
 
+  loadShippingStatues() {
+    this.generalConfigService.getShippingStatues().subscribe(res => {
+      this.lstShippingStatues = res;
+    });
+  }
+
+  loadInteraction() {
+    let name = "AutoInteraction";
+    this.generalConfigService.getByName(name).subscribe((res: AutoInteractionDTO) => {
+      this.updateFormInteraction(res);
+    })
+  }
+
+  createFormGeneralConfig() {
+    this.formGeneralConfig = this.fb.group({
+      AssignOnReadup: [true],
+      AssignOnAudio: [true],
+      AssignOnShip: [true],
+      WareHouse: [null],
+      WareHouseSync: [null],
+      CustomerSync: [null]
+    });
+  }
+
+  createFormInteraction() {
+    this.formInteraction = this.fb.group({
+      IsEnableOrder: [false],
+      IsEnableShopLink: [false],
+      IsEnableShipping: [false],
+      IsEnableBill: [false],
+      IsUsingProviderTemplate: [false],
+      OrderTemplate: [null],
+      ShopLabel: [null],
+      ShopLabel2: [null],
+      BillTemplate: [null],
+      ShippingTemplate: [null],
+      ShippingStatues: [null]
+    });
+  }
+
+  updateFormGeneralConfig() {
+
+  }
+
+  updateFormInteraction(data: AutoInteractionDTO) {
+    this.formInteraction.patchValue(data);
+    console.log(this.formInteraction.value);
+  }
+
   // switch event
   onChangeOverviewSwitch1(value:boolean){
     this.enableOverview1 = value;
@@ -170,28 +238,28 @@ export class ConfigOverviewComponent implements OnInit {
 
   // select event
   onSelectShippingUnit(data:TDSSafeAny){
-    
+
   }
 
   onSelectRepository(data:TDSSafeAny){
-    
+
   }
 
   onSelectAsynRepository(data:TDSSafeAny){
-    
+
   }
 
   onSelectAsynCustomer(data:TDSSafeAny){
-    
+
   }
 
   onSelectStatus(data:TDSSafeAny){
-    
+
   }
 
   // input event
   onInputTitle1(event:TDSSafeAny){
-    
+
   }
 
   onInputTitle2(event:TDSSafeAny){
@@ -200,7 +268,7 @@ export class ConfigOverviewComponent implements OnInit {
 
   //  button event
   onAsynRepository(event:TDSSafeAny){
-    
+
   }
 
   onAsynCustomer(event:TDSSafeAny){
@@ -208,19 +276,56 @@ export class ConfigOverviewComponent implements OnInit {
   }
 
   onSaveChangeOverview(event:TDSSafeAny){
-    
+
   }
 
-  onSaveChangeAutoReact(event:TDSSafeAny){
-    
+  onSaveInteraction(event: TDSSafeAny){
+    let model = this.prepareInteraction();
+    this.generalConfigService.update(model).subscribe(res => {
+      this.message.success(Message.SaveSuccess);
+    }, error =>{
+      if(error?.error?.message) {
+        this.message.error(error?.error?.message);
+      }
+      else {
+        this.message.error(Message.ErrorOccurred);
+      }
+    });
   }
 
   onCancelOverview(event:TDSSafeAny){
-    
+
   }
 
   onCancelAutoReact(event:TDSSafeAny){
-    
+
+  }
+
+  prepareInteraction(): GeneralConfigUpdateDTO<AutoInteractionDTO> {
+
+    const formValue = this.formInteraction.value;
+
+    let value: AutoInteractionDTO = {
+      IsEnableShipping: formValue["IsEnableShipping"],
+      ShippingStatues: formValue["ShippingStatues"],
+      ShippingTemplate: formValue["ShippingTemplate"],
+      IsEnableOrder: formValue["IsEnableOrder"],
+      OrderTemplate: formValue["OrderTemplate"],
+      IsOrderReplyOnlyOnce: formValue["IsOrderReplyOnlyOnce"],
+      IsEnableShopLink: formValue["IsEnableShopLink"],
+      ShopLabel: formValue["ShopLabel"],
+      ShopLabel2: formValue["ShopLabel2"],
+      IsEnableBill: formValue["IsEnableBill"],
+      IsUsingProviderTemplate: formValue["IsUsingProviderTemplate"],
+      BillTemplate: formValue["BillTemplate"],
+    };
+
+    let model: GeneralConfigUpdateDTO<AutoInteractionDTO> = {
+      Name: 'AutoInteraction',
+      Value: value
+    };
+
+    return model;
   }
 
   // area event
@@ -229,10 +334,10 @@ export class ConfigOverviewComponent implements OnInit {
   }
 
   onAreaForm2(data:string){
-    
+
   }
 
   onAreaForm3(data:string){
-    
+
   }
 }

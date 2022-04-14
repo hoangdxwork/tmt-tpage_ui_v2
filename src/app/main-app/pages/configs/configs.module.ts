@@ -43,6 +43,9 @@ import { ModalListShiftComponent } from './components/modal-list-shift/modal-lis
 import { ModalAddShiftComponent } from './components/modal-add-shift/modal-add-shift.component';
 import { ModalUpdateShiftComponent } from './components/modal-update-shift/modal-update-shift.component';
 import { TDSAvatarModule, TDSBadgeModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSDatePickerModule, TDSDropDownModule, TDSFormFieldModule, TDSImageModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSModalService, TDSPopoverModule, TDSRadioModule, TDSSelectModule, TDSSpinnerModule, TDSSwitchModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTimePickerModule, TDSToolTipModule, TDSUploadModule } from 'tmt-tang-ui';
+import { OdataTPosLoggingService } from '../../services/mock-odata/odata-tpos-logging.service';
+import { OdataSaleCouponProgramService } from '../../services/mock-odata/odata-sale-coupon-program.service';
+import { SaleCouponProgramService } from '../../services/sale-coupon-program.service';
 
 const SERVICES = [
     TDSModalService,
@@ -52,6 +55,9 @@ const SERVICES = [
     RestSMSService,
     OdataProductService,
     ProductService,
+    OdataTPosLoggingService,
+    OdataSaleCouponProgramService,
+    SaleCouponProgramService
 ]
 
 @NgModule({
