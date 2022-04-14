@@ -1,12 +1,13 @@
+import { Router } from '@angular/router';
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'app-decentralize-page-management',
-  templateUrl: './decentralize-page-management.component.html',
-  styleUrls: ['./decentralize-page-management.component.scss']
+  selector: 'app-config-decentralize-page',
+  templateUrl: './config-decentralize-page.component.html',
+  styleUrls: ['./config-decentralize-page.component.scss']
 })
-export class DecentralizePageManagementComponent implements OnInit {
+export class ConfigDecentralizePageComponent implements OnInit {
 
   @Output() getComponent:EventEmitter<number> = new EventEmitter<number>();
 
@@ -39,13 +40,16 @@ export class DecentralizePageManagementComponent implements OnInit {
     ]}
   ]
 
-  constructor() { }
+  constructor(
+    private router: Router,
+  ) { }
 
   ngOnInit(): void {
   }
 
   backToMain(){
-    this.getComponent.emit(1);
+    var returnUrl = '/configs/users/operation'
+    this.router.navigate([returnUrl]);
   }
 
   submitSave(){

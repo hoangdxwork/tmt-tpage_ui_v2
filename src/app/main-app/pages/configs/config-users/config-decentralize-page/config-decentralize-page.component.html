@@ -1,4 +1,4 @@
-<div class="w-full h-full" autocomplete="off">
+<div class="w-full h-full text-body-2" autocomplete="off">
     <div class="w-full h-full pb-4 px-4">
         <div class="flex flex-col w-full h-full bg-white rounded-xl">
             <div class="flex flex-row items-center justify-between px-4 py-3">
@@ -8,8 +8,7 @@
                             <i class="tdsi-back-fill text-xl leading-5"></i>
                         </span>
                     </button>
-                    <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">THÊM MỚI BIẾN THỂ SẢN
-                        PHẨM</span>
+                    <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">PHÂN QUYỀN QUẢN LÝ PAGE</span>
                 </div>
                 <button tds-button color="primary" (click)="submitSave()">
                     <span class="text-body-2 font-semibold">Lưu</span>
@@ -36,8 +35,8 @@
                     </thead>
                     <tbody>
                         <ng-template ngFor let-data [ngForOf]="tablePermission.data">
-                            <tr >
-                                <td> 
+                            <tr>
+                                <td class="border-r border-neutral-2-100"> 
                                     <div class="flex w-full h-full flex-col gap-x-2.5 justify-center items-center ">
                                         <tds-avatar class="bg-white  text-white" [size]="108" [tdsSrc]="data.urlImg">
                                         </tds-avatar>
@@ -46,9 +45,11 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td [ngStyle]="{'padding': 0}">
-                                    <div class="flex w-full h-full justify-start flex-col divide-y divide-neutral-2-100">
-                                        <div *ngFor="let item of data.page; let ind = index" class="flex w p-2   border-l border-neutral-2-100">
+                                <td class="!p-0 align-top">
+                                    <div [ngClass]="data.page.length <= 2?'border-b border-neutral-2-100':''"
+                                        class="flex w-full h-full justify-start flex-col divide-y divide-neutral-2-100">
+                                        <div *ngFor="let item of data.page; let ind = index" 
+                                            class="flex p-2 items-center">
                                             <div class="flex w-1/2">
                                                 <span>{{item.namePage}}</span>
                                             </div>
