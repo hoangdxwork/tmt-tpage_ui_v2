@@ -42,7 +42,7 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
         link: '/configs/activities',
     },
     {
-        name: "chương trình khuyến mãi",
+        name: "Chương trình khuyến mãi",
         icon: "tdsi-discount-fill",
         link: '/configs/promotions',
     },

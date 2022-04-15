@@ -4,12 +4,8 @@ import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheServ
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperString,  TDSSafeAny } from 'tmt-tang-ui';
 import { ODataCRMTagDTO } from '../../dto/crm-tag/odata-crmtag.dto';
-import { ODataPartnerDTO } from '../../dto/partner/partner.dto';
+import { CTMTagFilterObjDTO } from '../../dto/odata/odata.dto';
 import { BaseSevice } from '../base.service';
-
-export interface FilterObjDTO  {
-    searchText: '',
-}
 
 @Injectable()
 export class OdataCRMTagService extends BaseSevice {
@@ -19,7 +15,8 @@ export class OdataCRMTagService extends BaseSevice {
   baseRestApi: string = "";
 
   constructor(private apiService: TCommonService,
-      public caheApi: THelperCacheService) {
+      public caheApi: THelperCacheService
+  ) {
     super(apiService)
   }
 
@@ -32,7 +29,7 @@ export class OdataCRMTagService extends BaseSevice {
     return this.apiService.getData<ODataCRMTagDTO>(api, null);
   }
 
-  public buildFilter(filterObj: FilterObjDTO) {
+  public buildFilter(filterObj: CTMTagFilterObjDTO) {
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",
         filters: []

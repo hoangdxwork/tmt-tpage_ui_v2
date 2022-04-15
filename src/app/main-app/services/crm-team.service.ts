@@ -57,6 +57,21 @@ export class CRMTeamService extends BaseSevice {
     this.listFaceBook$.next(data);
   }
 
+  onRefreshListFacebook() {
+    this.getAllFacebooks().subscribe(dataTeam => {
+      if (TDSHelperObject.hasValue(dataTeam)) {
+        this.onUpdateListFaceBook(dataTeam);
+      }
+      else {
+        this.onUpdateListFaceBook(null);
+        this.onUpdateTeam(null);
+      }
+    }, error => {
+      this.onUpdateListFaceBook(null);
+      this.onUpdateTeam(null);
+    });
+  }
+
   getCurrentTeam(): CRMTeamDTO | null {
     return this._currentTeam;
   }
@@ -104,6 +119,14 @@ export class CRMTeamService extends BaseSevice {
       method: TApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  refreshPageToken(id: number, data: any): Observable<TDSSafeAny> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${id}/refreshpagetoken?`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   delete(key: any): Observable<TDSSafeAny> {

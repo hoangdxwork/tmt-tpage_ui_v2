@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 
@@ -11,9 +12,8 @@ export class ConfigProductVariantComponent implements OnInit {
   TableDataTab1:Array<TDSSafeAny> = [];
   TableDataTab2:Array<TDSSafeAny> = [];
   dropdownList:Array<TDSSafeAny> = [];
-  currentComponent = 1;
 
-  constructor() {
+  constructor(private router:Router) {
     this.dropdownList = [
       {
         id:1,
@@ -513,13 +513,8 @@ export class ConfigProductVariantComponent implements OnInit {
       },
     ];
   }
-
   
   addNewData(data:TDSSafeAny){
-    this.currentComponent = 2;
-  }
-
-  getCurrentComponent(i:number){
-    this.currentComponent = i;
+    this.router.navigate(['/configs/product-variant/create']);
   }
 }

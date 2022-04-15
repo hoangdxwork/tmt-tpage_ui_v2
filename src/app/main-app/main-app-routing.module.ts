@@ -24,7 +24,8 @@ const routes: Routes = [
       {
         path: "conversation",
         data: {
-          breadcrumb: 'Conversation'
+          breadcrumb: 'Conversation',
+          collapse: true
         },
         loadChildren: () => import('./pages/conversations/conversations.module').then(m => m.ConversationsModule)
       },

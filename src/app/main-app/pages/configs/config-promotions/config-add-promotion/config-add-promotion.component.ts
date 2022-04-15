@@ -47,19 +47,26 @@ export class ConfigAddPromotionComponent implements OnInit {
   initForm(){
     this.addProductForm = this.formBuilder.group({
       name: new FormControl('', [Validators.required]),
-      tabComponent: new FormControl('1'),
+      tabComponent: new FormControl('all'),
     });
+    
+    this.tabForm = this.formBuilder.group({});
   }
 
   resetForm(){
     this.addProductForm.reset({
       name: '',
-      tabComponent: '1',
+      tabComponent: 'all',
     });
   }
 
   getComponentData(data:FormGroup){
     this.tabForm = data;
+  }
+
+  onChangeTabForm(){
+    this.tabForm = new FormGroup({});
+
   }
 
   backToMain(){

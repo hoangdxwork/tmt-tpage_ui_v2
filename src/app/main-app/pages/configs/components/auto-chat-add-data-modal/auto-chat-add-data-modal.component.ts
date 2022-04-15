@@ -1,7 +1,7 @@
 import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { TDSMessageService, TDSSafeAny, TDSUploadChangeParam, TDSModalRef } from 'tmt-tang-ui';
+import { TDSMessageService, TDSSafeAny, TDSUploadChangeParam, TDSModalRef, TDSUploadFile } from 'tmt-tang-ui';
 import { filter } from 'rxjs/operators';
 
 export interface TDSMessageFormData{
@@ -62,8 +62,10 @@ export class AutoChatAddDataModalComponent implements OnInit{
   currentBreadcrumb = 0;
   status = false;
   imageURL = '';
+  fileList:TDSUploadFile[] = [];
 
   createForm!: FormGroup ;
+  createImageForm!:FormGroup;
   createMessageForm!: FormGroup;
   mediaForm! :FormControl;
 
@@ -73,6 +75,11 @@ export class AutoChatAddDataModalComponent implements OnInit{
     this.createForm = this.formBuilder.group({
       name: new FormControl('', [Validators.required]),
       shortcut: new FormControl('',[Validators.required]),
+      image: new FormControl('',[Validators.required]),
+    });
+
+    this.createImageForm = this.formBuilder.group({
+      image: new FormControl(''),
     });
 
     this.createMessageForm = this.formBuilder.group({
@@ -214,12 +221,12 @@ export class AutoChatAddDataModalComponent implements OnInit{
   }
 
   handleChange(info: TDSUploadChangeParam): void {
-    // if (info.file.status !== 'uploading') {
-    //     console.log(info.file, info.fileList);
-    // }
     if (info.file.status === 'done') {
+        this.createImageForm.value.image = info.file.name;
         this.msg.success(`${info.file.name} file uploaded successfully`);
     } else if (info.file.status === 'error') {
+        this.createImageForm.value.image = info.file.name;
+        console.log(this.createImageForm)
         this.msg.error(`${info.file.name} file upload failed.`);
     }
   }

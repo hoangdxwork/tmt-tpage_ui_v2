@@ -1,5 +1,6 @@
+import { Router } from '@angular/router';
 import { TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-config-products',
@@ -20,11 +21,518 @@ export class ConfigProductsComponent implements OnInit {
   pageSize = 20;
   pageIndex = 1;
 
-  configTags:Array<TDSSafeAny> = [];
-  configTagList:Array<TDSSafeAny> = [];
-  clickingTag = -1;
+  fallback = 'assets/images/config/no-image-default.svg'
 
-  constructor(private modalService: TDSModalService, private viewContainerRef: ViewContainerRef) { 
+  configModelTags:Array<TDSSafeAny> = [];
+  configTagDataList:Array<TDSSafeAny> = [];
+  indClickTag = -1;
+
+  constructor(
+    private router:Router,
+    private modalService: TDSModalService
+    ) { 
+    this.initListData();
+  }
+
+  ngOnInit(): void {
+    this.loadData();
+  }
+
+  loadData() {
+    this.TableData = [
+      {
+        id:1,
+        image:{id:1,url:'assets/images/config/SP1120.png'},
+        images:[
+          {
+            uid: '-1',
+            name: 'shoes_1.png',
+            status: 'done',
+            url: 'https://assets.adidas.com/images/w_600,f_auto,q_auto/ce8a6f3aa6294de988d7abce00c4e459_9366/Breaknet_Shoes_White_FX8707_01_standard.jpg'
+          },
+          {
+            uid: '-2',
+            name: 'shoes_2.png',
+            status: 'done',
+            url: 'https://assets.adidas.com/images/w_600,f_auto,q_auto/ce8a6f3aa6294de988d7abce00c4e459_9366/Breaknet_Shoes_White_FX8707_01_standard.jpg'
+          },
+        ],
+        productCode:'SP0682',
+        productName:'Kristin Watson',
+        productGroup:'Tất cả',
+        productType:'Có thể lưu trữ',
+        price:1200000,
+        discountSalePrice:100000,
+        allowToSellOnAnotherCompany: false,
+        manufacturingCompany: 'Công Nghệ Trường Minh Thịnh',
+        defaultUnit:'Cái',
+        Tags:[
+          {id:1,name:'hàng lỗi'},
+          {id:2,name:'Sale'}
+        ],
+        active:true,
+        stockCards:[
+          {
+            id:1,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+          {
+            id:2,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+          {
+            id:3,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+        ],
+        inventory:[
+          {
+            id:1,
+            stockName:'tmt30',
+            quantity:2
+          },
+          {
+            id:2,
+            stockName:'Kho Hàng Tại Hà Nội',
+            quantity:3
+          },
+          {
+            id:3,
+            stockName:'kho diệp minh châu',
+            quantity:1
+          },
+          {
+            id:4,
+            stockName:'TMT Fashion',
+            quantity:0
+          },
+        ],
+      },
+      {
+        id:2,
+        image:{id:1,url:'assets/images/config/SP1120.png'},
+        images:[
+          {
+            uid: '-1',
+            name: 'shoes_1.png',
+            status: 'done',
+            url: 'https://assets.adidas.com/images/w_600,f_auto,q_auto/ce8a6f3aa6294de988d7abce00c4e459_9366/Breaknet_Shoes_White_FX8707_01_standard.jpg'
+          },
+          {
+            uid: '-2',
+            name: 'shoes_2.png',
+            status: 'done',
+            url: 'https://assets.adidas.com/images/w_600,f_auto,q_auto/ce8a6f3aa6294de988d7abce00c4e459_9366/Breaknet_Shoes_White_FX8707_01_standard.jpg'
+          },
+        ],
+        productCode:'SP0682',
+        productName:'Kristin Watson',
+        productGroup:'Tất cả',
+        productType:'Có thể lưu trữ',
+        price:1200000,
+        discountSalePrice:100000,
+        allowToSellOnAnotherCompany: false,
+        manufacturingCompany: 'Công Nghệ Trường Minh Thịnh',
+        defaultUnit:'Cái',
+        Tags:[],
+        active:true,
+        stockCards:[
+          {
+            id:1,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+          {
+            id:2,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+          {
+            id:3,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+        ],
+        inventory:[
+          {
+            id:1,
+            stockName:'tmt30',
+            quantity:2
+          },
+          {
+            id:2,
+            stockName:'Kho Hàng Tại Hà Nội',
+            quantity:3
+          },
+          {
+            id:3,
+            stockName:'kho diệp minh châu',
+            quantity:1
+          },
+          {
+            id:4,
+            stockName:'TMT Fashion',
+            quantity:0
+          },
+        ],
+      },
+      {
+        id:3,
+        image:{id:1,url:'assets/images/config/SP1120.png'},
+        images:[
+          {
+            uid: '-1',
+            name: 'shoes_1.png',
+            status: 'done',
+            url: 'https://assets.adidas.com/images/w_600,f_auto,q_auto/ce8a6f3aa6294de988d7abce00c4e459_9366/Breaknet_Shoes_White_FX8707_01_standard.jpg'
+          },
+          {
+            uid: '-2',
+            name: 'shoes_2.png',
+            status: 'done',
+            url: 'https://assets.adidas.com/images/w_600,f_auto,q_auto/ce8a6f3aa6294de988d7abce00c4e459_9366/Breaknet_Shoes_White_FX8707_01_standard.jpg'
+          },
+        ],
+        productCode:'SP0682',
+        productName:'Kristin Watson',
+        productGroup:'Tất cả',
+        productType:'Có thể lưu trữ',
+        price:1200000,
+        discountSalePrice:100000,
+        allowToSellOnAnotherCompany: false,
+        manufacturingCompany: 'Công Nghệ Trường Minh Thịnh',
+        defaultUnit:'Cái',
+        Tags:[],
+        active:true,
+        stockCards:[
+          {
+            id:1,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+          {
+            id:2,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+          {
+            id:3,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+        ],
+        inventory:[
+          {
+            id:1,
+            stockName:'tmt30',
+            quantity:2
+          },
+          {
+            id:2,
+            stockName:'Kho Hàng Tại Hà Nội',
+            quantity:3
+          },
+          {
+            id:3,
+            stockName:'kho diệp minh châu',
+            quantity:1
+          },
+          {
+            id:4,
+            stockName:'TMT Fashion',
+            quantity:0
+          },
+        ],
+      },
+      {
+        id:4,
+        image:{id:1,url:'assets/images/config/SP1120.png'},
+        images:[],
+        productCode:'SP0682',
+        productName:'Kristin Watson',
+        productGroup:'Tất cả',
+        productType:'Có thể lưu trữ',
+        price:1200000,
+        discountSalePrice:100000,
+        allowToSellOnAnotherCompany: false,
+        manufacturingCompany: 'Công Nghệ Trường Minh Thịnh',
+        defaultUnit:'Cái',
+        Tags:[],
+        active:true,
+        stockCards:[
+          {
+            id:1,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+          {
+            id:2,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+          {
+            id:3,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+        ],
+        inventory:[
+          {
+            id:1,
+            stockName:'tmt30',
+            quantity:2
+          },
+          {
+            id:2,
+            stockName:'Kho Hàng Tại Hà Nội',
+            quantity:3
+          },
+          {
+            id:3,
+            stockName:'kho diệp minh châu',
+            quantity:1
+          },
+          {
+            id:4,
+            stockName:'TMT Fashion',
+            quantity:0
+          },
+        ],
+      },
+      {
+        id:5,
+        image:{id:1,url:'assets/images/config/SP1120.png'},
+        images:[],
+        productCode:'SP0682',
+        productName:'Kristin Watson',
+        productGroup:'Tất cả',
+        productType:'Có thể lưu trữ',
+        price:1200000,
+        discountSalePrice:100000,
+        allowToSellOnAnotherCompany: false,
+        manufacturingCompany: 'Công Nghệ Trường Minh Thịnh',
+        defaultUnit:'Cái',
+        Tags:[],
+        active:true,
+        stockCards:[
+          {
+            id:1,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+          {
+            id:2,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+          {
+            id:3,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+        ],
+        inventory:[
+          {
+            id:1,
+            stockName:'tmt30',
+            quantity:2
+          },
+          {
+            id:2,
+            stockName:'Kho Hàng Tại Hà Nội',
+            quantity:3
+          },
+          {
+            id:3,
+            stockName:'kho diệp minh châu',
+            quantity:1
+          },
+          {
+            id:4,
+            stockName:'TMT Fashion',
+            quantity:0
+          },
+        ],
+      },
+      {
+        id:6,
+        image:{
+          id:1,url:'assets/images/config/SP1120.png'
+        },
+        images:[
+          {
+            uid: '-1',
+            name: 'shoes_1.png',
+            status: 'done',
+            url: 'https://assets.adidas.com/images/w_600,f_auto,q_auto/ce8a6f3aa6294de988d7abce00c4e459_9366/Breaknet_Shoes_White_FX8707_01_standard.jpg'
+          },
+        ],
+        productCode:'SP0682',
+        productName:'Kristin Watson',
+        productGroup:'Tất cả',
+        productType:'Có thể lưu trữ',
+        price:1200000,
+        discountSalePrice:100000,
+        allowToSellOnAnotherCompany: false,
+        manufacturingCompany: 'Công Nghệ Trường Minh Thịnh',
+        defaultUnit:'Cái',
+        Tags:[],
+        active:true,
+        stockCards:[
+          {
+            id:1,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+          {
+            id:2,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+          {
+            id:3,
+            type:'Text',
+            pickingName:'text',
+            reference:'text',
+            source:'text',
+            arriveTo:'text',
+            unit:'text',
+            quantity:10,
+            createdDate: new Date()
+          },
+        ],
+        inventory:[
+          {
+            id:1,
+            stockName:'tmt30',
+            quantity:2
+          },
+          {
+            id:2,
+            stockName:'Kho Hàng Tại Hà Nội',
+            quantity:3
+          },
+          {
+            id:3,
+            stockName:'kho diệp minh châu',
+            quantity:1
+          },
+          {
+            id:4,
+            stockName:'TMT Fashion',
+            quantity:0
+          },
+        ],
+      },
+    ];
+  }
+
+  initListData(){
     this.dropdownList = [
       {
         id:1,
@@ -43,15 +551,23 @@ export class ConfigProductsComponent implements OnInit {
         name:'Thêm SP vào Page'
       },
     ];
-  }
 
-  ngOnInit(): void {
-  }
-
-  loadData() {
-    this.TableData = [
-
-    ]
+    this.configTagDataList = [
+      {
+        id:1,
+        name:'Hàng lỗi'
+      },
+      {
+        id:2,
+        name:'Hàng khuyến mãi'
+      },
+      {
+        id:3,
+        name:'Hàng tặng'
+      }
+    ];
+    //add product
+    
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -105,21 +621,22 @@ export class ConfigProductsComponent implements OnInit {
   }
 
   openTag(id: number, data: TDSSafeAny) {
-    this.configTags = [];
-    this.clickingTag = id;
-    this.configTagList = JSON.parse(data);
+    this.configModelTags = [];
+    this.indClickTag = id;
+    this.configTagDataList = JSON.parse(data);
   }
 
   assignTags(id: number, tags: Array<TDSSafeAny>){
-
+    this.TableData.find(f=>f.id == id).Tags = tags;
+    this.indClickTag = -1;
   }
 
   closeTag() {
-    this.clickingTag = -1;
+    this.indClickTag = -1;
   }
 
   addNewData(data:TDSSafeAny){
-    
+    this.router.navigate(['configs/products/create']);
   }
 
   refreshData(){
@@ -132,8 +649,8 @@ export class ConfigProductsComponent implements OnInit {
 
   showRemoveModal(i:number){
     const modal = this.modalService.error({
-        title: 'Xác nhận xóa biến thể sản phẩm',
-        content: 'Bạn có chắc muốn xóa biến thể sản phẩm này không?',
+        title: 'Xác nhận xóa sản phẩm',
+        content: 'Bạn có chắc muốn xóa sản phẩm này không?',
         iconType:'tdsi-trash-fill',
         okText:"Xác nhận",
         cancelText:"Hủy bỏ",

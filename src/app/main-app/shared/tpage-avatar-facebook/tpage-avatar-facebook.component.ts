@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { shareReplay } from 'rxjs/operators';
 import { ButtonSize, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 import { ImageFacade } from '../../services/facades/image.facade';
@@ -19,7 +19,7 @@ export class TpageAvatarFacebookComponent implements OnInit {
   @Input()
   shape:'square' | 'circle' = 'circle';
   url!: string;
-  private nativeElement: HTMLElement;
+  nativeElement: HTMLElement;
 
   constructor(element: ElementRef,
     private imageFacade: ImageFacade

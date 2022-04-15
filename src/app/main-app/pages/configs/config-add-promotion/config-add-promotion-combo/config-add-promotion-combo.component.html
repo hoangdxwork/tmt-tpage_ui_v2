@@ -1,0 +1,282 @@
+
+<form [formGroup]="sendingData" autocomplete="off">
+    <tds-tabset>
+        <tds-tab title="Thông tin chương trình">
+            <div class="grid grid-cols-2 gap-y-4 gap-x-8 text-neutral-1-600 text-header-2 font-semibold">
+                <span>Điều kiện áp dụng</span>
+                <span>Giá trị</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-y-4 gap-x-8 mt-4">
+                <div class="grid grid-cols-3 gap-y-4 items-center">
+                    <tds-label>Số lượng</tds-label>
+                    <tds-form-field class="w-full col-span-2">
+                        <tds-input-number formControlName="quantity" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"
+                            (ngModelChange)="getData()"></tds-input-number>
+                        <tds-error>
+                            Vui lòng nhập số lượng
+                        </tds-error>
+                    </tds-form-field>
+                </div>
+
+                <div class="grid grid-cols-3 gap-y-4 items-center">
+                    <tds-label>Sử dụng cho</tds-label>
+                    <tds-form-field class="w-full col-span-2">
+                        <tds-input-number formControlName="useFor" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"
+                        (ngModelChange)="getData()"></tds-input-number>
+                        <tds-error>
+                            Vui lòng nhập giá trị
+                        </tds-error>
+                    </tds-form-field>
+                </div>
+
+                <div class="grid grid-cols-3 gap-y-4 items-center">
+                    <tds-label>Số tiền tối thiểu</tds-label>
+                    <tds-form-field class="w-full col-span-2">
+                        <tds-input-number formControlName="minimumPrice" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"
+                        (ngModelChange)="getData()"></tds-input-number>
+                        <tds-error>
+                            Vui lòng nhập số tiền tối thiểu
+                        </tds-error>
+                    </tds-form-field>
+                </div>
+
+                <div class="grid grid-cols-3 gap-y-4 items-center">
+                    <tds-label>Ngày bắt đầu</tds-label>
+                    <tds-form-field class="w-full col-span-2">
+                        <tds-date-picker formControlName="startDate" placeholder="Chọn ngày bắt đầu" [required]='true'>
+                        </tds-date-picker>
+                        <tds-error>Vui lòng nhập ngày bắt đầu</tds-error>
+                    </tds-form-field>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-y-4 gap-x-8 mt-4">
+                <div class="grid grid-cols-3 gap-y-4 items-center">
+                    <tds-label>Công ty</tds-label>
+                    <tds-form-field class="w-full col-span-2">
+                        <tds-select valueField="id" textField="name" placeholder='Chọn công ty'
+                            disabledField="isActive" formControlName="companyName" [required]='true'
+                            [data]="companyList" [allowClear]="true"
+                            (ngModelChange)="getData()">
+                        </tds-select>
+                        <tds-error>
+                            Chọn công ty
+                        </tds-error>
+                    </tds-form-field>
+                </div>
+
+                <div class="grid grid-cols-3 gap-y-4 items-center">
+                    <tds-label>Ngày kết thúc</tds-label>
+                    <tds-form-field class="w-full col-span-2">
+                        <tds-date-picker formControlName="endDate" placeholder="Chọn ngày kết thúc" [required]='true'>
+                        </tds-date-picker>
+                        <tds-error>Vui lòng nhập ngày kết thúc</tds-error>
+                    </tds-form-field>
+                </div>
+
+                <div class="grid grid-cols-3 gap-y-4 items-center"></div>
+
+                <div class="grid grid-cols-3 gap-y-4 items-center">
+                    <tds-label>Hiệu lực</tds-label>
+                    <div class="w-full col-span-2">
+                        <tds-switch size="md" formControlName="active"
+                        (ngModelChange)="getData()"></tds-switch>
+                    </div>
+                </div>
+            </div>
+        </tds-tab>
+        <tds-tab title="Khuyến mãi combo">
+            <div class="h-full">
+                <tds-table #basicTable [listData]="comboPromotionTable" [showPagination]="false" [outerBordered]="true">
+                    <thead>
+                          <tr>
+                                <th [width]="'48px'">STT</th>
+                                <th [width]="'400px'">Sản phẩm mua</th>
+                                <th>Số lượng</th>
+                                <th>% chiếc khấu</th>
+                                <th>Tiền cố định</th>
+                                <th>Chiết khấu tối đa</th>
+                                <th [width]="'160px'">Sản phẩm thưởng</th>
+                                <th [width]="'80px'">Hiệu lực</th>
+                                <th [width]="'80px'">Thao tác</th>
+                          </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let data of comboPromotionTable; let i= index">
+                            <td [width]="'48px'">{{ i+1 }}</td>
+                            <td [width]="'400px'">
+                                <tds-form-field>
+                                    <tds-select valueField="id" textField="name" placeholder='Chọn sản phẩm'
+                                        disabledField="isActive"
+                                        [data]="productList" mode="multiple">
+                                    </tds-select>
+                                    <tds-error>Vui lòng chọn sản phẩm</tds-error>
+                                </tds-form-field>
+                            </td>
+                            <td>
+                                <div class="border border-neutral-2-200 rounded bg-white">
+                                    <input tdsInput type="number" [value]="data.quantity" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="border border-neutral-2-200 rounded bg-white">
+                                    <input tdsInput type="number" [value]="data.discountPercent" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="border border-neutral-2-200 rounded bg-white">
+                                    <input tdsInput type="number" [value]="data.fixedValue" [min]="0" [step]="1000" class="text-neutral-1-900 text-body-2 font-regular"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="border border-neutral-2-200 rounded bg-white">
+                                    <input tdsInput type="number" [value]="data.maximumDiscountValue" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"/>
+                                </div>
+                            </td>
+                            <td [width]="'160px'">
+                                {{data.gift}}
+                            </td>
+                            <td [width]="'80px'">
+                                <tds-switch [checked]="data.active" (change)="onActiveComboChange(i)"></tds-switch>
+                            </td>
+                            <td [width]="'80px'">
+                                <button tds-button-icon color="secondary" (click)="removeComboPromotion(i)">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-trash-fill text-lg leading-none"></i>
+                                    </span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="9">
+                                <button tds-button color="primary" (click)="addNewComboPromotion()">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+                                      <span class="text-body-2 font-semibold">Thêm mới</span>
+                                    </span>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </tds-table>
+            </div>
+        </tds-tab>
+        <tds-tab title="Khuyến mãi quà tặng combo">
+            <div class="h-full">
+                <tds-table #basicTable [listData]="giftComboPromotionTable" [showPagination]="false" [loading]="isLoading" [outerBordered]="true">
+                    <thead>
+                          <tr>
+                                <th [width]="'48px'">STT</th>
+                                <th [width]="'400px'">Sản phẩm mua</th>
+                                <th>Số lượng</th>
+                                <th [width]="'400px'">Sản phẩm quà tặng</th>
+                                <th>Số lượng quà</th>
+                                <th [width]="'80px'">Hiệu lực</th>
+                                <th [width]="'80px'">Thao tác</th>
+                          </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let data of giftComboPromotionTable; let i= index">
+                            <td [width]="'48px'">{{ i+1 }}</td>
+                            <td [width]="'400px'">
+                                <tds-form-field>
+                                    <tds-select valueField="id" textField="name" placeholder='Chọn sản phẩm mua' disabledField="isActive"
+                                        [data]="productList" mode="multiple">
+                                    </tds-select>
+                                    <tds-error>Vui lòng chọn sản phẩm mua</tds-error>
+                                </tds-form-field>
+                            </td>
+                            <td>
+                                <div class="border border-neutral-2-200 rounded bg-white">
+                                    <input tdsInput type="number" [value]="data.productQuantity" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"/>
+                                </div>
+                            </td>
+                            <td [width]="'400px'">
+                                <tds-form-field>
+                                    <tds-select valueField="id" textField="name" placeholder='Chọn sản phẩm quà tặng' disabledField="isActive"
+                                        [data]="giftList" mode="multiple">
+                                    </tds-select>
+                                    <tds-error>Vui lòng chọn sản phẩm quà tặng</tds-error>
+                                </tds-form-field>
+                            </td>
+                            <td>
+                                <div class="border border-neutral-2-200 rounded bg-white">
+                                    <input tdsInput type="number" [value]="data.giftQuantity" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"/>
+                                </div>
+                            </td>
+                            <td [width]="'80px'">
+                                <tds-switch [checked]="data.active" (change)="onActiveGiftComboChange(i)"></tds-switch>
+                            </td>
+                            <td [width]="'80px'">
+                                <button tds-button-icon color="secondary" (click)="removeGiftComboPromotion(i)">
+                                    <span class="flex items-center">
+                                    <i class="tdsi-trash-fill text-lg leading-none"></i>
+                                    </span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="7">
+                                <button tds-button color="primary" (click)="addNewGiftComboPromotion()">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+                                      <span class="text-body-2 font-semibold">Thêm mới</span>
+                                    </span>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </tds-table>
+            </div>
+        </tds-tab>
+        <tds-tab title="Danh sách coupon">
+            <div class="h-full">
+                <tds-table [listData]="couponTable" [showPagination]="false" [outerBordered]="true">
+                    <thead>
+                          <tr>
+                                <th>STT</th>
+                                <th>Tên coupon</th>
+                                <th>Hiệu lực</th>
+                                <th>Thao tác</th>
+                          </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let data of couponTable; let i= index">
+                            <td [width]="'48px'">{{ i+1 }}</td>
+                            <td [width]="'600px'">
+                                <tds-form-field>
+                                    <input tdsInput [value]="data.name" placeholder="Nhập tên coupon" class="text-neutral-1-900 text-body-2 font-regular"
+                                        (input)="onChangeCouponName($event,i)"/>
+                                    <tds-error>
+                                        Vui lòng nhập tên coupon
+                                    </tds-error>
+                                </tds-form-field>
+                            </td>
+                            <td>
+                                <tds-switch [checked]="data.active" (change)="onActiveCouponChange(i)"></tds-switch>
+                            </td>
+                            <td>
+                                <button tds-button-icon color="secondary" (click)="removeCoupon(i)">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-trash-fill text-lg leading-none"></i>
+                                    </span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="5">
+                                <button tds-button color="primary" (click)="addNewCoupon()">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+                                      <span class="text-body-2 font-semibold">Thêm mới</span>
+                                    </span>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </tds-table>
+            </div>
+        </tds-tab>
+    </tds-tabset>
+</form>

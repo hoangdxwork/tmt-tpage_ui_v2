@@ -11,10 +11,30 @@ export class ConfigUsersShiftComponent implements OnInit {
 
   visible: boolean = false;
   indClickTag = -1
+  isChooseWeek = -1
+  isChooseDayOfWeek= -1
+
+  
+  listDataWeek = [
+    {id: 0, week: 12, date: '21/03', dayOfWeek: 'Thứ 2'},
+    {id: 1, week: 12, date: '22/03', dayOfWeek: 'Thứ 3'},
+    {id: 2, week: 12, date: '23/03', dayOfWeek: 'Thứ 4'},
+    {id: 3, week: 12, date: '24/03', dayOfWeek: 'Thứ 5'},
+    {id: 4, week: 12, date: '25/03', dayOfWeek: 'Thứ 6'},
+    {id: 5, week: 12, date: '26/03', dayOfWeek: 'Thứ 7'},
+    {id: 6, week: 12, date: '27/03', dayOfWeek: 'Chủ nhật'},
+  ]
   public modelTags = [];
   listOfDataUser = [
-    {id:1, name: 'Jacob Jones', dataTags:[{id: 1 , name: 'Ca sáng'}, {id: 2 , name: 'Ca chiều'}, {id: 3 , name: 'Tăng ca'},]},
-    {id:2, name: 'Guy Hawkins' , dataTags:[{id: 4 , name: 'test'},]},
+    {id:1, name: 'Jacob Jones', week: 12, dataTags:[
+      {idTag: 1, idDayOfWeek: 0, name: 'Ca sáng'}, 
+      {idTag: 2 ,idDayOfWeek: 0, name: 'Ca chiều'}, 
+      {idTag: 3 ,idDayOfWeek: 0, name: 'Tăng ca'},
+      {idTag: 4 ,idDayOfWeek: 1, name: 'test'},
+    ]},
+    {id:2, name: 'Guy Hawkins',week: 12, dataTags:[
+      {idTag: 4 , idDayOfWeek: 1 , name: 'test'},
+    ]},
     {id:3, name: 'Theresa Webb', dataTags:[]},
     {id:4, name: 'Esther Howard', dataTags:[]},
     {id:5, name: 'Robert Fox', dataTags:[]},
@@ -52,8 +72,10 @@ change(value: boolean): void {
     console.log(value);
 }
 
-openTag(id: number) {
+openTag(id: number,week: number, dayOfWeek: number) {
   this.indClickTag = id;
+  this.isChooseWeek = week;
+  this.isChooseDayOfWeek = dayOfWeek;
 }
 
 closeTag() {
@@ -61,10 +83,7 @@ closeTag() {
   this.modelTags = [];
 }
 assignTags(id: number){
-  var index = this.listOfDataUser.findIndex(x=>x.id == id)
-  this.listOfDataUser[index].dataTags = this.modelTags
-  this.modelTags = []
-  this.indClickTag = -1;
+ 
 }
 
 showModalListShift(){

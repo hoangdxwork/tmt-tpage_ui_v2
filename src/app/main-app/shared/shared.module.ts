@@ -23,6 +23,7 @@ import { ProductIndexDBService } from '../services/product-indexDB.service';
 import { SuggestAddressComponent } from './suggest-address/suggest-address.component';
 import { SuggestAddressService } from '../services/suggest-address.service';
 import { ImageFacade } from '../services/facades/image.facade';
+import { TpageAvatarGroupFacebookComponent } from './tpage-avatar-group-facebook/tpage-avatar-group-facebook.component';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -37,7 +38,8 @@ const cmp =[
   TpageAddCategoryComponent,
   TpageSearchUOMComponent,
   TpageAddUOMComponent,
-  ListProductTmpComponent
+  ListProductTmpComponent,
+  TpageAvatarGroupFacebookComponent
 ]
 
 const SERVICES = [
@@ -49,7 +51,7 @@ const SERVICES = [
 
 @NgModule({
   declarations: [
-    ...cmp
+    ...cmp,
   ],
   imports: [
     CommonModule,

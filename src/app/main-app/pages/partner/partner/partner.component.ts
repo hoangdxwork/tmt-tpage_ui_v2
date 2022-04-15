@@ -4,8 +4,8 @@ import { ModalSendMessageComponent } from './../components/modal-send-message/mo
 import { ModalConvertPartnerComponent } from './../components/modal-convert-partner/modal-convert-partner.component';
 import { ModalEditPartnerComponent } from './../components/modal-edit-partner/modal-edit-partner.component';
 
-import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
-import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperArray, TDSMessageService, TDSTableQueryParams, TDSHelperString } from 'tmt-tang-ui';
+import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef, ElementRef, AfterViewInit } from '@angular/core';
+import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperArray, TDSMessageService, TDSTableQueryParams, TDSHelperString, TDSResizeObserver } from 'tmt-tang-ui';
 import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
 import { OperatorEnum, SortEnum, THelperCacheService } from 'src/app/lib';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -27,7 +27,7 @@ import { PartnerBirthdayDTO } from 'src/app/main-app/dto/partner/partner-birthda
   styleUrls: ['./partner.component.scss']
 })
 
-export class PartnerComponent implements OnInit, OnDestroy {
+export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   lstOfData: Array<PartnerDTO> = [];
   pageSize = 20;
@@ -61,31 +61,49 @@ export class PartnerComponent implements OnInit, OnDestroy {
 
   public hiddenColumns = new Array<ColumnTableDTO>();
   public columns: Array<ColumnTableDTO> = [
-    {value: 'DisplayName', name: 'Tên', isChecked: true},
-    {value: 'Phone', name: 'Điện thoại', isChecked: true},
-    {value: 'Email', name: 'Email', isChecked: false},
-    {value: 'Street', name: 'Địa chỉ', isChecked: true},
-    {value: 'StatusText', name: 'Trạng thái', isChecked: true},
-    {value: 'Credit', name: 'Nợ hiện tại', isChecked: true},
-    {value: 'FacebookId', name: 'Facebook', isChecked: false},
-    {value: 'Zalo', name: 'Zalo', isChecked: false},
-    {value: 'Active', name: 'Hiệu lực', isChecked: true},
-    {value: 'DateCreated', name: 'Ngày tạo', isChecked: true}
+    { value: 'DisplayName', name: 'Tên', isChecked: true },
+    { value: 'Phone', name: 'Điện thoại', isChecked: true },
+    { value: 'Email', name: 'Email', isChecked: false },
+    { value: 'Street', name: 'Địa chỉ', isChecked: true },
+    { value: 'StatusText', name: 'Trạng thái', isChecked: true },
+    { value: 'Credit', name: 'Nợ hiện tại', isChecked: true },
+    { value: 'FacebookId', name: 'Facebook', isChecked: false },
+    { value: 'Zalo', name: 'Zalo', isChecked: false },
+    { value: 'Active', name: 'Hiệu lực', isChecked: true },
+    { value: 'DateCreated', name: 'Ngày tạo', isChecked: true }
   ];
 
   expandSet = new Set<number>();
   private destroy$ = new Subject<void>();
+  private _destroy = new Subject<void>();
+  widthTable: number = 0;
+  paddingCollapse: number = 32;
+  isLoadingCollapse: boolean = false
+  @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
 
   constructor(private modalService: TDSModalService,
-      private odataPartnerService: OdataPartnerService,
-      private cacheApi: THelperCacheService,
-      private commonService: CommonService,
-      private message: TDSMessageService,
-      private tagService: TagService,
-      private modal: TDSModalService,
-      private excelExportService: ExcelExportService,
-      private partnerService: PartnerService,
-      private viewContainerRef: ViewContainerRef) {
+    private odataPartnerService: OdataPartnerService,
+    private cacheApi: THelperCacheService,
+    private commonService: CommonService,
+    private message: TDSMessageService,
+    private tagService: TagService,
+    private modal: TDSModalService,
+    private excelExportService: ExcelExportService,
+    private partnerService: PartnerService,
+    private viewContainerRef: ViewContainerRef,
+    private resizeObserver: TDSResizeObserver,
+  ) {
+  }
+
+  ngAfterViewInit(): void {
+    this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse
+    this.resizeObserver
+      .observe(this.viewChildWidthTable)
+      .subscribe(() => {
+        this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse
+        this.viewChildWidthTable.nativeElement.click()
+        console.log(  this.viewChildWidthTable)
+      });
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -142,8 +160,8 @@ export class PartnerComponent implements OnInit, OnDestroy {
       this.isLoading = false;
 
     }, error => {
-        this.isLoading = false;
-        this.message.error('Tải dữ liệu khách hàng thất bại!');
+      this.isLoading = false;
+      this.message.error('Tải dữ liệu khách hàng thất bại!');
     });
   }
 
@@ -153,8 +171,8 @@ export class PartnerComponent implements OnInit, OnDestroy {
     this.tabIndex = value;
 
     this.filterObj = {
-        searchText: '',
-        statusText: value
+      searchText: '',
+      statusText: value
     };
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -187,8 +205,8 @@ export class PartnerComponent implements OnInit, OnDestroy {
     this.setOfCheckedId = new Set<number>();
 
     this.filterObj = {
-        searchText: '',
-        statusText: null
+      searchText: '',
+      statusText: null
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -208,8 +226,8 @@ export class PartnerComponent implements OnInit, OnDestroy {
 
   checkStatusText(text: string) {
     var exits = this.partnerStatusReport.filter(x => x.StatusText.toLowerCase() == text.toLowerCase())[0] as any;
-    if(exits) {
-        return exits.StatusStyle;
+    if (exits) {
+      return exits.StatusStyle;
     }
   }
 
@@ -250,14 +268,14 @@ export class PartnerComponent implements OnInit, OnDestroy {
             exits.Tags = JSON.stringify(tags)
           }
 
-          this.indClickTag = -1;
-          this.modelTags = [];
-
-          this.message.success('Gán nhãn thành công!');
-        }
-    }, error => {
         this.indClickTag = -1;
-        this.message.error('Gán nhãn thất bại!');
+        this.modelTags = [];
+
+        this.message.success('Gán nhãn thành công!');
+      }
+    }, error => {
+      this.indClickTag = -1;
+      this.message.error('Gán nhãn thất bại!');
     });
   }
 
@@ -271,14 +289,14 @@ export class PartnerComponent implements OnInit, OnDestroy {
   }
 
   isHidden(columnName: string) {
-      return this.hiddenColumns.find(x => x.value == columnName)?.isChecked;
+    return this.hiddenColumns.find(x => x.value == columnName)?.isChecked;
   }
 
   columnsChange(event: Array<ColumnTableDTO>) {
     this.hiddenColumns = event;
-    if(event && event.length > 0) {
+    if (event && event.length > 0) {
       const gridConfig = {
-          columnConfig: event
+        columnConfig: event
       };
 
       const key = this.partnerService._keyCacheGrid;
@@ -293,8 +311,8 @@ export class PartnerComponent implements OnInit, OnDestroy {
     this.indClickTag = -1;
 
     this.filterObj = {
-        statusText: event.statusText,
-        searchText: event.searchText,
+      statusText: event.statusText,
+      searchText: event.searchText,
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -304,30 +322,30 @@ export class PartnerComponent implements OnInit, OnDestroy {
     if (this.isProcessing) { return }
 
     let state = {
-        skip: 0,
-        take: 20,
-        filter: {
-          filters: [
-            { field: "Customer", operator: OperatorEnum.eq, value: true },
-            { field: "Active", operator: OperatorEnum.eq, value: true },
-          ],
-          logic: "and",
-        }
+      skip: 0,
+      take: 20,
+      filter: {
+        filters: [
+          { field: "Customer", operator: OperatorEnum.eq, value: true },
+          { field: "Active", operator: OperatorEnum.eq, value: true },
+        ],
+        logic: "and",
+      }
     };
 
-    let data = { customer: true, data : JSON.stringify(state) }
+    let data = { customer: true, data: JSON.stringify(state) }
 
     let that = this;
     let callBackFn = () => {
       that.isProcessing = false;
     }
 
-    this.excelExportService.exportPost('/Partner/ExportFile',{data: JSON.stringify(data)}, 'danh-sach-kh', callBackFn);
+    this.excelExportService.exportPost('/Partner/ExportFile', { data: JSON.stringify(data) }, 'danh-sach-kh', callBackFn);
   }
 
   setActive(type: string) {
     if (this.checkValueEmpty() == 1) {
-      switch(type) {
+      switch (type) {
         case "active":
           let model1 = {  Active: true, Ids: this.idsModel }
           this.partnerService.setActive({model: model1}).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
@@ -368,7 +386,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
     return 1;
   }
 
-  onDelete(data :any) {
+  onDelete(data: any) {
     let that = this;
     if (this.isProcessing) {
       return
@@ -387,37 +405,37 @@ export class PartnerComponent implements OnInit, OnDestroy {
       onCancel: () => { that.isProcessing = false; },
       okText: "Xác nhận",
       cancelText: "Đóng",
-      confirmViewType:"compact"
+      confirmViewType: "compact"
     });
   }
 
-  editPartner(data: any){
+  editPartner(data: any) {
     const modal = this.modalService.create({
-        title: 'Sửa Khách hàng',
-        content: ModalEditPartnerComponent,
-        size: "xl",
-        viewContainerRef: this.viewContainerRef,
-        centered: true,
-        componentParams: {
-          partnerId: data.Id
-        }
+      title: 'Sửa Khách hàng',
+      content: ModalEditPartnerComponent,
+      size: "xl",
+      viewContainerRef: this.viewContainerRef,
+      centered: true,
+      componentParams: {
+        partnerId: data.Id
+      }
     });
   }
 
-  createPartner(){
+  createPartner() {
     const modal = this.modalService.create({
-        title: 'Thêm mới khách hàng',
-        content: ModalEditPartnerComponent,
-        size: "xl",
-        viewContainerRef: this.viewContainerRef,
-        centered: true,
-        componentParams: {
-          partnerId: null
-        }
+      title: 'Thêm mới khách hàng',
+      content: ModalEditPartnerComponent,
+      size: "xl",
+      viewContainerRef: this.viewContainerRef,
+      centered: true,
+      componentParams: {
+        partnerId: null
+      }
     });
   }
 
-  resetLoyaltyPoint(){
+  resetLoyaltyPoint() {
     let that = this;
     if (this.isProcessing) {
       return
@@ -434,8 +452,8 @@ export class PartnerComponent implements OnInit, OnDestroy {
             that.message.success('Thao tác thành công!');
             that.isProcessing = false;
         }, error => {
-            that.message.error(`${error?.error?.message}`);
-            that.isProcessing = false;
+          that.message.error(`${error?.error?.message}`);
+          that.isProcessing = false;
         })
       },
       onCancel: () => { that.isProcessing = false; },
@@ -445,41 +463,41 @@ export class PartnerComponent implements OnInit, OnDestroy {
     });
   }
 
-  openTransferPartner(){
+  openTransferPartner() {
     this.modalService.create({
-        title: 'Chuyển đổi khách hàng',
-        content: ModalConvertPartnerComponent,
-        size: "md",
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-            lstOfData: this.lstOfData
-        }
+      title: 'Chuyển đổi khách hàng',
+      content: ModalConvertPartnerComponent,
+      size: "md",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        lstOfData: this.lstOfData
+      }
     });
   }
 
   //Modal gửi tin nhắn đến khách hàng
-  showModalSendMessage(){
+  showModalSendMessage() {
     let ids: any = [...this.setOfCheckedId];
     this.modalService.create({
-        title: 'Gửi tin nhắn tới khách hàng',
-        content: ModalSendMessageComponent,
-        size: "lg",
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-            ids: ids
-        }
+      title: 'Gửi tin nhắn tới khách hàng',
+      content: ModalSendMessageComponent,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        ids: ids
+      }
     });
   }
 
   // Modal sinh nhật của khách hàng
-  showModalBirthday(){
+  showModalBirthday() {
     this.modalService.create({
       title: 'Sinh nhật khách hàng',
       content: ModalBirthdayPartnerComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
-        componentParams: {
-           data: this.lstBirtdays
+      componentParams: {
+        data: this.lstBirtdays
       }
     });
   }
@@ -492,11 +510,11 @@ export class PartnerComponent implements OnInit, OnDestroy {
   }
 
   // Drawer tin nhắn facebook
-  openDrawerMessage(){
+  openDrawerMessage() {
     this.isOpenMessageFacebook = true;
   }
 
-  closeDrawerMessage(ev: boolean){
+  closeDrawerMessage(ev: boolean) {
     this.isOpenMessageFacebook = false;
   }
 

@@ -72,8 +72,8 @@
       <ng-container *ngIf="data && data.length > 0 || dataSearch">
         <ng-template ngFor let-team [ngForOf]="dataSearch || data" let-i="index">
           <tds-collapse [expandIconPosition]="'right'" class="bg-white rounded-xl w-full">
-            <tds-collapse-panel [header]="header" [active]="!i ? true : false" [disabled]=false
-            [expandedIcon]="icon" bordered="false" (activeChange)="onChangeCollapse(i, $event)">
+            <tds-collapse-panel  [header]="header" [active]="getIsIconCollapse(team.Id)" [disabled]=false
+            [expandedIcon]="icon" bordered="false" (activeChange)="onChangeCollapse(team.Id, $event)">
 
               <!-- Header -->
               <ng-template #header>
@@ -116,12 +116,12 @@
               <ng-template #icon>
                 <div class="flex gap-4">
                     <tds-button-group>
-                        <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" (click)="onClickDropdown($event)" placement ="bottomRight">
+                        <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menuSetting" (click)="onClickDropdown($event)" placement ="bottomRight">
                             <span class="text-neutral-1-900 flex  items-center justify-center text-body-2 font-semibold">
-                                {{ fieldListSetting[team.Id].name }} <i class="tdsi-arrow-down-fill text-base leading-none ml-1.5 text-neutral-1-900"></i>
+                                Cài đặt trang hệ thống <i class="tdsi-arrow-down-fill text-base leading-none ml-1.5 text-neutral-1-900"></i>
                             </span>
                         </button>
-                        <tds-dropdown-menu #menu="tdsDropdownMenu">
+                        <tds-dropdown-menu #menuSetting="tdsDropdownMenu">
                             <div class="w-full">
                                 <ng-template ngFor let-item [ngForOf]="listSetting">
                                     <div tds-dropdown-item (click)="onClickFieldListSetting(item, team.Id)">
@@ -133,9 +133,27 @@
                             </div>
                         </tds-dropdown-menu>
                     </tds-button-group>
+                    <tds-button-group>
+                        <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" (click)="onClickDropdown($event)" placement ="bottomRight">
+                            <span class="text-neutral-1-900 flex  items-center justify-center text-body-2 font-semibold">
+                                {{ fieldListFilter[team.Id].name }} <i class="tdsi-arrow-down-fill text-base leading-none ml-1.5 text-neutral-1-900"></i>
+                            </span>
+                        </button>
+                        <tds-dropdown-menu #menu="tdsDropdownMenu">
+                            <div class="w-full">
+                                <ng-template ngFor let-item [ngForOf]="listFilter">
+                                    <div tds-dropdown-item (click)="onClickFieldListFilter(item, team.Id)">
+                                        <a class="text-primary-1 flex items-center">
+                                            <div class="pl-2 text-neutral-1-900">{{ item.name }}</div>
+                                        </a>
+                                    </div>
+                                </ng-template>
+                            </div>
+                        </tds-dropdown-menu>
+                    </tds-button-group>
                     <div class="border border-neutral-2-200 border-solid rounded-md">
-                        <div *ngIf="!getIsIconCollapse(i)" class="tdsi-arrow-up-line p-2 text-neutral-1-500"></div>
-                        <div *ngIf="getIsIconCollapse(i)" class="tdsi-arrow-down-line p-2 text-neutral-1-500"></div>
+                        <div *ngIf="!getIsIconCollapse(team.Id)" class="tdsi-arrow-up-line p-2 text-neutral-1-500"></div>
+                        <div *ngIf="getIsIconCollapse(team.Id)" class="tdsi-arrow-down-line p-2 text-neutral-1-500"></div>
                     </div>
                 </div>
               </ng-template>
@@ -161,6 +179,12 @@
                               <div class="flex gap-2 items-center">
                                   <div class="tdsi-success-fill text-primary-1 text-xl"></div>
                                   <div class="text-body-2 text-neutral-1-900 font-regular">Đã kết nối</div>
+                                  <div class="text-success-400 flex items-center gap-x-1 cursor-pointer"
+                                    *ngIf="userFBLogin?.id && userFBLogin?.id == team?.Facebook_UserId && team.Active"
+                                    (click)="refreshPageToken(team.Id, child.Facebook_PageId)">
+                                    <span class="tdsi-undo-line flex text-sm"></span>
+                                    <span class="flex text-xs">Cập nhật token</span>
+                                  </div>
                               </div>
                           </div>
                       </div>
