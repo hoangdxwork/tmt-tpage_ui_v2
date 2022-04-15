@@ -1,7 +1,7 @@
 <div *ngFor="let item of menuData">
     <div *ngIf="item.listChild; else childTmp">
         <tds-collapse [bordered]="false" [expandIconPosition]="'right'">
-            <tds-collapse-panel [header]="headerTpl" [active]="active" [disabled]="disableCollapse">
+            <tds-collapse-panel [header]="headerTpl" [active]="openCollapsePanel(item.link)" [tdsClass]="'p-0'">
                 <ng-template #headerTpl>
                     <div class="flex items-center px-4 border-l-3 border-transparent cursor-pointer text-neutral-500">
                         <i class="text-lg leading-none mr-2 
@@ -12,16 +12,16 @@
                 </ng-template>
                 <div *ngFor="let child of item.listChild">
                     <div class="flex items-center px-4 border-l-3 cursor-pointer hover:bg-light-50 m-0 
-                        {{currentPage.link === child.link ?'border-primary-1':'border-transparent'}}"
-                        (click)="onChangePage(child)" 
+                        {{(currentURL === child.link)||(currentURL.includes(child.link)) ?'border-primary-1':'border-transparent'}}"
+                        (click)="onChangePage(child.link)" 
                         [routerLink]="child.link">
                         <span class="flex items-center p-4">
                             <i class="text-lg leading-none mr-2 
                                 {{child.icon ?? 'p-2.5'}}
-                                {{currentPage.link === child.link ? 'text-primary-1' : 'text-neutral-500 '}}">
+                                {{(currentURL === child.link)||(currentURL.includes(child.link)) ? 'text-primary-1' : 'text-neutral-500 '}}">
                             </i>
                             <span class="font-semibold text-body-2 font-sans w-full 
-                                {{currentPage.link === child.link ? 'text-neutral-900' : 'text-neutral-500'}}">
+                                {{(currentURL === child.link)||(currentURL.includes(child.link)) ? 'text-neutral-900' : 'text-neutral-500'}}">
                                 {{child.name}}
                             </span>
                         </span>
@@ -31,15 +31,15 @@
         </tds-collapse>
     </div>
     <ng-template #childTmp>
-        <div class="w-full px-4 border-l-3 cursor-pointer hover:bg-light-50 {{currentPage.link === item.link ?'border-primary-1':'border-transparent'}}"  
-            (click)="onChangePage(item)" [routerLink]="item.link">
+        <div class="w-full px-4 border-l-3 cursor-pointer hover:bg-light-50 {{(currentURL === item.link)||(currentURL.includes(item.link)) ?'border-primary-1':'border-transparent'}}"  
+            (click)="onChangePage(item.link)" [routerLink]="item.link">
             <span class="flex items-center p-4">
                 <i class="text-lg leading-none mr-2 
                     {{item.icon ?? 'p-2.5'}}
-                    {{currentPage.link === item.link ? 'text-primary-1' : 'text-neutral-500 '}}">
+                    {{(currentURL === item.link)||(currentURL.includes(item.link)) ? 'text-primary-1' : 'text-neutral-500 '}}">
                 </i>
                 <span class="font-semibold text-body-2 font-sans w-full 
-                    {{currentPage.link === item.link ? 'text-neutral-900' : 'text-neutral-500'}}">
+                    {{(currentURL === item.link)||(currentURL.includes(item.link)) ? 'text-neutral-900' : 'text-neutral-500'}}">
                     {{item.name}}
                 </span>
             </span>

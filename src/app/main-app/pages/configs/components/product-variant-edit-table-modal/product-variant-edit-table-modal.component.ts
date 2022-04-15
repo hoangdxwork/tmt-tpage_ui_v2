@@ -42,7 +42,6 @@ export class ProductVariantEditTableModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.data)
     this.initData();
   }
 

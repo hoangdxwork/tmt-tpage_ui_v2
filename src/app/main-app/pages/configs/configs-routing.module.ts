@@ -1,3 +1,6 @@
+import { ConfigAddPromotionComponent } from './config-add-promotion/config-add-promotion.component';
+import { ConfigAddProductComponent } from './config-add-product/config-add-product.component';
+import { ConfigAddProductVariantComponent } from './config-add-product-variant/config-add-product-variant.component';
 import { ConfigDecentralizePageComponent } from './config-users/config-decentralize-page/config-decentralize-page.component';
 import { ConfigUsersDivideTaskComponent } from './config-users/config-users-divide-task/config-users-divide-task.component';
 import { ConfigPrintBillsComponent } from './config-print-bills/config-print-bills.component';
@@ -49,11 +52,20 @@ const routes: Routes = [
       },
       {
         path:'product-variant',
-        component: ConfigProductVariantComponent
+        component: ConfigProductVariantComponent,
+        
+      },
+      {
+        path:'product-variant/create',
+        component: ConfigAddProductVariantComponent
       },
       {
         path:'products',
-        component: ConfigProductsComponent
+        component: ConfigProductsComponent,
+      },
+      {
+        path:'products/create',
+        component: ConfigAddProductComponent
       },
       {
         path:'activities',
@@ -61,7 +73,11 @@ const routes: Routes = [
       },
       {
         path:'promotions',
-        component: ConfigPromotionsComponent
+        component: ConfigPromotionsComponent,
+      },
+      {
+        path:'promotions/create',
+        component: ConfigAddPromotionComponent
       },
       {
         path:'users',

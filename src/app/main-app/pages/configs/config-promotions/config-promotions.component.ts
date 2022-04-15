@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { ConfigPromotionService } from './config-promotion.service';
 import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSMessageService } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
@@ -45,8 +46,6 @@ export class ConfigPromotionsComponent implements OnInit {
   checked = false;
   indeterminate = false;
   loading = false;
-  currentComponentIndex = 1;
-
   sort: Array<SortDataRequestDTO>= [{
       field: "DateCreated",
       dir: SortEnum.desc,
@@ -61,12 +60,11 @@ export class ConfigPromotionsComponent implements OnInit {
   constructor(
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
-    private service: ConfigPromotionService,
     private message: TDSMessageService,
     private odataSaleCouponProgramService: OdataSaleCouponProgramService,
-    private saleCouponProgramService: SaleCouponProgramService
+    private saleCouponProgramService: SaleCouponProgramService,
+    private router:Router
   ) {
-
   }
 
   ngOnInit(): void {
@@ -96,11 +94,7 @@ export class ConfigPromotionsComponent implements OnInit {
   }
 
   addNewData(data:TDSSafeAny){
-    this.currentComponentIndex = 2;
-  }
-
-  getComponentIndex(i:number){
-    this.currentComponentIndex = i;
+    this.router.navigate(['configs/promotions/create']);
   }
 
   updateCheckedSet(id: number, checked: boolean): void {

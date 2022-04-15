@@ -62,199 +62,154 @@
                     <tds-tabset clsTab="tds-add-product-form">
                         <tds-tab title="Thông tin chung">
                             <div class="grid grid-cols-2 gap-y-4 gap-x-8">
-                                <!-- type -->
-                                <div class="flex flex-row items-center justify-between">
-                                    <span class="text-neutral-1-900 text-body-2 font-semibold">
-                                        Loại sản phẩm:
-                                    </span>
-                                    <tds-form-field class="w-2/3">
-                                        <tds-select valueField="id" textField="name" placeholder='Chọn loại sản phẩm'
-                                            disabledField="isActive" formControlName="type" [required]='true'
-                                            [data]="productTypeList" [allowClear]="true">
-                                        </tds-select>
-                                        <tds-error>
-                                            Vui lòng chọn loại sản phẩm
-                                        </tds-error>
-                                    </tds-form-field>
-                                </div>
-                                <!-- variant price -->
-                                <div class="flex flex-row items-center justify-between">
-                                    <span class="text-neutral-1-900 text-body-2 font-semibold">
-                                        Giá biến thể:
-                                    </span>
-                                    <tds-form-field class="w-2/3">
-                                        <tds-input-number formControlName="variantPrice" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                              <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
+                                <tds-label>Loại sản phẩm:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <tds-select valueField="id" textField="name" placeholder='Chọn loại sản phẩm'
+                                      disabledField="isActive" formControlName="type" [required]='true'
+                                      [data]="productTypeList" [allowClear]="true">
+                                  </tds-select>
+                                  <tds-error>
+                                      Vui lòng chọn loại sản phẩm
+                                  </tds-error>
+                                </tds-form-field>
+
+                                <tds-label>Mã sản phẩm:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <input tdsInput formControlName="productCode" placeholder="" class="text-neutral-1-900 text-body-2 font-regular"/>
+                                  <tds-error>
+                                      Vui lòng nhập mã sản phẩm
+                                  </tds-error>
+                                </tds-form-field>
+
+                                <tds-label>Mã vạch:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <input tdsInput formControlName="QRCode" placeholder="" class="text-neutral-1-900 text-body-2 font-regular"/>
+                                  <tds-error>
+                                      Vui lòng nhập mã vạch
+                                  </tds-error>
+                                </tds-form-field>
+
+                                <tds-label>Nhóm sản phẩm:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <tds-select valueField="id" textField="name" placeholder='Chọn nhóm sản phẩm'
+                                  disabledField="isActive" formControlName="group" [required]='true'
+                                  [data]="productGroupList" [allowClear]="true">
+                                  </tds-select>
+                                  <tds-error>
+                                      Vui lòng chọn nhóm sản phẩm
+                                  </tds-error>
+                                </tds-form-field>
+
+                                <tds-label>Thuộc tính:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <input tdsInput formControlName="attribute" placeholder="" class="text-neutral-1-900 text-body-2 font-regular"/>
+                                  <tds-error>
+                                      Vui lòng nhập thuộc tính
+                                  </tds-error>
+                                </tds-form-field>
+                              </div>
+
+                              <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
+                                <tds-label>Giá biến thể:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <tds-input-number formControlName="variantPrice" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                                         <tds-error>
                                             Vui lòng nhập giá biến thể
                                         </tds-error>
-                                    </tds-form-field>
-                                </div>
-                                <!-- product code -->
-                                <div class="flex flex-row items-center justify-between">
-                                    <span class="text-neutral-1-900 text-body-2 font-semibold">
-                                        Mã sản phẩm:
-                                    </span>
-                                    <tds-form-field class="w-2/3">
-                                        <input tdsInput formControlName="productCode" placeholder="" class="text-neutral-1-900 text-body-2 font-regular"/>
-                                        <tds-error>
-                                            Vui lòng nhập mã sản phẩm
-                                        </tds-error>
-                                    </tds-form-field>
-                                </div>
-                                <!-- capital -->
-                                <div class="flex flex-row items-center justify-between">
-                                    <span class="text-neutral-1-900 text-body-2 font-semibold">
-                                        Giá vốn:
-                                    </span>
-                                    <tds-form-field class="w-2/3">
-                                        <tds-input-number formControlName="capital" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
-                                        <tds-error>
-                                            Vui lòng nhập giá vốn
-                                        </tds-error>
-                                    </tds-form-field>
-                                </div>
-                                <!-- product code -->
-                                <div class="flex flex-row items-center justify-between">
-                                    <span class="text-neutral-1-900 text-body-2 font-semibold">
-                                        Mã vạch:
-                                    </span>
-                                    <tds-form-field class="w-2/3">
-                                        <input tdsInput formControlName="QRCode" placeholder="" class="text-neutral-1-900 text-body-2 font-regular"/>
-                                        <tds-error>
-                                            Vui lòng nhập mã vạch
-                                        </tds-error>
-                                    </tds-form-field>
-                                </div>
-                                <!-- default unit -->
-                                <div class="flex flex-row items-center justify-between">
-                                    <span class="text-neutral-1-900 text-body-2 font-semibold">
-                                        Đơn vị mặc định:
-                                    </span>
-                                    <tds-form-field class="w-2/3">
-                                        <tds-select valueField="id" textField="name" placeholder='Nhập đơn vị'
-                                            disabledField="isActive" formControlName="defaultUnit" [required]='true'
-                                            [data]="productUnitList" [allowClear]="true">
-                                        </tds-select>
-                                        <tds-error>
-                                            Vui lòng chọn đơn vị mặc định
-                                        </tds-error>
-                                    </tds-form-field>
-                                </div>
-                                <!-- group -->
-                                <div class="flex flex-row items-center justify-between">
-                                    <span class="text-neutral-1-900 text-body-2 font-semibold">
-                                        Nhóm sản phẩm:
-                                    </span>
-                                    <tds-form-field class="w-2/3">
-                                        <tds-select valueField="id" textField="name" placeholder='Chọn nhóm sản phẩm'
-                                            disabledField="isActive" formControlName="group" [required]='true'
-                                            [data]="productGroupList" [allowClear]="true">
-                                        </tds-select>
-                                        <tds-error>
-                                            Vui lòng chọn nhóm sản phẩm
-                                        </tds-error>
-                                    </tds-form-field>
-                                </div>
-                                <!-- unit -->
-                                <div class="flex flex-row items-center justify-between">
-                                    <span class="text-neutral-1-900 text-body-2 font-semibold">
-                                        Đơn vị mua:
-                                    </span>
-                                    <tds-form-field class="w-2/3">
-                                        <tds-select valueField="id" textField="name" placeholder='Nhập đơn vị'
-                                            disabledField="isActive" formControlName="unit" [required]='true'
-                                            [data]="productUnitList" [allowClear]="true">
-                                        </tds-select>
-                                        <tds-error>
-                                            Vui lòng chọn đơn vị mua
-                                        </tds-error>
-                                    </tds-form-field>
-                                </div>
-                                <!-- attribute -->
-                                <div class="flex flex-row items-center justify-between">
-                                    <span class="text-neutral-1-900 text-body-2 font-semibold">
-                                        Thuộc tính:
-                                    </span>
-                                    <tds-form-field class="w-2/3">
-                                        <input tdsInput formControlName="attribute" placeholder="" class="text-neutral-1-900 text-body-2 font-regular"/>
-                                        <tds-error>
-                                            Vui lòng nhập thuộc tính
-                                        </tds-error>
-                                    </tds-form-field>
-                                </div>
-                                <!-- inventory -->
-                                <div class="flex flex-row items-start justify-between">
-                                    <span class="text-neutral-1-900 text-body-2 font-semibold">
-                                        Kiểm soát hóa đơn mua hàng:
-                                    </span>
-                                    <tds-radio-group class="flex flex-col w-2/3" formControlName="inventory">
-                                        <label tds-radio value="1" class="mb-2">Trên số lượng đặt hàng</label>
-                                        <label tds-radio value="2">Trên số lượng nhận hàng</label>
-                                    </tds-radio-group>
-                                </div>
+                                </tds-form-field>
+
+                                <tds-label>Giá vốn:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <tds-input-number formControlName="capital" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                                  <tds-error>
+                                      Vui lòng nhập giá vốn
+                                  </tds-error>
+                                </tds-form-field>
+
+                                <tds-label>Đơn vị mặc định:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <tds-select valueField="id" textField="name" placeholder='Nhập đơn vị'
+                                  disabledField="isActive" formControlName="defaultUnit" [required]='true'
+                                  [data]="productUnitList" [allowClear]="true">
+                                  </tds-select>
+                                  <tds-error>
+                                      Vui lòng chọn đơn vị mặc định
+                                  </tds-error>
+                                </tds-form-field>
+
+                                <tds-label>Đơn vị mua:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <tds-select valueField="id" textField="name" placeholder='Nhập đơn vị'
+                                  disabledField="isActive" formControlName="unit" [required]='true'
+                                  [data]="productUnitList" [allowClear]="true">
+                                  </tds-select>
+                                  <tds-error>
+                                      Vui lòng chọn đơn vị mua
+                                  </tds-error>
+                                </tds-form-field>
+
+                                <tds-label>Kiểm soát hóa đơn mua hàng:</tds-label>
+                                <tds-radio-group class="grid grid-cols-1 w-full col-span-2" formControlName="inventory">
+                                  <label tds-radio value="1" class="mb-2">Trên số lượng đặt hàng</label>
+                                  <label tds-radio value="2">Trên số lượng nhận hàng</label>
+                                </tds-radio-group>
+                              </div>
                             </div>
                         </tds-tab>
                         <tds-tab title="Tồn kho">
                             <div class="grid grid-cols-2 gap-y-4 gap-x-8">
-                                <!-- time out -->
-                                <div class="flex flex-row items-center justify-between">
-                                    <span class="text-neutral-1-900 text-body-2 font-semibold">
-                                        Khối lượng tịnh:
-                                    </span>
-                                    <tds-form-field class="w-2/3">
-                                        <tds-input-number formControlName="netWeight" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
-                                        <tds-error>
-                                            Vui lòng nhập khối lượng
-                                        </tds-error>
-                                    </tds-form-field>
-                                </div>
+                              <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
+                                <tds-label>Khối lượng tịnh:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <tds-input-number formControlName="netWeight" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                                  <tds-error>
+                                    Vui lòng nhập khối lượng
+                                  </tds-error>
+                                </tds-form-field>
+                              </div>
                             </div>
                         </tds-tab>
                         <tds-tab title="Bán hàng">
-                            <div class="grid grid-cols-2 gap-y-4 gap-x-8">
-                                <span class="text-neutral-1-600 text-header-2 font-semibold">Chính sách bán hàng</span>
-                                <span class="text-neutral-1-600 text-header-2 font-semibold">Điểm bán hàng</span>
-                                <!-- time out -->
-                                <div class="flex flex-row items-center justify-between">
-                                    <span class="text-neutral-1-900 text-body-2 font-semibold">
-                                        Thời gian chờ:
-                                    </span>
-                                    <tds-form-field class="w-2/3">
-                                        <tds-input-number formControlName="timeOut" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
-                                        <tds-error>
-                                            Vui lòng nhập thời gian chờ
-                                        </tds-error>
-                                    </tds-form-field>
-                                </div>
-                                <!-- Pos group -->
-                                <div class="flex flex-row items-center justify-between">
-                                    <span class="text-neutral-1-900 text-body-2 font-semibold">
-                                        Nhóm Pos:
-                                    </span>
-                                    <tds-form-field class="w-2/3">
-                                        <tds-select valueField="id" textField="name" placeholder='Chọn nhóm Pos'
-                                            disabledField="isActive" formControlName="PosGroup" [required]='true'
-                                            [data]="PosGroupList" [allowClear]="true">
-                                        </tds-select>
-                                        <tds-error>
-                                            Vui lòng chọn nhóm Pos
-                                        </tds-error>
-                                    </tds-form-field>
-                                </div>
+                          <div class="grid grid-cols-2 gap-y-4 gap-x-8 items-center text-neutral-1-600 text-header-2 font-semibold">
+                            <span>Chính sách bán hàng</span>
+                            <span>Điểm bán hàng</span>
+                          </div>
+                          
+                          <div class="grid grid-cols-2 gap-y-4 gap-x-8 mt-4">
+                            <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
+                              <tds-label>Thời gian chờ:</tds-label>
+                              <tds-form-field class="w-full col-span-2">
+                                <tds-input-number formControlName="timeOut" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                                <tds-error>
+                                  Vui lòng nhập thời gian chờ
+                                </tds-error>
+                              </tds-form-field>
                             </div>
+
+                            <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
+                              <tds-label>Nhóm Pos:</tds-label>
+                              <tds-form-field class="w-full col-span-2">
+                                <tds-select valueField="id" textField="name" placeholder='Chọn nhóm Pos'
+                                  disabledField="isActive" formControlName="PosGroup" [required]='true'
+                                  [data]="PosGroupList" [allowClear]="true">
+                                </tds-select>
+                                <tds-error>
+                                  Vui lòng chọn nhóm Pos
+                                </tds-error>
+                              </tds-form-field>
+                            </div>
+                          </div>
                         </tds-tab>
                         <tds-tab title="Hóa đơn">
                             <div class="grid grid-cols-2 gap-y-4 gap-x-8">
-                                <!-- sale policy -->
-                                <div class="flex flex-row items-start justify-between">
-                                    <span class="text-neutral-1-900 text-body-2 font-semibold">
-                                        Chính sách hóa đơn:
-                                    </span>
-                                    <tds-radio-group class="flex flex-col w-2/3" formControlName="salePolicy">
-                                        <label tds-radio value="1" class="mb-2">Trên số lượng đặt hàng</label>
-                                        <label tds-radio value="2">Trên số lượng đã giao</label>
-                                    </tds-radio-group>
-                                </div>
+                              <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
+                                <tds-label>Chính sách hóa đơn:</tds-label>
+                                <tds-radio-group class="grid grid-cols-1 w-full col-span-2" formControlName="salePolicy">
+                                  <label tds-radio value="1" class="mb-2">Trên số lượng đặt hàng</label>
+                                  <label tds-radio value="2">Trên số lượng đã giao</label>
+                              </tds-radio-group>
+                              </div>
                             </div>
                         </tds-tab>
                     </tds-tabset>

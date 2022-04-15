@@ -195,15 +195,24 @@
             <div *ngIf="getMessageFormIndex(messageForm) == 0">
                 <div *ngIf="messageStructurePart == 1">
                     <div class="flex flex-col w-full">
-                        <span class="text-neutral-1-900 text-body-2 font-semibold pb-2">Phương tiện</span>
-                        <tds-upload class="flex flex-row items-center tds-upload-modal"
-                            (uploadChange)="handleChange($event)" [customRequest]="handleUpload" [showUploadList]="true">
-                            <button tds-button color="secondary" class="rounded-r-none">
-                                <span class="flex items-center">
-                                    <i class="tdsi-upload-fill text-lg leading-none mr-2"></i>Tải ảnh/video
-                                </span>
-                            </button>
-                        </tds-upload>
+                        <form [formGroup]="createImageForm" autocomplete="off">
+                            <span class="text-neutral-1-900 text-body-2 font-semibold">Phương tiện</span>
+                            <tds-upload class="flex flex-row items-center tds-upload-modal pt-2"
+                                (uploadChange)="handleChange($event)" 
+                                
+                                [customRequest]="handleUpload" 
+                                [(fileList)]="fileList"
+                                [showUploadList]="false">
+                                <tds-form-field class="w-full">
+                                    <button tdsAddOnLeft tds-button color="secondary" class="rounded-r-none">
+                                        <span class="flex items-center">
+                                            <i class="tdsi-upload-fill text-lg leading-none mr-2"></i>Tải ảnh/video
+                                        </span>
+                                    </button>
+                                    <input tdsInput formControlName="image" [value]="createImageForm.value.image" [placeholder]="'No file choosen'">
+                                </tds-form-field>
+                            </tds-upload>
+                        </form>
                     </div>
                 </div>
                 <div *ngIf="messageStructurePart == 2">
