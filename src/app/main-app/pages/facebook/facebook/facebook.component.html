@@ -72,8 +72,8 @@
       <ng-container *ngIf="data && data.length > 0 || dataSearch">
         <ng-template ngFor let-team [ngForOf]="dataSearch || data" let-i="index">
           <tds-collapse [expandIconPosition]="'right'" class="bg-white rounded-xl w-full">
-            <tds-collapse-panel [header]="header" [active]="!i ? true : false" [disabled]=false
-            [expandedIcon]="icon" bordered="false" (activeChange)="onChangeCollapse(i, $event)">
+            <tds-collapse-panel  [header]="header" [active]="getIsIconCollapse(team.Id)" [disabled]=false
+            [expandedIcon]="icon" bordered="false" (activeChange)="onChangeCollapse(team.Id, $event)">
 
               <!-- Header -->
               <ng-template #header>

@@ -56,6 +56,21 @@ export class CRMTeamService extends BaseSevice {
     this.listFaceBook$.next(data);
   }
 
+  onRefreshListFacebook() {
+    this.getAllFacebooks().subscribe(dataTeam => {
+      if (TDSHelperObject.hasValue(dataTeam)) {
+        this.onUpdateListFaceBook(dataTeam);
+      }
+      else {
+        this.onUpdateListFaceBook(null);
+        this.onUpdateTeam(null);
+      }
+    }, error => {
+      this.onUpdateListFaceBook(null);
+      this.onUpdateTeam(null);
+    });
+  }
+
   getCurrentTeam(): CRMTeamDTO | null {
     return this._currentTeam;
   }
