@@ -53,5 +53,7 @@ export const Message = {
     NotFoundUserPage: 'Không tìm thấy kênh kết nối nào',
     TokenExpires: 'Kết nối trang hết hạn',
     ChannelExist: 'Kênh đã tồn tại.',
+    RefreshTokenSuccess: 'Cập nhật token thành công.',
+    RefreshTokenFail: 'Cập nhật token thất bại!',
   }
 }
