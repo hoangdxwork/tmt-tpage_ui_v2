@@ -1,9 +1,8 @@
 import { TDSModalRef } from 'tmt-tang-ui';
-import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, Input, OnInit } from '@angular/core';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
-import { AddressesV2 } from 'src/app/main-app/dto/partner/partner-detail.dto';
 
 @Component({
   selector: 'app-modal-add-address',
@@ -21,11 +20,11 @@ export class ModalAddAddressComponent implements OnInit {
   @Input() _street!: string;
   public items!: ResultCheckAddressDTO;
 
-  constructor( private fb: FormBuilder,
+  constructor(private fb: FormBuilder,
     private modal: TDSModalRef) { }
 
   ngOnInit(): void {
-    this._districts; debugger
+    this._districts;
   }
 
   onLoadSuggestion(item: ResultCheckAddressDTO) {
@@ -39,4 +38,5 @@ export class ModalAddAddressComponent implements OnInit {
   onSave() {
     this.modal.destroy(this.items);
   }
+
 }

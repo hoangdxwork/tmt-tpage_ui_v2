@@ -74,7 +74,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
   ];
 
   expandSet = new Set<number>();
-  private _destroy = new Subject<void>();
+  private destroy$ = new Subject<void>();
 
   constructor(private modalService: TDSModalService,
       private odataPartnerService: OdataPartnerService,
@@ -121,7 +121,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
 
   loadGridConfig() {
     const key = this.partnerService._keyCacheGrid;
-    this.cacheApi.getItem(key).subscribe((res: TDSSafeAny) => {
+    this.cacheApi.getItem(key).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
       if(res && res.value) {
         var jsColumns = JSON.parse(res.value) as any;
         this.hiddenColumns = jsColumns.value.columnConfig;
@@ -135,7 +135,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     let filters = this.odataPartnerService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
-    this.odataPartnerService.getView(params, this.filterObj).subscribe((res: ODataPartnerDTO) => {
+    this.odataPartnerService.getView(params, this.filterObj).pipe(takeUntil(this.destroy$)).subscribe((res: ODataPartnerDTO) => {
 
       this.count = res['@odata.count'] as number;
       this.lstOfData = res.value;
@@ -162,13 +162,13 @@ export class PartnerComponent implements OnInit, OnDestroy {
 
   loadTags() {
     let type = "partner";
-    this.tagService.getByType(type).subscribe((res: ODataTagsPartnerDTO) => {
+    this.tagService.getByType(type).pipe(takeUntil(this.destroy$)).subscribe((res: ODataTagsPartnerDTO) => {
         this.lstDataTag = res.value;
     })
   }
 
   loadPartnerStatusReport() {
-    this.commonService.getPartnerStatusReport().subscribe((res: PartnerStatusReport) => {
+    this.commonService.getPartnerStatusReport().pipe(takeUntil(this.destroy$)).subscribe((res: PartnerStatusReport) => {
       if(res && TDSHelperArray.isArray(res.item)) {
           this.partnerStatusReport = res.item;
       }
@@ -243,7 +243,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
 
   assignTags(id: number, tags: Array<TagsPartnerDTO>) {
     let model = { PartnerId: id, Tags: tags };
-    this.partnerService.assignTagPartner(model).subscribe((res: TDSSafeAny) => {
+    this.partnerService.assignTagPartner(model).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
         if(res && res.PartnerId) {
           var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
           if(exits) {
@@ -330,7 +330,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
       switch(type) {
         case "active":
           let model1 = {  Active: true, Ids: this.idsModel }
-          this.partnerService.setActive({model: model1}).subscribe((res: TDSSafeAny) => {
+          this.partnerService.setActive({model: model1}).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
               this.message.success('Đã mở hiệu lực thành công!');
               setTimeout(() => {
                 this.loadData(this.pageSize, this.pageIndex);
@@ -342,7 +342,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
 
         case "unactive":
           let model2 = {  Active: false, Ids: this.idsModel }
-          this.partnerService.setActive({model: model2}).subscribe((res: TDSSafeAny) => {
+          this.partnerService.setActive({model: model2}).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
               this.message.success('Đóng hiệu lực thành công!');
               setTimeout(() => {
                 this.loadData(this.pageSize, this.pageIndex);
@@ -378,7 +378,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
       title: 'Xóa khách hàng',
       content: 'Bạn muốn chắc xóa khách hàng này?',
       onOk: () => {
-          this.partnerService.delete(data.Id).subscribe((res: TDSSafeAny) => {
+          this.partnerService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
             this.message.success('Xóa thành công!')
           }, error => {
             this.message.error(`${error.error.message}`)
@@ -430,7 +430,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
       title: 'Reset điểm tích lũy',
       content: 'Bạn muốn chắc chắn reset điểm khách hàng này?',
       onOk: () => {
-        that.partnerService.resetLoyaltyPoint({ ids: ids }).pipe(takeUntil(this._destroy)).subscribe(() => {
+        that.partnerService.resetLoyaltyPoint({ ids: ids }).pipe(takeUntil(this.destroy$)).subscribe(() => {
             that.message.success('Thao tác thành công!');
             that.isProcessing = false;
         }, error => {
@@ -486,7 +486,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
 
   loadBirtdays() {
     let type = "day";
-    this.partnerService.getPartnerBirthday(type).subscribe((res: Array<PartnerBirthdayDTO>) => {
+    this.partnerService.getPartnerBirthday(type).pipe(takeUntil(this.destroy$)).subscribe((res: Array<PartnerBirthdayDTO>) => {
         this.lstBirtdays = res;
     })
   }
@@ -501,7 +501,7 @@ export class PartnerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._destroy.next();
-    this._destroy.complete();
+    this.destroy$ .next();
+    this.destroy$ .complete();
   }
 }

@@ -1,11 +1,11 @@
 import { TDSHelperArray, TDSHelperString, TDSMessageService } from 'tmt-tang-ui';
-import { Component, Input, OnInit, EventEmitter, Output, SimpleChanges, OnChanges, AfterViewInit, HostListener, ElementRef, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, EventEmitter, Output, SimpleChanges, OnChanges, AfterViewInit, HostListener, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { BehaviorSubject, fromEvent, Observable, of } from 'rxjs';
+import { BehaviorSubject, fromEvent, Observable, of, Subject } from 'rxjs';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from '../../dto/suggest-address/suggest-address.dto';
 import { SuggestAddressService } from '../../services/suggest-address.service';
 import { ResultCheckAddressDTO } from '../../dto/address/address.dto';
-import { catchError, debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 
 const ESCAPE_KEYUP = 'ArrowUp';
 const ESCAPE_KEYDOWN = 'ArrowDown';
@@ -16,10 +16,9 @@ const ESCAPE_ENTER = 'Enter';
   templateUrl: './suggest-address.component.html',
 })
 
-export class SuggestAddressComponent implements  OnChanges, AfterViewInit {
+export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDestroy {
 
   // @ViewChild('streetInput') streetInput!: ElementRef;
-
   _form!: FormGroup;
   @Input() _isExpanded!: boolean;
   @Input() _street!: string;
@@ -44,6 +43,7 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit {
   public suggestions$!: Observable<any[]>;
 
   @Output() onLoadSuggestion: EventEmitter<ResultCheckAddressDTO> = new EventEmitter<ResultCheckAddressDTO>();
+  private destroy$ = new Subject();
 
   constructor(private fb: FormBuilder,
       private message: TDSMessageService,
@@ -87,21 +87,24 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit {
   }
 
   loadCity(): void {
-    this.suggestService.getCities().subscribe((res: any) => {
+    this.suggestService.getCities().pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
         this.lstCities = res;
         this.citySubject.next(res);
     });
   }
 
   loadDistricts(code: string) {
-    this.suggestService.getDistricts(code).subscribe((res: any) => {
+    this.suggestService.getDistricts(code).pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
         this.lstDistricts = res;
         this.districtSubject.next(res);
       });
   }
 
   loadWards(code: string) {
-    this.suggestService.getWards(code).subscribe((res: any) => {
+    this.suggestService.getWards(code).pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
         this.lstWards = res;
         this.wardSubject.next(res);
       });
@@ -255,7 +258,8 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit {
     }
 
     text = encodeURIComponent(text);
-    this.suggestService.checkAddress(text).subscribe((res: any) => {
+    this.suggestService.checkAddress(text).pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
       if (res.success && TDSHelperArray.isArray(res.data)) {
           this.index = 0;
           this.selectAddress(res.data[0], 0);
@@ -335,6 +339,11 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit {
           break;
       }
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

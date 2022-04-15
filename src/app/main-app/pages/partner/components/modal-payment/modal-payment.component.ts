@@ -2,7 +2,7 @@ import { AccountDTO } from './../../../../dto/account/account.dto';
 import { da } from 'date-fns/locale';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { TDSHelperObject, TDSMessageService, TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { AccountRegisterPaymentService } from 'src/app/main-app/services/account-register-payment.service';
@@ -16,7 +16,7 @@ import { ODataRegisterPartnerDTO } from 'src/app/main-app/dto/partner/partner-re
   templateUrl: './modal-payment.component.html',
   styleUrls: ['./modal-payment.component.scss']
 })
-export class ModalPaymentComponent implements OnInit {
+export class ModalPaymentComponent implements OnInit, OnDestroy {
 
   @Input() data!: ODataRegisterPartnerDTO;
 
@@ -30,8 +30,7 @@ export class ModalPaymentComponent implements OnInit {
     paymentDate: new Date(),
     communication: null
   }
-
-  private _destroy = new Subject<void>();
+  private destroy$ = new Subject();
 
   constructor(private modal: TDSModalRef,
     private message: TDSMessageService,
@@ -42,7 +41,7 @@ export class ModalPaymentComponent implements OnInit {
 
   ngOnInit(): void {
     if(this.data) {
-      this.registerPaymentService.getWithCompanyPayment().subscribe((res: any) => {
+      this.registerPaymentService.getWithCompanyPayment().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
           this.lstAcJournal = res.value;
           this.modelForm.acJournal = res.value[0];
       });
@@ -88,7 +87,7 @@ export class ModalPaymentComponent implements OnInit {
     this.data.Journal = this.modelForm.acJournal;
     this.data.PaymentMethodId = this.modelForm.acJournal.Id;
 
-    this.registerPaymentService.insert(this.data).subscribe((res: any) => {
+    this.registerPaymentService.insert(this.data).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       let model = {
         id: res.Id
       }
@@ -100,7 +99,7 @@ export class ModalPaymentComponent implements OnInit {
             obs =  this.printerService.printUrl(`/AccountPayment/PrintThuChiThuan?id=${x.value}`)
         }
         if (TDSHelperObject.hasValue(obs)) {
-            obs.pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+            obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
               that.printerService.printHtml(res);
               that.isProcessing = false;
             })
@@ -116,5 +115,10 @@ export class ModalPaymentComponent implements OnInit {
       this.modal.destroy(null);
       this.message.error('Thanh toán đã xảy ra lỗi!');
     })
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

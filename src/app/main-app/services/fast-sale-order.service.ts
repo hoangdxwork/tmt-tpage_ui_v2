@@ -66,7 +66,7 @@ export class FastSaleOrderService extends BaseSevice {
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api,null);
+    return this.apiService.getData<FastSaleOrder_DefaultDTOV2>(api,null);
   }
 
   getSummaryStatus(data: TDSSafeAny): Observable<TDSSafeAny> {

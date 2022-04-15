@@ -1,7 +1,7 @@
-import { Observable, Subscriber, Subscription } from 'rxjs';
+import { Observable, Subject, Subscriber, Subscription } from 'rxjs';
 import { TDSSafeAny, TDSModalRef, TDSMessageService, TDSModalService, TDSUploadChangeParam, TDSUploadXHRArgs, TDSHelperObject, TDSUploadFile } from 'tmt-tang-ui';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone, OnDestroy } from '@angular/core';
 import { ProductTemplateDTO, ProductType, ProductUOMDTO } from '../../dto/product/product.dto';
 import { ProductTemplateService } from '../../services/product-template.service';
 import { ProductCategoryService } from '../../services/product-category.service';
@@ -13,28 +13,27 @@ import { TpageSearchUOMComponent } from '../tpage-search-uom/tpage-search-uom.co
 import { CommonService } from '../../services/common.service';
 import { TCommonService, TAPIDTO, TApiMethodType } from 'src/app/lib';
 import { SharedService } from '../../services/shared.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'tpage-add-product',
   templateUrl: './tpage-add-product.component.html',
   styleUrls: ['./tpage-add-product.component.scss']
 })
-export class TpageAddProductComponent implements OnInit {
+export class TpageAddProductComponent implements OnInit, OnDestroy {
 
   @Output() onLoadedProductSelect = new EventEmitter<TDSSafeAny>();
 
   formAddProduct!: FormGroup;
-
   defaultGet!: ProductTemplateDTO;
 
   lstCategory!: Array<ProductCategoryDTO>;
   lstUOMCategory!: Array<ProductUOMDTO>;
 
   imageUrl = "https://randomuser.me/api/portraits/women/68.jpg";
-
   public readonly lstProductType = ProductType;
-
   fileList: TDSUploadFile[] = [];
+  private destroy$ = new Subject();
 
   constructor(private sharedService: SharedService,
     private fb: FormBuilder,
@@ -45,9 +44,7 @@ export class TpageAddProductComponent implements OnInit {
     public productTemplateService: ProductTemplateService,
     private productCategoryService: ProductCategoryService,
     private productUOMService: ProductUOMService,
-    public zone: NgZone,
-  ) {
-
+    public zone: NgZone) {
    }
 
   ngOnInit(): void {
@@ -56,11 +53,10 @@ export class TpageAddProductComponent implements OnInit {
     this.loadCategory();
     this.loadUOMCateg();
     this.loadDefault();
-
   }
 
   loadDefault() {
-    this.productTemplateService.getDefault().subscribe((res: TDSSafeAny) => {
+    this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
       delete res["@odata.context"];
 
       this.defaultGet = res;
@@ -69,13 +65,13 @@ export class TpageAddProductComponent implements OnInit {
   }
 
   loadCategory() {
-    this.productCategoryService.get().subscribe((res: any) => {
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.lstCategory = res.value;
     });
   }
 
   loadUOMCateg() {
-    this.productUOMService.getUOMCateg().subscribe((res: any) => {
+    this.productUOMService.getUOMCateg().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.lstUOMCategory = res.value;
     });
   }
@@ -83,7 +79,7 @@ export class TpageAddProductComponent implements OnInit {
   onSave(type?: string) {
     let model = this.prepareModel();
 
-    this.productTemplateService.insert(model).subscribe(res => {
+    this.productTemplateService.insert(model).pipe(takeUntil(this.destroy$)).subscribe(res => {
       delete res['@odata.context'];
 
       this.message.success(Message.Product.InsertSuccess);
@@ -94,6 +90,8 @@ export class TpageAddProductComponent implements OnInit {
       else {
         this.onCancel(null);
       }
+    }, error => {
+      this.message.error(`${error.error.message}`);
     });
   }
 
@@ -156,7 +154,7 @@ export class TpageAddProductComponent implements OnInit {
     formData.append("files", file as any, file.name);
     formData.append('id', '0000000000000051');
 
-    return this.sharedService.saveImageV2(formData).subscribe((res: any) => {
+    return this.sharedService.saveImageV2(formData).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.message.success(Message.Upload.Success);
       this.formAddProduct.controls["ImageUrl"].setValue(res[0].urlImageProxy);
     }, error => {
@@ -240,6 +238,11 @@ export class TpageAddProductComponent implements OnInit {
         UOM: [null, Validators.required],
         UOMPO: [null, Validators.required]
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

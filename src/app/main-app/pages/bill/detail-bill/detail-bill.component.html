@@ -288,7 +288,7 @@
                               <span class="w-1/2 font-semibold">Tổng tiền</span>
                               <span class="w-1/2 text-header-1 font-semibold">{{dataModel.AmountTotal || 0 | number: '1.0-3'}} đ</span>
                           </div>
-                          <div class="flex mb-5" *ngFor="let payment of payments">
+                          <div class="flex mb-5" *ngFor="let payment of payments; let i = index">
                               <span class="w-1/2 flex items-center  justify-end" >
                                   <span class="tdsi-information-fill mr-2 text-info-500 text-xl leading-5" type="button"
                                       tds-button tds-popover popoverTrigger="click" popoverTitle="Thông tin thanh toán"
