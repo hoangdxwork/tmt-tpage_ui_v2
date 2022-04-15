@@ -105,6 +105,14 @@ export class CRMTeamService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
+  refreshPageToken(id: number, data: any): Observable<TDSSafeAny> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${id}/refreshpagetoken?`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
   delete(key: any): Observable<TDSSafeAny> {
     let api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,

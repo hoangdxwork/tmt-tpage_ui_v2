@@ -63,9 +63,9 @@
           (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
           <thead>
             <tr>
-              <th class="text-center" width="50px"></th>
+              <th class="text-center" width="50px" [tdsLeft]="true"></th>
               <th [(checked)]="checked" [indeterminate]="indeterminate" width="50px" class="text-center"
-                (checkedChange)="onAllChecked($event)"></th>
+                (checkedChange)="onAllChecked($event)" [tdsLeft]="true"></th>
               <th class="text-left" width="80px">STT</th>
               <th *ngIf="isHidden('Code')" class="text-left" width="200px">Mã</th>
               <th *ngIf="isHidden('CRMTeamName')" class="text-left" width="160px">Kênh kết nối</th>
@@ -76,7 +76,7 @@
               <th *ngIf="isHidden('DateCreated')" class="text-center" width="140px">Ngày hóa đơn</th>
               <th *ngIf="isHidden('StatusText')" class="text-left" width="140px">Trạng thái</th>
               <th *ngIf="isHidden('UserName')" class="text-center" width="140px">Nhân viên</th>
-              <th class="text-left" width="140px">Thao tác</th>
+              <th class="text-left" width="140px" [tdsRight]="true">Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -86,12 +86,12 @@
 
                 <!-- Detail -->
                 <td [expand]="expandSet.has(data.Id)" class="text-center"
-                  (expandChange)="onExpandChange(data.Id, $event)">
+                  (expandChange)="onExpandChange(data.Id, $event)" [tdsLeft]="true">
                 </td>
 
                 <!-- Checked -->
                 <td [checked]="setOfCheckedId.has(data.Id)" (checkedChange)="onItemChecked(data.Id, $event)"
-                  class="text-center">
+                  class="text-center" [tdsLeft]="true">
                 </td>
 
                 <!-- STT -->
@@ -236,7 +236,7 @@
                 </td>
 
                 <!-- Thao tác -->
-                <td>
+                <td [tdsRight]="true">
                   <div class="flex gap-x-2">
                     <button tds-button-icon color="secondary" size="sm">
                       <span class="flex items-center">

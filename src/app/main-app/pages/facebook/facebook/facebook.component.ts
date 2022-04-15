@@ -27,9 +27,7 @@ export class FacebookComponent implements OnInit, AfterViewInit {
   dataSearch?: CRMTeamDTO[];
 
   currentTeam!: CRMTeamDTO | null;
-
   lstPageNotConnect: PageNotConnectDTO = {};
-
   lstData: TDSSafeAny = {};
 
   inputValue?: string;
@@ -368,6 +366,25 @@ export class FacebookComponent implements OnInit, AfterViewInit {
     let id = this.fieldListFilter?.[teamId]?.id;
     if(id) return id;
     return 1;
+  }
+
+  refreshPageToken(teamId: number, pageId: number) {
+    let model = {
+      access_token: "",
+      pageId: pageId
+    }
+
+    this.isLoading = true;
+
+    this.crmTeamService.refreshPageToken(teamId, model).subscribe((res: any) => {
+      if(TDSHelperString.hasValueString(res)) {
+        this.message.success(Message.ConnectionChannel.RefreshTokenSuccess);
+        this.loadListTeam();
+      }
+      else {
+        this.message.error(Message.ConnectionChannel.RefreshTokenFail);
+      }
+    }, error => this.isLoading = false);
   }
 
   getListData(teamId: number) {
