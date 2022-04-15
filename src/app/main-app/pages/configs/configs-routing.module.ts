@@ -1,3 +1,4 @@
+import { ConfigDecentralizePageComponent } from './config-users/config-decentralize-page/config-decentralize-page.component';
 import { ConfigUsersDivideTaskComponent } from './config-users/config-users-divide-task/config-users-divide-task.component';
 import { ConfigPrintBillsComponent } from './config-print-bills/config-print-bills.component';
 import { ConfigPagesBasicComponent } from './config-pages/config-pages-basic/config-pages-basic.component';
@@ -76,6 +77,10 @@ const routes: Routes = [
           {
             path:'shift',
             component: ConfigUsersShiftComponent
+          },
+          {
+            path:'decentralize',
+            component: ConfigDecentralizePageComponent
           }
         ]
       },

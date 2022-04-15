@@ -1,41 +1,42 @@
 import { TDSModalRef } from 'tmt-tang-ui';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
+import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
+import { AddressesV2 } from 'src/app/main-app/dto/partner/partner-detail.dto';
 
 @Component({
   selector: 'app-modal-add-address',
   templateUrl: './modal-add-address.component.html',
   styleUrls: ['./modal-add-address.component.scss']
 })
+
 export class ModalAddAddressComponent implements OnInit {
 
-  formAddAddress!: FormGroup
-  dataAddress = [
-    { id: 1, value: 'status 1' },
-    { id: 2, value: 'status 2' },
-  ]
+  _form!: FormGroup
+
+  @Input() _cities!: SuggestCitiesDTO;
+  @Input() _districts!: SuggestDistrictsDTO;
+  @Input() _wards!: SuggestWardsDTO;
+  @Input() _street!: string;
+  public items!: ResultCheckAddressDTO;
+
   constructor( private fb: FormBuilder,
     private modal: TDSModalRef) { }
 
   ngOnInit(): void {
-    this.formAddAddress = this.fb.group({
-      numberStreet: new FormControl(''),
-      province: new FormControl(''),
-      district: new FormControl(''),
-      wards: new FormControl(''),
-
-    })
-  }
-  submitAddress(){
-    if (!this.formAddAddress.invalid) {
-      this.modal.destroy(this.formAddAddress.value);
-  }
+    this._districts; debugger
   }
 
-cancel() {
-    this.modal.destroy(null);
-}
+  onLoadSuggestion(item: ResultCheckAddressDTO) {
+      this.items = item;
+  }
 
-save() {
-}
+  onCancel() {
+      this.modal.destroy(null);
+  }
+
+  onSave() {
+    this.modal.destroy(this.items);
+  }
 }

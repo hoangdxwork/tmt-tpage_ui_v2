@@ -1,3 +1,4 @@
+import { da } from 'date-fns/locale';
 import { TDSHelperArray, TDSHelperString, TDSUploadFile } from 'tmt-tang-ui';
 import { ModalAddAddressComponent } from '../modal-add-address/modal-add-address.component';
 import { FormGroup, FormBuilder, FormControl, FormArray } from '@angular/forms';
@@ -6,8 +7,8 @@ import { TDSModalRef, TDSModalService, TDSHelperObject, TDSMessageService } from
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { formatDate } from '@angular/common';
-import { CheckAddressDTO, CityDTO, DataSuggestionDTO, DistrictDTO, ResultCheckAddressDTO, WardDTO } from 'src/app/main-app/dto/address/address.dto';
-import { PartnerDetailDTO } from 'src/app/main-app/dto/partner/partner-detail.dto';
+import { AddressDTO, CheckAddressDTO, CityDTO, DataSuggestionDTO, DistrictDTO, ResultCheckAddressDTO, WardDTO } from 'src/app/main-app/dto/address/address.dto';
+import { AddressesV2, PartnerDetailDTO } from 'src/app/main-app/dto/partner/partner-detail.dto';
 import { PartnerCategoryDTO, StatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -175,6 +176,12 @@ export class ModalEditPartnerComponent implements OnInit {
     if(!TDSHelperString.hasValueString(model.Name)) {
         this.message.error('Vui lòng nhập tên khách hàng');
     }
+    if(!TDSHelperString.hasValueString(model.StatusText)) {
+        this.message.error('Vui lòng nhập trạng thái khách hàng');
+    }
+    if(!TDSHelperString.hasValueString(model.Street)) {
+        this.message.error('Vui lòng nhập địa chỉ khách hàng');
+    }
 
     if(this.partnerId) {
       this.isLoading = true;
@@ -201,19 +208,128 @@ export class ModalEditPartnerComponent implements OnInit {
     }
   }
 
-  //modal add Address
+  initAddress(data: AddressesV2 | null) {
+    if (data != null) {
+        return this.fb.group({
+          Id: [data.Id],
+          PartnerId: [data.PartnerId],
+          CityCode: [data.CityCode],
+          CityName: [data.CityName],
+          DistrictCode: [data.DistrictCode],
+          DistrictName: [data.DistrictName],
+          WardCode: [data.WardCode],
+          WardName: [data.WardName],
+          IsDefault: [data.IsDefault],
+          Street:[data.Street],
+          Address: [data.Address],
+        });
+    } else {
+        return this.fb.group({
+          Id: [null],
+          PartnerId: [null],
+          CityCode: [null],
+          CityName: [null],
+          DistrictCode: [null],
+          DistrictName: [null],
+          WardCode: [null],
+          WardName: [null],
+          IsDefault: [null],
+          Street:  [null],
+          Address: [null]
+        });
+    }
+  }
+
+  addAddresses(data: any) {
+      const control = <FormArray>this._form.controls['Addresses'];
+      control.push(this.initAddress(data));
+  }
+
+  removeAddresses(i: number) {
+      const control = <FormArray>this._form.controls['Addresses'];
+      control.removeAt(i);
+  }
+
+  openItemAddresses(data: AddressesV2, index: number) {
+    this._cities = {
+        code: data.CityCode,
+        name: data.CityName
+    };
+    this._districts = {
+        cityCode: data.CityCode,
+        cityName: data.CityName,
+        code: data.DistrictCode,
+        name: data.DistrictName
+    };
+    this._wards = {
+        cityCode: data.CityCode,
+        cityName: data.CityName,
+        districtCode: data.DistrictCode,
+        districtName: data.DistrictName,
+        code: data.WardCode,
+        name: data.WardName
+    };
+    this._street = data.Street;
+
+    const modal = this.modalService.create({
+        title: 'Chỉnh sửa địa chỉ',
+        content: ModalAddAddressComponent,
+        size: "lg",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          _cities: this._cities,
+          _districts: this._districts,
+          _wards: this._wards,
+          _street: this._street
+        }
+    });
+
+    modal.afterClose.subscribe((res: ResultCheckAddressDTO) => {
+      if (TDSHelperObject.hasValue(res)) {
+          let item: AddressesV2 = {
+              Id: data.Id,
+              PartnerId: this.partnerId,
+              CityCode: res.CityCode,
+              CityName: res.CityName,
+              DistrictCode: res.DistrictCode,
+              DistrictName: res.DistrictName,
+              WardCode: res.WardCode,
+              WardName: res.WardName,
+              IsDefault: data.IsDefault,
+              Street: res.Address,
+              Address: res.Address
+          };
+
+          (this._form.controls.Addresses as FormArray).at(index).patchValue(item);
+      }
+    });
+  }
+
   showModalAddAddress(){
     const modal = this.modalService.create({
-      title: 'Thêm địa chỉ',
-      content: ModalAddAddressComponent,
-      size: "lg",
-      viewContainerRef: this.viewContainerRef,
+        title: 'Thêm địa chỉ',
+        content: ModalAddAddressComponent,
+        size: "lg",
+        viewContainerRef: this.viewContainerRef
     });
-    modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
-    modal.afterClose.subscribe(result => {
-      console.log('[afterClose] The result is:', result);
-      if (TDSHelperObject.hasValue(result)) {
-        console.log(result)
+
+    modal.afterClose.subscribe((res: ResultCheckAddressDTO) => {
+      if (TDSHelperObject.hasValue(res)) {
+          let item: AddressesV2 = {
+              Id: 0,
+              PartnerId: this.partnerId,
+              CityCode: res.CityCode,
+              CityName: res.CityName,
+              DistrictCode: res.DistrictCode,
+              DistrictName: res.DistrictName,
+              WardCode: res.WardCode,
+              WardName: res.WardName,
+              IsDefault: null,
+              Street: res.Address,
+              Address: res.Address
+          }
+
+          this.addAddresses(item);
       }
     });
   }
