@@ -116,15 +116,33 @@
               <ng-template #icon>
                 <div class="flex gap-4">
                     <tds-button-group>
+                        <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menuSetting" (click)="onClickDropdown($event)" placement ="bottomRight">
+                            <span class="text-neutral-1-900 flex  items-center justify-center text-body-2 font-semibold">
+                                Cài đặt trang hệ thống <i class="tdsi-arrow-down-fill text-base leading-none ml-1.5 text-neutral-1-900"></i>
+                            </span>
+                        </button>
+                        <tds-dropdown-menu #menuSetting="tdsDropdownMenu">
+                            <div class="w-full">
+                                <ng-template ngFor let-item [ngForOf]="listSetting">
+                                    <div tds-dropdown-item (click)="onClickFieldListSetting(item, team.Id)">
+                                        <a class="text-primary-1 flex items-center">
+                                            <div class="pl-2 text-neutral-1-900">{{ item.name }}</div>
+                                        </a>
+                                    </div>
+                                </ng-template>
+                            </div>
+                        </tds-dropdown-menu>
+                    </tds-button-group>
+                    <tds-button-group>
                         <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" (click)="onClickDropdown($event)" placement ="bottomRight">
                             <span class="text-neutral-1-900 flex  items-center justify-center text-body-2 font-semibold">
-                                {{ fieldListSetting[team.Id].name }} <i class="tdsi-arrow-down-fill text-base leading-none ml-1.5 text-neutral-1-900"></i>
+                                {{ fieldListFilter[team.Id].name }} <i class="tdsi-arrow-down-fill text-base leading-none ml-1.5 text-neutral-1-900"></i>
                             </span>
                         </button>
                         <tds-dropdown-menu #menu="tdsDropdownMenu">
                             <div class="w-full">
-                                <ng-template ngFor let-item [ngForOf]="listSetting">
-                                    <div tds-dropdown-item (click)="onClickFieldListSetting(item, team.Id)">
+                                <ng-template ngFor let-item [ngForOf]="listFilter">
+                                    <div tds-dropdown-item (click)="onClickFieldListFilter(item, team.Id)">
                                         <a class="text-primary-1 flex items-center">
                                             <div class="pl-2 text-neutral-1-900">{{ item.name }}</div>
                                         </a>

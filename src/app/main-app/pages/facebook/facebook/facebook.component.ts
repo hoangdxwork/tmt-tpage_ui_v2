@@ -56,7 +56,7 @@ export class FacebookComponent implements OnInit, AfterViewInit {
     },
   ]
 
-  listSetting: Array<any> = [
+  listFilter: Array<any> = [
     {
       id: 1,
       name: 'Tất cả',
@@ -75,7 +75,18 @@ export class FacebookComponent implements OnInit, AfterViewInit {
     },
   ]
 
-  fieldListSetting: any = {};
+  listSetting: Array<any> = [
+    {
+      id: 1,
+      name: 'Ẩn/Hiện tài khoản',
+    },
+    {
+      id: 2,
+      name: 'Xóa tài khoản',
+    }
+  ]
+
+  fieldListFilter: any = {};
   iconCollapse: TDSSafeAny = {"0": true};
 
   isLoading: boolean = true;
@@ -202,7 +213,7 @@ export class FacebookComponent implements OnInit, AfterViewInit {
       });
 
       res.forEach((item: any) => {
-        this.fieldListSetting[item.Id] = this.listSetting[0];
+        this.fieldListFilter[item.Id] = this.listFilter[0];
         this.getListData(item.Id);
       });
 
@@ -222,9 +233,24 @@ export class FacebookComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onClickFieldListSetting(value: TDSSafeAny, id: number) {
-    this.fieldListSetting[id] = value;
+  onClickFieldListFilter(value: TDSSafeAny, id: number) {
+    this.fieldListFilter[id] = value;
     this.getListData(id);
+  }
+
+  onClickFieldListSetting(value: TDSSafeAny, id: number) {
+    if(value.id == 1) {
+      this.hideChannel(id);
+    }
+    else if(value.id == 2) {
+      let user = this.data.find(x => x.Id == id);
+      if(user) {
+        this.unConnected(id, user.Facebook_UserId);
+      }
+      else {
+        this.message.error(Message.ErrorOccurred);
+      }
+    }
   }
 
   onClickFieldListAll(value: TDSSafeAny) {
@@ -253,7 +279,7 @@ export class FacebookComponent implements OnInit, AfterViewInit {
   unConnected(id: number, userId: any): void {
     this.modal.error({
         title: 'Hủy kết nối Facebook',
-        content: 'Bạn có chắc muốn hủy kết nối với: Mèo nhạt nhẽo',
+        content: 'Bạn có chắc muốn hủy kết nối',
         onOk: () => this.delete(id, userId),
         onCancel:()=>{console.log('cancel')},
         okText:"Xác nhận",
@@ -338,14 +364,14 @@ export class FacebookComponent implements OnInit, AfterViewInit {
     return false;
   }
 
-  getFieldListSetting(teamId: number): number {
-    let id = this.fieldListSetting?.[teamId]?.id;
+  getFieldListFilter(teamId: number): number {
+    let id = this.fieldListFilter?.[teamId]?.id;
     if(id) return id;
     return 1;
   }
 
   getListData(teamId: number) {
-    let field = this.getFieldListSetting(teamId);
+    let field = this.getFieldListFilter(teamId);
     let channel = this.data.find(x => x.Id == teamId);
 
     if(!channel) {
