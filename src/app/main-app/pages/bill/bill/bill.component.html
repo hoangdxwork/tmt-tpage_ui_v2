@@ -111,11 +111,12 @@
                       [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
                       [popoverContent]="contentAddtag" [popoverBackdrop]="true" popoverPlacement="left" color="secondary" size="sm"
                       class=" border-0">
-                      <span class="flex items-center relative">
-                        <i class="tdsi-tag-fill "></i>
-                        <i
-                          class="h-2.5 w-2.5 tdsi-plus-circle-fill text-xs leading-4 text-primary-1 absolute right-0 bottom-0"></i>
-                      </span>
+                      <div class="w-5 h-5 relative">
+                        <i class="tdsi-tag-fill text-base leading-4 select-all absolute top-0 left-0"></i>
+                        <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12" height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.00263 0.185353C5.78089 0.14704 5.55607 0.129611 5.3311 0.133295C3.96134 0.134421 2.64803 0.680863 1.67966 1.65259C0.711296 2.62431 0.167057 3.94186 0.166496 5.3158C0.162824 5.54146 0.180199 5.76697 0.218396 5.98938C0.342953 6.94846 0.732804 7.85338 1.34378 8.60162C1.95476 9.34986 2.76244 9.91151 3.67532 10.2229C4.5882 10.5344 5.56979 10.5831 6.50889 10.3637C7.44798 10.1443 8.30703 9.66541 8.98873 8.98138C9.67042 8.29736 10.1475 7.4355 10.3659 6.49346C10.5843 5.55142 10.5354 4.56685 10.2246 3.65129C9.91374 2.73574 9.3535 1.92579 8.60732 1.31322C7.86114 0.70065 6.95883 0.309939 6.00263 0.185353ZM8.09029 5.79283H5.80879V8.08342H4.85553V5.79283H2.57403V4.83665H4.85764V2.53756H5.81091V4.83878H8.09452L8.09029 5.79283Z" fill="#28A745"/>
+                        </svg>
+                      </div>
                     </button>
                     <!-- button thêm nhãn -->
                     <ng-template #contentAddtag>

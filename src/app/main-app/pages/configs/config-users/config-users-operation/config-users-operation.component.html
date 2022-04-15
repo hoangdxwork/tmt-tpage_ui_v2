@@ -37,6 +37,14 @@
                             <td>{{ data.decentralization }}</td>
                             <td>
                                 <div class="flex items-center pl-2" *ngIf="data.id == 2 || data.id == 3; else isOne">
+                                    <!-- <tpage-avatar-group-facebook>
+                                        <tpage-avatar-facebook [size]="44" [fbid]="team?.Facebook_ASUserId" [token]="team?.Facebook_UserToken">
+                                        </tpage-avatar-facebook>
+                                        <tpage-avatar-facebook [size]="44" [fbid]="team?.Facebook_ASUserId" [token]="team?.Facebook_UserToken">
+                                        </tpage-avatar-facebook>
+                                        <tpage-avatar-facebook [size]="44" [fbid]="team?.Facebook_ASUserId" [token]="team?.Facebook_UserToken">
+                                        </tpage-avatar-facebook>
+                                    </tpage-avatar-group-facebook> -->
                                     <div class="bg-white p-0.5 rounded-full" tds-tooltip tooltipTitle="Page test">
                                         <tds-avatar class="bg-white  text-white" [size]="44"
                                             tdsSrc="assets/images/config/SP1120.png">
