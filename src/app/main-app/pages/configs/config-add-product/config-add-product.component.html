@@ -1,0 +1,415 @@
+<form [formGroup]="addProductForm" autocomplete="off">
+    <div class="w-full pb-4 px-4">
+        <div class="flex flex-col w-full bg-white rounded-xl">
+            <div class="flex flex-row items-center justify-between px-4 py-3">
+                <div class="flex flex-row items-center">
+                    <button tds-flat-button-icon size="md" type="button"
+                        (click)="backToMain()">
+                        <span class="flex items-center">
+                            <i class="tdsi-back-fill text-xl leading-5"></i>
+                        </span>
+                    </button>
+                    <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">THÊM MỚI SẢN PHẨM</span>
+                </div>
+                <button tds-button color="primary" type="submit" class="w-[100px]" 
+                  [disabled]="!addProductForm.valid" 
+                  (click)="onSubmit()">
+                    <span class="text-body-2 font-semibold">Lưu</span>
+                </button>
+            </div>
+            <div class="flex flex-col p-4">
+                <div class="flex flex-row items-center justify-start w-2/3 pb-6">
+                    <div class="flex mr-12">
+                        <tds-upload
+                            listType="picture-card" 
+                            [(fileList)]="fileList"
+                            [showButton]="fileList.length == 0 " 
+                            [preview]="handlePreview" 
+                            [customRequest]="handleUpload"
+                            class="rounded-lg tds-upload-image">
+                            
+                            <div class="text-neutral-1-300 mx-2">
+                                <div class="flex items-center justify-center" >
+                                    <span class="tdsi-image-1-fill text-6xl leading-5"></span>
+                                </div>
+                            </div>
+                        </tds-upload>
+                        
+                        <tds-modal [visible]="previewVisible" [content]="modalContent" 
+                            [footer]="null" (onCancel)="previewVisible = false">
+                            <ng-template #modalContent>
+                                <img [src]="previewImage" [ngStyle]="{ width: '100%' }" />
+                            </ng-template>
+                        </tds-modal>
+                    </div>
+
+                    <div class="flex flex-col w-full">
+                        <tds-form-field>
+                            <tds-label>Nhập tên sản phẩm</tds-label>
+                            <input tdsInput formControlName="name" placeholder="Nhập tên sản phẩm" class="text-neutral-1-900 text-body-2 font-regular" [required]='true'/>
+                            <tds-error>
+                                Vui lòng nhập tên sản phẩm
+                            </tds-error>
+                        </tds-form-field>
+
+                        <div class="grid grid-cols-3 gap-y-4 text-neutral-1-900 text-body-2 font-regular pt-4">
+                            <tds-checkbox formControlName="sellable">Có thể bán</tds-checkbox>
+                            <tds-checkbox formControlName="isCombo">Là combo</tds-checkbox>
+                            <tds-checkbox formControlName="active">Hiệu lực</tds-checkbox>
+                            <tds-checkbox formControlName="buyable">Có thể mua</tds-checkbox>
+                            <tds-checkbox formControlName="pointOfSale">Hiện trên điểm bán hàng</tds-checkbox>
+                            <tds-checkbox formControlName="allowToSellAtAnotherCompany">Cho phép bán ở công ty khác</tds-checkbox>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full border border-neutral-2-100 rounded-md">
+                    <tds-tabset clsTab="tds-add-product-form">
+                        <tds-tab title="Thông tin chung">
+                            <div class="grid grid-cols-2 gap-y-4 gap-x-8">
+                              <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
+                                <tds-label>Loại sản phẩm:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <tds-select valueField="id" textField="name" placeholder='Chọn loại sản phẩm'
+                                      disabledField="isActive" formControlName="type" [required]='true'
+                                      [data]="productTypeList" [allowClear]="true">
+                                  </tds-select>
+                                  <tds-error>
+                                      Vui lòng chọn loại sản phẩm
+                                  </tds-error>
+                                </tds-form-field>
+
+                                <tds-label>Mã sản phẩm:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <input tdsInput formControlName="productCode" placeholder="Nhập mã sản phẩm" class="text-neutral-1-900 text-body-2 font-regular"/>
+                                  <tds-error>
+                                      Vui lòng nhập mã sản phẩm
+                                  </tds-error>
+                                </tds-form-field>
+
+                                <tds-label>Mã vạch:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <input tdsInput formControlName="QRCode" placeholder="Nhập mã vạch" class="text-neutral-1-900 text-body-2 font-regular"/>
+                                  <tds-error>
+                                      Vui lòng nhập mã vạch
+                                  </tds-error>
+                                </tds-form-field>
+
+                                <tds-label>Nhóm sản phẩm:</tds-label>
+                                <div class="col-span-2">
+                                  <div class="flex space-x-2">
+                                    <tds-form-field class="w-full mr-2">
+                                      <tds-select valueField="id" textField="name" placeholder='Chọn nhóm sản phẩm'
+                                      disabledField="isActive" formControlName="group" [required]='true'
+                                      [data]="productGroupList" [allowClear]="true">
+                                      </tds-select>
+                                      <tds-error>
+                                          Vui lòng chọn nhóm sản phẩm
+                                      </tds-error>
+                                    </tds-form-field>
+
+                                    <button tds-button-icon color="primary" (click)="addproductGroup($event)">
+                                      <span class="flex items-center">
+                                        <i class="tdsi-plus-fill"></i>
+                                      </span>
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <tds-label>Thuộc tính:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <input tdsInput formControlName="attribute" placeholder="Nhập thuộc tính" class="text-neutral-1-900 text-body-2 font-regular"/>
+                                  <tds-error>
+                                      Vui lòng nhập thuộc tính
+                                  </tds-error>
+                                </tds-form-field>
+                              </div>
+
+                              <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
+                                <tds-label>Giá sản phẩm:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <tds-input-number formControlName="price" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                                        <tds-error>
+                                            Vui lòng nhập giá sản phẩm
+                                        </tds-error>
+                                </tds-form-field>
+
+                                <tds-label>Giá vốn:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <tds-input-number formControlName="capital" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                                  <tds-error>
+                                      Vui lòng nhập giá vốn
+                                  </tds-error>
+                                </tds-form-field>
+
+                                <tds-label>Đơn vị mặc định:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <tds-select valueField="id" textField="name" placeholder='Nhập đơn vị'
+                                  disabledField="isActive" formControlName="defaultUnit" [required]='true'
+                                  [data]="productUnitList" [allowClear]="true">
+                                  </tds-select>
+                                  <tds-error>
+                                      Vui lòng chọn đơn vị mặc định
+                                  </tds-error>
+                                </tds-form-field>
+
+                                <tds-label>Đơn vị mua:</tds-label>
+                                <tds-form-field class="w-full col-span-2">
+                                  <tds-select valueField="id" textField="name" placeholder='Nhập đơn vị'
+                                  disabledField="isActive" formControlName="unit" [required]='true'
+                                  [data]="productUnitList" [allowClear]="true">
+                                  </tds-select>
+                                  <tds-error>
+                                      Vui lòng chọn đơn vị mua
+                                  </tds-error>
+                                </tds-form-field>
+
+                                <tds-label>Kiểm soát hóa đơn mua hàng:</tds-label>
+                                <tds-radio-group class="grid grid-cols-1 w-full col-span-2" formControlName="inventory">
+                                  <label tds-radio value="1" class="mb-2">Trên số lượng đặt hàng</label>
+                                  <label tds-radio value="2">Trên số lượng nhận hàng</label>
+                                </tds-radio-group>
+                              </div>
+                            </div>
+                        </tds-tab>
+                        <tds-tab title="Hình ảnh">
+                          <div class="w-full">
+                              <tds-upload
+                                  listType="picture-card" 
+                                  [(fileList)]="imageList"
+                                  [preview]="handlePreview" 
+                                  [download]="handleDownload"
+                                  [customRequest]="handleUpload"
+                                  class="rounded-lg flex flex-wrap">
+                                                      
+                                  <div class="w-full text-neutral-1-300">
+                                      <div class="flex items-center justify-center" >
+                                          <span class="tdsi-images-fill text-xl leading-5"></span>
+                                      </div>
+                                      <div class="mt-2 text-body-2 font-regular">Upload</div>
+                                  </div>
+                              </tds-upload>
+                              
+                              <tds-modal [visible]="previewVisible" [content]="modalContent" 
+                                  [footer]="null" (onCancel)="previewVisible = false">
+                                  <ng-template #modalContent>
+                                      <img [src]="previewImage" [ngStyle]="{ width: '100%' }" />
+                                  </ng-template>
+                              </tds-modal>
+                          </div>
+                        </tds-tab>
+                        <tds-tab title="tồn kho">
+                          <div class="grid grid-cols-2 gap-y-4 gap-x-8">
+                            <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
+                              <tds-label>Theo dõi</tds-label>
+                              <tds-form-field class="w-full col-span-2">
+                                <tds-select valueField="id" textField="name" placeholder='Không theo dõi'
+                                  disabledField="isActive" formControlName="supervise" [required]='true'
+                                  [data]="superviseList" [allowClear]="true">
+                                </tds-select>
+                                <tds-error>
+                                  Vui lòng chọn theo dõi
+                                </tds-error>
+                              </tds-form-field>
+
+                              <tds-label>Khối lượng</tds-label>
+                              <tds-form-field class="w-full col-span-2">
+                                <tds-input-number formControlName="netWeight" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                                <tds-error>
+                                  Vui lòng nhập khối lượng
+                                </tds-error>
+                              </tds-form-field>
+
+                              <tds-label>Thể tích</tds-label>
+                              <tds-form-field class="w-full col-span-2">
+                                <tds-input-number formControlName="volumn" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                                <tds-error>
+                                  Vui lòng nhập thể tích
+                                </tds-error>
+                              </tds-form-field>
+                            </div>
+                          </div>
+                        </tds-tab>
+                        <tds-tab title="Bán hàng">
+                          <div class="grid grid-cols-2 gap-y-4 gap-x-8 items-center text-neutral-1-600 text-header-2 font-semibold">
+                            <span>Điểm bán hàng</span>
+                          </div>
+                          
+                          <div class="grid grid-cols-2 gap-y-4 gap-x-8 mt-4">
+                            <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
+                              <tds-label>Nhóm Pos:</tds-label>
+                              <tds-form-field class="w-full col-span-2">
+                                <tds-select valueField="id" textField="name" placeholder='Chọn nhóm Pos'
+                                  disabledField="isActive" formControlName="PosGroup" [required]='true'
+                                  [data]="PosGroupList" [allowClear]="true">
+                                </tds-select>
+                                <tds-error>
+                                  Vui lòng chọn nhóm Pos
+                                </tds-error>
+                              </tds-form-field>
+                            </div>
+                          </div>
+                        </tds-tab>
+                        <tds-tab title="Biến thể">
+                            <div class="border border-neutral-2-200 rounded-md">
+                              <div class="flex items-center justify-end w-full py-2.5 px-4">
+                                <button tds-button color="primary" (click)="addNewVariants($event)">
+                                  <span class="flex items-center">
+                                    <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+                                    <span class="text-body-2 font-semibold">Thêm biến thể</span>
+                                  </span>
+                                </button>
+                              </div>
+                              <div class="w-full h-full pb-3">
+                                <tds-table [listData]="variantTableData">
+                                  <thead>
+                                        <tr>
+                                              <th [width]="'80px'">STT</th>
+                                              <th>Tên</th>
+                                              <th>Giá</th>
+                                              <th>Hoạt động</th>
+                                              <th>Thao tác</th>
+                                        </tr>
+                                  </thead>
+                                  <tbody>
+                                      <ng-template ngFor let-data let-i="index" [ngForOf]="variantTableData" >
+                                          <tr>
+                                              <td>{{ i+1 }}</td>
+                                              <td>{{ data.name }}</td>
+                                              <td>
+                                                <div class="border border-neutral-2-200 rounded bg-white">
+                                                  <input tdsInput type="number" [value]="data.price" [min]="0" [step]="1000" class="text-neutral-1-900 text-body-2 font-regular"/>
+                                                </div>
+                                              </td>
+                                              <td>
+                                                <tds-switch [checked]="data.active"></tds-switch>
+                                              </td>
+                                              <td>
+                                                <button tds-button-icon color="secondary" size="sm" class=" mr-2">
+                                                  <span class="flex items-center">
+                                                    <i class="tdsi-edit-fill text-xl leading-none"></i>
+                                                  </span>
+                                                </button>
+                                                <button tds-button-icon color="secondary" size="sm">
+                                                    <span class="flex items-center">
+                                                      <i class="tdsi-trash-fill text-xl leading-none"></i>
+                                                    </span>
+                                                </button>
+                                              </td>
+                                          </tr>
+                                      </ng-template>
+                                  </tbody>
+                              </tds-table>
+                              </div>
+                            </div>
+                        </tds-tab>
+                        <tds-tab title="Thông tin khác">
+                          <div class="grid grid-cols-1 gap-y-4">
+                            <div class="grid grid-cols-8 gap-x-6">
+                              <tds-label>Mô tả sản phẩm</tds-label>
+                              <tds-form-field class="w-full col-span-7">
+                                <textarea tdsInput formControlName="describeProduct" placeholder="Nhập mô tả sản phẩm"></textarea>
+                              </tds-form-field>
+                            </div>
+                            
+                            <div class="grid grid-cols-8 gap-x-8">
+                              <tds-label>Mô tả trên báo giá bán hàng</tds-label>
+                              <tds-form-field class="w-full col-span-7">
+                                <textarea tdsInput formControlName="describeOnProductReport" placeholder="Nhập mô tả trên báo giá bán hàng"></textarea>
+                              </tds-form-field>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-x-8 gap-y-4">
+                              <div class="grid grid-cols-4 gap-y-4 gap-x-6 items-center">
+                                <tds-label>Nhà sản xuất</tds-label>
+                                <div class="flex space-x-2 items-center col-span-3">
+                                  <tds-form-field class="w-full">
+                                    <tds-select valueField="id" textField="name" placeholder='Chọn nhà sản xuất'
+                                      disabledField="isActive" [required]='true'[data]="manufacturerList"
+                                      formControlName="manufacturer">
+                                    </tds-select>
+                                  </tds-form-field>
+                                  <button tds-button-icon color="primary" size="sm" (click)="addManufacturer()">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-plus-fill"></i>
+                                    </span>
+                                  </button>
+                                </div>
+                                
+                                <tds-label>Nhà nhập khẩu</tds-label>
+                                <div class="flex space-x-2 items-center col-span-3">
+                                  <tds-form-field class="w-full">
+                                    <tds-select valueField="id" textField="name" placeholder='Chọn nhà nhập khẩu'
+                                      disabledField="isActive" [required]='true'[data]="importerList"
+                                      formControlName="importer">
+                                    </tds-select>
+                                  </tds-form-field>
+                                  <button tds-button-icon color="primary" size="sm" (click)="addImporter()">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-plus-fill"></i>
+                                    </span>
+                                  </button>
+                                </div>
+
+                                <tds-label>Nhà phân phối</tds-label>
+                                <div class="flex space-x-2 items-center col-span-3">
+                                  <tds-form-field class="w-full">
+                                    <tds-select valueField="id" textField="name" placeholder='Chọn nhà phân phối'
+                                      disabledField="isActive" [required]='true'[data]="distributorList"
+                                      formControlName="distributor">
+                                    </tds-select>
+                                  </tds-form-field>
+                                  <button tds-button-icon color="primary" size="sm" (click)="addDistributor()">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-plus-fill"></i>
+                                    </span>
+                                  </button>
+                                </div>
+
+                                <tds-label>Xuất xứ</tds-label>
+                                <div class="flex space-x-2 items-center col-span-3">
+                                  <tds-form-field class="w-full">
+                                    <tds-select valueField="id" textField="name" placeholder='Chọn xuất xứ'
+                                      disabledField="isActive" [required]='true'[data]="nationList"
+                                      formControlName="madeIn">
+                                    </tds-select>
+                                  </tds-form-field>
+                                  <button tds-button-icon color="primary" size="sm" (click)="addMadeIn()">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-plus-fill"></i>
+                                    </span>
+                                  </button>
+                                </div>
+
+                                <tds-label>Năm sản xuất</tds-label>
+                                <tds-form-field class="w-full col-span-3">
+                                  <tds-input-number formControlName="produceInYear" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                                  <tds-error>
+                                    Vui lòng nhập năm sản xuất
+                                  </tds-error>
+                                </tds-form-field>
+                              </div>
+                              <div class="grid grid-cols-4 grid-rows-1 gap-y-4 gap-x-6 items-center">
+                                <tds-label>Thành phần</tds-label>
+                                <tds-form-field class="w-full col-span-3">
+                                  <textarea tdsInput formControlName="components" placeholder="Nhập thành phần"></textarea>
+                                </tds-form-field>
+
+                                <tds-label>Thông số kỹ thuật</tds-label>
+                                <tds-form-field class="w-full col-span-3">
+                                  <textarea tdsInput formControlName="technicalParameter" placeholder="Nhập thông số kỹ thuật"></textarea>
+                                </tds-form-field>
+                                
+                                <tds-label>Thông tin cảnh báo</tds-label>
+                                <tds-form-field class="w-full col-span-3">
+                                  <textarea tdsInput formControlName="attention" placeholder="Nhập thông tin cảnh báo"></textarea>
+                                </tds-form-field>
+                              </div>
+                            </div>
+                          </div>
+                        </tds-tab>
+                    </tds-tabset>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

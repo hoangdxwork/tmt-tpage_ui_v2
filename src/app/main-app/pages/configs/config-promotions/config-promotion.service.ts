@@ -66,6 +66,20 @@ export class ConfigPromotionService {
       return products;
     }
 
+    getGiftList(){
+      let gifts = [
+        {
+          id:1,
+          name:'Sản phẩm abc'
+        },
+        {
+          id:2,
+          name:'sản phẩm xyz'
+        }
+      ];
+      return gifts
+    }
+
     public getProductGroupList():Array<TDSSafeAny>{
         let productGroupList = [
             {

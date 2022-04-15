@@ -1,6 +1,6 @@
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { ConfigPromotionService } from './../config-promotion.service';
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { TDSSafeAny } from 'tmt-tang-ui';
 
 @Component({
@@ -14,55 +14,162 @@ export class ConfigAddPromotionAllComponent implements OnInit {
   companyList:Array<TDSSafeAny> = [];
   discountTypeList: Array<TDSSafeAny>  = [];
   productList:Array<TDSSafeAny> = [];
-  data!:FormGroup;
-  tableData:Array<TDSSafeAny> = [];
+  giftList:Array<TDSSafeAny>  = [];
+  sendingData!:FormGroup;
+  discountProductTable:Array<TDSSafeAny> = [];
+  couponTable:Array<TDSSafeAny> = [];
   
-
   constructor(private service: ConfigPromotionService, private formBuilder:FormBuilder) { 
+    this.initForm();
+    this.getFormData.emit(this.sendingData);
     this.productList = this.service.getProductList();
     this.companyList = this.service.getCompanyList();
     this.discountTypeList = this.service.getDiscountType();
+    this.giftList = this.service.getGiftList();
+    
+  }
 
-    this.data = this.formBuilder.group({
+  ngOnInit(): void {
+    this.initTableData();
+  }
+
+  initForm(){
+    this.sendingData = this.formBuilder.group({
       quantity: new FormControl(0, [Validators.required]),
       useFor: new FormControl(0, [Validators.required]),
       minimumPrice: new FormControl(0, [Validators.required]),
-      StartDate: new FormControl(0, [Validators.required]),
+      startDate: new FormControl(0, [Validators.required]),
       companyName: new FormControl('', [Validators.required]),
       endDate: new FormControl(0, [Validators.required]),
       active: new FormControl(true),
-      bonusType: new FormControl('1'),
+      bonusType: new FormControl('discount'),
       applyFor: new FormControl('1'),
       applyDiscountType: new FormControl(1, [Validators.required]),
       applyDiscountValue: new FormControl(0, [Validators.required]),
       maximumDiscountValue: new FormControl(0, [Validators.required]),
       discountOn: new FormControl('1'),
-      discountOnProduct: new FormControl([{id:1, productName:this.productList[0].name,price:50000,applyDiscountPrice:40000}]),
+      listOfDiscountOnProduct: new FormControl([]),
+      gift: new FormControl(1, [Validators.required]),
+      quantityGift: new FormControl(0, [Validators.required]),
+      duplicateQuantity: new FormControl(false),
+      couponList: new FormControl([]),
     });
-    
   }
 
-  ngOnInit(): void {
-    
+  resetForm(){
+    this.sendingData.reset({
+      quantity: 0,
+      useFor: 0,
+      minimumPrice: 0,
+      startDate: 0,
+      companyName: '',
+      endDate: 0,
+      active: true,
+      bonusType: 'discount',
+      applyFor: '1',
+      applyDiscountType: 1,
+      applyDiscountValue: 0,
+      maximumDiscountValue: 0,
+      discountOn: '1',
+      listOfDiscountOnProduct: [],
+      gift: 1,
+      quantityGift: 0,
+      duplicateQuantity: false,
+      couponList: [],
+    });
   }
 
-  onSelectProduct(id:number, index:number){
-    this.data.value.discountOnProduct[index].productName = this.productList.find(f=>f.id==id).name;
+  initTableData(){
+    this.discountProductTable = [
+      {
+        id:1, 
+        name:'',
+        price:50000,
+        applyDiscountPrice:40000
+      }
+    ];
+    this.couponTable = [
+      {
+        id:1, 
+        name:'', 
+        active:true
+      }
+    ];
+  }
+
+  onSelectProduct(id:number, i:number){
+    this.discountProductTable[i].name = this.productList.find(f=>f.id==id).name;
+    this.getData();
+  }
+
+  onChangeCouponName(event:TDSSafeAny,i:number){
+    this.couponTable[i].name = event.target.value;
+    this.getData();
+  }
+
+  onActiveChange(i:number){
+    this.couponTable[i].active = !this.couponTable[i].active;
+    this.getData();
   }
 
   addNewDiscountProduct(){
-    this.data.value.discountOnProduct.push(
+    this.discountProductTable.push(
       {
-        id:this.data.value.discountOnProduct.length+1,
-        productName:this.productList[0].name,
+        id:this.discountProductTable.length + 1,
+        name:'',
         price:50000,
         applyDiscountPrice:40000
       }
     );
-    console.log(this.data.value.discountOnProduct)
+  }
+
+  addNewCoupon(){
+    this.couponTable.push(
+      {
+        id: this.couponTable.length + 1,
+        name:'',
+        active: true
+      }
+    );
+  }
+
+  removeDiscountProduct(i:number){
+    this.discountProductTable.splice(i,1);
+    this.getData();
+  }
+
+  removeCoupon(i:number){
+    this.couponTable.splice(i,1);
+    this.getData();
   }
 
   getData(){
-    this.getFormData.emit(this.data)
+    this.getFormData.emit(this.sendingData);
+    this.updateDiscountProductTable();
+    this.updateCouponTable();
+  }
+
+  updateDiscountProductTable(){
+    this.sendingData.value.listOfDiscountOnProduct = [];
+    let id = 1;
+    this.discountProductTable.forEach(rs => {
+      if(rs.name !== ''){
+        rs.id = id;
+        this.sendingData.value.listOfDiscountOnProduct.push(rs);
+        id++;
+      }
+    });
+  }
+
+  updateCouponTable(){
+    this.sendingData.value.couponList = [];
+    let id = 1;
+    this.couponTable.forEach(rs=>{
+      if(rs.name !== ''){
+        rs.id = id;
+        this.sendingData.value.couponList.push(rs);
+        id++;
+      }
+    });
   }
 }

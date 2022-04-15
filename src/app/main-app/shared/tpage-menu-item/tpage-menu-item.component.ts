@@ -1,4 +1,5 @@
-import { Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { Event, RouterEvent, Router } from '@angular/router';
 import { TDSMenuDTO } from 'tmt-tang-ui';
 import { Component, OnInit, Input } from '@angular/core';
 
@@ -10,33 +11,29 @@ import { Component, OnInit, Input } from '@angular/core';
 export class TpageMenuItemComponent implements OnInit {
   //#region variable
   @Input() menuData!:Array<TDSMenuDTO>;
-  @Input() active:boolean = false;
-  @Input() disableCollapse:boolean = false;
-  @Input() currentItem!:TDSMenuDTO;
-  currentPage!:TDSMenuDTO;
+
+  currentURL!:string;
+  active:boolean = false;
   //#endregion
 
-  constructor(private router: Router) { }
-
-  ngOnInit(): void {
-    if(this.currentItem){
-      this.currentPage = this.currentItem;
-    }
-
-    if(this.router.url === this.menuData[0].link){
-      this.onChangePage(this.menuData[0]);
-    }else{
-      let item = sessionStorage.getItem('menuItem');
-      if(item){
-        this.currentPage = JSON.parse(item);
-      }else{
-        this.currentPage = this.menuData[0];
-      }
-    }
+  constructor(private router: Router) { 
+    router.events.pipe(
+      filter((e: Event): e is RouterEvent => e instanceof RouterEvent)
+    ).subscribe((e: RouterEvent) => {
+      this.currentURL = router.url;
+    });
   }
 
-  onChangePage(page:TDSMenuDTO){
-    this.currentPage = page;
-    sessionStorage.setItem('menuItem',JSON.stringify(page));
+  ngOnInit(): void {}
+
+  onChangePage(url:string){
+    this.router.navigateByUrl(url);
+    this.currentURL = url;
+  }
+
+  openCollapsePanel(url:string){
+    if(this.currentURL.includes(url))
+      return true;
+    return false;
   }
 }

@@ -31,15 +31,21 @@
                         <div class="flex flex-row items-center w-full pt-4">
                             <span class="text-neutral-1-900 text-body-2 font-semibold w-1/6 pr-6">Dựa trên</span>
                             <tds-radio-group formControlName="tabComponent" class="flex justify-between w-1/3">
-                                <label tds-radio value="1">Toàn bộ</label>
-                                <label tds-radio value="2">Nhóm sản phẩm</label>
-                                <label tds-radio value="3">Combo sản phẩm</label>
+                                <label tds-radio value="all" >Toàn bộ</label>
+                                <label tds-radio value="group">Nhóm sản phẩm</label>
+                                <label tds-radio value="combo">Combo sản phẩm</label>
                             </tds-radio-group>
                         </div>
                     </div>
                 </div>
-                <div *ngIf="addProductForm.value.tabComponent === '1' " class="w-full border border-neutral-2-100 rounded-md">
+                <div *ngIf="addProductForm.value.tabComponent === 'all' " class="w-full border border-neutral-2-100 rounded-md">
                     <app-config-add-promotion-all (getFormData)="getComponentData($event)"></app-config-add-promotion-all>
+                </div>
+                <div *ngIf="addProductForm.value.tabComponent === 'group' " class="w-full border border-neutral-2-100 rounded-md">
+                    <app-config-add-promotion-group (getFormData)="getComponentData($event)"></app-config-add-promotion-group>
+                </div>
+                <div *ngIf="addProductForm.value.tabComponent === 'combo' " class="w-full border border-neutral-2-100 rounded-md">
+                    <app-config-add-promotion-combo (getFormData)="getComponentData($event)"></app-config-add-promotion-combo>
                 </div>
             </div>
         </div>

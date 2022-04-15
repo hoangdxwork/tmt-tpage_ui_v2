@@ -12,10 +12,10 @@
                 </span>
             </button>
         </div>
-    </div>
-    <div class="flex flex-col border-t">
-        <div class="flex flex-row items-center justify-end">
-            <tds-button-group class="mr-2">
+        <div class="flex flex-col border-t border-neutral-2-100 h-full">
+          <div class="flex flex-row items-center justify-end px-4 py-2.5">
+            <div class="flex flex-row items-center justify-end w-2/5">
+              <tds-button-group class="mr-2">
                 <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" [placement]="'bottomRight'">
                     <span class="flex items-center">
                         Thao tác<i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
@@ -28,126 +28,351 @@
                         </div>
                     </div>
                 </tds-dropdown-menu>
-            </tds-button-group>
-            <tds-form-field class="w-2/3">
-                <input tdsInput class="text-neutral-1-900" placeholder="Tìm kiếm sản phẩm" autocomplete="off"/>
-                <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-            </tds-form-field>
-        </div>
-        <tds-table #rowSelectionTable [showSizeChanger]="true" [frontPagination]="false" [listData]="TableData"
-            [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="TableData.length" [scroll]="{y:'auto'}"
-            [loading]="loading" (clickRefresh)="refreshData()" (currentPageDataChange)="onCurrentPageDataChange($event)">
-            <thead>
-              <tr>
-                <th width="50px"></th>
-                <th width="50px" [(checked)]="checked" [indeterminate]="indeterminate"
-                  (checkedChange)="onAllChecked($event)">
-                </th>
-                <th>Ảnh</th>
-                <th>Mã sản phẩm</th>
-                <th>Tên sản phẩm</th>
-                <th>Giá bán</th>
-                <th>Nhãn</th>
-                <th>Hiệu lực</th>
-                <th>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-i="index" let-odd='odd'>
-                <tr class="text-body-2 text-neutral-900 font-regular"
-                  [ngClass]="setOfCheckedId.has(data.Id)?'bg-[#F2FCF5]':''">
-                  <td [expand]="expandSet.has(data.Id)" (expandChange)="onExpandChange(data.Id, $event)">
-                  </td>
-                  <td [checked]="setOfCheckedId.has(data.Id)" (checkedChange)="onItemChecked(data.Id, $event)"
-                    class="border-l border-r text-center border-neutral-200"></td>
+              </tds-button-group>
 
-                  <td class=" border-r border-neutral-200">
-                    <div class="flex flex-col">
-                      <span></span>
-                    </div>
-                  </td>
-                  <td class=" border-r border-neutral-200">
-                    <div class="flex flex-col">
-                      <span></span>
-                    </div>
-                  </td>
-                  <td class=" border-r border-neutral-200">
-                    <div class="flex flex-col">
-                      <span></span>
-                    </div>
-                  </td>
-                  <td class=" border-r border-neutral-200">
-                    <div class="flex flex-col">
-                      <span></span>
-                    </div>
-                  </td>
-                  <td class="border-r border-neutral-200">
-                    <div class="flex w-full gap-x-2 items-center">
-                      <div class="flex w-full flex-wrap gap-2">
-                        <tds-tag class="truncate" *ngFor="let item of data.Tags" status='primary'>
-                          {{item.Name}}</tds-tag>
-                      </div>
-                      <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover
-                        [popoverVisible]="clickingTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
-                        [popoverContent]="contentAddtag" [popoverBackdrop]="true" popoverPlacement="left"
-                        color="secondary" size="sm" class=" border-0">
-                        <span class="flex items-center relative">
-                          <i class="tdsi-tag-fill "></i>
-                          <i
-                            class="h-2.5 w-2.5 tdsi-plus-circle-fill text-xs leading-4 text-primary-1 absolute right-0 bottom-0"></i>
-                        </span>
-                      </button>
-                      <!-- button thêm nhãn -->
-                      <ng-template #contentAddtag>
-                        <div class="w-96">
-                          <tds-form-field>
-                            <tds-select valueField="Id" textField="Name" placeholder='select item'
-                              [(ngModel)]="configTags" [allowClear]="true" [valuePrimitive]="false" [data]="configTagList"
-                              mode="multiple">
-                            </tds-select>
-                          </tds-form-field>
+              <tds-form-field class="w-2/3 mr-2">
+                  <input tdsInput class="text-neutral-1-900" placeholder="Tìm kiếm sản phẩm" autocomplete="off"/>
+                  <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+              </tds-form-field>
+
+              <button tds-button-icon color="secondary">
+                <span class="flex items-center">
+                  <i class="tdsi-column-setting-fill text-lg leading-none"></i>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="w-full h-full pb-3">
+            <tds-table #rowSelectionTable 
+                [listData]="TableData" 
+                [showSizeChanger]="true" 
+                [loading]="loading" 
+                [scroll]="{y:'auto'}" 
+                [pageSize]="20" 
+                [total]="TableData.length" 
+                (currentPageDataChange)="onCurrentPageDataChange($event)">
+                <thead>
+                    <tr class="text-neutral-1-900 text-body-2 font-semibold">
+                        <th width="32px" [align]="'center'"></th>
+                        <th width="44px" [align]="'center'" class="hover:bg-neutral-3-100" [checked]="checked" 
+                            [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)">
+                        </th>
+                          <th width="68px">Ảnh</th>
+                          <th>Mã sản phẩm</th>
+                          <th>Tên sản phẩm</th>
+                          <th [width]="'192px'">Giá bán</th>
+                          <th [width]="'192px'">Nhãn</th>
+                          <th [width]="'192px'">Hiệu lực</th>
+                          <th [width]="'192px'">Thao tác</th>
+                    </tr>
+              </thead>
+              <tbody>
+                  <ng-template ngFor let-data let-i="index" [ngForOf]="rowSelectionTable.data" let-odd='odd'>
+                      <tr class="text-neutral-1-900 text-body-2 font-regular {{setOfCheckedId.has(data.id) ? 'bg-background-6':''}}">
+                        <td [expand]="expandSet.has(data.id)" (expandChange)="onExpandChange(data.id, $event)"></td>
+                          <td [checked]="setOfCheckedId.has(data.id)" [disabled]="data.disabled"
+                              (checkedChange)="onItemChecked(data.id, $event)"></td>
+                          <td>
+                              <img [src]="data.image.url" class="rounded-lg">
+                          </td>
+                          <td>{{ data.productCode }}</td>
+                          <td>{{ data.productName }}</td>
+                          <td [width]="'192px'">{{ data.price | number }}</td>
+                          <td [width]="'192px'">
+                            <div class="flex w-full items-center">
+                              <div *ngIf="data.Tags.length > 0" class="flex flex-wrap w-full gap-x-2 items-center border-r">
+                                <div *ngFor="let item of data.Tags">
+                                  <tds-tag class="truncate" status='primary'>{{item.name}}</tds-tag>
+                                </div>
+                              </div>
+                              
+                              <button (click)="openTag(data.id, data.Tags)" tds-button-icon tds-popover
+                                [popoverVisible]="indClickTag == data.id" popoverTrigger="click" [popoverFooter]="footerAddTag"
+                                [popoverContent]="contentAddtag" [popoverBackdrop]="true" popoverPlacement="left"
+                                color="secondary" size="sm" class=" border-0">
+                                <span class="flex items-center relative">
+                                  <i class="tdsi-tag-fill "></i>
+                                  <i
+                                    class="h-2.5 w-2.5 tdsi-plus-circle-fill text-xs leading-4 text-primary-1 absolute right-0 bottom-0"></i>
+                                </span>
+                              </button>
+                              <!-- button thêm nhãn -->
+                              <ng-template #contentAddtag>
+                                <div class="w-96">
+                                  <tds-form-field>
+                                    <tds-select valueField="id" textField="name" placeholder='Chọn tag'
+                                      [(ngModel)]="configModelTags" [allowClear]="true" [valuePrimitive]="false" [data]="configTagDataList"
+                                      mode="multiple">
+                                    </tds-select>
+                                  </tds-form-field>
+                                </div>
+                              </ng-template>
+                              <ng-template #footerAddTag>
+                                <div class="flex justify-end pt-2">
+                                  <button tds-button color="secondary" class="mr-2" size="md" (click)="closeTag()">
+                                    <span class="flex items-center">
+                                      Đóng
+                                    </span>
+                                  </button>
+                                  <button tds-button size="md" (click)="assignTags(data.id, configModelTags)">
+                                    <span class="flex items-center">
+                                      Lưu
+                                    </span>
+                                  </button>
+                                </div>
+                              </ng-template>
+                            </div>
+                          </td>
+                          <td [width]="'192px'">
+                              <span class="flex items-center">
+                                  <i class="{{ data.active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
+                              </span>
+                          </td>
+                          <td [width]="'192px'">
+                              <button tds-button-icon color="secondary" size="sm" class=" mr-2" (click)="showEditModal(i)">
+                                  <span class="flex items-center">
+                                    <i class="tdsi-edit-fill text-xl leading-none"></i>
+                                  </span>
+                              </button>
+                              <button tds-button-icon color="secondary" size="sm" (click)="showRemoveModal(i)">
+                                  <span class="flex items-center">
+                                    <i class="tdsi-trash-fill text-xl leading-none"></i>
+                                  </span>
+                              </button>
+                          </td>
+                      </tr>
+                      <tr [expand]="expandSet.has(data.id)" class="border-b border-neutral-2-100 text-neutral-1-900 bg-neutral-3-50">
+                        <div class="bg-white rounded-xl">
+                          <tds-tabset>
+                            <tds-tab title="Thông tin">
+                              <div class="grid grid-cols-12 gap-x-8">
+                                <div class="w-full col-span-1">
+                                  <img [src]="data.image.url" class="w-full">
+                                </div>
+                                <div class="w-full col-span-11">
+                                  <div class="grid grid-cols-3 gap-x-8 gap-y-4 items-center">
+                                    <div class="grid grid-cols-3 gap-x-8 gap-y-4 items-center">
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Mã sản phẩm:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.productCode??'---'}}
+                                        </span>
+                                      </div>
+    
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Tên sản phẩm:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.productName??'---'}}
+                                        </span>
+                                      </div>
+    
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Nhóm sản phẩm:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.productGroup??'---'}}
+                                        </span>
+                                      </div>
+    
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Loại sản phẩm:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.productType??'---'}}
+                                        </span>
+                                      </div>
+
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Giá bán mặc định:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.price??'---'}}
+                                        </span>
+                                      </div>
+
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Chiết khấu bán:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.discountSalePrice??'---'}}
+                                        </span>
+                                      </div>
+
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Cho phép bán ở công ty khác:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.allowToSellOnAnotherCompany?'Có':(data.allowToSellOnAnotherCompany == false?'Không':'---')}}
+                                        </span>
+                                      </div>
+                                    </div>
+    
+                                    <div class="grid grid-cols-3 gap-x-8 gap-y-4 items-center">
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Công ty:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.manufacturingCompany??'---'}}
+                                        </span>
+                                      </div>
+    
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Đơn vị mặc định:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.defaultUnit??'---'}}
+                                        </span>
+                                      </div>
+    
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Giá mua:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.importPrice??'---'}}
+                                        </span>
+                                      </div>
+    
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Giá vốn:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.capitalPrice??'---'}}
+                                        </span>
+                                      </div>
+
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Chiết khấu mua:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.discountImportPrice??'---'}}
+                                        </span>
+                                      </div>
+
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Đơn vị mua:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.importUnit??'---'}}
+                                        </span>
+                                      </div>
+
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Khối lượng:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.netWeight??'---'}}
+                                        </span>
+                                      </div>
+                                    </div>
+    
+                                    <div class="grid grid-cols-3 gap-x-8 gap-y-4 items-center">
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Nhà phân phối:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.distributor??'---'}}
+                                        </span>
+                                      </div>
+    
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Nhà nhập khẩu:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.importer??'---'}}
+                                        </span>
+                                      </div>
+    
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Nhà sản xuất:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.manufacturer??'---'}}
+                                        </span>
+                                      </div>
+    
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Xuất xứ:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.madeIn??'---'}}
+                                        </span>
+                                      </div>
+
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Thành phần:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.components??'---'}}
+                                        </span>
+                                      </div>
+
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Thông số kỹ thuật:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.technicalParameter??'---'}}
+                                        </span>
+                                      </div>
+
+                                      <span class="text-neutral-1-900 text-body-2 font-regular">Thông tin cảnh báo:</span>
+                                      <div class="w-full col-span-2">
+                                        <span class="text-neutral-1-900 text-body-2 font-semibold ">
+                                          {{data.attention??'---'}}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </tds-tab>
+                            <tds-tab title="Hình ảnh">
+                              <div class="flex flex-wrap items-center gap-x-4">
+                                <div *ngFor="let image of data.images">
+                                  <img tds-image width="108px" height="108px" class="rounded-10" [fallback]="fallback" alt=""
+                                    [tdsSrc]="image.url" alt="" />
+                                </div>
+                              </div>
+                            </tds-tab>
+                            <tds-tab title="Thẻ kho">
+                              <tds-table [listData]="data.stockCards">
+                                <thead>
+                                      <tr>
+                                            <th>Loại</th>
+                                            <th>PickingName</th>
+                                            <th>Tham chiếu</th>
+                                            <th>Nguồn</th>
+                                            <th>Đến</th>
+                                            <th>ĐVT</th>
+                                            <th>Số lượng</th>
+                                            <th>Ngày tạo</th>
+                                      </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-template ngFor let-data [ngForOf]="data.stockCards" >
+                                        <tr>
+                                            <td>{{ data.type }}</td>
+                                            <td>{{ data.pickingName }}</td>
+                                            <td>{{ data.reference }}</td>
+                                            <td>{{ data.source }}</td>
+                                            <td>{{ data.arriveTo }}</td>
+                                            <td>{{ data.unit }}</td>
+                                            <td>{{ data.quantity | number }}</td>
+                                            <td>{{ data.createdDate | date:'dd/MM/yyy HH:mm:ss' }}</td>
+                                        </tr>
+                                    </ng-template>
+                                </tbody>
+                            </tds-table>
+                            </tds-tab>
+                            <tds-tab title="Tồn kho">
+                              <tds-table [listData]="data.inventory">
+                                <thead>
+                                      <tr>
+                                            <th>Kho</th>
+                                            <th>Tồn kho</th>
+                                      </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-template ngFor let-data [ngForOf]="data.inventory" >
+                                        <tr>
+                                            <td>{{ data.stockName }}</td>
+                                            <td>{{ data.quantity }}</td>
+                                        </tr>
+                                    </ng-template>
+                                </tbody>
+                            </tds-table>
+                            </tds-tab>
+                            <tds-tab title="Mô tả">
+                              Nội dung đang cập nhật
+                            </tds-tab>
+                          </tds-tabset>
                         </div>
-                      </ng-template>
-                      <ng-template #footerAddTag>
-                        <div class="flex justify-end pt-2">
-                          <button tds-button-icon color="secondary" class="mr-2" size="sm" (click)="closeTag()">
-                            <span class="flex items-center">
-                              <i class="tdsi-close-fill"></i>
-                            </span>
-                          </button>
-                          <button tds-button-icon size="sm" (click)="assignTags(data.Id, configTags)">
-                            <span class="flex items-center">
-                              <i class="tdsi-tick-fill"></i>
-                            </span>
-                          </button>
-                        </div>
-                      </ng-template>
-                    </div>
-                  </td>
-                  <td class=" border-r border-neutral-200">
-                    <div class="flex flex-col">
-                      <span></span>
-                    </div>
-                  </td>
-                  <td>
-                    <button tds-button-icon color="secondary" size="sm" class=" mr-2" (click)="showEditModal(i)">
-                        <span class="flex items-center">
-                          <i class="tdsi-edit-fill text-xl leading-none"></i>
-                        </span>
-                    </button>
-                    <button tds-button-icon color="secondary" size="sm" (click)="showRemoveModal(i)">
-                        <span class="flex items-center">
-                          <i class="tdsi-trash-fill text-xl leading-none"></i>
-                        </span>
-                    </button>
-                  </td>
-                </tr>
-                <!-- expand partner details -->
-                <tr [expand]="expandSet.has(data.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 bg-light-50">
-                  
-                </tr>
-              </ng-template>
-            </tbody>
-          </tds-table>
+                      </tr>
+                  </ng-template>
+              </tbody>
+            </tds-table>
+          </div>
+      </div>
     </div>
 </div>
