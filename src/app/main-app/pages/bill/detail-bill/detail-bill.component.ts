@@ -29,7 +29,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   popoverVisible: boolean = false;
   isProcessing: boolean = false;
 
-  private _destroy = new Subject<void>();
+  private destroy$ = new Subject<void>();
 
   statusStringBill: string = 'Nháp';
   isCancelPayment: boolean = false;
@@ -59,7 +59,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   loadBill() {
     this.isLoading = true;
-    this.fastSaleOrderService.getById(this.id).subscribe((res: BillDetailDTO) => {
+    this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$)).subscribe((res: BillDetailDTO) => {
         delete res['@odata.context'];
 
         if (res.DateCreated) {
@@ -104,7 +104,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   }
 
   loadPaymentInfoJson() {
-    this.fastSaleOrderService.getPaymentInfoJson(this.id).subscribe((res: any) => {
+    this.fastSaleOrderService.getPaymentInfoJson(this.id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.payments = res.value;
     }, error => {
       this.message.error('Load thông tin thanh toán đã lỗi!');
@@ -155,7 +155,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
     }
     if (TDSHelperObject.hasValue(obs)) {
       this.isProcessing = true;
-      obs.pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+      obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
           that.printerService.printHtml(res);
           that.isProcessing = false;
       })
@@ -176,7 +176,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
       onOk: () => {
           let model = { id: parseInt(that.id) }
 
-          that.fastSaleOrderService.getSendToShipper(model).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+          that.fastSaleOrderService.getSendToShipper(model).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
               that.message.success('Xác nhận gửi vận đơn thành công!');
               that.isProcessing = false;
               that.loadData();
@@ -207,7 +207,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
             ids: [parseInt(that.id)]
           }
 
-          that.fastSaleOrderService.getActionCancel(model).pipe(takeUntil(this._destroy)).subscribe(() => {
+          that.fastSaleOrderService.getActionCancel(model).pipe(takeUntil(this.destroy$)).subscribe(() => {
               that.message.success('Xác nhận hủy hóa đơn thành công!');
               that.isProcessing = false;
               this.loadData();
@@ -231,7 +231,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   showModalRegisterPayment() {
     let model = { ids: [parseInt(this.id)] };
-    this.fastSaleOrderService.getRegisterPayment(model).subscribe((res: any) => {
+    this.fastSaleOrderService.getRegisterPayment(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         delete res["@odata.context"];
         this.modalService.create({
             title: 'Đăng ký thanh toán',
@@ -272,7 +272,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
       onOk: () => {
           let model = { id: parseInt(that.id) };
 
-          that.fastSaleOrderService.getActionRefund(model).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+          that.fastSaleOrderService.getActionRefund(model).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
               that.message.success('Tạo trả hàng thành công!');
               that.isProcessing = false;
               this.loadData();
@@ -301,7 +301,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
       onOk: () => {
         let model = { ids: [parseInt(that.id)] };
         this.isLoading = true;
-        that.fastSaleOrderService.actionInvoiceOpen(model).subscribe((res: any) => {
+        that.fastSaleOrderService.actionInvoiceOpen(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
           if(res && res.Success) {
 
               that.message.success('Xác nhận bán hàng thành công!');
@@ -324,7 +324,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
               if (TDSHelperObject.hasValue(obs)) {
                 that.isProcessing = true;
-                obs.pipe(takeUntil(that._destroy)).subscribe((res: TDSSafeAny) => {
+                obs.pipe(takeUntil(that.destroy$)).subscribe((res: TDSSafeAny) => {
                   that.printerService.printHtml(res);
                   that.isProcessing = false;
                   this.isLoading = false;
@@ -357,7 +357,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
     }
 
     let warehouseId = this.dataModel.WarehouseId;
-    this.commonService.getInventoryByIds(warehouseId, ids).subscribe((res: any) => {
+    this.commonService.getInventoryByIds(warehouseId, ids).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.message.success('Cập nhật tồn kho thành công!');
     }, error => {
       this.message.error(`${error.error.message || 'Cập nhật tồn kho thất bại'}`);
@@ -373,7 +373,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   }
 
   ngOnDestroy(): void {
-    this._destroy.next();
-    this._destroy.complete();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

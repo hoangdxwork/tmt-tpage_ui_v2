@@ -23,7 +23,6 @@ import { PaymentMultipComponent } from './components/payment-multip/payment-mult
 import { TDSNotificationModule } from 'tmt-tang-ui';
 import { AccountRegisterPaymentService } from '../../services/account-register-payment.service';
 import { ModalSearchPartnerComponent } from './components/modal-search-partner/modal-search-partner.component';
-import { ModalAddProductComponent } from './components/modal-add-product/modal-add-product.component';
 import { CommonService } from '../../services/common.service';
 import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { PartnerService } from '../../services/partner.service';
@@ -51,7 +50,6 @@ const SERVICES = [
     PaymentMultipComponent,
     AddBillComponent,
     ModalSearchPartnerComponent,
-    ModalAddProductComponent,
     DetailBillComponent,
   ],
 

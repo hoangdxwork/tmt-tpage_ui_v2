@@ -3,6 +3,7 @@ import {  Observable, ReplaySubject } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
 import { PagedList2 } from '../dto/pagedlist2.dto';
+import { ODataAllFacebookChildTO } from '../dto/team/all-facebook-child.dto';
 import { CRMTeamDTO } from '../dto/team/team.dto';
 import { BaseSevice } from './base.service';
 
@@ -135,5 +136,14 @@ export class CRMTeamService extends BaseSevice {
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
+
+  getAllFacebookChilds(): Observable<ODataAllFacebookChildTO> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetAllFacebook?$expand=Childs`,
+      method: TApiMethodType.get
+    }
+    return this.apiService.getData<ODataAllFacebookChildTO>(api, null);
+  }
+
 
 }

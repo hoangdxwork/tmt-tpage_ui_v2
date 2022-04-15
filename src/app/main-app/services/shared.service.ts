@@ -4,6 +4,7 @@ import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { CompanyCurrentDTO } from '../dto/configs/company-current.dto';
 import { SaleConfigsDTO } from '../dto/configs/sale-config.dto';
+import { ODataStockWarehouseDTO } from '../dto/setting/stock-warehouse.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable()
@@ -48,6 +49,15 @@ export class SharedService extends BaseSevice {
     }
 
     return this.apiService.getFileUpload(api, param);
+  }
+
+  getStockWarehouse(): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/odata/StockWarehouse//OdataService.getByCompany`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<ODataStockWarehouseDTO>(api, null);
   }
 
 

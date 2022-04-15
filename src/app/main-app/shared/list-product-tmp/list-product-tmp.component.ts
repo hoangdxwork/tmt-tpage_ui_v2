@@ -9,10 +9,10 @@ import { CompanyCurrentDTO } from '../../dto/configs/company-current.dto';
 import { CommonService } from '../../services/common.service';
 import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { fromEvent, Observable, Subject, Subscription } from 'rxjs';
-import * as _ from "lodash";
-import { ModalAddProductComponent } from '../../pages/bill/components/modal-add-product/modal-add-product.component';
+import { orderBy as _orderBy } from 'lodash';
 import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
 import { SharedService } from '../../services/shared.service';
+import { TpageAddProductComponent } from '../tpage-add-product/tpage-add-product.component';
 
 @Component({
   selector: 'list-product-tmp',
@@ -90,7 +90,8 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
 
   loadProductIndexDB(productCount: number, version: number) {
     this.isLoading = true;
-    this.productIndexDBService.getLastVersionV2(productCount, version).subscribe((data: ProductPouchDBDTO) => {
+    this.productIndexDBService.getLastVersionV2(productCount, version).pipe(takeUntil(this.destroy$))
+       .subscribe((data: ProductPouchDBDTO) => {
 
         if(TDSHelperArray.hasListValue(data.Datas) && productCount == -1 && version == 0) {
             this.indexDbStorage = data.Datas;
@@ -170,20 +171,20 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
 
     if(TDSHelperObject.hasValue(this.currentType)) {
         switch(this.currentType.value) {
-          // case 'Id':
-          //   data = _.orderBy(data, ["Id"], ["desc"]);
-          // break;
+          case 'Id':
+            data = _orderBy(data, ["Id"], ["desc"]);
+          break;
 
           case 'Name':
-            data = _.orderBy(data, ["Name"], ["desc"]);
+            data = _orderBy(data, ["Name"], ["desc"]);
           break;
 
           case 'DefaultCode':
-            data = _.orderBy(data, ["DefaultCode"], ["desc"]);
+            data = _orderBy(data, ["DefaultCode"], ["desc"]);
           break;
 
           case 'PosSalesCount':
-            data = _.orderBy(data, ["PosSalesCount"], "desc");
+            data = _orderBy(data, ["PosSalesCount"], "desc");
           break;
 
           default: break;
@@ -210,15 +211,16 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
         this.message.error('Load thông tin cấu hình mặc định đã xảy ra lỗi!');
     });
 
-    this.sharedService.getCurrentCompany().subscribe((res: CompanyCurrentDTO) => {
-      if(res.DefaultWarehouseId) {
-          let warehouseId = res.DefaultWarehouseId;
-          this.commonService.getInventoryWarehouseId(warehouseId).subscribe((obj: any) => {
-              this.inventories = obj;
-          }, error =>{
-              this.message.error('Load thông tin tồn kho đã xảy ra lỗi!');
-          });
-      }
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$))
+      .subscribe((res: CompanyCurrentDTO) => {
+        if(res.DefaultWarehouseId) {
+            let warehouseId = res.DefaultWarehouseId;
+            this.commonService.getInventoryWarehouseId(warehouseId).subscribe((obj: any) => {
+                this.inventories = obj;
+            }, error =>{
+                this.message.error('Load thông tin tồn kho đã xảy ra lỗi!');
+            });
+        }
     }, error => {
         this.message.error('Load thông tin công ty đã xảy ra lỗi!');
     })
@@ -227,14 +229,14 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
   showModalAddProduct() {
     const modal = this.modalService.create({
         title: 'Thêm sản phẩm',
-        content: ModalAddProductComponent,
+        content: TpageAddProductComponent,
         size: "xl",
         viewContainerRef: this.viewContainerRef,
     });
 
     modal.afterClose.subscribe((res: ProductTemplateV2DTO) => {
       if(TDSHelperObject.hasValue(res)) {
-          this.pusToIndexDb();
+        this.pusToIndexDb();
       }
     });
   }

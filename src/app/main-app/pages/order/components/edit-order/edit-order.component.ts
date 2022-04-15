@@ -14,7 +14,7 @@ import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-o
 import { TDSModalRef, TDSModalService, TDSSafeAny, TDSMessageService, TACheckboxChange, TDSHelperString } from 'tmt-tang-ui';
 import { ProductService } from 'src/app/main-app/services/product.service';
 import { GetInventoryDTO, ValueGetInventoryDTO } from 'src/app/main-app/dto/product/product.dto';
-import { ApplicationUserService } from 'src/app/main-app/services/application-user.server';
+import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-product/tpage-add-product.component';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
@@ -220,7 +220,6 @@ export class EditOrderComponent implements OnInit {
 
   onSearchProduct(event: any) {
     let text = event.target.value;
-
     this.loadProduct(text);
   }
 
@@ -239,20 +238,20 @@ export class EditOrderComponent implements OnInit {
         let details = this.formEditOrder.controls['Details'];
 
         let productAdd = {
-          Factor: 1,
-          Id: this.idOrder,
-          ImageUrl: result.ImageUrl,
-          Note: '',
-          OrderId: '',
-          Price: result.ListPrice,
-          Priority: 0,
-          ProductCode: result.Barcode,
-          ProductId: result.Id,
-          ProductName: result.Name,
-          ProductNameGet: result.NameGet,
-          Quantity: 1,
-          UOMId: result.UOMId,
-          UOMName: result.UOMName
+            Factor: 1,
+            Id: this.idOrder,
+            ImageUrl: result.ImageUrl,
+            Note: '',
+            OrderId: '',
+            Price: result.ListPrice,
+            Priority: 0,
+            ProductCode: result.Barcode,
+            ProductId: result.Id,
+            ProductName: result.Name,
+            ProductNameGet: result.NameGet,
+            Quantity: 1,
+            UOMId: result.UOMId,
+            UOMName: result.UOMName
         };
 
         (details as FormArray).push(new FormControl(productAdd));

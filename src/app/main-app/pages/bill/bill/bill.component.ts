@@ -1,7 +1,6 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib/enum/sort.enum';
-import { TCommonService } from 'src/app/lib/services';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { OdataFastSaleOrderService } from 'src/app/main-app/services/mock-odata/odata-fastsaleorder.service';
@@ -12,6 +11,8 @@ import { THelperCacheService } from 'src/app/lib';
 import { ColumnTableDTO } from '../components/config-column/config-column.component';
 import { Router } from '@angular/router';
 import { FastSaleOrderDTO, FastSaleOrderSummaryStatusDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/bill/bill.dto';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-bill',
@@ -19,7 +20,7 @@ import { FastSaleOrderDTO, FastSaleOrderSummaryStatusDTO, ODataFastSaleOrderDTO 
   styleUrls: ['./bill.component.scss']
 })
 
-export class BillComponent implements OnInit{
+export class BillComponent implements OnInit, OnDestroy{
 
   lstOfData: Array<FastSaleOrderDTO> = [];
   pageSize = 20;
@@ -77,6 +78,7 @@ export class BillComponent implements OnInit{
   checked = false;
   indeterminate = false;
   setOfCheckedId = new Set<number>();
+  private destroy$ = new Subject();
 
   constructor( private  odataFastSaleOrderService: OdataFastSaleOrderService,
       private tagService: TagService,
@@ -98,7 +100,7 @@ export class BillComponent implements OnInit{
 
   loadGridConfig() {
     const key = this.fastSaleOrderService._keyCacheGrid;
-    this.cacheApi.getItem(key).subscribe((res: TDSSafeAny) => {
+    this.cacheApi.getItem(key).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
       if(res && res.value) {
         var jsColumns = JSON.parse(res.value) as any;
         this.hiddenColumns = jsColumns.value.columnConfig;
@@ -154,7 +156,7 @@ export class BillComponent implements OnInit{
     let filters = this.odataFastSaleOrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.odataFastSaleOrderService.getView(params, this.filterObj).subscribe((res: ODataFastSaleOrderDTO) => {
+    this.odataFastSaleOrderService.getView(params, this.filterObj).pipe(takeUntil(this.destroy$)).subscribe((res: ODataFastSaleOrderDTO) => {
 
         this.count = res['@odata.count'] as number //260
         this.lstOfData = res.value;
@@ -172,7 +174,7 @@ export class BillComponent implements OnInit{
         DeliveryType: this.filterObj.deliveryType ? this.filterObj.deliveryType.value : null,
     };
 
-    this.fastSaleOrderService.getSummaryStatus(model).subscribe((res: Array<FastSaleOrderSummaryStatusDTO>) => {
+    this.fastSaleOrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$)).subscribe((res: Array<FastSaleOrderSummaryStatusDTO>) => {
         var total = 0;
         res.map((x: TDSSafeAny) => {
             total = total + x.Total;
@@ -202,7 +204,7 @@ export class BillComponent implements OnInit{
 
   loadTags(){
     let type = "fastsaleorder";
-    this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
+    this.tagService.getByType(type).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
         this.lstDataTag = res.value;
     })
   }
@@ -252,7 +254,7 @@ export class BillComponent implements OnInit{
 
   assignTags(id: number, tags: TDSSafeAny) {
     let model = { OrderId: id, Tags: tags };
-    this.fastSaleOrderService.assignTagFastSaleOrder(model)
+    this.fastSaleOrderService.assignTagFastSaleOrder(model).pipe(takeUntil(this.destroy$))
       .subscribe((res: TDSSafeAny) => {
         if(res && res.OrderId) {
           var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
@@ -344,7 +346,7 @@ export class BillComponent implements OnInit{
       title: 'Xóa hóa đơn',
       content: 'Bạn có muốn xóa hóa đơn',
       onOk: () => {
-        this.fastSaleOrderService.delete(data.Id).subscribe(() => {
+        this.fastSaleOrderService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe(() => {
             this.message.success('Xóa hóa đơn thành công!');
             this.loadData(this.pageSize, this.pageIndex);
         }, error => {
@@ -355,5 +357,10 @@ export class BillComponent implements OnInit{
       okText: "Xác nhận",
       cancelText: "Đóng",
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
