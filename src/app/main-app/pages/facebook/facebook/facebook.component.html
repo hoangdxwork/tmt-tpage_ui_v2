@@ -152,8 +152,8 @@
                         </tds-dropdown-menu>
                     </tds-button-group>
                     <div class="border border-neutral-2-200 border-solid rounded-md">
-                        <div *ngIf="!getIsIconCollapse(i)" class="tdsi-arrow-up-line p-2 text-neutral-1-500"></div>
-                        <div *ngIf="getIsIconCollapse(i)" class="tdsi-arrow-down-line p-2 text-neutral-1-500"></div>
+                        <div *ngIf="!getIsIconCollapse(team.Id)" class="tdsi-arrow-up-line p-2 text-neutral-1-500"></div>
+                        <div *ngIf="getIsIconCollapse(team.Id)" class="tdsi-arrow-down-line p-2 text-neutral-1-500"></div>
                     </div>
                 </div>
               </ng-template>
@@ -180,7 +180,7 @@
                                   <div class="tdsi-success-fill text-primary-1 text-xl"></div>
                                   <div class="text-body-2 text-neutral-1-900 font-regular">Đã kết nối</div>
                                   <div class="text-success-400 flex items-center gap-x-1 cursor-pointer"
-                                    *ngIf="userFBLogin?.id && userFBLogin?.id == team?.Facebook_UserId"
+                                    *ngIf="userFBLogin?.id && userFBLogin?.id == team?.Facebook_UserId && team.Active"
                                     (click)="refreshPageToken(team.Id, child.Facebook_PageId)">
                                     <span class="tdsi-undo-line flex text-sm"></span>
                                     <span class="flex text-xs">Cập nhật token</span>

@@ -2,12 +2,13 @@ import { FacebookUser } from './../../../../lib/dto/facebook.dto';
 import {
   AfterViewInit,
   Component,
+  OnDestroy,
   OnInit,
   QueryList,
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Message } from 'src/app/lib/consts/message.const';
 import {
   FacebookAuth,
@@ -29,6 +30,7 @@ import {
 import { AddPageComponent } from '../components/add-page/add-page.component';
 import { FacebookService } from 'src/app/main-app/services/facebook.service';
 import { ViewportScroller } from '@angular/common';
+import { takeUntil } from 'rxjs/operators';
 
 export interface PageNotConnectDTO {
   // /rest/v1.0/product/getinventory
@@ -40,7 +42,7 @@ export interface PageNotConnectDTO {
   templateUrl: './facebook.component.html',
   styleUrls: ['./facebook.component.scss'],
 })
-export class FacebookComponent implements OnInit, AfterViewInit {
+export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
 
   data: CRMTeamDTO[] = [];
   dataSearch?: CRMTeamDTO[];
@@ -104,10 +106,13 @@ export class FacebookComponent implements OnInit, AfterViewInit {
   ];
 
   fieldListFilter: any = {};
-  iconCollapse: TDSSafeAny = { '0': true };
+  iconCollapse: TDSSafeAny = {};
 
   isLoading: boolean = true;
   lastScrollPosition: TDSSafeAny = null;
+
+  private _destroy = new Subject<void>();
+
   constructor(
     private modal: TDSModalService,
     private modalService: TDSModalService,
@@ -145,9 +150,11 @@ export class FacebookComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadListTeam(false);
-    this.crmTeamService.onChangeTeam().subscribe((res) => {
-      this.currentTeam = res;
-    });
+    this.crmTeamService.onChangeTeam()
+      .pipe(takeUntil(this._destroy))
+      .subscribe((res) => {
+        this.currentTeam = res;
+      });
   }
 
   facebookSignIn(): void {
@@ -181,6 +188,55 @@ export class FacebookComponent implements OnInit, AfterViewInit {
     );
   }
 
+  getMe() {
+    this.facebookService.getMe().subscribe(
+      (res: FacebookUser) => {
+        this.userFBLogin = res;
+
+        if (this.data && this.data.length > 0) {
+          this.onChangeCollapse(this.data[0].Id, false);
+          this.sortByFbLogin(this.userFBLogin?.id);
+        }
+      },
+      (error) => (this.userFBLogin = undefined)
+    );
+  }
+
+  loadListTeam(isRefresh: boolean) {
+    this.isLoading = true;
+    this.crmTeamService.getAllChannels().subscribe(
+      (res: TDSSafeAny) => {
+        this.data = res;
+
+        if(res && res.length > 0) {
+          res.sort((a: any, b: any) => {
+            if (a.Active) return -1;
+            return 1;
+          });
+
+          res.forEach((item: any) => {
+            this.fieldListFilter[item.Id] = this.listFilter[0];
+            this.getListData(item.Id);
+          });
+
+          if (this.userFBLogin) {
+            this.sortByFbLogin(this.userFBLogin.id);
+          }
+          else {
+            this.onChangeCollapse(res[0].Id, true);
+          }
+
+          if(isRefresh){
+            this.crmTeamService.onRefreshListFacebook();
+            this.scrollToLastPosition();
+          }
+        }
+        this.isLoading = false;
+      },
+      (error) => (this.isLoading = false)
+    );
+  }
+
   onFacebookConnected() {
     let channel = this.data.find(
       (x) => x.Facebook_UserId == this.userFBLogin?.id
@@ -189,6 +245,8 @@ export class FacebookComponent implements OnInit, AfterViewInit {
     if (channel || !this.userFBLogin) {
       this.message.error(Message.ConnectionChannel.ChannelExist);
     }
+
+    this.lastScrollPosition = this.viewportScroller.getScrollPosition();
 
     this.insertUserChannel(this.userFBAuth?.accessToken);
   }
@@ -219,57 +277,11 @@ export class FacebookComponent implements OnInit, AfterViewInit {
         this.crmTeamService.insert(team).subscribe(
           (res) => {
             this.message.success(Message.InsertSuccess);
-            this.loadListTeam(false);
+            this.loadListTeam(true);
             this.isLoading = false;
           },
           (error) => (this.isLoading = false)
         );
-      },
-      (error) => (this.isLoading = false)
-    );
-  }
-
-  getMe() {
-    this.facebookService.getMe().subscribe(
-      (res: FacebookUser) => {
-        this.userFBLogin = res;
-
-        if (this.data && this.data.length > 0) {
-          this.sortByFbLogin(this.userFBLogin?.id);
-        }
-      },
-      (error) => (this.userFBLogin = undefined)
-    );
-  }
-
-  loadListTeam(isRefresh: boolean) {
-    this.isLoading = true;
-    this.crmTeamService.getAllChannels().subscribe(
-      (res: TDSSafeAny) => {
-        this.data = res;
-
-        if(res && res.length > 0) {
-          res.sort((a: any, b: any) => {
-            if (a.Active) return -1;
-            return 1;
-          });
-
-          res.forEach((item: any) => {
-            this.fieldListFilter[item.Id] = this.listFilter[0];
-            this.getListData(item.Id);
-          });
-
-          if (this.userFBLogin) {
-            this.sortByFbLogin(this.userFBLogin.id);
-          }
-
-          if(isRefresh){
-            this.crmTeamService.onRefreshListFacebook();
-            this.scrollToLastPosition();
-          }
-          this.onChangeCollapse(res[0].Id, true);
-        }
-        this.isLoading = false;
       },
       (error) => (this.isLoading = false)
     );
@@ -283,11 +295,6 @@ export class FacebookComponent implements OnInit, AfterViewInit {
     if (item) {
       this.data.splice(this.data.indexOf(item), 1);
       this.data.unshift(item);
-      this.onChangeCollapse(item.Id, true);
-
-      this.data.forEach(item => {
-        this.onChangeCollapse(item.Id, false);
-      });
 
       this.onChangeCollapse(item.Id, true);
     }
@@ -357,8 +364,6 @@ export class FacebookComponent implements OnInit, AfterViewInit {
       (res) => {
         this.message.success(Message.DeleteSuccess);
         this.loadListTeam(true);
-        delete this.lstPageNotConnect[userId];
-
       },
       (error) => {
         if (error?.error?.message) {
@@ -385,11 +390,9 @@ export class FacebookComponent implements OnInit, AfterViewInit {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
         this.loadListTeam(true);
-        if (this.lstPageNotConnect[user.Id]) {
-          this.lstPageNotConnect[user.Id] = this.lstPageNotConnect[
-            user.Id
-          ].filter((x) => x.id != data.id);
-        }
+        // if (this.lstPageNotConnect[user.Id]) {
+        //   this.lstPageNotConnect[user.Id] = this.lstPageNotConnect[user.Id].filter((x) => x.id != data.id);
+        // }
       }
     });
   }
@@ -423,23 +426,25 @@ export class FacebookComponent implements OnInit, AfterViewInit {
   loadPageNotConnect(user: CRMTeamDTO) {
     let pageIdConnected = user?.Childs.map((x) => x.Facebook_PageId);
 
+    this.isLoading = true;
     this.facebookGraphService.getUserPages(user.Facebook_UserToken).subscribe(
       (res) => {
         if (res?.data.length < 1) {
           this.message.info(Message.ConnectionChannel.NotFoundUserPage);
         } else {
-          this.lstPageNotConnect[user.Id] = res.data.filter(
+          this.lstPageNotConnect[user.Id] = res.data;
+          this.lstData[user.Id]['notConnected'] = this.lstPageNotConnect[user.Id].filter(
             (item) => !pageIdConnected.includes(item.id)
-          );
-          this.lstData[user.Id]['notConnected'] =
-            this.lstPageNotConnect[user.Id];
+          );;
           this.message.success(
             `Tìm thấy ${this.lstPageNotConnect[user.Id]?.length || 0} kênh mới.`
           );
         }
+        this.isLoading = false;
       },
       (error) => {
         this.message.error(Message.ConnectionChannel.TokenExpires);
+        this.isLoading = false;
       }
     );
   }
@@ -477,7 +482,11 @@ export class FacebookComponent implements OnInit, AfterViewInit {
           this.message.error(Message.ConnectionChannel.RefreshTokenFail);
         }
       },
-      (error) => (this.isLoading = false)
+      (error) => {
+        this.isLoading = false;
+        if(error?.error?.message)this.message.error(error?.error?.message);
+        else this.message.error(Message.ConnectionChannel.RefreshTokenFail);
+      }
     );
   }
 
@@ -490,11 +499,12 @@ export class FacebookComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    let childIds = channel?.Childs.map(x => x.Facebook_PageId) || [];
+
     if (field == 1) {
       this.lstData[teamId] = this.lstData[teamId] || {};
       this.lstData[teamId]['data'] = channel?.Childs || [];
-      this.lstData[teamId]['notConnected'] =
-        this.lstPageNotConnect[teamId] || [];
+      this.lstData[teamId]['notConnected'] = this.lstPageNotConnect?.[teamId]?.filter(x => !childIds.includes(x.id)) || [];
     } else if (field == 2) {
       this.lstData[teamId] = this.lstData[teamId] || {};
       this.lstData[teamId]['data'] = channel?.Childs.filter((x) => x.Active);
@@ -506,8 +516,7 @@ export class FacebookComponent implements OnInit, AfterViewInit {
     } else if (field == 4) {
       this.lstData[teamId] = this.lstData[teamId] || {};
       this.lstData[teamId]['data'] = [];
-      this.lstData[teamId]['notConnected'] =
-        this.lstPageNotConnect[teamId] || [];
+      this.lstData[teamId]['notConnected'] = this.lstPageNotConnect?.[teamId]?.filter(x => !childIds.includes(x.id)) || [];
     }
 
     console.log(this.lstData[teamId]['data']);
@@ -519,5 +528,10 @@ export class FacebookComponent implements OnInit, AfterViewInit {
     {
       this.viewportScroller.scrollToPosition(this.lastScrollPosition);
     }
+  }
+
+  ngOnDestroy(): void {
+    this._destroy.next();
+    this._destroy.complete();
   }
 }
