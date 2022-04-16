@@ -51,6 +51,24 @@ export class FastSaleOrderService extends BaseSevice {
     this.apiService.removeCacheAPI(this._keyCacheDefaultGetV2);
   }
 
+  insert(data: FastSaleOrder_DefaultDTOV2): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
+        method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  update(key: TDSSafeAny, data: FastSaleOrder_DefaultDTOV2): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
+        method: TApiMethodType.put,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
   delete(key: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,

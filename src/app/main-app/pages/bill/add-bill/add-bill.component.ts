@@ -53,9 +53,17 @@ export class AddBillComponent implements OnInit, OnDestroy {
   totalAmountLines: number = 0;
   productUOMQtyTotal: number = 0;
   productPriceTotal: number = 0;
+  priceListItems: any;
 
+  enableInsuranceFee: boolean = false;
   visiblePopoverDiscount: boolean = false;
   visiblePopoverTax: boolean = false;
+
+  apiDeliveries: any = ['GHTK', 'ViettelPost', 'GHN', 'TinToc', 'SuperShip', 'FlashShip', 'OkieLa', 'MyVNPost', 'DHL', 'FulltimeShip', 'JNT', 'EMS', 'AhaMove', 'Snappy', 'NhatTin', 'HolaShip'];
+  carrierTypeInsurance = ["MyVNPost", "GHN", "GHTK", "ViettelPost", "NinjaVan"];
+  shipServices: any = [];
+  shipExtraServices: any = [];
+
   private destroy$ = new Subject();
 
   constructor(private fb: FormBuilder,
@@ -71,7 +79,6 @@ export class AddBillComponent implements OnInit, OnDestroy {
     private applicationUserService: ApplicationUserService,
     private registerPaymentService: AccountRegisterPaymentService,
     private viewContainerRef: ViewContainerRef) {
-
       this.createForm();
   }
 
@@ -86,7 +93,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.loadConfig();
     this.lstCarriers = this.loadCarrier();
     this.lstPaymentJournals = this.loadPaymentJournals();
-    this.lstPrices = this.loadlstPrice();
+    this.lstPrices = this.loadListPrice();
     this.lstCustomers = this.loadCustomers();
     this.lstWareHouses = this.loadWareHouse();
     this.lstTeams = this.loadAllFacebookChilds();
@@ -112,7 +119,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       CashOnDelivery: [0],
       ShipWeight: [0],
       DeliveryNote: [null],
-      Ship_InsuranceFee: [null],
+      Ship_InsuranceFee: [0],
       CustomerDeliveryPrice: [null],
       TrackingRef: [null],
       Ship_Receiver: [null],
@@ -139,6 +146,12 @@ export class AddBillComponent implements OnInit, OnDestroy {
       AmountTotal: [0],
       TotalQuantity: [0],
       Tax: [null],
+      Ship_ServiceId: [null],
+      Ship_ServiceName: [null],
+      Ship_ExtrasText: [null],
+      Ship_ServiceExtrasText: [null],
+      Ship_Extras: [null],
+      Ship_ServiceExtras: this.fb.array([]),
       OrderLines: this.fb.array([]),
     });
   }
@@ -156,6 +169,33 @@ export class AddBillComponent implements OnInit, OnDestroy {
         data.ReceiverDate = new Date(data.ReceiverDate);
       }
       this.dataModel = data;
+
+      if(data.Ship_ServiceId) {
+        this.shipServices.push({
+          ServiceId: data.Ship_ServiceId,
+          ServiceName: data.Ship_ServiceName,
+          TotalFee: data.CustomerDeliveryPrice
+        });
+      }
+      if (data.Ship_ServiceExtras && data.Ship_ServiceExtras.length > 0) {
+        for (var item of data.Ship_ServiceExtras) {
+          var exits = ((item.Id == '16' || item.Id == "GBH" || item.Id == "GHN" || item.Id == "OrderAmountEvaluation" &&
+                 data.Carrier.DeliveryType === "MyVNPost" || item.Id === "NinjaVan"))
+          if (exits) {
+            this.enableInsuranceFee = true;
+          }
+
+          this.shipExtraServices.push({
+            ServiceId: item.Id,
+            ServiceName: item.Name,
+            Fee: item.Fee,
+            Type: item.Type,
+            ExtraMoney: item.ExtraMoney,
+            IsSelected: true
+          });
+        }
+      }
+
       this.updateForm(this.dataModel);
     }, error => {
       this.message.error('Load hóa đơn đã xảy ra lỗi!');
@@ -178,13 +218,21 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
       this.dataModel = data;
       this.updateForm(this.dataModel);
-
     }, error => {
         this.message.error('Load thông tin mặc định đã xảy ra lỗi!');
     });
   }
 
   updateForm(data: FastSaleOrder_DefaultDTOV2) {
+    //TODO: cập nhật price of product theo bảng giá
+    if(data.PriceListId) {
+      this.commonService.getPriceListItems(data.PriceListId).subscribe((res: any) => {
+          this.priceListItems = res;
+      }, error => {
+        this.message.error('Load bảng giá đã xảy ra lỗi!')
+      })
+    }
+
     if (TDSHelperArray.hasListValue(data.OrderLines)) {
         data.OrderLines.forEach((x: OrderLine) => {
             this.addOrderLines(x);
@@ -229,19 +277,38 @@ export class AddBillComponent implements OnInit, OnDestroy {
     return this.registerPaymentService.getWithCompanyPayment().pipe(map(res => res.value));
   }
 
-  loadlstPrice() {
+  loadListPrice() {
     let date = formatDate(new Date(), 'yyyy-MM-ddTHH:mm:ss', 'en-US');
     return this.commonService.getPriceListAvailable(date).pipe(map(res => res.value))
   }
 
   changePartner(event: any) {
+    let model = this.prepareModel();
+    this.partnerService.onChangePartnerPriceList({ model: model}).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
 
+    }, error => {
+      this.message.error('Thay đổi khách hàng đã xảy ra lỗi!')
+    });
   }
 
-  onChangePrice(event: any) {
+  onChangePriceList(event: any) {
+    if(TDSHelperObject.hasValue(event)) {
+      this.commonService.getPriceListItems(event.Id).subscribe((res: any) => {
+          this.priceListItems = res;
+      }, error => {
+          this.message.error('Load bảng giá đã xảy ra lỗi!')
+      })
+    }
   }
 
-  onChangeWarehouse(event: any) { }
+  changePaymentAmount(event: any) {
+    this._form.controls['PaymentAmount'].setValue(event);
+  }
+
+  onChangeWarehouse(event: any) {
+    this._form.controls['Warehouse'].setValue(event);
+    this._form.controls['WarehouseId'].setValue(event.Id);
+  }
 
   onChangePayment(event: any) { }
 
@@ -249,7 +316,48 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   onChangeUser(event: any) { }
 
-  onChangeCarrier(event: any) { }
+  onChangeCarrier(event: DeliveryCarrierDTOV2) {
+    if(TDSHelperObject.hasValue(event)) {
+        //TODO: Cập nhật giá trị ship mặc định
+        this._form.controls['DeliveryPrice'].setValue(event.Config_DefaultFee || 0);
+        let cashOnDelivery = this._form.controls['AmountTotal'].value + this._form.controls['DeliveryPrice'].value;
+
+        this._form.controls['CashOnDelivery'].setValue(cashOnDelivery || 0);
+        this._form.controls['ShipWeight'].setValue(event.Config_DefaultWeight || 100);
+        this._form.controls['Ship_Extras'].setValue(JSON.parse(event.ExtrasText) || null);
+
+        this.updateCoDAmount();
+        //TODO: Check giá trị mặc định trước khi gửi
+    }
+  }
+
+  calculateFee(event: DeliveryCarrierDTOV2): any {
+    if(!this._form.controls['Partner'].value) {
+      return  this.message.error('Vui lòng chọn khách hàng');
+    }
+    if(!this._form.controls['Carrier'].value) {
+      return  this.message.error('Vui lòng chọn  đối tác giao hàng');
+    }
+    if(!this._form.controls['ShipWeight'].value) {
+      return  this.message.error('Vui lòng chọn nhập khối lượng');
+    }
+  }
+
+  public prepareModelFeeV2(){
+    const formModel = this._form.value;
+    const model: any = {
+      PartnerId: formModel.Partner.Id,
+      CompanyId: formModel.Company.Id,
+      CarrierId: formModel.Carrier.Id,
+      ServiceId: formModel.Ship_ServiceId || null,
+      InsuranceFee: formModel.Ship_InsuranceFee || 0,
+      ShipWeight: formModel.ShipWeight,
+      CashOnDelivery: formModel.CashOnDelivery,
+      ServiceExtras: [],
+      Ship_Receiver: {}
+    }
+  }
+
   changeDeliveryPrice(event: any) { }
   changeAmountDeposit(event: any) { }
   changeShipWeight(event: any) { }
@@ -382,6 +490,8 @@ export class AddBillComponent implements OnInit, OnDestroy {
   removeOrderLines(i: number) {
     let control = <FormArray>this._form.controls['OrderLines'];
     control.removeAt(i);
+
+    this.computeAmountTotal();
   }
 
   removeAllOrderLines(){
@@ -393,16 +503,18 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   computeAmountTotal() {
     let datas = this._form.controls['OrderLines'].value as Array<OrderLine>;
-    datas.forEach((x: OrderLine) => {
-        x.Discount = x.Discount ? x.Discount : 0;
-        x.PriceTotal = (x.PriceUnit * (1 - (x.Discount || 0) / 100) - (x.Discount_Fixed || 0)) * x.ProductUOMQty;
-        x.WeightTotal = Math.round(x.ProductUOMQty * x.Weight * 1000) / 1000;
-    });
 
-    //Tính giá trị tổng bao gồm ShipWeight,WeightTotal,DiscountAmount,AmountUntaxed,PaymentAmount,TotalQuantity,AmoutTotal
-    this.updateTotalSummary(datas);
-    this.updateQuantitySummary(datas);
+    if(TDSHelperArray.hasListValue(datas)){
+        datas.forEach((x: OrderLine) => {
+            x.Discount = x.Discount ? x.Discount : 0;
+            x.PriceTotal = (x.PriceUnit * (1 - (x.Discount || 0) / 100) - (x.Discount_Fixed || 0)) * x.ProductUOMQty;
+            x.WeightTotal = Math.round(x.ProductUOMQty * x.Weight * 1000) / 1000;
+        });
 
+        //Tính giá trị tổng bao gồm ShipWeight,WeightTotal,DiscountAmount,AmountUntaxed,PaymentAmount,TotalQuantity,AmoutTotal
+        this.updateTotalSummary(datas);
+        this.updateQuantitySummary(datas);
+    }
     //update lại Giao hàng thu tiền
     this.updateCoDAmount();
   }
@@ -411,10 +523,12 @@ export class AddBillComponent implements OnInit, OnDestroy {
     let total = 0;
     let weightTotal = 0;
 
-    datas.forEach((x: OrderLine) => {
-        total += x.PriceTotal;
-        weightTotal += x.WeightTotal;
-    });
+    if(TDSHelperArray.hasListValue(datas)){
+      datas.forEach((x: OrderLine) => {
+          total += x.PriceTotal;
+          weightTotal += x.WeightTotal;
+      });
+    }
 
     //Gán lại khối lượng ship
     this._form.controls['WeightTotal'].setValue(weightTotal);
@@ -456,11 +570,13 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   updateQuantitySummary(datas: OrderLine[]) {
     let total = 0;
-    datas.forEach((x: OrderLine) => {
-        if (!x.PromotionProgramId) {
-          total += x.ProductUOMQty;
-        }
-    });
+    if(TDSHelperArray.hasListValue(datas)){
+      datas.forEach((x: OrderLine) => {
+          if (!x.PromotionProgramId) {
+              total += x.ProductUOMQty;
+          }
+      });
+    }
     this._form.controls['TotalQuantity'].setValue(total);
   }
 
@@ -476,4 +592,95 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  onSave(): any {
+    let model = this.prepareModel();
+    if(!TDSHelperArray.hasListValue(model.OrderLines)) {
+      return this.message.error('Vui lòng chọn ít nhất 1 sản phẩm!');
+    }
+
+    if(this.id) {
+      this.fastSaleOrderService.update(this.id, model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+          this.message.success('Cập nhật hóa đơn thành công!');
+      }, error => {
+          this.message.error(`${error.error.message}` || 'Cập nhật hóa đơn thất bại!');
+      })
+    } else {
+      this.fastSaleOrderService.insert(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+          this.message.success('Tạo mới hóa đơn thành công!');
+      }, error => {
+          this.message.error(`${error.error.message}`|| 'Tạo mớihóa đơn thất bại!');
+      });
+    }
+  }
+
+  onBack() {
+    history.back();
+  }
+
+  prepareModel(): any {
+    const formModel = this._form.value as FastSaleOrder_DefaultDTOV2;
+    const model = this.dataModel as FastSaleOrder_DefaultDTOV2;
+
+    model.Id = formModel.Id ? formModel.Id : model.Id;
+    model.Partner = formModel.Partner ? formModel.Partner : model.Partner;
+    model.PartnerId = formModel.Partner ? formModel.Partner.Id : model.PartnerId;
+    model.PriceList = formModel.PriceList ? formModel.PriceList : model.PriceList;
+    model.PriceListId = formModel.PriceList ? formModel.PriceList.Id : model.PriceListId;
+    model.Warehouse = formModel.Warehouse ? formModel.Warehouse : model.Warehouse;
+    model.WarehouseId = formModel.Warehouse ? formModel.Warehouse.Id : model.WarehouseId;
+    model.PaymentJournal = formModel.PaymentJournal ? formModel.PaymentJournal : model.PaymentJournal;
+    model.PaymentJournalId = formModel.PaymentJournal ? formModel.PaymentJournal.Id : model.PaymentJournalId;
+    model.PaymentAmount = formModel.PaymentAmount ? formModel.PaymentAmount : model.PaymentAmount;
+    model.Team = formModel.Team ? formModel.Team : model.Team;
+    model.TeamId = formModel.Team ? formModel.Team.Id : model.TeamId;
+    model.Deliver = formModel.Deliver ? formModel.Deliver : model.Deliver;
+    model.PreviousBalance = formModel.PreviousBalance ? formModel.PreviousBalance : model.PreviousBalance;
+    model.Reference = formModel.Reference ? formModel.Reference : model.Reference;
+    model.Revenue = formModel.Revenue ? formModel.Revenue : model.Revenue;
+    model.Carrier = formModel.Carrier ? formModel.Carrier : model.Carrier;
+    model.CarrierId = formModel.Carrier ? formModel.Carrier.Id : model.CarrierId;
+    model.DeliveryPrice = formModel.DeliveryPrice ? formModel.DeliveryPrice : model.DeliveryPrice;
+    model.AmountDeposit = formModel.AmountDeposit ? formModel.AmountDeposit : model.AmountDeposit;
+    model.CashOnDelivery = formModel.CashOnDelivery ? formModel.CashOnDelivery : model.CashOnDelivery;
+    model.ShipWeight = formModel.ShipWeight ? formModel.ShipWeight : model.ShipWeight;
+    model.DeliveryNote = formModel.DeliveryNote ? formModel.DeliveryNote : model.DeliveryNote;
+    model.Ship_ServiceId = formModel.Ship_ServiceId ? formModel.Ship_ServiceId : model.Ship_ServiceId;
+    model.Ship_ServiceName = formModel.Ship_ServiceName ? formModel.Ship_ServiceName : model.Ship_ServiceName;
+    model.Ship_ServiceExtrasText = formModel.Ship_ServiceExtrasText ? formModel.Ship_ServiceExtrasText : model.Ship_ServiceExtrasText;
+    model.Ship_ExtrasText = formModel.Ship_ExtrasText ? formModel.Ship_ExtrasText : model.Ship_ExtrasText;
+    model.Ship_InsuranceFee = formModel.Ship_InsuranceFee ? formModel.Ship_InsuranceFee : model.Ship_InsuranceFee;
+    model.CustomerDeliveryPrice = formModel.CustomerDeliveryPrice ? formModel.CustomerDeliveryPrice : model.CustomerDeliveryPrice;
+    model.TrackingRef = formModel.TrackingRef ? formModel.TrackingRef : model.TrackingRef;
+    model.Ship_Receiver = formModel.Ship_Receiver ? formModel.Ship_Receiver : model.Ship_Receiver;
+    model.Address = formModel.Address ? formModel.Address : model.Address;
+    model.ReceiverName = formModel.ReceiverName ? formModel.ReceiverName : model.ReceiverName;
+    model.ReceiverPhone = formModel.ReceiverPhone ? formModel.ReceiverPhone : model.ReceiverPhone;
+    model.ReceiverDate = formModel.ReceiverDate ? formModel.ReceiverDate : model.ReceiverDate;
+    model.ReceiverAddress = formModel.ReceiverAddress ? formModel.ReceiverAddress : model.ReceiverAddress;
+    model.ReceiverNote = formModel.ReceiverNote ? formModel.ReceiverNote : model.ReceiverNote;
+    model.User = formModel.User ? formModel.User : model.User;
+    model.UserId = formModel.User ? formModel.User.Id : model.UserId;
+    model.DateOrderRed = formModel.DateOrderRed ? formModel.DateOrderRed : model.DateOrderRed;
+    model.State = formModel.State ? formModel.State : model.State;
+    model.DateInvoice = formModel.DateInvoice ? formModel.DateInvoice : model.DateInvoice;
+    model.NumberOrder = formModel.NumberOrder ? formModel.NumberOrder : model.NumberOrder;
+    model.Comment = formModel.Comment ? formModel.Comment : model.Comment;
+    model.Seri = formModel.Seri ? formModel.Seri : model.Seri;
+    model.WeightTotal = formModel.WeightTotal ? formModel.WeightTotal : model.WeightTotal;
+    model.DiscountAmount = formModel.DiscountAmount ? formModel.DiscountAmount : model.DiscountAmount;
+    model.Discount = formModel.Discount ? formModel.Discount : model.Discount;
+    model.DecreaseAmount = formModel.DecreaseAmount ? formModel.DecreaseAmount : model.DecreaseAmount;
+    model.AmountUntaxed = formModel.AmountUntaxed ? formModel.AmountUntaxed : model.AmountUntaxed;
+    model.Type = formModel.Type ? formModel.Type : model.Type;
+    model.SaleOrder = formModel.SaleOrder ? formModel.SaleOrder : model.SaleOrder;
+    model.AmountTotal = formModel.AmountTotal ? formModel.AmountTotal : model.AmountTotal;
+    model.TotalQuantity = formModel.TotalQuantity ? formModel.TotalQuantity : model.TotalQuantity;
+    model.Tax = formModel.Tax ? formModel.Tax : model.Tax;
+    model.TaxId = formModel.Tax ? formModel.Tax.Id : model.TaxId;
+    model.OrderLines = formModel.OrderLines ? formModel.OrderLines : model.OrderLines;
+
+    return model;
+  }
+
 }
