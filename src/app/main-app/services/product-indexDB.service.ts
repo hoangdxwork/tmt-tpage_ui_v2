@@ -1,8 +1,6 @@
-import { EventEmitter, Injectable, Output } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { shareReplay } from "rxjs/operators";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
-import { TDSSafeAny } from "tmt-tang-ui";
 import { ProductPouchDBDTO } from "../dto/product-pouchDB/product-pouchDB.dto";
 import { BaseSevice } from "./base.service";
 
@@ -17,6 +15,7 @@ export class ProductIndexDBService extends BaseSevice {
   baseRestApi: string = "rest/v1.0/product";
 
   _keyCacheProductIndexDB: string = "_product_UOMLine_V2";
+  _keyCacheLastVersionDB: string = "product_latest_version";
 
   constructor(private apiService: TCommonService) {
       super(apiService);

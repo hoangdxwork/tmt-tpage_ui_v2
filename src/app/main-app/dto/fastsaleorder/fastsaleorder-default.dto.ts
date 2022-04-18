@@ -416,6 +416,41 @@ export interface Team {
   Facebook_Configs?: any;
 }
 
+export interface ShipServiceExtra {
+  Id: string;
+  Name: string;
+  Fee: number;
+  Type?: any;
+  ExtraMoney?: any;
+  OrderTime?: any;
+}
+
+export interface ShipExtras {
+  PickWorkShift?: any;
+  PickWorkShiftName?: any;
+  DeliverWorkShift?: any;
+  DeliverWorkShiftName?: any;
+  PaymentTypeId?: any;
+  PosId?: any;
+  IsDropoff: boolean;
+  IsInsurance: boolean;
+  InsuranceFee?: any;
+  IsPackageViewable: boolean;
+  Is_Fragile: boolean;
+  PickupAccountId?: any;
+  SoldToAccountId?: any;
+  IsPartSign?: any;
+  IsAllowTryout: boolean;
+  IsDeductCod: boolean;
+  IsCollectMoneyGoods: boolean;
+  CollectMoneyGoods?: any;
+  ConfirmType?: any;
+  PartialDelivery?: any;
+  IsRefund?: any;
+  IsInsuranceEqualTotalAmount?: any;
+  ServiceCustoms: any[];
+}
+
 export interface FastSaleOrder_DefaultDTOV2 {
     Id: number;
     Name?: any;
@@ -520,7 +555,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     TimeLock?: any;
     PageName: string;
     Ship_Receiver: ShipReceiver;
-    Ship_Extras?: any;
+    Ship_Extras: ShipExtras;
     PaymentInfo: any[];
     Search?: any;
     Partner: Partner;
@@ -536,6 +571,6 @@ export interface FastSaleOrder_DefaultDTOV2 {
     Tax?: any;
     SaleOrder?: any;
     OrderLines: OrderLine[];
-    Ship_ServiceExtras: any[];
+    Ship_ServiceExtras: ShipServiceExtra[];
     Team: Team;
 }
