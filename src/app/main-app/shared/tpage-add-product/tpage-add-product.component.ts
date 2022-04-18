@@ -45,7 +45,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     private productCategoryService: ProductCategoryService,
     private productUOMService: ProductUOMService,
     public zone: NgZone) {
-   }
+  }
 
   ngOnInit(): void {
     this.createForm();
@@ -78,13 +78,13 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
 
   onSave(type?: string) {
     let model = this.prepareModel();
-
+    console.log('onSave')
     this.productTemplateService.insert(model).pipe(takeUntil(this.destroy$)).subscribe(res => {
       delete res['@odata.context'];
 
       this.message.success(Message.Product.InsertSuccess);
 
-      if(type == "select") {
+      if (type == "select") {
         this.onCancel(res);
       }
       else {
@@ -110,7 +110,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     });
 
     modal.afterClose.subscribe(result => {
-      if(TDSHelperObject.hasValue(result)) {
+      if (TDSHelperObject.hasValue(result)) {
         this.loadCategory();
       }
     });
@@ -127,7 +127,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     });
 
     modal.afterClose.subscribe(result => {
-      if(TDSHelperObject.hasValue(result)) {
+      if (TDSHelperObject.hasValue(result)) {
         this.loadUOMCateg();
       }
     });
@@ -179,12 +179,12 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     this.defaultGet["DiscountPurchase"] = formModel.DiscountPurchase;
     this.defaultGet["StandardPrice"] = formModel.StandardPrice;
 
-    if(formModel.UOM) {
+    if (formModel.UOM) {
       this.defaultGet["UOM"] = formModel.UOM;
       this.defaultGet["UOMId"] = formModel.UOM.Id;
     }
 
-    if(formModel.UOMPO) {
+    if (formModel.UOMPO) {
       this.defaultGet["UOMPO"] = formModel.UOMPO;
       this.defaultGet["UOMPOId"] = formModel.UOMPO.Id;
     }
@@ -222,21 +222,21 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   }
 
   createForm() {
-    this.formAddProduct  = this.fb.group({
-        Name: [null, Validators.required],
-        Type: [null],
-        DefaultCode: [null],
-        Barcode: [null],
-        Categ: [null, Validators.required],
-        Weight: [0],
-        ListPrice: [0],
-        DiscountSale: [0],
-        PurchasePrice: [0],
-        DiscountPurchase: [0],
-        StandardPrice: [0],
-        ImageUrl: [null],
-        UOM: [null, Validators.required],
-        UOMPO: [null, Validators.required]
+    this.formAddProduct = this.fb.group({
+      Name: [null, Validators.required],
+      Type: [null],
+      DefaultCode: [null],
+      Barcode: [null],
+      Categ: [null, Validators.required],
+      Weight: [0],
+      ListPrice: [0],
+      DiscountSale: [0],
+      PurchasePrice: [0],
+      DiscountPurchase: [0],
+      StandardPrice: [0],
+      ImageUrl: [null],
+      UOM: [null, Validators.required],
+      UOMPO: [null, Validators.required]
     });
   }
 

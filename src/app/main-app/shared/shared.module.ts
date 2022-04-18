@@ -2,7 +2,7 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TDSAvatarModule, TDSBadgeModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSOutletModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTagModule, TDSTypographyModule, TDSUploadModule } from 'tmt-tang-ui';
+import { TDSAvatarModule, TDSBadgeModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSOutletModule, TDSScrollIntoViewModule, TDSSelectModule, TDSSpinnerModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTypographyModule, TDSUploadModule } from 'tmt-tang-ui';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TpageTeamDropdownComponent } from './tpage-team-dropdown/tpage-team-dropdown.component';
 import { TpageBaseComponent } from './tpage-base/tpage-base.component';
@@ -73,7 +73,10 @@ const SERVICES = [
     TDSTagModule,
     TDSTypographyModule,
     TDSUploadModule,
-    TDSTypographyModule
+    TDSTypographyModule,
+    TDSSpinnerModule,
+    TDSTabsModule,
+    PipeModule
   ],
   exports:[
    ...cmp

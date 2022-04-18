@@ -7,6 +7,8 @@ import { DataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
 import { FastSaleOrderSummaryStatusDTO } from '../dto/bill/bill.dto';
 import { ODataPaymentJsonDTO } from '../dto/bill/payment-json.dto';
+import { CalculatorFeeV2DTO } from '../dto/fastsaleorder/calculate-feeV2.dto';
+import { ODataCalculatorListFeeDTO } from '../dto/fastsaleorder/calculate-listFee.dto';
 import { FastSaleOrder_DefaultDTOV2 } from '../dto/fastsaleorder/fastsaleorder-default.dto';
 import { PagedList2 } from '../dto/pagedlist2.dto';
 import { CRMTeamDTO } from '../dto/team/team.dto';
@@ -222,12 +224,20 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
+  calculateListFee(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.CalculateListFee`,
+        method: TApiMethodType.post
+    }
+    return this.apiService.getData<ODataCalculatorListFeeDTO>(api, data);
+  }
+
   calculateFeeV2(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/calculatefee`,
         method: TApiMethodType.post
     }
-    return this.apiService.getData<TDSSafeAny>(api, data);
+    return this.apiService.getData<CalculatorFeeV2DTO>(api, data);
   }
 
   getPaymentInfoJson(key: TDSSafeAny): Observable<TDSSafeAny> {
@@ -267,6 +277,31 @@ export class FastSaleOrderService extends BaseSevice {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.getRegisterPayment?$expand=Partner`,
         method: TApiMethodType.post
     }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  getTokenTrackingOrderGHN(data: TDSSafeAny): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetTokenTrackingOrderGHN`,
+        method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  getTrackingOrderAhaMove(data: TDSSafeAny): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetTrackingOrderAhaMove`,
+        method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  onChangePartnerPriceList(data: TDSSafeAny) : Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.onChangePartner_PriceList?$expand=PartnerShipping,PriceList,Account`,
+      method: TApiMethodType.post,
+    }
+
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
