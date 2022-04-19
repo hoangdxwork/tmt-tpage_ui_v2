@@ -1,3 +1,4 @@
+import { CRMTagService } from './../../services/crm-tag.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MainSharedModule } from './../../shared/shared.module';
 import { NgModule } from '@angular/core';
@@ -19,7 +20,7 @@ import { ConfigUsersShiftComponent } from './config-users/config-users-shift/con
 import { ConfigPagesBasicComponent } from './config-pages/config-pages-basic/config-pages-basic.component';
 import { ConfigPagesDivideTaskComponent } from './config-pages/config-pages-divide-task/config-pages-divide-task.component';
 import { ConfigPrintBillsComponent } from './config-print-bills/config-print-bills.component';
-import { AutoChatEditTagDataModalComponent } from './components/auto-chat-edit-tag-data-modal/auto-chat-edit-tag-data-modal.component';
+import { ConfigConversationTagsEditDataModalComponent } from './components/config-conversation-tags-edit-data-modal/config-conversation-tags-edit-data-modal.component';
 import { AutoChatAddDataModalComponent } from './components/auto-chat-add-data-modal/auto-chat-add-data-modal.component';
 import { SMSMessagesAddServiceModalComponent } from './components/sms-messages-add-service-modal/sms-messages-add-service-modal.component';
 import { TableTemplateProductVariantComponent } from './components/table-template-product-variant/table-template-product-variant.component';
@@ -50,6 +51,7 @@ import { ConfigAddProductComponent } from './config-add-product/config-add-produ
 import { OdataTPosLoggingService } from '../../services/mock-odata/odata-tpos-logging.service';
 import { OdataSaleCouponProgramService } from '../../services/mock-odata/odata-sale-coupon-program.service';
 import { SaleCouponProgramService } from '../../services/sale-coupon-program.service';
+import { ConfigConversationTagsCreateDataModalComponent } from './components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
 
 const SERVICES = [
     TDSModalService,
@@ -61,7 +63,8 @@ const SERVICES = [
     ProductService,
     OdataTPosLoggingService,
     OdataSaleCouponProgramService,
-    SaleCouponProgramService
+    SaleCouponProgramService,
+    CRMTagService
 ]
 
 @NgModule({
@@ -81,7 +84,7 @@ const SERVICES = [
     ConfigPagesBasicComponent,
     ConfigPagesDivideTaskComponent,
     ConfigPrintBillsComponent,
-    AutoChatEditTagDataModalComponent,
+    ConfigConversationTagsEditDataModalComponent,
     AutoChatAddDataModalComponent,
     SMSMessagesAddServiceModalComponent,
     TableTemplateProductVariantComponent,
@@ -101,7 +104,8 @@ const SERVICES = [
     ConfigAddMadeInModalComponent,
     ConfigAddProductVariantComponent,
     ConfigAddProductComponent,
-    ConfigDecentralizePageComponent
+    ConfigDecentralizePageComponent,
+    ConfigConversationTagsCreateDataModalComponent
   ],
   imports: [
     CommonModule,
