@@ -1,4 +1,3 @@
-import { City } from './../../../dto/bill/bill-detail.dto';
 import { formatNumber } from '@angular/common';
 import { TDSModalService, TDSHelperObject, TDSMessageService, TDSHelperArray, TDSSafeAny, TDSHelperString } from 'tmt-tang-ui';
 import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
@@ -9,7 +8,7 @@ import { SharedService } from 'src/app/main-app/services/shared.service';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { AccountRegisterPaymentService } from 'src/app/main-app/services/account-register-payment.service';
 import { formatDate } from '@angular/common';
-import { ODataPartnerCategoryDTO, PartnerCategoryDTO } from 'src/app/main-app/dto/partner/partner-category.dto';
+import { PartnerCategoryDTO } from 'src/app/main-app/dto/partner/partner-category.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { FastSaleOrder_DefaultDTOV2, OrderLine, User } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
@@ -29,8 +28,8 @@ import { CalculatorFeeV2DTO } from 'src/app/main-app/dto/fastsaleorder/calculate
 import { CalculatorListFeeDTO } from 'src/app/main-app/dto/fastsaleorder/calculate-listFee.dto';
 import { ModalEditPartnerComponent } from '../../partner/components/modal-edit-partner/modal-edit-partner.component';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
-import { AddressesV2, PartnerDetailDTO } from 'src/app/main-app/dto/partner/partner-detail.dto';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
+import { TaxDTO } from 'src/app/main-app/dto/tax/tax.dto';
 
 @Component({
   selector: 'app-add-bill',
@@ -52,6 +51,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   lstWareHouses!: Observable<StockWarehouseDTO[]>;
   lstTeams!: Observable<AllFacebookChildTO[]>;
   lstUser!: Observable<ApplicationUserDTO[]>;
+  lstTax!: TaxDTO[];
 
   _cities!: SuggestCitiesDTO;
   _districts!: SuggestDistrictsDTO;
@@ -63,13 +63,14 @@ export class AddBillComponent implements OnInit, OnDestroy {
   limit: number = 20;
 
   totalAmountLines: number = 0;
-  productUOMQtyTotal: number = 0;
-  productPriceTotal: number = 0;
+  totalQtyLines: number = 0;
   priceListItems: any;
 
   enableInsuranceFee: boolean = false;
   visiblePopoverDiscount: boolean = false;
   visiblePopoverTax: boolean = false;
+  visibleDiscountLines: boolean = false;
+  indClickTag = -1;
 
   apiDeliveries: any = ['GHTK', 'ViettelPost', 'GHN', 'TinToc', 'SuperShip', 'FlashShip', 'OkieLa', 'MyVNPost', 'DHL', 'FulltimeShip', 'JNT', 'EMS', 'AhaMove', 'Snappy', 'NhatTin', 'HolaShip'];
   carrierTypeInsurance = ["MyVNPost", "GHN", "GHTK", "ViettelPost", "NinjaVan"];
@@ -97,84 +98,84 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.id = this.route.snapshot.paramMap.get("id");
-    if (this.id) {
-      this.loadBill(this.id);
-    } else {
-      this.loadDefault();
-    }
+      this.id = this.route.snapshot.paramMap.get("id");
+      if (this.id) {
+          this.loadBill(this.id);
+      } else {
+          this.loadDefault();
+      }
 
-    this.loadConfig();
-    this.lstCarriers = this.loadCarrier();
-    this.lstPaymentJournals = this.loadPaymentJournals();
-    this.lstPrices = this.loadListPrice();
-    this.lstCustomers = this.loadCustomers();
-    this.lstWareHouses = this.loadWareHouse();
-    this.lstTeams = this.loadAllFacebookChilds();
-    this.lstUser = this.loadUser();
+      this.loadConfig();
+      this.lstCarriers = this.loadCarrier();
+      this.lstPaymentJournals = this.loadPaymentJournals();
+      this.lstPrices = this.loadListPrice();
+      this.lstCustomers = this.loadCustomers();
+      this.lstWareHouses = this.loadWareHouse();
+      this.lstTeams = this.loadAllFacebookChilds();
+      this.lstUser = this.loadUser();
   }
 
   createForm() {
     this._form = this.fb.group({
-      Id: [null],
-      Partner: [null],
-      PartnerId: [null],
-      PriceList: [null],
-      PriceListId: [null],
-      Warehouse: [null],
-      WarehouseId: [null],
-      PaymentJournal: [null],
-      PaymentAmount: [0],
-      Team: [null],
-      TeamId: [null],
-      Deliver: [null],
-      PreviousBalance: [null],
-      Reference: [null],
-      Revenue: [null],
-      Carrier: [null],
-      CarrierId: [null],
-      DeliveryPrice: [null],
-      AmountDeposit: [0],
-      CashOnDelivery: [0],
-      ShipWeight: [0],
-      DeliveryNote: [null],
-      Ship_InsuranceFee: [0],
-      CustomerDeliveryPrice: [null],
-      TrackingRef: [null],
-      Ship_Receiver: [null],
-      Address: [null],
-      ReceiverName: [null],
-      ReceiverPhone: [null],
-      ReceiverDate: [null],
-      ReceiverAddress: [null],
-      ReceiverNote: [null],
-      User: [null],
-      UserId: [null],
-      DateOrderRed: [null],
-      State: [null],
-      DateInvoice: [null],
-      NumberOrder: [null],
-      Comment: [null],
-      Seri: [null],
-      WeightTotal: [0],
-      DiscountAmount: [0],
-      Discount: [0],
-      DecreaseAmount: [0],
-      AmountUntaxed: [0],
-      AmountTax: [0],
-      Type: [null],
-      SaleOrder: [null],
-      AmountTotal: [0],
-      TotalQuantity: [0],
-      Tax: [null],
-      TaxId: [null],
-      Ship_ServiceId: [null],
-      Ship_ServiceName: [null],
-      Ship_ExtrasText: [null],
-      Ship_ServiceExtrasText: [null],
-      Ship_Extras: [null],
-      Ship_ServiceExtras: this.fb.array([]),
-      OrderLines: this.fb.array([]),
+        Id: [null],
+        Partner: [null],
+        PartnerId: [null],
+        PriceList: [null],
+        PriceListId: [null],
+        Warehouse: [null],
+        WarehouseId: [null],
+        PaymentJournal: [null],
+        PaymentAmount: [0],
+        Team: [null],
+        TeamId: [null],
+        Deliver: [null],
+        PreviousBalance: [null],
+        Reference: [null],
+        Revenue: [null],
+        Carrier: [null],
+        CarrierId: [null],
+        DeliveryPrice: [null],
+        AmountDeposit: [0],
+        CashOnDelivery: [0],
+        ShipWeight: [0],
+        DeliveryNote: [null],
+        Ship_InsuranceFee: [0],
+        CustomerDeliveryPrice: [null],
+        TrackingRef: [null],
+        Ship_Receiver: [null],
+        Address: [null],
+        ReceiverName: [null],
+        ReceiverPhone: [null],
+        ReceiverDate: [null],
+        ReceiverAddress: [null],
+        ReceiverNote: [null],
+        User: [null],
+        UserId: [null],
+        DateOrderRed: [null],
+        State: [null],
+        DateInvoice: [null],
+        NumberOrder: [null],
+        Comment: [null],
+        Seri: [null],
+        WeightTotal: [0],
+        DiscountAmount: [0],
+        Discount: [0],
+        DecreaseAmount: [0],
+        AmountUntaxed: [0],
+        AmountTax: [0],
+        Type: [null],
+        SaleOrder: [null],
+        AmountTotal: [0],
+        TotalQuantity: [0],
+        Tax: [null],
+        TaxId: [null],
+        Ship_ServiceId: [null],
+        Ship_ServiceName: [null],
+        Ship_ExtrasText: [null],
+        Ship_ServiceExtrasText: [null],
+        Ship_Extras: [null],
+        Ship_ServiceExtras: this.fb.array([]),
+        OrderLines: this.fb.array([])
     });
   }
 
@@ -252,18 +253,22 @@ export class AddBillComponent implements OnInit, OnDestroy {
       this.commonService.getPriceListItems(data.PriceListId).subscribe((res: any) => {
           this.priceListItems = res;
       }, error => {
-        this.message.error('Load bảng giá đã xảy ra lỗi!')
+          this.message.error('Load bảng giá đã xảy ra lỗi!')
       })
     }
 
+    let totalQty = 0;
+    let totalPrice = 0;
     if (TDSHelperArray.hasListValue(data.OrderLines)) {
         data.OrderLines.forEach((x: OrderLine) => {
             this.addOrderLines(x);
-
-            this.productUOMQtyTotal = this.productUOMQtyTotal + x.ProductUOMQty;
-            this.productPriceTotal = this.productPriceTotal + x.PriceTotal;
+            totalQty = totalQty + x.ProductUOMQty;
+            totalPrice = totalPrice + x.PriceTotal;
         });
     }
+
+    this.totalQtyLines = totalQty;
+    this.totalAmountLines = totalPrice;
     this._form.patchValue(data);
   }
 
@@ -296,7 +301,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
         Street: item.Address ? item.Address : null,
         City: item.CityCode ? { code: item.CityCode, name: item.CityName } : null,
         District: item.DistrictCode ? { code: item.DistrictCode, name: item.DistrictName } : null,
-        Ward: item.WardCode ? { code: item.WardCode, name: item.WardName } : null,
+        Ward: item.WardCode ? { code: item.WardCode, name: item.WardName } : null
     });
   }
 
@@ -966,28 +971,98 @@ export class AddBillComponent implements OnInit, OnDestroy {
     });
   }
 
-  onChangeQuantity(ev: any) {
+  onChangeQuantity(event: any, item: any, index: number) {
+    let datas = this._form.controls['OrderLines'].value;
+    if(TDSHelperArray.hasListValue(datas)) {
+      datas.map((x: any) => {
+        if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId) {
+            x.ProductUOMQty = event;
+        }
+      });
+
+      this.computeAmountTotal();
+    }
   }
 
-  onChangePriceUnit(ev: any) {
+  onChangePriceUnit(event: any, item: any, index: number) {
+    let datas = this._form.controls['OrderLines'].value;
+    if(TDSHelperArray.hasListValue(datas)) {
+      datas.map((x: any) => {
+          if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId) {
+              x.PriceUnit = event;
+          }
+      });
+      this.computeAmountTotal();
+    }
+  }
+
+  openDiscountLines(id: number) {
+    this.indClickTag = id;
+  }
+
+  closePopoverDiscountLines() {
+    this.indClickTag = -1;
+  }
+
+  changeProductDiscountType(event: any, item: any, typeDiscount: string, i: number) {
+    let datas = this._form.controls['OrderLines'].value;
+    if(TDSHelperArray.hasListValue(datas)) {
+        datas.map((x: any, index: number) => {
+          if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
+              x[`${typeDiscount}`] = event;
+          }
+        });
+    }
+    this.computeAmountTotal();
+  }
+
+  selectProductType(item: any, type: string, i: number) {
+    let datas = this._form.controls['OrderLines'].value;
+    if(TDSHelperArray.hasListValue(datas)) {
+        datas.map((x: any, index: number) => {
+          if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
+              x.Type = type;
+              x.Discount = 0;
+              x.Discount_Fixed = 0;
+          }
+        });
+    }
+    this.computeAmountTotal();
   }
 
   openPopoverDiscount() {
     this.visiblePopoverDiscount = true
   }
+
   closePopoverDiscount() {
     this.visiblePopoverDiscount = false
   }
+
   applyPopoverDiscount() {
     this.visiblePopoverDiscount = false
   }
 
   openPopoverTax() {
-    this.visiblePopoverTax = true
+    this.visiblePopoverTax = true;
+    this.fastSaleOrderService.getTax().subscribe((res: any) => {
+        if(TDSHelperArray.hasListValue(res.value)) {
+            this.lstTax = res.value;
+            this.lstTax = this.lstTax.sort((a, b) => a.Amount - b.Amount);
+        }
+    });
   }
+
   closePopoverTax() {
-    this.visiblePopoverTax = false
+    this.visiblePopoverTax = false;
   }
+
+  selectTax(tax: any) {
+    this._form.controls['Tax'].setValue(tax);
+    this._form.controls['TaxId'].setValue(tax?.Id);
+
+    this.computeAmountTotal();
+  }
+
   applyPopoverTax() {
     this.visiblePopoverTax = false
   }
@@ -1092,19 +1167,30 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   removeOrderLines(item: OrderLine, index: number) {
-    let datas = this._form.controls['OrderLines'].value as Array<OrderLine>;
-    if(TDSHelperArray.hasListValue(datas)) {
-        let exist = datas.filter(x => x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId)[0];
-        if(exist) {
-            (<FormArray>this._form.controls['OrderLines']).removeAt(index);
-        }
-    }
+    (<FormArray>this._form.controls['OrderLines']).removeAt(index);
+
+    this.totalQtyLines = Number(this.totalQtyLines - item.ProductUOMQty);
+    this.totalAmountLines = Number(this.totalAmountLines - item.PriceTotal);
     this.computeAmountTotal();
   }
 
   removeAllOrderLines(){
     let model = <FormArray>this._form.controls['OrderLines'];
     model.clear();
+    model.setValue([])
+
+    this.totalQtyLines = 0;
+    this.totalAmountLines = 0;
+
+    this._form.controls['TotalQuantity'].setValue(0);
+    this._form.controls['DecreaseAmount'].setValue(0);
+    this._form.controls['DiscountAmount'].setValue(0);
+    this._form.controls['Discount'].setValue(0);
+    this._form.controls['Tax'].setValue(null);
+    this._form.controls['TaxId'].setValue(null);
+    this._form.controls['AmountTax'].setValue(0);
+    this._form.controls['AmountUntaxed'].setValue(0);
+    this._form.controls['AmountTotal'].setValue(0);
 
     this.computeAmountTotal();
   }
@@ -1117,6 +1203,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
             x.PriceTotal = (x.PriceUnit * (1 - (x.Discount || 0) / 100) - (x.Discount_Fixed || 0)) * x.ProductUOMQty;
             x.WeightTotal = Math.round(x.ProductUOMQty * x.Weight * 1000) / 1000;
         });
+
         //TODO: Tính giá trị tổng bao gồm ShipWeight,WeightTotal,DiscountAmount,AmountUntaxed,PaymentAmount,TotalQuantity,AmoutTotal
         this.updateTotalSummary(datas);
         this.updateQuantitySummary(datas);

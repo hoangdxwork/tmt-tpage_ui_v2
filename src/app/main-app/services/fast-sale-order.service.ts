@@ -11,6 +11,7 @@ import { CalculatorFeeV2DTO } from '../dto/fastsaleorder/calculate-feeV2.dto';
 import { ODataCalculatorListFeeDTO } from '../dto/fastsaleorder/calculate-listFee.dto';
 import { FastSaleOrder_DefaultDTOV2 } from '../dto/fastsaleorder/fastsaleorder-default.dto';
 import { PagedList2 } from '../dto/pagedlist2.dto';
+import { ODataTaxDTO } from '../dto/tax/tax.dto';
 import { CRMTeamDTO } from '../dto/team/team.dto';
 import { BaseSevice } from './base.service';
 
@@ -304,5 +305,16 @@ export class FastSaleOrderService extends BaseSevice {
 
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
+
+
+  getTax(): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/AccountTax/ODataService.GetWithCompany`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<ODataTaxDTO>(api, null);
+  }
+
 
 }
