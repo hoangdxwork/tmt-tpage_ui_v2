@@ -1,194 +1,116 @@
+import { SortEnum } from './../../../../lib/enum/sort.enum';
+import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { ConfigConversationTagsCreateDataModalComponent } from './../components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
+import { CRMTagService } from './../../../services/crm-tag.service';
+import { CRMTagDTO, ODataCRMTagDTO } from './../../../dto/crm-tag/odata-crmtag.dto';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { THelperDataRequest } from './../../../../lib/services/helper-data.service';
+import { OdataCRMTagService } from './../../../services/mock-odata/odata-crmtag.service';
 import { FormControl } from '@angular/forms';
-import { AutoChatEditTagDataModalComponent } from '../components/auto-chat-edit-tag-data-modal/auto-chat-edit-tag-data-modal.component';
-import { TDSSafeAny, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { ConfigConversationTagsEditDataModalComponent } from '../components/config-conversation-tags-edit-data-modal/config-conversation-tags-edit-data-modal.component';
+import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSTableQueryParams, TDSMessageService, TDSHelperString } from 'tmt-tang-ui';
+import { Component, OnInit, ViewContainerRef, OnDestroy } from '@angular/core';
+import { CTMTagFilterObjDTO } from 'src/app/main-app/dto/odata/odata.dto';
 
 @Component({
   selector: 'app-config-conversation-tags',
   templateUrl: './config-conversation-tags.component.html',
   styleUrls: ['./config-conversation-tags.component.scss']
 })
-export class ConfigConversationTagsComponent implements OnInit {
-  filterForm!:FormControl;
-  TableData:Array<TDSSafeAny> = [];
-  TagList:Array<TDSSafeAny> = [];
-  colorList:string[] = [];
-  isLoading = false;
+export class ConfigConversationTagsComponent implements OnInit, OnDestroy {
 
-  constructor(private modalService: TDSModalService, private viewContainerRef: ViewContainerRef) { }
+  lstOfData:Array<CRMTagDTO> = [];
+  private destroy$ = new Subject<void>();
+
+  pageSize = 20;
+  pageIndex = 1;
+  isLoading = false;
+  count: number = 1;
+  public filterObj: CTMTagFilterObjDTO = {
+    searchText: ''
+  }
+
+  constructor(
+    private modalService: TDSModalService, 
+    private viewContainerRef: ViewContainerRef,
+    private message: TDSMessageService,
+    private odataTagService:OdataCRMTagService,
+    private tagService:CRMTagService,
+    ) { }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   ngOnInit(): void {
-    this.filterForm = new FormControl('');
-    this.loadData();
   }
 
-  loadData(){
-    this.TagList = [
-      {
-        id:1,
-        name:'Bom hàng',
-        color:'#F33240',
-        usedTime:4,
-        status:true,
-      },
-      {
-        id:2,
-        name:'Test',
-        color:'#B5076B',
-        usedTime:1,
-        status:true,
-      },
-      {
-        id:3,
-        name:'Giao hàng',
-        color:'#A70000',
-        usedTime:2,
-        status:true,
-      },
-      {
-        id:4,
-        name:'Chậm trễ',
-        color:'#FF8900',
-        usedTime:1,
-        status:true,
-      },
-      {
-        id:5,
-        name:'Khách khó',
-        color:'#FFC400',
-        usedTime:4,
-        status:true,
-      },
-      {
-        id:6,
-        name:'Hoàn thành',
-        color:'#28A745',
-        usedTime:6,
-        status:true,
-      },
-      {
-        id:7,
-        name:'Khách VIP',
-        color:'#00875A',
-        usedTime:3,
-        status:true,
-      },
-      {
-        id:7,
-        name:'Khách VIP',
-        color:'#00875A',
-        usedTime:3,
-        status:true,
-      },
-      {
-        id:7,
-        name:'Khách VIP',
-        color:'#00875A',
-        usedTime:3,
-        status:true,
-      },
-      {
-        id:7,
-        name:'Khách VIP',
-        color:'#00875A',
-        usedTime:3,
-        status:true,
-      },
-      {
-        id:7,
-        name:'Khách VIP',
-        color:'#00875A',
-        usedTime:3,
-        status:true,
-      },
-      {
-        id:7,
-        name:'Khách VIP',
-        color:'#00875A',
-        usedTime:3,
-        status:true,
-      },
-      {
-        id:7,
-        name:'Khách VIP',
-        color:'#00875A',
-        usedTime:3,
-        status:true,
-      },
-      {
-        id:7,
-        name:'Khách VIP',
-        color:'#00875A',
-        usedTime:3,
-        status:true,
-      },
-      {
-        id:7,
-        name:'Khách VIP',
-        color:'#00875A',
-        usedTime:3,
-        status:true,
-      },
-      {
-        id:7,
-        name:'Khách VIP',
-        color:'#00875A',
-        usedTime:3,
-        status:true,
-      },
-      {
-        id:7,
-        name:'Khách VIP',
-        color:'#00875A',
-        usedTime:3,
-        status:true,
-      },
-      {
-        id:7,
-        name:'Khách VIP',
-        color:'#00875A',
-        usedTime:3,
-        status:true,
-      },
-    ];
-
-    this.TableData = this.TagList;
+  loadData(pageSize: number, pageIndex: number, filters?:TDSSafeAny,sort?:TDSSafeAny[]){
+    this.isLoading = true;
+    
+    if(TDSHelperString.hasValueString(this.filterObj.searchText)){
+      filters = this.odataTagService.buildFilter(this.filterObj);
+    }
+    
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex,filters,sort);
+    this.odataTagService.getView(params).pipe(takeUntil(this.destroy$)).subscribe((res: ODataCRMTagDTO) => {
+      this.count = res['@odata.count'] as number;
+      this.lstOfData = res.value;
+      this.isLoading = false;
+    }, error => {
+      this.isLoading = false;
+      this.message.error('Tải dữ liệu thất bại!');
+    });
   }
 
-  showEditModal(index:number): void {
-    let data = this.TagList[index];
+  onQueryParamsChange(params: TDSTableQueryParams){
+    this.loadData(params.pageSize, params.pageIndex);
+  }
+
+  refreshData() {
+    this.pageIndex = 1;
+
+    this.filterObj = {
+      searchText: '',
+    }
+
+    this.loadData(this.pageSize, this.pageIndex);
+  }
+
+  showEditModal(data:CRMTagDTO): void {
     const modal = this.modalService.create({
         title: 'Chỉnh sửa thẻ hội thoại',
-        content: AutoChatEditTagDataModalComponent,
+        content: ConfigConversationTagsEditDataModalComponent,
         viewContainerRef: this.viewContainerRef,
         componentParams: {
             //send data to edit modal
-            data: {
-              name:data.name,
-              color:data.color,
-            },
+            data: data
         }
     });
-    modal.afterOpen.subscribe(() => {
 
-    });
     //receive result from edit modal after close modal
     modal.afterClose.subscribe(result => {
-        if (TDSHelperObject.hasValue(result)) {
-          //get new changed value
-            this.TagList[index] = Object.assign(this.TagList[index],result);
-            //edit item here
-        }
+        this.loadData(this.pageSize,this.pageIndex);
     });
   }
 
-  showRemoveModal(index:number): void {
+  showRemoveModal(data:CRMTagDTO): void {
     const modal = this.modalService.error({
         title: 'Xác nhận xóa thẻ',
         content: 'Bạn có chắc muốn xóa thẻ này không?',
         iconType:'tdsi-trash-fill',
         onOk: () => {
-          //remove item here
+          this.tagService.delete(data.Id).subscribe(
+            (data)=>{
+              this.message.success('Xóa thành công');
+              this.loadData(this.pageSize,this.pageIndex);
+            },
+            err=>{
+              this.message.error(err.error.message);
+            }
+          );
         },
         onCancel:()=>{
           modal.close();
@@ -198,11 +120,43 @@ export class ConfigConversationTagsComponent implements OnInit {
     });
   }
 
-  doFilter(event:TDSSafeAny){
-    this.TableData = this.TagList;
+  updateStatus(data:CRMTagDTO){
+    this.tagService.updateStatus(data.Id).subscribe(
+      (data)=>{
+        this.loadData(this.pageSize,this.pageIndex);
+      },
+      (err)=>{
+        this.message.error(err.error.message);
+      }
+    );
   }
 
-  onAddNewTag(data:TDSSafeAny){
+  doFilter(event:TDSSafeAny){
+    this.filterObj = {
+      searchText: event.target.value
+    }
+    this.loadData(this.pageSize,this.pageIndex);
+  }
 
+  showCreateModal(){
+    const modal = this.modalService.create({
+      title: 'Thêm mới thẻ hội thoại',
+      content: ConfigConversationTagsCreateDataModalComponent,
+      viewContainerRef: this.viewContainerRef,
+    });
+
+    //receive result from edit modal after close modal
+    modal.afterClose.subscribe(result => {
+      if(TDSHelperObject.hasValue(result)){
+        this.pageSize = 20;
+        this.pageIndex = 1;
+        
+        let sortByDate:SortDataRequestDTO = {
+          field:'DateCreated',
+          dir: SortEnum.desc
+        }
+        this.loadData(this.pageSize,this.pageIndex,undefined,[sortByDate]);
+      }
+    });
   }
 }
