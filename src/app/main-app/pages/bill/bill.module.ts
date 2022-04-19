@@ -90,7 +90,7 @@ const SERVICES = [
     TDSTabsModule,
     TDSCollapseModule,
     TDSStepsModule,
-    TDSButtonSpitModule
+    TDSButtonSpitModule,
   ],
   providers: [
    ...SERVICES,

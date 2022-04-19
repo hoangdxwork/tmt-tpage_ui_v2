@@ -265,7 +265,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
         viewContainerRef: this.viewContainerRef,
     });
 
-    modal.afterClose.subscribe((res: ProductTemplateV2DTO) => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: ProductTemplateV2DTO) => {
       if(TDSHelperObject.hasValue(res)) {
           this.pusToIndexDb();
       }
