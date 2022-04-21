@@ -1,4 +1,10 @@
+import { TDSMessageService } from 'tmt-tang-ui';
+import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder } from '@angular/forms';
+import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
+import { Message } from 'src/app/lib/consts/message.const';
+import { AutoReplyConfigDTO } from 'src/app/main-app/dto/configs/page-config.dto';
 
 @Component({
   selector: 'app-config-pages-basic',
@@ -36,11 +42,71 @@ export class ConfigPagesBasicComponent implements OnInit {
     {id:2, text:'Cảm ơn bạn đã liên hệ, bạn có đang cần nhân viên tư vấn không?'},
     {id:3, text:'Cảm ơn bạn đã liên hệ, bạn có đang cần nhân viên tư vấn không?'},
   ]
-  constructor() { }
+
+
+  formConfigAutoReply!: FormGroup;
+
+  currentTab: number = 0;
+  currentTeam!: CRMTeamDTO | null;
+  isLoading: boolean = false;
+
+  onSaveAutoReply: boolean = false;
+  onSaveAutoHideComment: boolean = false;
+  onSaveInteractiveMenus: boolean = false;
+  onSaveQuickQuestion: boolean = false;
+  onSaveGreeting: boolean = false;
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private crmTeamService: CRMTeamService,
+    private message: TDSMessageService,
+  ) { }
 
   ngOnInit(): void {
   }
 
+  selectedIndexChange(event: number) {
+    this.currentTab = event;
+  }
+
+  onSave() {
+    switch(this.currentTab) {
+      case 0:
+        this.onSaveAutoReply = true;
+        break;
+      case 1:
+        this.onSaveAutoHideComment = true;
+        break;
+      case 2:
+        this.onSaveInteractiveMenus = true;
+        break;
+      case 3:
+        this.onSaveQuickQuestion = true;
+        break;
+      case 4:
+        this.onSaveGreeting = true;
+        break;
+      default:
+        this.message.error(Message.ErrorOccurred);
+        break;
+    }
+  }
+
+  onSaveAutoReplySuccess(event: boolean) {
+    this.onSaveAutoReply = false;
+  }
+  onSaveAutoHideCommentSuccess(event: boolean) {
+    this.onSaveAutoHideComment = false;
+  }
+  onSaveInteractiveMenusSuccess(event: boolean) {
+    this.onSaveInteractiveMenus = false;
+  }
+  onSaveQuickQuestionSuccess(event: boolean) {
+    this.onSaveQuickQuestion = false;
+  }
+  onSaveGreetingSuccess(event: boolean) {
+    this.onSaveGreeting = false;
+  }
 
   // change switch tabs Phẩn hồi bình luận
   changefeedbackMessage(){

@@ -50,6 +50,11 @@ import { ConfigAddProductComponent } from './config-add-product/config-add-produ
 import { OdataTPosLoggingService } from '../../services/mock-odata/odata-tpos-logging.service';
 import { OdataSaleCouponProgramService } from '../../services/mock-odata/odata-sale-coupon-program.service';
 import { SaleCouponProgramService } from '../../services/sale-coupon-program.service';
+import { ConfigAutoReplyComponent } from './config-pages/config-pages-basic/config-auto-reply/config-auto-reply.component';
+import { ConfigAutoHideCommentComponent } from './config-pages/config-pages-basic/config-auto-hide-comment/config-auto-hide-comment.component';
+import { ConfigInteractiveMenusComponent } from './config-pages/config-pages-basic/config-interactive-menus/config-interactive-menus.component';
+import { ConfigQuickQuestionComponent } from './config-pages/config-pages-basic/config-quick-question/config-quick-question.component';
+import { ConfigGreetingComponent } from './config-pages/config-pages-basic/config-greeting/config-greeting.component';
 
 const SERVICES = [
     TDSModalService,
@@ -101,7 +106,12 @@ const SERVICES = [
     ConfigAddMadeInModalComponent,
     ConfigAddProductVariantComponent,
     ConfigAddProductComponent,
-    ConfigDecentralizePageComponent
+    ConfigDecentralizePageComponent,
+    ConfigAutoReplyComponent,
+    ConfigAutoHideCommentComponent,
+    ConfigInteractiveMenusComponent,
+    ConfigQuickQuestionComponent,
+    ConfigGreetingComponent
   ],
   imports: [
     CommonModule,
