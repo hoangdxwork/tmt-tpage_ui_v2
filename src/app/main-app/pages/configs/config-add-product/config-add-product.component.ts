@@ -1,12 +1,14 @@
+import { OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { ProductService } from 'src/app/main-app/services/product.service';
 import { Router } from '@angular/router';
 import { ConfigAddMadeInModalComponent } from './../components/config-add-made-in-modal/config-add-made-in-modal.component';
 import { ConfigAddManufacturerModalComponent } from './../components/config-add-manufacturer-modal/config-add-manufacturer-modal.component';
 import { ConfigAddVariantProductModalComponent } from './../components/config-add-variant-product-modal/config-add-variant-product-modal.component';
-import { filter } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 import { HttpClient, HttpResponse, HttpRequest } from '@angular/common/http';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { TDSSafeAny, TDSUploadFile, TDSMessageService, TDSUploadChangeParam, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
-import { ConfigProductService } from './../config-products/config-product.service';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 
 const getBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
@@ -22,10 +24,10 @@ const getBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
   templateUrl: './config-add-product.component.html',
   styleUrls: ['./config-add-product.component.scss']
 })
-export class ConfigAddProductComponent implements OnInit {
+export class ConfigAddProductComponent implements OnInit, OnDestroy {
   variantTableData:Array<TDSSafeAny> = [];
   productTypeList:Array<TDSSafeAny>  = [];
-  productGroupList:Array<TDSSafeAny>  = [];
+  categoryList:Array<TDSSafeAny>  = [];
   productUnitList:Array<TDSSafeAny>  = [];
   PosGroupList:Array<TDSSafeAny> = [];
   superviseList:Array<TDSSafeAny> = [];
@@ -33,6 +35,7 @@ export class ConfigAddProductComponent implements OnInit {
   importerList:Array<TDSSafeAny> = [];
   distributorList:Array<TDSSafeAny> = [];
   nationList:Array<TDSSafeAny> = [];
+  private destroy$ = new Subject<void>();
 
 
   fileList: TDSUploadFile[] = [];
@@ -51,8 +54,8 @@ export class ConfigAddProductComponent implements OnInit {
     private msg: TDSMessageService, 
     private http: HttpClient, 
     private formBuilder: FormBuilder,
-    private service:ConfigProductService,
     private router:Router,
+    private productService: ProductService
   ) { 
     this.initListData();
     this.initForm();
@@ -60,6 +63,11 @@ export class ConfigAddProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadData(){
@@ -74,21 +82,83 @@ export class ConfigAddProductComponent implements OnInit {
   }
 
   initListData(){
-    this.productTypeList = this.service.getTypeList();
+    this.productTypeList = [
+      { value: 'product', text: 'Có thể lưu trữ' },
+      { value: 'consu', text: 'Có thể tiêu thụ' },
+      { value: 'service', text: 'Dịch vụ' }
+    ];
 
-    this.productGroupList = this.service.getProductGroupList();
+    this.productService.getProductCategory().pipe(takeUntil(this.destroy$)).subscribe(
+      (res:TDSSafeAny)=>{
+        this.categoryList = res;
+      }
+    );
 
-    this.productUnitList = this.service.getProductUnitList();
+    this.productUnitList = [
+            {
+              id:1,
+              name:'Cái'
+            },
+            {
+              id:2,
+              name:'Kg'
+            }
+    ];
 
-    this.PosGroupList = this.service.getPosGroupList();
+    this.PosGroupList = [
+            {
+              id:1,
+              name:'Nhóm 1'
+            },
+            {
+              id:2,
+              name:'nhóm 2'
+            }
+    ];
 
-    this.manufacturerList = this.service.getManufacturerList();
+    this.manufacturerList = [
+      {
+        id:1,
+        name:'Công ty sản xuất ABC'
+      },
+      {
+        id:2,
+        name:'Công ty sản xuất XYZ'
+      },
+    ];
 
-    this.importerList = this.service.getImporterList();
+    this.importerList = [
+        {
+          id:1,
+          name:'Công ty nhập khẩu ABC'
+        },
+        {
+          id:2,
+          name:'Công ty nhập khẩu XYZ'
+        },
+    ];
 
-    this.distributorList = this.service.getDistributorList();
-    
-    this.nationList = this.service.getNationList();
+    this.distributorList = [
+        {
+          id:1,
+          name:'Công ty phân phối ABC'
+        },
+        {
+          id:2,
+          name:'Công ty phân phối XYZ'
+        },
+    ];
+
+    this.nationList = [
+        {
+          id:1,
+          name: 'Nga'
+        },
+        {
+          id:2,
+          name:'Ukraine'
+        }
+      ];
 
     this.superviseList = [
       {
@@ -105,11 +175,11 @@ export class ConfigAddProductComponent implements OnInit {
   initForm(){
     this.addProductForm = this.formBuilder.group({
       name: new FormControl('', [Validators.required]),
-      sellable: new FormControl(false),
-      buyable: new FormControl(false),
+      sellable: new FormControl(true),
+      buyable: new FormControl(true),
       isCombo: new FormControl(false),
       active: new FormControl(false),
-      pointOfSale: new FormControl(false),
+      pointOfSale: new FormControl(true),
       allowToSellAtAnotherCompany: new FormControl(false),
       type: new FormControl('', [Validators.required]),
       productCode: new FormControl('', [Validators.required]),

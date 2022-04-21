@@ -1,4 +1,4 @@
-export interface ProductTemplateDTO {
+export interface ConfigProductTemplateDTO {
     Id: number;
     Name: string;
     NameNoSign: string;
