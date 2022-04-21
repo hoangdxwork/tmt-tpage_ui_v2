@@ -19,6 +19,36 @@ export interface QuickReplyDTO {
   DateCreated: Date;
 }
 
+export interface CreateQuickReplyDTO {
+  Active: boolean,
+  AdvancedTemplate?: string,
+  BodyHtml?: string
+  SubjectHtml: string,
+}
+
+export interface AdvancedTemplateDTO {
+  Title: string,
+  SubTitle?: string,
+  Url: string,
+  Buttons?: ButtonsDTO[],
+  Text?: string,
+  TemplateType: string,
+  Pages?: PagesMediaDTO[]
+}
+
+export interface ButtonsDTO {
+  Title: string,
+  Payload: string,
+  ButtonType: string,
+  Url?: string
+}
+
+export interface PagesMediaDTO{
+    PageId:string,
+    PageName:string,
+    AttachmentId:string
+}
+
 export interface ODataQuickReplyDTO {
   "@odata.context"?: string;
   "@odata.count"?: number;

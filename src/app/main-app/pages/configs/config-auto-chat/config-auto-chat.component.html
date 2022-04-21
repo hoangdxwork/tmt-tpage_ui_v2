@@ -23,12 +23,13 @@
             <tds-table #basicTable
                 [listData]="AutoChatList"
                 [showSizeChanger]="true"
+                [frontPagination]="false"
                 [loading]="isLoading"
                 [scroll]="{y:'auto'}"
-                [pageSize]="20"
-                [total]="AutoChatList.length"
-
-                >
+                [pageIndex]="pageIndex"
+                [pageSize]="pageSize"
+                [total]="count"
+                (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
                 <thead>
                       <tr class="text-neutral-1-900 text-body-2 font-semibold">
                             <th>Tên mẫu</th>
@@ -42,19 +43,17 @@
                     <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
                         <tr class="text-neutral-1-900 text-body-2 font-regular group">
                             <td>
-                                <div class="flex flex-col">
-                                    {{ data.name }}
-                                    <div class="hidden group-hover:inline-block">
-                                        <button tds-flat-button-icon size="sm" tds-tooltip tooltipTitle="Đơn hàng mặc định"
-                                            tooltipPlacement="top" class="mr-1"
-                                            (click)="onChangeSetting(1,i)">
+                                <div class="flex flex-col gap-y-2">
+                                    {{ data.Subject }}
+                                    <div class="inline-block">
+                                        <button *ngIf="data.IsDefaultForOrder" tds-tooltip tooltipTitle="Đơn hàng mặc định"
+                                            tooltipPlacement="top" class="mr-1">
                                             <span class="flex items-center">
                                                 <i class="tdsi-order-fill text-xl leading-5 text-tertiary-1"></i>
                                             </span>
                                         </button>
-                                        <button tds-flat-button-icon size="sm" tds-tooltip tooltipTitle="Hóa đơn mặc định"
-                                            tooltipPlacement="top"
-                                            (click)="onChangeSetting(2,i)">
+                                        <button *ngIf="data.IsDefaultForBill" tds-tooltip tooltipTitle="Hóa đơn mặc định"
+                                            tooltipPlacement="top">
                                             <span class="flex items-center">
                                                 <i class="tdsi-quotation-fill text-xl leading-5 text-primary-1"></i>
                                             </span>
@@ -62,14 +61,14 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>{{ data.content }}</td>
-                            <td>{{ data.shortcut }}</td>
+                            <td>{{ data.BodyPlain }}</td>
+                            <td></td>
                             <td>
-                                <tds-switch [(ngModel)]="data.status" (ngModelChange)="onChangeStatus($event,i)"></tds-switch>
+                                <tds-switch [(ngModel)]="data.Active" (ngModelChange)="onChangeStatus(data.Id)"></tds-switch>
                             </td>
                             <td>
                                 <button tds-button-icon color="secondary" size="sm" class="mr-2"
-                                    (click)="onEditRow($event,i)">
+                                    (click)="onEditRow($event,data.Id)">
                                     <span class="flex items-center">
                                       <i class="tdsi-edit-fill text-xl leading-none"></i>
                                     </span>
@@ -86,13 +85,13 @@
                                     </span>
                                 </button>
                                 <tbutton-menu #menu="TDSButtonMenu">
-                                    <button tds-button-menu-item (click)="onChangeSetting(1,i)">
+                                    <button tds-button-menu-item (click)="selectOrderDefault(data.Id)">
                                         <span class="flex items-center">
                                             <i class="tdsi-order-fill text-xl leading-5 text-tertiary-1 mr-2"></i>Chọn làm đơn hàng mặc định
                                         </span>
                                     </button>
                                     <button tds-button-menu-item>
-                                        <span class="flex items-center" (click)="onChangeSetting(2,i)">
+                                        <span class="flex items-center" (click)="selectBillDefault(data.Id)">
                                             <i class="tdsi-quotation-fill text-xl leading-5 text-primary-1 mr-2"></i>Chọn làm hóa đơn mặc định
                                         </span>
                                     </button>

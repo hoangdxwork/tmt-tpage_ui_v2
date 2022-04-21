@@ -1,3 +1,4 @@
+import { CreateQuickReplyDTO, QuickReplyDTO } from './../dto/quick-reply.dto.ts/quick-reply.dto';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable} from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
@@ -32,7 +33,7 @@ export class QuickReplyService extends BaseSevice {
       method: TApiMethodType.get
     }
 
-    return this.apiService.getData<any>(api, null);
+    return this.apiService.getData<QuickReplyDTO>(api, null);
   }
 
   getOnlyActive(): Observable<any> {
@@ -44,19 +45,19 @@ export class QuickReplyService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
-  insert(data: any): Observable<any> {
+  insert(data: CreateQuickReplyDTO): Observable<any> {
     let api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
       method: TApiMethodType.post
     }
-
+    
     return this.apiService.getData<any>(api, data);
   }
 
-  update(key :any, data: any): Observable<any> {
+  update(key :any, data: CreateQuickReplyDTO): Observable<any> {
     let api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
-      method: TApiMethodType.post
+      method: TApiMethodType.put
     }
 
     return this.apiService.getData<any>(api, data);
