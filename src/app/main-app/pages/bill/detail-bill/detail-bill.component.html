@@ -32,23 +32,23 @@
                       </span>
                   </button>
                   <button type="button"  tds-button color="primary" class="mr-2"  (click)="actionRefund()"
-                  *ngIf="!(dataModel.Type  =='refund' || ['open', 'paid'].indexOf(dataModel.State) === -1)">
+                     *ngIf="!(dataModel.Type  =='refund' || ['open', 'paid'].indexOf(dataModel.State) === -1)">
                       <span class="flex items-center">
                           <i class="tdsi-reply-fill text-lg leading-none mr-2"></i>Tạo trả hàng
                       </span>
                   </button>
-                  <!-- <button tds-button color="info" class="mr-2">
+                  <button tds-button color="info" class="mr-2">
                       <span class="flex items-center">
                           <i class="tdsi-copy-fill text-lg leading-none mr-2"></i>Sao chép
                       </span>
-                  </button> -->
+                  </button>
 
                   <button type="button" tds-button color="info" class="mr-2" (click)="onCreate()">
                       <span class="flex items-center">
                           <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
                       </span>
                   </button>
-                  <button type="button"  tds-button color="secondary" class="mr-2" (click)="onEdit()" *ngIf="dataModel.State != ('draft' ||  'cancel')">
+                  <button type="button"  tds-button color="secondary" class="mr-2" (click)="onEdit()">
                       <span class="flex items-center">
                           <i class="tdsi-edit-fill text-lg leading-none mr-2"></i>Chỉnh sửa
                       </span>

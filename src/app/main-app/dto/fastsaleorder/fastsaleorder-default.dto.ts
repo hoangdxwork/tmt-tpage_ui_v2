@@ -416,6 +416,114 @@ export interface Team {
   Facebook_Configs?: any;
 }
 
+export interface ShipServiceExtra {
+  Id: string;
+  Name: string;
+  Fee: number;
+  Type?: any;
+  ExtraMoney?: any;
+  OrderTime?: any;
+}
+
+export interface ShipExtras {
+  PickWorkShift?: any;
+  PickWorkShiftName?: any;
+  DeliverWorkShift?: any;
+  DeliverWorkShiftName?: any;
+  PaymentTypeId?: any;
+  PosId?: any;
+  IsDropoff: boolean;
+  IsInsurance: boolean;
+  InsuranceFee?: any;
+  IsPackageViewable: boolean;
+  Is_Fragile: boolean;
+  PickupAccountId?: any;
+  SoldToAccountId?: any;
+  IsPartSign?: any;
+  IsAllowTryout: boolean;
+  IsDeductCod: boolean;
+  IsCollectMoneyGoods: boolean;
+  CollectMoneyGoods?: any;
+  ConfirmType?: any;
+  PartialDelivery?: any;
+  IsRefund?: any;
+  IsInsuranceEqualTotalAmount?: any;
+  ServiceCustoms: any[];
+}
+
+export interface Carrier {
+  IsPrintCustom: boolean;
+  Id: number;
+  Name: string;
+  SenderName?: any;
+  Sequence: number;
+  Active: boolean;
+  DeliveryType: string;
+  DeliveryTypeGet: string;
+  ProductId?: any;
+  FixedPrice?: any;
+  CompanyId?: any;
+  Amount?: any;
+  FreeOver: boolean;
+  Margin?: any;
+  HCMPTConfigId?: any;
+  GHN_ApiKey?: any;
+  GHN_ClientId?: any;
+  GHN_NoteCode: string;
+  GHN_PaymentTypeId: number;
+  GHN_PackageWidth: number;
+  GHN_PackageLength: number;
+  GHN_PackageHeight: number;
+  GHN_ServiceId?: any;
+  ViettelPost_UserName?: any;
+  ViettelPost_Password?: any;
+  ViettelPost_Token?: any;
+  ViettelPost_ServiceId?: any;
+  ViettelPost_ProductType?: any;
+  ViettelPost_OrderPayment?: any;
+  ShipChung_ServiceId?: any;
+  ShipChung_PaymentTypeID?: any;
+  ShipChung_ApiKey?: any;
+  HCMPost_sI?: any;
+  HCMPost_sK?: any;
+  HCMPost_ShopID?: any;
+  HCMPost_ShopName?: any;
+  HCMPost_ServiceId?: any;
+  TokenShip?: any;
+  VNPost_ClientId?: any;
+  VNPost_ServiceId?: any;
+  VNPost_IsContracted: boolean;
+  VNPost_PickupType?: any;
+  GHTK_Token?: any;
+  GHTK_ClientId?: any;
+  GHTK_IsFreeShip: number;
+  SuperShip_Token?: any;
+  SuperShip_ClientId?: any;
+  SuperShip_Config: string;
+  Config_TransportId?: any;
+  Config_TransportName?: any;
+  EMS_Service?: any;
+  EMS_Inventory?: any;
+  EMS_Token?: any;
+  TinToc_Service?: any;
+  TinToc_ServiceCode?: any;
+  NinjaVan_ClientId?: any;
+  NinjaVan_ClientSecret?: any;
+  NinjaVan_ServiceType?: any;
+  NinjaVan_ServiceLevel?: any;
+  NinjaVan_Token?: any;
+  NinjaVan_BranchId?: any;
+  ZTO_PickupType?: any;
+  ZTO_ProductType?: any;
+  ZTO_SendWayType?: any;
+  ZTO_AppCode?: any;
+  ZTO_SecretKey?: any;
+  Config_DefaultFee?: any;
+  Config_DefaultWeight?: any;
+  ExtrasText?: any;
+  Extras?: any;
+}
+
 export interface FastSaleOrder_DefaultDTOV2 {
     Id: number;
     Name?: any;
@@ -520,7 +628,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     TimeLock?: any;
     PageName: string;
     Ship_Receiver: ShipReceiver;
-    Ship_Extras?: any;
+    Ship_Extras: ShipExtras;
     PaymentInfo: any[];
     Search?: any;
     Partner: Partner;
@@ -532,10 +640,10 @@ export interface FastSaleOrder_DefaultDTOV2 {
     Account: Account;
     Journal: Journal;
     PaymentJournal: PaymentJournal;
-    Carrier?: any;
+    Carrier?: Carrier;
     Tax?: any;
     SaleOrder?: any;
     OrderLines: OrderLine[];
-    Ship_ServiceExtras: any[];
+    Ship_ServiceExtras: ShipServiceExtra[];
     Team: Team;
 }

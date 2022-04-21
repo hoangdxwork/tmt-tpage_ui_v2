@@ -162,13 +162,5 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  onChangePartnerPriceList(data: TDSSafeAny) : Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.onChangePartner_PriceList?$expand=PartnerShipping,PriceList,Account`,
-      method: TApiMethodType.post,
-    }
-
-    return this.apiService.getData<TDSSafeAny>(api, data);
-  }
 
 }
