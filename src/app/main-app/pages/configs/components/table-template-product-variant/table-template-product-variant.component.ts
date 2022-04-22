@@ -1,25 +1,68 @@
+import { takeUntil } from 'rxjs/operators';
+import { THelperDataRequest } from './../../../../../lib/services/helper-data.service';
+import { OdataProductTemplateService } from './../../../../services/mock-odata/odata-product-template.service';
+import { Subject } from 'rxjs';
+import { ConfigProductTemplateDTO } from './../../../../dto/configs/product/config-product.dto';
+import { ODataProductTemplateDTO } from './../../../../dto/configs/product/config-odata-product.dto';
 import { ProductVariantEditTableModalComponent } from '../product-variant-edit-table-modal/product-variant-edit-table-modal.component';
-import { TDSSafeAny, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
-import { Component, OnInit, Input, ViewContainerRef } from '@angular/core';
+import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSMessageService, TDSHelperString } from 'tmt-tang-ui';
+import { Component, OnInit, Input, ViewContainerRef, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'table-template-product-variant',
   templateUrl: './table-template-product-variant.component.html',
   styleUrls: ['./table-template-product-variant.component.scss']
 })
-export class TableTemplateProductVariantComponent implements OnInit {
-  @Input() TableData:Array<TDSSafeAny> = [];
+export class TableTemplateProductVariantComponent implements OnInit, OnChanges {
 
   setOfCheckedId = new Set<number>();
   listOfCurrentPageData: readonly TDSSafeAny[] = [];
+  listOfDataTableAll: ConfigProductTemplateDTO[] = [];
+  isLoading = false;
+  pageSize: number = 20;
+  pageIndex: number = 1;
+  count: number = 0;
+  private destroy$ = new Subject<void>();
+  public filterObj: TDSSafeAny = {
+    searchText: ''
+  }
  
   checked = false;
   indeterminate = false;
   loading = false;
+  
+  
 
-  constructor(private modalService: TDSModalService, private viewContainerRef: ViewContainerRef) {}
 
-  ngOnInit(): void {}
+  ngOnChanges(changes: SimpleChanges) {
+    console.log(changes.listOfDataProductTemplate.currentValue['@odata.count'])
+    
+  }
+
+  constructor(private modalService: TDSModalService, private viewContainerRef: ViewContainerRef,
+    private odataProductTemplateService : OdataProductTemplateService,
+    private message: TDSMessageService) {}
+
+  ngOnInit(): void {
+    this.loadData
+  }
+
+  loadData(pageSize: number, pageIndex: number){
+
+    this.isLoading = true;
+    let filters = this.odataProductTemplateService.buildFilter(this.filterObj);  
+    let params = TDSHelperString.hasValueString(this.filterObj.searchText)?
+        THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters):
+        THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
+    this.odataProductTemplateService.getView(params).pipe(takeUntil(this.destroy$)).subscribe((res: ODataProductTemplateDTO) => {
+      this.listOfDataTableAll = res.value
+      this.count = res['@odata.count'] as number
+      this.isLoading = false;
+    }, error => {
+      this.isLoading = false;
+      this.message.error('Tải dữ liệu thất bại!');
+    });
+  ;}
 
   updateCheckedSet(id: number, checked: boolean): void {
         if (checked) {
@@ -54,7 +97,7 @@ export class TableTemplateProductVariantComponent implements OnInit {
 
   sendRequestTableTab(): void {
       this.loading = true;
-      const requestData = this.TableData.filter(data => this.setOfCheckedId.has(data.id));
+      const requestData = this.listOfDataTableAll.filter(data => this.setOfCheckedId.has(data.Id));
       console.log(requestData);
       setTimeout(() => {
           this.setOfCheckedId.clear();
@@ -64,7 +107,7 @@ export class TableTemplateProductVariantComponent implements OnInit {
   }
 
   showEditModal(i:number){
-    let editData =  this.TableData[i];
+    let editData =  this.listOfDataTableAll[i];
     const modal = this.modalService.create({
       title: 'Cập nhật biến thể sản phẩm',
       content: ProductVariantEditTableModalComponent,

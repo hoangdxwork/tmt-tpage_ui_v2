@@ -51,7 +51,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
   buttonFormList: Array<FormGroup> = [];
   subjectHtmlModel!: string;
 
-  constructor(private modal: TDSModalRef,
+    constructor(private modal: TDSModalRef,
     private formBuilder: FormBuilder,
     private http: HttpClient,
     private message: TDSMessageService,
@@ -198,7 +198,6 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
            this.getById()
         }
         this.isLoading = false
-        console.log(this.mediaChannelList)
       }, err => {
         this.isLoading = false
         this.message.error('Lấy dữ liệu page Facebook thất bại !')
@@ -253,8 +252,8 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
 
   addPage(data: PagesMediaDTO) {
     this.mediaForm.push(data.AttachmentId)
-    console.log(this.mediaForm)
   }
+
 
   enableSubmit() {
     switch (this.formQuickReply.value.advancedTemplateRadio) {
@@ -280,12 +279,13 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
 
   onResetMessageFrom() {
     this.createMessageForm.controls.title.setValue('');
+    this.createMessageForm.controls.subTitle.setValue('');
     this.createMessageForm.controls.text.setValue('');
-
   }
 
   onChangeRadio(radio: boolean) {
     this.formQuickReply.controls.advancedTemplateRadio.setValue(radio)
+    this.mediaForm = []
     this.onResetMessageFrom();
   }
 
@@ -293,6 +293,8 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
     this.templateType = data;
     this.messageStructurePart = 1;
     this.onResetMessageFrom();
+    this.mediaForm = []
+
   }
 
   onCloseActionButton(i: number) {
@@ -465,17 +467,23 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
         })
       }
       if (this.mediaForm && this.mediaForm.length != 0) {
+        console.log(this.mediaForm)
+        console.log(this.mediaChannelList)
+        this.dataAdvancedTemplate.Pages = []
         this.mediaForm.forEach(el => {
-          let data = this.mediaChannelList.find(x => x.Facebook_ASUserId = el)
+          console.log(el)
+          let data = this.mediaChannelList.find(x => x.Facebook_ASUserId == el)
+          console.log(data)
           if (data) {
             let model: PagesMediaDTO = {
               AttachmentId: data.Facebook_ASUserId,
               PageId: data.Facebook_PageId,
-              PageName: data.Facebook_PageName
+              PageName: data.Name
             }
             this.dataAdvancedTemplate.Pages?.push(model)
           }
         })
+        console.log(this.dataAdvancedTemplate.Pages)
       }
       if (this.templateType == 'media' && this.dataAdvancedTemplate.Pages?.length == 0) {
         this.message.error('Vui lòng chọn ít nhất 1 kênh cho mẫu phương tiện');

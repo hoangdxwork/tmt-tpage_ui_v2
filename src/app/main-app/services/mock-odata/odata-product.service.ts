@@ -33,6 +33,15 @@ export class OdataProductService extends BaseSevice {
     return this.apiService.getData<ODataProductDTOV2>(api, null);
   }
 
+  getProductOnFacebookPage(params: string, pageId: string): Observable<TDSSafeAny>{
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetProductOnFacebookPage?pageId=${pageId}&${params}&$count=true`,
+      method: TApiMethodType.get,
+  }
+
+  return this.apiService.getData<ODataProductDTOV2>(api, null);
+  }
+
   public buildFilter(filterObj: FilterObjDTO) {
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",
