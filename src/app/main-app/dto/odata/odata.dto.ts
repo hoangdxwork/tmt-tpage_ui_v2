@@ -1,10 +1,10 @@
 export interface CTMTagFilterObjDTO  {
-  searchText: '',
+  searchText: string,
 }
 
 export interface TposLoggingFilterObjDTO {
-  name: '',
-  searchText: '',
+  name: string,
+  searchText: string,
   dateRange: {
     startDate: Date,
     endDate: Date

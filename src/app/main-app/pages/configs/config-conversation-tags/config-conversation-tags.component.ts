@@ -7,7 +7,6 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { THelperDataRequest } from './../../../../lib/services/helper-data.service';
 import { OdataCRMTagService } from './../../../services/mock-odata/odata-crmtag.service';
-import { FormControl } from '@angular/forms';
 import { ConfigConversationTagsEditDataModalComponent } from '../components/config-conversation-tags-edit-data-modal/config-conversation-tags-edit-data-modal.component';
 import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSTableQueryParams, TDSMessageService, TDSHelperString } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef, OnDestroy } from '@angular/core';
@@ -36,8 +35,7 @@ export class ConfigConversationTagsComponent implements OnInit, OnDestroy {
     private viewContainerRef: ViewContainerRef,
     private message: TDSMessageService,
     private odataTagService:OdataCRMTagService,
-    private tagService:CRMTagService,
-    ) { }
+    private tagService:CRMTagService) { }
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -85,13 +83,11 @@ export class ConfigConversationTagsComponent implements OnInit, OnDestroy {
         content: ConfigConversationTagsEditDataModalComponent,
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-            //send data to edit modal
             data: data
         }
     });
 
-    //receive result from edit modal after close modal
-    modal.afterClose.subscribe(result => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
         this.loadData(this.pageSize,this.pageIndex);
     });
   }
@@ -102,7 +98,7 @@ export class ConfigConversationTagsComponent implements OnInit, OnDestroy {
         content: 'Bạn có chắc muốn xóa thẻ này không?',
         iconType:'tdsi-trash-fill',
         onOk: () => {
-          this.tagService.delete(data.Id).subscribe(
+          this.tagService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe(
             (data)=>{
               this.message.success('Xóa thành công');
               this.loadData(this.pageSize,this.pageIndex);
@@ -121,7 +117,7 @@ export class ConfigConversationTagsComponent implements OnInit, OnDestroy {
   }
 
   updateStatus(data:CRMTagDTO){
-    this.tagService.updateStatus(data.Id).subscribe(
+    this.tagService.updateStatus(data.Id).pipe(takeUntil(this.destroy$)).subscribe(
       (data)=>{
         this.loadData(this.pageSize,this.pageIndex);
       },
@@ -145,12 +141,8 @@ export class ConfigConversationTagsComponent implements OnInit, OnDestroy {
       viewContainerRef: this.viewContainerRef,
     });
 
-    //receive result from edit modal after close modal
-    modal.afterClose.subscribe(result => {
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if(TDSHelperObject.hasValue(result)){
-        this.pageSize = 20;
-        this.pageIndex = 1;
-        
         let sortByDate:SortDataRequestDTO = {
           field:'DateCreated',
           dir: SortEnum.desc
