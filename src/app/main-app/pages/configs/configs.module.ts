@@ -1,3 +1,10 @@
+import { ExcelExportService } from './../../services/excel-export.service';
+import { TagProductTemplateService } from './../../services/tag-product-template.service';
+import { TagService } from 'src/app/main-app/services/tag.service';
+import { ProductTemplateService } from './../../services/product-template.service';
+import { PipeModule } from './../../shared/pipe/pipe.module';
+import { StockMoveService } from '../../services/stock-move.service';
+import { OdataProductTemplateService } from '../../services/mock-odata/odata-product-template.service';
 import { CRMTagService } from './../../services/crm-tag.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MainSharedModule } from './../../shared/shared.module';
@@ -58,6 +65,7 @@ import { ConfigQuickQuestionComponent } from './config-pages/config-pages-basic/
 import { ConfigGreetingComponent } from './config-pages/config-pages-basic/config-greeting/config-greeting.component';
 import { ConfigConversationTagsCreateDataModalComponent } from './components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
 import { FacebookService } from '../../services/facebook.service';
+import { ConfigProductDetailsComponent } from './components/config-product-details/config-product-details.component';
 
 const SERVICES = [
     TDSModalService,
@@ -71,7 +79,13 @@ const SERVICES = [
     OdataSaleCouponProgramService,
     SaleCouponProgramService,
     CRMTagService,
-    FacebookService
+    FacebookService,
+    OdataProductTemplateService,
+    ProductTemplateService,
+    StockMoveService,
+    TagService,
+    TagProductTemplateService,
+    ExcelExportService
 ]
 
 @NgModule({
@@ -117,7 +131,8 @@ const SERVICES = [
     ConfigInteractiveMenusComponent,
     ConfigQuickQuestionComponent,
     ConfigGreetingComponent,
-    ConfigConversationTagsCreateDataModalComponent
+    ConfigConversationTagsCreateDataModalComponent,
+    ConfigProductDetailsComponent
   ],
   imports: [
     CommonModule,
@@ -151,6 +166,7 @@ const SERVICES = [
     TDSDatePickerModule,
     TDSSpinnerModule,
     TDSTimePickerModule,
+    PipeModule
   ],
   providers:[
     ...SERVICES

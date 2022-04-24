@@ -1,27 +1,16 @@
+import { Router } from '@angular/router';
+import { CRMTeamDTO } from './../../../../dto/team/team.dto';
+import { CRMTeamService } from './../../../../services/crm-team.service';
+import { Observable, Subject } from 'rxjs';
+import { QuickReplyService } from './../../../../services/quick-reply.service';
+import { CreateQuickReplyDTO, QuickReplyDTO, AdvancedTemplateDTO, ButtonsDTO, PagesMediaDTO } from './../../../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { TDSMessageService, TDSSafeAny, TDSUploadChangeParam, TDSModalRef, TDSUploadFile } from 'tmt-tang-ui';
-import { filter } from 'rxjs/operators';
+import { Component, Input, OnInit, ViewEncapsulation, OnDestroy, AfterViewInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators, FormArray } from '@angular/forms';
+import { TDSMessageService, TDSSafeAny, TDSUploadChangeParam, TDSModalRef, TDSUploadFile, TDSHelperString, TDSHelperObject } from 'tmt-tang-ui';
+import { filter, map, takeUntil } from 'rxjs/operators';
+import { Model, number } from 'echarts';
 
-export interface TDSMessageFormData{
-  name:string,
-  shortcut:string,
-  status:boolean,
-  media?:{
-    image:string,
-    mediaChannels?:Array<string>
-  },
-  content?:{
-    title:string,
-    text:string,
-  },
-  button?:Array<{
-    text:string,
-    type:string,
-    payLoad:string
-  }>
-};
 
 @Component({
   selector: 'app-auto-chat-add-data-modal',
@@ -30,53 +19,66 @@ export interface TDSMessageFormData{
   encapsulation: ViewEncapsulation.None,
 })
 
-export class AutoChatAddDataModalComponent implements OnInit{
-  @Input() data: TDSSafeAny;
+export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
+  @Input() valueEditId!: TDSSafeAny;
+  private destroy$ = new Subject<void>();
 
-  nameTagList: Array<string> = [];
+  params!: TDSSafeAny;
+  nameTagList: Array<TDSSafeAny> = [];
   contentTagList: Array<TDSSafeAny> = [];
   MessageFormList: Array<TDSSafeAny> = [];
-  MessageFormData!: TDSMessageFormData;
-  messageForm = '';
-  messageStructurePart = 1;
+  valueEdit!: QuickReplyDTO;
+  templateType: string = 'generic';
+  messageStructurePart: number = 1;
   uploadUrl = 'https://tshop.tpos.dev/api/v1/app-products/upload-defaultimage';
-  buttonTypeList: Array<string> = [
-    'submit',
-    'reset',
-  ]
-  mediaChannelList: Array<TDSSafeAny> = [
-    {
-      id:1,
-      name:'page 1'
-    },
-    {
-      id:2,
-      name:'page 2'
-    },
-    {
-      id:3,
-      name:'page 3'
-    },
-  ]
-  radioValue = '1';
+  buttonTypeList: Array<TDSSafeAny> = [];
+  mediaChannelList: Array<CRMTeamDTO> = [];
+  dataMeidaRes: Array<CRMTeamDTO> = [];
   currentBreadcrumb = 0;
-  status = false;
   imageURL = '';
-  fileList:TDSUploadFile[] = [];
+  fileList: TDSUploadFile[] = [];
 
-  createForm!: FormGroup ;
-  createImageForm!:FormGroup;
+
+  teams$!: Observable<any[]>;
+  formQuickReply!: FormGroup
+  data!: CreateQuickReplyDTO;
+  dataAdvancedTemplate!: AdvancedTemplateDTO;
+  createImageForm!: FormGroup;
   createMessageForm!: FormGroup;
-  mediaForm! :FormControl;
+  mediaForm: Array<string> = [];
+  isLoading: boolean = false;
 
   buttonFormList: Array<FormGroup> = [];
+  subjectHtmlModel!: string;
 
-  constructor(private modal: TDSModalRef,private formBuilder: FormBuilder, private msg: TDSMessageService, private http: HttpClient) { 
-    this.createForm = this.formBuilder.group({
-      name: new FormControl('', [Validators.required]),
-      shortcut: new FormControl('',[Validators.required]),
-      image: new FormControl('',[Validators.required]),
-    });
+  constructor(private modal: TDSModalRef,
+    private formBuilder: FormBuilder,
+    private http: HttpClient,
+    private message: TDSMessageService,
+    private quickReplyService: QuickReplyService,
+    private crmService: CRMTeamService,
+    private router: Router) {
+    this.createForm();
+  }
+
+  ngOnInit(): void {
+    this.loadData()
+  }
+
+  createForm() {
+    this.formQuickReply = this.formBuilder.group({
+      active: new FormControl(false),
+      bodyHtml: new FormControl(''),
+      subjectHtml: new FormControl(''),
+      advancedTemplateRadio: new FormControl(false),
+      title: new FormControl(null),
+      subTitle: new FormControl(null),
+      url: new FormControl(null),
+      buttons: new FormControl(null),
+      texy: new FormControl(null),
+      templateType: new FormControl(null),
+      pages: new FormControl(null),
+    })
 
     this.createImageForm = this.formBuilder.group({
       image: new FormControl(''),
@@ -84,262 +86,436 @@ export class AutoChatAddDataModalComponent implements OnInit{
 
     this.createMessageForm = this.formBuilder.group({
       title: new FormControl('', [Validators.required]),
+      subTitle: new FormControl('',),
       text: new FormControl(''),
     });
 
-    this.buttonFormList = [
-      this.formBuilder.group({
-        text: new FormControl('', [Validators.required]),
-        type: new FormControl('',[Validators.required]),
-        payLoad: new FormControl('',[Validators.required]),
-      })
-    ]
-
-    this.mediaForm = new FormControl([],[Validators.required]);
   }
 
-  ngOnInit(): void {
-    this.loadData();
-    this.messageForm = this.MessageFormList[0].name ?? '';
-    this.MessageFormData = {
-      name:'',
-      shortcut:'',
-      status:false
-    }
-  }
-
-  loadData(){
+  loadData() {
+    this.getAllFacebook()
     this.nameTagList = [
-      'Mã đơn hàng',
-      'Mã vận đơn',
-      'Mã đặt hàng'
-    ];
+      { id: "Mã đơn hàng", value: "{order.code}" },
+      { id: "Mã vận đơn", value: "{order.tracking_code}" },
+      { id: "Mã đặt hàng", value: "{placeholder.code}" },
+    ]
 
     this.contentTagList = [
       {
-        name:'Khách hàng',
-        data:[
-          'Tên KH',
-          'Mã KH',
-          'Điện thoại KH',
-          'Địa chỉ KH',
-          'Công nợ KH'
+        name: 'Khách hàng',
+        data: [
+          { id: "Tên KH", value: "{partner.name}" },
+          { id: "Mã KH", value: "{partner.code}" },
+          { id: "Điện thoại KH", value: "{partner.phone}" },
+          { id: "Địa chỉ KH", value: "{partner.address}" },
+          { id: "Công nợ KH", value: "{partner.debt}}" },
         ]
       },
       {
-        name:'Đơn hàng',
-        data:[
-          'Tên ĐH',
-          'Mã ĐH'
+        name: 'Đơn hàng',
+        data: [
+          { id: "Mã đơn hàng", value: "{order.code}" },
+          { id: "Mã vận đơn", value: "{order.tracking_code}" },
+          { id: "Tổng tiền đơn hàng", value: "{order.total_amount}" },
         ]
       },
       {
-        name:'Đặt hàng',
-        data:[
-          'Tên KH',
-          'Mã KH',
-          'Tên ĐH',
-          'Mã ĐH',
-          'Địa chỉ KH'
+        name: 'Đặt hàng',
+        data: [
+          { id: "Mã đặt hàng", value: "{placeholder.code}" },
+          { id: "Ghi chú đặt hàng", value: "{placeholder.note}" },
+          { id: "Chi tiết đặt hàng", value: "{placeholder.details}" },
+          { id: "Tag facebook", value: "{tag}" },
+          { id: "Yêu cầu gửi số điện thoại", value: "{required.phone}" },
+          { id: "Yêu cầu gửi địa chỉ", value: "{required.address}" },
+          { id: "Yêu cầu điện thoại, địa chỉ", value: "{required.phone_address}" },
         ]
       },
     ];
 
     this.MessageFormList = [
-      {
-        id:1,
-        name:'Mẫu chung'
-      },
-      {
-        id:2,
-        name:'Mẫu nút'
-      },
-      {
-        id:3,
-        name:'Mẫu phương tiện'
-      }
+      { id: 'generic', value: 'Mẫu chung' },
+      { id: 'button', value: 'Mẫu nút' },
+      { id: 'media', value: 'Mẫu phương tiện' }
     ];
-  }
 
-  onResetMessageFrom(){
-    this.createMessageForm.value.title = '';
-    this.createMessageForm.value.text = '';
-    this.mediaForm.reset([]);
-
-    this.buttonFormList = [
-      this.formBuilder.group({
-        text: new FormControl('', [Validators.required]),
-        type: new FormControl('',[Validators.required]),
-        payLoad: new FormControl('',[Validators.required]),
-      })
+    this.buttonTypeList = [
+      { id: "Post Back", value: "postback" },
+      { id: "Web Url", value: "web_url" },
+      { id: "Phone Number", value: "phone_number" },
     ]
+
+    this.data = {
+      Active: false,
+      SubjectHtml: '',
+    }
+
+    this.dataAdvancedTemplate = {
+      SubTitle: '',
+      TemplateType: '',
+      Title: '',
+      Url: '',
+      Buttons: [],
+      Pages: [],
+      Text: ''
+    }
+    
   }
 
-  onChangeRadio(){
+  getById(){
+    if (this.valueEditId) {
+      this.quickReplyService.getById(this.valueEditId).pipe(takeUntil(this.destroy$)).subscribe((res) => {
+        {
+          this.valueEdit = res;
+          this.updateForm(this.valueEdit);
+        }
+      },
+        err => {
+          this.message.error('Load dữ liệu thất bại');
+        })
+    }
+  }
+
+  getAllFacebook() {
+    this.isLoading = true
+    this.crmService.getAllFacebooks()
+      .pipe(takeUntil(this.destroy$)).subscribe(dataTeam => {
+        if (TDSHelperObject.hasValue(dataTeam)) {
+          this.dataMeidaRes = dataTeam.Items
+          this.dataMeidaRes.forEach(data => {
+            if (data.Childs.length == 0) {
+              data.Active = true
+              this.mediaChannelList.push(data)
+            }
+            else {
+              data.Active = false
+              data.Childs.forEach(dataChilds => {
+                dataChilds.Active = false
+                this.mediaChannelList.push(dataChilds)
+              })
+            }
+          })
+           this.getById()
+        }
+        this.isLoading = false
+        console.log(this.mediaChannelList)
+      }, err => {
+        this.isLoading = false
+        this.message.error('Lấy dữ liệu page Facebook thất bại !')
+      })
+    
+  }
+
+  updateForm(data: QuickReplyDTO) {
+    this.formQuickReply.controls.subjectHtml.setValue(data.SubjectHtml || data.Subject);
+    this.formQuickReply.controls.bodyHtml.setValue(data.BodyHtml || data.BodyPlain);
+    this.formQuickReply.controls.active.setValue(data.Active);
+    let templateAd = JSON.parse(data.AdvancedTemplate);
+
+    if (templateAd) {
+      this.formQuickReply.controls.advancedTemplateRadio.setValue(true);
+      this.createMessageForm.controls.title.setValue(templateAd.Title);
+      this.createMessageForm.controls.subTitle.setValue(templateAd.SubTitle);
+      this.createMessageForm.controls.text.setValue(templateAd.Text);
+      this.templateType = templateAd.TemplateType
+      this.createImageForm.controls.image.setValue(templateAd.Url);
+      templateAd.Buttons.forEach((element: ButtonsDTO) => {
+        this.addButton(element)
+      });
+      templateAd.Pages.forEach((element: PagesMediaDTO) => {
+        this.addPage(element);
+      });
+    }
+
+  }
+
+  addButton(data: ButtonsDTO) {
+    const model = this.buttonFormList;
+    model.push(this.initButton(data));
+  }
+
+  initButton(data: ButtonsDTO) {
+    if (data != null) {
+      return this.formBuilder.group({
+        title: [data.Title],
+        payLoad: [data.Payload],
+        type: [data.ButtonType],
+      });
+
+    } else {
+      return this.formBuilder.group({
+        title: [null],
+        payLoad: [null],
+        type: [null],
+      });
+    }
+  }
+
+  addPage(data: PagesMediaDTO) {
+    this.mediaForm.push(data.AttachmentId)
+    console.log(this.mediaForm)
+  }
+
+  enableSubmit() {
+    switch (this.formQuickReply.value.advancedTemplateRadio) {
+      case false: {
+        return !this.formQuickReply.valid
+      }
+      case true:
+        {
+          // return !this.formQuickReply.valid
+          if (this.templateType == 'generic') {
+            return !this.formQuickReply.valid || !this.createMessageForm.valid || !this.isValidButton(this.buttonFormList)
+          }
+          if (this.templateType == 'media') {
+            return !this.formQuickReply.valid || !this.isValidButton(this.buttonFormList)
+          }
+          if (this.templateType == 'button') {
+            return !this.formQuickReply.valid || !this.isValidButton(this.buttonFormList)
+          }
+        }
+    }
+    return false;
+  }
+
+  onResetMessageFrom() {
+    this.createMessageForm.controls.title.setValue('');
+    this.createMessageForm.controls.text.setValue('');
+
+  }
+
+  onChangeRadio(radio: boolean) {
+    this.formQuickReply.controls.advancedTemplateRadio.setValue(radio)
     this.onResetMessageFrom();
   }
 
-  onChangeMessageForm(data:TDSSafeAny){
-    this.messageForm = data;
+  getTemplateType(data: string) {
+    this.templateType = data;
     this.messageStructurePart = 1;
     this.onResetMessageFrom();
   }
 
-  onCloseActionButton(i:number){
-    this.buttonFormList.splice(i,1);
+  onCloseActionButton(i: number) {
+    this.buttonFormList.splice(i, 1);
   }
 
-  addActionButton(){
+  addActionButton() {
     this.buttonFormList.push(
       this.formBuilder.group({
-        text: new FormControl('', [Validators.required]),
-        type: new FormControl('',[Validators.required]),
-        payLoad: new FormControl('',[Validators.required]),
+        title: new FormControl('', [Validators.required]),
+        type: new FormControl('', [Validators.required]),
+        payLoad: new FormControl('', [Validators.required]),
       })
     )
   }
 
-  onInputMessageTitle(event:TDSSafeAny){
+  onInputMessageTitle(event: TDSSafeAny) {
 
   }
 
-  onInputMessageContent(event:TDSSafeAny){
-    
+  onInputMessageContent(event: TDSSafeAny) {
+
   }
 
-  onChangeStructurePart(i:number){
+  onChangeStructurePart(i: number) {
     this.messageStructurePart = i;
   }
 
-  onChangeTagName(index:number){
-    this.createForm.value.name = this.nameTagList[index];
+  onChangeTagName(data: string) {
+    this.formQuickReply.controls.subjectHtml.setValue(this.formQuickReply.value.subjectHtml.concat(data));
   }
 
-  addTagToContent(listIndex:number,dataIndex:number){
+  addTagToContent(listIndex: number, data: string) {
     //add tag to content
-    this.createMessageForm.value.text = this.createMessageForm.value.text.concat('{',this.contentTagList[listIndex].data[dataIndex],'}');
+    this.formQuickReply.controls.bodyHtml.setValue(this.formQuickReply.value.bodyHtml.concat(data))
   }
 
   handleChange(info: TDSUploadChangeParam): void {
     if (info.file.status === 'done') {
-        this.createImageForm.value.image = info.file.name;
-        this.msg.success(`${info.file.name} file uploaded successfully`);
+      this.createImageForm.value.image = info.file.name;
+      this.message.success(`${info.file.name} file uploaded successfully`);
     } else if (info.file.status === 'error') {
-        this.createImageForm.value.image = info.file.name;
-        console.log(this.createImageForm)
-        this.msg.error(`${info.file.name} file upload failed.`);
+      this.createImageForm.value.image = info.file.name;
+      this.message.error(`${info.file.name} file upload failed.`);
     }
   }
 
   handleUpload = (item: any) => {
     const formData = new FormData();
-    
+
     formData.append('mediaFile', item.file as any, item.file.name);
     formData.append('id', '0000000000000051');
 
     const req = new HttpRequest('POST', this.uploadUrl, formData);
-    return this.http.request(req).pipe(filter(e => e instanceof HttpResponse)).subscribe(
-        (res:TDSSafeAny) => {   
-            if(res && res.body)
-            {
-                const data = res.body;
-                item.file.url = data.mediaUrl;
-            }
-            item.onSuccess(item.file);
-        },
-        (err) => {
-            item.onError({statusText:err.error?.error?.details}, item.file);
+    return this.http.request(req).pipe(filter(e => e instanceof HttpResponse)).pipe(takeUntil(this.destroy$)).subscribe(
+      (res: TDSSafeAny) => {
+        if (res && res.body) {
+          const data = res.body;
+          item.file.url = data.mediaUrl;
         }
+        item.onSuccess(item.file);
+      },
+      (err) => {
+        item.onError({ statusText: err.error?.error?.details }, item.file);
+      }
     )
   }
 
-  getMessageFormIndex(name:string){
-    return this.MessageFormList.findIndex(f=>f.name === name)
+  getMessageFormIndex(name: string) {
+    return this.MessageFormList.findIndex(f => f.value === name)
   }
 
-  enableSubmit(){
-    switch(this.radioValue){
-      case '1':{
-        return !this.createForm.valid
-      }
-      case '2':{
-        if(this.getMessageFormIndex(this.messageForm) == 0){
-          return !this.createForm.valid || !this.createMessageForm.valid || !this.isValidButton(this.buttonFormList)
-        }
-        if(this.getMessageFormIndex(this.messageForm) == 1){
-          return !this.createForm.valid || !this.isValidButton(this.buttonFormList)
-        }
-        if(this.getMessageFormIndex(this.messageForm) == 2){
-          return !this.createForm.valid || !this.isValidButton(this.buttonFormList) || !this.mediaForm.valid
-        }
-      }
-    }
-    return false;
-  }
-
-  isValidButton(list:FormGroup[]){
+  isValidButton(list: FormGroup[]) {
     let result = true;
-    if(list.length > 0){
+    if (list.length > 0) {
       list.forEach(form => {
-        if(!form.valid){
+        if (!form.valid) {
           result = false;
         }
       });
-      console.log(result)
       return result
-    }else{
+    } else {
       return false;
     }
   }
 
-  onSubmit() {
-    if (!this.createForm.invalid) {
-      let buttonList:TDSSafeAny[] = [];
-      let mediaList:TDSSafeAny[] = [];
-
-      this.buttonFormList.forEach(butonForm => {
-        if(butonForm.value.text !== ''){
-          buttonList.push(
-            {
-              text: butonForm.value.text,
-              type: butonForm.value.type,
-              payLoad: butonForm.value.payLoad
-            }
-          );
-        }
-      });
-
-      let mediaForm = this.mediaForm.value as Array<TDSSafeAny>;
-      mediaForm.forEach(value => {
-        let item = this.mediaChannelList.find(f=>f.id == value);
-        mediaList.push(item);
-      });
-
-      this.MessageFormData = Object.assign(this.MessageFormData,{
-        name: this.createForm.value.name,
-        shortcut: this.createForm.value.shortcut,
-        status: this.status,
-        media:{
-          image: this.imageURL,
-          mediaChannels: mediaList
-        },
-        content:{
-          title: this.createMessageForm.value.title,
-          text: this.createMessageForm.value.text
-        },
-        button: buttonList
-      });
-
-      this.modal.destroy(this.MessageFormData);
-      console.log(this.MessageFormData)
+  onClickTeam(data: CRMTeamDTO) {
+    if (this.params?.teamId) {
+      let url = this.router.url.split("?")[0];
+      const params = { ...this.params };
+      params.teamId = data.Id;
+      this.router.navigate([url], { queryParams: params })
+    } else {
+      this.crmService.onUpdateTeam(data);
     }
   }
 
   cancel() {
-      this.modal.destroy(null);
+    this.modal.destroy(null);
   }
 
-  save() {
-      this.onSubmit();
+
+  onSave() {
+    let model = this.prepareModel();
+    if (!model)
+      return
+    if (!TDSHelperString.hasValueString(model.SubjectHtml)) {
+      this.message.error('Vui lòng nhập tiêu đề');
+      return
+    }
+
+
+    if (this.valueEditId) {
+      this.isLoading = true;
+      this.quickReplyService.update(this.valueEditId, model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        this.isLoading = false;
+        this.message.success('Cập nhật trả lời nhanh thành công!');
+        this.modal.destroy(true);
+      }, error => {
+        this.isLoading = false;
+        this.message.error('Cập nhật trả lời nhanh thất bại!');
+        this.modal.destroy(null);
+      })
+    } else {
+      this.isLoading = false;
+      this.quickReplyService.insert(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        this.isLoading = false;
+        this.message.success('Thêm mới trả lời nhanh thành công!');
+        this.modal.destroy(true);
+      }, error => {
+        this.isLoading = false;
+        this.message.error('Thêm mới trả lời nhanh thất bại!');
+        // this.modal.destroy(null);
+      })
+    }
+  }
+
+  prepareModel() {
+    let formModelQuickReply = this.formQuickReply.value;
+    let formModelCreateMessage = this.createMessageForm.value;
+    let formModelCreateImage = this.createImageForm.value
+
+    if (formModelQuickReply.active != null) {
+      this.data.Active = formModelQuickReply.active as boolean;
+    }
+    if (formModelQuickReply.bodyHtml != null && !formModelQuickReply.advancedTemplateRadio) {
+      this.data.BodyHtml = formModelQuickReply.bodyHtml
+    }
+    if (formModelQuickReply.subjectHtml != null) {
+      this.data.SubjectHtml = formModelQuickReply.subjectHtml;
+    }
+    if (formModelQuickReply.advancedTemplateRadio) {
+      this.dataAdvancedTemplate.Url = formModelCreateImage.image
+      if (this.templateType == 'generic'){
+        this.dataAdvancedTemplate.Title = formModelCreateMessage.title
+        this.dataAdvancedTemplate.SubTitle = formModelCreateMessage.subTitle
+      }
+      if (this.templateType == 'button'){
+        this.dataAdvancedTemplate.Title = formModelCreateMessage.title
+        this.dataAdvancedTemplate.Text = formModelCreateMessage.text
+      }
+      this.dataAdvancedTemplate.TemplateType = this.templateType
+      this.dataAdvancedTemplate.Buttons = []
+      for (let i = 0; i < this.buttonFormList.length; i++) {
+        this.dataAdvancedTemplate.Buttons?.push({
+          Title: this.buttonFormList[i].value.title,
+          Payload: this.buttonFormList[i].value.payLoad,
+          ButtonType: this.buttonFormList[i].value.type,
+          Url: ''
+        })
+      }
+      if (this.mediaForm && this.mediaForm.length != 0) {
+        this.mediaForm.forEach(el => {
+          let data = this.mediaChannelList.find(x => x.Facebook_ASUserId = el)
+          if (data) {
+            let model: PagesMediaDTO = {
+              AttachmentId: data.Facebook_ASUserId,
+              PageId: data.Facebook_PageId,
+              PageName: data.Facebook_PageName
+            }
+            this.dataAdvancedTemplate.Pages?.push(model)
+          }
+        })
+      }
+      if (this.templateType == 'media' && this.dataAdvancedTemplate.Pages?.length == 0) {
+        this.message.error('Vui lòng chọn ít nhất 1 kênh cho mẫu phương tiện');
+        return
+      }
+      if (this.templateType == 'generic' && !TDSHelperString.hasValueString(this.dataAdvancedTemplate.Title)) {
+        this.message.error("Mẫu chung: Têu đề không được bỏ trống");
+        return;
+      }
+
+      if (this.templateType == 'button' &&
+        (!TDSHelperString.hasValueString(this.dataAdvancedTemplate.Title) || this.dataAdvancedTemplate.Buttons?.length == 0)) {
+        this.message.error("Mẫu nút: Têu đề không được bỏ trống và phải có ít nhất một nút");
+        return;
+      }
+
+      if (this.templateType == 'media' && !TDSHelperString.hasValueString(this.dataAdvancedTemplate.Url)) {
+        this.message.error("Mẫu phương tiện: Vui lòng chọn hình ảnh hoặc video");
+        return;
+      }
+      if (this.dataAdvancedTemplate.Buttons) {
+        let arrEmpty = this.dataAdvancedTemplate.Buttons?.filter((x) => {
+          if (x.Title == '' || x.Payload == '' || x.ButtonType == '') {
+            return x
+          }
+          return
+        });
+        if (arrEmpty.length > 0) {
+          this.message.error("Vui lòng nhập đầy đủ thông tin nút");
+          return;
+        }
+      }
+      this.data.AdvancedTemplate = JSON.stringify(this.dataAdvancedTemplate)
+    }
+
+    return this.data;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

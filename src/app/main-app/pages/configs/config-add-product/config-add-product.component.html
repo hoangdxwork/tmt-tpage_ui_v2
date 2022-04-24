@@ -69,7 +69,7 @@
                               <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
                                 <tds-label>Loại sản phẩm:</tds-label>
                                 <tds-form-field class="w-full col-span-2">
-                                  <tds-select valueField="id" textField="name" placeholder='Chọn loại sản phẩm'
+                                  <tds-select valueField="value" textField="text" placeholder='Chọn loại sản phẩm'
                                       disabledField="isActive" formControlName="type" [required]='true'
                                       [data]="productTypeList" [allowClear]="true">
                                   </tds-select>
@@ -98,9 +98,9 @@
                                 <div class="col-span-2">
                                   <div class="flex space-x-2">
                                     <tds-form-field class="w-full mr-2">
-                                      <tds-select valueField="id" textField="name" placeholder='Chọn nhóm sản phẩm'
+                                      <tds-select valueField="Id" textField="CompleteName" placeholder='Chọn nhóm sản phẩm'
                                       disabledField="isActive" formControlName="group" [required]='true'
-                                      [data]="productGroupList" [allowClear]="true">
+                                      [data]="categoryList" [allowClear]="true">
                                       </tds-select>
                                       <tds-error>
                                           Vui lòng chọn nhóm sản phẩm
@@ -172,24 +172,28 @@
                             </div>
                         </tds-tab>
                         <tds-tab title="Hình ảnh">
-                          <div class="w-full">
-                              <tds-upload
+                          <div class="flex flex-wrap items-center">
+                            <div *ngFor="let image of imageList">
+                              <tds-avatar class="rounded-lg mr-2 mt-2" [shape]="'square'" [size]="112"
+                                [tdsSrc]="image.url" [isAvatar]="false">
+                              </tds-avatar>
+                            </div>
+                            <tds-upload
+                                  [showUploadList]="false"
                                   listType="picture-card" 
                                   [(fileList)]="imageList"
                                   [preview]="handlePreview" 
                                   [download]="handleDownload"
                                   [customRequest]="handleUpload"
-                                  class="rounded-lg flex flex-wrap">
-                                                      
+                                  [classList]="'rounded-lg'">
                                   <div class="w-full text-neutral-1-300">
-                                      <div class="flex items-center justify-center" >
-                                          <span class="tdsi-images-fill text-xl leading-5"></span>
-                                      </div>
-                                      <div class="mt-2 text-body-2 font-regular">Upload</div>
-                                  </div>
+                                    <div class="flex items-center justify-center" >
+                                        <span class="tdsi-images-fill text-xl leading-5"></span>
+                                    </div>
+                                    <div class="mt-2 text-body-2 font-regular">Upload</div>
+                                </div>
                               </tds-upload>
-                              
-                              <tds-modal [visible]="previewVisible" [content]="modalContent" 
+                              <tds-modal [visible]="previewVisible" [content]="modalContent"
                                   [footer]="null" (onCancel)="previewVisible = false">
                                   <ng-template #modalContent>
                                       <img [src]="previewImage" [ngStyle]="{ width: '100%' }" />

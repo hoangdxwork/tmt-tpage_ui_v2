@@ -1,4 +1,3 @@
-import { ConfigProductService } from './../../config-products/config-product.service';
 import { filter } from 'rxjs/operators';
 import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
@@ -32,11 +31,19 @@ export class ConfigAddVariantProductModalComponent implements OnInit {
     private modal: TDSModalRef, 
     private msg: TDSMessageService, 
     private http: HttpClient, 
-    private formBuilder: FormBuilder,
-    private service:ConfigProductService
+    private formBuilder: FormBuilder
   ) { 
       this.initForm();
-      this.productTypeList = this.service.getTypeList();
+      this.productTypeList = [
+        {
+          id:1,
+          name:'Giày dép'
+        },
+        {
+          id:2,
+          name:'Thực phẩm'
+        }
+      ];
   }
 
   ngOnInit(): void {

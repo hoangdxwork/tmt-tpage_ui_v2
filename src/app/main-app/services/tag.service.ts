@@ -1,3 +1,4 @@
+import { ODataProductTagDTO } from './../dto/configs/product/config-odata-product.dto';
 import { Injectable } from '@angular/core';
 import { da } from 'date-fns/locale';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
@@ -38,4 +39,12 @@ export class TagService extends BaseSevice {
     return this.apiService.getData<ODataTagsPartnerDTO>(api, null);
   }
 
+  getProductTagList(): Observable<any>{
+    const api: TAPIDTO = {
+    url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetByType?type=producttemplate`,
+    method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<ODataProductTagDTO>(api, null);
+  }
 }

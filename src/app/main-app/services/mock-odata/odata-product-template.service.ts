@@ -1,47 +1,51 @@
+import { ODataProductTemplateDTO } from '../../dto/configs/product/config-odata-product.dto';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperString,  TDSSafeAny } from 'tmt-tang-ui';
-import { ODataCRMTagDTO } from '../../dto/crm-tag/odata-crmtag.dto';
-import { ODataPartnerDTO } from '../../dto/partner/partner.dto';
-import { ODataQuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { BaseSevice } from '../base.service';
 
 export interface FilterObjDTO  {
-    searchText: '',
+    searchText: string,
 }
 
 @Injectable()
-export class OdataQuickReplyService extends BaseSevice {
+export class OdataProductTemplateService extends BaseSevice {
 
   prefix: string = "odata";
-  table: string = "MailTemplate";
+  table: string = "ProductTemplate";
   baseRestApi: string = "";
 
   constructor(private apiService: TCommonService,
       public caheApi: THelperCacheService) {
-    super(apiService);
+    super(apiService)
   }
 
-  get(params: string): Observable<TDSSafeAny>{
+  getView(params:string): Observable<any>{
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}?${params}&$count=true`,
-        method: TApiMethodType.get,
+    url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?${params}&$count=true`,
+    method: TApiMethodType.get,
     }
-    return this.apiService.getData<ODataQuickReplyDTO>(api, null);
-  }
 
+    return this.apiService.getData<ODataProductTemplateDTO>(api, null);
+  }
+  
   public buildFilter(filterObj: FilterObjDTO) {
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",
         filters: []
     }
 
+    dataFilter.filters.push({ field: "Active", operator: OperatorEnum.eq, value: true})
+    dataFilter.logic = "and";
+
     if (TDSHelperString.hasValueString(filterObj.searchText)) {
         dataFilter.filters.push( {
             filters: [
-              { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText }
+              { field: "NameGet", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "UOMName", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "DefaultCode", operator: OperatorEnum.contains, value: filterObj.searchText }
             ],
             logic: 'or'
         })

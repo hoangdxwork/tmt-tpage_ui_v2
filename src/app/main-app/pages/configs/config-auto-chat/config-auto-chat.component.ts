@@ -1,6 +1,16 @@
+import { FormGroup, FormBuilder } from '@angular/forms';
+import { SortEnum } from './../../../../lib/enum/sort.enum';
+import { SortDataRequestDTO } from './../../../../lib/dto/dataRequest.dto';
+import { QuickReplyService } from './../../../services/quick-reply.service';
+import { QuickReplyDTO } from './../../../dto/quick-reply.dto.ts/quick-reply.dto';
+import { takeUntil } from 'rxjs/operators';
+import { THelperDataRequest } from './../../../../lib/services/helper-data.service';
+import { Subject } from 'rxjs';
+import { OdataQuickReplyService } from './../../../services/mock-odata/odata-quick-reply.service';
 import { AutoChatAddDataModalComponent } from '../components/auto-chat-add-data-modal/auto-chat-add-data-modal.component';
-import { TDSSafeAny, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
+import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSMessageService, TDSTableQueryParams } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { ODataQuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-reply.dto';
 
 @Component({
   selector: 'app-config-auto-chat',
@@ -8,134 +18,69 @@ import { Component, OnInit, ViewContainerRef } from '@angular/core';
   styleUrls: ['./config-auto-chat.component.scss']
 })
 export class ConfigAutoChatComponent implements OnInit {
-  AutoChatList:Array<TDSSafeAny> = [];
+  AutoChatList:Array<QuickReplyDTO> = [];
   expandBtnList:Array<boolean> = [];
   isLoading = false;
+  pageSize: number = 20;
+  pageIndex: number = 1;
+  count: number = 0;
 
-  constructor(private modalService: TDSModalService,
-    private viewContainerRef: ViewContainerRef) { }
-
-  ngOnInit(): void {
-    this.loadData();
+  private destroy$ = new Subject<void>();
+  public filterObj: TDSSafeAny = {
+    searchText: ''
   }
 
-  loadData(){
-    this.AutoChatList = [
-      {
-        id:1,
-        name:'Yêu cầu gửi số điện thoại',
-        content:'{required.phone}',
-        shortcut:'#',
-        status:true,
-      },
-      {
-        id:2,
-        name:'Yêu cầu địa chỉ',
-        content:'{required.address}',
-        shortcut:'#',
-        status:true,
-      },
-      {
-        id:3,
-        name:'Cảm ơn',
-        content:'Xin chào, {partner.name} Cảm ơn bạn đã đặt hàng tại shop!!! ...',
-        shortcut:'#',
-        status:true,
-      },
-      {
-        id:4,
-        name:'Đặt hàng',
-        content:'{partner.phone}{partner.address}{order}{placeholder.note}',
-        shortcut:'#',
-        status:true,
-      },
-      {
-        id:5,
-        name:'Tag',
-        content:'{tag}',
-        shortcut:'#',
-        status:true,
-      },
-      {
-        id:6,
-        name:'Yêu cầu đặt hàng',
-        content:'{partner.name}{partner.code}{partner.code}{order}',
-        shortcut:'#',
-        status:true,
-      },
-      {
-        id:7,
-        name:'Mã đặt hàng',
-        content:'{placeholder.code}',
-        shortcut:'#',
-        status:true,
-      },
-      {
-        id:8,
-        name:'Thanh toán',
-        content:'{partner.code}{order}{order.tracking_code}{order.total_amount}{placeholder.details}',
-        shortcut:'#',
-        status:true,
-      },
-      {
-        id:9,
-        name:'Chi tiết đơn hàng',
-        content:'{placeholder.details}',
-        shortcut:'#',
-        status:true,
-      },
-      {
-        id:9,
-        name:'Chi tiết đơn hàng',
-        content:'{placeholder.details}',
-        shortcut:'#',
-        status:true,
-      },
-      {
-        id:9,
-        name:'Chi tiết đơn hàng',
-        content:'{placeholder.details}',
-        shortcut:'#',
-        status:true,
-      },
-      {
-        id:9,
-        name:'Chi tiết đơn hàng',
-        content:'{placeholder.details}',
-        shortcut:'#',
-        status:true,
-      },
-      {
-        id:9,
-        name:'Chi tiết đơn hàng',
-        content:'{placeholder.details}',
-        shortcut:'#',
-        status:true,
-      },
-      {
-        id:9,
-        name:'Chi tiết đơn hàng',
-        content:'{placeholder.details}',
-        shortcut:'#',
-        status:true,
-      },
-      {
-        id:9,
-        name:'Chi tiết đơn hàng',
-        content:'{placeholder.details}',
-        shortcut:'#',
-        status:true,
-      },
-      {
-        id:9,
-        name:'Chi tiết đơn hàng',
-        content:'{placeholder.details}',
-        shortcut:'#',
-        status:true,
-      },
-    ];
+  constructor(private modalService: TDSModalService,
+    private viewContainerRef: ViewContainerRef,
+    private message: TDSMessageService,
+    private fb : FormBuilder,
+    private odataQuickReplyService : OdataQuickReplyService,
+    private quickReplyService: QuickReplyService,
+    ) {     }
+
+  ngOnInit(): void {
+    // this.loadData(this.pageSize, this.pageIndex);
+  }
+
+  
+
+  loadData(pageSize: number, pageIndex: number ){
+    this.isLoading = true;
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
+    this.odataQuickReplyService.get(params, ).pipe(takeUntil(this.destroy$)).subscribe((res: ODataQuickReplyDTO) => {
+      this.AutoChatList = res.value
+      this.count = res['@odata.count'] as number
+      this.isLoading = false;
+    }, error => {
+      this.isLoading = false;
+      this.message.error('Tải dữ liệu thất bại!');
+    });
 
     this.setExpandBtnStatus();
+  }
+
+  onQueryParamsChange(params: TDSTableQueryParams) {
+    this.loadData(params.pageSize, params.pageIndex);
+    this.pageIndex = params.pageIndex;
+  }
+
+  refreshData(){
+    this.pageIndex = 1;
+
+  }
+
+  selectOrderDefault(key: number) {
+    this.quickReplyService.updateDefaultForOrder(key).subscribe((res: any) => {
+      this.message.success("Thay đổi Templates đơn hàng thành công!");
+      this.loadData(this.pageSize, this.pageIndex);
+    });
+  }
+
+  selectBillDefault(key: number) {
+    this.quickReplyService.updateDefaultForBill(key).subscribe((res: any) => {
+      this.message.success("Thay đổi Templates hóa đơn thành công!");
+      this.loadData(this.pageSize, this.pageIndex);
+    });
   }
 
   setExpandBtnStatus(){
@@ -157,7 +102,7 @@ export class ConfigAutoChatComponent implements OnInit {
       viewContainerRef: this.viewContainerRef,
       size:'lg',
       componentParams: {
-          data: {}
+          
       }
     });
     modal.afterOpen.subscribe(() => {
@@ -166,21 +111,40 @@ export class ConfigAutoChatComponent implements OnInit {
     // Return a result when closed
     modal.afterClose.subscribe(result => {
         if (TDSHelperObject.hasValue(result)) {
-          this.AutoChatList.push(result);
+            this.loadData(this.pageSize, this.pageIndex);
         }
     });
   }
 
-  onChangeStatus(value:boolean,index:number){
-
+  onChangeStatus(key: number){
+    this.quickReplyService.updateStatus(key).subscribe((res) => {
+      
+    });
   }
 
   onChangeSetting(data:TDSSafeAny,index:number){
 
   }
 
-  onEditRow(data:TDSSafeAny,index:number){
+  onEditRow(ev:TDSSafeAny,id:number){
+    const modal = this.modalService.create({
+      title: 'Cập nhật trả lời nhanh',
+      content: AutoChatAddDataModalComponent,
+      viewContainerRef: this.viewContainerRef,
+      size:'lg',
+      componentParams: {
+        valueEditId : id
+      }
+    });
+    modal.afterOpen.subscribe(() => {
 
+    });
+    // Return a result when closed
+    modal.afterClose.subscribe(result => {
+        if (TDSHelperObject.hasValue(result)) {
+          this.loadData(this.pageSize, this.pageIndex);
+        }
+    })
   }
 
   onRemoveRow(index:number){

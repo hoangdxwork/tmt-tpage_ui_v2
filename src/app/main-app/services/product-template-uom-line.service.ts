@@ -1,10 +1,8 @@
 import { ODataProductInventoryDTO } from './../dto/configs/product/config-odata-product.dto';
-import { EventEmitter, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tmt-tang-ui";
-import { PagedList2 } from "../dto/pagedlist2.dto";
-import { ProductTemplateDTO } from "../dto/product/product.dto";
 import { ProductTemplateV2DTO } from "../dto/producttemplate/product-tempalte.dto";
 import { BaseSevice } from "./base.service";
 
@@ -15,8 +13,8 @@ import { BaseSevice } from "./base.service";
 export class ProductTemplateService extends BaseSevice {
 
   prefix: string = "odata";
-  table: string = "ProductTemplate";
-  baseRestApi: string = "rest/v1.0/product";
+  table: string = "ProductTemplateUOMLine";
+  baseRestApi: string = "";
 
   constructor(private apiService: TCommonService) {
     super(apiService)
