@@ -1,1 +1,32 @@
-<p>config-greeting works!</p>
+<tds-spin [spinning]="isLoading">
+  <div class="w-full h-full flex flex-col gap-y-4 ">
+    <div>
+        <span class="text-title-1 font-semibold">Cấu hình lời chào</span>
+    </div>
+    <div class="flex gap-x-2 items-center">
+        <tds-switch [(ngModel)]="isSelect" size="md"></tds-switch>
+        <span class="">Bật danh sách lời chào</span>
+    </div>
+    <div *ngIf="isSelect"
+        class="rounded-xl bg-neutral-3-50 flex flex-col px-4 divide-y divide-neutral-2-200">
+        <div class="flex flex-col p-4 w-1/2">
+            <div *ngFor="let item of lstGreeting; let index = index" class="flex flex-col gap-y-2.5">
+                <tds-form-field>
+                    <tds-label>Màn hình giới thiệu bắt đầu</tds-label>
+                    <input tdsInput autocomplete="off" placeholder="Giới thiệu" [(ngModel)]="item.text" />
+                </tds-form-field>
+                <div class="flex gap-x-2">
+                    <div *ngFor="let suggest of suggests"  class="bg-primary-1 px-2 rounded" (click)="addSuggest(suggest, index)">
+                      <span class="text-caption-2 font-semibold text-white"> {{suggest.text}} </span>
+                    </div>
+                </div>
+                <tds-form-field>
+                    <tds-label>Nút bắt đầu</tds-label>
+                    <input tdsInput autocomplete="off" placeholder="Nhập nút bắt đầu" [(ngModel)]="getStarted" />
+                </tds-form-field>
+            </div>
+        </div>
+    </div>
+  </div>
+</tds-spin>
+

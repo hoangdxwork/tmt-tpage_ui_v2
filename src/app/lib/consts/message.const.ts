@@ -58,5 +58,12 @@ export const Message = {
     ChannelExist: 'Kênh đã tồn tại.',
     RefreshTokenSuccess: 'Cập nhật token thành công.',
     RefreshTokenFail: 'Cập nhật token thất bại!',
+  },
+  Config: {
+    PageConfig: {
+      ProfileMessagesLimit: 'Menu tương tác đã đạt giới hạn.',
+      InfoEmpty: 'Có thông tin bị trống',
+      Saved: 'Đã lưu'
+    }
   }
 }

@@ -29,222 +29,23 @@
                       </ng-template>
                   </tds-tab>
                   <!-- tabs menu tương tác -->
-                  <ng-template tds-tab title="Menu tương tác">
-                      <!-- <config-interactive-menus [eventOnSave]="onSaveInteractiveMenus" (onSaveSuccess)="onSaveInteractiveMenusSuccess($event)"></config-interactive-menus> -->
-                      <div class="w-full h-full flex flex-col gap-y-4 ">
-                          <div>
-                              <span class="text-title-1 font-semibold">Cấu hình menu tương tác</span>
-                          </div>
-                          <div class="flex gap-x-2 items-center">
-                              <tds-switch [checked]="isOpenTagMenuTurnOnInteract" (change)="changeTagMenuTurnOnInteract()" size="md"></tds-switch>
-                              <span class="">Bật menu tương tác</span>
-                          </div>
-                          <div *ngIf="isOpenTagMenuTurnOnInteract"
-                              class="rounded-xl bg-neutral-3-50 flex flex-col px-4 divide-y divide-neutral-2-200">
-                              <div *ngFor="let item of listOfDataInteract" class="flex flex-col gap-y-2 py-5">
-                                  <div class="flex gap-x-2 items-center justify-between ">
-                                      <div class="flex gap-x-2 items-center">
-                                          <tds-switch [checked]="item.statusSwitch" size="md"></tds-switch>
-                                          <span class="">{{item.name}}</span>
-                                      </div>
-                                      <div *ngIf="indClickInteract != item.id" class="flex gap-x-2 items-center">
-                                          <button tds-button-icon color="secondary" size="sm"
-                                              (click)="clickEditInteract(item.id)">
-                                              <span class="flex items-center">
-                                                  <i class="tdsi-edit-fill text-lg leading-none"></i>
-                                              </span>
-                                          </button>
-                                          <button tds-button-icon color="secondary" size="sm">
-                                              <span class="flex items-center">
-                                                  <i class="tdsi-trash-fill text-lg leading-none"></i>
-                                              </span>
-                                          </button>
-                                      </div>
-                                      <div *ngIf="indClickInteract == item.id" class="flex gap-x-2 items-center">
-                                          <button tds-button-icon color="secondary" size="sm"
-                                              (click)="clickCloseInteract()">
-                                              <span class="flex items-center">
-                                                  <i class="tdsi-close-fill text-lg leading-none"></i>
-                                              </span>
-                                          </button>
-                                          <button tds-button-icon color="secondary" size="sm">
-                                              <span class="flex items-center">
-                                                  <i class="tdsi-tick-fill text-lg leading-none"></i>
-                                              </span>
-                                          </button>
-                                      </div>
-                                  </div>
-                                  <div *ngIf="indClickInteract == item.id" class="flex flex-col gap-y-2.5">
-                                      <tds-tabset class="bg-white rounded-xl py-4">
-                                          <tds-tab [title]="titleTemplateWebsite"
-                                              clsContent=" w-full h-full p-4 -mt-px">
-                                              <ng-template #titleTemplateWebsite let-active="active">
-                                                  <div class="pr-2 border-r border-neutral-2-200">
-                                                      <div class="flex items-center font-semibold cursor-pointer rounded-md text-body-2 px-4 py-2 "
-                                                          [ngClass]='{"text-white  bg-primary-1":active,"text-neutral-1-400 hover:text-white hover:bg-primary-1":!active}'>
-                                                          <span>Website</span>
-                                                      </div>
-                                                  </div>
-
-                                              </ng-template>
-
-                                              <div class="flex flex-col gap-y-2.5">
-                                                  <tds-form-field>
-                                                      <tds-label>Tiêu đề</tds-label>
-                                                      <input tdsInput autocomplete="off" placeholder="Nhập tiêu đề" />
-                                                  </tds-form-field>
-                                                  <tds-form-field>
-                                                      <tds-label>URL</tds-label>
-                                                      <input tdsInput autocomplete="off" placeholder="Nhập URL" />
-                                                  </tds-form-field>
-                                              </div>
-                                          </tds-tab>
-                                          <tds-tab [title]="titleTemplatePostback"
-                                              clsContent=" w-full h-full p-4 -mt-px">
-                                              <ng-template #titleTemplatePostback let-active="active">
-                                                  <div class="pl-2">
-                                                      <div class="flex items-center font-semibold cursor-pointer rounded-md text-body-2 px-4 py-2"
-                                                          [ngClass]='{"text-white  bg-primary-1":active,"text-neutral-1-400 hover:text-white hover:bg-primary-1":!active}'>
-                                                          <span>Postback</span>
-                                                      </div>
-                                                  </div>
-                                              </ng-template>
-                                              <div class="flex flex-col gap-y-2.5">
-                                                  <tds-form-field>
-                                                      <tds-label>Tiêu đề</tds-label>
-                                                      <input tdsInput autocomplete="off" placeholder="Nhập tiêu đề" />
-                                                  </tds-form-field>
-                                                  <tds-form-field>
-                                                      <tds-label>Payload</tds-label>
-                                                      <input tdsInput autocomplete="off" placeholder="Nhập Payload" />
-                                                  </tds-form-field>
-                                              </div>
-                                          </tds-tab>
-                                      </tds-tabset>
-                                  </div>
-                              </div>
-                              <div class="py-5">
-                                  <button tds-button color="secondary" (click)="addDataInteract()">
-                                      <span class="flex items-center">
-                                          <i class="tdsi-plus-circle-fill text-lg leading-5 text-neutral-1-500 mr-2"></i>
-                                          Thêm mới
-                                      </span>
-                                  </button>
-                              </div>
-                          </div>
-                      </div>
-                  </ng-template>
+                  <tds-tab tds-tab title="Menu tương tác">
+                      <ng-template tds-tab>
+                          <config-interactive-menus [eventOnSave]="onSaveInteractiveMenus" (onSaveSuccess)="onSaveInteractiveMenusSuccess($event)"></config-interactive-menus>
+                      </ng-template>
+                  </tds-tab>
                   <!-- tab các câu hỏi nhanh -->
-                  <ng-template tds-tab title="Các câu hỏi nhanh">
-                      <div class="w-full h-full flex flex-col gap-y-4 ">
-                          <div>
-                              <span class="text-title-1 font-semibold">Cấu hình câu hỏi nhanh</span>
-                          </div>
-                          <div class="flex gap-x-2 items-center">
-                              <tds-switch [checked]="isOpenTagturnOnQuestionQuick" (change)="changeTagturnOnQuestionQuick()" size="md"></tds-switch>
-                              <span class="">Bật danh sách câu hỏi nhanh</span>
-                          </div>
-                          <div *ngIf="isOpenTagturnOnQuestionQuick"
-                              class="rounded-xl bg-neutral-3-50 flex flex-col px-4 divide-y divide-neutral-2-200">
-                              <div *ngFor="let item of listOfDataQuestion" class="flex flex-col gap-y-2 py-5">
-                                  <div class="flex gap-x-2 items-center justify-between ">
-                                      <div class="flex gap-x-2 items-center">
-                                          <span class="mr-2">#{{item.id}}</span>
-                                          <span class="">{{item.text}}</span>
-                                      </div>
-                                      <div *ngIf="indClickQuestion != item.id" class="flex gap-x-2 items-center">
-                                          <button tds-button-icon color="secondary" size="sm"
-                                              (click)="clickEditQuestion(item.id)">
-                                              <span class="flex items-center">
-                                                  <i class="tdsi-edit-fill text-lg leading-none"></i>
-                                              </span>
-                                          </button>
-                                          <button tds-button-icon color="secondary" size="sm">
-                                              <span class="flex items-center">
-                                                  <i class="tdsi-trash-fill text-lg leading-none"></i>
-                                              </span>
-                                          </button>
-                                      </div>
-                                      <div *ngIf="indClickQuestion == item.id" class="flex gap-x-2 items-center">
-                                          <button tds-button-icon color="secondary" size="sm"
-                                              (click)="clickCloseQuestion()">
-                                              <span class="flex items-center">
-                                                  <i class="tdsi-close-fill text-lg leading-none"></i>
-                                              </span>
-                                          </button>
-                                          <button tds-button-icon color="secondary" size="sm">
-                                              <span class="flex items-center">
-                                                  <i class="tdsi-tick-fill text-lg leading-none"></i>
-                                              </span>
-                                          </button>
-                                      </div>
-                                  </div>
-                                  <div *ngIf="indClickQuestion == item.id" class="flex flex-col gap-y-2.5">
-
-                                      <div class="flex flex-col gap-y-2.5">
-                                          <tds-form-field>
-                                              <tds-label>Câu hỏi</tds-label>
-                                              <input tdsInput autocomplete="off" placeholder="Nhập tiêu đề" />
-                                          </tds-form-field>
-                                          <tds-form-field>
-                                              <tds-label>trả lời</tds-label>
-                                              <input tdsInput autocomplete="off" placeholder="Nhập" />
-                                          </tds-form-field>
-                                          <tds-form-field>
-                                              <tds-label>Payload</tds-label>
-                                              <input tdsInput autocomplete="off" placeholder="Nhập Payload" />
-                                          </tds-form-field>
-                                      </div>
-
-                                  </div>
-                              </div>
-                              <div class="py-5">
-                                  <button tds-button color="secondary" (click)="addDataQuestion()">
-                                      <span class="flex items-center">
-                                          <i
-                                              class="tdsi-plus-circle-fill text-lg leading-5 text-neutral-1-500 mr-2"></i>Thêm
-                                          mới
-                                      </span>
-                                  </button>
-                              </div>
-                          </div>
-                      </div>
-                  </ng-template>
+                  <tds-tab tds-tab title="Các câu hỏi nhanh">
+                      <ng-template tds-tab>
+                        <config-quick-question [eventOnSave]="onSaveQuickQuestion" (onSaveSuccess)="onSaveQuickQuestionSuccess($event)"></config-quick-question>
+                      </ng-template>
+                  </tds-tab>
                   <!-- tabs lời chào -->
-                  <ng-template tds-tab title="Lời chào">
-                      <div class="w-full h-full flex flex-col gap-y-4 ">
-                          <div>
-                              <span class="text-title-1 font-semibold">Cấu hình lời chào</span>
-                          </div>
-                          <div class="flex gap-x-2 items-center">
-                              <tds-switch [checked]="isOpenTagturnOnListGreeting" (change)="changeTagturnOnListGreeting()" size="md"></tds-switch>
-                              <span class="">Bật danh sách lời chào</span>
-                          </div>
-                          <div *ngIf="isOpenTagturnOnListGreeting"
-                              class="rounded-xl bg-neutral-3-50 flex flex-col px-4 divide-y divide-neutral-2-200">
-                              <div class="flex flex-col p-4 w-1/2">
-                                  <div class="flex flex-col gap-y-2.5">
-                                      <tds-form-field>
-                                          <tds-label>Màn hình giới thiệu bắt đầu</tds-label>
-                                          <input tdsInput autocomplete="off" placeholder="Giới thiệu" />
-                                      </tds-form-field>
-                                      <div class="flex gap-x-2">
-                                          <div class="bg-primary-1 px-2 rounded">
-                                              <span class="text-caption-2 font-semibold text-white">Gợi ý 1</span>
-                                          </div>
-                                          <div class="bg-primary-1 px-2 rounded">
-                                              <span class="text-caption-2 font-semibold text-white">Gợi ý 2</span>
-                                          </div>
-                                      </div>
-                                      <tds-form-field>
-                                          <tds-label>Nút bắt đầu</tds-label>
-                                          <input tdsInput autocomplete="off" placeholder="Nhập" />
-                                      </tds-form-field>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </ng-template>
+                  <tds-tab tds-tab title="Lời chào">
+                    <ng-template tds-tab>
+                      <config-greeting [eventOnSave]="onSaveGreeting" (onSaveSuccess)="onSaveGreetingSuccess($event)"></config-greeting>
+                    </ng-template>
+                  </tds-tab>
               </tds-tabset>
           </div>
       </div>

@@ -1,4 +1,6 @@
-<div class="w-full h-full pb-4 px-4 overflow-hidden text-body-2">
+
+<tds-spin [spinning]="isLoading">
+  <div class="w-full h-full pb-4 px-4 overflow-hidden text-body-2">
     <div class="w-full h-full overflow-y-auto tds-custom-scroll">
         <div class="flex flex-col w-full bg-white rounded-xl">
             <div class="flex flex-row items-center justify-between px-4 py-3">
@@ -7,100 +9,111 @@
                     <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">CẤU HÌNH NHÃN HỘI THOẠI</span>
                 </div>
                 <div class="flex gap-x-2">
-                    <button tds-button color="primary">
+                    <button tds-button color="primary" (click)="onSave()" [disabled]="!formAutoLabelConfig.valid">
                         <span class="flex items-center">
                             Lưu thay đổi
                         </span>
                     </button>
                 </div>
             </div>
-            <div class="w-full p-4 grid grid-cols-2 gap-y-6 gap-x-16">
-                <div class="flex w-full justify-start gap-x-2">
-                    <tds-switch [checked]="isOpenTagContainsPhone" (change)="onChangeTagContainsPhone()" size="md"></tds-switch>
-                    <div class="flex flex-col w-full gap-y-2">
-                        <span>Tự động gắn nhãn vào hội thoại có chứa số điện thoại?</span>
-                        <tds-form-field *ngIf="isOpenTagContainsPhone">
-                            <tds-select valueField="id" textField="name" placeholder='Chọn nhãn'
-                                disabledField="isActive"  [required]='true'
-                                 [allowClear]="true">
-                            </tds-select>
-                        </tds-form-field>
-                    </div>
-                </div>
-                <div class="flex w-full justify-start gap-x-2">
-                    <tds-switch [checked]="isOpenTagAfterConfirmingAndPrintingOrder" (change)="onChangeTagAfterConfirmingAndPrintingOrder()" size="md"></tds-switch>
-                    <div class="flex flex-col w-full gap-y-2">
-                        <span>Tự động gắn nhãn vào hội thoại sau khi xác nhận và in hóa đơn?</span>
-                        <tds-form-field *ngIf="isOpenTagAfterConfirmingAndPrintingOrder">
-                            <tds-select valueField="id" textField="name" placeholder='Chọn nhãn'
-                                disabledField="isActive"  [required]='true'
-                                 [allowClear]="true">
-                            </tds-select>
-                        </tds-form-field>
-                    </div>
-                </div>
-                <div class="flex w-full justify-start gap-x-2">
-                    <tds-switch [checked]="isOpenTagAfterCreatingOrder" size="md" (change)="onChangeTagAfterCreatingOrder()"></tds-switch>
-                    <div class="flex flex-col w-full gap-y-2">
-                        <span>Tự động gắn nhãn vào hội thoại sau khi tạo đơn hàng?</span>
-                        <tds-form-field *ngIf="isOpenTagAfterCreatingOrder">
-                            <tds-select valueField="id" textField="name" placeholder='Chọn nhãn'
-                                disabledField="isActive"  [required]='true'
-                                 [allowClear]="true">
-                            </tds-select>
-                        </tds-form-field>
-                    </div>
-                </div>
-                <div class="flex w-full justify-start gap-x-2">
-                    <tds-switch [checked]="isOpenTagDraftOrder" size="md" (change)="onChangeTagDraftOrder()"></tds-switch>
-                    <div class="flex flex-col w-full gap-y-2">
-                        <span>Tự động gắn nhãn vào hội thoại sau khi lưu nháp hóa đơn?</span>
-                        <tds-form-field *ngIf="isOpenTagDraftOrder">
-                            <tds-select valueField="id" textField="name" placeholder='Chọn nhãn'
-                                disabledField="isActive"  [required]='true'
-                                 [allowClear]="true">
-                            </tds-select>
-                        </tds-form-field>
-                    </div>
-                </div>
-                <div class="flex w-full justify-start gap-x-2">
-                    <tds-switch [checked]="isOpenTagContainsKeyword" size="md" (change)="onChangeTagContainsKeyword()"></tds-switch>
-                    <div class="flex flex-col w-full gap-y-2">
-                        <span>Tự động gắn nhãn vào hội thoại có chứa từ khóa?</span>
-                        <div class="flex gap-x-4" *ngIf="isOpenTagContainsKeyword">
-                            <tds-form-field class="w-full">
-                                <tds-select valueField="id" textField="name" placeholder='Chọn nhãn'
-                                    disabledField="isActive"  [required]='true'
-                                     [allowClear]="true">
+            <!-- Form Config -->
+            <form [formGroup]="formAutoLabelConfig">
+                <div class="w-full p-4 grid grid-cols-2 gap-y-6 gap-x-16">
+                  <div class="flex w-full justify-start gap-x-2">
+                      <tds-switch formControlName="AssignOnPhone" size="md"></tds-switch>
+                      <div class="flex flex-col w-full gap-y-2">
+                          <span>Tự động gắn nhãn vào hội thoại có chứa số điện thoại?</span>
+                          <tds-form-field *ngIf="formAutoLabelConfig?.value?.AssignOnPhone">
+                              <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' formControlName="TagOnPhone" [valuePrimitive]="false"
+                                  disabledField="isActive"  [required]='true' [data]="lstTags"
+                                  [allowClear]="true">
+                              </tds-select>
+                          </tds-form-field>
+                      </div>
+                  </div>
+                  <div class="flex w-full justify-start gap-x-2">
+                      <tds-switch formControlName="AssignOnBillPrint" size="md"></tds-switch>
+                      <div class="flex flex-col w-full gap-y-2">
+                          <span>Tự động gắn nhãn vào hội thoại sau khi xác nhận và in hóa đơn?</span>
+                          <tds-form-field *ngIf="formAutoLabelConfig?.value?.AssignOnBillPrint">
+                              <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' formControlName="TagOnBillPrint" [valuePrimitive]="false"
+                                  disabledField="isActive"  [required]='true' [data]="lstTags"
+                                  [allowClear]="true">
+                              </tds-select>
+                          </tds-form-field>
+                      </div>
+                  </div>
+                  <div class="flex w-full justify-start gap-x-2">
+                      <tds-switch formControlName="AssignOnOrder" size="md"></tds-switch>
+                      <div class="flex flex-col w-full gap-y-2">
+                          <span>Tự động gắn nhãn vào hội thoại sau khi tạo đơn hàng?</span>
+                          <tds-form-field *ngIf="formAutoLabelConfig?.value?.AssignOnOrder">
+                              <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' formControlName="TagOnOrder" [valuePrimitive]="false"
+                                  disabledField="isActive"  [required]='true' [data]="lstTags"
+                                  [allowClear]="true">
+                              </tds-select>
+                          </tds-form-field>
+                      </div>
+                  </div>
+                  <div class="flex w-full justify-start gap-x-2">
+                      <tds-switch formControlName="AssignOnBillDraft" size="md"></tds-switch>
+                      <div class="flex flex-col w-full gap-y-2">
+                          <span>Tự động gắn nhãn vào hội thoại sau khi lưu nháp hóa đơn?</span>
+                          <tds-form-field *ngIf="formAutoLabelConfig?.value?.AssignOnBillDraft">
+                              <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' formControlName="TagOnBillDraft" [valuePrimitive]="false"
+                                  disabledField="isActive"  [required]='true' [data]="lstTags"
+                                  [allowClear]="true">
+                              </tds-select>
+                          </tds-form-field>
+                      </div>
+                  </div>
+                  <div class="flex w-full justify-start gap-x-2">
+                      <tds-switch formControlName="AssignOnPattern" size="md"></tds-switch>
+                      <div class="flex flex-col w-full gap-y-2" formArrayName="TagOnPattern">
+                          <span>Tự động gắn nhãn vào hội thoại có chứa từ khóa?</span>
+                          <div *ngIf="formAutoLabelConfig?.value?.AssignOnPattern" class="flex flex-col w-full gap-y-2">
+                            <div *ngFor="let item of tagOnPatternFormGroups; let i=index" [formGroupName]="i" class="flex gap-x-4">
+                              <tds-form-field class="w-full">
+                                  <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn'
+                                      disabledField="isActive" [required]='true' [data]="lstTags" formControlName="CrmTag" [valuePrimitive]="false"
+                                      [allowClear]="true">
+                                  </tds-select>
+                              </tds-form-field>
+                              <tds-form-field class="w-full">
+                                <tds-select valueField="id" textField="name" [required]='true' formControlName="CrmKey"
+                                    placeholder='Chọn từ khóa' mode="tags">
                                 </tds-select>
-                            </tds-form-field>
-                            <tds-form-field class="w-full">
-                                <tds-select valueField="id" textField="name" placeholder='Chọn nhãn'
-                                    disabledField="isActive"  [required]='true'
-                                     [allowClear]="true">
-                                </tds-select>
-                            </tds-form-field>
-                            <button tds-button-icon color="secondary" size="md">
-                                <span class="flex items-center">
-                                    <i class="tdsi-trash-fill"></i>
-                                </span>
-                            </button>
-                        </div>
-                    </div>
+                              </tds-form-field>
+                              <button tds-button-icon color="secondary" size="md" (click)="deleteCRMKeyTag(i)">
+                                  <span class="flex items-center">
+                                      <i class="tdsi-trash-fill"></i>
+                                  </span>
+                              </button>
+                            </div>
+                          </div>
+                          <button tds-button color="secondary" size="md" (click)="addCRMKeyTag(null)" class="w-min">
+                            <span class="flex items-center">
+                              <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm nhãn
+                            </span>
+                          </button>
+                      </div>
+                  </div>
+                  <div class="flex w-full justify-start gap-x-2">
+                      <tds-switch formControlName="AssignOnBillPrintShip" size="md"></tds-switch>
+                      <div class="flex flex-col w-full gap-y-2">
+                          <span>Tự động gắn nhãn vào hội thoại sau khi xác nhận và in phiếu ship?</span>
+                          <tds-form-field *ngIf="formAutoLabelConfig?.value?.AssignOnBillPrintShip">
+                              <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' formControlName="TagOnBillPrintShip" [valuePrimitive]="false"
+                                  disabledField="isActive"  [required]='true' [data]="lstTags"
+                                  [allowClear]="true">
+                              </tds-select>
+                          </tds-form-field>
+                      </div>
+                  </div>
                 </div>
-                <div class="flex w-full justify-start gap-x-2">
-                    <tds-switch [checked]="isOpenTagAfterConfirmingAndPrintingOrdeShip" size="md" (change)="onChangeTagAfterConfirmingAndPrintingOrdeShip()"></tds-switch>
-                    <div class="flex flex-col w-full gap-y-2">
-                        <span>Tự động gắn nhãn vào hội thoại sau khi xác nhận và in phiếu ship?</span>
-                        <tds-form-field *ngIf="isOpenTagAfterConfirmingAndPrintingOrdeShip">
-                            <tds-select valueField="id" textField="name" placeholder='Chọn nhãn'
-                                disabledField="isActive"  [required]='true'
-                                 [allowClear]="true">
-                            </tds-select>
-                        </tds-form-field>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
-</div>
+  </div>
+</tds-spin>
+

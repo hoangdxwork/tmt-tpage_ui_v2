@@ -1,17 +1,19 @@
-import { Component, OnInit, Input, SimpleChanges, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges, EventEmitter, Output, OnChanges, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Message } from 'src/app/lib/consts/message.const';
+import { ProfileMessageDTO } from 'src/app/main-app/dto/configs/page-config.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
-import { TDSMessageService } from 'tmt-tang-ui';
+import { FacebookService } from 'src/app/main-app/services/facebook.service';
+import { TDSMessageService, TDSSafeAny, TDSHelperArray } from 'tmt-tang-ui';
 
 @Component({
   selector: 'config-interactive-menus',
   templateUrl: './config-interactive-menus.component.html'
 })
-export class ConfigInteractiveMenusComponent implements OnInit {
+export class ConfigInteractiveMenusComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() eventOnSave: boolean = false;
   @Output() onSaveSuccess = new EventEmitter();
@@ -24,10 +26,21 @@ export class ConfigInteractiveMenusComponent implements OnInit {
 
   private destroy$ = new Subject();
 
+  isSelect: boolean = false;
+
+  lstData: ProfileMessageDTO[] = [];
+  lstProfileMessages: ProfileMessageDTO[] = [];
+
+  lstType = {
+    post_back: "postback",
+    web_url: "web_url"
+  }
+
   constructor(
     private formBuilder: FormBuilder,
     private crmTeamService: CRMTeamService,
     private message: TDSMessageService,
+    private facebookService: FacebookService
   ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -44,13 +57,10 @@ export class ConfigInteractiveMenusComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.createForm();
-
     this.loadConfigs();
   }
 
   loadConfigs() {
-    this.isLoading = true;
     this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.currentTeam = res;
 
@@ -59,98 +69,111 @@ export class ConfigInteractiveMenusComponent implements OnInit {
         this.updateAutoReplyConfig(pageId);
       }
 
-      this.isLoading = false;
-
-    }, error => this.isLoading = false);
-  }
-
-  createForm() {
-    // Bật auto phản hồi
-    this.formConfigInteractiveMenus = this.formBuilder.group({
-      IsEnableAutoReplyComment: [false],
-      IsEnableAutoReplyMultiple: [false],
-      MaxForAutoReplyMultiple: [1],
-      IsEnableAutoReplyAllComment: [false],
-      IsEnableAutoReplyCommentWithPhone: [false],
-      IsEnableAutoReplyCommentWithEmail: [false],
-      ContentOfCommentForAutoReply: [null],
-      ContentOfCommentForNotAutoReply: [null],
-      IsEnableAutoReplyCommentInMessage: [false],
-      ContentForAutoReplyWithComment: [null],
-      ContentForAutoReplyWithMessage: [null],
-      selectedWord1s: [null],
-      selectedWord2s: [null],
-      selectedWord3s: [null]
     });
   }
 
   updateAutoReplyConfig(pageId: string) {
-    // let formControls = this.formConfigAutoReply.controls;
+    this.isLoading = true;
+    this.isSelect = false;
+    this.facebookService.getChannelConfig(pageId).subscribe(res => {
+      this.lstData = res.profile_messages;
+      this.lstProfileMessages = this.lstData.map(x => ({...x}));
 
-    // this.crmTeamService.getChannelAutoReplyConfig(pageId).subscribe(res => {
-    //   console.log(res);
-    //   formControls["IsEnableAutoReplyComment"].setValue(res.IsEnableAutoReplyComment);
-    //   formControls["IsEnableAutoReplyMultiple"].setValue(res.IsEnableAutoReplyMultiple);
-    //   formControls["MaxForAutoReplyMultiple"].setValue(res.MaxForAutoReplyMultiple);
-    //   formControls["IsEnableAutoReplyAllComment"].setValue(res.IsEnableAutoReplyAllComment);
-    //   formControls["IsEnableAutoReplyCommentWithPhone"].setValue(res.IsEnableAutoReplyCommentWithPhone);
-    //   formControls["IsEnableAutoReplyCommentWithEmail"].setValue(res.IsEnableAutoReplyCommentWithEmail);
-    //   formControls["ContentOfCommentForAutoReply"].setValue(res.ContentOfCommentForAutoReply);
-    //   formControls["IsEnableAutoReplyCommentInMessage"].setValue(res.IsEnableAutoReplyCommentInMessage);
-    //   formControls["ContentForAutoReplyWithComment"].setValue(res.ContentForAutoReplyWithComment);
-    //   formControls["ContentForAutoReplyWithMessage"].setValue(res.ContentForAutoReplyWithMessage);
+      if(TDSHelperArray.hasListValue(this.lstData)) {
+        this.isSelect = true;
+      }
 
-    //   if (res.ContentOfCommentForAutoReply) {
-    //     formControls['selectedWord2s'].setValue(res.ContentOfCommentForAutoReply.split(','));
-    //   }
+      this.isLoading = false;
+    }, error => {
+      this.isLoading = false;
+      this.onSaveSuccess.emit(false);
+      if(error?.error?.message) this.message.error(error?.error?.message);
+      else this.message.error(Message.ErrorOccurred);
+    });
+  }
 
-    //   if (res.ContentOfCommentForNotAutoReply) {
-    //     formControls['selectedWord3s'].setValue(res.ContentOfCommentForNotAutoReply.split(','));
-    //   }
-    // });
+  add() {
+    let item: ProfileMessageDTO = {
+      type: this.lstType.web_url,
+      title: 'Chưa đặt tên',
+      payload: null,
+      url: null,
+      isActive: true
+    };
+
+    this.lstProfileMessages.push(item);
+    this.lstData.push(item);
   }
 
   onSave(pageId: string) {
-    // let model = this.prepareModelAutoReply();
-    // this.isLoading = true;
-    // this.crmTeamService.insertOrUpdateChannelAutoReplyConfig(pageId, model).subscribe(res => {
-    //   this.message.success(Message.UpdatedSuccess);
-    //   this.isLoading = false;
-    //   this.onSaveSuccess.emit(true);
-    // }, error => {
-    //   this.isLoading = false;
-    //   this.onSaveSuccess.emit(false);
-    //   if(error?.error?.message) this.message.error(error?.error?.message);
-    //   else this.message.error(Message.ErrorOccurred);
-    // });
+    this.isLoading = true;
+    let check = this.checkValue();
+
+    if(check != null) {
+      this.facebookService.updateProfileMessage(pageId, check).subscribe(res => {
+        this.lstData = res.profile_messages;
+        this.lstProfileMessages = this.lstData.map(x => ({...x}));
+
+        this.message.success(Message.UpdatedSuccess);
+        this.isLoading = false;
+        this.onSaveSuccess.emit(true)
+      }, error => {
+        this.isLoading = false;
+        this.onSaveSuccess.emit(false);
+        if(error?.Message) this.message.error(error?.Message);
+        else this.message.error(Message.ErrorOccurred);
+      });
+    }
+    else {
+      this.isLoading = false;
+      this.onSaveSuccess.emit(false);
+    }
+
   }
 
-  prepareModelAutoReply() {
-    // let formValue = this.formConfigAutoReply.value;
+  onRemoveInteract(index: number) {
+    this.lstProfileMessages.splice(index, 1);
+    this.lstData.splice(index, 1);
+  }
 
-    // let model: AutoReplyConfigDTO = {
-    //   IsEnableAutoReplyComment: formValue["IsEnableAutoReplyComment"],
-    //   IsEnableAutoReplyMultiple: formValue["IsEnableAutoReplyMultiple"],
-    //   MaxForAutoReplyMultiple: formValue["MaxForAutoReplyMultiple"],
-    //   IsEnableAutoReplyAllComment: formValue["IsEnableAutoReplyAllComment"],
-    //   IsEnableAutoReplyCommentWithPhone: formValue["IsEnableAutoReplyCommentWithPhone"],
-    //   IsEnableAutoReplyCommentWithEmail: formValue["IsEnableAutoReplyCommentWithEmail"],
-    //   ContentOfCommentForAutoReply: formValue["ContentOfCommentForAutoReply"],
-    //   ContentOfCommentForNotAutoReply: formValue["ContentOfCommentForAutoReply"],
-    //   IsEnableAutoReplyCommentInMessage: formValue["IsEnableAutoReplyCommentInMessage"],
-    //   ContentForAutoReplyWithComment: formValue["ContentForAutoReplyWithComment"],
-    //   ContentForAutoReplyWithMessage: formValue["ContentForAutoReplyWithMessage"],
-    // };
+  onConfirmInteract(item: ProfileMessageDTO, index: number) {
+    this.lstData[index] = ({...item});
+    this.message.info(Message.Config.PageConfig.Saved);
+  }
 
-    // if (formValue["selectedWord2s"]) {
-    //   model.ContentOfCommentForAutoReply = formValue["selectedWord2s"].join(",");
-    // }
+  onOpenTab(item: ProfileMessageDTO, index: number) {debugger;
+    item.tabSelected = !item.tabSelected ? true : false;
+    this.lstData[index].tabSelected = item.tabSelected;
+  }
 
-    // if (formValue["selectedWord3s"]) {
-    //   model.ContentOfCommentForNotAutoReply = formValue["selectedWord3s"].join(",");
-    // }
+  onCloseTab(item: ProfileMessageDTO, index: number) {
+    item.tabSelected = !item.tabSelected ? true : false;
+    this.lstData[index].tabSelected = item.tabSelected;
+    this.lstProfileMessages[index] = ({...this.lstData[index]});
+  }
 
-    // return model;
+  checkValue(): ProfileMessageDTO[] | null{
+    let data = this.lstData.map(x => ({...x}));
+
+    let result = 1;
+
+    for (let index = 0; index < data.length; index++) {
+      data[index].url = data[index].type == this.lstType.post_back ? null : data[index].url;
+      if (!data[index].url && data[index].type == this.lstType.web_url) {
+        this.message.error(Message.Config.PageConfig.InfoEmpty);
+        result = 0;
+        break;
+      }
+
+      data[index].payload = data[index].type == this.lstType.web_url ? null : data[index].payload;
+      if (!data[index].payload && data[index].type == this.lstType.post_back) {
+        this.message.error(Message.Config.PageConfig.InfoEmpty);
+        result = 0;
+        break;
+      }
+    }
+
+    return result ? data : null;
   }
 
   ngOnDestroy(): void {

@@ -30,7 +30,7 @@ export class CRMTagService extends BaseSevice {
     return this.apiService.getData<CRMTagDTO>(api, null);
   }
 
-  getOnlyActive(key: string): Observable<any> {
+  getOnlyActive(): Observable<any> {
     let api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}?$filter=IsDeleted eq false`,
       method: TApiMethodType.get

@@ -9,11 +9,11 @@ import { AddPageComponent } from './components/add-page/add-page.component';
 import { MainSharedModule } from '../../shared/shared.module';
 import { FacebookGraphService } from '../../services/facebook-graph.service';
 import { PipeModule } from '../../shared/pipe/pipe.module';
-import { FacebookService } from '../../services/facebook.service';
+import { FacebookLoginService } from '../../services/facebook-login.service';
 
 const SERVICES = [
   FacebookGraphService,
-  FacebookService
+  FacebookLoginService
 ]
 
 @NgModule({

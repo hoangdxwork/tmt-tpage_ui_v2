@@ -57,6 +57,7 @@ import { ConfigInteractiveMenusComponent } from './config-pages/config-pages-bas
 import { ConfigQuickQuestionComponent } from './config-pages/config-pages-basic/config-quick-question/config-quick-question.component';
 import { ConfigGreetingComponent } from './config-pages/config-pages-basic/config-greeting/config-greeting.component';
 import { ConfigConversationTagsCreateDataModalComponent } from './components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
+import { FacebookService } from '../../services/facebook.service';
 
 const SERVICES = [
     TDSModalService,
@@ -69,7 +70,8 @@ const SERVICES = [
     OdataTPosLoggingService,
     OdataSaleCouponProgramService,
     SaleCouponProgramService,
-    CRMTagService
+    CRMTagService,
+    FacebookService
 ]
 
 @NgModule({
