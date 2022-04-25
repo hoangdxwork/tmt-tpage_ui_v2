@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import {  Observable, ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
 import { AutoHideCommentDTO, AutoReplyConfigDTO, ChannelAutoLabelConfigDTO, ChannelFacebookConfigDTO } from '../dto/configs/page-config.dto';
@@ -18,8 +19,8 @@ export class CRMTeamService extends BaseSevice {
   baseRestApi: string = "rest/v1.0/crmteam";
   private readonly __keyCacheTeamId = 'nearestTeamId';
 
-  private listFaceBook$ = new ReplaySubject<PagedList2<CRMTeamDTO> | null>(1);
-  private currentTeam$ = new ReplaySubject<CRMTeamDTO | null>(1);
+  private readonly listFaceBook$ = new ReplaySubject<PagedList2<CRMTeamDTO> | null>(1);
+  private readonly currentTeam$ = new ReplaySubject<CRMTeamDTO | null>(1);
   private _currentTeam!: CRMTeamDTO | null;
 
   constructor(private apiService: TCommonService, public caheApi: THelperCacheService) {
@@ -79,16 +80,15 @@ export class CRMTeamService extends BaseSevice {
 
   // xử lý teasm
   getCacheTeamId(): Observable<string | null> {
-    return new Observable(obs => {
-      this.caheApi.getItem(this.__keyCacheTeamId).subscribe(ops => {
-        let value = null;
+    return this.caheApi.getItem(this.__keyCacheTeamId).pipe(
+      map((ops: TDSSafeAny) => {
+        let value: string | null = null;
         if (TDSHelperObject.hasValue(ops)) {
           value = JSON.parse(ops.value).value;
         }
-        obs.next(value);
-        obs.complete();
-      });
-    });
+        return value;
+      })
+    )
 
   }
 
