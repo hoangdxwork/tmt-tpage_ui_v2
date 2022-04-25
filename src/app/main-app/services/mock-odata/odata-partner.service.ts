@@ -31,12 +31,10 @@ export class OdataPartnerService extends BaseSevice {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?${params}&$count=true`,
         method: TApiMethodType.get,
     }
-
     return this.apiService.getData<ODataPartnerDTO>(api, null);
   }
 
   public buildFilter(filterObj: FilterObjDTO) {
-
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",
         filters: [],
@@ -51,18 +49,18 @@ export class OdataPartnerService extends BaseSevice {
     }
 
     if (TDSHelperString.hasValueString(filterObj.searchText)) {
+        let value =  TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim())
         dataFilter.filters.push( {
             filters: [
-              { field: "DisplayName", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Phone", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Email", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Street", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Zalo", operator: OperatorEnum.contains, value: filterObj.searchText }
+              { field: "DisplayName", operator: OperatorEnum.contains, value: value },
+              { field: "Phone", operator: OperatorEnum.contains, value: value },
+              { field: "Email", operator: OperatorEnum.contains, value: value },
+              { field: "Street", operator: OperatorEnum.contains, value: value },
+              { field: "Zalo", operator: OperatorEnum.contains, value: value }
             ],
             logic: 'or'
         })
     }
-
     return dataFilter;
   }
 
