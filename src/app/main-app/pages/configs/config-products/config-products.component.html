@@ -51,7 +51,7 @@
 
               <tds-form-field class="w-2/3 mr-2">
                   <input tdsInput class="text-neutral-1-900" placeholder="Tìm kiếm sản phẩm" autocomplete="off"
-                  (keyup)="doFilter($event)"/>
+                  [tdsInputDebounce]="300" (inputKeyup)="doFilter($event)"/>
                   <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
               </tds-form-field>
 
@@ -84,7 +84,6 @@
                 [(pageIndex)]="pageIndex"
                 [total]="count"
                 (queryParams)="onQueryParamsChange($event)"
-                (currentPageDataChange)="onCurrentPageDataChange($event)"
                 (clickRefresh)="refreshData()">
                 <thead>
                     <tr class="text-neutral-1-900 text-body-2 font-semibold">
@@ -101,7 +100,7 @@
                           <th *ngIf="!isHiddenColumn('Tags')" [width]="'192px'">Nhãn</th>
                           <th *ngIf="!isHiddenColumn('DateCreated')" [width]="'192px'">Ngày tạo</th>
                           <th *ngIf="!isHiddenColumn('Active')" [width]="'192px'">Hiệu lực</th>
-                          <th [width]="'192px'" [tdsRight]="true">Thao tác</th>
+                          <th [width]="'192px'" [align]="'center'" [tdsRight]="true">Thao tác</th>
                     </tr>
               </thead>
               <tbody>
@@ -174,7 +173,7 @@
                                   <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
                               </span>
                           </td>
-                          <td [width]="'192px'" [tdsRight]="true">
+                          <td [width]="'192px'" [align]="'center'"  [tdsRight]="true">
                               <button tds-button-icon color="secondary" size="sm" class="mr-2" (click)="showEditModal(i)">
                                   <span class="flex items-center">
                                     <i class="tdsi-edit-fill text-xl leading-none"></i>
@@ -189,7 +188,7 @@
                       </tr>
                       <tr [expand]="expandSet.has(data.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 bg-neutral-3-50">
                         <div [ngStyle]="{ 'width.px': tableWidth }" class="bg-white rounded-xl">
-                          <config-product-details [productTemplate]="data"></config-product-details>
+                          <config-product-details [productTemplate]="data" *ngIf="expandSet.has(data.Id)"></config-product-details>
                         </div>
                       </tr>
                   </ng-template>

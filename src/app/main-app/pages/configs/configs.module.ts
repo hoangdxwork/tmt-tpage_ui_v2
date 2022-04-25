@@ -51,8 +51,8 @@ import { ModalUpdateShiftComponent } from './components/modal-update-shift/modal
 import { ConfigDecentralizePageComponent } from './config-users/config-decentralize-page/config-decentralize-page.component';
 import { TDSAvatarModule, TDSBadgeModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSDatePickerModule, TDSDropDownModule, TDSFormFieldModule, TDSImageModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSModalService, TDSPopoverModule, TDSRadioModule, TDSSelectModule, TDSSpinnerModule, TDSSwitchModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTimePickerModule, TDSToolTipModule, TDSUploadModule } from 'tmt-tang-ui';
 import { ConfigAddVariantProductModalComponent } from './components/config-add-variant-product-modal/config-add-variant-product-modal.component';
-import { ConfigAddManufacturerModalComponent } from './components/config-add-manufacturer-modal/config-add-manufacturer-modal.component';
-import { ConfigAddMadeInModalComponent } from './components/config-add-made-in-modal/config-add-made-in-modal.component';
+import { ConfigAddUOMModalComponent } from './components/config-add-UOM-modal/config-add-UOM-modal.component';
+import { ConfigAddOriginCountryModalComponent } from './components/config-add-origin-country-modal/config-add-origin-country-modal.component';
 import { ConfigAddProductVariantComponent } from './config-add-product-variant/config-add-product-variant.component';
 import { ConfigAddProductComponent } from './config-add-product/config-add-product.component';
 import { OdataTPosLoggingService } from '../../services/mock-odata/odata-tpos-logging.service';
@@ -60,6 +60,7 @@ import { OdataSaleCouponProgramService } from '../../services/mock-odata/odata-s
 import { SaleCouponProgramService } from '../../services/sale-coupon-program.service';
 import { ConfigConversationTagsCreateDataModalComponent } from './components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
 import { ConfigProductDetailsComponent } from './components/config-product-details/config-product-details.component';
+import { ConfigAddCategoryModalComponent } from './components/config-add-category-modal/config-add-category-modal.component';
 
 const SERVICES = [
     TDSModalService,
@@ -114,13 +115,14 @@ const SERVICES = [
     ModalAddShiftComponent,
     ModalUpdateShiftComponent,
     ConfigAddVariantProductModalComponent,
-    ConfigAddManufacturerModalComponent,
-    ConfigAddMadeInModalComponent,
+    ConfigAddUOMModalComponent,
+    ConfigAddOriginCountryModalComponent,
     ConfigAddProductVariantComponent,
     ConfigAddProductComponent,
     ConfigDecentralizePageComponent,
     ConfigConversationTagsCreateDataModalComponent,
-    ConfigProductDetailsComponent
+    ConfigProductDetailsComponent,
+    ConfigAddCategoryModalComponent
   ],
   imports: [
     CommonModule,

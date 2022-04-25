@@ -1,0 +1,19 @@
+<div class="flex flex-wrap items-center">
+    <div *ngFor="let image of imageList; let i = index">
+      <div class="relative">
+        <tds-avatar class="rounded-lg border border-neutral-2-200 mr-2 mt-2" [shape]="'square'" [size]="112"
+          [tdsSrc]="image" [isAvatar]="false" >
+        </tds-avatar>
+        <i class="tdsi-error-fill text-error-400 absolute top-3 right-3 cursor-pointer"
+          (click)="removeImage(i)"></i>
+      </div>
+    </div>
+    <label for="fileInputImages" class="text-neutral-1-300 cursor-pointer rounded-lg border border-neutral-2-200 border-dashed flex flex-col items-center justify-center mt-2" 
+      [ngStyle]="{'height': size+'px','width': size+'px'}">
+      <div class="flex items-center justify-center" >
+          <span class="tdsi-images-fill text-xl leading-5"></span>
+      </div>
+      <div class="mt-2 text-body-2 font-regular">Upload</div>
+    </label>
+    <input id="fileInputImages" type='file' class="hidden" (change)="onSelectFile($event)">
+</div>

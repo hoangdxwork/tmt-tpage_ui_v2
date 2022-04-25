@@ -60,5 +60,12 @@ export class SharedService extends BaseSevice {
     return this.apiService.getData<ODataStockWarehouseDTO>(api, null);
   }
 
+  uploadImage(data:TDSSafeAny){
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/api/common/uploadimagebtn`,
+      method: TApiMethodType.post,
+    }
 
+    return this.apiService.getFileUpload(api, data);
+  }
 }
