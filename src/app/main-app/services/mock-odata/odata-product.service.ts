@@ -48,7 +48,7 @@ export class OdataProductService extends BaseSevice {
         filters: []
     }
 
-    dataFilter.filters.push({ field: "Active", operator: OperatorEnum.eq, value: true})
+    // dataFilter.filters.push({ field: "Active", operator: OperatorEnum.eq, value: true })
     dataFilter.logic = "and";
 
     if (TDSHelperString.hasValueString(filterObj.searchText)) {
