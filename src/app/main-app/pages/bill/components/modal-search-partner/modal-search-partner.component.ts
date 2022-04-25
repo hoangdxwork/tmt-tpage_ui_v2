@@ -1,15 +1,10 @@
 import { FormBuilder } from '@angular/forms';
-import { TDSModalRef } from 'tmt-tang-ui';
-import { Component, OnInit } from '@angular/core';
-
-export interface dataPartner {
-  id: number;
-  name: string;
-  phone: string;
-  address: string;
-  facebook: string;
-  createdDate: string;
-}
+import { TDSHelperArray, TDSHelperString, TDSMessageService, TDSModalRef } from 'tmt-tang-ui';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { PartnerService } from 'src/app/main-app/services/partner.service';
+import { CustomerDTO } from 'src/app/main-app/dto/partner/customer.dto';
+import { fromEvent} from 'rxjs';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-modal-search-partner',
@@ -17,26 +12,58 @@ export interface dataPartner {
 })
 export class ModalSearchPartnerComponent implements OnInit {
 
-  listPartner!: dataPartner[]
-  inputsearch : string = '';
+  @ViewChild('innerText') innerText!: ElementRef;
+
+  lstCustomers!: CustomerDTO[];
+  keyFilter!: string;
+  page: number = 1;
+  limit: number = 20;
+  isLoading: boolean = false;
+
   constructor(private fb: FormBuilder,
+    private message: TDSMessageService,
+    private partnerService: PartnerService,
     private modal: TDSModalRef) { }
 
   ngOnInit(): void {
-    this.listPartner = new Array(60).fill(0).map((_, index) => ({
-      id: index,
-      name: `[A${index}] Diễm Mi`,
-      phone: '09355213147',
-      address: 'Ấp Long Phú, Xã Phước Thái, Huyện Long Thành, Tỉnh Đồng Nai',
-      facebook: 'fb.com/151839215125',
-      createdDate: '20/2/2002  16:20'
-  }));
+    this.loadCustomers();
   }
 
-  cancel() {
-    this.modal.destroy(null);
-}
+  loadCustomers() {
+    this.isLoading = true;
+    this.partnerService.getCustomers(this.page, this.limit, this.keyFilter)
+      .subscribe((res: any) => {
+        if(TDSHelperArray.hasListValue(res.value)) {
+            this.lstCustomers = res.value;
+            this.isLoading = false;
+        }
+      }, error => {
+          this.isLoading = false;
+          this.message.error('Load danh sách khách hàng đã xảy ra lỗi');
+      })
+  }
 
-  save() {
+  onSearch() {
+    this.keyFilter = this.innerText.nativeElement.value;
+    this.keyFilter = TDSHelperString.stripSpecialChars(this.keyFilter.trim());
+    this.loadCustomers();
+  }
+
+  ngAfterViewInit(): void {
+    fromEvent(this.innerText.nativeElement, 'keyup').pipe(
+        map((event: any) => {
+            return event.target.value
+        }), debounceTime(750), distinctUntilChanged()).subscribe((text: string) => {
+          this.keyFilter = text;
+          this.loadCustomers();
+    });
+  }
+
+  onCancel() {
+    this.modal.destroy(null);
+  }
+
+  selectCustomer(event: any): void {
+     this.modal.destroy(event);
   }
 }

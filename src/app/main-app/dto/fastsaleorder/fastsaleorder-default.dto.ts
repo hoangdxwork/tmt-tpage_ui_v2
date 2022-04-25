@@ -289,11 +289,11 @@ export interface OrderLine {
   PartnerId?: any;
   PriceSubTotalSigned: number;
   PromotionProgramComboId?: any;
-  Product: Product;
-  ProductUOM: ProductUOM;
+  Product?: Product | null;
+  ProductUOM?: ProductUOM;
   Account: Account;
   SaleLine?: any;
-  User: User;
+  User: User | null;
 }
 
 export interface Product {

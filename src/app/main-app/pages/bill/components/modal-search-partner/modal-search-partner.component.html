@@ -2,10 +2,10 @@
     <div class="flex w-2/5">
         <div class="w-full mr-2">
             <tds-form-field>
-                <input tdsInput autocomplete="off"  placeholder="Tìm kiếm khách hàng" [(ngModel)]="inputsearch" />
+                <input tdsInput autocomplete="off"  #innerText  placeholder="Tìm kiếm khách hàng" />
             </tds-form-field>
         </div>
-        <button tds-button-icon color="primary" size="md">
+        <button tds-button-icon color="primary" type="button" size="md" (click)="onSearch()">
             <span class="flex items-center">
                 <i class="tdsi-search-fill"></i>
             </span>
@@ -14,26 +14,26 @@
 
     <div class="w-full h-[530px] text-body-2 text-neutral-1-900">
         <tds-table #TableListPartner class="h-full"
-        showPagination showSizeChanger 
-        [scroll]="{y:'auto'}"
-        [listData]="listPartner">
+            showPagination showSizeChanger
+            [scroll]="{y:'auto'}"  [loading]="isLoading"
+            [listData]="lstCustomers">
             <thead>
-                  <tr>
-                        <th>Tên</th>
-                        <th>Điện thoại</th>
-                        <th>Địa chỉ</th>
-                        <th>Facebook</th>
-                        <th>Ngày tạo</th>
+                  <tr style="width: 100%;">
+                      <th style="width: 20%;">Tên</th>
+                      <th style="width: 20%;">Điện thoại</th>
+                      <th style="width: 50%;">Địa chỉ</th>
+                      <th style="width: 10%;">Thao tác</th>
                   </tr>
             </thead>
             <tbody>
                 <ng-template ngFor let-data [ngForOf]="TableListPartner.data" >
-                    <tr>
-                        <td class="font-semibold">{{ data.name }}</td>
-                        <td>{{ data.phone }}</td>
-                        <td>{{ data.address }}</td>
-                        <td class="text-info-500">{{ data.facebook }}</td>
-                        <td>{{ data.createdDate }}</td>
+                    <tr >
+                        <td  class="font-semibold">{{ data.DisplayName || data.Name }}</td>
+                        <td>{{ data.Phone }}</td>
+                        <td>{{ data.Street }}</td>
+                        <td >
+                            <button tds-button color="success" (click)="selectCustomer(data)">Chọn</button>
+                        </td>
                     </tr>
                 </ng-template>
             </tbody>
@@ -41,7 +41,6 @@
     </div>
 
     <div class="w-full flex justify-end p-4" *tdsModalFooter>
-        <button tds-button class="mr-2" color="secondary" (click)="cancel()">Đóng</button>
-        <button tds-button type="submit" color="primary" (click)="save()">Xác nhận</button>
+        <button tds-button class="mr-2" color="secondary" (click)="onCancel()">Đóng</button>
     </div>
 </div>

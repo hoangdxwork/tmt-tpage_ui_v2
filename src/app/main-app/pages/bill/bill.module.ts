@@ -26,6 +26,7 @@ import { ModalSearchPartnerComponent } from './components/modal-search-partner/m
 import { CommonService } from '../../services/common.service';
 import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { PartnerService } from '../../services/partner.service';
+import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.service';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -36,7 +37,8 @@ const SERVICES = [
   ExcelExportService,
   AccountRegisterPaymentService,
   CommonService,
-  PartnerService
+  PartnerService,
+  FastSaleOrderLineService
 ]
 
 @NgModule({

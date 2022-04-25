@@ -1,5 +1,5 @@
 import { SaleConfigsDTO, SaleSettingDTO } from './../../dto/configs/sale-config.dto';
-import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { THelperCacheService } from 'src/app/lib';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSSafeAny, TDSTableComponent } from 'tmt-tang-ui';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO,  ProductPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
@@ -24,17 +24,19 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
   @ViewChild('innerText') innerText!: ElementRef;
 
   @Input() priceListItems: any;
+  @Output() onLoadProductToOrderLines: EventEmitter<any> = new EventEmitter<any>();
   private destroy$ = new Subject();
-
   lstOfData!: DataPouchDBDTO[];
 
   indexDbVersion: number = 0;
   indexDbProductCount: number = -1;
   indexDbStorage!: DataPouchDBDTO[];
+  productTmplItems!: ProductTemplateV2DTO;
 
   roleConfigs!: SaleSettingDTO;
   inventories!: TDSSafeAny;
   isLoading: boolean = false;
+  @Input() isLoadingProduct: boolean = false;
 
   options: Array<TDSSafeAny> = [
     { text: 'Tất cả', value: 'all'},
@@ -73,6 +75,10 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
       this.priceListItems = changes["priceListItems"].currentValue;
       this.loadData();
     }
+
+    if(changes['isLoadingProduct'] && (changes['isLoadingProduct'].currentValue == true || changes['isLoadingProduct'].currentValue == false)) {
+      this.isLoading = changes['isLoadingProduct'].currentValue;
+    }
   }
 
   loadData(): void {
@@ -96,7 +102,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
     })
   }
 
-  loadProductIndexDB(productCount: number, version: number) {
+  loadProductIndexDB(productCount: number, version: number): any {
     this.isLoading = true;
     this.productIndexDBService.getLastVersionV2(productCount, version).pipe(takeUntil(this.destroy$))
       .subscribe((data: ProductPouchDBDTO) => {
@@ -106,9 +112,22 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
               this.indexDbStorage = data.Datas;
               this.loadDataTable();
           } else {
+            if(TDSHelperArray.hasListValue(data.Datas)) {
               data.Datas.forEach((x: DataPouchDBDTO) => {
                   this.indexDbStorage.push(x);
               });
+
+              // TODO: trường hợp thêm mới push sp vào orderLines
+              if(TDSHelperObject.hasValue(this.productTmplItems) && this.productTmplItems.Id) {
+                  var item = this.indexDbStorage.filter((x: DataPouchDBDTO) =>
+                      x.ProductTmplId == this.productTmplItems.Id && x.UOMId == this.productTmplItems.UOMId && x.Price == this.productTmplItems.ListPrice)[0] as DataPouchDBDTO;
+                  if(!TDSHelperObject.hasValue(item)) {
+                      this.message.error('Thêm mới sản phẩm vào indexDB đã xảy ra lỗi!');
+                      return;
+                  }
+                  this.addItem(item);
+              }
+            }
           }
         }
 
@@ -150,7 +169,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
 
     if(TDSHelperObject.hasValue(this.currentOption)) {
         if(TDSHelperString.hasValueString(this.innerText)) {
-          this.keyFilter = TDSHelperString.stripSpecialChars(this.keyFilter);
+            this.keyFilter = TDSHelperString.stripSpecialChars(this.keyFilter.trim());
         }
 
         switch(this.currentOption.value) {
@@ -262,19 +281,20 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
         title: 'Thêm sản phẩm',
         content: TpageAddProductComponent,
         size: "xl",
-        viewContainerRef: this.viewContainerRef,
+        viewContainerRef: this.viewContainerRef
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((res: ProductTemplateV2DTO) => {
-      if(TDSHelperObject.hasValue(res)) {
-          this.pusToIndexDb();
-      }
+        if(res) {
+            this.pusToIndexDb();
+            this.productTmplItems = res;
+        }
     });
   }
 
-  pusToIndexDb() {
-      this.indexDbProductCount = this.indexDbProductCount + 1;
-      this.loadProductIndexDB(this.indexDbProductCount, this.indexDbVersion);
+  pusToIndexDb(): any {
+    this.indexDbProductCount = this.indexDbProductCount + 1;
+    this.loadProductIndexDB(this.indexDbProductCount, this.indexDbVersion);
   }
 
   reloadIndexDB() {
@@ -291,6 +311,10 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
     this.cacheApi.removeItem(keyCache);
 
     this.loadData();
+  }
+
+  addItem(data: DataPouchDBDTO) {
+      this.onLoadProductToOrderLines.emit(data);
   }
 
   ngAfterViewInit(): void {

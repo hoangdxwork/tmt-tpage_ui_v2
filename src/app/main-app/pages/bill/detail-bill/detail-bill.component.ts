@@ -105,7 +105,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   loadPaymentInfoJson() {
     this.fastSaleOrderService.getPaymentInfoJson(this.id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.payments = res.value;
+        this.payments = res.value;
     }, error => {
       this.message.error('Load thông tin thanh toán đã lỗi!');
     })
@@ -204,7 +204,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
       content: 'Bạn có muốn xác nhận hủy hóa đơn',
       onOk: () => {
           let model = {
-            ids: [parseInt(that.id)]
+              ids: [parseInt(that.id)]
           }
 
           that.fastSaleOrderService.getActionCancel(model).pipe(takeUntil(this.destroy$)).subscribe(() => {
@@ -223,7 +223,6 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   }
 
   onClickButton(e: MouseEvent) {
-
   }
 
   comfirmAndPrint() {
