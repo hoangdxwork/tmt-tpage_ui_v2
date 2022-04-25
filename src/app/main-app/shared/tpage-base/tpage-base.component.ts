@@ -26,12 +26,13 @@ export class TpageBaseComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     console.log("ngOnInit")
-    combineLatest([this.activatedRoute.queryParams, this.crmService.onChangeTeam(), this.crmService.onChangeListFaceBook()])
-      .pipe(takeUntil(this._destroy)).subscribe(([params, team, listTeam]) => {
+    combineLatest([this.activatedRoute.queryParams,
+    this.crmService.onChangeTeam(),
+    this.crmService.onChangeListFaceBook()])
+      .pipe(takeUntil(this._destroy))
+      .subscribe(([params, team, listTeam]) => {
         this._params = params;
         this._currentTeam = team;
-        console.log("params", params)
-        console.log("team", team)
         if ((!TDSHelperObject.hasValue(params) || !TDSHelperObject.hasValue(params.teamId))) {
           if (!TDSHelperObject.hasValue(team)) {
             this.onRedirect();
