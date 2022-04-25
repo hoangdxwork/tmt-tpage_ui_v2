@@ -1,4 +1,3 @@
-import { da } from 'date-fns/locale';
 import { TDSHelperArray, TDSHelperString, TDSUploadFile } from 'tmt-tang-ui';
 import { ModalAddAddressComponent } from '../modal-add-address/modal-add-address.component';
 import { FormGroup, FormBuilder, FormControl, FormArray } from '@angular/forms';
@@ -85,31 +84,52 @@ export class ModalEditPartnerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadData();
+    if(this.partnerId) {
+      this.loadPartner()
+    } else {
+      this.loadDefault();
+    }
   }
 
-  loadData() {
-    if(this.partnerId) {
-      this.isLoading = true;
-
-      this.partnerService.getById(this.partnerId).subscribe((res: any) => {
-          delete res['@odata.context'];
-          this.data = res;
-
-          if(this.data.BirthDay) {
-            this.data.BirthDay = new Date(this.data.BirthDay);
-          }
-
-          this.updateForm(this.data);
-          this.isLoading = false;
-
-          this.mappingAddress(res);
-
-      }, error => {
-          this.isLoading = false;
-          this.message.error('Tải dữ liệu khách hàng thất bại');
-      })
+  loadDefault() {
+    this.isLoading = true;
+    let model = {
+        Customer: true,
+        Supplier: false
     }
+
+    this.partnerService.getDefault(model).subscribe((res: any) => {
+      delete res['@odata.context'];
+
+      this.isLoading = false;
+      this.data = res;
+      this.updateForm(this.data);
+
+    }, error => {
+      this.isLoading = false;
+      this.message.error('Tải dữ liệu mặc định khách hàng thất bại');
+    })
+  }
+
+  loadPartner() {
+    this.isLoading = true;
+    this.partnerService.getById(this.partnerId).subscribe((res: any) => {
+        delete res['@odata.context'];
+        this.data = res;
+
+        if(this.data.BirthDay) {
+          this.data.BirthDay = new Date(this.data.BirthDay);
+        }
+
+        this.updateForm(this.data);
+        this.isLoading = false;
+
+        this.mappingAddress(res);
+
+    }, error => {
+        this.isLoading = false;
+        this.message.error('Tải dữ liệu khách hàng thất bại');
+    })
   }
 
   mappingAddress(data: PartnerDetailDTO) {
@@ -162,7 +182,7 @@ export class ModalEditPartnerComponent implements OnInit {
     let date = formatDate(new Date(), 'yyyy-MM-ddTHH:mm:ss', 'en-US');
     this.commonService.getPriceListAvailable(date).subscribe((res: any) => {
       if(TDSHelperString.hasValueString(res.value)) {
-        this.lstPrice = res.value;
+          this.lstPrice = res.value;
       }
     })
   }
@@ -176,19 +196,12 @@ export class ModalEditPartnerComponent implements OnInit {
     if(!TDSHelperString.hasValueString(model.Name)) {
         this.message.error('Vui lòng nhập tên khách hàng');
     }
-    if(!TDSHelperString.hasValueString(model.StatusText)) {
-        this.message.error('Vui lòng nhập trạng thái khách hàng');
-    }
-    if(!TDSHelperString.hasValueString(model.Street)) {
-        this.message.error('Vui lòng nhập địa chỉ khách hàng');
-    }
-
     if(this.partnerId) {
       this.isLoading = true;
       this.partnerService.update(this.partnerId, model).subscribe((res: any) => {
           this.isLoading = false;
           this.message.success('Cập nhật khách hàng thành công!');
-          this.modal.destroy(null);
+          this.modal.destroy(this.partnerId);
       }, error => {
           this.isLoading = false;
           this.message.error('Cập nhật khách hàng thất bại!');
@@ -199,7 +212,7 @@ export class ModalEditPartnerComponent implements OnInit {
       this.partnerService.insert(model).subscribe((res: any) => {
           this.isLoading = false;
           this.message.success('Thêm mới khách hàng thành công!');
-          this.modal.destroy(null);
+          this.modal.destroy(res.Id);
       }, error => {
           this.isLoading = false;
           this.message.error('Thêm mới khách hàng thất bại!');
@@ -211,31 +224,31 @@ export class ModalEditPartnerComponent implements OnInit {
   initAddress(data: AddressesV2 | null) {
     if (data != null) {
         return this.fb.group({
-          Id: [data.Id],
-          PartnerId: [data.PartnerId],
-          CityCode: [data.CityCode],
-          CityName: [data.CityName],
-          DistrictCode: [data.DistrictCode],
-          DistrictName: [data.DistrictName],
-          WardCode: [data.WardCode],
-          WardName: [data.WardName],
-          IsDefault: [data.IsDefault],
-          Street:[data.Street],
-          Address: [data.Address],
+            Id: [data.Id],
+            PartnerId: [data.PartnerId],
+            CityCode: [data.CityCode],
+            CityName: [data.CityName],
+            DistrictCode: [data.DistrictCode],
+            DistrictName: [data.DistrictName],
+            WardCode: [data.WardCode],
+            WardName: [data.WardName],
+            IsDefault: [data.IsDefault],
+            Street:[data.Street],
+            Address: [data.Address]
         });
     } else {
         return this.fb.group({
-          Id: [null],
-          PartnerId: [null],
-          CityCode: [null],
-          CityName: [null],
-          DistrictCode: [null],
-          DistrictName: [null],
-          WardCode: [null],
-          WardName: [null],
-          IsDefault: [null],
-          Street:  [null],
-          Address: [null]
+            Id: [null],
+            PartnerId: [null],
+            CityCode: [null],
+            CityName: [null],
+            DistrictCode: [null],
+            DistrictName: [null],
+            WardCode: [null],
+            WardName: [null],
+            IsDefault: [null],
+            Street:  [null],
+            Address: [null]
         });
     }
   }
@@ -395,7 +408,6 @@ export class ModalEditPartnerComponent implements OnInit {
       if(this.partnerId) {
         this._form.controls["ImageUrl"].setValue(res[0].urlImageProxy);
       }
-
     }, error => {
       this.message.error('Upload Image đã xảy ra lỗi!')
     });
@@ -459,7 +471,6 @@ export class ModalEditPartnerComponent implements OnInit {
         this.data['Customer'] = formModel.Customer;
     }
     if(formModel.PropertyProductPricelist != null) {
-        this.data['PropertyProductPricelist'] = formModel.PropertyProductPricelist;
         this.data['PropertyProductPricelistId'] = this._form.controls['PropertyProductPricelist'].value.Id;
     }
     if(formModel.Discount != null) {
@@ -471,7 +482,7 @@ export class ModalEditPartnerComponent implements OnInit {
     if(formModel.Supplier != null) {
         this.data['Supplier'] = formModel.Supplier;
     }
-    if(formModel.Addresses != null) {
+    if(TDSHelperArray.hasListValue(formModel.Addresses)) {
         this.data['Addresses'] = formModel.Addresses;
     }
     if(formModel.CompanyType != null) {

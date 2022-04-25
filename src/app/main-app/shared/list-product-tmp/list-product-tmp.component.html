@@ -1,3 +1,4 @@
+
 <div class="rounded-xl bg-white pt-2 px-3 flex h-full flex-col gap-y-2">
   <div class="flex gap-x-2">
       <tds-form-field class="w-full">
@@ -40,7 +41,7 @@
       </button>
   </div>
   <div class="w-full h-full">
-      <tds-table  #basicTable
+      <tds-table #basicTable
           [listData]="lstOfData"
           [scroll]="{y:'100%',x:'hidden'}"
           [showPagination]="false"
@@ -80,7 +81,7 @@
                       <td class="text-body-2">{{ data.UOMName }}</td>
                       <td class="text-body-2">{{ data.Price | number: '1.0-3'}} đ</td>
                       <td>
-                          <button class="group-hover:block hidden" tds-button-icon color="primary" size="sm">
+                          <button class="group-hover:block hidden" tds-button-icon color="primary" size="sm" (click)="addItem(data)">
                               <span class="flex items-center">
                                   <i class="tdsi-arrow-right-line"></i>
                               </span>
@@ -92,3 +93,4 @@
       </tds-table>
   </div>
 </div>
+

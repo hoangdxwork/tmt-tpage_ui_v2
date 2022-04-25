@@ -155,10 +155,11 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     formData.append('id', '0000000000000051');
 
     return this.sharedService.saveImageV2(formData).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.message.success(Message.Upload.Success);
-      this.formAddProduct.controls["ImageUrl"].setValue(res[0].urlImageProxy);
+        this.message.success(Message.Upload.Success);
+        this.formAddProduct.controls["ImageUrl"].setValue(res[0].urlImageProxy);
     }, error => {
-      console.log(error);
+        let message = JSON.parse(error.Message);
+        this.message.error(`${message.message}`);
     });
   }
 

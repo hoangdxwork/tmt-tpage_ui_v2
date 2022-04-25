@@ -47,11 +47,7 @@ export class FastSaleOrderService extends BaseSevice {
         method: TApiMethodType.post,
     }
 
-    return this.apiService.getCacheData<FastSaleOrder_DefaultDTOV2>(api, data);
-  }
-
-  deleteKeyCacheDefaultGetV2() {
-    this.apiService.removeCacheAPI(this._keyCacheDefaultGetV2);
+    return this.apiService.getData<FastSaleOrder_DefaultDTOV2>(api, data);
   }
 
   insert(data: FastSaleOrder_DefaultDTOV2): Observable<TDSSafeAny> {

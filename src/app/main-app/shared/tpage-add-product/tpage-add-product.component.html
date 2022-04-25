@@ -142,8 +142,8 @@
     </div>
     <div class="w-full flex justify-end p-4" *tdsModalFooter>
         <button tds-button class="mr-4 w-[100px]" color="secondary" (click)="onCancel(null)">Đóng</button>
-        <button tds-button class="mr-4 w-[120px]" color="info" (click)="onSave('select')" [disabled]="!formAddProduct?.valid">Lưu và chọn</button>
-        <button tds-button type="submit" class="w-[100px]" color="primary" (click)="onSave()" [disabled]="!formAddProduct?.valid">Lưu</button>
+        <button tds-button type="submit" class="w-[100px] mr-4" color="primary" (click)="onSave()" [disabled]="!formAddProduct?.valid">Lưu</button>
+        <button tds-button class="w-[120px]" color="info" (click)="onSave('select')" [disabled]="!formAddProduct?.valid">Lưu và chọn</button>
     </div>
   </div>
 </form>

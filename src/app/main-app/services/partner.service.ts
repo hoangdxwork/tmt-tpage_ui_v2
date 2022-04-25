@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
-import { TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 import { ODataCustomerDTO } from '../dto/partner/customer.dto';
 import { PartnerBirthdayDTO } from '../dto/partner/partner-birthday.dto';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
@@ -20,6 +20,15 @@ export class PartnerService extends BaseSevice {
 
   constructor(private apiService: TCommonService) {
     super(apiService)
+  }
+
+  getDefault(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.DefaultGet?$expand=AccountPayable,AccountReceivable,StockCustomer,StockSupplier`,
+        method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<ODataRegisterPartnerDTO>(api, data);
   }
 
   getById(id: number): Observable<any> {
@@ -141,8 +150,8 @@ export class PartnerService extends BaseSevice {
 
   getCustomers(page: number, limit: number, keyword: string): Observable<any> {
     let filter = "";
-    if (keyword) {
-      filter = `and (contains(NameNoSign,'${keyword}') or contains(DisplayName,'${keyword}') or contains(Phone,'${keyword}'))`
+    if (TDSHelperString.hasValueString(keyword)) {
+      filter = `and (contains(DisplayName,'${keyword}') or contains(NameNoSign,'${keyword}') or contains(Name,'${keyword}') or contains(Phone,'${keyword}'))`
     }
 
     const api: TAPIDTO = {

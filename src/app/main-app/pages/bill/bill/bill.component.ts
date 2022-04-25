@@ -157,7 +157,6 @@ export class BillComponent implements OnInit, OnDestroy{
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
     this.odataFastSaleOrderService.getView(params, this.filterObj).pipe(takeUntil(this.destroy$)).subscribe((res: ODataFastSaleOrderDTO) => {
-
         this.count = res['@odata.count'] as number //260
         this.lstOfData = res.value;
         this.isLoading = false;
@@ -168,7 +167,7 @@ export class BillComponent implements OnInit, OnDestroy{
     let model = {
         DateStart: this.filterObj.dateRange.startDate,
         DateEnd: this.filterObj.dateRange.endDate,
-        SearchText: this.filterObj.searchText,
+        SearchText: TDSHelperString.stripSpecialChars(this.filterObj.searchText.trim()) ,
         TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
         TrackingRef: this.filterObj.bill,
         DeliveryType: this.filterObj.deliveryType ? this.filterObj.deliveryType.value : null,
@@ -191,7 +190,6 @@ export class BillComponent implements OnInit, OnDestroy{
                 case "draft" :
                     this.tabNavs.push({Name: "Nháp", Index: 2, Type: x.Type, Total: x.Total })
                     break;
-
                 default:
                     break;
             }
@@ -279,6 +277,7 @@ export class BillComponent implements OnInit, OnDestroy{
     this.indClickTag = -1;
 
     this.filterObj.searchText = event.target.value;
+    this.filterObj.searchText = TDSHelperString.stripSpecialChars(this.filterObj.searchText.trim());
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -295,7 +294,7 @@ export class BillComponent implements OnInit, OnDestroy{
         searchText: event.searchText,
         dateRange: {
             startDate: event.dateRange.startDate,
-            endDate: event.dateRange.endDate,
+            endDate: event.dateRange.endDate
         }
     }
     this.loadData(this.pageSize, this.pageIndex);
