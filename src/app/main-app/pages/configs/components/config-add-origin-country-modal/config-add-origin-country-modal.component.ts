@@ -5,11 +5,11 @@ import { Component, OnInit, Input } from '@angular/core';
 import { TDSSafeAny, TDSUploadFile, TDSMessageService, TDSUploadChangeParam, TDSModalRef } from 'tmt-tang-ui';
 
 @Component({
-  selector: 'app-config-add-made-in-modal',
-  templateUrl: './config-add-made-in-modal.component.html',
-  styleUrls: ['./config-add-made-in-modal.component.scss']
+  selector: 'app-config-add-origin-country-modal',
+  templateUrl: './config-add-origin-country-modal.component.html',
+  styleUrls: ['./config-add-origin-country-modal.component.scss']
 })
-export class ConfigAddMadeInModalComponent implements OnInit {
+export class ConfigAddOriginCountryModalComponent implements OnInit {
   addMadeInForm!:FormGroup;
 
   constructor(

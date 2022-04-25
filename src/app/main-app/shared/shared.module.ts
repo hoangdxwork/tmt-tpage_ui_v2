@@ -24,6 +24,8 @@ import { SuggestAddressComponent } from './suggest-address/suggest-address.compo
 import { SuggestAddressService } from '../services/suggest-address.service';
 import { ImageFacade } from '../services/facades/image.facade';
 import { TpageAvatarGroupFacebookComponent } from './tpage-avatar-group-facebook/tpage-avatar-group-facebook.component';
+import { TpageUploadAvatarComponent } from './tpage-upload-avatar/tpage-upload-avatar.component';
+import { TpageUploadImagesComponent } from './tpage-upload-images/tpage-upload-images.component';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -39,7 +41,9 @@ const cmp =[
   TpageSearchUOMComponent,
   TpageAddUOMComponent,
   ListProductTmpComponent,
-  TpageAvatarGroupFacebookComponent
+  TpageAvatarGroupFacebookComponent,
+  TpageUploadAvatarComponent,
+  TpageUploadImagesComponent,
 ]
 
 const SERVICES = [

@@ -70,7 +70,6 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
 
   ngOnInit(): void {
     this.loadTagList();
-    this.loadData(this.pageSize,this.pageIndex);
   }
 
   ngAfterViewInit(): void {
@@ -105,9 +104,9 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
       this.count = res['@odata.count'] as number;
       this.lstOfData = res.value;
       this.isLoading = false;
-    }, error => {
+    }, err => {
       this.isLoading = false;
-      this.message.error(error.error.message ?? 'Tải dữ liệu sản phẩm thất bại!');
+      this.message.error('Tải dữ liệu sản phẩm thất bại!');
     });
   }
 
@@ -208,7 +207,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   doFilter(event:TDSSafeAny){
-    let keyFilter = event.target.value as string;
+    let keyFilter = event.value as string;
     this.filterObj = {
       searchText:  TDSHelperString.stripSpecialChars(keyFilter.trim())
     }
@@ -216,42 +215,26 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
-        if (checked) {
-            this.setOfCheckedId.add(id);
-        } else {
-            this.setOfCheckedId.delete(id);
-        }
+    if (checked) {
+      this.setOfCheckedId.add(id);
+    } else {
+      this.setOfCheckedId.delete(id);
+    }
   }
 
-  onCurrentPageDataChange(listOfCurrentPageData: readonly ConfigProductTemplateDTO[]): void {
-    this.listOfCurrentPageData = listOfCurrentPageData;
+  onItemChecked(id: number, checked: boolean): void {
+    this.updateCheckedSet(id, checked);
+    this.refreshCheckedStatus();
+  }
+
+  onAllChecked(value: boolean): void {
+    this.lstOfData.forEach((x: any) => this.updateCheckedSet(x.Id, value));
     this.refreshCheckedStatus();
   }
 
   refreshCheckedStatus(): void {
-      this.checked = this.listOfCurrentPageData.every(({ Id }) => this.setOfCheckedId.has(Id));
-      this.indeterminate = this.listOfCurrentPageData.some(({ Id }) => this.setOfCheckedId.has(Id)) && !this.checked;
-  }
-
-  onItemChecked(id: number, checked: boolean): void {
-      this.updateCheckedSet(id, checked);
-      this.refreshCheckedStatus();
-  }
-
-  onAllChecked(checked: boolean): void {
-      this.listOfCurrentPageData.forEach(({ Id }) => this.updateCheckedSet(Id, checked));
-      this.refreshCheckedStatus();
-  }
-
-  sendRequestTableTab(): void {
-      this.isLoading = true;
-      const requestData = this.lstOfData.filter(data => this.setOfCheckedId.has(data.Id));
-      console.log(requestData);
-      setTimeout(() => {
-          this.setOfCheckedId.clear();
-          this.refreshCheckedStatus();
-          this.isLoading = false;
-      }, 1000);
+    this.checked = this.lstOfData.every(x => this.setOfCheckedId.has(x.Id));
+    this.indeterminate = this.lstOfData.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
   }
 
   onExpandChange(id: number, checked: boolean): void {

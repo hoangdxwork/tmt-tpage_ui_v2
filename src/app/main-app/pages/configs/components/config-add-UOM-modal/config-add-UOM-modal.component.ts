@@ -5,11 +5,11 @@ import { Component, OnInit, Input } from '@angular/core';
 import { TDSSafeAny, TDSUploadFile, TDSMessageService, TDSUploadChangeParam, TDSModalRef } from 'tmt-tang-ui';
 
 @Component({
-  selector: 'app-config-add-manufacturer-modal',
-  templateUrl: './config-add-manufacturer-modal.component.html',
-  styleUrls: ['./config-add-manufacturer-modal.component.scss']
+  selector: 'app-config-add-uom-modal',
+  templateUrl: './config-add-uom-modal.component.html',
+  styleUrls: ['./config-add-uom-modal.component.scss']
 })
-export class ConfigAddManufacturerModalComponent implements OnInit {
+export class ConfigAddUOMModalComponent implements OnInit {
   addmanufacturerForm!:FormGroup;
 
   constructor(

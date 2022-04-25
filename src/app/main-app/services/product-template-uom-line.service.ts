@@ -10,7 +10,7 @@ import { BaseSevice } from "./base.service";
 @Injectable({
   providedIn: 'root'
 })
-export class ProductTemplateService extends BaseSevice {
+export class ProductTemplateOUMLineService extends BaseSevice {
 
   prefix: string = "odata";
   table: string = "ProductTemplateUOMLine";
@@ -20,48 +20,12 @@ export class ProductTemplateService extends BaseSevice {
     super(apiService)
   }
 
-  getDefault(): Observable<any> {
+  getOUMs(): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.DefaultGet?$expand=UOM,Categ,UOMPO`,
+      url: `${this._BASE_URL}/${this.prefix}/ProductUOM`,
       method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<ProductTemplateV2DTO>(api, null);
-  }
-
-  insert(data: TDSSafeAny): Observable<any> {
-    const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}?$expand=UOM`,
-      method: TApiMethodType.post,
-    }
-
-    return this.apiService.getData<TDSSafeAny>(api, data);
-  }
-
-  getInventoryProduct(productKey:number,params:string): Observable<any>{
-    const api: TAPIDTO = {
-    url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetInventoryProduct?productTmplId=${productKey}&${params}&$count=true`,
-    method: TApiMethodType.get,
-    }
-
-    return this.apiService.getData<ODataProductInventoryDTO>(api, null);
-  }
-  
-  setActive(data: any):Observable<any>{
-    const api: TAPIDTO = {
-    url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.SetActive`,
-    method: TApiMethodType.post,
-    }
-
-    return this.apiService.getData<ODataProductInventoryDTO>(api,data);
-  }
-
-  getRemoveIds(data: any):Observable<any>{
-    const api: TAPIDTO = {
-    url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.RemoveIds`,
-    method: TApiMethodType.post,
-    }
-
-    return this.apiService.getData<ODataProductInventoryDTO>(api,data);
+    return this.apiService.getData<TDSSafeAny>(api, null);
   }
 }
