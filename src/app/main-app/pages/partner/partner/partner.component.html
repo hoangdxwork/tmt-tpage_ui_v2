@@ -41,7 +41,7 @@
             </button>
           </div>
           <div class="flex items-center gap-x-2 pr-4">
-            
+
             <tds-button-group>
               <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
                 <span class="flex items-center">
@@ -57,7 +57,7 @@
             </tds-button-group>
 
             <tds-form-field class="w-full">
-              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keydown.enter)="applyFilter($event)" />
+              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText />
               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
             </tds-form-field>
 

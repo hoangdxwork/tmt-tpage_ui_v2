@@ -1,3 +1,4 @@
+import { finalize, switchMap } from 'rxjs/operators';
 import { da } from 'date-fns/locale';
 import { ModalBirthdayPartnerComponent } from './../components/modal-birthday-partner/modal-birthday-partner.component';
 import { ModalSendMessageComponent } from './../components/modal-send-message/modal-send-message.component';
@@ -14,8 +15,8 @@ import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { ColumnTableDTO } from '../../bill/components/config-column/config-column.component';
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
-import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
+import { fromEvent, Observable, Subject } from 'rxjs';
 import { ODataPartnerDTO, PartnerDTO, } from 'src/app/main-app/dto/partner/partner.dto';
 import { ODataTagsPartnerDTO, TagsPartnerDTO } from 'src/app/main-app/dto/partner/partner-tags.dto';
 import { PartnerStatusReport, PartnerStatusReportDTO } from 'src/app/main-app/dto/partner/partner-status-report.dto';
@@ -28,6 +29,8 @@ import { PartnerBirthdayDTO } from 'src/app/main-app/dto/partner/partner-birthda
 })
 
 export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
+
+  @ViewChild('innerText') innerText!: ElementRef;
 
   lstOfData: Array<PartnerDTO> = [];
   pageSize = 20;
@@ -95,17 +98,6 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   ) {
   }
 
-  ngAfterViewInit(): void {
-    this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse
-    this.resizeObserver
-      .observe(this.viewChildWidthTable)
-      .subscribe(() => {
-        this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse
-        this.viewChildWidthTable.nativeElement.click()
-        console.log(  this.viewChildWidthTable)
-      });
-  }
-
   updateCheckedSet(id: number, checked: boolean): void {
     if (checked) {
       this.setOfCheckedId.add(id);
@@ -140,7 +132,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   loadGridConfig() {
     const key = this.partnerService._keyCacheGrid;
     this.cacheApi.getItem(key).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-      if(res && res.value) {
+      if (res && res.value) {
         var jsColumns = JSON.parse(res.value) as any;
         this.hiddenColumns = jsColumns.value.columnConfig;
       } else {
@@ -150,20 +142,22 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   loadData(pageSize: number, pageIndex: number) {
-    this.isLoading = true;
     let filters = this.odataPartnerService.buildFilter(this.filterObj);
-
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
-    this.odataPartnerService.getView(params, this.filterObj).pipe(takeUntil(this.destroy$)).subscribe((res: ODataPartnerDTO) => {
 
-      this.count = res['@odata.count'] as number;
-      this.lstOfData = res.value;
-      this.isLoading = false;
-
+    this.getViewData(params).subscribe((res: ODataPartnerDTO) => {
+        this.count = res['@odata.count'] as number;
+        this.lstOfData = res.value;
     }, error => {
-      this.isLoading = false;
-      this.message.error('Tải dữ liệu khách hàng thất bại!');
+        this.message.error('Tải dữ liệu khách hàng thất bại!');
     });
+  }
+
+  private getViewData(params: string): Observable<ODataPartnerDTO> {
+    this.isLoading = true;
+    return this.odataPartnerService
+        .getView(params, this.filterObj).pipe(takeUntil(this.destroy$))
+        .pipe(finalize(() => {this.isLoading = false }));
   }
 
   onSelectChange(value: TDSSafeAny) {
@@ -182,14 +176,14 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   loadTags() {
     let type = "partner";
     this.tagService.getByType(type).pipe(takeUntil(this.destroy$)).subscribe((res: ODataTagsPartnerDTO) => {
-        this.lstDataTag = res.value;
+      this.lstDataTag = res.value;
     })
   }
 
   loadPartnerStatusReport() {
     this.commonService.getPartnerStatusReport().pipe(takeUntil(this.destroy$)).subscribe((res: PartnerStatusReport) => {
-      if(res && TDSHelperArray.isArray(res.item)) {
-          this.partnerStatusReport = res.item;
+      if (res && TDSHelperArray.isArray(res.item)) {
+        this.partnerStatusReport = res.item;
       }
     }, error => {
       this.message.error('Tải dữ liệu trạng thái khách hàng thất bại!');
@@ -263,11 +257,11 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   assignTags(id: number, tags: Array<TagsPartnerDTO>) {
     let model = { PartnerId: id, Tags: tags };
     this.partnerService.assignTagPartner(model).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-        if(res && res.PartnerId) {
-          var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
-          if(exits) {
-            exits.Tags = JSON.stringify(tags)
-          }
+      if (res && res.PartnerId) {
+        var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
+        if (exits) {
+          exits.Tags = JSON.stringify(tags)
+        }
 
         this.indClickTag = -1;
         this.modelTags = [];
@@ -275,18 +269,40 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
         this.message.success('Gán nhãn thành công!');
       }
     }, error => {
-      this.indClickTag = -1;
-      this.message.error('Gán nhãn thất bại!');
+        this.indClickTag = -1;
+        this.message.error('Gán nhãn thất bại!');
     });
   }
 
-  applyFilter(event: TDSSafeAny) {
-    this.tabIndex = null;
-    this.pageIndex = 1;
-    this.indClickTag = -1;
+  ngAfterViewInit(): void {
+    this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse
+    this.resizeObserver
+      .observe(this.viewChildWidthTable)
+      .subscribe(() => {
+          this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse
+          this.viewChildWidthTable.nativeElement.click()
+      });
 
-    this.filterObj.searchText = event.target.value;
-    this.loadData(this.pageSize, this.pageIndex);
+    fromEvent(this.innerText.nativeElement, 'keyup').pipe(
+        map((event: any) => { return event.target.value }),
+        debounceTime(750),
+        distinctUntilChanged(),
+        // TODO: switchMap xử lý trường hợp sub in sub
+        switchMap((text: TDSSafeAny) => {
+          this.tabIndex = null;
+          this.pageIndex = 1;
+          this.indClickTag = -1;
+
+          this.filterObj.searchText = text;
+          let filters = this.odataPartnerService.buildFilter(this.filterObj);
+
+          let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
+          return this.getViewData(params);
+      })
+    ).subscribe((res: any) => {
+        this.count = res['@odata.count'] as number;
+        this.lstOfData = res.value;
+    });
   }
 
   isHidden(columnName: string) {
@@ -321,7 +337,6 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   exportExcel() {
     if (this.isProcessing) { return }
-
     let state = {
       skip: 0,
       take: 20,
@@ -348,24 +363,24 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.checkValueEmpty() == 1) {
       switch (type) {
         case "active":
-          let model1 = {  Active: true, Ids: this.idsModel }
-          this.partnerService.setActive({model: model1}).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-              this.message.success('Đã mở hiệu lực thành công!');
-              setTimeout(() => {
-                this.loadData(this.pageSize, this.pageIndex);
-              }, 350)
+          let model1 = { Active: true, Ids: this.idsModel }
+          this.partnerService.setActive({ model: model1 }).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+            this.message.success('Đã mở hiệu lực thành công!');
+            setTimeout(() => {
+              this.loadData(this.pageSize, this.pageIndex);
+            }, 350)
           }, error => {
             this.message.error('Mở hiệu lực thất bại!');
           })
           break;
 
         case "unactive":
-          let model2 = {  Active: false, Ids: this.idsModel }
-          this.partnerService.setActive({model: model2}).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-              this.message.success('Đóng hiệu lực thành công!');
-              setTimeout(() => {
-                this.loadData(this.pageSize, this.pageIndex);
-              }, 350)
+          let model2 = { Active: false, Ids: this.idsModel }
+          this.partnerService.setActive({ model: model2 }).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+            this.message.success('Đóng hiệu lực thành công!');
+            setTimeout(() => {
+              this.loadData(this.pageSize, this.pageIndex);
+            }, 350)
           }, error => {
             this.message.error('Đóng hiệu lực thất bại!');
           })
@@ -393,15 +408,15 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
       return
     }
 
-    this.modal.success({
+    this.modal.error({
       title: 'Xóa khách hàng',
       content: 'Bạn muốn chắc xóa khách hàng này?',
       onOk: () => {
-          this.partnerService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-            this.message.success('Xóa thành công!')
-          }, error => {
-            this.message.error(`${error.error.message}`)
-          })
+        this.partnerService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+          this.message.success('Xóa thành công!')
+        }, error => {
+          this.message.error(`${error.error.message}`)
+        })
       },
       onCancel: () => { that.isProcessing = false; },
       okText: "Xác nhận",
@@ -450,8 +465,8 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
       content: 'Bạn muốn chắc chắn reset điểm khách hàng này?',
       onOk: () => {
         that.partnerService.resetLoyaltyPoint({ ids: ids }).pipe(takeUntil(this.destroy$)).subscribe(() => {
-            that.message.success('Thao tác thành công!');
-            that.isProcessing = false;
+          that.message.success('Thao tác thành công!');
+          that.isProcessing = false;
         }, error => {
           that.message.error(`${error?.error?.message}`);
           that.isProcessing = false;
@@ -506,7 +521,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   loadBirtdays() {
     let type = "day";
     this.partnerService.getPartnerBirthday(type).pipe(takeUntil(this.destroy$)).subscribe((res: Array<PartnerBirthdayDTO>) => {
-        this.lstBirtdays = res;
+      this.lstBirtdays = res;
     })
   }
 
@@ -520,7 +535,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    this.destroy$ .next();
-    this.destroy$ .complete();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
