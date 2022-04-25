@@ -28,9 +28,9 @@ import {
   TDSCollapsePanelComponent,
 } from 'tmt-tang-ui';
 import { AddPageComponent } from '../components/add-page/add-page.component';
-import { FacebookService } from 'src/app/main-app/services/facebook.service';
 import { ViewportScroller } from '@angular/common';
 import { takeUntil } from 'rxjs/operators';
+import { FacebookLoginService } from 'src/app/main-app/services/facebook-login.service';
 
 export interface PageNotConnectDTO {
   // /rest/v1.0/product/getinventory
@@ -120,14 +120,14 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
     private message: TDSMessageService,
     private facebookGraphService: FacebookGraphService,
     private viewContainerRef: ViewContainerRef,
-    private facebookService: FacebookService,
+    private facebookLoginService: FacebookLoginService,
     private viewportScroller: ViewportScroller
   ) {}
 
   ngAfterViewInit(): void {
-    this.facebookService.init().subscribe(
+    this.facebookLoginService.init().subscribe(
       (sdk) => {
-        this.facebookService.getLoginStatus().subscribe(
+        this.facebookLoginService.getLoginStatus().subscribe(
           (res: FacebookAuthResponse) => {
             if (res.status === 'connected') {
               this.userFBAuth = res.authResponse;
@@ -159,7 +159,7 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
 
   facebookSignIn(): void {
     this.isLoading = true;
-    this.facebookService.login().subscribe(
+    this.facebookLoginService.login().subscribe(
       (res: FacebookAuth) => {
         this.userFBAuth = res;
         this.getMe();
@@ -176,7 +176,7 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
 
   facebookSignOut() {
     this.isLoading = true;
-    this.facebookService.logout().subscribe(
+    this.facebookLoginService.logout().subscribe(
       () => {
         this.userFBLogin = undefined;
         this.isLoading = false;
@@ -189,7 +189,7 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getMe() {
-    this.facebookService.getMe().subscribe(
+    this.facebookLoginService.getMe().subscribe(
       (res: FacebookUser) => {
         this.userFBLogin = res;
 

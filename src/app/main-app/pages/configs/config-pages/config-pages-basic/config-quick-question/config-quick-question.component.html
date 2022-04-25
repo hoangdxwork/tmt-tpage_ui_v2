@@ -1,0 +1,75 @@
+<tds-spin [spinning]="isLoading">
+  <div class="w-full h-full flex flex-col gap-y-4 ">
+    <div>
+        <span class="text-title-1 font-semibold">Cấu hình câu hỏi nhanh</span>
+    </div>
+    <div class="flex gap-x-2 items-center">
+        <tds-switch [(ngModel)]="isSelect" size="md"></tds-switch>
+        <span class="">Bật danh sách câu hỏi nhanh</span>
+    </div>
+    <div *ngIf="isSelect"
+        class="rounded-xl bg-neutral-3-50 flex flex-col px-4 divide-y divide-neutral-2-200">
+        <div *ngFor="let item of lstQuickQuestion; let index = index" class="flex flex-col gap-y-2 py-5">
+            <!-- header -->
+            <div class="flex gap-x-2 items-center justify-between ">
+                <div class="flex gap-x-2 items-center">
+                    <span class="mr-2">#{{index + 1}}</span>
+                    <span class="">{{lstData[index].question}}</span>
+                </div>
+                <!-- Icon close content -->
+                <div *ngIf="!item.tabSelected" class="flex gap-x-2 items-center">
+                    <button tds-button-icon color="secondary" size="sm" (click)="onOpenTab(item, index)">
+                        <span class="flex items-center">
+                            <i class="tdsi-edit-fill text-lg leading-none"></i>
+                        </span>
+                    </button>
+                    <button tds-button-icon color="secondary" size="sm" (click)="onRemoveInteract(index)">
+                        <span class="flex items-center">
+                            <i class="tdsi-trash-fill text-lg leading-none"></i>
+                        </span>
+                    </button>
+                </div>
+                <!-- Icon open content -->
+                <div *ngIf="item.tabSelected" class="flex gap-x-2 items-center">
+                    <button tds-button-icon color="secondary" size="sm" (click)="onCloseTab(item, index)">
+                        <span class="flex items-center">
+                            <i class="tdsi-close-fill text-lg leading-none"></i>
+                        </span>
+                    </button>
+                    <button tds-button-icon color="secondary" size="sm" (click)="onConfirmInteract(item, index)">
+                        <span class="flex items-center">
+                            <i class="tdsi-tick-fill text-lg leading-none"></i>
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <!-- content -->
+            <div *ngIf="item.tabSelected" class="flex flex-col gap-y-2.5">
+                <div class="flex flex-col gap-y-2.5">
+                    <tds-form-field>
+                        <tds-label>Câu hỏi</tds-label>
+                        <input tdsInput autocomplete="off" placeholder="Nhập câu hỏi" [(ngModel)]="item.question" />
+                    </tds-form-field>
+                    <tds-form-field>
+                        <tds-label>Trả lời</tds-label>
+                        <input tdsInput autocomplete="off" placeholder="Nhập câu trả lời" [(ngModel)]="item.answer" />
+                    </tds-form-field>
+                    <tds-form-field>
+                        <tds-label>Payload</tds-label>
+                        <input tdsInput autocomplete="off" placeholder="Nhập Payload" [(ngModel)]="item.payload" />
+                    </tds-form-field>
+                </div>
+
+            </div>
+        </div>
+        <div class="py-5">
+            <button tds-button color="secondary" (click)="add()">
+                <span class="flex items-center">
+                    <i class="tdsi-plus-circle-fill text-lg leading-5 text-neutral-1-500 mr-2"></i>
+                    Thêm mới
+                </span>
+            </button>
+        </div>
+    </div>
+  </div>
+</tds-spin>

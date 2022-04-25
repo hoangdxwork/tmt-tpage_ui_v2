@@ -2,12 +2,6 @@ import { Observable, Observer, of } from "rxjs";
 import { tap } from "rxjs/operators";
 import { CachedImageDTO } from "../../dto/image/image.dto";
 
-
-
-
-
-
-
 export class ImageFacade {
   private _cachedImages: any = {};
 

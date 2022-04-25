@@ -5,10 +5,13 @@ export const Message = {
   SaveFail: 'Lưu thất bại!',
   DeleteSuccess: 'Xóa thành công.',
   DeleteFail: 'Xóa thất bại.',
+  UpdatedSuccess: 'Cập nhật thành công.',
+  UpdatedFail: 'Cập nhật thất bại.',
   ManipulationSuccessful: 'Thao tác thành công.',
   EmptyData: 'Không có dữ liệu',
   SelectOneLine: 'Vui lòng chọn tối thiểu 1 dòng!',
   ErrorOccurred: 'Đã có lỗi xảy ra',
+  PageNotExist: 'Không có kênh nào đang được kết nối',
   Error: {
     SeverError: 'Lỗi máy chủ. Vui lòng thử lại sau.'
   },
@@ -55,5 +58,12 @@ export const Message = {
     ChannelExist: 'Kênh đã tồn tại.',
     RefreshTokenSuccess: 'Cập nhật token thành công.',
     RefreshTokenFail: 'Cập nhật token thất bại!',
+  },
+  Config: {
+    PageConfig: {
+      ProfileMessagesLimit: 'Menu tương tác đã đạt giới hạn.',
+      InfoEmpty: 'Có thông tin bị trống',
+      Saved: 'Đã lưu'
+    }
   }
 }

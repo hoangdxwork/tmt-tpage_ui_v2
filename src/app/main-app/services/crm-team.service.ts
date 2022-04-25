@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {  Observable, ReplaySubject } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
+import { AutoHideCommentDTO, AutoReplyConfigDTO, ChannelAutoLabelConfigDTO, ChannelFacebookConfigDTO } from '../dto/configs/page-config.dto';
 import { PagedList2 } from '../dto/pagedlist2.dto';
 import { ODataAllFacebookChildTO } from '../dto/team/all-facebook-child.dto';
 import { CRMTeamDTO } from '../dto/team/team.dto';
@@ -145,5 +146,67 @@ export class CRMTeamService extends BaseSevice {
     return this.apiService.getData<ODataAllFacebookChildTO>(api, null);
   }
 
+  getChannelAutoReplyConfig(pageId: string): Observable<AutoReplyConfigDTO> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${pageId}/channelautoreplyconfig`,
+      method: TApiMethodType.get
+    }
+
+    return this.apiService.getData<AutoReplyConfigDTO>(api, null);
+  }
+
+  insertOrUpdateChannelAutoReplyConfig(pageId: string, data: AutoReplyConfigDTO): Observable<TDSSafeAny> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${pageId}/channelautoreplyconfig`,
+      method: TApiMethodType.put
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  getChannelAutoHiddenConfig(pageId: string): Observable<AutoHideCommentDTO> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${pageId}/channelautohiddenconfig`,
+      method: TApiMethodType.get
+    }
+
+    return this.apiService.getData<AutoHideCommentDTO>(api, null);
+  }
+
+  insertOrUpdateChannelAutoHiddenConfig(pageId: string, data: AutoHideCommentDTO): Observable<TDSSafeAny> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${pageId}/channelautohiddenconfig`,
+      method: TApiMethodType.put
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  getChannelConfig(pageId: string): Observable<ChannelFacebookConfigDTO> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/getchannelconfig?pageId=${pageId}`,
+      method: TApiMethodType.get
+    }
+
+    return this.apiService.getData<ChannelFacebookConfigDTO>(api, null);
+  }
+
+  getChannelAutoLabelConfig(pageId: string): Observable<ChannelAutoLabelConfigDTO> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${pageId}/channelautolabelconfig`,
+      method: TApiMethodType.get
+    }
+
+    return this.apiService.getData<ChannelAutoLabelConfigDTO>(api, null);
+  }
+
+  insertOrUpdateChannelAutoLabelConfig(pageId: string, data: TDSSafeAny): Observable<ChannelAutoLabelConfigDTO> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${pageId}/channelautolabelconfig`,
+      method: TApiMethodType.put
+    }
+
+    return this.apiService.getData<ChannelAutoLabelConfigDTO>(api, data);
+  }
 
 }
