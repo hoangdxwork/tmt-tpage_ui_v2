@@ -49,7 +49,7 @@ import { ModalListShiftComponent } from './components/modal-list-shift/modal-lis
 import { ModalAddShiftComponent } from './components/modal-add-shift/modal-add-shift.component';
 import { ModalUpdateShiftComponent } from './components/modal-update-shift/modal-update-shift.component';
 import { ConfigDecentralizePageComponent } from './config-users/config-decentralize-page/config-decentralize-page.component';
-import { TDSAvatarModule, TDSBadgeModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSDatePickerModule, TDSDropDownModule, TDSFormFieldModule, TDSImageModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSModalService, TDSPopoverModule, TDSRadioModule, TDSSelectModule, TDSSpinnerModule, TDSSwitchModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTimePickerModule, TDSToolTipModule, TDSUploadModule } from 'tmt-tang-ui';
+import { TDSAvatarModule, TDSBadgeModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSDatePickerModule, TDSDropDownModule, TDSFormFieldModule, TDSImageModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSModalService, TDSPopoverModule, TDSRadioModule, TDSSelectModule, TDSSpinnerModule, TDSSwitchModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTimePickerModule, TDSToolTipModule, TDSUploadModule, TDSFilterStatusModule } from 'tmt-tang-ui';
 import { ConfigAddVariantProductModalComponent } from './components/config-add-variant-product-modal/config-add-variant-product-modal.component';
 import { ConfigAddManufacturerModalComponent } from './components/config-add-manufacturer-modal/config-add-manufacturer-modal.component';
 import { ConfigAddMadeInModalComponent } from './components/config-add-made-in-modal/config-add-made-in-modal.component';
@@ -166,7 +166,8 @@ const SERVICES = [
     TDSDatePickerModule,
     TDSSpinnerModule,
     TDSTimePickerModule,
-    PipeModule
+    PipeModule,
+    TDSFilterStatusModule
   ],
   providers:[
     ...SERVICES

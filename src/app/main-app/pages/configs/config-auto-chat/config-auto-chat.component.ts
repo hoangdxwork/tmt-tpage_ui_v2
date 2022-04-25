@@ -8,7 +8,7 @@ import { THelperDataRequest } from './../../../../lib/services/helper-data.servi
 import { Subject } from 'rxjs';
 import { OdataQuickReplyService } from './../../../services/mock-odata/odata-quick-reply.service';
 import { AutoChatAddDataModalComponent } from '../components/auto-chat-add-data-modal/auto-chat-add-data-modal.component';
-import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSMessageService, TDSTableQueryParams } from 'tmt-tang-ui';
+import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSMessageService, TDSTableQueryParams, TDSHelperString } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ODataQuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-reply.dto';
 
@@ -18,8 +18,8 @@ import { ODataQuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quic
   styleUrls: ['./config-auto-chat.component.scss']
 })
 export class ConfigAutoChatComponent implements OnInit {
-  AutoChatList:Array<QuickReplyDTO> = [];
-  expandBtnList:Array<boolean> = [];
+  AutoChatList: Array<QuickReplyDTO> = [];
+  expandBtnList: Array<boolean> = [];
   isLoading = false;
   pageSize: number = 20;
   pageIndex: number = 1;
@@ -29,25 +29,30 @@ export class ConfigAutoChatComponent implements OnInit {
   public filterObj: TDSSafeAny = {
     searchText: ''
   }
+  tabIndex = null;
+
 
   constructor(private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private message: TDSMessageService,
-    private fb : FormBuilder,
-    private odataQuickReplyService : OdataQuickReplyService,
+    private fb: FormBuilder,
+    private odataQuickReplyService: OdataQuickReplyService,
     private quickReplyService: QuickReplyService,
-    ) {     }
+  ) { }
 
   ngOnInit(): void {
     // this.loadData(this.pageSize, this.pageIndex);
   }
 
-  
 
-  loadData(pageSize: number, pageIndex: number ){
+
+  loadData(pageSize: number, pageIndex: number) {
     this.isLoading = true;
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
-    this.odataQuickReplyService.get(params, ).pipe(takeUntil(this.destroy$)).subscribe((res: ODataQuickReplyDTO) => {
+    let filters = this.odataQuickReplyService.buildFilter(this.filterObj);  
+    let params = TDSHelperString.hasValueString(this.filterObj.searchText)?
+        THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters):
+        THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
+    this.odataQuickReplyService.get(params).pipe(takeUntil(this.destroy$)).subscribe((res: ODataQuickReplyDTO) => {
       this.AutoChatList = res.value
       this.count = res['@odata.count'] as number
       this.isLoading = false;
@@ -56,7 +61,6 @@ export class ConfigAutoChatComponent implements OnInit {
       this.message.error('Tải dữ liệu thất bại!');
     });
 
-    this.setExpandBtnStatus();
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
@@ -64,7 +68,7 @@ export class ConfigAutoChatComponent implements OnInit {
     this.pageIndex = params.pageIndex;
   }
 
-  refreshData(){
+  refreshData() {
     this.pageIndex = 1;
 
   }
@@ -83,26 +87,28 @@ export class ConfigAutoChatComponent implements OnInit {
     });
   }
 
-  setExpandBtnStatus(){
-    let i = 0;
-    while(i < (this.AutoChatList.length-1)){
-      this.expandBtnList.push(false);
-      i++;
+
+
+  applyFilter(event: TDSSafeAny) {
+    this.tabIndex = null;
+    this.pageIndex = 1;
+    this.pageSize = 20;
+
+    let keyFilter = event.target.value as string
+    this.filterObj = {
+      searchText:  keyFilter
     }
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
-  doFilter(event:TDSSafeAny){
-
-  }
-
-  onAddNewData(data:TDSSafeAny){
+  onAddNewData(data: TDSSafeAny) {
     const modal = this.modalService.create({
       title: 'Thêm mới trả lời nhanh',
       content: AutoChatAddDataModalComponent,
       viewContainerRef: this.viewContainerRef,
-      size:'lg',
+      size: 'lg',
       componentParams: {
-          
+
       }
     });
     modal.afterOpen.subscribe(() => {
@@ -110,30 +116,30 @@ export class ConfigAutoChatComponent implements OnInit {
     });
     // Return a result when closed
     modal.afterClose.subscribe(result => {
-        if (TDSHelperObject.hasValue(result)) {
-            this.loadData(this.pageSize, this.pageIndex);
-        }
+      if (TDSHelperObject.hasValue(result)) {
+        this.loadData(this.pageSize, this.pageIndex);
+      }
     });
   }
 
-  onChangeStatus(key: number){
+  onChangeStatus(key: number) {
     this.quickReplyService.updateStatus(key).subscribe((res) => {
-      
+
     });
   }
 
-  onChangeSetting(data:TDSSafeAny,index:number){
+  onChangeSetting(data: TDSSafeAny, index: number) {
 
   }
 
-  onEditRow(ev:TDSSafeAny,id:number){
+  onEditRow(ev: TDSSafeAny, id: number) {
     const modal = this.modalService.create({
       title: 'Cập nhật trả lời nhanh',
       content: AutoChatAddDataModalComponent,
       viewContainerRef: this.viewContainerRef,
-      size:'lg',
+      size: 'lg',
       componentParams: {
-        valueEditId : id
+        valueEditId: id
       }
     });
     modal.afterOpen.subscribe(() => {
@@ -141,13 +147,31 @@ export class ConfigAutoChatComponent implements OnInit {
     });
     // Return a result when closed
     modal.afterClose.subscribe(result => {
-        if (TDSHelperObject.hasValue(result)) {
-          this.loadData(this.pageSize, this.pageIndex);
-        }
+      if (TDSHelperObject.hasValue(result)) {
+        this.loadData(this.pageSize, this.pageIndex);
+      }
     })
   }
 
-  onRemoveRow(index:number){
+  onRemoveRow(key: number): void {
+    this.modalService.error({
+      title: 'Xóa trả lời nhanh',
+      iconType: 'tdsi-trash-fill',
+      content: 'Bạn có muốn xóa trả lời nhanh!',
+      onOk: () => {
+        this.quickReplyService.delete(key).pipe(takeUntil(this.destroy$)).subscribe(res => {
+          this.message.success('Xóa trả lời nhanh thành công!!');
+          this.loadData(this.pageSize, this.pageIndex);
+        },
+          err => {
+            this.message.success('Xóa trả lời nhanh thất bại!!');
+          })
+      },
+      onCancel: () => {
 
+      },
+      okText: "Xác nhận",
+      cancelText: "Hủy"
+    });
   }
 }
