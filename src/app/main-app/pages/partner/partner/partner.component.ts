@@ -302,6 +302,8 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     ).subscribe((res: any) => {
         this.count = res['@odata.count'] as number;
         this.lstOfData = res.value;
+    }, error => {
+        this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
     });
   }
 

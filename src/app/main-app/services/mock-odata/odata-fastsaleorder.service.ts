@@ -35,12 +35,10 @@ export class OdataFastSaleOrderService extends BaseSevice {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&deliveryType=${filterObj.deliveryType}&${params}&$count=true`,
         method: TApiMethodType.get,
     }
-
     return this.apiService.getData<ODataFastSaleOrderDTO>(api, null);
   }
 
   public buildFilter(filterObj: FilterObjDTO) {
-
     let dataFilter: FilterDataRequestDTO = {
         logic: "or",
         filters: [],
@@ -60,17 +58,18 @@ export class OdataFastSaleOrderService extends BaseSevice {
     }
 
     if (TDSHelperString.hasValueString(filterObj.searchText)) {
+        let value =  TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim())
         dataFilter.filters.push( {
             filters: [
-              { field: "PartnerDisplayName", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Phone", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Address", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Number", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "State", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Phone", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "PartnerNameNoSign", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "CarrierName", operator: OperatorEnum.contains, value: filterObj.searchText},
-              { field: "TrackingRef", operator: OperatorEnum.contains, value: filterObj.searchText}
+              { field: "PartnerDisplayName", operator: OperatorEnum.contains, value: value },
+              { field: "Phone", operator: OperatorEnum.contains, value: value },
+              { field: "Address", operator: OperatorEnum.contains, value: value },
+              { field: "Number", operator: OperatorEnum.contains, value: value },
+              { field: "State", operator: OperatorEnum.contains, value: value },
+              { field: "Phone", operator: OperatorEnum.contains, value: value },
+              { field: "PartnerNameNoSign", operator: OperatorEnum.contains, value: value },
+              { field: "CarrierName", operator: OperatorEnum.contains, value: value},
+              { field: "TrackingRef", operator: OperatorEnum.contains, value: value}
             ],
             logic: 'or'
         })

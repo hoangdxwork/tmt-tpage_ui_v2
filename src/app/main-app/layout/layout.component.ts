@@ -1,6 +1,5 @@
 import { Component, Injector, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular/router';
-import { throttle } from 'lodash';
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, filter, map, mergeMap, startWith, takeUntil } from 'rxjs/operators';
 import { TAuthService, UserInitDTO } from 'src/app/lib';
@@ -42,7 +41,7 @@ export class LayoutComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    
+
     this.crmService.onChangeTeam().subscribe(res => {
       this.lstMenu = this.setMenu(res);
       this.currentTeam = res;
@@ -52,7 +51,7 @@ export class LayoutComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe(res => {
       this.params = res;
     });
-  
+
   }
   onSelectShopChange(event: TDSSafeAny) {
 
@@ -189,7 +188,7 @@ export class LayoutComponent implements OnInit {
     ];
   }
 
-  
+
   //load thông tin user
   loadUserInfo() {
     this.auth.getUserInit().subscribe(res => {
