@@ -32,7 +32,7 @@ export interface ApplicationUserDTO {
   Fields: Array<any>;
   Functions: Array<any>;
   GroupRefs: Array<any>;
-  }
+}
 
 export interface ApplicationUserShiftDTO {
   Id: number;
@@ -40,16 +40,30 @@ export interface ApplicationUserShiftDTO {
   ShiftId: number;
   WorkingDay: Date;
   Shifts: Array<ShiftDTO>;
+  Color: string;
+  Name: string;
+  EditLevel: string;
 }
 
 export interface ShiftDTO {
-  id: number;
-  name: string;
-  fromHour: string;
-  toHour: string;
+  Id: string;
+  Name: string;
+  FromHour: string;
+  ToHour: string;
+}
+
+export interface AddShiftDTO {
+  Name: string;
+  FromHour: string;
+  ToHour: string;
 }
 
 export interface ApplicationUserRolesDTO {
   UserId: string;
   RoleId: string;
+}
+
+export interface UserUpdateShiftDTO {
+  WorkingDay: Date;
+  Shifts: ShiftDTO[];
 }

@@ -7,7 +7,7 @@ import { ProfileMessageDTO } from 'src/app/main-app/dto/configs/page-config.dto'
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { FacebookService } from 'src/app/main-app/services/facebook.service';
-import { TDSMessageService, TDSSafeAny, TDSHelperArray } from 'tmt-tang-ui';
+import { TDSMessageService, TDSSafeAny, TDSHelperArray, TDSTabChangeEvent } from 'tmt-tang-ui';
 
 @Component({
   selector: 'config-interactive-menus',
@@ -150,6 +150,10 @@ export class ConfigInteractiveMenusComponent implements OnInit, OnChanges, OnDes
     item.tabSelected = !item.tabSelected ? true : false;
     this.lstData[index].tabSelected = item.tabSelected;
     this.lstProfileMessages[index] = ({...this.lstData[index]});
+  }
+
+  onSelectChange(index: number, event: TDSTabChangeEvent) {
+    this.lstProfileMessages[index].type = event.index == 0 ? this.lstType.web_url : this.lstType.post_back;
   }
 
   checkValue(): ProfileMessageDTO[] | null{
