@@ -76,7 +76,8 @@
                                   </div>
                               </div>
                               <div class="w-2/3 flex flex-col gap-y-2" *ngIf="dataModel.State != 'draft'">
-                                 <span class="font-semibold">{{_form.controls['Partner'].value ? _form.controls['Partner'].value.DisplayName : 'N/A' }}</span>
+                                 <a class="font-semibold" (click)="editPartner(_form.controls['Partner'].value)">{{_form.controls['Partner'].value ? _form.controls['Partner'].value.DisplayName : 'N/A' }}</a>
+                                 <p class="text-body-2">{{_form.controls["Partner"].value ? _form.controls["Partner"].value.StatusText : "N/A" }}</p>
                             </div>
                           </div>
                           <div class=" col-span-1 flex gap-x-6 items-center">
@@ -173,7 +174,7 @@
                               </div>
                               <div class="w-2/3" *ngIf="dataModel.State != 'draft'">
                                   <span class="font-semibold" *ngIf="_form.controls['Team'].value">
-                                      {{_form.controls['Team'].value.NameGet}} - {{_form.controls["Team"].value.Facebook_PageName}}
+                                      {{_form.controls['Team'].value.NameGet || 'N/A'}} - {{_form.controls["Team"].value.Facebook_PageName || 'N/A'}}
                                   </span>
                               </div>
                           </div>
@@ -403,9 +404,8 @@
                                   </ul>
                               </div>
                           </div>
-
                           <div class="col-span-3">
-                              <tds-collapse accordion="true">
+                              <tds-collapse accordion="true" *ngIf="dataModel.State == 'paid' || dataModel.State == 'draft'">
                                   <tds-collapse-panel header="Thông tin nâng cao" [active]="false" [disabled]=false
                                       [expandedIcon]="'tdsi-arrow-up-line'">
                                       <div class="w-2/3 flex flex-col gap-y-4" formGroupName="Ship_Receiver">
@@ -447,11 +447,42 @@
                                       </div>
                                   </tds-collapse-panel>
                               </tds-collapse>
+                              <tds-collapse accordion="true" *ngIf="dataModel.State == 'open'">
+                                  <tds-collapse-panel header="Thông tin nâng cao" [active]="false" [disabled]=false
+                                      [expandedIcon]="'tdsi-arrow-up-line'">
+                                      <div class="w-2/3 flex flex-col gap-y-4" formGroupName="Ship_Receiver">
+                                          <div class="flex gap-x-6">
+                                              <div class="w-1/6">
+                                                  <span class="font-semibold">Tên</span>
+                                              </div>
+                                              <div class="w-5/6">
+                                                <span class="font-semibold">{{_form.controls['Ship_Receiver'].value?.Name}} </span>
+                                              </div>
+                                          </div>
+                                          <div class="flex gap-x-6">
+                                              <div class="w-1/6">
+                                                  <span class="font-semibold">Điện thoại</span>
+                                              </div>
+                                              <div class="w-5/6">
+                                                <span class="font-semibold">{{_form.controls['Ship_Receiver'].value?.Phone}} </span>
+                                              </div>
+                                          </div>
+                                          <div class="flex gap-x-6">
+                                              <div class="w-1/6">
+                                                  <span class="font-semibold">Địa chỉ</span>
+                                              </div>
+                                              <div class="w-5/6">
+                                                <span class="font-semibold">{{_form.controls['Ship_Receiver'].value?.Street}} </span>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </tds-collapse-panel>
+                              </tds-collapse>
                           </div>
                       </div>
                   </tds-tab>
                   <!-- tab thông tin người nhận -->
-                  <tds-tab title="Thông tin người nhận">
+                  <tds-tab title="Thông tin người nhận" *ngIf="this.roleConfigs && this.roleConfigs.GroupFastSaleReceiver == true">
                       <div class="grid grid-cols-3 gap-x-8 gap-y-4 text-body-2 text-neutral-1-900">
                           <div class=" col-span-1 flex gap-x-6 items-center">
                               <div class="w-1/3">
@@ -603,7 +634,96 @@
                   </tds-tab>
               </tds-tabset>
           </div>
-          <div class="flex h-full gap-x-4">
+          <!-- Danh sách sản phẩm -->
+          <div class="flex h-full gap-x-4"  *ngIf="dataModel && dataModel.State != 'draft'">
+              <div class="w-full h-full overflow-hidden">
+                  <div
+                      class="rounded-xl pt-2 px-3 bg-white flex h-full w-full flex-col gap-y-2 text-body-2 text-neutral-1-900">
+                      <tds-table templateMode #TableAddBill [listData]="_form['controls'].OrderLines.value"
+                          [scroll]="{y:'auto'}" [showPagination]="false">
+                          <thead>
+                              <tr>
+                                  <th width="10%">STT</th>
+                                  <th width="30%">Sản Phẩm</th>
+                                  <th width="10%">Số lượng</th>
+                                  <th width="10%">Đơn giá</th>
+                                  <th width="10%">Giá gần đây</th>
+                                  <th width="10%">Giảm giá</th>
+                                  <th width="10%" class="truncate">Khối lượng(g)</th>
+                                  <th width="10%">Thành tiền</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <ng-template ngFor let-data let-i="index" [ngForOf]="TableAddBill.data">
+                                  <tr>
+                                      <td>{{ i + 1 }}</td>
+                                      <td>
+                                          <div class="flex flex-col">
+                                              <span class="font-semibold">{{data.ProductNameGet}}</span>
+                                              <span class="text-neutral-1-400">Đơn vị: {{data.ProductUOMName}}</span>
+                                              <span class="text-neutral-1-400">
+                                                  <i class="tdsi-edit-fill mr-2"></i>  {{ data.Note || 'Chưa có ghi chú'}}
+                                              </span>
+                                              <a class="inline-block">
+                                                <span class="text-info-500 font-semibold">
+                                                    <i class="tdsi-user-fill mr-2 "></i> {{data.User?.Name || 'Chưa chọn nhân viên'}}
+                                                </span>
+                                              </a>
+                                          </div>
+                                      </td>
+                                      <!-- Số lượng -->
+                                      <td> {{ data.ProductUOMQty || 0 | number: '1.0-3'}}</td>
+                                      <!-- Đơn giá -->
+                                      <td> {{ data.PriceUnit || 0 | number: '1.0-3'}}</td>
+                                      <!-- Giá gần đây -->
+                                      <td class="text-center">{{ data.PriceRecent || 0 | number: '1.0-3'}}</td>
+                                      <!-- Giảm giá -->
+                                      <td class="text-center">
+                                          <span color="secondary">
+                                              <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'percent'">
+                                                  {{data.Discount || 0 | number: '1.0-3' }} %
+                                              </span>
+                                              <span class="underline decoration-dotted text-neutral-1-400" *ngIf="data.Type === 'fixed'">
+                                                  {{data.Discount_Fixed || 0 | number: '1.0-3' }} đ
+                                              </span>
+                                          </span>
+                                      </td>
+                                      <td>{{data.Weight >= 0 ? (data.Weight * 1000) : 0}}</td>
+                                      <td>{{data.PriceTotal || 0 | number: '1.0-3' }}</td>
+                                  </tr>
+                              </ng-template>
+                              <tr class="hover:bg-white border-b-0">
+                                  <td colspan="9">
+                                      <div class="flex w-full justify-end">
+                                          <div class="w-1/3 flex justify-end">
+                                              <div class="w-full grid grid-cols-3 gap-2 text-right font-semibold">
+                                                  <div><span class="font-regular">Tổng số lượng</span></div>
+                                                  <div class="col-span-2"><span>{{totalQtyLines | number: '1.0-3'}}</span></div>
+
+                                                  <div><span class="font-regular">Tổng tạm tính</span></div>
+                                                  <div class="col-span-2"><span>{{totalAmountLines | number: '1.0-3' }}đ</span></div>
+                                                  <div><span>Giảm giá</span></div>
+                                                  <div class="col-span-2">
+                                                      <span>{{(_form.controls["DecreaseAmount"].value + _form.controls["DiscountAmount"].value) || 0 | number}} đ</span>
+                                                  </div>
+                                                  <div><span>Thuế</span></div>
+                                                  <div class="col-span-2">
+                                                      <span>{{_form.controls["AmountTax"].value || 0 | number}}đ</span> -
+                                                      <span>{{_form.controls["Tax"].value ? _form.controls["Tax"].value.Amount : 0}}%</span>
+                                                  </div>
+                                                  <div><span>Tổng tiền</span></div>
+                                                  <div class="col-span-2"><span>{{_form.controls["AmountTotal"].value | number: '1.0-3' }}đ</span></div>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                              </tr>
+                          </tbody>
+                      </tds-table>
+                  </div>
+              </div>
+          </div>
+          <div class="flex h-full gap-x-4"  *ngIf="dataModel && dataModel.State == 'draft'">
               <div class="w-1/3 h-full overflow-hidden flex ">
                   <list-product-tmp [priceListItems]="priceListItems" [isLoadingProduct]="isLoadingProduct"
                    (onLoadProductToOrderLines)="onLoadProductToOrderLines($event)"></list-product-tmp>
@@ -620,8 +740,8 @@
                                   <th width="80px">Số lượng</th>
                                   <th width="96px">Đơn giá</th>
                                   <th width="96px">Giá gần đây</th>
-                                  <th width="96px" *ngIf="roleConfigs && roleConfigs.GroupDiscountPerSOLine">Giảm giá</th>
-                                  <th width="100px" class="truncate" *ngIf="roleConfigs && roleConfigs.GroupWeightPerSOLine">Khối lượng(g)</th>
+                                  <th width="96px" >Giảm giá</th>
+                                  <th width="100px" class="truncate">Khối lượng(g)</th>
                                   <th width="96px">Thành tiền</th>
                                   <th width="90px">
                                       <div class="flex items-center justify-center">
@@ -696,7 +816,7 @@
                                       <!-- Giá gần đây -->
                                       <td class="text-center">{{ data.PriceRecent || 0 | number: '1.0-3'}}</td>
                                       <!-- Giảm giá -->
-                                      <td *ngIf="roleConfigs && roleConfigs.GroupDiscountPerSOLine" class="text-center">
+                                      <td class="text-center">
                                             <span color="secondary"
                                                 tds-popover popoverTrigger="click"
                                                 [popoverContent]="popoverDiscountLines"
@@ -730,7 +850,7 @@
                                               </div>
                                             </ng-template>
                                         </td>
-                                      <td *ngIf="roleConfigs && roleConfigs.GroupWeightPerSOLine">{{data.Weight >= 0 ? (data.Weight * 1000) : 0}}</td>
+                                      <td >{{data.Weight >= 0 ? (data.Weight * 1000) : 0}}</td>
                                       <td>{{data.PriceTotal || 0 | number: '1.0-3' }}</td>
                                       <td>
                                           <div class="flex gap-x-2">

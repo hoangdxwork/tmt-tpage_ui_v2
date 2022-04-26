@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MainAppRoutingModule } from './main-app-routing.module';
@@ -19,6 +19,7 @@ import {
 } from 'tmt-tang-ui';
 
 import { PipeModule } from './shared/pipe/pipe.module';
+import { SignalRConnectionService } from './services/signalR/signalR-connection.service';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,14 @@ import { PipeModule } from './shared/pipe/pipe.module';
     PipeModule
   ],
   providers:[
-    // TAuthGuardService
+
+    SignalRConnectionService,
+    {
+        provide: APP_INITIALIZER,
+        useFactory: (signalrService: SignalRConnectionService) => () => signalrService.initiateSignalRConnection(),
+        deps: [SignalRConnectionService],
+        multi: true,
+    }
   ]
 })
 export class MainAppModule { }
