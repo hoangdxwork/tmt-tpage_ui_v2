@@ -66,7 +66,7 @@ export class ProductService extends BaseSevice {
   addProductToFacebookPage(data: any): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.AddProductOnFacebookPage`,
-        method: TApiMethodType.delete,
+        method: TApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -80,4 +80,13 @@ export class ProductService extends BaseSevice {
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
+
+  getSetActive(data: string): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.SetActive`,
+      method: TApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
 }

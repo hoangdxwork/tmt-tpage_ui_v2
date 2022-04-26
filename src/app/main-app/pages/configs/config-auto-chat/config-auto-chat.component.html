@@ -5,10 +5,10 @@
                 <tds-avatar class="bg-primary-1 text-white" icon="tdsi-chat-fill"></tds-avatar>
                 <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">TRẢ LỜI NHANH</span>
             </div>
-            <div class="flex flex-row items-center w-1/2">
-                <tds-form-field size='md' class="mr-4 w-3/4">
+            <div class="flex flex-row items-center w-1/2 justify-end">
+                <tds-form-field size='md' class="mr-4 w-1/2 ">
                     <input tdsInput class="text-neutral-1-900" placeholder="Tìm mẫu trả lời nhanh" autocomplete="off"
-                        (keydown.enter)="applyFilter($event)"/>
+                        #innerText [(ngModel)]="filterObj.searchText"/>
                     <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
                 </tds-form-field>
                 <button tds-button color="primary" (click)="onAddNewData($event)">
@@ -32,11 +32,11 @@
                 (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
                 <thead>
                       <tr class="text-neutral-1-900 text-body-2 font-semibold">
-                            <th>Tên mẫu</th>
-                            <th>Nội dung</th>
-                            <th>Phím tắt</th>
-                            <th>Trạng thái</th>
-                            <th>Thao tác</th>
+                            <th width="30%">Tên mẫu</th>
+                            <th width="30%">Nội dung</th>
+                            <th width="13%">Phím tắt</th>
+                            <th width="12%">Trạng thái</th>
+                            <th class="text-center" width="15%">Thao tác</th>
                       </tr>
                 </thead>
                 <tbody>
@@ -66,7 +66,7 @@
                             <td>
                                 <tds-switch [(ngModel)]="data.Active" (ngModelChange)="onChangeStatus(data.Id)"></tds-switch>
                             </td>
-                            <td>
+                            <td class="text-center">
                                 <button tds-button-icon color="secondary" size="sm" class="mr-2"
                                     (click)="onEditRow($event,data.Id)">
                                     <span class="flex items-center">

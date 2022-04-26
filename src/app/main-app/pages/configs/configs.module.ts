@@ -30,7 +30,6 @@ import { ConfigPrintBillsComponent } from './config-print-bills/config-print-bil
 import { ConfigConversationTagsEditDataModalComponent } from './components/config-conversation-tags-edit-data-modal/config-conversation-tags-edit-data-modal.component';
 import { AutoChatAddDataModalComponent } from './components/auto-chat-add-data-modal/auto-chat-add-data-modal.component';
 import { SMSMessagesAddServiceModalComponent } from './components/sms-messages-add-service-modal/sms-messages-add-service-modal.component';
-import { TableTemplateProductVariantComponent } from './components/table-template-product-variant/table-template-product-variant.component';
 import { ProductVariantEditTableModalComponent } from './components/product-variant-edit-table-modal/product-variant-edit-table-modal.component';
 import { ConfigAddPromotionComponent } from './config-add-promotion/config-add-promotion.component';
 import { ConfigAddPromotionAllComponent } from './config-add-promotion/config-add-promotion-all/config-add-promotion-all.component';
@@ -109,7 +108,6 @@ const SERVICES = [
     ConfigConversationTagsEditDataModalComponent,
     AutoChatAddDataModalComponent,
     SMSMessagesAddServiceModalComponent,
-    TableTemplateProductVariantComponent,
     ProductVariantEditTableModalComponent,
     ConfigAddPromotionComponent,
     ConfigAddPromotionAllComponent,
@@ -169,7 +167,7 @@ const SERVICES = [
     TDSSpinnerModule,
     TDSTimePickerModule,
     PipeModule,
-    TDSFilterStatusModule
+    TDSFilterStatusModule,
   ],
   providers:[
     ...SERVICES
