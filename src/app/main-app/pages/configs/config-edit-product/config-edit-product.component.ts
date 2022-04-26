@@ -4,7 +4,7 @@ import { ProductTemplateService } from './../../../services/product-template.ser
 import { OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ProductService } from 'src/app/main-app/services/product.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ConfigAddOriginCountryModalComponent } from '../components/config-add-origin-country-modal/config-add-origin-country-modal.component';
 import { ConfigAddUOMModalComponent } from '../components/config-add-UOM-modal/config-add-UOM-modal.component';
 import { ConfigAddVariantProductModalComponent } from './../components/config-add-variant-product-modal/config-add-variant-product-modal.component';
@@ -14,11 +14,11 @@ import { TDSSafeAny, TDSMessageService, TDSModalService, TDSHelperObject } from 
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 
 @Component({
-  selector: 'app-config-add-product',
-  templateUrl: './config-add-product.component.html',
-  styleUrls: ['./config-add-product.component.scss']
+  selector: 'app-config-edit-product',
+  templateUrl: './config-edit-product.component.html',
+  styleUrls: ['./config-edit-product.component.scss']
 })
-export class ConfigAddProductComponent implements OnInit, OnDestroy {
+export class ConfigEditProductComponent implements OnInit, OnDestroy {
   variantTableData:Array<TDSSafeAny> = [];
   productTypeList:Array<TDSSafeAny>  = [];
   categoryList:Array<TDSSafeAny>  = [];
@@ -34,8 +34,10 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  addProductForm!: FormGroup;
-  modelDefault:TDSSafeAny;
+  productId:TDSSafeAny;
+
+  editProductForm!: FormGroup;
+  productModel:TDSSafeAny;
   
   variantPageSize = 20;
   variantPageIndex = 1;
@@ -48,6 +50,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     private message: TDSMessageService,
     private formBuilder: FormBuilder,
     private router:Router,
+    private route: ActivatedRoute,
     private productService: ProductService,
     private productTemplateService: ProductTemplateService,
     private productTemplateOUMLine: ProductTemplateOUMLineService,
@@ -65,7 +68,8 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.getDefaultData();
+    this.productId = this.route.snapshot.paramMap.get('id');
+    this.getData();
   }
 
   ngOnDestroy(): void {
@@ -73,11 +77,21 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  getDefaultData(){
-    this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$)).subscribe(
+  getData(){
+    this.productTemplateService.getProductTemplateById(this.productId).pipe(takeUntil(this.destroy$)).subscribe(
       (res:TDSSafeAny)=>{
         delete res['@odata.context'];
-        this.modelDefault = res;
+        this.productModel = res;
+
+        if(res.Images){
+          let images = res.Images as Array<TDSSafeAny>;
+          images.map(x => {
+            this.addImages(x);
+            
+          });
+        }
+        this.editProductForm.patchValue(res);
+        console.log(res)
       }
     )
   }
@@ -176,7 +190,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   }
 
   loadForm(){
-    this.addProductForm = this.formBuilder.group({
+    this.editProductForm = this.formBuilder.group({
       Active: [true], //hiệu lực
       AvailableInPOS: [true],//hiện trên điểm bán hàng
       AttributeLines: [null],
@@ -281,7 +295,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   }
 
   showAddVariantModal(){
-    let productName = this.addProductForm.controls.Name.value;
+    let productName = this.editProductForm.controls.Name.value;
     if(productName){
       const modal = this.modalService.create({
         title: 'Thêm biến thể sản phẩm',
@@ -295,7 +309,6 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       
       modal.afterClose.subscribe(result => {
         if (TDSHelperObject.hasValue(result)) {
-          console.log(result);
           this.variantTableData.push(result);
         }
       });
@@ -399,16 +412,16 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   }
 
   addImages(data: any) {
-    const model = <FormArray>this.addProductForm.controls['Images'];
+    const model = <FormArray>this.editProductForm.controls['Images'];
     model.push(this.initImages(data));
   }
 
   getAvatar(url:string){
-    this.addProductForm.controls.Image.setValue(url);
+    this.editProductForm.controls.Image.setValue(url);
   }
 
   getImageList(images:Array<TDSSafeAny>){
-    this.addProductForm.controls.Images = this.formBuilder.array([]);
+    this.editProductForm.controls.Images = this.formBuilder.array([]);
     images.forEach(img => {
       this.addImages({
         MineType: img.type,
@@ -420,15 +433,15 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     });
   }
 
-  addProduct(){
+  editProduct(){
     let model = this.prepareModel();
     console.log(model)
     if(model.Name){
       this.productTemplateService.insertProductTemplate(model).subscribe(
         (res:TDSSafeAny)=>{
           this.message.success('Thêm mới thành công');
-          this.addProductForm.reset();
-          this.modelDefault = null;
+          this.editProductForm.reset();
+          this.productModel = null;
           this.loadForm();
           this.router.navigate(['configs/products']);
         },
@@ -440,190 +453,150 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   }
 
   prepareModel(){
-    let formModel = this.addProductForm.value;
+    let formModel = this.editProductForm.value;
 
     if(formModel.Name){
-      this.modelDefault.Name = formModel.Name;
+      this.productModel.Name = formModel.Name;
     }
     if(formModel.Image) {
-      this.modelDefault.Image = formModel.Image;
+      this.productModel.Image = formModel.Image;
     }
     if(formModel.Images) {
-        this.modelDefault.Images = formModel.Images;
+        this.productModel.Images = formModel.Images;
     }
     if(formModel.SaleOK) {
-        this.modelDefault.SaleOK = formModel.SaleOK;
+        this.productModel.SaleOK = formModel.SaleOK;
     }
     if(formModel.PurchaseOK) {
-        this.modelDefault.PurchaseOK = formModel.PurchaseOK;
+        this.productModel.PurchaseOK = formModel.PurchaseOK;
     }
     if(formModel.IsCombo) {
-        this.modelDefault.IsCombo = formModel.IsCombo;
+        this.productModel.IsCombo = formModel.IsCombo;
     }
     if(formModel.AvailableInPOS) {
-        this.modelDefault.AvailableInPOS = formModel.AvailableInPOS;
+        this.productModel.AvailableInPOS = formModel.AvailableInPOS;
     }
     if(formModel.EnableAll) {
-        this.modelDefault.EnableAll = formModel.EnableAll;
+        this.productModel.EnableAll = formModel.EnableAll;
     }
     if(formModel.Type) {
-        let modelType = this.productTypeList.find(x=>x.Id== formModel.Type);
-        if(modelType){
-          this.modelDefault.Type = modelType.Type;
-        }
+        this.productModel.Type = formModel.Type;
     }
     if(formModel.DefaultCode) {
-        this.modelDefault.DefaultCode = formModel.DefaultCode;
+        this.productModel.DefaultCode = formModel.DefaultCode;
     }
     if(formModel.Barcode) {
-        this.modelDefault.Barcode = formModel.Barcode;
+        this.productModel.Barcode = formModel.Barcode;
     }
     if(formModel.Categ) {
-        let modelCateg = this.categoryList.find(x=>x.Id== formModel.Categ);
-        if(modelCateg){
-          this.modelDefault.Categ = modelCateg.Categ;
-          this.modelDefault.CategId = modelCateg.Categ.Id;
-        }
+        this.productModel.Categ = formModel.Categ;
+        this.productModel.CategId = formModel.Categ.Id;
     } else {
-        this.modelDefault.CategId =   this.modelDefault.Categ.Id;
+        this.productModel.CategId =   this.productModel.Categ.Id;
     }
     if(formModel.Active) {
-        this.modelDefault.Active = formModel.Active;
+        this.productModel.Active = formModel.Active;
     }
     if(formModel.InitInventory) {
-        this.modelDefault.InitInventory = formModel.InitInventory;
+        this.productModel.InitInventory = formModel.InitInventory;
     }
     if(formModel.ListPrice) {
-        this.modelDefault.ListPrice = formModel.ListPrice;
+        this.productModel.ListPrice = formModel.ListPrice;
     }
     if(formModel.DiscountSale) {
-        this.modelDefault.DiscountSale = formModel.DiscountSale;
+        this.productModel.DiscountSale = formModel.DiscountSale;
     }
     if(formModel.PurchasePrice) {
-        this.modelDefault.PurchasePrice = formModel.PurchasePrice;
+        this.productModel.PurchasePrice = formModel.PurchasePrice;
     }
     if(formModel.DiscountPurchase) {
-        this.modelDefault.DiscountPurchase = formModel.DiscountPurchase;
+        this.productModel.DiscountPurchase = formModel.DiscountPurchase;
     }
     if(formModel.UOM) {
-        let modelUOM = this.UOMList.find(x=>x.Id== formModel.UOM);
-        if(modelUOM){
-          this.modelDefault.UOM = modelUOM;
-          this.modelDefault.UOMId = modelUOM.Id;
-        }
+        this.productModel.UOM = formModel.UOM;
+        this.productModel.UOMId = formModel.UOM.Id;
     } else {
-      this.modelDefault.UOMId = this.modelDefault.UOM.Id;
+      this.productModel.UOMId = this.productModel.UOM.Id;
     }
     if(formModel.UOMPO) {
-        let modelUOMPO = this.UOMPOList.find(x=>x.Id== formModel.UOMPO);
-        if(modelUOMPO){
-          this.modelDefault.UOMPO = modelUOMPO;
-          this.modelDefault.UOMPOId = modelUOMPO.Id;
-        }
+        this.productModel.UOMPO = formModel.UOMPO;
+        this.productModel.UOMPOId = formModel.UOMPO.Id;
     } else {
-        this.modelDefault.UOMPOId = this.modelDefault.UOMPO.Id;
+        this.productModel.UOMPOId = this.productModel.UOMPO.Id;
     }
     if(formModel.Weight) {
-        this.modelDefault.Weight = formModel.Weight;
+        this.productModel.Weight = formModel.Weight;
     }
     if(formModel.Volume) {
-        this.modelDefault.Volume = formModel.Volume;
+        this.productModel.Volume = formModel.Volume;
     }
     if(formModel.POSCateg) {
-        let modelPOSCateg = this.POSCategoryList.find(x=>x.Id== formModel.POSCateg);
-        if(modelPOSCateg){
-          this.modelDefault.POSCateg = modelPOSCateg;
-          this.modelDefault.POSCategId = modelPOSCateg.Id;
-        }
+        this.productModel.POSCateg = formModel.POSCateg;
+        this.productModel.POSCategId = formModel.POSCateg.Id;
     }
     if(formModel.DescriptionSale) {
-        this.modelDefault.DescriptionSale = formModel.DescriptionSale;
+        this.productModel.DescriptionSale = formModel.DescriptionSale;
     }
     if(formModel.Description) {
-        this.modelDefault.Description = formModel.Description;
+        this.productModel.Description = formModel.Description;
     }
     if(formModel.Producer) {
-        let modelProducer = this.producerList.find(x=>x.Id== formModel.Producer);
-        if(modelProducer){
-          this.modelDefault.Producer = modelProducer;
-          this.modelDefault.ProducerId = modelProducer.Id;
-        }
+        this.productModel.Producer = formModel.Producer;
+        this.productModel.ProducerId = formModel.Producer.Id;
     }
     if(formModel.Importer) {
-        let modelImporter = this.importerList.find(x=>x.Id== formModel.Importer);
-        if(modelImporter){
-          this.modelDefault.Importer = modelImporter;
-          this.modelDefault.ImporterId = modelImporter.Id;
-        }
+        this.productModel.Importer = formModel.Importer;
+        this.productModel.ImporterId = formModel.Importer.Id;
     }
     if(formModel.Distributor) {
-        let modelDistributor = this.distributorList.find(x=>x.Id== formModel.Distributor);
-        if(modelDistributor){
-          this.modelDefault.Distributor = modelDistributor;
-          this.modelDefault.DistributorId = modelDistributor.Id;
-        }
+        this.productModel.Distributor = formModel.Distributor;
+        this.productModel.DistributorId = formModel.Distributor.Id;
     }
     if(formModel.OriginCountry) {
-        let modelOriginCountry = this.originCountryList.find(x=>x.Id== formModel.OriginCountry);
-        if(modelOriginCountry){
-          this.modelDefault.OriginCountry = modelOriginCountry;
-          this.modelDefault.OriginCountryId = modelOriginCountry.Id;
-        }
+        this.productModel.OriginCountry = formModel.OriginCountry;
+        this.productModel.OriginCountryId = formModel.OriginCountry.Id;
     }
     if(formModel.YearOfManufacture) {
-      this.modelDefault.YearOfManufacture = formModel.YearOfManufacture;
+      this.productModel.YearOfManufacture = formModel.YearOfManufacture;
     }
     if(formModel.Element) {
-      this.modelDefault.Element = formModel.Element;
+      this.productModel.Element = formModel.Element;
     }
     if(formModel.Specifications) {
-      this.modelDefault.Specifications = formModel.Specifications;
+      this.productModel.Specifications = formModel.Specifications;
     }
     if(formModel.InfoWarning) {
-      this.modelDefault.InfoWarning = formModel.InfoWarning;
+      this.productModel.InfoWarning = formModel.InfoWarning;
     }
     if(formModel.Description) {
-      this.modelDefault.Description = formModel.Description;
+      this.productModel.Description = formModel.Description;
     }
     if(formModel.Tracking) {
-        let modelTracking = this.trackingList.find(x=>x.Id== formModel.Tracking);
-        if(modelTracking){
-          this.modelDefault.Tracking = modelTracking.Tracking;
-        }
+      this.productModel.Tracking = formModel.Tracking;
     }
     if(formModel.AttributeValues) {
-      this.modelDefault.AttributeValues = formModel.AttributeValues;
+      this.productModel.AttributeValues = formModel.AttributeValues;
     }
-    if(this.modelDefault && this.modelDefault.AttributeLines) {
-      let value = this.modelDefault.AttributeLines as TDSSafeAny[];
+    if(this.productModel && this.productModel.AttributeLines) {
+      let value = this.productModel.AttributeLines as TDSSafeAny[];
 
       let lines = value.forEach(line => {
         let id = line.Attribute.Id
         line["AttributeId"] = id;
       });
 
-      this.modelDefault.AttributeLines = lines;
+      this.productModel.AttributeLines = lines;
     }
 
-    return this.modelDefault;
+    return this.productModel;
   }
 
   backToMain(){
     this.router.navigate(['configs/products']);
-    this.addProductForm.reset();
+    this.editProductForm.reset();
   }
 
   onSubmit(){
-    if(this.modelDefault) {
-      this.addProduct();
-    }
-    else {
-      this.productTemplateService.getDefault().subscribe((res: TDSSafeAny) => {
-        delete res['@odata.context'];
-        this.modelDefault = res;
-
-        this.addProduct();
-      });
-    }
+    this.editProduct();
   }
 }

@@ -1,8 +1,8 @@
-<form [formGroup]="addmanufacturerForm" autocomplete="off" (ngSubmit)="onSubmit()">
+<form [formGroup]="addUOMForm" autocomplete="off" (ngSubmit)="onSubmit()">
     <div class="grid grid-cols-4 gap-y-4 items-center">
         <tds-label>Tên</tds-label>
         <tds-form-field class="w-full col-span-3">
-          <input tdsInput formControlName="manufacturerName" autocomplete="off" placeholder="Nhập tên nhà sản xuất"/>
+          <input tdsInput formControlName="Name" autocomplete="off" placeholder="Nhập tên nhà sản xuất"/>
           <tds-error>
               Vui lòng nhập tên nhà sản xuất
           </tds-error>
@@ -10,7 +10,7 @@
 
         <tds-label>Mã</tds-label>
         <tds-form-field class="w-full col-span-3">
-          <input tdsInput formControlName="manufacturerCode" autocomplete="off" placeholder="Nhập mã nhà sản xuất"/>
+          <input tdsInput formControlName="Code" autocomplete="off" placeholder="Nhập mã nhà sản xuất"/>
           <tds-error>
             Vui lòng nhập mã nhà sản xuất
         </tds-error>
@@ -18,7 +18,7 @@
 
         <tds-label>Địa chỉ</tds-label>
         <tds-form-field class="w-full col-span-3">
-          <input tdsInput formControlName="address" autocomplete="off" placeholder="Nhập địa chỉ nhà sản xuất"/>
+          <input tdsInput formControlName="Address" autocomplete="off" placeholder="Nhập địa chỉ nhà sản xuất"/>
           <tds-error>
             Vui lòng nhập địa chỉ
         </tds-error>
@@ -26,7 +26,7 @@
 
         <tds-label>Số điện thoại</tds-label>
         <tds-form-field class="w-full col-span-3">
-          <input tdsInput formControlName="phone" autocomplete="off" placeholder="Nhập số điện thoại nhà sản xuất"/>
+          <input tdsInput formControlName="Phone" autocomplete="off" placeholder="Nhập số điện thoại nhà sản xuất"/>
           <tds-error>
             Vui lòng nhập số điện thoại
         </tds-error>
@@ -34,7 +34,7 @@
 
         <tds-label>Email</tds-label>
         <tds-form-field class="w-full col-span-3">
-          <input tdsInput formControlName="email" autocomplete="off" placeholder="Nhập email nhà sản xuất"/>
+          <input tdsInput formControlName="Email" autocomplete="off" placeholder="Nhập email nhà sản xuất"/>
           <tds-error>
             Vui lòng nhập email
         </tds-error>
@@ -42,7 +42,7 @@
 
         <tds-label>Ghi chú</tds-label>
         <tds-form-field class="w-full col-span-3">
-          <input tdsInput formControlName="note" autocomplete="off" placeholder="Nhập ghi chú"/>
+          <input tdsInput formControlName="Note" autocomplete="off" placeholder="Nhập ghi chú"/>
           <tds-error>
             Vui lòng nhập ghi chú
         </tds-error>
@@ -54,7 +54,7 @@
     <button tds-button class="mr-2" color="secondary" (click)="cancel()">
         Hủy bỏ
     </button>
-    <button tds-button type="submit" [disabled]="!addmanufacturerForm.valid" color="primary" (click)="save()">
+    <button tds-button type="submit" [disabled]="!addUOMForm.valid" color="primary" (click)="save()">
         Lưu thay đổi
     </button>
 </div>

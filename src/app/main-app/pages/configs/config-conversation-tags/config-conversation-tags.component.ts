@@ -1,15 +1,16 @@
+import { switchMap } from 'rxjs/operators';
 import { SortEnum } from './../../../../lib/enum/sort.enum';
-import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { SortDataRequestDTO, FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { ConfigConversationTagsCreateDataModalComponent } from './../components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
 import { CRMTagService } from './../../../services/crm-tag.service';
 import { CRMTagDTO, ODataCRMTagDTO } from './../../../dto/crm-tag/odata-crmtag.dto';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable, fromEvent } from 'rxjs';
+import { takeUntil, finalize, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { THelperDataRequest } from './../../../../lib/services/helper-data.service';
 import { OdataCRMTagService } from './../../../services/mock-odata/odata-crmtag.service';
 import { ConfigConversationTagsEditDataModalComponent } from '../components/config-conversation-tags-edit-data-modal/config-conversation-tags-edit-data-modal.component';
-import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSTableQueryParams, TDSMessageService, TDSHelperString } from 'tmt-tang-ui';
-import { Component, OnInit, ViewContainerRef, OnDestroy } from '@angular/core';
+import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSTableQueryParams, TDSMessageService, TDSHelperString, TDSConfigService } from 'tmt-tang-ui';
+import { Component, OnInit, ViewContainerRef, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CTMTagFilterObjDTO } from 'src/app/main-app/dto/odata/odata.dto';
 
 @Component({
@@ -17,8 +18,8 @@ import { CTMTagFilterObjDTO } from 'src/app/main-app/dto/odata/odata.dto';
   templateUrl: './config-conversation-tags.component.html',
   styleUrls: ['./config-conversation-tags.component.scss']
 })
-export class ConfigConversationTagsComponent implements OnInit, OnDestroy {
-
+export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('filterText') filterText!: ElementRef;
   lstOfData:Array<CRMTagDTO> = [];
   private destroy$ = new Subject<void>();
 
@@ -33,6 +34,7 @@ export class ConfigConversationTagsComponent implements OnInit, OnDestroy {
   constructor(
     private modalService: TDSModalService, 
     private viewContainerRef: ViewContainerRef,
+    private configService: TDSConfigService,
     private message: TDSMessageService,
     private odataTagService:OdataCRMTagService,
     private tagService:CRMTagService) { }
@@ -43,28 +45,58 @@ export class ConfigConversationTagsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.configService.set('message',{maxStack:1});
   }
 
-  loadData(pageSize: number, pageIndex: number, filters?:TDSSafeAny,sort?:TDSSafeAny[]){
-    this.isLoading = true;
-    
+  ngAfterViewInit(): void {
+    fromEvent(this.filterText.nativeElement, 'keyup').pipe(
+      map((event: any) => { return event.target.value }),
+      debounceTime(750),
+      distinctUntilChanged(),
+      // TODO: switchMap xử lý trường hợp sub in sub
+      switchMap((text: TDSSafeAny) => {
+        this.pageIndex = 1;
+
+        this.filterObj.searchText = text;
+
+        let filters;
+        if(TDSHelperString.hasValueString(this.filterObj.searchText)){
+          filters = this.odataTagService.buildFilter(this.filterObj);
+        }
+
+        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
+        return this.getViewData(params);
+      })
+    ).subscribe((res: any) => {
+        this.count = res['@odata.count'] as number;
+        this.lstOfData = res.value;
+    });
+  }
+
+  loadData(pageSize: number, pageIndex: number, filters?:FilterDataRequestDTO,sort?:SortDataRequestDTO[]){
     if(TDSHelperString.hasValueString(this.filterObj.searchText)){
       filters = this.odataTagService.buildFilter(this.filterObj);
     }
     
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex,filters,sort);
-    this.odataTagService.getView(params).pipe(takeUntil(this.destroy$)).subscribe((res: ODataCRMTagDTO) => {
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, sort);
+
+    this.getViewData(params).subscribe((res: ODataCRMTagDTO) => {
       this.count = res['@odata.count'] as number;
       this.lstOfData = res.value;
-      this.isLoading = false;
-    }, error => {
-      this.isLoading = false;
+    }, err => {
       this.message.error('Tải dữ liệu thất bại!');
     });
   }
 
   onQueryParamsChange(params: TDSTableQueryParams){
     this.loadData(params.pageSize, params.pageIndex);
+  }
+
+  private getViewData(params: string): Observable<ODataCRMTagDTO> {
+    this.isLoading = true;
+    return this.odataTagService
+        .getView(params, this.filterObj).pipe(takeUntil(this.destroy$))
+        .pipe(finalize(() => {this.isLoading = false }));
   }
 
   refreshData() {

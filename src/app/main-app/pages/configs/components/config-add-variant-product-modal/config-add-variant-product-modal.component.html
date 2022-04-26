@@ -2,36 +2,22 @@
     <div class="flex flex-col">
         <div class="flex flex-row items-center justify-start w-2/3 pb-6">
             <div class="flex mr-6">
-                <tds-upload
-                    listType="picture-card" 
-                    [(fileList)]="fileList"
-                    [showButton]="fileList.length == 0 " 
-                    [preview]="handlePreview" 
-                    [customRequest]="handleUpload"
-                    class="rounded-lg tds-upload-image">
-                    
-                    <div class="text-neutral-1-300 mx-2">
-                        <div class="flex items-center justify-center" >
-                            <span class="tdsi-image-1-fill text-6xl leading-5"></span>
-                        </div>
-                    </div>
-                </tds-upload>
-                
-                <tds-modal [visible]="previewVisible" [content]="modalContent" 
-                    [footer]="null" (onCancel)="previewVisible = false">
-                    <ng-template #modalContent>
-                        <img [src]="previewImage" [ngStyle]="{ width: '100%' }" />
-                    </ng-template>
-                </tds-modal>
+                <input id="variantAvatar" type='file' class="hidden" (change)="onSelectFile($event)">
+
+                <label for="variantAvatar">
+                    <tds-avatar [shape]="'square'" [size]="132" [classList]="'rounded-lg border border-neutral-2-200 cursor-pointer'"
+                    [tdsSrc]="addProductVariantForm.value.Image" [isAvatar]="false" >
+                    </tds-avatar>
+                </label>
             </div>
 
             <div class="flex flex-col w-full">
-                <tds-label>Sản phẩm best seller</tds-label>
+                <tds-label>Sản phẩm {{name}}</tds-label>
 
                 <div class="grid grid-cols-1 gap-y-4 text-neutral-1-900 text-body-2 font-regular pt-4">
-                    <tds-checkbox formControlName="sellable">Có thể bán</tds-checkbox>
-                    <tds-checkbox formControlName="buyable">Có thể mua</tds-checkbox>
-                    <tds-checkbox formControlName="active">Hiệu lực</tds-checkbox>
+                    <tds-checkbox formControlName="SaleOK">Có thể bán</tds-checkbox>
+                    <tds-checkbox formControlName="PurchaseOK">Có thể mua</tds-checkbox>
+                    <tds-checkbox formControlName="Active">Hiệu lực</tds-checkbox>
                 </div>
             </div>
         </div>
@@ -39,8 +25,8 @@
             <div class="grid grid-cols-4 gap-y-4 gap-x-6 items-center">
                 <tds-label>Loại sản phẩm:</tds-label>
                 <tds-form-field class="w-full col-span-3">
-                    <tds-select valueField="id" textField="name" placeholder='Chọn loại sản phẩm'
-                        disabledField="isActive" formControlName="type" [required]='true'
+                    <tds-select valueField="value" textField="text" placeholder='Chọn loại sản phẩm'
+                        disabledField="isActive" formControlName="Type"
                         [data]="productTypeList" [allowClear]="true">
                     </tds-select>
                     <tds-error>
@@ -50,7 +36,7 @@
 
                 <tds-label>Giá biến thể:</tds-label>
                 <tds-form-field class="w-full col-span-3">
-                  <tds-input-number formControlName="price" placeholder="Nhập giá biến thể" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                  <tds-input-number formControlName="ListPrice" placeholder="Nhập giá biến thể" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                   <tds-error>
                     Vui lòng nhập giá biến thể
                     </tds-error>
@@ -58,7 +44,7 @@
 
                 <tds-label>Mã sản phẩm:</tds-label>
                 <tds-form-field class="w-full col-span-3">
-                  <input tdsInput formControlName="productCode" placeholder="Nhập mã sản phẩm" class="text-neutral-1-900 text-body-2 font-regular"/>
+                  <input tdsInput formControlName="DefaultCode" placeholder="Nhập mã sản phẩm" class="text-neutral-1-900 text-body-2 font-regular"/>
                   <tds-error>
                       Vui lòng nhập mã sản phẩm
                   </tds-error>
@@ -66,7 +52,7 @@
 
                 <tds-label>Mã vạch:</tds-label>
                 <tds-form-field class="w-full col-span-3">
-                  <input tdsInput formControlName="QRCode" placeholder="Nhập mã vạch" class="text-neutral-1-900 text-body-2 font-regular"/>
+                  <input tdsInput formControlName="Barcode" placeholder="Nhập mã vạch" class="text-neutral-1-900 text-body-2 font-regular"/>
                   <tds-error>
                       Vui lòng nhập mã vạch
                   </tds-error>
@@ -74,7 +60,7 @@
 
                 <tds-label>Thuộc tính:</tds-label>
                 <tds-form-field class="w-full col-span-3">
-                  <input tdsInput formControlName="attribute" placeholder="Nhập thuộc tính" class="text-neutral-1-900 text-body-2 font-regular"/>
+                  <input tdsInput formControlName="AttributeValues" placeholder="Nhập thuộc tính" class="text-neutral-1-900 text-body-2 font-regular"/>
                   <tds-error>
                       Vui lòng nhập thuộc tính
                   </tds-error>

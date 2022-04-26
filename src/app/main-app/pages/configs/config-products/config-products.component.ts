@@ -1,3 +1,7 @@
+import { ColumnTableDTO } from './../../partner/components/config-column/config-column-partner.component';
+import { THelperCacheService } from './../../../../lib/utility/helper-cache';
+import { FilterDataRequestDTO, SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { switchMap, finalize } from 'rxjs/operators';
 import { ProductTemplateService } from './../../../services/product-template.service';
 import { ExcelExportService } from './../../../services/excel-export.service';
 import { OdataProductTemplateService } from './../../../services/mock-odata/odata-product-template.service';
@@ -6,13 +10,14 @@ import { TagService } from 'src/app/main-app/services/tag.service';
 import { TagDTO } from './../../../dto/tag/tag.dto';
 import { ODataProductTemplateDTO, ODataProductTagDTO } from './../../../dto/configs/product/config-odata-product.dto';
 import { ConfigProductTemplateDTO } from '../../../dto/configs/product/config-product.dto';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable, fromEvent } from 'rxjs';
+import { takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { THelperDataRequest } from './../../../../lib/services/helper-data.service';
 import { CTMTagFilterObjDTO } from './../../../dto/odata/odata.dto';
 import { Router } from '@angular/router';
-import { TDSSafeAny, TDSModalService, TDSHelperString, TDSMessageService, TDSResizeObserver, TDSTableQueryParams } from 'tmt-tang-ui';
+import { TDSSafeAny, TDSModalService, TDSHelperString, TDSMessageService, TDSResizeObserver, TDSTableQueryParams, TDSConfigService } from 'tmt-tang-ui';
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { SortEnum } from 'src/app/lib';
 
 @Component({
   selector: 'app-config-products',
@@ -21,6 +26,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } fr
 })
 export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('viewChildProductTable') parentElement!: ElementRef;
+  @ViewChild('innerText') innerText!: ElementRef;
 
   lstOfData:Array<ConfigProductTemplateDTO> = [];
   private destroy$ = new Subject<void>();
@@ -28,16 +34,16 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
   expandSet = new Set<number>();
   setOfCheckedId = new Set<number>();
   listOfCurrentPageData: readonly ConfigProductTemplateDTO[] = [];
-  columnList:Array<TDSSafeAny> = [
-    {active:true, value:'ImageUrl',name:'Ảnh'},
-    {active:true, value: 'DefaultCode', name: 'Mã SP'},
-    {active:true, value: 'Name', name: 'Tên SP'},
-    {active:true, value: 'ListPrice', name: 'Giá bán'},
-    {active:false, value: 'QtyAvailable', name: 'SL thực tế'},
-    {active:false, value: 'UOMName', name: 'Đơn vị'},
-    {active:true, value: 'Tags', name: 'Nhãn'},
-    {active:false, value: 'DateCreated', name: 'Ngày tạo'},
-    {active:true, value: 'Active', name: 'Hiệu lực'}
+  columnList:Array<ColumnTableDTO> = [
+    {isChecked:true, value:'ImageUrl',name:'Ảnh'},
+    {isChecked:true, value: 'DefaultCode', name: 'Mã SP'},
+    {isChecked:true, value: 'Name', name: 'Tên SP'},
+    {isChecked:true, value: 'ListPrice', name: 'Giá bán'},
+    {isChecked:false, value: 'QtyAvailable', name: 'SL thực tế'},
+    {isChecked:false, value: 'UOMName', name: 'Đơn vị'},
+    {isChecked:true, value: 'Tags', name: 'Nhãn'},
+    {isChecked:false, value: 'DateCreated', name: 'Ngày tạo'},
+    {isChecked:true, value: 'Active', name: 'Hiệu lực'}
   ]
   count: number = 1;
   tableWidth:number = 0;
@@ -60,6 +66,8 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     private router:Router,
     private modalService: TDSModalService,
     private message: TDSMessageService,
+    private cacheApi: THelperCacheService,
+    private configService: TDSConfigService,
     private tagService: TagService,
     private productTagService: TagProductTemplateService,
     private productTemplateService: ProductTemplateService,
@@ -69,7 +77,9 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
   ){}
 
   ngOnInit(): void {
+    this.loadGridConfig();
     this.loadTagList();
+    this.configService.set('message',{maxStack:1});
   }
 
   ngAfterViewInit(): void {
@@ -81,6 +91,30 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
         this.tableWidth = this.parentElement.nativeElement.offsetWidth - this.paddingCollapse
         this.parentElement.nativeElement.click()
       });
+
+    fromEvent(this.innerText.nativeElement, 'keyup').pipe(
+      map((event: any) => { return event.target.value }),
+      debounceTime(750),
+      distinctUntilChanged(),
+      // TODO: switchMap xử lý trường hợp sub in sub
+      switchMap((text: TDSSafeAny) => {
+        this.pageIndex = 1;
+        this.indClickTag = -1;
+
+        this.filterObj.searchText = text;
+
+        let filters;
+        if(TDSHelperString.hasValueString(this.filterObj.searchText)){
+          filters = this.odataService.buildFilter(this.filterObj);
+        }
+
+        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
+        return this.getViewData(params);
+      })
+    ).subscribe((res: any) => {
+        this.count = res['@odata.count'] as number;
+        this.lstOfData = res.value;
+    });
   }
 
   ngOnDestroy(): void {
@@ -92,22 +126,47 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     this.loadData(params.pageSize, params.pageIndex);
   }
 
-  loadData(pageSize: number, pageIndex: number, filters?:TDSSafeAny,sort?:TDSSafeAny[]) {
-    this.isLoading = true;
-    
+  loadData(pageSize: number, pageIndex: number, filter?:FilterDataRequestDTO, sort?:SortDataRequestDTO[]) {
     if(TDSHelperString.hasValueString(this.filterObj.searchText)){
-      filters = this.odataService.buildFilter(this.filterObj);
+      filter = this.odataService.buildFilter(this.filterObj);
     }
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filter, sort);
     
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex,filters,sort);
-    this.odataService.getView(params).pipe(takeUntil(this.destroy$)).subscribe((res: ODataProductTemplateDTO) => {
+    this.getViewData(params).subscribe((res: ODataProductTemplateDTO) => {
       this.count = res['@odata.count'] as number;
       this.lstOfData = res.value;
-      this.isLoading = false;
     }, err => {
-      this.isLoading = false;
       this.message.error('Tải dữ liệu sản phẩm thất bại!');
     });
+  }
+
+  private getViewData(params: string): Observable<ODataProductTemplateDTO> {
+    this.isLoading = true;
+    return this.odataService
+        .getView(params, this.filterObj).pipe(takeUntil(this.destroy$))
+        .pipe(finalize(() => {this.isLoading = false }));
+  }
+  
+  //store data on indexedDB
+  storeIndexedDB(key:string, value:TDSSafeAny){
+    const gridConfig = { data: value };
+    this.cacheApi.setItem(key, gridConfig);
+  }
+
+  onChangeColumn(){
+    const key = this.productTemplateService._keyCacheGrid;
+    this.storeIndexedDB(key,this.columnList);
+    this.loadData(this.pageSize,this.pageIndex);
+  }
+
+  loadGridConfig() {
+    const key = this.productTemplateService._keyCacheGrid;
+    this.cacheApi.getItem(key).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+      if (res && res.value) {
+        var jsColumns = JSON.parse(res.value) as any;
+        this.columnList = jsColumns.value.data;
+      }
+    })
   }
 
   loadTagList(){
@@ -180,7 +239,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     let sort = [
       { 
         field: columnValue, 
-        dir: 'desc' 
+        dir: SortEnum.desc
       }
     ];
 
@@ -279,29 +338,35 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     this.indClickTag = -1;
   }
 
-  showCreateForm(data:TDSSafeAny){
-    this.router.navigate(['configs/products/create']);
+  showCreateForm(){
+    this.router.navigateByUrl(`/configs/products/create`);
   }
 
   isHiddenColumn(columnValue:string){
-    return !this.columnList.find(f=>f.value === columnValue).active;
+    return !this.columnList.find(f=>f.value === columnValue)?.isChecked;
   }
 
   refreshData(){
     this.pageIndex = 1;
+    this.indClickTag = -1;
 
+    this.checked = false;
+    this.indeterminate = false;
+    this.setOfCheckedId = new Set<number>();
+
+    this.innerText.nativeElement.value = '';
     this.filterObj = {
-      searchText: '',
+      searchText: ''
     }
 
     this.loadData(this.pageSize, this.pageIndex);
   }
 
-  showEditModal(i:number){
-    
+  showEditModal(data:ConfigProductTemplateDTO){
+    this.router.navigateByUrl(`/configs/products/edit/${data.Id}`);
   }
 
-  showRemoveModal(i:number){
+  showRemoveModal(data:ConfigProductTemplateDTO){
     const modal = this.modalService.error({
         title: 'Xác nhận xóa sản phẩm',
         content: 'Bạn có chắc muốn xóa sản phẩm này không?',
@@ -309,8 +374,15 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
         okText:"Xác nhận",
         cancelText:"Hủy bỏ",
         onOk: ()=>{
-          //remove item here
-
+          this.productTemplateService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe(
+            (res:TDSSafeAny)=>{
+              this.message.success('Xóa thành công');
+              this.loadData(this.pageSize,this.pageIndex)
+            },
+            err=>{
+              this.message.error(err.error.message??'Xóa thất bại');
+            }
+          )
         },
         onCancel:()=>{
           modal.close();

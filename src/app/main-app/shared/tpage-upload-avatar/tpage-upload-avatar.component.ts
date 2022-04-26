@@ -2,27 +2,33 @@ import { Subject } from 'rxjs';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { takeUntil } from 'rxjs/operators';
 import { TDSSafeAny, TDSMessageService } from 'tmt-tang-ui';
-import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, AfterViewInit } from '@angular/core';
 
 @Component({
   selector: 'tpage-upload-avatar',
   templateUrl: './tpage-upload-avatar.component.html',
   styleUrls: ['./tpage-upload-avatar.component.scss']
 })
-export class TpageUploadAvatarComponent implements OnInit, OnDestroy {
+export class TpageUploadAvatarComponent implements OnInit, AfterViewInit , OnDestroy {
   @Input() size:number = 112;
+  @Input() imageUrl:string = '';
   @Output() getResult = new EventEmitter<string>();
+  @Output() getBase64 = new EventEmitter<TDSSafeAny>();
 
   private destroy$ = new Subject<void>();
-
-  imageUrl:string = '';
 
   constructor(
     private sharedService: SharedService,
     private message: TDSMessageService
-  ) { }
+  ) { 
+
+  }
 
   ngOnInit(): void {
+  }
+
+  ngAfterViewInit(): void {
+    
   }
 
   ngOnDestroy(): void {
@@ -47,6 +53,7 @@ export class TpageUploadAvatarComponent implements OnInit, OnDestroy {
           (res:TDSSafeAny)=>{
             if (res) {
               this.imageUrl = res;
+              this.getBase64.emit(base64);
               this.getResult.emit(res);
             } else {
               this.message.error("Không upload được file lớn hơn 3Mb");
