@@ -6,6 +6,7 @@ import { HttpRequest, HttpResponse, HttpTransportType, HubConnection, HubConnect
 import { environment } from "src/environments/environment";
 import { SignalRHttpClient } from "./client-signalR";
 import * as signalR from "@microsoft/signalr";
+import { TDSSafeAny } from "tmt-tang-ui";
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,7 @@ export class SignalRConnectionService extends BaseSignalRSevice {
   isResolved: boolean = false;
   repeatTimeKey: any;
 
-  accessToken: string = "zEgoyxN_SxVYsWlm8785xmwXRZihp6kVzoc3eOmFBSIQFYSKtn3cwMDKxh8kM7xG6NTnO_ikuLcKH4P27RwHocnjlcWSSCQibK3knjMK_He2ZWmqDzA_qJMOqs6qyOMwIzfwO6w9yR7egVtEVcqXCsBcOtdqVI-ZwqbLn9WECvlkmE2gZUYp8HvA3JUGpA9s2X9A9nnNVTOpcVH-zzt0cxw0ZisbWyDQguQFCz4tuhwzKGVMgYepfRGZVQehs2VnuIybUdpE4GevI2i8FYZjjjvqnNmIugRL5QsI9TA8DcVBMD-C2pmLqr0yb4_t09jI-P73McNV90G1XlJFpooPldH6ZX2zPZfrxfQO3nm3lvsWo7U_0Oxxytq_CG5nUOdQPfrRWEdYCFFgIV4PMDEWX8dZY203c2IwDfsWX3cvAkjLARbPcXjiTbYy_iIse1y9o3Aze84CB4tWFevqsQxjiHlHuMwyeZd8sFZxDt1fxkD6363u"
+  // accessToken: string = "zEgoyxN_SxVYsWlm8785xmwXRZihp6kVzoc3eOmFBSIQFYSKtn3cwMDKxh8kM7xG6NTnO_ikuLcKH4P27RwHocnjlcWSSCQibK3knjMK_He2ZWmqDzA_qJMOqs6qyOMwIzfwO6w9yR7egVtEVcqXCsBcOtdqVI-ZwqbLn9WECvlkmE2gZUYp8HvA3JUGpA9s2X9A9nnNVTOpcVH-zzt0cxw0ZisbWyDQguQFCz4tuhwzKGVMgYepfRGZVQehs2VnuIybUdpE4GevI2i8FYZjjjvqnNmIugRL5QsI9TA8DcVBMD-C2pmLqr0yb4_t09jI-P73McNV90G1XlJFpooPldH6ZX2zPZfrxfQO3nm3lvsWo7U_0Oxxytq_CG5nUOdQPfrRWEdYCFFgIV4PMDEWX8dZY203c2IwDfsWX3cvAkjLARbPcXjiTbYy_iIse1y9o3Aze84CB4tWFevqsQxjiHlHuMwyeZd8sFZxDt1fxkD6363u"
   public connectionIsEstablished: boolean = false;
   public _connectionEstablished$ = new BehaviorSubject<Boolean>(false);
 
@@ -48,7 +49,7 @@ export class SignalRConnectionService extends BaseSignalRSevice {
   public configSignalR(): any {
     let config = {
       hubName: 'common',
-      token: this.accessToken,
+      token: this.authen.getAccessToken()?.access_token,
       logging: true,
     };
     return config;
@@ -56,7 +57,7 @@ export class SignalRConnectionService extends BaseSignalRSevice {
 
 
   initiateSignalRConnection() {
-    if (TGlobalConfig.Authen.isLogin) {
+    if (this.authen.isLogin()) {
       this.connectionBuilder();
       this.connectionStart();
       this.addEvents();
@@ -68,7 +69,7 @@ export class SignalRConnectionService extends BaseSignalRSevice {
 
 
   public addEvents(): void {
-    this._hubConnection.on('onMessage', (data) => {
+    this._hubConnection.on('onMessage', (data:TDSSafeAny) => {
       console.log(data);
       switch (data.type) {
         case "update_scan_feed":
@@ -135,19 +136,19 @@ export class SignalRConnectionService extends BaseSignalRSevice {
       }
     });
 
-    this._hubConnection.on('onFacebookEvent', (data) => {
+    this._hubConnection.on('onFacebookEvent', (data:TDSSafeAny) => {
       this._onFacebookEvent$.emit(data);
     });
 
-    this._hubConnection.on('onReadConversation', (data) => {
+    this._hubConnection.on('onReadConversation', (data:TDSSafeAny) => {
       this._onReadConversation$.emit(data);
     });
 
-    this._hubConnection.on('onSentConversation', (data) => {
+    this._hubConnection.on('onSentConversation', (data:TDSSafeAny) => {
       this._onSentConversation$.emit(data);
     });
 
-    this._hubConnection.on('onPaymentEvent', (data) => {
+    this._hubConnection.on('onPaymentEvent', (data:TDSSafeAny) => {
       this._onPaymentEvent$.emit(data);
     });
 
@@ -184,7 +185,7 @@ export class SignalRConnectionService extends BaseSignalRSevice {
           return configs.token;
         },
 
-        httpClient: new SignalRHttpClient() as any,
+        httpClient: new SignalRHttpClient(this.authen) as any,
         skipNegotiation: false
       })
       .withAutomaticReconnect([0, 5000, 10000, 30000, 60000, null])
