@@ -1,5 +1,5 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
@@ -11,6 +11,7 @@ import { registerLocaleData } from '@angular/common';
 import { TAuthGuardService, TAuthInterceptorService } from './lib';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { SharedModule } from './shared/shared.module';
+import { SignalRConnectionService } from './main-app/services/signalR/signalR-connection.service';
 // Thiết lập tiếng Việt
 registerLocaleData(localeVi);
 @NgModule({
@@ -30,7 +31,15 @@ registerLocaleData(localeVi);
   {
     provide: HTTP_INTERCEPTORS,
     useClass: TAuthInterceptorService, multi: true
-  },],
+  },
+  // SignalRConnectionService,
+  // {
+  //     provide: APP_INITIALIZER,
+  //     useFactory: (signalrService: SignalRConnectionService) => () => signalrService.initiateSignalRConnection(),
+  //     deps: [SignalRConnectionService],
+  //     multi: true,
+  // }
+],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
