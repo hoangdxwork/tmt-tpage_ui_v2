@@ -5,8 +5,8 @@ import { TTokenDTO } from '../dto';
 export class TGlobalConfig {
        
     static Authen:{
-        isLogin: boolean;
-        token:TTokenDTO | null;
+        // isLogin: boolean;
+        // token:TTokenDTO | null;
         refreshTokenInProgress:boolean;
         refreshTokenSubject: BehaviorSubject<TDSSafeAny>;
     }    
