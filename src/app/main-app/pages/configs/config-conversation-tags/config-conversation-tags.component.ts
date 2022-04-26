@@ -104,7 +104,7 @@ export class ConfigConversationTagsComponent implements OnInit, OnDestroy {
               this.loadData(this.pageSize,this.pageIndex);
             },
             err=>{
-              this.message.error(err.error.message);
+              this.message.error(err.error.errors.key[0]);
             }
           );
         },
@@ -119,6 +119,7 @@ export class ConfigConversationTagsComponent implements OnInit, OnDestroy {
   updateStatus(data:CRMTagDTO){
     this.tagService.updateStatus(data.Id).pipe(takeUntil(this.destroy$)).subscribe(
       (data)=>{
+        this.message.success('Cập nhật trạng thái thành công');
         this.loadData(this.pageSize,this.pageIndex);
       },
       (err)=>{
@@ -129,7 +130,7 @@ export class ConfigConversationTagsComponent implements OnInit, OnDestroy {
 
   doFilter(event:TDSSafeAny){
     this.filterObj = {
-      searchText: event.target.value
+      searchText: event.value
     }
     this.loadData(this.pageSize,this.pageIndex);
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, pipe, throwError } from 'rxjs';
 import { TAuthService } from './auth.service';
 import { TCommonService } from './common.service';
 import { environment } from 'src/environments/environment';
@@ -69,14 +69,15 @@ export class TAuthInterceptorService implements HttpInterceptor {
 
                     TGlobalConfig.Authen.refreshTokenInProgress = true;
                     TGlobalConfig.Authen.refreshTokenSubject.next(null);
-                    that.auth.refreshToken(TGlobalConfig.Authen.token).subscribe((data) => {
+                    that.auth.refreshToken(TGlobalConfig.Authen.token)
+                    .subscribe((data) => {
                         TGlobalConfig.Authen.refreshTokenInProgress = false;
                         TGlobalConfig.Authen.refreshTokenSubject.next(data);
                         return next.handle(that.auth.addAuthenticationToken(req));
                     },
                         error => {
-                            // that.auth.clearToken("AuthInterceptor");
-                            // that.auth.redirectLogin();
+                             that.auth.clearToken("AuthInterceptor");
+                            that.auth.redirectLogin();
                             return throwError(error);
                         });
                 }

@@ -1,3 +1,12 @@
+import { OdataProductUOMDTOV2 } from './../../../../dto/product/product-uom.dto';
+import { ProductUOMService } from './../../../../services/product-uom.service';
+import { Category } from './../../../../dto/configs/sale-config.dto';
+import { ODataProductCategoryDTOV2, ProductCategoryDTOV2 } from './../../../../dto/product/product-category.dto';
+import { ProductUOMDTOV2 } from './../../../../dto/product/product-uom.dto';
+import { ProductDTO } from './../../../../dto/product/product.dto';
+import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+import { ProductService } from './../../../../services/product.service';
+import { Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { HttpRequest, HttpResponse, HttpClient } from '@angular/common/http';
 import { ConfigProductVariantService } from '../../config-product-variant/config-product-variant.service';
@@ -18,41 +27,86 @@ const getBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
   styleUrls: ['./product-variant-edit-table-modal.component.scss']
 })
 export class ProductVariantEditTableModalComponent implements OnInit {
-  @Input() data:TDSSafeAny;
+  @Input() productId!: number;
 
-  groupList:Array<TDSSafeAny> = [];
-  unitList:Array<TDSSafeAny> = [];
+  dataProduct!: ProductDTO;
+  listProductCategory!: ProductCategoryDTOV2[];
+  listProductUOM!: ProductUOMDTOV2[];
   editForm!: FormGroup;
   imageList: TDSUploadFile[] = [];
   previewImage: string | undefined = '';
   previewVisible = false;
+  isLoading: boolean = false;
   uploadUrl = 'assets/images/config/';
+  private destroy$ = new Subject<void>();
+
 
   constructor(
     private modal: TDSModalRef, 
     private formBuilder: FormBuilder, 
     private service:ConfigProductVariantService, 
+    private productService: ProductService,
     private msg: TDSMessageService, 
-    private http: HttpClient
+    private http: HttpClient,
+    private message: TDSMessageService,
+    private productUOMService : ProductUOMService,
     ) { 
     
     this.editForm = new FormGroup({});
-    this.groupList = this.service.getProductGroupList();
-    this.unitList =  this.service.getProductUnitList();
+    this.createForm();
   }
 
   ngOnInit(): void {
-    this.initData();
+    this.loadData();
   }
 
-  initData(){
-    this.imageList = this.data.images;
+  createForm(){
     this.editForm = this.formBuilder.group({
-      name: new FormControl(this.data.name, [Validators.required]),
-      group: new FormControl(this.data.group, [Validators.required]),
-      unit: new FormControl(this.data.unit, [Validators.required]),
-      productPrice: new FormControl(this.data.productPrice, [Validators.required]),
+      name: new FormControl('', [Validators.required]),
+      categoryId: new FormControl('', [Validators.required]),
+      UOMId: new FormControl('', [Validators.required]),
+      productPrice: new FormControl('', [Validators.required]),
     })
+  }
+
+  loadData(){
+    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe((res:OdataProductUOMDTOV2)=>{
+      this.listProductUOM = res.value;
+      this.getProductCategory();
+    },err=>{
+      this.message.error(err.error.message || 'Load dữ liệu thất bại!!')
+    })
+  }
+
+  getByIdProduct(){
+    this.isLoading = true
+    this.productService.getById(this.productId).pipe(takeUntil(this.destroy$)).subscribe((res: ProductDTO)=>{
+      this.dataProduct = res
+      this.uploadUrl = this.dataProduct.ImageUrl
+      this.updateForm();
+      this.isLoading = false
+    },
+    err=>{
+      this.message.error(err.error.message || 'Load dữ liệu thất bại!')
+      this.isLoading = false;
+    } )
+  }
+
+  getProductCategory(){
+    this.productService.getProductCategory().pipe(takeUntil(this.destroy$)).subscribe((res:ODataProductCategoryDTOV2)=>{
+      this.listProductCategory = res.value;
+      this.getByIdProduct();
+    }, err=>{
+      this.message.error( err.error.message || 'load dữ liệu nhóm sản phẩm thất bại!')
+    })
+  }
+
+  updateForm(){
+    let form = this.editForm.controls
+    form.name.setValue(this.dataProduct.Name);
+    form.categoryId.setValue(this.dataProduct.Categ.Id);
+    form.UOMId.setValue(this.dataProduct.UOM.Id);
+    form.productPrice.setValue(this.dataProduct.LstPrice);
   }
 
   handlePreview = async (file: TDSUploadFile) => {
@@ -118,7 +172,8 @@ export class ProductVariantEditTableModalComponent implements OnInit {
       this.modal.destroy(null);
   }
 
-  save() {
-      this.onSubmit();
+  prepareModel() {
+  }
+  onSave() {
   }
 }

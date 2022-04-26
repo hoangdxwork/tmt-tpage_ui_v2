@@ -69,7 +69,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
     this.formQuickReply = this.formBuilder.group({
       active: new FormControl(false),
       bodyHtml: new FormControl(''),
-      subjectHtml: new FormControl(''),
+      subjectHtml: new FormControl('',[Validators.required]),
       advancedTemplateRadio: new FormControl(false),
       title: new FormControl(null),
       subTitle: new FormControl(null),
@@ -86,7 +86,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
 
     this.createMessageForm = this.formBuilder.group({
       title: new FormControl('', [Validators.required]),
-      subTitle: new FormControl('',),
+      subTitle: new FormControl(''),
       text: new FormControl(''),
     });
 
@@ -206,8 +206,9 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
   }
 
   updateForm(data: QuickReplyDTO) {
-    this.formQuickReply.controls.subjectHtml.setValue(data.SubjectHtml || data.Subject);
-    this.formQuickReply.controls.bodyHtml.setValue(data.BodyHtml || data.BodyPlain);
+    const getNormalisedString = (str: any) => (str ?? '').replace(/<\/?[^>]+(>|$)/g, "");
+    this.formQuickReply.controls.subjectHtml.setValue(getNormalisedString(data.SubjectHtml) || data.Subject);
+    this.formQuickReply.controls.bodyHtml.setValue(getNormalisedString(data.BodyHtml) || data.BodyPlain);
     this.formQuickReply.controls.active.setValue(data.Active);
     let templateAd = JSON.parse(data.AdvancedTemplate);
 
@@ -258,13 +259,13 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
   enableSubmit() {
     switch (this.formQuickReply.value.advancedTemplateRadio) {
       case false: {
-        return !this.formQuickReply.valid
+        return !this.formQuickReply?.valid
       }
       case true:
         {
           // return !this.formQuickReply.valid
           if (this.templateType == 'generic') {
-            return !this.formQuickReply.valid || !this.createMessageForm.valid || !this.isValidButton(this.buttonFormList)
+            return !this.formQuickReply.valid || !this.createMessageForm?.valid || !this.isValidButton(this.buttonFormList)
           }
           if (this.templateType == 'media') {
             return !this.formQuickReply.valid || !this.isValidButton(this.buttonFormList)
@@ -371,7 +372,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
     let result = true;
     if (list.length > 0) {
       list.forEach(form => {
-        if (!form.valid) {
+        if (!form?.valid) {
           result = false;
         }
       });
@@ -467,13 +468,9 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
         })
       }
       if (this.mediaForm && this.mediaForm.length != 0) {
-        console.log(this.mediaForm)
-        console.log(this.mediaChannelList)
         this.dataAdvancedTemplate.Pages = []
         this.mediaForm.forEach(el => {
-          console.log(el)
           let data = this.mediaChannelList.find(x => x.Facebook_ASUserId == el)
-          console.log(data)
           if (data) {
             let model: PagesMediaDTO = {
               AttachmentId: data.Facebook_ASUserId,
@@ -483,7 +480,6 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
             this.dataAdvancedTemplate.Pages?.push(model)
           }
         })
-        console.log(this.dataAdvancedTemplate.Pages)
       }
       if (this.templateType == 'media' && this.dataAdvancedTemplate.Pages?.length == 0) {
         this.message.error('Vui lòng chọn ít nhất 1 kênh cho mẫu phương tiện');
