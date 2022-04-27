@@ -91,7 +91,7 @@
                             <td [checked]="setOfCheckedId.has(data.Id)"
                                 (checkedChange)="onItemChecked(data.Id, $event)"></td>
                             <td>
-                                <tds-avatar class="rounded-lg" [shape]="'square'" [size]="44" [tdsSrc]="data.ImageUrl" [isAvatar]="false"></tds-avatar>
+                                <tds-avatar class="rounded-lg" [shape]="'square'" [size]="44" [tdsSrc]="data.ImageUrl?data.ImageUrl:(data.Images?data.Images[0].Url:'')" [isAvatar]="false"></tds-avatar>
                             </td>
                             <td>{{ data.NameGet }}</td>
                             <td>{{ data.UOMName }}</td>

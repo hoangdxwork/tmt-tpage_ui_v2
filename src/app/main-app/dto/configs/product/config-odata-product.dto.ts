@@ -1,3 +1,4 @@
+import { ProductDTO } from './../../product/product.dto';
 import { TagDTO } from './../../tag/tag.dto';
 import { ConfigProductInventoryDTO } from './config-inventory.dto';
 import { ConfigStockMoveDTO } from './config-warehouse.dto';
@@ -24,4 +25,10 @@ export interface ODataProductTagDTO {
     "@odata.context"?: string;
     "@odata.count"?: number;
     value: TagDTO[];
+}
+
+export interface ODataProductDTO {
+    "@odata.context"?: string;
+    "@odata.count"?: number;
+    value: ProductDTO[];
 }

@@ -54,7 +54,6 @@ export class ConfigAddProductVariantComponent implements OnInit {
     this.productService.getDefault().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       delete res['@odata.context'];
       this.modelDefault = res;
-      console.log(this.modelDefault)
     });
     this.loadCateg();
     // this.loadPOSCateg();
@@ -336,7 +335,6 @@ export class ConfigAddProductVariantComponent implements OnInit {
     if (formModel.InvoicePolicy) {
       this.modelDefault.InvoicePolicy = formModel.InvoicePolicy;
     }
-    console.log(this.modelDefault)
     return this.modelDefault;
   }
 }
