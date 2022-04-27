@@ -11,11 +11,14 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angu
 })
 export class TpageUploadImagesComponent implements OnInit, OnDestroy {
   @Input() size:number = 112;
-  @Output() getResult = new EventEmitter<Array<string>>();
+  @Input() showName:boolean = true;
+  @Input() inputImages:Array<TDSSafeAny> = [];
+  @Output() getResult = new EventEmitter<Array<TDSSafeAny>>();
 
   private destroy$ = new Subject<void>();
 
-  imageList:Array<string> = [];
+  imageList:Array<TDSSafeAny> = [];
+
 
   constructor(
     private sharedService: SharedService,
@@ -23,6 +26,9 @@ export class TpageUploadImagesComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    if(this.inputImages.length > 0){
+      this.imageList = this.inputImages;
+    }
   }
 
   ngOnDestroy(): void {
@@ -46,7 +52,12 @@ export class TpageUploadImagesComponent implements OnInit, OnDestroy {
         this.sharedService.uploadImage(model).pipe(takeUntil(this.destroy$)).subscribe(
           (res:TDSSafeAny)=>{
             if (res) {
-              this.imageList.push(res);
+              let outputModel = {
+                type: file.type,
+                name: file.name,
+                url: res
+              };
+              this.imageList.push(outputModel);
               this.getResult.emit(this.imageList);
             } else {
               this.message.error("Không upload được file lớn hơn 3Mb");

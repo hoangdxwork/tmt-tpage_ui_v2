@@ -22,7 +22,7 @@ export class OdataProductTemplateService extends BaseSevice {
     super(apiService)
   }
 
-  getView(params:string): Observable<any>{
+  getView(params:string, filterObj?: FilterObjDTO): Observable<any>{
     const api: TAPIDTO = {
     url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?${params}&$count=true`,
     method: TApiMethodType.get,

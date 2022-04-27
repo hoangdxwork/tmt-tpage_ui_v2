@@ -1,3 +1,4 @@
+import { ConfigEditProductComponent } from './config-edit-product/config-edit-product.component';
 import { ConfigAddPromotionComponent } from './config-add-promotion/config-add-promotion.component';
 import { ConfigAddProductComponent } from './config-add-product/config-add-product.component';
 import { ConfigAddProductVariantComponent } from './config-add-product-variant/config-add-product-variant.component';
@@ -66,6 +67,10 @@ const routes: Routes = [
       {
         path:'products/create',
         component: ConfigAddProductComponent
+      },
+      {
+        path:'products/edit/:id',
+        component: ConfigEditProductComponent
       },
       {
         path:'activities',

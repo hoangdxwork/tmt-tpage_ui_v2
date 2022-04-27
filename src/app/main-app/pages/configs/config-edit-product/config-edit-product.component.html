@@ -1,4 +1,4 @@
-<form [formGroup]="addProductForm" autocomplete="off">
+<form [formGroup]="editProductForm" autocomplete="off">
     <div class="w-full pb-4 px-4">
         <div class="flex flex-col w-full bg-white rounded-xl">
             <div class="flex flex-row items-center justify-between px-4 py-3">
@@ -9,17 +9,17 @@
                             <i class="tdsi-back-fill text-xl leading-5"></i>
                         </span>
                     </button>
-                    <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">THÊM MỚI SẢN PHẨM</span>
+                    <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">CHỈNH SỬA SẢN PHẨM</span>
                 </div>
                 <button tds-button color="primary" type="submit" class="w-[100px]" 
-                  [disabled]="!addProductForm.valid" 
+                  [disabled]="!editProductForm.valid" 
                   (click)="onSubmit()">
                     <span class="text-body-2 font-semibold">Lưu</span>
                 </button>
             </div>
             <div class="flex flex-col p-4">
                 <div class="flex flex-row items-center justify-start w-2/3 pb-6">
-                    <tpage-upload-avatar [size]="112" class="mr-12" (getResult)="getAvatar($event)"></tpage-upload-avatar>
+                    <tpage-upload-avatar [size]="112" class="mr-12" [imageUrl]="editProductForm.value.ImageUrl" (getResult)="getAvatar($event)"></tpage-upload-avatar>
                     <div class="flex flex-col w-full">
                         <tds-form-field>
                             <tds-label>Tên sản phẩm</tds-label>

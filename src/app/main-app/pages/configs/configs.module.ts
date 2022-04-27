@@ -66,6 +66,7 @@ import { ConfigConversationTagsCreateDataModalComponent } from './components/con
 import { FacebookService } from '../../services/facebook.service';
 import { ConfigProductDetailsComponent } from './components/config-product-details/config-product-details.component';
 import { ConfigAddCategoryModalComponent } from './components/config-add-category-modal/config-add-category-modal.component';
+import { ConfigEditProductComponent } from './config-edit-product/config-edit-product.component';
 
 const SERVICES = [
     TDSModalService,
@@ -132,7 +133,8 @@ const SERVICES = [
     ConfigGreetingComponent,
     ConfigConversationTagsCreateDataModalComponent,
     ConfigProductDetailsComponent,
-    ConfigAddCategoryModalComponent
+    ConfigAddCategoryModalComponent,
+    ConfigEditProductComponent
   ],
   imports: [
     CommonModule,
