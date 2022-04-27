@@ -1,22 +1,23 @@
-<div>
+<tds-spin [spinning]="isLoading">
+  <div>
     <div>
-        <tds-table #basicTable [listData]="listOfDataShift" [showPagination]="false">
+        <tds-table #basicTable [listData]="lstShifts" [showPagination]="false">
             <thead>
-                  <tr>
-                        <th>STT</th>
-                        <th>Tên ca làm việc</th>
-                        <th>Thời gian bắt đầu</th>
-                        <th>Thời gian kết thúc</th>
-                        <th>Thao tacs</th>
-                  </tr>
+                <tr>
+                      <th>STT</th>
+                      <th>Tên ca làm việc</th>
+                      <th>Thời gian bắt đầu</th>
+                      <th>Thời gian kết thúc</th>
+                      <th>Thao tác</th>
+                </tr>
             </thead>
             <tbody>
-                <ng-template ngFor let-data [ngForOf]="basicTable.data" >
+                <ng-template ngFor let-data [ngForOf]="basicTable.data" let-index="index" >
                     <tr>
-                        <td>{{ data.id }}</td>
-                        <td>{{ data.name }}</td>
-                        <td>{{ data.timeStart }}</td>
-                        <td>{{ data.timeEnd }}</td>
+                        <td>{{ data.Id }}</td>
+                        <td>{{ data.Name }}</td>
+                        <td>{{ data.FromHour }}</td>
+                        <td>{{ data.ToHour }}</td>
                         <td>
                             <div class="flex gap-x-2" >
                                 <button tds-button-icon color="secondary" size="sm" (click)="showModalUpdateShift(data)">
@@ -24,7 +25,7 @@
                                         <i class="tdsi-edit-fill"></i>
                                     </span>
                                 </button>
-                                <button tds-button-icon color="secondary" size="sm" (click)="showModalRemove(data.id)">
+                                <button tds-button-icon color="secondary" size="sm" (click)="showModalRemove(data)">
                                     <span class="flex items-center">
                                         <i class="tdsi-trash-fill"></i>
                                     </span>
@@ -43,6 +44,8 @@
                 <span class="text-body-2 font-semibold">Thêm mới</span>
             </span>
         </button>
-        <button tds-button class="mr-2" color="secondary" (click)="cancel()">Hủy bỏ</button>
+        <button tds-button class="mr-2" color="secondary" (click)="cancel()">Đóng</button>
     </div>
-</div>
+  </div>
+</tds-spin>
+

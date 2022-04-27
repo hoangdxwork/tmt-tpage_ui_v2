@@ -8,10 +8,11 @@ export const Message = {
   UpdatedSuccess: 'Cập nhật thành công.',
   UpdatedFail: 'Cập nhật thất bại.',
   ManipulationSuccessful: 'Thao tác thành công.',
-  EmptyData: 'Không có dữ liệu',
+  EmptyData: 'Không có dữ liệu!',
   SelectOneLine: 'Vui lòng chọn tối thiểu 1 dòng!',
   ErrorOccurred: 'Đã có lỗi xảy ra',
   PageNotExist: 'Không có kênh nào đang được kết nối',
+  FunctionNotWorking: 'Chức năng chưa hoạt động!',
   Error: {
     SeverError: 'Lỗi máy chủ. Vui lòng thử lại sau.'
   },

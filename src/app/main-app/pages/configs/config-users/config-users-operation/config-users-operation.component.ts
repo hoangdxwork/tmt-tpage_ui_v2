@@ -3,6 +3,8 @@ import { ModalAddUserComponent } from './../../components/modal-add-user/modal-a
 import { TDSModalService, TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ModalUpdateUserComponent } from '../../components/modal-update-user/modal-update-user.component';
+import { ApplicationRoleService } from 'src/app/main-app/services/application-role.service';
+import { ApplicationRoleDTO } from 'src/app/main-app/dto/account/application-role.dto';
 export interface DataUser {
   id: number;
   name: string;
@@ -20,9 +22,13 @@ export class ConfigUsersOperationComponent implements OnInit {
 
   currentComponent = 1;
   listOfDataUser: readonly DataUser[] = [];
+
+  lstUserRole: ApplicationRoleDTO[] = [];
+
   constructor(
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
+    private applicationRoleService: ApplicationRoleService,
     private router: Router,
   ) { }
 
@@ -33,7 +39,15 @@ export class ConfigUsersOperationComponent implements OnInit {
       decentralization: 'Administrators',
       page:'',
       status: index % 2 === 0
-  }));
+    }));
+
+    this.loadUserRole();
+  }
+
+  loadUserRole() {
+    this.applicationRoleService.get().subscribe(res => {
+      this.lstUserRole = res.value;
+    });
   }
 
   showModalUpdateUser(){
@@ -47,7 +61,7 @@ export class ConfigUsersOperationComponent implements OnInit {
     modal.afterClose.subscribe(result => {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-        
+
       }
     });
   }
@@ -63,7 +77,7 @@ export class ConfigUsersOperationComponent implements OnInit {
     modal.afterClose.subscribe(result => {
       console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-        
+
       }
     });
   }
