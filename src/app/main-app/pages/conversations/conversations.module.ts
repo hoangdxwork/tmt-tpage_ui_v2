@@ -8,11 +8,19 @@ import { ConversationPartnerComponent } from './conversation-partner/conversatio
 import { ConversationCommentComponent } from './conversation-comment/conversation-comment.component';
 import { ConversationInboxComponent } from './conversation-inbox/conversation-inbox.component';
 import { MainSharedModule } from '../../shared/shared.module';
-import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSModalModule, TDSPopoverModule, TDSRadioModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSToolTipModule } from 'tmt-tang-ui';
+import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSMessageModule, TDSModalModule, TDSPopoverModule, TDSRadioModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSToolTipModule } from 'tmt-tang-ui';
 import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conversations.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalImageStoreComponent } from './components/modal-image-store/modal-image-store.component';
+import { ConversationDataFacade } from '../../services/facades/conversation-data.facade';
+import { ConversationFacebookState } from '../../services/facebook-state/conversation-fb.state';
+import { ConversationService } from '../../services/conversation/conversation.service';
 
+const SERVICES = [
+  ConversationDataFacade,
+  ConversationFacebookState,
+  ConversationService
+]
 
 @NgModule({
   declarations: [
@@ -48,7 +56,9 @@ import { ModalImageStoreComponent } from './components/modal-image-store/modal-i
     TDSCheckBoxModule,
     TDSRadioModule,
     TDSToolTipModule,
-    TDSModalModule
-  ]
+    TDSModalModule,
+    TDSMessageModule
+  ],
+  providers: [ ...SERVICES]
 })
 export class ConversationsModule { }

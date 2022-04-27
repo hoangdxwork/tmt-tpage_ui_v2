@@ -18,6 +18,8 @@ export class ProductTemplateService extends BaseSevice {
   table: string = "ProductTemplate";
   baseRestApi: string = "rest/v1.0/product";
 
+  public _keyCacheGrid: string = 'product-page:grid_product:settings';
+
   constructor(private apiService: TCommonService) {
     super(apiService)
   }
@@ -25,6 +27,16 @@ export class ProductTemplateService extends BaseSevice {
   getDefault(): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.DefaultGet?$expand=UOM,Categ,UOMPO`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<ProductTemplateV2DTO>(api, null);
+  }
+
+  getProductTemplateById(key: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})?$expand=UOM,UOMCateg,Categ,UOMPO,POSCateg,Taxes,SupplierTaxes,Product_Teams,Images,
+      UOMView,Distributor,Importer,Producer,OriginCountry,ProductVariants($expand%3DUOM,Categ,UOMPO,POSCateg,AttributeValues)`,
       method: TApiMethodType.get,
     }
 
@@ -40,16 +52,25 @@ export class ProductTemplateService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  getInventoryProduct(productKey:number,params:string): Observable<TDSSafeAny>{
+  delete(key: number):Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-    url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetInventoryProduct?productTmplId=${productKey}&${params}&$count=true`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
+      method: TApiMethodType.delete,
+    }
+  
+    return this.apiService.getData<ODataProductInventoryDTO>(api, null);
+  }
+
+  getInventoryProduct(key:number,params:string): Observable<TDSSafeAny>{
+    const api: TAPIDTO = {
+    url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetInventoryProduct?productTmplId=${key}&${params}&$count=true`,
     method: TApiMethodType.get,
     }
 
     return this.apiService.getData<ODataProductInventoryDTO>(api, null);
   }
   
-  setActive(data: any):Observable<TDSSafeAny>{
+  setActive(data: TDSSafeAny):Observable<TDSSafeAny>{
     const api: TAPIDTO = {
     url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.SetActive`,
     method: TApiMethodType.post,
@@ -58,7 +79,7 @@ export class ProductTemplateService extends BaseSevice {
     return this.apiService.getData<ODataProductInventoryDTO>(api,data);
   }
 
-  getRemoveIds(data: any):Observable<TDSSafeAny>{
+  getRemoveIds(data: TDSSafeAny):Observable<TDSSafeAny>{
     const api: TAPIDTO = {
     url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.RemoveIds`,
     method: TApiMethodType.post,
@@ -94,7 +115,7 @@ export class ProductTemplateService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  getOriginCountry():Observable<any> {
+  getOriginCountry():Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/OriginCountry?%24format=json&%24filter=(contains(NameNoSign%2C%27%27)+or+contains(Code%2C%27%27))&%24count=true`,
       method: TApiMethodType.get,
@@ -103,7 +124,7 @@ export class ProductTemplateService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
-  geUOMAddType():Observable<any> {
+  getUOMAddType():Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/PartnerExt?%24format=json&%24filter=(contains(NameNoSign%2C%27%27)+or+contains(Code%2C%27%27)+or+contains(Phone%2C%27%27))&%24count=true`,
       method: TApiMethodType.get,
@@ -119,5 +140,32 @@ export class ProductTemplateService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  insertProductTemplate(data:TDSSafeAny):Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertV2`,
+      method: TApiMethodType.post,
+      }
+  
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  insertPartnerExt(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/PartnerExt`,
+      method: TApiMethodType.post,
+      }
+  
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  insertOriginCountry(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/OriginCountry `,
+      method: TApiMethodType.post,
+      }
+  
+    return this.apiService.getData<TDSSafeAny>(api, data);
   }
 }

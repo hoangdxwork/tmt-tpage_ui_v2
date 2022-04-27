@@ -133,25 +133,33 @@ export class ModalEditPartnerComponent implements OnInit {
   }
 
   mappingAddress(data: PartnerDetailDTO) {
-    this._cities = {
-        code: data.CityCode,
-        name: data.CityName
+    if(data && data.CityCode) {
+      this._cities = {
+          code: data.CityCode,
+          name: data.CityName
+      }
     }
-    this._districts = {
-        cityCode: data.CityCode,
-        cityName: data.CityName,
-        code: data.DistrictCode,
-        name: data.DistrictName
+    if(data && data.DistrictCode) {
+      this._districts = {
+          cityCode: data.CityCode,
+          cityName: data.CityName,
+          code: data.DistrictCode,
+          name: data.DistrictName
+      }
     }
-    this._wards = {
-        cityCode: data.CityCode,
-        cityName: data.CityName,
-        districtCode: data.DistrictCode,
-        districtName: data.DistrictName,
-        code: data.WardCode,
-        name: data.WardName
+    if(data && data.WardCode) {
+      this._wards = {
+          cityCode: data.CityCode,
+          cityName: data.CityName,
+          districtCode: data.DistrictCode,
+          districtName: data.DistrictName,
+          code: data.WardCode,
+          name: data.WardName
+      }
     }
-    this._street = data.Street;
+    if(data && data.Street) {
+      this._street = data.Street;
+    }
   }
 
   updateForm(data: any) {

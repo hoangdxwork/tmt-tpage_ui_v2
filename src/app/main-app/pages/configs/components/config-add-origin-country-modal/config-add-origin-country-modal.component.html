@@ -1,8 +1,8 @@
-<form [formGroup]="addMadeInForm" autocomplete="off" (ngSubmit)="onSubmit()">
+<form [formGroup]="originCountyForm" autocomplete="off" (ngSubmit)="onSubmit()">
     <div class="grid grid-cols-4 gap-y-4 items-center">
       <tds-label>Tên</tds-label>
       <tds-form-field class="w-full col-span-3">
-        <input tdsInput formControlName="nationName" autocomplete="off" placeholder="Nhập tên xuất xứ"/>
+        <input tdsInput formControlName="Name" autocomplete="off" placeholder="Nhập tên xuất xứ"/>
         <tds-error>
             Vui lòng nhập tên xuất xứ
         </tds-error>
@@ -10,7 +10,7 @@
 
       <tds-label>Mã</tds-label>
       <tds-form-field class="w-full col-span-3">
-        <input tdsInput formControlName="nationCode" autocomplete="off" placeholder="Nhập mã xuất xứ"/>
+        <input tdsInput formControlName="Code" autocomplete="off" placeholder="Nhập mã xuất xứ"/>
         <tds-error>
           Vui lòng nhập mã xuất xứ
       </tds-error>
@@ -18,7 +18,7 @@
 
       <tds-label>Địa chỉ</tds-label>
       <tds-form-field class="w-full col-span-3">
-        <input tdsInput formControlName="note" autocomplete="off" placeholder="Nhập ghi chú"/>
+        <input tdsInput formControlName="Note" autocomplete="off" placeholder="Nhập ghi chú"/>
         <tds-error>
           Vui lòng nhập ghi chú
       </tds-error>
@@ -30,7 +30,7 @@
     <button tds-button class="mr-2" color="secondary" (click)="cancel()">
         Hủy bỏ
     </button>
-    <button tds-button type="submit" [disabled]="!addMadeInForm.valid" color="primary" (click)="save()">
+    <button tds-button type="submit" [disabled]="!originCountyForm.valid" color="primary" (click)="save()">
         Lưu thay đổi
     </button>
 </div>

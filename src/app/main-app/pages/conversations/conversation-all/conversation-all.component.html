@@ -1,382 +1,112 @@
 <div class="w-full h-full flex items-stretch bg-neutral-3-200">
+  <!-- conversation sidenav -->
 	<div class="w-[357px] h-full ">
-		<div class="w-full flex flex-col gap-1 p-1 h-full">
-			<div class="bg-white p-2.5">
-				<div
-					class="border-2 border-2-50 border-solid rounded-lg py-2.5 px-3.5 flex justify-between items-center">
-					<div class="flex items-center">
-						<div>
-							<tds-avatar class="bg-accent-4  text-white" size="md" text="P"></tds-avatar>
-						</div>
-						<div class="w-52">
-							<tds-select [border]='false' valueField="id" textField="name" [data]="contactOptions"
-								[(ngModel)]="contact">
-							</tds-select>
-						</div>
-					</div>
-					<div class="tdsi-reload-fill text-3xl text-neutral-1-200"></div>
-				</div>
-				<div class="pt-4 flex gap-1 items-center">
-					<div>
-						<tds-form-field class="w-full bg-neutral-3-50">
-							<input aria-colspan="" class="placeholder-neutral-1-400"
-								placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput [(ngModel)]="inputValue" />
-							<span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
-						</tds-form-field>
-					</div>
-					<div class="flex gap-0.5">
-						<div>
-							<tds-badge [count]="iconTemplate">
-								<div class="tdsi-filter-2-line text-2xl text-neutral-1-500 p-2"></div>
-							</tds-badge>
-							<ng-template #iconTemplate>
-								<span
-									class="tdsi-success-fill text-primary-1 text-lg absolute top-4 right-2 inline-block transform translate-x-1/2 -translate-y-1/2 ">
-								</span>
-							</ng-template>
-						</div>
-						<div class="tdsi-sort-up-down-fill text-2xl text-neutral-1-500 p-2"></div>
-						<div class="tdsi-success-line text-2xl text-neutral-1-500 p-2"></div>
-					</div>
-				</div>
-			</div>
-			<div class="overflow-hidden overflow-y-auto tds-custom-scroll flex flex-auto flex-col gap-1 pb-10">
-				<!-- Badge khi có tin nhắn mới ,Item đang được xem -->
-				<div class="p-3.5 bg-white flex flex-col gap-2 w-full">
-					<div class="flex gap-3">
-						<tds-avatar [shape]="'square'" [size]="'xl'"
-							tdsSrc="/assets/images/conversation/avatar-notimage-messenger.svg">
-						</tds-avatar>
-						<div class="w-full flex flex-col gap-1">
-							<div class="flex justify-between items-center">
-								<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
-								<div class="flex items-center gap-2">
-									<tds-badge [standalone]="true" [count]="33"
-										[tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
-									<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
-								</div>
-							</div>
-							<div class="text-body-2 font-regular font-sans text-neutral-1-900">
-								Giao trong giờ hành chính giúp...Giao trong giờ hành chính giúp...Giao trong giờ h hành
-								chính giúp...Giao tron <span class="text-info-500"> Xem thêm</span>
-							</div>
-						</div>
-					</div>
-					<div class="flex justify-end flex-col gap-2">
-						<div class="flex justify-end gap-1.5">
-							<div class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
-							<div class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
-						</div>
-						<div class="flex justify-end gap-1 items-center">
-							<div class="tdsi-flash-on-fill text-accent-3 px-1 text-2xl"></div>
-							<div class="text-accent-3 text-caption-1 font-regular font-sans">Quản lý Shop ly đang xem
-								03:45</div>
-						</div>
-					</div>
-				</div>
-				<!-- Message Item Trạng thái: active -->
-				<div class="p-3.5 bg-secondary-3 w-full border-l-4 border-blue-500 border-solid">
-					<div class="flex gap-3">
-						<tds-avatar [shape]="'square'" [size]="'xl'"
-							tdsSrc="/assets/images/conversation/avatar-notimage-messenger.svg">
-						</tds-avatar>
-						<div class="w-full flex flex-col gap-1">
-							<div class="flex justify-between items-center">
-								<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
-								<div class="flex items-center gap-2">
-									<tds-badge [standalone]="true" [count]="33"
-										[tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
-									<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
-								</div>
-							</div>
-							<div class="text-body-2 font-regular font-sans text-neutral-1-900">
-								Giao trong giờ hành chính giúp...Giao trong giờ hành chính giúp...Giao trong giờ h hành
-								chính giúp...Giao tron <span class="text-info-500"> Xem thêm</span>
-							</div>
-						</div>
-					</div>
-				</div>
-				<!-- Tin nhắn chưa lưu trên hệ thống -->
-				<div class="p-3.5 bg-white w-full">
-					<div class="flex gap-3">
-						<tds-avatar [shape]="'square'" [size]="'xl'"
-							tdsSrc="/assets/images/conversation/avatar-nosave.svg">
-						</tds-avatar>
-						<div class="w-full flex flex-col gap-1">
-							<div class="flex justify-between items-center">
-								<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh ngọc Tường
-									V...</div>
-								<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
-							</div>
-							<div class="text-body-2 font-regular font-sans text-neutral-1-900">
-								Giao trong giờ hành chính giúp...Giao trong giờ hành chính giúp...Giao trong giờ h hành
-								chính giúp...Giao tronGiao trong giờ hành chính giúp...Giao trong giờ hành chính
-								giúp...Giao trong giờ h hành chính giúp...Giao tron Giao trong giờ h hành chính
-								giúp...Giao tron <span class="text-info-500"> Thu gọn</span>
-							</div>
-						</div>
-					</div>
-				</div>
-				<!-- Message Item Trạng thái: hover -->
-				<div class="p-3.5 bg-white w-full hover:bg-neutral-3-50 cursor-default flex flex-col gap-2">
-					<div class="flex gap-3 items-center">
-						<tds-avatar [shape]="'square'" [size]="'xl'"
-							tdsSrc="/assets/images/conversation/avatar-image-messenger.svg">
-						</tds-avatar>
-						<div class="w-full flex flex-col gap-1">
-							<div class="flex justify-between items-center">
-								<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
-								<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
-							</div>
-							<div class="text-body-2 font-regular font-sans text-neutral-1-900">
-								Giao trong giờ hành ch
-							</div>
-						</div>
-					</div>
-					<div class="flex justify-end gap-x-1.5">
-						<div class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
-						<div class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
-					</div>
-				</div>
-				<!-- Bình luận bài viết FB có nhãn-->
-				<div class="p-3.5 bg-white w-full flex flex-col gap-2">
-					<div class="flex gap-3 items-center">
-						<tds-avatar [shape]="'square'" [size]="'xl'"
-							tdsSrc="/assets/images/conversation/avatar-image-facebook.svg">
-						</tds-avatar>
-						<div class="w-full flex flex-col gap-1">
-							<div class="flex justify-between items-center">
-								<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
-								<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
-							</div>
-							<div class="text-body-2 font-regular font-sans text-neutral-1-900">
-								Giao trong giờ hành chGiao trong giờ
-							</div>
-						</div>
-					</div>
-					<div class="flex justify-end gap-1.5">
-						<div class="tdsi-bag-fill text-md text-white bg-blue-500 p-0.5 rounded-md"></div>
-						<div class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
-						<div class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
-					</div>
-				</div>
-				<!-- Bình luận bài viết FB-->
-				<div class="p-3.5 bg-white w-full">
-					<div class="flex gap-3 items-center">
-						<tds-avatar [shape]="'square'" [size]="'xl'"
-							tdsSrc="/assets/images/conversation/avatar-image-facebook.svg">
-						</tds-avatar>
-						<div class="w-full flex flex-col gap-1">
-							<div class="flex justify-between items-center">
-								<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
-								<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
-							</div>
-							<div class="text-body-2 font-regular font-sans text-neutral-1-900">
-								Giao trong giờ hành chGiao trong giờ
-							</div>
-						</div>
-					</div>
-				</div>
-				<!-- Badge khi có tin nhắn mới ,Item đang được xem , nhiều nhãn -->
-				<div class="p-3.5 bg-white flex flex-col gap-2 w-full">
-					<div class="flex gap-3">
-						<tds-avatar [shape]="'square'" [size]="'xl'"
-							tdsSrc="/assets/images/conversation/avatar-notimage-messenger.svg">
-						</tds-avatar>
-						<div class="w-full flex flex-col gap-1">
-							<div class="flex justify-between items-center">
-								<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
-								<div class="flex items-center gap-2">
-									<tds-badge [standalone]="true" [count]="33"
-										[tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
-									<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
-								</div>
-							</div>
-							<div class="text-body-2 font-regular font-sans text-neutral-1-900">
-								Giao trong giờ hành chính giúp...Giao trong giờ hành chính giúp...Giao trong giờ h hành
-								chính giúp...Giao tron <span class="text-info-500"> Xem thêm</span>
-							</div>
-						</div>
-					</div>
-					<div class="flex justify-end flex-col gap-2">
-						<div class="flex gap-1 items-center">
-							<div
-								class="bg-[#F2FCF5] py-0.5 px-1 text-caption-2 font-regular text-neutral-1-900 rounded">
-								<tds-badge status="success" text="Khách hàng cũ"></tds-badge>
-							</div>
-							<div
-								class="bg-[#FFEDEE] py-0.5 px-1 text-caption-2 font-regular text-neutral-1-900 rounded">
-								<tds-badge status="error" text="Bom hàng"></tds-badge>
-							</div>
-							<div
-								class="bg-[#FFF1D7] py-0.5 pl-1 text-caption-2 font-regular text-neutral-1-900 rounded ">
-								<tds-badge status="bg-yellow-500" text="bon"></tds-badge>
-							</div>
-							<div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded">
-								+3
-							</div>
-							<div class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
-							<div class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
-						</div>
-						<div class="flex justify-end gap-1 items-center">
-							<div class="tdsi-flash-on-fill text-accent-3 px-1 text-2xl"></div>
-							<div class="text-accent-3 text-caption-1 font-regular font-sans">Quản lý Shop ly đang xem
-								03:45</div>
-						</div>
-					</div>
-				</div>
-				<!-- Message nhiều nhãn -->
-				<div class="p-3.5 bg-white flex flex-col gap-2 w-full">
-					<div class="flex gap-3">
-						<tds-avatar [shape]="'square'" [size]="'xl'"
-							tdsSrc="/assets/images/conversation/avatar-notimage-messenger.svg">
-						</tds-avatar>
-						<div class="w-full flex flex-col gap-1">
-							<div class="flex justify-between items-center">
-								<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
-								<div class="flex items-center gap-2">
-									<tds-badge [standalone]="true" [count]="33"
-										[tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
-									<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
-								</div>
-							</div>
-							<div class="text-body-2 font-regular font-sans text-neutral-1-900">
-								Giao trong giờ hành chính giúp
-							</div>
-						</div>
-					</div>
-					<div class="flex justify-end flex-col gap-2">
-						<div class="flex gap-1 items-center">
-							<div
-								class="bg-[#F2FCF5] py-0.5 px-1.5 text-caption-2 font-regular text-neutral-1-900 rounded">
-								<tds-badge status="success" text="Khách hàng cũ"></tds-badge>
-							</div>
-							<div
-								class="bg-[#FFEDEE] py-0.5 px-1.5 text-caption-2 font-regular text-neutral-1-900 rounded">
-								<tds-badge status="error" text="Bom hàng"></tds-badge>
-							</div>
-							<div
-								class="bg-[#FFF1D7] py-0.5 px-1.5 text-caption-2 font-regular text-neutral-1-900 rounded ">
-								<tds-badge status="bg-yellow-500" text="Bom hàng"></tds-badge>
-							</div>
-							<div class="px-1.5 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded cursor-default"
-								tds-popover [popoverContent]="popoverContent" popoverPlacement="topRight">
-								+3
-							</div>
-							<ng-template #popoverContent>
-								<div class="flex gap-1">
-									<div
-										class="bg-[#FFE2F3] py-0.5 px-2 text-caption-2 font-regular text-neutral-1-900 rounded">
-										<tds-badge status="bg-pink-500" text="Khách hàng cũ"></tds-badge>
-									</div>
-									<div
-										class="bg-[#FFFAEA] py-0.5 px-2 text-caption-2 font-regular text-neutral-1-900 rounded">
-										<tds-badge status="warning" text="Bom hàng"></tds-badge>
-									</div>
-									<div
-										class="bg-[#D5F2E8] py-0.5 px-2 text-caption-2 font-regular text-neutral-1-900 rounded ">
-										<tds-badge status="bg-accent-7" text="Bom hàng"></tds-badge>
-									</div>
-								</div>
-							</ng-template>
-						</div>
-
-					</div>
-				</div>
-				<!--Hội thoại đánh dấu đã xong-->
-				<div class="w-full relative">
-					<div class="p-3.5 bg-white w-full flex flex-col gap-2">
-						<div class="flex gap-3 items-center">
-							<tds-avatar [shape]="'square'" [size]="'xl'"
-								tdsSrc="/assets/images/conversation/avatar-image-facebook.svg">
-							</tds-avatar>
-							<div class="w-full flex flex-col gap-1">
-								<div class="flex justify-between items-center">
-									<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
-									<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước</div>
-								</div>
-								<div class="text-body-2 font-regular font-sans text-neutral-1-900">
-									Giao trong giờ hành chGiao trong giờ
-								</div>
-							</div>
-						</div>
-						<div class="flex justify-end gap-1.5">
-							<div class="tdsi-bag-fill text-md text-white bg-blue-500 p-0.5 rounded-md"></div>
-							<div class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
-							<div class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
-						</div>
-					</div>
-					<div class="absolute top-0 right-0">
-						<div
-							class="w-0 h-0 border-t-[41px] border-t-green-400 border-l-[41px] border-l-transparent border-solid">
-						</div>
-					</div>
-					<div class="absolute top-0 right-0">
-						<div class="tdsi-tick-fill text-white text-lg px-1"></div>
-					</div>
-				</div>
-				<!-- Hội thoại đánh dấu đã xong ,Item đang được xem , nhiều nhãn -->
-				<div class="w-full relative">
-					<div class="p-3.5 bg-white flex flex-col gap-2 w-full">
-						<div class="flex gap-3">
-							<tds-avatar [shape]="'square'" [size]="'xl'"
-								tdsSrc="/assets/images/conversation/avatar-notimage-messenger.svg">
-							</tds-avatar>
-							<div class="w-full flex flex-col gap-1">
-								<div class="flex justify-between items-center">
-									<div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
-									<div class="flex items-center gap-2">
-										<tds-badge [standalone]="true" [count]="33"
-											[tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
-										<div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước
-										</div>
-									</div>
-								</div>
-								<div class="text-body-2 font-regular font-sans text-neutral-1-900">
-									Giao trong giờ hành chính giúp...Giao trong giờ hành chính giúp...Giao trong giờ h
-									hành chính giúp...Giao tron <span class="text-info-500"> Xem thêm</span>
-								</div>
-							</div>
-						</div>
-						<div class="flex justify-end flex-col gap-2">
-							<div class="flex gap-1 items-center">
-								<div
-									class="bg-[#F2FCF5] py-0.5 px-1 text-caption-2 font-regular text-neutral-1-900 rounded">
-									<tds-badge status="success" text="Khách hàng cũ"></tds-badge>
-								</div>
-								<div
-									class="bg-[#FFEDEE] py-0.5 px-1 text-caption-2 font-regular text-neutral-1-900 rounded">
-									<tds-badge status="error" text="Bom hàng"></tds-badge>
-								</div>
-								<div
-									class="bg-[#FFF1D7] py-0.5 pl-1 text-caption-2 font-regular text-neutral-1-900 rounded ">
-									<tds-badge status="bg-yellow-500" text="bon"></tds-badge>
-								</div>
-								<div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded">
-									+3
-								</div>
-								<div class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
-								<div class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
-							</div>
-							<div class="flex justify-end gap-1 items-center">
-								<div class="tdsi-flash-on-fill text-accent-3 px-1 text-2xl"></div>
-								<div class="text-accent-3 text-caption-1 font-regular font-sans">Quản lý Shop ly đang
-									xem 03:45</div>
-							</div>
-						</div>
-					</div>
-					<div class="absolute top-0 right-0">
-						<div
-							class="w-0 h-0 border-t-[41px] border-t-green-400 border-l-[41px] border-l-transparent border-solid">
-						</div>
-					</div>
-					<div class="absolute top-0 right-0">
-						<div class="tdsi-tick-fill text-white text-lg px-1"></div>
-					</div>
-				</div>
-			</div>
-		</div>
+      <div class="w-full flex flex-col gap-1 p-1 h-full">
+          <div class="bg-white p-2.5">
+            <div
+              class="border-2 border-2-50 border-solid rounded-lg py-2.5 px-3.5 flex justify-between items-center">
+              <div class="flex items-center">
+                <div>
+                  <tds-avatar class="bg-accent-4  text-white" size="md" text="P"></tds-avatar>
+                </div>
+                <div class="w-52">
+                  <tds-select [border]='false' valueField="id" textField="name" [data]="contactOptions"
+                    [(ngModel)]="contact">
+                  </tds-select>
+                </div>
+              </div>
+              <div class="tdsi-reload-fill text-3xl text-neutral-1-200"></div>
+            </div>
+            <div class="pt-4 flex gap-1 items-center">
+              <div>
+                <tds-form-field class="w-full bg-neutral-3-50">
+                  <input aria-colspan="" class="placeholder-neutral-1-400"
+                    placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput [(ngModel)]="inputValue" />
+                  <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
+                </tds-form-field>
+              </div>
+              <div class="flex gap-0.5">
+                <div>
+                  <tds-badge [count]="iconTemplate">
+                    <div class="tdsi-filter-2-line text-2xl text-neutral-1-500 p-2"></div>
+                  </tds-badge>
+                  <ng-template #iconTemplate>
+                    <span
+                      class="tdsi-success-fill text-primary-1 text-lg absolute top-4 right-2 inline-block transform translate-x-1/2 -translate-y-1/2 ">
+                    </span>
+                  </ng-template>
+                </div>
+                <div class="tdsi-sort-up-down-fill text-2xl text-neutral-1-500 p-2"></div>
+                <div class="tdsi-success-line text-2xl text-neutral-1-500 p-2"></div>
+              </div>
+            </div>
+          </div>
+          <!-- List danh sách chat -->
+          <div class="overflow-hidden overflow-y-auto tds-custom-scroll flex flex-auto flex-col gap-1 pb-10" *ngIf="dataSource$">
+              <div *ngFor="let item of (dataSource$ | async)">
+                <div class="w-full relative">
+                  <div class="p-3.5 bg-white flex flex-col gap-2 w-full">
+                    <div class="flex gap-3">
+                      <tds-avatar [shape]="'square'" [size]="'xl'"
+                        tdsSrc="/assets/images/conversation/avatar-notimage-messenger.svg">
+                      </tds-avatar>
+                      <div class="w-full flex flex-col gap-1">
+                        <div class="flex justify-between items-center">
+                          <div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
+                          <div class="flex items-center gap-2">
+                            <tds-badge [standalone]="true" [count]="33"
+                              [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
+                            <div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước
+                            </div>
+                          </div>
+                        </div>
+                        <div class="text-body-2 font-regular font-sans text-neutral-1-900">
+                          Giao trong giờ hành chính giúp...Giao trong giờ hành chính giúp...Giao trong giờ h
+                          hành chính giúp...Giao tron <span class="text-info-500"> Xem thêm</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="flex justify-end flex-col gap-2">
+                      <div class="flex gap-1 items-center">
+                        <div
+                          class="bg-[#F2FCF5] py-0.5 px-1 text-caption-2 font-regular text-neutral-1-900 rounded">
+                          <tds-badge status="success" text="Khách hàng cũ"></tds-badge>
+                        </div>
+                        <div
+                          class="bg-[#FFEDEE] py-0.5 px-1 text-caption-2 font-regular text-neutral-1-900 rounded">
+                          <tds-badge status="error" text="Bom hàng"></tds-badge>
+                        </div>
+                        <div
+                          class="bg-[#FFF1D7] py-0.5 pl-1 text-caption-2 font-regular text-neutral-1-900 rounded ">
+                          <tds-badge status="bg-yellow-500" text="bon"></tds-badge>
+                        </div>
+                        <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded">
+                          +3
+                        </div>
+                        <div class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
+                        <div class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
+                      </div>
+                      <div class="flex justify-end gap-1 items-center">
+                        <div class="tdsi-flash-on-fill text-accent-3 px-1 text-2xl"></div>
+                        <div class="text-accent-3 text-caption-1 font-regular font-sans">Quản lý Shop ly đang
+                          xem 03:45</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="absolute top-0 right-0">
+                    <div
+                      class="w-0 h-0 border-t-[41px] border-t-green-400 border-l-[41px] border-l-transparent border-solid">
+                    </div>
+                  </div>
+                  <div class="absolute top-0 right-0">
+                    <div class="tdsi-tick-fill text-white text-lg px-1"></div>
+                  </div>
+                </div>
+              </div>
+          </div>
+      </div>
 	</div>
+
 	<div class="flex flex-auto flex-col  h-full overflow-hidden">
 		<tds-conversations>
 			<ng-container *ngFor="let item of listData">
@@ -605,9 +335,9 @@
 												<ng-template tds-filter-status-template let-active='active'
 													let-count='count' let-name='name' let-value>
 													<div class="py-1 px-2 flex items-center border border-neutral-2-100 border-solid rounded-full mr-2"
-														[ngClass]="{' border-primary-1':active,'border-neutral-2-100 
+														[ngClass]="{' border-primary-1':active,'border-neutral-2-100
 														group-hover:border-primary-1':!active}">
-														<div class="text-body-2 mr-2 font-semibold" [ngClass]="{'text-primary-1':active,'text-neutral-1-400 
+														<div class="text-body-2 mr-2 font-semibold" [ngClass]="{'text-primary-1':active,'text-neutral-1-400
 																group-hover:text-primary-1':!active}">
 															{{name}}&nbsp; {{count}}
 														</div>
@@ -619,9 +349,9 @@
 												<ng-template tds-filter-status-template let-active='active'
 													let-count='count' let-name='name' let-value>
 													<div class="py-1 px-2 flex items-center border border-neutral-2-100 border-solid rounded-full mr-2"
-														[ngClass]="{' border-primary-1':active,'border-neutral-2-100 
+														[ngClass]="{' border-primary-1':active,'border-neutral-2-100
 														group-hover:border-primary-1':!active}">
-														<div class="text-body-2 mr-2 font-semibold" [ngClass]="{'text-primary-1':active,'text-neutral-1-400 
+														<div class="text-body-2 mr-2 font-semibold" [ngClass]="{'text-primary-1':active,'text-neutral-1-400
 																group-hover:text-primary-1':!active}">
 															{{name}}&nbsp; {{count}}
 														</div>
@@ -633,9 +363,9 @@
 												<ng-template tds-filter-status-template let-active='active'
 													let-count='count' let-name='name' let-value>
 													<div class="py-1 px-2 flex items-center border border-neutral-2-100 border-solid rounded-full mr-2"
-														[ngClass]="{' border-primary-1':active,'border-neutral-2-100 
+														[ngClass]="{' border-primary-1':active,'border-neutral-2-100
 														group-hover:border-primary-1':!active}">
-														<div class="text-body-2 mr-2 font-semibold" [ngClass]="{'text-primary-1':active,'text-neutral-1-400 
+														<div class="text-body-2 mr-2 font-semibold" [ngClass]="{'text-primary-1':active,'text-neutral-1-400
 																group-hover:text-primary-1':!active}">
 															{{name}}&nbsp; {{count}}
 														</div>
@@ -647,9 +377,9 @@
 												<ng-template tds-filter-status-template let-active='active'
 													let-count='count' let-name='name' let-value>
 													<div class="py-1 px-2 flex items-center border border-neutral-2-100 border-solid rounded-full mr-2"
-														[ngClass]="{' border-primary-1':active,'border-neutral-2-100 
+														[ngClass]="{' border-primary-1':active,'border-neutral-2-100
 														group-hover:border-primary-1':!active}">
-														<div class="text-body-2 mr-2 font-semibold" [ngClass]="{'text-primary-1':active,'text-neutral-1-400 
+														<div class="text-body-2 mr-2 font-semibold" [ngClass]="{'text-primary-1':active,'text-neutral-1-400
 																group-hover:text-primary-1':!active}">
 															{{name}}&nbsp; {{count}}
 														</div>
@@ -661,9 +391,9 @@
 												<ng-template tds-filter-status-template let-active='active'
 													let-count='count' let-name='name' let-value>
 													<div class="py-1 px-2 flex items-center border border-neutral-2-100 border-solid rounded-full mr-2"
-														[ngClass]="{' border-primary-1':active,'border-neutral-2-100 
+														[ngClass]="{' border-primary-1':active,'border-neutral-2-100
 														group-hover:border-primary-1':!active}">
-														<div class="text-body-2 mr-2 font-semibold" [ngClass]="{'text-primary-1':active,'text-neutral-1-400 
+														<div class="text-body-2 mr-2 font-semibold" [ngClass]="{'text-primary-1':active,'text-neutral-1-400
 																group-hover:text-primary-1':!active}">
 															{{name}}&nbsp; {{count}}
 														</div>
@@ -867,19 +597,19 @@
 										<div class="ml-2 text-title-1 font-semibold text-neutral-1-900 font-sans">Thông tin khách hàng</div>
 									</div>
 								</ng-template>
-								
+
 								<div class="flex flex-col gap-4">
 									<tds-form-field>
-										<input tdsInput autocomplete="off" placeholder="Nguyen Binh" 
+										<input tdsInput autocomplete="off" placeholder="Nguyen Binh"
 											[formControl]="name" [required]='true' />
-										<span tdsSuffix> 
+										<span tdsSuffix>
 											<tds-tag status='info' type="outline">
 												<span class="flex items-center text-neutral-1-900">
-													<tds-avatar [shape]="'square'" [size]="'sm'" 
+													<tds-avatar [shape]="'square'" [size]="'sm'"
 														tdsSrc="/assets/images/conversation/fb.svg">
 													</tds-avatar> Facebook: Ngọc Anh Nguyen
 												</span>
-											</tds-tag> 
+											</tds-tag>
 										</span>
 									</tds-form-field>
 									<div class="flex gap-5">
@@ -887,15 +617,15 @@
 											<div tdsAddOnRight>
 											  <i class="tdsi-search-fill text-xl leading-none"></i>
 											</div>
-											<input tdsInput placeholder="0512783652" 
+											<input tdsInput placeholder="0512783652"
 											  [required]='true' [formControl]="phoneNumber" />
-										</tds-form-field> 
+										</tds-form-field>
 
 										<tds-form-field>
-											<input tdsInput autocomplete="off"  placeholder="Nhập email" 
+											<input tdsInput autocomplete="off"  placeholder="Nhập email"
 												[formControl]="email" [required]='true' />
 										</tds-form-field>
-									</div> 
+									</div>
 
 									<div class="flex items-center gap-2">
 										<tds-form-field class="w-full">
@@ -926,20 +656,20 @@
 													</tds-dropdown-menu>
 												</tds-button-group>
 											</span>
-										</tds-form-field> 
+										</tds-form-field>
 										<button tds-button-icon color="primary">
 											<span class="flex items-center">
 												<i class="tdsi-location-fill"></i>
 											</span>
 										</button>
-									</div> 
+									</div>
 
 									<tds-form-field>
 										<tds-select valueField="id" textField="name" placeholder='Nguyen Binh'
 											disabledField="isActive" [formControl]="nameSelect" [required]='true'
 											[data]="contactCustomer" [allowClear]="true">
 										</tds-select>
-									</tds-form-field> 
+									</tds-form-field>
 
 									<tds-form-field>
 										<textarea tdsInput placeholder="Nhập ghi chú" [formControl]="note"></textarea>
@@ -947,7 +677,7 @@
 								</div>
 							</tds-collapse-panel>
 						</tds-collapse>
-					</div> 
+					</div>
 
 					<div class="pt-1">
 						<tds-collapse [expandIconPosition]="'right'" class="bg-neutral-3-50">
@@ -961,29 +691,29 @@
 											[tdsClass]="'bg-neutral-1-400 text-white'"></tds-badge>
 										</div>
 									</div>
-								</ng-template> 
+								</ng-template>
 
 								<div class="flex flex-col gap-6 w-full h-full">
 									<div class="flex gap-1.5">
 										<tds-form-field class="w-full">
-											<input aria-colspan="" class="placeholder-neutral-1-400" 
+											<input aria-colspan="" class="placeholder-neutral-1-400"
 												placeholder="Nhập tên sản phẩm" tdsInput [(ngModel)]="inputValue" />
 											<span tdsPrefix ><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
 											<span tdsSuffix><i class="tdsi-product-fill"></i></span>
-										</tds-form-field> 
-	
+										</tds-form-field>
+
 										<button tds-button-icon color="secondary">
 											<span class="flex items-center">
 												<i class="tdsi-add-fill text-primary-1"></i>
 											</span>
-										</button> 
+										</button>
 
 										<button tds-button-icon color="secondary">
 											<span class="flex items-center">
 												<i class="tdsi-gear-2-fill text-neutral-1-400"></i>
 											</span>
 										</button>
-									</div> 
+									</div>
 									<div class="rounded-t-xl h-60 w-full">
 										<tds-table #basicTable class="w-full h-full bg-neutral-2-50 px-0.5" [listData]="listOfData" showPagination="false" [scroll]="{y:'auto'}">
 											<thead class="bg-neutral-2-50">
@@ -1001,7 +731,7 @@
 															<div class="text-body-2">
 																{{data.name}}
 																<div  class="editable-cell cursor-pointer flex items-center" [class.hidden]="editNoteProduct === data.id" (click)="startEdit(data.id)" [class]="data.color"><span [class]="data.style">{{data.text}}</span> <span [class]="data.icon" class="text-neutral-1-400 text-lg ml-1"></span></div>
-															</div> 
+															</div>
 															<tds-form-field [class.hidden]="editNoteProduct !== data.id" class="pt-2">
 																<input tdsInput placeholder="note" [formControl]="noteProduct" (blur)="stopEdit()" />
 															</tds-form-field>
@@ -1028,14 +758,14 @@
 												<div class="w-2/3 flex justify-end text-body-2 font-regular font-sans text-neutral-1-900">
 												300.000
 												</div>
-										</div> 
+										</div>
 
 										<div class="w-full flex gap-4">
 											<div class="w-1/2 gap-2.5 flex items-center">
 												<div class="w-1/3 text-body-2 font-regular font-sans text-neutral-1-900">Giảm giá</div>
 												<div class="w-2/3">
 													<tds-form-field>
-														<input tdsInput autocomplete="off" placeholder="0" 
+														<input tdsInput autocomplete="off" placeholder="0"
 															[formControl]="giamGia" [required]='true' />
 														<span tdsSuffix><span class="text-body-2 font-semibold font-sans text-primary-1">%</span> <span class="text-body-2 font-semibold font-sans text-neutral-1-400 pl-2">VNĐ</span> </span>
 													</tds-form-field>
@@ -1047,14 +777,14 @@
 													300.000
 												</div>
 											</div>
-										</div> 
+										</div>
 
 										<div class="w-full flex gap-4">
 											<div class="w-1/2 gap-2.5 flex items-center">
 												<div class="w-1/3 text-body-2 font-regular font-sans text-neutral-1-900">Thuế</div>
 												<div class="w-2/3">
 													<tds-form-field>
-														<input tdsInput autocomplete="off" placeholder="0" 
+														<input tdsInput autocomplete="off" placeholder="0"
 															[formControl]="thue" [required]='true' />
 														<span tdsSuffix><i class="tdsi-revenue-fill text-primary-1 text-xl"></i></span>
 													</tds-form-field>
@@ -1064,19 +794,19 @@
 												<div class="w-1/3 text-body-2 font-regular font-sans text-neutral-1-900">Tiền cọc</div>
 												<div class="w-2/3">
 													<tds-form-field>
-														<input tdsInput autocomplete="off" placeholder="10.000" 
+														<input tdsInput autocomplete="off" placeholder="10.000"
 															[formControl]="tienCoc" [required]='true' />
 													</tds-form-field>
 												</div>
 											</div>
-										</div> 
+										</div>
 
 										<div class="w-full flex gap-4">
 											<div class="w-1/2 gap-2.5 flex items-center">
 												<div class="w-1/3 text-body-2 font-regular font-sans text-neutral-1-900">Khuyến mãi</div>
 												<div class="w-2/3">
 													<tds-form-field>
-														<input tdsInput autocomplete="off" placeholder="0" 
+														<input tdsInput autocomplete="off" placeholder="0"
 															[formControl]="khuyenMai" [required]='true' />
 														<span tdsSuffix><i class="tdsi-gift-fill text-primary-1 text-xl"></i></span>
 													</tds-form-field>
@@ -1086,7 +816,7 @@
 												<div class="w-1/3 text-body-2 font-regular font-sans text-neutral-1-900">Thanh toán</div>
 												<div class="w-2/3">
 													<tds-form-field>
-														<input tdsInput autocomplete="off" placeholder="0" 
+														<input tdsInput autocomplete="off" placeholder="0"
 															[formControl]="thanhToan" [required]='true' />
 													</tds-form-field>
 												</div>
@@ -1096,7 +826,7 @@
 								</div>
 							</tds-collapse-panel>
 						</tds-collapse>
-					</div> 
+					</div>
 					<div class="pt-1">
 						<div class="py-4 bg-primary-3 px-6">
 							<tds-checkbox [checked]="true">Tạo hoá đơn bán hàng</tds-checkbox>
@@ -1110,7 +840,7 @@
 										<tds-avatar class="bg-primary-1 text-white" icon="tdsi-truck-fill"></tds-avatar>
 										<div class="text-title-1 font-semibold text-neutral-1-900 font-sans">Giao hàng</div>
 									</div>
-								</ng-template>  
+								</ng-template>
 
 								<div class="flex flex-col gap-4 w-full h-full">
 									<div>
@@ -1133,7 +863,7 @@
 									</div>
 									<div>
 										<tds-checkbox [checked]="true">Cho khách xem hàng?</tds-checkbox>
-									</div> 
+									</div>
 									<div class="flex gap-3 items-center">
 										<div class="text-body-2 font-regular font-sans text-info-500">
 											Phí ship (đối tác): <span class="pl-2 font-semibold">20.000đ</span>
@@ -1143,7 +873,7 @@
 												<i class="tdsi-reload-fill"></i>
 											</span>
 										</button>
-									</div> 
+									</div>
 
 									<div>
 										<div class="text-body-2 font-semibold font-sans text-neutral-1-900 pb-2">Khối lượng (g)</div>
@@ -1157,7 +887,7 @@
 												</span>
 											</button>
 										</div>
-									</div> 
+									</div>
 
 									<div class="flex gap-4 w-full">
 										<div class="w-1/2">
@@ -1165,24 +895,24 @@
 											<tds-form-field class="w-full">
 												<input tdsInput autocomplete="off"  placeholder="1"  [formControl]="phiGH" [required]='true' />
 											</tds-form-field>
-										</div> 
+										</div>
 										<div class="w-1/2">
 											<div class="text-body-2 font-semibold font-sans text-neutral-1-900 pb-2">Tiền thu hộ</div>
 											<tds-form-field class="w-full">
 												<input tdsInput autocomplete="off"  placeholder="1"  [formControl]="tienThuHo" [required]='true' />
 											</tds-form-field>
-										</div> 
-									</div> 
+										</div>
+									</div>
 									<div>
 										<div class="text-body-2 font-semibold font-sans text-neutral-1-900 pb-2">Ghi chú giao hàng</div>
 										<tds-form-field class="w-full">
 											<textarea tdsInput placeholder="Nhập ghi chú" [formControl]="notGH"></textarea>
 										</tds-form-field>
-									</div> 
+									</div>
 								</div>
 							</tds-collapse-panel>
 						</tds-collapse>
-					</div> 
+					</div>
 					<div class="pt-1">
 						<div class="bg-white py-3 px-6 flex gap-3">
 							<button tds-button color="primary">Lưu nháp</button>

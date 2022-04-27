@@ -10,7 +10,7 @@
             <div class="flex flex-col mb-6">
                 <tds-form-field class="mb-2">
                     <tds-label>Tên mẫu</tds-label>
-                    <input tdsInput type="text" [innerHTML]="this.formQuickReply.value.subjectHtml" formControlName="subjectHtml" [required]="true" placeholder="Nhập tên"
+                    <input tdsInput type="text" formControlName="subjectHtml" [required]="true" placeholder="Nhập tên"
                         id="name" class="text-neutral-1-900 text-body-2 font-regular" />
                     <tds-error>
                         Vui lòng nhập tên mẫu

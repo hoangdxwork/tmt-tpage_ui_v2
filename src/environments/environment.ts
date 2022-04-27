@@ -5,6 +5,8 @@
 export const environment = {
   production: false,
   urlLogin:'/account/login',
+  signalR: "https://sr.tpos.vn",
+  signalRAppend: "?host=admin.tpos.vn",
   apiApp:"https://demoprod01.tpos.vn",
   apiAccount:{
     signInPassword:"/token",

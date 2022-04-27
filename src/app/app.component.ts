@@ -19,17 +19,18 @@ export class AppComponent {
     public cache: THelperCacheService,
     public zone: NgZone,
     public router: Router,
-    private loader: PageLoadingService,
-  ) {
+    private loader: PageLoadingService) {
+
     this.loader.show();
   }
   ngOnInit() {
     let that = this;
     that.init().subscribe(res => {
-      this.loader.hidden();
-      that.isLoaded = true;
+        this.loader.hidden();
+        that.isLoaded = true;
     });
   }
+
   init(): Observable<boolean> {
     let that = this;
     return new Observable(obs => {

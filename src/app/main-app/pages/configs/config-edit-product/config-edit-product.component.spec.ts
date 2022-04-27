@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ModalImageStoreComponent } from './modal-image-store.component';
+import { ConfigEditProductComponent } from './config-edit-product.component';
 
-describe('ModalImageStoreComponent', () => {
-  let component: ModalImageStoreComponent;
-  let fixture: ComponentFixture<ModalImageStoreComponent>;
+describe('ConfigEditProductComponent', () => {
+  let component: ConfigEditProductComponent;
+  let fixture: ComponentFixture<ConfigEditProductComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ModalImageStoreComponent ]
+      declarations: [ ConfigEditProductComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ModalImageStoreComponent);
+    fixture = TestBed.createComponent(ConfigEditProductComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

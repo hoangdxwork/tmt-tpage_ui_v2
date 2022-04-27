@@ -1,3 +1,13 @@
+import { ProductCategoryService } from './../../../../services/product-category.service';
+import { OdataProductUOMDTOV2 } from './../../../../dto/product/product-uom.dto';
+import { ProductUOMService } from './../../../../services/product-uom.service';
+import { Category } from './../../../../dto/configs/sale-config.dto';
+import { ODataProductCategoryDTOV2, ProductCategoryDTO, ProductCategoryDTOV2 } from './../../../../dto/product/product-category.dto';
+import { ProductUOMDTOV2 } from './../../../../dto/product/product-uom.dto';
+import { ProductDTO, ProductUOMDTO } from './../../../../dto/product/product.dto';
+import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+import { ProductService } from './../../../../services/product.service';
+import { Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { HttpRequest, HttpResponse, HttpClient } from '@angular/common/http';
 import { ConfigProductVariantService } from '../../config-product-variant/config-product-variant.service';
@@ -5,108 +15,101 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { TDSModalRef, TDSSafeAny, TDSUploadFile, TDSUploadChangeParam, TDSMessageService } from 'tmt-tang-ui';
 
-const getBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-    });
 @Component({
   selector: 'app-product-variant-edit-table-modal',
   templateUrl: './product-variant-edit-table-modal.component.html',
   styleUrls: ['./product-variant-edit-table-modal.component.scss']
 })
 export class ProductVariantEditTableModalComponent implements OnInit {
-  @Input() data:TDSSafeAny;
+  @Input() productId!: number;
 
-  groupList:Array<TDSSafeAny> = [];
-  unitList:Array<TDSSafeAny> = [];
+  dataProduct!: ProductDTO;
+  listProductCategory!: ProductCategoryDTO[];
+  listProductUOM!: ProductUOMDTO[];
   editForm!: FormGroup;
   imageList: TDSUploadFile[] = [];
   previewImage: string | undefined = '';
   previewVisible = false;
+  isLoading: boolean = false;
   uploadUrl = 'assets/images/config/';
+  private destroy$ = new Subject<void>();
+
 
   constructor(
     private modal: TDSModalRef, 
     private formBuilder: FormBuilder, 
-    private service:ConfigProductVariantService, 
+    private productService: ProductService,
     private msg: TDSMessageService, 
-    private http: HttpClient
+    private http: HttpClient,
+    private message: TDSMessageService,
+    private productUOMService : ProductUOMService,
+    private productCategoryService: ProductCategoryService,
     ) { 
     
     this.editForm = new FormGroup({});
-    this.groupList = this.service.getProductGroupList();
-    this.unitList =  this.service.getProductUnitList();
+    this.createForm();
   }
 
   ngOnInit(): void {
-    this.initData();
+    this.loadData();
   }
 
-  initData(){
-    this.imageList = this.data.images;
+  createForm(){
     this.editForm = this.formBuilder.group({
-      name: new FormControl(this.data.name, [Validators.required]),
-      group: new FormControl(this.data.group, [Validators.required]),
-      unit: new FormControl(this.data.unit, [Validators.required]),
-      productPrice: new FormControl(this.data.productPrice, [Validators.required]),
+      Name: [null, Validators.required],
+        PriceVariant: [null],
+        ImageUrl: [null],
+        IsAvailableOnTPage: [null],
+        CategId: [null],
+        UOMId: [null],
+        UOMPOId: [null],
+        POSCategId: [null],
+        Images: this.formBuilder.array([])
     })
   }
 
-  handlePreview = async (file: TDSUploadFile) => {
-    if (!file.url && !file.preview) {
-        file.preview = await getBase64(file.originFileObj!);
-    }
-    this.previewImage = file.url || file.preview;
-    this.previewVisible = true;
-  };
-
-  handleChange(info: TDSUploadChangeParam): void {
-    // if (info.file.status !== 'uploading') {
-    //     console.log(info.file, info.fileList);
-    // }
-    if (info.file.status === 'done') {
-        this.msg.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === 'error') {
-        this.msg.error(`${info.file.name} file upload failed.`);
-    }
+  loadData(){
+    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe((res:any)=>{
+      this.listProductUOM = res.value;
+      this.getProductCategory();
+    },err=>{
+      this.message.error(err.error.message || 'Load dữ liệu thất bại!!')
+    })
   }
 
-  handleUpload = (item: any) => {
-    const formData = new FormData();
-    
-    formData.append('mediaFile', item.file as any, item.file.name);
-    formData.append('id', '0000000000000051');
-
-    const req = new HttpRequest('POST', this.uploadUrl, formData);
-    return this.http.request(req).pipe(filter(e => e instanceof HttpResponse)).subscribe(
-        (res:TDSSafeAny) => {   
-            if(res && res.body)
-            {
-                const data = res.body;
-                item.file.url = data.mediaUrl;
-            }
-            item.onSuccess(item.file);
-        },
-        (err) => {
-            item.onError({statusText:err.error?.error?.details}, item.file);
-        }
-    )
+  getByIdProduct(){
+    this.isLoading = true
+    this.productService.getById(this.productId).pipe(takeUntil(this.destroy$)).subscribe((res: any)=>{
+      delete res['@odata.context'];
+      this.dataProduct = res
+      console.log(this.dataProduct)
+      this.uploadUrl = this.dataProduct.ImageUrl
+      this.updateForm();
+      this.isLoading = false
+    },
+    err=>{
+      this.message.error(err.error.message || 'Load dữ liệu thất bại!')
+      this.isLoading = false;
+    } )
   }
 
-  handleDownload=(file: TDSUploadFile)=>{
-    window.open(file.response.url);
+  getProductCategory(){
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe((res:any)=>{
+      this.listProductCategory = res.value;
+      this.getByIdProduct();
+    }, err=>{
+      this.message.error( err.error.message || 'load dữ liệu nhóm sản phẩm thất bại!')
+    })
   }
 
-  onselectProductGroup(id:TDSSafeAny){
-    
+  updateForm(){
+    let form = this.editForm.controls
+    form.Name.setValue(this.dataProduct.Name);
+    form.CategId.setValue(this.dataProduct.Categ.Id);
+    form.UOMId.setValue(this.dataProduct.UOM.Id);
+    form.PriceVariant.setValue(this.dataProduct.LstPrice);
   }
 
-  onselectProductUnit(id:TDSSafeAny){
-
-  }
 
   onSubmit() {
       if (!this.editForm.invalid) {
@@ -118,7 +121,55 @@ export class ProductVariantEditTableModalComponent implements OnInit {
       this.modal.destroy(null);
   }
 
-  save() {
-      this.onSubmit();
+  getImageArray(ev: TDSSafeAny){
+
+  }
+
+  prepareModel() {
+    let formModel = this.editForm.value
+    if(formModel.Name){
+      this.dataProduct.Name = formModel.Name
+    }
+    if (formModel.Categ) {
+      let modelCateg = this.listProductCategory.find(x => x.Id == formModel.Categ)
+      if (modelCateg) {
+        this.dataProduct.Categ = modelCateg;
+        this.dataProduct.CategId = modelCateg.Id;
+      }
+    } else {
+      this.dataProduct.CategId = this.dataProduct.Categ.Id;
+    }
+    if (formModel.UOMId) {
+      let modelUOM = this.listProductUOM.find(x => x.Id == formModel.UOMId)
+      if (modelUOM) {
+        this.dataProduct.UOM = modelUOM;
+        this.dataProduct.UOMId = modelUOM.Id;
+      }
+    } else {
+      this.dataProduct.UOMId = this.dataProduct.UOM.Id;
+    }
+    if(formModel.PriceVariant){
+      this.dataProduct.PriceVariant = formModel.PriceVariant;
+    }
+    this.dataProduct.UOMPOId = this.dataProduct.UOMPO.Id;
+
+    console.log(this.dataProduct)
+    return this.dataProduct
+  }
+  onSave() {
+    let model = this.prepareModel();
+
+    if (!model.Name) {
+      this.message.error('Vui lòng nhập tên sản phẩm');
+    } else {
+      let data = JSON.stringify(model)
+      this.productService.updateProduct(this.productId, data).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        this.message.success('Cập nhật thành công!');
+        this.createForm();
+        this.modal.destroy(true)
+      }, error => {
+        this.message.error('Thao tác thất bại!');
+      });
+    }
   }
 }

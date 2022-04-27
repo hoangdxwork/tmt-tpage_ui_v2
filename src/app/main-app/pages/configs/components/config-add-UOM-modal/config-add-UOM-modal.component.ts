@@ -1,21 +1,26 @@
-import { filter } from 'rxjs/operators';
-import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { ProductTemplateService } from './../../../../services/product-template.service';
+import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { Component, OnInit, Input } from '@angular/core';
-import { TDSSafeAny, TDSUploadFile, TDSMessageService, TDSUploadChangeParam, TDSModalRef } from 'tmt-tang-ui';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { TDSMessageService, TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
 
 @Component({
   selector: 'app-config-add-uom-modal',
   templateUrl: './config-add-uom-modal.component.html',
   styleUrls: ['./config-add-uom-modal.component.scss']
 })
-export class ConfigAddUOMModalComponent implements OnInit {
-  addmanufacturerForm!:FormGroup;
+export class ConfigAddUOMModalComponent implements OnInit, OnDestroy {
+  @Input() type!:string;
+
+  addUOMForm!:FormGroup;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private modal: TDSModalRef, 
-    private msg: TDSMessageService, 
-    private http: HttpClient, 
+    private message: TDSMessageService,
+    private productTemplate:ProductTemplateService,
     private formBuilder: FormBuilder
   ) { 
     this.initForm();
@@ -24,31 +29,55 @@ export class ConfigAddUOMModalComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   initForm(){
-    this.addmanufacturerForm = this.formBuilder.group({
-      manufacturerName: new FormControl('', [Validators.required]),
-      manufacturerCode: new FormControl('', [Validators.required]),
-      address: new FormControl('', [Validators.required]),
-      phone: new FormControl('', [Validators.required]),
-      email: new FormControl(''),
-      note: new FormControl(''),
+    this.addUOMForm = this.formBuilder.group({
+      Address: [null],
+      Code: [null],
+      Email: [null],
+      Name: [null,Validators.required],
+      Note: [null],
+      Phone: [null],
+      Type: [null]
     });
   }
 
-  resetForm(){
-    this.addmanufacturerForm.reset({
-      manufacturerName: '',
-      manufacturerCode: '',
-      address: '',
-      phone: '',
-      email: '',
-      note:''
-    });
+  prepareModel() {
+    let formModel = this.addUOMForm.value;
+    let model = {
+      Address: formModel.Address,
+      Code: formModel.Code,
+      Email: formModel.Email,
+      Name: formModel.Name,
+      Note: formModel.Note,
+      Phone: formModel.Phone,
+      Type: this.type
+    };
+
+    return model;
   }
 
   onSubmit() {
-    if (!this.addmanufacturerForm.invalid) {
-      this.modal.destroy(this.addmanufacturerForm);
+    if (!this.addUOMForm.invalid) {
+      if(this.type){
+        let model = this.prepareModel();
+        this.productTemplate.insertPartnerExt(model).pipe(takeUntil(this.destroy$)).subscribe(
+          (res:TDSSafeAny)=>{
+            this.message.success('Thêm thành công');
+            this.modal.destroy(model);
+            this.addUOMForm.reset();
+          },
+          err=>{
+            this.message.error(err.error.message??'Thêm thất bại');
+          }
+        )
+      }else{
+        this.message.error('Chưa xác định type');
+      }
     }
   }
 

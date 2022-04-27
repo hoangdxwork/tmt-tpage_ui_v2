@@ -15,6 +15,7 @@ import {
   TDSInputModule,
   TDSMenuModule,
   TDSMessageModule,
+  TDSMessageService,
   TDSSelectModule
 } from 'tmt-tang-ui';
 
@@ -39,11 +40,17 @@ import { PipeModule } from './shared/pipe/pipe.module';
     TDSInputModule,
     TDSAvatarModule,
     TDSDropDownModule,
-    TDSMessageModule ,
+    TDSMessageModule,
     PipeModule
   ],
   providers:[
-    // TAuthGuardService
+    //SignalRConnectionService,
+    // {
+    //     provide: APP_INITIALIZER,
+    //     useFactory: (signalrService: SignalRConnectionService) => () => signalrService.initiateSignalRConnection(),
+    //     deps: [SignalRConnectionService],
+    //     multi: true,
+    // }
   ]
 })
 export class MainAppModule { }

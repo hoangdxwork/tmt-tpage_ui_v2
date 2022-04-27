@@ -69,7 +69,7 @@ export class TAuthInterceptorService implements HttpInterceptor {
 
                     TGlobalConfig.Authen.refreshTokenInProgress = true;
                     TGlobalConfig.Authen.refreshTokenSubject.next(null);
-                    that.auth.refreshToken(TGlobalConfig.Authen.token)
+                    that.auth.refreshToken(this.auth.getAccessToken())
                     .subscribe((data) => {
                         TGlobalConfig.Authen.refreshTokenInProgress = false;
                         TGlobalConfig.Authen.refreshTokenSubject.next(data);
@@ -90,15 +90,16 @@ export class TAuthInterceptorService implements HttpInterceptor {
         }));
     }
     addAuthenticationToken = (req: HttpRequest<any>): HttpRequest<any> => {
-        if (TDSHelperObject.hasValue(TGlobalConfig.Authen)
-            && TDSHelperObject.hasValue(TGlobalConfig.Authen.token)
-            && TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.access_token)
+        let accessToken =this.auth.getAccessToken();
+        if (TDSHelperObject.hasValue(this.auth.isLogin())
+            && TDSHelperObject.hasValue(accessToken)
+            && TDSHelperString.hasValueString(accessToken?.access_token)
         ) {
             
             req = req.clone({
                 setHeaders:
                 {
-                    Authorization: "Bearer " + TGlobalConfig.Authen.token?.access_token,
+                    Authorization: "Bearer " + accessToken?.access_token,
                 }
             });
 

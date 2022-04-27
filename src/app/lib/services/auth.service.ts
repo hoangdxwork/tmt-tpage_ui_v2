@@ -1,6 +1,6 @@
 import { HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
@@ -16,6 +16,9 @@ import { TGlobalConfig } from './global-config';
 })
 export class TAuthService {
     private readonly __keyBearerToken = 'TpageBearerToken';
+    private _accessToken!: TTokenDTO;
+    private readonly authenObs = new Subject<boolean>();
+    private _isLogin: boolean = false;
     constructor(
         private apiService: TCommonService,
         private cacheService: THelperCacheService
@@ -37,49 +40,7 @@ export class TAuthService {
                     return this.setCacheToken(data);
                 })
             );
-        // .subscribe((res: TDSSafeAny) => {
-        //     if (TDSHelperObject.hasValue(res)) {
-        //         that.signInSuccess(res).subscribe(
-        //             s => {
-        //                 obs.next(true);
-        //                 obs.complete();
-        //             },
-        //             f => {
-        //                 obs.error(f);
-        //                 obs.complete();
-        //             }
-        //         )
-        //     }
-        // }, f => {
-        //     obs.error(f);
-        //     obs.complete();
-        // });
-        // return new Observable(obs => {
-        //   let data = new URLSearchParams();
-        //     data.set("client_id", "tmtWebApp");
-        //     data.set("grant_type", "password");
-        //     data.set("username", username);
-        //     data.set("password", password);
-        //     data.set("scope", "profile");
-        //     that.apiService.connect(TApiMethodType.post, environment.apiApp + environment.apiAccount.signInPassword, data,
-        //         this.apiService.getHeaderJSon(false, true), false).subscribe((res: TDSSafeAny) => {
-        //             if (TDSHelperObject.hasValue(res)) {
-        //                 that.signInSuccess(res).subscribe(
-        //                     s => {
-        //                         obs.next(true);
-        //                         obs.complete();
-        //                     },
-        //                     f => {
-        //                         obs.error(f);
-        //                         obs.complete();
-        //                     }
-        //                 )
-        //             }
-        //         }, f => {
-        //             obs.error(f);
-        //             obs.complete();
-        //         });
-        // });
+
     }
 
     //Thực thi việc lấy thông tin userInit
@@ -103,65 +64,23 @@ export class TAuthService {
                     return that.setCacheToken(data);
                 })
             )
-        // .subscribe(data => {
-        //     if (TDSHelperObject.hasValue(data)) {
-        //         that.setCacheToken(data as TTokenDTO).subscribe(() => {
-        //             observer.next(data);
-        //             observer.complete();
-        //         }, err => {
-        //             that.clearToken("auth refreshTokenOnServer")
-        //             observer.next(null);
-        //             observer.complete();
-        //         }
-        //         );
-        //     } else {
-        //         that.clearToken("auth refreshTokenOnServer")
-        //         observer.next(null);
-        //         observer.complete();
-        //     }
-        // }, error => {
-        //     observer.error(error);
-        //     observer.complete()
-        // });
 
     }
     //Thực thi get token vào cache theo function đã được định nghĩa trong authen.service.xxxx.ts
     getCacheToken(): Observable<TDSSafeAny> {
         return this.cacheService.getItem(this.__keyBearerToken)
-        .pipe(map((ops: TDSSafeAny) => {
-            let  token: TTokenDTO | null = null ;
-            if (TDSHelperObject.hasValue(ops)) {
-                token = JSON.parse(ops.value).value;
-            }
-            TGlobalConfig.Authen.token = token;
-            TGlobalConfig.Authen.isLogin = (TDSHelperObject.hasValue(token) &&
-            TDSHelperString.hasValueString(token?.access_token));
-            return of(token)
-        }))
+            .pipe(map((ops: TDSSafeAny) => {
+                let token: TTokenDTO | null = null;
+                if (TDSHelperObject.hasValue(ops)) {
+                    token = JSON.parse(ops.value).value;
+                }
+                this.setAccessToken(token);
+                this.updateIsLogin((TDSHelperObject.hasValue(token) &&
+                    TDSHelperString.hasValueString(token?.access_token)));
+                return token
+            }));
 
-        // return new Observable(obs => {
-        //     let token: TTokenDTO;
-        //     this.cacheService.getItem(this.__keyBearerToken)
-        //         .pipe(map((ops: TDSSafeAny) => {
-        //             if (TDSHelperObject.hasValue(ops)) {
-        //                 token = JSON.parse(ops.value).value;
-        //             }
-        //             TGlobalConfig.Authen.token = token;
-        //             TGlobalConfig.Authen.isLogin = (TDSHelperObject.hasValue(token) &&
-        //             TDSHelperString.hasValueString(token.access_token));
-        //             return of(token)
-        //         }))
-        //         // .subscribe(ops => {
-        //         //     if (TDSHelperObject.hasValue(ops)) {
-        //         //         token = JSON.parse(ops.value).value;
-        //         //     }
-        //         //     TGlobalConfig.Authen.token = token;
-        //         //     TGlobalConfig.Authen.isLogin = (TDSHelperObject.hasValue(token) &&
-        //         //         TDSHelperString.hasValueString(token.access_token));
-        //         //     obs.next(token);
-        //         //     obs.complete();
-        //         // });
-        // });
+
     }
     //Thực thi set token vào cache theo function đã được định nghĩa trong authen.service.xxxx.ts
     setCacheToken(token: TTokenDTO): Observable<TDSSafeAny> {
@@ -174,36 +93,24 @@ export class TAuthService {
     //Thực thi xóa cache token và toàn bộ dữ liệu
     clearToken(logString: string = "auth clearToken"): void {
         this.cacheService.clear().subscribe(f => {
-            TGlobalConfig.Authen.isLogin = false;
-            TGlobalConfig.Authen.token = null;
+            this.updateIsLogin(false);
+            this.setAccessToken(null);
+            this.authenObs.next(false);
         });
     }
-    //Thực thi thiết lập mật khẩu người dùng
-    // setPassword(params: TDSSafeAny): Observable<TDSSafeAny> {
-    //     if (TDSHelperObject.hasValue(TCoreFunction.setPassword)) {
-    //         return TCoreFunction.setPassword(params);
-    //     } else {
-    //         throw "setPassword no implement";
-    //     }
-    // }
-    //Thực thi thay đổi mật khẩu người dùng
-    // changePassword(params: TDSSafeAny): Observable<TDSSafeAny> {
-    //     if (TDSHelperObject.hasValue(TCoreFunction.changePassword)) {
-    //         return TCoreFunction.changePassword(params);
-    //     } else {
-    //         throw "changePassword no implement";
-    //     }
-    // }
+
     //Thực thi add authen token
     addAuthenticationToken(req: HttpRequest<TDSSafeAny>): HttpRequest<TDSSafeAny> {
-        if (TDSHelperObject.hasValue(TGlobalConfig.Authen)
-            && TDSHelperObject.hasValue(TGlobalConfig.Authen.token)
-            && TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.access_token)
+
+        let accessToken = this.getAccessToken();
+        if (TDSHelperObject.hasValue(this._isLogin)
+            && TDSHelperObject.hasValue(accessToken)
+            && TDSHelperString.hasValueString(accessToken?.access_token)
         ) {
             req = req.clone({
                 setHeaders:
                 {
-                    Authorization: "Bearer " + TGlobalConfig.Authen.token?.access_token,
+                    Authorization: "Bearer " + accessToken.access_token,
                 }
             });
         }
@@ -215,25 +122,27 @@ export class TAuthService {
         that.clearToken();
         that.redirectLogin(urlLogin);
     }
-    // private signInSuccess(token: TTokenDTO) {
-    //     let that = this;
-    //     return new Observable(obs => {
-    //         that.setCacheToken(token).subscribe(s => {
-    //             TGlobalConfig.Authen.isLogin = true;
-    //             that.apiService.resetData();
-    //             obs.next(true);
-    //             obs.complete();
-    //         }, f => {
-    //             obs.error(f);
-    //             obs.complete();
-    //         }
-    //         )
-    //     });
-    // }
+
 
     redirectLogin(urlLogin: string = environment.urlLogin) {
         setTimeout(() => {
             window.location.href = urlLogin;
         }, 1);
     };
+    getAuthenIsLogin() {
+        return this.authenObs.asObservable();
+    }
+    getAccessToken() {
+        return this._accessToken;
+    }
+    isLogin() {
+        return this._isLogin;
+    }
+    private updateIsLogin(isLogin: boolean) {
+        this._isLogin = isLogin;
+        this.authenObs.next(isLogin);
+    }
+    private setAccessToken(token: TDSSafeAny) {
+        this._accessToken = token;
+    }
 }
