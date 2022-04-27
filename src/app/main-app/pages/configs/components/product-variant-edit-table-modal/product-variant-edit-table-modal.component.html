@@ -4,7 +4,7 @@
         <form [formGroup]="editForm" autocomplete="off" (ngSubmit)="onSubmit()">
             <div class="flex flex-col w-full">
                 <div class="mb-4">
-                    <tds-avatar class="rounded-lg" [shape]="'square'" [size]="88" [tdsSrc]="uploadUrl" [isAvatar]="false"></tds-avatar>
+                    <tpage-upload-avatar class="rounded-lg" (getResult)="getUrl($event)" [size]="88" [imageUrl]="editForm.value?.ImageUrl"></tpage-upload-avatar>
                 </div>
                 <tds-form-field class="mb-4">
                     <tds-label>Tên sản phẩm:</tds-label>
@@ -48,7 +48,7 @@
     </tds-tab>
     <tds-tab title="Hình ảnh">
         <div class="w-full">
-            <tpage-upload-images (getResult)="getImageArray($event)"></tpage-upload-images>
+            <tpage-upload-images [showName]="false" [inputImages]="imageList" (getResult)="getImageArray($event)"></tpage-upload-images>
         </div>
     </tds-tab>
     </tds-tabset>

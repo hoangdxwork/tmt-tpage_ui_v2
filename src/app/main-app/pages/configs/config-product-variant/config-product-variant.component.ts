@@ -1,6 +1,6 @@
+import { ProductDTO } from './../../../dto/product/product.dto';
 import { ExcelExportService } from './../../../services/excel-export.service';
 import { ProductService } from './../../../services/product.service';
-import { ProductDTOV2, ODataProductDTOV2 } from './../../../dto/product/odata-product.dto';
 import { switchMap, finalize } from 'rxjs/operators';
 import { OdataProductService } from './../../../services/mock-odata/odata-product.service';
 import { CRMTeamService } from './../../../services/crm-team.service';
@@ -11,6 +11,7 @@ import { Subject, Observable, fromEvent } from 'rxjs';
 import { Router } from '@angular/router';
 import { TDSSafeAny, TDSHelperString, TDSMessageService, TDSModalService, TDSHelperObject, TDSTableQueryParams } from 'tmt-tang-ui';
 import { Component, OnInit, ViewEncapsulation, ViewContainerRef, ElementRef, ViewChild } from '@angular/core';
+import { ODataProductDTO } from 'src/app/main-app/dto/configs/product/config-odata-product.dto';
 
 @Component({
   selector: 'app-config-product-variant',
@@ -24,7 +25,7 @@ export class ConfigProductVariantComponent implements OnInit {
   dropdownList: Array<TDSSafeAny> = [];
   setOfCheckedId = new Set<number>();
   listOfCurrentPageData: readonly TDSSafeAny[] = [];
-  listOfDataTableProduct: ProductDTOV2[] = [];
+  listOfDataTableProduct: ProductDTO[] = [];
   pageId!: string;
   pageName!: string;
   currentTeam: TDSSafeAny;
@@ -84,13 +85,13 @@ export class ConfigProductVariantComponent implements OnInit {
         THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex);
         return this.get(params);
       })
-    ).pipe(takeUntil(this.destroy$)).subscribe((res: ODataProductDTOV2) => {
+    ).pipe(takeUntil(this.destroy$)).subscribe((res: ODataProductDTO) => {
       this.count = res['@odata.count'] as number;
       this.listOfDataTableProduct = res.value;
     });
   }
 
-  private get(params: string): Observable<ODataProductDTOV2> {
+  private get(params: string): Observable<ODataProductDTO> {
     this.isLoading = true;
     if (this.selected == 0) {
       return this.odataProductService
@@ -109,9 +110,8 @@ export class ConfigProductVariantComponent implements OnInit {
     THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters):
     THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
     if (pageId) {
-      this.odataProductService.getProductOnFacebookPage(params, pageId).pipe(takeUntil(this.destroy$)).subscribe((res: ODataProductDTOV2) => {
+      this.odataProductService.getProductOnFacebookPage(params, pageId).pipe(takeUntil(this.destroy$)).subscribe((res: ODataProductDTO) => {
         this.listOfDataTableProduct = res.value
-        console.log(res.value)
         this.count = res['@odata.count'] as number
         this.isLoading = false;
       }, error => {
@@ -119,9 +119,8 @@ export class ConfigProductVariantComponent implements OnInit {
         this.message.error(error.error.message ?? 'Tải dữ liệu thất bại!');
       });
     } else {
-      this.odataProductService.getView(params).pipe(takeUntil(this.destroy$)).subscribe((res: ODataProductDTOV2) => {
+      this.odataProductService.getView(params).pipe(takeUntil(this.destroy$)).subscribe((res: ODataProductDTO) => {
         this.listOfDataTableProduct = res.value
-        console.log(res.value)
         this.count = res['@odata.count'] as number
         this.isLoading = false;
       }, error => {
@@ -326,7 +325,7 @@ export class ConfigProductVariantComponent implements OnInit {
       onOk: () => {
         this.productService.delete_product(key).pipe(takeUntil(this.destroy$)).subscribe(res=>{
           this.message.success('Xóa sản phẩm thành công!')
-          this.getLoadData();
+          this.onSelectChange(this.selected);
           return
         },err=>{
           this.message.error(err.error.message || 'Xóa thất bại đã có lỗi xảy ra!')
