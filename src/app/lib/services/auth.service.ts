@@ -40,7 +40,7 @@ export class TAuthService {
                     return this.setCacheToken(data);
                 })
             );
-      
+
     }
 
     //Thực thi việc lấy thông tin userInit
@@ -64,7 +64,7 @@ export class TAuthService {
                     return that.setCacheToken(data);
                 })
             )
-        
+
     }
     //Thực thi get token vào cache theo function đã được định nghĩa trong authen.service.xxxx.ts
     getCacheToken(): Observable<TDSSafeAny> {
@@ -73,7 +73,7 @@ export class TAuthService {
                 let token: TTokenDTO | null = null;
                 if (TDSHelperObject.hasValue(ops)) {
                     token = JSON.parse(ops.value).value;
-                }                              
+                }
                 this.setAccessToken(token);
                 this.updateIsLogin((TDSHelperObject.hasValue(token) &&
                     TDSHelperString.hasValueString(token?.access_token)));
@@ -101,7 +101,7 @@ export class TAuthService {
 
     //Thực thi add authen token
     addAuthenticationToken(req: HttpRequest<TDSSafeAny>): HttpRequest<TDSSafeAny> {
-        
+
         let accessToken = this.getAccessToken();
         if (TDSHelperObject.hasValue(this._isLogin)
             && TDSHelperObject.hasValue(accessToken)

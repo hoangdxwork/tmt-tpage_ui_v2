@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MainAppRoutingModule } from './main-app-routing.module';
@@ -15,11 +15,11 @@ import {
   TDSInputModule,
   TDSMenuModule,
   TDSMessageModule,
+  TDSMessageService,
   TDSSelectModule
 } from 'tmt-tang-ui';
 
 import { PipeModule } from './shared/pipe/pipe.module';
-import { SignalRConnectionService } from './services/signalR/signalR-connection.service';
 
 @NgModule({
   declarations: [
@@ -40,18 +40,17 @@ import { SignalRConnectionService } from './services/signalR/signalR-connection.
     TDSInputModule,
     TDSAvatarModule,
     TDSDropDownModule,
-    TDSMessageModule ,
+    TDSMessageModule,
     PipeModule
   ],
   providers:[
-
-    SignalRConnectionService,
-    {
-        provide: APP_INITIALIZER,
-        useFactory: (signalrService: SignalRConnectionService) => () => signalrService.initiateSignalRConnection(),
-        deps: [SignalRConnectionService],
-        multi: true,
-    }
+    //SignalRConnectionService,
+    // {
+    //     provide: APP_INITIALIZER,
+    //     useFactory: (signalrService: SignalRConnectionService) => () => signalrService.initiateSignalRConnection(),
+    //     deps: [SignalRConnectionService],
+    //     multi: true,
+    // }
   ]
 })
 export class MainAppModule { }

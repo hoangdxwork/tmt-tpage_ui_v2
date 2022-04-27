@@ -15,7 +15,7 @@ export class TDSConversationsComponent implements OnInit {
   @Input() tdsHeader?: string | TemplateRef<void>;
 
   inputValue?: string;
-  
+
   listsfieldListAll: any = {
     id: 2,
     name: 'Nguyen Binh',
@@ -62,12 +62,12 @@ export class TDSConversationsComponent implements OnInit {
     },
   ]
 
-  constructor(private modalService: TDSModalService, 
+  constructor(private modalService: TDSModalService,
               private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
     setTimeout(() => {
-      
+
     }, 2000);
     this.showImageStore()
   }
@@ -78,19 +78,19 @@ export class TDSConversationsComponent implements OnInit {
 
   onClickDropdown(e: MouseEvent) {
     e.stopPropagation();
-  } 
+  }
 
   showImageStore(): void {
-    const modal = this.modalService.create({
-        title: 'Kho hình ảnh',
-        content: ModalImageStoreComponent,
-        size: "xl",
-        centered: true,
-        viewContainerRef: this.viewContainerRef,      
-        componentParams: {
-            // data: this.person
-        }
-    });
+    // const modal = this.modalService.create({
+    //     title: 'Kho hình ảnh',
+    //     content: ModalImageStoreComponent,
+    //     size: "xl",
+    //     centered: true,
+    //     viewContainerRef: this.viewContainerRef,
+    //     componentParams: {
+    //         // data: this.person
+    //     }
+    // });
     // modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
     // Return a result when closed
     // modal.afterClose.subscribe(result => {

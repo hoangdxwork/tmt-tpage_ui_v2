@@ -8,10 +8,13 @@ import { TCommonService } from "../../../lib";
 })
 
 export abstract class BaseSignalRSevice {
-    protected get _BASE_URL() {
+    protected get _SIGNALR_URL() {
         return environment.signalR;
     };
 
-    constructor(public libCommon: TCommonService) { }
+    protected get _SIGNALR_APPENDER() {
+        return environment.signalRAppend;
+    };
 
+    constructor(public libCommon: TCommonService) { }
 }

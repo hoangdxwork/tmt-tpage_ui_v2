@@ -1,18 +1,35 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FacebookGraphMessageDTO } from 'src/app/main-app/dto/conversation/message.dto';
+import { Observable, Subject } from 'rxjs';
+import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
+import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
-import { TDSSafeAny } from 'tmt-tang-ui';
+import { TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
 
 @Component({
-  selector: 'app-conversation-all',
-  templateUrl: './conversation-all.component.html',
-  styleUrls: ['./conversation-all.component.scss']
+    selector: 'app-conversation-all',
+    templateUrl: './conversation-all.component.html',
+    styleUrls: ['./conversation-all.component.scss']
 })
-export class ConversationAllComponent extends TpageBaseComponent {
-  // Đơn hàng 
+
+export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
+
+  isLoading: boolean = false;
+  dataSource$!: Observable<any>;
+  private destroy$ = new Subject();
+
+  constructor(private message: TDSMessageService,
+      private conversationDataFacade: ConversationDataFacade,
+      public crmService: CRMTeamService,
+      public activatedRoute: ActivatedRoute,
+      public router: Router) {
+
+      super(crmService, activatedRoute, router);
+  }
+
+  // Đơn hàng
   name = new FormControl('', [Validators.required]);
   phoneNumber = new FormControl('', [Validators.required, Validators.pattern(/^[0-9]{10}$/i)]);
   email = new FormControl('', [Validators.required, Validators.email]);
@@ -72,80 +89,72 @@ export class ConversationAllComponent extends TpageBaseComponent {
   ]
   // search
   inputValue?: string;
-  // Đơn hàng
-// table đơn hàng
-listOfData = [
-  {
-    id: '1',
-    name: '[SP0748] Gạo (Bao)',
-    color: 'text-info-500',
-    text: 'Ghi chú',
-    icon: '',
-    style:'not-italic',
-  }, 
-  {
-    id: '2',
-    name: '[SP0748] Gạo (Bao)',
-    color: 'text-neutral-1-400',
-    text: 'Ghi chú sản phẩm',
-    icon: 'tdsi-edit-line',
-    style:'italic',
-  },
-  {
-    id: '3',
-    name: '[SP0748] Gạo (Bao)',
-    color: 'text-info-500',
-    text: 'Ghi chú',
-    icon: '',
-    style:'not-italic',
-  }, 
-  {
-    id: '4',
-    name: '[SP0748] Gạo (Bao)',
-    color: 'text-info-500',
-    text: 'Ghi chú',
-    icon: '',
-    style:'not-italic',
-  }, 
-  {
-    id: '5',
-    name: '[SP0748] Gạo (Bao)',
-    color: 'text-neutral-1-400',
-    text: 'Ghi chú sản phẩm',
-    icon: 'tdsi-edit-line',
-    style:'italic',
-  },
-  {
-    id: '6',
-    name: '[SP0748] Gạo (Bao)',
-    color: 'text-info-500',
-    text: 'Ghi chú',
-    icon: '',
-    style:'not-italic',
-  },    
-];
+    // Đơn hàng
+  // table đơn hàng
+  listOfData = [
+    {
+      id: '1',
+      name: '[SP0748] Gạo (Bao)',
+      color: 'text-info-500',
+      text: 'Ghi chú',
+      icon: '',
+      style:'not-italic',
+    },
+    {
+      id: '2',
+      name: '[SP0748] Gạo (Bao)',
+      color: 'text-neutral-1-400',
+      text: 'Ghi chú sản phẩm',
+      icon: 'tdsi-edit-line',
+      style:'italic',
+    },
+    {
+      id: '3',
+      name: '[SP0748] Gạo (Bao)',
+      color: 'text-info-500',
+      text: 'Ghi chú',
+      icon: '',
+      style:'not-italic',
+    },
+    {
+      id: '4',
+      name: '[SP0748] Gạo (Bao)',
+      color: 'text-info-500',
+      text: 'Ghi chú',
+      icon: '',
+      style:'not-italic',
+    },
+    {
+      id: '5',
+      name: '[SP0748] Gạo (Bao)',
+      color: 'text-neutral-1-400',
+      text: 'Ghi chú sản phẩm',
+      icon: 'tdsi-edit-line',
+      style:'italic',
+    },
+    {
+      id: '6',
+      name: '[SP0748] Gạo (Bao)',
+      color: 'text-info-500',
+      text: 'Ghi chú',
+      icon: '',
+      style:'not-italic',
+    },
+  ];
 
-editNoteProduct: string | null = null;
-startEdit(id: string): void {
-  this.editNoteProduct = id;
-}
+  editNoteProduct: string | null = null;
+  startEdit(id: string): void {
+    this.editNoteProduct = id;
+  }
 
-stopEdit(): void {
-  this.editNoteProduct = null;
-}
-// 
+  stopEdit(): void {
+    this.editNoteProduct = null;
+  }
+  //
   listData: Array<TDSSafeAny> = []
-
-  constructor(public crmService: CRMTeamService, 
-              public activatedRoute: ActivatedRoute, 
-              public router: Router,private fb: FormBuilder) {
-    super(crmService, activatedRoute, router);
-    this.type ="all"
-  }
-  onInit(): void {
-    console.log("onInit")
-    this.listData = this.getData();
-  }
+  // onInit(): void {
+  //   this.listData = this.getData();
+  // }
   getData() {
     return [
       {
@@ -377,10 +386,35 @@ stopEdit(): void {
         "CreatedBy": null
       }
     ];
-  } 
+  }
 // dropdown-customer
   log(str: any){
     console.log(str)
   }
 
+  onInit() {
+    this.type = "all";
+    let team = this.currentTeam || {} as CRMTeamDTO;
+    let params = this.paramsUrl || {} as any;
+
+    // if((team && team.Id && team.Facebook_PageId) && (params && params.psid)) {
+        this.onChangeConversation(team, '4194616297242897');
+    // }
+
+    this.addQueryParams({ psid:'4194616297242897' });
+  }
+
+  onChangeConversation(team: any, psid: string) {
+      this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
+
+      this.dataSource$.subscribe(data => {})
+  }
+
+  ngAfterViewInit(): void {
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }
