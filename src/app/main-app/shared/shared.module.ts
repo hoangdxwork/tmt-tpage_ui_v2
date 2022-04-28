@@ -49,8 +49,8 @@ const cmp =[
 const SERVICES = [
   ProductIndexDBService,
   SuggestAddressService,
-    SharedService,
-    ImageFacade
+  SharedService,
+  ImageFacade
 ]
 
 @NgModule({
@@ -80,7 +80,7 @@ const SERVICES = [
     TDSTypographyModule,
     TDSSpinnerModule,
     TDSTabsModule,
-    PipeModule
+    PipeModule,
   ],
   exports:[
    ...cmp

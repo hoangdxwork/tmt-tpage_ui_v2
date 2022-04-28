@@ -2,14 +2,17 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FormsModule } from '@angular/forms';
-import { TDSOutletModule, TDSAvatarModule, TDSButtonModule, TDSToolTipModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSSelectModule, TDSBadgeModule, TDSModalModule} from 'tmt-tang-ui';
+import { TDSOutletModule, TDSAvatarModule, TDSButtonModule, TDSToolTipModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSSelectModule, TDSBadgeModule, TDSModalModule, TDSSpinnerModule} from 'tmt-tang-ui';
 import { TDSConversationsComponent } from './tds-conversations.component';
 import { TDSConversationItemComponent } from './tds-conversation-item';
-
+import { PickerModule } from '@ctrl/ngx-emoji-mart';
+import { TDSPopoverModule } from 'tmt-tang-ui';
+import { IconEmojiMartComponent } from '../emoji-mart/icon-emoji-mart.component';
 
 const CMP =[
   TDSConversationsComponent,
-  TDSConversationItemComponent
+  TDSConversationItemComponent,
+  IconEmojiMartComponent
 ]
 
 @NgModule({
@@ -29,10 +32,14 @@ const CMP =[
     TDSInputModule,
     TDSSelectModule,
     TDSBadgeModule,
-    TDSModalModule
+    TDSModalModule,
+    TDSSpinnerModule,
+    PickerModule,
+    TDSPopoverModule
   ],
   exports:[
     ...CMP
   ]
 })
+
 export class TDSConversationsModule { }

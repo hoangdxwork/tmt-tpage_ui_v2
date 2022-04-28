@@ -60,7 +60,7 @@ export class ConversationDataFacade extends BaseSevice implements OnInit, OnDest
   getConversation(pageId: any, type: string): Observable<any> {
     let exist = this.fbState.get(pageId, type);
     if (exist) {
-        this.dataSource$ = Observable.create((obs :any) => {debugger
+        this.dataSource$ = Observable.create((obs :any) => {
             obs.next(exist);
             obs.complete();
         });
@@ -71,7 +71,7 @@ export class ConversationDataFacade extends BaseSevice implements OnInit, OnDest
         if(create) {
           return this.fbState.setConversation(pageId, type, create);
         }
-      }));
+      }), shareReplay());
     }
     return this.dataSource$;
   }
