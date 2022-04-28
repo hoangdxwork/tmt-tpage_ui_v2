@@ -43,12 +43,14 @@
       </div>
       <!--keyTags thêm trong mục binh luận-->
       <div class="flex justify-end flex-col gap-2">
-        <div class="flex gap-1 items-center" *ngIf="item.tags">
-          <div *ngFor="let tag of item.tags | slice:0:2" [ngStyle]="{'background-color': [tag.color_class] }" class="py-0.5 px-1 text-caption-2 font-regular text-neutral-1-900 rounded">
-              <tds-badge status="success" [text]="tag.name"></tds-badge>
-          </div>
-          <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded" *ngIf="item.tags && item.tags.length - 2 > 0" title="Xem thêm">
-            +{{item.tags.length - 2}}
+        <div class="flex gap-1 items-center">
+          <div *ngIf="item.tags">
+              <div *ngFor="let tag of item.tags | slice:0:2" [ngStyle]="{'background-color': [tag.color_class] }" class="py-0.5 px-1 text-caption-2 font-regular text-neutral-1-900 rounded">
+                  <tds-badge status="success" [text]="tag.name"></tds-badge>
+              </div>
+              <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded" *ngIf="item.tags && item.tags.length - 2 > 0" title="Xem thêm">
+                +{{item.tags.length - 2}}
+              </div>
           </div>
           <div class="draft-message text-danger font-z10 tmr-t13" *ngIf="item.assigned_to">
               <tds-avatar class="bg-accent-4  text-white" size="sm"

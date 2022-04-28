@@ -1,12 +1,18 @@
 <div class="w-full h-full text-neutral-1-900 dark:text-d-neutral-1-900 relative overflow-hidden flex flex-col">
     <div class="w-full dark">
+
         <tds-header urlLogoText='assets/images/tpos-text.svg'>
             <div class="inline-flex tds-header-toolbar-right items-center">
-
+                <!-- Không có kết nối singalr -->
+                <button tds-button color="primary" (click)="onSave()"
+                   *ngIf="!_connectionEstablished || !isNetwork" title="Kết nối realtime thất bại.">
+                    <span class="flex items-center">
+                        <i class="tdsi-wifi-warning-fill text-lg"></i>
+                    </span>
+                </button>
                 <div>
                     <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)"></tpage-team-dropdown>
                 </div>
-
                 <button tds-flat-button-icon size="md" class="ml-2 mr-4">
                     <span class="flex items-center">
                         <i class="tdsi-bell-line text-xl leading-5"></i>
@@ -48,8 +54,6 @@
                     </tds-dropdown-menu>
                 </div>
             </div>
-
-
         </tds-header>
     </div>
     <div class="w-full h-full flex-auto flex overflow-hidden">

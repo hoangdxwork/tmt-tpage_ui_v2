@@ -49,7 +49,6 @@ export class TpageAvatarFacebookComponent implements OnInit {
   buildUrl(id: string, token: string){
     if(TDSHelperString.hasValueString(id) && TDSHelperString.hasValueString(token)){
         let url = `https://graph.facebook.com/${id}/picture?type=large&access_token=${token}`;
-
         this.imageFacade.getImage(url)
           .pipe(shareReplay(1))
           .subscribe(res => {

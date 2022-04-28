@@ -29,7 +29,6 @@ export class ConversationService extends BaseSevice implements OnInit {
   prefix: string = "";
   table: string = "";
   baseRestApi: string = "rest/v1.0/crmmatching";
-  _keyCacheCRMMatching: string = "_crmmatching";
 
   constructor(private apiService: TCommonService,
       private sgRConnectionService: SignalRConnectionService) {
@@ -52,12 +51,8 @@ export class ConversationService extends BaseSevice implements OnInit {
           url: `${this._BASE_URL}/${this.baseRestApi}?${queryString}`,
           method: TApiMethodType.get
       }
-      return this.apiService.getCacheData<CRMMatchingDTO>(api, null, this._keyCacheCRMMatching);
+      return this.apiService.getData<CRMMatchingDTO>(api, null);
     }
-  }
-
-  removeKeyCacheCRMMatching(){
-      this.apiService.removeCacheAPI(this._keyCacheCRMMatching);
   }
 
   getLink(url: string): Observable<any> {

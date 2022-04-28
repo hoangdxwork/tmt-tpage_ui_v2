@@ -154,12 +154,12 @@ export class SignalRConnectionService extends BaseSignalRSevice {
   }
 
   public refreshConnected() {
-      clearTimeout(this.repeatTimeKey);
-      this.initiateSignalRConnection();
+    clearTimeout(this.repeatTimeKey);
+    this.initiateSignalRConnection();
 
-      this.repeatTimeKey = setTimeout(() => {
-        this.initiateSignalRConnection();
-      }, this.retry * 10 * 1000);
+    this.repeatTimeKey = setTimeout(() => {
+      this.initiateSignalRConnection();
+    }, this.retry * 10 * 1000);
   }
 
   private connectionBuilder() {
@@ -168,9 +168,9 @@ export class SignalRConnectionService extends BaseSignalRSevice {
 
     this._hubConnection = hubConnectionBuilder
       .withUrl(`${this._SIGNALR_URL}/hub/` + configs.hubName + this._SIGNALR_APPENDER , {
-          transport: HttpTransportType.WebSockets | HttpTransportType.LongPolling,
+          transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling,
           accessTokenFactory: () => {
-            return configs.token;
+              return configs.token;
           },
           httpClient: new SignalRHttpClient(this.authen) as any,
           skipNegotiation: false

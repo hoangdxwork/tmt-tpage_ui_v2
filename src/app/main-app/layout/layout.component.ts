@@ -1,13 +1,14 @@
 import { APP_INITIALIZER, Component, Injector, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
-import { debounceTime, filter, map, mergeMap, startWith, takeUntil } from 'rxjs/operators';
+import { debounceTime, filter, finalize, map, mergeMap, startWith, take, takeUntil } from 'rxjs/operators';
 import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { environment } from 'src/environments/environment';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMenuDTO, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMenuDTO, TDSMessageService, TDSModalRef, TDSModalService, TDSSafeAny } from 'tmt-tang-ui';
 import { CRMTeamDTO } from '../dto/team/team.dto';
 import { CRMTeamService } from '../services/crm-team.service';
 import { TPageHelperService } from '../services/helper.service';
+import { NetworkHelper } from '../services/signalR/network.helper';
 import { SignalRConnectionService } from '../services/signalR/signalR-connection.service';
 
 @Component({
@@ -24,10 +25,16 @@ export class LayoutComponent implements OnInit {
   inlineCollapsed = false;
   params!: TDSSafeAny;
   private destroy$ = new Subject<void>();
+  isNetwork: boolean = false;
+  disabledSignalRConnect = false;
+  _connectionEstablished: boolean = false;
 
   constructor(private auth: TAuthService,
       private signalRConnectionService: SignalRConnectionService,
       public crmService: CRMTeamService,
+      private modalService: TDSModalService,
+      // private modal: TDSModalRef,
+      private message: TDSMessageService,
       private activatedRoute: ActivatedRoute,
       private router: Router) {
 
@@ -52,6 +59,13 @@ export class LayoutComponent implements OnInit {
   ngOnInit(): void {
     //TODO: Khoi tao signalR
     this.signalRConnectionService.initiateSignalRConnection();
+    this.signalRConnectionService._connectionEstablished$.subscribe((res: any) => {
+        this._connectionEstablished = res;
+    });
+
+    NetworkHelper.checkNetwork().subscribe(isNetwork => {
+        this.isNetwork = isNetwork;
+    });
 
     this.crmService.onChangeTeam().subscribe(res => {
       this.lstMenu = this.setMenu(res);
@@ -62,11 +76,11 @@ export class LayoutComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe(res => {
       this.params = res;
     });
-
   }
+
   onSelectShopChange(event: TDSSafeAny) {
-
   }
+
   onLogout() {
     this.auth.logout(environment.urlLogin)
   }
@@ -210,6 +224,7 @@ export class LayoutComponent implements OnInit {
       this.userInit = res || {};
     })
   }
+
   onClickTeam(data: CRMTeamDTO) {
     if (this.params?.teamId) {
       let url = this.router.url.split("?")[0];
@@ -219,6 +234,39 @@ export class LayoutComponent implements OnInit {
     } else {
       this.crmService.onUpdateTeam(data);
     }
+  }
+
+  onSave() {
+    this.modalService.info({
+      title: 'Kết nối realtime',
+      content: 'Thử kết nối lại',
+      onOk: () => { this.onConnectSginalR() },
+      onCancel:()=> {},
+      okText:"Kết nối",
+      cancelText:"Hủy",
+      confirmViewType: "compact",
+    });
+  }
+
+  onConnectSginalR(): any {
+    if(!this.isNetwork) {
+        return this.message.error("Không có kết nối mạng");
+    }
+
+    this.disabledSignalRConnect = true;
+    this.signalRConnectionService.refreshConnected();
+
+    this.signalRConnectionService._connectionEstablished$.pipe(take(1))
+      .pipe(finalize(() => {this.disabledSignalRConnect = false }))
+      .subscribe((res: any) => {
+        if(res == true) {
+            this.message.success("Kết nối thành công");
+        } else {
+            this.message.error("Kết nối thất bại");
+        }
+      }, error =>{
+        this.message.error("Lỗi server");
+    });
   }
 
 }
