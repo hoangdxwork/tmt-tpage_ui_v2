@@ -1,10 +1,8 @@
 import { ODataProductInventoryDTO } from './../dto/configs/product/config-odata-product.dto';
-import { EventEmitter, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tmt-tang-ui";
-import { PagedList2 } from "../dto/pagedlist2.dto";
-import { ProductTemplateDTO } from "../dto/product/product.dto";
 import { ProductTemplateV2DTO } from "../dto/producttemplate/product-tempalte.dto";
 import { BaseSevice } from "./base.service";
 
@@ -35,8 +33,7 @@ export class ProductTemplateService extends BaseSevice {
 
   getProductTemplateById(key: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})?$expand=UOM,UOMCateg,Categ,UOMPO,POSCateg,Taxes,SupplierTaxes,Product_Teams,Images,
-      UOMView,Distributor,Importer,Producer,OriginCountry,ProductVariants($expand%3DUOM,Categ,UOMPO,POSCateg,AttributeValues)`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})?$expand=UOM,UOMCateg,Categ,UOMPO,POSCateg,Images,UOMView,Distributor,Importer,Producer,OriginCountry,ProductVariants($expand%3DUOM,Categ,UOMPO,POSCateg,AttributeValues)`,
       method: TApiMethodType.get,
     }
 
@@ -86,6 +83,15 @@ export class ProductTemplateService extends BaseSevice {
     }
 
     return this.apiService.getData<ODataProductInventoryDTO>(api,data);
+  }
+
+  getProductAttributeValue(): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/odata/ProductAttributeValue?$format=json&$count=true`,
+      method: TApiMethodType.get,
+    }
+  
+    return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   getProductUOM():Observable<TDSSafeAny> {
@@ -141,10 +147,19 @@ export class ProductTemplateService extends BaseSevice {
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
-
+  // ko get được images
   insertProductTemplate(data:TDSSafeAny):Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertV2`,
+      method: TApiMethodType.post,
+      }
+  
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  updateProductTemplate(data:TDSSafeAny) :Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.UpdateV2`,
       method: TApiMethodType.post,
       }
   

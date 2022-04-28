@@ -34,7 +34,7 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
   constructor(
     private modalService: TDSModalService, 
     private viewContainerRef: ViewContainerRef,
-    private configService: TDSConfigService,
+    // private configService: TDSConfigService,
     private message: TDSMessageService,
     private odataTagService:OdataCRMTagService,
     private tagService:CRMTagService) { }
@@ -45,7 +45,7 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
   }
 
   ngOnInit(): void {
-    this.configService.set('message',{maxStack:1});
+    // this.configService.set('message',{maxStack:1});
   }
 
   ngAfterViewInit(): void {
@@ -56,7 +56,6 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
       // TODO: switchMap xử lý trường hợp sub in sub
       switchMap((text: TDSSafeAny) => {
         this.pageIndex = 1;
-
         this.filterObj.searchText = text;
 
         let filters;
@@ -67,7 +66,7 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
         let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
         return this.getViewData(params);
       })
-    ).subscribe((res: any) => {
+    ).subscribe((res: ODataCRMTagDTO) => {
         this.count = res['@odata.count'] as number;
         this.lstOfData = res.value;
     });
@@ -131,8 +130,14 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
         iconType:'tdsi-trash-fill',
         onOk: () => {
           this.tagService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe(
-            (data)=>{
+            (res)=>{
               this.message.success('Xóa thành công');
+              if(this.lstOfData.length <= 1){
+                this.pageIndex = 1;
+                this.filterObj.searchText = '';
+                this.filterText.nativeElement.value = '';
+                this.loadData(this.pageSize,this.pageIndex);
+              }
               this.loadData(this.pageSize,this.pageIndex);
             },
             err=>{
@@ -149,22 +154,28 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
   }
 
   updateStatus(data:CRMTagDTO){
-    this.tagService.updateStatus(data.Id).pipe(takeUntil(this.destroy$)).subscribe(
-      (data)=>{
+    this.changeStatus(data).subscribe(
+      (res)=>{
+        let index = this.lstOfData.findIndex(x=>x.Id === data.Id);
+        if(index > -1){
+          this.lstOfData[index].IsDeleted = !data.IsDeleted;
+        }
         this.message.success('Cập nhật trạng thái thành công');
-        this.loadData(this.pageSize,this.pageIndex);
       },
       (err)=>{
-        this.message.error(err.error.message);
+        this.message.error(err.error.message??'Cập nhật thất bại');
       }
     );
   }
 
-  doFilter(event:TDSSafeAny){
-    this.filterObj = {
-      searchText: event.value
-    }
-    this.loadData(this.pageSize,this.pageIndex);
+  changeStatus(data:CRMTagDTO){
+    this.isLoading = true;
+    return this.tagService.updateStatus(data.Id).pipe(takeUntil(this.destroy$))
+      .pipe(finalize(
+        () => { 
+          this.isLoading = false; 
+        }
+      ));
   }
 
   showCreateModal(){
@@ -180,6 +191,9 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
           field:'DateCreated',
           dir: SortEnum.desc
         }
+        this.pageIndex = 1;
+        this.filterText.nativeElement.value = '';
+        this.filterObj.searchText = '';
         this.loadData(this.pageSize,this.pageIndex,undefined,[sortByDate]);
       }
     });

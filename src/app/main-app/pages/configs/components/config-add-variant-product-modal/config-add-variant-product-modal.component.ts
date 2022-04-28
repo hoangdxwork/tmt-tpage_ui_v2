@@ -1,3 +1,4 @@
+import { ProductTemplateService } from './../../../../services/product-template.service';
 import { Subject } from 'rxjs';
 import { SharedService } from './../../../../services/shared.service';
 import { takeUntil } from 'rxjs/operators';
@@ -11,9 +12,12 @@ import { TDSSafeAny, TDSMessageService, TDSModalRef } from 'tmt-tang-ui';
   styleUrls: ['./config-add-variant-product-modal.component.scss']
 })
 export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy {
-  @Input() name!:string;
+  @Input() data!:TDSSafeAny;
 
   productTypeList:Array<TDSSafeAny> = [];
+  attributeValueList:Array<TDSSafeAny> = [];
+  attributeList:Array<TDSSafeAny> = [];
+  valueList:Array<TDSSafeAny> = [];
   addProductVariantForm!:FormGroup;
   private destroy$ = new Subject<void>();
   modelDefault:TDSSafeAny;
@@ -22,23 +26,32 @@ export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy 
     private modal: TDSModalRef, 
     private message: TDSMessageService, 
     private sharedService: SharedService,
+    private productTemplateService: ProductTemplateService,
     private formBuilder: FormBuilder
   ) { 
       this.initForm();
       this.loadProductTypeList();
+      this.loadProductAttributeValue();
   }
 
   ngOnInit(): void {
+    this.addProductVariantForm.controls.Barcode.setValue(this.data.Barcode);
+    this.addProductVariantForm.controls.DefaultCode.setValue(this.data.DefaultCode);
+
     this.modelDefault = {
-      Name:this.name,
-      Active: false,
-      AttributeValues: '',
+      Active: true,
+      AttributeLines:{
+        Attribute:null,
+        Values:[]
+      },
+      AttributeValues:[],
       Barcode: '',
       DefaultCode: '',
       Image: null,
+      ImageUrl:null,
       ListPrice: 0,
-      PurchaseOK: false,
-      SaleOK: false,
+      PurchaseOK: true,
+      SaleOK: true,
       Type: 'product'
     }
   }
@@ -51,15 +64,16 @@ export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy 
 
   initForm(){
     this.addProductVariantForm = this.formBuilder.group({
-      Name: [null],
       Image: [null],
-      SaleOK: [false],
-      PurchaseOK: [false],
-      Active: [false],
+      ImageUrl: [null],
+      SaleOK: [true],
+      PurchaseOK: [true],
+      Active: [true],
       Type: ['product'],
       DefaultCode: [null],
       Barcode: [null],
-      AttributeValues: [null,Validators.required],
+      Attributes: [null,Validators.required],
+      Values: [[],Validators.required],
       ListPrice: [0],
     });
   }
@@ -70,6 +84,31 @@ export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy 
       { value: 'consu', text: 'Có thể tiêu thụ' },
       { value: 'service', text: 'Dịch vụ' }
     ];
+  }
+
+  loadProductAttributeValue(){
+    return this.productTemplateService.getProductAttributeValue().pipe(takeUntil(this.destroy$)).subscribe(
+      (res:TDSSafeAny)=>{
+        this.attributeValueList = res.value;
+        this.attributeList = [];
+        this.attributeValueList.forEach(item=>{
+          let existedIndex = this.attributeList.findIndex(f=>f.AttributeId === item.AttributeId);
+          
+          if(existedIndex == -1){
+            this.attributeList.push(item);
+          }
+        });
+      },
+      err=>{
+        this.message.error(err.error.message??'Tải dữ liệu biến thể thất bại');
+      }
+    )
+  }
+
+  onSelectAttribute(attributeId:TDSSafeAny){
+    this.valueList = [];
+    this.addProductVariantForm.controls.Values.reset(null);
+    this.valueList = this.attributeValueList.filter(f=>f.AttributeId == attributeId);
   }
 
   onSelectFile(item: TDSSafeAny) {
@@ -109,6 +148,9 @@ export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy 
     if(formModel.Image) {
       this.modelDefault.Image = formModel.Image;
     }
+    if(formModel.ImageUrl) {
+      this.modelDefault.ImageUrl = formModel.ImageUrl;
+    }
     if(formModel.SaleOK) {
         this.modelDefault.SaleOK = formModel.SaleOK;
     }
@@ -130,8 +172,34 @@ export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy 
     if(formModel.Barcode) {
       this.modelDefault.Barcode = formModel.Barcode;
     }
-    if(formModel.AttributeValues) {
-      this.modelDefault.AttributeValues = formModel.AttributeValues;
+    if(formModel.Attributes && formModel.Values) {      
+      let attributeId = this.addProductVariantForm.controls.Attributes.value;
+      let valueIdList = this.addProductVariantForm.controls.Values.value as Array<TDSSafeAny>;
+      
+      let valuesList = this.attributeValueList.filter(f=> valueIdList.includes(f.Id));
+      this.modelDefault.AttributeValues = valuesList;
+
+      let values:TDSSafeAny[] = [];
+      valuesList.forEach(value => {
+        values.push({
+          Id: value.Id,
+          Name: value.Name,
+          NameGet: value.NameGet,
+          PriceExtra: value.PriceExtra,
+          Sequence: value.Sequence
+        })
+      });
+      
+      let attributes = this.attributeValueList.find(f=> f.AttributeId == attributeId);
+
+      this.modelDefault.AttributeLines = {
+        Attribute: {
+          AttributeId: attributes.AttributeId,
+          AttributeName: attributes.AttributeName,
+          Code: attributes.Code
+        },
+        Values: values
+      };
     }
 
     return this.modelDefault;
@@ -140,6 +208,7 @@ export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy 
   onSubmit() {
     if (!this.addProductVariantForm.invalid) {
       let model = this.prepareModel();
+      
       this.modal.destroy(model);
       this.addProductVariantForm.reset();
     }

@@ -1,3 +1,4 @@
+import { ProductDTO, ProductTemplateDTO } from './../../../../dto/product/product.dto';
 import { ProductTemplateService } from './../../../../services/product-template.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { ODataStokeMoveDTO, ODataProductInventoryDTO } from './../../../../dto/configs/product/config-odata-product.dto';
@@ -8,7 +9,6 @@ import { TDSMessageService, TDSTableQueryParams } from 'tmt-tang-ui';
 import { FormBuilder } from '@angular/forms';
 import { ConfigProductInventoryDTO } from '../../../../dto/configs/product/config-inventory.dto';
 import { ConfigStockMoveDTO } from './../../../../dto/configs/product/config-warehouse.dto';
-import { ConfigProductTemplateDTO } from './../../../../dto/configs/product/config-product.dto';
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
@@ -17,7 +17,7 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
   styleUrls: ['./config-product-details.component.scss']
 })
 export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
-  @Input() productTemplate!: ConfigProductTemplateDTO;
+  @Input() productTemplate!: ProductTemplateDTO;
 
   stockMoveData:Array<ConfigStockMoveDTO> = [];
   productInventoryData: Array<ConfigProductInventoryDTO> = [];
@@ -42,6 +42,7 @@ export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    console.log(this.productTemplate)
     this.getStockMoveProduct(this.pageSize_stockMove,this.pageIndex_stockMove);
     this.getProductInventory(this.pageSize_productInventory,this.pageIndex_productInventory);
   }

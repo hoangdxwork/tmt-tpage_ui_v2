@@ -1,10 +1,9 @@
+import { ProductTemplateDTO } from './../../../dto/product/product.dto';
 import { OdataProductService } from './../../../services/mock-odata/odata-product.service';
 import { CRMTeamService } from './../../../services/crm-team.service';
 import { ProductVariantEditTableModalComponent } from './../components/product-variant-edit-table-modal/product-variant-edit-table-modal.component';
-import { ConfigProductTemplateDTO } from './../../../dto/configs/product/config-product.dto';
 import { takeUntil } from 'rxjs/operators';
 import { ODataProductTemplateDTO } from './../../../dto/configs/product/config-odata-product.dto';
-import { OdataProductTemplateService } from './../../../services/mock-odata/odata-product-template.service';
 import { THelperDataRequest } from './../../../../lib/services/helper-data.service';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
@@ -22,7 +21,7 @@ export class ConfigProductVariantComponent implements OnInit {
   dropdownList:Array<TDSSafeAny> = [];
   setOfCheckedId = new Set<number>();
   listOfCurrentPageData: readonly TDSSafeAny[] = [];
-  listOfDataTableProduct: ConfigProductTemplateDTO[] = [];
+  listOfDataTableProduct: ProductTemplateDTO[] = [];
   pageId!: string;
   pageName!: string;
   currentTeam: TDSSafeAny;

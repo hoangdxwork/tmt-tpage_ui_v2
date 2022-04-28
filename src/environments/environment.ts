@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   urlLogin:'/account/login',
+  // apiApp:"https://admin.tpos.vn",
   apiApp:"https://demoprod01.tpos.vn",
   apiAccount:{
     signInPassword:"/token",

@@ -1,3 +1,4 @@
+import { ProductTemplateDTO } from './../../../dto/product/product.dto';
 import { ColumnTableDTO } from './../../partner/components/config-column/config-column-partner.component';
 import { THelperCacheService } from './../../../../lib/utility/helper-cache';
 import { FilterDataRequestDTO, SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
@@ -8,8 +9,7 @@ import { OdataProductTemplateService } from './../../../services/mock-odata/odat
 import { TagProductTemplateService } from '../../../services/tag-product-template.service';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { TagDTO } from './../../../dto/tag/tag.dto';
-import { ODataProductTemplateDTO, ODataProductTagDTO } from './../../../dto/configs/product/config-odata-product.dto';
-import { ConfigProductTemplateDTO } from '../../../dto/configs/product/config-product.dto';
+import { ODataProductTagDTO, ODataProductTemplateDTO } from './../../../dto/configs/product/config-odata-product.dto';
 import { Subject, Observable, fromEvent } from 'rxjs';
 import { takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { THelperDataRequest } from './../../../../lib/services/helper-data.service';
@@ -26,14 +26,14 @@ import { SortEnum } from 'src/app/lib';
 })
 export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('viewChildProductTable') parentElement!: ElementRef;
-  @ViewChild('innerText') innerText!: ElementRef;
+  @ViewChild('filterText') filterText!: ElementRef;
 
-  lstOfData:Array<ConfigProductTemplateDTO> = [];
+  lstOfData:Array<ProductTemplateDTO> = [];
   private destroy$ = new Subject<void>();
   
   expandSet = new Set<number>();
   setOfCheckedId = new Set<number>();
-  listOfCurrentPageData: readonly ConfigProductTemplateDTO[] = [];
+  listOfCurrentPageData: readonly ProductTemplateDTO[] = [];
   columnList:Array<ColumnTableDTO> = [
     {isChecked:true, value:'ImageUrl',name:'Ảnh'},
     {isChecked:true, value: 'DefaultCode', name: 'Mã SP'},
@@ -92,7 +92,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
         this.parentElement.nativeElement.click()
       });
 
-    fromEvent(this.innerText.nativeElement, 'keyup').pipe(
+    fromEvent(this.filterText.nativeElement, 'keyup').pipe(
       map((event: any) => { return event.target.value }),
       debounceTime(750),
       distinctUntilChanged(),
@@ -265,14 +265,6 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
-  doFilter(event:TDSSafeAny){
-    let keyFilter = event.value as string;
-    this.filterObj = {
-      searchText:  TDSHelperString.stripSpecialChars(keyFilter.trim())
-    }
-    this.loadData(this.pageSize,this.pageIndex);
-  }
-
   updateCheckedSet(id: number, checked: boolean): void {
     if (checked) {
       this.setOfCheckedId.add(id);
@@ -354,7 +346,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     this.indeterminate = false;
     this.setOfCheckedId = new Set<number>();
 
-    this.innerText.nativeElement.value = '';
+    this.filterText.nativeElement.value = '';
     this.filterObj = {
       searchText: ''
     }
@@ -362,11 +354,11 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     this.loadData(this.pageSize, this.pageIndex);
   }
 
-  showEditModal(data:ConfigProductTemplateDTO){
+  showEditModal(data:ProductTemplateDTO){
     this.router.navigateByUrl(`/configs/products/edit/${data.Id}`);
   }
 
-  showRemoveModal(data:ConfigProductTemplateDTO){
+  showRemoveModal(data:ProductTemplateDTO){
     const modal = this.modalService.error({
         title: 'Xác nhận xóa sản phẩm',
         content: 'Bạn có chắc muốn xóa sản phẩm này không?',
@@ -377,7 +369,12 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
           this.productTemplateService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe(
             (res:TDSSafeAny)=>{
               this.message.success('Xóa thành công');
-              this.loadData(this.pageSize,this.pageIndex)
+              if(this.lstOfData.length <= 1){
+                this.pageIndex = 1;
+                this.filterObj.searchText = '';
+                this.filterText.nativeElement.value = '';
+              }
+              this.loadData(this.pageSize,this.pageIndex);
             },
             err=>{
               this.message.error(err.error.message??'Xóa thất bại');

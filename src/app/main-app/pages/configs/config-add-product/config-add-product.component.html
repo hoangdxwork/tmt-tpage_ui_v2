@@ -118,7 +118,7 @@
                                   </tds-error>
                                 </tds-form-field>
 
-                                <tds-label>Đơn vị mặc định:</tds-label>
+                                <tds-label>Đơn vị mặc định<span class="text-error-400">*</span> :</tds-label>
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị'
                                   disabledField="isActive" formControlName="UOMPO"
@@ -129,7 +129,7 @@
                                   </tds-error>
                                 </tds-form-field>
 
-                                <tds-label>Đơn vị mua:</tds-label>
+                                <tds-label>Đơn vị mua<span class="text-error-400">*</span> :</tds-label>
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị'
                                   disabledField="isActive" formControlName="UOM"
@@ -204,63 +204,122 @@
                           </div>
                         </tds-tab>
                         <tds-tab title="Biến thể">
-                            <div class="border border-neutral-2-200 rounded-md">
+                            <div>
                               <div class="flex items-center justify-end w-full py-2.5 px-4">
                                 <button tds-button color="primary" type="button" (click)="showAddVariantModal()">
                                   <span class="flex items-center">
                                     <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
-                                    <span class="text-body-2 font-semibold">Thêm biến thể</span>
+                                    <span class="text-body-2 font-semibold">Thêm thuộc tính</span>
                                   </span>
                                 </button>
                               </div>
-                              <div *ngIf="variantTableData.length > 0" class="w-full h-full pb-3">
-                                <tds-table 
-                                  [listData]="variantTableData"
-                                  [showSizeChanger]="true" 
-                                  [frontPagination]="false"
-                                  [loading]="isLoadingVariant"
-                                  [pageSize]="variantPageSize"
-                                  [pageIndex]="variantPageIndex"
-                                  [total]="count"
-                                  (clickRefresh)="refreshVariantData()">
-                                  <thead>
-                                        <tr>
-                                              <th [width]="'80px'">STT</th>
-                                              <th>Tên</th>
-                                              <th>Giá</th>
-                                              <th>Hoạt động</th>
-                                              <th>Thao tác</th>
-                                        </tr>
-                                  </thead>
-                                  <tbody>
-                                      <ng-template ngFor let-data let-i="index" [ngForOf]="variantTableData" >
-                                          <tr>
-                                              <td>{{ i+1 }}</td>
-                                              <td>{{ data.Name }} ({{data.AttributeValues}})</td>
-                                              <td>
-                                                <div class="border border-neutral-2-200 rounded bg-white">
-                                                  <input tdsInput type="number" [value]="data.ListPrice" [min]="0" [step]="1" class="text-neutral-1-900 text-body-2 font-regular"/>
-                                                </div>
-                                              </td>
-                                              <td>
-                                                <tds-switch [checked]="data.Active"></tds-switch>
-                                              </td>
-                                              <td>
-                                                <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2">
-                                                  <span class="flex items-center">
-                                                    <i class="tdsi-edit-fill text-xl leading-none"></i>
-                                                  </span>
-                                                </button>
-                                                <button tds-button-icon color="secondary" type="button" size="sm">
-                                                    <span class="flex items-center">
-                                                      <i class="tdsi-trash-fill text-xl leading-none"></i>
-                                                    </span>
-                                                </button>
-                                              </td>
-                                          </tr>
-                                      </ng-template>
-                                  </tbody>
-                              </tds-table>
+                              <div class="flex flex-row w-full pb-3">
+                                <div *ngIf="AttributeTableData.length > 0" class="w-1/2 pb-3 mr-6">
+                                  <div class="w-full p-3">
+                                    <span class="text-neutral-1-900 text-body-2 font-semibold">Danh sách thuộc tính</span>
+                                  </div>
+                                  <div>
+                                    <tds-table 
+                                      [listData]="AttributeTableData"
+                                      [showSizeChanger]="true" 
+                                      [frontPagination]="false"
+                                      [loading]="isLoadingVariant"
+                                      [pageSize]="variantPageSize"
+                                      [pageIndex]="variantPageIndex"
+                                      [total]="count"
+                                      (clickRefresh)="refreshVariantData()">
+                                      <thead>
+                                            <tr>
+                                                  <th [width]="'80px'">STT</th>
+                                                  <th>Thuộc tính</th>
+                                                  <th>Giá trị</th>
+                                                  <th>Thao tác</th>
+                                            </tr>
+                                      </thead>
+                                      <tbody>
+                                          <ng-template ngFor let-data let-i="index" [ngForOf]="AttributeTableData" >
+                                              <tr>
+                                                  <td>{{ i+1 }}</td>
+                                                  <td>{{data.Attribute.AttributeName}}</td>
+                                                  <td>
+                                                    <div *ngFor="let item of data.Values" class="flex flex-wrap">
+                                                      <tds-tag mode="checkable" size="sm" class="mr-2">
+                                                        {{item.NameGet}}
+                                                      </tds-tag>
+                                                    </div>
+                                                  </td>
+                                                  <td>
+                                                    <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2">
+                                                      <span class="flex items-center">
+                                                        <i class="tdsi-edit-fill text-xl leading-none"></i>
+                                                      </span>
+                                                    </button>
+                                                    <button tds-button-icon color="secondary" type="button" size="sm">
+                                                        <span class="flex items-center">
+                                                          <i class="tdsi-trash-fill text-xl leading-none"></i>
+                                                        </span>
+                                                    </button>
+                                                  </td>
+                                              </tr>
+                                          </ng-template>
+                                      </tbody>
+                                  </tds-table>
+                                  </div>
+                                </div>
+                                <div *ngIf="variantTableData.length > 0" class="w-1/2 pb-3">
+                                  <div class="w-full p-3">
+                                    <span class="text-neutral-1-900 text-body-2 font-semibold">Danh sách biến thể</span>
+                                  </div>
+                                  <div>
+                                    <tds-table 
+                                      [listData]="variantTableData"
+                                      [showSizeChanger]="true" 
+                                      [frontPagination]="false"
+                                      [loading]="isLoadingVariant"
+                                      [pageSize]="variantPageSize"
+                                      [pageIndex]="variantPageIndex"
+                                      [total]="count"
+                                      (clickRefresh)="refreshVariantData()">
+                                      <thead>
+                                            <tr>
+                                                  <th [width]="'80px'">STT</th>
+                                                  <th>Tên</th>
+                                                  <th>Giá</th>
+                                                  <th>Hoạt động</th>
+                                                  <th>Thao tác</th>
+                                            </tr>
+                                      </thead>
+                                      <tbody>
+                                          <ng-template ngFor let-data let-i="index" [ngForOf]="variantTableData" >
+                                              <tr>
+                                                  <td>{{ i+1 }}</td>
+                                                  <td>{{data.Name}}</td>
+                                                  <td>
+                                                    <div class="border border-neutral-2-200 rounded bg-white">
+                                                      <input tdsInput type="number" [value]="data.ListPrice" [min]="0" [step]="1" class="text-neutral-1-900 text-body-2 font-regular"/>
+                                                    </div>
+                                                  </td>
+                                                  <td>
+                                                    <tds-switch [checked]="data.Active"></tds-switch>
+                                                  </td>
+                                                  <td>
+                                                    <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2">
+                                                      <span class="flex items-center">
+                                                        <i class="tdsi-edit-fill text-xl leading-none"></i>
+                                                      </span>
+                                                    </button>
+                                                    <button tds-button-icon color="secondary" type="button" size="sm">
+                                                        <span class="flex items-center">
+                                                          <i class="tdsi-trash-fill text-xl leading-none"></i>
+                                                        </span>
+                                                    </button>
+                                                  </td>
+                                              </tr>
+                                          </ng-template>
+                                      </tbody>
+                                  </tds-table>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                         </tds-tab>
