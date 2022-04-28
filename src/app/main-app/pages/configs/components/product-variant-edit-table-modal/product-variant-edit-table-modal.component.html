@@ -4,12 +4,11 @@
         <form [formGroup]="editForm" autocomplete="off" (ngSubmit)="onSubmit()">
             <div class="flex flex-col w-full">
                 <div class="mb-4">
-                    <img tds-image width="80px" height="80px" 
-                       [src]="uploadUrl" />
+                    <tpage-upload-avatar class="rounded-lg" (getResult)="getUrl($event)" [size]="88" [imageUrl]="editForm.value?.ImageUrl"></tpage-upload-avatar>
                 </div>
                 <tds-form-field class="mb-4">
                     <tds-label>Tên sản phẩm:</tds-label>
-                    <input tdsInput formControlName="name" placeholder="Nhập tên sản phẩm" class="text-neutral-1-900 text-body-2 font-regular"/>
+                    <input tdsInput formControlName="Name" placeholder="Nhập tên sản phẩm" class="text-neutral-1-900 text-body-2 font-regular"/>
                     <tds-error>
                         Vui lòng nhập tên sản phẩm
                     </tds-error>
@@ -18,9 +17,8 @@
                 <tds-form-field class="mb-4">
                     <tds-label>Nhóm sản phẩm:</tds-label>
                     <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm sản phẩm'
-                        disabledField="isActive" formControlName="categoryId"
-                        [data]="listProductCategory" [allowClear]="true"
-                        (selectChange)="onselectProductGroup($event)">
+                        disabledField="isActive" formControlName="CategId"
+                        [data]="listProductCategory" [allowClear]="true">
                     </tds-select>
                     <tds-error>
                         Vui lòng chọn nhóm sản phẩm
@@ -31,8 +29,7 @@
                     <tds-label>Đơn vị mua:</tds-label>
                     <tds-select valueField="Id" textField="Name" placeholder='Chọn đơn vị mua'
                         disabledField="isActive" formControlName="UOMId"
-                        [data]="listProductUOM" [allowClear]="true"
-                        (selectChange)="onselectProductUnit($event)">
+                        [data]="listProductUOM" [allowClear]="true">
                     </tds-select>
                     <tds-error>
                         Vui lòng chọn đơn vị mua
@@ -41,7 +38,7 @@
 
                 <tds-form-field>
                     <tds-label>Giá biến thể:</tds-label>
-                    <tds-input-number formControlName="productPrice" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                    <tds-input-number formControlName="PriceVariant" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                     <tds-error>
                         Vui lòng nhập giá biến thể
                     </tds-error>
@@ -51,28 +48,7 @@
     </tds-tab>
     <tds-tab title="Hình ảnh">
         <div class="w-full">
-            <tds-upload
-                listType="picture-card" 
-                [(fileList)]="imageList"
-                [preview]="handlePreview" 
-                [download]="handleDownload"
-                [customRequest]="handleUpload"
-                class="rounded-lg flex flex-wrap">
-                                    
-                <div class="w-full text-neutral-1-300">
-                    <div class="flex items-center justify-center" >
-                        <span class="tdsi-images-fill text-xl leading-5"></span>
-                    </div>
-                    <div class="mt-2 text-body-2 font-regular">Upload</div>
-                </div>
-            </tds-upload>
-            
-            <tds-modal [visible]="previewVisible" [content]="modalContent" 
-                [footer]="null" (onCancel)="previewVisible = false">
-                <ng-template #modalContent>
-                    <img [src]="previewImage" [ngStyle]="{ width: '100%' }" />
-                </ng-template>
-            </tds-modal>
+            <tpage-upload-images [showName]="false" [inputImages]="imageList" (getResult)="getImageArray($event)"></tpage-upload-images>
         </div>
     </tds-tab>
     </tds-tabset>

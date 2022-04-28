@@ -164,6 +164,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
 
   getById(){
     if (this.valueEditId) {
+      this.isLoading = true
       this.quickReplyService.getById(this.valueEditId).pipe(takeUntil(this.destroy$)).subscribe((res) => {
         {
           this.valueEdit = res;
@@ -171,6 +172,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
         }
       },
         err => {
+          this.isLoading = false
           this.message.error('Load dữ liệu thất bại');
         })
     }
@@ -226,6 +228,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
         this.addPage(element);
       });
     }
+    this.isLoading = false
 
   }
 
@@ -263,7 +266,6 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
       }
       case true:
         {
-          // return !this.formQuickReply.valid
           if (this.templateType == 'generic') {
             return !this.formQuickReply.valid || !this.createMessageForm?.valid || !this.isValidButton(this.buttonFormList)
           }
@@ -287,6 +289,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
   onChangeRadio(radio: boolean) {
     this.formQuickReply.controls.advancedTemplateRadio.setValue(radio)
     this.mediaForm = []
+    this.createImageForm.controls.image.setValue('')
     this.onResetMessageFrom();
   }
 
@@ -294,6 +297,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
     this.templateType = data;
     this.messageStructurePart = 1;
     this.onResetMessageFrom();
+    this.createImageForm.controls.image.setValue('')
     this.mediaForm = []
 
   }
@@ -312,13 +316,6 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
     )
   }
 
-  onInputMessageTitle(event: TDSSafeAny) {
-
-  }
-
-  onInputMessageContent(event: TDSSafeAny) {
-
-  }
 
   onChangeStructurePart(i: number) {
     this.messageStructurePart = i;
@@ -333,35 +330,8 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
     this.formQuickReply.controls.bodyHtml.setValue(this.formQuickReply.value.bodyHtml.concat(data))
   }
 
-  handleChange(info: TDSUploadChangeParam): void {
-    if (info.file.status === 'done') {
-      this.createImageForm.value.image = info.file.name;
-      this.message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === 'error') {
-      this.createImageForm.value.image = info.file.name;
-      this.message.error(`${info.file.name} file upload failed.`);
-    }
-  }
-
-  handleUpload = (item: any) => {
-    const formData = new FormData();
-
-    formData.append('mediaFile', item.file as any, item.file.name);
-    formData.append('id', '0000000000000051');
-
-    const req = new HttpRequest('POST', this.uploadUrl, formData);
-    return this.http.request(req).pipe(filter(e => e instanceof HttpResponse)).pipe(takeUntil(this.destroy$)).subscribe(
-      (res: TDSSafeAny) => {
-        if (res && res.body) {
-          const data = res.body;
-          item.file.url = data.mediaUrl;
-        }
-        item.onSuccess(item.file);
-      },
-      (err) => {
-        item.onError({ statusText: err.error?.error?.details }, item.file);
-      }
-    )
+  getUrl(ev: string){
+    this.createImageForm.controls.image.setValue(ev)
   }
 
   getMessageFormIndex(name: string) {

@@ -1,7 +1,9 @@
-import { filter } from 'rxjs/operators';
+import { ProductTemplateService } from './../../../../services/product-template.service';
+import { Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { TDSSafeAny, TDSUploadFile, TDSMessageService, TDSUploadChangeParam, TDSModalRef } from 'tmt-tang-ui';
 
 @Component({
@@ -9,13 +11,14 @@ import { TDSSafeAny, TDSUploadFile, TDSMessageService, TDSUploadChangeParam, TDS
   templateUrl: './config-add-origin-country-modal.component.html',
   styleUrls: ['./config-add-origin-country-modal.component.scss']
 })
-export class ConfigAddOriginCountryModalComponent implements OnInit {
-  addMadeInForm!:FormGroup;
+export class ConfigAddOriginCountryModalComponent implements OnInit, OnDestroy {
+  originCountyForm!:FormGroup;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private modal: TDSModalRef, 
-    private msg: TDSMessageService, 
-    private http: HttpClient, 
+    private message: TDSMessageService, 
+    private productTemplateService: ProductTemplateService,
     private formBuilder: FormBuilder
   ) { 
     this.initForm();
@@ -24,25 +27,44 @@ export class ConfigAddOriginCountryModalComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   initForm(){
-    this.addMadeInForm = this.formBuilder.group({
-      nationName: new FormControl('', [Validators.required]),
-      nationCode: new FormControl('', [Validators.required]),
-      note: new FormControl(''),
+    this.originCountyForm = this.formBuilder.group({
+      Code: [null],
+      Name: [null,Validators.required],
+      Note: [null]
     });
   }
 
-  resetForm(){
-    this.addMadeInForm.reset({
-      nationName: '',
-      nationCode: '',
-      note:''
-    });
+  repareModel() {
+    let formModel = this.originCountyForm.value;
+    let model = {
+      Code: formModel.Code,
+      Name: formModel.Name,
+      Note: formModel.Note
+    };
+
+    return model;
   }
 
   onSubmit() {
-    if (!this.addMadeInForm.invalid) {
-      this.modal.destroy(this.addMadeInForm);
+    if (!this.originCountyForm.invalid) {
+      let model = this.repareModel();
+      this.productTemplateService.insertOriginCountry(model).pipe(takeUntil(this.destroy$)).subscribe(
+        (res:TDSSafeAny)=>{
+          this.message.success('Thêm mới thành công');
+          this.modal.destroy(this.originCountyForm);
+          this.originCountyForm.reset();
+        },
+        err=>{ 
+          this.message.error(err.error.message??'Thêm thất bại');
+        }
+      )
+      
     }
   }
 

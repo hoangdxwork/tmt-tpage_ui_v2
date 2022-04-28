@@ -1,5 +1,6 @@
+import { ProductDTO } from './../../../dto/product/product.dto';
+import { ExcelExportService } from './../../../services/excel-export.service';
 import { ProductService } from './../../../services/product.service';
-import { ProductDTOV2, ODataProductDTOV2 } from './../../../dto/product/odata-product.dto';
 import { switchMap, finalize } from 'rxjs/operators';
 import { OdataProductService } from './../../../services/mock-odata/odata-product.service';
 import { CRMTeamService } from './../../../services/crm-team.service';
@@ -10,6 +11,7 @@ import { Subject, Observable, fromEvent } from 'rxjs';
 import { Router } from '@angular/router';
 import { TDSSafeAny, TDSHelperString, TDSMessageService, TDSModalService, TDSHelperObject, TDSTableQueryParams } from 'tmt-tang-ui';
 import { Component, OnInit, ViewEncapsulation, ViewContainerRef, ElementRef, ViewChild } from '@angular/core';
+import { ODataProductDTO } from 'src/app/main-app/dto/configs/product/config-odata-product.dto';
 
 @Component({
   selector: 'app-config-product-variant',
@@ -23,11 +25,12 @@ export class ConfigProductVariantComponent implements OnInit {
   dropdownList: Array<TDSSafeAny> = [];
   setOfCheckedId = new Set<number>();
   listOfCurrentPageData: readonly TDSSafeAny[] = [];
-  listOfDataTableProduct: ProductDTOV2[] = [];
+  listOfDataTableProduct: ProductDTO[] = [];
   pageId!: string;
   pageName!: string;
   currentTeam: TDSSafeAny;
   isLoading = false;
+  isProcessing: boolean = false;
   checked = false;
   indeterminate = false;
   selected: number = 0;
@@ -49,12 +52,12 @@ export class ConfigProductVariantComponent implements OnInit {
     private message: TDSMessageService,
     private teamService: CRMTeamService,
     private productService: ProductService,
-
+    private excelExportService: ExcelExportService,
   ) {}
 
   ngOnInit(): void {
 
-    this.teamService.onChangeTeam().subscribe(data => {
+    this.teamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(data => {
       if (data) {
         this.currentTeam = data;
         this.pageId = data.Facebook_PageId;
@@ -82,13 +85,13 @@ export class ConfigProductVariantComponent implements OnInit {
         THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex);
         return this.get(params);
       })
-    ).subscribe((res: ODataProductDTOV2) => {
+    ).pipe(takeUntil(this.destroy$)).subscribe((res: ODataProductDTO) => {
       this.count = res['@odata.count'] as number;
       this.listOfDataTableProduct = res.value;
     });
   }
 
-  private get(params: string): Observable<ODataProductDTOV2> {
+  private get(params: string): Observable<ODataProductDTO> {
     this.isLoading = true;
     if (this.selected == 0) {
       return this.odataProductService
@@ -107,7 +110,7 @@ export class ConfigProductVariantComponent implements OnInit {
     THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters):
     THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
     if (pageId) {
-      this.odataProductService.getProductOnFacebookPage(params, pageId).pipe(takeUntil(this.destroy$)).subscribe((res: ODataProductDTOV2) => {
+      this.odataProductService.getProductOnFacebookPage(params, pageId).pipe(takeUntil(this.destroy$)).subscribe((res: ODataProductDTO) => {
         this.listOfDataTableProduct = res.value
         this.count = res['@odata.count'] as number
         this.isLoading = false;
@@ -116,7 +119,7 @@ export class ConfigProductVariantComponent implements OnInit {
         this.message.error(error.error.message ?? 'Tải dữ liệu thất bại!');
       });
     } else {
-      this.odataProductService.getView(params).pipe(takeUntil(this.destroy$)).subscribe((res: ODataProductDTOV2) => {
+      this.odataProductService.getView(params).pipe(takeUntil(this.destroy$)).subscribe((res: ODataProductDTO) => {
         this.listOfDataTableProduct = res.value
         this.count = res['@odata.count'] as number
         this.isLoading = false;
@@ -131,7 +134,7 @@ export class ConfigProductVariantComponent implements OnInit {
     if (this.selected == 0) {
       this.loadData(params.pageSize, params.pageIndex);
     }
-    if (this.selected) {
+    if (this.selected == 1) {
       this.loadData(params.pageSize, params.pageIndex, this.pageId);
     }
     this.pageIndex = params.pageIndex;
@@ -148,6 +151,15 @@ export class ConfigProductVariantComponent implements OnInit {
     }
   }
 
+  getLoadData(){
+    if (this.selected == 0) {
+      this.loadData(this.pageSize, this.pageIndex);
+    }
+    if (this.selected == 1) {
+      this.loadData(this.pageSize, this.pageIndex, this.pageId);
+    }
+  }
+
   setActive(type:string,) {
     let array = Array.from(this.setOfCheckedId);
     if(array.length == 0) {
@@ -158,18 +170,18 @@ export class ConfigProductVariantComponent implements OnInit {
         case 'active':
           let dataActive = JSON.stringify({ model: {Active: true,  Ids: array}})
           this.productService.getSetActive(dataActive)
-            .subscribe((res: any) => {
+            .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
                 this.message.success("Đã mở hiệu lực thành công!");
-                this.onSelectChange(this.selected);
+                this.getLoadData();
             });
           break;
 
         case 'unactive':
           let dataUnActive = JSON.stringify({ model: {Active: false,  Ids: array}})
           this.productService.getSetActive(dataUnActive)
-            .subscribe((res: any) => {
-                this.message.success("Hết hiệu lực thành công!");
-                this.onSelectChange(this.selected);
+            .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+                this.message.success("Đã hết hiệu lực!");
+                this.getLoadData();
             });
           break;
 
@@ -195,7 +207,7 @@ export class ConfigProductVariantComponent implements OnInit {
         ProductIds: array,
       }
     })
-    this.productService.checkExitProductOnPageFB(model).subscribe((res: any)=>{
+    this.productService.checkExitProductOnPageFB(model).pipe(takeUntil(this.destroy$)).subscribe((res: any)=>{
       if(res.value.length > 0) {
         let data = JSON.stringify({
           model: {
@@ -203,7 +215,7 @@ export class ConfigProductVariantComponent implements OnInit {
             ProductIds: res.value,
           }
         })
-        this.productService.addProductToFacebookPage(data).subscribe(res=>{
+        this.productService.addProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe(res=>{
           this.message.success("Thao tác thành công");
         });
       } else {
@@ -211,6 +223,27 @@ export class ConfigProductVariantComponent implements OnInit {
       }
     });
   }
+  exportExcel() {
+    if (this.isProcessing) { return }
+    let state = {
+      skip: 0,
+      take: 20,
+      filter: {
+        filters: [],
+        logic: "and",
+      }
+    };
+
+    let data = { data: JSON.stringify(state) }
+
+    let that = this;
+    let callBackFn = () => {
+      that.isProcessing = false;
+    }
+
+    this.excelExportService.exportPost('/Product/ExportProduct', { data: JSON.stringify(data) }, 'bien_the_san_pham_kiem_kho_theo_id');
+  }
+
 
   addNewData(data: TDSSafeAny) {
     this.router.navigate(['/configs/product-variant/create']);
@@ -219,7 +252,7 @@ export class ConfigProductVariantComponent implements OnInit {
   refreshData() {
     this.pageIndex = 1;
     this.filterObj.searchText = '';
-    this.loadData(this.pageSize, this.pageIndex);
+    this.getLoadData();
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -275,15 +308,14 @@ export class ConfigProductVariantComponent implements OnInit {
     modal.afterOpen.subscribe(() => {
 
     });
-    //receive result from modal after close modal
     modal.afterClose.subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
-        //get new changed value here
+      if (result) {
+        this.getLoadData();
       }
     });
   }
 
-  showRemoveModal(i: number) {
+  showRemoveModal(key: number) {
     const modal = this.modalService.error({
       title: 'Xác nhận xóa biến thể sản phẩm',
       content: 'Bạn có chắc muốn xóa biến thể sản phẩm này không?',
@@ -291,8 +323,13 @@ export class ConfigProductVariantComponent implements OnInit {
       okText: "Xác nhận",
       cancelText: "Hủy bỏ",
       onOk: () => {
-        //remove item here
-
+        this.productService.delete_product(key).pipe(takeUntil(this.destroy$)).subscribe(res=>{
+          this.message.success('Xóa sản phẩm thành công!')
+          this.onSelectChange(this.selected);
+          return
+        },err=>{
+          this.message.error(err.error.message || 'Xóa thất bại đã có lỗi xảy ra!')
+        })
       },
       onCancel: () => {
         modal.close();

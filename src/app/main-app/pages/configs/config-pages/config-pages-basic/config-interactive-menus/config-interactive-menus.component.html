@@ -10,7 +10,6 @@
     <div *ngIf="isSelect"
         class="rounded-xl bg-neutral-3-50 flex flex-col px-4 divide-y divide-neutral-2-200">
         <div *ngFor="let item of lstProfileMessages; let index = index" class="flex flex-col gap-y-2 py-5">
-
             <!-- header -->
             <div class="flex gap-x-2 items-center justify-between">
                 <div class="flex gap-x-2 items-center">
@@ -47,10 +46,9 @@
 
             <!-- content -->
             <div *ngIf="item.tabSelected" class="flex flex-col gap-y-2.5">
-                <tds-tabset class="bg-white rounded-xl py-4" [selectedIndex]="item.type == 'web_url' ? 0 : 1">
+                <tds-tabset class="bg-white rounded-xl py-4" [selectedIndex]="item.type == 'web_url' ? 0 : 1" (selectChange)="onSelectChange(index, $event)">
                     <!-- Website -->
-                    <tds-tab [title]="titleTemplateWebsite"
-                        clsContent=" w-full h-full p-4 -mt-px">
+                    <tds-tab [title]="titleTemplateWebsite" clsContent=" w-full h-full p-4 -mt-px">
                         <ng-template #titleTemplateWebsite let-active="active">
                             <div class="pr-2 border-r border-neutral-2-200">
                                 <div class="flex items-center font-semibold cursor-pointer rounded-md text-body-2 px-4 py-2 "
@@ -58,7 +56,6 @@
                                     <span>Website</span>
                                 </div>
                             </div>
-
                         </ng-template>
 
                         <div class="flex flex-col gap-y-2.5">
@@ -68,13 +65,13 @@
                             </tds-form-field>
                             <tds-form-field>
                                 <tds-label>URL</tds-label>
-                                <input tdsInput autocomplete="off" placeholder="Nhập URL" [(ngModel)]="item.url" required='true' />
+                                <input tdsInput autocomplete="off" placeholder="Nhập URL" [(ngModel)]="item.url"
+                                  required="{{item.type == lstType.web_url ? true : false}}" />
                             </tds-form-field>
                         </div>
                     </tds-tab>
                     <!-- Postback -->
-                    <tds-tab [title]="titleTemplatePostback"
-                        clsContent=" w-full h-full p-4 -mt-px">
+                    <tds-tab [title]="titleTemplatePostback" clsContent=" w-full h-full p-4 -mt-px">
                         <ng-template #titleTemplatePostback let-active="active">
                             <div class="pl-2">
                                 <div class="flex items-center font-semibold cursor-pointer rounded-md text-body-2 px-4 py-2"
@@ -90,7 +87,8 @@
                             </tds-form-field>
                             <tds-form-field>
                                 <tds-label>Payload</tds-label>
-                                <input tdsInput autocomplete="off" placeholder="Nhập Payload" [(ngModel)]="item.payload" required='true' />
+                                <input tdsInput autocomplete="off" placeholder="Nhập Payload" [(ngModel)]="item.payload"
+                                  required="{{item.type == lstType.post_back ? true : false}}"/>
                             </tds-form-field>
                         </div>
                     </tds-tab>

@@ -1,11 +1,9 @@
+import { ODataProductDTO } from './../../dto/configs/product/config-odata-product.dto';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperString,  TDSSafeAny } from 'tmt-tang-ui';
-import { ODataCRMTagDTO } from '../../dto/crm-tag/odata-crmtag.dto';
-import { ODataPartnerDTO } from '../../dto/partner/partner.dto';
-import { ODataProductDTOV2 } from '../../dto/product/odata-product.dto';
 import { BaseSevice } from '../base.service';
 
 export interface FilterObjDTO  {
@@ -30,7 +28,7 @@ export class OdataProductService extends BaseSevice {
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<ODataProductDTOV2>(api, null);
+    return this.apiService.getData<ODataProductDTO>(api, null);
   }
 
   getProductOnFacebookPage(params: string, pageId: string): Observable<TDSSafeAny>{
@@ -39,7 +37,7 @@ export class OdataProductService extends BaseSevice {
       method: TApiMethodType.get,
   }
 
-  return this.apiService.getData<ODataProductDTOV2>(api, null);
+  return this.apiService.getData<ODataProductDTO>(api, null);
   }
 
   public buildFilter(filterObj: FilterObjDTO) {

@@ -5,7 +5,7 @@
                 <tds-avatar class="bg-primary-1 text-white" icon="tdsi-box-fill"></tds-avatar>
                 <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">SẢN PHẨM</span>
             </div>
-            <button tds-button color="primary" (click)="showCreateForm($event)">
+            <button tds-button color="primary" (click)="showCreateForm()">
                 <span class="flex items-center">
                   <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
                   <span class="text-body-2 font-semibold">Thêm mới</span>
@@ -50,8 +50,7 @@
               </tds-button-group>
 
               <tds-form-field class="w-2/3 mr-2">
-                  <input tdsInput class="text-neutral-1-900" placeholder="Tìm kiếm sản phẩm" autocomplete="off"
-                  [tdsInputDebounce]="300" (inputKeyup)="doFilter($event)"/>
+                  <input tdsInput class="text-neutral-1-900" placeholder="Tìm kiếm sản phẩm" autocomplete="off" #innerText/>
                   <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
               </tds-form-field>
 
@@ -65,7 +64,7 @@
                   <div class="w-40">
                     <ng-container *ngFor="let item of columnList">
                       <div tds-dropdown-item>
-                        <tds-checkbox [(ngModel)]="item.active" (change)="loadData(pageSize,pageIndex)" class="w-full">{{item.name}}</tds-checkbox>
+                        <tds-checkbox [(ngModel)]="item.isChecked" (change)="onChangeColumn()" class="w-full">{{item.name}}</tds-checkbox>
                       </div>
                     </ng-container>
                   </div>
@@ -104,13 +103,13 @@
                     </tr>
               </thead>
               <tbody>
-                  <ng-template ngFor let-data let-i="index" [ngForOf]="rowSelectionTable.data" let-odd='odd'>
+                  <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd'>
                       <tr class="text-neutral-1-900 text-body-2 font-regular {{setOfCheckedId.has(data.Id) ? 'bg-background-6':''}}">
                           <td [width]="'32px'" [tdsLeft]="true" [expand]="expandSet.has(data.Id)" (expandChange)="onExpandChange(data.Id, $event)"></td>
                           <td [width]="'44px'" [align]="'center'" [tdsLeft]="true" [checked]="setOfCheckedId.has(data.Id)" [disabled]="false"
                               (checkedChange)="onItemChecked(data.Id, $event)"></td>
                           <td *ngIf="!isHiddenColumn('ImageUrl')" [width]="'68px'" [tdsLeft]="true">
-                              <img [src]="data.ImageUrl" class="rounded-lg">
+                              <tds-avatar [tdsSrc]="data.ImageUrl" [size]="44" [isAvatar]="false" class="rounded-lg"></tds-avatar>
                           </td>
                           <td *ngIf="!isHiddenColumn('DefaultCode')" [width]="'192px'" [tdsLeft]="true">{{ data.DefaultCode }}</td>
                           <td *ngIf="!isHiddenColumn('Name')" [width]="'258px'">{{ data.Name }}</td>
@@ -174,12 +173,12 @@
                               </span>
                           </td>
                           <td [width]="'192px'" [align]="'center'"  [tdsRight]="true">
-                              <button tds-button-icon color="secondary" size="sm" class="mr-2" (click)="showEditModal(i)">
+                              <button tds-button-icon color="secondary" size="sm" class="mr-2" (click)="showEditModal(data)">
                                   <span class="flex items-center">
                                     <i class="tdsi-edit-fill text-xl leading-none"></i>
                                   </span>
                               </button>
-                              <button tds-button-icon color="secondary" size="sm" (click)="showRemoveModal(i)">
+                              <button tds-button-icon color="secondary" size="sm" (click)="showRemoveModal(data)">
                                   <span class="flex items-center">
                                     <i class="tdsi-trash-fill text-xl leading-none"></i>
                                   </span>

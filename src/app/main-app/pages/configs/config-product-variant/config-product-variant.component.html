@@ -29,23 +29,23 @@
                     </button>
                     <tds-dropdown-menu #menu="tdsDropdownMenu">
                         <div class="w-full">
-                            <div tds-dropdown-item class="px-3 py-4">
+                            <div tds-dropdown-item class="px-3 py-4" (click)="exportExcel()">
                                 <a class="text-neutral-1-900 text-body-2 font-regular" >Xuất excel kiểm kho</a>
                             </div>
                         </div>
                         <div class="w-full">
-                            <div tds-dropdown-item class="px-3 py-4">
-                                <a class="text-neutral-1-900 text-body-2 font-regular" (click)="setActive('active')">Mở hiệu lực</a>
+                            <div tds-dropdown-item class="px-3 py-4" (click)="setActive('active')">
+                                <a class="text-neutral-1-900 text-body-2 font-regular" >Mở hiệu lực</a>
                             </div>
                         </div>
                         <div class="w-full">
-                            <div tds-dropdown-item class="px-3 py-4">
-                                <a class="text-neutral-1-900 text-body-2 font-regular" (click)="setActive('unactive')">Hết hiệu lực</a>
+                            <div tds-dropdown-item class="px-3 py-4" (click)="setActive('unactive')">
+                                <a class="text-neutral-1-900 text-body-2 font-regular" >Hết hiệu lực</a>
                             </div>
                         </div>
                         <div class="w-full">
-                            <div tds-dropdown-item class="px-3 py-4">
-                                <a class="text-neutral-1-900 text-body-2 font-regular" (click)="addProductToPageFB()">Thêm SP vào Page</a>
+                            <div tds-dropdown-item class="px-3 py-4" (click)="addProductToPageFB()">
+                                <a class="text-neutral-1-900 text-body-2 font-regular" >Thêm SP vào Page</a>
                             </div>
                         </div>
                     </tds-dropdown-menu>
@@ -91,7 +91,7 @@
                             <td [checked]="setOfCheckedId.has(data.Id)"
                                 (checkedChange)="onItemChecked(data.Id, $event)"></td>
                             <td>
-                                <img [src]="data.ImageUrl" class="rounded-lg">
+                                <tds-avatar class="rounded-lg" [shape]="'square'" [size]="44" [tdsSrc]="data.ImageUrl?data.ImageUrl:(data.Images?data.Images[0].Url:'')" [isAvatar]="false"></tds-avatar>
                             </td>
                             <td>{{ data.NameGet }}</td>
                             <td>{{ data.UOMName }}</td>
@@ -110,7 +110,7 @@
                                         <i class="tdsi-edit-fill text-xl leading-none"></i>
                                     </span>
                                 </button>
-                                <button tds-button-icon color="secondary" size="sm" (click)="showRemoveModal(i)">
+                                <button tds-button-icon color="secondary" size="sm" (click)="showRemoveModal(data.Id)">
                                     <span class="flex items-center">
                                         <i class="tdsi-trash-fill text-xl leading-none"></i>
                                     </span>

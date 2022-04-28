@@ -1,7 +1,7 @@
-<input id="fileInput" type='file' class="hidden" (change)="onSelectFile($event)">
+<input id="inputImg" type='file' class="hidden" (change)="onSelectFile($event)">
 
-<label for="fileInput">
-    <tds-avatar [shape]="'square'" [size]="size" [classList]="'rounded-lg border border-neutral-2-200 cursor-pointer'"
-      [tdsSrc]="imageUrl" [isAvatar]="false" >
-    </tds-avatar>
+<label for="inputImg">
+  <tds-avatar [shape]="'square'" [size]="size" [classList]="'rounded-lg border border-neutral-2-200 cursor-pointer'"
+    [tdsSrc]="imageUrl" [isAvatar]="false" >
+  </tds-avatar>
 </label>

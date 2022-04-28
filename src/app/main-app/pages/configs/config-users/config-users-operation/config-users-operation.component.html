@@ -1,4 +1,5 @@
-<div class="w-full h-full pb-4 px-4 text-body-2">
+<tds-spin [spinning]="isLoading">
+  <div class="w-full h-full pb-4 px-4 text-body-2">
     <div class="flex flex-col w-full h-full bg-white rounded-xl">
         <div class="flex flex-row items-center justify-between px-4 py-3">
             <div class="flex flex-row items-center">
@@ -20,12 +21,15 @@
             </div>
         </div>
         <div class="w-full h-full pb-4">
-            <tds-table #tableUser [listData]="listOfDataUser" showPagination showSizeChanger [scroll]="{y:'auto'} ">
+            <tds-table #tableUser [listData]="lstUsers" showPagination showSizeChanger [scroll]="{y:'auto'} ">
                 <thead>
                     <tr>
                         <th>Người dùng</th>
                         <th>Phân quyền</th>
-                        <th>Page quản lý</th>
+                        <th class="flex items-center gap-x-1">
+                          <span class="flex">Page quản lý</span>
+                          <span class="flex text-info-500 text-sm tdsi-info-line" title="Chức năng chưa hoạt động"></span>
+                        </th>
                         <th>Trạng thái</th>
                         <th>Thao tác</th>
                     </tr>
@@ -33,18 +37,14 @@
                 <tbody>
                     <ng-template ngFor let-data [ngForOf]="tableUser.data">
                         <tr>
-                            <td>{{ data.name }}</td>
-                            <td>{{ data.decentralization }}</td>
+                            <td>{{ data.Name }}</td>
                             <td>
-                                <div class="flex items-center pl-2" *ngIf="data.id == 2 || data.id == 3; else isOne">
-                                    <!-- <tpage-avatar-group-facebook>
-                                        <tpage-avatar-facebook [size]="44" [fbid]="team?.Facebook_ASUserId" [token]="team?.Facebook_UserToken">
-                                        </tpage-avatar-facebook>
-                                        <tpage-avatar-facebook [size]="44" [fbid]="team?.Facebook_ASUserId" [token]="team?.Facebook_UserToken">
-                                        </tpage-avatar-facebook>
-                                        <tpage-avatar-facebook [size]="44" [fbid]="team?.Facebook_ASUserId" [token]="team?.Facebook_UserToken">
-                                        </tpage-avatar-facebook>
-                                    </tpage-avatar-group-facebook> -->
+                              <div *ngFor="let userRole of data?.Roles">
+                                {{getNameRole(userRole.RoleId)}}
+                              </div>
+                            </td>
+                            <td>
+                                <div class="flex items-center pl-2">
                                     <div class="bg-white p-0.5 rounded-full" tds-tooltip tooltipTitle="Page test">
                                         <tds-avatar class="bg-white  text-white" [size]="44"
                                             tdsSrc="assets/images/config/SP1120.png">
@@ -95,16 +95,16 @@
                                 </ng-template>
                             </td>
                             <td>
-                                <tds-switch [checked]="data.status" size="md"></tds-switch>
+                                <tds-switch [checked]="data.Active || false" size="md"></tds-switch>
                             </td>
                             <td>
                                 <div class="flex gap-x-2">
-                                    <button tds-button-icon color="secondary" size="sm" (click)="showModalUpdateUser()">
+                                    <button tds-button-icon color="secondary" size="sm" (click)="showModalUpdateUser(data.Id)">
                                         <span class="flex items-center">
                                             <i class="tdsi-edit-fill text-lg leading-none"></i>
                                         </span>
                                     </button>
-                                    <button tds-button-icon color="secondary" size="sm">
+                                    <button tds-button-icon color="secondary" size="sm" (click)="onDelete(data.Id)">
                                         <span class="flex items-center">
                                             <i class="tdsi-trash-fill text-lg leading-none"></i>
                                         </span>
@@ -117,4 +117,6 @@
             </tds-table>
         </div>
     </div>
-</div>
+  </div>
+</tds-spin>
+

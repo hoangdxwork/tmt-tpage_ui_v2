@@ -2,20 +2,23 @@ import { Subject } from 'rxjs';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { takeUntil } from 'rxjs/operators';
 import { TDSSafeAny, TDSMessageService } from 'tmt-tang-ui';
-import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'tpage-upload-images',
   templateUrl: './tpage-upload-images.component.html',
   styleUrls: ['./tpage-upload-images.component.scss']
 })
-export class TpageUploadImagesComponent implements OnInit, OnDestroy {
+export class TpageUploadImagesComponent implements OnInit, OnDestroy, OnChanges {
   @Input() size:number = 112;
-  @Output() getResult = new EventEmitter<Array<string>>();
+  @Input() showName:boolean = true;
+  @Input() inputImages:Array<TDSSafeAny> = [];
+  @Output() getResult = new EventEmitter<Array<TDSSafeAny>>();
 
   private destroy$ = new Subject<void>();
 
-  imageList:Array<string> = [];
+  imageList:Array<TDSSafeAny> = [];
+
 
   constructor(
     private sharedService: SharedService,
@@ -23,6 +26,13 @@ export class TpageUploadImagesComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    if(this.inputImages.length > 0){
+      this.imageList = this.inputImages;
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.imageList = this.inputImages;
   }
 
   ngOnDestroy(): void {
@@ -46,7 +56,12 @@ export class TpageUploadImagesComponent implements OnInit, OnDestroy {
         this.sharedService.uploadImage(model).pipe(takeUntil(this.destroy$)).subscribe(
           (res:TDSSafeAny)=>{
             if (res) {
-              this.imageList.push(res);
+              let outputModel = {
+                type: file.type,
+                name: file.name,
+                url: res
+              };
+              this.imageList.push(outputModel);
               this.getResult.emit(this.imageList);
             } else {
               this.message.error("Không upload được file lớn hơn 3Mb");
