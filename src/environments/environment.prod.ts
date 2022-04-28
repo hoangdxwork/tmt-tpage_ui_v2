@@ -1,5 +1,7 @@
 export const environment = {
   production: true,
+  signalR: "",
+  signalRAppend: "",
   apiApp:"https://test.tpos.dev/",
   urlLogin:'/account/login',
   apiAccount:{

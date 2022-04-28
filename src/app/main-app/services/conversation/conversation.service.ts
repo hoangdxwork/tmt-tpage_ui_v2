@@ -12,6 +12,14 @@ export interface QueryStateConversationDTO {
   type: string;
 }
 
+export interface ResponseStateConversationDTO {
+  hasNextPage: any,
+  nextPageUrl: any,
+  pageSize: any,
+  totalCount: any,
+  totalPages: any
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,14 +29,14 @@ export class ConversationService extends BaseSevice implements OnInit {
   prefix: string = "";
   table: string = "";
   baseRestApi: string = "rest/v1.0/crmmatching";
+  _keyCacheCRMMatching: string = "_crmmatching";
 
   constructor(private apiService: TCommonService,
-    private sgRConnectionService: SignalRConnectionService) {
-    super(apiService)
+      private sgRConnectionService: SignalRConnectionService) {
+      super(apiService)
   }
 
   ngOnInit(): void {
-
   }
 
   get(queryObj: any, url?: string): Observable<any> {
@@ -44,8 +52,12 @@ export class ConversationService extends BaseSevice implements OnInit {
           url: `${this._BASE_URL}/${this.baseRestApi}?${queryString}`,
           method: TApiMethodType.get
       }
-      return this.apiService.getData<CRMMatchingDTO>(api, null);
+      return this.apiService.getCacheData<CRMMatchingDTO>(api, null, this._keyCacheCRMMatching);
     }
+  }
+
+  removeKeyCacheCRMMatching(){
+      this.apiService.removeCacheAPI(this._keyCacheCRMMatching);
   }
 
   getLink(url: string): Observable<any> {
@@ -72,7 +84,7 @@ export class ConversationService extends BaseSevice implements OnInit {
         pageSize: response.PageSize,
         totalCount: response.TotalCount,
         totalPages: response.TotalPages
-    }
+    } as ResponseStateConversationDTO;
   }
 
 

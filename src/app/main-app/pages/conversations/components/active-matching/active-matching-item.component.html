@@ -1,0 +1,82 @@
+<div *ngIf="item">
+  <div class="w-full relative">
+    <div class="p-3.5 bg-white flex flex-col gap-2 w-full hover:bg-neutral-3-50">
+      <div class="flex gap-3">
+        <div class="relative">
+            <tpage-avatar-facebook
+                [shape]="'circle'" [size]="'lg'"
+                [psid]="item.psid" [token]="team?.Facebook_PageToken">
+            </tpage-avatar-facebook>
+            <!-- icon comment -->
+            <span *ngIf="getLastActivity()?.type == 2" class="absolute text-info-500 text-[25px]" style="top: 25px;left: 25px;">
+                <span class="tdsi-comment-on-fill"></span>
+            </span>
+            <!-- icon message -->
+            <span *ngIf="getLastActivity()?.type == 3"  class="absolute text-info-500 text-[25px]" style="top: 25px;left: 25px;">
+                <span class="tdsi-messenger-fill"></span>
+            </span>
+        </div>
+        <div class="w-full flex flex-col gap-1">
+            <div class="flex justify-between items-center" *ngIf="getLastActivity()">
+                <div class="text-body-2 text-neutral-1-600">{{item.name || item.partner_name}}</div>
+                <div class="flex items-center gap-2" >
+                    <span *ngIf="type == 'all' && item.count_unread_activities > 0">
+                        <tds-badge [standalone]="true" [count]="item.count_unread_activities" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
+                    </span>
+                    <span *ngIf="type == 'message' && item.count_unread_messages > 0">
+                        <tds-badge [standalone]="true" [count]="item.count_unread_messages" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
+                    </span>
+                    <span *ngIf="type == 'comment' && item.count_unread_comments > 0">
+                        <tds-badge [standalone]="true" [count]="item.count_unread_comments" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
+                    </span>
+                    <div class="text-neutral-1-400 text-body-2 font-regular font-sans">
+                        {{item.LastActivityTimeConverted | date:"dd-MM-yyyy HH:mm"}}
+                    </div>
+                </div>
+            </div>
+            <div class="text-body-2 font-regular font-sans text-neutral-1-900" >
+                <p tds-typography ellipsis expandable [ellipsisRows]="2" [content]="getLastActivity()?.message"
+                  [contentCollapse]="'Ẩn'">
+                </p>
+            </div>
+        </div>
+      </div>
+      <!--keyTags thêm trong mục binh luận-->
+      <div class="flex justify-end flex-col gap-2">
+        <div class="flex gap-1 items-center" *ngIf="item.tags">
+          <div *ngFor="let tag of item.tags | slice:0:2" [ngStyle]="{'background-color': [tag.color_class] }" class="py-0.5 px-1 text-caption-2 font-regular text-neutral-1-900 rounded">
+              <tds-badge status="success" [text]="tag.name"></tds-badge>
+          </div>
+          <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded" *ngIf="item.tags && item.tags.length - 2 > 0" title="Xem thêm">
+            +{{item.tags.length - 2}}
+          </div>
+          <div class="draft-message text-danger font-z10 tmr-t13" *ngIf="item.assigned_to">
+              <tds-avatar class="bg-accent-4  text-white" size="sm"
+                  [tdsSrc]="item.assigned_to.Avatar">
+              </tds-avatar>
+              <span class="text-body-2">{{item.assigned_to.Name}}</span>
+          </div>
+          <div class="draft-message text-danger font-z10 tmr-t13" *ngIf="isDraftMessage">Chưa gửi</div>
+          <div *ngIf="item.has_order" class="tdsi-cart-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
+          <div *ngIf="item.has_phone" class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
+          <div *ngIf="item.has_address" class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
+        </div>
+        <div class="flex justify-end gap-1 items-center" *ngIf="eventData && eventData[team.Facebook_PageId] && eventData[team.Facebook_PageId][psid]">
+            <div class="tdsi-flash-on-fill text-accent-3 px-1 text-2xl"></div>
+            <div class="text-accent-3 text-caption-1 font-regular font-sans">
+                <span>{{eventData[team.Facebook_PageId][psid].message}}</span>
+                <span>{{eventData[team.Facebook_PageId][psid].time}}</span>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="activeMatchingItem && (activeMatchingItem?.id == item.id)">
+        <div class="absolute top-0 right-0 flex">
+            <span class="w-0 h-0 border-t-[41px] border-t-green-400 border-l-[41px] border-l-transparent border-solid"> </span>
+        </div>
+        <div class="absolute top-0 right-0 flex">
+            <div class="tdsi-tick-fill text-white text-lg px-1"></div>
+        </div>
+      </div>
+  </div>
+</div>

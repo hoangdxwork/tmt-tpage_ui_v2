@@ -1,4 +1,3 @@
-import { da } from 'date-fns/locale';
 import { Injectable, OnDestroy, OnInit } from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import { map, shareReplay, takeUntil } from "rxjs/operators";
@@ -9,6 +8,7 @@ import { ConversationFacebookState } from "../facebook-state/conversation-fb.sta
 import { SharedService } from "../shared.service";
 import { SignalRConnectionService } from "../signalR/signalR-connection.service";
 import { CRMMatchingDTO } from '../../dto/conversation-all/crm-matching.dto';
+import { CRMMatchingMappingDTO } from "../../dto/conversation-all/conversation-all.dto";
 
 @Injectable({
   providedIn: 'root'
@@ -53,54 +53,55 @@ export class ConversationDataFacade extends BaseSevice implements OnInit, OnDest
   }
 
   makeDataSource(pageId: any, type: string): Observable<any> {
-      this.fbState.createEventData(pageId);
-      return this.getConversation(pageId, type);
+    this.fbState.createEventData(pageId);
+    return this.getConversation(pageId, type);
   }
 
-  getConversation(pageId: any, type: string) {
+  getConversation(pageId: any, type: string): Observable<any> {
     let exist = this.fbState.get(pageId, type);
     if (exist) {
-      this.dataSource$ = Observable.create((observer :any) => {
-          observer.next(exist);
-          observer.complete();
-      });
+        this.dataSource$ = Observable.create((obs :any) => {debugger
+            obs.next(exist);
+            obs.complete();
+        });
     } else {
       let query = this.service.createQuery(pageId, type);
       this.dataSource$ = this.service.get(query).pipe(map((res: CRMMatchingDTO) => {
-          let create = this.createConversation(res, query, type);
-          if(create) {
-              let result = this.fbState.setConversation(pageId, type, create);
-              return result;
-          }
-      }), shareReplay());
+        let create = this.createConversation(res, query, type);
+        if(create) {
+          return this.fbState.setConversation(pageId, type, create);
+        }
+      }));
     }
-
     return this.dataSource$;
   }
 
   createConversation(data: any, query: any, type: string) {
-    let value = {
-        items: this.prepareData(data.Items),
+    return {
+        items: data.Items,
         query: query,
         response: this.service.createResponse(data)
-    };
+    } as CRMMatchingMappingDTO;
+  }
 
-    return value;
+  checkSendMessage(pageId: any, type: any, psid: any) {
+    var exist = this.fbState.getByPsid(pageId, type, psid);
+    if (exist) {
+      exist.checkSendMessage = !exist.checkSendMessage;
+    }
   }
 
   prepareData(datas: Array<any>) {
     datas.forEach((item: any) => {
       item.LastActivityTimeConverted = item.LastUpdated;
       let lastActivity = item.last_activity;
-
       if (lastActivity) {
-        item.LastActivityTimeConverted = item.LastActivityTimeConverted || lastActivity.created_time;
+          item.LastActivityTimeConverted = item.LastActivityTimeConverted || lastActivity.created_time;
       }
       //check send message
       item["checkSendMessage"] = false;
       //tags
       item["keyTags"] = {};
-
       if(item.tags && item.tags.length > 0) {
         item.tags.map((x: any) => {
             item["keyTags"][x.id] = true;
@@ -109,9 +110,7 @@ export class ConversationDataFacade extends BaseSevice implements OnInit, OnDest
       else {
         item.tags = [];
       }
-
     });
-
     return datas;
   }
 

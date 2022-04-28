@@ -6,6 +6,7 @@ import { HttpTransportType } from '@microsoft/signalr';
 import { SignalRHttpClient } from "./client-signalR";
 import * as signalR from "@microsoft/signalr";
 import { TDSSafeAny } from "tmt-tang-ui";
+import { HubEvents } from "./app-constant/hub-event";
 
 @Injectable({
   providedIn: 'root'
@@ -65,7 +66,7 @@ export class SignalRConnectionService extends BaseSignalRSevice {
   }
 
   public addHubEvents(): void {
-    this._hubConnection.on('onMessage', (data:TDSSafeAny) => {
+    this._hubConnection.on(`${HubEvents.onMessage}`, (data:TDSSafeAny) => {
       switch (data.type) {
         case "update_scan_feed":
         case "update_scan_conversation":
@@ -129,16 +130,16 @@ export class SignalRConnectionService extends BaseSignalRSevice {
           break;
       }
     });
-    this._hubConnection.on('onFacebookEvent', (data:TDSSafeAny) => {
+    this._hubConnection.on(`${HubEvents.onFacebookEvent}`, (data:TDSSafeAny) => {
       this._onFacebookEvent$.emit(data);
     });
-    this._hubConnection.on('onReadConversation', (data:TDSSafeAny) => {
+    this._hubConnection.on(`${HubEvents.onReadConversation}`, (data:TDSSafeAny) => {
       this._onReadConversation$.emit(data);
     });
-    this._hubConnection.on('onSentConversation', (data:TDSSafeAny) => {
+    this._hubConnection.on(`${HubEvents.onSentConversation}`, (data:TDSSafeAny) => {
       this._onSentConversation$.emit(data);
     });
-    this._hubConnection.on('onPaymentEvent', (data:TDSSafeAny) => {
+    this._hubConnection.on(`${HubEvents.onPaymentEvent}`, (data:TDSSafeAny) => {
       this._onPaymentEvent$.emit(data);
     });
     this._hubConnection.onreconnecting(() => {
@@ -166,9 +167,9 @@ export class SignalRConnectionService extends BaseSignalRSevice {
     let hubConnectionBuilder = new signalR.HubConnectionBuilder() as any;
 
     this._hubConnection = hubConnectionBuilder
-      .withUrl(`${this._SIGNALR_URL}/hub/` + configs.hubName + this._SIGNALR_APPENDER, {
+      .withUrl(`${this._SIGNALR_URL}/hub/` + configs.hubName + this._SIGNALR_APPENDER , {
           transport: HttpTransportType.WebSockets | HttpTransportType.LongPolling,
-          accessTokenFactory: () => {debugger
+          accessTokenFactory: () => {
             return configs.token;
           },
           httpClient: new SignalRHttpClient(this.authen) as any,
@@ -185,12 +186,12 @@ export class SignalRConnectionService extends BaseSignalRSevice {
                 return null;
             }
           }
-      })
-      .build();
+      }).build();
   }
 
   private connectionStart() {
-    this._hubConnection?.start()
+    this._hubConnection
+      .start()
       .then(() => {
         console.log('Hub connection started');
         this.retry = 0;
@@ -219,6 +220,23 @@ export class SignalRConnectionService extends BaseSignalRSevice {
     this.isResolved = true;
     this.connectionIsEstablished = true;
     this._connectionEstablished$.next(true);
+  }
+
+  public sendMessage(action: any, data: any): void {
+    if (this.connectionIsEstablished) {
+        this._hubConnection
+            .invoke(action, data)
+            .catch(err => console.error(err));
+    } else {
+        // Xử lý chờ kết nối và gửi
+        this._connectionEstablished$.subscribe(data => {
+            if (data) {
+                this._hubConnection
+                    .invoke(action, data)
+                    .catch(err => console.error(err));
+            }
+        })
+    }
   }
 
 }

@@ -22,8 +22,8 @@ export class ApplicationUserService extends BaseSevice {
   public dataActive$ = new BehaviorSubject<any>(this.dataActive);
 
   constructor(private apiService: TCommonService) {
-    super(apiService);
-    this.initialize();
+      super(apiService);
+      this.initialize();
   }
 
   initialize() {

@@ -31,7 +31,7 @@ export class ConfigConversationTagsComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    private modalService: TDSModalService, 
+    private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private message: TDSMessageService,
     private odataTagService:OdataCRMTagService,
@@ -47,11 +47,11 @@ export class ConfigConversationTagsComponent implements OnInit, OnDestroy {
 
   loadData(pageSize: number, pageIndex: number, filters?:TDSSafeAny,sort?:TDSSafeAny[]){
     this.isLoading = true;
-    
+
     if(TDSHelperString.hasValueString(this.filterObj.searchText)){
       filters = this.odataTagService.buildFilter(this.filterObj);
     }
-    
+
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex,filters,sort);
     this.odataTagService.getView(params).pipe(takeUntil(this.destroy$)).subscribe((res: ODataCRMTagDTO) => {
       this.count = res['@odata.count'] as number;
@@ -69,11 +69,9 @@ export class ConfigConversationTagsComponent implements OnInit, OnDestroy {
 
   refreshData() {
     this.pageIndex = 1;
-
     this.filterObj = {
       searchText: '',
     }
-
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -117,6 +115,7 @@ export class ConfigConversationTagsComponent implements OnInit, OnDestroy {
   }
 
   updateStatus(data:CRMTagDTO){
+
     this.tagService.updateStatus(data.Id).pipe(takeUntil(this.destroy$)).subscribe(
       (data)=>{
         this.message.success('Cập nhật trạng thái thành công');
