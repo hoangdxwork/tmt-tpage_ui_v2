@@ -153,11 +153,16 @@ export class LayoutComponent implements OnInit {
         },
         hidden: false,
       },
-
       {
         name: "Đơn hàng",
         icon: "tdsi-bag-fill",
         link: `/order`,
+
+      },
+      {
+        name: "Chiến dịch live",
+        icon: "tdsi-live-session-fill",
+        link: `/live-campaign`,
 
       },
       {
