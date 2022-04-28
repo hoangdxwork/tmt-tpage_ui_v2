@@ -183,7 +183,7 @@ export class ConfigUsersShiftComponent implements OnInit {
     }
 
     let model: UserUpdateShiftDTO = {
-      WorkingDay: workingDay,
+      WorkingDay: new Date(workingDay.toLocaleString("vi-VN", {timeZone: "Asia/Jakarta"})),
       Shifts: this.modelShifts
     }
 

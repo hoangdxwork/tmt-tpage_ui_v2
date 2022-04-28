@@ -29,7 +29,7 @@ export class TpageBaseComponent implements OnInit, OnDestroy {
       this.crmService.onChangeTeam(),
       this.crmService.onChangeListFaceBook()])
           .pipe(takeUntil(this._destroy))
-          .subscribe(([params, team, listTeam]) => {debugger
+          .subscribe(([params, team, listTeam]) => {
               this._params = params;
               this._currentTeam = team;
               if ((!TDSHelperObject.hasValue(params) || !TDSHelperObject.hasValue(params.teamId))) {
@@ -37,7 +37,7 @@ export class TpageBaseComponent implements OnInit, OnDestroy {
                   this.onRedirect();
                 } else {
                   let url = this.router.url.split("?")[0];
-                  if (this.paramsUrl.psid) {debugger
+                  if (this.paramsUrl.psid) {
                     this.router.navigateByUrl(`${url}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${this.paramsUrl.psid}`);
                   } else {
                     this.router.navigateByUrl(`${url}?teamId=${this.currentTeam?.Id}&type=${this.type}`);

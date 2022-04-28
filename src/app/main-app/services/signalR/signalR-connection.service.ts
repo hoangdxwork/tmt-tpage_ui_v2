@@ -168,7 +168,7 @@ export class SignalRConnectionService extends BaseSignalRSevice {
     this._hubConnection = hubConnectionBuilder
       .withUrl(`${this._SIGNALR_URL}/hub/` + configs.hubName + this._SIGNALR_APPENDER, {
           transport: HttpTransportType.WebSockets | HttpTransportType.LongPolling,
-          accessTokenFactory: () => {debugger
+          accessTokenFactory: () => {
             return configs.token;
           },
           httpClient: new SignalRHttpClient(this.authen) as any,

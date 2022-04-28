@@ -68,6 +68,7 @@ import { ConfigProductDetailsComponent } from './components/config-product-detai
 import { ConfigAddCategoryModalComponent } from './components/config-add-category-modal/config-add-category-modal.component';
 import { ApplicationRoleService } from '../../services/application-role.service';
 import { ConfigEditProductComponent } from './config-edit-product/config-edit-product.component';
+import { UserRestHandler } from '../../services/handlers/user-rest.handler';
 
 const SERVICES = [
     TDSModalService,
@@ -88,7 +89,8 @@ const SERVICES = [
     TagService,
     TagProductTemplateService,
     ExcelExportService,
-    ApplicationRoleService
+    ApplicationRoleService,
+    UserRestHandler
 ]
 
 @NgModule({
