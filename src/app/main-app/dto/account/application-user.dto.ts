@@ -34,6 +34,29 @@ export interface ApplicationUserDTO {
   GroupRefs: Array<any>;
 }
 
+export interface UpdateApplicationUserDTO {
+  Id: string;
+  Name: string;
+  Email: string;
+  UserName: string;
+  Avatar: string;
+  PhoneNumber: string;
+  Active: boolean;
+  Roles: ApplicationUserRolesDTO[];
+}
+
+export interface AddApplicationUserDTO {
+  Id: null;
+  Name: string;
+  Email: string;
+  UserName: string;
+  Avatar: string;
+  PhoneNumber: string;
+  Active: boolean;
+  PasswordNew: string;
+  Roles: ApplicationUserRolesDTO[];
+}
+
 export interface ApplicationUserShiftDTO {
   Id: number;
   UserId: string;

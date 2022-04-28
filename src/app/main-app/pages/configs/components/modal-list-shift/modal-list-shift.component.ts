@@ -59,7 +59,7 @@ export class ModalListShiftComponent implements OnInit {
 
   showModalUpdateShift(data: any) {
     const modal = this.modalService.create({
-      title: 'Cập nhập ca làm việc',
+      title: 'Cập nhật ca làm việc',
       content: ModalUpdateShiftComponent,
       size: "md",
       viewContainerRef: this.viewContainerRef,

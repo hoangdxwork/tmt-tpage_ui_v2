@@ -1,13 +1,21 @@
 import { Router } from '@angular/router';
-import { TDSSafeAny } from 'tmt-tang-ui';
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { TDSSafeAny, TDSMessageService, TDSHelperArray } from 'tmt-tang-ui';
+import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { PagedList2 } from 'src/app/main-app/dto/pagedlist2.dto';
+import { CRMTeamDTO, UpdateGrantPermissionDTO } from 'src/app/main-app/dto/team/team.dto';
+import { Observable, Subject } from 'rxjs';
+import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
+import { finalize, takeUntil } from 'rxjs/operators';
+import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
+import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
+import { Message } from 'src/app/lib/consts/message.const';
 
 @Component({
   selector: 'app-config-decentralize-page',
   templateUrl: './config-decentralize-page.component.html',
   styleUrls: ['./config-decentralize-page.component.scss']
 })
-export class ConfigDecentralizePageComponent implements OnInit {
+export class ConfigDecentralizePageComponent implements OnInit, OnDestroy {
 
   @Output() getComponent:EventEmitter<number> = new EventEmitter<number>();
 
@@ -40,11 +48,36 @@ export class ConfigDecentralizePageComponent implements OnInit {
     ]}
   ]
 
+  data: CRMTeamDTO[] | undefined;
+  lstUsers: ApplicationUserDTO[] = [];
+  isLoading: boolean = false;
+  private destroy$ = new Subject();
+
   constructor(
     private router: Router,
+    private crmTeamService: CRMTeamService,
+    private message: TDSMessageService,
+    private applicationUserService: ApplicationUserService
   ) { }
 
   ngOnInit(): void {
+    this.loadListTeam();
+    this.loadUser();
+  }
+
+  loadListTeam() {
+    this.crmTeamService.onChangeListFaceBook().subscribe(res => {
+      this.data = res?.Items;
+    });
+  }
+
+  loadUser() {
+    this.isLoading = true;
+    this.applicationUserService.get()
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe(res => {
+        this.lstUsers = res.value;
+      });
   }
 
   backToMain(){
@@ -52,11 +85,42 @@ export class ConfigDecentralizePageComponent implements OnInit {
     this.router.navigate([returnUrl]);
   }
 
-  submitSave(){
-    this.getComponent.emit(1);
+  onSave(){
+    if(!TDSHelperArray.hasListValue(this.data)) {
+      this.message.info(Message.PageNotExist);
+      return;
+    }
+
+    this.isLoading = true;
+    let result: UpdateGrantPermissionDTO[] = [];
+    this.data?.forEach(element => {
+      if(TDSHelperArray.hasListValue(element?.Childs)) {
+        element?.Childs.forEach(child => {
+          if(TDSHelperArray.hasListValue(child?.Users)) {
+            result.push({
+              CRMTeamId: child.Id,
+              UserId: child?.Users.map(x => x.Id).toString()
+            });
+          }
+        })
+      }
+    });
+
+    this.crmTeamService.updateGrantPermission(result)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe(res => {
+        this.message.success(Message.UpdatedSuccess);
+        this.crmTeamService.onRefreshListFacebook();
+      });
+
   }
 
-  onModelChangePermission(ev: TDSSafeAny){
-    
+  onModelChangePermission(e: TDSSafeAny) {
+    console.log(e);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

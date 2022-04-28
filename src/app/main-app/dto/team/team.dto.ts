@@ -3,7 +3,7 @@ import { ApplicationUserDTO } from '../account/application-user.dto';
 import { CompanyDTO } from '../company/company.dto';
 
 export interface CRMTeam_UserDTO {
-  id: number;
+  Id: number;
   crmTeamId: number;
   userId: string;
   applicationUsers: Array<ApplicationUserDTO>;
@@ -58,7 +58,13 @@ export interface CRMTeamDTO {
   ParentId?: number;
   Parent: CRMTeamDTO;
   Childs: Array<CRMTeamDTO>;
+  Users: Array<ApplicationUserDTO>;
   _extraProperties: string;
+}
+
+export interface UpdateGrantPermissionDTO {
+  CRMTeamId: number,
+  UserId: string
 }
 
 export enum Facebook_Type {
