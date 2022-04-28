@@ -44,7 +44,7 @@ export class ConfigAutoChatComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     // this.loadData(this.pageSize, this.pageIndex);
-    
+
   }
 
   ngAfterViewInit(): void {
@@ -55,10 +55,11 @@ export class ConfigAutoChatComponent implements OnInit, AfterViewInit {
       // TODO: switchMap xử lý trường hợp sub in sub
       switchMap((text: TDSSafeAny) => {
         this.pageIndex = 1;
-  
+
         this.filterObj.searchText = text;
         let filters = this.odataQuickReplyService.buildFilter(this.filterObj);
-        let params = TDSHelperString.hasValueString(this.filterObj.searchText)?
+
+        let params = TDSHelperString.hasValueString(this.filterObj.searchText) ?
         THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters):
         THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex);
         return this.get(params);
@@ -68,7 +69,7 @@ export class ConfigAutoChatComponent implements OnInit, AfterViewInit {
       this.AutoChatList = res.value;
   });
   }
-  
+
   private get(params: string): Observable<ODataQuickReplyDTO> {
     this.isLoading = true;
     return this.odataQuickReplyService
@@ -78,7 +79,7 @@ export class ConfigAutoChatComponent implements OnInit, AfterViewInit {
 
   loadData(pageSize: number, pageIndex: number) {
     this.isLoading = true;
-    let filters = this.odataQuickReplyService.buildFilter(this.filterObj);  
+    let filters = this.odataQuickReplyService.buildFilter(this.filterObj);
     let params = TDSHelperString.hasValueString(this.filterObj.searchText)?
         THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters):
         THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);

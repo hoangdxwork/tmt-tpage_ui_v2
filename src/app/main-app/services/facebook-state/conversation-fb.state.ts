@@ -22,8 +22,7 @@ export class ConversationFacebookState implements OnInit{
   }
 
   public get(pageId: string, type: string) {
-      let exist = _get(this.dataSource, `${pageId}.${type}`);
-      return exist;
+    return _get(this.dataSource, `${pageId}.${type}`);
   }
 
   public setEvent(pageId: string, psid: string, event: any) {
@@ -39,8 +38,15 @@ export class ConversationFacebookState implements OnInit{
   public setConversation(pageId: string, type: string, data: any) {
       this.dataSource[pageId] = this.dataSource[pageId] || {};
       this.dataSource[pageId][type] = data;
-
       return this.dataSource[pageId][type];
+  }
+
+  public getByPsid(pageId: string, type: string, psid: string) {
+    let exist = _get(this.dataSource, `${pageId}.${type}.items`);
+    if(exist) {
+      return exist.find((x: any) => x.psid == psid);
+    }
+    return null;
   }
 
 }

@@ -33,26 +33,26 @@ export class TpageBaseComponent implements OnInit, OnDestroy {
               this._params = params;
               this._currentTeam = team;
               if ((!TDSHelperObject.hasValue(params) || !TDSHelperObject.hasValue(params.teamId))) {
-                if (!TDSHelperObject.hasValue(team)) {
-                  this.onRedirect();
-                } else {
-                  let url = this.router.url.split("?")[0];
-                  if (this.paramsUrl.psid) {
-                    this.router.navigateByUrl(`${url}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${this.paramsUrl.psid}`);
-                  } else {
-                    this.router.navigateByUrl(`${url}?teamId=${this.currentTeam?.Id}&type=${this.type}`);
-                  }
-                }
-              } else {
-                if (!TDSHelperObject.hasValue(team) || (team?.Id != params.teamId)) {
-                  const team = TPageHelperService.findTeamById(listTeam?.Items || [], params.teamId, false);
-                  if (team)
-                    this.crmService.onUpdateTeam(team);
-                  else
+                  if (!TDSHelperObject.hasValue(team)) {
                     this.onRedirect();
-                } else {
-                  this.onInit();
-                }
+                  } else {
+                    let url = this.router.url.split("?")[0];
+                    if (this.paramsUrl.psid) {
+                      this.router.navigateByUrl(`${url}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${this.paramsUrl.psid}`);
+                    } else {
+                      this.router.navigateByUrl(`${url}?teamId=${this.currentTeam?.Id}&type=${this.type}`);
+                    }
+                  }
+              } else {
+                  if (!TDSHelperObject.hasValue(team) || (team?.Id != params.teamId)) {
+                    const team = TPageHelperService.findTeamById(listTeam?.Items || [], params.teamId, false);
+                    if (team)
+                      this.crmService.onUpdateTeam(team);
+                    else
+                      this.onRedirect();
+                  } else {
+                    this.onInit();
+                  }
             }
       })
   }
@@ -86,8 +86,8 @@ export class TpageBaseComponent implements OnInit, OnDestroy {
       this.onDestroy();
   }
 
-  addQueryParams(queryParams: TDSSafeAny):void {
-    this.router.navigate([], {
+  addQueryParams(queryParams: TDSSafeAny): any {
+    return  this.router.navigate([], {
         relativeTo: this.activatedRoute,
         queryParams: queryParams,
         queryParamsHandling: 'merge',

@@ -2,11 +2,17 @@ import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { ActiveMatchingItem, CRMMatchingMappingDTO } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
+import { CRMMatchingDTO, CRMMatchingItem } from 'src/app/main-app/dto/conversation-all/crm-matching.dto';
+import { CRMActivityDTO } from 'src/app/main-app/dto/conversation/activity.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
+import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
+import { ConversationFacebookState } from 'src/app/main-app/services/facebook-state/conversation-fb.state';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
-import { TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperObject, TDSMessageService, TDSSafeAny, TDSHelperArray } from 'tmt-tang-ui';
 
 @Component({
     selector: 'app-conversation-all',
@@ -18,15 +24,20 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   isLoading: boolean = false;
   dataSource$!: Observable<any>;
-  private destroy$ = new Subject();
+  lstMatchingItem!: ActiveMatchingItem[];
+  destroy$ = new Subject();
+  psid!: string;
+  activeMatchingItem!: ActiveMatchingItem;
+  isFastSend: boolean = false;
 
   constructor(private message: TDSMessageService,
+      private fbState: ConversationFacebookState,
       private conversationDataFacade: ConversationDataFacade,
       public crmService: CRMTeamService,
+      private conversationService: ConversationService,
       public activatedRoute: ActivatedRoute,
       public router: Router) {
-
-      super(crmService, activatedRoute, router);
+        super(crmService, activatedRoute, router);
   }
 
   // Đơn hàng
@@ -393,24 +404,81 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onInit() {
-    this.type = "all";
+    this.type = this.paramsUrl?.type;
     let team = this.currentTeam || {} as CRMTeamDTO;
-    let params = this.paramsUrl || {} as any;
-
-    // if((team && team.Id && team.Facebook_PageId) && (params && params.psid)) {
-        this.onChangeConversation(team, '4194616297242897');
-    // }
-
-    this.addQueryParams({ psid:'4194616297242897' });
+    if((TDSHelperObject.hasValue(team) && team?.Id && team?.Facebook_PageId)) {
+        this.onChangeConversation(team);
+    }
   }
 
-  onChangeConversation(team: any, psid: string) {
-      this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
+  onChangeConversation(team: CRMTeamDTO) {
+    this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
+    this.loadConversations((this.dataSource$));
+  }
 
-      this.dataSource$.subscribe(data => {})
+  makeDataSource(pageId: any, type: string) {
+    this.fbState.createEventData(pageId);
+    const query = this.conversationService.createQuery(pageId, type);
+
+    this.conversationService.get(query).pipe(takeUntil(this.destroy$)).subscribe((res: CRMMatchingDTO) => {
+        if(res && TDSHelperArray.hasListValue(res.Items)) {
+          let datas = this.conversationDataFacade.createConversation(res, query, type) as CRMMatchingMappingDTO;
+          if(datas) {
+              this.fbState.setConversation(pageId, type, datas);
+          }
+        }
+    });
+  }
+
+  loadConversations(dataSource$: Observable<any>) {
+    if(dataSource$) {
+      dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: CRMMatchingMappingDTO) => {
+        if(res && TDSHelperArray.hasListValue(res.items)) {
+            this.lstMatchingItem = [...res.items];
+            //TODO: khi load lần đầu tiên psid = null, load dữ liệu sẽ gán lại giá trị tại items[0]
+            let psid: string = this.paramsUrl?.psid || null;
+            //TODO: check psid khi load lần 2,3,4...
+            let exits = this.lstMatchingItem.filter(x => x.psid == psid)[0];
+            if(exits) {
+                this.activeConversations(exits);
+            } else {
+                this.activeConversations(this.lstMatchingItem[0]);
+            }
+        }
+      }, error => {
+          this.message.error('Load thông tin CRMMatching đã xảy ra lỗi');
+      })
+    }
+  }
+
+  activeConversations(item: ActiveMatchingItem) {
+    if(TDSHelperObject.hasValue(item)) {
+      if(this.isFastSend == true) {
+          this.conversationDataFacade.checkSendMessage(item.page_id, this.type, item.psid);
+      } else {
+          //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching
+          let psid: string = item.psid;
+          this.addQueryParams({ psid: psid });
+          this.activeMatchingItem = item;
+      }
+    }
   }
 
   ngAfterViewInit(): void {
+  }
+
+  onClickTeam(data: CRMTeamDTO) {
+    if (this.paramsUrl?.teamId ) {
+        let url = this.router.url.split("?")[0];
+        const params = { ...this.paramsUrl };
+        params.teamId = data.Id;
+        this.router.navigate([url], { queryParams: params })
+    } else {
+        this.crmService.onUpdateTeam(data);
+    }
+    //TODO: xóa cache browser CRMMatching sau đó load lại dữ liệu khi đổi teamId
+    this.conversationService.removeKeyCacheCRMMatching();
+    this.onChangeConversation(data);
   }
 
   ngOnDestroy(): void {

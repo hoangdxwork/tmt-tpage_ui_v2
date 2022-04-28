@@ -3,20 +3,10 @@
 	<div class="w-[357px] h-full ">
       <div class="w-full flex flex-col gap-1 p-1 h-full">
           <div class="bg-white p-2.5">
-            <div
-              class="border-2 border-2-50 border-solid rounded-lg py-2.5 px-3.5 flex justify-between items-center">
-              <div class="flex items-center">
-                <div>
-                  <tds-avatar class="bg-accent-4  text-white" size="md" text="P"></tds-avatar>
-                </div>
-                <div class="w-52">
-                  <tds-select [border]='false' valueField="id" textField="name" [data]="contactOptions"
-                    [(ngModel)]="contact">
-                  </tds-select>
-                </div>
-              </div>
-              <div class="tdsi-reload-fill text-3xl text-neutral-1-200"></div>
+            <div class="block items-center">
+                  <tpage-team-dropdown></tpage-team-dropdown>
             </div>
+            <!-- <div class="tdsi-reload-fill text-3xl text-neutral-1-200"></div> -->
             <div class="pt-4 flex gap-1 items-center">
               <div>
                 <tds-form-field class="w-full bg-neutral-3-50">
@@ -42,67 +32,14 @@
             </div>
           </div>
           <!-- List danh sách chat -->
-          <div class="overflow-hidden overflow-y-auto tds-custom-scroll flex flex-auto flex-col gap-1 pb-10" *ngIf="dataSource$">
-              <div *ngFor="let item of (dataSource$ | async)">
-                <div class="w-full relative">
-                  <div class="p-3.5 bg-white flex flex-col gap-2 w-full">
-                    <div class="flex gap-3">
-                      <tds-avatar [shape]="'square'" [size]="'xl'"
-                        tdsSrc="/assets/images/conversation/avatar-notimage-messenger.svg">
-                      </tds-avatar>
-                      <div class="w-full flex flex-col gap-1">
-                        <div class="flex justify-between items-center">
-                          <div class="text-title-1 font-semibold font-sans text-neutral-1-900">Ngọc Anh</div>
-                          <div class="flex items-center gap-2">
-                            <tds-badge [standalone]="true" [count]="33"
-                              [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
-                            <div class="text-neutral-1-400 text-body-2 font-regular font-sans">2 giờ trước
-                            </div>
-                          </div>
-                        </div>
-                        <div class="text-body-2 font-regular font-sans text-neutral-1-900">
-                          Giao trong giờ hành chính giúp...Giao trong giờ hành chính giúp...Giao trong giờ h
-                          hành chính giúp...Giao tron <span class="text-info-500"> Xem thêm</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="flex justify-end flex-col gap-2">
-                      <div class="flex gap-1 items-center">
-                        <div
-                          class="bg-[#F2FCF5] py-0.5 px-1 text-caption-2 font-regular text-neutral-1-900 rounded">
-                          <tds-badge status="success" text="Khách hàng cũ"></tds-badge>
-                        </div>
-                        <div
-                          class="bg-[#FFEDEE] py-0.5 px-1 text-caption-2 font-regular text-neutral-1-900 rounded">
-                          <tds-badge status="error" text="Bom hàng"></tds-badge>
-                        </div>
-                        <div
-                          class="bg-[#FFF1D7] py-0.5 pl-1 text-caption-2 font-regular text-neutral-1-900 rounded ">
-                          <tds-badge status="bg-yellow-500" text="bon"></tds-badge>
-                        </div>
-                        <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded">
-                          +3
-                        </div>
-                        <div class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
-                        <div class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
-                      </div>
-                      <div class="flex justify-end gap-1 items-center">
-                        <div class="tdsi-flash-on-fill text-accent-3 px-1 text-2xl"></div>
-                        <div class="text-accent-3 text-caption-1 font-regular font-sans">Quản lý Shop ly đang
-                          xem 03:45</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="absolute top-0 right-0">
-                    <div
-                      class="w-0 h-0 border-t-[41px] border-t-green-400 border-l-[41px] border-l-transparent border-solid">
-                    </div>
-                  </div>
-                  <div class="absolute top-0 right-0">
-                    <div class="tdsi-tick-fill text-white text-lg px-1"></div>
-                  </div>
-                </div>
-              </div>
+          <div *ngIf="lstMatchingItem" class="overflow-hidden overflow-y-auto tds-custom-scroll flex flex-auto flex-col gap-1 pb-10">
+             <div *ngFor="let item of lstMatchingItem; let i= index" (click)="activeConversations(item)">
+                <active-matching-item
+                    [item]="item" [psid]="item.psid" [type]="type"
+                    [activeMatchingItem]="activeMatchingItem"
+                    [team]="currentTeam" [isFastSend]="isFastSend">
+                </active-matching-item>
+             </div>
           </div>
       </div>
 	</div>
@@ -110,9 +47,8 @@
 	<div class="flex flex-auto flex-col  h-full overflow-hidden">
 		<tds-conversations>
 			<ng-container *ngFor="let item of listData">
-				<tds-conversation-item [data]="item"></tds-conversation-item>
+		  		<tds-conversation-item [data]="item"></tds-conversation-item>
 			</ng-container>
-
 		</tds-conversations>
 	</div>
 	<div class="w-[576px] h-full flex flex-col">

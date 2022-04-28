@@ -204,7 +204,6 @@ export class LayoutComponent implements OnInit {
     ];
   }
 
-
   //load thông tin user
   loadUserInfo() {
     this.auth.getUserInit().subscribe(res => {

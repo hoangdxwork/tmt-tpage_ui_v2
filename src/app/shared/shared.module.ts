@@ -1,15 +1,12 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CustomCurrencyPipe } from './components/pipe/custom-currency.pipe';
 import { PageLoadingComponent } from './components/page-loading/page-loading.component';
 import { TDSSpinnerModule } from 'tmt-tang-ui';
 import { PageLoadingService } from './services/page-loading.service';
-import { SignalRConnectionService } from '../main-app/services/signalR/signalR-connection.service';
 
 @NgModule({
   declarations: [
     PageLoadingComponent,
-    CustomCurrencyPipe,
   ],
   imports: [
     CommonModule,
@@ -17,7 +14,6 @@ import { SignalRConnectionService } from '../main-app/services/signalR/signalR-c
   ],
   exports: [
     PageLoadingComponent,
-    CustomCurrencyPipe
   ],
   providers: [
     PageLoadingService,
