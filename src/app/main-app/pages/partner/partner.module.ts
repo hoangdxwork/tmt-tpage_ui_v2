@@ -1,3 +1,5 @@
+import { RestSMSService } from './../../services/sms.service';
+import { QuickReplyService } from './../../services/quick-reply.service';
 import { DrawerMessageComponent } from './components/drawer-message/drawer-message.component';
 import { ModalPaymentComponent } from './components/modal-payment/modal-payment.component';
 import { ModalBirthdayPartnerComponent } from './components/modal-birthday-partner/modal-birthday-partner.component';
@@ -13,7 +15,7 @@ import { CommonModule } from '@angular/common';
 
 import { PartnerRoutingModule } from './partner-routing.module';
 import { PartnerComponent } from './partner/partner.component';
-import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSFilterStatusModule, TDSSpinnerModule, TDSAlertModule, TDSNotificationModule, TDSUploadModule } from 'tmt-tang-ui';
+import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSFilterStatusModule, TDSSpinnerModule, TDSAlertModule, TDSNotificationModule, TDSUploadModule, TDSTypographyModule, TDSEmptyModule } from 'tmt-tang-ui';
 import { OdataPartnerService } from '../../services/mock-odata/odata-partner.service';
 import { CommonService } from '../../services/common.service';
 import { TDSMessageModule } from 'tmt-tang-ui';
@@ -34,7 +36,9 @@ const SERVICES = [
   TagService,
   PrinterService,
   ExcelExportService,
-  AccountRegisterPaymentService
+  AccountRegisterPaymentService,
+  QuickReplyService,
+  RestSMSService
 ]
 
 @NgModule({
@@ -87,7 +91,8 @@ const SERVICES = [
     TDSAlertModule,
     CommonModule,
     MainSharedModule,
-
+    TDSTypographyModule,
+    TDSEmptyModule
   ],
   providers: [
     ...SERVICES,

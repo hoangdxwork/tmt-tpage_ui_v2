@@ -1,5 +1,5 @@
 <div class="rounded-md border border-light-50">
-    <tds-table #basicTable [listData]="listSampleMessage" [showPagination]="false">
+    <tds-table templateMode >
         <thead>
             <tr>
                 <th>STT</th>
@@ -8,17 +8,16 @@
             </tr>
         </thead>
         <tbody>
-            <ng-template ngFor let-data [ngForOf]="basicTable.data">
-                <tr>
-                    <td>{{ data.id }}</td>
-                    <td>{{ data.name }}</td>
-                    <td>{{ data.content }}</td>
-                </tr>
-            </ng-template>
+            <tr *ngFor="let data of listSampleMessage; let idx = index" (click)="chooseQuickReply(data)" class="cursor-pointer">
+                <td>{{ idx }}</td>
+                <td>{{ data.Name }}</td>
+                <td>
+                    <p tds-typography ellipsis expandable [ellipsisRows]="2" [content]=" data.BodyPlain" [contentCollapse]="'Ẩn'"></p>
+                </td>
+            </tr>
         </tbody>
     </tds-table>
 </div>
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
     <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">Đóng</button>
-
 </div>
