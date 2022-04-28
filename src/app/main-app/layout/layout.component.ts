@@ -1,29 +1,45 @@
-import { Component, Injector, OnInit } from '@angular/core';
+import { APP_INITIALIZER, Component, Injector, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular/router';
-import { throttle } from 'lodash';
-import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
-import { debounceTime, filter, map, mergeMap, startWith, takeUntil, tap } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { debounceTime, filter, finalize, map, mergeMap, startWith, take, takeUntil } from 'rxjs/operators';
 import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { environment } from 'src/environments/environment';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMenuDTO, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMenuDTO, TDSMessageService, TDSModalRef, TDSModalService, TDSSafeAny } from 'tmt-tang-ui';
 import { CRMTeamDTO } from '../dto/team/team.dto';
 import { CRMTeamService } from '../services/crm-team.service';
 import { TPageHelperService } from '../services/helper.service';
+import { NetworkHelper } from '../services/signalR/network.helper';
+import { SignalRConnectionService } from '../services/signalR/signalR-connection.service';
 
 @Component({
   selector: 'app-layout',
   templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.scss']
+  styleUrls: ['./layout.component.scss'],
 })
+
 export class LayoutComponent implements OnInit {
+
   userInit!: UserInitDTO;
   currentTeam!: CRMTeamDTO | null;
   lstMenu!: TDSSafeAny;
   inlineCollapsed = false;
   params!: TDSSafeAny;
   private destroy$ = new Subject<void>();
-  constructor(private auth: TAuthService, public crmService: CRMTeamService, private activatedRoute: ActivatedRoute, private router: Router) {
+  isNetwork: boolean = false;
+  disabledSignalRConnect = false;
+  _connectionEstablished: boolean = false;
+
+  constructor(private auth: TAuthService,
+      private signalRConnectionService: SignalRConnectionService,
+      public crmService: CRMTeamService,
+      private modalService: TDSModalService,
+      // private modal: TDSModalRef,
+      private message: TDSMessageService,
+      private activatedRoute: ActivatedRoute,
+      private router: Router) {
+
     router.events.pipe(
+      takeUntil(this.destroy$),
       filter(event => event instanceof NavigationEnd), // Only get the event of NavigationEnd
       map(() => activatedRoute), // Listen to activateRoute
       map(route => {
@@ -33,34 +49,38 @@ export class LayoutComponent implements OnInit {
         return route;
       }),
       filter(route => route.outlet === 'primary'),
-      mergeMap(route => route.data),
-      takeUntil(this.destroy$),
-      // get the data
-    ).subscribe(res => {
+      mergeMap(route => route.data) ,
+    // get the data
+    ).subscribe(res=>{
       this.inlineCollapsed = res.collapse;
     })
   }
 
   ngOnInit(): void {
+    //TODO: Khoi tao signalR
+    this.signalRConnectionService.initiateSignalRConnection();
+    this.signalRConnectionService._connectionEstablished$.subscribe((res: any) => {
+        this._connectionEstablished = res;
+    });
 
-    this.crmService.onChangeTeam().pipe(
-      takeUntil(this.destroy$),
-    ).subscribe(res => {
+    NetworkHelper.checkNetwork().subscribe(isNetwork => {
+        this.isNetwork = isNetwork;
+    });
+
+    this.crmService.onChangeTeam().subscribe(res => {
       this.lstMenu = this.setMenu(res);
       this.currentTeam = res;
     })
     this.getAllFacebook();
     this.loadUserInfo();
-    this.activatedRoute.queryParams.pipe(
-      takeUntil(this.destroy$),
-    ).subscribe(res => {
+    this.activatedRoute.queryParams.subscribe(res => {
       this.params = res;
     });
-
   }
+
   onSelectShopChange(event: TDSSafeAny) {
-
   }
+
   onLogout() {
     this.auth.logout(environment.urlLogin)
   }
@@ -69,21 +89,16 @@ export class LayoutComponent implements OnInit {
   }
   //lay danh sách facebook
   getAllFacebook() {
-    combineLatest(
-      [
-        this.crmService.getAllFacebooks(),
-        this.crmService.getCacheTeamId()
-      ]
-    ).pipe(
-      takeUntil(this.destroy$),
-    )
-      .subscribe(([dataTeam, teamId]) => {
+    this.crmService.getAllFacebooks()
+      .subscribe(dataTeam => {
         // console.log(f)
         if (TDSHelperObject.hasValue(dataTeam)) {
-          // let team!: CRMTeamDTO;
+          let team!: CRMTeamDTO;
           this.crmService.onUpdateListFaceBook(dataTeam);
-          const team = TPageHelperService.findTeamById(dataTeam.Items, teamId, true)
-          this.crmService.onUpdateTeam(team);
+          this.crmService.getCacheTeamId().subscribe((teamId: string | null) => {
+            const team = TPageHelperService.findTeamById(dataTeam.Items, teamId, true)
+            this.crmService.onUpdateTeam(team);
+          })
         } else {
           this.crmService.onUpdateListFaceBook(null);
           this.crmService.onUpdateTeam(null);
@@ -102,61 +117,66 @@ export class LayoutComponent implements OnInit {
         icon: "tdsi-home-fill",
         link: '/dashboard',
       },
-      // {
-      //   name: "Tất cả",
-      //   icon: "tdsi-drawer-fill",
-      //   link: '/conversation/all',
-      //   linkProps: {
-      //     queryParams: {
-      //       'teamId': data?.Id,
-      //       'type': 'all',
-      //     },
-      //   },
-      //   hidden: hidden
-      // },
-      // {
-      //   name: "Tin nhắn",
-      //   icon: "tdsi-email-fill",
-      //   link: '/conversation/inbox',
-      //   linkProps: {
-      //     queryParams: {
-      //       'teamId': data?.Id,
-      //       'type': 'message',
-      //     },
-      //   },
-      //   hidden: hidden,
-      // },
+      {
+        name: "Tất cả",
+        icon: "tdsi-drawer-fill",
+        link: '/conversation/all',
+        linkProps: {
+          queryParams: {
+            'teamId': data?.Id,
+            'type': 'all',
+          },
+        },
+        hidden: false
+      },
+      {
+        name: "Tin nhắn",
+        icon: "tdsi-email-fill",
+        link: '/conversation/inbox',
+        linkProps: {
+          queryParams: {
+            'teamId': data?.Id,
+            'type': 'message',
+          },
+        },
+        hidden: false,
+      },
 
-      // {
-      //   name: "Bình luận",
-      //   icon: "tdsi-comment-fill",
-      //   link: `/conversation/comment`,
-      //   linkProps: {
-      //     queryParams: {
-      //       'teamId': data?.Id,
-      //       'type': 'comment',
-      //     },
-      //   },
-      //   hidden: hidden,
-      // },
+      {
+        name: "Bình luận",
+        icon: "tdsi-comment-fill",
+        link: `/conversation/comment`,
+        linkProps: {
+          queryParams: {
+            'teamId': data?.Id,
+            'type': 'comment',
+          },
+        },
+        hidden: false,
+      },
 
-      // {
-      //   name: "Bài viết",
-      //   icon: "tdsi-edit-paper-fill",
-      //   link: `/conversation/post`,
-      //   linkProps: {
-      //     queryParams: {
-      //       'teamId': data?.Id,
-      //       'type': 'post',
-      //     },
-      //   },
-      //   hidden: hidden,
-      // },
-
+      {
+        name: "Bài viết",
+        icon: "tdsi-edit-paper-fill",
+        link: `/conversation/post`,
+        linkProps: {
+          queryParams: {
+            'teamId': data?.Id,
+            'type': 'post',
+          },
+        },
+        hidden: false,
+      },
       {
         name: "Đơn hàng",
         icon: "tdsi-bag-fill",
         link: `/order`,
+
+      },
+      {
+        name: "Chiến dịch live",
+        icon: "tdsi-live-session-fill",
+        link: `/live-campaign`,
 
       },
       {
@@ -198,15 +218,13 @@ export class LayoutComponent implements OnInit {
     ];
   }
 
-
   //load thông tin user
   loadUserInfo() {
-    this.auth.getUserInit().pipe(
-      takeUntil(this.destroy$),
-    ).subscribe(res => {
+    this.auth.getUserInit().subscribe(res => {
       this.userInit = res || {};
     })
   }
+
   onClickTeam(data: CRMTeamDTO) {
     if (this.params?.teamId) {
       let url = this.router.url.split("?")[0];
@@ -216,6 +234,39 @@ export class LayoutComponent implements OnInit {
     } else {
       this.crmService.onUpdateTeam(data);
     }
+  }
+
+  onSave() {
+    this.modalService.info({
+      title: 'Kết nối realtime',
+      content: 'Thử kết nối lại',
+      onOk: () => { this.onConnectSginalR() },
+      onCancel:()=> {},
+      okText:"Kết nối",
+      cancelText:"Hủy",
+      confirmViewType: "compact",
+    });
+  }
+
+  onConnectSginalR(): any {
+    if(!this.isNetwork) {
+        return this.message.error("Không có kết nối mạng");
+    }
+
+    this.disabledSignalRConnect = true;
+    this.signalRConnectionService.refreshConnected();
+
+    this.signalRConnectionService._connectionEstablished$.pipe(take(1))
+      .pipe(finalize(() => {this.disabledSignalRConnect = false }))
+      .subscribe((res: any) => {
+        if(res == true) {
+            this.message.success("Kết nối thành công");
+        } else {
+            this.message.error("Kết nối thất bại");
+        }
+      }, error =>{
+        this.message.error("Lỗi server");
+    });
   }
 
 }

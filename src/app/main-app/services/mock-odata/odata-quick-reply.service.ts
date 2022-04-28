@@ -39,14 +39,11 @@ export class OdataQuickReplyService extends BaseSevice {
     }
 
     if (TDSHelperString.hasValueString(filterObj.searchText)) {
-      let key = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim())
+        let key = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim())
         dataFilter.filters.push( {
             filters: [
               { field: "Name", operator: OperatorEnum.contains, value: key },
-              { field: "BodyHtml", operator: OperatorEnum.contains, value: key },
               { field: "BodyPlain", operator: OperatorEnum.contains, value: key },
-              { field: "Subject", operator: OperatorEnum.contains, value: key },
-              { field: "TypeName", operator: OperatorEnum.contains, value: key },
             ],
             logic: 'or'
         })

@@ -1,3 +1,4 @@
+<tds-spin [spinning]="isLoading">
 <form [formGroup]="formQuickReply">
     <div class="flex flex-row items-center mb-6">
         <span class="text-neutral-1-900 text-body-2 font-semibold w-32">Trạng thái</span>
@@ -10,7 +11,7 @@
             <div class="flex flex-col mb-6">
                 <tds-form-field class="mb-2">
                     <tds-label>Tên mẫu</tds-label>
-                    <input tdsInput type="text" [innerHTML]="this.formQuickReply.value.subjectHtml" formControlName="subjectHtml" [required]="true" placeholder="Nhập tên"
+                    <input tdsInput type="text" formControlName="subjectHtml" [required]="true" placeholder="Nhập tên"
                         id="name" class="text-neutral-1-900 text-body-2 font-regular" />
                     <tds-error>
                         Vui lòng nhập tên mẫu
@@ -105,7 +106,7 @@
         <div *ngIf="templateType == 'generic'" class="flex flex-col bg-white w-[200px]">
             <div class="relative">
                 <img tds-image width="200px" height="200px" [fallback]="'assets/images/config/no-image-default.svg'"
-                    [tdsSrc]="imageURL" alt="" class="cursor-pointer rounded-t-md" />
+                    [tdsSrc]="this.createImageForm.value?.image" alt="" class="cursor-pointer rounded-t-md" />
                 <div class="w-full h-full absolute top-0 rounded-t-md {{messageStructurePart == 1 ? 'border border-primary-1 bg-[#28A74533]/[0.2]' : ''}}"
                     (click)="onChangeStructurePart(1)"></div>
             </div>
@@ -146,7 +147,7 @@
             <div class="bg-white w-[200px] mb-2">
                 <div class="relative">
                     <img tds-image width="200px" height="200px" [fallback]="'assets/images/config/no-image-default.svg'"
-                        [tdsSrc]="imageURL" alt="" class="cursor-pointer rounded-t-md" />
+                        [tdsSrc]="this.createImageForm.value?.image" alt="" class="cursor-pointer rounded-t-md" />
                     <div class="w-full h-full absolute top-0 rounded-t-md {{messageStructurePart == 1 ? 'border border-primary-1 bg-[#28A74533]/[0.2]' : ''}}"
                         (click)="onChangeStructurePart(1)"></div>
                 </div>
@@ -199,21 +200,9 @@
             <div *ngIf="templateType == 'generic'">
                 <div *ngIf="messageStructurePart == 1">
                     <div class="flex flex-col w-full">
-                        <form [formGroup]="createImageForm" autocomplete="off">
+                        <form [formGroup]="createImageForm" class="flex flex-col gap-y-2" autocomplete="off">
                             <span class="text-neutral-1-900 text-body-2 font-semibold">Phương tiện</span>
-                            <tds-upload class="flex flex-row items-center tds-upload-modal pt-2"
-                                (uploadChange)="handleChange($event)" [customRequest]="handleUpload"
-                                [(fileList)]="fileList" [showUploadList]="false">
-                                <tds-form-field class="w-full">
-                                    <button tdsAddOnLeft tds-button color="secondary" class="rounded-r-none">
-                                        <span class="flex items-center">
-                                            <i class="tdsi-upload-fill text-lg leading-none mr-2"></i>Tải ảnh/video
-                                        </span>
-                                    </button>
-                                    <input tdsInput formControlName="image" [value]="createImageForm.value.image"
-                                        [placeholder]="'No file choosen'">
-                                </tds-form-field>
-                            </tds-upload>
+                            <tpage-upload-avatar [imageUrl]="this.createImageForm.value?.image" (getResult)="getUrl($event)"></tpage-upload-avatar>
                         </form>
                     </div>
                 </div>
@@ -223,16 +212,14 @@
                             <tds-form-field class="mb-2">
                                 <tds-label class="text-neutral-1-900 text-body-2 font-semibold">Nội dung mẫu</tds-label>
                                 <input tdsInput type="text" formControlName="title" placeholder="Tiêu đề trống"
-                                    class="text-neutral-1-900 text-body-2 font-regular"
-                                    (keyup)="onInputMessageTitle($event)" />
+                                    class="text-neutral-1-900 text-body-2 font-regular" />
                                 <tds-error>
                                     Vui lòng nhập tiêu đề mẫu
                                 </tds-error>
                             </tds-form-field>
                             <textarea formControlName="subTitle" placeholder="Nội dung trống"
                                 class="text-neutral-1-900 text-body-2 font-regular w-full
-                                    focus:ring-3 focus:ring-primary-1 focus:ring-opacity-30 focus:border-primary-1 border-neutral-2-200 rounded"
-                                (keyup)="onInputMessageContent($event)"></textarea>
+                                    focus:ring-3 focus:ring-primary-1 focus:ring-opacity-30 focus:border-primary-1 border-neutral-2-200 rounded"></textarea>
                         </form>
                     </div>
                 </div>
@@ -255,8 +242,7 @@
                                     <form [formGroup]="formButtons" autocomplete="off">
                                         <tds-form-field class="mb-2">
                                             <input tdsInput type="text" formControlName="title" placeholder="Button text"
-                                                class="text-neutral-1-900 text-body-2 font-regular"
-                                                (keyup)="onInputMessageTitle($event)" />
+                                                class="text-neutral-1-900 text-body-2 font-regular" />
                                             <tds-error>
                                                 Vui lòng nhập tiêu đề
                                             </tds-error>
@@ -274,8 +260,7 @@
 
                                         <tds-form-field class="mb-2">
                                             <input tdsInput type="text" formControlName="payLoad" placeholder="Payload"
-                                                class="text-neutral-1-900 text-body-2 font-regular"
-                                                (keyup)="onInputMessageTitle($event)" />
+                                                class="text-neutral-1-900 text-body-2 font-regular" />
                                             <tds-error>
                                                 Vui lòng nhập pay load
                                             </tds-error>
@@ -300,8 +285,7 @@
                             <tds-form-field class="mb-2">
                                 <tds-label class="text-neutral-1-900 text-body-2 font-semibold">Nội dung mẫu</tds-label>
                                 <input tdsInput type="text" formControlName="title" placeholder="Tiêu đề trống"
-                                    class="text-neutral-1-900 text-body-2 font-regular"
-                                    (keyup)="onInputMessageTitle($event)" />
+                                    class="text-neutral-1-900 text-body-2 font-regular"/>
                                 <tds-error>
                                     Vui lòng nhập tiêu đề mẫu
                                 </tds-error>
@@ -328,8 +312,7 @@
                                     <form [formGroup]="form" autocomplete="off">
                                         <tds-form-field class="mb-2">
                                             <input tdsInput type="text" formControlName="title" placeholder="Button text"
-                                                class="text-neutral-1-900 text-body-2 font-regular"
-                                                (keyup)="onInputMessageTitle($event)" />
+                                                class="text-neutral-1-900 text-body-2 font-regular" />
                                             <tds-error>
                                                 Vui lòng nhập tiêu đề
                                             </tds-error>
@@ -347,8 +330,7 @@
 
                                         <tds-form-field class="mb-2">
                                             <input tdsInput type="text" formControlName="payLoad" placeholder="Payload"
-                                                class="text-neutral-1-900 text-body-2 font-regular"
-                                                (keyup)="onInputMessageTitle($event)" />
+                                                class="text-neutral-1-900 text-body-2 font-regular" />
                                             <tds-error>
                                                 Vui lòng nhập pay load
                                             </tds-error>
@@ -369,21 +351,9 @@
             <div *ngIf="templateType == 'media'">
                 <div *ngIf="messageStructurePart == 1">
                     <div class="flex flex-col w-full">
-                        <form [formGroup]="createImageForm" autocomplete="off">
+                        <form [formGroup]="createImageForm" class="flex flex-col gap-y-2" autocomplete="off">
                             <span class="text-neutral-1-900 text-body-2 font-semibold">Phương tiện</span>
-                            <tds-upload class="flex flex-row items-center tds-upload-modal pt-2"
-                                (uploadChange)="handleChange($event)" [customRequest]="handleUpload"
-                                [(fileList)]="fileList" [showUploadList]="false">
-                                <tds-form-field class="w-full">
-                                    <button tdsAddOnLeft tds-button color="secondary" class="rounded-r-none">
-                                        <span class="flex items-center">
-                                            <i class="tdsi-upload-fill text-lg leading-none mr-2"></i>Tải ảnh/video
-                                        </span>
-                                    </button>
-                                    <input tdsInput formControlName="image" [value]="createImageForm.value.image"
-                                        [placeholder]="'No file choosen'">
-                                </tds-form-field>
-                            </tds-upload>
+                            <tpage-upload-avatar [imageUrl]="this.createImageForm.value?.image" (getResult)="getUrl($event)"></tpage-upload-avatar>
                         </form>
                     </div>
                 </div>
@@ -406,8 +376,7 @@
                                     <form [formGroup]="form" autocomplete="off">
                                         <tds-form-field class="mb-2">
                                             <input tdsInput type="text" formControlName="title" placeholder="Button text"
-                                                class="text-neutral-1-900 text-body-2 font-regular"
-                                                (keyup)="onInputMessageTitle($event)" />
+                                                class="text-neutral-1-900 text-body-2 font-regular"/>
                                             <tds-error>
                                                 Vui lòng nhập tiêu đề
                                             </tds-error>
@@ -425,8 +394,7 @@
 
                                         <tds-form-field class="mb-2">
                                             <input tdsInput type="text" formControlName="payLoad" placeholder="Payload"
-                                                class="text-neutral-1-900 text-body-2 font-regular"
-                                                (keyup)="onInputMessageTitle($event)" />
+                                                class="text-neutral-1-900 text-body-2 font-regular"/>
                                             <tds-error>
                                                 Vui lòng nhập pay load
                                             </tds-error>
@@ -447,7 +415,7 @@
         </div>
     </div>
 </div>
-
+</tds-spin>
 
 
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
@@ -455,6 +423,6 @@
         Hủy bỏ
     </button>
     <button tds-button type="submit" color="primary" (click)="onSave()" [disabled]="enableSubmit()">
-        Tạo mới
+        {{valueEditId?'Cập nhật':'Tạo mới'}}
     </button>
 </div>

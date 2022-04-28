@@ -1,0 +1,22 @@
+<emoji-mart
+  [showPreview]="false"
+  title="Chọn biểu tượng…"
+  [i18n]="{
+    search: 'Tìm kiếm',
+    notfound: 'Không tìm thấy icon',
+    categories: {
+      search: 'Kết quả tìm kiếm',
+      recent: 'Đã dùng gần đây',
+      people: 'Mặt cười & hình người',
+      nature: 'Động vật & thiên nhiên',
+      foods: 'Ẩm thực',
+      activity: 'Hoạt động',
+      places: 'Du lịch & địa điểm',
+      objects: 'Đồ vật',
+      symbols: 'Biểu tượng' }}"
+  (emojiClick)="addEmoji($event)"
+  [exclude] = "excludeIcon"
+  title="Pick your emoji…" emoji="point_up"
+  [style]="{  }">
+</emoji-mart>
+

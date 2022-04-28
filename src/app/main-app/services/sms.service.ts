@@ -24,7 +24,7 @@ export class RestSMSService extends BaseSevice {
 
   get(): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
+        url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}`,
         method: TApiMethodType.get,
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
@@ -65,7 +65,7 @@ export class RestSMSService extends BaseSevice {
 
   sendMessageSMS(data: any): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/sendmessagesms`,
+        url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/sendmessagesms`,
         method: TApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -73,7 +73,7 @@ export class RestSMSService extends BaseSevice {
 
   generateMessageByPhone(data: any): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/generatemessagebyphone`,
+        url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/generatemessagebyphone`,
         method: TApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);

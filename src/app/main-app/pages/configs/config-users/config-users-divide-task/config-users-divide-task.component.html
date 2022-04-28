@@ -1,53 +1,64 @@
-<div class="w-full text-body-2 pb-4 px-4">
-    <div class="flex flex-col w-full h-full bg-white rounded-xl">
-        <div class="flex flex-row items-center justify-between px-4 py-3">
-            <div class="flex flex-row items-center">
-                <tds-avatar class="bg-primary-1 text-white" icon="tdsi-group-people-fill"></tds-avatar>
-                <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">PHÂN CÔNG HỘI THOẠI</span>
-            </div>
-        </div>
-        <div class="w-full flex flex-col gap-y-4 p-4">
-            <div>
-                <span class="text-title-1 font-semibold">Cấu hình phân công hội thoại</span>
-            </div>
-            <div class="flex gap-x-2 items-center">
-                <tds-switch [checked]="true" size="md"></tds-switch>
-                <div>
-                    <span>Phân công hội thoại theo ca</span>
-                </div>
-            </div>
-            <div class="flex gap-x-2 items-center">
-                <tds-switch [checked]="true" size="md"></tds-switch>
-                <div>
-                    <span>Tự động gán hội thoại xoay vòng theo tài khoản đang online</span>
-                </div>
-            </div>
-            <div class="p-4 bg-neutral-3-50 rounded-xl flex flex-col gap-y-4">
-                <div class="flex gap-x-2 items-center">
-                    <tds-switch [checked]="true" size="md"></tds-switch>
-                    <div>
-                        <span>Nhân viên chỉ thấy được hội thoại được phân công</span>
-                    </div>
-                </div>
-                <div class="flex gap-x-2 items-center">
-                    <tds-switch [checked]="true" size="md"></tds-switch>
-                    <div>
-                        <span>Tự động phân công lại hội thoại</span>
-                    </div>
-                </div>
-                <div class="flex gap-x-2 items-center">
-                    <div>
-                        <span>Hội thoại không được trả lời sẽ được phân công lại sau</span>
-                    </div>
-                    <tds-form-field>
-                        <tds-select valueField="id" textField="name" placeholder='select item'
-                            disabledField="isActive" [formControl]="persondisplayWith"
-                            [data]="contactOptionsTask" >
-                        </tds-select>
-                        <tds-error>Validation message text</tds-error>
-                    </tds-form-field>
-                </div>
-            </div>
-        </div>
+<tds-spin [spinning]="isLoading">
+  <form [formGroup]="formDivideTag">
+    <div class="w-full text-body-2 pb-4 px-4">
+      <div class="flex flex-col w-full h-full bg-white rounded-xl">
+          <div class="flex flex-row items-center justify-between px-4 py-3">
+              <div class="flex flex-row items-center">
+                  <tds-avatar class="bg-primary-1 text-white" icon="tdsi-group-people-fill"></tds-avatar>
+                  <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">PHÂN CÔNG HỘI THOẠI</span>
+              </div>
+              <div class="flex gap-x-2">
+                <button tds-button color="primary" (click)="onSave()">
+                    <span class="flex items-center">
+                        Lưu thay đổi
+                    </span>
+                </button>
+              </div>
+          </div>
+          <div class="w-full flex flex-col gap-y-4 p-4">
+              <div>
+                  <span class="text-title-1 font-semibold">Cấu hình phân công hội thoại</span>
+              </div>
+              <div class="flex gap-x-2 items-center">
+                  <tds-switch formControlName="AssignOnShift" size="md"></tds-switch>
+                  <div>
+                      <span>Phân công hội thoại theo ca</span>
+                  </div>
+              </div>
+              <div class="flex gap-x-2 items-center">
+                  <tds-switch formControlName="AssignOnAccount" size="md"></tds-switch>
+                  <div>
+                      <span>Tự động gán hội thoại xoay vòng theo tài khoản đang online</span>
+                  </div>
+              </div>
+              <div class="p-4 bg-neutral-3-50 rounded-xl flex flex-col gap-y-4" *ngIf="formDivideTag?.value?.AssignOnAccount">
+                  <div class="flex gap-x-2 items-center">
+                      <tds-switch formControlName="AssignOnActive" size="md"></tds-switch>
+                      <div>
+                          <span>Nhân viên chỉ thấy được hội thoại được phân công</span>
+                      </div>
+                  </div>
+                  <div class="flex gap-x-2 items-center">
+                      <tds-switch formControlName="AssignOnAutomation" size="md"></tds-switch>
+                      <div>
+                          <span>Tự động phân công lại hội thoại</span>
+                      </div>
+                  </div>
+                  <div class="flex gap-x-2 items-center" *ngIf="formDivideTag?.value?.AssignOnAutomation">
+                      <div>
+                          <span>Hội thoại không được trả lời sẽ được phân công lại sau</span>
+                      </div>
+                      <tds-form-field>
+                          <tds-select valueField="id" textField="name" placeholder='Chọn thời gian'
+                              disabledField="isActive" formControlName="AssignTime"
+                              [data]="contactOptionsTask" >
+                          </tds-select>
+                          <tds-error>Validation message text</tds-error>
+                      </tds-form-field>
+                  </div>
+              </div>
+          </div>
+      </div>
     </div>
-</div>
+  </form>
+</tds-spin>

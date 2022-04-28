@@ -126,6 +126,7 @@ export class ConfigGreetingComponent implements OnInit, OnChanges, OnDestroy  {
         this.isLoading = false;
         this.onSaveSuccess.emit(false);
         if(error?.Message) this.message.error(error?.Message);
+        else if(error?.error?.message) this.message.error(error?.error?.message);
         else this.message.error(Message.ErrorOccurred);
       });
     }

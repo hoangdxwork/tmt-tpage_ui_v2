@@ -27,7 +27,7 @@
         <div class="flex items-center gap-x-2 pr-4">
           <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]></action-dropdown>
           <tds-form-field class="w-full">
-            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keydown.enter)="applyFilter($event)" />
+            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText/>
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
           </tds-form-field>
           <filter-options (onLoadOption)="onLoadOption($event)"></filter-options>

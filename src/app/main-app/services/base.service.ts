@@ -11,6 +11,7 @@ export abstract class BaseSevice {
     protected get _BASE_URL() {
         return environment.apiApp
     };
+
     constructor(public libCommon: TCommonService) { }
 
 }

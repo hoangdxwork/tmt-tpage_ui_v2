@@ -6,7 +6,10 @@ import { TCommonService } from 'src/app/lib';
 import { BaseSevice } from '../base.service';
 import { SharedService } from '../shared.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
+
 export class GeneralConfigsFacade extends BaseSevice {
 
   prefix: string = "";

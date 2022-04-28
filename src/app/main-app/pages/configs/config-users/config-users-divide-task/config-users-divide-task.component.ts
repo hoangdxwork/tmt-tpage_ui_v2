@@ -1,5 +1,7 @@
-import { FormControl } from '@angular/forms';
+import { TDSMessageService } from 'tmt-tang-ui';
+import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
+import { Message } from 'src/app/lib/consts/message.const';
 
 @Component({
   selector: 'app-config-users-divide-task',
@@ -13,13 +15,33 @@ export class ConfigUsersDivideTaskComponent implements OnInit {
     { id: 2, name: '5 phút' },
     { id: 3, name: '10 phút' },
     { id: 4, name: 'Khác' },
-]
-persondisplayWith!: FormControl
+  ]
+  persondisplayWith!: FormControl;
 
-  constructor() { }
+  formDivideTag!: FormGroup;
+  isLoading: boolean = false;
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private message: TDSMessageService
+  ) { }
 
   ngOnInit(): void {
-    this.persondisplayWith = new FormControl(1);
+    this.createForm();
+  }
+
+  createForm() {
+    this.formDivideTag = this.formBuilder.group({
+      AssignOnShift: [true],
+      AssignOnAccount: [true],
+      AssignOnActive: [true],
+      AssignOnAutomation: [true],
+      AssignTime: [null]
+    });
+  }
+
+  onSave() {
+    this.message.info(Message.FunctionNotWorking);
   }
 
 }

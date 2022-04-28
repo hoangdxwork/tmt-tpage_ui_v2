@@ -6,7 +6,7 @@ import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
 import { AutoHideCommentDTO, AutoReplyConfigDTO, ChannelAutoLabelConfigDTO, ChannelFacebookConfigDTO } from '../dto/configs/page-config.dto';
 import { PagedList2 } from '../dto/pagedlist2.dto';
 import { ODataAllFacebookChildTO } from '../dto/team/all-facebook-child.dto';
-import { CRMTeamDTO } from '../dto/team/team.dto';
+import { CRMTeamDTO, UpdateGrantPermissionDTO } from '../dto/team/team.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable({
@@ -207,6 +207,15 @@ export class CRMTeamService extends BaseSevice {
     }
 
     return this.apiService.getData<ChannelAutoLabelConfigDTO>(api, data);
+  }
+
+  updateGrantPermission(data: UpdateGrantPermissionDTO[]): Observable<TDSSafeAny> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/updategrantpermission`,
+      method: TApiMethodType.put
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
 }

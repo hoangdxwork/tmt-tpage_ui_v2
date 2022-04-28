@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ModalImageStoreComponent } from './modal-image-store.component';
+import { LiveCampaignComponent } from './livecampaign.component';
 
-describe('ModalImageStoreComponent', () => {
-  let component: ModalImageStoreComponent;
-  let fixture: ComponentFixture<ModalImageStoreComponent>;
+describe('LivecampaignComponent', () => {
+  let component: LiveCampaignComponent;
+  let fixture: ComponentFixture<LiveCampaignComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ModalImageStoreComponent ]
+      declarations: [ LiveCampaignComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ModalImageStoreComponent);
+    fixture = TestBed.createComponent(LiveCampaignComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

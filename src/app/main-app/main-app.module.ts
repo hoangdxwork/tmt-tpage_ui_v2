@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MainAppRoutingModule } from './main-app-routing.module';
 import { LayoutComponent } from './layout/layout.component';
 import { MainSharedModule } from './shared/shared.module';
+import { PipeModule } from './shared/pipe/pipe.module';
 
 import {
   TDSAvatarModule,
@@ -15,10 +16,11 @@ import {
   TDSInputModule,
   TDSMenuModule,
   TDSMessageModule,
-  TDSSelectModule
+  TDSModalModule,
+  TDSNotificationModule,
+  TDSSelectModule,
 } from 'tmt-tang-ui';
 
-import { PipeModule } from './shared/pipe/pipe.module';
 
 @NgModule({
   declarations: [
@@ -39,11 +41,19 @@ import { PipeModule } from './shared/pipe/pipe.module';
     TDSInputModule,
     TDSAvatarModule,
     TDSDropDownModule,
-    TDSMessageModule ,
-    PipeModule
+    TDSMessageModule,
+    PipeModule,
+    TDSModalModule,
+    TDSNotificationModule,
   ],
   providers:[
-    // TAuthGuardService
+    //SignalRConnectionService,
+    // {
+    //     provide: APP_INITIALIZER,
+    //     useFactory: (signalrService: SignalRConnectionService) => () => signalrService.initiateSignalRConnection(),
+    //     deps: [SignalRConnectionService],
+    //     multi: true,
+    // }
   ]
 })
 export class MainAppModule { }

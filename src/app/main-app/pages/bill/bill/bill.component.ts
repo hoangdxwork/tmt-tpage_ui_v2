@@ -11,8 +11,8 @@ import { THelperCacheService } from 'src/app/lib';
 import { ColumnTableDTO } from '../components/config-column/config-column.component';
 import { Router } from '@angular/router';
 import { FastSaleOrderDTO, FastSaleOrderSummaryStatusDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/bill/bill.dto';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { fromEvent, Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, finalize, map, switchMap, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-bill',
@@ -20,7 +20,9 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./bill.component.scss']
 })
 
-export class BillComponent implements OnInit, OnDestroy{
+export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
+
+  @ViewChild('innerText') innerText!: ElementRef;
 
   lstOfData: Array<FastSaleOrderDTO> = [];
   pageSize = 20;
@@ -91,10 +93,8 @@ export class BillComponent implements OnInit, OnDestroy{
   }
 
   ngOnInit(): void {
-    //this.loadData();
     this.loadSummaryStatus();
     this.loadTags();
-
     this.loadGridConfig();
   }
 
@@ -152,15 +152,22 @@ export class BillComponent implements OnInit, OnDestroy{
   }
 
   loadData(pageSize : number, pageIndex: number) {
-    this.isLoading = true;
     let filters = this.odataFastSaleOrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.odataFastSaleOrderService.getView(params, this.filterObj).pipe(takeUntil(this.destroy$)).subscribe((res: ODataFastSaleOrderDTO) => {
-        this.count = res['@odata.count'] as number //260
+    this.getViewData(params).subscribe((res: ODataFastSaleOrderDTO) => {
+        this.count = res['@odata.count'] as number;
         this.lstOfData = res.value;
-        this.isLoading = false;
+    }, error => {
+        this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
     });
+  }
+
+  private getViewData(params: string): Observable<ODataFastSaleOrderDTO> {
+    this.isLoading = true;
+    return this.odataFastSaleOrderService
+        .getView(params, this.filterObj).pipe(takeUntil(this.destroy$))
+        .pipe(finalize(() => {this.isLoading = false }));
   }
 
   loadSummaryStatus(){
@@ -208,7 +215,6 @@ export class BillComponent implements OnInit, OnDestroy{
   }
 
   onSelectChange(Index: TDSSafeAny) {
-    // this.tabIndex = item.Index;
     const dataItem =  this.tabNavs.find(f =>{ return f.Index == Index })
     this.pageIndex = 1;
     this.indClickTag = -1;
@@ -271,14 +277,29 @@ export class BillComponent implements OnInit, OnDestroy{
     });
   }
 
-  applyFilter(event: TDSSafeAny)  {
-    this.tabIndex = 1;
-    this.pageIndex = 1;
-    this.indClickTag = -1;
+  ngAfterViewInit(): void {
+    fromEvent(this.innerText.nativeElement, 'keyup').pipe(
+        map((event: any) => { return event.target.value }),
+        debounceTime(750),
+        distinctUntilChanged(),
+        // TODO: switchMap xử lý trường hợp sub in sub
+        switchMap((text: TDSSafeAny) => {
 
-    this.filterObj.searchText = event.target.value;
-    this.filterObj.searchText = TDSHelperString.stripSpecialChars(this.filterObj.searchText.trim());
-    this.loadData(this.pageSize, this.pageIndex);
+          this.tabIndex = 1;
+          this.pageIndex = 1;
+          this.indClickTag = -1;
+
+          this.filterObj.searchText = text;
+          let filters = this.odataFastSaleOrderService.buildFilter(this.filterObj);
+          let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
+          return this.getViewData(params);
+      })
+    ).subscribe((res: any) => {
+      this.count = res['@odata.count'] as number;
+      this.lstOfData = res.value;
+    }, error => {
+        this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
+    });
   }
 
   onLoadOption(event: any): void {

@@ -1,20 +1,22 @@
 <tds-spin [spinning]="isLoading">
-    <form [formGroup]="formUpdateUser" (ngSubmit)="onSubmitUpdateUser()"
+    <form [formGroup]="formUpdateUser"
         class="flex flex-col gap-y-6">
         <div class="flex gap-x-8 w-full items-center">
             <div>
-                <tds-avatar class="bg-white  text-white" [size]="108"
-                    tdsSrc="assets/images/config/ImgUserModalUpdate.png">
-                </tds-avatar>
+                <tds-upload [beforeUpload]="beforeUpload" [showUploadList]="false">
+                  <tds-avatar [isAvatar]="false" class="bg-white text-white" [size]="108"
+                    tdsSrc="{{formUpdateUser?.value?.Avatar}}">
+                  </tds-avatar>
+                </tds-upload>
             </div>
             <div class="flex flex-col w-full gap-y-4">
                 <tds-form-field class="w-full">
                     <tds-label>Tên nhân viên</tds-label>
-                    <input formGroupName="nameUser" tdsInput autocomplete="off" [required]="true" placeholder="Nhập tên nhân viên" />
+                    <input formControlName="Name" tdsInput autocomplete="off" [required]="true" placeholder="Nhập tên nhân viên" />
                     <tds-error>Vui lòng nhập tên nhân viên</tds-error>
                 </tds-form-field>
                 <div class="flex items-center gap-x-2">
-                    <tds-switch formControlName="status" size="md"  [checked]="true"></tds-switch>
+                    <tds-switch formControlName="Active" size="md"></tds-switch>
                     <span>Trạng thái</span>
                 </div>
             </div>
@@ -22,39 +24,44 @@
         <div class="w-full grid grid-cols-2 gap-x-12 gap-y-4">
             <tds-form-field class="w-full">
                 <tds-label>Số điện thoại</tds-label>
-                <input formControlName="phone" tdsInput autocomplete="off" [required]="true" placeholder="Nhập tên nhân viên" />
+                <input formControlName="PhoneNumber" tdsInput autocomplete="off" [required]="true" placeholder="Nhập tên nhân viên" />
                 <tds-error>Vui lòng nhập số điện thoại</tds-error>
             </tds-form-field>
             <tds-form-field class="w-full">
                 <tds-label>Email</tds-label>
-                <input formControlName="email" tdsInput autocomplete="off" [required]="true" placeholder="Nhập email" />
-                <tds-error>Vui lòng email</tds-error>
+                <input formControlName="Email" tdsInput autocomplete="off" [required]="true" placeholder="Nhập email" />
+                <tds-error>
+                  <span *ngIf="formUpdateUser.controls['Email'].errors?.emailExist; else emailEmpty">Email đã tồn tại</span>
+                  <ng-template #emailEmpty>
+                    <span>Vui lòng email</span>
+                  </ng-template>
+                </tds-error>
             </tds-form-field>
             <tds-form-field class="w-full">
                 <tds-label>Tài khoản</tds-label>
-                <input [placeholder]="formUpdateUser.value?.userName" [disabled]="true" [required]="true" tdsInput autocomplete="off" />
+                <input [placeholder]="formUpdateUser.value?.UserName" [value]="formUpdateUser.value?.UserName" [disabled]="true" [required]="true" tdsInput autocomplete="off" />
             </tds-form-field>
             <div class="flex flex-col">
                 <tds-form-field class="w-full">
                     <tds-label>Mật Khẩu</tds-label>
-                    <input [placeholder]="formUpdateUser.value?.password" [disabled]="true" [required]="true" type="password" tdsInput
+                    <input [placeholder]="'Mật khẩu'" [value]="'******'" [disabled]="true" [required]="true" type="password" tdsInput
                         autocomplete="off" />
                 </tds-form-field>
                 <div>
                     <button class="text-info-400 text-caption-1 italic" type="button"
-                        (click)="ShowModalChangePassword()">Thay đổi mật khẩu</button>
+                        (click)="showModalChangePassword()">Thay đổi mật khẩu</button>
                 </div>
             </div>
             <tds-form-field class="col-span-2">
                 <tds-label> Phân quyền </tds-label>
-                <tds-select formControlName="decentralization" valueField="id" textField="name" [required]="true"
-                    placeholder='Chọn' (ngModelChange)="onModelChange($event)" [data]="listData" mode="multiple">
+                <tds-select [ngModel]="listSelectedRole" [ngModelOptions]="{standalone: true}" valueField="Id" textField="Name" [required]="true"
+                    placeholder='Chọn' (ngModelChange)="onChangeRole($event)" [data]="lstUserRole" mode="multiple">
                 </tds-select>
             </tds-form-field>
         </div>
         <div class="w-full flex justify-end p-4" *tdsModalFooter>
             <button tds-button class="mr-2" color="secondary" (click)="cancel()">Hủy bỏ</button>
-            <button tds-button type="submit" color="primary" (click)="save()">Lưu thay đổi</button>
+            <button tds-button type="submit" color="primary" (click)="onSave()" [disabled]="!formUpdateUser?.valid">Lưu thay đổi</button>
         </div>
     </form>
 </tds-spin>

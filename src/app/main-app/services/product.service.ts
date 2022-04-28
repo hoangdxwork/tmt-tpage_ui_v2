@@ -1,3 +1,4 @@
+import { ProductDTO } from './../dto/product/product.dto';
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
@@ -66,7 +67,7 @@ export class ProductService extends BaseSevice {
   addProductToFacebookPage(data: any): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.AddProductOnFacebookPage`,
-        method: TApiMethodType.delete,
+        method: TApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -88,5 +89,47 @@ export class ProductService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  getSetActive(data: string): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.SetActive`,
+      method: TApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  insertProduct(data: string): Observable<any>{
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
+      method: TApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  updateProduct(key: any,data: string): Observable<any>{
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
+      method: TApiMethodType.put,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  getDefault(): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.DefaultGet?$expand=UOM,Categ,UOMPO`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<ProductDTO>(api, null);
+  }
+
+  delete_product(key: any): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
+      method: TApiMethodType.delete,
+    }
+
+    return this.apiService.getData<ProductDTO>(api, null);
   }
 }

@@ -32,7 +32,7 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
   }
 
   constructor(
-    private modalService: TDSModalService, 
+    private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     // private configService: TDSConfigService,
     private message: TDSMessageService,
@@ -100,11 +100,9 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
 
   refreshData() {
     this.pageIndex = 1;
-
     this.filterObj = {
       searchText: '',
     }
-
     this.loadData(this.pageSize, this.pageIndex);
   }
 

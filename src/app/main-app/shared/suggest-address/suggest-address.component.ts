@@ -273,28 +273,29 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
   }
 
   selectAddress(item: ResultCheckAddressDTO, index: number) {
-      this.index = index;
-      this._form.controls['Street'].setValue(item.Address);
-      if(item.CityCode) {
-          this._form.controls['City'].patchValue({
-              code: item.CityCode,
-              name: item.CityName
-          });
-      }
-      if(item.DistrictCode) {
-        this._form.controls['District'].patchValue({
-              code: item.DistrictCode,
-              name: item.DistrictName
-          });
-      }
-      if(item.WardCode) {
-        this._form.controls['Ward'].patchValue({
-              code: item.WardCode,
-              name: item.WardName
-          });
-      }
-
-      this.onLoadSuggestion.emit(item);
+    if(item) {
+        this.index = index;
+        this._form.controls['Street'].setValue(item.Address);
+        if(item.CityCode) {
+            this._form.controls['City'].patchValue({
+                code: item.CityCode,
+                name: item.CityName
+            });
+        }
+        if(item.DistrictCode) {
+          this._form.controls['District'].patchValue({
+                code: item.DistrictCode,
+                name: item.DistrictName
+            });
+        }
+        if(item.WardCode) {
+          this._form.controls['Ward'].patchValue({
+                code: item.WardCode,
+                name: item.WardName
+            });
+        }
+        this.onLoadSuggestion.emit(item);
+    }
   }
 
   @HostListener('document:keydown', ['$event'])

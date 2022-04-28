@@ -66,7 +66,9 @@ import { ConfigConversationTagsCreateDataModalComponent } from './components/con
 import { FacebookService } from '../../services/facebook.service';
 import { ConfigProductDetailsComponent } from './components/config-product-details/config-product-details.component';
 import { ConfigAddCategoryModalComponent } from './components/config-add-category-modal/config-add-category-modal.component';
+import { ApplicationRoleService } from '../../services/application-role.service';
 import { ConfigEditProductComponent } from './config-edit-product/config-edit-product.component';
+import { UserRestHandler } from '../../services/handlers/user-rest.handler';
 
 const SERVICES = [
     TDSModalService,
@@ -86,7 +88,9 @@ const SERVICES = [
     StockMoveService,
     TagService,
     TagProductTemplateService,
-    ExcelExportService
+    ExcelExportService,
+    ApplicationRoleService,
+    UserRestHandler
 ]
 
 @NgModule({
@@ -169,7 +173,7 @@ const SERVICES = [
     TDSSpinnerModule,
     TDSTimePickerModule,
     PipeModule,
-    TDSFilterStatusModule
+    TDSFilterStatusModule,
   ],
   providers:[
     ...SERVICES

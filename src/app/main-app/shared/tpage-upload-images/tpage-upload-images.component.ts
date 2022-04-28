@@ -2,14 +2,14 @@ import { Subject } from 'rxjs';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { takeUntil } from 'rxjs/operators';
 import { TDSSafeAny, TDSMessageService } from 'tmt-tang-ui';
-import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'tpage-upload-images',
   templateUrl: './tpage-upload-images.component.html',
   styleUrls: ['./tpage-upload-images.component.scss']
 })
-export class TpageUploadImagesComponent implements OnInit, OnDestroy {
+export class TpageUploadImagesComponent implements OnInit, OnDestroy, OnChanges {
   @Input() size:number = 112;
   @Input() showName:boolean = true;
   @Input() inputImages:Array<TDSSafeAny> = [];
@@ -29,6 +29,10 @@ export class TpageUploadImagesComponent implements OnInit, OnDestroy {
     if(this.inputImages.length > 0){
       this.imageList = this.inputImages;
     }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.imageList = this.inputImages;
   }
 
   ngOnDestroy(): void {

@@ -69,7 +69,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
     this.formQuickReply = this.formBuilder.group({
       active: new FormControl(false),
       bodyHtml: new FormControl(''),
-      subjectHtml: new FormControl(''),
+      subjectHtml: new FormControl('',[Validators.required]),
       advancedTemplateRadio: new FormControl(false),
       title: new FormControl(null),
       subTitle: new FormControl(null),
@@ -86,7 +86,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
 
     this.createMessageForm = this.formBuilder.group({
       title: new FormControl('', [Validators.required]),
-      subTitle: new FormControl('',),
+      subTitle: new FormControl(''),
       text: new FormControl(''),
     });
 
@@ -164,6 +164,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
 
   getById(){
     if (this.valueEditId) {
+      this.isLoading = true
       this.quickReplyService.getById(this.valueEditId).pipe(takeUntil(this.destroy$)).subscribe((res) => {
         {
           this.valueEdit = res;
@@ -171,6 +172,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
         }
       },
         err => {
+          this.isLoading = false
           this.message.error('Load dữ liệu thất bại');
         })
     }
@@ -206,8 +208,9 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
   }
 
   updateForm(data: QuickReplyDTO) {
-    this.formQuickReply.controls.subjectHtml.setValue(data.SubjectHtml || data.Subject);
-    this.formQuickReply.controls.bodyHtml.setValue(data.BodyHtml || data.BodyPlain);
+    const getNormalisedString = (str: any) => (str ?? '').replace(/<\/?[^>]+(>|$)/g, "");
+    this.formQuickReply.controls.subjectHtml.setValue(getNormalisedString(data.SubjectHtml) || data.Subject);
+    this.formQuickReply.controls.bodyHtml.setValue(getNormalisedString(data.BodyHtml) || data.BodyPlain);
     this.formQuickReply.controls.active.setValue(data.Active);
     let templateAd = JSON.parse(data.AdvancedTemplate);
 
@@ -225,6 +228,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
         this.addPage(element);
       });
     }
+    this.isLoading = false
 
   }
 
@@ -258,13 +262,12 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
   enableSubmit() {
     switch (this.formQuickReply.value.advancedTemplateRadio) {
       case false: {
-        return !this.formQuickReply.valid
+        return !this.formQuickReply?.valid
       }
       case true:
         {
-          // return !this.formQuickReply.valid
           if (this.templateType == 'generic') {
-            return !this.formQuickReply.valid || !this.createMessageForm.valid || !this.isValidButton(this.buttonFormList)
+            return !this.formQuickReply.valid || !this.createMessageForm?.valid || !this.isValidButton(this.buttonFormList)
           }
           if (this.templateType == 'media') {
             return !this.formQuickReply.valid || !this.isValidButton(this.buttonFormList)
@@ -286,6 +289,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
   onChangeRadio(radio: boolean) {
     this.formQuickReply.controls.advancedTemplateRadio.setValue(radio)
     this.mediaForm = []
+    this.createImageForm.controls.image.setValue('')
     this.onResetMessageFrom();
   }
 
@@ -293,6 +297,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
     this.templateType = data;
     this.messageStructurePart = 1;
     this.onResetMessageFrom();
+    this.createImageForm.controls.image.setValue('')
     this.mediaForm = []
 
   }
@@ -311,13 +316,6 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
     )
   }
 
-  onInputMessageTitle(event: TDSSafeAny) {
-
-  }
-
-  onInputMessageContent(event: TDSSafeAny) {
-
-  }
 
   onChangeStructurePart(i: number) {
     this.messageStructurePart = i;
@@ -332,35 +330,8 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
     this.formQuickReply.controls.bodyHtml.setValue(this.formQuickReply.value.bodyHtml.concat(data))
   }
 
-  handleChange(info: TDSUploadChangeParam): void {
-    if (info.file.status === 'done') {
-      this.createImageForm.value.image = info.file.name;
-      this.message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === 'error') {
-      this.createImageForm.value.image = info.file.name;
-      this.message.error(`${info.file.name} file upload failed.`);
-    }
-  }
-
-  handleUpload = (item: any) => {
-    const formData = new FormData();
-
-    formData.append('mediaFile', item.file as any, item.file.name);
-    formData.append('id', '0000000000000051');
-
-    const req = new HttpRequest('POST', this.uploadUrl, formData);
-    return this.http.request(req).pipe(filter(e => e instanceof HttpResponse)).pipe(takeUntil(this.destroy$)).subscribe(
-      (res: TDSSafeAny) => {
-        if (res && res.body) {
-          const data = res.body;
-          item.file.url = data.mediaUrl;
-        }
-        item.onSuccess(item.file);
-      },
-      (err) => {
-        item.onError({ statusText: err.error?.error?.details }, item.file);
-      }
-    )
+  getUrl(ev: string){
+    this.createImageForm.controls.image.setValue(ev)
   }
 
   getMessageFormIndex(name: string) {
@@ -371,7 +342,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
     let result = true;
     if (list.length > 0) {
       list.forEach(form => {
-        if (!form.valid) {
+        if (!form?.valid) {
           result = false;
         }
       });
@@ -467,13 +438,9 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
         })
       }
       if (this.mediaForm && this.mediaForm.length != 0) {
-        console.log(this.mediaForm)
-        console.log(this.mediaChannelList)
         this.dataAdvancedTemplate.Pages = []
         this.mediaForm.forEach(el => {
-          console.log(el)
           let data = this.mediaChannelList.find(x => x.Facebook_ASUserId == el)
-          console.log(data)
           if (data) {
             let model: PagesMediaDTO = {
               AttachmentId: data.Facebook_ASUserId,
@@ -483,7 +450,6 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
             this.dataAdvancedTemplate.Pages?.push(model)
           }
         })
-        console.log(this.dataAdvancedTemplate.Pages)
       }
       if (this.templateType == 'media' && this.dataAdvancedTemplate.Pages?.length == 0) {
         this.message.error('Vui lòng chọn ít nhất 1 kênh cho mẫu phương tiện');
