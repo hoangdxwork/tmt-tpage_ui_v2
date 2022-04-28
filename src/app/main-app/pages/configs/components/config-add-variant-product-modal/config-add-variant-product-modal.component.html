@@ -12,7 +12,7 @@
             </div>
 
             <div class="flex flex-col w-full">
-                <tds-label>Sản phẩm {{name}}</tds-label>
+                <tds-label>Sản phẩm {{data.Name}}</tds-label>
 
                 <div class="grid grid-cols-1 gap-y-4 text-neutral-1-900 text-body-2 font-regular pt-4">
                     <tds-checkbox formControlName="SaleOK">Có thể bán</tds-checkbox>
@@ -58,12 +58,26 @@
                   </tds-error>
                 </tds-form-field>
 
-                <tds-label>Thuộc tính:</tds-label>
+                <tds-label>Thuộc tính<span class="text-error-400">*</span> :</tds-label>
                 <tds-form-field class="w-full col-span-3">
-                  <input tdsInput formControlName="AttributeValues" placeholder="Nhập thuộc tính" class="text-neutral-1-900 text-body-2 font-regular"/>
-                  <tds-error>
-                      Vui lòng nhập thuộc tính
-                  </tds-error>
+                    <tds-select valueField="AttributeId" textField="AttributeName" placeholder='Chọn thuộc tính'
+                        disabledField="isActive" formControlName="Attributes"
+                        [data]="attributeList" [allowClear]="true"
+                        (selectChange)="onSelectAttribute($event)">
+                    </tds-select>
+                    <tds-error>
+                        Vui lòng chọn thuộc tính
+                    </tds-error>
+                </tds-form-field>
+                <tds-label>Giá trị<span class="text-error-400">*</span> :</tds-label>
+                <tds-form-field class="w-full col-span-3">
+                    <tds-select valueField="Id" textField="NameGet" placeholder='Chọn giá trị thuộc tính'
+                        disabledField="isActive" formControlName="Values" mode="multiple"
+                        [data]="valueList" [autoClose]="true" [allowClear]="true">
+                    </tds-select>
+                    <tds-error>
+                        Vui lòng chọn giá trị thuộc tính
+                    </tds-error>
                 </tds-form-field>
             </div>
         </div>

@@ -20,6 +20,7 @@ import { Component, OnInit, ViewContainerRef } from '@angular/core';
 })
 export class ConfigAddProductComponent implements OnInit, OnDestroy {
   variantTableData:Array<TDSSafeAny> = [];
+  AttributeTableData:Array<TDSSafeAny> = [];
   productTypeList:Array<TDSSafeAny>  = [];
   categoryList:Array<TDSSafeAny>  = [];
   UOMPOList:Array<TDSSafeAny>  = [];
@@ -36,6 +37,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
 
   addProductForm!: FormGroup;
   modelDefault:TDSSafeAny;
+  imgList:Array<TDSSafeAny> = [];
   
   variantPageSize = 20;
   variantPageIndex = 1;
@@ -255,13 +257,13 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       Tags: [null],
       Tracking: ['none'],
       Type: ['product'],
-      UOM: [null],
+      UOM: [null,Validators.required],
       UOMCategId: [null],
       UOMId: [null],
       UOMLines: [null],
       UOMName: [null],
       UOMNameNoSign: [null],
-      UOMPO: [null],
+      UOMPO: [null,Validators.required],
       UOMPOId: [null],
       UOMPOName: [null],
       UOMPONameNoSign: [null],
@@ -281,22 +283,39 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   }
 
   showAddVariantModal(){
-    let productName = this.addProductForm.controls.Name.value;
-    if(productName){
+    let modelData = {
+      Name: this.addProductForm.controls.Name.value,
+      Barcode: this.addProductForm.controls.Barcode.value,
+      DefaultCode: this.addProductForm.controls.DefaultCode.value
+    }
+    
+    if(modelData.Name){
       const modal = this.modalService.create({
         title: 'Thêm biến thể sản phẩm',
         content: ConfigAddVariantProductModalComponent,
         size: "lg",
         viewContainerRef: this.viewContainerRef,
         componentParams:{
-          name: productName
+          data: modelData
         }
       });
       
       modal.afterClose.subscribe(result => {
         if (TDSHelperObject.hasValue(result)) {
-          console.log(result);
-          this.variantTableData.push(result);
+          // this.addProductForm.controls.AttributeLines.setValue(result.AttributeLines);
+          // this.addProductForm.controls.AttributeValues.setValue(result.AttributeValues);
+          // console.log(result)
+          let productName = this.addProductForm.controls.Name.value;
+          let lines = result.AttributeLines.Values as TDSSafeAny[];
+          lines.forEach(line => {
+            this.variantTableData.push({
+              Name: `${productName} (${line.Name})`,
+              ListPrice: result.ListPrice,
+              Active: result.Active
+            });
+          });
+
+          this.AttributeTableData.push(result.AttributeLines);
         }
       });
     }else{
@@ -378,45 +397,27 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     });
   }
 
-  initImages(data: any | null) {
-    if(data != null) {
-      return this.formBuilder.group({
-          MineType: [data.MineType],
-          Name: [data.Name],
-          ResModel: [data.ResModel],
-          Type: [data.Type],
-          Url: [data.Url]
-      });
-    } else {
-      return this.formBuilder.group({
-          MineType: [null],
-          Name: [null],
-          ResModel: [null],
-          Type: [null],
-          Url: [null]
-      });
-    }
-  }
-
-  addImages(data: any) {
-    const model = <FormArray>this.addProductForm.controls['Images'];
-    model.push(this.initImages(data));
-  }
-
   getAvatar(url:string){
-    this.addProductForm.controls.Image.setValue(url);
+    this.addProductForm.controls.ImageUrl.setValue(url);
   }
 
   getImageList(images:Array<TDSSafeAny>){
-    this.addProductForm.controls.Images = this.formBuilder.array([]);
-    images.forEach(img => {
-      this.addImages({
-        MineType: img.type,
-        Name: img.name,
-        ResModel: 'product.template',
-        Type: 'url',
-        Url: img.url
+    this.imgList = images;
+  }
+
+  insertImageToForm(){
+    const model = <FormArray>this.addProductForm.controls['Images'];
+
+    this.imgList.forEach(img => {
+      let form = this.formBuilder.group({
+        MineType: [img.type],
+        Name: [img.name],
+        ResModel: ['product.template'],
+        Type: ['url'],
+        Url: [img.url]
       });
+
+      model.push(form);
     });
   }
 
@@ -427,21 +428,25 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       this.productTemplateService.insertProductTemplate(model).subscribe(
         (res:TDSSafeAny)=>{
           this.message.success('Thêm mới thành công');
+          // console.log(res)
           this.addProductForm.reset();
           this.modelDefault = null;
           this.loadForm();
-          this.router.navigate(['configs/products']);
+          history.back();
         },
         err=>{
-          this.message.error('Thao tác thất bại');
+          this.message.error(err.error.errors.model[0]??'Thao tác thất bại');
         }
       );
+      
     }
   }
 
   prepareModel(){
+    this.insertImageToForm();
+    
     let formModel = this.addProductForm.value;
-
+    
     if(formModel.Name){
       this.modelDefault.Name = formModel.Name;
     }
@@ -451,6 +456,9 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     if(formModel.Images) {
         this.modelDefault.Images = formModel.Images;
     }
+    if(formModel.ImageUrl) {
+      this.modelDefault.ImageUrl = formModel.ImageUrl;
+  }
     if(formModel.SaleOK) {
         this.modelDefault.SaleOK = formModel.SaleOK;
     }
@@ -467,10 +475,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         this.modelDefault.EnableAll = formModel.EnableAll;
     }
     if(formModel.Type) {
-        let modelType = this.productTypeList.find(x=>x.Id== formModel.Type);
-        if(modelType){
-          this.modelDefault.Type = modelType.Type;
-        }
+      this.modelDefault.Type = formModel.Type;
     }
     if(formModel.DefaultCode) {
         this.modelDefault.DefaultCode = formModel.DefaultCode;
@@ -481,11 +486,17 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     if(formModel.Categ) {
         let modelCateg = this.categoryList.find(x=>x.Id== formModel.Categ);
         if(modelCateg){
-          this.modelDefault.Categ = modelCateg.Categ;
-          this.modelDefault.CategId = modelCateg.Categ.Id;
+          this.modelDefault.Categ = modelCateg;
+          this.modelDefault.CategId = modelCateg.Id;
+          this.modelDefault.CategName = modelCateg.Name;
+          this.modelDefault.CategNameNoSign = modelCateg.NameNoSign;
+          this.modelDefault.CategCompleteName = modelCateg.CompleteName;
         }
     } else {
         this.modelDefault.CategId =   this.modelDefault.Categ.Id;
+        this.modelDefault.CategName =   this.modelDefault.Categ.Name;
+        this.modelDefault.CategNameNoSign =   this.modelDefault.Categ.NameNoSign;
+        this.modelDefault.CategCompleteName =   this.modelDefault.Categ.CompleteName;
     }
     if(formModel.Active) {
         this.modelDefault.Active = formModel.Active;
@@ -510,18 +521,32 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         if(modelUOM){
           this.modelDefault.UOM = modelUOM;
           this.modelDefault.UOMId = modelUOM.Id;
+          this.modelDefault.UOMName = modelUOM.Name;
+          this.modelDefault.UOMNameNoSign = modelUOM.NameNoSign;
         }
     } else {
       this.modelDefault.UOMId = this.modelDefault.UOM.Id;
+      this.modelDefault.UOMId = this.modelDefault.UOM.Name;
+      this.modelDefault.UOMId = this.modelDefault.UOM.NameNoSign;
     }
     if(formModel.UOMPO) {
         let modelUOMPO = this.UOMPOList.find(x=>x.Id== formModel.UOMPO);
         if(modelUOMPO){
           this.modelDefault.UOMPO = modelUOMPO;
           this.modelDefault.UOMPOId = modelUOMPO.Id;
+          this.modelDefault.UOMPOName = modelUOMPO.Name;
+          this.modelDefault.UOMPONameNoSign = modelUOMPO.NameNoSign;
         }
     } else {
         this.modelDefault.UOMPOId = this.modelDefault.UOMPO.Id;
+        this.modelDefault.UOMPOName = this.modelDefault.UOMPO.Name;
+        this.modelDefault.UOMPONameNoSign = this.modelDefault.UOMPO.NameNoSign;
+    }
+    if(formModel.PurchaseMethod){
+      this.modelDefault.PurchaseMethod = formModel.PurchaseMethod;
+    }
+    if(formModel.Tracking) {
+      this.modelDefault.Tracking = formModel.Tracking;
     }
     if(formModel.Weight) {
         this.modelDefault.Weight = formModel.Weight;
@@ -532,8 +557,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     if(formModel.POSCateg) {
         let modelPOSCateg = this.POSCategoryList.find(x=>x.Id== formModel.POSCateg);
         if(modelPOSCateg){
-          this.modelDefault.POSCateg = modelPOSCateg;
-          this.modelDefault.POSCategId = modelPOSCateg.Id;
+          this.modelDefault.PosCategId = modelPOSCateg.Id;
         }
     }
     if(formModel.DescriptionSale) {
@@ -547,6 +571,12 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         if(modelProducer){
           this.modelDefault.Producer = modelProducer;
           this.modelDefault.ProducerId = modelProducer.Id;
+          this.modelDefault.ProducerName = modelProducer.Name;
+          this.modelDefault.ProducerAddress = modelProducer.Address;
+        }else{
+          this.modelDefault.ProducerId = this.modelDefault.Producer.Id;
+          this.modelDefault.ProducerName = this.modelDefault.Producer.Name;
+          this.modelDefault.ProducerAddress = this.modelDefault.Producer.Address;
         }
     }
     if(formModel.Importer) {
@@ -554,6 +584,12 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         if(modelImporter){
           this.modelDefault.Importer = modelImporter;
           this.modelDefault.ImporterId = modelImporter.Id;
+          this.modelDefault.ImporterName = modelImporter.Name;
+          this.modelDefault.ImporterAddress = modelImporter.Address;
+        }else{
+          this.modelDefault.ImporterId = this.modelDefault.Importer.Id;
+          this.modelDefault.ImporterName = this.modelDefault.Importer.Name;
+          this.modelDefault.ImporterAddress = this.modelDefault.Importer.Address;
         }
     }
     if(formModel.Distributor) {
@@ -561,6 +597,12 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         if(modelDistributor){
           this.modelDefault.Distributor = modelDistributor;
           this.modelDefault.DistributorId = modelDistributor.Id;
+          this.modelDefault.DistributorName = modelDistributor.Name;
+          this.modelDefault.DistributorAddress = modelDistributor.Address;
+        }else{
+          this.modelDefault.DistributorId = this.modelDefault.Distributor.Id;
+          this.modelDefault.DistributorName = this.modelDefault.Distributor.Name;
+          this.modelDefault.DistributorAddress = this.modelDefault.Distributor.Address;
         }
     }
     if(formModel.OriginCountry) {
@@ -568,6 +610,10 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         if(modelOriginCountry){
           this.modelDefault.OriginCountry = modelOriginCountry;
           this.modelDefault.OriginCountryId = modelOriginCountry.Id;
+          this.modelDefault.OriginCountryName = modelOriginCountry.Name;
+        }else{
+          this.modelDefault.OriginCountryId = this.modelDefault.OriginCountry.Id;
+          this.modelDefault.OriginCountryName = this.modelDefault.OriginCountry.Name;
         }
     }
     if(formModel.YearOfManufacture) {
@@ -585,32 +631,18 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     if(formModel.Description) {
       this.modelDefault.Description = formModel.Description;
     }
-    if(formModel.Tracking) {
-        let modelTracking = this.trackingList.find(x=>x.Id== formModel.Tracking);
-        if(modelTracking){
-          this.modelDefault.Tracking = modelTracking.Tracking;
-        }
-    }
     if(formModel.AttributeValues) {
       this.modelDefault.AttributeValues = formModel.AttributeValues;
     }
     if(this.modelDefault && this.modelDefault.AttributeLines) {
-      let value = this.modelDefault.AttributeLines as TDSSafeAny[];
-
-      let lines = value.forEach(line => {
-        let id = line.Attribute.Id
-        line["AttributeId"] = id;
-      });
-
-      this.modelDefault.AttributeLines = lines;
+      this.modelDefault.AttributeLines = formModel.AttributeLines;
     }
 
     return this.modelDefault;
   }
 
   backToMain(){
-    this.router.navigate(['configs/products']);
-    this.addProductForm.reset();
+    history.back();
   }
 
   onSubmit(){

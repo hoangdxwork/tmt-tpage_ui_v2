@@ -22,10 +22,10 @@ export class OdataProductTemplateService extends BaseSevice {
     super(apiService)
   }
 
-  getView(params:string, filterObj?: FilterObjDTO): Observable<any>{
+  getView(params:string, filterObj?: FilterObjDTO): Observable<TDSSafeAny>{
     const api: TAPIDTO = {
-    url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?${params}&$count=true`,
-    method: TApiMethodType.get,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?${params}&$count=true`,
+      method: TApiMethodType.get,
     }
 
     return this.apiService.getData<ODataProductTemplateDTO>(api, null);
@@ -43,9 +43,13 @@ export class OdataProductTemplateService extends BaseSevice {
     if (TDSHelperString.hasValueString(filterObj.searchText)) {
         dataFilter.filters.push( {
             filters: [
+              { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText },
               { field: "NameGet", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "UOMName", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "DefaultCode", operator: OperatorEnum.contains, value: filterObj.searchText }
+              { field: "NameNoSign", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "DefaultCode", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "ProducerName", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "ImporterName", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "DistributorName", operator: OperatorEnum.contains, value: filterObj.searchText },
             ],
             logic: 'or'
         })

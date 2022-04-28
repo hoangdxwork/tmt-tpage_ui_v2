@@ -164,9 +164,9 @@
     </tds-tab>
     <tds-tab title="Hình ảnh">
       <div class="flex flex-wrap items-center gap-x-4">
-        <div *ngFor="let image of productTemplate.Image | prettyjson">
-          <img tds-image width="108px" height="108px" class="rounded-10" [fallback]="fallback" alt=""
-            [tdsSrc]="image.url" alt="" />
+        <div *ngFor="let image of productTemplate.Images">
+          <tds-avatar [shape]="'square'" [size]="108" class="rounded-10" [isAvatar]="false" [tdsSrc]="image.Url">
+          </tds-avatar>
         </div>
       </div>
     </tds-tab>

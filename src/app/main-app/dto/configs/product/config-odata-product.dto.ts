@@ -1,12 +1,13 @@
+import { ProductTemplateDTO } from './../../product/product.dto';
 import { ProductDTO } from './../../product/product.dto';
 import { TagDTO } from './../../tag/tag.dto';
 import { ConfigProductInventoryDTO } from './config-inventory.dto';
 import { ConfigStockMoveDTO } from './config-warehouse.dto';
-import { ConfigProductTemplateDTO } from './../product/config-product.dto';
+
 export interface ODataProductTemplateDTO {
     "@odata.context"?: string;
     "@odata.count"?: number;
-    value: ConfigProductTemplateDTO[];
+    value: ProductTemplateDTO[];
 }
 
 export interface ODataStokeMoveDTO {
