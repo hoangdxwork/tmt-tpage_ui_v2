@@ -5,7 +5,7 @@ import { ModalSendMessageComponent } from './../components/modal-send-message/mo
 import { ModalConvertPartnerComponent } from './../components/modal-convert-partner/modal-convert-partner.component';
 import { ModalEditPartnerComponent } from './../components/modal-edit-partner/modal-edit-partner.component';
 
-import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef, ElementRef, AfterViewInit, HostListener } from '@angular/core';
 import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperArray, TDSMessageService, TDSTableQueryParams, TDSHelperString, TDSResizeObserver } from 'tmt-tang-ui';
 import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
 import { OperatorEnum, SortEnum, THelperCacheService } from 'src/app/lib';
@@ -273,7 +273,11 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
         this.message.error('Gán nhãn thất bại!');
     });
   }
-
+  
+//   @HostListener('window:scroll', ['$event'])
+// onWindowScroll($event) {
+//     console.log("scrolling...");
+// }
   ngAfterViewInit(): void {
     this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse
     this.resizeObserver
@@ -502,7 +506,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        ids: ids
+        partnerIds: ids
       }
     });
   }

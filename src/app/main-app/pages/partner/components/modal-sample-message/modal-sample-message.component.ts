@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { ODataQuickReplyDTO, QuickReplyDTO } from './../../../../dto/quick-reply.dto.ts/quick-reply.dto';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { QuickReplyService } from './../../../../services/quick-reply.service';
+import { Component, OnInit, Input } from '@angular/core';
 import { TDSModalRef } from 'tmt-tang-ui';
-interface SampleMessageDto{
-  id: number;
-  name: string;
-  content: string
-}
 
 @Component({
   selector: 'app-modal-sample-message',
@@ -13,19 +12,35 @@ interface SampleMessageDto{
 })
 export class ModalSampleMessageComponent implements OnInit {
 
-  listSampleMessage!: SampleMessageDto[]
-  constructor(private modal: TDSModalRef,) { }
+  listSampleMessage!: QuickReplyDTO[];
+  count!: number;
+  pageSize: number = 20;
+  private destroy$ = new Subject<void>();
+  constructor(
+    private modal: TDSModalRef,
+    private quickReplyService: QuickReplyService,
+    ) { }
 
   ngOnInit(): void {
-    this.listSampleMessage = [
-      {id: 1, name: 'Công nợ', content:'{partner.debt}'},
-      {id: 2, name: 'Tổng tiền đơn hàng', content:'{{order.total_amount}}'},
-      {id: 3, name: 'Mã vận đơn', content:'{order.tracking_code}'},
-      {id: 4, name: 'Số điện thoại', content:'{partner.phone}'},
-      {id: 5, name: 'Mã đặt hàng', content:'{placeholder.code}'},
-
-    ]
+    this.loadData();
   }
+
+  loadData(){
+    this.quickReplyService.getOnlyActive().pipe(takeUntil(this.destroy$)).subscribe((res:ODataQuickReplyDTO)=>{
+      if(res){
+        this.listSampleMessage = res.value
+        this.count = res['@odata.count'] as number;
+      }
+      
+    })
+  }
+
+  chooseQuickReply(data: QuickReplyDTO){
+    if(data){
+      this.modal.destroy(data)
+    }
+  }
+
   cancel(){
     this.modal.destroy(null)
   }
