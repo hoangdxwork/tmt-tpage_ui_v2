@@ -1,14 +1,17 @@
 import { finalize } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ModalAddUserComponent } from './../../components/modal-add-user/modal-add-user.component';
-import { TDSModalService, TDSHelperObject, TDSSafeAny, TDSMessageService } from 'tmt-tang-ui';
+import { TDSModalService, TDSHelperObject, TDSSafeAny, TDSMessageService, TDSHelperArray } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ModalUpdateUserComponent } from '../../components/modal-update-user/modal-update-user.component';
 import { ApplicationRoleService } from 'src/app/main-app/services/application-role.service';
 import { ApplicationRoleDTO } from 'src/app/main-app/dto/account/application-role.dto';
-import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
+import { ApplicationUserCRMTeamDTO, ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { Message } from 'src/app/lib/consts/message.const';
+import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
+import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
+import { Observable } from 'rxjs';
 export interface DataUser {
   id: number;
   name: string;
@@ -29,8 +32,15 @@ export class ConfigUsersOperationComponent implements OnInit {
 
   lstUsers: ApplicationUserDTO[] = [];
   lstUserRole: ApplicationRoleDTO[] = [];
+  lstTeam: CRMTeamDTO[] | undefined;
 
   isLoading: boolean = false;
+  userManagerPage: TDSSafeAny = {};
+
+  userManagerPage$!: Observable<TDSSafeAny>;
+  userManagerPageNot$!: Observable<TDSSafeAny>;
+
+  userManagerNumber: number = 2;
 
   constructor(
     private modalService: TDSModalService,
@@ -39,19 +49,13 @@ export class ConfigUsersOperationComponent implements OnInit {
     private applicationUserService: ApplicationUserService,
     private applicationRoleService: ApplicationRoleService,
     private router: Router,
+    private crmTeamService: CRMTeamService
   ) { }
 
   ngOnInit(): void {
-    this.listOfDataUser = new Array(66).fill(0).map((_, index) => ({
-      id: index,
-      name: `Jerome Bell ${index}`,
-      decentralization: 'Administrators',
-      page:'',
-      status: index % 2 === 0
-    }));
-
     this.loadUser();
     this.loadUserRole();
+    this.loadListTeam();
   }
 
   loadUser() {
@@ -60,6 +64,7 @@ export class ConfigUsersOperationComponent implements OnInit {
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.lstUsers = res.value;
+        this.loadCRMTeamUser();
       });
   }
 
@@ -69,9 +74,48 @@ export class ConfigUsersOperationComponent implements OnInit {
     });
   }
 
+  loadListTeam() {
+    this.crmTeamService.onChangeListFaceBook().subscribe(res => {
+      this.lstTeam = res?.Items;
+    });
+  }
+
   getNameRole(id: string) {
     let item = this.lstUserRole.find(x => x.Id == id);
     return item?.Name || "";
+  }
+
+  loadCRMTeamUser() {
+    let ids = this.lstUsers.map(x => x.Id);
+    let model: ApplicationUserCRMTeamDTO = {
+      Ids: ids
+    }
+
+    this.applicationUserService.getCRMTeamUser({model: model}).subscribe(res => {
+      res.value.forEach(x => {
+        this.userManagerPage[x.Id] = x.CRMTeam_Users;
+      });
+
+      console.log(this.userManagerPage);
+    });
+
+    this.userManagerPage$ = new Observable(observer => {
+      this.applicationUserService.getCRMTeamUser({model: model}).subscribe(res => {
+        let result: TDSSafeAny = {};
+        res.value.forEach((x) => {
+          result[x.Id] = {
+            pageShow: [],
+            pageHide: []
+          }
+
+          result[x.Id].pageShow = [...x.CRMTeam_Users].splice(0, 2);
+          result[x.Id].pageHide = [...x.CRMTeam_Users].splice(2, x.CRMTeam_Users.length - 1);
+        });
+
+        observer.next(result);
+        observer.complete();
+      });
+    });
   }
 
   showModalUpdateUser(userId: string){
@@ -130,6 +174,18 @@ export class ConfigUsersOperationComponent implements OnInit {
       .subscribe(res => {
         this.message.success(Message.DeleteSuccess);
         this.loadUser();
+      }, error => {
+        if(error?.error?.message) this.message.error(error?.error?.message);
+        else this.message.error(Message.ErrorOccurred);
+      });
+  }
+
+  updateStatus(id: string) {
+    this.isLoading = true;
+    this.applicationUserService.updateStatus(id)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe((res) => {
+        this.message.success(Message.UpdatedSuccess);
       }, error => {
         if(error?.error?.message) this.message.error(error?.error?.message);
         else this.message.error(Message.ErrorOccurred);
