@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { ConversationsRoutingModule } from './conversations-routing.module';
 import { ConversationAllComponent } from './conversation-all/conversation-all.component';
 import { ConversationPostComponent } from './conversation-post/conversation-post.component';
-import { ConversationPartnerComponent } from './conversation-partner/conversation-partner.component';
 import { ConversationCommentComponent } from './conversation-comment/conversation-comment.component';
 import { ConversationInboxComponent } from './conversation-inbox/conversation-inbox.component';
 import { MainSharedModule } from '../../shared/shared.module';
@@ -15,29 +14,40 @@ import { ModalImageStoreComponent } from './components/modal-image-store/modal-i
 import { ConversationDataFacade } from '../../services/facades/conversation-data.facade';
 import { ConversationFacebookState } from '../../services/facebook-state/conversation-fb.state';
 import { ConversationService } from '../../services/conversation/conversation.service';
-import { ActiveMatchingItemComponent } from './components/active-matching/active-matching-item.component';
 import { ConversationEventFacade } from '../../services/facades/conversation-event.facade';
 import { DraftMessageService } from '../../services/conversation/draft-message.service';
 import { THelperCacheService } from 'src/app/lib';
+import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
+import { TDSSpinnerModule } from 'tmt-tang-ui';
+import { ConversationOrderComponent } from './components/conversation-order/conversation-order.component';
+import { ConversationPartnerComponent } from './components/conversation-partner/conversation-partner.component';
+import { ActiveMatchingItemComponent } from './components/active-matching/active-matching-item.component';
+import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
+import { SaleOnline_OrderService } from '../../services/sale-online-order.service';
+import { PartnerService } from '../../services/partner.service';
 
 const SERVICES = [
   ConversationDataFacade,
   ConversationEventFacade,
+  ConversationOrderFacade,
   ConversationFacebookState,
   ConversationService,
   DraftMessageService,
-  THelperCacheService
+  THelperCacheService,
+  SaleOnline_OrderService,
+  PartnerService
 ]
 
 @NgModule({
   declarations: [
     ConversationAllComponent,
     ConversationPostComponent,
-    ConversationPartnerComponent,
     ConversationCommentComponent,
     ConversationInboxComponent,
     ModalImageStoreComponent,
-    ActiveMatchingItemComponent
+    ActiveMatchingItemComponent,
+    ConversationOrderComponent,
+    ConversationPartnerComponent
   ],
   imports: [
     CommonModule,
@@ -66,7 +76,9 @@ const SERVICES = [
     TDSToolTipModule,
     TDSModalModule,
     TDSMessageModule,
-    TDSTypographyModule
+    TDSTypographyModule,
+    UploadImageModule,
+    TDSSpinnerModule
   ],
   providers: [ ...SERVICES]
 })

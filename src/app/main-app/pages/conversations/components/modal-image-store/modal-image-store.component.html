@@ -4,8 +4,8 @@
             <div class="flex flex-col h-full w-full">
                 <div class="flex items-center gap-2.5">
                     <tds-form-field class="w-full">
-                        <input aria-colspan="" class="placeholder-neutral-1-400" 
-                            placeholder="Tìm kiếm hình ảnh" tdsInput [(ngModel)]="inputValue" />
+                        <input aria-colspan="" class="placeholder-neutral-1-400"
+                            placeholder="Tìm kiếm hình ảnh" tdsInput />
                         <span tdsPrefix ><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
                     </tds-form-field>
                     <button tds-button color="primary">
@@ -24,24 +24,24 @@
                           <i class="tdsi-trash-line text-lg leading-none mr-2"></i>Xóa ảnh
                         </span>
                       </button>
-                </div> 
+                </div>
                 <div class="max-h-[calc(100vh-375px)] w-full overflow-y-auto tds-custom-scroll">
                     <div class="grid grid-cols-4 gap-5 h-full w-full">
                         <ng-template ngFor let-data [ngForOf]="listImage">
                             <div *ngIf="data.choose === false; else noActive">
-                                <div class="relative rounded-lg border border-transparent border-solid group"> 
+                                <div class="relative rounded-lg border border-transparent border-solid group">
                                     <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100">
                                         <tds-checkbox [checked]="data.choose"></tds-checkbox>
                                     </div>
-                                    <img [src]="data.image"> 
+                                    <img [src]="data.image">
                                     <div class="absolute bottom-0 opacity-0 group-hover:opacity-100">
                                         <div class="flex p-2.5 gap-2.5 bg-gradient-to-b from-black/0 to-black/100 items-center rounded-b-lg">
                                             <div class="text-body-2 text-white font-semibold font-sans">Bộ đồ thời trang siêu đẹp mùa thu đông... </div>
-                                            <div class="flex gap-0.5"> 
+                                            <div class="flex gap-0.5">
                                                 <div class="flex items-center "><i class="tdsi-edit-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i></div>
-                                                
+
                                                 <div class="flex items-center " tds-flat-button-icon tds-tooltip tooltipTitle="Thêm vào bộ sưu tập"><i class="tdsi-add-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i></div>
-            
+
                                                 <div class="flex items-center "><i class="tdsi-trash-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i></div>
                                             </div>
                                         </div>
@@ -49,26 +49,26 @@
                                 </div>
                             </div>
                             <ng-template #noActive>
-                                <div class="relative rounded-lg border border-primary-1 border-solid group"> 
+                                <div class="relative rounded-lg border border-primary-1 border-solid group">
                                     <div class="absolute top-1 right-1 opacity-100">
                                         <tds-checkbox [checked]="data.choose"></tds-checkbox>
                                     </div>
-                                    <img [src]="data.image"> 
+                                    <img [src]="data.image">
                                     <div class="absolute bottom-0 opacity-0 group-hover:opacity-100">
                                         <div class="flex p-2.5 gap-2.5 bg-gradient-to-b from-black/0 to-black/100 items-center rounded-b-lg">
                                             <div class="text-body-2 text-white font-semibold font-sans">Bộ đồ thời trang siêu đẹp mùa thu đông... </div>
-                                            <div class="flex gap-0.5"> 
+                                            <div class="flex gap-0.5">
                                                 <div class="flex items-center "><i class="tdsi-edit-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i></div>
-                                                
+
                                                 <div class="flex items-center " tds-flat-button-icon tds-tooltip tooltipTitle="Thêm vào bộ sưu tập"><i class="tdsi-add-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i></div>
-            
+
                                                 <div class="flex items-center "><i class="tdsi-trash-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i></div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                               </ng-template>
-                        </ng-template> 
+                        </ng-template>
                     </div>
                 </div>
             </div>
@@ -77,8 +77,8 @@
             <div class="flex flex-col h-full w-full">
                 <div class="flex items-center gap-2.5">
                     <tds-form-field class="w-full">
-                        <input aria-colspan="" class="placeholder-neutral-1-400" 
-                            placeholder="Tìm kiếm hình ảnh" tdsInput [(ngModel)]="inputValue" />
+                        <input aria-colspan="" class="placeholder-neutral-1-400"
+                            placeholder="Tìm kiếm hình ảnh" tdsInput  />
                         <span tdsPrefix ><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
                     </tds-form-field>
                     <button tds-button color="primary">
@@ -97,12 +97,12 @@
                           <i class="tdsi-trash-line text-lg leading-none mr-2"></i>Xóa bộ sưu tập
                         </span>
                       </button>
-                </div> 
+                </div>
                 <div class="max-h-[calc(100vh-375px)] w-full overflow-y-auto tds-custom-scroll">
                     <div class="grid grid-cols-3 gap-5 ">
                         <ng-template ngFor let-data [ngForOf]="listCollect">
                             <div *ngIf="data.choose === false; else noCollectActive">
-                                <div class="relative rounded-lg border border-transparent border-solid group"> 
+                                <div class="relative rounded-lg border border-transparent border-solid group">
                                     <div class="absolute top-2 right-1 opacity-0 group-hover:opacity-100">
                                         <tds-checkbox [checked]="data.choose"></tds-checkbox>
                                     </div>
@@ -121,9 +121,9 @@
                                                 <div class="text-caption-1 font-regular text-white font-sans">Bộ sưu tập - {{data.soLuong}} ảnh</div>
                                                 <div class="text-body-2 text-white font-semibold font-sans">{{data.name}}</div>
                                             </div>
-                                            <div class="flex gap-0.5"> 
+                                            <div class="flex gap-0.5">
                                                 <div class="flex items-center "><i class="tdsi-edit-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i></div>
-            
+
                                                 <div class="flex items-center "><i class="tdsi-trash-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i></div>
                                             </div>
                                         </div>
@@ -131,7 +131,7 @@
                                 </div>
                             </div>
                             <ng-template #noCollectActive>
-                                <div class="relative rounded-lg border border-transparent border-solid group"> 
+                                <div class="relative rounded-lg border border-transparent border-solid group">
                                     <div class="absolute top-2 right-1 opacity-100">
                                         <tds-checkbox [checked]="data.choose"></tds-checkbox>
                                     </div>
@@ -150,21 +150,21 @@
                                                 <div class="text-caption-1 font-regular text-white font-sans">Bộ sưu tập - {{data.soLuong}} ảnh</div>
                                                 <div class="text-body-2 text-white font-semibold font-sans">{{data.name}}</div>
                                             </div>
-                                            <div class="flex gap-0.5"> 
+                                            <div class="flex gap-0.5">
                                                 <div class="flex items-center "><i class="tdsi-edit-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i></div>
-            
+
                                                 <div class="flex items-center "><i class="tdsi-trash-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i></div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                               </ng-template>
-                        </ng-template> 
+                        </ng-template>
                     </div>
                 </div>
             </div>
         </tds-tab>
-    </tds-tabset> 
+    </tds-tabset>
     <div class="w-full flex justify-end p-4" *tdsModalFooter>
         <button tds-button class="mr-2" color="secondary" (click)="cancel()">Hủy bỏ</button>
         <button tds-button type="submit" color="primary">Gửi</button>

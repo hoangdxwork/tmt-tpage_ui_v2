@@ -69,6 +69,7 @@ import { ConfigAddCategoryModalComponent } from './components/config-add-categor
 import { ApplicationRoleService } from '../../services/application-role.service';
 import { ConfigEditProductComponent } from './config-edit-product/config-edit-product.component';
 import { UserRestHandler } from '../../services/handlers/user-rest.handler';
+import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
 
 const SERVICES = [
     TDSModalService,
@@ -174,6 +175,7 @@ const SERVICES = [
     TDSTimePickerModule,
     PipeModule,
     TDSFilterStatusModule,
+    UploadImageModule
   ],
   providers:[
     ...SERVICES

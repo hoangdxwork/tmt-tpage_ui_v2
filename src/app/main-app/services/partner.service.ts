@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
+import { CheckConversationDTO } from '../dto/partner/check-conversation.dto';
 import { ODataCustomerDTO } from '../dto/partner/customer.dto';
 import { PartnerBirthdayDTO } from '../dto/partner/partner-birthday.dto';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
@@ -170,6 +171,17 @@ export class PartnerService extends BaseSevice {
 
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
+
+  checkConversation(page_id: string, psid: string) {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/checkconversation`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<CheckConversationDTO>(api, { PageId: page_id, UserId: psid });
+  }
+
+
 
 
 }

@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, TemplateRef, ViewContainerRef } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { isThisSecond } from 'date-fns';
 import { TDSHelperObject, TDSModalService } from 'tmt-tang-ui';
 import { ActiveMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
@@ -11,21 +12,19 @@ import { ModalImageStoreComponent } from '../../pages/conversations/components/m
   host: {  class: "w-full h-full overflow-hidden flex flex-col" },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TDSConversationsComponent implements OnInit {
+export class TDSConversationsComponent implements OnInit, OnChanges {
 
   @Input() tdsHeader?: string | TemplateRef<void>;
-
   @Input() data!: ActiveMatchingItem;
   @Input() psid!: string;
   @Input() type!: string;
   @Input() team!: CRMTeamDTO;
   @Output() onLoadMiniChat = new EventEmitter();
-
-  isLoading: boolean = false;
   inputValue?: string;
+  isLoadingChat: boolean = false;
 
   constructor(private modalService: TDSModalService,
-              private viewContainerRef: ViewContainerRef) { }
+        private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
   }
@@ -40,5 +39,9 @@ export class TDSConversationsComponent implements OnInit {
   loadEmojiMart(event: any) {
 
   }
+
+  ngOnChanges(changes: SimpleChanges) {
+  }
+
 
 }

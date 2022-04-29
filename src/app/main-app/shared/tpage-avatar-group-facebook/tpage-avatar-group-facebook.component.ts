@@ -1,5 +1,5 @@
-import { TpageAvatarFacebookComponent } from './../tpage-avatar-facebook/tpage-avatar-facebook.component';
 import { Component, ContentChildren, QueryList, Input, ChangeDetectionStrategy } from '@angular/core';
+import { TpageAvatarFacebookComponent } from '../upload-image/tpage-avatar-facebook/tpage-avatar-facebook.component';
 
 @Component({
   selector: 'tpage-avatar-group-facebook',
@@ -22,7 +22,7 @@ export class TpageAvatarGroupFacebookComponent {
             this.tdsClass.forEach(cl=>{
               avatar.nativeElement.classList.add(cl);
             })
-            
+
           }
         })
     }
