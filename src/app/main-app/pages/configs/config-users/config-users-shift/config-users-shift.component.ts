@@ -38,40 +38,6 @@ export class ConfigUsersShiftComponent implements OnInit {
     { id: 6, week: 12, date: '27/03', dayOfWeek: 'Chủ nhật', workingDay: new Date() },
   ];
   public modelShifts = [];
-  listOfDataUser = [
-    {
-      id: 1,
-      name: 'Jacob Jones',
-      week: 12,
-      dataTags: [
-        { idTag: 1, idDayOfWeek: 0, name: 'Ca sáng' },
-        { idTag: 2, idDayOfWeek: 0, name: 'Ca chiều' },
-        { idTag: 3, idDayOfWeek: 0, name: 'Tăng ca' },
-        { idTag: 4, idDayOfWeek: 1, name: 'test' },
-      ],
-    },
-    {
-      id: 2,
-      name: 'Guy Hawkins',
-      week: 12,
-      dataTags: [{ idTag: 4, idDayOfWeek: 1, name: 'test' }],
-    },
-    { id: 3, name: 'Theresa Webb', dataTags: [] },
-    { id: 4, name: 'Esther Howard', dataTags: [] },
-    { id: 5, name: 'Robert Fox', dataTags: [] },
-    { id: 6, name: 'Wade Warren', dataTags: [] },
-    { id: 7, name: 'Jenny Wilson', dataTags: [] },
-    { id: 8, name: 'Marvin McKinney', dataTags: [] },
-    { id: 9, name: 'Darrell Steward', dataTags: [] },
-    { id: 10, name: 'Kristin Watson', dataTags: [] },
-    { id: 11, name: 'Tester 1', dataTags: [] },
-    { id: 12, name: 'Tester 2', dataTags: [] },
-  ];
-  lstDataTag = [
-    { id: 1, name: 'Ca sáng' },
-    { id: 2, name: 'Ca chiều' },
-    { id: 3, name: 'Tăng ca' },
-  ];
 
   startOFWeek!: Date;
   endOFWeek!: Date;
@@ -173,17 +139,13 @@ export class ConfigUsersShiftComponent implements OnInit {
   }
 
   assignTags(user: ApplicationUserDTO, workingDay: Date) {
-    console.log(this.modelShifts);
-    console.log(this.listDataWeek);
-    debugger;
-
     if(!TDSHelperArray.hasListValue(this.modelShifts)) {
       this.message.error(Message.EmptyData);
       return;
     }
 
     let model: UserUpdateShiftDTO = {
-      WorkingDay: new Date(workingDay.toLocaleString("vi-VN", {timeZone: "Asia/Jakarta"})),
+      WorkingDay: new Date(workingDay.setDate(workingDay.getDate() + 1)),
       Shifts: this.modelShifts
     }
 

@@ -90,3 +90,7 @@ export interface UserUpdateShiftDTO {
   WorkingDay: Date;
   Shifts: ShiftDTO[];
 }
+
+export interface ApplicationUserCRMTeamDTO {
+  Ids: string[];
+}

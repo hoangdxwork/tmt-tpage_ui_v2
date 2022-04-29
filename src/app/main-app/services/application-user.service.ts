@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable} from 'rxjs';
 import { map } from 'rxjs/operators';
-import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService, TIDictionary } from 'src/app/lib';
 import { TDSSafeAny } from 'tmt-tang-ui';
-import { AddApplicationUserDTO, AddShiftDTO, ApplicationUserDTO, ApplicationUserShiftDTO, ShiftDTO, UpdateApplicationUserDTO, UserUpdateShiftDTO } from '../dto/account/application-user.dto';
+import { AddApplicationUserDTO, AddShiftDTO, ApplicationUserCRMTeamDTO, ApplicationUserDTO, ApplicationUserShiftDTO, ShiftDTO, UpdateApplicationUserDTO, UserUpdateShiftDTO } from '../dto/account/application-user.dto';
 import { ODataResponsesDTO } from '../dto/odata/odata.dto';
+import { CRMTeam_UserDTO } from '../dto/team/team.dto';
 import { ODataApplicationUserDTO } from '../dto/user/application-user.dto';
 import { BaseSevice } from './base.service';
 
@@ -92,6 +93,15 @@ export class ApplicationUserService extends BaseSevice {
     return this.apiService.getData<ShiftDTO>(api, null);
   }
 
+  getCRMTeamUser(data: TDSSafeAny): Observable<ODataResponsesDTO<ApplicationUserDTO>> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetCRMTeamUser?$expand=CRMTeam_Users`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<ODataResponsesDTO<ApplicationUserDTO>>(api, data);
+  }
+
   update(data: UpdateApplicationUserDTO): Observable<ApplicationUserDTO> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/update`,
@@ -135,6 +145,15 @@ export class ApplicationUserService extends BaseSevice {
     }
 
     return this.apiService.getData<ODataResponsesDTO<ShiftDTO>>(api, data);
+  }
+
+  updateStatus(id: string): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}('${id}')/ODataService.UpdateStatus`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   removeShifts(id: string): Observable<TDSSafeAny> {

@@ -4,12 +4,12 @@ import { CompanyDTO } from '../company/company.dto';
 
 export interface CRMTeam_UserDTO {
   Id: number;
-  crmTeamId: number;
-  userId: string;
-  applicationUsers: Array<ApplicationUserDTO>;
-  facebook_PageId: string;
-  facebook_PageName: string;
-  facebook_PageLogo: string;
+  CRMTeamId: number;
+  UserId: string;
+  ApplicationUsers: Array<ApplicationUserDTO>;
+  Facebook_PageId: string;
+  Facebook_PageName: string;
+  Facebook_PageLogo: string;
 }
 
 export interface CRMTeamDTO {
