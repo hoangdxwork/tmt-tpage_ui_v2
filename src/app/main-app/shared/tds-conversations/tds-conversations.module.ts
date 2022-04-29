@@ -8,6 +8,7 @@ import { TDSConversationItemComponent } from './tds-conversation-item';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { TDSPopoverModule } from 'tmt-tang-ui';
 import { IconEmojiMartComponent } from '../emoji-mart/icon-emoji-mart.component';
+import { UploadImageModule } from '../upload-image/tpage-avatar-facebook/upload-image.module';
 
 const CMP =[
   TDSConversationsComponent,
@@ -35,7 +36,8 @@ const CMP =[
     TDSModalModule,
     TDSSpinnerModule,
     PickerModule,
-    TDSPopoverModule
+    TDSPopoverModule,
+    UploadImageModule
   ],
   exports:[
     ...CMP

@@ -24,8 +24,8 @@ export class SaleOnline_OrderService extends BaseSevice {
 
   getById(id: string): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})?$expand=Details,User,Partner`,
-      method: TApiMethodType.get,
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})?$expand=Details,User,Partner`,
+        method: TApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);

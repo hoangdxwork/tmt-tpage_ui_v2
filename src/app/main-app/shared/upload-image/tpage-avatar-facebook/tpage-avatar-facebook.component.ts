@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { shareReplay } from 'rxjs/operators';
 import { ButtonSize, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
-import { ImageFacade } from '../../services/facades/image.facade';
+import { ImageFacade } from '../../../services/facades/image.facade';
 
 @Component({
   selector: 'tpage-avatar-facebook',

@@ -20,6 +20,7 @@ import {
   TDSNotificationModule,
   TDSSelectModule,
 } from 'tmt-tang-ui';
+import { UploadImageModule } from './shared/upload-image/tpage-avatar-facebook/upload-image.module';
 
 
 @NgModule({
@@ -45,6 +46,7 @@ import {
     PipeModule,
     TDSModalModule,
     TDSNotificationModule,
+    UploadImageModule
   ],
   providers:[
     //SignalRConnectionService,

@@ -10,6 +10,7 @@ import { MainSharedModule } from '../../shared/shared.module';
 import { FacebookGraphService } from '../../services/facebook-graph.service';
 import { PipeModule } from '../../shared/pipe/pipe.module';
 import { FacebookLoginService } from '../../services/facebook-login.service';
+import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
 
 const SERVICES = [
   FacebookGraphService,
@@ -41,7 +42,8 @@ const SERVICES = [
     TDSSwitchModule,
     TDSModalModule,
     PipeModule,
-    TDSSpinnerModule
+    TDSSpinnerModule,
+    UploadImageModule
   ],
   providers: [
     ...SERVICES,
