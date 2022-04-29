@@ -6,7 +6,7 @@ export interface CRMGenerateMessageByPhoneDTO {
 }
 
 export interface RestSMSDTO {
-    Id: number;
+    Id?: number;
     Name: string;
     Provider: string;
     ApiUrl: string;
@@ -20,4 +20,22 @@ export interface SendMessageSMSDTO {
     Provider: string;
     ApiUrl: string;
     CustomProperties: string;
+}
+
+export interface CategorySMSDTO {
+    key: number;
+    datasource?: string;
+    Price: number;
+}
+
+export interface customPropertiesSMSDTO{
+    type: CategorySMSDTO;
+    secretkey: string;
+}
+
+export interface ListSMSDTO {
+    provider: string;
+    name: string;
+    apiurl: string;
+    categories: CategorySMSDTO[];
 }

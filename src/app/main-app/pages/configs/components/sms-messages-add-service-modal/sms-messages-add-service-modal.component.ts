@@ -1,6 +1,12 @@
+import { takeUntil } from 'rxjs/operators';
+import { Subject, pipe } from 'rxjs';
+import { CategorySMSDTO, customPropertiesSMSDTO } from './../../../../dto/sms/sms.dto';
+import { TDSMessageService } from 'tmt-tang-ui';
+import { RestSMSService } from './../../../../services/sms.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
+import { ListSMSDTO, RestSMSDTO } from 'src/app/main-app/dto/sms/sms.dto';
 
 @Component({
   selector: 'app-sms-messages-add-service-modal',
@@ -8,106 +14,169 @@ import { TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
   styleUrls: ['./sms-messages-add-service-modal.component.scss']
 })
 export class SMSMessagesAddServiceModalComponent implements OnInit {
-  SMSServiceData:Array<TDSSafeAny> = [];
-  responseData:Array<TDSSafeAny> = [];
-  partnerData:Array<TDSSafeAny> = [];
-  serviceData:Array<TDSSafeAny> = [];
+  @Input() dataId!: number;
 
+  isLoading: boolean = false;
+  private destroy$ = new Subject<void>();
+  categorySMS: CategorySMSDTO[] = [];
+  items: Array<ListSMSDTO> = [];
   serviceForm!: FormGroup;
+  modelDefault: RestSMSDTO = {
+    ApiKey: '',
+    ApiUrl: '',
+    CustomProperties: '',
+    Name: '',
+    Provider: ''
+  };
 
-  constructor(private modal: TDSModalRef, private formBuilder: FormBuilder) { 
-    this.serviceForm = this.formBuilder.group({
-      partner: new FormControl('', [Validators.required]),
-      apiKey: new FormControl('', [Validators.required]),
-      secretKey: new FormControl('', [Validators.required]),
-      service: new FormControl('', [Validators.required]),
-    });
+  constructor(
+    private modal: TDSModalRef,
+    private formBuilder: FormBuilder,
+    private restSMSService: RestSMSService,
+    private message: TDSMessageService,
+  ) {
+    this.createForm();
   }
 
   ngOnInit(): void {
     this.loadData();
   }
 
-  loadData(){
-    this.SMSServiceData = [
-      {
-        id:1,
-        partner:'ESMS',
-        services:[
-          {
-            id:1,
-            name:'Dịch vụ Internet'
-          },
-          {
-            id:2,
-            name:'Gửi tin nhắn SMS'
-          },
-        ]
-      },
-      {
-        id:2,
-        partner:'SpeedSMS',
-        services:[
-          {
-            id:1,
-            name:'Gửi bằng đầu số ngẫu nhiên'
-          },
-          {
-            id:2,
-            name:'Tin nhắn gửi bằng brandname'
-          },
-          {
-            id:3,
-            name:'Tin nhắn gửi bằng brandname mặc định (Verify hoặc Notify)'
-          },
-          {
-            id:4,
-            name:'Tin nhắn gửi bằng app android'
-          },
-        ]
+  createForm() {
+    this.serviceForm = this.formBuilder.group({
+      currentValue: new FormControl('', [Validators.required]),
+      apiKey: new FormControl('', [Validators.required]),
+      secretKey: new FormControl('', [Validators.required]),
+      category: new FormControl('', [Validators.required]),
+    });
+  }
+
+  resetForm() {
+    this.serviceForm.controls.category.setValue('');
+    this.serviceForm.controls.apiKey.setValue('');
+    this.serviceForm.controls.secretKey.setValue('');
+  }
+
+  loadData() {
+    this.restSMSService.getListSMS().pipe(takeUntil(this.destroy$)).subscribe((res: ListSMSDTO[]) => {
+      this.items = res;
+      if (this.dataId) {
+        this.isLoading = true;
+        this.restSMSService.getById(this.dataId).pipe(takeUntil(this.destroy$)).subscribe((res: RestSMSDTO) => {
+          if (res) {
+            this.modelDefault = res;
+            let temp = this.items.find(x => x.provider == res.Provider);
+            var hihi = JSON.parse(res.CustomProperties);
+            if (temp) {
+              let key = temp.categories.find(x => x.key == hihi.type.key);
+              this.serviceForm.controls.category.setValue(key?.key);
+              this.categorySMS = temp.categories
+            }
+            this.serviceForm.controls.currentValue.setValue(temp?.provider);
+            this.serviceForm.controls.apiKey.setValue(res.ApiKey);
+            this.serviceForm.controls.secretKey.setValue(hihi["secretkey"] || null);
+          }
+          this.isLoading = false;
+        }, err => {
+          this.message.error(err.error ? err.error.message : 'Load dữ liệu thất bại')
+          this.isLoading = false;
+        })
       }
-    ];
+    }, err => {
+      this.message.error('Load dữ liệu danh sách đối tác dịch vụ thất bại!')
+    })
 
-    this.getAllPartner();
   }
 
-  getAllPartner(){
-    this.partnerData = [
-      {
-        id:1,
-        partner:'ESMS',
-      },
-      {
-        id:2,
-        partner:'SpeedSMS',
-      },
-    ];
-  }
 
-  getServices(partnerId:number){
-    let item = this.SMSServiceData.find(f=>f.id === partnerId);
-    
-    if(item){
-      this.serviceData = item.services
+  valueChange(ev: TDSSafeAny) {
+    this.resetForm();
+    let temp = this.items.find(x => x.provider == ev);
+    if (temp) {
+      this.categorySMS = temp.categories
+      this.serviceForm.controls.category.setValue('');
     }
-  }
 
-  onselectPartner(id:TDSSafeAny){
-    this.serviceForm.controls.service.reset('');
-    this.getServices(id);
-  }
-
-  onSubmit() {
-      if (!this.serviceForm.invalid) {
-        this.modal.destroy(this.responseData);
-      }
   }
 
   cancel() {
-      this.modal.destroy(null);
+    this.modal.destroy(null);
   }
 
-  save() {
-      this.onSubmit();
+  prepareModel() {
+    let model = this.serviceForm.value;
+    let customProperties: customPropertiesSMSDTO = {
+        secretkey: '',
+        type: {
+          Price: 0,
+          key: 0,
+          datasource: ''
+        }
+      };
+    if (model.category) {
+      let categ = this.categorySMS.find(x => x.key == model.category)
+      if (categ) {
+        customProperties.type.key = categ.key;
+        customProperties.type.datasource = categ.datasource;
+        customProperties.type.Price = categ.Price;
+      }
+    }
+    if (model.apiKey) {
+      this.modelDefault.ApiKey = model.apiKey;
+    }
+    if (model.secretKey) {
+      customProperties.secretkey = model.secretKey
+    }
+    if (model.currentValue) {
+      let current = this.items.find(x => x.provider == model.currentValue)
+      if (current) {
+        this.modelDefault.Provider = current.provider
+        this.modelDefault.Name = current.name
+        this.modelDefault.ApiUrl = current.apiurl
+      }
+    }
+    this.modelDefault.CustomProperties = JSON.stringify(customProperties)
+    return this.modelDefault
+  }
+
+  OnSave() {
+    this.isLoading = true;
+    let model = this.prepareModel();
+    if (!model) {
+      this.isLoading = false;
+      return
+    }
+    if (!model.Provider) {
+      this.message.error('Đối tác không được để trống!')
+      this.isLoading = false;
+      return
+    }
+    if (!model.ApiKey) {
+      this.message.error('ApiKey không được để trống!')
+      this.isLoading = false;
+      return
+    }
+    let data = JSON.stringify(model);
+    if (this.dataId) {
+      this.restSMSService.update(this.dataId, data).pipe(takeUntil(this.destroy$)).subscribe(res => {
+        this.message.success('Sửa đổi SMS thành công!')
+        this.isLoading = false;
+        this.modal.destroy(this.dataId);
+      }, err => {
+        this.message.error(err.error ? err.error.message : 'Sửa đổi SMS thất bại!')
+        this.isLoading = false;
+      })
+    }
+    if (!this.dataId) {
+      this.restSMSService.insert(data).pipe(takeUntil(this.destroy$)).subscribe(res=>{
+        this.message.success('Thêm mới SMS thành công!')
+        this.isLoading = false;
+        this.modal.destroy('success');
+      },err=>{
+        this.message.error( err.error? err.error.message : 'Thêm SMS thất bại!')
+        this.isLoading = false;
+      })
+    }
+
   }
 }
