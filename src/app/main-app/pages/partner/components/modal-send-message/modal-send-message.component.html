@@ -1,3 +1,4 @@
+<tds-spin [spinning]="isLoading">
 <div class="rounded-xl border border-light-50">
     <tds-tabset class="" (selectChange)="changeTab($event)">
         <tds-tab title="Gửi tin nhắn Facebook">
@@ -10,12 +11,12 @@
                 </tds-form-field>
                 <tds-form-field>
                     <tds-label>Nội dung</tds-label>
-                    <textarea tdsInput class="h-16" formControlName="content" placeholder="Nhập nội dung"></textarea>
+                    <textarea tdsInput class="h-16" formControlName="content" [tdsInputDebounce]="700" (inputKeyup)="checkIncludes($event)" placeholder="Nhập nội dung"></textarea>
                 </tds-form-field>
                 <div class="flex justify-between">
                     <div class="">
                         <tds-tag *ngFor="let item of tagCustomers" (click)="addTagContentFB(item.value)"
-                            class="mr-2 cursor-pointer" status='secondary' type="outline" rounded="rounded-full">
+                            class="mr-2 cursor-pointer" [status]="setOfCheckedTag.has(item.value)?'success':'secondary'" type="outline" rounded="rounded-full">
                             {{item.text}}
                         </tds-tag>
                     </div>
@@ -84,12 +85,12 @@
             <form *ngIf="!isTableSendMessageSMS" [formGroup]="formSendMessageSMS" class="flex flex-col gap-y-4">
                 <tds-form-field>
                     <tds-label>Nội dung</tds-label>
-                    <textarea class="h-16" tdsInput formControlName="content" placeholder="Nhập nội dung"></textarea>
+                    <textarea tdsInput class="h-16" tdsInput formControlName="content" [tdsInputDebounce]="700" (inputKeyup)="checkIncludes($event)" placeholder="Nhập nội dung"></textarea>
                 </tds-form-field>
                 <div class="flex justify-between">
                     <div class="">
                         <tds-tag *ngFor="let item of tagCustomers" (click)="addTagContentSMS(item.value)"
-                            class="mr-2 cursor-pointer" status='secondary' type="outline" rounded="rounded-full">
+                            class="mr-2 cursor-pointer" [status]="setOfCheckedTag.has(item.value)?'success':'secondary'" type="outline" rounded="rounded-full">
                             {{item.text}}
                         </tds-tag>
                     </div>
@@ -140,6 +141,7 @@
         </tds-tab>
     </tds-tabset>
 </div>
+</tds-spin>
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
     <button tds-button *ngIf="indexTab == 0 && !isTableSendMessageFacebook" class="mr-2" type="button" color="secondary"
         (click)="close()">Đóng</button>

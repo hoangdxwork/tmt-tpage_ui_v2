@@ -1,11 +1,12 @@
-<form [formGroup]="serviceForm" autocomplete="off" (ngSubmit)="onSubmit()">
+<tds-spin [spinning]="isLoading">
+<form [formGroup]="serviceForm" autocomplete="off">
     <div class="flex flex-col w-full">
         <tds-form-field class="mb-4">
             <tds-label>Đối tác</tds-label>
-            <tds-select valueField="id" textField="partner" placeholder='Chọn'
-                disabledField="isActive" formControlName="partner"
-                [data]="partnerData" [allowClear]="true"
-                (selectChange)="onselectPartner($event)">
+            <tds-select valueField="provider" textField="name" placeholder='Chọn'
+                disabledField="isActive" formControlName="currentValue"
+                [data]="items" [allowClear]="true"
+                (selectChange)="valueChange($event)">
             </tds-select>
             <tds-error>
                 Vui lòng chọn tên đối tác
@@ -30,9 +31,9 @@
 
         <tds-form-field>
             <tds-label>Loại dịch vụ</tds-label>
-            <tds-select valueField="id" textField="name" placeholder='Chọn'
-                disabledField="isActive" formControlName="service"
-                [data]="serviceData" [allowClear]="true">
+            <tds-select valueField="key" textField="datasource" placeholder='Chọn'
+                disabledField="isActive" formControlName="category"
+                [data]="categorySMS" [allowClear]="true">
             </tds-select>
             <tds-error>
                 Vui lòng chọn loại dịch vụ
@@ -40,13 +41,13 @@
         </tds-form-field>
     </div>
 </form>
-
+</tds-spin>
 <!-- footer -->
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button class="mr-2" color="secondary" (click)="cancel()">
+    <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">
         Hủy bỏ
     </button>
-    <button tds-button type="submit" [disabled]="!serviceForm.valid" color="primary" (click)="save()">
-        Thêm mới
+    <button tds-button type="submit" [disabled]="!serviceForm?.valid || isLoading" color="primary" (click)="OnSave()">
+        {{dataId?'Cập nhật':'Tạo mới'}}
     </button>
 </div>

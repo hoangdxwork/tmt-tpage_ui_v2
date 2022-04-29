@@ -3,7 +3,7 @@
         <div class="flex justify-between">
             <h1 class="text-header-1 font-semibol flex items-center">Tổng: {{data.length}}</h1>
             <div class="flex gap-x-2">
-                <button tds-button color="primary" [disabled]="setOfCheckedId.size==0" (click)="sendMessage()">
+                <button tds-button color="primary" [disabled]="setOfCheckedId.size==0" (click)="showModalSendMessage()">
                     <span class="flex items-center">
                         <i class="tdsi-send-fill mr-2"></i>Gửi tin nhắn
                     </span>

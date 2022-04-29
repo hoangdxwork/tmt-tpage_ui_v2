@@ -14,12 +14,12 @@
         </div>
         <div class="flex flex-auto pb-2.5">
             <tds-table #basicTable 
-                [listData]="TableData" 
+                [listData]="listOfDataRestSMS" 
                 [showSizeChanger]="true" 
                 [loading]="isLoading" 
                 [scroll]="{y:'auto'}"
                 [pageSize]="20"
-                [total]="TableData.length" 
+                [total]="listOfDataRestSMS.length" 
                 >
                 <thead>
                       <tr class="text-neutral-1-900 text-body-2 font-semibold">
@@ -33,17 +33,17 @@
                 <tbody>
                     <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
                         <tr class="text-neutral-1-900 text-body-2 font-regular">
-                            <td>{{ data.id }}</td>
-                            <td>{{ data.partner }}</td>
-                            <td>{{ data.APIKey }}</td>
-                            <td>{{ data.service }}</td>
+                            <td>{{ data.Id }}</td>
+                            <td>{{ data.Provider }}</td>
+                            <td>{{ data.ApiKey }}</td>
+                            <td>{{ data.Name }}</td>
                             <td>
-                                <button tds-button-icon color="secondary" size="sm" class=" mr-2" (click)="showEditModal(i)">
+                                <button tds-button-icon color="secondary" size="sm" class=" mr-2" (click)="showEditModal(data.Id)">
                                     <span class="flex items-center">
                                       <i class="tdsi-edit-fill text-xl leading-none"></i>
                                     </span>
                                 </button>
-                                <button tds-button-icon color="secondary" size="sm" (click)="showRemoveModal(i)">
+                                <button tds-button-icon color="secondary" size="sm" (click)="showRemoveModal(data.Id)">
                                     <span class="flex items-center">
                                       <i class="tdsi-trash-fill text-xl leading-none"></i>
                                     </span>

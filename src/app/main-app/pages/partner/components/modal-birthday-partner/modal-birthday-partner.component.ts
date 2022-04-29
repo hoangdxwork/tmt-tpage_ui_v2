@@ -1,5 +1,6 @@
-import { TDSModalRef } from 'tmt-tang-ui';
-import { Component, Input, OnInit } from '@angular/core';
+import { ModalSendMessageComponent } from './../modal-send-message/modal-send-message.component';
+import { TDSModalRef, TDSModalService } from 'tmt-tang-ui';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
 
@@ -26,8 +27,11 @@ export class ModalBirthdayPartnerComponent implements OnInit {
     currentTime: any = {text: 'Hôm nay', value: 'day'};
 
     constructor(private modal: TDSModalRef,
-      private excelExportService: ExcelExportService,
-        private partnerService: PartnerService) {
+        private excelExportService: ExcelExportService,
+        private partnerService: PartnerService,
+        private modalService: TDSModalService,
+        private viewContainerRef: ViewContainerRef,
+    ) {
     }
 
     ngOnInit(): void {
@@ -72,8 +76,17 @@ export class ModalBirthdayPartnerComponent implements OnInit {
         this.excelExportService.exportGet(`/Partner/ExcelPartnerBirthDay?type=${type}`, `sinh-nhat-khach-hang`);
     }
 
-    sendMessage() {
-      let ids: any[] = [...this.setOfCheckedId];
-    }
+    showModalSendMessage() {
+        let ids: any = [...this.setOfCheckedId];
+        this.modalService.create({
+          title: 'Gửi tin nhắn tới khách hàng',
+          content: ModalSendMessageComponent,
+          size: "lg",
+          viewContainerRef: this.viewContainerRef,
+          componentParams: {
+            partnerIds: ids
+          }
+        });
+      }
 
 }

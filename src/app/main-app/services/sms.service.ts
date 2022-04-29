@@ -32,7 +32,7 @@ export class RestSMSService extends BaseSevice {
 
   getById(key: any): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/${key}`,
+        url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/${key}`,
         method: TApiMethodType.get,
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
@@ -40,7 +40,7 @@ export class RestSMSService extends BaseSevice {
 
   getListSMS(): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/getlistsms`,
+        url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/getlistsms`,
         method: TApiMethodType.get
     }
 
@@ -49,7 +49,7 @@ export class RestSMSService extends BaseSevice {
 
   insert(data: any): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
+        url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}`,
         method: TApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -57,7 +57,7 @@ export class RestSMSService extends BaseSevice {
 
   update(key: any, data: any): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/${key}`,
+        url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/${key}`,
         method: TApiMethodType.put,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);

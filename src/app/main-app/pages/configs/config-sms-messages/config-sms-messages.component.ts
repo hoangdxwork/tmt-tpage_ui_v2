@@ -1,6 +1,10 @@
+import { takeUntil } from 'rxjs/operators';
+import { RestSMSDTO } from './../../../dto/sms/sms.dto';
+import { RestSMSService } from './../../../services/sms.service';
 import { SMSMessagesAddServiceModalComponent } from '../components/sms-messages-add-service-modal/sms-messages-add-service-modal.component';
-import { TDSSafeAny, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
+import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSMessageService } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-config-sms-messages',
@@ -8,80 +12,83 @@ import { Component, OnInit, ViewContainerRef } from '@angular/core';
   styleUrls: ['./config-sms-messages.component.scss']
 })
 export class ConfigSmsMessagesComponent implements OnInit {
-  TableData:Array<TDSSafeAny> = [];
+  listOfDataRestSMS: Array<RestSMSDTO> = [];
 
   isLoading = false;
+  private destroy$ = new Subject<void>();
 
-  constructor(private modalService: TDSModalService, private viewContainerRef: ViewContainerRef) { }
+  constructor(
+    private modalService: TDSModalService,
+    private viewContainerRef: ViewContainerRef,
+    private restSMSService: RestSMSService,
+    private message: TDSMessageService) { }
 
   ngOnInit(): void {
     this.loadData();
   }
 
-  loadData(){
-    this.TableData = [
-      {
-        id:1,
-        partner:'ESMS',
-        APIKey:'4DFAA62B2B86A614B6F3F9820',
-        service:'Dịch vụ Internet',
-      },
-      {
-        id:2,
-        partner:'SpeedSMS',
-        APIKey:'4DFAA62B2B86A614B6F3F9820',
-        service:'Gửi bằng đầu số ngẫu nhiên',
-      },
-      {
-        id:3,
-        partner:'ESMS',
-        APIKey:'4DFAA62B2B86A614B6F3F9820',
-        service:'Gửi tin nhắn SMS',
-      },
-      {
-        id:4,
-        partner:'SpeedSMS',
-        APIKey:'4DFAA62B2B86A614B6F3F9820',
-        service:'Tin nhắn gửi bằng brandname',
-      },
-    ];
+  loadData() {
+    this.isLoading = true;
+    this.restSMSService.get().pipe(takeUntil(this.destroy$)).subscribe((res: Array<RestSMSDTO>) => {
+      this.listOfDataRestSMS = res;
+      this.isLoading = false;
+    }, err => {
+      this.message.error('Load dữ liệu thất bại!');
+    })
   }
 
-  onAddNewData(data:TDSSafeAny){
+  onAddNewData(data: TDSSafeAny) {
     const modal = this.modalService.create({
-        title: 'Thêm mới dịch vụ SMS',
-        content: SMSMessagesAddServiceModalComponent,
-        viewContainerRef: this.viewContainerRef,
-        size:'md'
+      title: 'Thêm mới dịch vụ SMS',
+      content: SMSMessagesAddServiceModalComponent,
+      viewContainerRef: this.viewContainerRef,
+      size: 'md'
     });
     modal.afterOpen.subscribe(() => {
 
     });
     //receive result from modal after close modal
     modal.afterClose.subscribe(result => {
-        if (TDSHelperObject.hasValue(result)) {
-          //get new changed value here
-        }
+      if (TDSHelperObject.hasValue(result)) {
+        //get new changed value here
+      }
     });
   }
 
-  showEditModal(i:number){
-    
+  showEditModal(id: TDSSafeAny) {
+    const modal = this.modalService.create({
+      title: 'Sửa dịch vụ SMS',
+      content: SMSMessagesAddServiceModalComponent,
+      viewContainerRef: this.viewContainerRef,
+      size: 'md',
+      componentParams: {
+        dataId: id
+      }
+    });
+    modal.afterOpen.subscribe(() => {
+
+    });
+    //receive result from modal after close modal
+    modal.afterClose.subscribe(result => {
+      if (TDSHelperObject.hasValue(result)) {
+        this.loadData()
+      }
+    });
   }
 
-  showRemoveModal(i:number){
+  showRemoveModal(i: TDSSafeAny) {
     const modal = this.modalService.error({
       title: 'Xác nhận xóa dịch vụ SMS',
       content: 'Bạn có chắc muốn xóa dịch vụ này không?',
-      iconType:'tdsi-trash-fill',
+      iconType: 'tdsi-trash-fill',
       onOk: () => {
         //remove item here
       },
-      onCancel:()=>{
+      onCancel: () => {
         modal.close();
       },
-      okText:"Xác nhận",
-      cancelText:"Hủy bỏ"
-  });
+      okText: "Xác nhận",
+      cancelText: "Hủy bỏ"
+    });
   }
 }

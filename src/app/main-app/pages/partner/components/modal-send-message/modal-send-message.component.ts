@@ -30,6 +30,8 @@ export class ModalSendMessageComponent implements OnInit {
   indexTab = 0
   isLoading: boolean = false;
 
+  setOfCheckedTag= new Set<string>();
+  listTagText = ["{partner.name}","{partner.code}","{partner.phone}","{partner.address}"]
   selectSMS!: number;
   listSendMessageFacebook!: CRMgenerateMessagePartnersDTO[];
   listSendMessageSMS!: CRMGenerateMessageByPhoneDTO[];
@@ -97,10 +99,14 @@ export class ModalSendMessageComponent implements OnInit {
 
   addTagContentFB(value: string) {
     this.formSendMessageFacebook.controls.content.setValue(this.formSendMessageFacebook.value?.content + value);
+    if(!this.setOfCheckedTag.has(value))
+      this.setOfCheckedTag.add(value)
   }
 
   addTagContentSMS(value: string) {
     this.formSendMessageSMS.controls.content.setValue(this.formSendMessageSMS.value?.content + value);
+    if(!this.setOfCheckedTag.has(value))
+      this.setOfCheckedTag.add(value)
   }
 
   cancel() {
@@ -291,9 +297,19 @@ export class ModalSendMessageComponent implements OnInit {
     this.indexTab = ev.index;
     this.isTableSendMessageFacebook = false;
     this.isTableSendMessageSMS = false;
+    this.setOfCheckedTag= new Set<string>();
     this.resetForm();
   }
 
-
+  checkIncludes(ev: TDSSafeAny){
+    this.listTagText.forEach(element => {
+      if(!ev.value.includes(element) && this.setOfCheckedTag.has(element)){
+        this.setOfCheckedTag.delete(element)
+      }
+      if(ev.value.includes(element) && !this.setOfCheckedTag.has(element)){
+        this.setOfCheckedTag.add(element)
+      }
+    });
+  }
 
 }
