@@ -1,4 +1,3 @@
-import { ConfigPromotionService } from './../../config-promotions/config-promotion.service';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { TDSSafeAny } from 'tmt-tang-ui';
@@ -20,13 +19,13 @@ export class ConfigAddPromotionComboComponent implements OnInit {
   comboPromotionTable:Array<TDSSafeAny> = [];
   giftComboPromotionTable:Array<TDSSafeAny> = [];
   isLoading= false;
-  
-  constructor(private service: ConfigPromotionService, private formBuilder:FormBuilder) { 
+
+  constructor(private formBuilder:FormBuilder) {
     this.initForm();
     this.getFormData.emit(this.sendingData);
-    this.productList = this.service.getProductList();
-    this.companyList = this.service.getCompanyList();
-    this.giftList = this.service.getGiftList();
+    // this.productList = this.service.getProductList();
+    // this.companyList = this.service.getCompanyList();
+    // this.giftList = this.service.getGiftList();
   }
 
   ngOnInit(): void {
@@ -72,7 +71,7 @@ export class ConfigAddPromotionComboComponent implements OnInit {
   initTableData(){
     this.comboPromotionTable = [
       {
-        id:1, 
+        id:1,
         name:[],
         quantity:100000,
         discountPercent:10,
@@ -85,7 +84,7 @@ export class ConfigAddPromotionComboComponent implements OnInit {
 
     this.giftComboPromotionTable = [
       {
-        id:1, 
+        id:1,
         name:[],
         productQuantity:10,
         gift:[],
@@ -96,15 +95,15 @@ export class ConfigAddPromotionComboComponent implements OnInit {
 
     this.couponTable = [
       {
-        id:1, 
-        name:'', 
+        id:1,
+        name:'',
         active:true
       }
     ];
   }
 
   // onSelectProduct(id:number, i:number){
-    
+
   //   this.getData();
   // }
 
@@ -162,7 +161,7 @@ export class ConfigAddPromotionComboComponent implements OnInit {
     this.couponTable.push(
       {
         id: this.couponTable.length + 1,
-        name:'', 
+        name:'',
         active:true
       }
     );

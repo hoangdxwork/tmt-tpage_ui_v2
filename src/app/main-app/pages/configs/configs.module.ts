@@ -70,6 +70,7 @@ import { ApplicationRoleService } from '../../services/application-role.service'
 import { ConfigEditProductComponent } from './config-edit-product/config-edit-product.component';
 import { UserRestHandler } from '../../services/handlers/user-rest.handler';
 import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
+import { CompanyService } from '../../services/company.servive';
 
 const SERVICES = [
     TDSModalService,
@@ -91,7 +92,8 @@ const SERVICES = [
     TagProductTemplateService,
     ExcelExportService,
     ApplicationRoleService,
-    UserRestHandler
+    UserRestHandler,
+    CompanyService
 ]
 
 @NgModule({

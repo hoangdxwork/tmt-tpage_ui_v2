@@ -1,4 +1,3 @@
-import { ConfigPromotionService } from './../../config-promotions/config-promotion.service';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { TDSSafeAny } from 'tmt-tang-ui';
@@ -19,16 +18,16 @@ export class ConfigAddPromotionGroupComponent implements OnInit {
   sendingData!:FormGroup;
   discountProductTable:Array<TDSSafeAny> = [];
   couponTable:Array<TDSSafeAny> = [];
-  
 
-  constructor(private service: ConfigPromotionService, private formBuilder:FormBuilder) { 
+
+  constructor(private formBuilder:FormBuilder) {
     this.initForm();
     this.getFormData.emit(this.sendingData);
-    this.productList = this.service.getProductList();
-    this.productGroupList = this.service.getProductGroupList();
-    this.companyList = this.service.getCompanyList();
-    this.discountTypeList = this.service.getDiscountType();
-    this.giftList = this.service.getGiftList();
+    // this.productList = this.service.getProductList();
+    // this.productGroupList = this.service.getProductGroupList();
+    // this.companyList = this.service.getCompanyList();
+    // this.discountTypeList = this.service.getDiscountType();
+    // this.giftList = this.service.getGiftList();
   }
 
   ngOnInit(): void {
@@ -85,7 +84,7 @@ export class ConfigAddPromotionGroupComponent implements OnInit {
   initTableData(){
     this.discountProductTable = [
       {
-        id:1, 
+        id:1,
         name:'',
         price:50000,
         applyDiscountPrice:40000
@@ -93,8 +92,8 @@ export class ConfigAddPromotionGroupComponent implements OnInit {
     ];
     this.couponTable = [
       {
-        id:1, 
-        name:'', 
+        id:1,
+        name:'',
         active:true
       }
     ];

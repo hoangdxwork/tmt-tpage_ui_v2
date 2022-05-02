@@ -14,7 +14,6 @@ export class CommonService extends BaseSevice {
   prefix: string = "odata";
   table: string = "";
   baseRestApi: string = "api/common";
-  private readonly __keyCacheTeamId = 'nearestTeamId';
 
   constructor(private apiService: TCommonService) {
     super(apiService)

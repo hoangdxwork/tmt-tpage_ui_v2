@@ -1,4 +1,4 @@
-<form [formGroup]="addProductForm" autocomplete="off">
+<form [formGroup]="formAddPromotion" autocomplete="off">
     <div class="w-full pb-4 px-4">
         <div class="flex flex-col w-full bg-white rounded-xl">
             <div class="flex flex-row items-center justify-between px-4 py-3">
@@ -11,8 +11,8 @@
                     </button>
                     <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">Chỉnh sửa chương trình khuyến mãi</span>
                 </div>
-                <button tds-button color="primary" class="w-[100px]" type="submit" 
-                    [disabled]="!addProductForm.valid || !tabForm || (tabForm && !tabForm.valid)" 
+                <button tds-button color="primary" class="w-[100px]" type="submit"
+                    [disabled]="!formAddPromotion?.valid || !tabForm || (tabForm && !tabForm.valid)"
                     (click)="onSubmit()">
                     <span class="text-body-2 font-semibold">Lưu</span>
                 </button>
@@ -23,7 +23,8 @@
                         <div class="flex flex-row items-center w-full">
                             <span class="text-neutral-1-900 text-body-2 font-semibold w-1/6">Tên chương trình</span>
                             <tds-form-field class="w-5/6">
-                                <input tdsInput formControlName="name" placeholder="Nhập tên chương trình" class="text-neutral-1-900 text-body-2 font-regular" [required]='true'/>
+                                <input tdsInput formControlName="Name" placeholder="Nhập tên chương trình" class="text-neutral-1-900 text-body-2 font-regular"
+                                [required]='true'/>
                                 <tds-error>
                                     Vui lòng nhập tên chương trình
                                 </tds-error>
@@ -32,21 +33,21 @@
 
                         <div class="flex flex-row items-center w-full pt-4">
                             <span class="text-neutral-1-900 text-body-2 font-semibold w-1/6 pr-6">Dựa trên</span>
-                            <tds-radio-group formControlName="tabComponent" class="flex justify-between w-1/3">
+                            <tds-radio-group formControlName="RuleBasedOn" class="flex justify-between w-1/3">
                                 <label tds-radio value="all" >Toàn bộ</label>
-                                <label tds-radio value="group">Nhóm sản phẩm</label>
+                                <label tds-radio value="product_category">Nhóm sản phẩm</label>
                                 <label tds-radio value="combo">Combo sản phẩm</label>
                             </tds-radio-group>
                         </div>
                     </div>
                 </div>
-                <div *ngIf="addProductForm.value.tabComponent === 'all' " class="w-full border border-neutral-2-100 rounded-md">
-                    <app-config-add-promotion-all (getFormData)="getComponentData($event)"></app-config-add-promotion-all>
+                <div *ngIf="formAddPromotion.value.RuleBasedOn === 'all' " class="w-full border border-neutral-2-100 rounded-md">
+                    <app-config-add-promotion-all (changeForm)="changeFormAll($event)" (getFormData)="getComponentData($event)"></app-config-add-promotion-all>
                 </div>
-                <div *ngIf="addProductForm.value.tabComponent === 'group' " class="w-full border border-neutral-2-100 rounded-md">
+                <div *ngIf="formAddPromotion.value.RuleBasedOn === 'product_category' " class="w-full border border-neutral-2-100 rounded-md">
                     <app-config-add-promotion-group (getFormData)="getComponentData($event)"></app-config-add-promotion-group>
                 </div>
-                <div *ngIf="addProductForm.value.tabComponent === 'combo' " class="w-full border border-neutral-2-100 rounded-md">
+                <div *ngIf="formAddPromotion.value.RuleBasedOn === 'combo' " class="w-full border border-neutral-2-100 rounded-md">
                     <app-config-add-promotion-combo (getFormData)="getComponentData($event)"></app-config-add-promotion-combo>
                 </div>
             </div>
