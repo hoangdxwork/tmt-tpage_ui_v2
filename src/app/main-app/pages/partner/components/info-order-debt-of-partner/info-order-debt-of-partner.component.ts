@@ -1,6 +1,6 @@
 import { ModalPaymentComponent } from './../modal-payment/modal-payment.component';
 import { TDSModalService, TDSHelperObject, TDSSafeAny, TDSTableQueryParams, TDSMessageService } from 'tmt-tang-ui';
-import { Component, OnInit, Input, ViewContainerRef, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit, HostListener } from '@angular/core';
 import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -46,7 +46,7 @@ interface infoPartnerDto {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class InfoOrderDebtOfPartnerComponent implements OnInit {
+export class InfoOrderDebtOfPartnerComponent implements OnInit, AfterViewInit {
 
   lstCreditDebit: Array<CreditDebitDTO> = [];
   pageSize1 = 20;
@@ -141,5 +141,31 @@ export class InfoOrderDebtOfPartnerComponent implements OnInit {
     }, error => {
       this.message.error(`${error?.error.message}`)
     })
+  }
+
+  getResize() {
+    let element = document.getElementById('detailPartner') as any;
+    let wClosest = element.closest('.partner-resize').getBoundingClientRect().width;
+    let wClient = wClosest - 36;
+    element.setAttribute('style', `max-width: ${wClient}px; width: 100%`);
+
+    var wrapScroll = element.closest('.tds-table-body');
+    wrapScroll.addEventListener('scroll', function() {
+      var scrollleft = wrapScroll.scrollLeft;
+      element.setAttribute('style', `margin-left: ${scrollleft}px;max-width: ${wClient}px;`);
+    });
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event :any) {
+    if(event) {
+      this.getResize();
+    }
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.getResize();
+    }, 250);
   }
 }

@@ -195,7 +195,6 @@ export class ConversationOrderComponent extends TpageBaseComponent implements On
 
   onInit(): void {
     this.loadData();
-    this.data;debugger
   }
 
   loadData() {

@@ -181,7 +181,4 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<CheckConversationDTO>(api, { PageId: page_id, UserId: psid });
   }
 
-
-
-
 }

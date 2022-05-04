@@ -127,7 +127,7 @@ export class LayoutComponent implements OnInit {
             'type': 'all',
           },
         },
-        hidden: false
+        hidden: hidden
       },
       {
         name: "Tin nhắn",
@@ -139,7 +139,7 @@ export class LayoutComponent implements OnInit {
             'type': 'message',
           },
         },
-        hidden: false,
+        hidden: hidden,
       },
 
       {
@@ -152,7 +152,7 @@ export class LayoutComponent implements OnInit {
             'type': 'comment',
           },
         },
-        hidden: false,
+        hidden: hidden,
       },
 
       {
@@ -165,7 +165,7 @@ export class LayoutComponent implements OnInit {
             'type': 'post',
           },
         },
-        hidden: false,
+        hidden: hidden,
       },
       {
         name: "Đơn hàng",

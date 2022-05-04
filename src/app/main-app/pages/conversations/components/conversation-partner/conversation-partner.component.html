@@ -3,9 +3,10 @@
   <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-y-auto tds-custom-scroll" *ngIf="data">
     <div class="bg-white px-6 pt-6">
       <div class="flex gap-6">
-        <tds-avatar class="bg-accent-4  text-white" size="xl"
-          tdsSrc="https://randomuser.me/api/portraits/women/68.jpg">
-        </tds-avatar>
+        <tpage-avatar-facebook
+            [shape]="'circle'" [size]="'lg'"
+            [psid]="data.psid" [token]="team?.Facebook_PageToken">
+        </tpage-avatar-facebook>
         <div class="flex flex-col gap-2">
           <div class="flex gap-4 items-center">
             <div class="text-heading-4 font-sans font-semibold text-neutral-1-900">
@@ -55,11 +56,12 @@
           <div
             class="tdsi-call-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]">
           </div>
+          <!-- Xem lịch sử chặn SĐT, tố cáo, bỏ tố cáo -->
           <div class="flex items-center gap-1">
-            <div class="text-neutral-1-900 text-body-2 font-regular font-sans">
-              {{_form.controls['Phone'].value || 'Chưa có SĐT'}}
-            </div>
-            <div class="tdsi-success-fill text-xl text-primary-1"></div>
+              <div class="text-neutral-1-900 text-body-2 font-regular font-sans">
+                {{_form.controls['Phone'].value || 'Chưa có SĐT'}}
+              </div>
+              <div class="tdsi-success-fill text-xl text-primary-1"></div>
           </div>
         </div>
         <div class="flex gap-2 items-center">
@@ -83,26 +85,16 @@
         <tds-button-group>
           <div tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu"
             class="rounded-full border border-neutral-2-100 border-solid bg-white py-1.5 px-4">
-            <span
-              class="flex items-center text-body-2 font-semibold text-neutral-1-500 cursor-pointer">
-              Tổng doanh số: <span class="pl-2 text-primary-1">200.000</span><i
+            <span class="flex items-center text-body-2 font-semibold text-neutral-1-500 cursor-pointer">
+              Tổng doanh số: <span class="pl-2 text-primary-1">{{objRevenue?.RevenueTotal || 0 | number: '1.0-3'}}đ</span><i
                 class="tdsi-arrow-down-line text-lg leading-none ml-2"></i>
             </span>
           </div>
           <tds-dropdown-menu #menu="tdsDropdownMenu">
             <div class="w-full">
-              <!-- <div (click)="log('1st menu item')" tds-dropdown-item>
-                <a> Item 1 </a>
-              </div>
-              <div (click)="log('2 menu item')" tds-dropdown-item>
-                <a> Item 2 </a>
-              </div>
-              <div (click)="log('3 menu item')" tds-dropdown-item>
-                <a> Item 3 </a>
-              </div>
-              <div (click)="log('4 menu item')" tds-dropdown-item>
-                <a> Item 4 </a>
-              </div> -->
+                <div tds-dropdown-item>Doanh số đầu kỳ:{{objRevenue?.RevenueBegan || 0 | number: '1.0-3'}}đ</div>
+                <div tds-dropdown-item>Doanh số: {{objRevenue?.Revenue || 0 | number: '1.0-3'}}đ</div>
+                <div tds-dropdown-item>Tổng doanh số: {{objRevenue?.RevenueTotal || 0 | number: '1.0-3'}}đ</div>
             </div>
           </tds-dropdown-menu>
         </tds-button-group>
@@ -114,35 +106,31 @@
         </button>
       </div>
     </div>
+    <!-- Xử lý ghi chú -->
     <div class="bg-white p-4">
       <div class="flex items-center gap-2 pb-3">
         <tds-form-field class="w-full">
-          <input class="placeholder-neutral-1-400 bg-neutral-3-50" placeholder="Nhập ghi chú"
-            tdsInput />
+            <input class="placeholder-neutral-1-400 bg-neutral-3-50" placeholder="Nhập ghi chú" tdsInput />
         </tds-form-field>
-        <button tds-button color="primary">
+        <button tds-button color="primary" (click)="addNote()">
           <span class="flex items-center">
             <i class="tdsi-plus-fill text-lg leading-none mr-2"></i>Thêm
           </span>
         </button>
       </div>
-      <div class="pl-2 flex flex-col gap-3">
-        <div class="border-l border-primary-1 border-solid pl-2">
-          <div class="text-neutral-1-400 text-body-2 font-regular font-sans">22:22 12/02/2022
-          </div>
+      <div class="pl-2 flex flex-col gap-3" *ngIf="noteData.items.length > 0">
+        <div class="border-l border-primary-1 border-solid pl-2" *ngFor="let item of noteData.items; let i=index">
+          <div class="text-neutral-1-400 text-body-2 font-regular font-sans">{{item.DateCreated | date:'HH:mm dd/MM/yyyy'}}</div>
           <div class="flex gap-2 pt-1">
-            <div class="text-body-2 font-semibold font-sans text-neutral-1-900">Admin</div>
-            <div class="text-body-2 font-regular font-sans text-neutral-1-900">Khách bom hàng,
-              hẹn mai lấy mà mai hông lấy, giận hết sứt</div>
-          </div>
-        </div>
-        <div class="border-l border-primary-1 border-solid pl-2">
-          <div class="text-neutral-1-400 text-body-2 font-regular font-sans">22:22 12/02/2022
-          </div>
-          <div class="flex gap-2 pt-1">
-            <div class="text-body-2 font-semibold font-sans text-neutral-1-900">Admin</div>
-            <div class="text-body-2 font-regular font-sans text-neutral-1-900">Khách bom hàng,
-              hẹn mai lấy mà mai hông lấy, giận hết sứt</div>
+            <div class="text-body-2 font-semibold font-sans text-neutral-1-900">{{item.CreatedBy.Name}} ({{item.CreatedBy.UserName}})</div>
+            <div class="text-body-2 font-regular font-sans text-neutral-1-900" tds-typography ellipsis expandable
+               [ellipsisRows]="2" [content]="item.message" [contentCollapse]="'Ẩn'">
+            </div>
+            <button tds-button color="error" (click)="removeNote(item.id, i)">
+                <span class="flex items-center">
+                    <i class="tdsi-trash-line text-lg leading-none"></i>
+                </span>
+            </button>
           </div>
         </div>
       </div>
@@ -157,7 +145,7 @@
               </tds-avatar>
               <div class="flex flex-col gap-1">
                 <div class="text-neutral-1-400 font-regular text-body-2 font-sans">Phiếu bán
-                  hàng gần nhất</div>
+                    hàng gần nhất</div>
                 <div class="flex gap-2">
                   <div class="text-info-500 text-header-1 font-sans font-semibold">
                     #INV/2022/0236</div>
