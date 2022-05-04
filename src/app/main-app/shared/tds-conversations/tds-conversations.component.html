@@ -8,9 +8,8 @@
                   <!-- left -->
                   <div class="flex items-center justify-center">
                       <tpage-avatar-facebook
-                          *ngIf="psid && team?.Facebook_PageToken"
                           [shape]="'circle'" [size]="'lg'"
-                          [psid]="psid" [token]="team?.Facebook_PageToken">
+                          [psid]="data.psid" [token]="team?.Facebook_PageToken">
                       </tpage-avatar-facebook>
                       <div class="flex flex-col pl-2.5">
                           <div class="text-title-1 font-semibold text-neutral-900 dark:text-d-neutral-900">{{data.name || data.partner_name}}</div>

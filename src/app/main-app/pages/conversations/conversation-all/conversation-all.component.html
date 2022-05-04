@@ -78,8 +78,8 @@
               </div>
             </div>
         </ng-template>
-        <div *ngIf="activeMatchingItem && activeMatchingItem.id">
-            <conversation-partner [data]="activeMatchingItem"></conversation-partner>
+        <div *ngIf="activeMatchingItem && activeMatchingItem?.id">
+            <conversation-partner [data]="activeMatchingItem" [team]="currentTeam"></conversation-partner>
         </div>
       </tds-tab>
       <!-- tab Đơn hàng -->

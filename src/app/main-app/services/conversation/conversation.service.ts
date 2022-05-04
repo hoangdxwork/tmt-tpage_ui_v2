@@ -1,6 +1,7 @@
 import { Injectable, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { TDSSafeAny } from "tmt-tang-ui";
 import { CRMMatchingDTO } from "../../dto/conversation-all/crm-matching.dto";
 import { BaseSevice } from "../base.service";
 import { SignalRConnectionService } from "../signalR/signalR-connection.service";
@@ -80,6 +81,25 @@ export class ConversationService extends BaseSevice implements OnInit {
         totalCount: response.TotalCount,
         totalPages: response.TotalPages
     } as ResponseStateConversationDTO;
+  }
+
+
+  getNotes(page_id: string, psid: string) {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/notes?page_id=${page_id}`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  deleteNote(id: any) {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/${id}/notes`,
+        method: TApiMethodType.delete,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
 
