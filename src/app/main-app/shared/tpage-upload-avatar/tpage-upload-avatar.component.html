@@ -1,7 +1,7 @@
 <input id="inputImg" type='file' class="hidden" (change)="onSelectFile($event)">
 
 <label for="inputImg">
-  <tds-avatar [shape]="'square'" [size]="size" [classList]="'rounded-lg border border-neutral-2-200 cursor-pointer'"
-    [tdsSrc]="imageUrl" [isAvatar]="false" >
+  <tds-avatar [shape]="shape" [size]="size" [classList]="shape=='square'?'rounded-lg border border-neutral-2-200 cursor-pointer':'border border-neutral-2-200 cursor-pointer'"
+    [tdsSrc]="imageUrl" [isAvatar]="isAvatar" >
   </tds-avatar>
 </label>

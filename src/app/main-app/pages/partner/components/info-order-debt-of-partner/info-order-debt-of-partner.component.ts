@@ -143,29 +143,7 @@ export class InfoOrderDebtOfPartnerComponent implements OnInit, AfterViewInit {
     })
   }
 
-  getResize() {
-    let element = document.getElementById('detailPartner') as any;
-    let wClosest = element.closest('.partner-resize').getBoundingClientRect().width;
-    let wClient = wClosest - 36;
-    element.setAttribute('style', `max-width: ${wClient}px; width: 100%`);
-
-    var wrapScroll = element.closest('.tds-table-body');
-    wrapScroll.addEventListener('scroll', function() {
-      var scrollleft = wrapScroll.scrollLeft;
-      element.setAttribute('style', `margin-left: ${scrollleft}px;max-width: ${wClient}px;`);
-    });
-  }
-
-  @HostListener('window:resize', ['$event'])
-  onResize(event :any) {
-    if(event) {
-      this.getResize();
-    }
-  }
 
   ngAfterViewInit() {
-    setTimeout(() => {
-      this.getResize();
-    }, 250);
   }
 }
