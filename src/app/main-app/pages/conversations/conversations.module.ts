@@ -25,6 +25,7 @@ import { ActiveMatchingItemComponent } from './components/active-matching/active
 import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
 import { SaleOnline_OrderService } from '../../services/sale-online-order.service';
 import { PartnerService } from '../../services/partner.service';
+import { FastSaleOrderService } from '../../services/fast-sale-order.service';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -35,7 +36,8 @@ const SERVICES = [
   DraftMessageService,
   THelperCacheService,
   SaleOnline_OrderService,
-  PartnerService
+  PartnerService,
+  FastSaleOrderService
 ]
 
 @NgModule({

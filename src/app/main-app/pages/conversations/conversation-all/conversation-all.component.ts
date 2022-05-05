@@ -3,11 +3,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, pipe, Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { ActiveMatchingItem, CRMMatchingMappingDTO } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
+import { CheckConversationData, CheckConversationDTO } from 'src/app/main-app/dto/partner/check-conversation.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import { ConversationFacebookState } from 'src/app/main-app/services/facebook-state/conversation-fb.state';
+import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { TDSHelperObject, TDSMessageService, TDSSafeAny, TDSHelperArray } from 'tmt-tang-ui';
 
@@ -27,13 +29,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   psid!: string;
   activeMatchingItem!: ActiveMatchingItem;
   isFastSend: boolean = false;
-  currentConversation: any;
 
   constructor(private message: TDSMessageService,
     private fbState: ConversationFacebookState,
     private conversationDataFacade: ConversationDataFacade,
     public crmService: CRMTeamService,
     private conversationService: ConversationService,
+    private partnerService: PartnerService,
     public activatedRoute: ActivatedRoute,
     public router: Router) {
       super(crmService, activatedRoute, router);
@@ -69,7 +71,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
               //TODO: load lần đầu tiên
               (this.activeMatchingItem  as any) = {};
               this.activeConversations(this.lstMatchingItem[0]);
-          }
+            }
         }
       }, error => {
           this.message.error('Load thông tin CRMMatching đã xảy ra lỗi');
@@ -77,6 +79,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
   }
 
+  //TODO: matching đang chọn active
   activeConversations(item: ActiveMatchingItem) {
     if(TDSHelperObject.hasValue(item)) {
       if(this.isFastSend == true) {

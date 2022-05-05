@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
@@ -18,6 +18,7 @@ export class PartnerService extends BaseSevice {
   baseRestApi: string = "rest/v1.0/partner";
 
   public _keyCacheGrid: string = 'partner-page:grid_partner:settings';
+  public onLoadedPartnerFromCheckCvs: EventEmitter<any> = new EventEmitter();
 
   constructor(private apiService: TCommonService) {
     super(apiService)

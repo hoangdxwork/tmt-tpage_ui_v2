@@ -13,6 +13,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
+import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 
 @Component({
     selector: 'conversation-partner',
@@ -34,6 +35,7 @@ export class ConversationPartnerComponent extends TpageBaseComponent implements 
       private draftMessageService: DraftMessageService,
       private conversationEventFacade: ConversationEventFacade,
       private conversationService: ConversationService,
+      private fastSaleOrderService: FastSaleOrderService,
       private partnerService: PartnerService,
       public crmService: CRMTeamService,
       private cdr: ChangeDetectorRef,
@@ -67,6 +69,38 @@ export class ConversationPartnerComponent extends TpageBaseComponent implements 
     //TODO load dữ liệu lần đầu, khi change matching sẽ đi vào onChanges
     if(this.data && this.data?.psid == this.paramsUrl?.psid && this.team?.Id == this.paramsUrl?.teamId) {
         this.loadData(this.data);
+    }
+  }
+
+  loadData(data: ActiveMatchingItem) {
+    if(data?.page_id && data?.psid) {
+      this.loadNotes(data?.page_id, data?.psid);
+    }
+    if(data?.partner && (data?.partner_id ||data?.partner?.id)) {
+      let id = data?.partner_id || data?.partner?.id;
+      this.loadPartnerRevenue(id);
+    }
+    if(data?.page_id && data?.psid) {
+        let page_id = data?.page_id;
+        let psid = data?.psid;
+
+        this.partnerService.checkConversation(page_id, psid).pipe(takeUntil(this.destroy$))
+          .subscribe((res: CheckConversationDTO) => {
+              if(res?.Data && res?.Success) {
+                res.Data.Name = res?.Data.Name || this.data.name;
+                res.Data.Facebook_ASUserId = res?.Data.Facebook_ASUserId || this.data.psid;
+                res.Data.Phone = res?.Data.Phone || this.data.phone;
+                res.Data.Street = res?.Data.Street || this.data.address;
+
+                this.loadBill(this.data.partner_id || this.data.partner.id);
+                this.updateForm(res.Data);
+
+                // TODO: đẩy dữ liệu sang service để mapping + realtime qua tab đơn hàng
+                this.partnerService.onLoadedPartnerFromCheckCvs.emit(res.Data);
+              }
+          }, error => {
+            this.message.error('Check conversation đã xảy ra lỗi!');
+        })
     }
   }
 
@@ -111,36 +145,13 @@ export class ConversationPartnerComponent extends TpageBaseComponent implements 
     });
   }
 
-  loadBill(id: string) {
-  }
+  loadBill(partnerId: any) {
+    this.fastSaleOrderService.getConversationOrderBillByPartner(partnerId).pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
 
-  loadData(data: ActiveMatchingItem) {
-    if(data?.page_id && data?.psid) {
-      this.loadNotes(data?.page_id, data?.psid);
-    }
-    if(data?.partner && (data?.partner_id ||data?.partner?.id)) {
-      let id = data?.partner_id || data?.partner?.id;
-      this.loadPartnerRevenue(id);
-    }
-    if(data?.page_id && data?.psid) {
-        let page_id =data?.page_id;
-        let psid = data?.psid;
-
-        this.partnerService.checkConversation(page_id, psid).pipe(takeUntil(this.destroy$))
-          .subscribe((res: CheckConversationDTO) => {
-              if(res?.Data && res?.Success) {
-                res.Data.Name = res?.Data.Name || this.data.name;
-                res.Data.Facebook_ASUserId = res?.Data.Facebook_ASUserId || this.data.psid;
-                res.Data.Phone = res?.Data.Phone || this.data.phone;
-                res.Data.Street = res?.Data.Street || this.data.address;
-
-                // this.loadBill(res.Data.Id);
-                this.updateForm(res.Data);
-              }
-          }, error => {
-            this.message.error('Check conversation đã xảy ra lỗi!');
-        })
-    }
+      }, error => {
+        this.message.error('Load hóa đơn khách hàng trong hội thoại đã xảy ra lỗi!');
+      })
   }
 
   //Dữ liệu khi change crmmatching xử lý tại đây
