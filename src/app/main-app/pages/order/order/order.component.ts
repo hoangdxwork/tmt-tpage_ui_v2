@@ -297,7 +297,7 @@ export class OrderComponent implements OnInit {
     this.saleOnline_OrderService.assignSaleOnlineOrder(model)
       .subscribe((res: TDSSafeAny) => {
         if(res && res.OrderId) {
-          var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
+          let exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
           if(exits) {
             exits.Tags = JSON.stringify(tags)
           }
