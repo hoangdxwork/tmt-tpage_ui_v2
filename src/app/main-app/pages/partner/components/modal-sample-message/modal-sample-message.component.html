@@ -2,17 +2,21 @@
     <tds-table templateMode >
         <thead>
             <tr>
-                <th>STT</th>
-                <th>Tên mẫu</th>
-                <th>Nội dung</th>
+                <th width="">STT</th>
+                <th width="30%">Tên mẫu</th>
+                <th width="55%">Nội dung</th>
+                <th>Thao tác</th>
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let data of listSampleMessage; let idx = index" (click)="chooseQuickReply(data)" class="cursor-pointer">
+            <tr *ngFor="let data of listSampleMessage; let idx = index" class="cursor-pointer">
                 <td>{{ idx }}</td>
                 <td>{{ data.Name }}</td>
                 <td>
                     <p tds-typography ellipsis expandable [ellipsisRows]="2" [content]=" data.BodyPlain" [contentCollapse]="'Ẩn'"></p>
+                </td>
+                <td>
+                    <button tds-button color="primary" (click)="chooseQuickReply(data)">Chọn</button>
                 </td>
             </tr>
         </tbody>

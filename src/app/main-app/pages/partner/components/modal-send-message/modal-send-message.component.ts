@@ -285,9 +285,11 @@ export class ModalSendMessageComponent implements OnInit {
         if (key == 'facebook') {
           this.formSendMessageFacebook.controls.title.setValue(result.Name);
           this.formSendMessageFacebook.controls.content.setValue(result.BodyPlain);
+          this.checkIncludes(this.formSendMessageFacebook.value.content);
         }
         if (key == 'SMS') {
           this.formSendMessageSMS.controls.content.setValue(result.BodyPlain);
+          this.checkIncludes( this.formSendMessageSMS.value.content);
         }
       }
     });
@@ -302,14 +304,17 @@ export class ModalSendMessageComponent implements OnInit {
   }
 
   checkIncludes(ev: TDSSafeAny){
-    this.listTagText.forEach(element => {
-      if(!ev.value.includes(element) && this.setOfCheckedTag.has(element)){
-        this.setOfCheckedTag.delete(element)
-      }
-      if(ev.value.includes(element) && !this.setOfCheckedTag.has(element)){
-        this.setOfCheckedTag.add(element)
-      }
-    });
+    let value = (ev && ev.value)? ev.value:(TDSHelperString.hasValueString(ev)?ev:'')
+    if(TDSHelperString.hasValueString(value)){
+      this.listTagText.forEach(element => {
+        if(!value.includes(element) && this.setOfCheckedTag.has(element)){
+          this.setOfCheckedTag.delete(element)
+        }
+        if(value.includes(element) && !this.setOfCheckedTag.has(element)){
+          this.setOfCheckedTag.add(element)
+        }
+      });
+    }
   }
 
 }
