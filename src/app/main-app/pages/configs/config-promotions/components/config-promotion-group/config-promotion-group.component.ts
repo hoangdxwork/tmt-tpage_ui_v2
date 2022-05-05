@@ -1,49 +1,45 @@
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { TDSSafeAny, TDSMessageService } from 'tmt-tang-ui';
-import { CompanyService } from 'src/app/main-app/services/company.servive';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { TDSHelperString, TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
+import { ProductCategoryService } from 'src/app/main-app/services/product-category.service';
+import { ProductCategoryDTO } from 'src/app/main-app/dto/product/product-category.dto';
 import { CompanyDTO } from 'src/app/main-app/dto/company/company.dto';
+import { CompanyService } from 'src/app/main-app/services/company.servive';
+import { showDiscountFixedAmount, showDiscountPercentageOnOrder, showDiscountPercentageSpecificProduct, showProduct } from 'src/app/main-app/services/facades/config-promotion.facede';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
 import { THelperCacheService } from 'src/app/lib';
 import { DataPouchDBDTO, ProductPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateV2DTO } from 'src/app/main-app/dto/producttemplate/product-tempalte.dto';
-import { finalize, takeUntil } from 'rxjs/operators';
-import { PromotionAllDTO } from 'src/app/main-app/dto/configs/promotion/promotion-add.dto';
+import { finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-config-add-promotion-all',
-  templateUrl: './config-add-promotion-all.component.html',
-  styleUrls: ['./config-add-promotion-all.component.scss']
+  selector: 'app-config-promotion-group',
+  templateUrl: './config-promotion-group.component.html',
+  styleUrls: ['./config-promotion-group.component.scss']
 })
-export class ConfigAddPromotionAllComponent implements OnInit {
+export class ConfigPromotionGroupComponent implements OnInit {
+  @Input() form!: FormGroup;
   @Output() getFormData:EventEmitter<FormGroup> = new EventEmitter<FormGroup>();
-
-  @Output() changeForm = new EventEmitter<PromotionAllDTO>();
 
   companyList:Array<TDSSafeAny> = [];
   discountTypeList: Array<TDSSafeAny>  = [];
   productList:Array<TDSSafeAny> = [];
+  productGroupList:Array<TDSSafeAny> = [];
   giftList:Array<TDSSafeAny>  = [];
   sendingData!:FormGroup;
   discountProductTable:Array<TDSSafeAny> = [];
   couponTable:Array<TDSSafeAny> = [];
-
-  formPromotionAll!: FormGroup;
-
-  lstCompany: CompanyDTO[] = [];
-  lstProduct: DataPouchDBDTO[] = [];
 
   lstDiscountType: any = [
     { text: 'Phần trăm', value: 'percentage' },
     { text: 'Tiền cố định', value: 'fixed_amount' }
   ];
 
-  showDiscountPercentageOnOrder = ['DiscountType', 'DiscountApplyOn', 'DiscountMaxAmount', 'DiscountPercentage'];
-  showDiscountPercentageSpecificProduct = ['DiscountType', 'DiscountApplyOn', 'DiscountSpecificProduct', 'DiscountMaxAmount', 'DiscountPercentage', 'DiscountMaxAmount'];
-  showDiscountFixedAmount = ['DiscountFixedAmount', 'DiscountType'];
-  showProduct = ['DiscountSpecificProduct', 'RewardProductQuantity'];
-
   isLoading: boolean = false;
+
+  lstProductCategory: ProductCategoryDTO[] = [];
+  lstProduct: DataPouchDBDTO[] = [];
+  lstCompany: CompanyDTO[] = [];
 
   indexDbVersion: number = 0;
   indexDbProductCount: number = -1;
@@ -52,88 +48,28 @@ export class ConfigAddPromotionAllComponent implements OnInit {
 
   constructor(
     private formBuilder:FormBuilder,
+    private productCategoryService: ProductCategoryService,
     private companyService: CompanyService,
-    private message: TDSMessageService,
     private productIndexDBService: ProductIndexDBService,
     private cacheApi: THelperCacheService,
-  ) {
-    // this.initForm();
-    // this.getFormData.emit(this.sendingData);
-    // this.productList = this.service.getProductList();
-    // this.companyList = this.service.getCompanyList();
-    // this.discountTypeList = this.service.getDiscountType();
-    // this.giftList = this.service.getGiftList();
-
-  }
+    private message: TDSMessageService,
+  ) { }
 
   ngOnInit(): void {
-    // this.initTableData();
-    this.createForm();
-    this.onChangeForm();
-
+    this.loadProductCategory();
     this.loadCompany();
     this.loadProduct();
   }
 
-  createForm() {
-    this.formPromotionAll = this.formBuilder.group({
-      Active: [true],
-      Company: [null],
-      DiscountApplyOn: ['on_order'],
-      DiscountMaxAmount: [0],
-      DiscountPercentage: [0],
-      DiscountSpecificProduct: [null],
-      DiscountType: ['percentage'],
-      MaximumUseNumber: [0],
-      NoIncrease: [false],
-      PromoApplicability: ['on_current_order'],
-      RewardProductQuantity: [1],
-      RewardType: ['discount'],
-      RuleDateFrom: [null],
-      RuleDateTo: [null],
-      RuleMinimumAmount: [0],
-      RuleMinQuantity: [1],
-      DiscountFixedAmount: [0]
-      // RuleProductId: [null],
+  loadProductCategory() {
+    this.productCategoryService.get().subscribe(res => {
+      this.lstProductCategory = res.value;
     });
-  }
-
-  onChangeForm() {
-    this.formPromotionAll.valueChanges.subscribe(res => {
-      let value = this.prepareModel();
-      this.changeForm.emit(value);
-    });
-  }
-
-  prepareModel() {
-    let formValue = this.formPromotionAll.value;
-
-    let model: PromotionAllDTO = {
-      Active: formValue.Active,
-      Company: formValue.Company,
-      DiscountApplyOn: formValue.DiscountApplyOn,
-      DiscountMaxAmount: formValue.DiscountMaxAmount,
-      DiscountPercentage: formValue.DiscountPercentage,
-      DiscountSpecificProduct: formValue.DiscountSpecificProduct,
-      DiscountType: formValue.DiscountType,
-      MaximumUseNumber: formValue.MaximumUseNumber,
-      NoIncrease: formValue.NoIncrease,
-      PromoApplicability: formValue.PromoApplicability,
-      RewardProductQuantity: formValue.RewardProductQuantity,
-      RewardType: formValue.RewardType,
-      RuleDateFrom: formValue.RuleDateFrom,
-      RuleDateTo: formValue.RuleDateTo,
-      RuleMinimumAmount: formValue.RuleMinimumAmount,
-      RuleMinQuantity: formValue.RuleMinQuantity,
-      DiscountFixedAmount: formValue.DiscountFixedAmount
-    };
-
-    return model;
   }
 
   loadCompany() {
     this.companyService.get().subscribe(res => {
-      this.lstCompany = res.value;
+      this.lstCompany = res.value.filter(x => TDSHelperString.hasValueString(x.Name));
     });
   }
 
@@ -173,25 +109,26 @@ export class ConfigAddPromotionAllComponent implements OnInit {
   isShow(value: string) : boolean {
     let result = false;
 
-    let rewardType = this.formPromotionAll.value.RewardType;
-    let discountType = this.formPromotionAll.value.DiscountType;
-    let discountApplyOn = this.formPromotionAll.value.DiscountApplyOn;
+    let rewardType = this.form.value.RewardType;
+    let discountType = this.form.value.DiscountType;
+    let discountApplyOn = this.form.value.DiscountApplyOn;
 
+    // Check các lựa chọn hiện tại trong form => Kiểm tra giá trị đó có trong danh sách cho hiển thị hay không
     if(rewardType === "discount") {
         if(discountType === "percentage") {
             if(discountApplyOn === "on_order") {
-                return this.showDiscountPercentageOnOrder.includes(value);
+                return showDiscountPercentageOnOrder.includes(value);
             }
             if(discountApplyOn === "specific_product") {
-                return this.showDiscountPercentageSpecificProduct.includes(value);
+                return showDiscountPercentageSpecificProduct.includes(value);
             }
         }
         else if(discountType === "fixed_amount") {
-            return this.showDiscountFixedAmount.includes(value);
+            return showDiscountFixedAmount.includes(value);
         }
     }
     else if(rewardType === "product") {
-      return this.showProduct.includes(value);
+      return showProduct.includes(value);
     }
 
     return result;
@@ -199,6 +136,7 @@ export class ConfigAddPromotionAllComponent implements OnInit {
 
   initForm(){
     this.sendingData = this.formBuilder.group({
+      prductGroup: new FormControl('', [Validators.required]),
       quantity: new FormControl(0, [Validators.required]),
       useFor: new FormControl(0, [Validators.required]),
       minimumPrice: new FormControl(0, [Validators.required]),

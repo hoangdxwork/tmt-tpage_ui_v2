@@ -1,5 +1,4 @@
 import { ConfigEditProductComponent } from './config-edit-product/config-edit-product.component';
-import { ConfigAddPromotionComponent } from './config-add-promotion/config-add-promotion.component';
 import { ConfigAddProductComponent } from './config-add-product/config-add-product.component';
 import { ConfigAddProductVariantComponent } from './config-add-product-variant/config-add-product-variant.component';
 import { ConfigDecentralizePageComponent } from './config-users/config-decentralize-page/config-decentralize-page.component';
@@ -20,6 +19,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ConfigComponent } from './config/config.component';
 import { ConfigConversationTagsComponent } from './config-conversation-tags/config-conversation-tags.component';
+import { ConfigAddPromotionComponent } from './config-promotions/components/config-add-promotion/config-add-promotion.component';
+import { ConfigEditPromotionComponent } from './config-promotions/components/config-edit-promotion/config-edit-promotion.component';
 
 const routes: Routes = [
   {
@@ -54,7 +55,7 @@ const routes: Routes = [
       {
         path:'product-variant',
         component: ConfigProductVariantComponent,
-        
+
       },
       {
         path:'product-variant/create',
@@ -83,6 +84,10 @@ const routes: Routes = [
       {
         path:'promotions/create',
         component: ConfigAddPromotionComponent
+      },
+      {
+        path:'promotions/edit/:id',
+        component: ConfigEditPromotionComponent
       },
       {
         path:'users',

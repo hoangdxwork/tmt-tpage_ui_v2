@@ -65,6 +65,11 @@ export const Message = {
       ProfileMessagesLimit: 'Menu tương tác đã đạt giới hạn.',
       InfoEmpty: 'Có thông tin bị trống',
       Saved: 'Đã lưu'
+    },
+    Promotion: {
+      PromotionNameEmpty: 'Vui lòng nhập tên chương trình khuyến mãi.',
+      ProductBuyEmpty: 'Vui lòng chọn sản phẩm mua.',
+      RuleBasedOnEmpty: 'Nhóm sản phẩm không tồn tại.'
     }
   }
 }

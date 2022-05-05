@@ -102,6 +102,7 @@ export interface ProductDTO {
   AmountTotal?: number;
   NameCombos: Array<string>;
   RewardName: string;
+  RewardProductQuantity?: number;
   Product_UOMId: string;
   Tags: string;
   DateCreated?: Date;
