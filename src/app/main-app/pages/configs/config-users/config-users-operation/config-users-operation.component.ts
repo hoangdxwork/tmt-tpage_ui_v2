@@ -1,4 +1,4 @@
-import { finalize } from 'rxjs/operators';
+import { finalize, shareReplay, take, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ModalAddUserComponent } from './../../components/modal-add-user/modal-add-user.component';
 import { TDSModalService, TDSHelperObject, TDSSafeAny, TDSMessageService, TDSHelperArray } from 'tmt-tang-ui';
@@ -35,10 +35,10 @@ export class ConfigUsersOperationComponent implements OnInit {
   lstTeam: CRMTeamDTO[] | undefined;
 
   isLoading: boolean = false;
-  userManagerPage: TDSSafeAny = {};
+  userManagerPage: TDSSafeAny = null;
 
-  userManagerPage$!: Observable<TDSSafeAny>;
-  userManagerPageNot$!: Observable<TDSSafeAny>;
+  // userManagerPage$!: Observable<TDSSafeAny>;
+  // userManagerPageNot$!: Observable<TDSSafeAny>;
 
   userManagerNumber: number = 2;
 
@@ -92,29 +92,18 @@ export class ConfigUsersOperationComponent implements OnInit {
     }
 
     this.applicationUserService.getCRMTeamUser({model: model}).subscribe(res => {
-      res.value.forEach(x => {
-        this.userManagerPage[x.Id] = x.CRMTeam_Users;
+      let result: TDSSafeAny = {};
+      res.value.forEach((x) => {
+        result[x.Id] = {
+          pageShow: [],
+          pageHide: []
+        }
+
+        result[x.Id].pageShow = [...x.CRMTeam_Users].splice(0, 2);
+        result[x.Id].pageHide = [...x.CRMTeam_Users].splice(2, x.CRMTeam_Users.length - 1);
       });
 
-      console.log(this.userManagerPage);
-    });
-
-    this.userManagerPage$ = new Observable(observer => {
-      this.applicationUserService.getCRMTeamUser({model: model}).subscribe(res => {
-        let result: TDSSafeAny = {};
-        res.value.forEach((x) => {
-          result[x.Id] = {
-            pageShow: [],
-            pageHide: []
-          }
-
-          result[x.Id].pageShow = [...x.CRMTeam_Users].splice(0, 2);
-          result[x.Id].pageHide = [...x.CRMTeam_Users].splice(2, x.CRMTeam_Users.length - 1);
-        });
-
-        observer.next(result);
-        observer.complete();
-      });
+      this.userManagerPage = result;
     });
   }
 

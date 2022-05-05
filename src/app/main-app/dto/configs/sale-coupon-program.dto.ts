@@ -1,3 +1,4 @@
+import { CompanyDTO } from "../company/company.dto";
 import { ProductDTO } from "../product/product.dto";
 
 export interface SaleCouponProgramDTO {
@@ -11,6 +12,7 @@ export interface SaleCouponProgramDTO {
   RuleMinQuantity: number;
   RuleMinimumAmount: number;
   CompanyId: number;
+  Company: CompanyDTO;
   PromoApplicability: string;
   RewardType: string;
   RewardProductId?: any;
@@ -37,6 +39,7 @@ export interface SaleCouponProgramDTO {
   NoIncrease: boolean;
   RewardProductUOMId?: any;
   NoteReward?: any;
+  RewardProduct?: ProductDTO[];
 }
 
 export interface SaleCouponProgramDetailDTO {
@@ -65,5 +68,5 @@ export interface SaleCouponProgramDetailDTO {
   RewardProduct?: any;
   DiscountSpecificProduct?: any;
   RuleCombo: ProductDTO[];
-  RewardCombo: any[];
+  RewardCombo: ProductDTO[];
 }

@@ -21,3 +21,7 @@ export interface ODataResponsesDTO<T> {
   "@odata.count"?: number;
   value: Array<T>
 }
+
+export interface ODataModelDTO<T> {
+  model: T;
+}
