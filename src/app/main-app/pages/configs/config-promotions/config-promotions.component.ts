@@ -1,5 +1,4 @@
 import { Router } from '@angular/router';
-import { ConfigPromotionService } from './config-promotion.service';
 import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSMessageService } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { OdataSaleCouponProgramService } from 'src/app/main-app/services/mock-odata/odata-sale-coupon-program.service';
@@ -88,7 +87,7 @@ export class ConfigPromotionsComponent implements OnInit {
 
     if(item && !item?.Details) {
       this.saleCouponProgramService.getById(id).subscribe(res => {
-        if(item) item.Details = res;
+        if(item) item.Details = res.Details;
       })
     }
   }
@@ -154,8 +153,8 @@ export class ConfigPromotionsComponent implements OnInit {
       }, 1000);
   }
 
-  showEditModal(i:number){
-
+  showEditModal(id: number){
+    this.router.navigateByUrl(`/configs/promotions/edit/${id}`);
   }
 
   showRemoveModal(id: number){

@@ -37,7 +37,7 @@
                 </div>
             </div>
             <div class="w-full h-full pb-2.5">
-                    <tds-table #rowSelectionTable 
+                    <tds-table #rowSelectionTable
                     [listData]="lstData"
                     [showSizeChanger]="true"
                     [loading]="loading"
@@ -51,7 +51,7 @@
                     <thead>
                         <tr class="text-neutral-1-900 text-body-2 font-semibold">
                             <th width="32px" [align]="'center'"></th>
-                            <th width="44px" [align]="'center'" class="hover:bg-neutral-3-100" [checked]="checked" 
+                            <th width="44px" [align]="'center'" class="hover:bg-neutral-3-100" [checked]="checked"
                                 [indeterminate]="indeterminate" (checkedChange)="onAllChecked($event)">
                             </th>
                             <th>Tên</th>
@@ -74,7 +74,7 @@
                             </td>
                             <td>{{ data.DateCreated | date:'dd/MM/yyyy HH:mm:ss' }}</td>
                             <td>
-                                <button tds-button-icon color="secondary" size="sm" class=" mr-2" (click)="showEditModal(i)">
+                                <button tds-button-icon color="secondary" size="sm" class=" mr-2" (click)="showEditModal(data.Id)">
                                     <span class="flex items-center">
                                         <i class="tdsi-edit-fill text-xl leading-none"></i>
                                     </span>

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ConfigAddPromotionComponent } from './config-add-promotion.component';
+import { ConfigPromotionAllComponent } from './config-promotion-all.component';
 
-describe('ConfigAddPromotionComponent', () => {
-  let component: ConfigAddPromotionComponent;
-  let fixture: ComponentFixture<ConfigAddPromotionComponent>;
+describe('ConfigPromotionAllComponent', () => {
+  let component: ConfigPromotionAllComponent;
+  let fixture: ComponentFixture<ConfigPromotionAllComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ConfigAddPromotionComponent ]
+      declarations: [ ConfigPromotionAllComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ConfigAddPromotionComponent);
+    fixture = TestBed.createComponent(ConfigPromotionAllComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

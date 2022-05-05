@@ -44,9 +44,9 @@
                               </div>
                             </td>
                             <td>
-                                <div class="flex items-center pl-2" *ngIf="(this.userManagerPage$ | async)?.[data.Id] as CRMTeamUsers">
+                                <div class="flex items-center pl-2" *ngIf="userManagerPage">
 
-                                    <div *ngFor="let crmTeam of CRMTeamUsers.pageShow; let index = index"
+                                    <div *ngFor="let crmTeam of userManagerPage?.pageShow; let index = index"
                                       tds-tooltip tooltipTitle="{{crmTeam?.Facebook_PageName}}"
                                       class="bg-white p-0.5 rounded-full" [ngClass]="index ? '-ml-5 relative' : ''">
                                         <tpage-avatar-facebook class="bg-white  text-white" [size]="44"
@@ -54,15 +54,15 @@
                                         </tpage-avatar-facebook>
                                     </div>
 
-                                    <div *ngIf="CRMTeamUsers.pageHide.length > 0" class="-ml-3 bg-white relative z-[4] p-0.5 rounded-full" tds-popover
+                                    <div *ngIf="userManagerPage?.pageHide.length > 0" class="-ml-3 bg-white relative z-[4] p-0.5 rounded-full" tds-popover
                                         popoverPlacement="bottomLeft" [popoverContent]="popoverPageFacebook">
-                                        <tds-avatar class="bg-primary-3  text-primary-1" [size]="44" text="+{{CRMTeamUsers.pageHide.length}}">
+                                        <tds-avatar class="bg-primary-3  text-primary-1" [size]="44" text="+{{userManagerPage?.pageHide.length}}">
                                         </tds-avatar>
                                     </div>
 
                                     <ng-template #popoverPageFacebook>
                                         <div class="w-[217px] flex flex-col gap-y-4">
-                                            <div *ngFor="let crmTeamUser of CRMTeamUsers.pageHide; let index = index"
+                                            <div *ngFor="let crmTeamUser of userManagerPage?.pageHide; let index = index"
                                               class="flex gap-x-4 items-center">
                                                 <tpage-avatar-facebook class="bg-white  text-white" [size]="44"
                                                     [fbid]="crmTeamUser?.Facebook_ASUserId" [token]="crmTeamUser?.Facebook_UserToken">

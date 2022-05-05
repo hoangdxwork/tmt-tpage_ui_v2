@@ -1,4 +1,4 @@
-<form [formGroup]="sendingData" autocomplete="off">
+<form [formGroup]="form" autocomplete="off">
     <tds-tabset>
         <tds-tab title="Thông tin chương trình">
             <div class="grid grid-cols-2 gap-y-4 gap-x-8 text-neutral-1-600 text-header-2 font-semibold">
@@ -10,8 +10,7 @@
                 <div class="grid grid-cols-3 gap-y-4 items-center">
                     <tds-label>Số lượng</tds-label>
                     <tds-form-field class="w-full col-span-2">
-                        <tds-input-number formControlName="quantity" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"
-                            (ngModelChange)="getData()"></tds-input-number>
+                        <tds-input-number formControlName="RuleMinQuantity" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                         <tds-error>
                             Vui lòng nhập số lượng
                         </tds-error>
@@ -21,8 +20,7 @@
                 <div class="grid grid-cols-3 gap-y-4 items-center">
                     <tds-label>Sử dụng cho</tds-label>
                     <tds-form-field class="w-full col-span-2">
-                        <tds-input-number formControlName="useFor" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"
-                        (ngModelChange)="getData()"></tds-input-number>
+                        <tds-input-number formControlName="MaximumUseNumber" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                         <tds-error>
                             Vui lòng nhập giá trị
                         </tds-error>
@@ -32,18 +30,20 @@
                 <div class="grid grid-cols-3 gap-y-4 items-center">
                     <tds-label>Số tiền tối thiểu</tds-label>
                     <tds-form-field class="w-full col-span-2">
-                        <tds-input-number formControlName="minimumPrice" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"
-                        (ngModelChange)="getData()"></tds-input-number>
+                        <tds-input-number formControlName="RuleMinimumAmount" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                         <tds-error>
                             Vui lòng nhập số tiền tối thiểu
                         </tds-error>
                     </tds-form-field>
                 </div>
 
-                <div class="grid grid-cols-3 gap-y-4 items-center">
-                    <tds-label>Ngày bắt đầu</tds-label>
+                <div class="grid grid-cols-3 gap-y-4 items-baseline">
+                    <tds-label>
+                      Ngày bắt đầu
+                      <span class="text-error-500 text-body-2 font-semibold">*</span>
+                    </tds-label>
                     <tds-form-field class="w-full col-span-2">
-                        <tds-date-picker formControlName="startDate" placeholder="Chọn ngày bắt đầu" [required]='true'>
+                        <tds-date-picker showTime formControlName="RuleDateFrom" placeholder="Chọn ngày bắt đầu" [required]='true'>
                         </tds-date-picker>
                         <tds-error>Vui lòng nhập ngày bắt đầu</tds-error>
                     </tds-form-field>
@@ -54,10 +54,9 @@
                 <div class="grid grid-cols-3 gap-y-4 items-center">
                     <tds-label>Công ty</tds-label>
                     <tds-form-field class="w-full col-span-2">
-                        <tds-select valueField="id" textField="name" placeholder='Chọn công ty'
-                            disabledField="isActive" formControlName="companyName" [required]='true'
-                            [data]="companyList" [allowClear]="true"
-                            (ngModelChange)="getData()">
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn công ty'
+                            disabledField="isActive" formControlName="Company"
+                            [data]="lstCompany" [allowClear]="true" [valuePrimitive]='false'>
                         </tds-select>
                         <tds-error>
                             Chọn công ty
@@ -65,10 +64,13 @@
                     </tds-form-field>
                 </div>
 
-                <div class="grid grid-cols-3 gap-y-4 items-center">
-                    <tds-label>Ngày kết thúc</tds-label>
+                <div class="grid grid-cols-3 gap-y-4 items-baseline">
+                    <tds-label>
+                      Ngày kết thúc
+                      <span class="text-error-500 text-body-2 font-semibold">*</span>
+                    </tds-label>
                     <tds-form-field class="w-full col-span-2">
-                        <tds-date-picker formControlName="endDate" placeholder="Chọn ngày kết thúc" [required]='true'>
+                        <tds-date-picker showTime formControlName="RuleDateTo" placeholder="Chọn ngày kết thúc" [required]='true'>
                         </tds-date-picker>
                         <tds-error>Vui lòng nhập ngày kết thúc</tds-error>
                     </tds-form-field>
@@ -79,8 +81,7 @@
                 <div class="grid grid-cols-3 gap-y-4 items-center">
                     <tds-label>Hiệu lực</tds-label>
                     <div class="w-full col-span-2">
-                        <tds-switch size="md" formControlName="active"
-                        (ngModelChange)="getData()"></tds-switch>
+                        <tds-switch size="md" formControlName="Active"></tds-switch>
                     </div>
                 </div>
             </div>
@@ -92,10 +93,9 @@
                     <span class="text-neutral-1-900 text-body-2 font-semibold">
                         Loại phần thưởng
                     </span>
-                    <tds-radio-group class="flex flex-row w-2/3" formControlName="bonusType"
-                        (ngModelChange)="getData()">
+                    <tds-radio-group class="flex flex-row w-2/3" formControlName="RewardType">
                         <label tds-radio value="discount" class="w-1/2">Chiết khấu</label>
-                        <label tds-radio value="gift" class="w-1/2">Quà tặng</label>
+                        <label tds-radio value="product" class="w-1/2">Quà tặng</label>
                     </tds-radio-group>
                 </div>
                 <!-- apply for -->
@@ -103,64 +103,72 @@
                     <span class="text-neutral-1-900 text-body-2 font-semibold">
                         Áp dụng
                     </span>
-                    <tds-radio-group class="flex flex-row w-2/3" formControlName="applyFor"
-                        (ngModelChange)="getData()">
-                        <label tds-radio value="1" class="w-1/2">Áp dụng trên đơn hàng hiện tại</label>
+                    <tds-radio-group class="flex flex-row w-2/3" formControlName="PromoApplicability">
+                        <label tds-radio value="on_current_order">Áp dụng trên đơn hàng hiện tại</label>
                     </tds-radio-group>
                 </div>
                 <!-- discount for -->
-                <div *ngIf=" sendingData.value.bonusType === 'discount'" class="flex flex-row items-center justify-between w-1/2 mt-4">
+                <div *ngIf="isShow('DiscountType')" class="flex flex-row items-center justify-between w-1/2 mt-4">
                     <span class="text-neutral-1-900 text-body-2 font-semibold">
                         Áp dụng chiết khấu
                     </span>
                     <div class="flex flex-row items-center w-2/3">
                         <div class="w-1/2 pr-4">
                             <tds-form-field class="w-full">
-                                <tds-select valueField="id" textField="name" placeholder='Chọn loại chiết khấu'
-                                    disabledField="isActive" formControlName="applyDiscountType" [required]='true'
-                                    [data]="discountTypeList" [allowClear]="true"
-                                    (ngModelChange)="getData()">
+                                <tds-select valueField="value" textField="text" placeholder='Chọn chiết khấu'
+                                    disabledField="isActive" formControlName="DiscountType" [required]='true'
+                                    [data]="lstDiscountType" [allowClear]="false">
                                 </tds-select>
                                 <tds-error>
                                     Vui lòng chọn loại chiết khấu
                                 </tds-error>
                             </tds-form-field>
                         </div>
-                        <tds-form-field class="w-1/2">
-                            <tds-input-number formControlName="applyDiscountValue" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"
-                                (ngModelChange)="getData()"></tds-input-number>
+                        <tds-form-field class="w-1/2" *ngIf="isShow('DiscountPercentage')">
+                            <tds-input-number formControlName="DiscountPercentage" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                             <tds-error>
                                 Vui lòng nhập giá trị chiết khấu
                             </tds-error>
                         </tds-form-field>
                     </div>
                 </div>
+                <!-- DiscountFixedAmount -->
+                <div *ngIf="isShow('DiscountFixedAmount')" class="flex flex-row items-center justify-between w-1/2 mt-4">
+                    <span class="text-neutral-1-900 text-body-2 font-semibold">
+                        Tiền cố định
+                    </span>
+                    <tds-form-field class="w-2/3">
+                        <tds-input-number formControlName="DiscountFixedAmount" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                        <tds-error>
+                            Vui lòng nhập tiền cố định
+                        </tds-error>
+                    </tds-form-field>
+                </div>
+
                 <!-- maximum discount -->
-                <div *ngIf=" sendingData.value.bonusType === 'discount'" class="flex flex-row items-center justify-between w-1/2 mt-4">
+                <div *ngIf="isShow('DiscountMaxAmount')" class="flex flex-row items-center justify-between w-1/2 mt-4">
                     <span class="text-neutral-1-900 text-body-2 font-semibold">
                         Tiền chiết khấu tối đa
                     </span>
                     <tds-form-field class="w-2/3">
-                        <tds-input-number formControlName="maximumDiscountValue" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"
-                            (ngModelChange)="getData()"></tds-input-number>
+                        <tds-input-number formControlName="DiscountMaxAmount" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                         <tds-error>
                             Vui lòng nhập giá trị chiết khấu tối đa
                         </tds-error>
                     </tds-form-field>
                 </div>
                 <!-- discount on -->
-                <div *ngIf=" sendingData.value.bonusType === 'discount'" class="flex flex-row items-start justify-between w-1/2 mt-4">
+                <div *ngIf="isShow('DiscountApplyOn')" class="flex flex-row items-start justify-between w-1/2 mt-4">
                     <span class="text-neutral-1-900 text-body-2 font-semibold">
                         Chiết khấu trên
                     </span>
-                    <tds-radio-group class="flex flex-row w-2/3" formControlName="discountOn"
-                        (ngModelChange)="getData()">
-                        <label tds-radio value="1" class="w-1/2">Trên đơn hàng</label>
-                        <label tds-radio value="2" class="w-1/2">Trên sản phẩm cụ thể</label>
+                    <tds-radio-group class="flex flex-row w-2/3" formControlName="DiscountApplyOn">
+                        <label tds-radio value="on_order" class="w-1/2">Trên đơn hàng</label>
+                        <label tds-radio value="specific_product" class="w-1/2">Trên sản phẩm cụ thể</label>
                     </tds-radio-group>
                 </div>
                 <!-- add discount product table -->
-                <div *ngIf=" sendingData.value.bonusType === 'discount' && sendingData.value.discountOn === '2' " class="h-full mt-4">
+                <!-- <div *ngIf=" formPromotionAll.value.bonusType === 'discount' && formPromotionAll.value.discountOn === '2' " class="h-full mt-4">
                     <tds-table [listData]="discountProductTable" [showPagination]="false" [outerBordered]="true">
                         <thead>
                               <tr>
@@ -208,18 +216,17 @@
                             </tr>
                         </tbody>
                     </tds-table>
-                </div>
+                </div> -->
                 <!-- gift -->
-                <div *ngIf=" sendingData.value.bonusType === 'gift'" class="flex flex-row items-center justify-between w-1/2 mt-4">
+                <div *ngIf="isShow('DiscountSpecificProduct')" class="flex flex-row items-center justify-between w-1/2 mt-4">
                     <span class="text-neutral-1-900 text-body-2 font-semibold">
                         Sản phẩm quà tặng
                     </span>
                     <div class="flex flex-row items-center w-2/3">
                         <tds-form-field class="w-full">
-                            <tds-select valueField="id" textField="name" placeholder='Chọn loại chiết khấu'
-                                disabledField="isActive" formControlName="gift" [required]='true'
-                                [data]="giftList" [allowClear]="true"
-                                (ngModelChange)="getData()">
+                            <tds-select valueField="Id" textField="NameGet" placeholder='Chọn sản phẩm'
+                                disabledField="isActive" formControlName="DiscountSpecificProduct" [required]='true'
+                                [data]="lstProduct" [allowClear]="true">
                             </tds-select>
                             <tds-error>
                                 Vui lòng chọn quà tặng
@@ -228,14 +235,13 @@
                     </div>
                 </div>
                 <!-- gift quantity -->
-                <div *ngIf=" sendingData.value.bonusType === 'gift'" class="flex flex-row items-center justify-between w-1/2 mt-4">
+                <div *ngIf="isShow('RewardProductQuantity')" class="flex flex-row items-center justify-between w-1/2 mt-4">
                     <span class="text-neutral-1-900 text-body-2 font-semibold">
                         Số lượng tặng
                     </span>
                     <div class="flex flex-row items-center w-2/3">
                         <tds-form-field class="w-full">
-                            <tds-input-number formControlName="quantityGift" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"
-                            (ngModelChange)="getData()"></tds-input-number>
+                            <tds-input-number formControlName="RewardProductQuantity" [min]="0" [step]="1" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                             <tds-error>
                                 Vui lòng nhập số lượng tặng
                             </tds-error>
@@ -243,18 +249,17 @@
                     </div>
                 </div>
                 <!-- duplicate quantity -->
-                <div *ngIf=" sendingData.value.bonusType === 'gift'" class="flex flex-row items-center justify-between w-1/2 mt-4">
+                <div *ngIf="isShow('NoIncrease')" class="flex flex-row items-center justify-between w-1/2 mt-4">
                     <span class="text-neutral-1-900 text-body-2 font-semibold">
                         Nhân số lượng khuyến mãi
                     </span>
                     <div class="flex flex-row items-start w-2/3">
-                        <tds-checkbox formControlName="duplicateQuantity"
-                        (ngModelChange)="getData()">Ví dụ: mua 2 tặng 1 thì mua 4 tặng 2</tds-checkbox>
+                        <tds-checkbox formControlName="NoIncrease">Ví dụ: mua 2 tặng 1 thì mua 4 tặng 2</tds-checkbox>
                     </div>
                 </div>
             </div>
         </tds-tab>
-        <tds-tab title="Danh sách coupon">
+        <!-- <tds-tab title="Danh sách coupon">
             <div class="h-full">
                 <tds-table [listData]="couponTable" [showPagination]="false" [outerBordered]="true">
                     <thead>
@@ -301,6 +306,6 @@
                     </tbody>
                 </tds-table>
             </div>
-        </tds-tab>
+        </tds-tab> -->
     </tds-tabset>
 </form>
