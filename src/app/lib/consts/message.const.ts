@@ -13,8 +13,13 @@ export const Message = {
   ErrorOccurred: 'Đã có lỗi xảy ra',
   PageNotExist: 'Không có kênh nào đang được kết nối',
   FunctionNotWorking: 'Chức năng chưa hoạt động!',
+  CanNotLoadData: 'Không thể tải dữ liệu',
   Error: {
     SeverError: 'Lỗi máy chủ. Vui lòng thử lại sau.'
+  },
+  Tag: {
+    InsertSuccess: 'Gán nhãn thành công!',
+    InsertFail: 'Gán nhãn thất bại!'
   },
   Order: {
     UpdateSuccess: 'Cập nhật đơn hàng thành công.',
