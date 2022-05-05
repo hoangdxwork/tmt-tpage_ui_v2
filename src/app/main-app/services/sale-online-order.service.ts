@@ -16,8 +16,6 @@ export class SaleOnline_OrderService extends BaseSevice {
 
   public _keyCacheGrid: string = 'saleonline_order-page:grid_saleonline_order:settings';
 
-  public eventReloadData: EventEmitter<any> = new EventEmitter<any>();
-
   constructor(private apiService: TCommonService) {
     super(apiService)
   }

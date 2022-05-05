@@ -9,8 +9,8 @@ import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { OdataSaleOnline_OrderService } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { TagService } from 'src/app/main-app/services/tag.service';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, finalize } from 'rxjs/operators';
 import { EditOrderComponent } from '../components/edit-order/edit-order.component';
 import { CreateBillFastComponent } from '../components/create-bill-fast/create-bill-fast.component';
 import { CreateBillDefaultComponent } from '../components/create-bill-default/create-bill-default.component';
@@ -74,6 +74,12 @@ export class OrderComponent implements OnInit {
   namePhone = ['Viettel',  'Mobifone', 'Mobifone', 'Mobifone', 'Vinaphone']
 
   expandSet = new Set<string>();
+  isOpenMessageFacebook = false;
+  indClickTag = "";
+
+  checked = false;
+  indeterminate = false;
+  setOfCheckedId = new Set<string>();
 
   constructor(
     private tagService: TagService,
@@ -87,13 +93,10 @@ export class OrderComponent implements OnInit {
     private excelExportService: ExcelExportService
   ) { }
 
-  isOpenMessageFacebook = false;
-  indClickTag = "";
-
-  checked = false;
-  indeterminate = false;
-  listOfCurrentPageData: readonly SaleOnline_OrderDTO[] = [];
-  setOfCheckedId = new Set<string>();
+  ngOnInit(): void {
+    this.loadTags();
+    this.loadGridConfig();
+  }
 
   updateCheckedSet(id: string, checked: boolean): void {
     if (checked) {
@@ -119,31 +122,24 @@ export class OrderComponent implements OnInit {
     this.indeterminate = this.lstOfData.some(item => this.setOfCheckedId.has(item.Id)) && !this.checked;
   }
 
-  ngOnInit(): void {
-    this.loadTags();
-
-    this.loadGridConfig();
-
-    this.saleOnline_OrderService.eventReloadData
-      .pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
-        this.refreshData();
-      });
-  }
-
   loadData(pageSize: number, pageIndex: number) {
-    this.isLoading = true;
     let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.odataSaleOnline_OrderService.getView(params, this.filterObj).subscribe((res: TDSSafeAny) => {
-
-        console.log("view:", res);
+    this.getViewData(params).subscribe((res: TDSSafeAny) => {
         this.count = res['@odata.count'] as number;
         this.lstOfData = res.value;
-        this.isLoading = false;
 
-        this.loadSummaryStatus();
-    });
+    }, error => this.message.error(`${error?.error?.message}` || Message.CanNotLoadData));
+
+    this.loadSummaryStatus();
+  }
+
+  getViewData(params: string) {
+    this.isLoading = true;
+    return this.odataSaleOnline_OrderService
+        .getView(params, this.filterObj)
+        .pipe(finalize(() => this.isLoading = false ));
   }
 
   loadSummaryStatus() {
@@ -154,42 +150,45 @@ export class OrderComponent implements OnInit {
       tagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
     }
 
-    this.saleOnline_OrderService.getSummaryStatus(model).subscribe((res: Array<TDSSafeAny>) => {
-      var total = 0;
+    this.isLoading = true;
+    this.saleOnline_OrderService.getSummaryStatus(model)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe((res: Array<TDSSafeAny>) => {
+        let total = 0;
 
-      this.tabNavs.length = 0;
+        this.tabNavs.length = 0;
 
-      res.map((x: TDSSafeAny) => {
-        total += x.Total;
-        switch(x.StatusText) {
-          case "Nháp" :
-            this.tabNavs.push({ Name: "Nháp", Index: 2, Total: x.Total });
-            break;
-          case "Đã xác nhận" :
-            this.tabNavs.push({ Name: "Đã xác nhận", Index: 3, Total: x.Total });
-            break;
-          case "Đơn hàng" :
-            this.tabNavs.push({ Name: "Đơn hàng", Index: 3, Total: x.Total });
-            break;
-          case "Đã thanh toán" :
-            this.tabNavs.push({ Name: "Đã thanh toán", Index: 4, Total: x.Total });
-            break;
-          case "Hủy" :
-            this.tabNavs.push({ Name: "Hủy", Index: 5, Total: x.Total });
-            break;
-        }
+        res.map((x: TDSSafeAny) => {
+          total += x.Total;
+          switch(x.StatusText) {
+            case "Nháp" :
+              this.tabNavs.push({ Name: "Nháp", Index: 2, Total: x.Total });
+              break;
+            case "Đã xác nhận" :
+              this.tabNavs.push({ Name: "Đã xác nhận", Index: 3, Total: x.Total });
+              break;
+            case "Đơn hàng" :
+              this.tabNavs.push({ Name: "Đơn hàng", Index: 3, Total: x.Total });
+              break;
+            case "Đã thanh toán" :
+              this.tabNavs.push({ Name: "Đã thanh toán", Index: 4, Total: x.Total });
+              break;
+            case "Hủy" :
+              this.tabNavs.push({ Name: "Hủy", Index: 5, Total: x.Total });
+              break;
+          }
+        });
+
+        this.tabNavs.push({ Name: "Tất cả", Index: 1, Total: total });
+        this.tabNavs.sort((a, b) => a.Index - b.Index);
       });
-
-      this.tabNavs.push({ Name: "Tất cả", Index: 1, Total: total });
-      this.tabNavs.sort((a, b) => a.Index - b.Index);
-    });
   }
 
   loadGridConfig() {
     const key = this.saleOnline_OrderService._keyCacheGrid;
     this.cacheApi.getItem(key).subscribe((res: TDSSafeAny) => {
       if(res && res.value) {
-        var jsColumns = JSON.parse(res.value) as any;
+        let jsColumns = JSON.parse(res.value) as any;
         this.hiddenColumns = jsColumns.value.columnConfig;
       } else {
         this.hiddenColumns = this.columns;
@@ -250,7 +249,7 @@ export class OrderComponent implements OnInit {
 
   checkPhone(phone: string) {
     if(TDSHelperString.hasValueString(phone)) {
-      for (var i = 0; i < this.firstPhone.length; i++) {
+      for (let i = 0; i < this.firstPhone.length; i++) {
         if (phone.indexOf(this.firstPhone[i]) == 0)
           return this.namePhone[i];
       }
@@ -304,12 +303,12 @@ export class OrderComponent implements OnInit {
 
           this.indClickTag = "";
           this.modelTags = [];
-          this.message.success('Gán nhãn thành công!');
+          this.message.success(Message.Tag.InsertSuccess);
         }
 
-    }, (error: TDSSafeAny) => {
+    }, error => {
       this.indClickTag = "";
-      this.message.error('Gán nhãn thất bại!');
+      this.message.error(`${error?.error?.message}` || Message.Tag.InsertFail);
     });
   }
 
@@ -428,7 +427,7 @@ export class OrderComponent implements OnInit {
 
   onRemove(id: string, code: string) {
     this.modal.error({
-      title: 'Xác nhận',
+      title: 'Xóa đơn hàng',
       content: 'Bạn có chắc muốn xóa đơn hàng',
       onOk: () => this.remove(id, code),
       onCancel:()=>{console.log('cancel')},
@@ -438,10 +437,13 @@ export class OrderComponent implements OnInit {
   }
 
   remove(id: string, code: string) {
-    this.saleOnline_OrderService.remove(id).subscribe((res: TDSSafeAny) => {
-      this.message.info(`${Message.Order.DeleteSuccess} ${code}`);
-      this.refreshDataCurrent();
-    });
+    this.isLoading = true;
+    this.saleOnline_OrderService.remove(id)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe((res: TDSSafeAny) => {
+        this.message.info(`${Message.Order.DeleteSuccess} ${code}`);
+        this.refreshDataCurrent();
+      }, error => this.message.error(`${error?.error?.message}` || Message.ErrorOccurred));
   }
 
   checkValueEmpty() {
@@ -476,8 +478,7 @@ export class OrderComponent implements OnInit {
       ids: [...this.setOfCheckedId]
     }
 
-    this.excelExportService.exportPost(`/SaleOnline_Order/ExportFile`,
-     model,`don_hang_online`);
+    this.excelExportService.exportPost(`/SaleOnline_Order/ExportFile`, model,`don_hang_online`);
   }
 
   ngOnDestroy(): void {

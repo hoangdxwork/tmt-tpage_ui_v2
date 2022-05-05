@@ -122,8 +122,8 @@ export class ActionDropdownComponent implements OnInit {
 
   getUpdateUIds() {
     this.saleOnline_OrderService.getUpdateUIds().subscribe(res => {
-      this.message.success(Message.ManipulationSuccessful);
-      this.saleOnline_OrderService.eventReloadData.emit();
+      this.message.success(Message.UpdatedSuccess);
+      this.onRefreshData.emit(true);
     });
   }
 

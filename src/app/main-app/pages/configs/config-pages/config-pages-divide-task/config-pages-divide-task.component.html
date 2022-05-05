@@ -25,7 +25,7 @@
                           <span>Tự động gắn nhãn vào hội thoại có chứa số điện thoại?</span>
                           <tds-form-field *ngIf="formAutoLabelConfig?.value?.AssignOnPhone">
                               <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' formControlName="TagOnPhone" [valuePrimitive]="false"
-                                  disabledField="isActive"  [required]='true' [data]="lstTags"
+                                  disabledField="isActive"  [required]='true' [data]="(lstTags | async) || []"
                                   [allowClear]="true">
                               </tds-select>
                           </tds-form-field>
@@ -37,7 +37,7 @@
                           <span>Tự động gắn nhãn vào hội thoại sau khi xác nhận và in hóa đơn?</span>
                           <tds-form-field *ngIf="formAutoLabelConfig?.value?.AssignOnBillPrint">
                               <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' formControlName="TagOnBillPrint" [valuePrimitive]="false"
-                                  disabledField="isActive"  [required]='true' [data]="lstTags"
+                                  disabledField="isActive"  [required]='true' [data]="(lstTags | async) || []"
                                   [allowClear]="true">
                               </tds-select>
                           </tds-form-field>
@@ -49,7 +49,7 @@
                           <span>Tự động gắn nhãn vào hội thoại sau khi tạo đơn hàng?</span>
                           <tds-form-field *ngIf="formAutoLabelConfig?.value?.AssignOnOrder">
                               <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' formControlName="TagOnOrder" [valuePrimitive]="false"
-                                  disabledField="isActive"  [required]='true' [data]="lstTags"
+                                  disabledField="isActive"  [required]='true' [data]="(lstTags | async) || []"
                                   [allowClear]="true">
                               </tds-select>
                           </tds-form-field>
@@ -61,7 +61,7 @@
                           <span>Tự động gắn nhãn vào hội thoại sau khi lưu nháp hóa đơn?</span>
                           <tds-form-field *ngIf="formAutoLabelConfig?.value?.AssignOnBillDraft">
                               <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' formControlName="TagOnBillDraft" [valuePrimitive]="false"
-                                  disabledField="isActive"  [required]='true' [data]="lstTags"
+                                  disabledField="isActive"  [required]='true' [data]="(lstTags | async) || []"
                                   [allowClear]="true">
                               </tds-select>
                           </tds-form-field>
@@ -75,7 +75,7 @@
                             <div *ngFor="let item of tagOnPatternFormGroups; let i=index" [formGroupName]="i" class="flex gap-x-4">
                               <tds-form-field class="w-full">
                                   <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn'
-                                      disabledField="isActive" [required]='true' [data]="lstTags" formControlName="CrmTag" [valuePrimitive]="false"
+                                      disabledField="isActive" [required]='true' [data]="(lstTags | async) || []" formControlName="CrmTag" [valuePrimitive]="false"
                                       [allowClear]="true">
                                   </tds-select>
                               </tds-form-field>
@@ -104,7 +104,7 @@
                           <span>Tự động gắn nhãn vào hội thoại sau khi xác nhận và in phiếu ship?</span>
                           <tds-form-field *ngIf="formAutoLabelConfig?.value?.AssignOnBillPrintShip">
                               <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' formControlName="TagOnBillPrintShip" [valuePrimitive]="false"
-                                  disabledField="isActive"  [required]='true' [data]="lstTags"
+                                  disabledField="isActive"  [required]='true' [data]="(lstTags | async) || []"
                                   [allowClear]="true">
                               </tds-select>
                           </tds-form-field>

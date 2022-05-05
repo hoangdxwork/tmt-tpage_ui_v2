@@ -11,14 +11,17 @@ export class CRMTagService extends BaseSevice {
   table: string = "CRMTag";
   baseRestApi: string = "";
 
-  public data!: any[];
-  public dataActive: any;
-
-  public dataSource$ = new BehaviorSubject<any>(null);
-  public dataActive$ = new BehaviorSubject<any>(null);
+  public dataActive$ = new BehaviorSubject<any>([]);
 
   constructor(private apiService: TCommonService) {
     super(apiService);
+    this.initialize();
+  }
+
+  initialize() {
+    this.getOnlyActive().subscribe((res: any) => {
+      this.dataActive$.next(res.value);
+    });
   }
 
   getById(key: string): Observable<any> {
