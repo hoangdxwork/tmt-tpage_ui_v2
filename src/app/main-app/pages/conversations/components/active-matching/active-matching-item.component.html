@@ -63,6 +63,7 @@
           <div *ngIf="item.has_phone" class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
           <div *ngIf="item.has_address" class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
         </div>
+
         <div class="flex justify-end gap-1 items-center" *ngIf="eventData && eventData[team.Facebook_PageId] && eventData[team.Facebook_PageId][psid]">
             <div class="tdsi-flash-on-fill text-accent-3 px-1 text-2xl"></div>
             <div class="text-accent-3 text-caption-1 font-regular font-sans">
