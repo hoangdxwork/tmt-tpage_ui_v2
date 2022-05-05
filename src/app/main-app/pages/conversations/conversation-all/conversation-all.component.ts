@@ -12,9 +12,9 @@ import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-bas
 import { TDSHelperObject, TDSMessageService, TDSSafeAny, TDSHelperArray } from 'tmt-tang-ui';
 
 @Component({
-    selector: 'app-conversation-all',
-    templateUrl: './conversation-all.component.html',
-    styleUrls: ['./conversation-all.component.scss']
+  selector: 'app-conversation-all',
+  templateUrl: './conversation-all.component.html',
+  styleUrls: ['./conversation-all.component.scss']
 })
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit {
@@ -36,15 +36,17 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     private conversationService: ConversationService,
     public activatedRoute: ActivatedRoute,
     public router: Router) {
-      super(crmService, activatedRoute, router);
+    super(crmService, activatedRoute, router);
   }
 
   onInit() {
+
     this.type = this.paramsUrl?.type;
     let team = this.currentTeam || {} as CRMTeamDTO;
-    if((TDSHelperObject.hasValue(team) && team?.Id && team?.Facebook_PageId)) {
-        this.onChangeConversation(team);
+    if ((TDSHelperObject.hasValue(team) && team?.Id && team?.Facebook_PageId)) {
+      this.onChangeConversation(team);
     }
+    
   }
 
   onChangeConversation(team: CRMTeamDTO) {
@@ -53,39 +55,39 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   loadConversations(dataSource$: Observable<any>) {
-    if(dataSource$) {
+    if (dataSource$) {
       this.isLoading = true;
-      dataSource$.pipe(takeUntil(this.destroy$)).pipe(finalize(() => {this.isLoading = false }))
+      dataSource$.pipe(takeUntil(this.destroy$)).pipe(finalize(() => { this.isLoading = false }))
         .subscribe((res: CRMMatchingMappingDTO) => {
-          if(res && TDSHelperArray.hasListValue(res.items)) {
+          if (res && TDSHelperArray.hasListValue(res.items)) {
             this.lstMatchingItem = [...res.items];
 
             let psid: string = this.paramsUrl?.psid || null;
             //TODO: check psid khi load lần 2,3,4...
             let exits = this.lstMatchingItem.filter(x => x.psid == psid)[0];
-            if(exits) {
+            if (exits) {
               this.activeConversations(exits);
             } else {
               //TODO: load lần đầu tiên
-              (this.activeMatchingItem  as any) = {};
+              (this.activeMatchingItem as any) = {};
               this.activeConversations(this.lstMatchingItem[0]);
+            }
           }
-        }
-      }, error => {
+        }, error => {
           this.message.error('Load thông tin CRMMatching đã xảy ra lỗi');
-      })
+        })
     }
   }
 
   activeConversations(item: ActiveMatchingItem) {
-    if(TDSHelperObject.hasValue(item)) {
-      if(this.isFastSend == true) {
-          this.conversationDataFacade.checkSendMessage(item.page_id, this.type, item.psid);
+    if (TDSHelperObject.hasValue(item)) {
+      if (this.isFastSend == true) {
+        this.conversationDataFacade.checkSendMessage(item.page_id, this.type, item.psid);
       } else {
-          //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
-          this.psid = item.psid;
-          this.addQueryParams({ psid: this.psid });
-          this.activeMatchingItem = item;
+        //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
+        this.psid = item.psid;
+        this.addQueryParams({ psid: this.psid });
+        this.activeMatchingItem = item;
       }
     }
   }
@@ -93,20 +95,19 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   ngAfterViewInit(): void {
   }
 
-  onClickTeam(data: CRMTeamDTO):any {
-    if (this.paramsUrl?.teamId ) {
-        let url = this.router.url.split("?")[0];
-        const params = { ...this.paramsUrl };
-        params.teamId = data.Id;
+  onClickTeam(data: CRMTeamDTO): any {
+    if (this.paramsUrl?.teamId) {
+      let url = this.router.url.split("?")[0];
+      const params = { ...this.paramsUrl };
+      params.teamId = data.Id;
 
-        this.onChangeConversation(data);
-        return this.router.navigate([url], { queryParams: params });
-    } else {
-        this.crmService.onUpdateTeam(data);
+      this.onChangeConversation(data);
+      this.router.navigate([url], { queryParams: params });
     }
+    this.crmService.onUpdateTeam(data);
   }
 
-  onLoadMiniChat(event: any): void {}
+  onLoadMiniChat(event: any): void { }
 
   ngOnDestroy(): void {
     this.destroy$.next();

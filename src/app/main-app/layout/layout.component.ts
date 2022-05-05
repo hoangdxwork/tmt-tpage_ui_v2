@@ -30,13 +30,13 @@ export class LayoutComponent implements OnInit {
   _connectionEstablished: boolean = false;
 
   constructor(private auth: TAuthService,
-      private signalRConnectionService: SignalRConnectionService,
-      public crmService: CRMTeamService,
-      private modalService: TDSModalService,
-      // private modal: TDSModalRef,
-      private message: TDSMessageService,
-      private activatedRoute: ActivatedRoute,
-      private router: Router) {
+    private signalRConnectionService: SignalRConnectionService,
+    public crmService: CRMTeamService,
+    private modalService: TDSModalService,
+    // private modal: TDSModalRef,
+    private message: TDSMessageService,
+    private activatedRoute: ActivatedRoute,
+    private router: Router) {
 
     router.events.pipe(
       takeUntil(this.destroy$),
@@ -50,8 +50,8 @@ export class LayoutComponent implements OnInit {
       }),
       filter(route => route.outlet === 'primary'),
       mergeMap(route => route.data) ,
-    // get the data
-    ).subscribe(res=>{
+      // get the data
+    ).subscribe(res => {
       this.inlineCollapsed = res.collapse;
     })
   }
@@ -60,11 +60,11 @@ export class LayoutComponent implements OnInit {
     //TODO: Khoi tao signalR
     this.signalRConnectionService.initiateSignalRConnection();
     this.signalRConnectionService._connectionEstablished$.subscribe((res: any) => {
-        this._connectionEstablished = res;
+      this._connectionEstablished = res;
     });
 
     NetworkHelper.checkNetwork().subscribe(isNetwork => {
-        this.isNetwork = isNetwork;
+      this.isNetwork = isNetwork;
     });
 
     this.crmService.onChangeTeam().subscribe(res => {
@@ -224,16 +224,19 @@ export class LayoutComponent implements OnInit {
       this.userInit = res || {};
     })
   }
-
+/**
+ * xử lý chọn team: 
+ * cập nhật url 
+ * update team 
+*/
   onClickTeam(data: CRMTeamDTO) {
     if (this.params?.teamId) {
       let url = this.router.url.split("?")[0];
       const params = { ...this.params };
       params.teamId = data.Id;
       this.router.navigate([url], { queryParams: params })
-    } else {
-      this.crmService.onUpdateTeam(data);
-    }
+    } 
+    this.crmService.onUpdateTeam(data);
   }
 
   onSave() {
@@ -241,32 +244,32 @@ export class LayoutComponent implements OnInit {
       title: 'Kết nối realtime',
       content: 'Thử kết nối lại',
       onOk: () => { this.onConnectSginalR() },
-      onCancel:()=> {},
-      okText:"Kết nối",
-      cancelText:"Hủy",
+      onCancel: () => { },
+      okText: "Kết nối",
+      cancelText: "Hủy",
       confirmViewType: "compact",
     });
   }
 
   onConnectSginalR(): any {
-    if(!this.isNetwork) {
-        return this.message.error("Không có kết nối mạng");
+    if (!this.isNetwork) {
+      return this.message.error("Không có kết nối mạng");
     }
 
     this.disabledSignalRConnect = true;
     this.signalRConnectionService.refreshConnected();
 
     this.signalRConnectionService._connectionEstablished$.pipe(take(1))
-      .pipe(finalize(() => {this.disabledSignalRConnect = false }))
+      .pipe(finalize(() => { this.disabledSignalRConnect = false }))
       .subscribe((res: any) => {
-        if(res == true) {
-            this.message.success("Kết nối thành công");
+        if (res == true) {
+          this.message.success("Kết nối thành công");
         } else {
-            this.message.error("Kết nối thất bại");
+          this.message.error("Kết nối thất bại");
         }
-      }, error =>{
+      }, error => {
         this.message.error("Lỗi server");
-    });
+      });
   }
 
 }
