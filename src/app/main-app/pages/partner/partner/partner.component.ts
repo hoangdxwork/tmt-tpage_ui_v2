@@ -273,7 +273,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
         this.message.error('Gán nhãn thất bại!');
     });
   }
-  
+
 //   @HostListener('window:scroll', ['$event'])
 // onWindowScroll($event) {
 //     console.log("scrolling...");

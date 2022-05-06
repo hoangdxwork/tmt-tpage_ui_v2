@@ -1,5 +1,5 @@
 import { CheckConversationData, CheckConversationDTO } from './../../../../dto/partner/check-conversation.dto';
-import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, SimpleChanges, SkipSelf } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActiveMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
@@ -12,15 +12,16 @@ import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
-import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
+import { ConversationAllComponent } from '../../conversation-all/conversation-all.component';
+import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 
 @Component({
     selector: 'conversation-partner',
     templateUrl: './conversation-partner.component.html',
 })
 
-export class ConversationPartnerComponent extends TpageBaseComponent implements OnInit, OnChanges {
+export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   @Input() data!: ActiveMatchingItem;
   @Input() team!: CRMTeamDTO;
@@ -32,18 +33,16 @@ export class ConversationPartnerComponent extends TpageBaseComponent implements 
   destroy$ = new Subject();
 
   constructor(private message: TDSMessageService,
-      private draftMessageService: DraftMessageService,
-      private conversationEventFacade: ConversationEventFacade,
-      private conversationService: ConversationService,
-      private fastSaleOrderService: FastSaleOrderService,
-      private partnerService: PartnerService,
-      public crmService: CRMTeamService,
-      private cdr: ChangeDetectorRef,
-      private fb: FormBuilder,
-      public activatedRoute: ActivatedRoute,
-      public router: Router) {
-        super(crmService, activatedRoute, router);
-        this.createForm();
+    private draftMessageService: DraftMessageService,
+    private conversationEventFacade: ConversationEventFacade,
+    private conversationService: ConversationService,
+    private fastSaleOrderService: FastSaleOrderService,
+    private partnerService: PartnerService,
+    public crmService: CRMTeamService,
+    private fb: FormBuilder,
+    public activatedRoute: ActivatedRoute,
+    public router: Router) {
+      this.createForm();
   }
 
   createForm(){
@@ -65,9 +64,8 @@ export class ConversationPartnerComponent extends TpageBaseComponent implements 
     });
   }
 
-  onInit(): void {
-    //TODO load dữ liệu lần đầu, khi change matching sẽ đi vào onChanges
-    if(this.data && this.data?.psid == this.paramsUrl?.psid && this.team?.Id == this.paramsUrl?.teamId) {
+  ngOnInit(): void  {
+    if(this.data?.id) {
         this.loadData(this.data);
     }
   }
@@ -80,34 +78,32 @@ export class ConversationPartnerComponent extends TpageBaseComponent implements 
       let id = data?.partner_id || data?.partner?.id;
       this.loadPartnerRevenue(id);
     }
-    if(data?.page_id && data?.psid) {
-        let page_id = data?.page_id;
-        let psid = data?.psid;
 
-        this.partnerService.checkConversation(page_id, psid).pipe(takeUntil(this.destroy$))
-          .subscribe((res: CheckConversationDTO) => {
-              if(res?.Data && res?.Success) {
-                res.Data.Name = res?.Data.Name || this.data.name;
-                res.Data.Facebook_ASUserId = res?.Data.Facebook_ASUserId || this.data.psid;
-                res.Data.Phone = res?.Data.Phone || this.data.phone;
-                res.Data.Street = res?.Data.Street || this.data.address;
+    this.loadBill(this.data.partner_id || this.data.partner.id);
 
-                this.loadBill(this.data.partner_id || this.data.partner.id);
-                this.updateForm(res.Data);
+     //TODO: checkconversation để đẩy dữ liệu sang tab đơn hàng vs tab khách hàng
+     let page_id = data?.page_id;
+     let psid = data?.psid;
+     this.partnerService.checkConversation(page_id, psid).pipe(takeUntil(this.destroy$))
+       .subscribe((res: CheckConversationDTO) => {
+          if(res?.Data && res?.Success) {
 
-                // TODO: đẩy dữ liệu sang service để mapping + realtime qua tab đơn hàng
-                this.partnerService.onLoadedPartnerFromCheckCvs.emit(res.Data);
-              }
-          }, error => {
-            this.message.error('Check conversation đã xảy ra lỗi!');
-        })
-    }
+            res.Data.Name = res.Data.Name || data.name;
+            res.Data.Facebook_ASUserId = res.Data.Facebook_ASUserId || this.data.psid;
+            res.Data.Phone = res.Data.Phone || this.data.phone;
+            res.Data.Street = res.Data.Street || this.data.address;
+            this.updateForm(res.Data);
+          }
+       }, error => {
+          this.message.error('Check conversation đã xảy ra lỗi!');
+     })
+
   }
 
   updateForm(data: CheckConversationData){
     if(data?.Id) {
-        this._form.controls['FacebookASIds'].setValue(data.Facebook_ASUserId);
-        this._form.patchValue(data);
+      this._form.controls['FacebookASIds'].setValue(data.Facebook_ASUserId);
+      this._form.patchValue(data);
     }
   }
 
@@ -154,12 +150,10 @@ export class ConversationPartnerComponent extends TpageBaseComponent implements 
       })
   }
 
-  //Dữ liệu khi change crmmatching xử lý tại đây
-  ngOnChanges(changes: SimpleChanges): void {
-    //TODO: click change component
-    if(!changes["data"]?.firstChange) {
-      this.data = changes["data"].currentValue || {};
-      this.loadData(this.data);
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes["data"] && !changes["data"].firstChange) {
+        this.data = changes["data"].currentValue;
+        this.loadData(this.data);
     }
   }
 

@@ -49,7 +49,7 @@ export class OdataPartnerService extends BaseSevice {
     }
 
     if (TDSHelperString.hasValueString(filterObj.searchText)) {
-        let value =  TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim())
+        let value = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim());
         dataFilter.filters.push( {
             filters: [
               { field: "DisplayName", operator: OperatorEnum.contains, value: value },
