@@ -90,9 +90,9 @@
             </div>
           </div>
         </ng-template>
-        <!-- <div *ngIf="activeMatchingItem?.id && checkConversationData?.Id">
-            <conversation-order></conversation-order>
-        </div> -->
+        <div *ngIf="activeMatchingItem?.id && currentTeam">
+            <conversation-order [data]="activeMatchingItem" [team]="currentTeam"></conversation-order>
+        </div>
       </tds-tab>
     </tds-tabset>
   </div>

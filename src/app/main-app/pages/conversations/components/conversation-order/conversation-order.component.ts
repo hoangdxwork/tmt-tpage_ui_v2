@@ -1,18 +1,18 @@
+import { User } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
 import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, SimpleChanges, SkipSelf } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { ActiveMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CheckConversationData } from 'src/app/main-app/dto/partner/check-conversation.dto';
+import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { DraftMessageService } from 'src/app/main-app/services/conversation/draft-message.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationEventFacade } from 'src/app/main-app/services/facades/conversation-event.facade';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { TDSMessageService } from 'tmt-tang-ui';
-import { ConversationAllComponent } from '../../conversation-all/conversation-all.component';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'conversation-order',
@@ -21,10 +21,12 @@ import { ConversationAllComponent } from '../../conversation-all/conversation-al
 
 export class ConversationOrderComponent  implements OnInit, OnChanges {
 
+  @Input() data!: ActiveMatchingItem;
+  @Input() team!: CRMTeamDTO;
+
   _form!: FormGroup;
   isLoading: boolean = false;
 
-  data!: ActiveMatchingItem;
   cvsData!: CheckConversationData;
   private destroy$ = new Subject();
 
@@ -156,7 +158,6 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
     private conversationOrderFacade: ConversationOrderFacade,
     private saleOnline_OrderService: SaleOnline_OrderService,
     public crmService: CRMTeamService,
-    @Host() @SkipSelf() @Optional() private _optionalCvsAll: ConversationAllComponent,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     public activatedRoute: ActivatedRoute,
@@ -192,23 +193,24 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
         Session: [null],
         SessionIndex: [null],
         StatusText: [null],
-        Details: this.fb.array([])
+        Details: this.fb.array([]),
     })
   }
 
   ngOnInit(): void {
-    if(this._optionalCvsAll.activeMatchingItem?.id ) {
-      this.data = this._optionalCvsAll.activeMatchingItem;
-      // this.cvsData = this._optionalCvsAll.checkConversationData;
-      this.loadData(this.data, this.cvsData);
+    if(this.data ) {debugger
+      //TODO: data load lần đầu
+      this.loadData(this.data);
     }
+    //TODO: load user gán _form User
   }
 
-  loadData(data: any, cvsData: any) {
+  loadData(data: any) {
     let id = "";
-    // this.saleOnline_OrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-    //   debugger
-    // })
+    this.saleOnline_OrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      delete res['@odata.context'];
+      debugger
+    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {

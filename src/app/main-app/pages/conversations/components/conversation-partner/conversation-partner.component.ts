@@ -80,7 +80,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     }
 
     this.loadBill(this.data.partner_id || this.data.partner.id);
-
      //TODO: checkconversation để đẩy dữ liệu sang tab đơn hàng vs tab khách hàng
      let page_id = data?.page_id;
      let psid = data?.psid;
@@ -93,6 +92,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
             res.Data.Phone = res.Data.Phone || this.data.phone;
             res.Data.Street = res.Data.Street || this.data.address;
             this.updateForm(res.Data);
+
+            this.partnerService.onLoadOrderFromTabPartner.emit(res.Data);
           }
        }, error => {
           this.message.error('Check conversation đã xảy ra lỗi!');

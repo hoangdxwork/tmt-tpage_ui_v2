@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, pipe, Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { ActiveMatchingItem, CRMMatchingMappingDTO } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
-import { CheckConversationData, CheckConversationDTO } from 'src/app/main-app/dto/partner/check-conversation.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -42,7 +41,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onInit(): void {
-    this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe(([team, params] :any) => {
+    this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe(([team, params]: any) => {
       if (!TDSHelperObject.hasValue(team)) {
           this.onRedirect();
       } else {
@@ -67,13 +66,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           if (res && TDSHelperArray.hasListValue(res.items)) {
             this.lstMatchingItem = [...res.items];
             let psid: string = this.paramsUrl?.psid || null;
+
             //TODO: check psid khi load lần 2,3,4...
             let exits = this.lstMatchingItem.filter(x => x.psid == psid)[0];
             if (exits) {
               this.activeConversations(exits);
             } else {
               //TODO: load lần đầu tiên
-              (this.activeMatchingItem as any) = {};
               this.activeConversations(this.lstMatchingItem[0]);
             }
           }
@@ -85,8 +84,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   //TODO: matching đang chọn active
   activeConversations(item: ActiveMatchingItem) {
-    (this.activeMatchingItem as any) = {};
-
+    (this.activeMatchingItem as any) = null;
     if (TDSHelperObject.hasValue(item)) {
       if (this.isFastSend == true) {
           this.conversationDataFacade.checkSendMessage(item.page_id, this.type, item.psid);
