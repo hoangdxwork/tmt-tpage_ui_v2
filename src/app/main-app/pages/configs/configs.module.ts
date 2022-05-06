@@ -70,6 +70,7 @@ import { ApplicationRoleService } from '../../services/application-role.service'
 import { ConfigEditProductComponent } from './config-edit-product/config-edit-product.component';
 import { UserRestHandler } from '../../services/handlers/user-rest.handler';
 import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
+import { ConfigAddAttributeProductModalComponent } from './components/config-add-attribute-product-modal/config-add-attribute-product-modal.component';
 
 const SERVICES = [
     TDSModalService,
@@ -139,7 +140,8 @@ const SERVICES = [
     ConfigConversationTagsCreateDataModalComponent,
     ConfigProductDetailsComponent,
     ConfigAddCategoryModalComponent,
-    ConfigEditProductComponent
+    ConfigEditProductComponent,
+    ConfigAddAttributeProductModalComponent
   ],
   imports: [
     CommonModule,
