@@ -4,7 +4,7 @@ import { TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TagOnPatternDTO } from 'src/app/main-app/dto/configs/page-config.dto';
@@ -15,19 +15,11 @@ import { TagOnPatternDTO } from 'src/app/main-app/dto/configs/page-config.dto';
   styleUrls: ['./config-pages-divide-task.component.scss']
 })
 export class ConfigPagesDivideTaskComponent implements OnInit, OnDestroy {
-
-  isOpenTagContainsPhone: boolean = true;
-  isOpenTagAfterConfirmingAndPrintingOrder: boolean = true;
-  isOpenTagAfterCreatingOrder: boolean = true;
-  isOpenTagDraftOrder: boolean = true;
-  isOpenTagContainsKeyword: boolean = true;
-  isOpenTagAfterConfirmingAndPrintingOrdeShip: boolean = true;
-
   private destroy$ = new Subject();
 
   formAutoLabelConfig!: FormGroup;
   isLoading: boolean = false;
-  lstTags: CRMTagDTO[] = [];
+  lstTags!: Observable<CRMTagDTO[]>;
   pageId!: string;
 
   constructor(
@@ -70,9 +62,7 @@ export class ConfigPagesDivideTaskComponent implements OnInit, OnDestroy {
   }
 
   loadTags() {
-    this.crmTagService.getOnlyActive().subscribe(res => {
-      this.lstTags = res.value;
-    });
+    this.lstTags = this.crmTagService.dataActive$;
   }
 
   changeTeam() {
@@ -149,8 +139,6 @@ export class ConfigPagesDivideTaskComponent implements OnInit, OnDestroy {
       });
     }
 
-    debugger;
-
     return model;
   }
 
@@ -178,22 +166,4 @@ export class ConfigPagesDivideTaskComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  onChangeTagContainsPhone(){
-    this.isOpenTagContainsPhone = !this.isOpenTagContainsPhone
-  }
-  onChangeTagAfterConfirmingAndPrintingOrder(){
-    this.isOpenTagAfterConfirmingAndPrintingOrder = !this.isOpenTagAfterConfirmingAndPrintingOrder
-  }
-  onChangeTagAfterCreatingOrder(){
-    this.isOpenTagAfterCreatingOrder = !this.isOpenTagAfterCreatingOrder
-  }
-  onChangeTagDraftOrder(){
-    this.isOpenTagDraftOrder = !this.isOpenTagDraftOrder
-  }
-  onChangeTagContainsKeyword(){
-    this.isOpenTagContainsKeyword = !this.isOpenTagContainsKeyword
-  }
-  onChangeTagAfterConfirmingAndPrintingOrdeShip(){
-    this.isOpenTagAfterConfirmingAndPrintingOrdeShip = !this.isOpenTagAfterConfirmingAndPrintingOrdeShip
-  }
 }

@@ -1,6 +1,6 @@
 import { TDSHelperArray, TDSHelperString, TDSUploadFile } from 'tmt-tang-ui';
 import { ModalAddAddressComponent } from '../modal-add-address/modal-add-address.component';
-import { FormGroup, FormBuilder, FormControl, FormArray } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, FormArray, Validators } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { TDSModalRef, TDSModalService, TDSHelperObject, TDSMessageService } from 'tmt-tang-ui';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -55,7 +55,7 @@ export class ModalEditPartnerComponent implements OnInit {
   createForm() {
     this._form = this.fb.group({
         Id: [null],
-        Name: [null],
+        Name: [null, Validators.required],
         Image: [null],
         ImageUrl: [null],
         Ref: [null],
@@ -133,28 +133,28 @@ export class ModalEditPartnerComponent implements OnInit {
   }
 
   mappingAddress(data: PartnerDetailDTO) {
-    if(data && data.CityCode) {
+    if(data && data.CityCode && data.CityName) {
       this._cities = {
           code: data.CityCode,
           name: data.CityName
       }
-    }
-    if(data && data.DistrictCode) {
-      this._districts = {
-          cityCode: data.CityCode,
-          cityName: data.CityName,
-          code: data.DistrictCode,
-          name: data.DistrictName
+      if(data.DistrictCode && data.DistrictName) {
+        this._districts = {
+            cityCode: data.CityCode,
+            cityName: data.CityName,
+            code: data.DistrictCode,
+            name: data.DistrictName
       }
-    }
-    if(data && data.WardCode) {
-      this._wards = {
-          cityCode: data.CityCode,
-          cityName: data.CityName,
-          districtCode: data.DistrictCode,
-          districtName: data.DistrictName,
-          code: data.WardCode,
-          name: data.WardName
+        if(data.WardCode && data.WardName) {
+          this._wards = {
+              cityCode: data.CityCode,
+              cityName: data.CityName,
+              districtCode: data.DistrictCode,
+              districtName: data.DistrictName,
+              code: data.WardCode,
+              name: data.WardName
+          }
+        }
       }
     }
     if(data && data.Street) {
@@ -168,7 +168,6 @@ export class ModalEditPartnerComponent implements OnInit {
         (this._form.controls.Addresses as FormArray).push(this.fb.control(value));
       });
     }
-
     this._form.patchValue(data);
   }
 
@@ -364,18 +363,30 @@ export class ModalEditPartnerComponent implements OnInit {
             code: item.CityCode,
             name: item.CityName
         });
+      }else{
+        this._form.controls['City'].setValue(null)
       }
       if(item && item.DistrictCode) {
         this._form.controls['District'].patchValue({
+              cityCode: item.CityCode,
+              cityName: item.CityName,
               code: item.DistrictCode,
               name: item.DistrictName
           });
+      }else{
+        this._form.controls['District'].setValue(null)
       }
       if(item && item.WardCode) {
         this._form.controls['Ward'].patchValue({
+              cityCode: item.CityCode,
+              cityName: item.CityName,
+              districtCode: item.DistrictCode,
+              districtName: item.DistrictName,
               code: item.WardCode,
               name: item.WardName
           });
+      }else{
+        this._form.controls['Ward'].setValue(null)
       }
   }
 
@@ -398,32 +409,14 @@ export class ModalEditPartnerComponent implements OnInit {
       name: event.Ward?.Name,
     } : null);
   }
-
-  beforeUpload = (file: TDSUploadFile): boolean => {
-    this.fileList = this.fileList.concat(file);
-
-    this.handleUpload(file);
-    return false;
-  };
-
-  handleUpload(file: TDSUploadFile) {
-    let formData: any = new FormData();
-    formData.append("files", file as any, file.name);
-    formData.append('id', '0000000000000051');
-
-    return this.sharedService.saveImageV2(formData).subscribe((res: any) => {
-      this.message.success(Message.Upload.Success);
-      if(this.partnerId) {
-        this._form.controls["ImageUrl"].setValue(res[0].urlImageProxy);
-      }
-    }, error => {
-      this.message.error('Upload Image đã xảy ra lỗi!')
-    });
+  getUrl(urlImage: string){
+    if(urlImage){
+      this._form.controls["ImageUrl"].setValue(urlImage);
+    }
   }
 
   prepareModel() {
     const formModel = this._form.value;
-
     if(formModel.Name != null) {
         this.data['Name'] = formModel.Name;
     }
@@ -466,15 +459,9 @@ export class ModalEditPartnerComponent implements OnInit {
     if(formModel.TaxCode != null) {
         this.data['TaxCode'] = formModel.TaxCode ;
     }
-    if(formModel.City != null) {
-        this.data['City'] = formModel.City ;
-    }
-    if(formModel.District != null) {
-        this.data['District'] = formModel.District;
-    }
-    if(formModel.Ward != null) {
-        this.data['Ward'] = formModel.Ward;
-    }
+    this.data['City'] = formModel.City ;
+    this.data['District'] = formModel.District;
+    this.data['Ward'] = formModel.Ward;
     if(formModel.Customer != null) {
         this.data['Customer'] = formModel.Customer;
     }

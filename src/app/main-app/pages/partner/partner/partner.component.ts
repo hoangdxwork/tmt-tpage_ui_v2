@@ -6,7 +6,7 @@ import { ModalConvertPartnerComponent } from './../components/modal-convert-part
 import { ModalEditPartnerComponent } from './../components/modal-edit-partner/modal-edit-partner.component';
 
 import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef, ElementRef, AfterViewInit, HostListener } from '@angular/core';
-import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperArray, TDSMessageService, TDSTableQueryParams, TDSHelperString, TDSResizeObserver } from 'tmt-tang-ui';
+import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperArray, TDSMessageService, TDSTableQueryParams, TDSHelperString, TDSResizeObserver, TDSConfigService } from 'tmt-tang-ui';
 import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
 import { OperatorEnum, SortEnum, THelperCacheService } from 'src/app/lib';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -81,8 +81,10 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   private _destroy = new Subject<void>();
   widthTable: number = 0;
   paddingCollapse: number = 32;
+  marginLeftCollapse: number = 0;
   isLoadingCollapse: boolean = false
   @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
+  @ViewChild('viewChildDetailPartner') viewChildDetailPartner!: ElementRef;
 
   constructor(private modalService: TDSModalService,
     private odataPartnerService: OdataPartnerService,
@@ -95,7 +97,9 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     private partnerService: PartnerService,
     private viewContainerRef: ViewContainerRef,
     private resizeObserver: TDSResizeObserver,
+    private configService: TDSConfigService,
   ) {
+    
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -127,6 +131,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loadGridConfig();
     this.loadPartnerStatusReport();
     this.loadBirtdays();
+    this.configService.set('message',{pauseOnHover: true})
   }
 
   loadGridConfig() {
@@ -147,7 +152,8 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.getViewData(params).subscribe((res: ODataPartnerDTO) => {
         this.count = res['@odata.count'] as number;
-        this.lstOfData = res.value;
+        this.lstOfData = [...res.value];
+        
     }, error => {
         this.message.error('Tải dữ liệu khách hàng thất bại!');
     });
@@ -273,20 +279,22 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
         this.message.error('Gán nhãn thất bại!');
     });
   }
-
-//   @HostListener('window:scroll', ['$event'])
-// onWindowScroll($event) {
-//     console.log("scrolling...");
-// }
   ngAfterViewInit(): void {
     this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse
     this.resizeObserver
       .observe(this.viewChildWidthTable)
       .subscribe(() => {
-          this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse
-          this.viewChildWidthTable.nativeElement.click()
-      });
-
+        this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse;
+        this.viewChildWidthTable.nativeElement.click()
+      });     
+      setTimeout(() => {
+        let that = this;
+        let wrapScroll = this.viewChildDetailPartner.nativeElement.closest('.tds-table-body');
+        wrapScroll.addEventListener('scroll', function() {
+          var scrollleft = wrapScroll.scrollLeft;
+          that.marginLeftCollapse = scrollleft;
+        });
+      }, 500);
     fromEvent(this.innerText.nativeElement, 'keyup').pipe(
         map((event: any) => { return event.target.value }),
         debounceTime(750),
@@ -442,6 +450,11 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
         partnerId: data.Id
       }
     });
+    modal.afterClose.subscribe(result => {
+      if (TDSHelperObject.hasValue(result)) {
+        this.loadData(this.pageSize,this.pageIndex);
+      }
+    });
   }
 
   createPartner() {
@@ -453,6 +466,11 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
       centered: true,
       componentParams: {
         partnerId: null
+      }
+    });
+    modal.afterClose.subscribe(result => {
+      if (TDSHelperObject.hasValue(result)) {
+        this.loadData(this.pageSize,this.pageIndex);
       }
     });
   }
