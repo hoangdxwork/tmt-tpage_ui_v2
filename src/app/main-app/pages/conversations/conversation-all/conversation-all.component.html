@@ -33,29 +33,26 @@
           </div>
           <!-- List danh sách chat -->
           <div *ngIf="lstMatchingItem" class="overflow-hidden overflow-y-auto tds-custom-scroll flex flex-auto flex-col gap-1 pb-10">
-            <div *ngFor="let item of lstMatchingItem; let i= index" (click)="activeConversations(item)">
-                <ng-container *ngIf="activeMatchingItem && activeMatchingItem.id">
-                  <active-matching-item
-                      [item]="item" [psid]="item.psid" [type]="type"
-                      [activeMatchingItem]="activeMatchingItem"
-                      [team]="currentTeam" [isFastSend]="isFastSend">
-                  </active-matching-item>
-                </ng-container>
+            <div *ngFor="let item of lstMatchingItem; let i= index">
+                <div *ngIf="activeMatchingItem?.id && currentTeam" (click)="activeConversations(item)">
+                    <active-matching-item
+                        [item]="item" [psid]="item.psid" [type]="type"
+                        [activeMatchingItem]="activeMatchingItem"
+                        [team]="currentTeam" [isFastSend]="isFastSend">
+                    </active-matching-item>
+                </div>
             </div>
           </div>
       </div>
   </div>
   <!--Nội dung cuộc hội thoại-->
   <div class="flex flex-auto flex-col  h-full overflow-hidden">
-      <div *ngIf="activeMatchingItem && activeMatchingItem.id">
+      <div *ngIf="activeMatchingItem?.id && currentTeam">
           <tds-conversations
             [data]="activeMatchingItem"
             [psid]="activeMatchingItem.psid" [type]="type"
             [team]="currentTeam"
             (onLoadMiniChat)="onLoadMiniChat($event)">
-              <!-- <ng-container *ngFor="let item of listData">
-                  <tds-conversation-item [data]="item"></tds-conversation-item>
-              </ng-container> -->
           </tds-conversations>
       </div>
       <div *ngIf="!activeMatchingItem">
@@ -71,14 +68,14 @@
       <tds-tab [title]="conversationPartner" clsContent="border-t border-neutral-2-200 -mt-px h-full flex flex-col">
         <ng-template #conversationPartner let-active="active">
             <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 py-4 pr-4 relative  group"
-              [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
-              <span class="mr-2">Khách hàng</span>
-              <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
-                  class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
-              </div>
+                [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
+                <span class="mr-2">Khách hàng</span>
+                <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
+                    class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
+                </div>
             </div>
         </ng-template>
-        <div *ngIf="activeMatchingItem && activeMatchingItem?.id">
+        <div *ngIf="activeMatchingItem?.id  && currentTeam">
             <conversation-partner [data]="activeMatchingItem" [team]="currentTeam"></conversation-partner>
         </div>
       </tds-tab>
@@ -93,9 +90,9 @@
             </div>
           </div>
         </ng-template>
-        <div *ngIf="activeMatchingItem && activeMatchingItem.id">
-          <conversation-order [data]="activeMatchingItem"></conversation-order>
-        </div>
+        <!-- <div *ngIf="activeMatchingItem?.id && checkConversationData?.Id">
+            <conversation-order></conversation-order>
+        </div> -->
       </tds-tab>
     </tds-tabset>
   </div>

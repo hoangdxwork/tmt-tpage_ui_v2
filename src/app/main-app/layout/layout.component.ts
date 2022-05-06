@@ -109,6 +109,7 @@ export class LayoutComponent implements OnInit {
         this.crmService.onUpdateTeam(null);
       })
   }
+
   setMenu(data: CRMTeamDTO | null): Array<TDSMenuDTO> {
     let hidden = TDSHelperObject.hasValue(data) ? false : true;
     return [
@@ -141,7 +142,6 @@ export class LayoutComponent implements OnInit {
         },
         hidden: hidden,
       },
-
       {
         name: "Bình luận",
         icon: "tdsi-comment-fill",
@@ -154,7 +154,6 @@ export class LayoutComponent implements OnInit {
         },
         hidden: hidden,
       },
-
       {
         name: "Bài viết",
         icon: "tdsi-edit-paper-fill",
@@ -171,13 +170,11 @@ export class LayoutComponent implements OnInit {
         name: "Đơn hàng",
         icon: "tdsi-bag-fill",
         link: `/order`,
-
       },
       {
         name: "Chiến dịch live",
         icon: "tdsi-live-session-fill",
         link: `/live-campaign`,
-
       },
       {
         name: "Phiếu bán hàng",
@@ -189,31 +186,26 @@ export class LayoutComponent implements OnInit {
           },
         },
         hidden: hidden,
-
       },
       {
         name: "Khách hàng",
         icon: "tdsi-user-fill",
         link: `/partner`,
-
       },
       {
         name: "Kênh kết nối",
         icon: "tdsi-facebook-2-fill",
         link: `/facebook`,
-
       },
       {
         name: "Thống kê",
         icon: "tdsi-chart-pie-fill",
         link: `/report`,
-
       },
       {
         name: "Cấu hình",
         icon: "tdsi-gear-line",
         link: `/configs`,
-
       }
     ];
   }
@@ -224,18 +216,19 @@ export class LayoutComponent implements OnInit {
       this.userInit = res || {};
     })
   }
-/**
- * xử lý chọn team: 
- * cập nhật url 
- * update team 
-*/
+
+  /**
+   * xử lý chọn team:
+   * cập nhật url
+   * update team
+  */
   onClickTeam(data: CRMTeamDTO) {
     if (this.params?.teamId) {
       let url = this.router.url.split("?")[0];
       const params = { ...this.params };
       params.teamId = data.Id;
       this.router.navigate([url], { queryParams: params })
-    } 
+    }
     this.crmService.onUpdateTeam(data);
   }
 
