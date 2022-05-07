@@ -7,7 +7,6 @@ import { CheckConversationData, ConversationLastOrder } from "../../dto/partner/
 import { BaseSevice } from "../base.service";
 import { ConversationService } from "../conversation/conversation.service";
 import { CRMTeamService } from "../crm-team.service";
-import { ConversationFacebookState } from "../facebook-state/conversation-fb.state";
 import { PartnerService } from "../partner.service";
 import { SharedService } from "../shared.service";
 import { SignalRConnectionService } from "../signalR/signalR-connection.service";
@@ -28,7 +27,6 @@ export class ConversationOrderFacade extends BaseSevice implements OnInit, OnDes
   public onLastOrderCheckCvs$: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private apiService: TCommonService,
-      private fbState: ConversationFacebookState,
       private message: TDSMessageService,
       private crmTeamService: CRMTeamService,
       private service: ConversationService,

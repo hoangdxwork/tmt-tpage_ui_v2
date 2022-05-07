@@ -198,7 +198,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    if(this.data ) {debugger
+    if(this.data ) {
       //TODO: data load lần đầu
       this.loadData(this.data);
     }
@@ -207,10 +207,10 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
 
   loadData(data: any) {
     let id = "";
-    this.saleOnline_OrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      delete res['@odata.context'];
-      debugger
-    })
+    // this.saleOnline_OrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    //   delete res['@odata.context'];
+    //   debugger
+    // })
   }
 
   ngOnChanges(changes: SimpleChanges): void {

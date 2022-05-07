@@ -49,10 +49,10 @@
   <div class="flex flex-auto flex-col  h-full overflow-hidden">
       <div *ngIf="activeMatchingItem?.id && currentTeam">
           <tds-conversations
-            [data]="activeMatchingItem"
-            [psid]="activeMatchingItem.psid" [type]="type"
-            [team]="currentTeam"
-            (onLoadMiniChat)="onLoadMiniChat($event)">
+              [data]="activeMatchingItem"
+              [type]="type"
+              [team]="currentTeam"
+              (onLoadMiniChat)="onLoadMiniChat($event)">
           </tds-conversations>
       </div>
       <div *ngIf="!activeMatchingItem">

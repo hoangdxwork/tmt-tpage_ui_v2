@@ -2,7 +2,7 @@ import { FormGroup, FormBuilder, FormControl, Validators, FormArray } from '@ang
 import { Component, OnInit, Input } from '@angular/core';
 import { TDSHelperString, TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
 import { CompanyDTO } from 'src/app/main-app/dto/company/company.dto';
-import { CompanyService } from 'src/app/main-app/services/company.servive';
+import { CompanyService } from 'src/app/main-app/services/company.service';
 import { showDiscountFixedAmount, showDiscountPercentageOnOrder, showDiscountPercentageSpecificProduct, showProduct } from 'src/app/main-app/services/facades/config-promotion.facede';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
 import { THelperCacheService } from 'src/app/lib';

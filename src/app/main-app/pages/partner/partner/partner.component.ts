@@ -43,7 +43,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     statusText: null
   }
 
-  tabIndex = null;
+  tabIndex: any = null;
   partnerStatusReport: Array<PartnerStatusReportDTO> = [];
 
   isOpenMessageFacebook = false
@@ -99,7 +99,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     private resizeObserver: TDSResizeObserver,
     private configService: TDSConfigService,
   ) {
-    
+
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -153,7 +153,6 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.getViewData(params).subscribe((res: ODataPartnerDTO) => {
         this.count = res['@odata.count'] as number;
         this.lstOfData = [...res.value];
-        
     }, error => {
         this.message.error('Tải dữ liệu khách hàng thất bại!');
     });
@@ -286,7 +285,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(() => {
         this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse;
         this.viewChildWidthTable.nativeElement.click()
-      });     
+      });
       setTimeout(() => {
         let that = this;
         let wrapScroll = this.viewChildDetailPartner.nativeElement.closest('.tds-table-body');

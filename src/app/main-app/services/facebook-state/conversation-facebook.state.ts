@@ -22,11 +22,11 @@ export class ConversationFacebookState implements OnInit{
   }
 
   public get(pageId: string, type: string) {
-    return _get(this.dataSource, `${pageId}.${type}`);
+    return _get(this.dataSource, `${pageId}.${type}`) as any;
   }
 
   public setEvent(pageId: string, psid: string, event: any) {
-      this.eventData[pageId] = this.eventData[pageId] || this.createEventData(pageId);
+      this.eventData[pageId] = this.eventData[pageId] || this.createEventData(pageId) as any;
       this.eventData[pageId][psid] = event;
   }
 
@@ -36,13 +36,13 @@ export class ConversationFacebookState implements OnInit{
   }
 
   public setConversation(pageId: string, type: string, data: any) {
-      this.dataSource[pageId] = this.dataSource[pageId] || {};
+      this.dataSource[pageId] = this.dataSource[pageId] || {} as any;
       this.dataSource[pageId][type] = data;
       return this.dataSource[pageId][type];
   }
 
   public getByPsid(pageId: string, type: string, psid: string) {
-    let exist = _get(this.dataSource, `${pageId}.${type}.items`);
+    let exist = _get(this.dataSource, `${pageId}.${type}.items`) as any;
     if(exist) {
       return exist.find((x: any) => x.psid == psid);
     }
