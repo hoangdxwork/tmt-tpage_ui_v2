@@ -49,10 +49,10 @@
   <div class="flex flex-auto flex-col  h-full overflow-hidden">
       <div *ngIf="activeMatchingItem?.id && currentTeam">
           <tds-conversations
-            [data]="activeMatchingItem"
-            [psid]="activeMatchingItem.psid" [type]="type"
-            [team]="currentTeam"
-            (onLoadMiniChat)="onLoadMiniChat($event)">
+              [data]="activeMatchingItem"
+              [type]="type"
+              [team]="currentTeam"
+              (onLoadMiniChat)="onLoadMiniChat($event)">
           </tds-conversations>
       </div>
       <div *ngIf="!activeMatchingItem">
@@ -90,9 +90,9 @@
             </div>
           </div>
         </ng-template>
-        <!-- <div *ngIf="activeMatchingItem?.id && checkConversationData?.Id">
-            <conversation-order></conversation-order>
-        </div> -->
+        <div *ngIf="activeMatchingItem?.id && currentTeam">
+            <conversation-order [data]="activeMatchingItem" [team]="currentTeam"></conversation-order>
+        </div>
       </tds-tab>
     </tds-tabset>
   </div>

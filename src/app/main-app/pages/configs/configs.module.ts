@@ -66,7 +66,7 @@ import { ApplicationRoleService } from '../../services/application-role.service'
 import { ConfigEditProductComponent } from './config-edit-product/config-edit-product.component';
 import { UserRestHandler } from '../../services/handlers/user-rest.handler';
 import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
-import { CompanyService } from '../../services/company.servive';
+import { CompanyService } from '../../services/company.service';
 import { ConfigPromotionGroupComponent } from './config-promotions/components/config-promotion-group/config-promotion-group.component';
 import { ConfigPromotionComboComponent } from './config-promotions/components/config-promotion-combo/config-promotion-combo.component';
 import { ConfigPromotionAllComponent } from './config-promotions/components/config-promotion-all/config-promotion-all.component';

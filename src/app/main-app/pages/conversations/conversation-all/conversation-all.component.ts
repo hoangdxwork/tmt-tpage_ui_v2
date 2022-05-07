@@ -3,12 +3,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, pipe, Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { ActiveMatchingItem, CRMMatchingMappingDTO } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
-import { CheckConversationData, CheckConversationDTO } from 'src/app/main-app/dto/partner/check-conversation.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
-import { ConversationFacebookState } from 'src/app/main-app/services/facebook-state/conversation-fb.state';
+import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { TDSHelperObject, TDSMessageService, TDSHelperArray } from 'tmt-tang-ui';
@@ -31,18 +30,18 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   isFastSend: boolean = false;
 
   constructor(private message: TDSMessageService,
-    private fbState: ConversationFacebookState,
     private conversationDataFacade: ConversationDataFacade,
     public crmService: CRMTeamService,
     private conversationService: ConversationService,
     private partnerService: PartnerService,
+    private fbGraphService: FacebookGraphService,
     public activatedRoute: ActivatedRoute,
     public router: Router) {
       super(crmService, activatedRoute, router);
   }
 
   onInit(): void {
-    this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe(([team, params] :any) => {
+    this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe(([team, params]: any) => {
       if (!TDSHelperObject.hasValue(team)) {
           this.onRedirect();
       } else {
@@ -50,6 +49,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           this.setParamsUrl(params.params);
           this.setCurrentTeam(team);
           this.onChangeConversation(team);
+
+          this.fetchLiveConversations(team);
       }
     })
   }
@@ -67,13 +68,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           if (res && TDSHelperArray.hasListValue(res.items)) {
             this.lstMatchingItem = [...res.items];
             let psid: string = this.paramsUrl?.psid || null;
+
             //TODO: check psid khi load lần 2,3,4...
             let exits = this.lstMatchingItem.filter(x => x.psid == psid)[0];
             if (exits) {
               this.activeConversations(exits);
             } else {
               //TODO: load lần đầu tiên
-              (this.activeMatchingItem as any) = {};
               this.activeConversations(this.lstMatchingItem[0]);
             }
           }
@@ -85,8 +86,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   //TODO: matching đang chọn active
   activeConversations(item: ActiveMatchingItem) {
-    (this.activeMatchingItem as any) = {};
-
+    (this.activeMatchingItem as any) = null;
     if (TDSHelperObject.hasValue(item)) {
       if (this.isFastSend == true) {
           this.conversationDataFacade.checkSendMessage(item.page_id, this.type, item.psid);
@@ -114,6 +114,14 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onLoadMiniChat(event: any): void { }
+
+
+  fetchLiveConversations(team: any): void {
+    this.fbGraphService.api(`me/conversations?fields=id,link,participants,senders&access_token=${team.Facebook_PageToken}`)
+      .subscribe((res :any) => {
+        console.log(res);
+      });
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();

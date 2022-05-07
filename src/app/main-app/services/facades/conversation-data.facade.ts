@@ -4,7 +4,7 @@ import { map, shareReplay, takeUntil } from "rxjs/operators";
 import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { ConversationService } from "../conversation/conversation.service";
-import { ConversationFacebookState } from "../facebook-state/conversation-fb.state";
+import { ConversationFacebookState } from "../facebook-state/conversation-facebook.state";
 import { SharedService } from "../shared.service";
 import { SignalRConnectionService } from "../signalR/signalR-connection.service";
 import { CRMMatchingDTO } from '../../dto/conversation-all/crm-matching.dto';
@@ -23,7 +23,7 @@ export class ConversationDataFacade extends BaseSevice implements OnInit, OnDest
   private destroy$ = new Subject();
 
   constructor(private apiService: TCommonService,
-      private fbState: ConversationFacebookState,
+      private cvsFbState: ConversationFacebookState,
       private service: ConversationService,
       private sgRConnectionService: SignalRConnectionService,
       private sharedService: SharedService) {
@@ -53,12 +53,12 @@ export class ConversationDataFacade extends BaseSevice implements OnInit, OnDest
   }
 
   makeDataSource(pageId: any, type: string): Observable<any> {
-    this.fbState.createEventData(pageId);
+    this.cvsFbState.createEventData(pageId);
     return this.getConversation(pageId, type);
   }
 
   getConversation(pageId: any, type: string): Observable<any> {
-    let exist = this.fbState.get(pageId, type);
+    let exist = this.cvsFbState.get(pageId, type);
     if (exist) {
         this.dataSource$ = Observable.create((obs :any) => {
             obs.next(exist);
@@ -69,7 +69,7 @@ export class ConversationDataFacade extends BaseSevice implements OnInit, OnDest
       this.dataSource$ = this.service.get(query).pipe(map((res: CRMMatchingDTO) => {
         let create = this.createConversation(res, query, type);
         if(create) {
-          return this.fbState.setConversation(pageId, type, create);
+          return this.cvsFbState.setConversation(pageId, type, create);
         }
       }), shareReplay());
     }
@@ -85,7 +85,7 @@ export class ConversationDataFacade extends BaseSevice implements OnInit, OnDest
   }
 
   checkSendMessage(pageId: any, type: any, psid: any) {
-    var exist = this.fbState.getByPsid(pageId, type, psid);
+    var exist = this.cvsFbState.getByPsid(pageId, type, psid);
     if (exist) {
       exist.checkSendMessage = !exist.checkSendMessage;
     }

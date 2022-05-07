@@ -1,0 +1,28 @@
+<div *ngIf="data && team">
+  <!--Lọc theo Messages-->
+  <div *ngIf="data.type != 2" class="chat-item flex-message">
+    <!-- Avatar Facebook_PageId -->
+    <div class="avatar w-32">
+        <tpage-avatar-facebook
+            [shape]="'circle'" [size]="'lg'"
+            [psid]="data.is_admin ? data.from_id : team.Facebook_PageId"
+            [token]="team?.Facebook_PageToken">
+        </tpage-avatar-facebook>
+    </div>
+    <!--Nội dung bình luận-->
+    <div class="chat-body">
+    </div>
+  </div>
+
+  <!--Lọc theo comments-->
+  <div *ngIf="data.comment" class="chat-item flex-comment">
+      <!-- Avatar Facebook_PageId -->
+      <div class="avatar w-32">
+        <tpage-avatar-facebook
+            [shape]="'circle'" [size]="'lg'"
+            [psid]="data.is_admin ? data.from_id : team.Facebook_PageId"
+            [token]="team?.Facebook_PageToken">
+        </tpage-avatar-facebook>
+    </div>
+  </div>
+</div>

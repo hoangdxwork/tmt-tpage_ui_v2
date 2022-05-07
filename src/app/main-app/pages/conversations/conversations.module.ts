@@ -12,7 +12,7 @@ import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conve
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalImageStoreComponent } from './components/modal-image-store/modal-image-store.component';
 import { ConversationDataFacade } from '../../services/facades/conversation-data.facade';
-import { ConversationFacebookState } from '../../services/facebook-state/conversation-fb.state';
+import { ConversationFacebookState } from '../../services/facebook-state/conversation-facebook.state';
 import { ConversationService } from '../../services/conversation/conversation.service';
 import { ConversationEventFacade } from '../../services/facades/conversation-event.facade';
 import { DraftMessageService } from '../../services/conversation/draft-message.service';
@@ -26,18 +26,26 @@ import { ConversationOrderFacade } from '../../services/facades/conversation-ord
 import { SaleOnline_OrderService } from '../../services/sale-online-order.service';
 import { PartnerService } from '../../services/partner.service';
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
+import { FacebookGraphService } from '../../services/facebook-graph.service';
+import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
+import { ActivityMatchingService } from '../../services/conversation/activity-matching.service';
+import { ApplicationUserService } from '../../services/application-user.service';
 
 const SERVICES = [
   ConversationDataFacade,
   ConversationEventFacade,
   ConversationOrderFacade,
+  ActivityDataFacade,
   ConversationFacebookState,
   ConversationService,
   DraftMessageService,
   THelperCacheService,
   SaleOnline_OrderService,
   PartnerService,
-  FastSaleOrderService
+  FastSaleOrderService,
+  FacebookGraphService,
+  ActivityMatchingService,
+  ApplicationUserService
 ]
 
 @NgModule({

@@ -18,7 +18,7 @@ export class PartnerService extends BaseSevice {
   baseRestApi: string = "rest/v1.0/partner";
 
   public _keyCacheGrid: string = 'partner-page:grid_partner:settings';
-  public onLoadedPartnerFromCheckCvs: EventEmitter<any> = new EventEmitter();
+  public onLoadOrderFromTabPartner: EventEmitter<any> = new EventEmitter();
 
   constructor(private apiService: TCommonService) {
     super(apiService)
