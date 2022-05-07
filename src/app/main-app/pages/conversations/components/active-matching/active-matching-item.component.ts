@@ -13,7 +13,7 @@ import { TDSMessageService } from 'tmt-tang-ui';
     templateUrl: './active-matching-item.component.html',
 })
 
-export class ActiveMatchingItemComponent extends TpageBaseComponent implements OnInit, OnChanges {
+export class ActiveMatchingItemComponent  implements OnInit, OnChanges {
 
   @Input() isFastSend: boolean | undefined;
   @Input() item!: ActiveMatchingItem;
@@ -32,7 +32,6 @@ export class ActiveMatchingItemComponent extends TpageBaseComponent implements O
       private cdr: ChangeDetectorRef,
       public activatedRoute: ActivatedRoute,
       public router: Router) {
-        super(crmService, activatedRoute, router);
   }
 
   ngOnInit(): void {

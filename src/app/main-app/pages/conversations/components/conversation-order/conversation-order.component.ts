@@ -1,28 +1,33 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { User } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
+import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, SimpleChanges, SkipSelf } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { ActiveMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
+import { CheckConversationData } from 'src/app/main-app/dto/partner/check-conversation.dto';
+import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { DraftMessageService } from 'src/app/main-app/services/conversation/draft-message.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationEventFacade } from 'src/app/main-app/services/facades/conversation-event.facade';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { TDSMessageService } from 'tmt-tang-ui';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'conversation-order',
     templateUrl: './conversation-order.component.html',
 })
 
-export class ConversationOrderComponent extends TpageBaseComponent implements OnInit, OnChanges {
+export class ConversationOrderComponent  implements OnInit, OnChanges {
+
+  @Input() data!: ActiveMatchingItem;
+  @Input() team!: CRMTeamDTO;
 
   _form!: FormGroup;
   isLoading: boolean = false;
 
-  @Input() data!: ActiveMatchingItem;
+  cvsData!: CheckConversationData;
   private destroy$ = new Subject();
 
   // Đơn hàng
@@ -148,17 +153,16 @@ export class ConversationOrderComponent extends TpageBaseComponent implements On
   }
 
   constructor(private message: TDSMessageService,
-      private draftMessageService: DraftMessageService,
-      private conversationEventFacade: ConversationEventFacade,
-      private conversationOrderFacade: ConversationOrderFacade,
-      private saleOnline_OrderService: SaleOnline_OrderService,
-      public crmService: CRMTeamService,
-      private fb: FormBuilder,
-      private cdr: ChangeDetectorRef,
-      public activatedRoute: ActivatedRoute,
-      public router: Router) {
-        super(crmService, activatedRoute, router);
-        this.createForm();
+    private draftMessageService: DraftMessageService,
+    private conversationEventFacade: ConversationEventFacade,
+    private conversationOrderFacade: ConversationOrderFacade,
+    private saleOnline_OrderService: SaleOnline_OrderService,
+    public crmService: CRMTeamService,
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef,
+    public activatedRoute: ActivatedRoute,
+    public router: Router) {
+      this.createForm();
   }
 
   createForm(): void {
@@ -189,21 +193,24 @@ export class ConversationOrderComponent extends TpageBaseComponent implements On
         Session: [null],
         SessionIndex: [null],
         StatusText: [null],
-        Details: this.fb.array([])
+        Details: this.fb.array([]),
     })
   }
 
-  onInit(): void {
-    this.loadData();
+  ngOnInit(): void {
+    if(this.data ) {debugger
+      //TODO: data load lần đầu
+      this.loadData(this.data);
+    }
+    //TODO: load user gán _form User
   }
 
-  loadData() {
+  loadData(data: any) {
     let id = "";
-    // this.saleOnline_OrderService.getById(id).subscribe((res: any) => {
-    //   debugger
-    // })
-    // this.conversationOrderFacade.onLastOrderUpdated$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {debugger
-    // })
+    this.saleOnline_OrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      delete res['@odata.context'];
+      debugger
+    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -213,6 +220,5 @@ export class ConversationOrderComponent extends TpageBaseComponent implements On
     this.destroy$.next();
     this.destroy$.complete();
   }
-
 
 }

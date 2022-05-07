@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, of, Subject } from 'rxjs';
-import { map, mergeMap, takeUntil, tap, filter } from 'rxjs/operators';
+import { combineLatest, Observable, of, Subject, Subscription } from 'rxjs';
+import { map, mergeMap, takeUntil, tap, filter, distinctUntilChanged } from 'rxjs/operators';
 import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { CRMTeamService } from '../../services/crm-team.service';
@@ -13,77 +13,63 @@ import { TPageHelperService } from '../../services/helper.service';
   styleUrls: ['./tpage-base.component.scss']
 })
 
-export class TpageBaseComponent implements OnInit, OnDestroy {
+export class TpageBaseComponent implements OnInit {
 
   type!: string;
   private _destroy = new Subject<void>();
   private _params!: TDSSafeAny;
   private _currentTeam!: CRMTeamDTO | null;
   private _listFaceBook: Array<CRMTeamDTO> = [];
+  public isFirstLoad: boolean = true;
+  public isChangeTeam: boolean = false;
+  subscription!: Observable<any>;
+
   constructor(public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
     public router: Router) { }
 
   ngOnInit(): void {
+    this.onInit();
+  }
+
+  loadQueryParamMap(): Observable<any> {
     let that = this;
-    /**
-     * chỉ load lại data khi url thay đổi
-     */
-    this.activatedRoute.queryParamMap.pipe(
-      tap((queryParamMap: TDSSafeAny) => {
-        that._params = { ...queryParamMap?.params };
-      }),
+    return that.activatedRoute.queryParamMap.pipe(
+      tap((queryParamMap: TDSSafeAny) => { that._params = { ...queryParamMap?.params } }),
       mergeMap((params: TDSSafeAny) => {
-        return that.crmService.onChangeListFaceBook().pipe(
-          tap((listFb) => {
-            that._listFaceBook = listFb?.Items || [];
-          }),
+        return that.crmService.onChangeListFaceBook()
+          .pipe(tap((listFb: TDSSafeAny) => {  that._listFaceBook = listFb?.Items || [] }),
           map((listTeam) => {
-            const team = that.findTeamById(listTeam?.Items || [], that.paramsUrl?.teamId, false);
-            return team;
+            const team = TPageHelperService.findTeamById(listTeam?.Items || [], that.paramsUrl?.teamId, false);
+            return [team, params];
           })
-        )
-      }),
-      takeUntil(this._destroy)
-    ).subscribe(
-      team => {      
-        if (!TDSHelperObject.hasValue(team)) {
-          this.onRedirect();
-        } else {
-          this._currentTeam = team;
-          this.onInit();
-        }
-      }
-    );
+        )}));
   }
 
   get paramsUrl() {
     return this._params;
   }
 
+  setParamsUrl(data: any): any {
+    return this._params = data;
+  }
+
   get currentTeam(): any {
     return this._currentTeam;
+  }
+
+  setCurrentTeam(data: any): any {
+    return this._currentTeam = data;
   }
 
   // viết lại hàm này
   onInit(): void {
   }
 
-  // viết lại hàm này
-  onDestroy() {
-
-  }
-
   //có thể viết lại hàm này
   onRedirect() {
     console.warn("không có queryparams và team")
     this.router.navigate(['/']);
-  }
-
-  ngOnDestroy(): void {
-    this._destroy.next();
-    this._destroy.complete();
-    this.onDestroy();
   }
 
   addQueryParams(queryParams: TDSSafeAny): any {
@@ -96,31 +82,7 @@ export class TpageBaseComponent implements OnInit, OnDestroy {
       // do not trigger navigation
     });
   }
-  findTeamById(dataTeam: Array<CRMTeamDTO>, teamId: TDSSafeAny, getFirstItem: boolean = false) {
-    let team: CRMTeamDTO | null = null;
-    if (!TDSHelperArray.hasListValue(dataTeam)) {
-      return team;
-    }
-    for (let index = 0; index < dataTeam?.length; index++) {
-      const item = dataTeam[index];
-      for (let index = 0; index < item.Childs.length; index++) {
-        const child = item.Childs[index];
-        if (teamId == child.Id) {
-          team = child;
-          break;
-        }
-      }
-      if (TDSHelperObject.hasValue(team)) {
-        break
-      }
-    }
-    if (!TDSHelperObject.hasValue(team) && getFirstItem) {
-      const firstItem = dataTeam.find(res => {
-        return res.Childs.length > 0
-      });
-      team = firstItem?.Childs[0] || null;
-    }
-    return team;
-  }
- 
+
 }
+
+

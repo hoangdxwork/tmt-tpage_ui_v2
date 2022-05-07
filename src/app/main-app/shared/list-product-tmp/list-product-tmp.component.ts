@@ -293,7 +293,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   pusToIndexDb(): any {
-    this.indexDbProductCount = this.indexDbProductCount + 1;
+    this.indexDbProductCount = this.indexDbProductCount;
     this.loadProductIndexDB(this.indexDbProductCount, this.indexDbVersion);
   }
 

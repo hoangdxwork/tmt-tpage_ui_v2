@@ -1,6 +1,6 @@
 
-<form [formGroup]="_form" novalidate >
-  <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-y-auto tds-custom-scroll" *ngIf="data">
+<form [formGroup]="_form" novalidate *ngIf="data?.id">
+  <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-y-auto tds-custom-scroll">
     <div class="bg-white px-6 pt-6">
       <div class="flex gap-6">
         <tpage-avatar-facebook

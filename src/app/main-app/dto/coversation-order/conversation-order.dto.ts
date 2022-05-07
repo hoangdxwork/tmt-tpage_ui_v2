@@ -1,0 +1,30 @@
+export interface ConversationOrderForm {
+  Id: string;
+  Code: string;
+  LiveCampaignId: string;
+  Facebook_UserId: string;
+  Facebook_ASUserId: string;
+  Facebook_UserName: string;
+  Facebook_CommentId: string;
+  Facebook_PostId: string;
+  PartnerId: number;
+  PartnerName: string;
+  Name: string;
+  Email: string;
+  TotalAmount: number;
+  TotalQuantity: number;
+  Street: string;
+  City: Object;
+  District: Object;
+  Ward: Object,
+  UserId: string;
+  User: Object;
+  Telephone: string;
+  Note: string;
+  CRMTeamId: number;
+  PrintCount: number;
+  Session: number,
+  SessionIndex: number,
+  StatusText: string;
+  Details: Array<any>
+}
