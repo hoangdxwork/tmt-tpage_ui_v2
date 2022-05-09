@@ -19,7 +19,7 @@ import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-use
 import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-product/tpage-add-product.component';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { Message } from 'src/app/lib/consts/message.const';
-import { FastSaleOrderDTO, FastSaleOrderLineDTO, FastSaleOrder_ServiceExtraDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
+import { FastSaleOrderDefaultDTO, FastSaleOrderLineDTO, FastSaleOrder_ServiceExtraDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { SaleOnline_OrderHandler } from 'src/app/main-app/services/handlers/sale-online-order.handler';
 import { Observable } from 'rxjs';
@@ -46,7 +46,7 @@ export class EditOrderComponent implements OnInit {
   isLoadCarrier: boolean = false;
 
   model!: SaleOnline_OrderDTO;
-  defaultBill!: FastSaleOrderDTO;
+  defaultBill!: FastSaleOrderDefaultDTO;
 
   // Giá trị này phải khởi tạo = []
   shipExtraServices: TDSSafeAny[] = [];
@@ -461,7 +461,7 @@ export class EditOrderComponent implements OnInit {
     !this.shipExtraServices && (this.shipExtraServices = []);
     this.saleOnline_OrderHandler.selectShipService(event, this.defaultBill, this.shipExtraServices);
 
-    if (this.defaultBill.Carrier.DeliveryType === 'GHN') {
+    if (this.defaultBill.Carrier?.DeliveryType === 'GHN') {
       this.onUpdateInsuranceFee('16').subscribe(res => {});
     }
   }
@@ -563,7 +563,7 @@ export class EditOrderComponent implements OnInit {
     this.formEditOrder.setControl("Details", this.fb.array(data.Details || []));
   }
 
-  updateFormByBillDefault(billDefault: FastSaleOrderDTO) {
+  updateFormByBillDefault(billDefault: FastSaleOrderDefaultDTO) {
     billDefault.Ship_ServiceExtras = JSON.parse(billDefault.Ship_ServiceExtrasText) || [];
 
     let formControl = this.formEditOrder.controls;
@@ -620,7 +620,7 @@ export class EditOrderComponent implements OnInit {
       this.defaultBill.Ship_ServiceExtras.forEach((element: FastSaleOrder_ServiceExtraDTO) => {
 
         if (element.Id === "NinjaVan" || element.Id === "16" || element.Id === "GBH" ||
-          (element.Id === "OrderAmountEvaluation" && this.defaultBill.Carrier.DeliveryType === "MyVNPost") ) {
+          (element.Id === "OrderAmountEvaluation" && this.defaultBill.Carrier?.DeliveryType === "MyVNPost") ) {
           this.enableInsuranceFee = true;
         }
 

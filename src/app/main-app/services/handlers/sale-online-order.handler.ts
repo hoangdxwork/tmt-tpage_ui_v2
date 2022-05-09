@@ -5,6 +5,7 @@ import { TAPIDTO, TApiMethodType, TAuthService, TCommonService, UserInitDTO } fr
 import { TDSMessageService, TDSSafeAny } from "tmt-tang-ui";
 import { BaseSevice } from "../base.service";
 import { CommonService } from "../common.service";
+import { GeneralConfigsFacade } from "../facades/general-config.facade";
 import { FastSaleOrderService } from "../fast-sale-order.service";
 import { CarrierHandler } from "./carier.handler";
 import { CheckFormHandler } from "./check-form.handler";
@@ -45,11 +46,11 @@ export class SaleOnline_OrderHandler extends BaseSevice {
     private apiService: TCommonService,
     private auth: TAuthService,
     private message: TDSMessageService,
-    private commonService: CommonService,
     private carrierHandler: CarrierHandler,
     private checkFormHandler: CheckFormHandler,
     private fastSaleOrderHandler: FastSaleOrderHandler,
-    private fastSaleOrderService: FastSaleOrderService
+    private fastSaleOrderService: FastSaleOrderService,
+    private generalConfigsFacade: GeneralConfigsFacade
   ) {
     super(apiService);
 
@@ -65,7 +66,7 @@ export class SaleOnline_OrderHandler extends BaseSevice {
   }
 
   loadSaleConfig() {
-    this.commonService.getConfigs().subscribe(res => {
+    this.generalConfigsFacade.getSaleConfigs().subscribe(res => {
       this.saleConfig = res;
     });
   }
@@ -136,7 +137,7 @@ export class SaleOnline_OrderHandler extends BaseSevice {
     saleModel.Ship_ServiceName = "";
     saleModel.Carrier = carrier;
 
-    this.carrierHandler.changeCarrier(saleModel, carrier, this.saleConfig.roles);
+    this.carrierHandler.changeCarrier(saleModel, carrier, this.saleConfig?.roles);
   }
 
   // Thêm dịch vụ vận chuyển bổ xung bởi đối tác giao hàng

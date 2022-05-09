@@ -23,8 +23,10 @@ export const Message = {
   },
   Order: {
     UpdateSuccess: 'Cập nhật đơn hàng thành công.',
+    InsertSuccess: 'Thêm đơn hàng thành công.',
     EmptyProduct: 'Hãy nhập sản phẩm!',
     DeleteSuccess: 'Xóa thành công đơn hàng',
+    LoadUpdatePartnerFail: 'Không thể cập nhật không tin khách hàng',
   },
   Bill: {
     InsertSuccess: 'Tạo hóa đơn thành công.',
