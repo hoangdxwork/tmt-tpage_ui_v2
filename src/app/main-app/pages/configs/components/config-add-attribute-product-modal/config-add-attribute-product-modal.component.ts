@@ -80,10 +80,6 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
     this.ModelDefault.AttributeLines = attributeModel.filter(f=>f.Attribute != data.AttributeId);
     // remove trên table data
     this.listOfData = this.listOfData.filter(f=>f.AttributeId != data.AttributeId);
-    // remove selected list
-    // let selectFormValue = this.createAttributeForm.controls.Attributes.value as Array<TDSSafeAny>;
-    // selectFormValue = selectFormValue.filter(f=>f != data.AttributeId);
-    // this.createAttributeForm.controls.Attributes.reset(selectFormValue);
     
     this.isLoading = false;
   }
@@ -101,6 +97,10 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
   updateTableData(){
     this.isLoading = true;
     this.listOfData = [];
+    this.ModelDefault = {
+      AttributeLines:[] as TDSSafeAny[],
+      AttributeValues:[] as TDSSafeAny[]
+    };
     let IdList = this.createAttributeForm.controls.Attributes.value as Array<TDSSafeAny>;
     IdList.forEach(id =>{
       let index = this.attributeList.findIndex(f=>f.AttributeId == id);
@@ -154,7 +154,7 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
 
   onSubmit() {
     let model = this.prepareModel();
-    this.modal.destroy(model);console.log(model)
+    this.modal.destroy(model);
     this.createAttributeForm.reset();
   }
 
