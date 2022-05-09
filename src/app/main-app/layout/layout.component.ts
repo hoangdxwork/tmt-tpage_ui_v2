@@ -8,8 +8,8 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMenuDTO, TDSMessag
 import { CRMTeamDTO } from '../dto/team/team.dto';
 import { CRMTeamService } from '../services/crm-team.service';
 import { TPageHelperService } from '../services/helper.service';
-import { NetworkHelper } from '../services/signalR/network.helper';
 import { SignalRConnectionService } from '../services/signalR/signalR-connection.service';
+import { NetworkHelper } from '../shared/helper/network.helper';
 
 @Component({
   selector: 'app-layout',
@@ -71,6 +71,7 @@ export class LayoutComponent implements OnInit {
       this.lstMenu = this.setMenu(res);
       this.currentTeam = res;
     })
+
     this.getAllFacebook();
     this.loadUserInfo();
     this.activatedRoute.queryParams.subscribe(res => {

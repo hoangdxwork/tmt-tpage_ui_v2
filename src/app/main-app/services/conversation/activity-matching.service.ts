@@ -1,3 +1,4 @@
+import { da } from 'date-fns/locale';
 import { EventEmitter, Injectable, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
@@ -71,5 +72,37 @@ export class ActivityMatchingService extends BaseSevice implements OnInit {
       totalCount: response.TotalCount,
       totalPages: response.TotalPages
     } as any;
+  }
+
+  refreshAttachment(id: string, message_id: string, image_id: string): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/${id}/refreshattachment?message_id=${message_id}&image_id=${image_id}`,
+        method: TApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  retryMessage(id: string, page_id: string): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/${id}/queueretrymessage?page_id=${page_id}`,
+        method: TApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  addLikeComment(data: any): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/rest/v1.0/facebook/addlikecomment`,
+        method: TApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  hideComment(data: any): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/rest/v1.0/facebook/hidecomment`,
+        method: TApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
   }
 }

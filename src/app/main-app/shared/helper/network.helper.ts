@@ -1,3 +1,4 @@
+
 import { Observable, Observer, fromEvent, merge } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -12,5 +13,4 @@ export class NetworkHelper {
       }));
   }
 }
-
 

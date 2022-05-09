@@ -1,3 +1,5 @@
+import { ActivityStatus } from "src/app/lib/enum/message/coversation-message";
+
 export interface Object {
   id: string;
 }
@@ -154,6 +156,44 @@ export interface MakeActivityItem {
   CreatedBy?: any;
 }
 
+export interface MakeActivityItemWebHook {
+  id: string;
+  from_id: string;
+  object_id: string;
+  is_admin: boolean;
+  message_formatted: string;
+  comment: Comment;
+  message: Message;
+  type: number;
+  nlps: any[];
+  error_message: string;
+  DateCreated: Date;
+  LastUpdated: Date;
+  IsCompleted: boolean;
+  DateProcessed?: Date;
+  CreatedBy?: any;
+  is_show_avatar: boolean;
+  page_id: string | null;
+  last_activity: Object;
+  last_message: Object;
+  attachment: any;
+  fbid: string;
+  tpid: string;
+  status: ActivityStatus;
+  Image: any;
+  IsHandledBySystem: any;
+  isSelected: boolean;
+  message_obj: any;
+  HasRepliedWithComment: boolean;
+  HasRepliedWithMessage: boolean;
+  CountOrder: number;
+  to_id: any;
+  account_id: any;
+  ActivityCampaignId: string;
+  host: string;
+  psid: string;
+}
+
 export interface MakeActivityQueryObj {
   limit: number;
   page: number;
@@ -176,7 +216,7 @@ export interface MakeActivityExtras {
 
 export interface MakeActivityMessagesDTO {
   extras: MakeActivityExtras;
-  items: Array<MakeActivityItem>;
+  items: Array<MakeActivityItemWebHook>;
   query: MakeActivityQueryObj;
   response: MakeActivityResponse;
 }

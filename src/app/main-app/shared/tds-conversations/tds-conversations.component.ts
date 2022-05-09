@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Optional, Output, Self, SimpleChanges, TemplateRef, ViewContainerRef, Host, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Optional, Output, Self,
+  SimpleChanges, TemplateRef, ViewContainerRef, Host, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService } from 'tmt-tang-ui';
 import { ActiveMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
@@ -6,7 +7,7 @@ import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { CRMTeamService } from '../../services/crm-team.service';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { MakeActivityItem, MakeActivityMessagesDTO } from '../../dto/conversation/make-activity.dto';
+import { MakeActivityItem, MakeActivityItemWebHook, MakeActivityMessagesDTO } from '../../dto/conversation/make-activity.dto';
 import { ApplicationUserService } from '../../services/application-user.service';
 
 @Component({
@@ -24,7 +25,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   @Input() team!: CRMTeamDTO;
   @Output() onLoadMiniChat = new EventEmitter();
 
-  private destroy$ = new Subject();
+  destroy$ = new Subject();
   isLoadMessage: boolean = false;
   inputValue?: string;
   dataSource$!: Observable<MakeActivityMessagesDTO>;
@@ -32,11 +33,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   lstUser!: any[];
 
   constructor(private modalService: TDSModalService,
-      private crmTeamService: CRMTeamService,
-      private message: TDSMessageService,
-      private applicationUserService: ApplicationUserService,
-      private activityDataFacade: ActivityDataFacade,
-      private viewContainerRef: ViewContainerRef) {
+    private crmTeamService: CRMTeamService,
+    private message: TDSMessageService,
+    private applicationUserService: ApplicationUserService,
+    private activityDataFacade: ActivityDataFacade,
+    private viewContainerRef: ViewContainerRef) {
   }
 
   ngOnInit() {
@@ -92,7 +93,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
       return (data?.extras?.children[item?.id] as any) || {};
   }
 
-  getExtrasPosts(data: any, item: MakeActivityItem) {
+  getExtrasPosts(data: any, item: MakeActivityItemWebHook) {
       return (data?.extras?.posts[item?.object_id] as any) || {};
   }
 

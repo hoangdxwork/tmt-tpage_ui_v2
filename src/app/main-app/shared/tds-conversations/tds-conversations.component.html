@@ -17,12 +17,12 @@
     <!-- main -->
     <div class="flex-auto w-full">
         <div class="w-full h-full relative ">
-            <div class="inset-0 overflow-auto overflow-y-auto tds-custom-scroll" style="max-height: 630px">
+            <div class="inset-0 overflow-auto overflow-y-auto tds-custom-scroll" style="max-height: 630px;width: 915px;">
                 <div *ngIf="(dataSource$ | async )?.items?.length == 0">
                     <p>Chưa có nội dung nào</p>
                 </div>
-                <ng-container *ngFor="let item of (dataSource$ | async )?.items; let i = index">
-                    <div class="p-[4px]">
+                <tds-spin [spinning]="isLoadMessage" tip="Loading...">
+                  <ng-container *ngFor="let item of (dataSource$ | async )?.items; let i = index ">
                       <!-- Thông tin bài post -->
                       <div *ngIf="item.type == 2 && item.object_id && getExtrasPosts((dataSource$ | async), item)">
                         <tds-card class="post-block w-full bg-white" style="padding: 15px 30px">
@@ -35,8 +35,8 @@
                                 <p *ngIf="getExtrasPosts((dataSource$ | async), item)?.message">{{getExtrasPosts((dataSource$ | async), item).message}}</p>
                                 <p *ngIf="getExtrasPosts((dataSource$ | async), item)?.description">{{getExtrasPosts((dataSource$ | async), item).description}}</p>
 
-                                <div *ngIf="getExtrasPosts((dataSource$ | async), item).picture">
-                                    <img [src]="getExtrasPosts((dataSource$ | async), item)?.picture" alt="getExtrasPosts((dataSource$ | async), item)?.story"/>
+                                <div *ngIf="getExtrasPosts((dataSource$ | async), item)?.picture">
+                                    <img [src]="getExtrasPosts((dataSource$ | async), item)?.picture" alt="{{getExtrasPosts((dataSource$ | async), item)?.story}}"/>
                                 </div>
                             </div>
                             <div class="post-footer">
@@ -49,12 +49,11 @@
                           [team]="team" [psid]="data.psid"
                           [data]="item" [index]="i"
                           [type]="type" [name]="data.name"
-                          [children]="(dataSource$ | async)?.extras?.children"
                           [children]="getExtrasChildren((dataSource$ | async), item)"
                           [partner]="partner">
                       </tds-conversation-item>
-                    </div>
-                </ng-container>
+                  </ng-container>
+                </tds-spin>
             </div>
         </div>
     </div>

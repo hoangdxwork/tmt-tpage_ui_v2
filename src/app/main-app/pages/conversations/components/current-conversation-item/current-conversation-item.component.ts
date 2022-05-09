@@ -8,11 +8,11 @@ import { ConversationEventFacade } from 'src/app/main-app/services/facades/conve
 import { TDSMessageService } from 'tmt-tang-ui';
 
 @Component({
-    selector: 'active-matching-item',
-    templateUrl: './active-matching-item.component.html',
+    selector: 'current-conversation-item',
+    templateUrl: './current-conversation-item.component.html',
 })
 
-export class ActiveMatchingItemComponent  implements OnInit, OnChanges {
+export class CurrentConversationItemComponent  implements OnInit, OnChanges {
 
   @Input() isFastSend: boolean | undefined;
   @Input() item!: ActiveMatchingItem;
