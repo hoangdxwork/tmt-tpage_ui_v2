@@ -9,6 +9,11 @@ import { SharedService } from "../shared.service";
 import { SignalRConnectionService } from "../signalR/signalR-connection.service";
 import { CRMMatchingDTO } from '../../dto/conversation-all/crm-matching.dto';
 import { CRMMatchingMappingDTO } from "../../dto/conversation-all/conversation-all.dto";
+import { DataUpdate } from "../../dto/conversation/conversation.dto";
+import { CRMTeamService } from "../crm-team.service";
+import { HrefPageService } from "../href-page.service";
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSNotificationService } from "tmt-tang-ui";
+import { StringHelperV2 } from "../../shared/helper/string.helper";
 
 @Injectable({
   providedIn: 'root'
@@ -21,17 +26,31 @@ export class ConversationDataFacade extends BaseSevice implements OnInit, OnDest
   baseRestApi: string = "";
   private dataSource$!: Observable<any>;
   private destroy$ = new Subject();
+  private currentTeam: any;
+  private currentPage: any;
+  public lstTeam!: any[];
 
   constructor(private apiService: TCommonService,
       private cvsFbState: ConversationFacebookState,
       private service: ConversationService,
+      private crmTeamService: CRMTeamService,
+      private hrefService: HrefPageService,
+      private notification: TDSNotificationService,
       private sgRConnectionService: SignalRConnectionService,
       private sharedService: SharedService) {
-        super(apiService)
+        super(apiService);
+
+        this.crmTeamService.onChangeListFaceBook().subscribe((res :any) => {
+          if(res && TDSHelperArray.isArray(res.Items)){
+              this.lstTeam = res.Items;
+          }
+        })
   }
 
   ngOnInit(): void {
-      this.initialize();
+    this.currentTeam = this.crmTeamService.getCurrentTeam();
+    // this.currentPage = this.hrefService.getCurrentPage();
+    this.initialize();
   }
 
   initialize() {
@@ -43,13 +62,88 @@ export class ConversationDataFacade extends BaseSevice implements OnInit, OnDest
     }, error => {})
   }
 
+  getTeamByPageId(pageId: any) {
+    let team = {};
+    this.lstTeam.forEach((x: any) => {
+      var items = x.Childs.filter((a: any) => {
+          if (a.Facebook_PageId == pageId) { return a }
+      });
+      if (items.length > 0) {
+        team = items[0];
+      }
+    })
+    return team;
+  }
+
   notificationMessage(value: any): any {
     let data = Object.assign({}, value.data);
     let pageId = data.page_id;
     let psid = data.psid;
+
+    if(value.action == "facebook_messages_delivery") return;
+
+    if (this.currentPage && this.currentTeam && this.currentPage.key == "conversation" &&
+      this.currentTeam.Facebook_PageId == pageId) {
+    } else {
+
+      let splitMessage = StringHelperV2.getSliceAfterSpaceByLength(value.message, 60, "...");
+      let team = this.getTeamByPageId(pageId) as any;
+
+      if (TDSHelperObject.hasValue(team)) {
+        let message = `${splitMessage} tới Page: ${team.Facebook_PageName}`;
+        let url = `/conversation/all?teamId=${team.Id}&type=all&psid=${psid}`;
+
+        //TODO: mai xử lý tiếp signalR
+        this.notification.error('', message);
+        // this.toaStrCustomService.toaSuccess(message, url);
+      } else {
+        let messageError = "Không tìm thấy trang.";
+        this.notification.error('', messageError);
+        // this.toaStrCustomService.toaSuccessAndError(splitMessage, messageError);
+      }
+
+    }
+  }
+
+  messageServer(value: any) {
+    let data = Object.assign({}, value);
+    let psid = data.to_id;
+    let pageId = data.account_id;
+    let dateCreated = data.DateCreated;
+    let type = data.type;
+
+    this.updateConversation(pageId, type, psid, data.message_formatted, dateCreated, true);
   }
 
   messageWebhook(data: any): any  {
+
+  }
+
+  updateConversation(pageId: string, type: any, psid: string, message_format: string, dateCreated: any, is_admin: boolean) {
+    let lastActivity = this.createLastActivity(message_format, dateCreated, type);
+
+    let dataUpdate: DataUpdate = {
+      last_activity: lastActivity,
+      last_message: type == 3 ? lastActivity : null,
+      last_comment: type == 2 ? lastActivity : null,
+      LastActivityTimeConverted: dateCreated,
+      LastUpdated: dateCreated,
+      is_admin: is_admin
+    }
+
+    this.cvsFbState.updateConversation(pageId, "all", psid, dataUpdate);
+    type == 2 && this.cvsFbState.updateConversation(pageId, "comment", psid, dataUpdate);
+    type == 3 && this.cvsFbState.updateConversation(pageId, "message", psid, dataUpdate);
+  }
+
+  createLastActivity(message: string, dateCreated: any, type: any) {
+    let result = {
+      message: message,
+      message_format: message,
+      created_time: dateCreated,
+      type: type
+    };
+    return result;
   }
 
   makeDataSource(pageId: any, type: string): Observable<any> {

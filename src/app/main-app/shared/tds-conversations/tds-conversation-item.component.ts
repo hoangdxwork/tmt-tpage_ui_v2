@@ -3,7 +3,7 @@ import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { ActivityStatus } from "src/app/lib/enum/message/coversation-message";
 import { TDSHelperString, TDSMessageService } from "tmt-tang-ui";
-import { MakeActivityItem, MakeActivityItemWebHook } from "../../dto/conversation/make-activity.dto";
+import { MakeActivityItemWebHook } from "../../dto/conversation/make-activity.dto";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
 import { ActivityMatchingService } from "../../services/conversation/activity-matching.service";
 import { ActivityDataFacade } from "../../services/facades/activity-data.facade";
@@ -79,7 +79,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
         fbid: this.data.comment?.from?.id
     }
 
-    this.activityMatchingService.addLikeComment(model).subscribe((res: any) => {
+    this.activityMatchingService.addLikeComment(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.message.success('Thao tác thành công!');
         this.data.comment.user_likes = !this.data.comment.user_likes;
     }, error => {
@@ -97,7 +97,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
         fbid: this.data.comment?.from?.id
     };
 
-    this.activityMatchingService.hideComment(model).subscribe((res: any) => {
+    this.activityMatchingService.hideComment(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.message.success('Thao tác thành công!');
         this.data.comment.is_hidden = !this.data.comment.is_hidden;
     }, error => {
@@ -139,6 +139,10 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   }
 
   open_gallery(send_picture: any, att: any) {
+  }
+
+  replyComment(event :any) {
+
   }
 
   ngOnDestroy(): void {

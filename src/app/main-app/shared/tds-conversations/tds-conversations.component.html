@@ -66,9 +66,11 @@
         <!-- editer+toolbars -->
         <div class="flex flex-col w-full p-4 bg-white rounded-xl ">
             <div class="w-full flex">
-                <div class="flex flex-auto">
-                    Nhập nội dung tin nhắn, nhấn [Enter] để gửi
-                </div>
+                <textarea class="flex flex-auto" rows="2" placeholder="Nhập nội dung tin nhắn, nhấn [Enter] để gửi"
+                [(ngModel)]="messageModel"  #ctrl="ngModel" (paste)="onPaste($event)"
+                (keydown.enter)="onEnter($event)" >
+
+                </textarea>
                 <div class="pl-2">
                     <button tds-button color="primary" class="rounded-xl">
                         <span class="flex items-center">

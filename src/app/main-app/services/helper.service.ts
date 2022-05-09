@@ -1,8 +1,10 @@
 import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from "tmt-tang-ui";
 import { CRMTeamDTO } from "../dto/team/team.dto";
+import { CRMTeamService } from "./crm-team.service";
 
 // @dynamic
 export class TPageHelperService {
+
     static findTeamById(dataTeam: Array<CRMTeamDTO>, teamId: TDSSafeAny, getFirstItem: boolean = false) {
         let team: CRMTeamDTO | null = null;
         if (!TDSHelperArray.hasListValue(dataTeam)) {
@@ -29,4 +31,6 @@ export class TPageHelperService {
         }
         return team;
     }
+
+
 }
