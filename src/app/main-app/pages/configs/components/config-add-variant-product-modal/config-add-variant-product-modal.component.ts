@@ -1,4 +1,3 @@
-import { ProductTemplateService } from './../../../../services/product-template.service';
 import { Subject } from 'rxjs';
 import { SharedService } from './../../../../services/shared.service';
 import { takeUntil } from 'rxjs/operators';
@@ -13,11 +12,10 @@ import { TDSSafeAny, TDSMessageService, TDSModalRef } from 'tmt-tang-ui';
 })
 export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy {
   @Input() data!:TDSSafeAny;
+  @Input() attributeList:Array<TDSSafeAny> = [];
 
   productTypeList:Array<TDSSafeAny> = [];
-  attributeValueList:Array<TDSSafeAny> = [];
-  attributeList:Array<TDSSafeAny> = [];
-  valueList:Array<TDSSafeAny> = [];
+  
   addProductVariantForm!:FormGroup;
   private destroy$ = new Subject<void>();
   modelDefault:TDSSafeAny;
@@ -26,12 +24,10 @@ export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy 
     private modal: TDSModalRef, 
     private message: TDSMessageService, 
     private sharedService: SharedService,
-    private productTemplateService: ProductTemplateService,
     private formBuilder: FormBuilder
   ) { 
       this.initForm();
       this.loadProductTypeList();
-      this.loadProductAttributeValue();
   }
 
   ngOnInit(): void {
@@ -40,11 +36,7 @@ export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy 
 
     this.modelDefault = {
       Active: true,
-      AttributeLines:{
-        Attribute:null,
-        Values:[]
-      },
-      AttributeValues:[],
+      AttributeLines:[],
       Barcode: '',
       DefaultCode: '',
       Image: null,
@@ -72,9 +64,7 @@ export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy 
       Type: ['product'],
       DefaultCode: [null],
       Barcode: [null],
-      Attributes: [null,Validators.required],
-      Values: [[],Validators.required],
-      ListPrice: [0],
+      ListPrice: [0]
     });
   }
 
@@ -84,31 +74,6 @@ export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy 
       { value: 'consu', text: 'Có thể tiêu thụ' },
       { value: 'service', text: 'Dịch vụ' }
     ];
-  }
-
-  loadProductAttributeValue(){
-    return this.productTemplateService.getProductAttributeValue().pipe(takeUntil(this.destroy$)).subscribe(
-      (res:TDSSafeAny)=>{
-        this.attributeValueList = res.value;
-        this.attributeList = [];
-        this.attributeValueList.forEach(item=>{
-          let existedIndex = this.attributeList.findIndex(f=>f.AttributeId === item.AttributeId);
-          
-          if(existedIndex == -1){
-            this.attributeList.push(item);
-          }
-        });
-      },
-      err=>{
-        this.message.error(err.error.message??'Tải dữ liệu biến thể thất bại');
-      }
-    )
-  }
-
-  onSelectAttribute(attributeId:TDSSafeAny){
-    this.valueList = [];
-    this.addProductVariantForm.controls.Values.reset(null);
-    this.valueList = this.attributeValueList.filter(f=>f.AttributeId == attributeId);
   }
 
   onSelectFile(item: TDSSafeAny) {
@@ -139,6 +104,51 @@ export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy 
       }
     }
   }
+
+  onSelectAttribute(Value:TDSSafeAny,Attribute:TDSSafeAny){
+    let lines = this.modelDefault.AttributeLines as Array<TDSSafeAny>;
+    let index = lines.findIndex(f=>f.AttributeId == Attribute.AttributeId);
+    if(Value == null){
+      this.modelDefault.AttributeLines.splice(index,1);
+    }else{
+      if(index > -1){
+        this.modelDefault.AttributeLines[index].Values[0] = {
+          AttributeId: Attribute.AttributeId,
+          AttributeName: Attribute.AttributeName,
+          Code: Attribute.Code,
+          Id: Value.Id,
+          Name: Value.Name,
+          NameGet: Value.NameGet,
+          PriceExtra: Value.PriceExtra,
+          Sequence: Value.Sequence
+        }
+      }else{
+        this.modelDefault.AttributeLines.push({
+          Attribute:{
+            Code: Attribute.Code,
+            CreateVariant: true,
+            Id: Attribute.AttributeId,
+            Name: Attribute.AttributeName,
+            Sequence: Attribute.Sequence
+          },
+          AttributeId: Attribute.AttributeId,
+          Values:[
+            {
+              AttributeId: Attribute.AttributeId,
+              AttributeName: Attribute.AttributeName,
+              Code: Attribute.Code,
+              Id: Value.Id,
+              Name: Value.Name,
+              NameGet: Value.NameGet,
+              PriceExtra: Value.PriceExtra,
+              Sequence: Value.Sequence
+            }
+          ]
+        });
+      }
+    }
+  }
+
   prepareModel(){
     let formModel = this.addProductVariantForm.value;
     
@@ -171,35 +181,6 @@ export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy 
     }
     if(formModel.Barcode) {
       this.modelDefault.Barcode = formModel.Barcode;
-    }
-    if(formModel.Attributes && formModel.Values) {      
-      let attributeId = this.addProductVariantForm.controls.Attributes.value;
-      let valueIdList = this.addProductVariantForm.controls.Values.value as Array<TDSSafeAny>;
-      
-      let valuesList = this.attributeValueList.filter(f=> valueIdList.includes(f.Id));
-      this.modelDefault.AttributeValues = valuesList;
-
-      let values:TDSSafeAny[] = [];
-      valuesList.forEach(value => {
-        values.push({
-          Id: value.Id,
-          Name: value.Name,
-          NameGet: value.NameGet,
-          PriceExtra: value.PriceExtra,
-          Sequence: value.Sequence
-        })
-      });
-      
-      let attributes = this.attributeValueList.find(f=> f.AttributeId == attributeId);
-
-      this.modelDefault.AttributeLines = {
-        Attribute: {
-          AttributeId: attributes.AttributeId,
-          AttributeName: attributes.AttributeName,
-          Code: attributes.Code
-        },
-        Values: values
-      };
     }
 
     return this.modelDefault;
