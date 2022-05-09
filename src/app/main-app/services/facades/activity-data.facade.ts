@@ -12,6 +12,7 @@ import { FacebookPostService } from "../facebook-post.service";
 import { TDSHelperArray, TDSHelperString, TDSMessageService } from "tmt-tang-ui";
 import { ActivityMatchingService } from "../conversation/activity-matching.service";
 import { map, shareReplay, takeUntil } from "rxjs/operators";
+import { MakeActivityItemWebHook } from "../../dto/conversation/make-activity.dto";
 
 @Injectable({
   providedIn: 'root'
@@ -59,19 +60,19 @@ export class ActivityDataFacade extends BaseSevice implements OnInit, OnDestroy 
 
     //TODO: gửi tin nhắn
     this.sgRConnectionService._onSendMessageSendingEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.message.info(res.message);
-        this.messageSending(res);
+      this.message.info(res.message);
+      this.messageSending(res);
     });
 
     //TODO: tin nhắn lỗi
     this.sgRConnectionService._onSendMessageFailEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.message.error(res.message);
-        this.messageFail(res);
+      this.message.error(res.message);
+      this.messageFail(res);
     });
 
     //TODO: Retry Message
     this.sgRConnectionService._onRetryMessage$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.messageRetry(res);
+      this.messageRetry(res);
     });
 
     //TODO: Data From Scan
@@ -152,7 +153,7 @@ export class ActivityDataFacade extends BaseSevice implements OnInit, OnDestroy 
     const pageId = data.account_id;
     const psid = data.to_id;
 
-    if(!TDSHelperString.hasValueString(data.error_messages)) {
+    if(TDSHelperString.hasValueString(data.error_messages)) {
       this.message.error(`Thử gửi lại tin với ${data.to_name} thất bại.`);
     }
     this.activityFbState.updateRetryMessage(pageId, psid, data);
@@ -590,7 +591,7 @@ export class ActivityDataFacade extends BaseSevice implements OnInit, OnDestroy 
 
   createDataAttachments(attachment_url: string) {
     const model = {} as any;
-    if (!TDSHelperString.hasValueString(attachment_url)) {
+    if (TDSHelperString.hasValueString(attachment_url)) {
       model["attachments"] = {};
       model["attachments"]["data"] = [];
       model["attachments"]["data"].push({
@@ -642,7 +643,7 @@ export class ActivityDataFacade extends BaseSevice implements OnInit, OnDestroy 
       return this.service.get(query, psid).pipe(map((res: any) => {
 
           if(res && TDSHelperArray.isArray(res.Items)) {
-            res.Items = res.Items.sort((a: any, b: any) => Date.parse(a.created_time) - Date.parse(b.created_time));
+            res.Items = res.Items.sort((a: any, b: any) => Date.parse(a.DateCreated) - Date.parse(b.DateCreated));
           }
 
           let value = this.createType(res, query);
@@ -662,6 +663,12 @@ export class ActivityDataFacade extends BaseSevice implements OnInit, OnDestroy 
 
       return this.activityFbState.setActivity(pageId, psid, type, value);
     }), shareReplay());
+  }
+
+  refreshAttachment(data: any) {
+    let psid = data.to_id;
+    let pageId = data.account_id;
+    this.activityFbState.refreshAttachment(pageId, psid, data);
   }
 
   createType(data: any, query: any) {

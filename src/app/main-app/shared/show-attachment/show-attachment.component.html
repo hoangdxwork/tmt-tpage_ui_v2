@@ -1,0 +1,30 @@
+<!-- image/jpeg -->
+<img *ngIf="currentType == enumAttachmentType.IMAGE_JPEG"
+  [src]="url" class="img-rounded" (error)="error()"/>
+
+<!-- image/gif -->
+<img *ngIf="currentType == enumAttachmentType.IMAGE_GIF"
+  [src]="url" class="img-rounded" (error)="error()"/>
+
+<!-- audio/mpeg -->
+<audio *ngIf="currentType == enumAttachmentType.AUDIO_MPEG" controls [muted]="!isMuted ? 'muted' : ''"
+  style="height: 35px; width: 240px;">
+  <source [src]="url" type="audio/ogg" (error)="error()">
+</audio>
+
+<!-- video/mp4 -->
+<video *ngIf="currentType == enumAttachmentType.VIDEO_MP4 && isControls" autoplay="autoplay" id="{{url}}" [muted]="!isMuted ? 'muted' : ''"
+  controls="controls" [ngStyle]="{'max-width': width ? width : '95%', 'max-height': height ? height : 'calc(100vh - 20px)', 'height': '100%'}">
+  <source [src]="url" type="video/mp4" id="videomp4" (error)="error()"/>
+</video>
+
+<video *ngIf="currentType == enumAttachmentType.VIDEO_MP4 && !isControls" autoplay="autoplay" id="{{url}}" [muted]="!isMuted ? 'muted' : ''"
+  [ngStyle]="{'max-width': width ? width : '95%', 'max-height': height ? height : 'calc(100vh - 20px)', 'width': '100%', 'height': '100%'}">
+  <source [src]="url" type="video/mp4" id="videomp4" (error)="error()"/>
+</video>
+
+<!-- video/ogg -->
+<video *ngIf="currentType == enumAttachmentType.VIDEO_OGG" autoplay="autoplay" [muted]="!isMuted ? 'muted' : ''"
+  controls="controls" [ngStyle]="{'max-width': width ? width : '95%', 'max-height': height ? height : '95%', 'height': '100%'}">
+  <source [src]="url" type="video/ogg" (error)="error()"/>
+</video>

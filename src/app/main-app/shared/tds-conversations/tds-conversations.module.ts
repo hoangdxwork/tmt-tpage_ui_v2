@@ -10,11 +10,15 @@ import { TDSPopoverModule } from 'tmt-tang-ui';
 import { IconEmojiMartComponent } from '../emoji-mart/icon-emoji-mart.component';
 import { UploadImageModule } from '../upload-image/tpage-avatar-facebook/upload-image.module';
 import { TDSCardModule } from 'tmt-tang-ui';
+import { ShowAttachmentComponent } from '../show-attachment/show-attachment.component';
+import { PipeModule } from '../pipe/pipe.module';
+import { TDSImageModule } from 'tmt-tang-ui';
 
 const CMP =[
   TDSConversationsComponent,
   TDSConversationItemComponent,
-  IconEmojiMartComponent
+  IconEmojiMartComponent,
+  ShowAttachmentComponent
 ]
 
 @NgModule({
@@ -39,7 +43,9 @@ const CMP =[
     PickerModule,
     TDSPopoverModule,
     UploadImageModule,
-    TDSCardModule
+    TDSCardModule,
+    PipeModule,
+    TDSImageModule
   ],
   exports:[
     ...CMP

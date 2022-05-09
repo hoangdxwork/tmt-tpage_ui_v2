@@ -35,11 +35,11 @@
           <div *ngIf="lstMatchingItem" class="overflow-hidden overflow-y-auto tds-custom-scroll flex flex-auto flex-col gap-1 pb-10">
             <div *ngFor="let item of lstMatchingItem; let i= index">
                 <div *ngIf="activeMatchingItem?.id && currentTeam" (click)="activeConversations(item)">
-                    <active-matching-item
+                    <current-conversation-item
                         [item]="item" [psid]="item.psid" [type]="type"
                         [activeMatchingItem]="activeMatchingItem"
                         [team]="currentTeam" [isFastSend]="isFastSend">
-                    </active-matching-item>
+                    </current-conversation-item>
                 </div>
             </div>
           </div>
