@@ -2,7 +2,8 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tmt-tang-ui";
-import { ODataProductCategoryDTOV2 } from "../dto/product/product-category.dto";
+import { ODataResponsesDTO } from "../dto/odata/odata.dto";
+import { ODataProductCategoryDTOV2, ProductCategoryDTO } from "../dto/product/product-category.dto";
 import { BaseSevice } from "./base.service";
 
 @Injectable({
@@ -19,13 +20,13 @@ export class ProductCategoryService extends BaseSevice {
     super(apiService)
   }
 
-  get(): Observable<TDSSafeAny> {
+  get(): Observable<ODataResponsesDTO<ProductCategoryDTO>> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}?%24format=json&%24orderby=ParentLeft&%24count=true`,
       method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<any>(api, null);
+    return this.apiService.getData<ODataResponsesDTO<ProductCategoryDTO>>(api, null);
   }
 
   getDefault(): Observable<TDSSafeAny> {

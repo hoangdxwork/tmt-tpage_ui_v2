@@ -116,13 +116,17 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
   }
 
   handleFilterDistrict(value: string) {
+    if(TDSHelperString.hasValueString(value)){
       var result = this.lstDistricts.filter((x: SuggestDistrictsDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
       this.districtSubject.next(result);
+    }
   }
 
   handleFilterWard(value: string) {
+    if(TDSHelperString.hasValueString(value)){
       var result = this.lstWards.filter((x: SuggestWardsDTO) => (x.name && TDSHelperString.stripSpecialChars(x.name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(value.toLowerCase())) !== -1));
       this.wardSubject.next(result);
+    }
   }
 
   changeStreet(event: any){
@@ -166,7 +170,26 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
         WardName: '',
         Score: 0
       }
+      this.onLoadSuggestion.emit(item);
+    }else{
+      this.lstDistricts = [];
+      this.lstWards = []
+      this._form.controls['City'].setValue(null);
+      this._form.controls['District'].setValue(null);
+      this._form.controls['Ward'].setValue(null);
 
+      let item: ResultCheckAddressDTO = {
+        Telephone: null,
+        Address: this._form.controls['Street'].value,
+        ShortAddress: '',
+        CityCode: '',
+        CityName: '',
+        DistrictCode: '',
+        DistrictName: '',
+        WardCode: '',
+        WardName: '',
+        Score: 0
+      }
       this.onLoadSuggestion.emit(item);
     }
   }
@@ -185,6 +208,25 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
         CityName: event.cityName,
         DistrictCode: event.code,
         DistrictName: event.name,
+        WardCode: '',
+        WardName: '',
+        Score: 0
+      }
+
+      this.onLoadSuggestion.emit(item);
+    }else{
+      this.lstWards = []
+      this._form.controls['District'].setValue(null);
+      this._form.controls['Ward'].setValue(null);
+
+      let item: ResultCheckAddressDTO = {
+        Telephone: null,
+        Address: this._form.controls['Street'].value,
+        ShortAddress: '',
+        CityCode: this._form.controls['City'].value.code,
+        CityName: this._form.controls['City'].value.name,
+        DistrictCode: '',
+        DistrictName: '',
         WardCode: '',
         WardName: '',
         Score: 0
@@ -211,6 +253,21 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
       }
 
       this.onLoadSuggestion.emit(item);
+    }else{
+      let item: ResultCheckAddressDTO = {
+        Telephone: null,
+        Address: this._form.controls['Street'].value,
+        ShortAddress: '',
+        CityCode: this._form.controls['City'].value.code,
+        CityName: this._form.controls['City'].value.name,
+        DistrictCode: this._form.controls['District'].value.code,
+        DistrictName: this._form.controls['District'].value.name,
+        WardCode: '',
+        WardName: '',
+        Score: 0
+    }
+
+    this.onLoadSuggestion.emit(item);
     }
   }
 

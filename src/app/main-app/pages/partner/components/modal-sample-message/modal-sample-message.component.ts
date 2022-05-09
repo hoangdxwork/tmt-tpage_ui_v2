@@ -3,7 +3,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { QuickReplyService } from './../../../../services/quick-reply.service';
 import { Component, OnInit, Input } from '@angular/core';
-import { TDSModalRef } from 'tmt-tang-ui';
+import { TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
 
 @Component({
   selector: 'app-modal-sample-message',
@@ -28,7 +28,7 @@ export class ModalSampleMessageComponent implements OnInit {
   loadData(){
     this.quickReplyService.getOnlyActive().pipe(takeUntil(this.destroy$)).subscribe((res:ODataQuickReplyDTO)=>{
       if(res){
-        this.listSampleMessage = res.value
+        this.listSampleMessage = [...res.value]
         this.count = res['@odata.count'] as number;
       }
       

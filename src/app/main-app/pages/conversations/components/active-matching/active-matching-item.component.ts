@@ -5,7 +5,6 @@ import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { DraftMessageService } from 'src/app/main-app/services/conversation/draft-message.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationEventFacade } from 'src/app/main-app/services/facades/conversation-event.facade';
-import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { TDSMessageService } from 'tmt-tang-ui';
 
 @Component({
@@ -13,7 +12,7 @@ import { TDSMessageService } from 'tmt-tang-ui';
     templateUrl: './active-matching-item.component.html',
 })
 
-export class ActiveMatchingItemComponent extends TpageBaseComponent implements OnInit, OnChanges {
+export class ActiveMatchingItemComponent  implements OnInit, OnChanges {
 
   @Input() isFastSend: boolean | undefined;
   @Input() item!: ActiveMatchingItem;
@@ -32,7 +31,6 @@ export class ActiveMatchingItemComponent extends TpageBaseComponent implements O
       private cdr: ChangeDetectorRef,
       public activatedRoute: ActivatedRoute,
       public router: Router) {
-        super(crmService, activatedRoute, router);
   }
 
   ngOnInit(): void {

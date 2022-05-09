@@ -31,10 +31,6 @@ import { ConfigConversationTagsEditDataModalComponent } from './components/confi
 import { AutoChatAddDataModalComponent } from './components/auto-chat-add-data-modal/auto-chat-add-data-modal.component';
 import { SMSMessagesAddServiceModalComponent } from './components/sms-messages-add-service-modal/sms-messages-add-service-modal.component';
 import { ProductVariantEditTableModalComponent } from './components/product-variant-edit-table-modal/product-variant-edit-table-modal.component';
-import { ConfigAddPromotionComponent } from './config-add-promotion/config-add-promotion.component';
-import { ConfigAddPromotionAllComponent } from './config-add-promotion/config-add-promotion-all/config-add-promotion-all.component';
-import { ConfigAddPromotionGroupComponent } from './config-add-promotion/config-add-promotion-group/config-add-promotion-group.component';
-import { ConfigAddPromotionComboComponent } from './config-add-promotion/config-add-promotion-combo/config-add-promotion-combo.component';
 import { OdataCRMTagService } from '../../services/mock-odata/odata-crmtag.service';
 import { QuickReplyService } from '../../services/quick-reply.service';
 import { OdataQuickReplyService } from '../../services/mock-odata/odata-quick-reply.service';
@@ -71,6 +67,12 @@ import { ConfigEditProductComponent } from './config-edit-product/config-edit-pr
 import { UserRestHandler } from '../../services/handlers/user-rest.handler';
 import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
 import { ConfigAddAttributeProductModalComponent } from './components/config-add-attribute-product-modal/config-add-attribute-product-modal.component';
+import { CompanyService } from '../../services/company.service';
+import { ConfigPromotionGroupComponent } from './config-promotions/components/config-promotion-group/config-promotion-group.component';
+import { ConfigPromotionComboComponent } from './config-promotions/components/config-promotion-combo/config-promotion-combo.component';
+import { ConfigPromotionAllComponent } from './config-promotions/components/config-promotion-all/config-promotion-all.component';
+import { ConfigEditPromotionComponent } from './config-promotions/components/config-edit-promotion/config-edit-promotion.component';
+import { ConfigAddPromotionComponent } from './config-promotions/components/config-add-promotion/config-add-promotion.component';
 
 const SERVICES = [
     TDSModalService,
@@ -92,7 +94,8 @@ const SERVICES = [
     TagProductTemplateService,
     ExcelExportService,
     ApplicationRoleService,
-    UserRestHandler
+    UserRestHandler,
+    CompanyService
 ]
 
 @NgModule({
@@ -116,10 +119,6 @@ const SERVICES = [
     AutoChatAddDataModalComponent,
     SMSMessagesAddServiceModalComponent,
     ProductVariantEditTableModalComponent,
-    ConfigAddPromotionComponent,
-    ConfigAddPromotionAllComponent,
-    ConfigAddPromotionGroupComponent,
-    ConfigAddPromotionComboComponent,
     ModalUpdateUserComponent,
     ModalChangePasswordUserComponent,
     ModalAddUserComponent,
@@ -141,7 +140,12 @@ const SERVICES = [
     ConfigProductDetailsComponent,
     ConfigAddCategoryModalComponent,
     ConfigEditProductComponent,
-    ConfigAddAttributeProductModalComponent
+    ConfigAddAttributeProductModalComponent,
+    ConfigAddPromotionComponent,
+    ConfigEditPromotionComponent,
+    ConfigPromotionGroupComponent,
+    ConfigPromotionComboComponent,
+    ConfigPromotionAllComponent
   ],
   imports: [
     CommonModule,

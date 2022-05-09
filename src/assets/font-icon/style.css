@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'TDSIcons';
   src:
-    url('fonts/TDSIcons.ttf?uw5afa') format('truetype'),
-    url('fonts/TDSIcons.woff?uw5afa') format('woff'),
-    url('fonts/TDSIcons.svg?uw5afa#TDSIcons') format('svg');
+    url('fonts/TDSIcons.ttf?31e2fm') format('truetype'),
+    url('fonts/TDSIcons.woff?31e2fm') format('woff'),
+    url('fonts/TDSIcons.svg?31e2fm#TDSIcons') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -24,8 +24,77 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.tdsi-edit-1-line:before {
+.tdsi-password-reset-fill:before {
+  content: "\ead3";
+}
+.tdsi-color-fill:before {
+  content: "\eacf";
+}
+.tdsi-content-fill:before {
+  content: "\ead0";
+}
+.tdsi-help-circle-fill:before {
+  content: "\ead1";
+}
+.tdsi-module-fill:before {
+  content: "\ead2";
+}
+.tdsi-block-line:before {
   content: "\eabc";
+}
+.tdsi-external-link-line:before {
+  content: "\eaca";
+}
+.tdsi-play-fill:before {
+  content: "\eacb";
+}
+.tdsi-shine-fill:before {
+  content: "\eacc";
+}
+.tdsi-blur-fill:before {
+  content: "\eacd";
+}
+.tdsi-mic-setting-fill:before {
+  content: "\eace";
+}
+.tdsi-arrow-left-bottom-fill:before {
+  content: "\eabd";
+}
+.tdsi-arrow-left-top-fill:before {
+  content: "\eabe";
+}
+.tdsi-arrow-right-bottom-fill:before {
+  content: "\eabf";
+}
+.tdsi-arrow-right-top-fill:before {
+  content: "\eac0";
+}
+.tdsi-call-incoming-fill:before {
+  content: "\eac1";
+}
+.tdsi-call-missed-fill:before {
+  content: "\eac2";
+}
+.tdsi-call-missing-fill:before {
+  content: "\eac3";
+}
+.tdsi-call-outgoing-fill:before {
+  content: "\eac4";
+}
+.tdsi-video-incoming-fill:before {
+  content: "\eac5";
+}
+.tdsi-video-missed-fill:before {
+  content: "\eac6";
+}
+.tdsi-video-missing-fill:before {
+  content: "\eac7";
+}
+.tdsi-video-outgoing-fill:before {
+  content: "\eac8";
+}
+.tdsi-wifi-warning-fill:before {
+  content: "\eac9";
 }
 .tdsi-block-fill:before {
   content: "\eabb";

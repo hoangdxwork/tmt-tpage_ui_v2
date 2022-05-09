@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
@@ -103,7 +103,7 @@ export class CRMTeamService extends BaseSevice {
   setCacheTeamId(data: TDSSafeAny) {
     this.caheApi.setItem(this.__keyCacheTeamId, data);
   }
-
+//TODO: cập nhật team cho các componet đăng ký sự kiện onChangeTeam, lưu cache.
   onUpdateTeam(data: CRMTeamDTO | null) {
     this.setCacheTeamId(data ? data.Id : null);
     this._currentTeam = data;

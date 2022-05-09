@@ -299,18 +299,24 @@ export class FastSaleOrderService extends BaseSevice {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.onChangePartner_PriceList?$expand=PartnerShipping,PriceList,Account`,
       method: TApiMethodType.post,
     }
-
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
-
 
   getTax(): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/AccountTax/ODataService.GetWithCompany`,
       method: TApiMethodType.get,
     }
-
     return this.apiService.getData<ODataTaxDTO>(api, null);
+  }
+
+  getConversationOrderBillByPartner(id: any): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/get_conversationorderbill_bypartner(${id})`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
 

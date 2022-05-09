@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
+import { combineLatest, Observable, of, Subject, Subscription } from 'rxjs';
+import { map, mergeMap, takeUntil, tap, filter, distinctUntilChanged } from 'rxjs/operators';
+import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { CRMTeamService } from '../../services/crm-team.service';
 import { TPageHelperService } from '../../services/helper.service';
@@ -13,65 +13,57 @@ import { TPageHelperService } from '../../services/helper.service';
   styleUrls: ['./tpage-base.component.scss']
 })
 
-export class TpageBaseComponent implements OnInit, OnDestroy {
+export class TpageBaseComponent implements OnInit {
 
   type!: string;
   private _destroy = new Subject<void>();
   private _params!: TDSSafeAny;
   private _currentTeam!: CRMTeamDTO | null;
+  private _listFaceBook: Array<CRMTeamDTO> = [];
+  public isFirstLoad: boolean = true;
+  public isChangeTeam: boolean = false;
+  subscription!: Observable<any>;
 
   constructor(public crmService: CRMTeamService,
-      public activatedRoute: ActivatedRoute,
-      public router: Router) { }
+    public activatedRoute: ActivatedRoute,
+    public router: Router) { }
 
   ngOnInit(): void {
-    combineLatest([this.activatedRoute.queryParams,
-      this.crmService.onChangeTeam(),
-      this.crmService.onChangeListFaceBook()])
-          .pipe(takeUntil(this._destroy))
-          .subscribe(([params, team, listTeam]) => {
-              this._params = params;
-              this._currentTeam = team;
-              if ((!TDSHelperObject.hasValue(params) || !TDSHelperObject.hasValue(params.teamId))) {
-                  if (!TDSHelperObject.hasValue(team)) {
-                    this.onRedirect();
-                  } else {
-                    let url = this.router.url.split("?")[0];
-                    if (this.paramsUrl.psid) {
-                      this.router.navigateByUrl(`${url}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${this.paramsUrl.psid}`);
-                    } else {
-                      this.router.navigateByUrl(`${url}?teamId=${this.currentTeam?.Id}&type=${this.type}`);
-                    }
-                  }
-              } else {
-                  if (!TDSHelperObject.hasValue(team) || (team?.Id != params.teamId)) {
-                    const team = TPageHelperService.findTeamById(listTeam?.Items || [], params.teamId, false);
-                    if (team)
-                      this.crmService.onUpdateTeam(team);
-                    else
-                      this.onRedirect();
-                  } else {
-                    this.onInit();
-                  }
-            }
-      })
+    this.onInit();
+  }
+
+  loadQueryParamMap(): Observable<any> {
+    let that = this;
+    return that.activatedRoute.queryParamMap.pipe(
+      tap((queryParamMap: TDSSafeAny) => { that._params = { ...queryParamMap?.params } }),
+      mergeMap((params: TDSSafeAny) => {
+        return that.crmService.onChangeListFaceBook()
+          .pipe(tap((listFb: TDSSafeAny) => {  that._listFaceBook = listFb?.Items || [] }),
+          map((listTeam) => {
+            const team = TPageHelperService.findTeamById(listTeam?.Items || [], that.paramsUrl?.teamId, false);
+            return [team, params];
+          })
+        )}));
   }
 
   get paramsUrl() {
     return this._params;
   }
 
+  setParamsUrl(data: any): any {
+    return this._params = data;
+  }
+
   get currentTeam(): any {
     return this._currentTeam;
   }
 
-  // viết lại hàm này
-  onInit(): void {
+  setCurrentTeam(data: any): any {
+    return this._currentTeam = data;
   }
 
   // viết lại hàm này
-  onDestroy() {
-
+  onInit(): void {
   }
 
   //có thể viết lại hàm này
@@ -80,21 +72,17 @@ export class TpageBaseComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
-  ngOnDestroy(): void {
-      this._destroy.next();
-      this._destroy.complete();
-      this.onDestroy();
-  }
-
   addQueryParams(queryParams: TDSSafeAny): any {
-    return  this.router.navigate([], {
-        relativeTo: this.activatedRoute,
-        queryParams: queryParams,
-        queryParamsHandling: 'merge',
-        // preserve the existing query params in the route
-        skipLocationChange: true
-        // do not trigger navigation
+    return this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: queryParams,
+      queryParamsHandling: 'merge',
+      // preserve the existing query params in the route
+      skipLocationChange: true
+      // do not trigger navigation
     });
   }
 
 }
+
+

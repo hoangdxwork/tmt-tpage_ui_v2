@@ -1,23 +1,39 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
+import { TAPIDTO, TApiMethodType, TAuthService, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { CompanyCurrentDTO } from '../dto/configs/company-current.dto';
 import { SaleConfigsDTO } from '../dto/configs/sale-config.dto';
 import { ODataStockWarehouseDTO } from '../dto/setting/stock-warehouse.dto';
 import { BaseSevice } from './base.service';
 
-@Injectable()
+interface AppSettings {
+  appName: string;
+  appVersion: string;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
 
 export class SharedService extends BaseSevice {
 
+  public userLogged: any;
+  public settings!: AppSettings;
   prefix: string = "";
   table: string = "";
   baseRestApi: string = "";
   _keyCacheConfigs = "_keycache_configs";
 
-  constructor(private apiService: TCommonService) {
-    super(apiService)
+  constructor(private apiService: TCommonService,
+    private auth: TAuthService) {
+    super(apiService);
+    this.settings = <AppSettings>{
+        appName: "T-Page",
+        appVersion: "1.06.1.7"
+    };
+
+    //TODO: xử lý userLogged
   }
 
   getConfigs(): Observable<TDSSafeAny> {
