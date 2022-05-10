@@ -31,6 +31,7 @@ export class ActivityDataFacade extends BaseSevice implements OnInit, OnDestroy 
 
   public statusNextData$: EventEmitter<any> = new EventEmitter<any>();
   private destroy$ = new Subject();
+  lstTeam!: any[];
 
   constructor(private apiService: TCommonService,
       private activityFbState: ActivityFacebookState,
@@ -40,7 +41,13 @@ export class ActivityDataFacade extends BaseSevice implements OnInit, OnDestroy 
       private service: ActivityMatchingService,
       private sgRConnectionService: SignalRConnectionService,
       private sharedService: SharedService) {
-        super(apiService)
+        super(apiService);
+
+        this.crmTeamService.onChangeListFaceBook().subscribe((res :any) => {
+          if(res && TDSHelperArray.isArray(res.Items)){
+              this.lstTeam = res.Items;
+          }
+        })
   }
 
   ngOnInit() {
@@ -157,6 +164,18 @@ export class ActivityDataFacade extends BaseSevice implements OnInit, OnDestroy 
       this.message.error(`Thử gửi lại tin với ${data.to_name} thất bại.`);
     }
     this.activityFbState.updateRetryMessage(pageId, psid, data);
+  }
+
+  messageReplyCommentServer(value: any) {
+    let data = Object.assign({}, value);
+    let psid = data.to_id;
+    let pageId = data.account_id || (value.from && value.from.id ? value.from.id : null);
+    let partner_id = _get(data, `partner.id`) || data.parent_id;
+
+    let dataAdd = this.convertDataReplyComment(data);
+    if(dataAdd["is_admin"] == null) dataAdd["is_admin"] = true;
+
+    this.activityFbState.addReplyComment(pageId, psid, partner_id, dataAdd);
   }
 
   messageScanConversation(model: any) {
@@ -603,9 +622,22 @@ export class ActivityDataFacade extends BaseSevice implements OnInit, OnDestroy 
     return model;
   }
 
+  getTeamByPageId(pageId: any) {
+    let team = {};
+    this.lstTeam.forEach((x: any) => {
+      var items = x.Childs.filter((a: any) => {
+          if (a.Facebook_PageId == pageId) { return a }
+      });
+      if (items.length > 0) {
+        team = items[0];
+      }
+    })
+    return team;
+  }
+
   private getPost(pageId: string, ids: string): Observable<any> {
     return Observable.create((observer: any) => {
-      let team = this.crmTeamService.getCurrentTeam();
+      let team = this.getTeamByPageId(pageId) as any;
       if (team && team.Id) {
         let model = { TeamId: team.Id, PostIds: [ids] };
         this.facebookPostService.getByIds(model).subscribe((res: any) => {
@@ -641,17 +673,31 @@ export class ActivityDataFacade extends BaseSevice implements OnInit, OnDestroy 
     } else {
       let query = this.service.createQuery(pageId, type);
       return this.service.get(query, psid).pipe(map((res: any) => {
-
           if(res && TDSHelperArray.isArray(res.Items)) {
             res.Items = res.Items.sort((a: any, b: any) => Date.parse(a.DateCreated) - Date.parse(b.DateCreated));
           }
-
           let value = this.createType(res, query);
           this.activityFbState.setExtras(pageId, psid, value.extras);
           return this.activityFbState.setActivity(pageId, psid, type, value);
-
       }), shareReplay());
     }
+  }
+
+  getMessageNearest(pageId: string, psid: string, type: string) {
+    let exist = this.activityFbState.getByType(pageId, psid, type);
+    if (exist && exist.items) {
+      let result = _maxBy(exist.items, 'DateCreated');
+      return result;
+    }
+    return null;
+  }
+
+  getMessageAttachments(pageId: string, psid: string, messageId: string): any {
+    let exist = this.activityFbState.getExtrasMessage(pageId, psid);
+    if (exist) {
+      return (exist[messageId] || { attachments: { data: null } }).attachments.data;
+    }
+    return null;
   }
 
   refreshData(pageId: string, psid: string, type: string): Observable<any> {

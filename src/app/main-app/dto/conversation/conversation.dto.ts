@@ -62,3 +62,13 @@ export interface ConversationDTO { // /rest/v1.0/crmmatching/406109210143079_286
   /// Check from hợp lệ
   isValidFrom: boolean;
 }
+
+
+export interface DataUpdate {
+  last_activity: any;
+  last_message: any;
+  last_comment: any;
+  LastActivityTimeConverted: any;
+  LastUpdated: any;
+  is_admin: boolean;
+}

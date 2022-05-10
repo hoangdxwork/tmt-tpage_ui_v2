@@ -105,4 +105,12 @@ export class ActivityMatchingService extends BaseSevice implements OnInit {
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
+
+  replyComment(teamId: number, data: any): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/rest/v1.0/facebook/replycomment?teamId=${teamId}`,
+        method: TApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
 }
