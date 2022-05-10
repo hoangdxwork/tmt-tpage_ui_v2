@@ -31,6 +31,7 @@ import { PrinterService } from '../../services/printer.service';
 import { ExcelExportService } from '../../services/excel-export.service';
 import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { OdataProductService } from '../../services/mock-odata/odata-product.service';
+import { CheckFormHandler } from '../../services/handlers/check-form.handler';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -44,6 +45,7 @@ const SERVICES = [
   PrinterService,
   ExcelExportService,
   SaleOnline_OrderHandler,
+  CheckFormHandler,
   OdataProductService
 ]
 

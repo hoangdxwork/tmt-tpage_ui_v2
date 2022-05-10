@@ -1,3 +1,4 @@
+import { finalize } from 'rxjs/operators';
 import { TDSSafeAny, TDSModalRef, TDSTableQueryParams, TDSHelperString } from 'tmt-tang-ui';
 import { Component, Input, OnInit } from '@angular/core';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -68,10 +69,12 @@ export class InfoPartnerComponent implements OnInit {
   }
 
   loadPartner() {
-    this.partnerService.getById(this.partnerId).subscribe((res: any) => {
-      console.log(res);
-      this.data = res;
-    });
+    this.isLoading = true;
+    this.partnerService.getById(this.partnerId)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe((res: any) => {
+        this.data = res;
+      });
   }
 
   loadPartnerRevenueById() {

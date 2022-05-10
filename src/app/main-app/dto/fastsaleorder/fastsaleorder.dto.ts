@@ -23,7 +23,7 @@ export interface GetSummaryStatusInputDTO {// /rest/v1.0/fastsaleorder/getsummar
   trackingRef: string;
 }
 
-export interface FastSaleOrderDTO { // /odata/FastSaleOrder(10139)?$expand= (GET, PUT, POST)
+export interface FastSaleOrderDefaultDTO { // /odata/FastSaleOrder(10139)?$expand= (GET, PUT, POST)
   Id: number;
 
   Name: string;
@@ -109,7 +109,7 @@ export interface FastSaleOrderDTO { // /odata/FastSaleOrder(10139)?$expand= (GET
   Type: string;
   RefundOrderId?: number;
   ReferenceNumber: string;
-  RefundOrder: FastSaleOrderDTO;
+  RefundOrder: FastSaleOrderDefaultDTO;
 
   /// The partner account used for this invoice.
   AccountId: number;
@@ -126,7 +126,7 @@ export interface FastSaleOrderDTO { // /odata/FastSaleOrder(10139)?$expand= (GET
 
   /// Đối tác giao hàng
   CarrierId?: number;
-  Carrier: DeliveryCarrierDTO;
+  Carrier?: DeliveryCarrierDTO;
   CarrierName: string;
   CarrierDeliveryType: string;
 
@@ -236,7 +236,7 @@ export interface FastSaleOrderDTO { // /odata/FastSaleOrder(10139)?$expand= (GET
   /// Các thông tin vận đơn bổ sung dạng text
   Ship_ExtrasText: string;
 
-  Ship_Extras: DeliveryCarrier_ExtraDTO;
+  Ship_Extras: DeliveryCarrier_ExtraDTO | Object;
 
   /// Khai báo giá trị hàng hóa, để bảo hiểm
   Ship_InsuranceFee?: number;
@@ -261,7 +261,7 @@ export interface FastSaleOrderDTO { // /odata/FastSaleOrder(10139)?$expand= (GET
   DateOrderRed?: Date;
   Search: SearchStaffReportDTO;
 
-  Lines: Array<FastSaleOrderDTO>;
+  Lines: Array<FastSaleOrderDefaultDTO>;
   ApplyPromotion?: boolean;
   TimeLock?: number;
   PageName: string;

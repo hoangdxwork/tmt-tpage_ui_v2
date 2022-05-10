@@ -1,6 +1,6 @@
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { Injectable } from "@angular/core";
-import { FastSaleOrderDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
+import { FastSaleOrderDefaultDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
 
 export interface Ship_Receiver {
   Name: string;
@@ -74,10 +74,7 @@ export class FastSaleOrderHandler {
       });
     });
 
-    debugger;
-
     saleModel.Ship_Receiver = this.prepareShipReceiverModel(_model);
-
     shipExtraServices = shipExtraServices && shipExtraServices.length > 0 ? shipExtraServices : [];
 
     let result = {
@@ -102,7 +99,7 @@ export class FastSaleOrderHandler {
     return model;
   }
 
-  checkValue(model: FastSaleOrderDTO): string | undefined {
+  checkValue(model: FastSaleOrderDefaultDTO): string | undefined {
     debugger;
     let result = undefined;
     if(!model.Ship_Receiver) {
