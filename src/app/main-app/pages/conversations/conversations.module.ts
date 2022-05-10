@@ -12,7 +12,7 @@ import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conve
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalImageStoreComponent } from './components/modal-image-store/modal-image-store.component';
 import { ConversationDataFacade } from '../../services/facades/conversation-data.facade';
-import { ConversationFacebookState } from '../../services/facebook-state/conversation-fb.state';
+import { ConversationFacebookState } from '../../services/facebook-state/conversation-facebook.state';
 import { ConversationService } from '../../services/conversation/conversation.service';
 import { ConversationEventFacade } from '../../services/facades/conversation-event.facade';
 import { DraftMessageService } from '../../services/conversation/draft-message.service';
@@ -21,7 +21,7 @@ import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebo
 import { TDSSpinnerModule } from 'tmt-tang-ui';
 import { ConversationOrderComponent } from './components/conversation-order/conversation-order.component';
 import { ConversationPartnerComponent } from './components/conversation-partner/conversation-partner.component';
-import { ActiveMatchingItemComponent } from './components/active-matching/active-matching-item.component';
+import { CurrentConversationItemComponent } from './components/current-conversation-item/current-conversation-item.component';
 import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
 import { SaleOnline_OrderService } from '../../services/sale-online-order.service';
 import { PartnerService } from '../../services/partner.service';
@@ -30,11 +30,16 @@ import { CheckFormHandler } from '../../services/handlers/check-form.handler';
 import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { CommonService } from '../../services/common.service';
 import { SaleOnline_OrderHandler } from '../../services/handlers/sale-online-order.handler';
+import { FacebookGraphService } from '../../services/facebook-graph.service';
+import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
+import { ActivityMatchingService } from '../../services/conversation/activity-matching.service';
+import { ApplicationUserService } from '../../services/application-user.service';
 
 const SERVICES = [
   ConversationDataFacade,
   ConversationEventFacade,
   ConversationOrderFacade,
+  ActivityDataFacade,
   ConversationFacebookState,
   ConversationService,
   DraftMessageService,
@@ -45,7 +50,10 @@ const SERVICES = [
   CheckFormHandler,
   DeliveryCarrierService,
   CommonService,
-  SaleOnline_OrderHandler
+  SaleOnline_OrderHandler,
+  FacebookGraphService,
+  ActivityMatchingService,
+  ApplicationUserService
 ]
 
 @NgModule({
@@ -55,7 +63,7 @@ const SERVICES = [
     ConversationCommentComponent,
     ConversationInboxComponent,
     ModalImageStoreComponent,
-    ActiveMatchingItemComponent,
+    CurrentConversationItemComponent,
     ConversationOrderComponent,
     ConversationPartnerComponent
   ],

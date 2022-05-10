@@ -1,7 +1,7 @@
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { TDSSafeAny, TDSMessageService, TDSHelperString } from 'tmt-tang-ui';
-import { CompanyService } from 'src/app/main-app/services/company.servive';
+import { CompanyService } from 'src/app/main-app/services/company.service';
 import { CompanyDTO } from 'src/app/main-app/dto/company/company.dto';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
 import { THelperCacheService } from 'src/app/lib';

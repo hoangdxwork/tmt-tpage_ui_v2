@@ -1,3 +1,7 @@
+import { THelperCacheService } from './../../../../lib/utility/helper-cache';
+import { ProductIndexDBService } from './../../../services/product-indexDB.service';
+import { DataPouchDBDTO, ProductPouchDBDTO, KeyCacheIndexDBDTO } from './../../../dto/product-pouchDB/product-pouchDB.dto';
+import { ProductTemplateV2DTO } from './../../../dto/producttemplate/product-tempalte.dto';
 import { ProductDTO } from './../../../dto/product/product.dto';
 import { ExcelExportService } from './../../../services/excel-export.service';
 import { ProductService } from './../../../services/product.service';
@@ -10,7 +14,7 @@ import { takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operato
 import { THelperDataRequest } from './../../../../lib/services/helper-data.service';
 import { Subject, Observable, fromEvent } from 'rxjs';
 import { Router } from '@angular/router';
-import { TDSSafeAny, TDSHelperString, TDSMessageService, TDSModalService, TDSHelperObject, TDSTableQueryParams } from 'tmt-tang-ui';
+import { TDSSafeAny, TDSHelperString, TDSMessageService, TDSModalService, TDSHelperObject, TDSTableQueryParams, TDSHelperArray } from 'tmt-tang-ui';
 import { Component, OnInit, ViewEncapsulation, ViewContainerRef, ElementRef, ViewChild } from '@angular/core';
 import { ODataProductDTO } from 'src/app/main-app/dto/configs/product/config-odata-product.dto';
 
@@ -45,6 +49,11 @@ export class ConfigProductVariantComponent implements OnInit {
   }
   orderBy: string = 'Name'
 
+  indexDbVersion: number = 0;
+  indexDbProductCount: number = -1;
+  indexDbStorage!: DataPouchDBDTO[];
+  productTmplItems!: ProductTemplateV2DTO;
+
   constructor(
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
@@ -54,6 +63,8 @@ export class ConfigProductVariantComponent implements OnInit {
     private teamService: CRMTeamService,
     private productService: ProductService,
     private excelExportService: ExcelExportService,
+    private productIndexDBService: ProductIndexDBService,
+    private cacheApi: THelperCacheService,
   ) {}
 
   ngOnInit(): void {
@@ -68,6 +79,7 @@ export class ConfigProductVariantComponent implements OnInit {
         }
       }
     });
+    this.loadProduct();
   }
 
   ngAfterViewInit(): void {
@@ -297,6 +309,25 @@ export class ConfigProductVariantComponent implements OnInit {
     }, 1000);
   }
 
+  loadProduct(): void {
+    let keyCache = JSON.stringify(this.productIndexDBService._keyCacheProductIndexDB);
+    this.cacheApi.getItem(keyCache).subscribe((obs: TDSSafeAny) => {
+        if(TDSHelperString.hasValueString(obs)) {
+            let cache = JSON.parse(obs['value']) as TDSSafeAny;
+            let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
+
+            this.indexDbVersion = cacheDB.cacheVersion;
+            this.indexDbProductCount = cacheDB.cacheCount;
+            this.indexDbStorage = cacheDB.cacheDbStorage;
+        }
+
+        if(this.indexDbProductCount == -1 && this.indexDbVersion == 0) {
+           this.loadProductIndexDB(this.indexDbProductCount, this.indexDbVersion);
+        }
+    })
+  }
+
+
   showEditModal(id: number) {
     const modal = this.modalService.create({
       title: 'Cập nhật biến thể sản phẩm',
@@ -312,8 +343,62 @@ export class ConfigProductVariantComponent implements OnInit {
     modal.afterClose.subscribe(result => {
       if (result) {
         this.getLoadData();
+        this.pusToIndexDb();
       }
     });
+  }
+
+  pusToIndexDb(): any {
+    this.indexDbProductCount = this.indexDbProductCount;
+    this.loadProductIndexDB(this.indexDbProductCount, this.indexDbVersion);
+  }
+
+  loadProductIndexDB(productCount: number, version: number): any {
+    this.productIndexDBService.getLastVersionV2(productCount, version).pipe(takeUntil(this.destroy$))
+      .subscribe((data: ProductPouchDBDTO) => {
+        if(TDSHelperArray.hasListValue(data.Datas)){
+          if(this.indexDbProductCount == -1 && this.indexDbVersion == 0){
+            this.indexDbStorage = data.Datas
+          }else
+          if(TDSHelperArray.hasListValue(data.Datas)){
+            let dataProduct = data.Datas[data.Datas.length -1];
+            let index = this.indexDbStorage.findIndex(x=> x.ProductTmplId == dataProduct.ProductTmplId && x.Id == dataProduct.Id)
+            if(index > -1){
+              this.indexDbStorage[index] = dataProduct
+            }
+          } 
+          
+          //TODO: check số version
+          let versions = this.indexDbStorage.map((x: DataPouchDBDTO) => x.Version);
+          let lastVersion = Math.max(...versions);
+
+          //TODO: check số lượng
+          let count = this.indexDbStorage.length;
+
+          if(lastVersion != this.indexDbVersion || count != this.indexDbProductCount) {
+            this.indexDbVersion = lastVersion;
+            this.indexDbProductCount = count;
+          }
+        }
+
+        this.mappingCacheDB();
+
+    }, error => {
+        this.isLoading = false;
+        this.message.error('Load danh sách sản phẩm đã xảy ra lỗi!');
+    })
+  }
+
+  mappingCacheDB() {
+    //TODO: lưu cache cho ds sản phẩm
+    let objCached: KeyCacheIndexDBDTO = {
+        cacheCount: this.indexDbProductCount,
+        cacheVersion: this.indexDbVersion,
+        cacheDbStorage: this.indexDbStorage
+    };
+
+    let keyCache = JSON.stringify(this.productIndexDBService._keyCacheProductIndexDB);
+    this.cacheApi.setItem(keyCache, JSON.stringify(objCached));
   }
 
   showRemoveModal(key: number) {

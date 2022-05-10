@@ -11,7 +11,7 @@
                   <div class="w-2/3 flex flex-col gap-y-4">
                       <tds-form-field>
                           <tds-label>Tên Khách hàng</tds-label>
-                          <input tdsInput autocomplete="off" placeholder="Nhập tên săn phẩn" [required]='true' formControlName="Name" />
+                          <input tdsInput autocomplete="off" placeholder="Nhập tên Khách hàng" [required]='true' formControlName="Name" />
                           <tds-error>Vui lòng nhập tên khách hàng</tds-error>
                       </tds-form-field>
                       <tds-radio-group formControlName="CompanyType">
@@ -134,20 +134,19 @@
                       </div>
                   </div>
               </div>
-              <div>
-                  <div class="grid w-full">
-                      <div class="flex mb-2">
+              <div class="">
+                  <div class="grid grid-cols-3 gap-x-4 mt-4 w-full">
+                      <div class="flex">
                           <tds-label>Địa chỉ</tds-label>
                       </div>
-                      <div class="block">
-                          <suggest-address
-                              [_isExpanded]="false"
-                              [_cities]="_cities"
-                              [_districts]="_districts"
-                              [_wards]="_wards"
-                              [_street]="_street"
-                              (onLoadSuggestion)="onLoadSuggestion($event)">
-                          </suggest-address>
+                      <div class="block col-span-2">
+                          <tpage-check-address
+                            [streetText]="_street"
+                            [city]="_cities"
+                            [district]="_districts"
+                            [ward]="_wards"
+                            (onChangeAddress)="onChangeAddress($event)">
+                          </tpage-check-address>
                       </div>
                   </div>
               </div>

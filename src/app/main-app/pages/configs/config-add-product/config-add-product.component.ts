@@ -1,17 +1,22 @@
+import { ConfigImage, ConfigCateg, ConfigUOMPO, ConfigUOM } from './../../../dto/configs/product/config-product-default.dto';
+import { ConfigUOMTypeDTO, ConfigOriginCountryDTO } from './../../../dto/configs/product/config-UOM-type.dto';
+import { ConfigProductVariant, ConfigAttributeValue } from '../../../dto/configs/product/config-product-default.dto';
+import { ConfigAddAttributeProductModalComponent } from './../components/config-add-attribute-product-modal/config-add-attribute-product-modal.component';
 import { ConfigAddCategoryModalComponent } from './../components/config-add-category-modal/config-add-category-modal.component';
 import { ProductTemplateOUMLineService } from './../../../services/product-template-uom-line.service';
 import { ProductTemplateService } from './../../../services/product-template.service';
 import { OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ProductService } from 'src/app/main-app/services/product.service';
-import { Router } from '@angular/router';
 import { ConfigAddOriginCountryModalComponent } from '../components/config-add-origin-country-modal/config-add-origin-country-modal.component';
 import { ConfigAddUOMModalComponent } from '../components/config-add-UOM-modal/config-add-UOM-modal.component';
 import { ConfigAddVariantProductModalComponent } from './../components/config-add-variant-product-modal/config-add-variant-product-modal.component';
 import { takeUntil } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder, FormArray } from '@angular/forms';
-import { TDSSafeAny, TDSMessageService, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
+import { TDSSafeAny, TDSMessageService, TDSModalService, TDSHelperObject, TDSHelperArray } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { ConfigProductDefaultDTO } from 'src/app/main-app/dto/configs/product/config-product-default.dto';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-config-add-product',
@@ -19,170 +24,51 @@ import { Component, OnInit, ViewContainerRef } from '@angular/core';
   styleUrls: ['./config-add-product.component.scss']
 })
 export class ConfigAddProductComponent implements OnInit, OnDestroy {
-  variantTableData:Array<TDSSafeAny> = [];
-  AttributeTableData:Array<TDSSafeAny> = [];
+  _form!: FormGroup;
+
+  variantTableData:Array<ConfigProductVariant> = [];
   productTypeList:Array<TDSSafeAny>  = [];
-  categoryList:Array<TDSSafeAny>  = [];
-  UOMPOList:Array<TDSSafeAny>  = [];
-  UOMList:Array<TDSSafeAny>  = [];
+  categoryList:Array<ConfigCateg>  = [];
+  UOMPOList:Array<ConfigUOMPO>  = [];
+  UOMList:Array<ConfigUOM>  = [];
   POSCategoryList:Array<TDSSafeAny> = [];
   trackingList:Array<TDSSafeAny> = [];
-  producerList:Array<TDSSafeAny> = [];
-  importerList:Array<TDSSafeAny> = [];
-  distributorList:Array<TDSSafeAny> = [];
-  originCountryList:Array<TDSSafeAny> = [];
-  attributeValueList:Array<TDSSafeAny> = [];
+  producerList:Array<ConfigUOMTypeDTO> = [];
+  importerList:Array<ConfigUOMTypeDTO> = [];
+  distributorList:Array<ConfigUOMTypeDTO> = [];
+  originCountryList:Array<ConfigOriginCountryDTO> = [];
+  attributeValuesList:Array<ConfigAttributeValue> = [];
+  attributeList:Array<TDSSafeAny> = [];
 
   private destroy$ = new Subject<void>();
 
-  addProductForm!: FormGroup;
-  modelDefault:TDSSafeAny;
-  imgList:Array<TDSSafeAny> = [];
+  modelDefault!: ConfigProductDefaultDTO;
+  lstImages:Array<ConfigImage> = [];
   
   variantPageSize = 20;
   variantPageIndex = 1;
   isLoadingVariant = false;
   count = 1;
+  id: TDSSafeAny;
 
   constructor(
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private message: TDSMessageService,
-    private formBuilder: FormBuilder,
-    private router:Router,
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
     private productService: ProductService,
     private productTemplateService: ProductTemplateService,
-    private productTemplateOUMLine: ProductTemplateOUMLineService,
-  ) { 
-    this.loadProductTypeList();
-    this.loadProductCategory();
-    this.loadProductUOM();
-    this.loadUOMs();
-    this.loadPOSCategory();
-    this.loadTrackingList();
-    this.loadUOMAddType();
-    this.loadOriginCountry();
-    this.loadAttributeValue();
-    this.loadForm();
+    private productTemplateOUMLine: ProductTemplateOUMLineService) { 
+    this.createForm();
   }
 
-  ngOnInit(): void {
-    this.getDefaultData();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  getDefaultData(){
-    this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$)).subscribe(
-      (res:TDSSafeAny)=>{
-        delete res['@odata.context'];
-        this.modelDefault = res;
-      }
-    )
-  }
-
-  loadAttributeValue(){
-    // this.productService.getProductAttributeValue().pipe(takeUntil(this.destroy$)).subscribe(
-    //   (res:TDSSafeAny)=>{
-    //     this.count = res['@odata.count'];
-    //     this.attributeValueList = res.value;
-    //   },
-    //   err=>{
-    //     this.message.error('Tải dữ liệu thất bại');
-    //   }
-    // )
-  }
-
-  refreshVariantData(){
-    this.variantPageIndex = 1;
-  }
-
-  loadProductTypeList(){
-    this.productTypeList = [
-      { value: 'product', text: 'Có thể lưu trữ' },
-      { value: 'consu', text: 'Có thể tiêu thụ' },
-      { value: 'service', text: 'Dịch vụ' }
-    ];
-  }
-
-  loadProductCategory(){
-    this.productService.getProductCategory().pipe(takeUntil(this.destroy$)).subscribe(
-      (res:TDSSafeAny)=>{
-        this.categoryList = res.value;
-      },
-      error=>{
-        this.message.error(error.error.message);
-      }
-    );
-  }
-
-  loadProductUOM(){
-    this.productTemplateService.getProductUOM().pipe(takeUntil(this.destroy$)).subscribe(
-      (res:TDSSafeAny)=>{
-        this.UOMPOList = res.value;
-      },
-      error=>{
-        this.message.error(error.error.message);
-      }
-    );
-  }
-
-  loadUOMs(){
-    this.productTemplateOUMLine.getOUMs().pipe(takeUntil(this.destroy$)).subscribe(
-      (res:TDSSafeAny)=>{
-        this.UOMList = res.value;
-      },
-      err=>{
-        this.message.error(err.error.message);
-      }
-    );
-  }
-
-  loadPOSCategory(){
-    this.productTemplateService.getPOSCategory().pipe(takeUntil(this.destroy$)).subscribe(
-      (res:TDSSafeAny)=>{
-        this.POSCategoryList = res.value;
-      },
-      err=>{
-        this.message.error(err.error.message);
-      }
-    );
-  }
-
-  loadTrackingList(){
-    this.trackingList = [
-      { value: 'lot', text: 'Theo lô' },
-      { value: 'none', text: 'Không theo dõi' },
-    ];
-  }
-
-  loadOriginCountry(){
-    this.productTemplateService.getOriginCountry().pipe(takeUntil(this.destroy$)).subscribe(
-      (res:TDSSafeAny)=>{
-        this.originCountryList = res.value;
-      }
-    )
-  }
-
-  loadUOMAddType() {
-    this.productTemplateService.getUOMAddType().subscribe(
-      (res: TDSSafeAny) => {
-        this.producerList = res.value.filter((x: { Type: string; }) => x.Type === 'producer');
-        this.importerList = res.value.filter((x: { Type: string; }) => x.Type === 'importer');
-        this.distributorList = res.value.filter((x: { Type: string; }) => x.Type === 'distributor');
-      }
-    );
-  }
-
-  loadForm(){
-    this.addProductForm = this.formBuilder.group({
+  createForm(){
+    this._form = this.fb.group({
       Active: [true], //hiệu lực
       AvailableInPOS: [true],//hiện trên điểm bán hàng
       AttributeLines: [null],
-      AttributeValues:[null],//thuộc tính
+      AttributeValues:[null],
       Barcode: [null],
       BOMCount: [null],
       Categ: [null],
@@ -211,7 +97,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       EnableAll: [false],
       Id: [null],
       Image: [null],
-      Images: this.formBuilder.array([]),
+      Images: this.fb.array([]),
       ImageUrl: [null],
       Importer: [null],
       ImporterAddress: [null],
@@ -278,50 +164,272 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       Weight: [0],
       YearOfManufacture: [null],
       ZaloProductId: [null],
-      url_add: [null]
     });
   }
 
-  showAddVariantModal(){
-    let modelData = {
-      Name: this.addProductForm.controls.Name.value,
-      Barcode: this.addProductForm.controls.Barcode.value,
-      DefaultCode: this.addProductForm.controls.DefaultCode.value
+  ngOnInit(): void {
+    this.id = this.route.snapshot.paramMap.get("id");
+    if (this.id) {
+      this.loadData(this.id);
+    } else {
+      this.loadDefault();
     }
-    
-    if(modelData.Name){
-      const modal = this.modalService.create({
-        title: 'Thêm biến thể sản phẩm',
-        content: ConfigAddVariantProductModalComponent,
-        size: "lg",
-        viewContainerRef: this.viewContainerRef,
-        componentParams:{
-          data: modelData
-        }
-      });
-      
-      modal.afterClose.subscribe(result => {
-        if (TDSHelperObject.hasValue(result)) {
-          // this.addProductForm.controls.AttributeLines.setValue(result.AttributeLines);
-          // this.addProductForm.controls.AttributeValues.setValue(result.AttributeValues);
-          // console.log(result)
-          let productName = this.addProductForm.controls.Name.value;
-          let lines = result.AttributeLines.Values as TDSSafeAny[];
-          lines.forEach(line => {
-            this.variantTableData.push({
-              Name: `${productName} (${line.Name})`,
-              ListPrice: result.ListPrice,
-              Active: result.Active
-            });
-          });
-
-          this.AttributeTableData.push(result.AttributeLines);
-        }
-      });
-    }else{
-      this.message.error('Vui lòng nhập tên sản phẩm');
-    }
+    this.loadProductTypeList();
+    this.loadProductCategory();
+    this.loadProductUOM();
+    this.loadUOMs();
+    this.loadPOSCategory();
+    this.loadTrackingList();
+    this.loadUOMAddType();
+    this.loadOriginCountry();
+    this.loadAttributeValues();
   }
+
+  loadData(id :TDSSafeAny) {
+    this.productTemplateService.getProductTemplateById(id).pipe(takeUntil(this.destroy$))
+      .subscribe((res :TDSSafeAny) => {
+          delete res['@odata.context'];
+          if (res.DateCreated) {
+            res.DateCreated = new Date(res.DateCreated);
+          }
+          this.modelDefault = res;
+          this.updateForm(res);
+    }, error => {
+      this.message.error('Không thể tải dữ liệu');
+    })
+  }
+
+  loadDefault(){
+    this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$))
+      .subscribe((res: TDSSafeAny) => {
+        delete res['@odata.context'];
+        if (res.DateCreated) {
+          res.DateCreated = new Date(res.DateCreated);
+        }
+        this.modelDefault = res;
+        this.updateForm(res);
+      }, error => {
+        this.message.error('Không thể tải dữ liệu mặc định');
+      })
+  }
+
+  updateForm(data: TDSSafeAny) {
+    //TODO: xu ly array form 
+    if (TDSHelperArray.hasListValue(data.Images)) {
+      data.OrderLines.forEach((x: TDSSafeAny) => {
+          this.addImages(x);
+      });
+    }
+    if (TDSHelperArray.hasListValue(data.ProductVariants)) {
+      data.ProductVariants.forEach((x: TDSSafeAny) => {
+          this.addProductVariants(x);
+      });
+    }
+    this._form.patchValue(data);
+  }
+
+  refreshVariantData(){
+    this.variantPageIndex = 1;
+  }
+
+  loadProductTypeList(){
+    this.productTypeList = [
+      { value: 'product', text: 'Có thể lưu trữ' },
+      { value: 'consu', text: 'Có thể tiêu thụ' },
+      { value: 'service', text: 'Dịch vụ' }
+    ];
+  }
+
+  loadProductCategory(){
+    this.productService.getProductCategory().pipe(takeUntil(this.destroy$)).subscribe(
+      (res:TDSSafeAny)=>{
+        this.categoryList = res.value;
+      }, error=>{
+        this.message.error('không thể tải dữ liệu nhóm sản phẩm');
+      }
+    );
+  }
+
+  loadProductUOM(){
+    this.productTemplateService.getProductUOM().pipe(takeUntil(this.destroy$)).subscribe(
+      (res:TDSSafeAny)=>{
+        this.UOMPOList = res.value;
+      },
+      error=>{
+        this.message.error('Không thể tải dữ liệu UOMPO');
+      }
+    );
+  }
+
+  loadUOMs(){
+    this.productTemplateOUMLine.getOUMs().pipe(takeUntil(this.destroy$)).subscribe(
+      (res:TDSSafeAny)=>{
+        this.UOMList = res.value;
+      },
+      err=>{
+        this.message.error('Không thể tải dữ liệu UOM');
+      }
+    );
+  }
+
+  loadPOSCategory(){
+    this.productTemplateService.getPOSCategory().pipe(takeUntil(this.destroy$)).subscribe(
+      (res:TDSSafeAny)=>{
+        this.POSCategoryList = res.value;
+      },
+      err=>{
+        this.message.error('Không thể tải dữ liệu nhóm POS');
+      }
+    );
+  }
+
+  loadTrackingList(){
+    this.trackingList = [
+      { value: 'lot', text: 'Theo lô' },
+      { value: 'none', text: 'Không theo dõi' },
+    ];
+  }
+
+  loadOriginCountry(){
+    this.productTemplateService.getOriginCountry().pipe(takeUntil(this.destroy$)).subscribe(
+      (res:TDSSafeAny)=>{
+        this.originCountryList = res.value;
+      },
+      err=>{
+        this.message.error('Không thể tải dữ liệu origin country');
+      }
+    )
+  }
+
+  loadUOMAddType() {
+    this.productTemplateService.getUOMAddType().subscribe(
+      (res: TDSSafeAny) => {
+        this.producerList = res.value.filter((x: { Type: string; }) => x.Type === 'producer');
+        this.importerList = res.value.filter((x: { Type: string; }) => x.Type === 'importer');
+        this.distributorList = res.value.filter((x: { Type: string; }) => x.Type === 'distributor');
+      }
+    );
+  }
+
+  loadAttributeValues(){
+    this.productTemplateService.getProductAttributeValue().pipe(takeUntil(this.destroy$)).subscribe(
+      (res:TDSSafeAny)=>{
+        this.attributeValuesList = res.value;
+      },
+      err=>{
+        this.message.error(err.error.message??'Tải dữ liệu biến thể thất bại');
+      }
+    )
+  }
+
+  showCreateAttributeModal(){
+    const modal = this.modalService.create({
+      title: 'Quản lý thuộc tính',
+      content: ConfigAddAttributeProductModalComponent,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef
+    });
+    
+    modal.afterClose.subscribe(result => {
+      if (TDSHelperObject.hasValue(result)) {
+        let AttributeLines = result.AttributeLines as Array<TDSSafeAny>;
+        let AttributeValues = result.AttributeValues as Array<TDSSafeAny>;
+        this.attributeList = [];
+        let modelData = {
+          Name: this._form.controls.Name.value,
+          Barcode: this._form.controls.Barcode.value,
+          DefaultCode: this._form.controls.DefaultCode.value
+        }
+
+        AttributeLines.forEach(line => {
+          let attribute = AttributeValues.find(f=>f.AttributeId == line.Attribute);
+          let values = AttributeValues.filter(f=>line.Values.includes(f.Id) && f.AttributeId == line.Attribute);
+
+          this.attributeList.push({
+            Attribute: attribute,
+            Values: values
+          })
+        });
+
+        let attributeValues:Array<TDSSafeAny> = [];
+
+        this.attributeList.forEach((attr)=>{
+          let values = attr.Values as Array<TDSSafeAny>;
+          let attrList:Array<TDSSafeAny> = [];
+
+          values.forEach(value => {
+            attrList.push(attr.Attribute.AttributeName + ' : ' + value.Name);
+          });
+          attributeValues.push(attrList);
+        });
+        
+        attributeValues.forEach(valueArray => {
+          let newData:TDSSafeAny = {
+            NameGet: `[${modelData.DefaultCode}] ${modelData.Name}`,
+            PriceVariant: 0,
+            PurchaseOK: result.PurchaseOK,
+            AttributeValues: attributeValues,
+            Active: false
+          }
+          this.variantTableData = [
+            ...this.variantTableData,
+            newData
+          ]
+        });
+      }
+    });
+  }
+
+  // showCreateVariantModal(){
+  //   let modelData = {
+  //     Name: this.addProductForm.controls.Name.value,
+  //     Barcode: this.addProductForm.controls.Barcode.value,
+  //     DefaultCode: this.addProductForm.controls.DefaultCode.value
+  //   }
+    
+  //   if(modelData.Name){
+  //     const modal = this.modalService.create({
+  //       title: 'Thêm biến thể sản phẩm',
+  //       content: ConfigAddVariantProductModalComponent,
+  //       size: "lg",
+  //       viewContainerRef: this.viewContainerRef,
+  //       componentParams:{
+  //         data: modelData,
+  //         attributeList: this.attributeList
+  //       }
+  //     });
+      
+  //     modal.afterClose.subscribe(result => {
+  //       if (TDSHelperObject.hasValue(result)) {
+  //         //lấy thuộc tính biến thể
+  //         this.modelDefault.AttributeLines = result.AttributeLines;
+  //         let lines = result.AttributeLines as Array<TDSSafeAny>;
+  //         let attributeValues:Array<TDSSafeAny> = [];
+  //         lines.forEach(attr => {
+  //           attributeValues.push(attr.Values[0].NameGet)
+  //         });
+        
+  //         this.variantTableData =[
+  //           ...this.variantTableData,{
+  //             Name: modelData.Name,
+  //             Barcode: result.Barcode,
+  //             DefaultCode: result.DefaultCode,
+  //             Image: result.Image,
+  //             ImageUrl: result.ImageUrl,
+  //             PriceVariant: result.ListPrice,
+  //             PurchaseOK: result.PurchaseOK,
+  //             SaleOK: result.SaleOK,
+  //             Type: result.Type,
+  //             AttributeValues: attributeValues,
+  //             Active: false
+  //           }
+  //         ]
+  //       }
+  //     });
+  //   }else{
+  //     this.message.error('Vui lòng nhập tên sản phẩm');
+  //   }
+  // }
 
   addCategory(){
     const modal = this.modalService.create({
@@ -398,27 +506,70 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   }
 
   getAvatar(url:string){
-    this.addProductForm.controls.ImageUrl.setValue(url);
+    this._form.controls.ImageUrl.setValue(url);
   }
 
   getImageList(images:Array<TDSSafeAny>){
-    this.imgList = images;
+    this.lstImages = images;
   }
 
-  insertImageToForm(){
-    const model = <FormArray>this.addProductForm.controls['Images'];
+  // insertImages(){
+  //   this._form.controls.Images = this.fb.array([]);
+  //   const model = <FormArray>this._form.controls.Images;
 
-    this.imgList.forEach(img => {
-      let form = this.formBuilder.group({
-        MineType: [img.type],
-        Name: [img.name],
-        ResModel: ['product.template'],
-        Type: ['url'],
-        Url: [img.url]
-      });
+  //   this.lstImages.forEach(item => {
+  //     this.addImages(item)
+  //   });
+  // }
 
-      model.push(form);
-    });
+  initImages(data: TDSSafeAny | null) {
+    if (data != null) {
+      return this.fb.group({
+          MineType: [data.type],
+          Name: [data.name],
+          ResModel: ['product.template'],
+          Type: ['url'],
+          Url: [data.url]
+      })
+    } else {
+      return this.fb.group({
+          MineType: [null],
+          Name: [null],
+          ResModel: ['product.template'],
+          Type: ['url'],
+          Url: [null]
+      })
+    }
+  }
+
+  initProductVariants(data: TDSSafeAny | null) {
+    if (data != null) {
+      return this.fb.group({
+          MineType: [data.type],
+          Name: [data.name],
+          ResModel: ['product.template'],
+          Type: ['url'],
+          Url: [data.url]
+      })
+    } else {
+      return this.fb.group({
+          MineType: [null],
+          Name: [null],
+          ResModel: ['product.template'],
+          Type: ['url'],
+          Url: [null]
+      })
+    }
+  }
+
+  addImages(data: TDSSafeAny) {
+    let control = <FormArray>this._form.controls['Images'];
+    control.push(this.initImages(data));
+  }
+
+  addProductVariants(data: TDSSafeAny){
+    let control = <FormArray>this._form.controls['ProductVariants'];
+    control.push(this.initProductVariants(data));
   }
 
   addProduct(){
@@ -428,24 +579,19 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       this.productTemplateService.insertProductTemplate(model).subscribe(
         (res:TDSSafeAny)=>{
           this.message.success('Thêm mới thành công');
-          // console.log(res)
-          this.addProductForm.reset();
-          this.modelDefault = null;
-          this.loadForm();
+          this.createForm();
           history.back();
         },
         err=>{
           this.message.error(err.error.errors.model[0]??'Thao tác thất bại');
+          console.log(err.error.errors.model[0])
         }
       );
-      
     }
   }
 
   prepareModel(){
-    this.insertImageToForm();
-    
-    let formModel = this.addProductForm.value;
+    let formModel = this._form.value;
     
     if(formModel.Name){
       this.modelDefault.Name = formModel.Name;
@@ -454,7 +600,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       this.modelDefault.Image = formModel.Image;
     }
     if(formModel.Images) {
-        this.modelDefault.Images = formModel.Images;
+      this.modelDefault.Images = formModel.Images;
     }
     if(formModel.ImageUrl) {
       this.modelDefault.ImageUrl = formModel.ImageUrl;
@@ -484,7 +630,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         this.modelDefault.Barcode = formModel.Barcode;
     }
     if(formModel.Categ) {
-        let modelCateg = this.categoryList.find(x=>x.Id== formModel.Categ);
+        let modelCateg = this.categoryList.find(x=>x.Id == formModel.Categ.Id);
         if(modelCateg){
           this.modelDefault.Categ = modelCateg;
           this.modelDefault.CategId = modelCateg.Id;
@@ -517,7 +663,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         this.modelDefault.DiscountPurchase = formModel.DiscountPurchase;
     }
     if(formModel.UOM) {
-        let modelUOM = this.UOMList.find(x=>x.Id== formModel.UOM);
+        let modelUOM = this.UOMList.find(x=>x.Id== formModel.UOM.Id);
         if(modelUOM){
           this.modelDefault.UOM = modelUOM;
           this.modelDefault.UOMId = modelUOM.Id;
@@ -526,11 +672,11 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         }
     } else {
       this.modelDefault.UOMId = this.modelDefault.UOM.Id;
-      this.modelDefault.UOMId = this.modelDefault.UOM.Name;
+      this.modelDefault.UOMName = this.modelDefault.UOM.Name;
       this.modelDefault.UOMId = this.modelDefault.UOM.NameNoSign;
     }
     if(formModel.UOMPO) {
-        let modelUOMPO = this.UOMPOList.find(x=>x.Id== formModel.UOMPO);
+        let modelUOMPO = this.UOMPOList.find(x=>x.Id== formModel.UOMPO.Id);
         if(modelUOMPO){
           this.modelDefault.UOMPO = modelUOMPO;
           this.modelDefault.UOMPOId = modelUOMPO.Id;
@@ -557,7 +703,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     if(formModel.POSCateg) {
         let modelPOSCateg = this.POSCategoryList.find(x=>x.Id== formModel.POSCateg);
         if(modelPOSCateg){
-          this.modelDefault.PosCategId = modelPOSCateg.Id;
+          this.modelDefault.POSCategId = modelPOSCateg.Id;
         }
     }
     if(formModel.DescriptionSale) {
@@ -631,13 +777,12 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     if(formModel.Description) {
       this.modelDefault.Description = formModel.Description;
     }
-    if(formModel.AttributeValues) {
-      this.modelDefault.AttributeValues = formModel.AttributeValues;
-    }
-    if(this.modelDefault && this.modelDefault.AttributeLines) {
-      this.modelDefault.AttributeLines = formModel.AttributeLines;
-    }
-
+    // if(formModel.AttributeValues) {
+    //   let values = this.attributeValuesList.filter(f=>formModel.AttributeValues.includes(f.Id));
+      
+    //   this.modelDefault.AttributeValues = values;
+    // }
+    
     return this.modelDefault;
   }
 
@@ -648,14 +793,18 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   onSubmit(){
     if(this.modelDefault) {
       this.addProduct();
-    }
-    else {
+    } else {
       this.productTemplateService.getDefault().subscribe((res: TDSSafeAny) => {
         delete res['@odata.context'];
         this.modelDefault = res;
-
         this.addProduct();
       });
     }
   }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
 }

@@ -7,7 +7,7 @@ import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
-import { ConversationFacebookState } from 'src/app/main-app/services/facebook-state/conversation-fb.state';
+import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { TDSHelperObject, TDSMessageService, TDSHelperArray } from 'tmt-tang-ui';
@@ -30,11 +30,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   isFastSend: boolean = false;
 
   constructor(private message: TDSMessageService,
-    private fbState: ConversationFacebookState,
     private conversationDataFacade: ConversationDataFacade,
     public crmService: CRMTeamService,
     private conversationService: ConversationService,
     private partnerService: PartnerService,
+    private fbGraphService: FacebookGraphService,
     public activatedRoute: ActivatedRoute,
     public router: Router) {
       super(crmService, activatedRoute, router);
@@ -49,6 +49,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           this.setParamsUrl(params.params);
           this.setCurrentTeam(team);
           this.onChangeConversation(team);
+          this.fetchLiveConversations(team);
       }
     })
   }
@@ -112,6 +113,14 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onLoadMiniChat(event: any): void { }
+
+
+  fetchLiveConversations(team: any): void {
+    this.fbGraphService.api(`me/conversations?fields=id,link,participants,senders&access_token=${team.Facebook_PageToken}`)
+      .subscribe((res :any) => {
+        console.log(res);
+      });
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();

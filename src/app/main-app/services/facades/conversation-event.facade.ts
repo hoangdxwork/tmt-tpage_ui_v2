@@ -2,7 +2,7 @@ import { Injectable, OnDestroy, OnInit } from "@angular/core";
 import { Subject } from "rxjs";
 import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
-import { ConversationFacebookState } from "../facebook-state/conversation-fb.state";
+import { ConversationFacebookState } from "../facebook-state/conversation-facebook.state";
 import { SignalRConnectionService } from "../signalR/signalR-connection.service";
 import { CRMTeamService } from '../crm-team.service';
 import { TDSMessageService } from 'tmt-tang-ui';
@@ -19,7 +19,7 @@ export class ConversationEventFacade extends BaseSevice implements OnInit, OnDes
   private destroy$ = new Subject();
 
   constructor(private apiService: TCommonService,
-      private fbState: ConversationFacebookState,
+      private cvsFbState: ConversationFacebookState,
       private message: TDSMessageService,
       public crmService: CRMTeamService,
       private sgRConnectionService: SignalRConnectionService) {
@@ -69,7 +69,7 @@ export class ConversationEventFacade extends BaseSevice implements OnInit, OnDes
   }
 
   getEvent() {
-    return this.fbState.getEvent;
+    return this.cvsFbState.getEvent;
   }
 
   updateSendMessage(value: any) {
@@ -82,7 +82,7 @@ export class ConversationEventFacade extends BaseSevice implements OnInit, OnDes
           message: `${user["Name"] || ""} đã phản hồi.`,
           time: new Date()
         };
-        this.fbState.setEvent(pageId, psid, event);
+        this.cvsFbState.setEvent(pageId, psid, event);
     }
   }
 
@@ -98,7 +98,7 @@ export class ConversationEventFacade extends BaseSevice implements OnInit, OnDes
         message: `${user["Name"] || ""} đang xem.`,
         time: new Date()
       };
-      this.fbState.setEvent(pageId, psid, event);
+      this.cvsFbState.setEvent(pageId, psid, event);
     }
   }
 
@@ -119,7 +119,7 @@ export class ConversationEventFacade extends BaseSevice implements OnInit, OnDes
           message: message,
           time: new Date()
       };
-      this.fbState.setEvent(pageId, psid, event);
+      this.cvsFbState.setEvent(pageId, psid, event);
     }
   }
 
@@ -140,7 +140,7 @@ export class ConversationEventFacade extends BaseSevice implements OnInit, OnDes
           message: message,
           time: new Date()
         };
-        this.fbState.setEvent(pageId, psid, event);
+        this.cvsFbState.setEvent(pageId, psid, event);
     }
   }
 

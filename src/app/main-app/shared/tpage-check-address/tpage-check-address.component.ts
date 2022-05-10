@@ -1,5 +1,5 @@
 import { map, takeUntil } from 'rxjs/operators';
-import { TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperString, TDSSafeAny, TDSMessageService, TDSHelperArray, TDSHelperObject } from 'tmt-tang-ui';
 import { Component, Input, OnInit, EventEmitter, Output, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CheckAddressDTO, CityDTO, DataSuggestionDTO, DistrictDTO, ResultCheckAddressDTO, WardDTO } from '../../dto/address/address.dto';
@@ -27,11 +27,14 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges, OnDestroy 
   lstDistrict: DistrictDTO[] = [];
   lstWard: WardDTO[] = [];
 
+  index: number = 0;
+
   lstResultCheck: ResultCheckAddressDTO[] = [];
   private destroy$ = new Subject();
 
   constructor(private fb: FormBuilder,
-    private addressService: AddressService) { }
+    private addressService: AddressService,
+    private message: TDSMessageService,) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.createForm();
@@ -90,35 +93,67 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges, OnDestroy 
     });
   }
 
+  setAddress(ward: WardDTO, district: DistrictDTO, city: CityDTO){
+    let address =  (ward? `${ward.Name}, `: '') +  
+    (district != null? `${district.Name}, `: '' )+ 
+    (city? city.Name: '');
+    this.formAddress.controls["street"].setValue(address);
+  }
+
   onSelectCity(event: CityDTO) {
     this.formAddress.controls["district"].setValue(null);
     this.formAddress.controls["ward"].setValue(null);
-
-    this.loadDistrict(event.Code);
+    this.setAddress(this.formAddress.controls["ward"].value,this.formAddress.controls["district"].value, this.formAddress.controls["city"].value);
+    if(event){
+      this.loadDistrict(event.Code);
+    }else{
+      this.lstDistrict = [];
+    }
+    this.lstWard = [];
     this.prepareAddress();
   }
 
   onSelectDistrict(event: DistrictDTO) {
     this.formAddress.controls["ward"].setValue(null);
-    this.loadWard(event.Code);
+    this.setAddress(this.formAddress.controls["ward"].value,this.formAddress.controls["district"].value, this.formAddress.controls["city"].value);
+    if(event){
+      this.loadWard(event.Code);
+    }else{
+      this.lstWard = [];
+    }
     this.prepareAddress();
   }
 
   onSelectWard(event: WardDTO) {
-    console.log(event);
+    this.setAddress(this.formAddress.controls["ward"].value,this.formAddress.controls["district"].value, this.formAddress.controls["city"].value);
     this.prepareAddress();
   }
 
   onSelectStreet() {
     let value = this.formAddress.controls["street"].value;
+    if(!TDSHelperString.hasValueString(value)) {
+      this.message.error('Vui lòng nhập dữ liệu trước khi kiểm tra!');
+      return
+    }
 
     this.addressService.checkAddress(value).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-      res.success && (this.lstResultCheck = res.data);
-      res.success && this.setValueSelect(res.data[0]);
+      if (res.success && TDSHelperArray.isArray(res.data)) {
+        this.index = 0;
+        res.success && (this.lstResultCheck = res.data);
+        res.success && this.setValueSelect(res.data[0], 0);
+      }
+      else{
+        this.message.error('Không tìm thấy kết quả phù hợp!');
+      }
     });
   }
 
-  setValueSelect(value: ResultCheckAddressDTO) {
+  onchangeInputStreet(ev: TDSSafeAny){
+    this.prepareAddress();
+  }
+
+  setValueSelect(value: ResultCheckAddressDTO, index: number) {
+    this.index = index;
     let formControls = this.formAddress.controls;
 
     formControls["street"].setValue(value.Address);

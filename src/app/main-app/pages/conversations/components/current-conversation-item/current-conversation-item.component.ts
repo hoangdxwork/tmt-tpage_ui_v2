@@ -5,15 +5,14 @@ import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { DraftMessageService } from 'src/app/main-app/services/conversation/draft-message.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationEventFacade } from 'src/app/main-app/services/facades/conversation-event.facade';
-import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { TDSMessageService } from 'tmt-tang-ui';
 
 @Component({
-    selector: 'active-matching-item',
-    templateUrl: './active-matching-item.component.html',
+    selector: 'current-conversation-item',
+    templateUrl: './current-conversation-item.component.html',
 })
 
-export class ActiveMatchingItemComponent  implements OnInit, OnChanges {
+export class CurrentConversationItemComponent  implements OnInit, OnChanges {
 
   @Input() isFastSend: boolean | undefined;
   @Input() item!: ActiveMatchingItem;

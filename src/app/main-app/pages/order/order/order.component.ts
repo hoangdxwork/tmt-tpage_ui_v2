@@ -1,8 +1,8 @@
 import { addDays } from 'date-fns/esm';
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef } from '@angular/core';
 import { SaleOnlineOrderSummaryStatusDTO, SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSSafeAny, TDSTableQueryParams, TDSTagStatusType } from 'tmt-tang-ui';
+import { TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSSafeAny, TDSTableQueryParams, TDSTagStatusType, TDSResizeObserver } from 'tmt-tang-ui';
 import { ColumnTableDTO } from 'src/app/main-app/dto/common/table.dto';
 import { SortEnum, THelperCacheService } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
@@ -81,6 +81,13 @@ export class OrderComponent implements OnInit {
   indeterminate = false;
   setOfCheckedId = new Set<string>();
 
+  widthTable: number = 0;
+  paddingCollapse: number = 32;
+  marginLeftCollapse: number = 0;
+  isLoadingCollapse: boolean = false
+  @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
+  @ViewChild('viewChildDetailPartner') viewChildDetailPartner!: ElementRef;
+
   constructor(
     private tagService: TagService,
     private router: Router,
@@ -90,13 +97,32 @@ export class OrderComponent implements OnInit {
     private saleOnline_OrderService: SaleOnline_OrderService,
     private odataSaleOnline_OrderService: OdataSaleOnline_OrderService,
     private cacheApi: THelperCacheService,
-    private excelExportService: ExcelExportService
+    private excelExportService: ExcelExportService,
+    private resizeObserver: TDSResizeObserver,
   ) { }
 
   ngOnInit(): void {
     this.loadTags();
     this.loadGridConfig();
   }
+
+  ngAfterViewInit(): void {
+    this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse
+    this.resizeObserver
+      .observe(this.viewChildWidthTable)
+      .subscribe(() => {
+        this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse;
+        this.viewChildWidthTable.nativeElement.click()
+      });     
+      setTimeout(() => {
+        let that = this;
+        let wrapScroll = this.viewChildDetailPartner.nativeElement.closest('.tds-table-body');
+        wrapScroll.addEventListener('scroll', function() {
+          var scrollleft = wrapScroll.scrollLeft;
+          that.marginLeftCollapse = scrollleft;
+        });
+      }, 500);
+    }
 
   updateCheckedSet(id: string, checked: boolean): void {
     if (checked) {

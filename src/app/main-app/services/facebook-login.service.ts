@@ -13,7 +13,6 @@ export const FACEBOOK_DEFAULTS: FacebookInitParams = {
   version: environment.facebook.appVersion
 };
 
-
 declare const FB: Facebook;
 
 declare const window: {

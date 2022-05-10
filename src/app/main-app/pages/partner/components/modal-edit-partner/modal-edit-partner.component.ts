@@ -10,8 +10,6 @@ import { AddressDTO, CheckAddressDTO, CityDTO, DataSuggestionDTO, DistrictDTO, R
 import { AddressesV2, PartnerDetailDTO } from 'src/app/main-app/dto/partner/partner-detail.dto';
 import { PartnerCategoryDTO, StatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { SharedService } from 'src/app/main-app/services/shared.service';
-import { Message } from 'src/app/lib/consts/message.const';
-import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 
 @Component({
   selector: 'app-modal-edit-partner',
@@ -31,9 +29,9 @@ export class ModalEditPartnerComponent implements OnInit {
   lstPrice: Array<PartnerCategoryDTO> = [];
   fileList: TDSUploadFile[] = [];
 
-  _cities!: SuggestCitiesDTO;
-  _districts!: SuggestDistrictsDTO;
-  _wards!: SuggestWardsDTO;
+  _cities!: CityDTO;
+  _districts!: DistrictDTO;
+  _wards!: WardDTO;
   _street!: string;
 
   formatterPercent = (value: number) => `${value} %`;
@@ -135,24 +133,24 @@ export class ModalEditPartnerComponent implements OnInit {
   mappingAddress(data: PartnerDetailDTO) {
     if(data && data.CityCode && data.CityName) {
       this._cities = {
-          code: data.CityCode,
-          name: data.CityName
+          Code: data.CityCode,
+          Name: data.CityName
       }
       if(data.DistrictCode && data.DistrictName) {
         this._districts = {
-            cityCode: data.CityCode,
-            cityName: data.CityName,
-            code: data.DistrictCode,
-            name: data.DistrictName
+            CityCode: data.CityCode,
+            CityName: data.CityName,
+            Code: data.DistrictCode,
+            Name: data.DistrictName
       }
         if(data.WardCode && data.WardName) {
           this._wards = {
-              cityCode: data.CityCode,
-              cityName: data.CityName,
-              districtCode: data.DistrictCode,
-              districtName: data.DistrictName,
-              code: data.WardCode,
-              name: data.WardName
+              CityCode: data.CityCode,
+              CityName: data.CityName,
+              DistrictCode: data.DistrictCode,
+              DistrictName: data.DistrictName,
+              Code: data.WardCode,
+              Name: data.WardName
           }
         }
       }
@@ -271,25 +269,25 @@ export class ModalEditPartnerComponent implements OnInit {
   }
 
   openItemAddresses(data: AddressesV2, index: number) {
-    this._cities = {
-        code: data.CityCode,
-        name: data.CityName
+    let _cities = {
+        Code: data.CityCode,
+        Name: data.CityName
     };
-    this._districts = {
-        cityCode: data.CityCode,
-        cityName: data.CityName,
-        code: data.DistrictCode,
-        name: data.DistrictName
+    let _districts = {
+        CityCode: data.CityCode,
+        CityName: data.CityName,
+        Code: data.DistrictCode,
+        Name: data.DistrictName
     };
-    this._wards = {
-        cityCode: data.CityCode,
-        cityName: data.CityName,
-        districtCode: data.DistrictCode,
-        districtName: data.DistrictName,
-        code: data.WardCode,
-        name: data.WardName
+    let _wards = {
+        CityCode: data.CityCode,
+        CityName: data.CityName,
+        DistrictCode: data.DistrictCode,
+        DistrictName: data.DistrictName,
+        Code: data.WardCode,
+        Name: data.WardName
     };
-    this._street = data.Street;
+    let _street = data.Street;
 
     const modal = this.modalService.create({
         title: 'Chỉnh sửa địa chỉ',
@@ -297,27 +295,27 @@ export class ModalEditPartnerComponent implements OnInit {
         size: "lg",
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          _cities: this._cities,
-          _districts: this._districts,
-          _wards: this._wards,
-          _street: this._street
+          _cities: _cities,
+          _districts: _districts,
+          _wards: _wards,
+          _street: _street
         }
     });
 
-    modal.afterClose.subscribe((res: ResultCheckAddressDTO) => {
+    modal.afterClose.subscribe((res: CheckAddressDTO) => {
       if (TDSHelperObject.hasValue(res)) {
           let item: AddressesV2 = {
               Id: data.Id,
               PartnerId: this.partnerId,
-              CityCode: res.CityCode,
-              CityName: res.CityName,
-              DistrictCode: res.DistrictCode,
-              DistrictName: res.DistrictName,
-              WardCode: res.WardCode,
-              WardName: res.WardName,
+              CityCode: res.City?.Code ? res.City.Code : '',
+              CityName: res.City?.Name ? res.City.Name : '',
+              DistrictCode: res.District?.Code ? res.District.Code: '',
+              DistrictName: res.District?.Name ? res.District.Name: '',
+              WardCode: res.Ward?.Code ? res.Ward.Code : '', 
+              WardName: res.Ward?.Name ? res.Ward.Name : '',
               IsDefault: data.IsDefault,
-              Street: res.Address,
-              Address: res.Address
+              Street: res.Street? res.Street: '',
+              Address: res.Street? res.Street: ''
           };
 
           (this._form.controls.Addresses as FormArray).at(index).patchValue(item);
@@ -333,21 +331,21 @@ export class ModalEditPartnerComponent implements OnInit {
         viewContainerRef: this.viewContainerRef
     });
 
-    modal.afterClose.subscribe((res: ResultCheckAddressDTO) => {
+    modal.afterClose.subscribe((res: CheckAddressDTO) => {
       if (TDSHelperObject.hasValue(res)) {
-          let item: AddressesV2 = {
+            let item: AddressesV2 = {
               Id: 0,
               PartnerId: this.partnerId,
-              CityCode: res.CityCode,
-              CityName: res.CityName,
-              DistrictCode: res.DistrictCode,
-              DistrictName: res.DistrictName,
-              WardCode: res.WardCode,
-              WardName: res.WardName,
+              CityCode: res.City?.Code ? res.City.Code : '',
+              CityName: res.City?.Name ? res.City.Name : '',
+              DistrictCode: res.District?.Code ? res.District.Code: '',
+              DistrictName: res.District?.Name ? res.District.Name: '',
+              WardCode: res.Ward?.Code ? res.Ward.Code : '', 
+              WardName: res.Ward?.Name ? res.Ward.Name : '',
               IsDefault: null,
-              Street: res.Address,
-              Address: res.Address
-          }
+              Street: res.Street? res.Street: '',
+              Address: res.Street? res.Street: ''
+          };
 
           this.addAddresses(item);
       }

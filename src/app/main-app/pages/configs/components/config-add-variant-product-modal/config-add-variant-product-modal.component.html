@@ -57,27 +57,14 @@
                       Vui lòng nhập mã vạch
                   </tds-error>
                 </tds-form-field>
-
-                <tds-label>Thuộc tính<span class="text-error-400">*</span> :</tds-label>
+            </div>
+            <div *ngFor="let attr of attributeList" class="grid grid-cols-4 gap-y-4 gap-x-6 items-center">
+                <tds-label>{{attr.Attribute.AttributeName}}</tds-label>
                 <tds-form-field class="w-full col-span-3">
-                    <tds-select valueField="AttributeId" textField="AttributeName" placeholder='Chọn thuộc tính'
-                        disabledField="isActive" formControlName="Attributes"
-                        [data]="attributeList" [allowClear]="true"
-                        (selectChange)="onSelectAttribute($event)">
+                    <tds-select valueField="Id" textField="Name" placeholder='Chọn giá trị thuộc tính'
+                        disabledField="isActive" [valuePrimitive]="false"
+                        [data]="attr.Values" [allowClear]="true" (selectChange)="onSelectAttribute($event,attr.Attribute)">
                     </tds-select>
-                    <tds-error>
-                        Vui lòng chọn thuộc tính
-                    </tds-error>
-                </tds-form-field>
-                <tds-label>Giá trị<span class="text-error-400">*</span> :</tds-label>
-                <tds-form-field class="w-full col-span-3">
-                    <tds-select valueField="Id" textField="NameGet" placeholder='Chọn giá trị thuộc tính'
-                        disabledField="isActive" formControlName="Values" mode="multiple"
-                        [data]="valueList" [autoClose]="true" [allowClear]="true">
-                    </tds-select>
-                    <tds-error>
-                        Vui lòng chọn giá trị thuộc tính
-                    </tds-error>
                 </tds-form-field>
             </div>
         </div>
@@ -88,7 +75,7 @@
     <button tds-button class="mr-2" color="secondary" (click)="cancel()">
         Hủy bỏ
     </button>
-    <button tds-button type="submit" [disabled]="!addProductVariantForm.valid" color="primary" (click)="save()">
+    <button tds-button type="submit" [disabled]="!(modelDefault && modelDefault.AttributeLines.length == attributeList.length)" color="primary" (click)="save()">
         Lưu thay đổi
     </button>
 </div>

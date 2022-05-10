@@ -1,8 +1,8 @@
+import { CheckAddressDTO } from './../../../../dto/address/address.dto';
+import { CityDTO, DistrictDTO, WardDTO } from './../../../../dto/partner/partner-register-payment.dto';
 import { TDSModalRef } from 'tmt-tang-ui';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, Input, OnInit } from '@angular/core';
-import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
-import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 
 @Component({
   selector: 'app-modal-add-address',
@@ -14,11 +14,11 @@ export class ModalAddAddressComponent implements OnInit {
 
   _form!: FormGroup
 
-  @Input() _cities!: SuggestCitiesDTO;
-  @Input() _districts!: SuggestDistrictsDTO;
-  @Input() _wards!: SuggestWardsDTO;
+  @Input() _cities!: CityDTO;
+  @Input() _districts!: DistrictDTO;
+  @Input() _wards!: WardDTO;
   @Input() _street!: string;
-  public items!: ResultCheckAddressDTO;
+  public items!: CheckAddressDTO;
 
   constructor(private fb: FormBuilder,
     private modal: TDSModalRef) { }
@@ -27,7 +27,7 @@ export class ModalAddAddressComponent implements OnInit {
     this._districts;
   }
 
-  onLoadSuggestion(item: ResultCheckAddressDTO) {
+  onChangeAddress(item: CheckAddressDTO) {
       this.items = item;
   }
 

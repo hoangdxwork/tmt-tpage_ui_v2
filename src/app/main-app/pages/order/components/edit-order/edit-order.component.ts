@@ -1,3 +1,4 @@
+import { ResultCheckAddressDTO } from './../../../../dto/address/address.dto';
 import { FilterObjDTO, OdataProductService } from './../../../../services/mock-odata/odata-product.service';
 import { TDSHelperObject } from 'tmt-tang-ui';
 import { FastSaleOrderHandler } from './../../../../services/handlers/fast-sale-order.handler';
@@ -110,7 +111,7 @@ export class EditOrderComponent implements OnInit {
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
 
     this.odataProductService.getView(params).subscribe((res: TDSSafeAny) => {
-        console.log("view product:", res);
+        // console.log("view product:", res);
     });
   }
 
@@ -198,7 +199,6 @@ export class EditOrderComponent implements OnInit {
 
   loadPartnerStatus() {
     this.commonService.getPartnerStatus().subscribe(res => {
-      console.log(res);
       this.lstPartnerStatus = res;
     });
   }
@@ -415,7 +415,7 @@ export class EditOrderComponent implements OnInit {
       title: 'Cảnh báo',
       content: 'Đối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
       onOk: () => this.calculateFee(carrier),
-      onCancel:()=>{console.log('cancel')},
+      onCancel:()=>{},
       okText:"Đồng ý",
       cancelText:"Hủy"
     });
@@ -435,15 +435,12 @@ export class EditOrderComponent implements OnInit {
         this.initNinjaVan();
       }
 
-      console.log(this.shipServices);
-      console.log(this.defaultBill);
 
       this.updateFormByBillDefault(this.defaultBill);
 
       this.isLoadCarrier = false;
 
     }, error => {
-      console.log(error);
       if(error.error_description) {
         this.message.error(error.error_description);
       }
@@ -699,7 +696,6 @@ export class EditOrderComponent implements OnInit {
         return x;
       });
 
-      console.log(this.lstComment);
     });
   }
 
@@ -774,7 +770,6 @@ export class EditOrderComponent implements OnInit {
       Name: event.Ward?.Name,
     } : null);
 
-    console.log(this.formEditOrder.value);
   }
 
   createForm() {

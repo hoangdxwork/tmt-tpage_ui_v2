@@ -27,17 +27,17 @@ export class IconEmojiMartComponent implements OnInit {
       name: 'Octocat',
       colons: ':octocat:',
       keywords: ['github'],
-      emoticons: [],
+      emoticons: [] as any,
       imageUrl: 'https://assets-cdn.github.com/images/icons/emoji/octocat.png?v7'
     }
   ]
 
-  obj ={
+  obj = {
     id: 'octocat',
     name: 'Octocat',
     colons: ':octocat',
     text: '',
-    emoticons: [],
+    emoticons: [] as any,
     custom: true,
     imageUrl: 'https://github.githubassets.com/images/icons/emoji/octocat.png'
   }

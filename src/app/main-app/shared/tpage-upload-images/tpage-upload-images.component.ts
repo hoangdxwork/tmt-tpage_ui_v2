@@ -13,6 +13,7 @@ export class TpageUploadImagesComponent implements OnInit, OnDestroy, OnChanges 
   @Input() size:number = 112;
   @Input() showName:boolean = true;
   @Input() inputImages:Array<TDSSafeAny> = [];
+  @Input() productInput: boolean = false;
   @Output() getResult = new EventEmitter<Array<TDSSafeAny>>();
 
   private destroy$ = new Subject<void>();
