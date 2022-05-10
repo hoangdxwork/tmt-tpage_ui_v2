@@ -118,7 +118,6 @@ export class ConversationFacebookState implements OnInit{
     if(new Date(newTime).getTime() > new Date(existTime).getTime()) {
       return true;
     }
-
     return false;
   }
 
@@ -127,6 +126,13 @@ export class ConversationFacebookState implements OnInit{
     return count;
   }
 
+  public addConversation(pageId: string, type: string, psid: string, data: any) {
+    this.updateLastUpdated(data, type);
+    let exist = this.getByPsid(pageId, type, psid);
+    if(!exist && this.get(pageId, type)) {
+      this.dataSource[pageId][type].items = [data, ...this.dataSource[pageId][type].items];
+    }
+  }
 
   private deleteByConversation(pageId: string, type: string, item: any) {
     if(item) {

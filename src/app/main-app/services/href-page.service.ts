@@ -6,7 +6,6 @@ import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
 import { PartnerStatusReport } from '../dto/partner/partner-status-report.dto';
 import { StatusDTO } from '../dto/partner/partner.dto';
 import { BaseSevice } from './base.service';
-// import * as urlLib from 'url';
 import { ActivatedRoute, Router } from '@angular/router';
 
 const defaultRoute = [
