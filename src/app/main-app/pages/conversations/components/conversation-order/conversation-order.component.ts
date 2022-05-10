@@ -866,6 +866,10 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
     }
   }
 
+  onChangeExtraService(extra: TDSSafeAny) {
+
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     console.log(changes.data);
   }

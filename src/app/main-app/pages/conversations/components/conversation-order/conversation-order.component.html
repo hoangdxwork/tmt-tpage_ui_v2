@@ -264,8 +264,9 @@
                         </tds-select>
                       </tds-form-field>
                     </div>
+                     <!-- Danh sách dịch vụ vận chuyển -->
                     <div *ngIf="lstShipServices && lstShipServices.length > 0">
-                      <div class="text-body-2 font-semibold font-sans text-neutral-1-900 pb-2">Giao hàng tiêu chuẩn (Dịch vụ)</div>
+                      <div class="text-body-2 font-semibold font-sans text-neutral-1-900 pb-2">Dịch vụ</div>
                       <tds-form-field>
                         <tds-select valueField="ServiceId" textField="ServiceName" placeholder='Giao hàng tiêu chuẩn'
                           disabledField="isActive" [data]="lstShipServices" [allowClear]="true" [required]="true"
@@ -273,8 +274,11 @@
                         </tds-select>
                       </tds-form-field>
                     </div>
-                    <div>
-                      <!-- <tds-checkbox [checked]="true">Cho khách xem hàng?</tds-checkbox> -->
+                    <!-- Dịch vụ vận chuyển bổ xung -->
+                    <div *ngIf="shipExtraServices && shipExtraServices.length > 0">
+                      <tds-checkbox *ngFor="let shipExtra of shipExtraServices" [(ngModel)]="shipExtra.IsSelected" (change)="onChangeExtraService($event)">
+                        {{shipExtra.ServiceName}}
+                      </tds-checkbox>
                     </div>
                     <div class="flex gap-3 items-center">
                       <div class="text-body-2 font-regular font-sans text-info-500">
