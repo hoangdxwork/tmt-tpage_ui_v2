@@ -111,7 +111,7 @@ export interface Partner {
   Ward_District_City: string;
 }
 
-export interface Detail {
+export interface ConversationLastOrderDetailDTO {
   Id: string;
   Quantity: number;
   Price: number;
@@ -201,7 +201,7 @@ export interface ConversationLastOrder {
   StatusText: string;
   Facebook_CommentsText?: any;
   Facebook_Comments: any[];
-  Details: Detail[];
+  Details: ConversationLastOrderDetailDTO[];
   StatusStr?: any;
   CommentIds: any[];
   CompanyId?: any;

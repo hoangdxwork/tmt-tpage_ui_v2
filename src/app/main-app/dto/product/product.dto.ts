@@ -106,6 +106,7 @@ export interface ProductDTO {
   Product_UOMId: string;
   Tags: string;
   DateCreated?: Date;
+  Note: string;
 }
 
 export interface Product_PriceListDTO {

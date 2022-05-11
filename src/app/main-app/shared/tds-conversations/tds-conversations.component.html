@@ -21,39 +21,54 @@
                 <div *ngIf="(dataSource$ | async )?.items?.length == 0">
                     <p>Chưa có nội dung nào</p>
                 </div>
-                <tds-spin [spinning]="isLoadMessage" tip="Loading...">
-                  <ng-container *ngFor="let item of (dataSource$ | async )?.items; let i = index ">
-                      <!-- Thông tin bài post -->
-                      <div *ngIf="item.type == 2 && item.object_id && getExtrasPosts((dataSource$ | async), item)">
-                        <tds-card class="post-block w-full bg-white" style="padding: 15px 30px">
-                            <div class="post-header">
-                                <label>{{getExtrasPosts((dataSource$ | async), item)?.type}}</label>
-                                <p >{{getExtrasPosts((dataSource$ | async), item)?.created_time | date: "dd-MM-yyyy HH:mm"}}</p>
-                            </div>
-                            <div class="post-body">
-                                <p *ngIf="getExtrasPosts((dataSource$ | async), item)?.story" class="font-semibold">{{getExtrasPosts((dataSource$ | async), item).story}}</p>
-                                <p *ngIf="getExtrasPosts((dataSource$ | async), item)?.message">{{getExtrasPosts((dataSource$ | async), item).message}}</p>
-                                <p *ngIf="getExtrasPosts((dataSource$ | async), item)?.description">{{getExtrasPosts((dataSource$ | async), item).description}}</p>
-
-                                <div *ngIf="getExtrasPosts((dataSource$ | async), item)?.picture">
-                                    <img [src]="getExtrasPosts((dataSource$ | async), item)?.picture" alt="{{getExtrasPosts((dataSource$ | async), item)?.story}}"/>
+                <ng-container *ngFor="let item of (dataSource$ | async )?.items | showAvatar; let i = index ">
+                    <div *ngIf="item.is_show_break && i!= 0" class="mt-2 mb-2 block" style="text-align: center">
+                          <tds-alert type="warning" [message]="item.DateCreated"></tds-alert>
+                    </div>
+                    <!-- Thông tin bài post -->
+                    <div *ngIf="item.type == 2 && item.object_id && getExtrasPosts((dataSource$ | async), item)">
+                      <div class="post-block mb-3">
+                          <div class="post-body">
+                              <div class="post-type">
+                                  <span>
+                                      <span class="tdsi-facebook-line"></span>
+                                  </span>
+                                  <span>{{getExtrasPosts((dataSource$ | async), item)?.created_time | date: "dd-MM-yyyy HH:mm"}}</span>
+                              </div>
+                              <div class="post-item">
+                                <div class="w-full block">
+                                  <p class="story" *ngIf="getExtrasPosts((dataSource$ | async), item)?.story">{{getExtrasPosts((dataSource$ | async), item).story}}</p>
+                                  <p class="message" *ngIf="getExtrasPosts((dataSource$ | async), item)?.message"
+                                      tds-typography ellipsis expandable [ellipsisRows]="2"
+                                      [content]="getExtrasPosts((dataSource$ | async), item)?.message"
+                                      [contentCollapse]="'Ẩn'">
+                                  </p>
+                                  <p class="description" *ngIf="getExtrasPosts((dataSource$ | async), item)?.description">{{getExtrasPosts((dataSource$ | async), item).description}}</p>
                                 </div>
-                            </div>
-                            <div class="post-footer">
-                                <label>Like: {{getExtrasPosts((dataSource$ | async), item)?.count_reactions || 0}}</label>
+                                <div class="w-full picture" *ngIf="getExtrasPosts((dataSource$ | async), item)?.picture">
+                                    <img tds-image [tdsSrc]="getExtrasPosts((dataSource$ | async), item)?.picture" alt="{{getExtrasPosts((dataSource$ | async), item)?.story}}"/>
+                                </div>
+                              </div>
+                          </div>
+                          <div class="post-footer">
+                              <label>Like: {{getExtrasPosts((dataSource$ | async), item)?.count_reactions || 0}}</label>
+                              <div class="flex">
                                 <label>Bình luận: {{getExtrasPosts((dataSource$ | async), item)?.count_comments || 0}}</label>
-                            </div>
-                        </tds-card>
+                                <a title="Bài viết tổng quan" (click)="openPost(item, 'all')">Tổng quan</a>
+                                <a title="Đi tới bình luận"  href="https://www.facebook.com/{{item.id}}" target="_blank">Bình luận</a>
+                                <a title="Đi tới bài viết" (click)="openPost(item, 'post')">Bài viết</a>
+                              </div>
+                          </div>
                       </div>
-                      <tds-conversation-item
-                          [team]="team" [psid]="data.psid"
-                          [data]="item" [index]="i"
-                          [type]="type" [name]="data.name"
-                          [children]="getExtrasChildren((dataSource$ | async), item)"
-                          [partner]="partner">
-                      </tds-conversation-item>
-                  </ng-container>
-                </tds-spin>
+                    </div>
+                    <tds-conversation-item
+                        [team]="team" [psid]="data.psid"
+                        [data]="item" [index]="i"
+                        [type]="type" [name]="data.name"
+                        [children]="getExtrasChildren((dataSource$ | async), item)"
+                        [partner]="partner">
+                    </tds-conversation-item>
+                </ng-container>
             </div>
         </div>
     </div>
@@ -110,9 +125,9 @@
         <!-- editer+toolbars -->
         <div class="flex flex-col w-full p-4 bg-white rounded-xl ">
             <div class="w-full flex">
-                <div class="flex flex-auto">
-                    Nhập nội dung tin nhắn, nhấn [Enter] để gửi
-                </div>
+                <textarea class="flex flex-auto form-control" rows="2" placeholder="Nhập nội dung tin nhắn, nhấn [Enter] để gửi"
+                  (paste)="onPaste($event)" (keydown.enter)="onEnter($event)">
+                </textarea>
                 <div class="pl-2">
                     <button tds-button color="primary" class="rounded-xl">
                         <span class="flex items-center">

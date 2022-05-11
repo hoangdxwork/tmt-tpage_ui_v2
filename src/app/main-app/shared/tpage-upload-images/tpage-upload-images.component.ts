@@ -12,7 +12,11 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, OnChanges, S
 export class TpageUploadImagesComponent implements OnInit, OnDestroy, OnChanges {
   @Input() size:number = 112;
   @Input() showName:boolean = true;
+  @Input() showPopUpModal: boolean = true;
   @Input() inputImages:Array<TDSSafeAny> = [];
+  @Input() productInput: boolean = false;
+  @Input() useProductModel: boolean = false;
+  @Input() allowUpload: boolean = true;
   @Output() getResult = new EventEmitter<Array<TDSSafeAny>>();
 
   private destroy$ = new Subject<void>();
@@ -27,12 +31,14 @@ export class TpageUploadImagesComponent implements OnInit, OnDestroy, OnChanges 
 
   ngOnInit(): void {
     if(this.inputImages.length > 0){
-      this.imageList = this.inputImages;
+      this.imageList = this.formatNoneProductModel(this.inputImages);
     }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.imageList = this.inputImages;
+    if(this.inputImages.length > 0){
+      this.imageList = this.formatNoneProductModel(this.inputImages);
+    }
   }
 
   ngOnDestroy(): void {
@@ -59,10 +65,12 @@ export class TpageUploadImagesComponent implements OnInit, OnDestroy, OnChanges 
               let outputModel = {
                 type: file.type,
                 name: file.name,
-                url: res
+                url: res,
+                isPopup:false
               };
               this.imageList.push(outputModel);
-              this.getResult.emit(this.imageList);
+              let result = this.formatProductModel(this.imageList);
+              this.getResult.emit(result);
             } else {
               this.message.error("Không upload được file lớn hơn 3Mb");
             }
@@ -78,5 +86,47 @@ export class TpageUploadImagesComponent implements OnInit, OnDestroy, OnChanges 
   removeImage(index:number){
     this.imageList.splice(index,1);
     this.getResult.emit(this.imageList);
+  }
+
+  formatProductModel(data:Array<TDSSafeAny>){
+    if(this.useProductModel){
+      let lstImg:Array<TDSSafeAny> = [];
+      data.forEach(img => {
+        lstImg.push({
+          MineType: img.type,
+          Name: img.name,
+          ResModel: 'product.template',
+          Type: 'url',
+          Url: img.url
+        })
+      });
+      return lstImg;
+    }
+    return data;
+  }
+
+  formatNoneProductModel(data:Array<TDSSafeAny>){
+    let lstImg:Array<TDSSafeAny> = [];
+    if(this.useProductModel){
+      data.forEach(img => {
+        lstImg.push({
+          type: img.MineType,
+          name: img.Name,
+          url: img.Url,
+          isPopup: false
+        })
+      });
+    }else{
+      data.forEach(img => {
+        lstImg.push({
+          type: img.type,
+          name: img.name,
+          url: img.url,
+          isPopup: false
+        })
+      });
+    }
+
+    return lstImg;
   }
 }

@@ -1,9 +1,9 @@
 <form [formGroup]="createAttributeForm" autocomplete="off">
     <div class="flex flex-row mb-4">
         <tds-form-field class="flex-auto col-span-3 mr-4">
-            <tds-select valueField="AttributeId" textField="AttributeName" placeholder='Chọn thuộc tính'
+            <tds-select valueField="Id" textField="Name" placeholder='Chọn thuộc tính'
                 disabledField="isActive" formControlName="Attributes" [autoClose]="true"
-                [data]="attributeList" [allowClear]="true" [mode]="'multiple'">
+                [data]="attributeList" [allowClear]="true" [mode]="'multiple'" [valuePrimitive]="false">
             </tds-select>
             <tds-error>
                 Vui lòng chọn thuộc tính
@@ -19,7 +19,7 @@
     </div>
     <div>
         <tds-table #basicTable 
-            [listData]="listOfData"
+            [listData]="lstOfData"
             [showPagination]="false"
             [loading]="isLoading"
             [noResult]="NoResultTable">
@@ -31,12 +31,12 @@
                   </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let data of listOfData; let i = index">
-                    <td [width]="'160px'">{{ data.Name }}</td>
+                <tr *ngFor="let data of lstOfData; let i = index">
+                    <td [width]="'160px'">{{ data.Attribute.Name }}</td>
                     <td [width]="'492px'">
                         <tds-form-field>
                             <tds-select valueField="Id" textField="Name" placeholder='Chọn giá trị thuộc tính'
-                                disabledField="isActive" mode="multiple"
+                                disabledField="isActive" mode="multiple" [valuePrimitive]="false"
                                 [data]="data.Values" [autoClose]="true" [allowClear]="true" (selectChange)="onSelectValues($event,data.AttributeId)">
                             </tds-select>
                             <tds-error>
@@ -46,7 +46,7 @@
                     </td>
                     <td [width]="'116px'" [align]="'center'">
                         <button tds-button-flat-icon type="button" size="sm"
-                            (click)="deleteAttribute(data)">
+                            (click)="deleteAttribute(data.AttributeId)">
                             <span class="flex items-center">
                               <i class="tdsi-trash-line text-error-400 text-xl leading-none"></i>
                             </span>

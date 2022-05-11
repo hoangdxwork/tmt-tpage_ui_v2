@@ -18,7 +18,6 @@ import { TagService } from '../../services/tag.service';
 import { DuplicateUserComponent } from './components/duplicate-user/duplicate-user.component';
 import { EditOrderComponent } from './components/edit-order/edit-order.component';
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
-import { SaleOnline_OrderHandler } from '../../services/handlers/sale-online-order.handler';
 import { CreateBillFastComponent } from './components/create-bill-fast/create-bill-fast.component';
 import { CreateBillFastErrorComponent } from './components/create-bill-fast-error/create-bill-fast-error.component';
 import { CreateBillDefaultComponent } from './components/create-bill-default/create-bill-default.component';
@@ -31,6 +30,9 @@ import { PrinterService } from '../../services/printer.service';
 import { ExcelExportService } from '../../services/excel-export.service';
 import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { OdataProductService } from '../../services/mock-odata/odata-product.service';
+import { CheckFormHandler } from '../../services/handlers/check-form.handler';
+import { CarrierHandler } from '../../services/handlers/carier.handler';
+import { SaleHandler } from '../../services/handlers/sale.handler';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -43,8 +45,10 @@ const SERVICES = [
   PartnerService,
   PrinterService,
   ExcelExportService,
-  SaleOnline_OrderHandler,
-  OdataProductService
+  SaleHandler,
+  CheckFormHandler,
+  OdataProductService,
+  CarrierHandler
 ]
 
 @NgModule({

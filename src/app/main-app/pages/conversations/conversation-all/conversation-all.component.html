@@ -84,14 +84,17 @@
         <ng-template #conversationOrder let-active="active">
           <div class="flex items-center font-semibold justify-center text-body-2 p-4 relative group cursor-pointer"
             [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
-            <span class="mr-2 flex items-center">Đơn hàng <tds-tag status='primary' class="ml-3">#220300024</tds-tag></span>
+            <span class="mr-2 flex items-center">
+              Đơn hàng
+              <tds-tag status='primary' class="ml-3" *ngIf="currentOrderCode"> #{{ currentOrderCode }} </tds-tag>
+            </span>
             <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
               class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
             </div>
           </div>
         </ng-template>
         <div *ngIf="activeMatchingItem?.id && currentTeam">
-            <conversation-order [data]="activeMatchingItem" [team]="currentTeam"></conversation-order>
+            <conversation-order [data]="activeMatchingItem" [team]="currentTeam" (currentOrderCode)="changeOrderId($event)"></conversation-order>
         </div>
       </tds-tab>
     </tds-tabset>

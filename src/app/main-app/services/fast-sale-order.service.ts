@@ -5,12 +5,14 @@ import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { DataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
-import { FastSaleOrderSummaryStatusDTO } from '../dto/bill/bill.dto';
+import { FastSaleOrderDTO, FastSaleOrderSummaryStatusDTO } from '../dto/bill/bill.dto';
 import { ODataPaymentJsonDTO } from '../dto/bill/payment-json.dto';
 import { CalculatorFeeV2DTO } from '../dto/fastsaleorder/calculate-feeV2.dto';
 import { ODataCalculatorListFeeDTO } from '../dto/fastsaleorder/calculate-listFee.dto';
 
 import { FastSaleOrder_DefaultDTOV2 } from '../dto/fastsaleorder/fastsaleorder-default.dto';
+import { FastSaleOrderDefaultDTO } from '../dto/fastsaleorder/fastsaleorder.dto';
+import { ODataModelDTO } from '../dto/odata/odata.dto';
 import { PagedList2 } from '../dto/pagedlist2.dto';
 import { ODataTaxDTO } from '../dto/tax/tax.dto';
 import { CRMTeamDTO } from '../dto/team/team.dto';
@@ -317,6 +319,26 @@ export class FastSaleOrderService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  getDefault(data: ODataModelDTO<TDSSafeAny>): Observable<FastSaleOrderDefaultDTO> {
+    let expand = "Warehouse,User,PriceList,Company,Journal,PaymentJournal,Partner,Carrier,Tax,SaleOrder";
+
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.DefaultGet?$expand=${expand}`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<FastSaleOrderDefaultDTO>(api, data);
+  }
+
+  saveV2(data: TDSSafeAny, isDraft: boolean): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/create?IsDraft=${isDraft}`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
 

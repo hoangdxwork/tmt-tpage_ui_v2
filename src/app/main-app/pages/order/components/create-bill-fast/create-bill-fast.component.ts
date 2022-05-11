@@ -10,6 +10,7 @@ import { UpdateInfoPartnerComponent } from '../update-info-partner/update-info-p
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { Subject } from 'rxjs';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
+import { DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
 
 @Component({
   selector: 'create-bill-fast',
@@ -21,7 +22,7 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
 
   formCreateBillFast!: FormGroup;
   lstData!: TDSSafeAny[];
-  lstCarriers: Array<TDSSafeAny> = [];
+  lstCarriers: Array<DeliveryCarrierDTO> = [];
 
   private _destroy = new Subject<void>();
 

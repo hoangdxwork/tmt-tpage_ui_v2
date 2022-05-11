@@ -518,9 +518,6 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
       this.lstData[teamId]['data'] = [];
       this.lstData[teamId]['notConnected'] = this.lstPageNotConnect?.[teamId]?.filter(x => !childIds.includes(x.id)) || [];
     }
-
-    console.log(this.lstData[teamId]['data']);
-    console.log(this.lstData[teamId]['notConnected']);
   }
 
   scrollToLastPosition(){

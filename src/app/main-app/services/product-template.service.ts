@@ -147,7 +147,7 @@ export class ProductTemplateService extends BaseSevice {
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
-  // ko get được images
+  
   insertProductTemplate(data:TDSSafeAny):Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertV2`,
@@ -178,6 +178,15 @@ export class ProductTemplateService extends BaseSevice {
   insertOriginCountry(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/OriginCountry `,
+      method: TApiMethodType.post,
+      }
+  
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  suggestVariants(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.SuggestionsVariant?$expand=AttributeValues`,
       method: TApiMethodType.post,
       }
   

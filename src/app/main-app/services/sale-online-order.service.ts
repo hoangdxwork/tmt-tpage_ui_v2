@@ -2,6 +2,7 @@ import { EventEmitter, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tmt-tang-ui";
+import { ODataModelDTO } from "../dto/odata/odata.dto";
 import { PagedList2 } from "../dto/pagedlist2.dto";
 import { BaseSevice } from "./base.service";
 
@@ -105,6 +106,15 @@ export class SaleOnline_OrderService extends BaseSevice {
   previewMessages(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/previewmessages`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  insertFromMessage(data: ODataModelDTO<TDSSafeAny>): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertFromMessage?$expand=Details,User`,
       method: TApiMethodType.post,
     }
 
