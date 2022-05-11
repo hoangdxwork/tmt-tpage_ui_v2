@@ -75,8 +75,52 @@
     <!-- footer  -->
     <div class="w-full flex flex-col">
         <div class="w-full pt-2 pb-3">
-            <tds-avatar class="bg-white text-neutral-1-400 mr-2.5 cursor-pointer" icon="tdsi-three-dots-horizon-fill"></tds-avatar>
-            <tds-avatar class="bg-white text-neutral-1-400 cursor-pointer" icon="tdsi-tag-fill"></tds-avatar>
+            <tds-avatar tds-popover
+                [popoverContent]="popoverContentOptionSendMessages"
+                popoverTrigger="click"
+                [popoverPlacement]="['topLeft', 'leftTop']"
+                class="bg-white text-neutral-1-400 mr-2.5 cursor-pointer" icon="tdsi-three-dots-horizon-fill">
+            </tds-avatar>
+            <ng-template #popoverContentOptionSendMessages>
+                <div class="w-[336px] flex flex-col gap-y-3">
+                    <span class="font-semibold text-title-1">Tuỳ chọn gửi tin nhắn</span>
+                    <div class="w-full flex justify-between">
+                       <span class="text-neutral-1-400">Nhấn [Enter] để gửi</span> 
+                       <tds-switch size="md" [checked]="true"></tds-switch>
+                    </div>
+                </div>
+            </ng-template>
+            <tds-avatar tds-popover
+                [popoverContent]="popoverContentTagConversat"
+                popoverTrigger="click"
+                [popoverPlacement]="['topLeft', 'leftTop']"
+                class="bg-white text-neutral-1-400 cursor-pointer" icon="tdsi-tag-fill">
+            </tds-avatar>
+            <ng-template #popoverContentTagConversat>
+                <div class="w-[336px] flex flex-col gap-y-3">
+                    <div class="flex justify-between">
+                        <span class="font-semibold text-title-1">Gắn nhãn hội thoại</span>
+                        <button tds-button-icon color="secondary" rounded="!rounded-full"
+                            (click)="showModalAddTag()" 
+                            tds-tooltip
+                            tooltipTitle="Thêm nhãn mới">
+                            <i class="tdsi-plus-fill"></i>
+                        </button>
+                    </div>
+                    <tds-form-field class="w-full">
+                        <input tdsInput placeholder="Tìm kiếm nhãn" autocomplete="off" />
+                        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                    </tds-form-field>
+                    <div class="flex flex-wrap gap-2.5">
+                        <tds-tag status='error'>Bom hàng</tds-tag>
+                        <tds-tag status='primary' [disabled]="true">KH VIP</tds-tag>
+                        <tds-tag status='warning' [disabled]="true">Sale</tds-tag>
+                        <tds-tag status='secondary' [disabled]="true">Chưa xác nhận</tds-tag>
+                        <tds-tag status='info' [disabled]="true">Tiềm năng</tds-tag>
+                        <tds-tag status='primary'>KH VIP</tds-tag>
+                    </div>
+                </div>
+            </ng-template>
         </div>
         <!-- editer+toolbars -->
         <div class="flex flex-col w-full p-4 bg-white rounded-xl ">
@@ -110,14 +154,49 @@
                 <div class="p-2">
                     <div class="tdsi-image-line text-neutral-1-400 text-2xl cursor-pointer" (click)="showImageStore()"></div>
                 </div>
-                <div class="p-2">
+                <div class="p-2" (click)="showModalListProcut()">
                     <div class="tdsi-product-line text-neutral-1-400 text-2xl cursor-pointer"></div>
                 </div>
                 <div class="p-2">
-                    <div class="tdsi-message-template-line text-neutral-1-400 text-2xl cursor-pointer"></div>
+                    <div class="tdsi-message-template-line text-neutral-1-400 text-2xl cursor-pointer" 
+                    tds-popover [(popoverVisible)]="isVisibleReply"
+                    popoverTrigger="click" 
+                    [popoverContent]="contentTemplate"></div>
+                    <ng-template #contentTemplate>
+                        <div class="w-[336px] flex flex-col gap-y-4">
+                            <div class="flex justify-between">
+                                <div class="">
+                                    <span class="text-title-1 font-semibold">Trả lời nhanh</span>
+                                </div>
+                                <div>
+                                    <button tds-button color="secondary" (click)="showModalAddQuickReply()">
+                                        <span class="flex items-center text-primary-1">
+                                          <i class="tdsi-plus-fill text-lg leading-none mr-2"></i>Thêm mới
+                                        </span>
+                                      </button>
+                                </div>
+                            </div>
+                            <div class="w-full">
+                                <tds-form-field class="w-full">
+                                    <input tdsInput placeholder="Tìm kiếm tin nhắn" autocomplete="off" />
+                                    <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                                  </tds-form-field>
+                            </div>
+                            <div class="flex flex-col divide-y divide-neutral-2-300 border-y border-neutral-2-300 divide-dotted border-dotted">
+                                <div class="py-3 px-1 flex flex-col cursor-pointer hover:bg-neutral-3-50">
+                                    <span class="font-semibold">Mã đặt hàng</span>
+                                    <span>placeholder.code</span>
+                                </div>
+                                <div class="py-3 px-1 flex flex-col cursor-pointer hover:bg-neutral-3-50">
+                                    <span class="font-semibold">Mã đặt hàng</span>
+                                    <span>placeholder.code</span>
+                                </div>
+                            </div>
+                        </div> 
+                    </ng-template>
                 </div>
                 <div class="p-2">
-                    <div class="tdsi-paper-fill text-neutral-1-400 text-2xl cursor-pointer"></div>
+                    <div class="tdsi-paper-fill text-neutral-1-400 text-2xl cursor-pointer" (click)="showModalListBill()"></div>
                 </div>
                 <div class="p-2">
                     <div class="tdsi-images-fill text-neutral-1-400 text-2xl cursor-pointer"></div>
