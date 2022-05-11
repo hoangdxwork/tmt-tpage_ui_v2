@@ -44,6 +44,8 @@ import { ModalListProductComponent } from './components/modal-list-product/modal
 import { ModalListBillComponent } from './components/modal-list-bill/modal-list-bill.component';
 import { ModalDetailBillComponent } from './components/modal-detail-bill/modal-detail-bill.component';
 import { ModalConfirmShippingAddressComponent } from './components/modal-confirm-shipping-address/modal-confirm-shipping-address.component';
+import { ModalBlockPhoneComponent } from './components/modal-block-phone/modal-block-phone.component';
+import { CRMMatchingService } from '../../services/crm-matching.service';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -67,7 +69,8 @@ const SERVICES = [
   OrderPrintService,
   PrinterService,
   OrderFormHandler,
-  CarrierHandler
+  CarrierHandler,
+  CRMMatchingService
 ]
 
 @NgModule({
@@ -85,7 +88,8 @@ const SERVICES = [
     ModalDetailBillComponent,
     ModalConfirmShippingAddressComponent,
     ModalConfirmPaymentComponent,
-    ModalAddQuickReplyComponent
+    ModalAddQuickReplyComponent,
+    ModalBlockPhoneComponent
   ],
   imports: [
     CommonModule,
