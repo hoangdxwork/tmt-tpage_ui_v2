@@ -236,9 +236,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     switch(status) {
       case "Nháp":
         return "info";
-      case "Đơn hàng":
+      case "Đã thanh toán":
         return "success";
-      case "Hủy":
+      case "Hủy bỏ":
         return "error";
       default:
         return "warning";
