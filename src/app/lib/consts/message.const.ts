@@ -43,6 +43,7 @@ export const Message = {
   },
   Product: {
     InsertSuccess: 'Thêm sản phẩm thành công.',
+    UpdateListPriceSuccess: 'Cập nhật bảng giá thành công.'
   },
   ProductCategory: {
     InsertSuccess: 'Thêm nhóm sản phẩm thành công.'

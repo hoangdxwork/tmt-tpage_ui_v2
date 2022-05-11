@@ -85,7 +85,7 @@
                 <div class="w-[336px] flex flex-col gap-y-3">
                     <span class="font-semibold text-title-1">Tuỳ chọn gửi tin nhắn</span>
                     <div class="w-full flex justify-between">
-                       <span class="text-neutral-1-400">Nhấn [Enter] để gửi</span> 
+                       <span class="text-neutral-1-400">Nhấn [Enter] để gửi</span>
                        <tds-switch size="md" [checked]="true"></tds-switch>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
                     <div class="flex justify-between">
                         <span class="font-semibold text-title-1">Gắn nhãn hội thoại</span>
                         <button tds-button-icon color="secondary" rounded="!rounded-full"
-                            (click)="showModalAddTag()" 
+                            (click)="showModalAddTag()"
                             tds-tooltip
                             tooltipTitle="Thêm nhãn mới">
                             <i class="tdsi-plus-fill"></i>
@@ -154,13 +154,13 @@
                 <div class="p-2">
                     <div class="tdsi-image-line text-neutral-1-400 text-2xl cursor-pointer" (click)="showImageStore()"></div>
                 </div>
-                <div class="p-2" (click)="showModalListProcut()">
+                <div class="p-2" (click)="showModalListProduct()">
                     <div class="tdsi-product-line text-neutral-1-400 text-2xl cursor-pointer"></div>
                 </div>
                 <div class="p-2">
-                    <div class="tdsi-message-template-line text-neutral-1-400 text-2xl cursor-pointer" 
+                    <div class="tdsi-message-template-line text-neutral-1-400 text-2xl cursor-pointer"
                     tds-popover [(popoverVisible)]="isVisibleReply"
-                    popoverTrigger="click" 
+                    popoverTrigger="click"
                     [popoverContent]="contentTemplate"></div>
                     <ng-template #contentTemplate>
                         <div class="w-[336px] flex flex-col gap-y-4">
@@ -192,7 +192,7 @@
                                     <span>placeholder.code</span>
                                 </div>
                             </div>
-                        </div> 
+                        </div>
                     </ng-template>
                 </div>
                 <div class="p-2">
