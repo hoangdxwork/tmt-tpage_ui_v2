@@ -8,6 +8,7 @@ import { FieldChannelPipe } from './field-channel.pipe';
 import { FormatMessagePipe } from './format-message.pipe';
 import { SafeHtmlPipe } from './safe-html.pipe';
 import { YiDiffDateTimePipe } from './yi-diff-datetime.pipe';
+import { ShowAvatarPipe } from './show-avatar.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -15,7 +16,8 @@ const cmp =[
   FieldChannelPipe,
   FormatMessagePipe,
   SafeHtmlPipe,
-  YiDiffDateTimePipe
+  YiDiffDateTimePipe,
+  ShowAvatarPipe
 ]
 
 @NgModule({

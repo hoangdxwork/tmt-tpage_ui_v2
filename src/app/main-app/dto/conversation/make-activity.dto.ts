@@ -199,6 +199,7 @@ export interface MakeActivityItemWebHook {
   has_order: boolean;
   has_phone: number;
   has_address: number;
+  is_show_break: boolean;
 }
 
 export interface MakeActivityQueryObj {

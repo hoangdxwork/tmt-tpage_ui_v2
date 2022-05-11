@@ -113,4 +113,15 @@ export class ActivityMatchingService extends BaseSevice implements OnInit {
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
+
+  addTemplateMessage(psid: string, data: any): Observable<TDSSafeAny> {
+    if(data.to_id) {
+      psid = data.to_id;
+    }
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${psid}/addtemplatemessage`,
+        method: TApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
 }
