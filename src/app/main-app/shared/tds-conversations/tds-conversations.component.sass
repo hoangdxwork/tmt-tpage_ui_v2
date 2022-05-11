@@ -1,13 +1,38 @@
-.chat-block
-  display: block
-  padding: 4px
-  height: 100%
+
+.post-block
   width: 100%
-  .chat-header
-    justify-content: space-between
+  display: block
+  .post-footer
+    background-color: #F8F9FB
+  .post-body
+    padding: 16px 20px
     background-color: #fff
-    padding: 12px
-    .avatar
-      border-radius: 50%
-      background-color: #52BF50
-      padding: 1px
+    .post-item
+      display: flex
+      justify-content: space-between
+      .picture
+        max-width: 153px
+        height: auto
+        border-radius: 12px
+        display: contents
+      .message
+        max-width: 66.5%
+        display: block
+
+.is_admin
+  justify-content: flex-end
+  .chat-body
+    background: #28A745
+    color: #fff
+.is_client
+  justify-content: flex-start
+  .chat-body
+    background: #fff
+
+.chat-content
+  display: block
+  white-space: pre-line
+  word-break: break-word
+  position: relative
+
+

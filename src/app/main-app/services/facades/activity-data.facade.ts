@@ -223,6 +223,19 @@ export class ActivityDataFacade extends BaseSevice implements OnInit, OnDestroy 
     this.activityFbState.updateMessage(pageId, psid, "message", dataAdd);
   }
 
+  messageServer(value: any) {
+    let data = Object.assign({}, value);
+    let psid = data.to_id;
+    let pageId = data.account_id;
+    let dateCreated = data.DateCreated;
+    let type = data.type;
+
+    let dataAdd = this.convertDataServer(data);
+
+    this.activityFbState.updateMessage(pageId, psid, "all", dataAdd);
+    this.activityFbState.updateMessage(pageId, psid, "message", dataAdd);
+  }
+
   webhookAddComment(model: any) {
     const pageId = model.page_id || model.account_id;
     const psid = model.psid || model.to_id;

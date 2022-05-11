@@ -11,6 +11,7 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import { MakeActivityItem, MakeActivityItemWebHook, MakeActivityMessagesDTO } from '../../dto/conversation/make-activity.dto';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ActivityMatchingService } from '../../services/conversation/activity-matching.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'tds-conversations',
@@ -45,6 +46,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     private applicationUserService: ApplicationUserService,
     private activityDataFacade: ActivityDataFacade,
     private conversationDataFacade: ConversationDataFacade,
+    private router: Router,
     private viewContainerRef: ViewContainerRef) {
   }
 
@@ -97,12 +99,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  getExtrasChildren(data: any, item: any) {
-      return (data?.extras?.children[item?.id] as any) || {};
+  getExtrasChildren(data: any, item: any): any {
+      return (data?.extras?.children[item?.id] as any) || [];
   }
 
-  getExtrasPosts(data: any, item: MakeActivityItemWebHook) {
-      return (data?.extras?.posts[item?.object_id] as any) || {};
+  getExtrasPosts(data: any, item: MakeActivityItemWebHook): any  {
+      return (data?.extras?.posts[item?.object_id] as any) || [];
   }
 
   onEnter(event: any): void {
@@ -159,6 +161,15 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
 
   onPaste(event: any) {
 
+  }
+
+  openPost(item: any, type :any) {
+    if(type === 'post' && item.object_i){
+      this.router.navigateByUrl(`/conversation/post?teamId=${this.team.Id}&type=post&post_id=${item.object_id}`);
+    }
+    if(type === 'all' && item.object_id) {
+       //TODO xử lý tiếp
+    }
   }
 
   ngOnDestroy(): void {

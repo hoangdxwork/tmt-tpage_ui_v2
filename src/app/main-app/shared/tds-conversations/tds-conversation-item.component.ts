@@ -7,10 +7,15 @@ import { MakeActivityItemWebHook } from "../../dto/conversation/make-activity.dt
 import { CRMTeamDTO } from "../../dto/team/team.dto";
 import { ActivityMatchingService } from "../../services/conversation/activity-matching.service";
 import { ActivityDataFacade } from "../../services/facades/activity-data.facade";
+import { ConversationDataFacade } from "../../services/facades/conversation-data.facade";
+import { ConversationOrderFacade } from "../../services/facades/conversation-order.facade";
+import { PhoneHelper } from "../helper/phone.helper";
+import { ReplaceHelper } from "../helper/replace.helper";
 
 @Component({
   selector: "tds-conversation-item",
-  templateUrl:'./tds-conversation-item.component.html'
+  templateUrl:'./tds-conversation-item.component.html',
+  styleUrls: ['./tds-conversations.component.sass'],
 })
 
 export class TDSConversationItemComponent implements OnInit, OnDestroy {
@@ -23,18 +28,21 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   @Input() team!: CRMTeamDTO;
   @Input() children: any;
   @Input() type: any;
-
   messages: any = [];
+  message: string = '';
   enumActivityStatus = ActivityStatus;
   destroy$ = new Subject();
   isReply: boolean = false;
+  isPrivateReply: boolean = false;
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
   @ViewChild('contentMessage') contentMessage: any;
 
   constructor(private element: ElementRef,
-    private message: TDSMessageService,
+    private tdsMessage: TDSMessageService,
     private activityDataFacade: ActivityDataFacade,
+    private conversationDataFacade: ConversationDataFacade,
+    private conversationOrderFacade: ConversationOrderFacade,
     private activityMatchingService: ActivityMatchingService) {
   }
 
@@ -61,9 +69,45 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
       return this.element;
   }
 
-  selectOrder(type: string): void {
+  selectOrder(type: string): any {
+    let data = {
+      phone: null,
+      address: null,
+      note: null
+    } as any;
 
+    let value = this.getTextOfContentMessage();
+    if (type == 'phone') {
+      let phone = PhoneHelper.getMultiplePhoneFromText(value);
+      if (!phone) {
+        return this.tdsMessage.error("Không tìm thấy số điện thoại.");
+      }
+      this.tdsMessage.info("Chọn làm số điện thoại thành công.");
+      data.phone = phone;
+    } else if (type == 'address') {
+      data.address = value;
+      if (value) {
+        this.tdsMessage.info("Chọn làm  địa chỉ thành công.");
+      }
+    } else if (type == 'note') {
+      data.note = value;
+      if (value) {
+        this.tdsMessage.info("Chọn làm ghi chú thành công.");
+      }
+    }
+
+    //TODO: load sang tab conversation-order paste lại dữ liệu
+    this.conversationOrderFacade.onConversationOrder$.emit(data);
   }
+
+  getTextOfContentMessage() {
+    if (this.contentMessage && this.contentMessage.nativeElement && this.contentMessage.nativeElement.outerText) {
+      return this.contentMessage.nativeElement.outerText;
+    }
+    this.tdsMessage.info("Không thể lấy thông tin.");
+    return null;
+  }
+
 
   clickReply(event: any) {
     this.isReply = !this.isReply;
@@ -80,10 +124,10 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     }
 
     this.activityMatchingService.addLikeComment(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.message.success('Thao tác thành công!');
+        this.tdsMessage.success('Thao tác thành công!');
         this.data.comment.user_likes = !this.data.comment.user_likes;
     }, error => {
-      this.message.error('Đã xảy ra lỗi');
+      this.tdsMessage.error('Đã xảy ra lỗi');
     });
   }
 
@@ -98,10 +142,10 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     };
 
     this.activityMatchingService.hideComment(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.message.success('Thao tác thành công!');
+        this.tdsMessage.success('Thao tác thành công!');
         this.data.comment.is_hidden = !this.data.comment.is_hidden;
     }, error => {
-      this.message.error('Đã xảy ra lỗi');
+      this.tdsMessage.error('Đã xảy ra lỗi');
     });
   }
 
@@ -115,10 +159,10 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   refreshAttachment(item: any) {
     this.activityMatchingService.refreshAttachment(this.team.Facebook_PageId, this.data.fbid || this.data.id , item.id)
       .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.message.success('Thao tác thành công');
+        this.tdsMessage.success('Thao tác thành công');
         this.activityDataFacade.refreshAttachment(res);
     }, error => {
-      this.message.success('Thao tác thất bại');
+      this.tdsMessage.error('Thao tác thất bại');
     })
   }
 
@@ -132,10 +176,55 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   retryMessage() {
     this.activityMatchingService.retryMessage(this.data.tpid || this.data.id, this.team.Facebook_PageId)
       .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-          this.message.success("Thao tác thành công.");
+          this.tdsMessage.success("Thao tác thành công.");
       }, error => {
-      this.message.success('Thao tác thất bại');
+      this.tdsMessage.success('Thao tác thất bại');
     })
+  }
+
+  changeIsPrivateReply() {
+    this.isPrivateReply = !this.isPrivateReply;
+  }
+
+  onProductSelected(event :any) {
+    let model = {
+      page_id: this.team.Facebook_PageId,
+      to_id: this.data.from_id,
+      comment_id: this.data.id,
+      message: this.message,
+
+      product: {
+        Id: event.Id,
+        Name: event.Name,
+        Picture: event.Picture,
+        Price: event.Price,
+      }
+    };
+
+    this.activityMatchingService.addTemplateMessage(this.data.psid, model)
+      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        this.activityDataFacade.messageServer(res);
+        this.conversationDataFacade.messageServer(res);
+        this.tdsMessage.success('Gửi thành công sản phẩm.');
+    }, error => {
+      this.tdsMessage.error('Gửi sản phẩm thất bại');
+    });
+
+    this.message += event.Name, + " - " + event.Price;
+  }
+
+  onIconShowButtonSelected(event: any) {
+    if (!this.message) {
+      this.message = event.emoji.native;
+    } else {
+      this.message = `${this.message}${event.emoji.native}`;
+    }
+  }
+
+  onQuickReplySelected(event: any) {
+    let text = event.BodyPlain || event.BodyHtml || event.text;
+    text = ReplaceHelper.quickReply(text, this.partner);
+    this.message = text;
   }
 
   open_gallery(send_picture: any, att: any) {

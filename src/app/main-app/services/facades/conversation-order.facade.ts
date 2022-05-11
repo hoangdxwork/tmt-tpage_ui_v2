@@ -31,6 +31,7 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
 
   public onLastOrderUpdated$: EventEmitter<any> = new EventEmitter<any>();
   public onLastOrderCheckCvs$: EventEmitter<ConversationOrderForm> = new EventEmitter<ConversationOrderForm>();
+  public onConversationOrder$: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private apiService: TCommonService,
       private message: TDSMessageService,
