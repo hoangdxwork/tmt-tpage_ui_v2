@@ -98,17 +98,17 @@
                 <tds-form-field class="w-full">
                   <input aria-colspan="" class="placeholder-neutral-1-400"
                     placeholder="Nhập tên sản phẩm" tdsInput />
-                  <span tdsPrefix ><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
-                  <span tdsSuffix><i class="tdsi-product-fill"></i></span>
+                  <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
+                  <span tdsSuffix title="Chọn sản phẩm" (click)="onSelectProduct()"><i class="tdsi-product-fill"></i></span>
                 </tds-form-field>
 
-                <button tds-button-icon color="secondary">
+                <button tds-button-icon color="secondary" title="Thêm sản phẩm">
                   <span class="flex items-center">
                     <i class="tdsi-add-fill text-primary-1"></i>
                   </span>
                 </button>
 
-                <button tds-button-icon color="secondary">
+                <button tds-button-icon color="secondary" title="Cấu hình sản phẩm">
                   <span class="flex items-center">
                     <i class="tdsi-gear-2-fill text-neutral-1-400"></i>
                   </span>

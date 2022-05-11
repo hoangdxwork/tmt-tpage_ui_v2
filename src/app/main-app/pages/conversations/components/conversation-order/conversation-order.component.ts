@@ -1,6 +1,6 @@
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { User } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
-import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, Output, SimpleChanges, SkipSelf, EventEmitter } from '@angular/core';
+import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, Output, SimpleChanges, SkipSelf, EventEmitter, ViewContainerRef } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, pipe, Observable } from 'rxjs';
@@ -31,6 +31,7 @@ import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { OrderFormHandler } from 'src/app/main-app/services/handlers/order-form.handler';
 import { CarrierHandler } from 'src/app/main-app/services/handlers/carier.handler';
 import { SaleHandler } from 'src/app/main-app/services/handlers/sale.handler';
+import { ListProductTmpComponent } from 'src/app/main-app/shared/list-product-tmp/list-product-tmp.component';
 
 @Component({
     selector: 'conversation-order',
@@ -70,6 +71,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
     private conversationEventFacade: ConversationEventFacade,
     private conversationOrderFacade: ConversationOrderFacade,
     private saleOnline_OrderService: SaleOnline_OrderService,
+    private modal: TDSModalService,
     private applicationUserService: ApplicationUserService,
     private crmService: CRMTeamService,
     private fb: FormBuilder,
@@ -87,6 +89,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
     private printerService: PrinterService,
     private orderFormHandler: OrderFormHandler,
     private carrierHandler: CarrierHandler,
+    private viewContainerRef: ViewContainerRef,
     private saleHandler: SaleHandler,
     public router: Router) {
   }
@@ -461,6 +464,10 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
 
   stopEdit(): void {
     this.editNoteProduct = null;
+  }
+
+  onSelectProduct() {
+
   }
 
   ngOnChanges(changes: SimpleChanges): void {
