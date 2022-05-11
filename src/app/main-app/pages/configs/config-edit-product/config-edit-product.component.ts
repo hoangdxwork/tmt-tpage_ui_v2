@@ -109,7 +109,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
           this.variantTableData = res.ProductVariants;
         }
     
-        console.log(this.productModel)
+        console.log('edit-page')
         this.editProductForm.patchValue(res);
       },
       err=>{
@@ -496,7 +496,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
 
   editProduct(){
     let model = this.prepareModel();
-    console.log(model)
+    
     if(model.Name){
       this.productTemplateService.updateProductTemplate(model).subscribe(
         (res:TDSSafeAny)=>{
@@ -673,19 +673,6 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
     if(formModel.Description) {
       this.productModel.Description = formModel.Description;
     }
-    // if(formModel.AttributeValues) {
-    //   this.productModel.AttributeValues = formModel.AttributeValues;
-    // }
-    // if(this.productModel && this.productModel.AttributeLines) {
-    //   let value = this.productModel.AttributeLines as TDSSafeAny[];
-
-    //   let lines = value.forEach(line => {
-    //     let id = line.Attribute.Id
-    //     line["AttributeId"] = id;
-    //   });
-
-    //   this.productModel.AttributeLines = lines;
-    // }
 
     return this.productModel;
   }
