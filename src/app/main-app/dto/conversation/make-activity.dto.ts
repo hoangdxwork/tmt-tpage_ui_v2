@@ -192,6 +192,14 @@ export interface MakeActivityItemWebHook {
   ActivityCampaignId: string;
   host: string;
   psid: string;
+  LastActivityTimeConverted: any;
+  checkSendMessage: boolean;
+  tags: any[];
+  count_unread_activities: number;
+  has_order: boolean;
+  has_phone: number;
+  has_address: number;
+  is_show_break: boolean;
 }
 
 export interface MakeActivityQueryObj {

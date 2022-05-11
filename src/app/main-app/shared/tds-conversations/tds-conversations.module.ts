@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FormsModule } from '@angular/forms';
-import { TDSOutletModule, TDSAvatarModule, TDSButtonModule, TDSToolTipModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSSelectModule, TDSBadgeModule, TDSModalModule, TDSSpinnerModule} from 'tmt-tang-ui';
+import { TDSOutletModule, TDSAvatarModule, TDSButtonModule, TDSToolTipModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSSelectModule, TDSBadgeModule, TDSModalModule, TDSSpinnerModule, TDSTypographyModule} from 'tmt-tang-ui';
 import { TDSConversationsComponent } from './tds-conversations.component';
 import { TDSConversationItemComponent } from './tds-conversation-item.component';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
@@ -13,6 +13,8 @@ import { TDSCardModule } from 'tmt-tang-ui';
 import { ShowAttachmentComponent } from '../show-attachment/show-attachment.component';
 import { PipeModule } from '../pipe/pipe.module';
 import { TDSImageModule } from 'tmt-tang-ui';
+import {  TDSAlertModule } from 'tmt-tang-ui';
+import { TDSCollapseModule } from 'tmt-tang-ui';
 
 const CMP =[
   TDSConversationsComponent,
@@ -45,7 +47,10 @@ const CMP =[
     UploadImageModule,
     TDSCardModule,
     PipeModule,
-    TDSImageModule
+    TDSImageModule,
+    TDSCollapseModule,
+    TDSTypographyModule,
+    TDSAlertModule
   ],
   exports:[
     ...CMP
