@@ -1,0 +1,122 @@
+<div class="flex flex-col gap-y-8 text-body-2">
+    <div class="flex w-full gap-x-8 items-center">
+        <tds-avatar [shape]="'square'" [size]="133" tdsSrc="error" [isAvatar]="false" class="rounded-lg"> </tds-avatar>
+        <div class=" flex-auto grid grid-cols-2">
+            <div class="flex flex-col gap-y-4">
+                <div class="flex">
+                    <div class="w-1/2">
+                        <span>Số lượng:</span>
+                    </div>
+                    <div class="w-1/2">
+                        <span>1</span>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="w-1/2">
+                        <span>Phí giao hàng:</span>
+                    </div>
+                    <div class="w-1/2">
+                        <span>30,000</span>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="w-1/2">
+                        <span>Chiết khấu:</span>
+                    </div>
+                    <div class="w-1/2">
+                        <span>0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col gap-y-4">
+                <div class="flex">
+                    <div class="w-1/2">
+                        <span>Thành tiền</span>
+                    </div>
+                    <div class="w-1/2">
+                        <span>150.000.000</span>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="w-1/2">
+                        <span>Tiền khách phải trả</span>
+                    </div>
+                    <div class="w-1/2">
+                        <span>150.000.000</span>
+                    </div>
+                </div>
+                <div class="flex text-title-1 font-semibold">
+                    <div class="w-1/2">
+                        <span>Tổng tiền:</span>
+                    </div>
+                    <div class="w-1/2">
+                        <span>150,030,000</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-col gap-y-4">
+        <div>
+            <span class="text-header-2 font-semibold text-neutral-1-600">Thông tin xác nhận</span>
+        </div>
+        <div class="w-full bg-neutral-3-50 rounded-xl flex items-center p-4">
+            <div class="grid flex-auto grid-cols-2 gap-4">
+                <div class="">
+                    <span class="flex items-center"><i
+                            class="tdsi-user-fill mr-1 text-neutral-1-500 text-xl leading-none"></i>
+                        <span class="font-semibold mr-1">Người nhận hàng:</span> Nguyễn Thanh Thúy
+                    </span>
+                </div>
+                <div class="">
+                    <span class="flex items-center"><i
+                            class="tdsi-call-fill mr-1 text-neutral-1-500 text-xl leading-none"></i>
+                        <span class="font-semibold mr-1">Số điện thoại:</span> 0210 225 223
+                    </span>
+                </div>
+                <div class="">
+                    <span class="flex items-center"><i
+                            class="tdsi-pin-fill mr-1 text-neutral-1-500 text-xl leading-none"></i>
+                        <span class="font-semibold mr-1">Địa chỉ giao hàng: </span> Hòa Bình, Quận Ninh Kiều, Thành phố
+                        Cần Thơ
+                    </span>
+                </div>
+                <div class="">
+                    <span class="flex items-center"><i
+                            class="tdsi-edit-paper-fill mr-1 text-neutral-1-500 text-xl leading-none"></i>
+                        <span class="font-semibold mr-1">Ghi chú đơn hàng:</span> Cho khách xem hàng , không thử
+                    </span>
+                </div>
+            </div>
+            <div>
+                <button tds-flat-button size="md" (click)="showModalConfirmShippingAddress()">
+                    <span class="flex items-center text-primary-1">
+                        <i class=" tdsi-edit-fill text-xl leading-none mr-2">
+                        </i>Chỉnh sửa
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div class="w-full bg-neutral-3-50 rounded-xl flex items-center p-4">
+            <div class="flex-auto">
+                <span class="flex items-center gap-x-1">
+                    <i class="tdsi-user-fill text-neutral-1-500 text-xl leading-none"></i>
+                    <span class="font-semibold">Xác nhận thanh toán:</span> <span class="text-error-500">Chưa
+                        chọn</span>- 150.030.00
+                </span>
+            </div>
+            <div>
+                <button tds-flat-button size="md" (click)="showModalConfirmPayment()">
+                    <span class="flex items-center text-primary-1">
+                        <i class=" tdsi-edit-fill text-xl leading-none mr-2">
+                        </i>Chỉnh sửa
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2" color="secondary" (click)="cancel()">Đóng</button>
+    <button tds-button class="mr-2" color="primary" (click)="onSave()">Xác nhận</button>
+</div>
