@@ -1,7 +1,6 @@
 import { ResultCheckAddressDTO } from './../../../../dto/address/address.dto';
 import { FilterObjDTO, OdataProductService } from './../../../../services/mock-odata/odata-product.service';
 import { TDSHelperObject } from 'tmt-tang-ui';
-import { FastSaleOrderHandler } from './../../../../services/handlers/fast-sale-order.handler';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { DeliveryCarrierDTO } from './../../../../dto/carrier/delivery-carrier.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
@@ -22,12 +21,13 @@ import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderDefaultDTO, FastSaleOrderLineDTO, FastSaleOrder_ServiceExtraDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
-import { SaleOnline_OrderHandler } from 'src/app/main-app/services/handlers/sale-online-order.handler';
 import { Observable } from 'rxjs';
 import { CarrierHandler } from 'src/app/main-app/services/handlers/carier.handler';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
+import { finalize } from 'rxjs/operators';
+import { CheckFormHandler } from 'src/app/main-app/services/handlers/check-form.handler';
 
 @Component({
   selector: 'edit-order',
@@ -81,12 +81,11 @@ export class EditOrderComponent implements OnInit {
     private applicationUserService: ApplicationUserService,
     private commonService: CommonService,
     private fastSaleOrderService: FastSaleOrderService,
-    private saleOnline_OrderHandler: SaleOnline_OrderHandler,
-    private fastSaleOrderHandler: FastSaleOrderHandler,
     private carrierHandler: CarrierHandler,
     private partnerService: PartnerService,
     private odataProductService: OdataProductService,
     private deliveryCarrierService: DeliveryCarrierService,
+    private checkFormHandler: CheckFormHandler
   ) { }
 
   ngOnInit(): void {
@@ -400,7 +399,7 @@ export class EditOrderComponent implements OnInit {
       }
     }
 
-    let check = this.fastSaleOrderHandler.checkValue(this.defaultBill);
+    let check = this.checkFormHandler.checkValueBill(this.defaultBill);
 
     if(TDSHelperString.hasValueString(check)) {
       this.message.error(JSON.stringify(check));
@@ -427,36 +426,30 @@ export class EditOrderComponent implements OnInit {
     this.enableInsuranceFee = false;
     this.isLoadCarrier = true;
 
-    this.saleOnline_OrderHandler.changeCarrier(this.defaultBill, this.formEditOrder, event, this.shipExtraServices).subscribe(res => {
-      this.enableInsuranceFee = res.EnableInsuranceFee;
-      this.shipServices = res.ShipServices;
+    this.carrierHandler.changeCarrierV2(this.defaultBill, this.formEditOrder, event, this.shipExtraServices)
+      .pipe(finalize(() => this.isLoadCarrier = false))
+      .subscribe(res => {
+        this.shipServices = res?.Services;
+        this.updateShipExtraServices(event);
+        this.updateFormByBillDefault(this.defaultBill);
+      }, error => {
+          this.updateFormByBillDefault(this.defaultBill);
+          this.message.error(error.error_description ? error.error_description : JSON.stringify(error));
+      });
+  }
 
-      if(res.TypeShipExtra == "NinjaVan") {
-        this.initNinjaVan();
-      }
+  updateShipExtraServices(carrier: any) {
+    if(carrier) {
+      let insuranceFee = this.formEditOrder.value.Ship_Extras?.InsuranceFee || 0;
 
-
-      this.updateFormByBillDefault(this.defaultBill);
-
-      this.isLoadCarrier = false;
-
-    }, error => {
-      if(error.error_description) {
-        this.message.error(error.error_description);
-      }
-      else {
-        this.message.error(JSON.stringify(error));
-      }
-
-      this.updateFormByBillDefault(this.defaultBill);
-
-      this.isLoadCarrier = false;
-    });
+      this.enableInsuranceFee = this.carrierHandler.getShipExtraServices(carrier, this.shipExtraServices);
+      this.enableInsuranceFee && (this.formEditOrder.controls.Ship_InsuranceFee.setValue(insuranceFee));
+    }
   }
 
   onSelectShipServices(event: any) {
     !this.shipExtraServices && (this.shipExtraServices = []);
-    this.saleOnline_OrderHandler.selectShipService(event, this.defaultBill, this.shipExtraServices);
+    this.carrierHandler.selectShipService(event, this.defaultBill, this.shipExtraServices);
 
     if (this.defaultBill.Carrier?.DeliveryType === 'GHN') {
       this.onUpdateInsuranceFee('16').subscribe(res => {});
@@ -464,7 +457,7 @@ export class EditOrderComponent implements OnInit {
   }
 
   onUpdateInsuranceFee(serviceId: any): Observable<any> {
-    return this.saleOnline_OrderHandler.onUpdateInsuranceFee(serviceId, this.defaultBill, this.formEditOrder, this.shipExtraServices);
+    return this.carrierHandler.onUpdateInsuranceFee(serviceId, this.defaultBill, this.formEditOrder, this.shipExtraServices);
   }
 
   existDeliveryTypes(deliveryType: string) {
@@ -481,7 +474,7 @@ export class EditOrderComponent implements OnInit {
   }
 
   calculateFee(item: any) {
-    this.saleOnline_OrderHandler.calculateFeeHandler(item, this.defaultBill, this.formEditOrder, this.shipExtraServices).subscribe(res => {
+    this.carrierHandler.calculateFee(item, this.defaultBill, this.formEditOrder, this.shipExtraServices).subscribe(res => {
         this.shipServices = res.Services;
     }, (error: TDSSafeAny) => {
       if(error && typeof error == 'string') {

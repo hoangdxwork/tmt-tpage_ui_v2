@@ -28,6 +28,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   psid!: string;
   activeMatchingItem!: ActiveMatchingItem;
   isFastSend: boolean = false;
+  currentOrderCode!: string | undefined;
 
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
@@ -51,7 +52,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           this.onChangeConversation(team);
           this.fetchLiveConversations(team);
       }
-    })
+    });
   }
 
   onChangeConversation(team: any) {
@@ -120,6 +121,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       .subscribe((res :any) => {
         console.log(res);
       });
+  }
+
+  changeOrderId(orderCode: string | undefined) {
+    this.currentOrderCode = orderCode;
   }
 
   ngOnDestroy(): void {

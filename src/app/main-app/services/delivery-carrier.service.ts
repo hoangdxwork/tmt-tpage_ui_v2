@@ -16,13 +16,6 @@ export class DeliveryCarrierService extends BaseSevice {
   table: string = "DeliveryCarrier";
   baseRestApi: string = "";
 
-  private delivery_types: any = ["fixed", "base_on_rule", "VNPost", "NinjaVan"];
-  // Đối tác có phí báo hiểm
-  private carrierTypeInsurance: any = ["MyVNPost", "GHN", "GHTK", "ViettelPost", "NinjaVan"];
-  // Danh sách đối tác hỗ trợ tính phí
-  private apiDeliveries: any = ['GHTK', 'ViettelPost', 'GHN', 'TinToc', 'SuperShip', 'FlashShip', 'OkieLa', 'MyVNPost', 'DHL', 'FulltimeShip', 'JNT', 'BEST', 'EMS', 'AhaMove', 'Snappy', 'NhatTin', "HolaShip"];
-
-  public dataCarrierActive: any;
   public dataCarrierActive$ = new BehaviorSubject<any>([]);
 
   constructor(private apiService: TCommonService) {
@@ -31,17 +24,9 @@ export class DeliveryCarrierService extends BaseSevice {
   }
 
   initialize() {
-    if (this.dataCarrierActive) {
-        this.dataCarrierActive$.next(this.dataCarrierActive);
-    } else {
-      this.get().subscribe((res: any) => {
-          this.dataCarrierActive = res.value;
-          this.dataCarrierActive$.next(this.dataCarrierActive);
-
-          let deliveriesTypes = _groupBy(res.value, 'DeliveryType');
-          this.apiDeliveries = Object.keys(deliveriesTypes);
-      });
-    }
+    this.get().subscribe((res: any) => {
+        this.dataCarrierActive$.next(res?.value);
+    });
   }
 
   get(): Observable<any> {

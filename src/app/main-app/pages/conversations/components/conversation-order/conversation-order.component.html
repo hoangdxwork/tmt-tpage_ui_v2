@@ -165,7 +165,7 @@
                 <div class="flex w-1/2 gap-2.5 ">
                     <div class="w-1/3 text-body-2 font-regular font-sans text-neutral-1-900">Tổng</div>
                     <div class="w-2/3 flex justify-end text-body-2 font-regular font-sans text-neutral-1-900">
-                      {{ orderForm?.value?.TotalAmount }}
+                      {{ orderForm?.value?.TotalAmount | number }}
                     </div>
                 </div>
 
@@ -174,7 +174,8 @@
                     <div class="w-1/3 text-body-2 font-regular font-sans text-neutral-1-900">Giảm giá</div>
                     <div class="w-2/3">
                       <tds-form-field>
-                        <input tdsInput autocomplete="off" placeholder="0" [formControl]="giamGia" />
+                        <tds-input-number autocomplete="off" placeholder="0" [disabled]="true" [ngModelOptions]="{standalone: true}"
+                        [ngModel]="orderForm.value?.DecreaseAmount + orderForm.value?.DiscountAmount | number" ></tds-input-number>
                         <span tdsSuffix>
                           <span class="text-body-2 font-semibold font-sans text-primary-1">%</span>
                           <span class="text-body-2 font-semibold font-sans text-neutral-1-400 pl-2">VNĐ</span>
@@ -185,7 +186,7 @@
                   <div class="flex w-1/2 gap-2.5 items-center">
                     <div class="w-1/3 text-body-2 font-semibold font-sans text-neutral-1-900">Tổng tiền</div>
                     <div class="w-2/3 flex justify-end text-header-1 font-semibold font-sans text-neutral-1-900">
-                      {{ orderForm?.value?.TotalAmountBill }}
+                      {{ orderForm?.value?.TotalAmountBill | number }}
                     </div>
                   </div>
                 </div>
@@ -206,7 +207,7 @@
                     <div class="w-2/3">
                       <tds-form-field>
                         <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0"
-                          [(ngModel)]="saleModel.AmountDeposit" [ngModelOptions]="{standalone: true}"></tds-input-number>
+                          [(ngModel)]="saleModel.AmountDeposit" [ngModelOptions]="{standalone: true}" (ngModelChange)="updateTotalAmount()"></tds-input-number>
                       </tds-form-field>
                     </div>
                   </div>
@@ -216,10 +217,10 @@
                   <div class="w-1/2 gap-2.5 flex items-center">
                     <div class="w-1/3 text-body-2 font-regular font-sans text-neutral-1-900">Khuyến mãi</div>
                     <div class="w-2/3">
-                      <tds-form-field>
+                      <!-- <tds-form-field>
                         <tds-input-number [min]="0" autocomplete="off" placeholder="0" [formControl]="khuyenMai"></tds-input-number>
                         <span tdsSuffix><i class="tdsi-gift-fill text-primary-1 text-xl"></i></span>
-                      </tds-form-field>
+                      </tds-form-field> -->
                     </div>
                   </div>
                   <div class="flex w-1/2 gap-2.5 items-center">
@@ -255,12 +256,13 @@
                   </ng-template>
 
                   <div class="flex flex-col gap-4 w-full h-full">
+                    <!-- Đối tác giao hàng -->
                     <div>
                       <div class="text-body-2 font-semibold font-sans text-neutral-1-900 pb-2">Đối tác giao hàng</div>
                       <tds-form-field>
                         <tds-select valueField="Id" textField="Name" placeholder='Đối tác giao hàng'
                           [(ngModel)]="saleModel.Carrier"  [ngModelOptions]="{standalone: true}" disabledField="isActive" [data]="lstCarriers"
-                          [required]="true" (ngModelChange)="onChangeCarrier($event)" [valuePrimitive]="false">
+                          (ngModelChange)="onChangeCarrier($event)" [valuePrimitive]="false">
                         </tds-select>
                       </tds-form-field>
                     </div>
@@ -269,20 +271,33 @@
                       <div class="text-body-2 font-semibold font-sans text-neutral-1-900 pb-2">Dịch vụ</div>
                       <tds-form-field>
                         <tds-select valueField="ServiceId" textField="ServiceName" placeholder='Giao hàng tiêu chuẩn'
-                          disabledField="isActive" [data]="lstShipServices" [allowClear]="true" [required]="true"
-                          [formControl]="saleModel.Ship_ServiceId">
+                          disabledField="isActive" [data]="lstShipServices" [allowClear]="false" [required]="true" [valuePrimitive]="false"
+                          [(ngModel)]="saleModel.Ship_ServiceId" [ngModelOptions]="{standalone: true}" (selectChange)="onSelectShipService($event)">
                         </tds-select>
                       </tds-form-field>
                     </div>
                     <!-- Dịch vụ vận chuyển bổ xung -->
                     <div *ngIf="shipExtraServices && shipExtraServices.length > 0">
-                      <tds-checkbox *ngFor="let shipExtra of shipExtraServices" [(ngModel)]="shipExtra.IsSelected" (change)="onChangeExtraService($event)">
+                      <tds-checkbox *ngFor="let shipExtra of shipExtraServices" [(ngModel)]="shipExtra.IsSelected" [ngModelOptions]="{standalone: true}"
+                       (change)="onChangeExtraService($event)">
                         {{shipExtra.ServiceName}}
                       </tds-checkbox>
                     </div>
+                    <!-- Phí ship đối tác -->
                     <div class="flex gap-3 items-center">
                       <div class="text-body-2 font-regular font-sans text-info-500">
                         Phí ship (đối tác): <span class="pl-2 font-semibold"> {{ saleModel.CustomerDeliveryPrice  || 0 | number}} </span>
+                      </div>
+                      <button tds-button-icon color="info" (click)="calcFee()">
+                        <span class="flex items-center">
+                          <i class="tdsi-reload-fill"></i>
+                        </span>
+                      </button>
+                    </div>
+                    <!-- Giá trị hàng hóa / tổng hóa đơn -->
+                    <div class="flex gap-3 items-center" *ngIf="isEnableInsuranceFee">
+                      <div class="text-body-2 font-regular font-sans text-info-500">
+                        Giá trị hàng hóa: = Tổng hóa đơn {{ saleModel.Ship_InsuranceFee || 0 | number }}
                       </div>
                       <button tds-button-icon color="info">
                         <span class="flex items-center">
