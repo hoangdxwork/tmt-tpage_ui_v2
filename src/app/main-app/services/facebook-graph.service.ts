@@ -39,7 +39,6 @@ export class FacebookGraphService extends BaseSevice {
     return this.apiService.getData<FBUserPageRequestDTO>(api,null);
   }
 
-
   getFeed(accessToken: any): Observable<any> {
     return this.fb.api(`/me/feed?fields=id,picture,message,story,description&access_token=${accessToken}`, {})
         .pipe((res: any) => {

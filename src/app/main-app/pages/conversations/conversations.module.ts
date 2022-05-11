@@ -7,7 +7,7 @@ import { ConversationPostComponent } from './conversation-post/conversation-post
 import { ConversationCommentComponent } from './conversation-comment/conversation-comment.component';
 import { ConversationInboxComponent } from './conversation-inbox/conversation-inbox.component';
 import { MainSharedModule } from '../../shared/shared.module';
-import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSMessageModule, TDSModalModule, TDSPopoverModule, TDSRadioModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSToolTipModule, TDSTypographyModule } from 'tmt-tang-ui';
+import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSImageModule, TDSInputModule, TDSInputNumberModule, TDSMessageModule, TDSModalModule, TDSPopoverModule, TDSRadioModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSToolTipModule, TDSTypographyModule } from 'tmt-tang-ui';
 import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conversations.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalImageStoreComponent } from './components/modal-image-store/modal-image-store.component';
@@ -38,11 +38,14 @@ import { PrinterService } from '../../services/printer.service';
 import { OrderFormHandler } from '../../services/handlers/order-form.handler';
 import { CarrierHandler } from '../../services/handlers/carier.handler';
 import { SaleHandler } from '../../services/handlers/sale.handler';
+import { FacebookPostService } from '../../services/facebook-post.service';
+import { ConversationPostFacade } from '../../services/facades/conversation-post.facade';
 
 const SERVICES = [
   ConversationDataFacade,
   ConversationEventFacade,
   ConversationOrderFacade,
+  ConversationPostFacade,
   ActivityDataFacade,
   ConversationFacebookState,
   ConversationService,
@@ -61,7 +64,8 @@ const SERVICES = [
   OrderPrintService,
   PrinterService,
   OrderFormHandler,
-  CarrierHandler
+  CarrierHandler,
+  FacebookPostService
 ]
 
 @NgModule({
@@ -105,7 +109,8 @@ const SERVICES = [
     TDSTypographyModule,
     UploadImageModule,
     TDSSpinnerModule,
-    TDSInputNumberModule
+    TDSInputNumberModule,
+    TDSImageModule,
   ],
   providers: [ ...SERVICES]
 })

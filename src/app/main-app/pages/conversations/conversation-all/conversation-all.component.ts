@@ -49,8 +49,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           this.type = params?.params?.type;
           this.setParamsUrl(params.params);
           this.setCurrentTeam(team);
-          this.onChangeConversation(team);
           this.fetchLiveConversations(team);
+          this.onChangeConversation(team);
       }
     });
   }
