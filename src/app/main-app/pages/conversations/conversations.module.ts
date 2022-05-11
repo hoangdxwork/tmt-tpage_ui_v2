@@ -29,11 +29,15 @@ import { FastSaleOrderService } from '../../services/fast-sale-order.service';
 import { CheckFormHandler } from '../../services/handlers/check-form.handler';
 import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { CommonService } from '../../services/common.service';
-import { SaleOnline_OrderHandler } from '../../services/handlers/sale-online-order.handler';
 import { FacebookGraphService } from '../../services/facebook-graph.service';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
 import { ActivityMatchingService } from '../../services/conversation/activity-matching.service';
 import { ApplicationUserService } from '../../services/application-user.service';
+import { OrderPrintService } from '../../services/print/order-print.service';
+import { PrinterService } from '../../services/printer.service';
+import { OrderFormHandler } from '../../services/handlers/order-form.handler';
+import { CarrierHandler } from '../../services/handlers/carier.handler';
+import { SaleHandler } from '../../services/handlers/sale.handler';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -50,10 +54,14 @@ const SERVICES = [
   CheckFormHandler,
   DeliveryCarrierService,
   CommonService,
-  SaleOnline_OrderHandler,
+  SaleHandler,
   FacebookGraphService,
   ActivityMatchingService,
-  ApplicationUserService
+  ApplicationUserService,
+  OrderPrintService,
+  PrinterService,
+  OrderFormHandler,
+  CarrierHandler
 ]
 
 @NgModule({
