@@ -9,7 +9,7 @@
                             <i class="tdsi-back-fill text-xl leading-5"></i>
                         </span>
                     </button>
-                    <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">THÊM MỚI SẢN PHẨM</span>
+                    <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">{{id ? "CHỈNH SỬA SẢN PHẨM" : "THÊM MỚI SẢN PHẨM"}}</span>
                 </div>
                 <button tds-button color="primary" type="submit" class="w-[100px]" 
                   [disabled]="!_form.valid" 
@@ -19,7 +19,11 @@
             </div>
             <div class="flex flex-col p-4">
                 <div class="flex flex-row items-center justify-start w-2/3 pb-6">
-                    <tpage-upload-avatar [size]="112" class="mr-12" (getResult)="getAvatar($event)"></tpage-upload-avatar>
+                    <tpage-upload-avatar class="mr-12"
+                      [size]="112" 
+                      [imageUrl]="_form.controls.ImageUrl.value" 
+                      (getResult)="getAvatar($event)">
+                    </tpage-upload-avatar>
                     <div class="flex flex-col w-full">
                         <tds-form-field>
                             <tds-label>Tên sản phẩm</tds-label>
@@ -39,8 +43,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="w-full border border-neutral-2-100 rounded-md">
-                    <tds-tabset clsTab="tds-add-product-form">
+                <div class="w-full h-full border border-neutral-2-100 rounded-md">
+                    <tds-tabset>
                         <tds-tab title="Thông tin chung">
                             <div class="grid grid-cols-2 gap-y-4 gap-x-8">
                               <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
@@ -76,7 +80,7 @@
                                   <div class="flex space-x-2">
                                     <tds-form-field class="w-full mr-2">
                                       <tds-select valueField="Id" textField="CompleteName" placeholder='Chọn nhóm sản phẩm'
-                                      disabledField="isActive" formControlName="Categ"
+                                      disabledField="isActive" formControlName="Categ" [valuePrimitive]="false"
                                       [data]="categoryList" [allowClear]="true" [optionOverflowSize]="5">
                                       </tds-select>
                                       <tds-error>
@@ -124,7 +128,7 @@
                                 <tds-label>Đơn vị mặc định<span class="text-error-400">*</span> :</tds-label>
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị'
-                                  disabledField="isActive" formControlName="UOMPO"
+                                  disabledField="isActive" formControlName="UOMPO" [valuePrimitive]="false"
                                   [data]="UOMPOList" [allowClear]="true" [optionOverflowSize]="5">
                                   </tds-select>
                                   <tds-error>
@@ -135,7 +139,7 @@
                                 <tds-label>Đơn vị mua<span class="text-error-400">*</span> :</tds-label>
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị'
-                                  disabledField="isActive" formControlName="UOM"
+                                  disabledField="isActive" formControlName="UOM" [valuePrimitive]="false"
                                   [data]="UOMList" [allowClear]="true" [optionOverflowSize]="5">
                                   </tds-select>
                                   <tds-error>
@@ -152,7 +156,12 @@
                             </div>
                         </tds-tab>
                         <tds-tab title="Hình ảnh">
-                          <tpage-upload-images [size]="112" (getResult)="getImageList($event)"></tpage-upload-images>
+                          <tpage-upload-images 
+                            [size]="112" 
+                            [inputImages]="_form.controls.Images.value" 
+                            [useProductModel]="true"
+                            (getResult)="getImageList($event)">
+                          </tpage-upload-images>
                         </tds-tab>
                         <tds-tab title="tồn kho">
                           <div class="grid grid-cols-2 gap-y-4 gap-x-8">
@@ -196,7 +205,7 @@
                               <tds-label>Nhóm Pos:</tds-label>
                               <tds-form-field class="w-full col-span-2">
                                 <tds-select valueField="Id" textField="NameGet" placeholder='Chọn nhóm Pos'
-                                  disabledField="isActive" formControlName="POSCateg"
+                                  disabledField="isActive" formControlName="POSCateg" [valuePrimitive]="false"
                                   [data]="POSCategoryList" [allowClear]="true" [optionOverflowSize]="5">
                                 </tds-select>
                                 <tds-error>
@@ -207,12 +216,8 @@
                           </div>
                         </tds-tab>
                         <tds-tab title="Biến thể">
-                            <div class="flex flex-col items-center justify-between">
-                              <div class="flex flex-row items-center justify-between w-full py-4">
-                                <span class="flex flex-row items-center">
-                                  <i class="tdsi-variant-fill text-neutral-1-500 text-lg leading-none mr-2"></i>
-                                  <span class="text-body-2 font-semibold">Biến thể</span>
-                                </span>
+                            <div class="flex flex-col items-center h-full">
+                              <div *ngIf="!id" class="flex flex-row items-center justify-end w-full py-4">
                                 <div class="flex flex-row items-center justify-end">
                                   <button tds-button color="secondary" type="button" class="mr-3" (click)="showCreateAttributeModal()">
                                     <span class="flex items-center">
@@ -220,56 +225,82 @@
                                       <span class="text-body-2 font-semibold">Quản lý thuộc tính</span>
                                     </span>
                                   </button>
-                                  <div tds-tooltip 
-                                    tooltipTitle="Thêm trước thuộc tính để tạo biến thể"
-                                    tooltipPlacement="top"
-                                    [tooltipTrigger]="'hover'">
-                                    <button tds-button color="primary" type="button" 
-                                      [disabled]="attributeList.length == 0"
-                                      >
-                                      <!-- (click)="showCreateVariantModal()" -->
-                                      <span class="flex items-center">
-                                        <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
-                                        <span class="text-body-2 font-semibold">Thêm biến thể</span>
-                                      </span>
-                                    </button>
-                                  </div>
                                 </div>
                               </div>
-                              <div class="w-full h-full pb-3">
-                                <tds-table #basicTable
-                                    [listData]="variantTableData"
-                                    [showSizeChanger]="true" 
+                              <div class="flex flex-row justify-between w-full h-full pb-3">
+                                <div *ngIf="!id" class="h-60 mr-3">
+                                  <tds-table #attributesTable
+                                    [listData]="lstAttributes"
                                     [loading]="isLoadingVariant"
-                                    [pageSize]="variantPageSize"
-                                    [pageIndex]="variantPageIndex"
-                                    [total]="count"
                                     [noResult]="NoResultTable"
-                                    (clickRefresh)="refreshVariantData()">
+                                    [showPagination]="false"
+                                    [scroll]="{y:'auto'}"
+                                    class="h-full w-full"
+                                    >
+                                    <thead>
+                                      <tr>
+                                        <th [width]="'192px'">Thuộc tính</th>
+                                        <th [width]="'192px'">Giá trị</th>
+                                        <th [width]="'120px'" [align]="'center'">Thao tác</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        <ng-template ngFor let-data let-i="index" [ngForOf]="attributesTable.data">
+                                            <tr>
+                                              <td [width]="'192px'">
+                                                {{ data.Attribute.Name }}
+                                              </td>
+                                              <td [width]="'192px'">
+                                                <div class="flex flex-wrap items-center">
+                                                  <div *ngFor="let value of data.Values">
+                                                    <tds-tag status='secondary' rounded="rounded-full mr-2 mb-2">{{ value.NameGet }}</tds-tag> 
+                                                  </div>
+                                                </div>
+                                              </td>
+                                              <td [width]="'120px'" [align]="'center'">
+                                                <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2">
+                                                  <span class="flex items-center">
+                                                    <i class="tdsi-edit-fill text-xl leading-none"></i>
+                                                  </span>
+                                                </button>
+                                                <button tds-button-icon color="secondary" type="button" size="sm">
+                                                    <span class="flex items-center">
+                                                      <i class="tdsi-trash-fill text-xl leading-none"></i>
+                                                    </span>
+                                                </button>
+                                              </td>
+                                            </tr>
+                                        </ng-template>
+                                    </tbody>
+                                  </tds-table>
+                                </div>
+                                <div class="flex-auto h-60">
+                                  <tds-table #variantsTable
+                                    [listData]="lstVariants"
+                                    [loading]="isLoadingVariant"
+                                    [noResult]="NoResultTable"
+                                    [showPagination]="false"
+                                    [scroll]="{y:'auto'}"
+                                    class="h-full w-full">
                                     <thead>
                                           <tr>
-                                                <th [width]="'80px'">STT</th>
-                                                <th>Tên</th>
-                                                <th>Giá</th>
-                                                <th>Hoạt động</th>
-                                                <th>Thao tác</th>
+                                                <th [width]="'40px'">STT</th>
+                                                <th [width]="'192px'">Tên</th>
+                                                <th [width]="'192px'">Giá</th>
+                                                <th [width]="'120px'">Hoạt động</th>
+                                                <th [width]="'120px'">Thao tác</th>
                                           </tr>
                                     </thead>
                                     <tbody>
-                                        <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
+                                        <ng-template ngFor let-data let-i="index" [ngForOf]="variantsTable.data">
                                             <tr>
-                                                <td>{{ 1 + i + (variantPageIndex - 1) * variantPageSize }}</td>
-                                                <td>
+                                                <td [width]="'40px'">{{ 1 + i }}</td>
+                                                <td [width]="'192px'">
                                                   <div class="flex flex-col">
                                                     <span class="mb-2">{{ data.NameGet }}</span>
-                                                    <div class="flex flex-wrap items-center">
-                                                      <div *ngFor="let value of data.AttributeValues">
-                                                        <tds-tag status='secondary' rounded="rounded-full mr-2 mb-2">{{ value }}</tds-tag> 
-                                                      </div>
-                                                    </div>
                                                   </div>
                                                 </td>
-                                                <td>
+                                                <td [width]="'192px'">
                                                   <tds-input-number 
                                                     [(ngModel)]="data.PriceVariant" 
                                                     [ngModelOptions]="{standalone: true}" 
@@ -277,10 +308,10 @@
                                                     class="text-neutral-1-900 text-body-2 font-regular">
                                                   </tds-input-number>
                                                 </td>
-                                                <td>
+                                                <td [width]="'120px'">
                                                   <tds-switch [checked]="data.Active"></tds-switch>
                                                 </td>
-                                                <td>
+                                                <td [width]="'120px'">
                                                   <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2">
                                                     <span class="flex items-center">
                                                       <i class="tdsi-edit-fill text-xl leading-none"></i>
@@ -295,11 +326,12 @@
                                             </tr>
                                         </ng-template>
                                     </tbody>
-                                </tds-table>
+                                  </tds-table>
+                                </div>
                                 <ng-template #NoResultTable>
                                   <div class="flex flex-col items-center justify-center w-full h-[150px]">
                                     <tds-avatar [tdsSrc]="'assets/images/config/Empty_Table.svg'" [isAvatar]="false" [size]="90" [shape]="'square'"></tds-avatar>
-                                    <span class="text-neutral-1-400 text-body-2 text-center font-regular mt-3">Chưa có biến thể nào</span>
+                                    <span class="text-neutral-1-400 text-body-2 text-center font-regular mt-3">Không có dữ liệu</span>
                                   </div>
                                 </ng-template>
                               </div>
@@ -327,7 +359,7 @@
                                 <div class="flex space-x-2 items-center col-span-3">
                                   <tds-form-field class="w-full">
                                     <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà sản xuất'
-                                      disabledField="isActive" [data]="producerList" [optionOverflowSize]="5"
+                                      disabledField="isActive" [data]="producerList" [optionOverflowSize]="5" [valuePrimitive]="false"
                                       formControlName="Producer">
                                     </tds-select>
                                   </tds-form-field>
@@ -342,7 +374,7 @@
                                 <div class="flex space-x-2 items-center col-span-3">
                                   <tds-form-field class="w-full">
                                     <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà nhập khẩu'
-                                      disabledField="isActive" [data]="importerList" [optionOverflowSize]="5"
+                                      disabledField="isActive" [data]="importerList" [optionOverflowSize]="5" [valuePrimitive]="false"
                                       formControlName="Importer">
                                     </tds-select>
                                   </tds-form-field>
@@ -357,7 +389,7 @@
                                 <div class="flex space-x-2 items-center col-span-3">
                                   <tds-form-field class="w-full">
                                     <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà phân phối'
-                                      disabledField="isActive" [data]="distributorList" [optionOverflowSize]="5"
+                                      disabledField="isActive" [data]="distributorList" [optionOverflowSize]="5" [valuePrimitive]="false"
                                       formControlName="Distributor">
                                     </tds-select>
                                   </tds-form-field>
@@ -372,7 +404,7 @@
                                 <div class="flex space-x-2 items-center col-span-3">
                                   <tds-form-field class="w-full">
                                     <tds-select valueField="Id" textField="Name" placeholder='Chọn xuất xứ'
-                                      disabledField="isActive" [data]="originCountryList" [optionOverflowSize]="5"
+                                      disabledField="isActive" [data]="originCountryList" [optionOverflowSize]="5" [valuePrimitive]="false"
                                       formControlName="OriginCountry">
                                     </tds-select>
                                   </tds-form-field>

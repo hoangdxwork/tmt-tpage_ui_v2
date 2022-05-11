@@ -354,11 +354,11 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     this.loadData(this.pageSize, this.pageIndex);
   }
 
-  showEditModal(data:ProductTemplateDTO){
+  editProduct(data:ProductTemplateDTO){
     this.router.navigateByUrl(`/configs/products/edit/${data.Id}`);
   }
 
-  showRemoveModal(data:ProductTemplateDTO){
+  removeProduct(data:ProductTemplateDTO){
     const modal = this.modalService.error({
         title: 'Xác nhận xóa sản phẩm',
         content: 'Bạn có chắc muốn xóa sản phẩm này không?',

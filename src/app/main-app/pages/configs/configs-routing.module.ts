@@ -71,7 +71,7 @@ const routes: Routes = [
       },
       {
         path:'products/edit/:id',
-        component: ConfigEditProductComponent
+        component: ConfigAddProductComponent
       },
       {
         path:'activities',
