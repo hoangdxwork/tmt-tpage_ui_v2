@@ -1,6 +1,6 @@
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { User } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
-import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, SimpleChanges, SkipSelf } from '@angular/core';
+import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, Output, SimpleChanges, SkipSelf, EventEmitter } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, pipe, Observable } from 'rxjs';
@@ -41,6 +41,8 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
 
   @Input() data!: ActiveMatchingItem;
   @Input() team!: CRMTeamDTO;
+
+  @Output() currentOrderCode = new EventEmitter<string | undefined>();
 
   orderForm!: FormGroup;
 
@@ -164,6 +166,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
     this.conversationOrderFacade.onLastOrderCheckCvs$.pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.updateFormOrder(res);
       this.updateBillByForm(this.orderForm);
+      this.currentOrderCode.emit(res?.Code);
     });
   }
 
@@ -305,6 +308,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
                     this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${bill.Data.Id}${params}`);
                   }
 
+                  this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
                 }, error => {
                   this.message.error(`${error?.error?.message}` || JSON.stringify(error));
                 });

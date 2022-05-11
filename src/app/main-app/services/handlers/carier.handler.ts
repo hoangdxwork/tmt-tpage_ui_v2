@@ -185,7 +185,6 @@ export class CarrierHandler {
         observer.complete();
       }
       else {
-        debugger;
         let checkValueBill = this.checkValueBill(carrier);
         if(!checkValueBill) {
           this.prepareBillByOrderForm(saleModel, orderForm);

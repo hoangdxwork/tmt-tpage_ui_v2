@@ -173,13 +173,14 @@
                   <div class="w-1/2 gap-2.5 flex items-center">
                     <div class="w-1/3 text-body-2 font-regular font-sans text-neutral-1-900">Giảm giá</div>
                     <div class="w-2/3">
-                      <!-- <tds-form-field>
-                        <input tdsInput autocomplete="off" placeholder="0" [formControl]="giamGia" />
+                      <tds-form-field>
+                        <tds-input-number autocomplete="off" placeholder="0" [disabled]="true" [ngModelOptions]="{standalone: true}"
+                        [ngModel]="orderForm.value?.DecreaseAmount + orderForm.value?.DiscountAmount | number" ></tds-input-number>
                         <span tdsSuffix>
                           <span class="text-body-2 font-semibold font-sans text-primary-1">%</span>
                           <span class="text-body-2 font-semibold font-sans text-neutral-1-400 pl-2">VNĐ</span>
                         </span>
-                      </tds-form-field> -->
+                      </tds-form-field>
                     </div>
                   </div>
                   <div class="flex w-1/2 gap-2.5 items-center">
@@ -206,7 +207,7 @@
                     <div class="w-2/3">
                       <tds-form-field>
                         <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0"
-                          [(ngModel)]="saleModel.AmountDeposit" [ngModelOptions]="{standalone: true}"></tds-input-number>
+                          [(ngModel)]="saleModel.AmountDeposit" [ngModelOptions]="{standalone: true}" (ngModelChange)="updateTotalAmount()"></tds-input-number>
                       </tds-form-field>
                     </div>
                   </div>
@@ -261,7 +262,7 @@
                       <tds-form-field>
                         <tds-select valueField="Id" textField="Name" placeholder='Đối tác giao hàng'
                           [(ngModel)]="saleModel.Carrier"  [ngModelOptions]="{standalone: true}" disabledField="isActive" [data]="lstCarriers"
-                          [required]="true" (ngModelChange)="onChangeCarrier($event)" [valuePrimitive]="false">
+                          (ngModelChange)="onChangeCarrier($event)" [valuePrimitive]="false">
                         </tds-select>
                       </tds-form-field>
                     </div>
