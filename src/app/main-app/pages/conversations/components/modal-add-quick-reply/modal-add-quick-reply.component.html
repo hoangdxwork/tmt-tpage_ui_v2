@@ -1,0 +1,23 @@
+<div class="flex flex-col gap-y-4">
+    <tds-form-field class="w-full">
+        <tds-label>Tên mẫu</tds-label>
+        <input tdsInput placeholder="Nhập tên mẫu" />
+    </tds-form-field>
+    <tds-form-field class="w-full">
+        <tds-label>Phím tắt</tds-label>
+        <input tdsInput placeholder="Nhập phím tắt" />
+    </tds-form-field>
+    <tds-form-field class="w-full">
+        <tds-label>Nội dung</tds-label>
+        <textarea class="resize-none" tdsInput placeholder="Nhập nội dung"></textarea>
+    </tds-form-field>
+    <div class="flex gap-x-5 items-center">
+        <span>Kích hoạt</span>
+        <tds-switch size="md"></tds-switch>
+    </div>
+</div>
+
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2" color="secondary" (click)="cancel()">Hủy</button>
+    <button tds-button class="mr-2" color="primary" (click)="onSave()">Thêm</button>
+</div>
