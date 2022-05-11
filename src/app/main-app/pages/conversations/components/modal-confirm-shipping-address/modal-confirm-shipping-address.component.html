@@ -1,0 +1,44 @@
+<div class="grid grid-cols-2 gap-x-8 gap-y-4 text-body-2 text-neutral-1-900">
+    <tds-form-field>
+        <tds-label>Họ và tên người nhận</tds-label>
+        <input tdsInput placeholder="Nhập tên người nhận" />
+    </tds-form-field>
+    <tds-form-field>
+        <tds-label>Số điện thoại</tds-label>
+        <input tdsInput placeholder="Nhập số điện thoại" />
+    </tds-form-field>
+    <tds-form-field>
+        <tds-label>Số nhà, đường</tds-label>
+        <input tdsInput placeholder="Nhập số nhà" />
+    </tds-form-field>
+    <tds-form-field>
+        <tds-label>Tỉnh/ Thành phố</tds-label>
+        <tds-select valueField="id" textField="name" placeholder='chọn Tỉnh/ Thành phố'
+        disabledField="isActive"
+        [data]="listCity" [allowClear]="true">
+    </tds-select>
+    </tds-form-field>
+    <tds-form-field>
+        <tds-label>Quận/ Huyện</tds-label>
+        <tds-select valueField="id" textField="name" placeholder='chọn Quận/ Huyện'
+        disabledField="isActive"
+        [data]="listDistrict" [allowClear]="true">
+    </tds-select>
+    </tds-form-field>
+    <tds-form-field>
+        <tds-label>Phường/ Xã thị trấn</tds-label>
+        <tds-select valueField="id" textField="name" placeholder='chọn Phường/ Xã thị trấn'
+        disabledField="isActive"
+        [data]="listWard" [allowClear]="true">
+    </tds-select>
+    </tds-form-field>
+    
+    <tds-form-field class="col-span-2">
+        <tds-label>Ghi chú đơn hàng</tds-label>
+        <textarea class="resize-none" tdsInput placeholder="Placeholder"></textarea>
+    </tds-form-field>
+</div>
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2" color="secondary" (click)="cancel()">Đóng</button>
+    <button tds-button class="mr-2" color="primary" (click)="onSave()">Xác nhận</button>
+</div>

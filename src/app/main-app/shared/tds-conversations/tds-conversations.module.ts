@@ -1,8 +1,10 @@
+import { CRMTagService } from './../../services/crm-tag.service';
+import { QuickReplyService } from './../../services/quick-reply.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FormsModule } from '@angular/forms';
-import { TDSOutletModule, TDSAvatarModule, TDSButtonModule, TDSToolTipModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSSelectModule, TDSBadgeModule, TDSModalModule, TDSSpinnerModule} from 'tmt-tang-ui';
+import { TDSOutletModule, TDSAvatarModule, TDSButtonModule, TDSToolTipModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSSelectModule, TDSBadgeModule, TDSModalModule, TDSSpinnerModule, TDSSwitchModule, TDSTagModule } from 'tmt-tang-ui';
 import { TDSConversationsComponent } from './tds-conversations.component';
 import { TDSConversationItemComponent } from './tds-conversation-item.component';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
@@ -45,11 +47,17 @@ const CMP =[
     UploadImageModule,
     TDSCardModule,
     PipeModule,
-    TDSImageModule
+    TDSImageModule,
+    TDSSwitchModule,
+    TDSTagModule,
   ],
   exports:[
     ...CMP
   ],
+  providers:[
+    QuickReplyService,
+    CRMTagService,
+  ]
 })
 
 export class TDSConversationsModule { }
