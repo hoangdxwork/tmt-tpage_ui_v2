@@ -1,0 +1,29 @@
+<tds-spin [spinning]="isLoading">
+  <form [formGroup]="formConfigProduct">
+    <div class="w-full text-body-2 text-neutral-1-900">
+      <div class="flex items-baseline gap-x-8 gap-y-4">
+          <p class="mb-2 font-semibold text-[#5A6271] size-[14px] w-1/4">Chọn bảng giá</p>
+          <div class="w-3/4">
+            <tds-form-field>
+                <tds-select
+                    valueField="Id" textField="Name"
+                    placeholder='Chọn bảng giá' [required]='true'
+                    (ngModelChange)="changePriceList($event)" [valuePrimitive]="false"
+                    [data]="lstPriceLists" formControlName="PriceList">
+                </tds-select>
+                <tds-error>
+                    Vui lòng chọn bảng giá
+                </tds-error>
+            </tds-form-field>
+          </div>
+      </div>
+    </div>
+
+    <div class="w-full flex justify-end p-4" *tdsModalFooter>
+      <button tds-button class="mr-4 w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
+      <button tds-button type="submit" class="w-[100px] mr-4" color="primary" (click)="onSave()" [disabled]="!formConfigProduct?.valid">Áp dụng</button>
+    </div>
+
+  </form>
+
+</tds-spin>

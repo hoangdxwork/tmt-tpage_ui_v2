@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable} from 'rxjs';
+import { BehaviorSubject, Observable} from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
@@ -15,8 +15,18 @@ export class CommonService extends BaseSevice {
   table: string = "";
   baseRestApi: string = "api/common";
 
+  // Dữ liệu bảng giá
+  public dataPriceLists$ = new BehaviorSubject<any>({ currentId: null });
+
   constructor(private apiService: TCommonService) {
-    super(apiService)
+    super(apiService);
+    this.initialize();
+  }
+
+  initialize() {
+    this.getShopPaymentProviders().subscribe((res: any) => {
+      this.dataPriceLists$.next(res);
+    });
   }
 
   getPartnerStatusReport(): Observable<any> {
@@ -77,6 +87,15 @@ export class CommonService extends BaseSevice {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/api/common/getpricelistitems?id=${id}`,
         method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api,null);
+  }
+
+  getShopPaymentProviders(): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/rest/v1.0/common/shop-payment-providers`,
+      method: TApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api,null);

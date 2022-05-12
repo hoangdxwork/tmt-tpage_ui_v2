@@ -1,23 +1,66 @@
-
-<div *ngIf="data?.id" class="chat-block" >
-  <div class="chat-header flex items-center">
-    <div class="flex items-center">
-        <div class="avatar">
-            <tpage-avatar-facebook [size]="48"
-              [shape]="'circle'" [psid]="data.psid"
-              [token]="team?.Facebook_PageToken">
-            </tpage-avatar-facebook>
-        </div>
-        <div class="user">
-          <label>{{data.name || data.partner_name}}</label>
+<div *ngIf="data?.id" class="chat-block text-body-2 w-full h-full relative">
+    <div class="chat-header flex items-center p-2">
+        <div class="flex flex-row justify-between items-center bg-white w-full rounded-xl p-3">
+            <div class="flex flex-row items-center">
+                <div class="avatar mr-2">
+                    <tpage-avatar-facebook [size]="48"
+                    [shape]="'circle'" [psid]="data.psid"
+                    [token]="team?.Facebook_PageToken">
+                    </tpage-avatar-facebook>
+                </div>
+                <div class="user">
+                    <label class="text-black text-title-1 font-semibold">{{data.name || data.partner_name}}</label>
+                    <div class="flex flex-row">
+                        <span class="text-neutral-1-400 text-caption-1 font-regular pr-1">{{ true ? 'Đã gán cho' : 'Gán cuộc hội thoại' }}</span>
+                        <span class="text-primary-1 text-caption-1 font-semibold pr-1">Nguyen Binh</span>
+                        <button
+                            tds-button-flat-icon
+                            color="primary"
+                            trigger="click"
+                            tds-dropdown
+                            [tdsDropdownMenu]="menu2"
+                            [placement]="'bottomRight'">
+                            <i class="tdsi-arrow-down-line"></i>
+                        </button>
+                        <tds-dropdown-menu #menu2="tdsDropdownMenu">
+                        <div class="w-36">
+                            <div tds-dropdown-item>
+                            <a> Item 1 </a>
+                            </div>
+                            <div tds-dropdown-item>
+                            <a> Item 2 </a>
+                            </div>
+                            <div tds-dropdown-item>
+                            <a> Item 3 </a>
+                            </div>
+                            <div tds-dropdown-item>
+                            <a> Item 4 </a>
+                            </div>
+                        </div>
+                        </tds-dropdown-menu>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-row items-center">
+                <button tds-button-flat-icon color="secondary" class="mr-3">
+                    <img src="assets/images/conversation/box-add.svg" width="24px" height="24px">
+                </button>
+                <button tds-button-flat-icon color="secondary" class="mr-3">
+                    <img src="assets/images/conversation/process-done.svg" width="24px" height="24px">
+                </button>
+                <button tds-button-flat-icon color="secondary" class="mr-3">
+                <i class="tdsi-search-fill text-2xl text-neutral-1-400"></i>
+                </button>
+                <button tds-button-flat-icon color="secondary" class="mr-3">
+                <i class="tdsi-reload-fill text-2xl text-neutral-1-400"></i>
+                </button>
+            </div>
         </div>
     </div>
-    <div class="flex items-center"></div>
-  </div>
     <!-- main -->
     <div class="flex-auto w-full">
-        <div class="w-full h-full relative ">
-            <div class="inset-0 overflow-auto overflow-y-auto tds-custom-scroll" style="max-height: 630px;width: 915px;">
+        <div class="w-full relative">
+            <div #MainChat class="inset-0 overflow-y-auto tds-custom-scroll w-full" [ngStyle]="{'height.px': mainChatHeight}">
                 <div *ngIf="(dataSource$ | async )?.items?.length == 0">
                     <p>Chưa có nội dung nào</p>
                 </div>
@@ -26,40 +69,78 @@
                           <tds-alert type="warning" [message]="item.DateCreated"></tds-alert>
                     </div>
                     <!-- Thông tin bài post -->
-                    <div *ngIf="item.type == 2 && item.object_id && getExtrasPosts((dataSource$ | async), item)">
-                      <div class="post-block mb-3">
-                          <div class="post-body">
-                              <div class="post-type">
-                                  <span>
-                                      <span class="tdsi-facebook-line"></span>
-                                  </span>
-                                  <span>{{getExtrasPosts((dataSource$ | async), item)?.created_time | date: "dd-MM-yyyy HH:mm"}}</span>
-                              </div>
-                              <div class="post-item">
-                                <div class="w-full block">
-                                  <p class="story" *ngIf="getExtrasPosts((dataSource$ | async), item)?.story">{{getExtrasPosts((dataSource$ | async), item).story}}</p>
-                                  <p class="message" *ngIf="getExtrasPosts((dataSource$ | async), item)?.message"
-                                      tds-typography ellipsis expandable [ellipsisRows]="2"
-                                      [content]="getExtrasPosts((dataSource$ | async), item)?.message"
-                                      [contentCollapse]="'Ẩn'">
-                                  </p>
-                                  <p class="description" *ngIf="getExtrasPosts((dataSource$ | async), item)?.description">{{getExtrasPosts((dataSource$ | async), item).description}}</p>
+                    <div *ngIf="item.type == 2 && item.object_id && getExtrasPosts((dataSource$ | async), item)" class="pl-2">
+                        <div class="post-block mb-3 bg-white flex flex-col">
+                            <div class="post-body flex flex-row items-center justify-between p-4">
+                                <div class="post-content flex flex-col">
+                                    <div class="post-type flex flex-row items-center mb-3">
+                                        <tds-avatar 
+                                            [tdsSrc]="'assets/images/conversation/facebook-circle.svg'" 
+                                            [size]="24" 
+                                            [shape]="'circle'"
+                                            [isAvatar]="false"
+                                            class="mr-1">
+                                        </tds-avatar>
+                                        <tds-tag status='info' type="outline" rounded="rounded-full">
+                                          <span class="flex items-center py-0.5">
+                                            <span>{{getExtrasPosts((dataSource$ | async), item)?.created_time | date: "dd-MM-yyyy HH:mm"}}</span>
+                                          </span>
+                                        </tds-tag>
+                                    </div>
+                                    <div class="post-item">
+                                        <div class="w-full block">
+                                            <p class="story font-semibold" *ngIf="getExtrasPosts((dataSource$ | async), item)?.story">
+                                                {{getExtrasPosts((dataSource$ | async), item).story}}
+                                            </p>
+                                            <p class="message" *ngIf="getExtrasPosts((dataSource$ | async), item)?.message"
+                                                tds-typography ellipsis expandable [ellipsisRows]="2"
+                                                [content]="getExtrasPosts((dataSource$ | async), item)?.message"
+                                                [contentCollapse]="'Ẩn'">
+                                            </p>
+                                            <p class="description" *ngIf="getExtrasPosts((dataSource$ | async), item)?.description">{{getExtrasPosts((dataSource$ | async), item).description}}</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="w-full picture" *ngIf="getExtrasPosts((dataSource$ | async), item)?.picture">
-                                    <img tds-image [tdsSrc]="getExtrasPosts((dataSource$ | async), item)?.picture" alt="{{getExtrasPosts((dataSource$ | async), item)?.story}}"/>
+                                <div class="post-picture" *ngIf="getExtrasPosts((dataSource$ | async), item)?.picture">
+                                    <img tds-image
+                                        [tdsSrc]="getExtrasPosts((dataSource$ | async), item)?.picture" 
+                                        alt="{{getExtrasPosts((dataSource$ | async), item)?.story}}" class="rounded-xl"/>
                                 </div>
-                              </div>
-                          </div>
-                          <div class="post-footer">
-                              <label>Like: {{getExtrasPosts((dataSource$ | async), item)?.count_reactions || 0}}</label>
-                              <div class="flex">
-                                <label>Bình luận: {{getExtrasPosts((dataSource$ | async), item)?.count_comments || 0}}</label>
-                                <a title="Bài viết tổng quan" (click)="openPost(item, 'all')">Tổng quan</a>
-                                <a title="Đi tới bình luận"  href="https://www.facebook.com/{{item.id}}" target="_blank">Bình luận</a>
-                                <a title="Đi tới bài viết" (click)="openPost(item, 'post')">Bài viết</a>
-                              </div>
-                          </div>
-                      </div>
+                            </div>
+                            <div class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 px-4">
+                                <div class="emotion-count flex flex-row items-center">
+                                    <div class="flex flex-row mr-1">
+                                        <img src="assets/images/conversation/like-circle.svg" width="20px" height="20px" 
+                                            class="rounded-full z-50">
+                                        <img src="assets/images/conversation/love-circle.svg" width="20px" height="20px" 
+                                            class="rounded-full z-40 -ml-2">
+                                    </div>
+                                    <span>
+                                        {{getExtrasPosts((dataSource$ | async), item)?.count_reactions || 0}}
+                                    </span>
+                                </div>
+                                <div class="comment flex flex-row items-center">
+                                    <span class="comment-count  mr-4">
+                                      {{getExtrasPosts((dataSource$ | async), item)?.count_comments || 0}} Bình luận
+                                    </span>
+                                    <div class="comment-button">
+                                        <button tds-button-flat-icon color="secondary" class="mr-4"
+                                            (click)="openPost(item, 'all')">
+                                            <i class="tdsi-chart-pie-fill text-xl"></i>
+                                        </button>
+                                        <button tds-button-flat-icon color="secondary" class="mr-4"
+                                            (click)="openPost(item, 'post')">
+                                            <i class="tdsi-expand-line text-xl"></i>
+                                        </button>
+                                        <button tds-button-flat-icon color="secondary">
+                                            <a href="https://www.facebook.com/{{item.id}}" target="_blank">
+                                                <i class="tdsi-search-line text-xl"></i>
+                                            </a>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <tds-conversation-item
                         [team]="team" [psid]="data.psid"
@@ -85,7 +166,7 @@
                 <div class="w-[336px] flex flex-col gap-y-3">
                     <span class="font-semibold text-title-1">Tuỳ chọn gửi tin nhắn</span>
                     <div class="w-full flex justify-between">
-                       <span class="text-neutral-1-400">Nhấn [Enter] để gửi</span> 
+                       <span class="text-neutral-1-400">Nhấn [Enter] để gửi</span>
                        <tds-switch size="md" [checked]="true"></tds-switch>
                     </div>
                 </div>
@@ -101,7 +182,7 @@
                     <div class="flex justify-between">
                         <span class="font-semibold text-title-1">Gắn nhãn hội thoại</span>
                         <button tds-button-icon color="secondary" rounded="!rounded-full"
-                            (click)="showModalAddTag()" 
+                            (click)="showModalAddTag()"
                             tds-tooltip
                             tooltipTitle="Thêm nhãn mới">
                             <i class="tdsi-plus-fill"></i>
@@ -123,18 +204,15 @@
             </ng-template>
         </div>
         <!-- editer+toolbars -->
-        <div class="flex flex-col w-full p-4 bg-white rounded-xl ">
-            <div class="w-full flex">
-                <textarea class="flex flex-auto form-control" rows="2" placeholder="Nhập nội dung tin nhắn, nhấn [Enter] để gửi"
-                  (paste)="onPaste($event)" (keydown.enter)="onEnter($event)">
-                </textarea>
-                <div class="pl-2">
-                    <button tds-button color="primary" class="rounded-xl">
-                        <span class="flex items-center">
-                            <i class="tdsi-send-fill text-lg leading-none mr-1.5"></i> Gửi
-                        </span>
-                    </button>
-                </div>
+        <div class="flex flex-col w-full px-4 pt-4 pb-3 bg-white rounded-xl ">
+            <div class="w-full flex flex-row">
+                <textarea tdsInput placeholder="Nhập nội dung tin nhắn, nhấn [Enter] để gửi"
+                  (paste)="onPaste($event)" (change)="onEnter($event)" class="h-16"></textarea>
+                <button tds-button color="primary" class="!rounded-full ml-2" [size]="'lg'">
+                    <span class="flex items-center px-6">
+                        <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
+                    </span>
+                </button>
             </div>
             <!-- toolbar -->
             <div class="w-full flex justify-end items-center gap-1.5 pt-9">
@@ -154,7 +232,7 @@
                 <div class="p-2">
                     <div class="tdsi-image-line text-neutral-1-400 text-2xl cursor-pointer" (click)="showImageStore()"></div>
                 </div>
-                <div class="p-2" (click)="showModalListProcut()">
+                <div class="p-2" (click)="showModalListProduct()">
                     <div class="tdsi-product-line text-neutral-1-400 text-2xl cursor-pointer"></div>
                 </div>
                 <div class="p-2">

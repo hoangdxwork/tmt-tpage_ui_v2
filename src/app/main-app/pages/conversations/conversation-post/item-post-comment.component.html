@@ -1,0 +1,30 @@
+
+<div *ngFor="let item of data.Items">
+  <div *ngIf="item" class="flex">
+      <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'"
+        [psid]="item.from.id" [token]="team?.Facebook_PageToken">
+      </tpage-avatar-facebook>
+      <div class="list">
+        <a>{{item.from.name}} </a>
+        <a>{{item.message}} </a>
+        <div *ngIf="item.attachment">
+          <img tds-image *ngIf="item.attachment.type != 'sticker'"
+              [tdsSrc]="item.attachment.media.image.src" style="max-width: 200px;"  />
+          <img tds-image *ngIf="item.attachment.type == 'sticker'"
+              [tdsSrc]="item.attachment.media.image.src" style="max-width: 100px;"  />
+      </div>
+      <div class="d-flex order">
+          <button tds-button color="primary" *ngIf="item.from.id != team?.Facebook_PageId">
+              Tạo đơn hàng
+          </button>
+          <button tds-button color="warning" >
+              Thông tin
+          </button>
+          <button tds-button color="error" >
+              Thông tin
+          </button>
+      </div>
+      </div>
+  </div>
+</div>
+

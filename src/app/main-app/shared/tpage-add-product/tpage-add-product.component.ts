@@ -1,5 +1,5 @@
 import { Observable, Subject, Subscriber, Subscription } from 'rxjs';
-import { TDSSafeAny, TDSModalRef, TDSMessageService, TDSModalService, TDSUploadChangeParam, TDSUploadXHRArgs, TDSHelperObject, TDSUploadFile } from 'tmt-tang-ui';
+import { TDSSafeAny, TDSModalRef, TDSMessageService, TDSModalService, TDSUploadChangeParam, TDSUploadXHRArgs, TDSHelperObject, TDSUploadFile, TDSHelperString, TDSHelperArray } from 'tmt-tang-ui';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone, OnDestroy } from '@angular/core';
 import { ProductTemplateDTO, ProductType, ProductUOMDTO } from '../../dto/product/product.dto';
@@ -11,9 +11,12 @@ import { ProductCategoryDTO } from '../../dto/product/product-category.dto';
 import { TpageAddCategoryComponent } from '../tpage-add-category/tpage-add-category.component';
 import { TpageSearchUOMComponent } from '../tpage-search-uom/tpage-search-uom.component';
 import { CommonService } from '../../services/common.service';
-import { TCommonService, TAPIDTO, TApiMethodType } from 'src/app/lib';
+import { TCommonService, TAPIDTO, TApiMethodType, THelperCacheService } from 'src/app/lib';
 import { SharedService } from '../../services/shared.service';
 import { takeUntil } from 'rxjs/operators';
+import { ProductIndexDBService } from '../../services/product-indexDB.service';
+import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
+import { ProductDataFacade } from '../../services/facades/product.data.facade';
 
 @Component({
   selector: 'tpage-add-product',
@@ -41,9 +44,12 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     private modalRef: TDSModalRef,
     private message: TDSMessageService,
     private viewContainerRef: ViewContainerRef,
-    public productTemplateService: ProductTemplateService,
+    private productTemplateService: ProductTemplateService,
     private productCategoryService: ProductCategoryService,
     private productUOMService: ProductUOMService,
+    private cacheApi: THelperCacheService,
+    private productIndexDBService: ProductIndexDBService,
+    private productDataFacade: ProductDataFacade,
     public zone: NgZone) {
   }
 
@@ -78,21 +84,26 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
 
   onSave(type?: string) {
     let model = this.prepareModel();
-    console.log('onSave')
-    this.productTemplateService.insert(model).pipe(takeUntil(this.destroy$)).subscribe(res => {
-      delete res['@odata.context'];
+    this.productTemplateService.insert(model)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        delete res['@odata.context'];
 
-      this.message.success(Message.Product.InsertSuccess);
+        this.message.success(Message.Product.InsertSuccess);
 
-      if (type == "select") {
-        this.onCancel(res);
-      }
-      else {
-        this.onCancel(null);
-      }
-    }, error => {
-      this.message.error(`${error.error.message}`);
-    });
+        if (type == "select") {
+          this.onLoadedProductSelect.emit(res);
+          this.onCancel(null);
+        }
+        else {
+          this.onCancel(null);
+        }
+
+        this.productDataFacade.initialize();
+
+      }, error => {
+        this.message.error(`${error.error.message}`);
+      });
   }
 
   onCancel(result: TDSSafeAny) {

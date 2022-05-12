@@ -124,4 +124,15 @@ export class ActivityMatchingService extends BaseSevice implements OnInit {
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
+
+  assignUser(psid:string, data: any){
+    if(data.to_id) {
+      psid = data.to_id;
+    }
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/assignuser`,
+        method: TApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
 }
