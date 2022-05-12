@@ -1,3 +1,4 @@
+import { SaleSettingsDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { User } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
 import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, Output, SimpleChanges, SkipSelf, EventEmitter, ViewContainerRef } from '@angular/core';
@@ -18,10 +19,10 @@ import { ConversationOrderForm, ConversationOrderProductDefaultDTO } from 'src/a
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { CheckFormHandler } from 'src/app/main-app/services/handlers/check-form.handler';
-import { FastSaleOrderDefaultDTO, FastSaleOrder_ServiceExtraDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
+import { FastSaleOrderRestDTO, FastSaleOrder_ServiceExtraDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { GeneralConfigsFacade } from 'src/app/main-app/services/facades/general-config.facade';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
-import { DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
+import { CalculateFeeResponse_Data_ServiceDTO, CalculateFeeResponse_Data_Service_ExtraDTO, DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
 import { Message } from 'src/app/lib/consts/message.const';
 import { SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -31,9 +32,7 @@ import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { OrderFormHandler } from 'src/app/main-app/services/handlers/order-form.handler';
 import { CarrierHandler } from 'src/app/main-app/services/handlers/carier.handler';
 import { SaleHandler } from 'src/app/main-app/services/handlers/sale.handler';
-import { ListProductTmpComponent } from 'src/app/main-app/shared/list-product-tmp/list-product-tmp.component';
 import { ModalListProductComponent } from '../modal-list-product/modal-list-product.component';
-import { ProductTemplateV2DTO } from 'src/app/main-app/dto/producttemplate/product-tempalte.dto';
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-product/tpage-add-product.component';
 import { TpageConfigProductComponent } from 'src/app/main-app/shared/tpage-config-product/tpage-config-product.component';
@@ -52,7 +51,6 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
   @Output() currentOrderCode = new EventEmitter<string | undefined>();
 
   orderForm!: FormGroup;
-
   private destroy$ = new Subject();
 
   editNoteProduct: string | null = null;
@@ -66,13 +64,14 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
   currentTeam!: CRMTeamDTO | null;
   lstUser!: Array<ApplicationUserDTO>;
   lstCarriers: DeliveryCarrierDTO[] = [];
-  lstShipServices: TDSSafeAny = []; //  Dịch vụ bổ xung
+  lstShipServices: CalculateFeeResponse_Data_ServiceDTO[] = []; //  Dịch vụ bổ xung
 
-  saleModel: TDSSafeAny = null;
-  shipExtraServices: TDSSafeAny = [];
-  saleConfigRoles: TDSSafeAny = [];
+  saleModel!: FastSaleOrderRestDTO;
+  shipExtraServices: CalculateFeeResponse_Data_Service_ExtraDTO[] = [];
+  saleSettings!: SaleSettingsDTO;
 
-  constructor(private message: TDSMessageService,
+  constructor(
+    private message: TDSMessageService,
     private draftMessageService: DraftMessageService,
     private conversationEventFacade: ConversationEventFacade,
     private conversationOrderFacade: ConversationOrderFacade,
@@ -97,7 +96,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
     private carrierHandler: CarrierHandler,
     private viewContainerRef: ViewContainerRef,
     private saleHandler: SaleHandler,
-    public router: Router) {
+    private router: Router) {
   }
 
   get detailsFormGroups() {
@@ -159,7 +158,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
     });
   }
 
-  updateOrderFormByBill(bill: FastSaleOrderDefaultDTO) {
+  updateOrderFormByBill(bill: FastSaleOrderRestDTO) {
     this.orderForm.controls.Carrier?.setValue(bill.Carrier);
     this.orderForm.controls.Tax?.setValue(bill.Tax);
     this.saleModel.CashOnDelivery = this.orderForm.value.TotalAmountBill || 0;
@@ -181,7 +180,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
 
   loadConfig() {
     this.generalConfigsFacade.getSaleConfigs().subscribe(res => {
-      this.saleConfigRoles = res?.roles;
+      this.saleSettings = res?.SaleSetting;
     });
   }
 
@@ -216,7 +215,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
     this.updateTotalAmount();
   }
 
-  onChangeCarrier(carrier: any) {
+  onChangeCarrier(carrier: DeliveryCarrierDTO) {
     this.isLoadingCarrier = true;
     this.shipExtraServices.length = 0;
     this.lstShipServices.length = 0;
@@ -225,7 +224,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
     this.carrierHandler.changeCarrierV2(this.saleModel, this.orderForm, carrier, this.shipExtraServices)
       .pipe(finalize(() => this.isLoadingCarrier = false))
       .subscribe(res => {
-        this.lstShipServices = res?.Services;
+        this.lstShipServices = res?.Services || [];
         this.updateShipExtraServices(carrier);
 
       }, error => {
@@ -233,7 +232,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
       });
   }
 
-  updateShipExtraServices(carrier: any) {
+  updateShipExtraServices(carrier: DeliveryCarrierDTO | undefined) {
     if(carrier) {
       let insuranceFee = this.orderForm.value.Ship_Extras?.InsuranceFee || 0;
 
@@ -330,7 +329,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
       });
   }
 
-  isCheckBillValue(model: TDSSafeAny): number { // TODO: Tách hàm này ra function riêng
+  isCheckBillValue(model: TDSSafeAny): number {
     let errorMessage = this.checkFormHandler.checkValueBill(model);
 
     if(TDSHelperString.hasValueString(errorMessage) && errorMessage) {
@@ -368,7 +367,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
     this.carrierHandler.calculateFee(this.saleModel, this.orderForm, carrier, this.shipExtraServices)
       .pipe(finalize(() => this.isLoadingCarrier = false))
       .subscribe(res => {
-        this.lstShipServices = res.Services;
+        this.lstShipServices = res?.Services || [];
       }, error => {
         this.message.error(error?.error_description ? error.error_description : JSON.stringify(error));
       });
@@ -388,7 +387,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
     }
   }
 
-  prepareOrderModel(): any {
+  prepareOrderModel(): SaleOnline_OrderDTO {
     let model = this.checkFormHandler.prepareOrder(this.orderForm);
 
     if(!TDSHelperString.hasValueString(model.Facebook_ASUserId)) {
@@ -398,7 +397,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
     return model;
   }
 
-  prepareBillModel() {
+  prepareBillModel(): FastSaleOrderRestDTO {
     let model = this.checkFormHandler.prepareBill(this.orderForm, this.saleModel, this.shipExtraServices);
     return model;
   }
@@ -432,7 +431,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
     !this.shipExtraServices && (this.shipExtraServices = []);
     this.carrierHandler.selectShipService(shipService, this.saleModel, this.shipExtraServices);
 
-    if (this.saleModel.Carrier.DeliveryType === 'GHN') {
+    if (this.saleModel.Carrier?.DeliveryType === 'GHN') {
       this.onUpdateInsuranceFee('16')
         .pipe((finalize(() => this.isLoadingCarrier = false)))
         .subscribe(res => {});
@@ -578,7 +577,6 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
   }
 
   onChangeAddress(event: CheckAddressDTO) {
-    console.log(event);
     let formControls = this.orderForm.controls;
 
     formControls["Street"].setValue(event.Street);

@@ -2,9 +2,7 @@ import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSModalService } from 't
 import { Injectable } from "@angular/core";
 import { FastSaleOrderService } from '../fast-sale-order.service';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { FastSaleOrderDTO } from '../../dto/bill/bill.dto';
 import { map } from 'rxjs/operators';
-import { FastSaleOrderDefaultDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
 import { DeliveryCarrierService } from '../delivery-carrier.service';
 import { DeliveryCarrierDTO } from '../../dto/carrier/delivery-carrier.dto';
 import { CommonService } from '../common.service';
@@ -12,6 +10,9 @@ import { GeneralConfigsFacade } from '../facades/general-config.facade';
 import { FormGroup } from '@angular/forms';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { CRMTeamService } from '../crm-team.service';
+import { FastSaleOrderLineDTO, FastSaleOrderRestDTO, FastSaleOrder_ReceiverDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
+import { SaleOnline_OrderDTO } from '../../dto/saleonlineorder/sale-online-order.dto';
+import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
 
 
 @Injectable({
@@ -21,8 +22,7 @@ export class CheckFormHandler {
 
   lstCarriers!: DeliveryCarrierDTO[];
   saleConfig: TDSSafeAny;
-  billDefault$!: Observable<FastSaleOrderDefaultDTO>;
-  fastSaleOrderFormDefault!: FastSaleOrderDefaultDTO;
+  billDefault$!: Observable<FastSaleOrderRestDTO>;
 
   currentTeam!: CRMTeamDTO | null;
 
@@ -67,45 +67,46 @@ export class CheckFormHandler {
   }
 
   // Handling prepare form
-  prepareOrder(formOrder: FormGroup) {
+  prepareOrder(formOrder: FormGroup): SaleOnline_OrderDTO {
     let formValue = formOrder.value;
 
-    let model = {
-      Id: formValue.Id ? formValue.Id : null,
-      Code: formValue.Code ? formValue.Code : null,
-      Details: formValue.Details,
-      Facebook_UserId: formValue.Facebook_UserId,
-      Facebook_ASUserId: formValue.Facebook_ASUserId,
-      Facebook_UserName: formValue.Facebook_UserName || formValue.PartnerName,
-      PartnerName: formValue.PartnerName,
-      Name: formValue.PartnerName || formValue.Name,
-      Email: formValue.Email,
-      TotalAmount: formValue.TotalAmount || 0,
-      TotalQuantity: formValue.TotalQuantity || 0,
-      Address: formValue.Street,
-      CityCode: formValue.City ? formValue.City.Code : null,
-      CityName: formValue.City ? formValue.City.Name : null,
-      DistrictCode: formValue.District ? formValue.District.Code : null,
-      DistrictName: formValue.District ? formValue.District.Name : null,
-      WardName: formValue.Ward ? formValue.Ward.Name : null,
-      WardCode: formValue.Ward ? formValue.Ward.Code : null,
-      PartnerId: formValue.PartnerId,
-      UserId: formValue.User ? formValue.User.Id : null,
-      User: formValue.User ? {Id: formValue.User.Id, Name: formValue.User.Name} : null,
-      Telephone: formValue.Telephone,
-      Note: formValue.Note,
-      CRMTeamId: this.currentTeam ? this.currentTeam.Id : null
-    };
+    let model = {} as SaleOnline_OrderDTO;
+    let user = {Id: formValue.User?.Id, Name: formValue.User?.Name} as ApplicationUserDTO;
+
+    model.Id =formValue.Id ? formValue.Id : null,
+    model.Code = formValue.Code ? formValue.Code : null,
+    model.Details = formValue.Details,
+    model.Facebook_UserId = formValue.Facebook_UserId,
+    model.Facebook_ASUserId = formValue.Facebook_ASUserId,
+    model.Facebook_UserName = formValue.Facebook_UserName || formValue.PartnerName,
+    model.PartnerName = formValue.PartnerName,
+    model.Name = formValue.PartnerName || formValue.Name,
+    model.Email = formValue.Email,
+    model.TotalAmount = formValue.TotalAmount || 0,
+    model.TotalQuantity = formValue.TotalQuantity || 0,
+    model.Address = formValue.Street,
+    model.CityCode = formValue.City ? formValue.City.Code : null,
+    model.CityName = formValue.City ? formValue.City.Name : null,
+    model.DistrictCode = formValue.District ? formValue.District.Code : null,
+    model.DistrictName = formValue.District ? formValue.District.Name : null,
+    model.WardName = formValue.Ward ? formValue.Ward.Name : null,
+    model.WardCode = formValue.Ward ? formValue.Ward.Code : null,
+    model.PartnerId = formValue.PartnerId,
+    model.UserId = formValue.User ? formValue.User.Id : null,
+    model.User = formValue.User ? user : undefined,
+    model.Telephone = formValue.Telephone,
+    model.Note = formValue.Note,
+    model.CRMTeamId = this.currentTeam ? this.currentTeam.Id : null
 
     if (!model.Id) {
-      delete model.Id;
-      delete model.Code;
+      model.Id = undefined;
+      model.Code = undefined;
     }
 
     return model;
   }
 
-  prepareBill(orderForm: FormGroup, billModel: TDSSafeAny, shipExtraServices: TDSSafeAny[]) {
+  prepareBill(orderForm: FormGroup, billModel: FastSaleOrderRestDTO, shipExtraServices: TDSSafeAny[]): FastSaleOrderRestDTO {
     let model = billModel;
 
     let formValue = orderForm.value;
@@ -113,12 +114,14 @@ export class CheckFormHandler {
     model.SaleOnlineIds = [formValue.Id];
     model.PartnerId = formValue.PartnerId;
     model.Partner = formValue.Partner && formValue.Partner.Id ? formValue.Partner.Id : null;
-    model.PartnerName = formValue.PartnerName || formValue.Facebook_UserName;
+    model.Name = formValue.PartnerName || formValue.Facebook_UserName;
+    model.PartnerPhone = formValue.Telephone;
+    // model.PartnerName = formValue.PartnerName || formValue.Facebook_UserName;
     model.Address = formValue.Address || formValue.Street;
     model.FacebookId = formValue.Facebook_UserId;
     model.FacebookName = formValue.Facebook_UserName || formValue.Name || formValue.PartnerName;
     model.Facebook_ASUserId = formValue.Facebook_ASUserId;
-    model.Telephone = formValue.Telephone;
+    // model.Telephone = formValue.Telephone;
 
     model.Tax = formValue.Tax;
     model.Discount = formValue.Discount;
@@ -138,10 +141,10 @@ export class CheckFormHandler {
     model.PriceListId = model.PriceList ? model.PriceList.Id : 0;
     model.WarehouseId = model.Warehouse ? model.Warehouse.Id : 0;
 
-    model.Carrier = model.Carrier != null && model.Carrier.Id ? model.Carrier : null;
-    model.CarrierId = model.Carrier != null && model.Carrier.Id ? model.Carrier.Id : null;
+    model.Carrier = model.Carrier != null && model.Carrier.Id ? model.Carrier : undefined;
+    model.CarrierId = model.Carrier != null && model.Carrier.Id ? model.Carrier.Id : undefined;
 
-    model.PaymentJournalId = model.PaymentJournal != null ? model.PaymentJournal.Id : null;
+    model.PaymentJournalId = model.PaymentJournal != null ? model.PaymentJournal.Id : undefined;
 
     // Xóa detail gán lại
     model.OrderLines = [];
@@ -150,27 +153,29 @@ export class CheckFormHandler {
       if (!model.OrderLines)
         model.OrderLines = [];
 
-      model.OrderLines.push({
-        ProductId: detail.ProductId,
-        ProductUOMId: detail.UOMId,
-        ProductUOMQty: detail.Quantity,
-        PriceUnit: detail.Price,
-        Discount: 0,
-        Discount_Fixed: 0,
-        Type: "fixed",
-        PriceSubTotal: detail.Price * detail.Quantity,
-        Note: detail.Note
-      });
+        let orderLine = {} as FastSaleOrderLineDTO;
+        orderLine.ProductId = detail.ProductId,
+        orderLine.ProductUOMId = detail.UOMId,
+        orderLine.ProductUOMQty = detail.Quantity,
+        orderLine.PriceUnit = detail.Price,
+        orderLine.Discount = 0,
+        orderLine.Discount_Fixed = 0,
+        orderLine.Type = "fixed",
+        orderLine.PriceSubTotal = detail.Price * detail.Quantity,
+        orderLine.Note = detail.Note
+
+        model.OrderLines.push(orderLine);
     });
 
-    model.Ship_Receiver = {
-      Name: formValue.PartnerName || formValue.Name,
-      Phone: formValue.Telephone,
-      Street: formValue.Street,
-      City: formValue.City,
-      District: formValue.District,
-      Ward: formValue.Ward
-    };
+    let ship_Receiver = {} as FastSaleOrder_ReceiverDTO;
+    ship_Receiver.Name = formValue.PartnerName || formValue.Name,
+    ship_Receiver.Phone = formValue.Telephone,
+    ship_Receiver.Street = formValue.Street,
+    ship_Receiver.City = formValue.City,
+    ship_Receiver.District = formValue.District,
+    ship_Receiver.Ward = formValue.Ward
+
+    model.Ship_Receiver = ship_Receiver;
 
     if (shipExtraServices) {
       model.Ship_ServiceExtras = [];
@@ -188,8 +193,8 @@ export class CheckFormHandler {
       });
     }
 
-    model["PageId"] = this.currentTeam ? this.currentTeam.Facebook_PageId : null
-    model["PageName"] = this.currentTeam ? this.currentTeam.Facebook_PageName : null;
+    model.PageId = this.currentTeam ? this.currentTeam.Facebook_PageId : undefined;
+    model.PageName = this.currentTeam ? this.currentTeam.Facebook_PageName : undefined;
 
     return model;
   }
@@ -208,7 +213,7 @@ export class CheckFormHandler {
       errorMessage = "Hãy nhập sản phẩm.";
     }
 
-    if (!TDSHelperString.hasValueString(bill.Telephone)) {
+    if (!TDSHelperString.hasValueString(bill.PartnerPhone)) {
       errorMessage = "Hãy nhập số điện thoại.";
     }
 
@@ -232,7 +237,7 @@ export class CheckFormHandler {
       errorMessage = "Phí giao hàng phải lớn hơn 0.";
     }
 
-    if(!TDSHelperString.hasValueString(bill.PartnerName)) {
+    if(!TDSHelperString.hasValueString(bill.Name)) {
       errorMessage = "Hãy nhập tên khách hàng.";
     }
 

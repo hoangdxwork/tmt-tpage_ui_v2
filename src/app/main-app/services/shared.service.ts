@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TAuthService, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { CompanyCurrentDTO } from '../dto/configs/company-current.dto';
-import { SaleConfigsDTO } from '../dto/configs/sale-config.dto';
+import { InitSaleDTO } from '../dto/setting/setting-sale-online.dto';
 import { ODataStockWarehouseDTO } from '../dto/setting/stock-warehouse.dto';
 import { BaseSevice } from './base.service';
 
@@ -36,13 +36,13 @@ export class SharedService extends BaseSevice {
     //TODO: xử lý userLogged
   }
 
-  getConfigs(): Observable<TDSSafeAny> {
+  getConfigs(): Observable<InitSaleDTO> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/api/common/getsaleconfig`,
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getCacheData<SaleConfigsDTO>(api, null);
+    return this.apiService.getCacheData<InitSaleDTO>(api, null);
   }
 
   getCurrentCompany(): Observable<TDSSafeAny> {

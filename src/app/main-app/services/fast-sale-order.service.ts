@@ -5,13 +5,13 @@ import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { DataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
-import { FastSaleOrderDTO, FastSaleOrderSummaryStatusDTO } from '../dto/bill/bill.dto';
 import { ODataPaymentJsonDTO } from '../dto/bill/payment-json.dto';
-import { CalculatorFeeV2DTO } from '../dto/fastsaleorder/calculate-feeV2.dto';
+import { CalculateFeeResponse_DataDTO, ShippingCalculateFeeInputDTO } from '../dto/carrier/delivery-carrier.dto';
+import { ConversationOrderBillByPartnerDTO } from '../dto/conversation/conversation.dto';
 import { ODataCalculatorListFeeDTO } from '../dto/fastsaleorder/calculate-listFee.dto';
 
 import { FastSaleOrder_DefaultDTOV2 } from '../dto/fastsaleorder/fastsaleorder-default.dto';
-import { FastSaleOrderDefaultDTO } from '../dto/fastsaleorder/fastsaleorder.dto';
+import { FastSaleOrderDTO, FastSaleOrderRestDTO, FastSaleOrderSummaryStatusDTO } from '../dto/fastsaleorder/fastsaleorder.dto';
 import { ODataModelDTO } from '../dto/odata/odata.dto';
 import { PagedList2 } from '../dto/pagedlist2.dto';
 import { ODataTaxDTO } from '../dto/tax/tax.dto';
@@ -232,12 +232,12 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<ODataCalculatorListFeeDTO>(api, data);
   }
 
-  calculateFeeV2(data: TDSSafeAny): Observable<TDSSafeAny> {
+  calculateFeeV2(data: ShippingCalculateFeeInputDTO): Observable<CalculateFeeResponse_DataDTO> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/calculatefee`,
         method: TApiMethodType.post
     }
-    return this.apiService.getData<CalculatorFeeV2DTO>(api, data);
+    return this.apiService.getData<CalculateFeeResponse_DataDTO>(api, data);
   }
 
   getPaymentInfoJson(key: TDSSafeAny): Observable<TDSSafeAny> {
@@ -312,16 +312,17 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<ODataTaxDTO>(api, null);
   }
 
-  getConversationOrderBillByPartner(id: any): Observable<TDSSafeAny> {
+  getConversationOrderBillByPartner(id: number): Observable<ConversationOrderBillByPartnerDTO> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/get_conversationorderbill_bypartner(${id})`,
       method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, null);
+    return this.apiService.getData<ConversationOrderBillByPartnerDTO>(api, null);
   }
 
-  getDefault(data: ODataModelDTO<TDSSafeAny>): Observable<FastSaleOrderDefaultDTO> {
+  // NOTE: BE trả về FastSaleOrderDTO nhưng FE sử dụng FastSaleOrderRestDTO tránh convert dữ liệu
+  getDefault(data: ODataModelDTO<TDSSafeAny>): Observable<FastSaleOrderRestDTO> {
     let expand = "Warehouse,User,PriceList,Company,Journal,PaymentJournal,Partner,Carrier,Tax,SaleOrder";
 
     const api: TAPIDTO = {
@@ -329,10 +330,10 @@ export class FastSaleOrderService extends BaseSevice {
       method: TApiMethodType.post,
     }
 
-    return this.apiService.getData<FastSaleOrderDefaultDTO>(api, data);
+    return this.apiService.getData<FastSaleOrderRestDTO>(api, data);
   }
 
-  saveV2(data: TDSSafeAny, isDraft: boolean): Observable<TDSSafeAny> {
+  saveV2(data: FastSaleOrderRestDTO, isDraft: boolean): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/create?IsDraft=${isDraft}`,
       method: TApiMethodType.post,

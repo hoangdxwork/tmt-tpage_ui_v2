@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import { FastSaleOrderService } from '../fast-sale-order.service';
 import { DeliveryCarrierService } from '../delivery-carrier.service';
 import { groupBy as _groupBy } from 'lodash';
+import { CalculateFeeResponse_DataDTO, ShippingCalculateFeeInputDTO } from '../../dto/carrier/delivery-carrier.dto';
+import { FastSaleOrder_ReceiverDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
 
 export interface ModelCalculateFeeV2{
   PartnerId: any,
@@ -134,7 +136,7 @@ export class CarrierHandler {
 
   }
 
-  changeCarrierV2(saleModel: any, orderForm: any, carrier: any, shipExtraServices: Array<any>): Observable<any> {
+  changeCarrierV2(saleModel: any, orderForm: any, carrier: any, shipExtraServices: Array<any>): Observable<CalculateFeeResponse_DataDTO | null> {
     let oldDeliveryPrice = saleModel.DeliveryPrice;
 
     this.changeCarrierReset(saleModel, carrier); // Update field
@@ -178,7 +180,7 @@ export class CarrierHandler {
     saleModel.CashOnDelivery = formValue.TotalAmount + saleModel.DeliveryPrice - saleModel.AmountDeposit;
   }
 
-  calculateFee(saleModel: any, orderForm: any, carrier: any, shipExtraServices: any): Observable<any> {
+  calculateFee(saleModel: any, orderForm: any, carrier: any, shipExtraServices: any): Observable<CalculateFeeResponse_DataDTO | null> {
     return new Observable(observer => {
       if(!carrier) {
         observer.next(null);
@@ -296,18 +298,18 @@ export class CarrierHandler {
     };
   }
 
-  prepareModelCalculate(saleModel: any, shipExtraServices: any) {
-    let model = {} as ModelCalculateFeeV2;
+  prepareModelCalculate(saleModel: any, shipExtraServices: any): ShippingCalculateFeeInputDTO {
+    let model = {} as ShippingCalculateFeeInputDTO;
 
-    model.PartnerId = saleModel.PartnerId || (saleModel.Partner && saleModel.Partner.Id ? (saleModel.Partner.Id) : null),
-    model.CompanyId = saleModel.Company ? saleModel.Company.Id : saleModel.CompanyId,
-    model.CarrierId = saleModel.Carrier ? saleModel.Carrier.Id : null,
-    model.ServiceId = saleModel.Ship_ServiceId || '',
-    model.InsuranceFee = saleModel.Ship_InsuranceFee || 0,
-    model.ShipWeight = saleModel.ShipWeight,
-    model.CashOnDelivery = saleModel.CashOnDelivery,
-    model.ServiceExtras = [],
-    model.Ship_Receiver = {}
+    model.PartnerId = saleModel.PartnerId || (saleModel.Partner && saleModel.Partner.Id ? (saleModel.Partner.Id) : null);
+    model.CompanyId = saleModel.Company ? saleModel.Company.Id : saleModel.CompanyId;
+    model.CarrierId = saleModel.Carrier ? saleModel.Carrier.Id : null;
+    model.ServiceId = saleModel.Ship_ServiceId || '';
+    model.InsuranceFee = saleModel.Ship_InsuranceFee || 0;
+    model.ShipWeight = saleModel.ShipWeight;
+    model.CashOnDelivery = saleModel.CashOnDelivery;
+    model.ServiceExtras = [];
+    model.Ship_Receiver = {} as FastSaleOrder_ReceiverDTO;
 
     shipExtraServices = shipExtraServices && shipExtraServices.length > 0 ? shipExtraServices : [];
 
@@ -335,8 +337,6 @@ export class CarrierHandler {
       saleModel.Ship_ServiceName = shipService.ServiceName;
       saleModel.CustomerDeliveryPrice = shipService.TotalFee;
     }
-
-    debugger;
 
     let oldShipExtraServices = shipExtraServices.map(x => ({...x}));
 

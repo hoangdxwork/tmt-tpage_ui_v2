@@ -1,3 +1,4 @@
+import { ViewConversation_FastSaleOrdersDTO } from "../fastsaleorder/view_fastsaleorder.dto";
 import { FacebookUserPictureDTO, InnerActivityDTO, InnerCreatedByDTO, InnerPartnerDTO, InnerSaleOnlineOrderDTO, InnerTagDTO } from "./inner.dto";
 
 // MDB_Facebook_Partner_Mapping
@@ -71,4 +72,16 @@ export interface DataUpdate {
   LastActivityTimeConverted: any;
   LastUpdated: any;
   is_admin: boolean;
+}
+
+export interface ConversationOrderBillByPartnerDTO {
+  LastSaleOrder?: ViewConversation_FastSaleOrdersDTO;
+  Total: number;
+  Result: ConversationOrderBillByPartnerResultDTO[];
+}
+
+export interface ConversationOrderBillByPartnerResultDTO {
+  type: string;
+  data: ViewConversation_FastSaleOrdersDTO[];
+  total: number;
 }

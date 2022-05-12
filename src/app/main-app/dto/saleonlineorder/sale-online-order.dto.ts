@@ -12,8 +12,8 @@ export interface SaleOnlineOrderSummaryStatusDTO {
 }
 
 export interface SaleOnline_OrderDTO {
-  Id: string;
-  Code: string;
+  Id: string | undefined;
+  Code: string | undefined;
 
   Facebook_UserId: string;
   Facebook_PostId: string;
@@ -165,8 +165,8 @@ export interface SaleOnline_Facebook_FromDTO {
 }
 
 export interface UpdateStatusTextSaleOnlineDTO { // /odata/SaleOnline_Order/ODataService.UpdateStatusTextSaleOnline
-  Code: string;
-  Id: string;
+  Code: string | undefined;
+  Id: string | undefined;
   Name: string;
   StatusText: string;
   TotalAmount: number;

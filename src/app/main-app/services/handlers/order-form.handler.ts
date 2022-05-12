@@ -1,19 +1,20 @@
 import { FormBuilder } from '@angular/forms';
 import { Injectable } from "@angular/core";
-import { FastSaleOrderDefaultDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
 import { Observable } from 'rxjs';
 import { FastSaleOrderService } from '../fast-sale-order.service';
 import { map } from 'rxjs/operators';
 import { GeneralConfigsFacade } from '../facades/general-config.facade';
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { TAuthService } from 'src/app/lib';
+import { SaleSettingsDTO } from '../../dto/setting/setting-sale-online.dto';
+import { FastSaleOrderRestDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
 
 @Injectable()
 export class OrderFormHandler {
 
-  saleSetting: TDSSafeAny;
+  saleSetting!: SaleSettingsDTO;
   companyId: TDSSafeAny;
-  billDefault$!: Observable<FastSaleOrderDefaultDTO>;
+  billDefault$!: Observable<FastSaleOrderRestDTO>;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -85,7 +86,7 @@ export class OrderFormHandler {
     });
   }
 
-  createBillDefault() {
+  createBillDefault(): Observable<FastSaleOrderRestDTO> {
     if(this.billDefault$) return this.billDefault$;
 
     this.billDefault$ = new Observable(observer => {
@@ -98,7 +99,7 @@ export class OrderFormHandler {
     return this.billDefault$;
   }
 
-  private getBillInvoiceDefault(): Observable<FastSaleOrderDefaultDTO> {
+  private getBillInvoiceDefault(): Observable<FastSaleOrderRestDTO> {
     let typeInvoice = { "model": { "Type": "invoice" } };
     return this.fastSaleOrderService.getDefault(typeInvoice)
           .pipe(map((res) => {
@@ -107,18 +108,18 @@ export class OrderFormHandler {
           }));
   }
 
-  private updateBillDefault(billDefault: FastSaleOrderDefaultDTO) {
+  private updateBillDefault(billDefault: FastSaleOrderRestDTO) {
     let carrier = billDefault.Carrier;
 
     billDefault.CompanyId = this.companyId;
 
     if(carrier) {
-      billDefault.DeliveryPrice = carrier.Config_DefaultFee;
+      billDefault.DeliveryPrice = carrier.Config_DefaultFee || 0;
       billDefault.ShipWeight = carrier.Config_DefaultWeight;
       billDefault.Ship_Extras = carrier.ExtrasText && JSON.parse(carrier.ExtrasText);
     }
     else if(this.saleSetting) {
-      billDefault.DeliveryPrice = this.saleSetting.ShipAmount;
+      billDefault.DeliveryPrice = this.saleSetting.ShipAmount || 0;
       billDefault.ShipWeight = this.saleSetting.Weight;
     }
 

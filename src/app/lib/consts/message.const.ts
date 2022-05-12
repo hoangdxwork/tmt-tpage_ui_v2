@@ -62,7 +62,10 @@ export const Message = {
   Partner: {
     UpdateStatus: 'Cập nhật trạng thái khách hàng thành công.',
     AddNoteSuccess: 'Thêm ghi chú thành công.',
-    RemoveNoteSuccess: 'Xóa ghi chú thành công.'
+    RemoveNoteSuccess: 'Xóa ghi chú thành công.',
+    ReasonEmpty: 'Hãy nhập lí do.',
+    BlockSuccess: 'Chặn thành công.',
+    PhoneEmpty: 'Chưa có số điện thoại.'
   },
   ConnectionChannel: {
     NotFoundUserPage: 'Không tìm thấy kênh kết nối nào',

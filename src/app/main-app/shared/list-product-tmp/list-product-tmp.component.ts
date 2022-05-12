@@ -1,4 +1,3 @@
-import { SaleConfigsDTO, SaleSettingDTO } from './../../dto/configs/sale-config.dto';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { THelperCacheService } from 'src/app/lib';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSSafeAny, TDSTableComponent } from 'tmt-tang-ui';
@@ -12,6 +11,7 @@ import { orderBy as _orderBy } from 'lodash';
 import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
 import { SharedService } from '../../services/shared.service';
 import { TpageAddProductComponent } from '../tpage-add-product/tpage-add-product.component';
+import { InitSaleDTO, SaleSettingsDTO } from '../../dto/setting/setting-sale-online.dto';
 
 @Component({
   selector: 'list-product-tmp',
@@ -33,7 +33,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
   indexDbStorage!: DataPouchDBDTO[];
   productTmplItems!: ProductTemplateV2DTO;
 
-  roleConfigs!: SaleSettingDTO;
+  roleConfigs!: SaleSettingsDTO;
   inventories!: TDSSafeAny;
   isLoading: boolean = false;
   @Input() isLoadingProduct: boolean = false;
@@ -255,7 +255,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   loadConfig() {
-    this.sharedService.getConfigs().subscribe((res: SaleConfigsDTO) => {
+    this.sharedService.getConfigs().subscribe((res: InitSaleDTO) => {
         this.roleConfigs = res.SaleSetting;
     }, error => {
         this.message.error('Load thông tin cấu hình mặc định đã xảy ra lỗi!');

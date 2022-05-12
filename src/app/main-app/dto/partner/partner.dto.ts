@@ -122,9 +122,9 @@ export class ResCurrencyDTO {
 }
 
 export interface ResRevenueCustomerDTO { // /odata/Partner/OdataService.GetPartnerRevenueById?key=14
-  revenue: number;
-  revenueBegan: number;
-  revenueTotal: number;
+  Revenue: number;
+  RevenueBegan: number;
+  RevenueTotal: number;
 }
 
 
@@ -159,5 +159,46 @@ export enum PartnerStatus {
 export interface StatusDTO {
   value: string;
   text: string;
+}
+
+export interface MDBFacebookMappingNoteDTO {
+  id: string;
+  host: string;
+  page_id: string;
+  psid: string;
+  message: string;
+  DateCreated?: Date;
+  LastUpdated?: Date;
+  CreatedBy?: any;
+}
+
+export interface ListItemStatusDTO {
+  value: string;
+  text: string;
+}
+
+export interface InputReasonCannelOrderDTO {
+  phone: string;
+  reason: string;
+  company?: string;
+}
+
+export interface MDBPhoneReportDTO {
+  id: string;
+  phone: string;
+  host: string;
+  reasons: InnerReasonReportDTO[];
+  DateCreated: Date;
+  LastUpdated?: Date;
+}
+
+export interface InnerReasonReportDTO {
+  id: string;
+  reason: string;
+  host: string;
+  company: string;
+  un_check: boolean;
+  created_time?: Date;
+  last_update?: Date;
 }
 

@@ -10,12 +10,10 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { ProductCategoryDTO } from '../../dto/product/product-category.dto';
 import { TpageAddCategoryComponent } from '../tpage-add-category/tpage-add-category.component';
 import { TpageSearchUOMComponent } from '../tpage-search-uom/tpage-search-uom.component';
-import { CommonService } from '../../services/common.service';
-import { TCommonService, TAPIDTO, TApiMethodType, THelperCacheService } from 'src/app/lib';
+import { THelperCacheService } from 'src/app/lib';
 import { SharedService } from '../../services/shared.service';
 import { takeUntil } from 'rxjs/operators';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
-import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductDataFacade } from '../../services/facades/product.data.facade';
 
 @Component({
@@ -47,8 +45,6 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     private productTemplateService: ProductTemplateService,
     private productCategoryService: ProductCategoryService,
     private productUOMService: ProductUOMService,
-    private cacheApi: THelperCacheService,
-    private productIndexDBService: ProductIndexDBService,
     private productDataFacade: ProductDataFacade,
     public zone: NgZone) {
   }

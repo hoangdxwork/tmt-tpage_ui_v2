@@ -27,7 +27,7 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
 
   private userInit!: UserInitDTO;
   private order!: ConversationOrderForm;
-  private productDefault!: ConversationOrderProductDefaultDTO;
+  private productDefault!: ConversationOrderProductDefaultDTO | undefined;
 
   public onLastOrderUpdated$: EventEmitter<any> = new EventEmitter<any>();
   public onLastOrderCheckCvs$: EventEmitter<ConversationOrderForm> = new EventEmitter<ConversationOrderForm>();
@@ -70,7 +70,7 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
         let saleSetting = res.SaleSetting;
 
         if(TDSHelperObject.hasValue(saleSetting?.Product)) {
-          this.productDefault = this.updateProductDefault(saleSetting.Product);
+          this.productDefault = this.updateProductDefault(saleSetting?.Product);
         }
 
       }
@@ -83,20 +83,24 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
     });
   }
 
-  updateProductDefault(productSetting: ProductDTO) {
-    let result: ConversationOrderProductDefaultDTO = {
-      Note: productSetting.Note ? productSetting.Note : null,
-      Price: productSetting.Price || productSetting.PriceVariant || 0,
-      ProductCode: productSetting.DefaultCode,
-      ProductId: productSetting.Id,
-      ProductName: productSetting.Name,
-      ProductNameGet: productSetting.NameGet,
-      Quantity: 1,
-      UOMId: productSetting.UOMId,
-      UOMName: productSetting.UOMName,
-    };
+  updateProductDefault(productSetting: ProductDTO | undefined): ConversationOrderProductDefaultDTO | undefined {
+    if(productSetting) {
+      let result: ConversationOrderProductDefaultDTO = {
+        Note: productSetting.Note ? productSetting.Note : null,
+        Price: productSetting.Price || productSetting.PriceVariant || 0,
+        ProductCode: productSetting.DefaultCode,
+        ProductId: productSetting.Id,
+        ProductName: productSetting.Name,
+        ProductNameGet: productSetting.NameGet,
+        Quantity: 1,
+        UOMId: productSetting.UOMId,
+        UOMName: productSetting.UOMName,
+      };
 
-    return result;
+      return result;
+    }
+
+    return undefined;
   }
 
   loadOrderFromSignalR(){

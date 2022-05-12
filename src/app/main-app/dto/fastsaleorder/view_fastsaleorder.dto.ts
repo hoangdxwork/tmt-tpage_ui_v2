@@ -121,3 +121,22 @@ export interface View_FastSaleOrdersDTO { //  /odata/FastSaleOrder/ODataService.
   crmTeamId?: number;
   crmTeamName: string;
 }
+
+export interface ViewConversation_FastSaleOrdersDTO {
+  Id: number;
+  PartnerId: number;
+  DateCreated?: Date;
+  AmountTotal?: number;
+  PaymentJournalName: string;
+  CarrierName: string;
+  Name: string;
+  State: string;
+  Type: string;
+  Number: string;
+  TrackingRef: string;
+  DeliveryNote: string;
+  ShipPaymentStatus: string;
+  Address: string;
+  Phone: string;
+  ShowState: string;
+}
