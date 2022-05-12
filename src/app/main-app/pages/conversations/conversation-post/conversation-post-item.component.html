@@ -1,0 +1,32 @@
+<div class="row-col position-relative" *ngIf="data">
+  <!-- Tổng quan bài viết-->
+  <div class="bg-white">
+    <div class="block">
+          <span *ngIf="data.type">{{translateType(data.type, data.status_type)}}</span>
+          <a href="{{data.permalink_url}}" target="_blank">
+            {{data.created_time | date: 'dd/MM/yyyy HH:mm'}}
+          </a>
+    </div>
+    <hr>
+    <div class="flex p-2 w-full" style="justify-content: space-between;">
+        <div class="content">
+            <p *ngIf="data.story">{{data.story}}</p>
+            <p *ngIf="data.message">{{data.message}} </p>
+            <p *ngIf="!data.message && !data.story">(Chưa có nội dung tiêu đề)</p>
+        </div>
+        <div *ngIf="data.picture" class="picture">
+            <img tds-image [tdsSrc]="data.picture" />
+        </div>
+    </div>
+    <div class="footer-view">
+        <div class="like">
+            <label>Like: {{data.count_reactions || 0}}</label>
+        </div>
+        <div class="cmt"> Bình luận: {{data.count_comments || 0}}</div>
+    </div>
+  </div>
+  <!-- Danh sách bình luận -->
+  <div class="row-row" *ngIf="data">
+      <item-post-comment [post]="data"></item-post-comment>
+  </div>
+</div>

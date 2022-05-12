@@ -7,7 +7,7 @@ import { ConversationPostComponent } from './conversation-post/conversation-post
 import { ConversationCommentComponent } from './conversation-comment/conversation-comment.component';
 import { ConversationInboxComponent } from './conversation-inbox/conversation-inbox.component';
 import { MainSharedModule } from '../../shared/shared.module';
-import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSMessageModule, TDSModalModule, TDSPopoverModule, TDSRadioModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSToolTipModule, TDSTypographyModule, TDSSwitchModule } from 'tmt-tang-ui';
+import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSSwitchModule,  TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSImageModule, TDSInputModule, TDSInputNumberModule, TDSMessageModule, TDSModalModule, TDSPopoverModule, TDSRadioModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSToolTipModule, TDSTypographyModule } from 'tmt-tang-ui';
 import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conversations.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalImageStoreComponent } from './components/modal-image-store/modal-image-store.component';
@@ -46,11 +46,17 @@ import { ModalDetailBillComponent } from './components/modal-detail-bill/modal-d
 import { ModalConfirmShippingAddressComponent } from './components/modal-confirm-shipping-address/modal-confirm-shipping-address.component';
 import { ModalBlockPhoneComponent } from './components/modal-block-phone/modal-block-phone.component';
 import { CRMMatchingService } from '../../services/crm-matching.service';
+import { FacebookPostService } from '../../services/facebook-post.service';
+import { ConversationPostFacade } from '../../services/facades/conversation-post.facade';
+import { ConversationPostItemComponent } from './conversation-post/conversation-post-item.component';
+import { ItemPostCommentComponent } from './conversation-post/item-post-comment.component';
+import { FacebookCommentService } from '../../services/facebook-comment.service';
 
 const SERVICES = [
   ConversationDataFacade,
   ConversationEventFacade,
   ConversationOrderFacade,
+  ConversationPostFacade,
   ActivityDataFacade,
   ConversationFacebookState,
   ConversationService,
@@ -70,7 +76,9 @@ const SERVICES = [
   PrinterService,
   OrderFormHandler,
   CarrierHandler,
-  CRMMatchingService
+  CRMMatchingService,
+  FacebookPostService,
+  FacebookCommentService
 ]
 
 @NgModule({
@@ -89,7 +97,9 @@ const SERVICES = [
     ModalConfirmShippingAddressComponent,
     ModalConfirmPaymentComponent,
     ModalAddQuickReplyComponent,
-    ModalBlockPhoneComponent
+    ModalBlockPhoneComponent,
+    ConversationPostItemComponent,
+    ItemPostCommentComponent
   ],
   imports: [
     CommonModule,
@@ -122,7 +132,8 @@ const SERVICES = [
     UploadImageModule,
     TDSSpinnerModule,
     TDSSwitchModule,
-    TDSInputNumberModule
+    TDSInputNumberModule,
+    TDSImageModule,
   ],
   providers: [ ...SERVICES]
 })

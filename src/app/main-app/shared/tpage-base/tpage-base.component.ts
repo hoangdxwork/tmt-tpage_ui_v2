@@ -13,23 +13,20 @@ import { TPageHelperService } from '../../services/helper.service';
   styleUrls: ['./tpage-base.component.scss']
 })
 
-export class TpageBaseComponent implements OnInit {
+export class TpageBaseComponent  {
 
   type!: string;
-  private _destroy = new Subject<void>();
   private _params!: TDSSafeAny;
   private _currentTeam!: CRMTeamDTO | null;
   private _listFaceBook: Array<CRMTeamDTO> = [];
   public isFirstLoad: boolean = true;
   public isChangeTeam: boolean = false;
   subscription!: Observable<any>;
+  destroy$ = new Subject();
 
   constructor(public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
-    public router: Router) { }
-
-  ngOnInit(): void {
-    this.onInit();
+    public router: Router) {
   }
 
   loadQueryParamMap(): Observable<any> {
@@ -62,27 +59,11 @@ export class TpageBaseComponent implements OnInit {
     return this._currentTeam = data;
   }
 
-  // viết lại hàm này
-  onInit(): void {
-  }
-
   //có thể viết lại hàm này
   onRedirect() {
     console.warn("không có queryparams và team")
     this.router.navigate(['/']);
   }
-
-  addQueryParams(queryParams: TDSSafeAny): any {
-    return this.router.navigate([], {
-      relativeTo: this.activatedRoute,
-      queryParams: queryParams,
-      queryParamsHandling: 'merge',
-      // preserve the existing query params in the route
-      skipLocationChange: true
-      // do not trigger navigation
-    });
-  }
-
 }
 
 
