@@ -11,28 +11,19 @@ import { ProductIndexDBService } from '../product-indexDB.service';
 import { SharedService } from '../shared.service';
 
 @Injectable()
-export class ProductDataFacade extends BaseSevice {
-
-  prefix: string = "";
-  table: string = "";
-  baseRestApi: string = "";
+export class ProductDataFacade {
 
   indexDbVersion: number = 0;
   indexDbProductCount: number = -1;
-  // indexDbStorage: DataPouchDBDTO[] = [];
   productTmplItems!: ProductTemplateV2DTO;
 
   isLoading: boolean = true;
   errorMessage: TDSSafeAny;
 
   constructor(
-    private apiService: TCommonService,
     private cacheApi: THelperCacheService,
     private productIndexDBService: ProductIndexDBService,
-    private sharedService: SharedService
   ) {
-    super(apiService);
-    debugger;
     this.initialize();
   }
 
@@ -129,7 +120,6 @@ export class ProductDataFacade extends BaseSevice {
           if(productCount == -1 && version == 0) {
               dbStorage.length = 0;
               dbStorage = data.Datas;
-              // this.loadDataTable();
           } else {
             data.Datas.forEach((x: DataPouchDBDTO) => {
               let existIndex = dbStorage.findIndex(dbProduct => dbProduct.Id == x.Id);
