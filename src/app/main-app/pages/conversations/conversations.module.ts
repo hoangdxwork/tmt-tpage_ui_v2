@@ -4,8 +4,6 @@ import { CommonModule } from '@angular/common';
 import { ConversationsRoutingModule } from './conversations-routing.module';
 import { ConversationAllComponent } from './conversation-all/conversation-all.component';
 import { ConversationPostComponent } from './conversation-post/conversation-post.component';
-import { ConversationCommentComponent } from './conversation-comment/conversation-comment.component';
-import { ConversationInboxComponent } from './conversation-inbox/conversation-inbox.component';
 import { MainSharedModule } from '../../shared/shared.module';
 import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSMessageModule, TDSModalModule, TDSPopoverModule, TDSRadioModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSToolTipModule, TDSTypographyModule } from 'tmt-tang-ui';
 import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conversations.module';
@@ -68,8 +66,6 @@ const SERVICES = [
   declarations: [
     ConversationAllComponent,
     ConversationPostComponent,
-    ConversationCommentComponent,
-    ConversationInboxComponent,
     ModalImageStoreComponent,
     CurrentConversationItemComponent,
     ConversationOrderComponent,

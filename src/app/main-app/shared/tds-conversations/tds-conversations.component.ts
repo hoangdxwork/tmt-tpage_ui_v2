@@ -1,8 +1,9 @@
+import { ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Optional, Output, Self,
   SimpleChanges, TemplateRef, ViewContainerRef, Host, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService } from 'tmt-tang-ui';
+import { TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSResizeObserver } from 'tmt-tang-ui';
 import { ActiveMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { CRMTeamService } from '../../services/crm-team.service';
@@ -20,8 +21,9 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
+export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
 
+  @ViewChild('MainChat') mainChat!:ElementRef;
   @Input() tdsHeader?: string | TemplateRef<void>;
   @Input() data!: ActiveMatchingItem;
   @Input() type!: string;
@@ -38,6 +40,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   uploadedImages: any[] = [];
   isSending: boolean = false;
   currentImage: any;
+  mainChatHeight:number = 0;
+  headerHeight:number = 88;
+  replyHeight:number = 196;
 
   constructor(private modalService: TDSModalService,
     private crmTeamService: CRMTeamService,
@@ -47,6 +52,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     private activityDataFacade: ActivityDataFacade,
     private conversationDataFacade: ConversationDataFacade,
     private router: Router,
+    private resizeObserver: TDSResizeObserver,
     private viewContainerRef: ViewContainerRef) {
   }
 
@@ -55,6 +61,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
         this.loadMessages(this.data);
     }
     this.loadUser();
+  }
+
+  ngAfterViewInit(): void {
+    this.resizeObserver.observe(this.mainChat).subscribe(() => {
+        let parent = this.mainChat.nativeElement.closest('.main-conversation');
+        this.mainChatHeight = parent.clientHeight - this.headerHeight - this.replyHeight;
+    });
   }
 
   //TODO: data.id = data.psid
@@ -79,7 +92,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
           this.lstUser = res;
       }, error => {
         this.message.error('Load user đã xảy ra lỗi');
-      })
+      });
   }
 
   onClickDropdown(e: MouseEvent) {
@@ -126,6 +139,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
       }
       event.preventDefault();
     }
+  }
+
+  assignUser(){
+
   }
 
   replyComment(data: any) {
