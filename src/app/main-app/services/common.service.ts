@@ -4,7 +4,8 @@ import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'sr
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
 import { PartnerStatusReport } from '../dto/partner/partner-status-report.dto';
-import { StatusDTO } from '../dto/partner/partner.dto';
+import { ListItemStatusDTO, StatusDTO } from '../dto/partner/partner.dto';
+import { InitSaleDTO } from '../dto/setting/setting-sale-online.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable()
@@ -29,7 +30,7 @@ export class CommonService extends BaseSevice {
     });
   }
 
-  getPartnerStatusReport(): Observable<any> {
+  getPartnerStatusReport(): Observable<PartnerStatusReport> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/getpartnerstatusreport`,
         method: TApiMethodType.get,
@@ -38,31 +39,22 @@ export class CommonService extends BaseSevice {
     return this.apiService.getData<PartnerStatusReport>(api,null);
   }
 
-  getPartnerStatus(): Observable<any> {
+  getPartnerStatus(): Observable<ListItemStatusDTO[]> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/GetPartnerStatus`,
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<Array<StatusDTO>>(api,null);
+    return this.apiService.getData<ListItemStatusDTO[]>(api,null);
   }
 
-  getPriceListAvailable(date: any): Observable<any> {
+  getPriceListAvailable(date: any): Observable<ODataPartnerCategoryDTO> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/Product_PriceList/OdataService.GetPriceListAvailable?date=${date}`,
         method: TApiMethodType.get,
     }
 
     return this.apiService.getData<ODataPartnerCategoryDTO>(api,null);
-  }
-
-  getConfigs(): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/getsaleconfig`,
-      method: TApiMethodType.get,
-    }
-
-    return this.apiService.getData<TDSSafeAny>(api,null);
   }
 
   getInventoryByIds(warehouseId: number, ids: any): Observable<TDSSafeAny> {

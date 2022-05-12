@@ -8,6 +8,7 @@ import { PartnerBirthdayDTO } from '../dto/partner/partner-birthday.dto';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
 import { PartnerDetailDTO } from '../dto/partner/partner-detail.dto';
 import { ODataRegisterPartnerDTO } from '../dto/partner/partner-register-payment.dto';
+import { ResRevenueCustomerDTO } from '../dto/partner/partner.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable()
@@ -105,13 +106,13 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api,data);
   }
 
-  getPartnerRevenueById(key: TDSSafeAny): Observable<TDSSafeAny> {
+  getPartnerRevenueById(key: number): Observable<ResRevenueCustomerDTO> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetPartnerRevenueById?key=${key}`,
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, null);
+    return this.apiService.getData<ResRevenueCustomerDTO>(api, null);
   }
 
   getRegisterPaymentPartner(data: TDSSafeAny): Observable<TDSSafeAny> {
@@ -164,16 +165,16 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<ODataCustomerDTO>(api, null);
   }
 
-  updateStatus(id: number, data: TDSSafeAny) {
+  updateStatus(id: number, data: TDSSafeAny): Observable<boolean> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})/OdataService.UpdateStatus`,
       method: TApiMethodType.post,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, data);
+    return this.apiService.getData<boolean>(api, data);
   }
 
-  checkConversation(page_id: string, psid: string) {
+  checkConversation(page_id: string, psid: string): Observable<CheckConversationDTO> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/checkconversation`,
       method: TApiMethodType.post,

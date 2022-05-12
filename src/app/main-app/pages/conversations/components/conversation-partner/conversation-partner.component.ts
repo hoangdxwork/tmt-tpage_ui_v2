@@ -7,7 +7,7 @@ import { DraftMessageService } from 'src/app/main-app/services/conversation/draf
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationEventFacade } from 'src/app/main-app/services/facades/conversation-event.facade';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
-import { TDSMessageService, TDSModalService, TDSHelperString, TDSHelperArray, TDSTagStatusType } from 'tmt-tang-ui';
+import { TDSMessageService, TDSModalService, TDSHelperString, TDSHelperArray, TDSTagStatusType, TDSHelperObject } from 'tmt-tang-ui';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
@@ -15,11 +15,13 @@ import { ConversationService } from 'src/app/main-app/services/conversation/conv
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { ConversationAllComponent } from '../../conversation-all/conversation-all.component';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { PartnerDTO, PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
+import { MDBFacebookMappingNoteDTO, PartnerDTO, PartnerStatusDTO, ResRevenueCustomerDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ModalBlockPhoneComponent } from '../modal-block-phone/modal-block-phone.component';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
+import { ConversationOrderBillByPartnerResultDTO } from 'src/app/main-app/dto/conversation/conversation.dto';
+import { ViewConversation_FastSaleOrdersDTO } from 'src/app/main-app/dto/fastsaleorder/view_fastsaleorder.dto';
 
 @Component({
     selector: 'conversation-partner',
@@ -33,7 +35,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   _form!: FormGroup;
   dataMatching!: ActiveMatchingItem;
-  objRevenue: any;
+  objRevenue!: ResRevenueCustomerDTO;
   noteData: any = { items: [] };
   destroy$ = new Subject();
 
@@ -41,8 +43,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   lstPartnerStatus!: Array<PartnerStatusDTO>;
 
   innerNote!: string;
-  lastBill: any;
-  lstBill: any[] = [];
+  lastBill!: ViewConversation_FastSaleOrdersDTO | undefined;
+  lstBill: ConversationOrderBillByPartnerResultDTO[] = [];
 
   tabBillCurrent: number = 0;
 
@@ -129,20 +131,19 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   loadPartnerRevenue(id: number){
     this.partnerService.getPartnerRevenueById(id).pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
+      .subscribe(res => {
           this.objRevenue = res;
     }, error => {
       this.message.error('Load doanh thu khách hàng đã xảy ra lỗi');
     });
   }
 
-  loadBill(partnerId: any) {
+  loadBill(partnerId: number) {
     this.lstBill.length = 0;
     this.fastSaleOrderService.getConversationOrderBillByPartner(partnerId).pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-        console.log(res);
+      .subscribe(res => {
         this.lstBill = res.Result || [];
-        this.lastBill = res.LastSaleOrder || null;
+        this.lastBill = res.LastSaleOrder || undefined;
       }, error => {
         this.message.error('Load hóa đơn khách hàng trong hội thoại đã xảy ra lỗi!');
       })
@@ -155,17 +156,16 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     }
   }
 
-  addNote(): any {
+  addNote() {
     if(!TDSHelperString.hasValueString(this.innerNote)) {
       this.message.error(Message.EmptyData);
       return;
     }
 
-    let model = {
-      message: this.innerNote,
-      psid: this.data?.psid,
-      page_id: this.data?.page_id
-    };
+    let model = {} as MDBFacebookMappingNoteDTO;
+    model.message = this.innerNote,
+    model.psid = this.data?.psid,
+    model.page_id = this.data?.page_id
 
     // TODO: Thêm loading
     this.crmMatchingService.addNote(this.data?.psid, model)
@@ -176,7 +176,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       }, error => {
         this.message.error(`${error?.error?.message}` || JSON.stringify(error));
       });
-
   }
 
   loadNotes(page_id: string, psid: string) {
@@ -186,7 +185,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         this.noteData.items = [...this.noteData.items, ...res.Items];
     }, error => {
         this.message.error('Load ghi chú khách hàng đã xảy ra lỗi');
-    })
+    });
   }
 
   removeNote(id: any, index: number) {
@@ -201,7 +200,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   onChangeBill(event: any) {
-    console.log(event);
     this.tabBillCurrent = event;
   }
 
@@ -214,7 +212,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       this.partnerService.updateStatus(this.partner?.id, data).subscribe(res => {
         this.message.success(Message.Partner.UpdateStatus);
         this.partner.status_text = status.text;
-        debugger;
         // this.formEditOrder.controls["Partner"].setValue(partner);
       });
     }
@@ -246,14 +243,24 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   showModalBlockPhone() {
+    let phone = this.data?.phone;
+
     const modal = this.modalService.create({
       title: '',
       content: ModalBlockPhoneComponent,
       viewContainerRef: this.viewContainerRef,
-      size: 'lg',
+      size: 'md',
       componentParams: {
+        phone: phone
       }
     });
+
+    modal.afterClose.subscribe(result => {
+      if (TDSHelperObject.hasValue(result)) {
+        // Cập nhật form PhoneReport.value;
+      }
+    });
+
   }
 
   ngOnChanges(changes: SimpleChanges) {

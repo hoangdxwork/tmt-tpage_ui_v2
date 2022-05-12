@@ -4,6 +4,7 @@ import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tmt-tang-ui";
 import { ODataModelDTO } from "../dto/odata/odata.dto";
 import { PagedList2 } from "../dto/pagedlist2.dto";
+import { SaleOnline_OrderDTO } from "../dto/saleonlineorder/sale-online-order.dto";
 import { BaseSevice } from "./base.service";
 
 
@@ -112,13 +113,13 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  insertFromMessage(data: ODataModelDTO<TDSSafeAny>): Observable<TDSSafeAny> {
+  insertFromMessage(data: ODataModelDTO<SaleOnline_OrderDTO>): Observable<SaleOnline_OrderDTO> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertFromMessage?$expand=Details,User`,
       method: TApiMethodType.post,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, data);
+    return this.apiService.getData<SaleOnline_OrderDTO>(api, data);
   }
 
 }

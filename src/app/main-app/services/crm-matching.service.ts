@@ -8,6 +8,7 @@ import { PartnerBirthdayDTO } from '../dto/partner/partner-birthday.dto';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
 import { PartnerDetailDTO } from '../dto/partner/partner-detail.dto';
 import { ODataRegisterPartnerDTO } from '../dto/partner/partner-register-payment.dto';
+import { InputReasonCannelOrderDTO, MDBFacebookMappingNoteDTO, MDBPhoneReportDTO } from '../dto/partner/partner.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable()
@@ -21,13 +22,22 @@ export class CRMMatchingService extends BaseSevice {
     super(apiService)
   }
 
-  addNote(psid: string, data: any) {
+  addNote(psid: string, data: MDBFacebookMappingNoteDTO) {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/notes`,
       method: TApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  addOrUpdatePhoneReport(data: InputReasonCannelOrderDTO): Observable<MDBPhoneReportDTO> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/addorupdatephonereport`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<MDBPhoneReportDTO>(api, data);
   }
 
 }

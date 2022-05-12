@@ -3,7 +3,6 @@ import { TDSModalService, TDSHelperObject, TDSMessageService, TDSHelperArray, TD
 import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
 import { ModalSearchPartnerComponent } from '../components/modal-search-partner/modal-search-partner.component';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
-import { SaleConfigsDTO, SaleSettingDTO } from 'src/app/main-app/dto/configs/sale-config.dto';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { AccountRegisterPaymentService } from 'src/app/main-app/services/account-register-payment.service';
@@ -24,7 +23,6 @@ import { AllFacebookChildTO } from 'src/app/main-app/dto/team/all-facebook-child
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
-import { CalculatorFeeV2DTO } from 'src/app/main-app/dto/fastsaleorder/calculate-feeV2.dto';
 import { CalculatorListFeeDTO } from 'src/app/main-app/dto/fastsaleorder/calculate-listFee.dto';
 import { ModalEditPartnerComponent } from '../../partner/components/modal-edit-partner/modal-edit-partner.component';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
@@ -34,6 +32,8 @@ import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pou
 import { FastSaleOrderLineService } from 'src/app/main-app/services/fast-sale-orderline.service';
 import { FSOrderLines } from 'src/app/main-app/dto/fastsaleorder/fastsale-orderline.dto';
 import { CompanyCurrentDTO } from 'src/app/main-app/dto/configs/company-current.dto';
+import { CalculateFeeResponse_DataDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
+import { InitSaleDTO, SaleSettingsDTO } from 'src/app/main-app/dto/setting/setting-sale-online.dto';
 
 @Component({
   selector: 'app-add-bill',
@@ -49,7 +49,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   isCalcFee: boolean = false;
 
   dataModel!: FastSaleOrder_DefaultDTOV2;
-  roleConfigs!: SaleSettingDTO;
+  roleConfigs!: SaleSettingsDTO;
   companyCurrents!: CompanyCurrentDTO;
   lstCarriers!: Observable<DeliveryCarrierDTOV2[]>;
   lstPaymentJournals!: Observable<AccountJournalPaymentDTO[]>;
@@ -361,7 +361,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   loadConfig() {
-    this.sharedService.getConfigs().pipe(takeUntil(this.destroy$)).subscribe((res: SaleConfigsDTO) => {
+    this.sharedService.getConfigs().pipe(takeUntil(this.destroy$)).subscribe((res: InitSaleDTO) => {
       this.roleConfigs = res.SaleSetting;
     }, error => {
       this.message.error('Load thông tin cấu hình mặc định đã xảy ra lỗi!');
@@ -818,7 +818,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
           return this.message.error('Vui lòng chọn nhập khối lượng');
         }
         this.isCalcFee = true;
-        this.fastSaleOrderService.calculateFeeV2(model).subscribe((res: CalculatorFeeV2DTO) => {
+        this.fastSaleOrderService.calculateFeeV2(model).subscribe((res: CalculateFeeResponse_DataDTO) => {
           if (res) {
             //TODO: Cập nhật lại phí ship
             this._form.controls['CustomerDeliveryPrice'].setValue(res.TotalFee);

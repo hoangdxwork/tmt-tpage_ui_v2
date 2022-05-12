@@ -2,7 +2,7 @@ import { ResultCheckAddressDTO } from './../../../../dto/address/address.dto';
 import { FilterObjDTO, OdataProductService } from './../../../../services/mock-odata/odata-product.service';
 import { TDSHelperObject } from 'tmt-tang-ui';
 import { CommonService } from 'src/app/main-app/services/common.service';
-import { DeliveryCarrierDTO } from './../../../../dto/carrier/delivery-carrier.dto';
+import { CalculateFeeResponse_Data_ServiceDTO, DeliveryCarrierDTO } from './../../../../dto/carrier/delivery-carrier.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 import { TAuthService } from 'src/app/lib';
@@ -19,7 +19,7 @@ import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-use
 import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-product/tpage-add-product.component';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { Message } from 'src/app/lib/consts/message.const';
-import { FastSaleOrderDefaultDTO, FastSaleOrderLineDTO, FastSaleOrder_ServiceExtraDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
+import { FastSaleOrderLineDTO, FastSaleOrderRestDTO, FastSaleOrder_ServiceExtraDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { Observable } from 'rxjs';
 import { CarrierHandler } from 'src/app/main-app/services/handlers/carier.handler';
@@ -47,11 +47,11 @@ export class EditOrderComponent implements OnInit {
   isLoadCarrier: boolean = false;
 
   model!: SaleOnline_OrderDTO;
-  defaultBill!: FastSaleOrderDefaultDTO;
+  defaultBill!: FastSaleOrderRestDTO;
 
   // Giá trị này phải khởi tạo = []
   shipExtraServices: TDSSafeAny[] = [];
-  shipServices: TDSSafeAny[] = [];
+  shipServices: CalculateFeeResponse_Data_ServiceDTO[] = [];
 
   saveType = {
     orderSave: 1,
@@ -303,7 +303,7 @@ export class EditOrderComponent implements OnInit {
 
     let formValue = this.formEditOrder.value;
 
-    this.defaultBill.SaleOnlineIds = [this.model.Id];
+    this.defaultBill.SaleOnlineIds = this.model.Id ? [this.model.Id] : [];
 
     this.defaultBill.PartnerId = formValue.Partner ? formValue.Partner.Id : null;
     this.defaultBill.Partner = formValue.Partner ? formValue.Partner : null;
@@ -429,9 +429,9 @@ export class EditOrderComponent implements OnInit {
     this.carrierHandler.changeCarrierV2(this.defaultBill, this.formEditOrder, event, this.shipExtraServices)
       .pipe(finalize(() => this.isLoadCarrier = false))
       .subscribe(res => {
-        this.shipServices = res?.Services;
-        this.updateShipExtraServices(event);
-        this.updateFormByBillDefault(this.defaultBill);
+          this.shipServices = res?.Services || [];
+          this.updateShipExtraServices(event);
+          this.updateFormByBillDefault(this.defaultBill);
       }, error => {
           this.updateFormByBillDefault(this.defaultBill);
           this.message.error(error.error_description ? error.error_description : JSON.stringify(error));
@@ -475,7 +475,7 @@ export class EditOrderComponent implements OnInit {
 
   calculateFee(item: any) {
     this.carrierHandler.calculateFee(item, this.defaultBill, this.formEditOrder, this.shipExtraServices).subscribe(res => {
-        this.shipServices = res.Services;
+        this.shipServices = res?.Services || [];
     }, (error: TDSSafeAny) => {
       if(error && typeof error == 'string') {
         this.message.error(error);
@@ -553,7 +553,7 @@ export class EditOrderComponent implements OnInit {
     this.formEditOrder.setControl("Details", this.fb.array(data.Details || []));
   }
 
-  updateFormByBillDefault(billDefault: FastSaleOrderDefaultDTO) {
+  updateFormByBillDefault(billDefault: FastSaleOrderRestDTO) {
     billDefault.Ship_ServiceExtras = JSON.parse(billDefault.Ship_ServiceExtrasText) || [];
 
     let formControl = this.formEditOrder.controls;

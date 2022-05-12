@@ -3,6 +3,8 @@ import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tmt-tang-ui";
 import { CRMMatchingDTO } from "../../dto/conversation-all/crm-matching.dto";
+import { PagedList2 } from "../../dto/pagedlist2.dto";
+import { MDBFacebookMappingNoteDTO } from "../../dto/partner/partner.dto";
 import { BaseSevice } from "../base.service";
 import { SignalRConnectionService } from "../signalR/signalR-connection.service";
 
@@ -39,7 +41,7 @@ export class ConversationService extends BaseSevice implements OnInit {
   ngOnInit(): void {
   }
 
-  get(queryObj: any, url?: string): Observable<any> {
+  get(queryObj: any, url?: string): Observable<CRMMatchingDTO> {
     if (url) {
         return this.getLink(url);
     }
@@ -56,7 +58,7 @@ export class ConversationService extends BaseSevice implements OnInit {
     }
   }
 
-  getLink(url: string): Observable<any> {
+  getLink(url: string): Observable<CRMMatchingDTO> {
     let api: TAPIDTO = {
       url: `${this._BASE_URL}/${url}`,
       method: TApiMethodType.get
@@ -84,22 +86,22 @@ export class ConversationService extends BaseSevice implements OnInit {
   }
 
 
-  getNotes(page_id: string, psid: string) {
+  getNotes(page_id: string, psid: string): Observable<PagedList2<MDBFacebookMappingNoteDTO>> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/notes?page_id=${page_id}`,
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, null);
+    return this.apiService.getData<PagedList2<MDBFacebookMappingNoteDTO>>(api, null);
   }
 
-  deleteNote(id: any) {
+  deleteNote(id: string): Observable<undefined> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/${id}/notes`,
         method: TApiMethodType.delete,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, null);
+    return this.apiService.getData<undefined>(api, null);
   }
 
 

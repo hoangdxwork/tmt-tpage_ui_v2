@@ -1,3 +1,4 @@
+import { FastSaleOrder_ReceiverDTO, FastSaleOrder_ServiceExtraDTO } from '../fastsaleorder/fastsaleorder.dto';
 import { ProductDTO } from '../product/product.dto';
 
 export interface DeliveryCarrierDTO {
@@ -151,4 +152,41 @@ export interface ServiceCustomDTO {
   ServiceId: string;
   Name: string;
   IsDefault: boolean;
+}
+
+export interface ShippingCalculateFeeInputDTO {
+  PartnerId?: number;
+  CompanyId?: number;
+  CarrierId: number;
+  ServiceId: string;
+  InsuranceFee?: number;
+  ShipWeight?: number;
+  CashOnDelivery?: number;
+  Ship_Receiver?: FastSaleOrder_ReceiverDTO;
+  ServiceExtras: FastSaleOrder_ServiceExtraDTO[];
+}
+
+export interface CalculateFeeResponse_DataDTO {
+  TotalFee: number;
+  CarrierId: number;
+  DeliveryType: string;
+  CarrierName: string;
+  Costs: CalculateFeeResponse_Data_ServiceDTO[];
+  Services: CalculateFeeResponse_Data_ServiceDTO[];
+}
+
+export interface CalculateFeeResponse_Data_ServiceDTO {
+  ServiceId: string;
+  ServiceName: string;
+  TotalFee: number;
+  Extras: CalculateFeeResponse_Data_Service_ExtraDTO[];
+}
+
+export interface CalculateFeeResponse_Data_Service_ExtraDTO {
+  ServiceId: string;
+  ServiceName: string;
+  Fee: number;
+  Type: string;
+  ExtraMoney?: number;
+  IsSelected?: boolean;
 }
