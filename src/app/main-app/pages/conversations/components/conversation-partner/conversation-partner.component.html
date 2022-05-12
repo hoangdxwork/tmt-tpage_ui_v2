@@ -184,7 +184,7 @@
           <div class="w-full h-full">
             <div class="w-full">
 
-              <tds-filter-status (selectChange)="onChangeBill($event)">
+              <tds-filter-status (selectChange)="onChangeBill($event)" [ngModel]='tabBillCurrent' [ngModelOptions]="{standalone: true}">
                 <tds-filter-status-item *ngFor="let bills of lstBill; let index = index"
                   [name]='bills.data[0].ShowState' [value]='index' [count]='bills.total'>
                   <ng-template tds-filter-status-template let-active='active' let-count='count' let-name='name' let-value>
@@ -200,7 +200,6 @@
 
             </div>
             <div class="pt-4 flex flex-col gap-2 w-full" *ngIf="lstBill">
-
               <tds-collapse *ngFor="let bill of lstBill[tabBillCurrent]?.data; let index = index">
                 <tds-collapse-panel [header]="headerBill" [active]="false" [disabled]=false>
                   <ng-template #headerBill>
