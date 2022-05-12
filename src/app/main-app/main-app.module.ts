@@ -22,7 +22,11 @@ import {
   TDSToolTipModule,
 } from 'tmt-tang-ui';
 import { UploadImageModule } from './shared/upload-image/tpage-avatar-facebook/upload-image.module';
+import { ProductDataFacade } from './services/facades/product.data.facade';
 
+const SERVICES = [
+  ProductDataFacade,
+]
 
 @NgModule({
   declarations: [
@@ -58,6 +62,7 @@ import { UploadImageModule } from './shared/upload-image/tpage-avatar-facebook/u
     //     deps: [SignalRConnectionService],
     //     multi: true,
     // }
+    ...SERVICES,
   ]
 })
 export class MainAppModule { }
