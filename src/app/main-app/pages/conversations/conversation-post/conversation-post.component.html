@@ -2,22 +2,8 @@
     <div class="w-[357px] h-full flex flex-col gap-y-1 text-body-2 text-neutral-1-900 overflow-hidden">
         <div class="w-full flex flex-col gap-1 px-1">
             <div class="bg-white p-2.5 flex flex-col gap-y-4">
-                <div class="flex justify-between items-center rounded-xl border-2 border-neutral-2-50 py-2.5 px-3">
-                    <div class="flex gap-x-1.5 items-center">
-                        <div class="relative pr-1">
-                            <tds-avatar class="bg-accent-4  text-white" text="P"></tds-avatar>
-                        </div>
-                        <div class="w-52">
-                            <tds-select [border]='false' valueField="id" textField="name" [data]="contactOptionsName"
-                                [(ngModel)]="contactName">
-                            </tds-select>
-                        </div>
-                    </div>
-                    <button class="p-1">
-                        <span class="flex justify-center items-center text-neutral-1-200">
-                            <i class="tdsi-reload-fill  text-xl leading-5"></i>
-                        </span>
-                    </button>
+                <div class="w-full">
+                    <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)"></tpage-team-dropdown>
                 </div>
                 <div class="flex">
                     <tds-form-field class="w-full mr-2">
@@ -38,23 +24,8 @@
                     <!-- droupdown filter -->
                     <tds-dropdown-menu #btnFilter="tdsDropdownMenu">
                         <div class="w-[225px] py-2">
-                            <div tds-dropdown-item>
-                                <a> Tất cả bài viết </a>
-                            </div>
-                            <div tds-dropdown-item class="w-full flex justify-between items-center">
-                                <a> Hình ảnh </a>
-                                <div class="flex items-center">
-                                    <span class="tdsi-success-fill text-primary-1 text-sm"></span>
-                                </div>
-                            </div>
-                            <div tds-dropdown-item>
-                                <a> Trạng thái </a>
-                            </div>
-                            <div tds-dropdown-item>
-                                <a> Story đã đăng </a>
-                            </div>
-                            <div tds-dropdown-item>
-                                <a> Story đã chia sẻ </a>
+                            <div tds-dropdown-item  *ngFor="let item of items"  (click)="setType(item, 'TYPE')">
+                              {{item.text}}
                             </div>
                         </div>
                     </tds-dropdown-menu>
@@ -67,639 +38,65 @@
                     <!-- droupdown up down -->
                     <tds-dropdown-menu #btnUpDown="tdsDropdownMenu">
                         <div class="w-[225px] py-2">
-                            <div tds-dropdown-item>
-                                <a> Ngày tạo mới nhất </a>
-                            </div>
-                            <div tds-dropdown-item class="w-full flex justify-between items-center">
-                                <a> Ngày tạo cũ nhất </a>
-                                <div class="flex items-center">
-                                    <span class="tdsi-success-fill text-primary-1 text-sm"></span>
-                                </div>
-                            </div>
-                            <div tds-dropdown-item>
-                                <a> Ngày cập nhật mới nhất </a>
-                            </div>
-                            <div tds-dropdown-item>
-                                <a> Ngày cập nhật cũ nhất </a>
+                            <div tds-dropdown-item *ngFor="let item of lstTimes" (click)="setType(item, 'SORT')">
+                              {{item.text}}
                             </div>
                         </div>
                     </tds-dropdown-menu>
                 </div>
             </div>
         </div>
-        <div class="h-full flex flex-col gap-y-1 overflow-hidden overflow-y-auto no-scrollbar">
-            <div class="px-1">
-                <div class="bg-white p-3.5 flex gap-x-4 hover:bg-neutral-3-50">
-                    <div class="w-2/5 flex flex-col gap-y-3">
-                        <div class="w-full relative">
-                            <img src="assets/images/conversation/post/img-post.svg" alt="">
-                            <div class="absolute top-1 right-1 border border-white/30 rounded-full">
-                                <div
-                                    class="flex rounded-full items-center bg-gradient-to-t from-[#FF7575] to-[#F22727]">
-                                    <span class=" flex items-center text-white px-2 ">
-                                        <svg class="mr-1" width="8" height="10" viewBox="0 0 8 10" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M0.55603 0.180176V9.42417L7.53303 4.62417L0.55603 0.180176Z"
-                                                fill="white" />
-                                        </svg>
-                                        LIVE
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex gap-x-4 text-neutral-1-400">
-                            <span class="flex items-center">
-                                <i class="text-base leading-4 tdsi-like-line mr-2"></i>10
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="mr-2" width="16" height="16" viewBox="0 0 16 16" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M2.00365 2.67027C2.34746 2.32645 2.81378 2.1333 3.30001 2.1333H12.844C13.3302 2.1333 13.7966 2.32645 14.1404 2.67027C14.4842 3.01409 14.6773 3.4804 14.6773 3.96663V10.9116C14.6773 11.1524 14.6299 11.3908 14.5378 11.6132C14.4457 11.8357 14.3106 12.0378 14.1404 12.208C13.9701 12.3782 13.768 12.5133 13.5456 12.6054C13.3232 12.6975 13.0848 12.745 12.844 12.745H8.29924L5.68124 15.0946C5.53547 15.2251 5.35311 15.3087 5.15905 15.3337C4.96499 15.3587 4.76792 15.3243 4.59384 15.2349C4.41976 15.1456 4.27686 15.0056 4.18401 14.8334C4.09116 14.6611 4.05272 14.4648 4.07377 14.2703L4.07395 14.2687L4.24404 12.74H3.30001C2.81378 12.74 2.34746 12.5468 2.00365 12.203C1.65983 11.8592 1.46667 11.3929 1.46667 10.9066V3.96663C1.46667 3.4804 1.65983 3.01409 2.00365 2.67027ZM12.844 3.19997H3.30001C3.09668 3.19997 2.90167 3.28074 2.75789 3.42452C2.61412 3.5683 2.53334 3.7633 2.53334 3.96663V10.9066C2.53334 11.11 2.61412 11.305 2.75789 11.4487C2.90167 11.5925 3.09668 11.6733 3.30001 11.6733H5.43598L5.16303 14.1264L7.89078 11.6783H12.844C12.9447 11.6783 13.0444 11.6585 13.1374 11.6199C13.2304 11.5814 13.3149 11.5249 13.3861 11.4537C13.4573 11.3826 13.5138 11.298 13.5523 11.205C13.5908 11.112 13.6107 11.0123 13.6107 10.9116V3.96663C13.6107 3.7633 13.5299 3.5683 13.3861 3.42452C13.2423 3.28074 13.0473 3.19997 12.844 3.19997Z"
-                                        fill="#929DAA" />
-                                </svg>
-                                10
-                            </span>
-                        </div>
+        <div class="h-full flex flex-col gap-y-1 overflow-y-auto no-scrollbar p-1">
+            <ng-container *ngFor="let item of (data$ | async); let i=index">
+                <div *ngIf="item" class="p-2 flex {{currentPost?.fbid == item.fbid ? 'bg-green-400' : 'bg-white'}}" (click)="selectPost(item)">
+                  <div class="mr-2 block">
+                    <img tds-image [tdsSrc]="item.picture" alt="{{item.story}}" style="max-width: 120px;max-height: 88px">
+                    <div>
+                      <!-- phân loại -->
+                      <span class="{{getIconTypePost(item.status_type)}}"></span>
+                      <!-- lượt comment -->
+                      <span class="ml-2">
+                          <span class="tdsi-comment-on-fill"></span> {{item.count_comments || 0}}
+                      </span>
+                      <span *ngIf="compareToday(item.created_time)" class="cursor">
+                          <span *ngIf="listBadge[item.fbid] && listBadge[item.fbid].count > 0"> {{listBadge[item.fbid].count}}</span>
+                          <span  title="Cập nhật lần cuối lúc: {{item.updated_time | date:'HH:mm dd/MM'}}">
+                            {{item.created_time | date:'dd/MM/yyyy HH:mm'}}
+                          </span>
+                      </span>
+                      <span *ngIf="!compareToday(item.created_time)">
+                          <span *ngIf="listBadge[item.fbid] && listBadge[item.fbid].count > 0">
+                              {{listBadge[item.fbid].count}}
+                          </span>
+                          <span  title="Cập nhật lần cuối lúc: {{item.updated_time | date:'HH:mm dd/MM'}}">
+                            {{item.created_time | date:'dd/MM/yyyy HH:mm'}}
+                          </span>
+                      </span>
                     </div>
-                    <div class="w-3/5 flex flex-col gap-y-2">
-                        <div class="flex flex-col gap-y-2">
-                            <span class="text-error-400 font-semibold truncate">Wiki Bot đang phát trực tiếp.</span>
-                            <span class="">Hàng công nghệ xả kho giá sốc hàng công nghệ xả...</span>
-                        </div>
-                        <div>
-                            <span class="text-neutral-1-400">2 giờ trước</span>
-                        </div>
-                        <div class="flex justify-between items-center gap-x-2">
-                            <div class="bg-base-orange-50 rounded-md">
-                                <span class="text-caption-1 truncate text-base-orange-500 px-2">
-                                    Chiến dịch Valentine...
-                                </span>
-                                <button class="text-base-orange-500">
-                                    <span class="flex items-center">
-                                        <i class="tdsi-arrow-right-line"></i>
-                                    </span>
-                                </button>
-                            </div>
-                            <div class="h-5 w-5 rounded-full flex justify-center items-center bg-accent-9 text-white">
-                                <span class="flex items-center">
-                                    <i class="tdsi-flash-on-fill"></i>
-                                </span>
-                            </div>
-                        </div>
+                  </div>
+                  <div>
+                    <div *ngIf="item.story" class="text-error-500">{{item.story}}</div>
+                    <div *ngIf="item.description" class="text-info-500">{{item.description}}</div>
+                    <div *ngIf="item.message">{{item.message}}</div>
+                    <div *ngIf="!item.story && !item.description && !item.message">
+                      (Chưa có tiêu đề)
                     </div>
+                  </div>
                 </div>
-            </div>
-            <div class="px-1">
-                <div class="bg-white p-3.5 flex gap-x-4 hover:bg-neutral-3-50">
-                    <div class="w-2/5 flex flex-col gap-y-3">
-                        <div class="w-full relative">
-                            <img src="assets/images/conversation/post/img-post.svg" alt="">
-                            <div class="absolute top-1 right-1 border border-white/30 rounded-full">
-                                <div
-                                    class="flex h-5 w-5 rounded-full justify-center items-center bg-gradient-to-t from-[#FF7575] to-[#F22727]">
-                                    <span class=" flex items-center text-white ">
-                                        <i class="tdsi-video-camera-fill"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex gap-x-4 text-neutral-1-400">
-                            <span class="flex items-center">
-                                <i class="text-base leading-4 tdsi-like-line mr-2"></i>10
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="mr-2" width="16" height="16" viewBox="0 0 16 16" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M2.00365 2.67027C2.34746 2.32645 2.81378 2.1333 3.30001 2.1333H12.844C13.3302 2.1333 13.7966 2.32645 14.1404 2.67027C14.4842 3.01409 14.6773 3.4804 14.6773 3.96663V10.9116C14.6773 11.1524 14.6299 11.3908 14.5378 11.6132C14.4457 11.8357 14.3106 12.0378 14.1404 12.208C13.9701 12.3782 13.768 12.5133 13.5456 12.6054C13.3232 12.6975 13.0848 12.745 12.844 12.745H8.29924L5.68124 15.0946C5.53547 15.2251 5.35311 15.3087 5.15905 15.3337C4.96499 15.3587 4.76792 15.3243 4.59384 15.2349C4.41976 15.1456 4.27686 15.0056 4.18401 14.8334C4.09116 14.6611 4.05272 14.4648 4.07377 14.2703L4.07395 14.2687L4.24404 12.74H3.30001C2.81378 12.74 2.34746 12.5468 2.00365 12.203C1.65983 11.8592 1.46667 11.3929 1.46667 10.9066V3.96663C1.46667 3.4804 1.65983 3.01409 2.00365 2.67027ZM12.844 3.19997H3.30001C3.09668 3.19997 2.90167 3.28074 2.75789 3.42452C2.61412 3.5683 2.53334 3.7633 2.53334 3.96663V10.9066C2.53334 11.11 2.61412 11.305 2.75789 11.4487C2.90167 11.5925 3.09668 11.6733 3.30001 11.6733H5.43598L5.16303 14.1264L7.89078 11.6783H12.844C12.9447 11.6783 13.0444 11.6585 13.1374 11.6199C13.2304 11.5814 13.3149 11.5249 13.3861 11.4537C13.4573 11.3826 13.5138 11.298 13.5523 11.205C13.5908 11.112 13.6107 11.0123 13.6107 10.9116V3.96663C13.6107 3.7633 13.5299 3.5683 13.3861 3.42452C13.2423 3.28074 13.0473 3.19997 12.844 3.19997Z"
-                                        fill="#929DAA" />
-                                </svg>
-                                10
-                            </span>
-                        </div>
-                    </div>
-                    <div class="w-3/5 flex flex-col gap-y-2">
-                        <div class="flex flex-col gap-y-2">
-                            <span class="">Hàng công nghệ xả kho giá sốc hàng công nghệ xả...</span>
-                        </div>
-                        <div>
-                            <span class="text-neutral-1-400">2 giờ trước</span>
-                        </div>
-                        <div class="flex justify-between items-center gap-x-2">
-                            <div class="bg-neutral-3-100 rounded-md">
-                                <span class="text-caption-1 truncate text-neutral-1-600 px-2">
-                                    Chọn chiến dịch
-                                </span>
-                                <button class="text-neutral-1-600">
-                                    <span class="flex">
-                                        <i class="tdsi-arrow-right-line"></i>
-                                    </span>
-                                </button>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="px-1">
-                <div class="bg-white p-3.5 flex gap-x-4 hover:bg-neutral-3-50">
-                    <div class="w-2/5 flex flex-col gap-y-3">
-                        <div class="w-full relative">
-                            <img src="assets/images/conversation/post/img-post.svg" alt="">
-                            <div class="absolute top-1 right-1 border border-white/30 rounded-full">
-                                <div
-                                    class="flex h-5 w-5 rounded-full justify-center items-center bg-gradient-to-t from-[#6EB3F8] to-[#3B7AD9]">
-                                    <span class=" flex items-center text-white">
-                                        <svg width="8" height="14" viewBox="0 0 8 14" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M6.09039 2.60428H7.29039V0.511481C6.7094 0.447755 6.12527 0.416906 5.54079 0.419081C5.13629 0.395957 4.73163 0.461554 4.35515 0.611277C3.97867 0.761 3.63947 0.991228 3.36133 1.28583C3.08319 1.58044 2.87282 1.93229 2.74497 2.31675C2.61712 2.70121 2.57488 3.10898 2.6212 3.51148V5.35468H0.709595V7.69468H2.6212V13.5819H4.96599V7.69588H6.80079L7.09239 5.35588H4.96479V3.74428C4.96479 3.06748 5.14719 2.60548 6.08919 2.60548L6.09039 2.60428Z"
-                                                fill="white" />
-                                        </svg>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex gap-x-4 text-neutral-1-400">
-                            <span class="flex items-center">
-                                <i class="text-base leading-4 tdsi-like-line mr-2"></i>10
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="mr-2" width="16" height="16" viewBox="0 0 16 16" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M2.00365 2.67027C2.34746 2.32645 2.81378 2.1333 3.30001 2.1333H12.844C13.3302 2.1333 13.7966 2.32645 14.1404 2.67027C14.4842 3.01409 14.6773 3.4804 14.6773 3.96663V10.9116C14.6773 11.1524 14.6299 11.3908 14.5378 11.6132C14.4457 11.8357 14.3106 12.0378 14.1404 12.208C13.9701 12.3782 13.768 12.5133 13.5456 12.6054C13.3232 12.6975 13.0848 12.745 12.844 12.745H8.29924L5.68124 15.0946C5.53547 15.2251 5.35311 15.3087 5.15905 15.3337C4.96499 15.3587 4.76792 15.3243 4.59384 15.2349C4.41976 15.1456 4.27686 15.0056 4.18401 14.8334C4.09116 14.6611 4.05272 14.4648 4.07377 14.2703L4.07395 14.2687L4.24404 12.74H3.30001C2.81378 12.74 2.34746 12.5468 2.00365 12.203C1.65983 11.8592 1.46667 11.3929 1.46667 10.9066V3.96663C1.46667 3.4804 1.65983 3.01409 2.00365 2.67027ZM12.844 3.19997H3.30001C3.09668 3.19997 2.90167 3.28074 2.75789 3.42452C2.61412 3.5683 2.53334 3.7633 2.53334 3.96663V10.9066C2.53334 11.11 2.61412 11.305 2.75789 11.4487C2.90167 11.5925 3.09668 11.6733 3.30001 11.6733H5.43598L5.16303 14.1264L7.89078 11.6783H12.844C12.9447 11.6783 13.0444 11.6585 13.1374 11.6199C13.2304 11.5814 13.3149 11.5249 13.3861 11.4537C13.4573 11.3826 13.5138 11.298 13.5523 11.205C13.5908 11.112 13.6107 11.0123 13.6107 10.9116V3.96663C13.6107 3.7633 13.5299 3.5683 13.3861 3.42452C13.2423 3.28074 13.0473 3.19997 12.844 3.19997Z"
-                                        fill="#929DAA" />
-                                </svg>
-                                10
-                            </span>
-                        </div>
-                    </div>
-                    <div class="w-3/5 flex flex-col gap-y-2">
-                        <div class="flex flex-col gap-y-2">
-                            <span class="">Hàng công nghệ xả kho</span>
-                        </div>
-                        <div>
-                            <span class="text-neutral-1-400">2 giờ trước</span>
-                        </div>
-                        <div class="flex justify-between items-center gap-x-2">
-                            <div class="bg-neutral-3-100 rounded-md">
-                                <span class="text-caption-1 truncate text-neutral-1-600 px-2">
-                                    Chọn chiến dịch
-                                </span>
-                                <button class="text-neutral-1-600">
-                                    <span class="flex">
-                                        <i class="tdsi-arrow-right-line"></i>
-                                    </span>
-                                </button>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="px-1 flex flex-col gap-y-1">
-                <div class=" p-3.5 flex gap-x-4 hover:bg-neutral-3-50 border-l-4 border-base-blue-500 bg-secondary-3">
-                    <div class="w-2/5 flex flex-col gap-y-3">
-                        <div class="w-full relative">
-                            <img src="assets/images/conversation/post/img-post-2+.svg" alt="">
-                            <div class="absolute top-1 right-1 border border-white/30 rounded-full">
-                                <div
-                                    class="flex h-5 w-5 rounded-full justify-center items-center bg-gradient-to-t from-[#6EB3F8] to-[#3B7AD9]">
-                                    <span class=" flex items-center text-white">
-                                        <i class="tdsi-image-1-fill"></i>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="absolute inset-0 flex w-full h-full justify-center items-center">
-                                <span class="text-header-1 text-white">+2</span>
-                            </div>
-                        </div>
-                        <div class="flex gap-x-4 text-neutral-1-400">
-                            <span class="flex items-center">
-                                <i class="text-base leading-4 tdsi-like-line mr-2"></i>10
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="mr-2" width="16" height="16" viewBox="0 0 16 16" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M2.00365 2.67027C2.34746 2.32645 2.81378 2.1333 3.30001 2.1333H12.844C13.3302 2.1333 13.7966 2.32645 14.1404 2.67027C14.4842 3.01409 14.6773 3.4804 14.6773 3.96663V10.9116C14.6773 11.1524 14.6299 11.3908 14.5378 11.6132C14.4457 11.8357 14.3106 12.0378 14.1404 12.208C13.9701 12.3782 13.768 12.5133 13.5456 12.6054C13.3232 12.6975 13.0848 12.745 12.844 12.745H8.29924L5.68124 15.0946C5.53547 15.2251 5.35311 15.3087 5.15905 15.3337C4.96499 15.3587 4.76792 15.3243 4.59384 15.2349C4.41976 15.1456 4.27686 15.0056 4.18401 14.8334C4.09116 14.6611 4.05272 14.4648 4.07377 14.2703L4.07395 14.2687L4.24404 12.74H3.30001C2.81378 12.74 2.34746 12.5468 2.00365 12.203C1.65983 11.8592 1.46667 11.3929 1.46667 10.9066V3.96663C1.46667 3.4804 1.65983 3.01409 2.00365 2.67027ZM12.844 3.19997H3.30001C3.09668 3.19997 2.90167 3.28074 2.75789 3.42452C2.61412 3.5683 2.53334 3.7633 2.53334 3.96663V10.9066C2.53334 11.11 2.61412 11.305 2.75789 11.4487C2.90167 11.5925 3.09668 11.6733 3.30001 11.6733H5.43598L5.16303 14.1264L7.89078 11.6783H12.844C12.9447 11.6783 13.0444 11.6585 13.1374 11.6199C13.2304 11.5814 13.3149 11.5249 13.3861 11.4537C13.4573 11.3826 13.5138 11.298 13.5523 11.205C13.5908 11.112 13.6107 11.0123 13.6107 10.9116V3.96663C13.6107 3.7633 13.5299 3.5683 13.3861 3.42452C13.2423 3.28074 13.0473 3.19997 12.844 3.19997Z"
-                                        fill="#929DAA" />
-                                </svg>
-                                10
-                            </span>
-                        </div>
-                    </div>
-                    <div class="w-3/5 flex flex-col gap-y-2">
-                        <div class="flex flex-col gap-y-2">
-                            <span class="">Hàng công nghệ xả kho</span>
-                        </div>
-                        <div>
-                            <span class="text-neutral-1-400">2 giờ trước</span>
-                        </div>
-                        <div class="flex justify-between items-center gap-x-2">
-                            <div class="bg-neutral-3-100 rounded-md">
-                                <span class="text-caption-1 truncate text-neutral-1-600 px-2">
-                                    Chọn chiến dịch
-                                </span>
-                                <button class="text-neutral-1-600">
-                                    <span class="flex">
-                                        <i class="tdsi-arrow-right-line"></i>
-                                    </span>
-                                </button>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="pl-6">
-                    <div class="bg-white p-3.5 flex gap-x-4 hover:bg-neutral-3-50">
-                        <div class="w-2/5 flex flex-col gap-y-3">
-                            <div class="w-full relative">
-                                <img src="assets/images/conversation/post/img-post.svg" alt="">
-                            </div>
-                            <div class="flex gap-x-4 text-neutral-1-400">
-                                <span class="flex items-center">
-                                    <i class="text-base leading-4 tdsi-like-line mr-2"></i>10
-                                </span>
-                                <span class="flex items-center">
-                                    <svg class="mr-2" width="16" height="16" viewBox="0 0 16 16" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                            d="M2.00365 2.67027C2.34746 2.32645 2.81378 2.1333 3.30001 2.1333H12.844C13.3302 2.1333 13.7966 2.32645 14.1404 2.67027C14.4842 3.01409 14.6773 3.4804 14.6773 3.96663V10.9116C14.6773 11.1524 14.6299 11.3908 14.5378 11.6132C14.4457 11.8357 14.3106 12.0378 14.1404 12.208C13.9701 12.3782 13.768 12.5133 13.5456 12.6054C13.3232 12.6975 13.0848 12.745 12.844 12.745H8.29924L5.68124 15.0946C5.53547 15.2251 5.35311 15.3087 5.15905 15.3337C4.96499 15.3587 4.76792 15.3243 4.59384 15.2349C4.41976 15.1456 4.27686 15.0056 4.18401 14.8334C4.09116 14.6611 4.05272 14.4648 4.07377 14.2703L4.07395 14.2687L4.24404 12.74H3.30001C2.81378 12.74 2.34746 12.5468 2.00365 12.203C1.65983 11.8592 1.46667 11.3929 1.46667 10.9066V3.96663C1.46667 3.4804 1.65983 3.01409 2.00365 2.67027ZM12.844 3.19997H3.30001C3.09668 3.19997 2.90167 3.28074 2.75789 3.42452C2.61412 3.5683 2.53334 3.7633 2.53334 3.96663V10.9066C2.53334 11.11 2.61412 11.305 2.75789 11.4487C2.90167 11.5925 3.09668 11.6733 3.30001 11.6733H5.43598L5.16303 14.1264L7.89078 11.6783H12.844C12.9447 11.6783 13.0444 11.6585 13.1374 11.6199C13.2304 11.5814 13.3149 11.5249 13.3861 11.4537C13.4573 11.3826 13.5138 11.298 13.5523 11.205C13.5908 11.112 13.6107 11.0123 13.6107 10.9116V3.96663C13.6107 3.7633 13.5299 3.5683 13.3861 3.42452C13.2423 3.28074 13.0473 3.19997 12.844 3.19997Z"
-                                            fill="#929DAA" />
-                                    </svg>
-                                    10
-                                </span>
-                            </div>
-                        </div>
-                        <div class=" flex flex-col gap-y-2">
-                            <div class="flex flex-col gap-y-2">
-                                <span class="">Hàng công nghệ xả kho</span>
-                            </div>
-                            <div>
-                                <span class="text-neutral-1-400">2 giờ trước</span>
-                            </div>
-                            <div class="flex justify-between items-center gap-x-2">
-                                <div class="bg-neutral-3-100 rounded-md">
-                                    <span class="text-caption-1 truncate text-neutral-1-600 px-2">
-                                        Chọn chiến dịch
-                                    </span>
-                                    <button class="text-neutral-1-600">
-                                        <span class="flex">
-                                            <i class="tdsi-arrow-right-line"></i>
-                                        </span>
-                                    </button>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="pl-6">
-                    <div class="bg-white p-3.5 flex gap-x-4 hover:bg-neutral-3-50">
-                        <div class="w-2/5 flex flex-col gap-y-3">
-                            <div class="w-full relative">
-                                <img src="assets/images/conversation/post/img-post.svg" alt="">
-                            </div>
-                            <div class="flex gap-x-4 text-neutral-1-400">
-                                <span class="flex items-center">
-                                    <i class="text-base leading-4 tdsi-like-line mr-2"></i>10
-                                </span>
-                                <span class="flex items-center">
-                                    <svg class="mr-2" width="16" height="16" viewBox="0 0 16 16" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                            d="M2.00365 2.67027C2.34746 2.32645 2.81378 2.1333 3.30001 2.1333H12.844C13.3302 2.1333 13.7966 2.32645 14.1404 2.67027C14.4842 3.01409 14.6773 3.4804 14.6773 3.96663V10.9116C14.6773 11.1524 14.6299 11.3908 14.5378 11.6132C14.4457 11.8357 14.3106 12.0378 14.1404 12.208C13.9701 12.3782 13.768 12.5133 13.5456 12.6054C13.3232 12.6975 13.0848 12.745 12.844 12.745H8.29924L5.68124 15.0946C5.53547 15.2251 5.35311 15.3087 5.15905 15.3337C4.96499 15.3587 4.76792 15.3243 4.59384 15.2349C4.41976 15.1456 4.27686 15.0056 4.18401 14.8334C4.09116 14.6611 4.05272 14.4648 4.07377 14.2703L4.07395 14.2687L4.24404 12.74H3.30001C2.81378 12.74 2.34746 12.5468 2.00365 12.203C1.65983 11.8592 1.46667 11.3929 1.46667 10.9066V3.96663C1.46667 3.4804 1.65983 3.01409 2.00365 2.67027ZM12.844 3.19997H3.30001C3.09668 3.19997 2.90167 3.28074 2.75789 3.42452C2.61412 3.5683 2.53334 3.7633 2.53334 3.96663V10.9066C2.53334 11.11 2.61412 11.305 2.75789 11.4487C2.90167 11.5925 3.09668 11.6733 3.30001 11.6733H5.43598L5.16303 14.1264L7.89078 11.6783H12.844C12.9447 11.6783 13.0444 11.6585 13.1374 11.6199C13.2304 11.5814 13.3149 11.5249 13.3861 11.4537C13.4573 11.3826 13.5138 11.298 13.5523 11.205C13.5908 11.112 13.6107 11.0123 13.6107 10.9116V3.96663C13.6107 3.7633 13.5299 3.5683 13.3861 3.42452C13.2423 3.28074 13.0473 3.19997 12.844 3.19997Z"
-                                            fill="#929DAA" />
-                                    </svg>
-                                    10
-                                </span>
-                            </div>
-                        </div>
-                        <div class=" flex flex-col gap-y-2">
-                            <div class="flex flex-col gap-y-2">
-                                <span class="">Hàng công nghệ xả kho</span>
-                            </div>
-                            <div>
-                                <span class="text-neutral-1-400">2 giờ trước</span>
-                            </div>
-                            <div class="flex justify-between items-center gap-x-2">
-                                <div class="bg-neutral-3-100 rounded-md">
-                                    <span class="text-caption-1 truncate text-neutral-1-600 px-2">
-                                        Chọn chiến dịch
-                                    </span>
-                                    <button class="text-neutral-1-600">
-                                        <span class="flex">
-                                            <i class="tdsi-arrow-right-line"></i>
-                                        </span>
-                                    </button>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="px-1">
-                <div class="bg-white p-3.5 flex gap-x-4 group hover:bg-neutral-3-50">
-                    <div class="w-2/5 flex flex-col gap-y-3">
-                        <div
-                            class="w-full flex items-center group-hover:bg-white bg-neutral-3-50 py-4 rounded-md justify-center relative">
-                            <img src="../../../../../assets/images/conversation/post/icon-note.svg" alt="">
-                            <div class="absolute top-1 right-1 border border-white/30 rounded-full">
-                                <div
-                                    class="flex h-5 w-5 rounded-full justify-center items-center bg-gradient-to-t from-[#6EB3F8] to-[#3B7AD9]">
-                                    <span class=" flex items-center text-white">
-                                        <svg width="8" height="14" viewBox="0 0 8 14" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M6.09039 2.60428H7.29039V0.511481C6.7094 0.447755 6.12527 0.416906 5.54079 0.419081C5.13629 0.395957 4.73163 0.461554 4.35515 0.611277C3.97867 0.761 3.63947 0.991228 3.36133 1.28583C3.08319 1.58044 2.87282 1.93229 2.74497 2.31675C2.61712 2.70121 2.57488 3.10898 2.6212 3.51148V5.35468H0.709595V7.69468H2.6212V13.5819H4.96599V7.69588H6.80079L7.09239 5.35588H4.96479V3.74428C4.96479 3.06748 5.14719 2.60548 6.08919 2.60548L6.09039 2.60428Z"
-                                                fill="white" />
-                                        </svg>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex gap-x-4 text-neutral-1-400">
-                            <span class="flex items-center">
-                                <i class="text-base leading-4 tdsi-like-line mr-2"></i>10
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="mr-2" width="16" height="16" viewBox="0 0 16 16" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M2.00365 2.67027C2.34746 2.32645 2.81378 2.1333 3.30001 2.1333H12.844C13.3302 2.1333 13.7966 2.32645 14.1404 2.67027C14.4842 3.01409 14.6773 3.4804 14.6773 3.96663V10.9116C14.6773 11.1524 14.6299 11.3908 14.5378 11.6132C14.4457 11.8357 14.3106 12.0378 14.1404 12.208C13.9701 12.3782 13.768 12.5133 13.5456 12.6054C13.3232 12.6975 13.0848 12.745 12.844 12.745H8.29924L5.68124 15.0946C5.53547 15.2251 5.35311 15.3087 5.15905 15.3337C4.96499 15.3587 4.76792 15.3243 4.59384 15.2349C4.41976 15.1456 4.27686 15.0056 4.18401 14.8334C4.09116 14.6611 4.05272 14.4648 4.07377 14.2703L4.07395 14.2687L4.24404 12.74H3.30001C2.81378 12.74 2.34746 12.5468 2.00365 12.203C1.65983 11.8592 1.46667 11.3929 1.46667 10.9066V3.96663C1.46667 3.4804 1.65983 3.01409 2.00365 2.67027ZM12.844 3.19997H3.30001C3.09668 3.19997 2.90167 3.28074 2.75789 3.42452C2.61412 3.5683 2.53334 3.7633 2.53334 3.96663V10.9066C2.53334 11.11 2.61412 11.305 2.75789 11.4487C2.90167 11.5925 3.09668 11.6733 3.30001 11.6733H5.43598L5.16303 14.1264L7.89078 11.6783H12.844C12.9447 11.6783 13.0444 11.6585 13.1374 11.6199C13.2304 11.5814 13.3149 11.5249 13.3861 11.4537C13.4573 11.3826 13.5138 11.298 13.5523 11.205C13.5908 11.112 13.6107 11.0123 13.6107 10.9116V3.96663C13.6107 3.7633 13.5299 3.5683 13.3861 3.42452C13.2423 3.28074 13.0473 3.19997 12.844 3.19997Z"
-                                        fill="#929DAA" />
-                                </svg>
-                                10
-                            </span>
-                        </div>
-                    </div>
-                    <div class="w-3/5 flex flex-col gap-y-2">
-                        <div class="flex flex-col gap-y-2">
-                            <span class="">Hàng công nghệ xả kho</span>
-                        </div>
-                        <div>
-                            <span class="text-neutral-1-400">2 giờ trước</span>
-                        </div>
-                        <div class="flex justify-between items-center gap-x-2">
-                            <div class="bg-base-orange-50 rounded-md">
-                                <span class="text-caption-1 truncate text-base-orange-500 px-2">
-                                    Chiến dịch Valentine...
-                                </span>
-                                <button class="text-base-orange-500">
-                                    <span class="flex items-center">
-                                        <i class="tdsi-arrow-right-line"></i>
-                                    </span>
-                                </button>
-                            </div>
-                            <div class="h-5 w-5 rounded-full flex justify-center items-center bg-accent-9 text-white "
-                                tooltipTitle="Bật tạo đơn tự động" tooltipPlacement="top" tds-tooltip>
-                                <span class="flex items-center">
-                                    <i class="tdsi-flash-on-fill"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="px-1">
-                <div class="bg-white p-3.5 flex gap-x-4 hover:bg-neutral-3-50">
-                    <div class="w-2/5 flex flex-col gap-y-3">
-                        <div class="w-full relative">
-                            <img src="assets/images/conversation/post/img-post.svg" alt="">
-                            <div class="absolute top-1 right-1 border border-white/30 rounded-full">
-                                <div
-                                    class="flex h-5 w-5 rounded-full justify-center items-center bg-gradient-to-t from-[#FF7575] to-[#F22727]">
-                                    <span class=" flex items-center text-white ">
-                                        <i class="tdsi-video-camera-fill"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex gap-x-4 text-neutral-1-400">
-                            <span class="flex items-center">
-                                <i class="text-base leading-4 tdsi-like-line mr-2"></i>10
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="mr-2" width="16" height="16" viewBox="0 0 16 16" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M2.00365 2.67027C2.34746 2.32645 2.81378 2.1333 3.30001 2.1333H12.844C13.3302 2.1333 13.7966 2.32645 14.1404 2.67027C14.4842 3.01409 14.6773 3.4804 14.6773 3.96663V10.9116C14.6773 11.1524 14.6299 11.3908 14.5378 11.6132C14.4457 11.8357 14.3106 12.0378 14.1404 12.208C13.9701 12.3782 13.768 12.5133 13.5456 12.6054C13.3232 12.6975 13.0848 12.745 12.844 12.745H8.29924L5.68124 15.0946C5.53547 15.2251 5.35311 15.3087 5.15905 15.3337C4.96499 15.3587 4.76792 15.3243 4.59384 15.2349C4.41976 15.1456 4.27686 15.0056 4.18401 14.8334C4.09116 14.6611 4.05272 14.4648 4.07377 14.2703L4.07395 14.2687L4.24404 12.74H3.30001C2.81378 12.74 2.34746 12.5468 2.00365 12.203C1.65983 11.8592 1.46667 11.3929 1.46667 10.9066V3.96663C1.46667 3.4804 1.65983 3.01409 2.00365 2.67027ZM12.844 3.19997H3.30001C3.09668 3.19997 2.90167 3.28074 2.75789 3.42452C2.61412 3.5683 2.53334 3.7633 2.53334 3.96663V10.9066C2.53334 11.11 2.61412 11.305 2.75789 11.4487C2.90167 11.5925 3.09668 11.6733 3.30001 11.6733H5.43598L5.16303 14.1264L7.89078 11.6783H12.844C12.9447 11.6783 13.0444 11.6585 13.1374 11.6199C13.2304 11.5814 13.3149 11.5249 13.3861 11.4537C13.4573 11.3826 13.5138 11.298 13.5523 11.205C13.5908 11.112 13.6107 11.0123 13.6107 10.9116V3.96663C13.6107 3.7633 13.5299 3.5683 13.3861 3.42452C13.2423 3.28074 13.0473 3.19997 12.844 3.19997Z"
-                                        fill="#929DAA" />
-                                </svg>
-                                10
-                            </span>
-                        </div>
-                    </div>
-                    <div class="w-3/5 flex flex-col gap-y-2">
-                        <div class="flex flex-col gap-y-2">
-                            <span class=" font-semibold truncate">Tiêu đề livestream</span>
-                            <span class="">Hàng công nghệ xả kho giá sốc hàng công nghệ xả...</span>
-                        </div>
-                        <div>
-                            <span class="text-neutral-1-400">2 giờ trước</span>
-                        </div>
-                        <div class="flex justify-between items-center gap-x-2">
-                            <div class="bg-neutral-3-100 rounded-md">
-                                <span class="text-caption-1 truncate text-neutral-1-600 px-2">
-                                    Chọn chiến dịch
-                                </span>
-                                <button class="text-neutral-1-600">
-                                    <span class="flex">
-                                        <i class="tdsi-arrow-right-line"></i>
-                                    </span>
-                                </button>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="px-1">
-                <div class="bg-white p-3.5 flex gap-x-4 group hover:bg-neutral-3-50">
-                    <div class="w-2/5 flex flex-col gap-y-3">
-                        <div
-                            class="w-full flex items-center group-hover:bg-white bg-neutral-3-50 py-4 rounded-md justify-center relative">
-                            <img src="../../../../../assets/images/conversation/post/icon-Image.svg" alt="">
-
-                            <div class="absolute top-1 right-1 border border-white/30 rounded-full">
-                                <div
-                                    class="flex h-5 w-5 rounded-full justify-center items-center bg-gradient-to-t from-[#6EB3F8] to-[#3B7AD9]">
-                                    <span class=" flex items-center text-white">
-                                        <svg width="8" height="14" viewBox="0 0 8 14" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M6.09039 2.60428H7.29039V0.511481C6.7094 0.447755 6.12527 0.416906 5.54079 0.419081C5.13629 0.395957 4.73163 0.461554 4.35515 0.611277C3.97867 0.761 3.63947 0.991228 3.36133 1.28583C3.08319 1.58044 2.87282 1.93229 2.74497 2.31675C2.61712 2.70121 2.57488 3.10898 2.6212 3.51148V5.35468H0.709595V7.69468H2.6212V13.5819H4.96599V7.69588H6.80079L7.09239 5.35588H4.96479V3.74428C4.96479 3.06748 5.14719 2.60548 6.08919 2.60548L6.09039 2.60428Z"
-                                                fill="white" />
-                                        </svg>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex gap-x-4 text-neutral-1-400">
-                            <span class="flex items-center">
-                                <i class="text-base leading-4 tdsi-like-line mr-2"></i>10
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="mr-2" width="16" height="16" viewBox="0 0 16 16" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M2.00365 2.67027C2.34746 2.32645 2.81378 2.1333 3.30001 2.1333H12.844C13.3302 2.1333 13.7966 2.32645 14.1404 2.67027C14.4842 3.01409 14.6773 3.4804 14.6773 3.96663V10.9116C14.6773 11.1524 14.6299 11.3908 14.5378 11.6132C14.4457 11.8357 14.3106 12.0378 14.1404 12.208C13.9701 12.3782 13.768 12.5133 13.5456 12.6054C13.3232 12.6975 13.0848 12.745 12.844 12.745H8.29924L5.68124 15.0946C5.53547 15.2251 5.35311 15.3087 5.15905 15.3337C4.96499 15.3587 4.76792 15.3243 4.59384 15.2349C4.41976 15.1456 4.27686 15.0056 4.18401 14.8334C4.09116 14.6611 4.05272 14.4648 4.07377 14.2703L4.07395 14.2687L4.24404 12.74H3.30001C2.81378 12.74 2.34746 12.5468 2.00365 12.203C1.65983 11.8592 1.46667 11.3929 1.46667 10.9066V3.96663C1.46667 3.4804 1.65983 3.01409 2.00365 2.67027ZM12.844 3.19997H3.30001C3.09668 3.19997 2.90167 3.28074 2.75789 3.42452C2.61412 3.5683 2.53334 3.7633 2.53334 3.96663V10.9066C2.53334 11.11 2.61412 11.305 2.75789 11.4487C2.90167 11.5925 3.09668 11.6733 3.30001 11.6733H5.43598L5.16303 14.1264L7.89078 11.6783H12.844C12.9447 11.6783 13.0444 11.6585 13.1374 11.6199C13.2304 11.5814 13.3149 11.5249 13.3861 11.4537C13.4573 11.3826 13.5138 11.298 13.5523 11.205C13.5908 11.112 13.6107 11.0123 13.6107 10.9116V3.96663C13.6107 3.7633 13.5299 3.5683 13.3861 3.42452C13.2423 3.28074 13.0473 3.19997 12.844 3.19997Z"
-                                        fill="#929DAA" />
-                                </svg>
-                                10
-                            </span>
-                        </div>
-                    </div>
-                    <div class="w-3/5 flex flex-col gap-y-2">
-                        <div class="flex flex-col gap-y-2">
-                            <span class=" font-semibold truncate text-info-500">Ảnh trên dòng thời gian</span>
-                            <span class="">Hàng công nghệ xả kho</span>
-                        </div>
-                        <div>
-                            <span class="text-neutral-1-400">2 giờ trước</span>
-                        </div>
-                        <div class="flex justify-between items-center gap-x-2">
-                            <div class="bg-neutral-3-100 rounded-md">
-                                <span class="text-caption-1 truncate text-neutral-1-600 px-2">
-                                    Chọn chiến dịch
-                                </span>
-                                <button class="text-neutral-1-600">
-                                    <span class="flex">
-                                        <i class="tdsi-arrow-right-line"></i>
-                                    </span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="px-1">
-                <div class="bg-white p-3.5 flex gap-x-4 group hover:bg-neutral-3-50">
-                    <div class="w-2/5 flex flex-col gap-y-3">
-                        <div class="w-full flex items-center rounded-md justify-center relative">
-                            <img src="../../../../../assets/images/conversation/post/img-post.svg" alt="">
-
-                            <div class="absolute top-1 right-1 border border-white/30 rounded-full">
-                                <div
-                                    class="flex h-5 w-5 rounded-full justify-center items-center bg-gradient-to-t from-[#6EB3F8] to-[#3B7AD9]">
-                                    <span class=" flex items-center text-white">
-                                        <svg width="8" height="14" viewBox="0 0 8 14" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M6.09039 2.60428H7.29039V0.511481C6.7094 0.447755 6.12527 0.416906 5.54079 0.419081C5.13629 0.395957 4.73163 0.461554 4.35515 0.611277C3.97867 0.761 3.63947 0.991228 3.36133 1.28583C3.08319 1.58044 2.87282 1.93229 2.74497 2.31675C2.61712 2.70121 2.57488 3.10898 2.6212 3.51148V5.35468H0.709595V7.69468H2.6212V13.5819H4.96599V7.69588H6.80079L7.09239 5.35588H4.96479V3.74428C4.96479 3.06748 5.14719 2.60548 6.08919 2.60548L6.09039 2.60428Z"
-                                                fill="white" />
-                                        </svg>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex gap-x-4 text-neutral-1-400">
-                            <span class="flex items-center">
-                                <i class="text-base leading-4 tdsi-like-line mr-2"></i>10
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="mr-2" width="16" height="16" viewBox="0 0 16 16" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M2.00365 2.67027C2.34746 2.32645 2.81378 2.1333 3.30001 2.1333H12.844C13.3302 2.1333 13.7966 2.32645 14.1404 2.67027C14.4842 3.01409 14.6773 3.4804 14.6773 3.96663V10.9116C14.6773 11.1524 14.6299 11.3908 14.5378 11.6132C14.4457 11.8357 14.3106 12.0378 14.1404 12.208C13.9701 12.3782 13.768 12.5133 13.5456 12.6054C13.3232 12.6975 13.0848 12.745 12.844 12.745H8.29924L5.68124 15.0946C5.53547 15.2251 5.35311 15.3087 5.15905 15.3337C4.96499 15.3587 4.76792 15.3243 4.59384 15.2349C4.41976 15.1456 4.27686 15.0056 4.18401 14.8334C4.09116 14.6611 4.05272 14.4648 4.07377 14.2703L4.07395 14.2687L4.24404 12.74H3.30001C2.81378 12.74 2.34746 12.5468 2.00365 12.203C1.65983 11.8592 1.46667 11.3929 1.46667 10.9066V3.96663C1.46667 3.4804 1.65983 3.01409 2.00365 2.67027ZM12.844 3.19997H3.30001C3.09668 3.19997 2.90167 3.28074 2.75789 3.42452C2.61412 3.5683 2.53334 3.7633 2.53334 3.96663V10.9066C2.53334 11.11 2.61412 11.305 2.75789 11.4487C2.90167 11.5925 3.09668 11.6733 3.30001 11.6733H5.43598L5.16303 14.1264L7.89078 11.6783H12.844C12.9447 11.6783 13.0444 11.6585 13.1374 11.6199C13.2304 11.5814 13.3149 11.5249 13.3861 11.4537C13.4573 11.3826 13.5138 11.298 13.5523 11.205C13.5908 11.112 13.6107 11.0123 13.6107 10.9116V3.96663C13.6107 3.7633 13.5299 3.5683 13.3861 3.42452C13.2423 3.28074 13.0473 3.19997 12.844 3.19997Z"
-                                        fill="#929DAA" />
-                                </svg>
-                                10
-                            </span>
-                        </div>
-                    </div>
-                    <div class="w-3/5 flex flex-col gap-y-2">
-                        <div class="flex flex-col gap-y-2">
-                            <span class="">Page QAXK Nhiên Trung đã đăng 1 ảnh</span>
-                        </div>
-                        <div>
-                            <span class="text-neutral-1-400">2 giờ trước</span>
-                        </div>
-                        <div class="flex justify-between items-center gap-x-2">
-                            <div class="bg-neutral-3-100 rounded-md">
-                                <span class="text-caption-1 truncate text-neutral-1-600 px-2">
-                                    Chọn chiến dịch
-                                </span>
-                                <button class="text-neutral-1-600">
-                                    <span class="flex">
-                                        <i class="tdsi-arrow-right-line"></i>
-                                    </span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="px-1">
-                <div class="bg-white p-3.5 flex gap-x-4 group hover:bg-neutral-3-50">
-                    <div class="w-2/5 flex flex-col gap-y-3">
-                        <div class="w-full flex items-center rounded-md justify-center relative">
-                            <img src="../../../../../assets/images/conversation/post/img-post.svg" alt="">
-
-                            <div class="absolute top-1 right-1 border border-white/30 rounded-full">
-                                <div
-                                    class="flex h-5 w-5 rounded-full justify-center items-center bg-gradient-to-t from-[#6EB3F8] to-[#3B7AD9]">
-                                    <span class=" flex items-center text-white">
-                                        <svg width="8" height="14" viewBox="0 0 8 14" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M6.09039 2.60428H7.29039V0.511481C6.7094 0.447755 6.12527 0.416906 5.54079 0.419081C5.13629 0.395957 4.73163 0.461554 4.35515 0.611277C3.97867 0.761 3.63947 0.991228 3.36133 1.28583C3.08319 1.58044 2.87282 1.93229 2.74497 2.31675C2.61712 2.70121 2.57488 3.10898 2.6212 3.51148V5.35468H0.709595V7.69468H2.6212V13.5819H4.96599V7.69588H6.80079L7.09239 5.35588H4.96479V3.74428C4.96479 3.06748 5.14719 2.60548 6.08919 2.60548L6.09039 2.60428Z"
-                                                fill="white" />
-                                        </svg>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex gap-x-4 text-neutral-1-400">
-                            <span class="flex items-center">
-                                <i class="text-base leading-4 tdsi-like-line mr-2"></i>10
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="mr-2" width="16" height="16" viewBox="0 0 16 16" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M2.00365 2.67027C2.34746 2.32645 2.81378 2.1333 3.30001 2.1333H12.844C13.3302 2.1333 13.7966 2.32645 14.1404 2.67027C14.4842 3.01409 14.6773 3.4804 14.6773 3.96663V10.9116C14.6773 11.1524 14.6299 11.3908 14.5378 11.6132C14.4457 11.8357 14.3106 12.0378 14.1404 12.208C13.9701 12.3782 13.768 12.5133 13.5456 12.6054C13.3232 12.6975 13.0848 12.745 12.844 12.745H8.29924L5.68124 15.0946C5.53547 15.2251 5.35311 15.3087 5.15905 15.3337C4.96499 15.3587 4.76792 15.3243 4.59384 15.2349C4.41976 15.1456 4.27686 15.0056 4.18401 14.8334C4.09116 14.6611 4.05272 14.4648 4.07377 14.2703L4.07395 14.2687L4.24404 12.74H3.30001C2.81378 12.74 2.34746 12.5468 2.00365 12.203C1.65983 11.8592 1.46667 11.3929 1.46667 10.9066V3.96663C1.46667 3.4804 1.65983 3.01409 2.00365 2.67027ZM12.844 3.19997H3.30001C3.09668 3.19997 2.90167 3.28074 2.75789 3.42452C2.61412 3.5683 2.53334 3.7633 2.53334 3.96663V10.9066C2.53334 11.11 2.61412 11.305 2.75789 11.4487C2.90167 11.5925 3.09668 11.6733 3.30001 11.6733H5.43598L5.16303 14.1264L7.89078 11.6783H12.844C12.9447 11.6783 13.0444 11.6585 13.1374 11.6199C13.2304 11.5814 13.3149 11.5249 13.3861 11.4537C13.4573 11.3826 13.5138 11.298 13.5523 11.205C13.5908 11.112 13.6107 11.0123 13.6107 10.9116V3.96663C13.6107 3.7633 13.5299 3.5683 13.3861 3.42452C13.2423 3.28074 13.0473 3.19997 12.844 3.19997Z"
-                                        fill="#929DAA" />
-                                </svg>
-                                10
-                            </span>
-                        </div>
-                    </div>
-                    <div class="w-3/5 flex flex-col gap-y-2">
-                        <div class="flex flex-col gap-y-2">
-                            <span class="">(Chưa có tiêu đề)</span>
-                        </div>
-                        <div>
-                            <span class="text-neutral-1-400">2 giờ trước</span>
-                        </div>
-                        <div class="flex justify-between items-center gap-x-2">
-                            <div class="bg-neutral-3-100 rounded-md">
-                                <span class="text-caption-1 truncate text-neutral-1-600 px-2">
-                                    Chọn chiến dịch
-                                </span>
-                                <button class="text-neutral-1-600">
-                                    <span class="flex">
-                                        <i class="tdsi-arrow-right-line"></i>
-                                    </span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="h-full flex flex-col px-1">
-                <div class="h-full bg-white"></div>
-            </div>
+            </ng-container>
         </div>
-
     </div>
+    <!--Chọn bài viết để hiển thị chi tiết-->
     <div class="flex flex-auto flex-col  h-full overflow-hidden">
-
+      <div *ngIf="currentPost && currentTeam">
+        <conversation-post-item [data]="currentPost"></conversation-post-item>
+      </div>
+      <div *ngIf="!currentPost">
+          Hãy chọn một bài viết.
+      </div>
     </div>
+
+    <!-- Danh sách khách hàng, đơn hàng -->
     <div class="w-[576px] h-full flex flex-col">
         <tds-tabset class="w-full h-full flex " [clsTab]="'flex-1'"
             [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
@@ -806,12 +203,12 @@
 
                             </tds-filter-status>
                         </div>
-                        <div *ngFor='let in of counter(4)'  class="flex flex-col gap-y-4">
+                        <div   class="flex flex-col gap-y-4">
                             <tds-collapse accordion="true">
                                 <tds-collapse-panel [header]="headercoll1" [active]="false"
                                     [extra]="extraTpl1">
                                     <div class="w-full">
-                                        <tds-table #tableInCollapse [listData]="listOfDataOrder"
+                                        <tds-table #tableInCollapse
                                             [showPagination]="false">
                                             <thead>
                                                 <tr>

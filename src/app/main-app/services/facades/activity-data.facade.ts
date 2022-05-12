@@ -18,7 +18,7 @@ import { MakeActivityItemWebHook } from "../../dto/conversation/make-activity.dt
   providedIn: 'root'
 })
 
-export class ActivityDataFacade extends BaseSevice implements OnInit, OnDestroy {
+export class ActivityDataFacade extends BaseSevice implements OnDestroy {
 
   prefix: string = "";
   table: string = "";
@@ -47,11 +47,8 @@ export class ActivityDataFacade extends BaseSevice implements OnInit, OnDestroy 
           if(res && TDSHelperArray.isArray(res.Items)){
               this.lstTeam = res.Items;
           }
-        })
-  }
-
-  ngOnInit() {
-    this.initialize();
+        });
+        this.initialize();
   }
 
   initialize() {

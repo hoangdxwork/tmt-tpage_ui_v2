@@ -1,6 +1,6 @@
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { User } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
-import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, Output, SimpleChanges, SkipSelf, EventEmitter } from '@angular/core';
+import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, Output, SimpleChanges, SkipSelf, EventEmitter, ViewContainerRef } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, pipe, Observable } from 'rxjs';
@@ -14,7 +14,7 @@ import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conve
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { TDSMessageService, TDSSafeAny, TDSHelperString, TDSHelperObject, TDSModalService } from 'tmt-tang-ui';
 import { takeUntil, finalize } from 'rxjs/operators';
-import { ConversationOrderForm } from 'src/app/main-app/dto/coversation-order/conversation-order.dto';
+import { ConversationOrderForm, ConversationOrderProductDefaultDTO } from 'src/app/main-app/dto/coversation-order/conversation-order.dto';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { CheckFormHandler } from 'src/app/main-app/services/handlers/check-form.handler';
@@ -31,6 +31,13 @@ import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { OrderFormHandler } from 'src/app/main-app/services/handlers/order-form.handler';
 import { CarrierHandler } from 'src/app/main-app/services/handlers/carier.handler';
 import { SaleHandler } from 'src/app/main-app/services/handlers/sale.handler';
+import { ListProductTmpComponent } from 'src/app/main-app/shared/list-product-tmp/list-product-tmp.component';
+import { ModalListProductComponent } from '../modal-list-product/modal-list-product.component';
+import { ProductTemplateV2DTO } from 'src/app/main-app/dto/producttemplate/product-tempalte.dto';
+import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
+import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-product/tpage-add-product.component';
+import { TpageConfigProductComponent } from 'src/app/main-app/shared/tpage-config-product/tpage-config-product.component';
+import { CheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 
 @Component({
     selector: 'conversation-order',
@@ -70,6 +77,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
     private conversationEventFacade: ConversationEventFacade,
     private conversationOrderFacade: ConversationOrderFacade,
     private saleOnline_OrderService: SaleOnline_OrderService,
+    private modal: TDSModalService,
     private applicationUserService: ApplicationUserService,
     private crmService: CRMTeamService,
     private fb: FormBuilder,
@@ -87,6 +95,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
     private printerService: PrinterService,
     private orderFormHandler: OrderFormHandler,
     private carrierHandler: CarrierHandler,
+    private viewContainerRef: ViewContainerRef,
     private saleHandler: SaleHandler,
     public router: Router) {
   }
@@ -461,6 +470,134 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
 
   stopEdit(): void {
     this.editNoteProduct = null;
+  }
+
+  showModalAddProduct() {
+    const modal = this.modalService.create({
+        title: 'Thêm sản phẩm',
+        content: TpageAddProductComponent,
+        size: "xl",
+        viewContainerRef: this.viewContainerRef
+    });
+
+    modal.componentInstance?.onLoadedProductSelect
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        let product = this.convertDetailSelect(res);
+        this.selectProduct(product);
+      });
+  }
+
+  showModalConfigProduct() {
+    const modal = this.modalService.create({
+        title: 'Cấu hình sản phẩm',
+        content: TpageConfigProductComponent,
+        size: "lg",
+        viewContainerRef: this.viewContainerRef
+    });
+
+    modal.componentInstance?.onSaveConfig
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        debugger;
+      });
+  }
+
+  showModalListProduct(){
+    const modal = this.modalService.create({
+      title: 'Danh sách sản phẩm',
+      content: ModalListProductComponent,
+      viewContainerRef: this.viewContainerRef,
+      size: 'xl',
+      componentParams: {
+        useListPrice: true
+      }
+    });
+
+    modal.componentInstance?.selectProduct.subscribe((res: DataPouchDBDTO) =>{
+      if(TDSHelperObject.hasValue(res)) {
+        let product = this.convertDetail(res);
+        this.selectProduct(product);
+      }
+    });
+  }
+
+  selectProduct(product: ConversationOrderProductDefaultDTO) {
+    let formDetail = this.orderForm.value.Details;
+    let quantity = 1;
+
+    let findProduct = formDetail.find((x: any) =>
+        x.ProductId == product.ProductId &&
+        x.Price == product.Price &&
+        x.UOMId == product.UOMId
+    );
+
+    if(TDSHelperObject.hasValue(findProduct)) {
+      findProduct.Quantity++;
+      quantity = findProduct.Quantity;
+      (this.orderForm?.get("Details") as FormArray).patchValue(formDetail);
+    }
+    else {
+      (this.orderForm?.get("Details") as FormArray).push(this.fb.group(product));
+    }
+
+    this.updateTotalAmount();
+    this.message.success(`Đã thêm ${quantity} ${product.UOMName}. ${product.ProductNameGet}`)
+  }
+
+  convertDetail(product: DataPouchDBDTO): ConversationOrderProductDefaultDTO {
+    let result = {} as ConversationOrderProductDefaultDTO;
+
+    result.Note = "";
+    result.Price = product.Price;
+    result.ProductCode = product.Barcode;
+    result.ProductId = product.Id;
+    result.ProductName = product.Name;
+    result.ProductNameGet = product.NameGet;
+    result.Quantity = 1;
+    result.UOMId = product.UOMId;
+    result.UOMName = product.UOMName;
+
+    return result;
+  }
+
+  convertDetailSelect(product: TDSSafeAny): ConversationOrderProductDefaultDTO {
+    let result = {} as ConversationOrderProductDefaultDTO;
+
+    result.Note = "";
+    result.Price = product.ListPrice;
+    result.ProductCode = product.Barcode;
+    result.ProductId = product.Id;
+    result.ProductName = product.Name;
+    result.ProductNameGet = product.NameGet;
+    result.Quantity = 1;
+    result.UOMId = product.UOMId;
+    result.UOMName = product.UOMName;
+
+    return result;
+  }
+
+  onChangeAddress(event: CheckAddressDTO) {
+    console.log(event);
+    let formControls = this.orderForm.controls;
+
+    formControls["Street"].setValue(event.Street);
+
+    formControls["City"].setValue( event.City?.Code ? {
+      Code: event.City?.Code,
+      Name: event.City?.Name
+    } : null);
+
+    formControls["District"].setValue( event.District?.Code ? {
+      Code: event.District?.Code,
+      Name: event.District?.Name,
+    } : null);
+
+    formControls["Ward"].setValue( event.Ward?.Code ? {
+      Code: event.Ward?.Code,
+      Name: event.Ward?.Name,
+    } : null);
+
   }
 
   ngOnChanges(changes: SimpleChanges): void {

@@ -11,7 +11,7 @@ import { TDSMessageService } from 'tmt-tang-ui';
   providedIn: 'root'
 })
 
-export class ConversationEventFacade extends BaseSevice implements OnInit, OnDestroy {
+export class ConversationEventFacade extends BaseSevice implements OnDestroy {
 
   prefix: string = "";
   table: string = "";
@@ -23,11 +23,8 @@ export class ConversationEventFacade extends BaseSevice implements OnInit, OnDes
       private message: TDSMessageService,
       public crmService: CRMTeamService,
       private sgRConnectionService: SignalRConnectionService) {
-        super(apiService)
-  }
-
-  ngOnInit(): void {
-    this.initialize();
+        super(apiService);
+        this.initialize();
   }
 
   initialize() {

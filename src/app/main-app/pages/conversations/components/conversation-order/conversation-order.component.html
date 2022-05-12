@@ -41,6 +41,16 @@
               </div>
 
               <div class="flex items-center gap-2">
+
+                <tpage-check-address class="w-full"
+                  [streetText]="orderForm.value['Street']"
+                  [city]="orderForm.value['City']"
+                  [district]="orderForm.value['District']"
+                  [ward]="orderForm.value['Ward']"
+                  [isExpand]="true"
+                  (onChangeAddress)="onChangeAddress($event)">
+                </tpage-check-address>
+<!--
                 <tds-form-field class="w-full">
                   <input tdsInput formControlName="Street" class="placeholder-neutral-1-400 bg-neutral-3-50" placeholder="Nhập địa chỉ" />
                   <span tdsSuffix>
@@ -61,7 +71,7 @@
                   <span class="flex items-center">
                     <i class="tdsi-location-fill"></i>
                   </span>
-                </button>
+                </button> -->
               </div>
 
               <tds-form-field>
@@ -96,19 +106,18 @@
             <div class="flex flex-col gap-6 w-full h-full">
               <div class="flex gap-1.5">
                 <tds-form-field class="w-full">
-                  <input aria-colspan="" class="placeholder-neutral-1-400"
-                    placeholder="Nhập tên sản phẩm" tdsInput />
-                  <span tdsPrefix ><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
-                  <span tdsSuffix><i class="tdsi-product-fill"></i></span>
+                  <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Nhập tên sản phẩm" tdsInput />
+                  <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
+                  <span tdsSuffix class="cursor-pointer" title="Chọn sản phẩm" (click)="showModalListProduct()"><i class="tdsi-product-fill"></i></span>
                 </tds-form-field>
 
-                <button tds-button-icon color="secondary">
+                <button tds-button-icon color="secondary" class="cursor-pointer" title="Thêm sản phẩm" (click)="showModalAddProduct()">
                   <span class="flex items-center">
                     <i class="tdsi-add-fill text-primary-1"></i>
                   </span>
                 </button>
 
-                <button tds-button-icon color="secondary">
+                <button tds-button-icon color="secondary" class="cursor-pointer" title="Cấu hình sản phẩm" (click)="showModalConfigProduct()">
                   <span class="flex items-center">
                     <i class="tdsi-gear-2-fill text-neutral-1-400"></i>
                   </span>
@@ -277,7 +286,7 @@
                       </tds-form-field>
                     </div>
                     <!-- Dịch vụ vận chuyển bổ xung -->
-                    <div *ngIf="shipExtraServices && shipExtraServices.length > 0">
+                    <div *ngIf="shipExtraServices && shipExtraServices.length > 0" class="flex flex-col gap-y-1">
                       <tds-checkbox *ngFor="let shipExtra of shipExtraServices" [(ngModel)]="shipExtra.IsSelected" [ngModelOptions]="{standalone: true}"
                        (change)="onChangeExtraService($event)">
                         {{shipExtra.ServiceName}}

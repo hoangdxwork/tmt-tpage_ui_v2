@@ -1,4 +1,9 @@
 import { ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
+import { ConfigConversationTagsCreateDataModalComponent } from './../../pages/configs/components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
+import { ModalListBillComponent } from './../../pages/conversations/components/modal-list-bill/modal-list-bill.component';
+import { ModalListProductComponent } from './../../pages/conversations/components/modal-list-product/modal-list-product.component';
+import { ModalImageStoreComponent } from './../../pages/conversations/components/modal-image-store/modal-image-store.component';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Optional, Output, Self,
   SimpleChanges, TemplateRef, ViewContainerRef, Host, OnDestroy } from '@angular/core';
@@ -36,6 +41,7 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
   dataSource$!: Observable<MakeActivityMessagesDTO>;
   partner: any;
   lstUser!: any[];
+  isVisibleReply: boolean = false;
   messageModel: any = {};
   uploadedImages: any[] = [];
   isSending: boolean = false;
@@ -100,6 +106,91 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
   }
 
   showImageStore(): void {
+    const modal = this.modalService.create({
+      title: 'Kho hình ảnh',
+      content: ModalImageStoreComponent,
+      centered: true,
+      size: "xl",
+      viewContainerRef: this.viewContainerRef,
+    });
+    modal.afterClose.subscribe(result => {
+      if (TDSHelperObject.hasValue(result)) {
+      }
+    });
+  }
+
+  showModalAddQuickReply(){
+    const modal = this.modalService.create({
+      title: 'Thêm mới trả lời nhanh',
+      content: ModalAddQuickReplyComponent,
+      viewContainerRef: this.viewContainerRef,
+      size: 'md',
+      componentParams: {
+
+      }
+    });
+    modal.afterOpen.subscribe(() => {
+
+    });
+    // Return a result when closed
+    modal.afterClose.subscribe(result => {
+      if (TDSHelperObject.hasValue(result)) {
+      }
+    });
+  }
+
+  showModalListProduct(){
+    const modal = this.modalService.create({
+      title: 'Danh sách sản phẩm',
+      content: ModalListProductComponent,
+      viewContainerRef: this.viewContainerRef,
+      size: 'xl',
+      componentParams: {
+
+      }
+    });
+    modal.afterOpen.subscribe(() => {
+
+    });
+    // Return a result when closed
+    modal.afterClose.subscribe(result => {
+      if (TDSHelperObject.hasValue(result)) {
+      }
+    });
+  }
+
+  showModalListBill(){
+    const modal = this.modalService.create({
+      title: 'Phiếu bán hàng',
+      content: ModalListBillComponent,
+      viewContainerRef: this.viewContainerRef,
+      size: 'xl',
+      componentParams: {
+
+      }
+    });
+    modal.afterOpen.subscribe(() => {
+
+    });
+    // Return a result when closed
+    modal.afterClose.subscribe(result => {
+      if (TDSHelperObject.hasValue(result)) {
+      }
+    });
+  }
+
+  showModalAddTag(){
+    const modal = this.modalService.create({
+      title: 'Thêm thẻ hội thoại',
+      content: ConfigConversationTagsCreateDataModalComponent,
+      viewContainerRef: this.viewContainerRef,
+    });
+
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
+      if(TDSHelperObject.hasValue(result)){
+
+      }
+    });
   }
 
   loadEmojiMart(event: any) {

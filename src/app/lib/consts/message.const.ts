@@ -14,6 +14,7 @@ export const Message = {
   PageNotExist: 'Không có kênh nào đang được kết nối',
   FunctionNotWorking: 'Chức năng chưa hoạt động!',
   CanNotLoadData: 'Không thể tải dữ liệu',
+  PartnerNotInfo: 'Không có thông tin khách hàng',
   Error: {
     SeverError: 'Lỗi máy chủ. Vui lòng thử lại sau.'
   },
@@ -43,6 +44,7 @@ export const Message = {
   },
   Product: {
     InsertSuccess: 'Thêm sản phẩm thành công.',
+    UpdateListPriceSuccess: 'Cập nhật bảng giá thành công.'
   },
   ProductCategory: {
     InsertSuccess: 'Thêm nhóm sản phẩm thành công.'
@@ -58,7 +60,9 @@ export const Message = {
     Success: 'Tải tập thành công.'
   },
   Partner: {
-    UpdateStatus: 'Cập nhật trạng thái khách hàng thành công.'
+    UpdateStatus: 'Cập nhật trạng thái khách hàng thành công.',
+    AddNoteSuccess: 'Thêm ghi chú thành công.',
+    RemoveNoteSuccess: 'Xóa ghi chú thành công.'
   },
   ConnectionChannel: {
     NotFoundUserPage: 'Không tìm thấy kênh kết nối nào',
