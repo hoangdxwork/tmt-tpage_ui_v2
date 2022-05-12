@@ -6,7 +6,7 @@ import { BaseSevice } from "../base.service";
   providedIn: 'root'
 })
 
-export class DraftMessageService extends BaseSevice implements OnInit {
+export class DraftMessageService extends BaseSevice  {
 
   prefix: string = "";
   table: string = "";
@@ -18,11 +18,9 @@ export class DraftMessageService extends BaseSevice implements OnInit {
   public facebookASIds!: string;
 
   constructor(private apiService: TCommonService) {
-      super(apiService)
-  }
+      super(apiService);
 
-  ngOnInit(): void {
-    this.initialize();
+      this.initialize();
   }
 
   initialize() {

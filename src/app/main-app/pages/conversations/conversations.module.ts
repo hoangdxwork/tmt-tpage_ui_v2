@@ -48,6 +48,9 @@ import { ModalBlockPhoneComponent } from './components/modal-block-phone/modal-b
 import { CRMMatchingService } from '../../services/crm-matching.service';
 import { FacebookPostService } from '../../services/facebook-post.service';
 import { ConversationPostFacade } from '../../services/facades/conversation-post.facade';
+import { ConversationPostItemComponent } from './conversation-post/conversation-post-item.component';
+import { ItemPostCommentComponent } from './conversation-post/item-post-comment.component';
+import { FacebookCommentService } from '../../services/facebook-comment.service';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -73,8 +76,9 @@ const SERVICES = [
   PrinterService,
   OrderFormHandler,
   CarrierHandler,
-    CRMMatchingService,
-    FacebookPostService
+  CRMMatchingService,
+  FacebookPostService,
+  FacebookCommentService
 ]
 
 @NgModule({
@@ -93,7 +97,9 @@ const SERVICES = [
     ModalConfirmShippingAddressComponent,
     ModalConfirmPaymentComponent,
     ModalAddQuickReplyComponent,
-    ModalBlockPhoneComponent
+    ModalBlockPhoneComponent,
+    ConversationPostItemComponent,
+    ItemPostCommentComponent
   ],
   imports: [
     CommonModule,

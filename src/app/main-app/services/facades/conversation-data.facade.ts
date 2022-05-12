@@ -20,7 +20,7 @@ import { ActivatedRoute, Router } from "@angular/router";
   providedIn: 'root'
 })
 
-export class ConversationDataFacade extends BaseSevice implements OnInit, OnDestroy {
+export class ConversationDataFacade extends BaseSevice implements OnDestroy {
 
   prefix: string = "";
   table: string = "";
@@ -49,12 +49,9 @@ export class ConversationDataFacade extends BaseSevice implements OnInit, OnDest
               this.lstTeam = res.Items;
           }
         });
-  }
-
-  ngOnInit(): void {
-    this.currentTeam = this.crmTeamService.getCurrentTeam();
-    this.currentUrl = this.router.routerState.snapshot.url;
-    this.initialize();
+        this.currentTeam = this.crmTeamService.getCurrentTeam();
+        this.currentUrl = this.router.routerState.snapshot.url;
+        this.initialize();
   }
 
   initialize() {

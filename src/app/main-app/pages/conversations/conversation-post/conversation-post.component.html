@@ -48,9 +48,9 @@
         </div>
         <div class="h-full flex flex-col gap-y-1 overflow-y-auto no-scrollbar p-1">
             <ng-container *ngFor="let item of (data$ | async); let i=index">
-                <div *ngIf="item" class="p-2 flex {{currentPost?.fbid == item.fbid ? 'bg-green-400' : 'bg-white'}}">
+                <div *ngIf="item" class="p-2 flex {{currentPost?.fbid == item.fbid ? 'bg-green-400' : 'bg-white'}}" (click)="selectPost(item)">
                   <div class="mr-2 block">
-                    <img [src]="item.picture" alt="{{item.title}}" style="max-width: 120px;max-height: 88px">
+                    <img tds-image [tdsSrc]="item.picture" alt="{{item.story}}" style="max-width: 120px;max-height: 88px">
                     <div>
                       <!-- phân loại -->
                       <span class="{{getIconTypePost(item.status_type)}}"></span>
@@ -78,7 +78,7 @@
                     <div *ngIf="item.story" class="text-error-500">{{item.story}}</div>
                     <div *ngIf="item.description" class="text-info-500">{{item.description}}</div>
                     <div *ngIf="item.message">{{item.message}}</div>
-                    <div *ngIf="!item.story && !item.description && !item.message && !item.title">
+                    <div *ngIf="!item.story && !item.description && !item.message">
                       (Chưa có tiêu đề)
                     </div>
                   </div>
@@ -86,8 +86,14 @@
             </ng-container>
         </div>
     </div>
-    <!-- main -->
+    <!--Chọn bài viết để hiển thị chi tiết-->
     <div class="flex flex-auto flex-col  h-full overflow-hidden">
+      <div *ngIf="currentPost && currentTeam">
+        <conversation-post-item [data]="currentPost"></conversation-post-item>
+      </div>
+      <div *ngIf="!currentPost">
+          Hãy chọn một bài viết.
+      </div>
     </div>
 
     <!-- Danh sách khách hàng, đơn hàng -->

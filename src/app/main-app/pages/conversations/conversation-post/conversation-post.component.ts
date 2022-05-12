@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { map, mergeMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
@@ -10,14 +10,15 @@ import { ConversationPostFacade } from 'src/app/main-app/services/facades/conver
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tmt-tang-ui';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService } from 'tmt-tang-ui';
 
 @Component({
   selector: 'app-conversation-post',
   templateUrl: './conversation-post.component.html',
   styleUrls: ['./conversation-post.component.scss']
 })
-export class ConversationPostComponent extends TpageBaseComponent implements OnInit {
+
+export class ConversationPostComponent extends TpageBaseComponent implements OnInit, OnDestroy {
 
   public items: any[] = [
     { type: '', text: 'Tất cả bài viêt' },
@@ -42,13 +43,12 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   postChilds = [];
   listBadge: any = {};
 
-  dataX: any = { Items: [] };
-  data: any[] = [];
+  data!: FacebookPostItem[];
   nextPage: any;
   offset = new BehaviorSubject(null);
   keyFilter: string = '';
   hasNextPage: boolean = true;
-  data$!: Observable<any>;
+  data$!: Observable<FacebookPostItem[]>;
   currentPost!: FacebookPostItem | undefined;
   destroy$ = new Subject();
 
@@ -56,13 +56,14 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private conversationPostFacade: ConversationPostFacade,
     private facebookGraphService: FacebookGraphService,
     private activityMatchingService: ActivityMatchingService,
+    private message: TDSMessageService,
     public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
     public router: Router) {
       super(crmService, activatedRoute, router);
   }
 
-  onInit(): void {
+  ngOnInit(): void {
     this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe(([team, params]: any) => {
       if (!TDSHelperObject.hasValue(team)) {
           this.onRedirect();
@@ -70,28 +71,33 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         this.type = params?.params?.type;
         this.setParamsUrl(params.params);
         this.setCurrentTeam(team);
-        this.fetchPosts();
-        this.loadData();
 
-        this.postId = params?.params?.post_id || null;
-        //TODO: khi có comment mới vào bài viết
-        this.loadBadgeComments();
+        if(TDSHelperString.isString(params?.params?.post_id)) {
+          this.postId = params?.params?.post_id;
+        }
+
+        let exist = (TDSHelperString.isString(this.currentPost?.fbid) != TDSHelperString.isString(this.paramsUrl.post_id))
+          || (!TDSHelperString.isString(this.currentPost?.fbid) && !TDSHelperString.isString(this.paramsUrl?.post_id));
+
+        if(exist) {
+          this.fetchPosts();
+          this.loadData();
+          this.loadBadgeComments();
+        }
       }
     })
   }
 
+  //TODO: khi có comment mới vào bài viết
   loadBadgeComments(){
-    // khi có comment mới vào bài viết
-    this.activityMatchingService.onGetComment$.subscribe((res: any) => {
-      let post_id = res.object.id;
-
-      this.listBadge[post_id] = this.listBadge[post_id] || {};
-      this.listBadge[post_id]["count"] = (this.listBadge[post_id]["count"] || 0) + 1;
+    this.activityMatchingService.onGetComment$
+      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        if(res){
+          let post_id = res.object?.id;
+          this.listBadge[post_id] = this.listBadge[post_id] || {};
+          this.listBadge[post_id]["count"] = (this.listBadge[post_id]["count"] || 0) + 1;
+        }
     });
-
-    // this.liveCampaignService.getData().subscribe((res: any) => {
-    //   this.lstLiveCampaign = res;
-    // })
   }
 
   public setType(item: any, eventType: string): void {
@@ -100,9 +106,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       this.currentType = item;
       this.data = [];
       delete this.nextPage;
-      if (this.offset) {
-        this.offset = new BehaviorSubject(null);
-      }
+      this.offset = new BehaviorSubject(null);
       this.loadData();
     }
   }
@@ -112,98 +116,75 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   loadData(){
-    let that = this;
-    if(TDSHelperString.hasValueString(that.keyFilter)){
-      this.data = [];
-      if (that.offset) {
-        that.offset = new BehaviorSubject(null);
-      }
-    }
+    this.data = [];
+    this.offset = new BehaviorSubject(null);
+    if(this.currentTeam?.Id) {
 
-    if(that.currentTeam?.Id){
-      let batchMap = that.offset.pipe(
-        throttleTime(500),
-        mergeMap((n: any) => that.getData(n, that.currentType.type, that.keyFilter))
-      );
+      const batchMap = this.offset.pipe(throttleTime(500),
+        mergeMap((x: any) => this.getData(x, this.currentType.type, this.keyFilter)));
 
-      that.data$ = batchMap
-        .pipe(takeUntil(that.destroy$))
-        .pipe(map((x: any) => {
-          let items = Object.values(x);
+      if(batchMap){
+        this.data$ = batchMap.pipe(takeUntil(this.destroy$)).pipe(map((dict: any) => {
+          let items = Object.values(dict);
           items.map((x: any) => {
-            if (this.data.filter((f) => f.fbid === x.fbid).length === 0) {
+            if (this.data.filter((f: any) => f.fbid === x.fbid).length === 0) {
               this.data = [...this.data, ...[x]];
             }
           });
-
-          let itemSelected = this.data.find((x: any) => x.fbid == this.postId);
-          if (!itemSelected) {
-            if(this.postId) {
-              this.facebookPostService.getPostByPageId(this.currentTeam.Facebook_PageId, this.postId)
-                .pipe(takeUntil(this.destroy$))
-                .subscribe((res: FacebookPostItem) => {
-                    itemSelected = res;
-                    this.selectPost(itemSelected);
-                })
+          if(TDSHelperArray.hasListValue(this.data)){
+            let exits = this.data.filter((x: any) => x.fbid == this.postId)[0];
+            if(TDSHelperObject.hasValue(exits)){
+                this.selectPost(exits);
             } else {
-              // Phần tử đầu tiên đã được sắp xếp
-              this.selectPost(this.data[0]);
-            }
-          }  else {
-            if (this.data.length > 0 && !this.currentPost) {
-              this.selectPost(itemSelected);
+                this.selectPost(this.data[0]);
             }
           }
           return this.data;
-      }));
+        }));
+      }
 
-      this.facebookGraphService.getFeed(this.currentTeam.Facebook_PageToken).subscribe((res: any) => {
-        if (res && TDSHelperArray.isArray(res.data)) {
-          res.data.forEach((x: any) => {
-            if (x.picture) {
-              let exist = this.data.filter(d => d.id == x.id)[0];
-              if (exist) {
-                exist.picture = x.picture;
-                exist.message = x.message;
-              }
-            }
-          });
-        }
+      this.facebookGraphService.getFeed(this.currentTeam.Facebook_PageToken)
+        .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+          if (res && TDSHelperArray.isArray(res.data)) {
+            res.data.forEach((x: any) => {
+              if (x.picture) {
+                let exist = this.data.filter(d => d.fbid == x.id)[0];
+                if (exist) {
+                  exist.picture = x.picture;
+                  exist.message = x.message;
+                }
+            }});
+          }
       });
     }
   }
 
-  selectPost(item: FacebookPostItem): void {
-    if (item && item.fbid && (!this.currentPost || (this.currentPost && item.fbid != this.currentPost.fbid))) {
-      if (!this.currentPost || this.currentPost.fbid != item.fbid) {
-        //TODO: mapping lại post_id vào url
-        this.currentPost = item;
-        this.facebookPostService.loadPost(this.currentPost);
-        // this.data.map((x) => { delete x.selected });
+  selectPost(item: FacebookPostItem): any {
+    (this.currentPost as any) = null;
+    this.postChilds = [];
 
-        // item.selected = true;
-        this.conversationPostFacade.onPostChanged$.emit(item);
-
-        // this.router.navigateByUrl(`/conversation/post?teamId=${this.paramsUrl.teamId}&type=post&post_id=${item.fbid}`);
-        // get posts child
-        if (!this.postChilds || this.postChilds.length < 1 || (!item.parent_id && this.postChilds.length > 0 && (this.postChilds[0] as any).parent_id != item.fbid)) {
-          this.postChilds = [];
-
-          this.facebookPostService.getByPostParent(this.paramsUrl.teamId, item.parent_id || item.fbid).subscribe((res: any) => {
+    if(TDSHelperObject.hasValue(item)){
+      this.currentPost = item;
+      this.facebookPostService.loadPost(item);
+      // load danh sách bài viết con từ bài viết chính
+      if(TDSHelperString.isString(item.parent_id)) {
+        this.facebookPostService.getByPostParent(this.paramsUrl.teamId, item.parent_id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((res: any) => {
+            if(res && TDSHelperArray.hasListValue(res.Items)) {
               this.postChilds = res.Items;
-              // item.count_post_child = res.Items && res.Items.length;
-          });
-        }
+            }
+        });
       }
-    } else
-    if (this.currentPost && this.currentPost.fbid != item.fbid) {
-      delete this.currentPost;
+
+      this.conversationPostFacade.onPostChanged$.emit(item);
+      let uri = `/conversation/${this.type}?teamId=${this.currentTeam?.Id}&type=${this.type}&post_id=${item?.fbid}`;
+      this.router.navigateByUrl(uri);
     }
-    this.addQueryParams({ post_id: item.fbid });
   }
 
-  getData(nextUrl?: string, type?: string, textSearch?: string) {
-    return this.facebookPostService.getPostsByTeamId(this.currentTeam.Id, nextUrl, type, this.eventType, textSearch)
+  getData(nextUrl?: string, type?: string, keyFilter?: string): Observable<any> {
+    return this.facebookPostService.getPostsByTeamId(this.currentTeam.Id, nextUrl, type, this.eventType, keyFilter)
       .pipe(tap((arr: FacebookPostDTO) => { (arr.HasNextPage ? null : (this.hasNextPage = true)) }),
           map((arr: FacebookPostDTO) => {
 
@@ -221,10 +202,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   onClickTeam(data: CRMTeamDTO): any {
     if (this.paramsUrl?.teamId) {
-      let url = this.router.url.split("?")[0];
-      const params = { ...this.paramsUrl };
-      params.teamId = data.Id;
-      this.router.navigate([url], { queryParams: params });
+      let uri = `/conversation/${this.type}?teamId=${data?.Id}&type=${this.type}`;
+      this.router.navigateByUrl(uri);
     }
     this.crmService.onUpdateTeam(data);
   }
@@ -245,7 +224,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     }
     return false;
   }
-
 
   ngOnDestroy(): void {
     this.destroy$.next();

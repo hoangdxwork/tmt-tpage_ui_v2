@@ -49,11 +49,20 @@ export class FacebookPostService extends BaseSevice implements OnInit, OnDestroy
 
   fetchPosts(teamId: any): Observable<any> {
     let api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/fetchposts?teamId=${teamId}`,
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebook/fetchposts?teamId=${teamId}`,
       method: TApiMethodType.post
     }
     return this.apiService.getData<any>(api, null);
   }
+
+  refetch(id: any): Observable<any> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${id}/refetch`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<any>(api, null);
+  }
+
 
   getPostByPageId(pageId: string, postId: string): Observable<any>{
     let api: TAPIDTO = {
@@ -140,7 +149,7 @@ export class FacebookPostService extends BaseSevice implements OnInit, OnDestroy
   }
 
   private onResolveData(data :any) {
-    if (data.Items as FacebookPostItem[]) {
+    if (data?.Items as FacebookPostItem[]) {
         data.Items.map((x: FacebookPostItem) => {
             if (x.attachments && x.attachments.data) {
                 let att = x.attachments.data[0];
