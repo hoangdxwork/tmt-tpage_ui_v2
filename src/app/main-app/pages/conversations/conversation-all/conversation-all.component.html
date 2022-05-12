@@ -1,46 +1,160 @@
-<div class="w-full h-full flex items-stretch bg-neutral-3-200">
+<div class="w-full h-full flex items-stretch bg-neutral-3-200 text-body-2 text-neutral-1-900">
   <!-- conversation list -->
   <div class="w-[357px] h-full ">
-      <div class="w-full flex flex-col gap-1 p-1 h-full">
-          <div class="bg-white p-2.5">
+      <div class="w-full flex flex-col gap-1 px-1 h-full">
+          <div class="bg-white  flex flex-col gap-y-4 p-2.5 z-10">
             <div class="block items-center">
                   <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)"></tpage-team-dropdown>
             </div>
             <!-- <div class="tdsi-reload-fill text-3xl text-neutral-1-200"></div> -->
-            <div class="pt-4 flex gap-1 items-center">
-              <div>
-                <tds-form-field class="w-full bg-neutral-3-50">
-                  <input aria-colspan="" class="placeholder-neutral-1-400"
-                    placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput/>
-                  <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
-                </tds-form-field>
-              </div>
+            <div class="flex items-center gap-x-1">
+              <tds-form-field class="w-full mr-1 bg-neutral-3-50">
+                <input aria-colspan="" class="placeholder-neutral-1-400"
+                  placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput/>
+                <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
+              </tds-form-field>
               <div class="flex gap-0.5">
-                <div>
-                  <tds-badge [count]="iconTemplate">
-                    <div class="tdsi-filter-2-line text-2xl text-neutral-1-500 p-2"></div>
-                  </tds-badge>
-                  <ng-template #iconTemplate>
-                    <span
-                      class="tdsi-success-fill text-primary-1 text-lg absolute top-4 right-2 inline-block transform translate-x-1/2 -translate-y-1/2 ">
+                <!-- button fillter -->
+                <button class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center" tds-dropdown trigger="click" placement="bottomRight" (click)="openDrawerFillter()">
+                    <span class="flex items-center text-neutral-1-500 relative">
+                        <i class="tdsi-filter-2-line  text-xl leading-5"></i>
+                        <div class="overflow-hidden h-3 w-3 bg-primary-1 text-white rounded-full absolute top-0 right-0 flex justify-center items-center"
+                            style="transform: translate(30%, -30%); transform-origin: 100% 0px;">
+                            <span class="text-[7px] leading-[5px] tdsi-tick-fill ">
+                            </span>
+                        </div>
                     </span>
-                  </ng-template>
-                </div>
-                <div class="tdsi-sort-up-down-fill text-2xl text-neutral-1-500 p-2"></div>
-                <div class="tdsi-success-line text-2xl text-neutral-1-500 p-2"></div>
+                </button>
+                <tds-drawer [bodyStyle]="{'overflow':'hidden'}"
+                  [visible]="visibleDrawerFillter" [placement]="'left'" title="Lọc hội thoại" 
+                (onClose)="close()" [footer]="footerTpl">
+                <ng-container *tdsDrawerContent>
+                    <div class="flex flex-col gap-y-6 overflow-auto ">
+                        <div class="flex items-center justify-between bg-neutral-3-50 py-4 px-1">
+                          <div class="flex gap-x-2">
+                            <span>Kết quả lọc</span>
+                            <tds-tag status='primary' rounded="rounded-full">12 hội thoại</tds-tag>
+                          </div>
+                          <div>
+                            <button tds-button color="secondary">
+                              <span class="flex items-center text-error-400">
+                                <i class="tdsi-close-fill text-lg leading-none mr-2"></i>Bỏ lọc
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="flex flex-col gap-y-3">
+                          <div class="pb-1">
+                            <span class="text-title-1 font-semibold">Lọc theo điều kiện </span>
+                          </div>
+                          <div class="flex items-center gap-x-2">
+                            <tds-checkbox [checked]="true">Có số điện thoại</tds-checkbox>
+                          </div>
+                          <div class="flex items-center gap-x-2">
+                            <tds-checkbox [checked]="true">Chưa có số điện thoại</tds-checkbox>
+                          </div>
+                          <div class="flex items-center gap-x-2">
+                            <tds-checkbox [checked]="false">Có địa chỉ</tds-checkbox>
+                          </div>
+                          <div class="flex items-center gap-x-2">
+                            <tds-checkbox [checked]="false">Chưa có địa chỉ</tds-checkbox>
+                          </div>
+                          <div class="flex items-center gap-x-2">
+                            <tds-checkbox [checked]="false">Hội thoại chưa đọc</tds-checkbox>
+                          </div>
+                          <div class="flex items-center gap-x-2">
+                            <tds-checkbox [checked]="false">Có đơn hàng</tds-checkbox>
+                          </div>
+                        </div>
+                        <div class="flex flex-col gap-y-4">
+                          <div class="flex flex-col">
+                            <span class="text-title-1 font-semibold">Lọc theo thời gian</span>
+                            <span class="text-neutral-1-400">Từ ngày - Đến ngày</span>
+                          </div>
+                          <tds-range-picker [(ngModel)]="rangeDate" (ngModelChange)="onChange($event)">
+                          </tds-range-picker>
+                        </div>
+                        <div class="flex flex-col gap-y-4">
+                          <div class="flex flex-col">
+                            <span class="text-title-1 font-semibold">Lọc theo nhân viên</span>
+                          </div>
+                          <div class="flex gap-x-2">
+                            <div class="py-1 px-2 flex items-center border border-solid rounded-full bg-primary-1 mr-2 ng-star-inserted border-neutral-2-200">
+                              <div class="text-body-2 px-2 font-semibold truncate text-white"> Mai </div>
+                            </div>
+                            <div class="py-1 px-2 flex items-center border border-solid rounded-full bg-white mr-2 ng-star-inserted border-neutral-2-200">
+                              <div class="text-body-2 px-2 font-semibold truncate text-neutral-1-400"> Quang Khai </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="flex flex-col gap-y-4">
+                          <span class="text-title-1 font-semibold">Lọc theo nhãn</span>
+                          <div class="flex flex-wrap gap-2.5">
+                            <tds-tag status='error'>Bom hàng</tds-tag>
+                            <tds-tag status='primary' [disabled]="true">KH VIP</tds-tag>
+                            <tds-tag status='warning' [disabled]="true">Sale</tds-tag>
+                            <tds-tag status='secondary' [disabled]="true">Chưa xác nhận</tds-tag>
+                            <tds-tag status='info' [disabled]="true">Tiềm năng</tds-tag>
+                            <tds-tag status='primary'>KH VIP</tds-tag>
+                          </div>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-template #footerTpl>
+                    <div class="flex justify-end w-full p-4 border-t border-neutral-2-100">
+                        <button tds-button color="secondary" class="mr-2" (click)="close()">
+                          Hủy
+                        </button>
+                        <button tds-button color="primary" (click)="close()">Áp dụng</button>
+                    </div>
+                </ng-template>
+            </tds-drawer>
+                <button (click)="setSort()" class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center"
+                [ngClass]="isSort?'bg-primary-3 text-primary-1':'bg-white text-neutral-1-500'">
+                  <span class="flex items-center text-neutral-1-500">
+                      <i class="tdsi-sort-up-down-fill text-xl leading-5"></i>
+                  </span>
+                </button>
+              <button class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center"
+                (click)="setCheck()"
+                [ngClass]="isCheck?'bg-primary-3 text-primary-1':'bg-white text-neutral-1-500'">
+                  <span class="flex items-center ">
+                      <i class="tdsi-success-line text-xl leading-5"></i>
+                  </span>
+              </button>
               </div>
             </div>
           </div>
+          <!-- Xử lý click button checkbox -->
+          <div [ngClass]="isCheck?'translate-y-0 py-3 ':'-translate-y-full h-0 overflow-hidden'"  class="ease-in-out duration-300 w-full px-3.5  flex justify-between items-center bg-white">
+            <div class="flex gap-x-2">
+              <button tds-button color="primary">
+                <span class="flex items-center">
+                  <i class="tdsi-messenger-fill text-lg leading-none mr-2"></i>Gửi tin nhắn
+                </span>
+              </button>
+              <button tds-button color="info">
+                <span class="flex items-center">
+                  <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In thông tin
+                </span>
+              </button>
+            </div>
+            <tds-checkbox [indeterminate]="indeterminate" [checked]="false"></tds-checkbox>
+          </div>
           <!-- List danh sách chat -->
-          <div *ngIf="lstMatchingItem" class="overflow-hidden overflow-y-auto tds-custom-scroll flex flex-auto flex-col gap-1 pb-10">
-            <div *ngFor="let item of lstMatchingItem; let i= index">
-                <div *ngIf="activeMatchingItem?.id && currentTeam" (click)="activeConversations(item)">
-                    <current-conversation-item
-                        [item]="item" [psid]="item.psid" [type]="type"
-                        [activeMatchingItem]="activeMatchingItem"
-                        [team]="currentTeam" [isFastSend]="isFastSend">
-                    </current-conversation-item>
-                </div>
+          <div class="overflow-hidden flex relative">
+            <div *ngIf="lstMatchingItem" class="overflow-y-auto tds-custom-scroll flex flex-auto flex-col gap-1">
+              
+              <div *ngFor="let item of lstMatchingItem; let i= index">
+                  <div *ngIf="activeMatchingItem?.id && currentTeam" (click)="activeConversations(item)">
+                      <current-conversation-item
+                          [item]="item" [psid]="item.psid" [type]="type"
+                          [activeMatchingItem]="activeMatchingItem"
+                          [team]="currentTeam" [isFastSend]="isFastSend"
+                          [isCheck]="isCheck">
+                      </current-conversation-item>
+                  </div>
+              </div>
             </div>
           </div>
       </div>

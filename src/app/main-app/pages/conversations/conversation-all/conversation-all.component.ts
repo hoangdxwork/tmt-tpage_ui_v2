@@ -29,6 +29,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   activeMatchingItem!: ActiveMatchingItem;
   isFastSend: boolean = false;
   currentOrderCode!: string | undefined;
+  visibleDrawerFillter: boolean = false;
+  rangeDate = null;
+  isCheck: boolean = false;
+  isSort: boolean = false;
+  indeterminate: boolean = false;
 
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
@@ -86,15 +91,17 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   //TODO: matching đang chọn active
   activeConversations(item: ActiveMatchingItem) {
-    (this.activeMatchingItem as any) = null;
-    if (TDSHelperObject.hasValue(item)) {
-      if (this.isFastSend == true) {
-          this.conversationDataFacade.checkSendMessage(item.page_id, this.type, item.psid);
-      } else {
-          //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
-          this.psid = item.psid;
-          this.addQueryParams({ psid: this.psid });
-          this.activeMatchingItem = item;
+    if(!this.isCheck){
+      (this.activeMatchingItem as any) = null;
+      if (TDSHelperObject.hasValue(item)) {
+        if (this.isFastSend == true) {
+            this.conversationDataFacade.checkSendMessage(item.page_id, this.type, item.psid);
+        } else {
+            //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
+            this.psid = item.psid;
+            this.addQueryParams({ psid: this.psid });
+            this.activeMatchingItem = item;
+        }
       }
     }
   }
@@ -127,6 +134,26 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.currentOrderCode = orderCode;
   }
 
+  openDrawerFillter(){
+    this.visibleDrawerFillter = true;
+  }
+
+  close(): void {
+      this.visibleDrawerFillter = false;
+  }
+
+  onChange(result: Date): void {
+    console.log('onChange: ', result);
+  }
+
+  setCheck(){
+    this.isCheck = !this.isCheck;
+  }
+
+  setSort(){
+    this.isSort = !this.isSort;
+
+  }
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

@@ -1,3 +1,4 @@
+import { YiDateTimeV2Pipe } from './../../shared/pipe/yi-datetimeV2.pipe';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -7,7 +8,7 @@ import { ConversationPostComponent } from './conversation-post/conversation-post
 import { ConversationCommentComponent } from './conversation-comment/conversation-comment.component';
 import { ConversationInboxComponent } from './conversation-inbox/conversation-inbox.component';
 import { MainSharedModule } from '../../shared/shared.module';
-import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSMessageModule, TDSModalModule, TDSPopoverModule, TDSRadioModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSToolTipModule, TDSTypographyModule, TDSSwitchModule } from 'tmt-tang-ui';
+import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSMessageModule, TDSModalModule, TDSPopoverModule, TDSRadioModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSToolTipModule, TDSTypographyModule, TDSSwitchModule, TDSDrawerModule, TDSDatePickerModule } from 'tmt-tang-ui';
 import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conversations.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalImageStoreComponent } from './components/modal-image-store/modal-image-store.component';
@@ -85,7 +86,8 @@ const SERVICES = [
     ModalDetailBillComponent,
     ModalConfirmShippingAddressComponent,
     ModalConfirmPaymentComponent,
-    ModalAddQuickReplyComponent
+    ModalAddQuickReplyComponent,
+    YiDateTimeV2Pipe
   ],
   imports: [
     CommonModule,
@@ -118,7 +120,9 @@ const SERVICES = [
     UploadImageModule,
     TDSSpinnerModule,
     TDSSwitchModule,
-    TDSInputNumberModule
+    TDSInputNumberModule,
+    TDSDrawerModule,
+    TDSDatePickerModule,
   ],
   providers: [ ...SERVICES]
 })

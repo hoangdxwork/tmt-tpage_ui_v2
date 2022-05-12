@@ -20,9 +20,11 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges {
   @Input() type: any;
   @Input() psid: any;
   @Input() activeMatchingItem!: ActiveMatchingItem;
+  @Input() isCheck!: boolean;
 
   eventData: any;
   isDraftMessage: boolean = false;
+  isConversationOver: boolean = false
 
   constructor(private message: TDSMessageService,
       private draftMessageService: DraftMessageService,
