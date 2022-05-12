@@ -1,5 +1,5 @@
 import { Observable, Subject, Subscriber, Subscription } from 'rxjs';
-import { TDSSafeAny, TDSModalRef, TDSMessageService, TDSModalService, TDSUploadChangeParam, TDSUploadXHRArgs, TDSHelperObject, TDSUploadFile } from 'tmt-tang-ui';
+import { TDSSafeAny, TDSModalRef, TDSMessageService, TDSModalService, TDSUploadChangeParam, TDSUploadXHRArgs, TDSHelperObject, TDSUploadFile, TDSHelperString, TDSHelperArray } from 'tmt-tang-ui';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone, OnDestroy } from '@angular/core';
 import { ProductTemplateDTO, ProductType, ProductUOMDTO } from '../../dto/product/product.dto';
@@ -11,9 +11,11 @@ import { ProductCategoryDTO } from '../../dto/product/product-category.dto';
 import { TpageAddCategoryComponent } from '../tpage-add-category/tpage-add-category.component';
 import { TpageSearchUOMComponent } from '../tpage-search-uom/tpage-search-uom.component';
 import { CommonService } from '../../services/common.service';
-import { TCommonService, TAPIDTO, TApiMethodType } from 'src/app/lib';
+import { TCommonService, TAPIDTO, TApiMethodType, THelperCacheService } from 'src/app/lib';
 import { SharedService } from '../../services/shared.service';
 import { takeUntil } from 'rxjs/operators';
+import { ProductIndexDBService } from '../../services/product-indexDB.service';
+import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 
 @Component({
   selector: 'tpage-add-product',
@@ -30,6 +32,10 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   lstCategory!: Array<ProductCategoryDTO>;
   lstUOMCategory!: Array<ProductUOMDTO>;
 
+  indexDbVersion: number = 0;
+  indexDbProductCount: number = -1;
+  indexDbStorage!: DataPouchDBDTO[];
+
   imageUrl = "https://randomuser.me/api/portraits/women/68.jpg";
   public readonly lstProductType = ProductType;
   fileList: TDSUploadFile[] = [];
@@ -41,18 +47,38 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     private modalRef: TDSModalRef,
     private message: TDSMessageService,
     private viewContainerRef: ViewContainerRef,
-    public productTemplateService: ProductTemplateService,
+    private productTemplateService: ProductTemplateService,
     private productCategoryService: ProductCategoryService,
     private productUOMService: ProductUOMService,
+    private cacheApi: THelperCacheService,
+    private productIndexDBService: ProductIndexDBService,
     public zone: NgZone) {
   }
 
   ngOnInit(): void {
     this.createForm();
+    this.loadIndexDB();
 
     this.loadCategory();
     this.loadUOMCateg();
     this.loadDefault();
+
+  }
+
+  loadIndexDB() {
+    let keyCache = JSON.stringify(this.productIndexDBService._keyCacheProductIndexDB);
+    this.cacheApi.getItem(keyCache).subscribe((obs: TDSSafeAny) => {
+
+      if(TDSHelperString.hasValueString(obs)) {
+          let cache = JSON.parse(obs['value']) as TDSSafeAny;
+          let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
+
+          this.indexDbVersion = cacheDB.cacheVersion;
+          this.indexDbProductCount = cacheDB.cacheCount;
+          this.indexDbStorage = cacheDB.cacheDbStorage;
+      }
+
+    });
   }
 
   loadDefault() {
@@ -78,21 +104,77 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
 
   onSave(type?: string) {
     let model = this.prepareModel();
-    console.log('onSave')
-    this.productTemplateService.insert(model).pipe(takeUntil(this.destroy$)).subscribe(res => {
-      delete res['@odata.context'];
+    this.productTemplateService.insert(model)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        delete res['@odata.context'];
 
-      this.message.success(Message.Product.InsertSuccess);
+        this.message.success(Message.Product.InsertSuccess);
 
-      if (type == "select") {
-        this.onCancel(res);
-      }
-      else {
-        this.onCancel(null);
-      }
+        if (type == "select") {
+          this.onLoadedProductSelect.emit(res);
+          this.onCancel(null);
+        }
+        else {
+          this.onCancel(null);
+        }
+
+        // Update Index DB
+        this.pusToIndexDb();
+
+      }, error => {
+        this.message.error(`${error.error.message}`);
+      });
+  }
+
+  pusToIndexDb(): any {
+    this.loadProductIndexDB(this.indexDbProductCount, this.indexDbVersion);
+  }
+
+  loadProductIndexDB(productCount: number, version: number): any {
+    this.productIndexDBService.getLastVersionV2(productCount, version).pipe(takeUntil(this.destroy$))
+      .subscribe((data: ProductPouchDBDTO) => {
+
+        if(TDSHelperArray.hasListValue(data.Datas)) {
+          if(productCount == -1 && version == 0) {
+              this.indexDbStorage = data.Datas;
+          } else {
+            if(TDSHelperArray.hasListValue(data.Datas)) {
+              data.Datas.forEach((x: DataPouchDBDTO) => {
+                  this.indexDbStorage.push(x);
+              });
+            }
+          }
+        }
+
+        //TODO: check số version
+        let versions = this.indexDbStorage.map((x: DataPouchDBDTO) => x.Version);
+        let lastVersion = Math.max(...versions);
+
+        //TODO: check số lượng
+        let count = this.indexDbStorage.length;
+
+        if(lastVersion != this.indexDbVersion || count != this.indexDbProductCount) {
+            this.indexDbVersion = lastVersion;
+            this.indexDbProductCount = count;
+        }
+
+        this.mappingCacheDB();
     }, error => {
-      this.message.error(`${error.error.message}`);
-    });
+        this.message.error('Load danh sách sản phẩm đã xảy ra lỗi!');
+    })
+  }
+
+  mappingCacheDB() {
+    //TODO: lưu cache cho ds sản phẩm
+    let objCached: KeyCacheIndexDBDTO = {
+        cacheCount: this.indexDbProductCount,
+        cacheVersion: this.indexDbVersion,
+        cacheDbStorage: this.indexDbStorage
+    };
+
+    let keyCache = JSON.stringify(this.productIndexDBService._keyCacheProductIndexDB);
+    this.cacheApi.setItem(keyCache, JSON.stringify(objCached));
   }
 
   onCancel(result: TDSSafeAny) {

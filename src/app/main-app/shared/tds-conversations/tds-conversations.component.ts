@@ -126,7 +126,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  showModalListProcut(){
+  showModalListProduct(){
     const modal = this.modalService.create({
       title: 'Danh sách sản phẩm',
       content: ModalListProductComponent,
@@ -175,7 +175,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if(TDSHelperObject.hasValue(result)){
-        
+
       }
     });
   }
