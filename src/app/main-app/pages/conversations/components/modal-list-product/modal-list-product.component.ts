@@ -62,7 +62,8 @@ export class ModalListProductComponent implements OnInit, OnDestroy {
 
   loadData(innerText: string = ''): void {
     this.productDataFacade.getProduct(innerText, this.lstPriceLists).subscribe(res => {
-      this.lstOfData = res;
+      this.lstOfData.length = 0;
+      this.lstOfData = res || [];
     });
   }
 
