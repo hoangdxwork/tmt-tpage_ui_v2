@@ -132,6 +132,10 @@ export class ProductDataFacade extends BaseSevice {
               // this.loadDataTable();
           } else {
             data.Datas.forEach((x: DataPouchDBDTO) => {
+              let existIndex = dbStorage.findIndex(dbProduct => dbProduct.Id == x.Id);
+              if(existIndex > -1) {
+                dbStorage.splice(existIndex, 1);
+              }
               dbStorage.push(x);
             });
           }
