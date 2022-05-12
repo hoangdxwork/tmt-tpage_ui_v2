@@ -4,7 +4,7 @@ export interface From {
   picture?: any;
 }
 
-export interface Partner {
+export interface ActiveMatchingPartner {
   name: string;
   code: string;
   status: string;
@@ -75,7 +75,7 @@ export interface ActiveMatchingItem {
   count_unread_activities: number;
   last_message_received_time?: Date;
   last_saleonline_order?: any;
-  partner: Partner;
+  partner: ActiveMatchingPartner;
   tags: Tag[];
   last_activity: LastActivity;
   last_comment: LastComment;

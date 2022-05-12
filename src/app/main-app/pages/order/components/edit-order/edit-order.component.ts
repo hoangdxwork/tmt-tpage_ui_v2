@@ -232,7 +232,7 @@ export class EditOrderComponent implements OnInit {
       }
     });
 
-    modal.afterClose.subscribe(result => {
+    modal.componentInstance?.onLoadedProductSelect.subscribe(result => {
       if(TDSHelperObject.hasValue(result)) {
         let details = this.formEditOrder.controls['Details'];
 

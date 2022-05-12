@@ -19,6 +19,8 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges, OnDestroy 
   @Input() district!: DistrictDTO;
   @Input() ward!: WardDTO;
 
+  @Input() isExpand: boolean = false;
+
   @Output() onChangeAddress: EventEmitter<CheckAddressDTO> = new EventEmitter<CheckAddressDTO>();
 
   formAddress!: FormGroup;
@@ -28,6 +30,8 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges, OnDestroy 
   lstWard: WardDTO[] = [];
 
   index: number = 0;
+
+  currentExpand: boolean = false;
 
   lstResultCheck: ResultCheckAddressDTO[] = [];
   private destroy$ = new Subject();
@@ -93,9 +97,13 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges, OnDestroy 
     });
   }
 
+  onChangeExpand() {
+    this.currentExpand = !this.currentExpand;
+  }
+
   setAddress(ward: WardDTO, district: DistrictDTO, city: CityDTO){
-    let address =  (ward? `${ward.Name}, `: '') +  
-    (district != null? `${district.Name}, `: '' )+ 
+    let address =  (ward? `${ward.Name}, `: '') +
+    (district != null? `${district.Name}, `: '' )+
     (city? city.Name: '');
     this.formAddress.controls["street"].setValue(address);
   }

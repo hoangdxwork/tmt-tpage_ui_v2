@@ -27,6 +27,9 @@ import { TpageAvatarGroupFacebookComponent } from './tpage-avatar-group-facebook
 import { TpageUploadAvatarComponent } from './tpage-upload-avatar/tpage-upload-avatar.component';
 import { TpageUploadImagesComponent } from './tpage-upload-images/tpage-upload-images.component';
 import { UploadImageModule } from './upload-image/tpage-avatar-facebook/upload-image.module';
+import { TpageConfigProductComponent } from './tpage-config-product/tpage-config-product.component';
+import { ProductPriceListService } from '../services/product-price-list.service';
+import { StockWarehouseService } from '../services/stock-warehouse.service';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -44,13 +47,16 @@ const cmp =[
   TpageAvatarGroupFacebookComponent,
   TpageUploadAvatarComponent,
   TpageUploadImagesComponent,
+  TpageConfigProductComponent
 ]
 
 const SERVICES = [
   ProductIndexDBService,
   SuggestAddressService,
   SharedService,
-  ImageFacade
+  ImageFacade,
+  ProductPriceListService,
+  StockWarehouseService
 ]
 
 @NgModule({
