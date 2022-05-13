@@ -45,7 +45,7 @@
                     </span>
                 </button>
                 <tds-drawer [bodyStyle]="{'overflow':'hidden'}"
-                  [visible]="visibleDrawerFillter" [placement]="'left'" title="Lọc hội thoại" 
+                  [visible]="visibleDrawerFillter" [placement]="'left'" title="Lọc hội thoại"
                 (onClose)="close()" [footer]="footerTpl">
                 <ng-container *tdsDrawerContent>
                     <div class="flex flex-col gap-y-6 overflow-auto ">
@@ -163,7 +163,7 @@
           <!-- List danh sách chat -->
           <div class="overflow-hidden flex relative">
             <div *ngIf="lstMatchingItem" class="overflow-y-auto tds-custom-scroll flex flex-auto flex-col gap-1">
-              
+
               <div *ngFor="let item of lstMatchingItem; let i= index">
                   <div *ngIf="activeMatchingItem?.id && currentTeam" (click)="activeConversations(item)">
                       <current-conversation-item

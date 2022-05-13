@@ -69,6 +69,11 @@ export class ConversationEventFacade extends BaseSevice implements OnDestroy {
     return this.cvsFbState.getEvent;
   }
 
+
+  updateMarkSeenBadge(pageId: string, type: string, psid: string) {
+    this.cvsFbState.markSeenBadge(pageId, type, psid);
+  }
+
   updateSendMessage(value: any) {
     let data = Object.assign({}, value.data);
     if(data && data.facebook && data.facebook.psId && data.facebook.pageId) {

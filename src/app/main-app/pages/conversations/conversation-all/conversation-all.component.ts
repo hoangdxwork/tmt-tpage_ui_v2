@@ -108,17 +108,19 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   activeConversations(item: ActiveMatchingItem) {
     (this.activeMatchingItem as any) = null;
 
-  if (TDSHelperObject.hasValue(item)) {
-    if (this.isFastSend == true) {
-      this.conversationDataFacade.checkSendMessage(item.page_id, this.type, item.psid);
-    } else {
-      //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
-      this.psid = item.psid;
-      this.activeMatchingItem = item;
-      let uri = `/conversation/${this.type}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${item?.psid}`;
-      this.router.navigateByUrl(uri);
+    if (TDSHelperObject.hasValue(item)) {
+      if (this.isFastSend == true) {
+          this.conversationDataFacade.checkSendMessage(item.page_id, this.type, item.psid);
+      } else {
+          //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
+          this.psid = item.psid;
+          this.activeMatchingItem = item;
+
+          let uri = this.router.url.split("?")[0];
+          let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${item?.psid}`;
+          this.router.navigateByUrl(uriParams);
+      }
     }
-  }
   }
 
   ngAfterViewInit(): void {
@@ -126,13 +128,16 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onClickTeam(data: CRMTeamDTO): any {
     if (this.paramsUrl?.teamId) {
-      let uri = `/conversation/${this.type}?teamId=${data?.Id}&type=${this.type}`;
-      this.router.navigateByUrl(uri);
+      let uri = this.router.url.split("?")[0];
+      let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}`;
+      this.router.navigateByUrl(uriParams);
     }
     this.crmService.onUpdateTeam(data);
   }
 
-  onLoadMiniChat(event: any): void { }
+  onLoadMiniChat(event: any): void {
+
+  }
 
   fetchLiveConversations(team: any): void {
     this.fbGraphService.api(`me/conversations?fields=id,link,participants,senders&access_token=${team.Facebook_PageToken}`)
