@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { TDSSafeAny } from 'tmt-tang-ui';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, Output, SimpleChanges, EventEmitter, ViewChild, ElementRef, AfterViewInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActiveMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -10,6 +11,8 @@ import { TDSMessageService } from 'tmt-tang-ui';
 @Component({
     selector: 'current-conversation-item',
     templateUrl: './current-conversation-item.component.html',
+    styleUrls: ['./current-conversation-item.component.scss'],
+    encapsulation: ViewEncapsulation.None
 })
 
 export class CurrentConversationItemComponent  implements OnInit, OnChanges {
@@ -20,11 +23,15 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges {
   @Input() type: any;
   @Input() psid: any;
   @Input() activeMatchingItem!: ActiveMatchingItem;
-  @Input() isCheck!: boolean;
+  @Input() isOpenCollapCheck!: boolean;
+  @Input() checked!: boolean;
+
+  @Output() checkedChange = new EventEmitter<boolean>();
 
   eventData: any;
   isDraftMessage: boolean = false;
-  isConversationOver: boolean = false
+  isConversationOver: boolean = false;
+  isChoose!: TDSSafeAny;
 
   constructor(private message: TDSMessageService,
       private draftMessageService: DraftMessageService,
@@ -95,4 +102,16 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges {
     return null;
   }
 
+  changeEllipsis(ev: TDSSafeAny){
+    // ev.stopPropagation();
+  }
+
+  changeCheck(ev: TDSSafeAny){
+    if(ev)
+      this.checkedChange.emit(ev.checked)
+  }
+
+  clickCheckbox(ev: TDSSafeAny){
+    ev.stopPropagation()
+  }
 }
