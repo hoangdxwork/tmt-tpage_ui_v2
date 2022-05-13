@@ -29,6 +29,8 @@ import { Router } from '@angular/router';
 export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
 
   @ViewChild('MainChat') mainChat!:ElementRef;
+  @ViewChild('chatHeader') headerChat!:ElementRef;
+  @ViewChild('chatFooter') footerChat!:ElementRef;
   @Input() tdsHeader?: string | TemplateRef<void>;
   @Input() data!: ActiveMatchingItem;
   @Input() type!: string;
@@ -47,8 +49,6 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
   isSending: boolean = false;
   currentImage: any;
   mainChatHeight:number = 0;
-  headerHeight:number = 88;
-  replyHeight:number = 196;
 
   constructor(private modalService: TDSModalService,
     private crmTeamService: CRMTeamService,
@@ -71,8 +71,11 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
 
   ngAfterViewInit(): void {
     this.resizeObserver.observe(this.mainChat).subscribe(() => {
-        let parent = this.mainChat.nativeElement.closest('.main-conversation');
-        this.mainChatHeight = parent.clientHeight - this.headerHeight - this.replyHeight;
+        let parentHeight = this.mainChat.nativeElement.closest('.main-conversation').clientHeight;
+        let headerHeight = this.headerChat.nativeElement.clientHeight;
+        let footerHeight = this.footerChat.nativeElement.clientHeight;
+        //set height động cho #MainChat
+        this.mainChatHeight = parentHeight - headerHeight - footerHeight;
     });
   }
 
