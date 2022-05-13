@@ -1,6 +1,6 @@
 <div class="w-full h-full flex items-stretch bg-neutral-3-200 text-body-2 text-neutral-1-900">
   <!-- conversation list -->
-  <div class="w-[357px] h-full ">
+  <div class="w-1/5 h-full ">
       <div class="w-full flex flex-col gap-1 px-1 h-full">
           <div class="bg-white  flex flex-col gap-y-4 p-2.5 z-10">
             <div class="block items-center">
@@ -8,6 +8,25 @@
             </div>
             <!-- <div class="tdsi-reload-fill text-3xl text-neutral-1-200"></div> -->
             <div class="flex items-center gap-x-1">
+              <button tds-button-icon color="secondary" (click)="nextData()">
+                <span class="flex items-center">
+                  <i class="tdsi-add-fill"></i>
+                </span>
+              </button>
+              <tds-button-group>
+                <button tds-button color="secondary" tds-dropdown [tdsDropdownMenu]="menu1">
+                    <span class="flex items-center">
+                        A-Z <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                    </span>
+                </button>
+                <tds-dropdown-menu #menu1="tdsDropdownMenu">
+                    <div class="w-full h-[400px] overflow-hidden overflow-y-auto tds-custom-scroll" >
+                        <div *ngFor="let item of letters" tds-dropdown-item>
+                            <a> {{item}} </a>
+                        </div>
+                    </div>
+                </tds-dropdown-menu>
+            </tds-button-group>
               <tds-form-field class="w-full mr-1 bg-neutral-3-50">
                 <input aria-colspan="" class="placeholder-neutral-1-400"
                   placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput/>
@@ -117,7 +136,7 @@
                 </button>
               <button class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center"
                 (click)="setCheck()"
-                [ngClass]="isCheck?'bg-primary-3 text-primary-1':'bg-white text-neutral-1-500'">
+                [ngClass]="isOpenCollapCheck?'bg-primary-3 text-primary-1':'bg-white text-neutral-1-500'">
                   <span class="flex items-center ">
                       <i class="tdsi-success-line text-xl leading-5"></i>
                   </span>
@@ -126,7 +145,7 @@
             </div>
           </div>
           <!-- Xử lý click button checkbox -->
-          <div [ngClass]="isCheck?'translate-y-0 py-3 ':'-translate-y-full h-0 overflow-hidden'"  class="ease-in-out duration-300 w-full px-3.5  flex justify-between items-center bg-white">
+          <div [ngClass]="isOpenCollapCheck?'translate-y-0 py-3 ':'-translate-y-full h-0 overflow-hidden'"  class="ease-in-out duration-300 w-full px-3.5  flex justify-between items-center bg-white">
             <div class="flex gap-x-2">
               <button tds-button color="primary">
                 <span class="flex items-center">
@@ -139,7 +158,7 @@
                 </span>
               </button>
             </div>
-            <tds-checkbox [indeterminate]="indeterminate" [checked]="false"></tds-checkbox>
+            <tds-checkbox (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
           </div>
           <!-- List danh sách chat -->
           <div class="overflow-hidden flex relative">
@@ -151,7 +170,9 @@
                           [item]="item" [psid]="item.psid" [type]="type"
                           [activeMatchingItem]="activeMatchingItem"
                           [team]="currentTeam" [isFastSend]="isFastSend"
-                          [isCheck]="isCheck">
+                          [isOpenCollapCheck]="isOpenCollapCheck"
+                          [checked]="setOfCheckedId.has(item.id)"
+                          (checkedChange)="onItemChecked(item.id, $event)">
                       </current-conversation-item>
                   </div>
               </div>
@@ -160,7 +181,7 @@
       </div>
   </div>
   <!--Nội dung cuộc hội thoại-->
-  <div class="flex flex-auto flex-col main-conversation h-full overflow-hidden">
+  <div class="flex w-1/2 flex-col main-conversation h-full overflow-hidden">
       <div *ngIf="activeMatchingItem?.id && currentTeam">
           <tds-conversations
               [data]="activeMatchingItem"
@@ -175,7 +196,7 @@
   </div>
   <!--Xử lí thông tin khách hàng & Đơn hàng-->
   <!-- Dữ liệu load vào form partner trước từ funtion checkConversation(),sau đó lấy dữ liệu gán lại form order -->
-  <div class="w-[576px] h-full flex flex-col">
+  <div class="w-[30%] h-full flex flex-col">
     <tds-tabset class="bg-white border border-neutral-2-200 h-full" [clsTab]="'flex-1'"
       [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
       <!-- tab Khách hàng -->

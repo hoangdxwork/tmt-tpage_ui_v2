@@ -51,6 +51,8 @@ import { ConversationPostItemComponent } from './conversation-post/conversation-
 import { ItemPostCommentComponent } from './conversation-post/item-post-comment.component';
 import { FacebookCommentService } from '../../services/facebook-comment.service';
 import { SharedService } from '../../services/shared.service';
+import { PipeModule } from '../../shared/pipe/pipe.module';
+import { CRMTagService } from '../../services/crm-tag.service';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -80,6 +82,7 @@ const SERVICES = [
   FacebookPostService,
   FacebookCommentService,
   SharedService,
+  CRMTagService
 ]
 
 @NgModule({
@@ -136,6 +139,7 @@ const SERVICES = [
     TDSDrawerModule,
     TDSDatePickerModule,
     TDSImageModule,
+    PipeModule
   ],
   providers: [ ...SERVICES]
 })

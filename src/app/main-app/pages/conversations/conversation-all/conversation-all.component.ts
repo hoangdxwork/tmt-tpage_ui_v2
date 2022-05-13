@@ -1,3 +1,4 @@
+import { TDSSafeAny } from 'tmt-tang-ui';
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, pipe, Subject, Subscription } from 'rxjs';
@@ -31,9 +32,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   currentOrderCode!: string | undefined;
   visibleDrawerFillter: boolean = false;
   rangeDate = null;
-  isCheck: boolean = false;
+  checked: boolean = false;
+  isOpenCollapCheck: boolean = false;
   isSort: boolean = false;
   indeterminate: boolean = false;
+  setOfCheckedId = new Set<string>();
+
+  letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
@@ -64,6 +69,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           }
       }
     });
+  }
+
+  nextData(){
+
   }
 
   onChangeConversation(team: any) {
@@ -120,7 +129,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onClickTeam(data: CRMTeamDTO): any {
     if (this.paramsUrl?.teamId) {
       let uri = this.router.url.split("?")[0];
-      let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}`;
+      let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
       this.router.navigateByUrl(uriParams);
     }
     this.crmService.onUpdateTeam(data);
@@ -133,7 +142,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   fetchLiveConversations(team: any): void {
     this.fbGraphService.api(`me/conversations?fields=id,link,participants,senders&access_token=${team.Facebook_PageToken}`)
       .subscribe((res :any) => {
-        console.log(res);
       });
   }
 
@@ -150,17 +158,42 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onChange(result: Date): void {
-    console.log('onChange: ', result);
+    // console.log('onChange: ', result);
   }
 
   setCheck(){
-    this.isCheck = !this.isCheck;
+    this.isOpenCollapCheck = !this.isOpenCollapCheck;
   }
 
   setSort(){
     this.isSort = !this.isSort;
 
   }
+
+  updateCheckedSet(id: string, checked: boolean): void {
+    if (checked) {
+        this.setOfCheckedId.add(id);
+    } else {
+        this.setOfCheckedId.delete(id);
+    }
+  }
+
+  onItemChecked(id: string, checked: boolean): void {
+    this.updateCheckedSet(id, checked);
+    this.refreshCheckedStatus();
+  }
+
+  onAllChecked(value: TDSSafeAny): void {
+    this.lstMatchingItem.forEach(item => this.updateCheckedSet(item.id, value.checked));
+    this.refreshCheckedStatus();
+  }
+
+
+  refreshCheckedStatus(): void {
+    this.checked = this.lstMatchingItem.every(item => this.setOfCheckedId.has(item.id));
+    this.indeterminate = this.lstMatchingItem.some(item => this.setOfCheckedId.has(item.id)) && !this.checked;
+  }
+  
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

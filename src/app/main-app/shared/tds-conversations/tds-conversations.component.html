@@ -229,14 +229,14 @@
             </div>
             <!-- toolbar -->
             <div class="w-full flex justify-end items-center">
-                <div class="p-2">
+                <a class="p-2" type="button" (click)="sendIconLike()">
                     <div class="tdsi-like-line text-neutral-1-400 text-xl cursor-pointer"></div>
-                </div>
+                </a>
                 <div class="tdsi-emotion-line text-neutral-1-400 text-xl cursor-pointer p-2"
                     tds-popover popoverTrigger="click"
                     [popoverContent]="infoEmojiMart"
                     [popoverAutoClose]="true"
-                    [popoverBackdrop]="true" 
+                    [popoverBackdrop]="true"
                     popoverPlacement="top">
                     <ng-template #infoEmojiMart>
                         <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
@@ -249,7 +249,7 @@
                     <div class="tdsi-product-line text-neutral-1-400 text-xl cursor-pointer"></div>
                 </div>
                 <div class="p-2">
-                    <div class="tdsi-message-template-line text-neutral-1-400 text-xl cursor-pointer" 
+                    <div class="tdsi-message-template-line text-neutral-1-400 text-xl cursor-pointer"
                     tds-popover [(popoverVisible)]="isVisibleReply"
                     popoverTrigger="click"
                     [popoverContent]="contentTemplate"></div>
