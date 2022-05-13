@@ -8,8 +8,8 @@
         <div class="flex flex-col w-full items-end chat-main-block group">
           <div class="flex flex-row justify-end">
             <!-- Thao tác -->
-            <div *ngIf="!data.message?.attachments" class="w-24 h-full hidden group-hover:block">
-              <div class="select-order flex flex-row-reverse items-center justify-start w-full h-full pr-3">
+            <div *ngIf="!data.message?.attachments" class="chat-option hidden group-hover:block">
+              <div class="select-order flex flex-row-reverse items-center justify-start w-fit h-full pr-3">
                 <span tds-tooltip tooltipTitle="Chọn làm số điện thoại" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer"
                   (click)="selectOrder('phone')">
                   <i class="tdsi-call-fill text-xs text-white"></i>
@@ -25,7 +25,7 @@
               </div>
             </div>
             <!--Nội dung bình luận-->
-            <div class="chat-body p-2" tds-tooltip tooltipTitle="{{data.DateCreated | date:'dd'}}/{{data.DateCreated | date:'MM'}} {{data.DateCreated | date:'HH:mm'}}">
+            <div class="chat-body" tds-tooltip tooltipTitle="{{data.DateCreated | date:'dd'}}/{{data.DateCreated | date:'MM'}} {{data.DateCreated | date:'HH:mm'}}">
               <div class="chat-content {{data.error_message ? 'bg-error-100 text-error-400' : ''}}">
                 <!-- khung nội dung -->
                 <div class="flex flex-auto">
@@ -84,7 +84,7 @@
       <div class="flex flex-col w-full commnent-block">
         <div class="flex flex-row w-full chat-main-block group">
           <!--Nội dung bình luận-->
-          <div class="chat-body p-2" tds-tooltip tooltipTitle="{{data.DateCreated | date:'dd'}}/{{data.DateCreated | date:'MM'}} {{data.DateCreated | date:'HH:mm'}}">
+          <div class="chat-body" tds-tooltip tooltipTitle="{{data.DateCreated | date:'dd'}}/{{data.DateCreated | date:'MM'}} {{data.DateCreated | date:'HH:mm'}}">
             <div class="chat-content {{data.error_message ? 'bg-error-100 text-error-400' : ''}}">
               <!-- khung nội dung -->
               <div class="flex flex-auto">
@@ -128,8 +128,8 @@
             </div>
           </div>
           <!-- Thao tác -->
-          <div  *ngIf="!data.message?.attachments" class="w-1/5 h-full hidden group-hover:block">
-            <div class="select-order flex flex-row items-center w-full h-full ml-3">
+          <div  *ngIf="!data.message?.attachments" class="chat-option hidden group-hover:block">
+            <div class="select-order flex flex-row items-center w-fit h-full ml-3">
               <span tds-tooltip tooltipTitle="Chọn làm số điện thoại" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
                 (click)="selectOrder('phone')">
                 <i class="tdsi-call-fill text-xs text-white"></i>
@@ -222,22 +222,20 @@
                           </div>
                       </div>
                   </div>
-                  <div class="w-1/5 h-full">
-                    <div  *ngIf="!child.message?.attachments" class="w-full h-full hidden group-hover:block">
-                      <div class="select-order flex flex-row items-center w-full h-full ml-3">
-                        <span tds-tooltip tooltipTitle="Chọn làm số điện thoại" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
-                          (click)="selectOrder('phone')">
-                          <i class="tdsi-call-fill text-xs text-white"></i>
-                        </span>
-                        <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
-                          (click)="selectOrder('address')">
-                          <i class="tdsi-pin-fill text-xs text-white"></i>
-                        </span>
-                        <span tds-tooltip tooltipTitle="Chọn làm ghi chú" class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
-                          (click)="selectOrder('note')">
-                          <i class="tdsi-note-2-fill text-xs text-white"></i>
-                        </span>
-                      </div>
+                  <div  *ngIf="!child.message?.attachments" class="chat-option hidden group-hover:block">
+                    <div class="select-order flex flex-row items-center w-fit h-full ml-3">
+                      <span tds-tooltip tooltipTitle="Chọn làm số điện thoại" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+                        (click)="selectOrder('phone')">
+                        <i class="tdsi-call-fill text-xs text-white"></i>
+                      </span>
+                      <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+                        (click)="selectOrder('address')">
+                        <i class="tdsi-pin-fill text-xs text-white"></i>
+                      </span>
+                      <span tds-tooltip tooltipTitle="Chọn làm ghi chú" class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
+                        (click)="selectOrder('note')">
+                        <i class="tdsi-note-2-fill text-xs text-white"></i>
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -269,7 +267,7 @@
       <div class="flex flex-col w-full commnent-block">
         <div class="flex flex-row w-full chat-main-block group">
           <!--Nội dung bình luận-->
-          <div class="chat-body p-2" tds-tooltip tooltipTitle="{{data.DateCreated | date:'dd'}}/{{data.DateCreated | date:'MM'}} {{data.DateCreated | date:'HH:mm'}}">
+          <div class="chat-body" tds-tooltip tooltipTitle="{{data.DateCreated | date:'dd'}}/{{data.DateCreated | date:'MM'}} {{data.DateCreated | date:'HH:mm'}}">
             <!--Chat nd + hình ảnh-->
             <div class="chat-content">
               <div class="flex flex-auto">
@@ -297,8 +295,8 @@
             </div>
           </div>
           <!-- Thao tác -->
-          <div  *ngIf="!data.message?.attachments" class="w-24 h-full hidden group-hover:block">
-            <div class="select-order flex flex-row items-center w-full h-full pl-3">
+          <div  *ngIf="!data.message?.attachments" class="chat-option hidden group-hover:block">
+            <div class="select-order flex flex-row items-center w-fit h-full pl-3">
               <span tds-tooltip tooltipTitle="Chọn làm số điện thoại" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
                 (click)="selectOrder('phone')">
                 <i class="tdsi-call-fill text-xs text-white"></i>
@@ -314,7 +312,6 @@
             </div>
           </div>
         </div>
-<<<<<<< HEAD
         <!--Thích hiện ẩn + CreatedBy.Name-->
         <div class="chat-meta bg-transparent text-neutral-1-600 text-caption-2 font-regular mt-1.5">
           <div class="chat-acts flex flex-row items-center" style="position: relative;">
@@ -327,33 +324,14 @@
             <a class="link-act cursor-pointer" (click)="addLike(data.comment ? data.comment.can_like : null)">
               {{data.comment.user_likes ? 'Đã thích' : 'Thích'}}
             </a>
-=======
-      </div>
-      <!--Thích hiện ẩn + CreatedBy.Name-->
-      <div class="chat-meta bg-transparent text-neutral-1-600 text-caption-2 font-regular mt-1.5">
-        <div class="chat-acts flex flex-row items-center" style="position: relative;">
-          <a class="link-act cursor-pointer" (click)="clickReply(data.comment ? data.comment.can_remove : null)">
-            Phản hồi
-          </a>
-
-          <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
-
-          <a class="link-act cursor-pointer" (click)="addLike(data.comment ? data.comment.can_like : null)">
-            {{data.comment.user_likes ? 'Đã thích' : 'Thích'}}
-          </a>
->>>>>>> dev
 
             <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 
-<<<<<<< HEAD
+
             <a class="link-act cursor-pointer" (click)="hideComment(data.comment ? data.comment.can_hide: null)">
+
               {{data.comment.is_hidden ? 'Hiện' : 'Ẩn'}}
             </a>
-=======
-          <a class="link-act cursor-pointer" (click)="hideComment(data.comment ? data.comment.can_hide: null)">
-            {{data.comment.is_hidden ? 'Hiện' : 'Ẩn'}}
-          </a>
->>>>>>> dev
 
             <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 
@@ -420,33 +398,31 @@
               <div class="flex flex-col w-full">
                 <div class="flex flex-row w-full group">
                   <div class="chat-body" tds-tooltip tooltipTitle="{{child.created_time | date:'dd'}}/{{child.created_time | date:'MM'}} {{child.created_time | date:'HH:mm'}}">
-                      <div class="chat-content rounded msg pb-0 d-flex" style="gap: 10px">
-                          <div class="pre mb-0 pb-2 border-activety-comment" *ngIf="child.message_format">
+                      <div class="chat-content flex-auto">
+                          <div class="border-activety-comment" *ngIf="child.message_format">
                               <div class="name font-semibold pb-1">{{child.from.name}}</div>
                               <div class="content-message font-regular" [innerHTML]="child.message_format | safeHtml"></div>
                           </div>
-                          <div class="pre mb-0 pb-2 border-activety-comment" *ngIf="!child.message_format">
+                          <div class="border-activety-comment" *ngIf="!child.message_format">
                               <div class="name font-semibold pb-1">{{child.from.name}}</div>
                               <div class="content-message font-regular">{{child.message}}</div>
                           </div>
                       </div>
                   </div>
-                  <div class="w-1/5 h-full">
-                    <div  *ngIf="!child.message?.attachments" class="w-full h-full hidden group-hover:block">
-                      <div class="select-order flex flex-row items-center w-full h-full ml-3">
-                        <span tds-tooltip tooltipTitle="Chọn làm số điện thoại" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
-                          (click)="selectOrder('phone')">
-                          <i class="tdsi-call-fill text-xs text-white"></i>
-                        </span>
-                        <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
-                          (click)="selectOrder('address')">
-                          <i class="tdsi-pin-fill text-xs text-white"></i>
-                        </span>
-                        <span tds-tooltip tooltipTitle="Chọn làm ghi chú" class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
-                          (click)="selectOrder('note')">
-                          <i class="tdsi-note-2-fill text-xs text-white"></i>
-                        </span>
-                      </div>
+                  <div  *ngIf="!child.message?.attachments" class="chat-option  group-hover:block">
+                    <div class="select-order flex flex-row items-center w-fit h-full ml-3">
+                      <span tds-tooltip tooltipTitle="Chọn làm số điện thoại" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+                        (click)="selectOrder('phone')">
+                        <i class="tdsi-call-fill text-xs text-white"></i>
+                      </span>
+                      <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+                        (click)="selectOrder('address')">
+                        <i class="tdsi-pin-fill text-xs text-white"></i>
+                      </span>
+                      <span tds-tooltip tooltipTitle="Chọn làm ghi chú" class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
+                        (click)="selectOrder('note')">
+                        <i class="tdsi-note-2-fill text-xs text-white"></i>
+                      </span>
                     </div>
                   </div>
                 </div>
