@@ -50,6 +50,7 @@ import { ConversationPostFacade } from '../../services/facades/conversation-post
 import { ConversationPostItemComponent } from './conversation-post/conversation-post-item.component';
 import { ItemPostCommentComponent } from './conversation-post/item-post-comment.component';
 import { FacebookCommentService } from '../../services/facebook-comment.service';
+import { SharedService } from '../../services/shared.service';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -77,7 +78,8 @@ const SERVICES = [
   CarrierHandler,
   CRMMatchingService,
   FacebookPostService,
-  FacebookCommentService
+  FacebookCommentService,
+  SharedService,
 ]
 
 @NgModule({

@@ -140,4 +140,23 @@ export class ConversationFacebookState implements OnInit{
     }
   }
 
+  public markSeenBadge(pageId: string, type: string, psid: string) {
+    let exist = this.getByPsid(pageId, type, psid);
+
+    if(exist && type == "message") {
+      exist.count_unread_activities -= exist.count_unread_messages;
+      exist.count_unread_messages = 0;
+    }
+    else if(exist && type == "comment") {
+      exist.count_unread_activities -= exist.count_unread_comments;
+      exist.count_unread_comments = 0;
+    }
+    else if(exist) {
+      exist.count_unread_messages = 0;
+      exist.count_unread_comments = 0;
+      exist.count_unread_activities = 0;
+    }
+
+  }
+
 }
