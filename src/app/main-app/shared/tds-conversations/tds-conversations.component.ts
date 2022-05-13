@@ -24,6 +24,8 @@ import { ConversationEventFacade } from '../../services/facades/conversation-eve
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
 import { SignalRConnectionService } from '../../services/signalR/signalR-connection.service';
 import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
+import { DraftMessageService } from '../../services/conversation/draft-message.service';
+import { CRMTagService } from '../../services/crm-tag.service';
 
 @Component({
   selector: 'tds-conversations',
@@ -59,6 +61,7 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
   markSeenTimer: any;
   messages: any[] = [];
   messageModel: any = null;
+  tags: any[] = [];
 
   constructor(private modalService: TDSModalService,
     private crmTeamService: CRMTeamService,
@@ -68,7 +71,9 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
     private activityDataFacade: ActivityDataFacade,
     private conversationDataFacade: ConversationDataFacade,
     private sharedService: SharedService,
+    private draftMessageService: DraftMessageService,
     private crmMatchingService: CRMMatchingService,
+    private crmTagService: CRMTagService,
     private conversationEventFacade: ConversationEventFacade,
     private sgRConnectionService: SignalRConnectionService,
     private router: Router,
@@ -81,7 +86,6 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
         this.loadMessages(this.data);
     }
     this.loadUser();
-    this.initiateTimer();
   }
 
   ngAfterViewInit(): void {
@@ -100,6 +104,8 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
     this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
       .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => {this.isLoadMessage = false }));
+
+    this.initiateTimer();
 
     // this.activityDataFacade.refreshData(this.team.Facebook_PageId, data.psid, this.type)
     //   .pipe(takeUntil(this.destroy$)).pipe(finalize(() => {this.isLoadMessage = false }))
@@ -259,8 +265,79 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
   ngOnChanges(changes: SimpleChanges) {
     if(changes["data"] && !changes["data"].firstChange) {
         this.data = changes["data"].currentValue;
+        let object ={
+            psid: this.data.psid,
+            messages: this.messageModel,
+            images: this.uploadedImages
+        }
+        this.draftMessageService.onUpdateDraftMessage$.emit(object);
+        let draftMessage = this.draftMessageService.getMessageByASIds(this.data.psid);
+        this.messageModel = draftMessage?.message;
+
+        if ((draftMessage.images as any[]).length > 0) {
+            this.uploadedImages = draftMessage.images;
+            this.currentImage = draftMessage.images[draftMessage.images.length - 1];
+        } else {
+            delete this.currentImage;
+            this.uploadedImages = [];
+        }
+        // TODO: Refetch data
+        if(!this.data.name && this.data.psid && this.data.psid != "null") {
+          this.refetch(changes["data"].currentValue.psid);
+        }
+
+        if(this.data && this.data.keyTags) {
+          if(!TDSHelperArray.hasListValue(this.tags)) {
+            this.crmTagService.dataActive$.subscribe((res: any) => {
+                this.tags = res;
+                this.sortTagsByParent();
+            })
+          } else {
+              this.sortTagsByParent();
+          }
+        }
         this.loadMessages(this.data);
     }
+  }
+
+  sortTagsByParent() {
+    this.tags = this.tags || [];
+    let local = this.crmTagService.getTagLocalStorage() as any;
+
+    this.tags.sort((a, b) => {
+      if (!local[a.Id]) {
+        local[a.Id] = { "point": 0 };
+      }
+      if (!local[b.Id]) {
+        local[b.Id] = { "point": 0 };
+      }
+      if (this.data && this.data.keyTags) {
+        if ((this.data.keyTags as any)[a.Id] && !(this.data.keyTags as any)[b.Id]) {
+          return -1;
+        }
+      }
+      if ((local[a.Id].point > local[b.Id].point) && !(this.data.keyTags as any)[b.Id]) {
+        return -1;
+      }
+      return 0;
+    });
+  }
+
+  refetch(psid: string) {
+    this.crmMatchingService.refetch(psid, this.team.Facebook_PageId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
+        if (res?.conversation?.psid == this.data.id) {
+            if (res.conversation.name) {
+              this.data.name = res.conversation.name;
+            }
+            if (res.conversation.from) {
+              this.data.from = res.conversation.from;
+            }
+        }
+      }, error => {
+        this.message.error(`${error?.error?.message}` || 'Refetch đã xảy ra lỗi');
+      });
   }
 
   getExtrasChildren(data: any, item: any): any {

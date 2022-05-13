@@ -78,5 +78,10 @@ export class CRMTagService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
+  getTagLocalStorage() {
+    // var nearestTags = JSON.parse(localStorage.getItem("nearestTags") || "{}");
+    // return nearestTags;
+  }
+
 
 }
