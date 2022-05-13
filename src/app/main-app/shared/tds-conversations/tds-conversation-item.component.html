@@ -314,6 +314,7 @@
             </div>
           </div>
         </div>
+<<<<<<< HEAD
         <!--Thích hiện ẩn + CreatedBy.Name-->
         <div class="chat-meta bg-transparent text-neutral-1-600 text-caption-2 font-regular mt-1.5">
           <div class="chat-acts flex flex-row items-center" style="position: relative;">
@@ -326,12 +327,33 @@
             <a class="link-act cursor-pointer" (click)="addLike(data.comment ? data.comment.can_like : null)"> 
               {{data.comment.user_likes ? 'Đã thích' : 'Thích'}}
             </a>
+=======
+      </div>
+      <!--Thích hiện ẩn + CreatedBy.Name-->
+      <div class="chat-meta bg-transparent text-neutral-1-600 text-caption-2 font-regular mt-1.5">
+        <div class="chat-acts flex flex-row items-center" style="position: relative;">
+          <a class="link-act cursor-pointer" (click)="clickReply(data.comment ? data.comment.can_remove : null)">
+            Phản hồi
+          </a>
+
+          <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
+
+          <a class="link-act cursor-pointer" (click)="addLike(data.comment ? data.comment.can_like : null)">
+            {{data.comment.user_likes ? 'Đã thích' : 'Thích'}}
+          </a>
+>>>>>>> dev
 
             <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 
+<<<<<<< HEAD
             <a class="link-act cursor-pointer" (click)="hideComment(data.comment ? data.comment.can_hide: null)"> 
               {{data.comment.is_hidden ? 'Hiện' : 'Ẩn'}}
             </a>
+=======
+          <a class="link-act cursor-pointer" (click)="hideComment(data.comment ? data.comment.can_hide: null)">
+            {{data.comment.is_hidden ? 'Hiện' : 'Ẩn'}}
+          </a>
+>>>>>>> dev
 
             <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 

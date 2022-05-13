@@ -32,8 +32,14 @@ export class SharedService extends BaseSevice {
         appName: "T-Page",
         appVersion: "1.06.1.7"
     };
+    //TODO: xử lý userLogged\
+    this.loadUserLogged();
+  }
 
-    //TODO: xử lý userLogged
+  loadUserLogged() {
+    this.auth.getUserInit().subscribe(res => {
+      this.userLogged = res;
+    });
   }
 
   getConfigs(): Observable<InitSaleDTO> {
@@ -83,5 +89,33 @@ export class SharedService extends BaseSevice {
     }
 
     return this.apiService.getFileUpload(api, data);
+  }
+
+  updateMinusConversationAll(number: number) {
+    this.updateMinusBadgeItem('/conversation/all', number);
+  }
+
+  updateMinusConversationMessage(number: number) {
+    this.updateMinusBadgeItem('/conversation/inbox', number);
+  }
+
+  updateMinusConversationComment(number: number) {
+    this.updateMinusBadgeItem('/conversation/comment', number);
+  }
+
+  updateMinusConversationPost(number: number) {
+    this.updateMinusBadgeItem('/conversation/post', number);
+  }
+
+  updateMinusBadgeItem(url: string, number: number) {
+    // TODO: xử lý tiếp
+
+
+    // this.navItems.forEach(x => {
+    //     if (x.url == url) {
+    //         x.badge = x.badge || <INavBadge>{};
+    //         x.badge.text = (parseInt(x.badge.text) - number).toString();
+    //     }
+    // });
   }
 }
