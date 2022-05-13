@@ -3,7 +3,7 @@ import { TDSHelperString, TDSSafeAny } from "tmt-tang-ui";
 import { ReplaceHelper } from "../helper/replace.helper";
 
 @Pipe({
-  name: 'formatMessage'
+  name: 'formatIconLike'
 })
 export class FormatMessagePipe implements PipeTransform {
 

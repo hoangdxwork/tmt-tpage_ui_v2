@@ -275,6 +275,11 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
     this.messageSendingToServer();
   }
 
+  onEnter(event: any) {
+    this.messageSendingToServer();
+    event.preventDefault();
+  }
+
   messageSendingToServer(){
     let message = this.messageModel;
     if(TDSHelperString.hasValueString(message)) {
@@ -294,45 +299,31 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
     }
   }
 
-  onEnter(event: any) {
-    this.messageSendingToServer();
-    event.preventDefault();
+  sendIconLike(){
+    const message = "(y)";
+    let model = this.prepareModel(message);
+    model.attachment = {
+      data: []
+    }
+
+    this.crmMatchingService.addMessage(this.data.psid, model)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
+          this.messageResponse(res, model);
+      }, error => {
+        this.message.error("Like thất bại");
+        console.log(error);
+      });
   }
 
   sendMessage(message: string) {
     const model = this.prepareModel(message);
     this.crmMatchingService.addMessage(this.data.psid, model)
       .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => {  }))
       .subscribe((res: any) => {
-
-        if(TDSHelperArray.hasListValue(res)) {
-            res.map((x: any, i: number) => {
-                x["status"] = ActivityStatus.sending;
-                this.activityDataFacade.messageServer({...x});
-
-                if(TDSHelperArray.hasListValue(this.uploadedImages)){
-                    x["message"] = this.activityDataFacade.createDataAttachments(this.uploadedImages[i]);
-                }
-            });
-        }
-
-        let items = res.pop();
-        this.conversationDataFacade.messageServer(items);
-
-        if(TDSHelperArray.hasListValue(this.uploadedImages) && TDSHelperArray.hasListValue(model?.attachments?.data)){
-          items["message_formatted"] = items["message_formatted"] || `Đã gửi ${model.attachments.data.length} ảnh.`;
-        }
-
-        // TODO: Gửi tín hiệu phản hồi
-        this.onSendSucceed(res);
-
-        this.currentImage = null;
-        this.messageModel = null;
-        this.uploadedImages = [];
-
+          this.messageResponse(res, model);
       }, error => {
-        this.message.error("Trả lời bình luận thất bại.");
+        this.message.error("Trả lời bình luận thất bại");
         console.log(error);
     });
   }
@@ -401,6 +392,32 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
     });
   }
 
+  messageResponse(res: any, model: SendMessageModelDTO){
+    if(TDSHelperArray.hasListValue(res)) {
+        res.map((x: any, i: number) => {
+            x["status"] = ActivityStatus.sending;
+            this.activityDataFacade.messageServer({...x});
+
+            if(TDSHelperArray.hasListValue(this.uploadedImages)){
+                x["message"] = this.activityDataFacade.createDataAttachments(this.uploadedImages[i]);
+            }
+        });
+    }
+
+    let items = res.pop();
+    this.conversationDataFacade.messageServer(items);
+
+    if(TDSHelperArray.hasListValue(this.uploadedImages) && TDSHelperArray.hasListValue(model?.attachments?.data)){
+      items["message_formatted"] = items["message_formatted"] || `Đã gửi ${model?.attachments?.data.length} ảnh.`;
+    }
+
+    // TODO: Gửi tín hiệu phản hồi
+    this.onSendSucceed(res);
+    this.currentImage = null;
+    this.messageModel = null;
+    this.uploadedImages = [];
+  }
+
   prepareModel(message: string): any {
     const model = {} as SendMessageModelDTO;
     model.from = {
@@ -410,9 +427,10 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
     model.to_id = this.data.psid;
     model.to_name = this.data.name;
     model.message = message;
-    model.created_time = new Date();
+    model.created_time = (new Date()).toISOString();
 
-    if(TDSHelperArray.hasListValue(this.uploadedImages) && this.type != 'comment'){
+    let exist = TDSHelperArray.hasListValue(this.uploadedImages) && this.type != 'comment'
+    if(exist) {
       this.uploadedImages.map((x) => {
         (model.attachments?.data as any).push({
             image_data: {

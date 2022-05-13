@@ -8,7 +8,7 @@ export interface SendMessageModelDTO {
   post_id?: string;
   parent_id?: string;
   comment_id?: string;
-  created_time: Date;
+  created_time: string;
 }
 
 export interface FromMessage {

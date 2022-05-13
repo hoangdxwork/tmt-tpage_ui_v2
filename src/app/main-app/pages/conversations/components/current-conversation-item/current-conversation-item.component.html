@@ -39,7 +39,7 @@
                   </svg>
             </span>
             </div>
-            
+
         </div>
         <div class="w-full flex flex-col gap-1">
             <div class="flex justify-between items-center gap-x-2" *ngIf="getLastActivity()">
@@ -63,7 +63,7 @@
                 </div>
             </div>
             <div class="text-body-2 font-regular font-sans text-neutral-1-900" >
-                <p tds-typography ellipsis expandable [ellipsisRows]="2" [content]="getLastActivity()?.message"
+                <p tds-typography ellipsis expandable [ellipsisRows]="2" [content]="getLastActivity()?.message | formatIconLike"
                   [contentCollapse]="'Ẩn'">
                 </p>
             </div>
