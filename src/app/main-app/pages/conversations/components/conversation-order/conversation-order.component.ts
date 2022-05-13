@@ -40,7 +40,7 @@ import { CheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 
 @Component({
     selector: 'conversation-order',
-    templateUrl: './conversation-order.component.html',
+    templateUrl: './conversation-order.component.html'
 })
 
 export class ConversationOrderComponent  implements OnInit, OnChanges {

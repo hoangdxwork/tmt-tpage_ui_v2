@@ -2,9 +2,9 @@
   <form [formGroup]="orderForm">
     <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-y-auto tds-custom-scroll">
       <div class="pt-1">
-        <tds-collapse [expandIconPosition]="'right'" class="bg-neutral-3-50">
-          <tds-collapse-panel [header]="headerTTKhachHang" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
-            <ng-template #headerTTKhachHang>
+        <tds-collapse [expandIconPosition]="'right'" class="bg-neutral-3-50 collapse-content-bg-white">
+          <tds-collapse-panel [header]="hearerInfoPartner" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
+            <ng-template #hearerInfoPartner>
               <div class="flex items-center">
                 <tds-avatar class="bg-primary-1 text-white" icon="tdsi-user-fill"></tds-avatar>
                 <div class="ml-2 text-title-1 font-semibold text-neutral-1-900 font-sans">Thông tin khách hàng</div>
@@ -41,37 +41,13 @@
               </div>
 
               <div class="flex items-center gap-2">
-
-                <tpage-check-address class="w-full"
+                <tpage-conversation-address class="w-full"
                   [streetText]="orderForm.value['Street']"
-                  [city]="orderForm.value['City']"
-                  [district]="orderForm.value['District']"
-                  [ward]="orderForm.value['Ward']"
-                  [isExpand]="true"
+                  [cityCode]="orderForm.value['City']?.Code"
+                  [districtCode]="orderForm.value['District']?.Code"
+                  [wardCode]="orderForm.value['Ward']?.Code"
                   (onChangeAddress)="onChangeAddress($event)">
-                </tpage-check-address>
-<!--
-                <tds-form-field class="w-full">
-                  <input tdsInput formControlName="Street" class="placeholder-neutral-1-400 bg-neutral-3-50" placeholder="Nhập địa chỉ" />
-                  <span tdsSuffix>
-                    <tds-button-group>
-                      <div tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" class="p-1 bg-neutral-3-100 rounded">
-                        <span class="flex items-center text-caption-2">
-                          Mở rộng <i class="tdsi-arrow-down-fill text-lg leading-none ml-1"></i>
-                        </span>
-                      </div>
-                      <tds-dropdown-menu #menu="tdsDropdownMenu">
-                        <div class="w-full">
-                        </div>
-                      </tds-dropdown-menu>
-                    </tds-button-group>
-                  </span>
-                </tds-form-field>
-                <button tds-button-icon color="primary">
-                  <span class="flex items-center">
-                    <i class="tdsi-location-fill"></i>
-                  </span>
-                </button> -->
+                </tpage-conversation-address>
               </div>
 
               <tds-form-field>
@@ -90,7 +66,7 @@
       </div>
 
       <div class="pt-1">
-        <tds-collapse [expandIconPosition]="'right'" class="bg-neutral-3-50">
+        <tds-collapse [expandIconPosition]="'right'" class="bg-neutral-3-50 collapse-content-bg-white">
           <tds-collapse-panel [header]="headerProduct" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
             <ng-template #headerProduct>
               <div class="flex items-center gap-2">
@@ -255,9 +231,9 @@
       <div class="pt-1">
         <tds-spin [spinning]="isLoadingCarrier">
           <div class="pt-1" *ngIf="isEnableCreateOrder">
-              <tds-collapse [expandIconPosition]="'right'" class="bg-neutral-3-50">
-                <tds-collapse-panel [header]="headerGiaoHang" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
-                  <ng-template #headerGiaoHang>
+              <tds-collapse [expandIconPosition]="'right'" class="bg-neutral-3-50 collapse-content-bg-white">
+                <tds-collapse-panel [header]="headerCarrier" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
+                  <ng-template #headerCarrier>
                     <div class="flex items-center gap-2">
                       <tds-avatar class="bg-primary-1 text-white" icon="tdsi-truck-fill"></tds-avatar>
                       <div class="text-title-1 font-semibold text-neutral-1-900 font-sans">Giao hàng</div>

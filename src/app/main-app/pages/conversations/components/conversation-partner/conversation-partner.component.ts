@@ -15,13 +15,17 @@ import { ConversationService } from 'src/app/main-app/services/conversation/conv
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { ConversationAllComponent } from '../../conversation-all/conversation-all.component';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { MDBFacebookMappingNoteDTO, PartnerDTO, PartnerStatusDTO, ResRevenueCustomerDTO } from 'src/app/main-app/dto/partner/partner.dto';
+import { MDBFacebookMappingNoteDTO, PartnerDTO, PartnerStatusDTO, PartnerTempDTO, ResRevenueCustomerDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ModalBlockPhoneComponent } from '../modal-block-phone/modal-block-phone.component';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { ConversationOrderBillByPartnerResultDTO } from 'src/app/main-app/dto/conversation/conversation.dto';
 import { ViewConversation_FastSaleOrdersDTO } from 'src/app/main-app/dto/fastsaleorder/view_fastsaleorder.dto';
+import { CheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
+import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
+import { ODataModelTeamDTO } from 'src/app/main-app/dto/odata/odata.dto';
+import { ModalListBlockComponent } from '../modal-list-block/modal-list-block.component';
 
 @Component({
     selector: 'conversation-partner',
@@ -47,6 +51,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   lstBill: ConversationOrderBillByPartnerResultDTO[] = [];
 
   tabBillCurrent: number = 0;
+  isEditPartner: boolean = false;
+  formData!: CheckConversationData;
+
+  isLoading: boolean = false;
 
   constructor(private message: TDSMessageService,
     private draftMessageService: DraftMessageService,
@@ -54,15 +62,24 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private conversationService: ConversationService,
     private fastSaleOrderService: FastSaleOrderService,
     private partnerService: PartnerService,
-    private crmService: CRMTeamService,
+    private crmTeamService: CRMTeamService,
     private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,
     private commonService: CommonService,
     private viewContainerRef: ViewContainerRef,
     private modalService: TDSModalService,
     private crmMatchingService: CRMMatchingService,
+    private saleOnline_OrderService: SaleOnline_OrderService,
     public router: Router) {
-      this.createForm();
+  }
+
+  ngOnInit(): void  {
+    this.createForm();
+
+    if(this.data?.id) {
+        this.loadData(this.data);
+    }
+    this.loadPartnerStatus();
   }
 
   createForm(){
@@ -79,16 +96,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         FacebookId: [null],
         City: [null],
         District: [null],
-        Ward: [null],
-        Address: [null]
+        Ward: [null]
     });
-  }
-
-  ngOnInit(): void  {
-    if(this.data?.id) {
-        this.loadData(this.data);
-    }
-    this.loadPartnerStatus();
   }
 
   loadData(data: ActiveMatchingItem) {
@@ -114,13 +123,14 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           res.Data.Facebook_ASUserId = res.Data.Facebook_ASUserId || this.data.psid;
           res.Data.Phone = res.Data.Phone || this.data.phone;
           res.Data.Street = res.Data.Street || this.data.address;
+          this.formData = res.Data;
           this.updateForm(res.Data);
 
           this.partnerService.onLoadOrderFromTabPartner.emit(res.Data);
         }
       }, error => {
         this.message.error('Check conversation đã xảy ra lỗi!');
-    });
+      });
   }
 
   loadPartnerStatus() {
@@ -151,8 +161,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   updateForm(data: CheckConversationData){
     if(data?.Id) {
-      this._form.controls['FacebookASIds'].setValue(data.Facebook_ASUserId);
       this._form.patchValue(data);
+      this._form.controls['FacebookASIds'].setValue(data.Facebook_ASUserId);
     }
   }
 
@@ -261,6 +271,92 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       }
     });
 
+  }
+
+  showModalListBlock() {
+    let phone = this.data?.phone;
+    let currentTeam = this.crmTeamService.getCurrentTeam();
+
+    const modal = this.modalService.create({
+      title: 'Lịch sử chặn',
+      content: ModalListBlockComponent,
+      viewContainerRef: this.viewContainerRef,
+      size: 'lg',
+      componentParams: {
+        phone: phone,
+        psid: this.data?.psid,
+        accessToken: currentTeam?.Facebook_PageToken,
+        facebookName: this.data?.name
+      }
+    });
+
+    modal.afterClose.subscribe(result => {
+      if (TDSHelperObject.hasValue(result)) {
+        // Cập nhật form PhoneReport.value;
+      }
+    });
+
+  }
+
+  onEditPartner() {
+    this.isEditPartner = !this.isEditPartner;
+  }
+
+  onChangeAddress(event: CheckAddressDTO) {
+    let formControls = this._form.controls;
+
+    formControls["Street"].setValue(event.Street);
+
+    formControls["City"].setValue( event.City?.Code ? {
+      code: event.City?.Code,
+      name: event.City?.Name
+    } : null);
+
+    formControls["District"].setValue( event.District?.Code ? {
+      code: event.District?.Code,
+      name: event.District?.Name,
+    } : null);
+
+    formControls["Ward"].setValue( event.Ward?.Code ? {
+      code: event.Ward?.Code,
+      name: event.Ward?.Name,
+    } : null);
+
+  }
+
+  onCancelEdit() {
+    this.updateForm(this.formData);
+    this.isEditPartner = false;
+  }
+
+  onSaveEdit() {
+    this.isLoading = true;
+    let model = this.prepareModelPartner();
+
+    this.saleOnline_OrderService.createUpdatePartner(model)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe(res => {
+        this.message.success(Message.Partner.UpdateStatus);
+        this.isEditPartner = false;
+        this.loadData(this.data);
+      }, error => {
+        this.message.error(`${error?.error?.message}` || JSON.stringify(error));
+      });
+  }
+
+  prepareModelPartner() {
+    let data = this._form.value as PartnerTempDTO;
+
+    data.Phone = data.Phone === "" ? undefined : data.Phone;
+    data.Street = data.Street === "" ? undefined : data.Street;
+
+    let currentTeam = this.crmTeamService.getCurrentTeam();
+
+    let model = {} as ODataModelTeamDTO<PartnerTempDTO>;
+    model.model = data;
+    model.teamId = currentTeam?.Id;
+
+    return model;
   }
 
   ngOnChanges(changes: SimpleChanges) {

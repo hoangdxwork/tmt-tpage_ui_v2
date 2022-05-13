@@ -53,6 +53,7 @@ import { FacebookCommentService } from '../../services/facebook-comment.service'
 import { SharedService } from '../../services/shared.service';
 import { PipeModule } from '../../shared/pipe/pipe.module';
 import { CRMTagService } from '../../services/crm-tag.service';
+import { ModalListBlockComponent } from './components/modal-list-block/modal-list-block.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -102,7 +103,8 @@ const SERVICES = [
     YiDateTimeV2Pipe,
     ModalBlockPhoneComponent,
     ConversationPostItemComponent,
-    ItemPostCommentComponent
+    ItemPostCommentComponent,
+    ModalListBlockComponent
   ],
   imports: [
     CommonModule,

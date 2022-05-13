@@ -1,18 +1,16 @@
 
 <form [formGroup]="_form" novalidate *ngIf="data?.id">
   <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-y-auto tds-custom-scroll">
-    <div class="bg-white px-6 pt-6">
+    <div class="bg-white px-6 py-4">
       <div class="flex gap-6">
-        <tpage-avatar-facebook
-            [shape]="'circle'" [size]="'lg'"
-            [psid]="data.psid" [token]="team?.Facebook_PageToken">
+        <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="data.psid" [token]="team?.Facebook_PageToken">
         </tpage-avatar-facebook>
         <div class="flex flex-col gap-2">
-          <div class="flex gap-4 items-center">
+          <div class="flex gap-4 items-center" style="min-height: 34px;">
             <div class="text-heading-4 font-sans font-semibold text-neutral-1-900">
                 {{_form.controls['Name'].value}}
             </div>
-            <button tds-button color="secondary">
+            <button tds-button color="secondary" (click)="onEditPartner()" *ngIf="!isEditPartner">
               <span class="flex items-center ">
                 <i class="tdsi-edit-fill text-xl leading-none text-neutral-1-400"></i>
               </span>
@@ -39,17 +37,16 @@
           </div>
         </div>
       </div>
-      <div class="pt-6 flex flex-col gap-3">
+      <div class="pt-6 flex flex-col gap-3" *ngIf="!isEditPartner">
         <div class="flex gap-2 items-center">
           <div
             class="tdsi-call-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]">
           </div>
-          <!-- Xem lịch sử chặn SĐT, tố cáo, bỏ tố cáo -->
           <div class="flex items-center gap-1">
               <div class="text-neutral-1-900 text-body-2 font-regular font-sans">
                 {{_form.controls['Phone'].value || 'Chưa có SĐT'}}
               </div>
-              <div class="tdsi-success-fill text-xl text-primary-1"></div>
+              <div class="tdsi-success-fill text-xl text-primary-1" (click)="showModalListBlock()"></div>
           </div>
         </div>
         <div class="flex gap-2 items-center">
@@ -69,7 +66,7 @@
           </div>
         </div>
       </div>
-      <div class="pt-4 flex gap-2 pb-4">
+      <div class="pt-4 flex gap-2 pb-4" *ngIf="!isEditPartner">
         <tds-button-group>
           <button tds-dropdown color="secondary" trigger="click" [tdsDropdownMenu]="menuRevenue"
             class="rounded-full border border-neutral-2-100 border-solid bg-white py-1.5 px-4">
@@ -94,7 +91,7 @@
       </div>
     </div>
     <!-- Xử lý ghi chú -->
-    <div class="bg-white p-4">
+    <div class="bg-white pt-0 p-4" *ngIf="!isEditPartner">
       <div class="flex items-center gap-2 pb-3">
         <tds-form-field class="w-full">
             <input class="placeholder-neutral-1-400 bg-neutral-3-50" placeholder="Nhập ghi chú" tdsInput (keyup.enter)="addNote()"
@@ -123,7 +120,7 @@
         </div>
       </div>
     </div>
-    <div class="pt-1">
+    <div class="pt-1" *ngIf="!isEditPartner">
       <tds-collapse [expandIconPosition]="'right'" class="bg-white">
         <tds-collapse-panel [header]="headerSalesDetails" [active]="true" [disabled]=false
           [expandedIcon]="'tdsi-arrow-up-line'">
@@ -169,7 +166,7 @@
         </tds-collapse-panel>
       </tds-collapse>
     </div>
-    <div class="pt-1">
+    <div class="pt-1" *ngIf="!isEditPartner">
       <tds-collapse [expandIconPosition]="'right'" class="bg-white" [bordered]="false">
         <tds-collapse-panel [header]="headerListSales" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
           <ng-template #headerListSales>
@@ -244,6 +241,55 @@
           </div>
         </tds-collapse-panel>
       </tds-collapse>
+    </div>
+    <!-- Edit khách hàng -->
+    <div class="pt-1" *ngIf="isEditPartner">
+      <div class="flex flex-col gap-4 bg-white p-4">
+        <tds-form-field>
+          <tds-label>
+            Tên khách hàng
+          </tds-label>
+          <input tdsInput placeholder="Nhập tên khách hàng" [required]='true' formControlName="Name" />
+        </tds-form-field>
+
+        <div class="flex gap-5">
+          <tds-form-field class="w-1/2">
+              <tds-label>
+                Số điện thoại
+              </tds-label>
+            <input tdsInput placeholder="Nhập số điện thoại" formControlName="Phone" />
+          </tds-form-field>
+
+          <tds-form-field class="w-1/2">
+            <tds-label>
+              Email
+            </tds-label>
+            <input tdsInput autocomplete="off"  placeholder="Nhập email" formControlName="Email" />
+          </tds-form-field>
+        </div>
+
+        <tds-form-field>
+          <tds-label>Ghi chú</tds-label>
+          <input tdsInput placeholder="Nhập ghi chú" formControlName="Comment" />
+        </tds-form-field>
+
+        <div class="flex flex-col gap-y-2">
+          <tds-label>Địa chỉ</tds-label>
+          <tpage-conversation-address class="w-full"
+            [streetText]="_form.value['Street']"
+            [cityCode]="_form.value['City']?.code"
+            [districtCode]="_form.value['District']?.code"
+            [wardCode]="_form.value['Ward']?.code"
+            (onChangeAddress)="onChangeAddress($event)">
+          </tpage-conversation-address>
+        </div>
+
+        <div class="mt-4">
+          <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSaveEdit()" [disabled]="!_form?.valid">Lưu</button>
+          <button tds-button class="ml-3 w-[100px]" color="secondary" (click)="onCancelEdit()">Hủy bỏ</button>
+        </div>
+
+      </div>
     </div>
   </div>
 </form>

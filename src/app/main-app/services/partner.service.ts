@@ -8,7 +8,7 @@ import { PartnerBirthdayDTO } from '../dto/partner/partner-birthday.dto';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
 import { PartnerDetailDTO } from '../dto/partner/partner-detail.dto';
 import { ODataRegisterPartnerDTO } from '../dto/partner/partner-register-payment.dto';
-import { ResRevenueCustomerDTO } from '../dto/partner/partner.dto';
+import { PartnerTempDTO, ResRevenueCustomerDTO } from '../dto/partner/partner.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable()

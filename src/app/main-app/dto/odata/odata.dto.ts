@@ -25,3 +25,8 @@ export interface ODataResponsesDTO<T> {
 export interface ODataModelDTO<T> {
   model: T;
 }
+
+export interface ODataModelTeamDTO<T> {
+  model: T;
+  teamId?: number;
+}

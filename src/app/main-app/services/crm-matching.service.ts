@@ -89,6 +89,24 @@ export class CRMMatchingService extends BaseSevice {
     return this.apiService.getData<MDBPhoneReportDTO>(api, data);
   }
 
+  getHistoryReportPhone(phone: string): Observable<MDBPhoneReportDTO> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/gethistoryreportphone?phone=${phone}`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<MDBPhoneReportDTO>(api, null);
+  }
+
+  unReportPhone(phone: string): Observable<undefined> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/unreportphone?phone=${phone}`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<undefined>(api, null);
+  }
+
   addMessage(psid: string, data: TDSSafeAny) {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/crmactivity/${psid}/addmessage`,
