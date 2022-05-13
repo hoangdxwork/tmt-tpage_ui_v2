@@ -162,7 +162,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
         this.tdsMessage.success('Thao tác thành công');
         this.activityDataFacade.refreshAttachment(res);
     }, error => {
-      this.tdsMessage.error('Thao tác thất bại');
+      this.tdsMessage.error('Không thành công');
     })
   }
 
@@ -178,7 +178,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
           this.tdsMessage.success("Thao tác thành công.");
       }, error => {
-      this.tdsMessage.success('Thao tác thất bại');
+      this.tdsMessage.error('Không thành công');
     })
   }
 

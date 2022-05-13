@@ -15,12 +15,13 @@ import { TPageHelperService } from '../../services/helper.service';
 
 export class TpageBaseComponent  {
 
-  type!: string;
   private _params!: TDSSafeAny;
   private _currentTeam!: CRMTeamDTO | null;
   private _listFaceBook: Array<CRMTeamDTO> = [];
   public isFirstLoad: boolean = true;
   public isChangeTeam: boolean = false;
+
+  type!: string;
   subscription!: Observable<any>;
   destroy$ = new Subject();
 
@@ -37,8 +38,8 @@ export class TpageBaseComponent  {
         return that.crmService.onChangeListFaceBook()
           .pipe(tap((listFb: TDSSafeAny) => {  that._listFaceBook = listFb?.Items || [] }),
           map((listTeam) => {
-            const team = TPageHelperService.findTeamById(listTeam?.Items || [], that.paramsUrl?.teamId, false);
-            return [team, params];
+              const team = TPageHelperService.findTeamById(listTeam?.Items || [], that.paramsUrl?.teamId, false);
+              return [team, params];
           })
         )}));
   }
