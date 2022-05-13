@@ -178,8 +178,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       }
 
       this.conversationPostFacade.onPostChanged$.emit(item);
-      let uri = `/conversation/${this.type}?teamId=${this.currentTeam?.Id}&type=${this.type}&post_id=${item?.fbid}`;
-      this.router.navigateByUrl(uri);
+
+      let uri = this.router.url.split("?")[0];
+      let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&post_id=${item?.fbid}`;
+      this.router.navigateByUrl(uriParams);
     }
   }
 
@@ -202,8 +204,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   onClickTeam(data: CRMTeamDTO): any {
     if (this.paramsUrl?.teamId) {
-      let uri = `/conversation/${this.type}?teamId=${data?.Id}&type=${this.type}`;
-      this.router.navigateByUrl(uri);
+      let uri = this.router.url.split("?")[0];
+      let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
+      this.router.navigateByUrl(uriParams);
     }
     this.crmService.onUpdateTeam(data);
   }

@@ -17,7 +17,8 @@ const cmp =[
   FormatMessagePipe,
   SafeHtmlPipe,
   YiDiffDateTimePipe,
-  ShowAvatarPipe
+  ShowAvatarPipe,
+  FormatMessagePipe
 ]
 
 @NgModule({

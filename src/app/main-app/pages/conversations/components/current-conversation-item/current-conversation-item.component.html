@@ -1,6 +1,6 @@
 <div *ngIf="item" class="text-body-2 text-neutral-1-900">
   <div class="w-full relative overflow-hidden">
-    <div [ngClass]="activeMatchingItem && (activeMatchingItem?.id == item.id)?'absolute h-full left-0 border-2 border-blue-500':''"></div>
+    <div [ngClass]="activeMatchingItem && (activeMatchingItem?.id == item.id)?'absolute h-full w-1 left-0 bg-blue-500':''"></div>
     <div class="p-3.5 bg-white flex flex-col gap-3 w-full hover:bg-neutral-3-50">
       <div class="flex gap-3">
         <div>
@@ -10,8 +10,8 @@
                 [psid]="item.psid" [token]="team?.Facebook_PageToken">
                 </tpage-avatar-facebook>
                 <!-- icon comment -->
-                <span *ngIf="getLastActivity()?.type == 2" class="absolute" style="top: 25px;left: 25px;">
-                    <svg width="26" height="27" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <span *ngIf="getLastActivity()?.type == 2" class="absolute" style="top: 31px;left: 31px;">
+                    <svg width="20" height="21" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1.6665 13.0152C1.6665 16.3866 3.04389 19.3288 5.30367 21.373L5.36031 23.2061C5.36031 23.2061 5.36031 23.2061 5.36031 23.2061C5.4008 24.5175 6.75463 25.3774 7.96053 24.845C7.96056 24.8449 7.96059 24.8449 7.96062 24.8449C7.96097 24.8448 7.96132 24.8446 7.96168 24.8444L10.0314 23.9321C11.076 24.2135 12.1824 24.3646 13.3332 24.3646C19.857 24.3646 24.9998 19.55 24.9998 13.0179C24.9998 6.4862 19.8573 1.66858 13.3332 1.66858C6.80934 1.66858 1.6665 6.4832 1.6665 13.0152Z" fill="url(#paint0_linear_11437_27281)" stroke="white" stroke-width="2"/>
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M16.4272 6.33233V8.49995L15.1407 8.5033C14.1322 8.5033 13.9379 8.98238 13.9379 9.68259V11.2338H16.3401L16.0285 13.6593H13.9379V19.9712H11.4323V13.6593H9.33466V11.2338H11.4323V9.44472C11.4323 7.36756 12.6983 6.23517 14.5544 6.23517C15.4392 6.23517 16.2027 6.30217 16.4272 6.33233Z" fill="white"/>
                         <defs>
@@ -23,8 +23,8 @@
                     </svg>
                 </span>
                 <!-- icon message -->
-                <span *ngIf="getLastActivity()?.type == 3"  class="absolute" style="top: 25px;left: 25px;">
-                    <svg width="26" height="27" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <span *ngIf="getLastActivity()?.type == 3"  class="absolute" style="top: 31px;left: 31px;">
+                    <svg width="20" height="21" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1.6665 13.0134C1.6665 16.3847 3.04389 19.327 5.30367 21.3711L5.36031 23.2042C5.36031 23.2042 5.36031 23.2042 5.36031 23.2042C5.4008 24.5156 6.75463 25.3755 7.96053 24.8431C7.96056 24.8431 7.96059 24.843 7.96062 24.843C7.96097 24.8429 7.96132 24.8427 7.96168 24.8426L10.0314 23.9302C11.076 24.2116 12.1824 24.3627 13.3332 24.3627C19.857 24.3627 24.9998 19.5481 24.9998 13.016C24.9998 6.48431 19.8573 1.66669 13.3332 1.66669C6.80934 1.66669 1.6665 6.48131 1.6665 13.0134Z" fill="url(#paint0_radial_11437_25390)" stroke="white" stroke-width="2" />
                         <path d="M6.92785 16.04L10.0612 11.0694C10.5598 10.2774 11.6265 10.0827 12.3758 10.6427L14.8692 12.512C15.0985 12.6827 15.4132 12.6827 15.6398 12.5094L19.0051 9.9547C19.4531 9.61336 20.0398 10.152 19.7411 10.6294L16.6052 15.5974C16.1065 16.3894 15.0398 16.584 14.2905 16.024L11.7972 14.1547C11.5678 13.984 11.2532 13.984 11.0265 14.1574L7.66118 16.712C7.21318 17.0534 6.62651 16.5174 6.92785 16.04Z" fill="white" />
                         <defs>
@@ -39,32 +39,32 @@
                   </svg>
             </span>
             </div>
-            
+
         </div>
         <div class="w-full flex flex-col gap-1">
-            <div class="flex justify-between items-center gap-x-2" *ngIf="getLastActivity()">
-                <div class="text-body-1 text-neutral-1-600 font-semibold truncate">{{item.name || item.partner_name}}</div>
+            <div class="flex w-full justify-between items-center gap-x-1.5" *ngIf="getLastActivity()">
+                <div class="w-1/2 text-body-1 text-neutral-1-600 font-semibold truncate">{{item.name || item.partner_name}}</div>
                 <div class="flex items-center gap-2 truncate" >
                     <span *ngIf="type == 'all' && item.count_unread_activities > 0">
-                        <tds-badge [standalone]="true" [count]="item.count_unread_activities" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
+                        <tds-badge class="flex items-center" [standalone]="true" [count]="item.count_unread_activities" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
                     </span>
                     <span *ngIf="type == 'message' && item.count_unread_messages > 0">
-                        <tds-badge [standalone]="true" [count]="item.count_unread_messages" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
+                        <tds-badge class="flex items-center" [standalone]="true" [count]="item.count_unread_messages" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
                     </span>
                     <span *ngIf="type == 'comment' && item.count_unread_comments > 0">
-                        <tds-badge [standalone]="true" [count]="item.count_unread_comments" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
+                        <tds-badge class="flex items-center" [standalone]="true" [count]="item.count_unread_comments" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
                     </span>
-                    <div *ngIf="!isCheck" class="text-neutral-1-400 text-body-2 font-regular font-sans">
+                    <div *ngIf="!isOpenCollapCheck" class="text-neutral-1-400 text-body-2 font-regular font-sans">
                         {{item.LastActivityTimeConverted | yiDateTimeV2}}
                     </div>
-                    <div *ngIf="isCheck">
-                        <tds-checkbox [checked]="false"></tds-checkbox>
+                    <div *ngIf="isOpenCollapCheck">
+                        <tds-checkbox [checked]="checked" class="checkboxMessage" (click)="clickCheckbox($event)" (change)="changeCheck($event)"></tds-checkbox>
                     </div>
                 </div>
             </div>
             <div class="text-body-2 font-regular font-sans text-neutral-1-900" >
-                <p tds-typography ellipsis expandable [ellipsisRows]="2" [content]="getLastActivity()?.message"
-                  [contentCollapse]="'Ẩn'">
+                <p tds-typography ellipsis expandable [ellipsisRows]="2" [content]="getLastActivity()?.message | formatIconLike"
+                  [contentCollapse]="'Ẩn'" (click)="changeEllipsis($event)">
                 </p>
             </div>
         </div>
@@ -74,8 +74,11 @@
         <div class="flex gap-2 items-center">
             <div class="flex-auto flex flex-nowrap gap-1 items-center overflow-hidden">
                 <div *ngIf="item.tags" class="flex gap-x-1">
-                    <div *ngFor="let tag of item.tags | slice:0:2" [ngStyle]="{'background-color': [tag.color_class] }" class="py-0.5 px-2 text-caption-2 font-regular text-neutral-1-900 rounded truncate flex-none">
-                        <tds-badge status="success" [text]="tag.name"></tds-badge>
+                    <div *ngFor="let tag of item.tags | slice:0:2" class="relative flex items-center text-caption-2 font-regular text-neutral-1-900 rounded truncate flex-none">
+                        <div [ngStyle]="{'background-color': [tag.color_class], 'color': [tag.color_class] }" class=" rounded-md py-0.5 px-3 font-semibold opacity-30">
+                            {{tag.name}}
+                        </div>
+                        <span class="absolute inset-0 py-0.5 px-1.5 flex items-center justify-center"><span [ngStyle]="{'background-color': [tag.color_class] }" class="-top-px inline-block align-middle rounded-full w-2 h-2 mr-1"></span>{{tag.name}}</span>
                     </div>
                 </div>
             </div>
@@ -88,8 +91,11 @@
                 </div>
                 <ng-template #popoverContentTag>
                     <div class="flex gap-1 flex-wrap items-center max-w-[336px]">
-                        <div *ngFor="let tag of item.tags | slice:2:item.tags.length" [ngStyle]="{'background-color': [tag.color_class] }" class="py-0.5 px-2 text-caption-2 font-regular text-neutral-1-900 rounded truncate">
-                            <tds-badge status="success" [text]="tag.name"></tds-badge>
+                        <div *ngFor="let tag of item.tags |  slice:2:item.tags.length" class="relative flex items-center text-caption-2 font-regular text-neutral-1-900 rounded truncate flex-none">
+                            <div [ngStyle]="{'background-color': [tag.color_class], 'color': [tag.color_class] }" class=" rounded-md py-0.5 px-3 font-semibold opacity-30">
+                                {{tag.name}}
+                            </div>
+                            <span class="absolute inset-0 py-0.5 px-1.5 flex items-center justify-center"><span [ngStyle]="{'background-color': [tag.color_class] }" class="-top-px inline-block align-middle rounded-full w-2 h-2 mr-1"></span>{{tag.name}}</span>
                         </div>
                     </div>
                 </ng-template>
