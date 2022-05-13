@@ -1,5 +1,5 @@
 <div *ngIf="data?.id" class="chat-block text-body-2 w-full h-full relative">
-    <div class="chat-header flex items-center p-2">
+    <div #chatHeader class="chat-header flex items-center p-2">
         <div class="flex flex-row justify-between items-center bg-white w-full rounded-xl p-3">
             <div class="flex flex-row items-center">
                 <div class="avatar mr-2">
@@ -58,20 +58,27 @@
         </div>
     </div>
     <!-- main -->
-    <div class="flex-auto w-full">
+    <div #MainChat class="flex-auto w-full">
         <div class="w-full relative">
-            <div #MainChat class="inset-0 overflow-y-auto tds-custom-scroll w-full" [ngStyle]="{'height.px': mainChatHeight}">
+            <div class="inset-0 overflow-y-auto tds-custom-scroll w-full" [ngStyle]="{'height.px': mainChatHeight}">
                 <div *ngIf="(dataSource$ | async )?.items?.length == 0">
                     <p>Chưa có nội dung nào</p>
                 </div>
                 <ng-container *ngFor="let item of (dataSource$ | async )?.items | showAvatar; let i = index ">
                     <div *ngIf="item.is_show_break && i!= 0" class="mt-2 mb-2 block" style="text-align: center">
-                          <tds-alert type="warning" [message]="item.DateCreated"></tds-alert>
+                          <!-- <tds-alert type="warning" [message]="item.DateCreated"></tds-alert> -->
+                          <div class="w-full flex flex-row items-center">
+                            <hr class="mt-0 mb-0">
+                            <div>
+                                {{item.DateCreated| date:'dd/MM/yyyy'}}
+                            </div>
+                            <hr class="mt-0 mb-0">
+                          </div>
                     </div>
                     <!-- Thông tin bài post -->
                     <div *ngIf="item.type == 2 && item.object_id && getExtrasPosts((dataSource$ | async), item)" class="pl-2">
                         <div class="post-block mb-3 bg-white flex flex-col">
-                            <div class="post-body flex flex-row items-center justify-between p-4">
+                            <div class="post-body flex flex-row justify-between p-4">
                                 <div class="post-content flex flex-col">
                                     <div class="post-type flex flex-row items-center mb-3">
                                         <tds-avatar
@@ -154,7 +161,7 @@
         </div>
     </div>
     <!-- footer  -->
-    <div class="w-full flex flex-col">
+    <div #chatFooter class="chat-footer w-full flex flex-col pr-2 pb-3">
         <div class="w-full pt-2 pb-3">
             <tds-avatar tds-popover
                 [popoverContent]="popoverContentOptionSendMessages"
@@ -204,7 +211,7 @@
             </ng-template>
         </div>
         <!-- editer+toolbars -->
-        <div class="flex flex-col w-full px-4 pt-4 pb-3 bg-white rounded-xl ">
+        <div class="flex flex-col w-full pl-2 pt-2 pr-4 bg-white rounded-xl">
             <div class="w-full flex flex-row">
 
                 <textarea tdsInput placeholder="Nhập nội dung tin nhắn, nhấn [Enter] để gửi"
@@ -218,28 +225,28 @@
                 </button>
             </div>
             <!-- toolbar -->
-            <div class="w-full flex justify-end items-center gap-1.5 pt-9">
+            <div class="w-full flex justify-end items-center">
                 <div class="p-2">
-                    <div class="tdsi-like-line text-neutral-1-400 text-2xl cursor-pointer"></div>
+                    <div class="tdsi-like-line text-neutral-1-400 text-xl cursor-pointer"></div>
                 </div>
-                <div class="p-2"
+                <div class="tdsi-emotion-line text-neutral-1-400 text-xl cursor-pointer p-2"
                     tds-popover popoverTrigger="click"
                     [popoverContent]="infoEmojiMart"
                     [popoverAutoClose]="true"
-                    [popoverBackdrop]="true" popoverPlacement="top">
-                    <div class="tdsi-emotion-line text-neutral-1-400 text-2xl cursor-pointer"></div>
+                    [popoverBackdrop]="true" 
+                    popoverPlacement="top">
                     <ng-template #infoEmojiMart>
                         <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
                     </ng-template>
                 </div>
                 <div class="p-2">
-                    <div class="tdsi-image-line text-neutral-1-400 text-2xl cursor-pointer" (click)="showImageStore()"></div>
+                    <div class="tdsi-image-line text-neutral-1-400 text-xl cursor-pointer"></div>
                 </div>
                 <div class="p-2" (click)="showModalListProduct()">
-                    <div class="tdsi-product-line text-neutral-1-400 text-2xl cursor-pointer"></div>
+                    <div class="tdsi-product-line text-neutral-1-400 text-xl cursor-pointer"></div>
                 </div>
                 <div class="p-2">
-                    <div class="tdsi-message-template-line text-neutral-1-400 text-2xl cursor-pointer"
+                    <div class="tdsi-message-template-line text-neutral-1-400 text-xl cursor-pointer" 
                     tds-popover [(popoverVisible)]="isVisibleReply"
                     popoverTrigger="click"
                     [popoverContent]="contentTemplate"></div>
@@ -277,10 +284,10 @@
                     </ng-template>
                 </div>
                 <div class="p-2">
-                    <div class="tdsi-paper-fill text-neutral-1-400 text-2xl cursor-pointer" (click)="showModalListBill()"></div>
+                    <div class="tdsi-paper-fill text-neutral-1-400 text-xl cursor-pointer" (click)="showModalListBill()"></div>
                 </div>
                 <div class="p-2">
-                    <div class="tdsi-images-fill text-neutral-1-400 text-2xl cursor-pointer"></div>
+                    <div class="tdsi-images-fill text-neutral-1-400 text-xl cursor-pointer" (click)="showImageStore()"></div>
                 </div>
             </div>
         </div>

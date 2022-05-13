@@ -100,7 +100,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     this.conversationOrderFacade.onConversationOrder$.emit(data);
   }
 
-  getTextOfContentMessage() {
+  getTextOfContentMessage() {//TODO: thêm xử lý với tin nhắn phản hồi
     if (this.contentMessage && this.contentMessage.nativeElement && this.contentMessage.nativeElement.outerText) {
       return this.contentMessage.nativeElement.outerText;
     }
@@ -108,6 +108,8 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     return null;
   }
 
+  loadEmojiMart(event: any) {
+  }
 
   clickReply(event: any) {
     this.isReply = !this.isReply;
