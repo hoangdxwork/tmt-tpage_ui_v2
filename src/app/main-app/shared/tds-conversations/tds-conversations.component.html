@@ -60,20 +60,23 @@
     <!-- main -->
     <div #MainChat class="flex-auto w-full">
         <div class="w-full relative">
-            <div class="inset-0 overflow-y-auto tds-custom-scroll w-full" [ngStyle]="{'height.px': mainChatHeight}">
+            <div class="inset-0 overflow-y-auto tds-custom-scroll w-full" [ngStyle]="{'height.px': 629}">
                 <div *ngIf="(dataSource$ | async )?.items?.length == 0">
                     <p>Chưa có nội dung nào</p>
                 </div>
                 <ng-container *ngFor="let item of (dataSource$ | async )?.items | showAvatar; let i = index ">
                     <div *ngIf="item.is_show_break && i!= 0" class="mt-2 mb-2 block" style="text-align: center">
                           <!-- <tds-alert type="warning" [message]="item.DateCreated"></tds-alert> -->
-                          <div class="w-full flex flex-row items-center">
+                          <!-- <div class="w-full flex flex-row items-center">
                             <hr class="mt-0 mb-0">
                             <div>
                                 {{item.DateCreated| date:'dd/MM/yyyy'}}
                             </div>
                             <hr class="mt-0 mb-0">
-                          </div>
+                          </div> -->
+                            <hr class="mt-0 mb-0">
+                                <span [innerHTML]="item.DateCreated"></span>
+                            <hr class="mt-0 mb-0">
                     </div>
                     <!-- Thông tin bài post -->
                     <div *ngIf="item.type == 2 && item.object_id && getExtrasPosts((dataSource$ | async), item)" class="pl-2">
@@ -216,9 +219,9 @@
 
                 <textarea tdsInput placeholder="Nhập nội dung tin nhắn, nhấn [Enter] để gửi"
                   [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
-                  (keydown.enter)="onEnter($event)" class="h-16"></textarea>
+                  (keydown.enter)="onEnter($event)" class="h-16 resize-none"></textarea>
 
-                <button tds-button type="button" color="primary" class="!rounded-full ml-2" [size]="'lg'"(click)="onClickSender()">
+                <button tds-button type="button" color="primary" class="!rounded-full ml-2 mt-2" [size]="'lg'"(click)="onClickSender()">
                     <span class="flex items-center px-6">
                         <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
                     </span>

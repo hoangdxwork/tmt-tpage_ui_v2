@@ -34,9 +34,9 @@ import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
 
 export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
 
-  @ViewChild('MainChat') mainChat!:ElementRef;
-  @ViewChild('chatHeader') headerChat!:ElementRef;
-  @ViewChild('chatFooter') footerChat!:ElementRef;
+  // @ViewChild('MainChat') mainChat!:ElementRef;
+  // @ViewChild('chatHeader') headerChat!:ElementRef;
+  // @ViewChild('chatFooter') footerChat!:ElementRef;
   @Input() tdsHeader?: string | TemplateRef<void>;
   @Input() data!: ActiveMatchingItem;
   @Input() type!: string;
@@ -52,9 +52,7 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
   isVisibleReply: boolean = false;
   uploadedImages: any[] = [];
   currentImage: any;
-  mainChatHeight:number = 0;
-  headerHeight:number = 88;
-  replyHeight:number = 196;
+  // mainChatHeight:number = 0;
   commentForReply: any;
   markSeenTimer: any;
   messages: any[] = [];
@@ -85,13 +83,14 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
   }
 
   ngAfterViewInit(): void {
-    this.resizeObserver.observe(this.mainChat).subscribe(() => {
-        let parentHeight = this.mainChat.nativeElement.closest('.main-conversation').clientHeight;
-        let headerHeight = this.headerChat.nativeElement.clientHeight;
-        let footerHeight = this.footerChat.nativeElement.clientHeight;
-        //set height động cho #MainChat
-        this.mainChatHeight = parentHeight - headerHeight - footerHeight;
-    });
+    // this.resizeObserver.observe(this.mainChat).subscribe(() => {
+    //     let parentHeight = this.mainChat.nativeElement.closest('.main-conversation').clientHeight;
+    //     let headerHeight = this.headerChat.nativeElement.clientHeight;
+    //     let footerHeight = this.footerChat.nativeElement.clientHeight;
+    //     //set height động cho #MainChat
+    //     this.mainChatHeight = parentHeight - headerHeight - footerHeight;
+    //     console.log(this.mainChatHeight)
+    // });
   }
 
   //TODO: data.id = data.psid
