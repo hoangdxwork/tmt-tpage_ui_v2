@@ -30,6 +30,7 @@ import { UploadImageModule } from './upload-image/tpage-avatar-facebook/upload-i
 import { TpageConfigProductComponent } from './tpage-config-product/tpage-config-product.component';
 import { ProductPriceListService } from '../services/product-price-list.service';
 import { StockWarehouseService } from '../services/stock-warehouse.service';
+import { TpageConversationAddressComponent } from './tpage-conversation-address/tpage-conversation-address.component';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -47,7 +48,8 @@ const cmp =[
   TpageAvatarGroupFacebookComponent,
   TpageUploadAvatarComponent,
   TpageUploadImagesComponent,
-  TpageConfigProductComponent
+  TpageConfigProductComponent,
+  TpageConversationAddressComponent,
 ]
 
 const SERVICES = [

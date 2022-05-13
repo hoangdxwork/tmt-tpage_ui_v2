@@ -65,7 +65,8 @@ export const Message = {
     RemoveNoteSuccess: 'Xóa ghi chú thành công.',
     ReasonEmpty: 'Hãy nhập lí do.',
     BlockSuccess: 'Chặn thành công.',
-    PhoneEmpty: 'Chưa có số điện thoại.'
+    PhoneEmpty: 'Chưa có số điện thoại.',
+    UnReportSuccess: 'Bor chặn thành công.'
   },
   ConnectionChannel: {
     NotFoundUserPage: 'Không tìm thấy kênh kết nối nào',

@@ -1,0 +1,77 @@
+<tds-spin [spinning]="isLoading">
+
+  <div class="flex flex-col gap-y-3">
+    <div class="flex justify-between items-center">
+      <div class="flex item-center gap-x-5">
+        <tpage-avatar-facebook [shape]="'circle'" [size]="'xl'" [psid]="psid" [token]="accessToken">
+        </tpage-avatar-facebook>
+
+        <div class="flex gap-4 items-center" style="min-height: 34px;">
+          <div class="text-heading-4 font-sans font-semibold text-neutral-1-900 flex-col">
+              <p>{{ facebookName }}</p>
+              <tds-tag status='error' type="outline" size="sm" *ngIf="isReport">
+                <span class="flex items-center text-xs">
+                    <i class="tdsi-unblock-fill mr-1"></i> Đang chặn
+                </span>
+              </tds-tag>
+              <tds-tag status='error' type="outline" size="sm" *ngIf="!isReport">
+                <span class="flex items-center text-xs">
+                    <i class="tdsi-unblock-fill mr-1"></i> Không chặn
+                </span>
+              </tds-tag>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <button class="border border-neutral-2-100 border-solid rounded-full btn-custom" (click)="onUnReportPhone()" *ngIf="isReport">
+          <span class="flex items-center font-semibold font-sans text-accent-3 text-sm">
+            <i class="tdsi-unblock-fill text-lg mr-2 text-accent-3"></i> Bỏ chặn
+          </span>
+        </button>
+        <button class="border border-neutral-2-100 border-solid rounded-full btn-custom" (click)="onReportPhone()" *ngIf="!isReport">
+          <span class="flex items-center font-semibold font-sans text-accent-3 text-sm">
+            <i class="tdsi-unblock-fill text-lg mr-2 text-accent-3"></i> Chặn
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <div class="w-full">
+      <tds-table #rowSelectionTable [listData]="data?.reasons || []">
+          <thead>
+              <tr class="bg-neutral-3-50" >
+                  <th class="text-body-2">Ngày chặn</th>
+                  <th class="text-body-2">Lí do chặn</th>
+                  <th class="text-body-2">Chặn bởi</th>
+                  <th class="text-body-2">Thao tác</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr *ngFor="let reason of data?.reasons; let index = index">
+                  <td class="text-body-2">{{ reason.created_time | date:"dd-MM-yyyy HH:mm"}}</td>
+                  <td class="text-body-2">{{ reason.reason }}</td>
+                  <td class="text-body-2">{{ reason.company }}</td>
+                  <td class="text-body-2">
+                    <button tds-button-icon color="secondary" size="sm">
+                      <span class="flex items-center">
+                        <i class="tdsi-edit-fill"></i>
+                      </span>
+                    </button>
+                    <button tds-button-icon color="secondary" size="sm">
+                      <span class="flex items-center">
+                        <i class="tdsi-trash-fill"></i>
+                      </span>
+                    </button>
+                  </td>
+              </tr>
+          </tbody>
+      </tds-table>
+    </div>
+  </div>
+
+  <div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2 w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
+  </div>
+
+</tds-spin>

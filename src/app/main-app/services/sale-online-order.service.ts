@@ -2,8 +2,9 @@ import { EventEmitter, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tmt-tang-ui";
-import { ODataModelDTO } from "../dto/odata/odata.dto";
+import { ODataModelDTO, ODataModelTeamDTO } from "../dto/odata/odata.dto";
 import { PagedList2 } from "../dto/pagedlist2.dto";
+import { PartnerTempDTO } from "../dto/partner/partner.dto";
 import { SaleOnline_OrderDTO } from "../dto/saleonlineorder/sale-online-order.dto";
 import { BaseSevice } from "./base.service";
 
@@ -120,6 +121,16 @@ export class SaleOnline_OrderService extends BaseSevice {
     }
 
     return this.apiService.getData<SaleOnline_OrderDTO>(api, data);
+  }
+
+
+  createUpdatePartner(data: ODataModelTeamDTO<PartnerTempDTO>): Observable<PartnerTempDTO> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.CreateUpdatePartner`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<PartnerTempDTO>(api, data);
   }
 
 }

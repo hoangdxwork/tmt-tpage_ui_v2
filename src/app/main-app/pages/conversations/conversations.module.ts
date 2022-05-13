@@ -50,6 +50,7 @@ import { ConversationPostFacade } from '../../services/facades/conversation-post
 import { ConversationPostItemComponent } from './conversation-post/conversation-post-item.component';
 import { ItemPostCommentComponent } from './conversation-post/item-post-comment.component';
 import { FacebookCommentService } from '../../services/facebook-comment.service';
+import { ModalListBlockComponent } from './components/modal-list-block/modal-list-block.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -97,7 +98,8 @@ const SERVICES = [
     YiDateTimeV2Pipe,
     ModalBlockPhoneComponent,
     ConversationPostItemComponent,
-    ItemPostCommentComponent
+    ItemPostCommentComponent,
+    ModalListBlockComponent
   ],
   imports: [
     CommonModule,

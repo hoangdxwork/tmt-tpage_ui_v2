@@ -1,23 +1,23 @@
-import { map, takeUntil } from 'rxjs/operators';
-import { TDSHelperString, TDSSafeAny, TDSMessageService, TDSHelperArray, TDSHelperObject } from 'tmt-tang-ui';
-import { Component, Input, OnInit, EventEmitter, Output, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { CheckAddressDTO, CityDTO, DataSuggestionDTO, DistrictDTO, ResultCheckAddressDTO, WardDTO } from '../../dto/address/address.dto';
-import { PartnerCityDTO, PartnerDistrictDTO, PartnerWardDTO } from '../../dto/partner/partner.dto';
+import { Subject, Observable } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
+import { TDSHelperArray, TDSHelperString, TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
+import { CheckAddressDTO, CityDTO, DistrictDTO, ResultCheckAddressDTO, WardDTO } from '../../dto/address/address.dto';
 import { AddressService } from '../../services/address.service';
-import { Subject } from 'rxjs';
 
 @Component({
-  selector: 'tpage-check-address',
-  templateUrl: './tpage-check-address.component.html',
-  styleUrls: ['./tpage-check-address.component.scss']
+  selector: 'tpage-conversation-address',
+  templateUrl: './tpage-conversation-address.component.html',
+  styleUrls: ['./tpage-conversation-address.component.scss']
 })
-export class TpageCheckAddressComponent implements OnInit, OnChanges, OnDestroy {
+export class TpageConversationAddressComponent implements OnInit {
 
   @Input() streetText: string = "";
-  @Input() city!: CityDTO;
-  @Input() district!: DistrictDTO;
-  @Input() ward!: WardDTO;
+
+  @Input() cityCode!: string;
+  @Input() districtCode!: string;
+  @Input() wardCode!: string;
 
   @Output() onChangeAddress: EventEmitter<CheckAddressDTO> = new EventEmitter<CheckAddressDTO>();
 
@@ -30,25 +30,27 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges, OnDestroy 
   index: number = 0;
 
   currentExpand: boolean = false;
+  isSuggest: boolean = false;
 
   lstResultCheck: ResultCheckAddressDTO[] = [];
   private destroy$ = new Subject();
 
-  constructor(private fb: FormBuilder,
+  constructor(
+    private fb: FormBuilder,
     private addressService: AddressService,
-    private message: TDSMessageService,) { }
+    private message: TDSMessageService
+  ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.createForm();
     this.initForm();
 
-    this.district && this.loadDistrict(this.city?.Code);
-    this.ward && this.loadWard(this.district?.Code);
+    this.loadCity();
+    this.loadDistrict(this.cityCode);
+    this.loadWard(this.districtCode);
   }
 
   ngOnInit(): void {
-    // this.createForm();
-    this.loadCity();
   }
 
   createForm() {
@@ -64,35 +66,58 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges, OnDestroy 
     if(TDSHelperString.hasValueString(this.streetText)) {
       this.formAddress.controls["street"].setValue(this.streetText);
     }
-    if(this.city?.Code) {
-      this.formAddress.controls["city"].setValue(this.city);
+    if(this.cityCode) {
+      this.formAddress.controls["city"].setValue({Code: this.cityCode});
     }
-    if(this.district?.Code) {
-      this.formAddress.controls["district"].setValue(this.district);
+    if(this.districtCode) {
+      this.formAddress.controls["district"].setValue({Code: this.districtCode});
     }
-    if(this.ward?.Code) {
-      this.formAddress.controls["ward"].setValue(this.ward);
+    if(this.wardCode) {
+      this.formAddress.controls["ward"].setValue({Code: this.wardCode});
     }
   }
 
   loadCity() {
-    this.addressService.getCities().pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-      this.lstCity = res;
-    });
+    if(TDSHelperArray.hasListValue(this.lstCity)) {
+      this.setFormCity();
+    }
+    else {
+      this.addressService.getCities().pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+        this.lstCity = res;
+        this.setFormCity();
+      });
+    }
   }
 
   loadDistrict(cityCode: string | undefined) {
     if(!cityCode) return;
     this.addressService.getDistricts(cityCode).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
       this.lstDistrict = res;
+      this.setFormDistrict();
     });
   }
 
-  loadWard(districtCode: string | undefined) {
+  loadWard(districtCode: string | undefined){
     if(!districtCode) return;
     this.addressService.getWards(districtCode).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
       this.lstWard = res;
+      this.setFormWard();
     });
+  }
+
+  setFormCity() {
+    let findCity = this.lstCity.find(x => x.Code == this.cityCode);
+    this.formAddress.controls.city.setValue(findCity);
+  }
+
+  setFormDistrict() {
+    let findDistrict = this.lstDistrict.find(x => x.Code == this.districtCode);
+    this.formAddress.controls.district.setValue(findDistrict);
+  }
+
+  setFormWard() {
+    let findWard = this.lstWard.find(x => x.Code == this.wardCode);
+    this.formAddress.controls.ward.setValue(findWard);
   }
 
   onChangeExpand() {
@@ -109,24 +134,28 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges, OnDestroy 
   onSelectCity(event: CityDTO) {
     this.formAddress.controls["district"].setValue(null);
     this.formAddress.controls["ward"].setValue(null);
+
     this.setAddress(this.formAddress.controls["ward"].value,this.formAddress.controls["district"].value, this.formAddress.controls["city"].value);
     if(event){
       this.loadDistrict(event.Code);
     }else{
       this.lstDistrict = [];
     }
+
     this.lstWard = [];
     this.prepareAddress();
   }
 
   onSelectDistrict(event: DistrictDTO) {
     this.formAddress.controls["ward"].setValue(null);
+
     this.setAddress(this.formAddress.controls["ward"].value,this.formAddress.controls["district"].value, this.formAddress.controls["city"].value);
     if(event){
       this.loadWard(event.Code);
     }else{
       this.lstWard = [];
     }
+
     this.prepareAddress();
   }
 
@@ -147,6 +176,7 @@ export class TpageCheckAddressComponent implements OnInit, OnChanges, OnDestroy 
         this.index = 0;
         res.success && (this.lstResultCheck = res.data);
         res.success && this.setValueSelect(res.data[0], 0);
+        this.isSuggest = true;
       }
       else{
         this.message.error('Không tìm thấy kết quả phù hợp!');
