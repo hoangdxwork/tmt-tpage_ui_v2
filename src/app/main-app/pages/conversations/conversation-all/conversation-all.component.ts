@@ -129,7 +129,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onClickTeam(data: CRMTeamDTO): any {
     if (this.paramsUrl?.teamId) {
       let uri = this.router.url.split("?")[0];
-      let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}`;
+      let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
       this.router.navigateByUrl(uriParams);
     }
     this.crmService.onUpdateTeam(data);
