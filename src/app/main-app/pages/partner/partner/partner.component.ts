@@ -138,7 +138,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     const key = this.partnerService._keyCacheGrid;
     this.cacheApi.getItem(key).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
       if (res && res.value) {
-        var jsColumns = JSON.parse(res.value) as any;
+        let jsColumns = JSON.parse(res.value) as any;
         this.hiddenColumns = jsColumns.value.columnConfig;
       } else {
         this.hiddenColumns = this.columns;
@@ -225,7 +225,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   checkStatusText(text: string) {
-    var exits = this.partnerStatusReport.filter(x => x.StatusText.toLowerCase() == text.toLowerCase())[0] as any;
+    let exits = this.partnerStatusReport.filter(x => x.StatusText.toLowerCase() == text.toLowerCase())[0] as any;
     if (exits) {
       return exits.StatusStyle;
     }
@@ -263,7 +263,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     let model = { PartnerId: id, Tags: tags };
     this.partnerService.assignTagPartner(model).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
       if (res && res.PartnerId) {
-        var exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
+        let exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
         if (exits) {
           exits.Tags = JSON.stringify(tags)
         }
@@ -290,7 +290,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
         let that = this;
         let wrapScroll = this.viewChildDetailPartner.nativeElement.closest('.tds-table-body');
         wrapScroll.addEventListener('scroll', function() {
-          var scrollleft = wrapScroll.scrollLeft;
+          let scrollleft = wrapScroll.scrollLeft;
           that.marginLeftCollapse = scrollleft;
         });
       }, 500);

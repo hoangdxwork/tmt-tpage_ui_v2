@@ -17,6 +17,8 @@ export class SaleOnline_OrderService extends BaseSevice {
   table: string = "SaleOnline_Order";
   baseRestApi: string = "rest/v1.0/saleonline_order";
 
+  public onSetCommentOrders: EventEmitter<any> = new EventEmitter();
+
   public _keyCacheGrid: string = 'saleonline_order-page:grid_saleonline_order:settings';
 
   constructor(private apiService: TCommonService) {
@@ -131,6 +133,10 @@ export class SaleOnline_OrderService extends BaseSevice {
     }
 
     return this.apiService.getData<PartnerTempDTO>(api, data);
+  }
+
+  setCommentOrder(data: any, fbid: string) {
+    this.onSetCommentOrders.emit({ data: data, fbid: fbid });
   }
 
 }

@@ -1,24 +1,17 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { map, mergeMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
-import { FacebookPostDTO, FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
-import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
-import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
-import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
-import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
-import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tmt-tang-ui';
 
 @Component({
-  selector: 'conversation-post-item',
-  templateUrl: './conversation-post-item.component.html',
+  selector: 'conversation-post-view',
+  templateUrl: './conversation-post-view.component.html',
   styleUrls: ['./conversation-post.component.scss']
 })
 
-export class ConversationPostItemComponent implements OnInit, OnChanges, OnDestroy {
+export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() data!: FacebookPostItem;
   destroy$ = new Subject();

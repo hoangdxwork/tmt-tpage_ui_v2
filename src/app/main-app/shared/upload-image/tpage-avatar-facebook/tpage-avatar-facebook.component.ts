@@ -1,5 +1,6 @@
 import { Component, ElementRef, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { shareReplay } from 'rxjs/operators';
+import { THelperCacheService } from 'src/app/lib';
 import { ButtonSize, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 import { ImageFacade } from '../../../services/facades/image.facade';
 
@@ -21,6 +22,7 @@ export class TpageAvatarFacebookComponent implements OnInit {
   id: any;
 
   constructor(element: ElementRef,
+    private cacheApi :THelperCacheService,
     private imageFacade: ImageFacade) {
     this.nativeElement = element.nativeElement;
   }
@@ -50,7 +52,6 @@ export class TpageAvatarFacebookComponent implements OnInit {
     if(TDSHelperString.hasValueString(id) && TDSHelperString.hasValueString(token)){
         let url = `https://graph.facebook.com/${id}/picture?type=large&access_token=${token}`;
         this.imageFacade.getImage(url)
-          .pipe(shareReplay(1))
           .subscribe(res => {
               this.url = res;
         });
@@ -58,4 +59,5 @@ export class TpageAvatarFacebookComponent implements OnInit {
         this.url = '';
     }
   }
+
 }

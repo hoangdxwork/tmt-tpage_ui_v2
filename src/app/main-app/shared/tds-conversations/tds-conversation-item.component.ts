@@ -23,7 +23,6 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   @Input() data!: MakeActivityItemWebHook;
   @Input() index!: number;
   @Input() psid!: string;
-  @Input() name!: string;
   @Input() partner: any;
   @Input() team!: CRMTeamDTO;
   @Input() children: any;

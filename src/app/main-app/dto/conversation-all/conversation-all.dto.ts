@@ -56,7 +56,7 @@ export interface AssignedTo {
   Avatar: string;
 }
 
-export interface ActiveMatchingItem {
+export interface ConversationMatchingItem {
   id: string;
   page_id: string;
   psid: string;
@@ -86,7 +86,7 @@ export interface ActiveMatchingItem {
   LastUpdated: Date;
   LastActivityTimeConverted: Date;
   checkSendMessage: boolean;
-  keyTags: {};
+  keyTags: any;
 }
 
 export interface Query {
@@ -105,7 +105,7 @@ export interface Response {
 }
 
 export interface CRMMatchingMappingDTO {
-  items: ActiveMatchingItem[];
+  items: ConversationMatchingItem[];
   query: Query;
   response: Response;
 }

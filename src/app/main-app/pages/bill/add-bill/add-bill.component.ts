@@ -16,7 +16,7 @@ import { AccountJournalPaymentDTO, ODataAccountJournalPaymentDTO } from 'src/app
 import { CustomerDTO, ODataCustomerDTO } from 'src/app/main-app/dto/partner/customer.dto';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { ActivatedRoute } from '@angular/router';
-import { map, takeUntil } from 'rxjs/operators';
+import { finalize, map, takeUntil } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
 import { StockWarehouseDTO } from 'src/app/main-app/dto/product/warehouse.dto';
 import { AllFacebookChildTO } from 'src/app/main-app/dto/team/all-facebook-child.dto';
@@ -1474,56 +1474,58 @@ export class AddBillComponent implements OnInit, OnDestroy {
     if (!this._form.controls['Partner'].value) {
       return this.message.error('Vui lòng chọn khách hàng!');
     }
+
     this.isLoadingProduct = true;
-    this.fsOrderLineService.onChangeProduct(data).subscribe((res: FSOrderLines) => {
-      delete res['@odata.context'];
-      var item: OrderLine = {
-        Id: 0,
-        ProductId: res.ProductId,
-        ProductUOMId: res.ProductUOMId,
-        PriceUnit: res.PriceUnit,
-        ProductUOMQty: res.ProductUOMQty,
-        UserId: this.dataModel.UserId,
-        Discount: res.Discount,
-        Discount_Fixed: res.Discount_Fixed,
-        PriceTotal: res.PriceTotal,
-        PriceSubTotal: res.PriceSubTotal,
-        Weight: res.Weight,
-        WeightTotal: res.WeightTotal,
-        AccountId: res.AccountId,
-        PriceRecent: res.PriceRecent,
-        Name: res.Name,
-        IsName: false,
-        ProductName: res.ProductName,
-        ProductUOMName: res.ProductUOMName,
-        SaleLineIds: res.SaleLineIds,
-        ProductNameGet: res.ProductNameGet,
-        SaleLineId: res.SaleLineId,
-        Type: res.Type,
-        PromotionProgramId: res.PromotionProgramId,
-        Note: res.Note,
-        ProductBarcode: res.ProductBarcode,
-        CompanyId: res.CompanyId || this.dataModel.Company?.Id,
-        PartnerId: this.dataModel.PartnerId,
-        PriceSubTotalSigned: res.PriceSubTotalSigned,
-        PromotionProgramComboId: res.PromotionProgramComboId,
-        Product: null,
-        ProductUOM: res.ProductUOM,
-        Account: res.Account,
-        SaleLine: null,
-        User: this.dataModel.User
-      }
+    this.fsOrderLineService.onChangeProduct(data)
+      .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => {this.isLoadingProduct = false }))
+      .subscribe((res: FSOrderLines) => {
+        delete res['@odata.context'];
+        var item: OrderLine = {
+          Id: 0,
+          ProductId: res.ProductId,
+          ProductUOMId: res.ProductUOMId,
+          PriceUnit: res.PriceUnit,
+          ProductUOMQty: res.ProductUOMQty,
+          UserId: this.dataModel.UserId,
+          Discount: res.Discount,
+          Discount_Fixed: res.Discount_Fixed,
+          PriceTotal: res.PriceTotal,
+          PriceSubTotal: res.PriceSubTotal,
+          Weight: res.Weight,
+          WeightTotal: res.WeightTotal,
+          AccountId: res.AccountId,
+          PriceRecent: res.PriceRecent,
+          Name: res.Name,
+          IsName: false,
+          ProductName: res.ProductName,
+          ProductUOMName: res.ProductUOMName,
+          SaleLineIds: res.SaleLineIds,
+          ProductNameGet: res.ProductNameGet,
+          SaleLineId: res.SaleLineId,
+          Type: res.Type,
+          PromotionProgramId: res.PromotionProgramId,
+          Note: res.Note,
+          ProductBarcode: res.ProductBarcode,
+          CompanyId: res.CompanyId || this.dataModel.Company?.Id,
+          PartnerId: this.dataModel.PartnerId,
+          PriceSubTotalSigned: res.PriceSubTotalSigned,
+          PromotionProgramComboId: res.PromotionProgramComboId,
+          Product: null,
+          ProductUOM: res.ProductUOM,
+          Account: res.Account,
+          SaleLine: null,
+          User: this.dataModel.User
+        }
 
-      if (item.Id <= 0) {
-        item.Id = this.idPush - 1;
-        this.idPush = item.Id;
-      }
+        if (item.Id <= 0) {
+          item.Id = this.idPush - 1;
+          this.idPush = item.Id;
+        }
 
-      this.addOrderLines(item);
-      this.computeAmountTotal();
-      this.isLoadingProduct = false;
+        this.addOrderLines(item);
+        this.computeAmountTotal();
     }, error => {
-      this.isLoadingProduct = false;
       this.message.error('Thêm mới sản phẩm vào PBH đã xảy ra lỗi!');
     })
   }
