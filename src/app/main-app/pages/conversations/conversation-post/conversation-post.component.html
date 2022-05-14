@@ -88,14 +88,13 @@
     </div>
     <!--Chọn bài viết để hiển thị chi tiết-->
     <div class="flex flex-auto flex-col  h-full overflow-hidden">
-      <div *ngIf="currentPost && currentTeam">
-        <conversation-post-item [data]="currentPost"></conversation-post-item>
-      </div>
-      <div *ngIf="!currentPost">
-          Hãy chọn một bài viết.
-      </div>
+        <div *ngIf="currentPost && currentTeam">
+          <conversation-post-view [data]="currentPost"></conversation-post-view>
+        </div>
+        <div *ngIf="!currentPost">
+            Hãy chọn một bài viết.
+        </div>
     </div>
-
     <!-- Danh sách khách hàng, đơn hàng -->
     <div class="w-[576px] h-full flex flex-col">
         <tds-tabset class="w-full h-full flex " [clsTab]="'flex-1'"

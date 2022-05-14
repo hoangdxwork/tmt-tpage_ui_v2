@@ -10,6 +10,7 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, OnChanges, S
   styleUrls: ['./tpage-upload-images.component.scss']
 })
 export class TpageUploadImagesComponent implements OnInit, OnDestroy, OnChanges {
+
   @Input() size:number = 112;
   @Input() showName:boolean = true;
   @Input() showPopUpModal: boolean = true;
@@ -20,14 +21,11 @@ export class TpageUploadImagesComponent implements OnInit, OnDestroy, OnChanges 
   @Output() getResult = new EventEmitter<Array<TDSSafeAny>>();
 
   private destroy$ = new Subject<void>();
-
   imageList:Array<TDSSafeAny> = [];
-
 
   constructor(
     private sharedService: SharedService,
-    private message: TDSMessageService
-  ) { }
+    private message: TDSMessageService) {}
 
   ngOnInit(): void {
     if(this.inputImages.length > 0){

@@ -1,4 +1,3 @@
-import { ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { ConfigConversationTagsCreateDataModalComponent } from './../../pages/configs/components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
 import { ModalListBillComponent } from './../../pages/conversations/components/modal-list-bill/modal-list-bill.component';
@@ -9,11 +8,10 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnI
   SimpleChanges, TemplateRef, ViewContainerRef, Host, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSResizeObserver } from 'tmt-tang-ui';
-import { ActiveMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
+import { ConversationMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
-import { CRMTeamService } from '../../services/crm-team.service';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil, debounceTime } from 'rxjs/operators';
 import { MakeActivityItem, MakeActivityItemWebHook, MakeActivityMessagesDTO } from '../../dto/conversation/make-activity.dto';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ActivityMatchingService } from '../../services/conversation/activity-matching.service';
@@ -28,41 +26,33 @@ import { DraftMessageService } from '../../services/conversation/draft-message.s
 import { CRMTagService } from '../../services/crm-tag.service';
 
 @Component({
-  selector: 'tds-conversations',
+  selector: 'shared-tds-conversations',
   templateUrl: './tds-conversations.component.html',
   styleUrls: ['./tds-conversations.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
 
-  // @ViewChild('MainChat') mainChat!:ElementRef;
-  // @ViewChild('chatHeader') headerChat!:ElementRef;
-  // @ViewChild('chatFooter') footerChat!:ElementRef;
   @Input() tdsHeader?: string | TemplateRef<void>;
-  @Input() data!: ActiveMatchingItem;
+  @Input() data!: ConversationMatchingItem;
   @Input() type!: string;
   @Input() team!: CRMTeamDTO;
   @Output() onLoadMiniChat = new EventEmitter();
 
   destroy$ = new Subject();
   isLoadMessage: boolean = false;
-  inputValue?: string;
   dataSource$!: Observable<MakeActivityMessagesDTO>;
   partner: any;
   lstUser!: any[];
   isVisibleReply: boolean = false;
   uploadedImages: any[] = [];
   currentImage: any;
-  // mainChatHeight:number = 0;
-  commentForReply: any;
   markSeenTimer: any;
-  messages: any[] = [];
   messageModel: any = null;
   tags: any[] = [];
 
   constructor(private modalService: TDSModalService,
-    private crmTeamService: CRMTeamService,
     private message: TDSMessageService,
     private activityMatchingService: ActivityMatchingService,
     private applicationUserService: ApplicationUserService,
@@ -80,39 +70,26 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
   }
 
   ngOnInit() {
+    this.validateData();
     if(this.data?.id && this.team && TDSHelperString.hasValueString(this.type)){
-        this.loadMessages(this.data);
+       this.loadData(this.data);
     }
-    this.loadUser();
   }
 
-  ngAfterViewInit(): void {
-    // this.resizeObserver.observe(this.mainChat).subscribe(() => {
-    //     let parentHeight = this.mainChat.nativeElement.closest('.main-conversation').clientHeight;
-    //     let headerHeight = this.headerChat.nativeElement.clientHeight;
-    //     let footerHeight = this.footerChat.nativeElement.clientHeight;
-    //     //set height động cho #MainChat
-    //     this.mainChatHeight = parentHeight - headerHeight - footerHeight;
-    //     console.log(this.mainChatHeight)
-    // });
+  loadData(data: ConversationMatchingItem){
+    this.loadTags(data);
+    this.initiateTimer();
+    this.loadUser();
+    // TODO: Nội dung tin nhắn
+    this.loadMessages(data);
   }
 
   //TODO: data.id = data.psid
-  loadMessages(data: ActiveMatchingItem): any {
+  loadMessages(data: ConversationMatchingItem): any {
     this.isLoadMessage = true;
     this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
       .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => {this.isLoadMessage = false }));
-
-    this.initiateTimer();
-
-    // this.activityDataFacade.refreshData(this.team.Facebook_PageId, data.psid, this.type)
-    //   .pipe(takeUntil(this.destroy$)).pipe(finalize(() => {this.isLoadMessage = false }))
-    //   .subscribe(() => {
-    //       this.dataSource$ = this.activityDataFacade.makeActivity(this.team.Facebook_PageId, data.psid, this.type);
-    //   }, error => {
-    //     this.message.error('Load message đã xảy ra lỗi!');
-    //   })
   }
 
   loadUser() {
@@ -126,7 +103,6 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
 
   initiateTimer(){
     this.destroyTimer();
-
     this.markSeenTimer = setTimeout(() => {
       this.markSeen();
     }, 3 * 1000); // Ở lại ít nhất 3s mới gọi markSeen
@@ -140,7 +116,6 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
 
   private markSeen() {
     let userLoggedId = this.sharedService.userLogged?.Id || null;
-
     this.crmMatchingService.markSeen(this.team.Facebook_PageId, this.data.psid, this.type, userLoggedId)
       .pipe(takeUntil(this.destroy$))
       .subscribe((x: any) => {
@@ -261,8 +236,17 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
   loadEmojiMart(event: any) {
   }
 
+  validateData(){
+    this.messageModel = null;
+    this.tags = [];
+    (this.dataSource$ as any) = null;
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if(changes["data"] && !changes["data"].firstChange) {
+        (this.data as any) = null;
+        this.validateData();
+
         this.data = changes["data"].currentValue;
         let object ={
             psid: this.data.psid,
@@ -284,42 +268,45 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
         if(!this.data.name && this.data.psid && this.data.psid != "null") {
           this.refetch(changes["data"].currentValue.psid);
         }
+        this.loadData(this.data);
+    }
+  }
 
-        if(this.data && this.data.keyTags) {
-          if(!TDSHelperArray.hasListValue(this.tags)) {
-            this.crmTagService.dataActive$.subscribe((res: any) => {
-                this.tags = res;
-                this.sortTagsByParent();
-            })
-          } else {
-              this.sortTagsByParent();
-          }
-        }
-        this.loadMessages(this.data);
+  loadTags(data: ConversationMatchingItem){
+    if(data && data.keyTags) {
+      if(!TDSHelperArray.hasListValue(this.tags)) {
+        this.crmTagService.dataActive$.subscribe((res: any) => {
+            this.tags = res;
+            this.sortTagsByParent();
+        })
+      } else {
+          this.sortTagsByParent();
+      }
     }
   }
 
   sortTagsByParent() {
-    this.tags = this.tags || [];
+    let tags = this.tags || [];
     let local = this.crmTagService.getTagLocalStorage() as any;
-
-    this.tags.sort((a, b) => {
-      if (!local[a.Id]) {
-        local[a.Id] = { "point": 0 };
-      }
-      if (!local[b.Id]) {
-        local[b.Id] = { "point": 0 };
-      }
-      if (this.data && this.data.keyTags) {
-        if ((this.data.keyTags as any)[a.Id] && !(this.data.keyTags as any)[b.Id]) {
+    if(TDSHelperArray.hasListValue(tags) && local) {
+      tags.sort((a: any, b: any) => {
+        if (!local[a.Id]) {
+          local[a.Id] = { "point": 0 };
+        }
+        if (!local[b.Id]) {
+          local[b.Id] = { "point": 0 };
+        }
+        if (this.data && this.data.keyTags) {
+          if ((this.data.keyTags as any)[a.Id] && !(this.data.keyTags as any)[b.Id]) {
+            return -1;
+          }
+        }
+        if ((local[a.Id].point > local[b.Id].point) && !(this.data.keyTags as any)[b.Id]) {
           return -1;
         }
-      }
-      if ((local[a.Id].point > local[b.Id].point) && !(this.data.keyTags as any)[b.Id]) {
-        return -1;
-      }
-      return 0;
-    });
+        return 0;
+      });
+    }
   }
 
   refetch(psid: string) {
@@ -335,7 +322,7 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
             }
         }
       }, error => {
-        this.message.error(`${error?.error?.message}` || 'Refetch đã xảy ra lỗi');
+        this.message.error(`${error?.Error?.Message}` || 'Refetch đã xảy ra lỗi');
       });
   }
 
@@ -521,6 +508,51 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
   assignUser(){
   }
 
+  onSelectTag(item: any){
+    let tags = {...this.data.keyTags};
+    if (tags[item.Id]) {
+      this.removeIndexDbTag(item);
+    } else {
+      this.assignIndexDbTag(item);
+    }
+  }
+
+  assignIndexDbTag(item: any){
+    this.assignTagOnView(item);
+    this.activityMatchingService.assignTagToConversation(this.data.id, item.Id, this.team.Facebook_PageId)
+      .subscribe(() => {
+          this.crmTagService.addTagLocalStorage(item.Id);
+      }, error => {
+        this.removeTagOnView(item);
+      });
+  }
+
+  removeIndexDbTag(item: any): void {
+    this.removeTagOnView(item);
+
+    this.activityMatchingService.removeTagFromConversation(this.data.id, item.Id, this.team.Facebook_PageId)
+      .subscribe(() => {
+      }, error => {
+        this.assignTagOnView(item);
+      });
+  }
+
+  assignTagOnView(tag: any) {
+    this.data.tags = this.data.tags || [];
+    (this.data.tags as any[]).push({
+        id: tag.Id,
+        name: tag.Name,
+        color_class: tag.ColorClassName
+    });
+    this.data.keyTags[tag.Id] = true;
+  }
+
+  removeTagOnView(tag: any) {
+    this.data.tags = this.data.tags || [];
+    this.data.tags = this.data.tags.filter(x => x.id != tag.Id);
+    delete this.data.keyTags[tag.Id];
+  }
+
   onSendSucceed(data: any) {
     let dataToBroadcast = {
       user: this.sharedService.userLogged,
@@ -530,12 +562,18 @@ export class TDSConversationsComponent implements OnInit, AfterViewInit, OnChang
   }
 
   openPost(item: any, type :any) {
-    if(type === 'post' && item.object_i){
+    if(type === 'post' && item.object_id){
       this.router.navigateByUrl(`/conversation/post?teamId=${this.team.Id}&type=post&post_id=${item.object_id}`);
     }
     if(type === 'all' && item.object_id) {
        //TODO xử lý tiếp
     }
+  }
+
+  refreshRead(){
+    this.messageModel = null;
+    this.uploadedImages = [];
+    this.loadMessages(this.data);
   }
 
   ngOnDestroy(): void {

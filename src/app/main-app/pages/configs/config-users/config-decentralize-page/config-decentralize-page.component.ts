@@ -81,7 +81,7 @@ export class ConfigDecentralizePageComponent implements OnInit, OnDestroy {
   }
 
   backToMain(){
-    var returnUrl = '/configs/users/operation'
+    let returnUrl = '/configs/users/operation'
     this.router.navigate([returnUrl]);
   }
 

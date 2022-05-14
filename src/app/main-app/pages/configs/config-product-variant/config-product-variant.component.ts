@@ -310,7 +310,7 @@ export class ConfigProductVariantComponent implements OnInit {
   }
 
   loadProduct(): void {
-    let keyCache = JSON.stringify(this.productIndexDBService._keyCacheProductIndexDB);
+    let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
     this.cacheApi.getItem(keyCache).subscribe((obs: TDSSafeAny) => {
         if(TDSHelperString.hasValueString(obs)) {
             let cache = JSON.parse(obs['value']) as TDSSafeAny;
@@ -366,8 +366,8 @@ export class ConfigProductVariantComponent implements OnInit {
             if(index > -1){
               this.indexDbStorage[index] = dataProduct
             }
-          } 
-          
+          }
+
           //TODO: check số version
           let versions = this.indexDbStorage.map((x: DataPouchDBDTO) => x.Version);
           let lastVersion = Math.max(...versions);
@@ -397,7 +397,7 @@ export class ConfigProductVariantComponent implements OnInit {
         cacheDbStorage: this.indexDbStorage
     };
 
-    let keyCache = JSON.stringify(this.productIndexDBService._keyCacheProductIndexDB);
+    let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
     this.cacheApi.setItem(keyCache, JSON.stringify(objCached));
   }
 

@@ -47,7 +47,7 @@ import { ModalBlockPhoneComponent } from './components/modal-block-phone/modal-b
 import { CRMMatchingService } from '../../services/crm-matching.service';
 import { FacebookPostService } from '../../services/facebook-post.service';
 import { ConversationPostFacade } from '../../services/facades/conversation-post.facade';
-import { ConversationPostItemComponent } from './conversation-post/conversation-post-item.component';
+import { ConversationPostViewComponent } from './conversation-post/conversation-post-view.component';
 import { ItemPostCommentComponent } from './conversation-post/item-post-comment.component';
 import { FacebookCommentService } from '../../services/facebook-comment.service';
 import { SharedService } from '../../services/shared.service';
@@ -83,7 +83,7 @@ const SERVICES = [
   FacebookPostService,
   FacebookCommentService,
   SharedService,
-  CRMTagService
+  CRMTagService,
 ]
 
 @NgModule({
@@ -102,7 +102,7 @@ const SERVICES = [
     ModalAddQuickReplyComponent,
     YiDateTimeV2Pipe,
     ModalBlockPhoneComponent,
-    ConversationPostItemComponent,
+    ConversationPostViewComponent,
     ItemPostCommentComponent,
     ModalListBlockComponent
   ],

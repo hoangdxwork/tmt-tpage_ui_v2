@@ -9,7 +9,9 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, AfterViewIni
   templateUrl: './tpage-upload-avatar.component.html',
   styleUrls: ['./tpage-upload-avatar.component.scss']
 })
+
 export class TpageUploadAvatarComponent implements OnInit, AfterViewInit , OnDestroy {
+
   @Input() size:number = 112;
   @Input() imageUrl:string = '';
   @Input() shape: 'square'|'circle' = 'square';
@@ -21,16 +23,13 @@ export class TpageUploadAvatarComponent implements OnInit, AfterViewInit , OnDes
 
   constructor(
     private sharedService: SharedService,
-    private message: TDSMessageService
-  ) { 
-
+    private message: TDSMessageService) {
   }
 
   ngOnInit(): void {
   }
 
   ngAfterViewInit(): void {
-    
   }
 
   ngOnDestroy(): void {

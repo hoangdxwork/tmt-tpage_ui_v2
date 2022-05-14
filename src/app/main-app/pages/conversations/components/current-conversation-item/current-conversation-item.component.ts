@@ -1,7 +1,7 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, Output, SimpleChanges, EventEmitter, ViewChild, ElementRef, AfterViewInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ActiveMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
+import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { DraftMessageService } from 'src/app/main-app/services/conversation/draft-message.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -18,11 +18,11 @@ import { TDSMessageService } from 'tmt-tang-ui';
 export class CurrentConversationItemComponent  implements OnInit, OnChanges {
 
   @Input() isFastSend: boolean | undefined;
-  @Input() item!: ActiveMatchingItem;
+  @Input() item!: ConversationMatchingItem;
   @Input() team!: CRMTeamDTO;
   @Input() type: any;
   @Input() psid: any;
-  @Input() activeMatchingItem!: ActiveMatchingItem;
+  @Input() activeCvsItem!: ConversationMatchingItem;
   @Input() isOpenCollapCheck!: boolean;
   @Input() checked!: boolean;
 
@@ -62,29 +62,30 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges {
     });
   }
 
-  prepareModel(item: ActiveMatchingItem) {
+  // TODO: refactor
+  prepareModel(item: ConversationMatchingItem) {
     item.LastActivityTimeConverted = item.LastUpdated;
     let lastActivity = item.last_activity;
     if(lastActivity) {
       item.LastActivityTimeConverted = item.LastActivityTimeConverted || lastActivity.created_time;
     }
-    // //check send message
-    // item["checkSendMessage"] = false;
-    // //tags
-    // item["keyTags"] = {};
-    // if(item.tags && item.tags.length > 0) {
-    //   item.tags.map((x: any) => {
-    //       item["keyTags"][x.id] = true;
-    //   })
-    // }
-    // else {
-    //   item.tags = [];
-    // }
+    //check send message
+    item['checkSendMessage'] = false;
+    //tags
+    item['keyTags'] = {};
+    if(TDSHelperObject.hasValue(item.tags)) {
+      item.tags.map((x: any) => {
+          (item['keyTags'] as any)[x.id] = true;
+      })
+    }  else {
+      item.tags = [];
+    }
+    return item;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes["activeMatchingItem"] && !changes["activeMatchingItem"].firstChange) {
-        this.activeMatchingItem = changes["activeMatchingItem"].currentValue;
+    if(changes["activeCvsItem"] && !changes["activeCvsItem"].firstChange) {
+        this.activeCvsItem = changes["activeCvsItem"].currentValue;
     }
   }
 

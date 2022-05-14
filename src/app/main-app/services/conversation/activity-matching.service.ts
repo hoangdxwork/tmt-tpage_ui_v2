@@ -12,8 +12,8 @@ import { SignalRConnectionService } from "../signalR/signalR-connection.service"
 
 export class ActivityMatchingService extends BaseSevice implements OnInit {
 
-  prefix: string = "";
-  table: string = "";
+  prefix: string = "odata";
+  table: string = "CRMActivity";
   baseRestApi: string = "rest/v1.0/crmmatching";
 
 
@@ -40,8 +40,8 @@ export class ActivityMatchingService extends BaseSevice implements OnInit {
       }).join('&');
 
       let api: TAPIDTO = {
-          url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/messages?${queryString}`,
-          method: TApiMethodType.get,
+        url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/messages?${queryString}`,
+        method: TApiMethodType.get,
       }
       return this.apiService.getData<TDSSafeAny>(api, null);
     }
@@ -49,8 +49,8 @@ export class ActivityMatchingService extends BaseSevice implements OnInit {
 
   getLink(url: string): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${url}`,
-        method: TApiMethodType.get,
+      url: `${this._BASE_URL}/${url}`,
+      method: TApiMethodType.get,
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
@@ -76,40 +76,40 @@ export class ActivityMatchingService extends BaseSevice implements OnInit {
 
   refreshAttachment(id: string, message_id: string, image_id: string): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/${id}/refreshattachment?message_id=${message_id}&image_id=${image_id}`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/${this.baseRestApi}/${id}/refreshattachment?message_id=${message_id}&image_id=${image_id}`,
+      method: TApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   retryMessage(id: string, page_id: string): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/${id}/queueretrymessage?page_id=${page_id}`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/${this.baseRestApi}/${id}/queueretrymessage?page_id=${page_id}`,
+      method: TApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   addLikeComment(data: any): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/rest/v1.0/facebook/addlikecomment`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/rest/v1.0/facebook/addlikecomment`,
+      method: TApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   hideComment(data: any): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
-        url: `${this._BASE_URL}/rest/v1.0/facebook/hidecomment`,
-        method: TApiMethodType.post,
+  const api: TAPIDTO = {
+      url: `${this._BASE_URL}/rest/v1.0/facebook/hidecomment`,
+      method: TApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   replyComment(teamId: number, data: any): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/rest/v1.0/facebook/replycomment?teamId=${teamId}`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/rest/v1.0/facebook/replycomment?teamId=${teamId}`,
+      method: TApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
@@ -119,8 +119,8 @@ export class ActivityMatchingService extends BaseSevice implements OnInit {
       psid = data.to_id;
     }
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${psid}/addtemplatemessage`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/${psid}/addtemplatemessage`,
+      method: TApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
@@ -130,9 +130,35 @@ export class ActivityMatchingService extends BaseSevice implements OnInit {
       psid = data.to_id;
     }
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/assignuser`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/assignuser`,
+      method: TApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  assignTagToConversation(psid: string, tagId: string, pageId: string){
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/updatetag`,
+      method: TApiMethodType.post
+    }
+    let model = {
+      pageId: pageId,
+      action: 'add',
+      tagId: tagId
+    }
+    return this.apiService.getData<TDSSafeAny>(api, model);
+  }
+
+  removeTagFromConversation(psid: string, tagId: string, pageId: string){
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/updatetag`,
+      method: TApiMethodType.post
+    }
+    let model =  {
+      pageId: pageId,
+      action: 'remove',
+      tagId: tagId
+    }
+    return this.apiService.getData<TDSSafeAny>(api, model);
   }
 }

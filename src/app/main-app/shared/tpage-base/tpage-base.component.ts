@@ -19,7 +19,6 @@ export class TpageBaseComponent  {
   private _currentTeam!: CRMTeamDTO | null;
   private _listFaceBook: Array<CRMTeamDTO> = [];
   public isFirstLoad: boolean = true;
-  public isChangeTeam: boolean = false;
 
   type!: string;
   subscription!: Observable<any>;
