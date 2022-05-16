@@ -51,6 +51,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   markSeenTimer: any;
   messageModel: any = null;
   tags: any[] = [];
+  postPictureError:any[] = [];
 
   constructor(private modalService: TDSModalService,
     private message: TDSMessageService,
@@ -331,7 +332,16 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getExtrasPosts(data: any, item: MakeActivityItemWebHook): any  {
+    console.log(data?.extras?.posts[item?.object_id])
       return (data?.extras?.posts[item?.object_id] as any) || [];
+  }
+
+  errorPostPicture(item: MakeActivityItemWebHook){
+    this.postPictureError.push(item?.object_id);
+  }
+
+  checkPostPictureError(item: MakeActivityItemWebHook){
+    return this.postPictureError.find(f=>f == item?.object_id);
   }
 
   onClickSender(){

@@ -2,7 +2,6 @@
 .is_admin
   justify-content: flex-end
   .chat-body
-    background: #28A745
     color: #fff
     border-radius: 12px 0px 12px 12px
     display: flex
@@ -10,10 +9,15 @@
     align-items: flex-start
     padding: 8px 16px
     gap: 4px
-    // max-width: 80%
   .chat-option
     width: fit-content,
     height: 100%
+  .chat-date
+    color: #929DAA
+    font-size: 12px
+    line-height: 16px
+    font-weight: 400
+    text-align: right
 .is_client
   justify-content: flex-start
   .chat-body
@@ -27,8 +31,17 @@
     gap: 4px
     max-width: 80%
   .chat-option
-    width: fit-content,
+    width: 80px
     height: 100%
+  .chat-reply
+    background: #fff
+    color: #2C333A
+    border-radius: 12px
+    display: flex
+    flex-direction: column
+    align-items: flex-start
+    padding: 8px 16px
+    gap: 4px
 
 .chat-content
   display: block
@@ -36,4 +49,17 @@
   word-break: break-word
   position: relative
 
-
+.date-line 
+  &::after
+    content: ""
+    width: 100%
+    height: 1px
+    background: #CAD1D8
+    display: block
+.date-value
+  position: absolute
+  left: 38%
+  right: 38%
+  top: 14px
+  text-align: center
+  

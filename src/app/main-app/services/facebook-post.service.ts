@@ -23,6 +23,7 @@ export class FacebookPostService extends BaseSevice implements OnInit, OnDestroy
   queryObj: any;
 
   public onLoadedPost: EventEmitter<any> = new EventEmitter();
+  public onRemoveOrderComment: EventEmitter<any> = new EventEmitter();
 
   constructor(private apiService: TCommonService,
     public caheApi: THelperCacheService) {

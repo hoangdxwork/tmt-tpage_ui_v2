@@ -1,4 +1,6 @@
-import { DatePipe, formatDate } from '@angular/common';
+import { vi_VN } from 'tmt-tang-ui';
+import { isToday, isYesterday } from 'date-fns';
+import { DatePipe, formatDate, WeekDay } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
@@ -8,19 +10,16 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class YiDateTimeV3Pipe extends DatePipe implements PipeTransform {
 
     transform(value: any): any {
+        const input = new Date(value);
+        
+        if(isToday(input)) {
+            return "Hôm nay, " + formatDate(input,'dd-MM-yyyy hh:mm',vi_VN.locale);
+        }
 
-    //   const input = formatDate(value, 'YYYYMMDD', 'en-US');
-    //   const today = formatDate(new Date(), 'YYYYMMDD', 'en-US');
-    //   const yesterday = moment().subtract(1, 'days').format('YYYYMMDD');
+        if(isYesterday(input)) {
+            return "Hôm qua, " + formatDate(input,'dd-MM-yyyy hh:mm',vi_VN.locale);
+        }
 
-    //   if(input == today) {
-    //     return "Hôm nay, " + moment(value).format("DD-MM-YYYY HH:mm");
-    //   }
-
-    //   if(input == yesterday) {
-    //     return "Hôm qua, " + moment(value).format("DD-MM-YYYY HH:mm");
-    //   }
-
-    //   return moment(value).format("dddd, DD-MM-YYYY HH:mm");
+        return formatDate(input,'EEEE, dd-MM-yyyy hh:mm',vi_VN.locale);
     }
 }
