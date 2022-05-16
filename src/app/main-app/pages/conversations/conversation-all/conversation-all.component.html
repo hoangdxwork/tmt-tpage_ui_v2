@@ -195,7 +195,7 @@
   <!--Xử lí thông tin khách hàng & Đơn hàng-->
   <!-- Dữ liệu load vào form partner trước từ funtion checkConversation(),sau đó lấy dữ liệu gán lại form order -->
   <div class="w-[30%] h-full flex flex-col">
-    <tds-tabset class="bg-white border border-neutral-2-200 h-full" [clsTab]="'flex-1'"
+    <tds-tabset class="bg-white border border-neutral-2-200 h-full" [clsTab]="'flex-1'" [(selectedIndex)]="currentOrderTab"
       [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
       <!-- tab Khách hàng -->
       <tds-tab [title]="conversationPartner" clsContent="border-t border-neutral-2-200 -mt-px h-full flex flex-col">
@@ -209,7 +209,7 @@
             </div>
         </ng-template>
         <div *ngIf="activeCvsItem?.id  && currentTeam">
-            <conversation-partner [data]="activeCvsItem" [team]="currentTeam"></conversation-partner>
+            <conversation-partner [data]="activeCvsItem" [team]="currentTeam" (onTabOrder)="onTabOrder($event)"></conversation-partner>
         </div>
       </tds-tab>
       <!-- tab Đơn hàng -->

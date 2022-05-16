@@ -1,5 +1,5 @@
 import { CheckConversationData, CheckConversationDTO } from './../../../../dto/partner/check-conversation.dto';
-import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, SimpleChanges, SkipSelf, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, SimpleChanges, SkipSelf, ViewContainerRef, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConversationMatchingItem, ActiveMatchingPartner } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
@@ -37,6 +37,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   @Input() data!: ConversationMatchingItem;
   @Input() team!: CRMTeamDTO;
 
+  @Output() onTabOrder = new EventEmitter<boolean>();
+
   _form!: FormGroup;
   dataMatching!: ConversationMatchingItem;
   objRevenue!: ResRevenueCustomerDTO;
@@ -47,6 +49,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   lstPartnerStatus!: Array<PartnerStatusDTO>;
 
   innerNote!: string;
+  totalBill: number = 0;
   lastBill!: ViewConversation_FastSaleOrdersDTO | undefined;
   lstBill: ConversationOrderBillByPartnerResultDTO[] = [];
 
@@ -104,6 +107,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     if(data?.page_id && data?.psid) {
       this.loadNotes(data?.page_id, data?.psid);
     }
+
     if(data?.partner && (data?.partner_id || data?.partner?.id)) {
       let id = data?.partner_id || data?.partner?.id;
       this.loadPartnerRevenue(id);
@@ -151,13 +155,16 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   loadBill(partnerId: number) {
     this.lstBill = [];
+    this.totalBill = 0;
+    this.lastBill = undefined;
     this.fastSaleOrderService.getConversationOrderBillByPartner(partnerId).pipe(takeUntil(this.destroy$))
       .subscribe(res => {
         this.lstBill = res.Result || [];
+        this.totalBill = this.lstBill.reduce((x, y) => x + y.total, 0);
         this.lastBill = res.LastSaleOrder || undefined;
       }, error => {
         this.message.error('Load hóa đơn khách hàng trong hội thoại đã xảy ra lỗi!');
-      })
+      });
   }
 
   updateForm(data: CheckConversationData){
@@ -277,6 +284,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   showModalListBlock() {
     let phone = this.data?.phone;
     let currentTeam = this.crmTeamService.getCurrentTeam();
+    let phoneReport = this._form.value?.PhoneReport;
 
     const modal = this.modalService.create({
       title: 'Lịch sử chặn',
@@ -287,8 +295,13 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         phone: phone,
         psid: this.data?.psid,
         accessToken: currentTeam?.Facebook_PageToken,
-        facebookName: this.data?.name
+        facebookName: this.data?.name,
+        isReport: phoneReport
       }
+    });
+
+    modal.componentInstance?.changeReportPartner.subscribe(res => {
+      this._form.controls.PhoneReport.setValue(res);
     });
 
     modal.afterClose.subscribe(result => {
@@ -362,6 +375,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     (this.data as any) = null;
     (this.partner as any) = null;
     this._form.reset();
+  }
+
+  createOrder() {
+    this.onTabOrder.emit(true);
   }
 
   ngOnChanges(changes: SimpleChanges) {

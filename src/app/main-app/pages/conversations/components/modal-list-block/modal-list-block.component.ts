@@ -1,7 +1,7 @@
 import { TDSHelperObject, TDSMessageService, TDSModalRef, TDSModalService } from 'tmt-tang-ui';
 import { finalize } from 'rxjs/operators';
 import { TDSHelperArray } from 'tmt-tang-ui';
-import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef, Output, EventEmitter } from '@angular/core';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { MDBPhoneReportDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -21,6 +21,8 @@ export class ModalListBlockComponent implements OnInit {
   @Input() facebookName!: string;
   @Input() isReport: boolean = false;
 
+  @Output() changeReportPartner = new EventEmitter<boolean>();
+
   data!: MDBPhoneReportDTO;
   isLoading: boolean = false;
 
@@ -34,13 +36,19 @@ export class ModalListBlockComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
+    this.loadData();
   }
 
   loadData() {
-    this.crmMatchingService.getHistoryReportPhone(this.phone).subscribe(res => {
-      this.data = res;
-    });
+    this.isLoading = true;
+    this.crmMatchingService.getHistoryReportPhone(this.phone)
+      .pipe(finalize(() => this.isLoading = false ))
+      .subscribe(res => {
+        this.data = res;
+        if(TDSHelperArray.hasListValue(res?.reasons)) {
+          this.isReport = true;
+        }
+      });
   }
 
   onUnReportPhone() {
@@ -72,7 +80,8 @@ export class ModalListBlockComponent implements OnInit {
 
     modal.afterClose.subscribe(result => {
       if (TDSHelperObject.hasValue(result)) {
-        // Cập nhật form PhoneReport.value;
+        this.changeReport(true);
+        this.loadData();
       }
     });
   }
@@ -82,14 +91,28 @@ export class ModalListBlockComponent implements OnInit {
     this.crmMatchingService.unReportPhone(this.phone)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
+        this.changeReport(false);
         this.message.success(Message.Partner.UnReportSuccess);
       }, error => {
         this.message.error(`${error?.error?.message}` || JSON.stringify(error));
       });
   }
 
+  editReason(index: number) {
+    this.message.info(Message.FunctionNotWorking);
+  }
+
+  removeReason(index: number) {
+    this.message.info(Message.FunctionNotWorking);
+  }
+
   onCancel() {
     this.modalRef.destroy();
+  }
+
+  changeReport(value: boolean) {
+    this.isReport = value;
+    this.changeReportPartner.emit(value);
   }
 
 }
