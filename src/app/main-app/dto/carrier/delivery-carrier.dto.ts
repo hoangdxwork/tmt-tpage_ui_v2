@@ -190,3 +190,9 @@ export interface CalculateFeeResponse_Data_Service_ExtraDTO {
   ExtraMoney?: number;
   IsSelected?: boolean;
 }
+
+export interface ShipProviderCreateChatbotDTO {
+  type: string;
+  shopid: string;
+  shoptoken: string;
+}

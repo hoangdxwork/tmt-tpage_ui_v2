@@ -191,6 +191,11 @@ export class LayoutComponent implements OnInit {
         hidden: hidden,
       },
       {
+        name: "Chatbot",
+        icon: "tdsi-callcenter-fill",
+        link: `/chatbot`,
+      },
+      {
         name: "Khách hàng",
         icon: "tdsi-user-fill",
         link: `/partner`,

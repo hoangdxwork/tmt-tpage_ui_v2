@@ -1,0 +1,47 @@
+<tds-spin [spinning]="isLoading">
+  <div class="max-h-[calc(100vh-375px)] w-full overflow-y-auto tds-custom-scroll gap-y-4 flex flex-col" *ngIf="lstChannel && lstChannel.length > 0">
+    <div class="flex justify-between items-center p-4 border-solid bg-white rounded-md border border-neutral-2-200 border-solid "
+      *ngFor="let channel of lstChannel">
+      <div class="flex gap-x-6">
+        <div class="flex gap-x-4">
+          <tds-badge class="mr-3" [count]="iconTemplate2">
+            <tpage-avatar-facebook [fbid]="channel?.Facebook_PageId" [token]="channel?.Facebook_PageToken" [size]="'lg'">
+            </tpage-avatar-facebook>
+          </tds-badge>
+          <ng-template #iconTemplate2>
+              <div class="absolute top-4 right-0  transform translate-x-1.5 translate-y-full rounded-full  bg-white flex items-center justify-center">
+                  <span><img src="/assets/images/conversation/union.svg"></span>
+              </div>
+          </ng-template>
+        </div>
+        <div>
+          <p class="text-sm font-semibold"> {{channel.Facebook_PageName}} </p>
+          <p class="text-sm text-[#ABABAB] mt-[6px] text-neutral-1-900">
+            <i class="tdsi-break-link-fill text-lg leading-none"></i>
+            Chưa kết nối
+          </p>
+        </div>
+      </div>
+      <div>
+        <button tds-button color="primary" (click)="showModalConnectChatbot(channel)">
+          <span class="flex items-center">
+              <i class="tdsi-addfriend-fill text-lg leading-none mr-2"></i>Kết nối Chatbot
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-4 justify-center flex" *ngIf="!lstChannel || lstChannel.length < 1">
+    <div class="justify-center flex flex-col gap-y-4">
+      <img src="/assets/images/chabot-empty.svg" alt="">
+      <p class="text-[#717171] text-xl">
+        Không có Page nào để kết nối
+      </p>
+    </div>
+  </div>
+
+  <div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+  </div>
+</tds-spin>

@@ -1,5 +1,6 @@
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { ApplicationUserDTO } from '../account/application-user.dto';
+import { ShipProviderCreateChatbotDTO } from '../carrier/delivery-carrier.dto';
 import { CompanyDTO } from '../company/company.dto';
 
 export interface CRMTeam_UserDTO {
@@ -65,6 +66,34 @@ export interface CRMTeamDTO {
 export interface UpdateGrantPermissionDTO {
   CRMTeamId: number,
   UserId: string
+}
+
+export interface TPosAppMongoDBFacebookDTO {
+  id: string;
+  host: string;
+  DateCreated: Date;
+  LastUpdated?: Date;
+  FacebookId: string;
+  FacebookToken: string;
+  FacebookName: string;
+  FacebookAvatar: string;
+  FacebookCover: string;
+  FacebookLink: string;
+  CallbackUrl: string;
+  IsExpired: boolean;
+  IsEnableChatbot: boolean;
+  ChatbotToken: string;
+  FacebookType: Facebook_Type;
+}
+
+export interface InputCreateChatbotDTO {
+  Name: string;
+  Facebook_PageId: string;
+  Address: string;
+  ShipProvider: ShipProviderCreateChatbotDTO[];
+  Category: string;
+  CompanyId: number;
+  Phone: string;
 }
 
 export enum Facebook_Type {

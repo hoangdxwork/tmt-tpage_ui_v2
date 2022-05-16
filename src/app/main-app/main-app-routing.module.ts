@@ -51,6 +51,13 @@ const routes: Routes = [
         loadChildren: () => import('./pages/bill/bill.module').then(m => m.BillModule)
       },
       {
+        path: "chatbot",
+        data: {
+          breadcrumb: 'Chatbot'
+        },
+        loadChildren: () => import('./pages/chatbot/chatbot.module').then(m => m.ChatbotModule)
+      },
+      {
         path: "configs",
         data: {
           breadcrumb: 'Config'

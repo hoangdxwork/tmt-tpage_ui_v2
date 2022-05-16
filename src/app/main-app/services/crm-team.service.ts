@@ -7,7 +7,7 @@ import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
 import { AutoHideCommentDTO, AutoReplyConfigDTO, ChannelAutoLabelConfigDTO, ChannelFacebookConfigDTO } from '../dto/configs/page-config.dto';
 import { PagedList2 } from '../dto/pagedlist2.dto';
 import { ODataAllFacebookChildTO } from '../dto/team/all-facebook-child.dto';
-import { CRMTeamDTO, UpdateGrantPermissionDTO } from '../dto/team/team.dto';
+import { CRMTeamDTO, InputCreateChatbotDTO, TPosAppMongoDBFacebookDTO, UpdateGrantPermissionDTO } from '../dto/team/team.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable({
@@ -217,5 +217,42 @@ export class CRMTeamService extends BaseSevice {
 
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
+
+  getChannelChatbot(ids: string[]): Observable<TPosAppMongoDBFacebookDTO[]> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/getchannelchatbot`,
+      method: TApiMethodType.post
+    }
+
+    return this.apiService.getData<TPosAppMongoDBFacebookDTO[]>(api, ids);
+  }
+
+  onChatbot(pageId: string): Observable<undefined> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/onchatbot?pageId=${pageId}`,
+      method: TApiMethodType.get
+    }
+
+    return this.apiService.getData<undefined>(api, null);
+  }
+
+  offChatbot(pageId: string): Observable<undefined> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/offchatbot?pageId=${pageId}`,
+      method: TApiMethodType.get
+    }
+
+    return this.apiService.getData<undefined>(api, null);
+  }
+
+  connectChatbot(data: InputCreateChatbotDTO): Observable<undefined> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/connectchatbot`,
+      method: TApiMethodType.post
+    }
+
+    return this.apiService.getData<undefined>(api, data);
+  }
+
 
 }

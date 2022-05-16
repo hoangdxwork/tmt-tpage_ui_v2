@@ -86,5 +86,10 @@ export const Message = {
       ProductBuyEmpty: 'Vui lòng chọn sản phẩm mua.',
       RuleBasedOnEmpty: 'Nhóm sản phẩm không tồn tại.'
     }
+  },
+  Chatbot: {
+    CreateChatbotSuccess: 'Tạo chatbot thành công.',
+    OnChatbotSuccess: 'Bật chatbot thành công.',
+    OffChatbotSuccess: 'Tắt chatbot thành công.',
   }
 }
