@@ -127,6 +127,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           items.map((x: any) => {
             if (this.data.filter((f: any) => f.fbid === x.fbid).length === 0) {
               this.data = [...this.data, ...[x]];
+            } else {
+              console.log([x]);
             }
           });
           if(TDSHelperArray.hasListValue(this.data)){
@@ -168,12 +170,12 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   selectPost(item: FacebookPostItem): any {
     if(TDSHelperObject.hasValue(item)){
-      this.currentPost = item;
+      this.currentPost = {...item};
       this.facebookPostService.loadPost(item);
 
-      // load danh sách bài viết con từ bài viết chính
-      if(TDSHelperString.isString(item.parent_id)) {
-        this.facebookPostService.getByPostParent(this.paramsUrl.teamId, item.parent_id)
+      //load danh sách bài viết con từ bài viết chính
+      if(TDSHelperString.hasValueString(item.parent_id)) {
+        this.facebookPostService.getByPostParent(this.currentTeam.Id, item.parent_id)
           .pipe(takeUntil(this.destroy$))
           .subscribe((res: any) => {
 
@@ -217,10 +219,15 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   getIconTypePost(type: string): any {
-    if (!type) return "tdsi-paste-as-text-fill";
-    if (type == "added_video") return "tdsi-video-camera-fill";
-    if (type == "added_photos") return "tdsi-images-fill";
-    return "tdsi-page-line";
+    if(!type){
+      return "tdsi-paste-as-text-fill";
+    } else if(type == "added_video") {
+      return "tdsi-video-camera-fill";
+    } else if(type == "added_photos") {
+      return "tdsi-images-fill";
+    } else {
+      return "tdsi-page-line";
+    }
   }
 
   compareToday(date: any) {

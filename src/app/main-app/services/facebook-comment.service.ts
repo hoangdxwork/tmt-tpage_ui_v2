@@ -3,6 +3,9 @@ import {  Observable, ReplaySubject, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSHelperArray } from 'tmt-tang-ui';
+import { RequestCommentByGroup } from '../dto/conversation/post/comment-group.dto';
+import { OdataCommentOrderPostDTO } from '../dto/conversation/post/comment-order-post.dto';
+import { RequestCommentByPost } from '../dto/conversation/post/comment-post.dto';
 import { FacebookPostDTO, FacebookPostItem } from '../dto/facebook-post/facebook-post.dto';
 import { ArrayHelper } from '../shared/helper/array.helper';
 import { BaseSevice } from './base.service';
@@ -28,8 +31,15 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
 
   constructor(private apiService: TCommonService,
     public caheApi: THelperCacheService) {
-      super(apiService);
+    super(apiService);
       this.setQuery();
+  }
+
+  setSort(sort: string): void {
+    if (!this.queryObj) {
+        this.setQuery();
+    }
+    this.queryObj.sort = sort;
   }
 
   private setQuery(query?: any) {
@@ -37,16 +47,22 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
         page: 1,
         limit: 50
     };
-
     this.queryObj2 = query || {
         page: 1,
         limit: 200
     };
-
     this.queryObj3 = query || {
         page: 1,
         limit: 200
     };
+  }
+
+  fetchComments(teamId: number, postId: string): Observable<any>{
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebook/fetchcomments?teamId=${teamId}&postId=${postId}`,
+      method: TApiMethodType.get
+    }
+    return this.apiService.getData<any>(api, null);
   }
 
   getCommentsOrderByPost(id: any): Observable<any> {
@@ -54,7 +70,7 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
       url: `${this._BASE_URL}/${this.prefix}/SaleOnline_Facebook_Post/ODataService.GetCommentOrders?$expand=orders&PostId=${id}`,
       method: TApiMethodType.get
     }
-    return this.apiService.getData<any>(api, null);
+    return this.apiService.getData<OdataCommentOrderPostDTO>(api, null);
   }
 
 
@@ -68,15 +84,39 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
         method: TApiMethodType.get
     }
 
-    return this.apiService.getData<any>(api, null)
+    return this.apiService.getData<RequestCommentByPost>(api, null)
       .pipe(takeUntil(this.destroy$))
-      .pipe(map((res: any) => {
+      .pipe(map((res: RequestCommentByPost) => {
           this.onResolveData(res, postId);
           return res;
       }));
   }
 
-  onResolveData(data: any, postId: string) {
+  getFilterCommentsByPostId(postId: string): Observable<any> {
+    let queryString = Object.keys(this.queryObj).map(key => {
+        return key + '=' + this.queryObj[key]
+    }).join('&');
+
+    let api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/filtercomments?${queryString}`,
+        method: TApiMethodType.get
+    }
+    return this.apiService.getData<any>(api, null);
+  }
+
+  getGroupCommentsByPostId(postId: string): Observable<any> {
+    let queryString = Object.keys(this.queryObj).map(key => {
+        return key + '=' + this.queryObj[key]
+    }).join('&');
+
+    let api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/groupcomments?${queryString}`,
+        method: TApiMethodType.get
+    }
+    return this.apiService.getData<RequestCommentByGroup>(api, null);
+  }
+
+  onResolveData(data: RequestCommentByPost, postId: string) {
     this.allItems = this.allItems || {};
 
     if (!this.allItems[postId]) {
