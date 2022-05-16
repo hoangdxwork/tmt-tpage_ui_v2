@@ -10,7 +10,7 @@
               <div class="text-heading-4 font-sans font-semibold text-neutral-1-900">
                   {{_form.controls['Name'].value}}
               </div>
-              <button tds-button color="secondary" (click)="onEditPartner()" *ngIf="!isEditPartner">
+              <button type="button" tds-button color="secondary" (click)="onEditPartner()" *ngIf="!isEditPartner">
                 <span class="flex items-center ">
                   <i class="tdsi-edit-fill text-xl leading-none text-neutral-1-400"></i>
                 </span>
@@ -105,19 +105,23 @@
           </button>
         </div>
         <div class="pl-2 flex flex-col gap-3 overflow-auto overflow-y-auto tds-custom-scroll max-h-[200px]" *ngIf="noteData.items.length > 0">
-          <div class="border-l border-primary-1 border-solid pl-2 " *ngFor="let item of noteData.items; let i=index">
-            <div class="text-neutral-1-400 text-body-2 font-regular font-sans">{{item.DateCreated | date:'HH:mm dd/MM/yyyy'}}</div>
-            <div class="flex gap-2 pt-1">
-              <div class="text-body-2 font-semibold font-sans text-neutral-1-900">{{item.CreatedBy.Name}} ({{item.CreatedBy.UserName}})</div>
-              <div class="text-body-2 font-regular font-sans text-neutral-1-900" tds-typography ellipsis expandable
-                [ellipsisRows]="2" [content]="item.message" [contentCollapse]="'Ẩn'">
+          <div class="border-l border-primary-1 border-solid pl-2 flex items-center justify-between" *ngFor="let item of noteData.items; let i=index">
+            <div>
+              <div class="text-neutral-1-400 text-body-2 font-regular font-sans">{{item.DateCreated | date:'HH:mm dd/MM/yyyy'}}</div>
+              <div class="flex gap-2 pt-1">
+                <div class="text-body-2 font-semibold font-sans text-neutral-1-900">{{item.CreatedBy.Name}} ({{item.CreatedBy.UserName}})</div>
+                <div class="text-body-2 font-regular font-sans text-neutral-1-900" tds-typography ellipsis expandable
+                  [ellipsisRows]="2" [content]="item.message" [contentCollapse]="'Ẩn'">
+                </div>
+
               </div>
-              <button tds-button color="error" (click)="removeNote(item.id, i)">
-                  <span class="flex items-center">
-                      <i class="tdsi-trash-line text-lg leading-none"></i>
-                  </span>
-              </button>
             </div>
+            <button tds-button color="error" (click)="removeNote(item.id, i)"  size="sm">
+              <span class="flex items-center">
+                  <i class="tdsi-trash-line text-lg leading-none"></i>
+              </span>
+          </button>
+
           </div>
         </div>
       </div>
