@@ -54,6 +54,7 @@ import { SharedService } from '../../services/shared.service';
 import { PipeModule } from '../../shared/pipe/pipe.module';
 import { CRMTagService } from '../../services/crm-tag.service';
 import { ModalListBlockComponent } from './components/modal-list-block/modal-list-block.component';
+import { PostCommentAllComponent } from './components/post-filter/post-comment-all.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -104,7 +105,8 @@ const SERVICES = [
     ModalBlockPhoneComponent,
     ConversationPostViewComponent,
     ItemPostCommentComponent,
-    ModalListBlockComponent
+    ModalListBlockComponent,
+    PostCommentAllComponent
   ],
   imports: [
     CommonModule,

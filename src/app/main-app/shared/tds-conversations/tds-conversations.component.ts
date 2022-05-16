@@ -487,8 +487,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
       id: this.team.Facebook_PageId,
       name: this.team.Facebook_PageName
     }
-    model.to_id = this.data.psid;
-    model.to_name = this.data.name;
+    model.to =  {
+      id: this.data.psid,
+      name: this.data.name
+    };
     model.message = message;
     model.created_time = (new Date()).toISOString();
 

@@ -48,7 +48,7 @@
         </div>
         <div class="h-full flex flex-col gap-y-1 overflow-y-auto no-scrollbar p-1">
             <ng-container *ngFor="let item of (data$ | async); let i=index">
-                <div *ngIf="item" class="p-2 flex {{currentPost?.fbid == item.fbid ? 'bg-green-400' : 'bg-white'}}" (click)="selectPost(item)">
+                <div *ngIf="item" class="p-2 flex {{ currentPost?.fbid == item.fbid ? 'bg-green-400' : 'bg-white'}}" (click)="selectPost(item)">
                   <div class="mr-2 block">
                     <img tds-image [tdsSrc]="item.picture" alt="{{item.story}}" style="max-width: 120px;max-height: 88px">
                     <div>
@@ -58,13 +58,13 @@
                       <span class="ml-2">
                           <span class="tdsi-comment-on-fill"></span> {{item.count_comments || 0}}
                       </span>
-                      <span *ngIf="compareToday(item.created_time)" class="cursor">
+                      <span *ngIf="compareToday(item.created_time) && item.fbid" class="cursor">
                           <span *ngIf="listBadge[item.fbid] && listBadge[item.fbid].count > 0"> {{listBadge[item.fbid].count}}</span>
                           <span  title="Cập nhật lần cuối lúc: {{item.updated_time | date:'HH:mm dd/MM'}}">
                             {{item.created_time | date:'dd/MM/yyyy HH:mm'}}
                           </span>
                       </span>
-                      <span *ngIf="!compareToday(item.created_time)">
+                      <span *ngIf="!compareToday(item.created_time) && item.fbid">
                           <span *ngIf="listBadge[item.fbid] && listBadge[item.fbid].count > 0">
                               {{listBadge[item.fbid].count}}
                           </span>
@@ -89,7 +89,7 @@
     <!--Chọn bài viết để hiển thị chi tiết-->
     <div class="flex flex-auto flex-col  h-full overflow-hidden">
         <div *ngIf="currentPost && currentTeam">
-          <conversation-post-view [data]="currentPost"></conversation-post-view>
+          <conversation-post-view [data]="currentPost" [team]="currentTeam"></conversation-post-view>
         </div>
         <div *ngIf="!currentPost">
             Hãy chọn một bài viết.
