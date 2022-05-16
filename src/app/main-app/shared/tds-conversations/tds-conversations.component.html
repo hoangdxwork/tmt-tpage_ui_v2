@@ -61,23 +61,19 @@
     <div #MainChat class="flex-auto w-full">
         <div class="w-full relative">
             <div class="inset-0 overflow-y-auto tds-custom-scroll w-full" [ngStyle]="{'height.px': 629}">
-                <div *ngIf="(dataSource$ | async )?.items?.length == 0">
-                    <p>Chưa có nội dung nào</p>
+                <div *ngIf="(dataSource$ | async )?.items?.length == 0" class="h-full w-full flex items-center justify-center">
+                    <span class="text-neutral-1-400 text-heading-1 font-semibold">
+                        Không tìm thấy nội dung
+                    </span>
                 </div>
                 <ng-container *ngFor="let item of (dataSource$ | async )?.items | showAvatar; let i = index ">
                     <div *ngIf="item">
-                      <div *ngIf="item.is_show_break && i!= 0" class="mt-2 mb-2 block" style="text-align: center">
-                              <!-- <tds-alert type="warning" [message]="item.DateCreated"></tds-alert> -->
-                              <!-- <div class="w-full flex flex-row items-center">
-                                <hr class="mt-0 mb-0">
-                                <div>
-                                    {{item.DateCreated| date:'dd/MM/yyyy'}}
-                                </div>
-                                <hr class="mt-0 mb-0">
-                              </div> -->
-                                <hr class="mt-0 mb-0">
-                                    <span [innerHTML]="item.DateCreated"></span>
-                                <hr class="mt-0 mb-0">
+                        <div *ngIf="item.is_show_break && i!= 0" class="w-full relative">
+                            <div class="bg-neutral-3-200 z-10 date-value">
+                                <span class="text-neutral-1-400" [innerHTML]="item.DateCreated | yiDateTimeV3"></span>
+                            </div>
+                            
+                            <div class="date-line mx-3 py-6 z-0"></div>
                         </div>
                         <!-- Thông tin bài post -->
                         <div *ngIf="item.type == 2 && item.object_id && getExtrasPosts((dataSource$ | async), item)" class="pl-2">
@@ -103,7 +99,7 @@
                                                 <p class="story font-semibold" *ngIf="getExtrasPosts((dataSource$ | async), item)?.story">
                                                     {{getExtrasPosts((dataSource$ | async), item).story}}
                                                 </p>
-                                                <p class="message" *ngIf="getExtrasPosts((dataSource$ | async), item)?.message"
+                                                <p class="message font-regular" *ngIf="getExtrasPosts((dataSource$ | async), item)?.message"
                                                     tds-typography ellipsis expandable [ellipsisRows]="2"
                                                     [content]="getExtrasPosts((dataSource$ | async), item)?.message"
                                                     [contentCollapse]="'Ẩn'">
@@ -112,8 +108,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="post-picture" *ngIf="getExtrasPosts((dataSource$ | async), item)?.picture">
-                                        <img tds-image
+                                    <div class="post-picture" *ngIf="getExtrasPosts((dataSource$ | async), item)?.picture && !checkPostPictureError(item)">
+                                        <img tds-image (error)="errorPostPicture(item)"
                                             [tdsSrc]="getExtrasPosts((dataSource$ | async), item)?.picture"
                                             alt="{{getExtrasPosts((dataSource$ | async), item)?.story}}" class="rounded-xl"/>
                                     </div>

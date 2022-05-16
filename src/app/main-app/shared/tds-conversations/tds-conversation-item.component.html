@@ -4,11 +4,11 @@
     <!-- for admin -->
     <div *ngIf="data.is_admin" class="w-full flex flex-row">
       <!-- comment block -->
-      <div class="flex flex-col w-full commnent-block">
-        <div class="flex flex-col w-full items-end chat-main-block group">
+      <div class="flex flex-col w-full items-end commnent-block">
+        <div class="inline-flex w-fit chat-main-block group">
           <div class="flex flex-row justify-end">
             <!-- Thao tác -->
-            <div *ngIf="!data.message?.attachments" class="chat-option hidden group-hover:block">
+            <div *ngIf="!data.message?.attachments" class="chat-option invisible group-hover:visible">
               <div class="select-order flex flex-row-reverse items-center justify-start w-fit h-full pr-3">
                 <span tds-tooltip tooltipTitle="Chọn làm số điện thoại" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer"
                   (click)="selectOrder('phone')">
@@ -24,50 +24,65 @@
                 </span>
               </div>
             </div>
-            <!--Nội dung bình luận-->
-            <div class="chat-body" tds-tooltip tooltipTitle="{{data.DateCreated | date:'dd'}}/{{data.DateCreated | date:'MM'}} {{data.DateCreated | date:'HH:mm'}}">
-              <div class="chat-content {{data.error_message ? 'bg-error-100 text-error-400' : ''}}">
-                <!-- khung nội dung -->
-                <div class="flex flex-auto">
-                  <!-- Tin nhắn hình ảnh -->
-                  <div *ngIf="data.message?.attachments">
-                    <div *ngFor="let att of data.message.attachments.data">
-                      <a *ngIf="att.image_data" (click)="open_gallery(send_picture, att)">
-                        <show-attachment [type]="att.mime_type" [url]="att.image_data?.url"></show-attachment>
-                      </a>
-                      <a *ngIf="att.video_data" (click)="open_gallery(send_picture, att)">
-                        <show-attachment [type]="att.mime_type" [url]="att.video_data?.url" [width]="'320px'" [height]="'240px'"
-                          [isMuted]="false"></show-attachment>
-                      </a>
-                      <a *ngIf="att.file_url" container="body" (click)="open_gallery(send_picture, att)">
-                        <show-attachment [type]="att.mime_type" [url]="att.file_url"></show-attachment>
-                      </a>
-                      <button tds-button color="primary" *ngIf="isErrorAttachment(att, data)"
-                        (click)="refreshAttachment(att)">errorShowAttachment</button>
-                    </div>
-                  </div>
-                  <!-- Nội dung gửi -->
-                  <div *ngIf="data.message_formatted" [innerHTML]="data.message_formatted | formatIconLike | safeHtml" #contentMessage></div>
+            <!-- Lỗi gửi tin -->
+            <div *ngIf="data.error_message || data.status == enumActivityStatus.fail" class="flex items-center pr-2">
+              <span class="tdsi-info-line text-error-400 text-base" *ngIf="!checkErrorMessage(data.error_message)" tds-tooltip tooltipTitle="{{data.error_message}}"></span>
+              <span class="tdsi-reload-fill text-error-400 text-base" tds-tooltip tooltipTitle="Gửi lại" *ngIf="checkErrorMessage(data.error_message)" (click)="retryMessage()"></span>
+            </div>
+            <!-- Nội dung tin nhắn -->
+            <div class="flex flex-col items-end">
+              <!-- Tin nhắn hình ảnh -->
+              <div *ngIf="data.message?.attachments">
+                <div *ngFor="let att of data.message.attachments.data" class="flex flex-row items-center">
+                  <span *ngIf="isErrorAttachment(att, data)" class="tdsi-reload-fill text-error-400 text-base mr-2" tds-tooltip tooltipTitle="Gửi lại" 
+                    (click)="refreshAttachment(att)"></span>
+                  <a *ngIf="att.image_data" (click)="open_gallery(send_picture, att)">
+                    <show-attachment [type]="att.mime_type" [url]="att.image_data?.url"></show-attachment>
+                  </a>
+                  <a *ngIf="att.video_data" (click)="open_gallery(send_picture, att)">
+                    <show-attachment [type]="att.mime_type" [url]="att.video_data?.url" [width]="'320px'" [height]="'240px'"
+                      [isMuted]="false"></show-attachment>
+                  </a>
+                  <a *ngIf="att.file_url" container="body" (click)="open_gallery(send_picture, att)">
+                    <show-attachment [type]="att.mime_type" [url]="att.file_url"></show-attachment>
+                  </a>
                 </div>
-
-                <!-- Lỗi gửi tin -->
-                <div *ngIf="data.error_message || data.status == enumActivityStatus.fail">
-                    <span class="tdsi-information-fill" *ngIf="!checkErrorMessage(data.error_message)" title="{{data.error_message}}"></span>
-                    <span class="tdsi-reload-fill" *ngIf="checkErrorMessage(data.error_message)" title="{{data.error_message}}" (click)="retryMessage()"></span>
+              </div>
+              <!--Bình luận-->
+              <div class="chat-body" *ngIf="data.message_formatted"
+                [ngStyle]="{'background-color': data.error_message ? '#7ECA8F' : '#28A745' }" 
+                tds-tooltip tooltipTitle="{{data.DateCreated | date:'dd'}}/{{data.DateCreated | date:'MM'}} {{data.DateCreated | date:'HH:mm'}}">
+                <div class="chat-content">
+                  <!-- khung nội dung -->
+                  <div class="flex flex-auto">
+                    <!-- Nội dung gửi -->
+                    <div [innerHTML]="data.message_formatted | formatIconLike | safeHtml" #contentMessage></div>
+                  </div>
+                </div>
+              </div>
+              <!-- Thông báo tin nhắn lỗi -->
+              <div class="chat-body" *ngIf="!data.message_formatted && !data.message?.attachments"
+                [ngStyle]="{'background-color': data.error_message ? '#7ECA8F' : '#28A745' }" 
+                tds-tooltip tooltipTitle="{{data.DateCreated | date:'dd'}}/{{data.DateCreated | date:'MM'}} {{data.DateCreated | date:'HH:mm'}}">
+                <div class="chat-content">
+                  <!-- khung nội dung -->
+                  <div class="flex flex-auto">
+                    <span class="text-error-400">Tải tin nhắn thất bại</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <!-- Người gửi -->
-          <div class="d-flex gap-5 chat-date">
-            <div class="chat-sending" *ngIf="data.status == enumActivityStatus.sending">
-              <span title="Đang gửi"><span class="tpi-send-fill"></span> Đang gửi</span>
-            </div>
-            <div class="chat-meta">
-              <span *ngIf="data.CreatedBy" class="chat-by"> Được gửi bởi
-                <span class="fw-5 text-info-500"> {{data.CreatedBy.Name}}</span>
-              </span>
-            </div>
+        </div>
+        <!-- Người gửi -->
+        <div class="chat-date flex justify-end cursor-default">
+          <div class="chat-sending" *ngIf="data.status == enumActivityStatus.sending">
+            <span title="Đang gửi"><span class="tdsi-send-fill pr-1"></span> Đang gửi...</span>
+          </div>
+          <div class="chat-meta">
+            <span *ngIf="data.CreatedBy && data.status != enumActivityStatus.sending" class="chat-by"> Được gửi bởi
+              <span class="text-info-500 font-semibold"> {{data.CreatedBy.Name}}</span>
+            </span>
           </div>
         </div>
       </div>
@@ -82,7 +97,7 @@
       </div>
       <!-- comment block -->
       <div class="flex flex-col w-full commnent-block">
-        <div class="flex flex-row w-full chat-main-block group">
+        <div class="inline-flex w-fit chat-main-block group">
           <!--Nội dung bình luận-->
           <div class="chat-body" tds-tooltip tooltipTitle="{{data.DateCreated | date:'dd'}}/{{data.DateCreated | date:'MM'}} {{data.DateCreated | date:'HH:mm'}}">
             <div class="chat-content {{data.error_message ? 'bg-error-100 text-error-400' : ''}}">
@@ -128,7 +143,7 @@
             </div>
           </div>
           <!-- Thao tác -->
-          <div  *ngIf="!data.message?.attachments" class="chat-option hidden group-hover:block">
+          <div  *ngIf="!data.message?.attachments" class="chat-option invisible group-hover:visible">
             <div class="select-order flex flex-row items-center w-fit h-full ml-3">
               <span tds-tooltip tooltipTitle="Chọn làm số điện thoại" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
                 (click)="selectOrder('phone')">
@@ -158,10 +173,10 @@
           </span>
         </div>
         <!-- Input trả lời bình luận -->
-        <div class="form-reply-comment form-group chat-body bg-white rounded-xl w-full mt-1" *ngIf="isReply == true">
+        <div class="chat-reply bg-white rounded-xl w-full mt-1" *ngIf="isReply == true">
           <div class="flex flex-row w-full">
               <textarea id="inputReply" #contentReply tdsInput placeholder="Nhập nội dung trả lời" class="w-full resize-none" (change)="replyComment($event)"></textarea>
-              <div class="flex-send ml-auto mx-2">
+              <div class="mx-2">
                   <div class="icon-send flex flex-row">
                       <span class="sub cursor-pointer mr-2" *ngIf="isPrivateReply" (onProductSelected)="onProductSelected($event)"
                           title="Sản phẩm" product-show-button>
@@ -209,7 +224,7 @@
                     </tpage-avatar-facebook>
               </div>
               <div class="flex flex-col w-full">
-                <div class="flex flex-row w-full group">
+                <div class="inline-flex w-fit group">
                   <div class="chat-body" tds-tooltip tooltipTitle="{{child.created_time | date:'dd'}}/{{child.created_time | date:'MM'}} {{child.created_time | date:'HH:mm'}}">
                       <div class="chat-content rounded msg pb-0 d-flex" style="gap: 10px">
                           <div class="pre mb-0 pb-2 border-activety-comment" *ngIf="child.message_format">
@@ -222,7 +237,7 @@
                           </div>
                       </div>
                   </div>
-                  <div  *ngIf="!child.message?.attachments" class="chat-option hidden group-hover:block">
+                  <div  *ngIf="!child.message?.attachments" class="chat-option invisible group-hover:visible">
                     <div class="select-order flex flex-row items-center w-fit h-full ml-3">
                       <span tds-tooltip tooltipTitle="Chọn làm số điện thoại" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
                         (click)="selectOrder('phone')">
@@ -265,10 +280,20 @@
       </div>
       <!-- comment block -->
       <div class="flex flex-col w-full commnent-block">
-        <div class="flex flex-row w-full chat-main-block group">
-          <!--Nội dung bình luận-->
-          <div class="chat-body" tds-tooltip tooltipTitle="{{data.DateCreated | date:'dd'}}/{{data.DateCreated | date:'MM'}} {{data.DateCreated | date:'HH:mm'}}">
-            <!--Chat nd + hình ảnh-->
+        <!--Chat chỉ gửi hình ảnh-->
+        <div *ngIf="data.Image" class="img-outer">
+          <img tds-image [tdsSrc]="data.Image" class="img-responsive img-thumbnail">
+        </div>
+        <!-- Hình ảnh -->
+        <div *ngIf="data.comment?.attachment" class="pb-2 w-full">
+          <img tds-image *ngIf="data.comment.attachment.type != 'sticker'"
+            [tdsSrc]="data.comment.attachment.media.image.src" />
+          <img tds-image *ngIf="data.comment.attachment.type == 'sticker'"
+            [tdsSrc]="data.comment.attachment.media.image.src" />
+        </div>
+        <div class="inline-flex w-fit chat-main-block group">
+          <!-- Nội dung bình luận -->
+          <div class="chat-body w-full" tds-tooltip tooltipTitle="{{data.DateCreated | date:'dd'}}/{{data.DateCreated | date:'MM'}} {{data.DateCreated | date:'HH:mm'}}">
             <div class="chat-content">
               <div class="flex flex-auto">
                 <!--Nội dung-->
@@ -276,26 +301,15 @@
                     <div class="name font-semibold pb-1">{{data.comment.from.name}}</div>
                     <div class="content-message font-regular" #contentMessage>{{data.comment.message}}</div>
                 </div>
-                <!-- Hình ảnh -->
-                <div *ngIf="data.comment?.attachment">
-                  <img tds-image *ngIf="data.comment.attachment.type != 'sticker'"
-                    [tdsSrc]="data.comment.attachment.media.image.src" />
-                  <img tds-image *ngIf="data.comment.attachment.type == 'sticker'"
-                    [tdsSrc]="data.comment.attachment.media.image.src" />
-                </div>
-              </div>
-              <!-- Lỗi gửi tin -->
-              <div *ngIf="data.error_message || data.status == enumActivityStatus.fail">
-                  <span class="tdsi-information-fill"  title="{{data.error_message}}"></span>
-              </div>
-              <!--Chat chỉ gửi hình ảnh-->
-              <div *ngIf="data.Image" class="img-outer">
-                <img tds-image [tdsSrc]="data.Image" class="img-responsive img-thumbnail">
               </div>
             </div>
           </div>
+          <!-- Lỗi gửi tin -->
+          <div *ngIf="data.error_message || data.status == enumActivityStatus.fail">
+            <span class="tdsi-information-fill"  title="{{data.error_message}}"></span>
+          </div>
           <!-- Thao tác -->
-          <div  *ngIf="!data.message?.attachments" class="chat-option hidden group-hover:block">
+          <div  *ngIf="!data.message?.attachments" class="chat-option invisible group-hover:visible">
             <div class="select-order flex flex-row items-center w-fit h-full pl-3">
               <span tds-tooltip tooltipTitle="Chọn làm số điện thoại" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
                 (click)="selectOrder('phone')">
@@ -315,40 +329,40 @@
         <!--Thích hiện ẩn + CreatedBy.Name-->
         <div class="chat-meta bg-transparent text-neutral-1-600 text-caption-2 font-regular mt-1.5">
           <div class="chat-acts flex flex-row items-center" style="position: relative;">
-            <a class="link-act cursor-pointer" (click)="clickReply(data.comment ? data.comment.can_remove : null)">
+            <a class="link-act cursor-pointer hover:underline" (click)="clickReply(data.comment ? data.comment.can_remove : null)">
               Phản hồi
             </a>
 
             <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 
-            <a class="link-act cursor-pointer" (click)="addLike(data.comment ? data.comment.can_like : null)">
+            <a class="link-act cursor-pointer hover:underline" (click)="addLike(data.comment ? data.comment.can_like : null)">
               {{data.comment.user_likes ? 'Đã thích' : 'Thích'}}
             </a>
 
             <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 
 
-            <a class="link-act cursor-pointer" (click)="hideComment(data.comment ? data.comment.can_hide: null)">
+            <a class="link-act cursor-pointer hover:underline" (click)="hideComment(data.comment ? data.comment.can_hide: null)">
 
               {{data.comment.is_hidden ? 'Hiện' : 'Ẩn'}}
             </a>
 
             <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 
-            <span *ngIf="data.DateCreated" class="date-diff cursor-default" tds-tooltip
+            <span *ngIf="data.DateCreated" class="date-diff cursor-pointer hover:underline" tds-tooltip
               tooltipTitle="{{data.DateCreated | date:'dd'}} Tháng {{data.DateCreated | date:'MM'}}, {{data.DateCreated | date:'yyyy'}} lúc {{data.DateCreated | date:'HH:mm'}}">
               {{data.DateCreated | yiDiffDateTime}}
             </span>
           </div>
           <span class="chat-by font-regular" *ngIf="data.IsHandledBySystem && data.CreatedBy"> Được gửi bởi
-            <span class="fw-5 font-semibold" style="color: #03468b;">{{data.CreatedBy.Name}}</span>
+            <span class="font-semibold" style="color: #03468b;">{{data.CreatedBy.Name}}</span>
           </span>
         </div>
         <!-- Input trả lời bình luận -->
-        <div class="form-reply-comment form-group chat-body bg-white rounded-xl w-full mt-1" *ngIf="isReply == true">
+        <div class="chat-reply bg-white rounded-xl w-full mt-1" *ngIf="isReply == true">
           <div class="flex flex-row w-full">
               <textarea id="inputReply" #contentReply tdsInput placeholder="Nhập nội dung trả lời" class="w-full resize-none" (change)="replyComment($event)"></textarea>
-              <div class="flex-send ml-auto mx-2">
+              <div class="mx-2">
                   <div class="icon-send flex flex-row">
                       <span class="sub cursor-pointer mr-2" *ngIf="isPrivateReply" (onProductSelected)="onProductSelected($event)"
                           title="Sản phẩm" product-show-button>
@@ -396,7 +410,7 @@
                     </tpage-avatar-facebook>
               </div>
               <div class="flex flex-col w-full">
-                <div class="flex flex-row w-full group">
+                <div class="inline-flex w-fit group">
                   <div class="chat-body" tds-tooltip tooltipTitle="{{child.created_time | date:'dd'}}/{{child.created_time | date:'MM'}} {{child.created_time | date:'HH:mm'}}">
                       <div class="chat-content flex-auto">
                           <div class="border-activety-comment" *ngIf="child.message_format">
@@ -409,7 +423,7 @@
                           </div>
                       </div>
                   </div>
-                  <div  *ngIf="!child.message?.attachments" class="chat-option  group-hover:block">
+                  <div  *ngIf="!child.message?.attachments" class="chat-option invisible group-hover:visible">
                     <div class="select-order flex flex-row items-center w-fit h-full ml-3">
                       <span tds-tooltip tooltipTitle="Chọn làm số điện thoại" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
                         (click)="selectOrder('phone')">
@@ -428,7 +442,7 @@
                 </div>
                 <div class="chat-meta text-neutral-1-600 text-caption-2 font-regular mt-1.5" style="position: relative;">
                   <div class="chat-acts flex flex-row items-center" style="position: relative;">
-                    <span *ngIf="child.created_time" class="date-diff cursor-default" tds-tooltip
+                    <span *ngIf="child.created_time" class="date-diff cursor-pointer hover:underline" tds-tooltip
                       tooltipTitle="{{child.created_time | date:'dd'}} Tháng {{child.created_time | date:'MM'}}, {{child.created_time | date:'yyyy'}} lúc {{child.created_time | date:'HH:mm'}}">
                       {{child.created_time | yiDiffDateTime}}
                     </span>
@@ -443,122 +457,182 @@
 
   <!--Lọc theo comments v2 -->
   <div *ngIf="!data.comment && data.type == 2" class="log-comment-v2 w-full mb-3 flex {{ data.is_admin ? 'is_admin' : 'is_client' }} ">
-    <!-- Avatar Facebook_PageId -->
-    <div class="mr-2">
-      <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'"
-        [psid]="!data.is_admin ? data.from_id : team.Facebook_PageId" [token]="team?.Facebook_PageToken">
-      </tpage-avatar-facebook>
-    </div>
-    <!--Nội dung bình luận-->
-    <div class="chat-body max-w-[80%] p-2">
-      <!--Nội dung-->
-      <div class="chat-content d-flex">
-        <div class="" *ngIf="data.message_formatted">
-          <div class="text-accent-3">Lỗi hiển thị bài viết</div>
-          <div #contentMessage class="content-message" [innerHTML]="data.message_formatted | formatIconLike | safeHtml"></div>
+    <div class="w-full flex flex-row">
+      <!-- Avatar Facebook_PageId -->
+      <div class="mr-2">
+        <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'"
+          [psid]="!data.is_admin ? data.from_id : team.Facebook_PageId" [token]="team?.Facebook_PageToken">
+        </tpage-avatar-facebook>
+      </div>
+      <!--Nội dung bình luận-->
+      <div class="flex flex-col w-full commnent-block">
+        <!--Chat chỉ gửi hình ảnh-->
+        <div *ngIf="data.Image" class="img-outer">
+          <img tds-image [tdsSrc]="data.Image" class="img-responsive img-thumbnail">
         </div>
-        <div class="" *ngIf="!data.message_formatted">
-          <div class="content-message" #contentMessage>
-            {{data.message_formatted | formatIconLike | safeHtml}
+        <div class="inline-flex w-fit chat-main-block group">
+          <!--Nội dung-->
+          <div class="chat-body w-full" tds-tooltip tooltipTitle="{{data.DateCreated | date:'dd'}}/{{data.DateCreated | date:'MM'}} {{data.DateCreated | date:'HH:mm'}}">
+            <div class="chat-content">
+              <div *ngIf="data.message_formatted">
+                <span class="text-error-400">Lỗi hiển thị bài viết</span>
+                <div #contentMessage class="content-message" [innerHTML]="data.message_formatted | formatIconLike | safeHtml"></div>
+              </div>
+              <div class="" *ngIf="!data.message_formatted">
+                <div class="content-message" #contentMessage>
+                  {{data.message_formatted | formatIconLike | safeHtml}}
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Lỗi gửi tin -->
+          <div *ngIf="data.error_message || data.status == enumActivityStatus.fail">
+            <span class="tdsi-information-fill"  title="{{data.error_message}}"></span>
+          </div>
+          <!-- Thao tác -->
+          <div  *ngIf="!data.message?.attachments" class="chat-option invisible group-hover:visible">
+            <div class="select-order flex flex-row items-center w-fit h-full pl-3">
+              <span tds-tooltip tooltipTitle="Chọn làm số điện thoại" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+                (click)="selectOrder('phone')">
+                <i class="tdsi-call-fill text-xs text-white"></i>
+              </span>
+              <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+                (click)="selectOrder('address')">
+                <i class="tdsi-pin-fill text-xs text-white"></i>
+              </span>
+              <span tds-tooltip tooltipTitle="Chọn làm ghi chú" class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
+                (click)="selectOrder('note')">
+                <i class="tdsi-note-2-fill text-xs text-white"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+        <!--Thích hiện ẩn + CreatedBy.Name-->
+        <div class="chat-meta bg-transparent text-neutral-1-600 text-caption-2 font-regular mt-1.5">
+          <div class="chat-acts flex flex-row items-center" style="position: relative;">
+            <!-- <a class="link-act cursor-pointer hover:underline" (click)="clickReply(data.comment ? data.comment.can_remove : null)">
+              Phản hồi
+            </a>
+
+            <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
+
+            <a class="link-act cursor-pointer hover:underline" (click)="addLike(data.comment ? data.comment.can_like : null)">
+              {{data.comment.user_likes ? 'Đã thích' : 'Thích'}}
+            </a>
+
+            <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
+
+
+            <a class="link-act cursor-pointer hover:underline" (click)="hideComment(data.comment ? data.comment.can_hide: null)">
+
+              {{data.comment.is_hidden ? 'Hiện' : 'Ẩn'}}
+            </a>
+
+            <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div> -->
+
+            <span *ngIf="data.DateCreated" class="date-diff cursor-pointer hover:underline" tds-tooltip
+              tooltipTitle="{{data.DateCreated | date:'dd'}} Tháng {{data.DateCreated | date:'MM'}}, {{data.DateCreated | date:'yyyy'}} lúc {{data.DateCreated | date:'HH:mm'}}">
+              {{data.DateCreated | yiDiffDateTime}}
+            </span>
+          </div>
+          <span class="chat-by font-regular" *ngIf="data.IsHandledBySystem && data.CreatedBy"> Được gửi bởi
+            <span class="font-semibold" style="color: #03468b;">{{data.CreatedBy.Name}}</span>
+          </span>
+        </div>
+        <!-- Input trả lời bình luận -->
+        <div class="chat-reply bg-white rounded-xl w-full mt-1" *ngIf="isReply == true">
+          <div class="flex flex-row w-full">
+              <textarea id="inputReply" #contentReply tdsInput placeholder="Nhập nội dung trả lời" class="w-full resize-none" (change)="replyComment($event)"></textarea>
+              <div class="mx-2">
+                  <div class="icon-send flex flex-row">
+                      <span class="sub cursor-pointer mr-2" *ngIf="isPrivateReply" (onProductSelected)="onProductSelected($event)"
+                          title="Sản phẩm" product-show-button>
+                        <i class="tdsi-product-line text-xl"></i>
+                      </span>
+
+                      <span class="sub cursor-pointer mr-2" container="body"
+                          placement="auto"
+                          tds-popover popoverTrigger="click"
+                          [popoverContent]="infoEmojiMart"
+                          [popoverAutoClose]="true"
+                          [popoverBackdrop]="true"
+                          popoverPlacement="top">
+                          <i class="tdsi-emotion-line text-xl"></i>
+                          <ng-template #infoEmojiMart>
+                            <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
+                          </ng-template>
+                          <!-- <ng-template #popContent>
+                          <div (onIconShowButtonSelected)="onIconShowButtonSelected($event)" icon-show-button></div>
+                          </ng-template> -->
+                      </span>
+
+                      <span class="sub cursor-pointer" (onQuickReplySelected)="onQuickReplySelected($event)" title="Tin nhắn nhanh"
+                          placement="left" quick-reply-button>
+                          <i class="tdsi-message-template-line text-xl"></i>
+                      </span>
+                  </div>
+              </div>
+          </div>
+          <!-- Check Private Reply -->
+          <div class="quick-message d-flex gap-5">
+              <div class="check gap-5">
+                  <tds-checkbox [checked]="isPrivateReply" (change)="changeIsPrivateReply()">
+                      Gửi về tin nhắn
+                  </tds-checkbox>
+              </div>
+          </div>
+        </div>
+        <!-- Phản hồi bình luận -->
+        <div *ngIf="children" class="chat-list">
+          <div class="chat-item mt-2 chat-comment flex flex-row" *ngFor="let child of children; let i = index">
+              <div class="avatar mr-2">
+                      <tpage-avatar-facebook [shape]="'circle'" [size]="36"
+                      [psid]="child.from.id" [token]="team?.Facebook_PageToken">
+                    </tpage-avatar-facebook>
+              </div>
+              <div class="flex flex-col w-full">
+                <div class="inline-flex w-fit group">
+                  <div class="chat-body" tds-tooltip tooltipTitle="{{child.created_time | date:'dd'}}/{{child.created_time | date:'MM'}} {{child.created_time | date:'HH:mm'}}">
+                      <div class="chat-content flex-auto">
+                          <div class="border-activety-comment" *ngIf="child.message_format">
+                              <div class="name font-semibold pb-1">{{child.from.name}}</div>
+                              <div class="content-message font-regular" [innerHTML]="child.message_format | safeHtml"></div>
+                          </div>
+                          <div class="border-activety-comment" *ngIf="!child.message_format">
+                              <div class="name font-semibold pb-1">{{child.from.name}}</div>
+                              <div class="content-message font-regular">{{child.message}}</div>
+                          </div>
+                      </div>
+                  </div>
+                  <div  *ngIf="!child.message?.attachments" class="chat-option invisible group-hover:visible">
+                    <div class="select-order flex flex-row items-center w-fit h-full ml-3">
+                      <span tds-tooltip tooltipTitle="Chọn làm số điện thoại" class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+                        (click)="selectOrder('phone')">
+                        <i class="tdsi-call-fill text-xs text-white"></i>
+                      </span>
+                      <span tds-tooltip tooltipTitle="Chọn làm địa chỉ" class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+                        (click)="selectOrder('address')">
+                        <i class="tdsi-pin-fill text-xs text-white"></i>
+                      </span>
+                      <span tds-tooltip tooltipTitle="Chọn làm ghi chú" class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
+                        (click)="selectOrder('note')">
+                        <i class="tdsi-note-2-fill text-xs text-white"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="chat-meta text-neutral-1-600 text-caption-2 font-regular mt-1.5" style="position: relative;">
+                  <div class="chat-acts flex flex-row items-center" style="position: relative;">
+                    <span *ngIf="child.created_time" class="date-diff cursor-pointer hover:underline" tds-tooltip
+                      tooltipTitle="{{child.created_time | date:'dd'}} Tháng {{child.created_time | date:'MM'}}, {{child.created_time | date:'yyyy'}} lúc {{child.created_time | date:'HH:mm'}}">
+                      {{child.created_time | yiDiffDateTime}}
+                    </span>
+                  </div>
+                </div>
+              </div>
           </div>
         </div>
       </div>
-      <!-- Thao tác -->
-      <div *ngIf="!data.message?.attachments">
-        <div class="select-order" >
-          <span class="tdsi-call-incoming-fill" (click)="selectOrder('phone')" title="Chọn làm số điện thoại"></span>
-          <span class="tdsi-location-line" (click)="selectOrder('address')" title="Chọn làm địa chỉ"></span>
-          <span class="tdsi-note-fill" (click)="selectOrder('note')" title="Chọn làm ghi chú"></span>
-        </div>
-      </div>
-
-      <!-- Lỗi gửi tin -->
-      <div *ngIf="data.error_message || data.status == enumActivityStatus.fail">
-        <span class="tdsi-information-fill"  title="{{data.error_message}}"></span>
-      </div>
-
-      <!--Chat chỉ gửi hình ảnh-->
-      <div *ngIf="data.Image" class="img-outer">
-        <img tds-image [tdsSrc]="data.Image" class="">
-      </div>
-       <!--Thích hiện ẩn + CreatedBy.Name-->
-      <div class="chat-meta  bg-neutral-3-50">
-        <div class="chat-acts">
-          <a class="link-act">Phản hồi</a> -
-          <a class="link-act"> {{'Thích'}}</a> -
-          <a class="link-act"> {{'Ẩn'}}</a> -
-          <span class="sep"></span>
-          <span *ngIf="data.DateCreated" class="date-diff"
-            title="{{data.DateCreated | date:'dd'}} Tháng {{data.DateCreated | date:'MM'}}, {{data.DateCreated | date:'yyyy'}} lúc {{data.DateCreated | date:'HH:mm'}}">
-            {{data.DateCreated | yiDiffDateTime}}
-          </span>
-        </div>
-        <span class="chat-by" *ngIf="data.IsHandledBySystem && data.CreatedBy"> Được gửi bởi
-          <span>{{data.CreatedBy.Name}}</span>
-        </span>
-      </div>
-       <!-- Input trả lời bình luận -->
-      <!-- Xử lý tại đây -->
-      <div class="form-reply-comment form-group mt-1" *ngIf="isReply == true">
-        <div class="d-flex align-items-center">
-            <div id="inputReply" #contentReply class="content-reply w-100  form-control" (keydown.enter)="replyComment($event)"
-                data-placeholder="Nhập nội dung trả lời" contenteditable="true">
-            </div>
-            <div class="flex-send ml-auto mr-2">
-                <div class="icon-send d-flex">
-                    <a class="sub" *ngIf="isPrivateReply" (onProductSelected)="onProductSelected($event)"
-                        title="Sản phẩm" product-show-button></a>
-                    <a class="sub" container="body"> <span class="tpi-emoji"></span></a>
-                    <ng-template #popContent>
-                        <div (onIconShowButtonSelected)="onIconShowButtonSelected($event)" icon-show-button></div>
-                    </ng-template>
-                    <a class="sub" (onQuickReplySelected)="onQuickReplySelected($event)" title="Tin nhắn nhanh"
-                        placement="left" quick-reply-button></a>
-                </div>
-            </div>
-        </div>
-        <!-- Check Private Reply -->
-        <div class="quick-message d-flex gap-5">
-            <div class="check gap-5">
-                <input type="checkbox" [checked]="isPrivateReply" (change)="changeIsPrivateReply()"
-                    id="id_replycomment_{{data.id}}">
-                <label class="small font-italic d-flex align-items-center cursor mb-0"
-                    for="id_replycomment_{{data.id}}">Gửi về tin nhắn</label>
-            </div>
-        </div>
-    </div>
-      <!-- Phản hồi bình luận -->
-      <div *ngIf="children" class="chat-list">
-        <div class="chat-item mt-2 chat-comment d-flex" *ngFor="let child of children; let i = index">
-            <div class="avatar w-32">
-                <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" *ngIf="data.is_show_avatar"
-                  [psid]="child.from.id" [token]="team?.Facebook_PageToken">
-                </tpage-avatar-facebook>
-            </div>
-            <div class="chat-body">
-                <div class="chat-content rounded msg pb-0 d-flex" style="gap: 10px">
-                    <div class="pre mb-0 pb-2 border-activety-comment" *ngIf="child.message_format">
-                        <div class="name">{{child.from.name}}</div>
-                        <div class="content-message" [innerHTML]="child.message_format | safeHtml"></div>
-                    </div>
-                    <div class="pre mb-0 pb-2 border-activety-comment" *ngIf="!child.message_format">
-                        <div class="name">{{child.from.name}}</div>
-                        <div class="content-message">{{child.message}}</div>
-                    </div>
-                    <div class="" *ngIf="!data.message?.attachments">
-                      <span class="tdsi-call-incoming-fill" (click)="selectOrder('phone')" title="Chọn làm số điện thoại"></span>
-                      <span class="tdsi-location-line" (click)="selectOrder('address')" title="Chọn làm địa chỉ"></span>
-                      <span class="tdsi-note-fill" (click)="selectOrder('note')" title="Chọn làm ghi chú"></span>
-                    </div>
-                </div>
-                <div class="chat-meta" style="position: relative;">
-                    <span *ngIf="child.LastUpdated || child.created_time" class="date-diff" container="body">
-                        {{child.LastUpdated || child.created_time | yiDiffDateTime}}
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
     </div>
   </div>
 </div>
