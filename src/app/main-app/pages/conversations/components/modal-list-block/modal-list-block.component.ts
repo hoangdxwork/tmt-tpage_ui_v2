@@ -1,10 +1,12 @@
-import { TDSMessageService, TDSModalRef, TDSModalService } from 'tmt-tang-ui';
+import { TDSHelperObject, TDSMessageService, TDSModalRef, TDSModalService } from 'tmt-tang-ui';
 import { finalize } from 'rxjs/operators';
 import { TDSHelperArray } from 'tmt-tang-ui';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { MDBPhoneReportDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { Message } from 'src/app/lib/consts/message.const';
+import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
+import { ModalBlockPhoneComponent } from '../modal-block-phone/modal-block-phone.component';
 
 @Component({
   selector: 'modal-list-block',
@@ -26,7 +28,9 @@ export class ModalListBlockComponent implements OnInit {
     private crmMatchingService: CRMMatchingService,
     private message: TDSMessageService,
     private modalRef: TDSModalRef,
-    private modal: TDSModalService
+    private modal: TDSModalService,
+    private viewContainerRef: ViewContainerRef,
+    private crmTeamService: CRMTeamService
   ) { }
 
   ngOnInit(): void {
@@ -54,7 +58,23 @@ export class ModalListBlockComponent implements OnInit {
   }
 
   onReportPhone() {
+    let phone = this.phone;
 
+    const modal = this.modal.create({
+      title: '',
+      content: ModalBlockPhoneComponent,
+      viewContainerRef: this.viewContainerRef,
+      size: 'md',
+      componentParams: {
+        phone: phone
+      }
+    });
+
+    modal.afterClose.subscribe(result => {
+      if (TDSHelperObject.hasValue(result)) {
+        // Cập nhật form PhoneReport.value;
+      }
+    });
   }
 
   unReportPhone() {
