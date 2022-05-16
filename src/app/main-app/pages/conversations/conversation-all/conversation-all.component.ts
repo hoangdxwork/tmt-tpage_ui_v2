@@ -37,6 +37,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   indeterminate: boolean = false;
   setOfCheckedId = new Set<string>();
 
+  currentOrderTab: number = 0;
+
   letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
   constructor(private message: TDSMessageService,
@@ -198,6 +200,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   refreshCheckedStatus(): void {
     this.checked = this.lstMatchingItem.every(item => this.setOfCheckedId.has(item.id));
     this.indeterminate = this.lstMatchingItem.some(item => this.setOfCheckedId.has(item.id)) && !this.checked;
+  }
+
+  onTabOrder(event: boolean) {
+    event && (this.currentOrderTab = 1);
   }
 
   ngOnDestroy(): void {

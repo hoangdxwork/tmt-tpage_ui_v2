@@ -14,7 +14,7 @@
                     <i class="tdsi-unblock-fill mr-1"></i> Đang chặn
                 </span>
               </tds-tag>
-              <tds-tag status='error' type="outline" size="sm" *ngIf="!isReport">
+              <tds-tag status='success' type="outline" size="sm" *ngIf="!isReport">
                 <span class="flex items-center text-xs">
                     <i class="tdsi-unblock-fill mr-1"></i> Không chặn
                 </span>
@@ -49,16 +49,16 @@
           </thead>
           <tbody>
               <tr *ngFor="let reason of data?.reasons; let index = index">
-                  <td class="text-body-2">{{ reason.created_time | date:"dd-MM-yyyy HH:mm"}}</td>
+                  <td class="text-body-2">{{ reason.created_time | date:"HH:mm, dd/MM/yyyy"}}</td>
                   <td class="text-body-2">{{ reason.reason }}</td>
                   <td class="text-body-2">{{ reason.company }}</td>
-                  <td class="text-body-2">
-                    <button tds-button-icon color="secondary" size="sm">
+                  <td class="text-body-2 flex gap-x-1">
+                    <button tds-button-icon color="secondary" size="sm" (click)="editReason(index)">
                       <span class="flex items-center">
                         <i class="tdsi-edit-fill"></i>
                       </span>
                     </button>
-                    <button tds-button-icon color="secondary" size="sm">
+                    <button tds-button-icon color="secondary" size="sm" (click)="removeReason(index)">
                       <span class="flex items-center">
                         <i class="tdsi-trash-fill"></i>
                       </span>

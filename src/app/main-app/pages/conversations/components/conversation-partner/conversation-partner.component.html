@@ -1,6 +1,6 @@
 <div *ngIf="data?.id">
   <form [formGroup]="_form" novalidate>
-    <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-y-auto tds-custom-scroll">
+    <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-y-auto tds-custom-scroll flex-col flex">
       <div class="bg-white px-6 py-4">
         <div class="flex gap-6">
           <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="data.psid" [token]="team?.Facebook_PageToken">
@@ -46,7 +46,8 @@
                 <div class="text-neutral-1-900 text-body-2 font-regular font-sans">
                   {{_form.controls['Phone'].value || 'Chưa có SĐT'}}
                 </div>
-                <div class="tdsi-success-fill text-xl text-primary-1" (click)="showModalListBlock()"></div>
+                <div class="tdsi-success-fill text-xl text-primary-1" *ngIf="!_form.value?.PhoneReport" (click)="showModalListBlock()"></div>
+                <div class="tdsi-success-fill text-xl text-accent-3" *ngIf="_form.value?.PhoneReport" (click)="showModalListBlock()"></div>
             </div>
           </div>
           <div class="flex gap-2 items-center">
@@ -120,7 +121,9 @@
           </div>
         </div>
       </div>
-      <div class="pt-1" *ngIf="!isEditPartner">
+
+      <!-- Phiếu bán hàng -->
+      <div class="pt-1" *ngIf="!isEditPartner && totalBill > 0">
         <tds-collapse [expandIconPosition]="'right'" class="bg-white">
           <tds-collapse-panel [header]="headerSalesDetails" [active]="true" [disabled]=false
             [expandedIcon]="'tdsi-arrow-up-line'">
@@ -130,7 +133,7 @@
                 </tds-avatar>
                 <div class="flex flex-col gap-1">
                   <div class="text-neutral-1-400 font-regular text-body-2 font-sans">Phiếu bán hàng gần nhất</div>
-                  <div class="flex gap-2" *ngIf="lastBill">
+                  <div class="flex gap-2 items-center" *ngIf="lastBill">
                     <div class="text-info-500 text-header-1 font-sans font-semibold">
                       #{{ lastBill.Number || 'N/A' }}</div>
                     <div>
@@ -150,30 +153,30 @@
                   {{ lastBill.CarrierName }}
                 </div>
                 <div class="text-body-2 font-regular font-sans text-neutral-1-900">
-                  [ {{ lastBill.ShowState }} - <span class="text-info-500 pl-0.5">{{ lastBill.TrackingRef }}</span>]
+                  [ {{ lastBill.ShowState }} - <span class="text-info-500 pl-0.5">{{ lastBill.TrackingRef || '#N/A' }}</span>]
                 </div>
               </div>
               <div class="text-body-2 font-regular font-sans text-neutral-1-400">
-                Tổng tiền: <span class="text-neutral-1-900 pl-0.5">{{ lastBill.AmountTotal }} (Tiền mặt)</span>
+                Tổng tiền: <span class="text-neutral-1-900 pl-0.5">{{ lastBill.AmountTotal }} ({{ lastBill.PaymentJournalName }})</span>
               </div>
               <div class="text-body-2 font-regular font-sans text-neutral-1-400">
-                Thời gian giao hàng: <span class="text-neutral-1-900 pl-0.5">11:11, 11/11/1111</span>
+                Thời gian giao hàng: <span class="text-neutral-1-900 pl-0.5">{{ lastBill.DateCreated | date: "HH:mm, dd/MM/yyyy" }}</span>
               </div>
               <div class="text-body-2 font-regular font-sans text-neutral-1-400">
                 {{ lastBill.Phone }} - {{ lastBill.Address }} </div>
-              <div class="text-body-2 font-semibold font-sans text-accent-3">Chưa có filed này</div>
+              <div class="text-body-2 font-semibold font-sans text-accent-3"> {{ lastBill.DeliveryNote }} </div>
             </div>
           </tds-collapse-panel>
         </tds-collapse>
       </div>
-      <div class="pt-1" *ngIf="!isEditPartner">
+      <div class="pt-1" *ngIf="!isEditPartner && totalBill > 0">
         <tds-collapse [expandIconPosition]="'right'" class="bg-white" [bordered]="false">
           <tds-collapse-panel [header]="headerListSales" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
             <ng-template #headerListSales>
               <div class="flex items-center gap-4">
                 <div class="text-neutral-1-900 font-semibold text-header-1 font-sans">Phiếu bán hàng</div>
                 <div>
-                  <tds-badge [standalone]="true" [count]="5"></tds-badge>
+                  <tds-badge [standalone]="true" [count]="totalBill"></tds-badge>
                 </div>
               </div>
             </ng-template>
@@ -206,7 +209,7 @@
                             #{{bill.Number || 'N/A'}}
                           </div>
                           <div class="text-neutral-1-400 text-caption-2 font-regular">
-                            {{bill.DateCreated | date:'dd/MM/yyyy HH:mm'}}
+                            {{bill.DateCreated | date: "HH:mm, dd/MM/yyyy"}}
                           </div>
                         </div>
                         <div class="text-neutral-1-900 text-body-2 font-semibold pr-10">
@@ -230,7 +233,7 @@
                           <div><img src="/assets/images/conversation/avatar-ghn.svg">
                           </div>
                           <div class="font-semibold text-body-2 font-sans text-neutral-1-900">
-                            {{ bill.CarrierName }} - <span class="text-info-500">{{ lastBill?.TrackingRef }}</span>
+                            {{ bill.CarrierName }} - <span class="text-info-500">{{ lastBill?.TrackingRef || '#N/A' }}</span>
                           </div>
                         </div>
                       </div>
@@ -242,6 +245,18 @@
           </tds-collapse-panel>
         </tds-collapse>
       </div>
+      <div class="pt-1 flex-auto" *ngIf="!isEditPartner && totalBill < 1">
+        <div class="flex flex-col gap-4 p-4 items-center bg-white h-full">
+          <img src="../../../assets/images/shop-empty.svg" alt="" class="mt-24 w-[110px] h-[82px]">
+          <span class="text-neutral-1-400 font-normal">Chưa có phiếu bán hàng nào</span>
+          <button tds-button color="primary" class="mt-3.5" (click)="createOrder()">
+            <span class="flex items-center">
+              <i class="tdsi-add-fill text-lg leading-none mr-2"></i>Tạo đơn hàng
+            </span>
+          </button>
+        </div>
+      </div>
+
       <!-- Edit khách hàng -->
       <div class="pt-1" *ngIf="isEditPartner">
         <div class="flex flex-col gap-4 bg-white p-4">
