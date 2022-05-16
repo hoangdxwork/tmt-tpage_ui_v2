@@ -617,7 +617,6 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
     return model;
   }
 
-
   createDataAttachments(attachment_url: string) {
     const model = {} as any;
     if (TDSHelperString.hasValueString(attachment_url)) {

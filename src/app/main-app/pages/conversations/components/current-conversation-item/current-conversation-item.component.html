@@ -1,6 +1,6 @@
 <div *ngIf="item" class="text-body-2 text-neutral-1-900">
   <div class="w-full relative overflow-hidden">
-    <div [ngClass]="activeMatchingItem && (activeMatchingItem?.id == item.id)?'absolute h-full w-1 left-0 bg-blue-500':''"></div>
+    <div [ngClass]="activeCvsItem && (activeCvsItem?.id == item.id)?'absolute h-full w-1 left-0 bg-blue-500':''"></div>
     <div class="p-3.5 bg-white flex flex-col gap-3 w-full hover:bg-neutral-3-50">
       <div class="flex gap-3">
         <div>

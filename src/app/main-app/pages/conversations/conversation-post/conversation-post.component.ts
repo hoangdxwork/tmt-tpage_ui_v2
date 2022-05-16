@@ -66,30 +66,33 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   ngOnInit(): void {
     this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe(([team, params]: any) => {
       if (!TDSHelperObject.hasValue(team)) {
-          this.onRedirect();
-      } else {
-        this.type = params?.params?.type;
-        this.setParamsUrl(params.params);
+        return this.onRedirect();
+      }
+      // TODO: change Team
+      if(team?.Id != this.currentTeam?.Id) {
+        this.fetchPosts(team);
         this.setCurrentTeam(team);
+      }
 
-        if(TDSHelperString.isString(params?.params?.post_id)) {
-          this.postId = params?.params?.post_id;
-        }
+      this.type = params?.params?.type;
+      this.setParamsUrl(params.params);
 
-        let exist = (TDSHelperString.isString(this.currentPost?.fbid) != TDSHelperString.isString(this.paramsUrl.post_id))
-          || (!TDSHelperString.isString(this.currentPost?.fbid) && !TDSHelperString.isString(this.paramsUrl?.post_id));
+      if(TDSHelperString.isString(params?.params?.post_id)) {
+        this.postId = params?.params?.post_id;
+      }
 
-        if(exist) {
-          this.fetchPosts();
-          this.loadData();
-          this.loadBadgeComments();
-        }
+      let exist = (TDSHelperString.isString(this.currentPost?.fbid) != TDSHelperString.isString(this.paramsUrl.post_id))
+        || (!TDSHelperString.isString(this.currentPost?.fbid) && !TDSHelperString.isString(this.paramsUrl?.post_id));
+
+      if(exist) {
+        this.loadData();
+        this.loadBadgeComments();
       }
     })
   }
 
   //TODO: khi có comment mới vào bài viết
-  loadBadgeComments(){
+  loadBadgeComments() {
     this.activityMatchingService.onGetComment$
       .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         if(res){
@@ -104,22 +107,17 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     this.eventType = eventType;
     if (this.currentType.type !== item.type) {
       this.currentType = item;
-      this.data = [];
-      delete this.nextPage;
-      this.offset = new BehaviorSubject(null);
       this.loadData();
     }
   }
 
-  fetchPosts() {
-    this.facebookPostService.fetchPosts(this.currentTeam.Id).pipe(takeUntil(this.destroy$)).subscribe((x: any) => {});
+  fetchPosts(team: any) {
+    this.facebookPostService.fetchPosts(team?.Id).pipe(takeUntil(this.destroy$)).subscribe((x: any) => {});
   }
 
   loadData(){
-    this.data = [];
-    this.offset = new BehaviorSubject(null);
+    this.validateData();
     if(this.currentTeam?.Id) {
-
       const batchMap = this.offset.pipe(throttleTime(500),
         mergeMap((x: any) => this.getData(x, this.currentType.type, this.keyFilter)));
 
@@ -145,7 +143,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
       this.facebookGraphService.getFeed(this.currentTeam.Facebook_PageToken)
         .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-          if (res && TDSHelperArray.isArray(res.data)) {
+          if (TDSHelperArray.hasListValue(res?.data)) {
             res.data.forEach((x: any) => {
               if (x.picture) {
                 let exist = this.data.filter(d => d.fbid == x.id)[0];
@@ -159,24 +157,31 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     }
   }
 
-  selectPost(item: FacebookPostItem): any {
+  validateData(){
+    delete this.nextPage;
+    (this.data$ as any) = null;
     (this.currentPost as any) = null;
     this.postChilds = [];
+    this.data = [];
+    this.offset = new BehaviorSubject(null);
+  }
 
+  selectPost(item: FacebookPostItem): any {
     if(TDSHelperObject.hasValue(item)){
       this.currentPost = item;
       this.facebookPostService.loadPost(item);
+
       // load danh sách bài viết con từ bài viết chính
       if(TDSHelperString.isString(item.parent_id)) {
         this.facebookPostService.getByPostParent(this.paramsUrl.teamId, item.parent_id)
           .pipe(takeUntil(this.destroy$))
           .subscribe((res: any) => {
+
             if(res && TDSHelperArray.hasListValue(res.Items)) {
               this.postChilds = res.Items;
             }
         });
       }
-
       this.conversationPostFacade.onPostChanged$.emit(item);
 
       let uri = this.router.url.split("?")[0];
@@ -219,9 +224,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   compareToday(date: any) {
-    var d = new Date(date);
-    var today = new Date();
-
+    let d = new Date(date);
+    let today = new Date();
     if (d.getFullYear() == today.getFullYear() && d.getMonth() - 1 == today.getMonth() && d.getDate() == d.getDate()) {
       return true;
     }

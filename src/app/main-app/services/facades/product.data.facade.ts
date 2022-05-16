@@ -28,7 +28,7 @@ export class ProductDataFacade {
   }
 
   initialize() {
-    let keyCache = JSON.stringify(this.productIndexDBService._keyCacheProductIndexDB);
+    let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
     this.cacheApi.getItem(keyCache).subscribe((obs: TDSSafeAny) => {
 
       let dbStorage: DataPouchDBDTO[] = [];
@@ -64,7 +64,7 @@ export class ProductDataFacade {
   }
 
   get(): Observable<DataPouchDBDTO[]> {
-    let keyCache = JSON.stringify(this.productIndexDBService._keyCacheProductIndexDB);
+    let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
     return this.cacheApi.getItem(keyCache).pipe(map((obs: TDSSafeAny) => {
       let dbStorage: DataPouchDBDTO[] = [];
 
@@ -160,7 +160,7 @@ export class ProductDataFacade {
         cacheDbStorage: dbStorage
     };
 
-    let keyCache = JSON.stringify(this.productIndexDBService._keyCacheProductIndexDB);
+    let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
     this.cacheApi.setItem(keyCache, JSON.stringify(objCached));
   }
 

@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 import { CheckConversationDTO } from '../dto/partner/check-conversation.dto';
@@ -20,9 +20,28 @@ export class PartnerService extends BaseSevice {
 
   public _keyCacheGrid: string = 'partner-page:grid_partner:settings';
   public onLoadOrderFromTabPartner: EventEmitter<any> = new EventEmitter();
+  public partnerStatus: any;
+  public partnerStatus$ = new BehaviorSubject<any>(null);
 
   constructor(private apiService: TCommonService) {
-    super(apiService)
+    super(apiService);
+    this.initialize();
+  }
+
+  initialize(){
+    this.getPartnerStatus().subscribe((res: any) => {
+        this.partnerStatus = res;
+        this.partnerStatus$.next(this.partnerStatus);
+    })
+  }
+
+  getPartnerStatus(): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/api/common/getpartnerstatus`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<ODataRegisterPartnerDTO>(api, null);
   }
 
   getDefault(data: TDSSafeAny): Observable<TDSSafeAny> {

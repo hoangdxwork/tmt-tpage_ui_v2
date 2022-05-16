@@ -2,7 +2,7 @@ import { CheckConversationData, CheckConversationDTO } from './../../../../dto/p
 import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, SimpleChanges, SkipSelf, ViewContainerRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ActiveMatchingItem, ActiveMatchingPartner } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
+import { ConversationMatchingItem, ActiveMatchingPartner } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { DraftMessageService } from 'src/app/main-app/services/conversation/draft-message.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationEventFacade } from 'src/app/main-app/services/facades/conversation-event.facade';
@@ -34,11 +34,11 @@ import { ModalListBlockComponent } from '../modal-list-block/modal-list-block.co
 
 export class ConversationPartnerComponent implements OnInit, OnChanges {
 
-  @Input() data!: ActiveMatchingItem;
+  @Input() data!: ConversationMatchingItem;
   @Input() team!: CRMTeamDTO;
 
   _form!: FormGroup;
-  dataMatching!: ActiveMatchingItem;
+  dataMatching!: ConversationMatchingItem;
   objRevenue!: ResRevenueCustomerDTO;
   noteData: any = { items: [] };
   destroy$ = new Subject();
@@ -100,7 +100,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     });
   }
 
-  loadData(data: ActiveMatchingItem) {
+  loadData(data: ConversationMatchingItem) {
     if(data?.page_id && data?.psid) {
       this.loadNotes(data?.page_id, data?.psid);
     }
@@ -111,15 +111,15 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     }
 
     this.partner = data?.partner;
-
     //TODO: checkconversation để đẩy dữ liệu sang tab đơn hàng vs tab khách hàng
     let page_id = data?.page_id;
     let psid = data?.psid;
-    this.partnerService.checkConversation(page_id, psid).pipe(takeUntil(this.destroy$))
+    this.partnerService.checkConversation(page_id, psid)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((res: CheckConversationDTO) => {
         if(res?.Data && res?.Success) {
 
-          res.Data.Name = res.Data.Name || data.name;
+          res.Data.Name = res.Data.Name || data.name || res.Data.Facebook_UserName;
           res.Data.Facebook_ASUserId = res.Data.Facebook_ASUserId || this.data.psid;
           res.Data.Phone = res.Data.Phone || this.data.phone;
           res.Data.Street = res.Data.Street || this.data.address;
@@ -140,6 +140,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   loadPartnerRevenue(id: number){
+    (this.objRevenue as any) = null;
     this.partnerService.getPartnerRevenueById(id).pipe(takeUntil(this.destroy$))
       .subscribe(res => {
           this.objRevenue = res;
@@ -149,7 +150,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   loadBill(partnerId: number) {
-    this.lstBill.length = 0;
+    this.lstBill = [];
     this.fastSaleOrderService.getConversationOrderBillByPartner(partnerId).pipe(takeUntil(this.destroy$))
       .subscribe(res => {
         this.lstBill = res.Result || [];
@@ -346,21 +347,26 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   prepareModelPartner() {
     let data = this._form.value as PartnerTempDTO;
+    let currentTeam = this.crmTeamService.getCurrentTeam();
+    let model = {} as ODataModelTeamDTO<PartnerTempDTO>;
 
     data.Phone = data.Phone === "" ? undefined : data.Phone;
     data.Street = data.Street === "" ? undefined : data.Street;
-
-    let currentTeam = this.crmTeamService.getCurrentTeam();
-
-    let model = {} as ODataModelTeamDTO<PartnerTempDTO>;
     model.model = data;
     model.teamId = currentTeam?.Id;
 
     return model;
   }
 
+  validateData() {
+    (this.data as any) = null;
+    (this.partner as any) = null;
+    this._form.reset();
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if(changes["data"] && !changes["data"].firstChange) {
+        this.validateData();
         this.data = changes["data"].currentValue;
         this.loadData(this.data);
     }

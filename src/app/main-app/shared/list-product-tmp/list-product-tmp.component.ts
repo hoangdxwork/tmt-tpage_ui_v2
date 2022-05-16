@@ -5,7 +5,7 @@ import { DataPouchDBDTO, KeyCacheIndexDBDTO,  ProductPouchDBDTO } from '../../dt
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { CompanyCurrentDTO } from '../../dto/configs/company-current.dto';
 import { CommonService } from '../../services/common.service';
-import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, finalize, map, takeUntil } from 'rxjs/operators';
 import { fromEvent, Observable, Subject, Subscription } from 'rxjs';
 import { orderBy as _orderBy } from 'lodash';
 import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
@@ -82,7 +82,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   loadData(): void {
-    let keyCache = JSON.stringify(this.productIndexDBService._keyCacheProductIndexDB);
+    let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
     this.cacheApi.getItem(keyCache).subscribe((obs: TDSSafeAny) => {
 
         if(TDSHelperString.hasValueString(obs)) {
@@ -104,7 +104,9 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
 
   loadProductIndexDB(productCount: number, version: number): any {
     this.isLoading = true;
-    this.productIndexDBService.getLastVersionV2(productCount, version).pipe(takeUntil(this.destroy$))
+    this.productIndexDBService.getLastVersionV2(productCount, version)
+      .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => {this.isLoading = false }))
       .subscribe((data: ProductPouchDBDTO) => {
 
         if(TDSHelperArray.hasListValue(data.Datas)) {
@@ -130,7 +132,6 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
             }
           }
         }
-
         //TODO: check số version
         let versions = this.indexDbStorage.map((x: DataPouchDBDTO) => x.Version);
         let lastVersion = Math.max(...versions);
@@ -144,10 +145,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
         }
 
         this.mappingCacheDB();
-        this.isLoading = false;
-
     }, error => {
-        this.isLoading = false;
         this.message.error('Load danh sách sản phẩm đã xảy ra lỗi!');
     })
   }
@@ -160,7 +158,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
         cacheDbStorage: this.indexDbStorage
     };
 
-    let keyCache = JSON.stringify(this.productIndexDBService._keyCacheProductIndexDB);
+    let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
     this.cacheApi.setItem(keyCache, JSON.stringify(objCached));
   }
 
@@ -307,7 +305,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
     this.indexDbVersion = 0;
     this.indexDbStorage = [];
 
-    let keyCache = JSON.stringify(this.productIndexDBService._keyCacheProductIndexDB);
+    let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
     this.cacheApi.removeItem(keyCache);
 
     this.loadData();
@@ -325,8 +323,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
     fromEvent(this.innerText.nativeElement, 'keyup').pipe(
       map((event: any) => {
         return event.target.value
-      })
-      , debounceTime(750), distinctUntilChanged()).subscribe((text: string) => {
+      }), debounceTime(750), distinctUntilChanged()).subscribe((text: string) => {
         this.keyFilter = text;
         this.loadDataTable();
     });

@@ -62,7 +62,7 @@ export class ConfigPromotionComboComponent implements OnInit {
   }
 
   loadProduct() {
-    let keyCache = JSON.stringify(this.productIndexDBService._keyCacheProductIndexDB);
+    let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
     this.cacheApi.getItem(keyCache).subscribe((obs: TDSSafeAny) => {
 
       // if(TDSHelperString.hasValueString(obs)) {

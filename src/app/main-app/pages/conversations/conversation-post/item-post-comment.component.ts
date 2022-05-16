@@ -11,6 +11,7 @@ import { ConversationPostFacade } from 'src/app/main-app/services/facades/conver
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
+import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { SignalRConnectionService } from 'src/app/main-app/services/signalR/signalR-connection.service';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService } from 'tmt-tang-ui';
@@ -33,11 +34,14 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   facebookScanData$!: Subscription;
   childs: any = {};
   commentOrders: any = [];
+  subSetCommentOrders$!: Subscription;
+
   destroy$ = new Subject();
   @ViewChild('contentMessage') contentMessage!: ElementRef;
 
   constructor(private message: TDSMessageService,
     private crmTeamService: CRMTeamService,
+    private saleOnline_OrderService: SaleOnline_OrderService,
     private sgRConnectionService: SignalRConnectionService,
     private conversationPostFacade: ConversationPostFacade,
     private facebookCommentService: FacebookCommentService,
@@ -54,11 +58,13 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
     }
     // Gán dictionary
     this.partners$ = this.conversationPostFacade.getDicPartnerSimplest$();
+
     this.facebookComment$ = this.sgRConnectionService._onFacebookEvent$.subscribe((res: any) => {
-      if(res?.data && res?.data?.last_activity && res?.data?.last_activity?.comment_obj &&  res?.data?.last_activity?.type == 2) {
+      if(res?.data?.last_activity?.comment_obj &&  res?.data?.last_activity?.type == 2) {
         let comment_obj = res.data?.last_activity?.comment_obj;
-        if (comment_obj.object.id == this.post.fbid) {
-          if(comment_obj.parent && comment_obj.parent.id && comment_obj.parent.id != this.post.fbid ) {
+
+        if (comment_obj.object?.id == this.post?.fbid) {
+          if(comment_obj.parent.id != this.post.fbid) {
             this.childs[comment_obj.parent.id].unshift(comment_obj);
           } else {
             this.data.Items.unshift(comment_obj);
@@ -82,20 +88,87 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     if(this.post) {
       this.post = {...this.post};
+      this.onSetCommentOrders();
       this.loadData();
     }
   }
 
-  loadData() {
-    this.data = {};
-    if(TDSHelperObject.hasValue(this.post) && this.post.fbid) {
-      this.getCommentOrders(this.post.fbid);
-      this.facebookCommentService.getCommentsByPostId(this.post.fbid).subscribe((res: any) => {
-        // Xử lý nếu bình luận đó là bình luận của 1 post child
-        let childIds = Object.keys(res.Extras['childs']);
+  onSetCommentOrders(){
+    this.subSetCommentOrders$ = this.saleOnline_OrderService.onSetCommentOrders
+      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        if(res) {
+          let data = res.data;
+          if (!this.commentOrders[res.fbid]) {
+            this.commentOrders[res.fbid] = [];
+          }
+          if (this.commentOrders[res.fbid].filter((x: any) => x.id === data.Id).length === 0) {
+            this.commentOrders[res.fbid].push({
+                session: data.Session,
+                index: data.SessionIndex,
+                code: data.SessionIndex > 0 ? `#${data.SessionIndex}. ${data.Code}` : data.Code,
+                id: data.Id
+            });
+          }
+        }
+    });
 
-        if(childIds && childIds.length > 0) {
-          childIds.map((x: string) => {
+    this.facebookPostService.onRemoveOrderComment
+      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+          let keys = Object.keys(this.commentOrders);
+          keys.forEach(key => {
+            this.commentOrders[key] = this.commentOrders[key].filter((x: any) => x.id && !res.includes(x.id));
+          })
+    })
+
+    this.sgRConnectionService._onSaleOnlineOrder$
+      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        if(res.data) {
+          let data = res.data;
+          let userId = data.facebook_ASUserId;
+
+          if(data.facebook_PostId == this.post.fbid) {
+            let dataAdd = {};
+            if(this.commentOrders[userId]) {
+              this.commentOrders[userId] = this.commentOrders[userId].filter((x: any) => x.id && !data.id);
+              dataAdd = {
+                code: data.code,
+                id: data.id,
+                index: data.index,
+                session: data.session
+              };
+            } else {
+              this.commentOrders[userId] = [];
+              dataAdd = {
+                code: data.code,
+                id: data.id,
+                index: data.index,
+                session: data.session
+              };
+            }
+            this.commentOrders[userId].push(dataAdd);
+          }
+        }
+    })
+  }
+
+  validateData(){
+    this.data = {};
+    this.childs = {};
+    this.commentOrders = [];
+  }
+
+  loadData() {
+    this.validateData();
+    this.getCommentOrders(this.post.fbid);
+
+    this.facebookCommentService.getCommentsByPostId(this.post.fbid)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
+        // Xử lý nếu bình luận đó là bình luận của 1 post child
+        const childIds = Object.keys(res.Extras['childs']);
+        if(TDSHelperObject.hasValue(childIds)) {
+
+          childIds.map((x: any) => {
             let splitParentId = x.split("_");
             let splitPostId = this.post.fbid.split("_");
 
@@ -104,37 +177,40 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
             }
           });
         }
-        res.Items = res.Items.map((x: any) => {
-          x["isPrivateReply"] = false;
-          x["replyMessage"] = "";
-          return x;
-        });
+        if(TDSHelperArray.hasListValue(res.Items)){
+          res.Items = res.Items.map((x: any) => {
+              x['isPrivateReply'] = false;
+              x['replyMessage'] = null;
+              return x;
+          });
+        }
 
         this.data = res;
         this.childs = res.Extras['childs'] || {};
-      });
-    }
+    });
   }
 
   getCommentOrders(posId: string) {
-    this.facebookCommentService.getCommentsOrderByPost(posId).subscribe((res: any) => {
-      this.commentOrders = [];
-      res.value.map((x: any) => {
-        this.commentOrders[x.asuid] = [];
-        this.commentOrders[x.uid] = [];
+    this.facebookCommentService.getCommentsOrderByPost(posId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
+        if(TDSHelperArray.hasListValue(res.value)) {
+          res.value.map((x: any) => {
+            this.commentOrders[x.asuid] = [];
+            this.commentOrders[x.uid] = [];
 
-        if (x.orders) {
-          x.orders.map((a: any) => {
-            this.commentOrders[x.asuid].push(a);
+            if (TDSHelperArray.hasListValue(x.orders)) {
+              x.orders.map((a: any) => {
+                  this.commentOrders[x.asuid].push(a);
+              });
+              if (x.uid && x.uid != x.asuid) {
+                x.orders.map((a: any) => {
+                  this.commentOrders[x.uid].push(a);
+                });
+              }
+            }
           });
-
-          if (x.uid && x.uid != x.asuid) {
-            x.orders.map((a: any) => {
-              this.commentOrders[x.uid].push(a);
-            });
-          }
         }
-      });
     });
   }
 
@@ -146,6 +222,10 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.subSetCommentOrders$.unsubscribe();
+    this.facebookComment$.unsubscribe();
+    this.facebookScanData$.unsubscribe();
+
     this.destroy$.next();
     this.destroy$.complete();
   }

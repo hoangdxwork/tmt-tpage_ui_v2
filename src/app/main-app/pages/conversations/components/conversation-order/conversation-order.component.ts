@@ -5,7 +5,7 @@ import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional,
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, pipe, Observable } from 'rxjs';
-import { ActiveMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
+import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CheckConversationData } from 'src/app/main-app/dto/partner/check-conversation.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { DraftMessageService } from 'src/app/main-app/services/conversation/draft-message.service';
@@ -45,7 +45,7 @@ import { CheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 
 export class ConversationOrderComponent  implements OnInit, OnChanges {
 
-  @Input() data!: ActiveMatchingItem;
+  @Input() data!: ConversationMatchingItem;
   @Input() team!: CRMTeamDTO;
 
   @Output() currentOrderCode = new EventEmitter<string | undefined>();

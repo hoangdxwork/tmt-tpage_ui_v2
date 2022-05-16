@@ -5,7 +5,7 @@ import { ReplaceHelper } from "../helper/replace.helper";
 @Pipe({
   name: 'formatIconLike'
 })
-export class FormatMessagePipe implements PipeTransform {
+export class FormatIconLikePipe implements PipeTransform {
 
   transform(message: any): string {
     if(TDSHelperString.hasValueString(message)) {

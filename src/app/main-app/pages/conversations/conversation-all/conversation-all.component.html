@@ -163,18 +163,17 @@
           <!-- List danh sách chat -->
           <div class="overflow-hidden flex relative">
             <div *ngIf="lstMatchingItem" class="overflow-y-auto tds-custom-scroll flex flex-auto flex-col gap-1">
-
               <div *ngFor="let item of lstMatchingItem; let i= index">
-                  <div *ngIf="activeMatchingItem?.id && currentTeam" (click)="activeConversations(item)">
+                  <a *ngIf="activeCvsItem?.id && currentTeam" (click)="changeCurrentCvsItem(item)" type="button" class="w-full">
                       <current-conversation-item
                           [item]="item" [psid]="item.psid" [type]="type"
-                          [activeMatchingItem]="activeMatchingItem"
+                          [activeCvsItem]="activeCvsItem"
                           [team]="currentTeam" [isFastSend]="isFastSend"
                           [isOpenCollapCheck]="isOpenCollapCheck"
                           [checked]="setOfCheckedId.has(item.id)"
                           (checkedChange)="onItemChecked(item.id, $event)">
                       </current-conversation-item>
-                  </div>
+                  </a>
               </div>
             </div>
           </div>
@@ -182,15 +181,14 @@
   </div>
   <!--Nội dung cuộc hội thoại-->
   <div class="flex w-1/2 flex-col main-conversation h-full overflow-hidden">
-      <div *ngIf="activeMatchingItem?.id && currentTeam">
-          <tds-conversations
-              [data]="activeMatchingItem"
-              [type]="type"
-              [team]="currentTeam"
+      <div *ngIf="activeCvsItem?.id && currentTeam">
+          <shared-tds-conversations
+              [data]="activeCvsItem"
+              [type]="type" [team]="currentTeam"
               (onLoadMiniChat)="onLoadMiniChat($event)">
-          </tds-conversations>
+          </shared-tds-conversations>
       </div>
-      <div *ngIf="!activeMatchingItem">
+      <div *ngIf="!activeCvsItem">
           <p>Hãy chọn một cuộc hội thoại</p>
       </div>
   </div>
@@ -210,8 +208,8 @@
                 </div>
             </div>
         </ng-template>
-        <div *ngIf="activeMatchingItem?.id  && currentTeam">
-            <conversation-partner [data]="activeMatchingItem" [team]="currentTeam"></conversation-partner>
+        <div *ngIf="activeCvsItem?.id  && currentTeam">
+            <conversation-partner [data]="activeCvsItem" [team]="currentTeam"></conversation-partner>
         </div>
       </tds-tab>
       <!-- tab Đơn hàng -->
@@ -228,8 +226,8 @@
             </div>
           </div>
         </ng-template>
-        <div *ngIf="activeMatchingItem?.id && currentTeam">
-            <conversation-order [data]="activeMatchingItem" [team]="currentTeam" (currentOrderCode)="changeOrderId($event)"></conversation-order>
+        <div *ngIf="activeCvsItem?.id && currentTeam">
+            <conversation-order [data]="activeCvsItem" [team]="currentTeam" (currentOrderCode)="changeOrderId($event)"></conversation-order>
         </div>
       </tds-tab>
     </tds-tabset>

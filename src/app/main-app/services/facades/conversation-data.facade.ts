@@ -33,25 +33,25 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   public onUpdateInfoByConversation$ = new EventEmitter<any>();
 
   constructor(private message: TDSMessageService,
-      private apiService: TCommonService,
-      private cvsFbState: ConversationFacebookState,
-      private service: ConversationService,
-      private crmTeamService: CRMTeamService,
-      private hrefService: HrefPageService,
-      private notification: TDSNotificationService,
-      private router: Router,
-      private sgRConnectionService: SignalRConnectionService,
-      private sharedService: SharedService) {
-        super(apiService);
+    private apiService: TCommonService,
+    private cvsFbState: ConversationFacebookState,
+    private service: ConversationService,
+    private crmTeamService: CRMTeamService,
+    private hrefService: HrefPageService,
+    private notification: TDSNotificationService,
+    private router: Router,
+    private sgRConnectionService: SignalRConnectionService,
+    private sharedService: SharedService) {
+      super(apiService);
 
-        this.crmTeamService.onChangeListFaceBook().subscribe((res :any) => {
-          if(res && TDSHelperArray.isArray(res.Items)){
-              this.lstTeam = res.Items;
-          }
-        });
-        this.currentTeam = this.crmTeamService.getCurrentTeam();
-        this.currentUrl = this.router.routerState.snapshot.url;
-        this.initialize();
+      this.crmTeamService.onChangeListFaceBook().subscribe((res :any) => {
+        if(res && TDSHelperArray.isArray(res.Items)){
+            this.lstTeam = res.Items;
+        }
+      });
+      this.currentTeam = this.crmTeamService.getCurrentTeam();
+      this.currentUrl = this.router.routerState.snapshot.url;
+      this.initialize();
   }
 
   initialize() {
@@ -79,17 +79,19 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
 
     // Data From Scan
     this.sgRConnectionService._onFacebookScanData$.subscribe((res: any) => {
-      if (res.type == "update_scan_conversation") {
+      if(res.type == "update_scan_conversation") {
         this.messageScanConversation(res);
       }
-      if (res.type == "update_scan_feed"){
+      if(res.type == "update_scan_feed") {
         this.messageScanFeed(res);
       }
     });
 
     // Message From Add Template
     this.sgRConnectionService._onAddTemplateMessage$.subscribe((res: any) => {
-      if(res.type == "add_template_message") this.messageAddTemplate(res);
+      if(res.type == "add_template_message") {
+        this.messageAddTemplate(res);
+      }
     });
 
     // Update tag
@@ -106,7 +108,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   getTeamByPageId(pageId: any) {
     let team = {};
     this.lstTeam.forEach((x: any) => {
-      var items = x.Childs.filter((a: any) => {
+      let items = x.Childs.filter((a: any) => {
           if (a.Facebook_PageId == pageId) { return a }
       });
       if (items.length > 0) {
@@ -117,30 +119,28 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   }
 
   notificationMessage(value: any): any {
-    let data = Object.assign({}, value.data);
+    let data = Object.assign({}, {...value.data});
     let pageId = data.page_id;
     let psid = data.psid;
 
-    if(value.action == "facebook_messages_delivery") return;
+    if(value.action == "facebook_messages_delivery"){
+      return
+    };
 
-    if (this.currentUrl && this.currentTeam && this.currentUrl.startsWith('/conversation') &&
-        this.currentTeam.Facebook_PageId == pageId) {
-    }
-    else {
+    let exist = this.currentUrl?.startsWith('/conversation') && (this.currentTeam?.Facebook_PageId == pageId);
+    if (!exist) {
       let splitMessage = StringHelperV2.getSliceAfterSpaceByLength(value.message, 60, "...");
       let team = this.getTeamByPageId(pageId) as any;
 
       if (TDSHelperObject.hasValue(team)) {
         let message = `${splitMessage} tới Page: ${team.Facebook_PageName}`;
         let url = `/conversation/all?teamId=${team.Id}&type=all&psid=${psid}`;
+        let template = `<a href="${url}">${message}</a>`;
 
-        //TODO: mai xử lý tiếp signalR
-        this.notification.error('', message);
-        // this.toaStrCustomService.toaSuccess(message, url);
+        this.notification.info('Tin nhắn mới', template, { placement: 'bottomLeft' });
       } else {
-        let messageError = "Không tìm thấy trang.";
-        this.notification.error('', messageError);
-        // this.toaStrCustomService.toaSuccessAndError(splitMessage, messageError);
+        let messageError = 'Không tìm thấy trang';
+        this.notification.info('Tin nhắn mới', messageError, { placement: 'bottomLeft' });
       }
     }
   }
@@ -159,7 +159,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     let data = Object.assign({}, value.data) as any;
 
     if (data && data.psid == data.page_id) {
-      return;
+      return
     }
 
     let pageId = data.page_id;
@@ -246,7 +246,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   }
 
   checkSendMessage(pageId: any, type: any, psid: any) {
-    var exist = this.cvsFbState.getByPsid(pageId, type, psid);
+    let exist = this.cvsFbState.getByPsid(pageId, type, psid);
     if (exist) {
       exist.checkSendMessage = !exist.checkSendMessage;
     }
@@ -263,7 +263,6 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     let message = data.message_formatted || " ";
 
     let dataAdd = this.convertDataScanConversation(data);
-
     this.addOrUpdateConversation(pageId, type, psid, message, dateCreated, is_admin, dataAdd);
   }
 
@@ -434,7 +433,6 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
 
   convertDataScanFeed(data: any) {
     let last_activity = this.createLastActivity(data.message || data.message_formatted, data.dateCreated, data.type);
-
     last_activity.message = last_activity.message_format || last_activity.message || "";
 
     let model = {} as any;
@@ -458,7 +456,6 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   convertDataScanConversation(data: any) {
     let pageId = data.account_id;
     let last_activity = this.createLastActivity(data.message_formatted, data.date_created, data.type);
-
     last_activity.message = last_activity.message_format || last_activity.message || "";
 
     let model = {} as any;

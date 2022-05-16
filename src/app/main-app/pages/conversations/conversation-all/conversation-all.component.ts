@@ -1,9 +1,9 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
+import { TDSNotificationService, TDSSafeAny } from 'tmt-tang-ui';
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, pipe, Subject, Subscription } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { ActiveMatchingItem, CRMMatchingMappingDTO } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
+import { ConversationMatchingItem, CRMMatchingMappingDTO } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -22,12 +22,11 @@ import { TDSHelperObject, TDSMessageService, TDSHelperArray, TDSHelperString } f
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isLoading: boolean = false;
-  isLoadingChat: boolean = false;
-  dataSource$!: Observable<any>;
-  lstMatchingItem!: ActiveMatchingItem[];
+  dataSource$!: Observable<any> | undefined;
+  lstMatchingItem!: ConversationMatchingItem[];
   destroy$ = new Subject();
   psid!: string;
-  activeMatchingItem!: ActiveMatchingItem;
+  activeCvsItem!: ConversationMatchingItem;
   isFastSend: boolean = false;
   currentOrderCode!: string | undefined;
   visibleDrawerFillter: boolean = false;
@@ -54,30 +53,39 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   ngOnInit(): void {
     this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe(([team, params]: any) => {
       if (!TDSHelperObject.hasValue(team)) {
-          this.onRedirect();
-      } else {
-          this.type = params?.params?.type;
-          this.setParamsUrl(params.params);
-          this.setCurrentTeam(team);
+        return this.onRedirect();
+      }
+      // TODO: change Team
+      if(team.Id != this.currentTeam?.Id) {
+        this.fetchLiveConversations(team);
+        this.setCurrentTeam(team);
+      }
 
-          let exist = (TDSHelperString.isString(this.activeMatchingItem?.psid) != TDSHelperString.isString(this.paramsUrl.psid))
-            || (!TDSHelperString.isString(this.activeMatchingItem?.psid) && !TDSHelperString.isString(this.paramsUrl?.psid));
+      this.type = params?.params?.type;
+      this.setParamsUrl(params.params);
 
-          if(exist){
-            this.fetchLiveConversations(team);
-            this.onChangeConversation(team);
-          }
+      let exist = (TDSHelperString.isString(this.activeCvsItem?.psid) != TDSHelperString.isString(this.paramsUrl?.psid))
+        || (!TDSHelperString.isString(this.activeCvsItem?.psid) && !TDSHelperString.isString(this.paramsUrl?.psid));
+
+      if(exist){
+        this.onChangeConversation(team);
       }
     });
   }
 
   nextData(){
-
   }
 
   onChangeConversation(team: any) {
+    this.validateData();
     this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
     this.loadConversations((this.dataSource$));
+  }
+
+  validateData(){
+    (this.activeCvsItem as any) = null;
+    (this.dataSource$ as any) = null;
+    this.lstMatchingItem = [];
   }
 
   loadConversations(dataSource$: Observable<any>) {
@@ -86,17 +94,16 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       dataSource$.pipe(takeUntil(this.destroy$)).pipe(finalize(() => { this.isLoading = false }))
         .subscribe((res: CRMMatchingMappingDTO) => {
           if (res && TDSHelperArray.hasListValue(res.items)) {
-            this.lstMatchingItem = [...res.items];
-            let psid: string = this.paramsUrl?.psid || null;
-
-            //TODO: check psid khi load lần 2,3,4...
-            let exits = this.lstMatchingItem.filter(x => x.psid == psid)[0];
-            if (exits) {
-              this.activeConversations(exits);
-            } else {
-              //TODO: load lần đầu tiên
-              this.activeConversations(this.lstMatchingItem[0]);
-            }
+              this.lstMatchingItem = [...res.items];
+              let psid = this.paramsUrl?.psid || null;
+              //TODO: check psid khi load lần 2,3,4...
+              let exits = this.lstMatchingItem.filter(x => x.psid == psid)[0];
+              if (exits) {
+                this.getActiveCvsItem(exits);
+              } else {
+                //TODO: load lần đầu tiên
+                this.getActiveCvsItem(this.lstMatchingItem[0]);
+              }
           }
         }, error => {
           this.message.error('Load thông tin CRMMatching đã xảy ra lỗi');
@@ -105,22 +112,25 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   //TODO: matching đang chọn active
-  activeConversations(item: ActiveMatchingItem) {
-    (this.activeMatchingItem as any) = null;
-
+  getActiveCvsItem(item: ConversationMatchingItem) {
     if (TDSHelperObject.hasValue(item)) {
       if (this.isFastSend == true) {
           this.conversationDataFacade.checkSendMessage(item.page_id, this.type, item.psid);
       } else {
           //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
           this.psid = item.psid;
-          this.activeMatchingItem = item;
+          this.activeCvsItem = item;
 
           let uri = this.router.url.split("?")[0];
           let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${item?.psid}`;
           this.router.navigateByUrl(uriParams);
       }
     }
+  }
+
+  changeCurrentCvsItem(item: any){
+    (this.activeCvsItem as any) = null;
+    this.getActiveCvsItem(item);
   }
 
   ngAfterViewInit(): void {
@@ -136,13 +146,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onLoadMiniChat(event: any): void {
-
   }
 
-  fetchLiveConversations(team: any): void {
+  fetchLiveConversations(team: CRMTeamDTO): void {
     this.fbGraphService.api(`me/conversations?fields=id,link,participants,senders&access_token=${team.Facebook_PageToken}`)
-      .subscribe((res :any) => {
-      });
+      .subscribe((res :any) => {});
   }
 
   changeOrderId(orderCode: string | undefined) {
@@ -167,7 +175,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   setSort(){
     this.isSort = !this.isSort;
-
   }
 
   updateCheckedSet(id: string, checked: boolean): void {
@@ -188,12 +195,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.refreshCheckedStatus();
   }
 
-
   refreshCheckedStatus(): void {
     this.checked = this.lstMatchingItem.every(item => this.setOfCheckedId.has(item.id));
     this.indeterminate = this.lstMatchingItem.some(item => this.setOfCheckedId.has(item.id)) && !this.checked;
   }
-  
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
