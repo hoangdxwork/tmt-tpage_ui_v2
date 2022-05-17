@@ -1,0 +1,85 @@
+<div class="mt-2 mb-2">
+  <div class="p-2 bg-white flex w-full" style="justify-content: space-between">
+    <tds-form-field style="width: 40%;">
+      <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText />
+    </tds-form-field>
+    <tds-form-field style="width: 40%;">
+      <tds-select valueField="value" textField="text" placeholder='select item'
+        [(ngModel)]="currentFilter" [allowClear]="true" [valuePrimitive]="false"
+        [data]="filterOptions" (ngModelChange)="onChangeFilter($event)" >
+      </tds-select>
+    </tds-form-field>
+  </div>
+</div>
+<!-- Danh sách bình luận lọc theo bình luận -->
+<div *ngIf="data?.Items" class="p-2" style="max-height: 750px;overflow: auto">
+  <div *ngFor="let item of data.Items; let i= index" class="mb-3 mt-3">
+    <div *ngIf="item" class="flex">
+      <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="item.from.id" [token]="team?.Facebook_PageToken">
+      </tpage-avatar-facebook>
+      <div class="ml-2 w-full">
+        <div class="bg-white p-2">
+          <div class="flex" style="justify-content: space-between">
+            <label class="font-semibold">{{item.from?.name}} </label>
+            <div>
+              <span>{{item.created_time | date:'dd/MM/yyyy HH:mm aa'}}</span>
+              <button tds-button color="primary">{{item.activities.length}}</button>
+            </div>
+          </div>
+          <div [innerHTML]="item.message | safeHtml"></div>
+          <div *ngIf="item.attachment">
+            <img tds-image *ngIf="item.attachment?.type != 'sticker'" [tdsSrc]="item.attachment?.media?.image?.src"
+              style="max-width: 200px;" />
+            <img tds-image *ngIf="item.attachment?.type == 'sticker'" [tdsSrc]="item.attachment?.media?.image?.src"
+              style="max-width: 100px;" />
+          </div>
+          <div class="flex">
+            <div *ngIf="commentOrders">
+              <a class="text-info-500 font-semibold" (click)="editOrder(order.id, item)"
+                *ngFor="let order of commentOrders[item.from.id];index as i">
+                {{order.code}}
+              </a>
+            </div>
+          </div>
+          <div class="flex">
+            <button tds-button color="primary" class="mr-2">Tạo đơn hàng </button>
+            <button tds-button color="warning" class="mr-2">Thông tin</button>
+            <button tds-button color="error" (click)="onGroupComment(item)">
+              {{currentGroup?.id === item.id ? 'Ẩn bình luận' : 'Xem bình luận'}}
+            </button>
+          </div>
+          <div class="flex" *ngIf="(partners$ | async)?.data[item.from.id] as partner">
+            <div class="key-tags" *ngIf="partner && partner.t">
+              <a class="tdsi-radio-circle-fill" *ngFor="let tag of partner.t"
+                [ngStyle]="{'color': [tag.color_class] }" title="{{tag.name}}"></a>
+            </div>
+            <span *ngIf="partner.st" [ngStyle]="{'color': partner.ss}">
+              {{partner.st}}
+            </span>
+            <span *ngIf="partner.p">phone</span>
+            <span *ngIf="partner.a">street</span>
+          </div>
+        </div>
+        <!-- Danh sách bình luận -->
+        <div *ngIf="item.activities.length > 0 && item.from?.id == currentGroup?.id">
+          <div *ngFor="let child of item.activities">
+            <div style="border: 1px solid #f0f0f0;justify-content: space-between" class="bg-white p-2 flex">
+              <div>
+                <div [innerHTML]="child.message | safeHtml"></div>
+                <p>({{child.created_time | date: 'short'}})</p>
+              </div>
+              <button tds-button color="primary" size="sm" rounded="!rounded-full" (click)="addGroupMessage(child)"
+                *ngIf="!child.isSelected">
+                <span class="flex items-center">Chọn ghi chú</span>
+              </button>
+              <button tds-button color="error" size="sm" rounded="!rounded-full" (click)="addGroupMessage(child)"
+                *ngIf="child.isSelected">
+                <span class="flex items-center">Bỏ chọn ghi chú</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

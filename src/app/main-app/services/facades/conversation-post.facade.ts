@@ -77,7 +77,6 @@ export class ConversationPostFacade extends BaseSevice implements OnDestroy {
     return this._dicPartnerSimplest$;
   }
 
-
   public initDicPartnerSimplest(teamId: number) {
     // this._dicPartnerSimplest$ = new BehaviorSubject<any>({ data: {} });
 

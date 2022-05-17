@@ -55,6 +55,10 @@ import { PipeModule } from '../../shared/pipe/pipe.module';
 import { CRMTagService } from '../../services/crm-tag.service';
 import { ModalListBlockComponent } from './components/modal-list-block/modal-list-block.component';
 import { PostCommentAllComponent } from './components/post-filter/post-comment-all.component';
+import { PostCommentGroupComponent } from './components/post-filter/post-comment-group.component';
+import { PostCommentFilterComponent } from './components/post-filter/post-comment-filter.component';
+import { ExcelExportService } from '../../services/excel-export.service';
+import { PostCommentManageComponent } from './components/post-filter/post-comment-manage.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -85,6 +89,7 @@ const SERVICES = [
   FacebookCommentService,
   SharedService,
   CRMTagService,
+  ExcelExportService
 ]
 
 @NgModule({
@@ -106,7 +111,10 @@ const SERVICES = [
     ConversationPostViewComponent,
     ItemPostCommentComponent,
     ModalListBlockComponent,
-    PostCommentAllComponent
+    PostCommentAllComponent,
+    PostCommentGroupComponent,
+    PostCommentFilterComponent,
+    PostCommentManageComponent
   ],
   imports: [
     CommonModule,

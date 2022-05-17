@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, OnDestroy, OnInit } from '@angular/core';
+import { EventEmitter, Injectable, OnDestroy, OnInit, Output } from '@angular/core';
 import {  Observable, ReplaySubject, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
@@ -16,6 +16,8 @@ import { BaseSevice } from './base.service';
 
 export class FacebookCommentService extends BaseSevice implements  OnDestroy {
 
+  @Output() onFilterSortCommentPost$ = new EventEmitter<any>();
+
   prefix: string = "odata";
   table: string = "";
   baseRestApi: string = "rest/v1.0";
@@ -26,6 +28,7 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
   public allItems: any;
   public dataResponse: any;
   public currentItems!: any[];
+
 
   private destroy$: Subject<void> = new Subject<void>();
 
@@ -60,7 +63,7 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
   fetchComments(teamId: number, postId: string): Observable<any>{
     let api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebook/fetchcomments?teamId=${teamId}&postId=${postId}`,
-      method: TApiMethodType.get
+      method: TApiMethodType.post
     }
     return this.apiService.getData<any>(api, null);
   }
@@ -93,8 +96,8 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
   }
 
   getFilterCommentsByPostId(postId: string): Observable<any> {
-    let queryString = Object.keys(this.queryObj).map(key => {
-        return key + '=' + this.queryObj[key]
+    let queryString = Object.keys(this.queryObj3).map(key => {
+        return key + '=' + this.queryObj3[key]
     }).join('&');
 
     let api: TAPIDTO = {
