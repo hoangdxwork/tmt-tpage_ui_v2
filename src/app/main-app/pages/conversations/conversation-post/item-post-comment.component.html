@@ -1,96 +1,16 @@
-<div *ngIf="data?.Items" class="p-2" style="max-height: 750px;overflow: auto">
-  <div *ngFor="let item of data.Items; let i= index" class="mb-3 mt-3">
-    <div *ngIf="item" class="flex">
-        <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="item.from.id" [token]="team?.Facebook_PageToken">
-        </tpage-avatar-facebook>
-        <div class="ml-2 w-full">
-            <div class="bg-white p-2">
-              <div class="flex" style="justify-content: space-between">
-                  <label class="font-semibold">{{item.from.name}} </label>
-                  <p>{{item.created_time | date:'dd/MM/yyyy HH:mm aa'}}</p>
-              </div>
-              <div [innerHTML]="item.message | safeHtml"></div>
-              <div *ngIf="item.attachment">
-                  <img tds-image *ngIf="item.attachment?.type != 'sticker'" [tdsSrc]="item.attachment?.media?.image?.src"
-                    style="max-width: 200px;" />
-                  <img tds-image *ngIf="item.attachment?.type == 'sticker'" [tdsSrc]="item.attachment?.media?.image?.src"
-                    style="max-width: 100px;" />
-              </div>
-              <div class="flex">
-                <div *ngIf="commentOrders">
-                    <a class="text-info-500 font-semibold" (click)="editOrder(order.id, item)" *ngFor="let order of commentOrders[item.from.id];index as i">
-                        {{order.code}}
-                    </a>
-                </div>
-                <a class="ml-2">Thêm ghi chú</a>
-              </div>
-              <div class="flex">
-                  <button tds-button color="primary" *ngIf="item.from?.id != team?.Facebook_PageId" class="mr-2">
-                    Tạo đơn hàng </button>
-                  <button tds-button color="warning" class="mr-2">Thông tin</button>
-                  <button tds-button color="error" (click)="isReply(item)">Trả lời</button>
-              </div>
-            </div>
-            <!-- Input trả lời bình luận -->
-            <div class="bg-white" *ngIf="item.is_reply">
-              <textarea tdsInput placeholder="Nhập nội dung tin nhắn, nhấn [Enter] để gửi"
-                [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
-                (keydown.enter)="onEnter(item, $event)" class="resize-none" rows="3">
-              </textarea>
-              <!-- Check Private Reply -->
-              <div class="flex">
-                  <input type="checkbox" [checked]="item.isPrivateReply"
-                      (change)="isPrivateReply(item)" id="id_replycomment{{i}}">
-                  <label class="ml-2" for="id_replycomment{{i}}">Gửi về tin nhắn</label>
-              </div>
-            </div>
-            <!-- Trả lời bình luận -->
-            <div *ngIf="childs[item.id]">
-              <div *ngFor="let child of childs[item.id]" class="mt-2 mb-2">
-                <div *ngIf="child" class="flex">
-                  <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'"
-                    [psid]="child.from?.id" [token]="team?.Facebook_PageToken">
-                  </tpage-avatar-facebook>
-                  <div class="list bg-white ml-2 p-2 w-full">
-                    <div class="flex" style="justify-content: space-between">
-                      <label class="font-semibold">{{child.from?.name}} </label>
-                      <p>{{child.created_time | date:'dd/MM/yyyy HH:mm aa'}}</p>
-                    </div>
-                    <p>{{child.message}} </p>
-                    <div *ngIf="child.attachment">
-                        <img tds-image *ngIf="child.attachment?.type != 'sticker'" [tdsSrc]="child.attachment?.media?.image?.src"
-                          style="max-width: 200px;" />
-                        <img tds-image *ngIf="child.attachment?.type == 'sticker'" [tdsSrc]="child.attachment?.media?.image?.src"
-                          style="max-width: 100px;" />
-                    </div>
-                    <div class="flex">
-                      <div *ngIf="commentOrders">
-                          <a class="text-info-500 font-semibold" (click)="editOrder(order.id, child)" *ngFor="let order of commentOrders[child.from.id];index as i">
-                              {{order.code}}
-                          </a>
-                      </div>
-                      <a class="ml-2">Thêm ghi chú</a>
-                    </div>
-                    <div class="flex">
-                        <button tds-button color="primary" *ngIf="item.from?.id != team?.Facebook_PageId" class="mr-2">
-                          Tạo đơn hàng </button>
-                        <button tds-button color="warning" class="mr-2">Thông tin</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-        </div>
+<tds-spin [spinning]="isLoading">
+  <div *ngIf="data && data?.Items">
+    <div *ngIf="currentFilter.value === 'all'">
+      <post-comment-all></post-comment-all>
+    </div>
+    <div *ngIf="currentFilter.value === 'group'">
+      <post-comment-group></post-comment-group>
+    </div>
+    <div *ngIf="currentFilter.value === 'filter'">
+      <post-comment-filter></post-comment-filter>
+    </div>
+    <div *ngIf="currentFilter.value === 'manage'">
+      <post-comment-filter></post-comment-filter>
     </div>
   </div>
-</div>
-
-<div *ngIf="currentFilter.value === 'all'">
-
-</div>
-<div *ngIf="currentFilter.value === 'group'">
-
-</div>
-<div *ngIf="currentFilter.value === 'filter'">
-
-</div>
+</tds-spin>
