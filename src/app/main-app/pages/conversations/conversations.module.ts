@@ -1,4 +1,3 @@
-import { YiDateTimeV2Pipe } from './../../shared/pipe/yi-datetimeV2.pipe';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -58,7 +57,7 @@ import { PostCommentAllComponent } from './components/post-filter/post-comment-a
 import { PostCommentGroupComponent } from './components/post-filter/post-comment-group.component';
 import { PostCommentFilterComponent } from './components/post-filter/post-comment-filter.component';
 import { ExcelExportService } from '../../services/excel-export.service';
-import { PostCommentManageComponent } from './components/post-filter/post-comment-manage.component';
+import { ManagePostCommentComponent } from './components/post-filter/manage-post-comment.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -106,7 +105,6 @@ const SERVICES = [
     ModalConfirmShippingAddressComponent,
     ModalConfirmPaymentComponent,
     ModalAddQuickReplyComponent,
-    YiDateTimeV2Pipe,
     ModalBlockPhoneComponent,
     ConversationPostViewComponent,
     ItemPostCommentComponent,
@@ -114,7 +112,7 @@ const SERVICES = [
     PostCommentAllComponent,
     PostCommentGroupComponent,
     PostCommentFilterComponent,
-    PostCommentManageComponent
+    ManagePostCommentComponent
   ],
   imports: [
     CommonModule,

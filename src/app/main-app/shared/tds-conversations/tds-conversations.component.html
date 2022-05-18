@@ -69,11 +69,10 @@
                 <ng-container *ngFor="let item of (dataSource$ | async )?.items | showAvatar; let i = index ">
                     <div *ngIf="item">
                         <div *ngIf="item.is_show_break && i!= 0" class="w-full relative">
-                            <div class="bg-neutral-3-200 z-10 date-value">
+                            <div class="date-v3">
                                 <span class="text-neutral-1-400" [innerHTML]="item.DateCreated | yiDateTimeV3"></span>
+                                <span class="hr"></span>
                             </div>
-                            
-                            <div class="date-line mx-3 py-6 z-0"></div>
                         </div>
                         <!-- Thông tin bài post -->
                         <div *ngIf="item.type == 2 && item.object_id && getExtrasPosts((dataSource$ | async), item)" class="pl-2">
@@ -227,7 +226,6 @@
         <!-- editer+toolbars -->
         <div class="flex flex-col w-full pl-2 pt-2 pr-4 bg-white rounded-xl">
             <div class="w-full flex flex-row">
-
                 <textarea tdsInput placeholder="Nhập nội dung tin nhắn, nhấn [Enter] để gửi"
                   [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
                   (keydown.enter)="onEnter($event)" class="h-16 resize-none"></textarea>
@@ -243,7 +241,7 @@
                 <a class="p-2" type="button" (click)="sendIconLike()">
                     <div class="tdsi-like-line text-neutral-1-400 text-xl cursor-pointer"></div>
                 </a>
-                <div class="tdsi-emotion-line text-neutral-1-400 text-xl cursor-pointer p-2"
+                <a class="tdsi-emotion-line text-neutral-1-400 text-xl cursor-pointer p-2" type="button"
                     tds-popover popoverTrigger="click"
                     [popoverContent]="infoEmojiMart"
                     [popoverAutoClose]="true"
@@ -252,10 +250,17 @@
                     <ng-template #infoEmojiMart>
                         <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
                     </ng-template>
-                </div>
-                <div class="p-2">
-                    <div class="tdsi-image-line text-neutral-1-400 text-xl cursor-pointer"></div>
-                </div>
+                </a>
+                <tds-upload
+                    (uploadChange)="handleChange($event)"
+                    listType="picture"
+                    [customRequest]="handleUpload"
+                    [download]="handleDownload">
+                    <a type="button" class="p-2" title="Hình ảnh">
+                      <div class="tdsi-image-line text-neutral-1-400 text-xl cursor-pointer"></div>
+                  </a>
+                </tds-upload>
+
                 <div class="p-2" (click)="showModalListProduct()">
                     <div class="tdsi-product-line text-neutral-1-400 text-xl cursor-pointer"></div>
                 </div>

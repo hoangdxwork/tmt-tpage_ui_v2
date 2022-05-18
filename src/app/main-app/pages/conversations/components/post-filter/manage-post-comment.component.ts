@@ -7,11 +7,11 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService } f
 import { CommentByPost } from 'src/app/main-app/dto/conversation/post/comment-post.dto';
 
 @Component({
-  selector: 'post-comment-manage',
-  templateUrl: './post-comment-manage.component.html',
+  selector: 'manage-post-comment',
+  templateUrl: './manage-post-comment.component.html',
 })
 
-export class PostCommentManageComponent implements OnInit, OnDestroy {
+export class ManagePostCommentComponent implements OnInit, OnDestroy {
 
   team!: CRMTeamDTO;
   data: any = { Items: []};
@@ -31,9 +31,7 @@ export class PostCommentManageComponent implements OnInit, OnDestroy {
   initialize() {
     if(TDSHelperObject.hasValue(this.itemPostCommentCmp?.data)) {
       this.data = {...this.itemPostCommentCmp.data};
-      this.commentOrders = {...this.itemPostCommentCmp.commentOrders};
       this.team = {...this.itemPostCommentCmp.team};
-      this.childs = {...this.itemPostCommentCmp.childs};
       this.partners$ = this.itemPostCommentCmp.partners$;
     }
   }

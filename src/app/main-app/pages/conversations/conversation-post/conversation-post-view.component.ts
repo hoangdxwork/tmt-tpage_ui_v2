@@ -70,9 +70,8 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
 
     this.currentFilter = event;
     switch(event.value) {
-      case "manage":
-        break;
       case "report":
+        // this.facebookCommentService.getReportCommentByPost(this.data.fbid)
         break;
       case "excel":
         this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.fbid}`,

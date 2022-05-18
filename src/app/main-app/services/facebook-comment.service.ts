@@ -119,6 +119,31 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
     return this.apiService.getData<RequestCommentByGroup>(api, null);
   }
 
+  getManageCommentsByLimit(postId: string){
+    let queryString = Object.keys(this.queryObj3).map(key => {
+        return key + '=' + this.queryObj3[key]
+    }).join('&');
+    let api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/comments?${queryString}`,
+        method: TApiMethodType.get
+    }
+    return this.apiService.getData<RequestCommentByPost>(api, null)
+      .pipe(takeUntil(this.destroy$))
+      .pipe(map((res: RequestCommentByPost) => {
+          this.onResolveData(res, postId);
+          return res;
+      }));
+  }
+
+  getReportCommentByPost(postId: string): Observable<any>{
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost${postId}/getreport?id=${postId}`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<any>(api, null);
+  }
+
+
   onResolveData(data: RequestCommentByPost, postId: string) {
     this.allItems = this.allItems || {};
 

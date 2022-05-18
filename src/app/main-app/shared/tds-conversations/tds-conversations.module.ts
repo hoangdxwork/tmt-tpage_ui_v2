@@ -17,6 +17,7 @@ import { PipeModule } from '../pipe/pipe.module';
 import { TDSImageModule } from 'tmt-tang-ui';
 import {  TDSAlertModule } from 'tmt-tang-ui';
 import { TDSCollapseModule } from 'tmt-tang-ui';
+import { TDSUploadModule } from "tmt-tang-ui";
 
 const CMP =[
   TDSConversationsComponent,
@@ -56,7 +57,8 @@ const CMP =[
     TDSTypographyModule,
     TDSAlertModule,
     TDSTagModule,
-    TDSCheckBoxModule
+    TDSCheckBoxModule,
+    TDSUploadModule
   ],
   exports:[
     ...CMP

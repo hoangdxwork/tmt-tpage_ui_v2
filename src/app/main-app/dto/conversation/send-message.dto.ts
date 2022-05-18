@@ -22,9 +22,9 @@ export interface ToMessage {
 }
 
 export interface Attachments {
-  data: ImageData[];
+  data: ImageData[]
 }
 
 export interface ImageData {
-  url: string;
+  image_data: Object;
 }
