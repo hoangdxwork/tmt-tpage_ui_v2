@@ -332,7 +332,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getExtrasPosts(data: any, item: MakeActivityItemWebHook): any  {
-    console.log(data?.extras?.posts[item?.object_id])
       return (data?.extras?.posts[item?.object_id] as any) || [];
   }
 
@@ -527,6 +526,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.assignIndexDbTag(item);
     }
+  }
+
+  onRemoteTag(item: any){
+    item.Id = item.id
+    this.removeIndexDbTag(item);
   }
 
   assignIndexDbTag(item: any){
