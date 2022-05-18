@@ -5,6 +5,7 @@ import { MainAppRoutingModule } from './main-app-routing.module';
 import { LayoutComponent } from './layout/layout.component';
 import { MainSharedModule } from './shared/shared.module';
 import { PipeModule } from './shared/pipe/pipe.module';
+import { TDSUploadModule } from "tmt-tang-ui";
 
 import {
   TDSAvatarModule,
@@ -52,7 +53,8 @@ const SERVICES = [
     TDSModalModule,
     TDSNotificationModule,
     UploadImageModule,
-    TDSToolTipModule
+    TDSToolTipModule,
+    TDSUploadModule
   ],
   providers:[
     //SignalRConnectionService,

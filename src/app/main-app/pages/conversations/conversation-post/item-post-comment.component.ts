@@ -206,6 +206,10 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
         // TODO: Lọc theo bình luận
         this.loadFilterCommentsByPost();
         break;
+      case 'manage':
+          // TODO:Quản lý bình luận
+          this.loadManageCommentsByPost();
+          break;
       default:
         // TODO: Tất cả bình luận
         this.loadAllCommentsByPost();
@@ -246,6 +250,23 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
     }, error => {
       this.message.error(`${error?.error?.message}` || 'Lọc theo bình luận đã xảy ra lỗi')
     });
+  }
+
+  loadManageCommentsByPost(){
+    this.facebookCommentService.getManageCommentsByLimit(this.post?.fbid)
+      .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => {this.isLoading = false }))
+      .subscribe((res: RequestCommentByPost) => {
+        if(TDSHelperArray.hasListValue(res.Items)) {
+          res.Items.forEach((x: any) => {
+            x["selected"] = false;
+            x["error_message"] = null;
+          });
+        }
+        this.data = res;
+      }, error => {
+        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
+      });
   }
 
   loadAllCommentsByPost() {

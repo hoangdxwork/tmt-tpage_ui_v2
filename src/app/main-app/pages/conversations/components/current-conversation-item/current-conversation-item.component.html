@@ -55,7 +55,7 @@
                         <tds-badge class="flex items-center" [standalone]="true" [count]="item.count_unread_comments" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
                     </span>
                     <div *ngIf="!isOpenCollapCheck" class="text-neutral-1-400 text-body-2 font-regular font-sans">
-                        {{item.LastActivityTimeConverted | yiDateTimeV2}}
+                        {{item.LastActivityTimeConverted | yiDateTimeFormat}}
                     </div>
                     <div *ngIf="isOpenCollapCheck">
                         <tds-checkbox [checked]="checked" class="checkboxMessage" (click)="clickCheckbox($event)" (change)="changeCheck($event)"></tds-checkbox>

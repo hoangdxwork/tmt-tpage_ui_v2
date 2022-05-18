@@ -3,10 +3,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { DateFormat } from 'src/app/lib/consts/date-format.const';
 
 @Pipe({
-    name: 'yiDateTimeV2'
+    name: 'yiDateTimeFormat'
 })
 
-export class YiDateTimeV2Pipe extends DatePipe implements PipeTransform {
+export class YiDateTimeFormatPipe extends DatePipe implements PipeTransform {
 
   transform(value: any, args?: any): any {
 

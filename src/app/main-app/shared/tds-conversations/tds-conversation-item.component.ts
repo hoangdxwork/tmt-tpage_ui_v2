@@ -1,5 +1,4 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { isYesterday, startOfYesterday } from "date-fns";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { ActivityStatus } from "src/app/lib/enum/message/coversation-message";
@@ -80,19 +79,19 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     if (type == 'phone') {
       let phone = PhoneHelper.getMultiplePhoneFromText(value);
       if (!phone) {
-        return this.tdsMessage.error("Không tìm thấy số điện thoại.");
+        return this.tdsMessage.error("Không tìm thấy số điện thoại");
       }
-      this.tdsMessage.info("Chọn làm số điện thoại thành công.");
+      this.tdsMessage.info("Chọn làm số điện thoại thành công");
       data.phone = phone;
     } else if (type == 'address') {
       data.address = value;
       if (value) {
-        this.tdsMessage.info("Chọn làm  địa chỉ thành công.");
+        this.tdsMessage.info("Chọn làm  địa chỉ thành công");
       }
     } else if (type == 'note') {
       data.note = value;
       if (value) {
-        this.tdsMessage.info("Chọn làm ghi chú thành công.");
+        this.tdsMessage.info("Chọn làm ghi chú thành công");
       }
     }
 
@@ -104,11 +103,12 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     if (this.contentMessage && this.contentMessage.nativeElement && this.contentMessage.nativeElement.outerText) {
       return this.contentMessage.nativeElement.outerText;
     }
-    this.tdsMessage.info("Không thể lấy thông tin.");
+    this.tdsMessage.info("Không thể lấy thông tin");
     return null;
   }
 
   loadEmojiMart(event: any) {
+    // this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
   }
 
   clickReply(event: any) {
@@ -178,7 +178,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   retryMessage() {
     this.activityMatchingService.retryMessage(this.data.tpid || this.data.id, this.team.Facebook_PageId)
       .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-          this.tdsMessage.success("Thao tác thành công.");
+          this.tdsMessage.success("Thao tác thành công");
       }, error => {
       this.tdsMessage.error('Không thành công');
     })
@@ -207,7 +207,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.activityDataFacade.messageServer(res);
         this.conversationDataFacade.messageServer(res);
-        this.tdsMessage.success('Gửi thành công sản phẩm.');
+        this.tdsMessage.success('Gửi thành công sản phẩm');
     }, error => {
       this.tdsMessage.error('Gửi sản phẩm thất bại');
     });
