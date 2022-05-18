@@ -75,8 +75,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     });
   }
 
-  nextData(){
-  }
 
   onChangeConversation(team: any) {
     this.validateData();
