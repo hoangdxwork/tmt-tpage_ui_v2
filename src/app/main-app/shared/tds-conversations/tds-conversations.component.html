@@ -160,65 +160,66 @@
         </div>
     </div>
     <!-- footer  -->
-    <div #chatFooter class="chat-footer w-full flex flex-col pr-2 pb-3 relative">
-        <div class="w-full pt-2 pb-3">
-            <tds-avatar tds-popover
-                [popoverContent]="popoverContentOptionSendMessages"
-                popoverTrigger="click"
-                [popoverPlacement]="['topLeft', 'leftTop']"
-                class="bg-white text-neutral-1-400 mr-2.5 cursor-pointer" icon="tdsi-three-dots-horizon-fill">
-            </tds-avatar>
-            <ng-template #popoverContentOptionSendMessages>
-                <div class="w-[336px] flex flex-col gap-y-3">
-                    <span class="font-semibold text-title-1">Tuỳ chọn gửi tin nhắn</span>
-                    <div class="w-full flex justify-between">
-                       <span class="text-neutral-1-400">Nhấn [Enter] để gửi</span>
-                       <tds-switch size="md" [checked]="true"></tds-switch>
+    <div #chatFooter class="chat-footer w-full flex flex-col pr-2 pb-3">
+        <div class="w-full pt-2 pb-3 flex items-center gap-x-2">
+            <div class="flex gap-x-2.5">
+                <tds-avatar tds-popover
+                    [popoverContent]="popoverContentOptionSendMessages"
+                    popoverTrigger="click"
+                    [popoverPlacement]="['topLeft', 'leftTop']"
+                    class="bg-white text-neutral-1-400 cursor-pointer" icon="tdsi-three-dots-horizon-fill">
+                </tds-avatar>
+                <ng-template #popoverContentOptionSendMessages>
+                    <div class="w-[336px] flex flex-col gap-y-3">
+                        <span class="font-semibold text-title-1">Tuỳ chọn gửi tin nhắn</span>
+                        <div class="w-full flex justify-between">
+                        <span class="text-neutral-1-400">Nhấn [Enter] để gửi</span>
+                        <tds-switch size="md" [checked]="true"></tds-switch>
+                        </div>
                     </div>
-                </div>
-            </ng-template>
-            <tds-avatar tds-popover
-                [popoverContent]="popoverContentTagConversat"
-                popoverTrigger="click"
-                [popoverPlacement]="['topLeft', 'leftTop']"
-                class="bg-white text-neutral-1-400 cursor-pointer" icon="tdsi-tag-fill">
-            </tds-avatar>
-            <ng-template #popoverContentTagConversat>
-                <div class="w-[336px] flex flex-col gap-y-3">
-                    <div class="flex justify-between">
-                        <span class="font-semibold text-title-1">Gắn nhãn hội thoại</span>
-                        <button tds-button-icon color="secondary" rounded="!rounded-full"
-                            (click)="showModalAddTag()"
-                            tds-tooltip
-                            tooltipTitle="Thêm nhãn mới">
-                            <i class="tdsi-plus-fill"></i>
-                        </button>
+                </ng-template>
+                <tds-avatar tds-popover
+                    [popoverContent]="popoverContentTagConversat"
+                    popoverTrigger="click"
+                    [popoverPlacement]="['topLeft', 'leftTop']"
+                    class="bg-white text-neutral-1-400 cursor-pointer" icon="tdsi-tag-fill">
+                </tds-avatar>
+                <ng-template #popoverContentTagConversat>
+                    <div class="w-[336px] h-[500px] flex flex-col gap-y-3">
+                        <div class="flex justify-between">
+                            <span class="font-semibold text-title-1">Gắn nhãn hội thoại</span>
+                            <button tds-button-icon color="secondary" rounded="!rounded-full"
+                                (click)="showModalAddTag()"
+                                tds-tooltip
+                                tooltipTitle="Thêm nhãn mới">
+                                <i class="tdsi-plus-fill"></i>
+                            </button>
+                        </div>
+                        <tds-form-field class="w-full">
+                            <input tdsInput placeholder="Tìm kiếm nhãn" autocomplete="off" />
+                            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                        </tds-form-field>
+                        <div class="flex-auto flex flex-wrap gap-2.5 overflow-hidden overflow-y-auto tds-custom-scroll">
+                            <span *ngFor="let item of tags" (click)="onSelectTag(item)"
+                                class="cursor-pointer px-2 py-0.5 rounded text-white text-caption-2 font-semibold flex items-center gap-x-2 hover:opacity-100"
+                                [ngClass]="data?.keyTags && data?.keyTags[item.Id]?'tdsi-tick-fill opacity-100':'opacity-40'"
+                                [ngStyle]="{'background-color': [item.ColorClassName]}" >
+                                <span class="font-sans">{{item.Name}}</span>
+                            </span>
+                        </div>
                     </div>
-                    <tds-form-field class="w-full">
-                        <input tdsInput placeholder="Tìm kiếm nhãn" autocomplete="off" />
-                        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-                    </tds-form-field>
-                    <div class="flex flex-wrap gap-2.5">
-                        <a *ngFor="let item of tags" (click)="onSelectTag(item)"
-                            [ngClass]="{'active': data?.keyTags && data?.keyTags[item.Id] }"
-                            [ngStyle]="{'background-color': [item.ColorClassName]}" >
-                            {{item.Name}}</a>
+                </ng-template>
+            </div>
+            <div class="flex-auto flex flex-nowrap gap-2.5 ">
+                <div *ngFor="let item of data.tags" (click)="onRemoteTag(item)" class="relative group flex items-center">
+                    <div class="cursor-pointer px-3 py-1 rounded-md text-white font-semibold truncate group-hover:opacity-5"
+                        [ngStyle]="{'background-color': [item.color_class]}">
+                        {{item.name}}
                     </div>
-                </div>
-            </ng-template>
-
-             <!-- Danh sách hình ảnh gửi -->
-            <div *ngIf="uploadedImages && uploadedImages.length > 0"
-                class="absolute w-full bg-white" style="border-bottom: 1px solid #f0f0f0; top: -70px">
-                <div *ngFor="let x of uploadedImages; let i=index" class="flex w-full">
-                    <img [src]="x" style="width: 114px; height: 114px;border-bottom: 1px solid #f0f0f0"  class="mr-2" />
-                    <tds-upload
-                        (uploadChange)="handleChange($event)"
-                        listType="picture"
-                        [customRequest]="handleUpload"
-                        [download]="handleDownload">
-                        <a type="button" class="p-2" title="Hình ảnh">Chọn </a>
-                    </tds-upload>
+                    <button
+                        class="group-hover:text-accent-3 font-semibold absolute group-hover:flex w-full items-center justify-center hidden truncate">
+                        Gỡ nhãn
+                    </button>
                 </div>
             </div>
         </div>

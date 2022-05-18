@@ -534,6 +534,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  onRemoteTag(item: any){
+    item.Id = item.id
+    this.removeIndexDbTag(item);
+  }
+
   assignIndexDbTag(item: any){
     this.assignTagOnView(item);
     this.activityMatchingService.assignTagToConversation(this.data.id, item.Id, this.team.Facebook_PageId)

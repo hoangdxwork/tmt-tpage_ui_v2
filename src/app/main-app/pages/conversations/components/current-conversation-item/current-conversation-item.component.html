@@ -75,10 +75,10 @@
             <div class="flex-auto flex flex-nowrap gap-1 items-center overflow-hidden">
                 <div *ngIf="item.tags" class="flex gap-x-1">
                     <div *ngFor="let tag of item.tags | slice:0:2" class="relative flex items-center text-caption-2 font-regular text-neutral-1-900 rounded truncate flex-none">
-                        <div [ngStyle]="{'background-color': [tag.color_class], 'color': [tag.color_class] }" class=" rounded-md py-0.5 px-3 font-semibold opacity-30">
+                        <div [ngStyle]="{'background-color': [tag.color_class], 'color': [tag.color_class] }" class=" rounded-md py-0.5 px-4 opacity-30">
                             {{tag.name}}
                         </div>
-                        <span class="absolute inset-0 py-0.5 px-1.5 flex items-center justify-center"><span [ngStyle]="{'background-color': [tag.color_class] }" class="-top-px inline-block align-middle rounded-full w-2 h-2 mr-1"></span>{{tag.name}}</span>
+                        <span class="absolute inset-0 py-0.5 flex items-center justify-center gap-x-1"><span [ngStyle]="{'background-color': [tag.color_class] }" class="-top-px inline-block align-middle rounded-full w-2.5 h-2.5"></span>{{tag.name}}</span>
                     </div>
                 </div>
             </div>
@@ -92,10 +92,10 @@
                 <ng-template #popoverContentTag>
                     <div class="flex gap-1 flex-wrap items-center max-w-[336px]">
                         <div *ngFor="let tag of item.tags |  slice:2:item.tags.length" class="relative flex items-center text-caption-2 font-regular text-neutral-1-900 rounded truncate flex-none">
-                            <div [ngStyle]="{'background-color': [tag.color_class], 'color': [tag.color_class] }" class=" rounded-md py-0.5 px-3 font-semibold opacity-30">
+                            <div [ngStyle]="{'background-color': [tag.color_class], 'color': [tag.color_class] }" class=" rounded-md py-0.5 px-4 opacity-30">
                                 {{tag.name}}
                             </div>
-                            <span class="absolute inset-0 py-0.5 px-1.5 flex items-center justify-center"><span [ngStyle]="{'background-color': [tag.color_class] }" class="-top-px inline-block align-middle rounded-full w-2 h-2 mr-1"></span>{{tag.name}}</span>
+                            <span class="absolute inset-0 py-0.5 flex items-center justify-center gap-x-1"><span [ngStyle]="{'background-color': [tag.color_class] }" class="-top-px inline-block align-middle rounded-full w-2.5 h-2.5"></span>{{tag.name}}</span>
                         </div>
                     </div>
                 </ng-template>
