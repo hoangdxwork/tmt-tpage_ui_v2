@@ -92,6 +92,11 @@ const routes: Routes = [
         },
         loadChildren: () => import('./pages/user/user.module').then(m => m.UserModule)
       },
+      {
+        path:  "*",
+        redirectTo: '/dashboard',
+        pathMatch: 'full',
+      },
     ]
 
   }

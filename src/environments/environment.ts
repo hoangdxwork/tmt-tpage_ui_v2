@@ -8,7 +8,7 @@ export const environment = {
   signalR: "https://sr.tpos.vn",
   signalRAppend: "?host=admin.tpos.vn",
   // apiApp:"https://demoprod01.tpos.vn",
-  apiApp:"https://test.tpos.dev",
+  apiApp:"https://test.tpos.dev:44323",
   apiAccount:{
     signInPassword:"/token",
     signInFacebook:"/sign-in/facebook",
