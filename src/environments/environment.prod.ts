@@ -3,7 +3,7 @@ export const environment = {
   signalR: "",
   signalRAppend: "",
   apiApp:"https://test.tpos.dev/",
-  urlLogin:'/account/login',
+  urlLogin:'/tpagev2/account/login',
   apiAccount:{
     signInPassword:"token",
     signInFacebook:"sign-in/facebook",
