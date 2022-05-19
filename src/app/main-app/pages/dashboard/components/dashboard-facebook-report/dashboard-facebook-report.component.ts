@@ -3,6 +3,9 @@ import { Color } from 'echarts';
 import { TDSChartOptions, TDSBarChartComponent, TDSBarChartDataSeries } from 'tds-report';
 import { TDSSafeAny, vi_VN } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
+import { InputSummaryPostDTO, MDBSummaryByPostDTO, SummaryFilterDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
+import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
+import { SummaryFacade } from 'src/app/main-app/services/facades/summary.facede';
 
 @Component({
   selector: 'app-dashboard-facebook-report',
@@ -10,7 +13,6 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./dashboard-facebook-report.component.scss']
 })
 export class DashboardFacebookReportComponent implements OnInit {
-  //#region variable
   fbReportOption:TDSSafeAny;
   chartOption = TDSChartOptions();
   labelData:TDSSafeAny[] = [];
@@ -18,21 +20,38 @@ export class DashboardFacebookReportComponent implements OnInit {
   seriesData:TDSSafeAny[] = [];
   colors:Color[] = [];
 
-  filterList= [
-    {id:1, name:'Tuần này'},
-    {id:2, name:'Tháng này'}
-  ]
-  currentFilter = this.filterList[0].name;
   emptyData = false;
-  //#endregion
 
-  constructor() { }
+  filterList: SummaryFilterDTO[] = [];
+  currentFilter!: SummaryFilterDTO;
+
+  dataSummaryPost!: MDBSummaryByPostDTO;
+
+  constructor(
+    private summaryFacade: SummaryFacade,
+    private reportFacebookService: ReportFacebookService
+  ) { }
 
   ngOnInit(): void {
+    this.loadFilter();
     this.loadData();
   }
 
+  loadFilter() {
+    this.filterList = this.summaryFacade.getFilter();
+    this.currentFilter = this.filterList[0];
+  }
+
   loadData(){
+    let model = {} as InputSummaryPostDTO;
+    model.PageId = undefined;
+    model.DateStart = this.currentFilter.startDate;
+    model.DateEnd = this.currentFilter.endDate;
+
+    this.reportFacebookService.getSummaryPost(model).subscribe(res => {
+      this.dataSummaryPost = res;
+    });
+
     this.labelData = [60000,60000,60000,60000,60000];
 
     this.axisData = ['06/06','07/06','08/06','09/06','10/06','11/06','12/06'];
@@ -162,11 +181,13 @@ export class DashboardFacebookReportComponent implements OnInit {
     return list;
   }
 
-  formatValue(value:number){
+  formatValue(value:number | undefined){
+    if(!value) return 0;
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   }
 
   onChangeFilter(data:any){
     this.currentFilter = data;
+    this.loadData();
   }
 }

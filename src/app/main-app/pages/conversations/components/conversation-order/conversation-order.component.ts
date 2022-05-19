@@ -272,8 +272,6 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
         this.orderForm.controls["Id"].setValue(res.Id);
         this.orderForm.controls["PartnerId"].setValue(res.PartnerId);
 
-        // TODO: Cập nhật mapping, thông tin khách hàng
-
         if (!this.isEnableCreateOrder) {
           if(print == "print") {
             this.orderPrintService.printOrder(res, null);
@@ -287,7 +285,8 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
           }
 
           this.isLoading = false;
-          this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
+          // this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
+          this.partnerService.onLoadPartnerFromTabOrder.emit(this.data);
         }
         else {
           let billModel = this.prepareBillModel(); // Bản chất đã change this.saleModel
@@ -316,7 +315,8 @@ export class ConversationOrderComponent  implements OnInit, OnChanges {
                     this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${bill.Data.Id}${params}`);
                   }
 
-                  this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
+                  this.partnerService.onLoadPartnerFromTabOrder.emit(this.data);
+                  // this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
                 }, error => {
                   this.message.error(`${error?.error?.message}` || JSON.stringify(error));
                 });

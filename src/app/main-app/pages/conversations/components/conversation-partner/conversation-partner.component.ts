@@ -73,16 +73,18 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private modalService: TDSModalService,
     private crmMatchingService: CRMMatchingService,
     private saleOnline_OrderService: SaleOnline_OrderService,
-    public router: Router) {
+    private router: Router) {
   }
 
   ngOnInit(): void  {
     this.createForm();
+    this.loadPartnerStatus();
+
+    this.loadPartnerByOrder();
 
     if(this.data?.id) {
         this.loadData(this.data);
     }
-    this.loadPartnerStatus();
   }
 
   createForm(){
@@ -101,6 +103,16 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         District: [null],
         Ward: [null]
     });
+  }
+
+  loadPartnerByOrder() {
+    this.partnerService.onLoadPartnerFromTabOrder
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        if(res?.psid && this.data?.psid && res.psid === this.data.psid) {
+          this.loadData(res);
+        }
+      });
   }
 
   loadData(data: ConversationMatchingItem) {
@@ -169,6 +181,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   updateForm(data: CheckConversationData){
     if(data?.Id) {
+      this._form.patchValue(data);
+      this._form.controls['FacebookASIds'].setValue(data.Facebook_ASUserId);
+    }
+    else {
       this._form.patchValue(data);
       this._form.controls['FacebookASIds'].setValue(data.Facebook_ASUserId);
     }

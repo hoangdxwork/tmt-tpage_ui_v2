@@ -91,7 +91,8 @@
                               </button>
                             </div>
                           </div>
-                          <button tds-button color="secondary" size="md" (click)="addCRMKeyTag(null)" class="w-min">
+                          <button *ngIf="formAutoLabelConfig?.value?.AssignOnPattern" tds-button color="secondary" size="md"
+                            (click)="addCRMKeyTag(null)" class="w-min">
                             <span class="flex items-center">
                               <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm nhãn
                             </span>

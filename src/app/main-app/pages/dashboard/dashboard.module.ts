@@ -24,7 +24,13 @@ import { DashboardStaffReportComponent } from './components/dashboard-staff-repo
 import { DashboardConnectingPageReportComponent } from './components/dashboard-connecting-page-report/dashboard-connecting-page-report.component';
 import { DashboardProductReportComponent } from './components/dashboard-product-report/dashboard-product-report.component';
 import { DashboardEmptyDataComponent } from './components/dashboard-empty-data/dashboard-empty-data.component';
+import { ReportFacebookService } from '../../services/report-facebook.service';
+import { SummaryFacade } from '../../services/facades/summary.facede';
 
+const SERVICES = [
+  ReportFacebookService,
+  SummaryFacade
+]
 
 @NgModule({
   declarations: [
@@ -64,6 +70,7 @@ import { DashboardEmptyDataComponent } from './components/dashboard-empty-data/d
     TDSFormFieldModule,
     TDSEmptyModule,
     TDSTableModule
-  ]
+  ],
+  providers: [ ...SERVICES]
 })
 export class DashboardModule { }
