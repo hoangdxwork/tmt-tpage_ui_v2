@@ -22,6 +22,9 @@ export class PartnerService extends BaseSevice {
   public onLoadOrderFromTabPartner: EventEmitter<any> = new EventEmitter();
   public onLoadPartnerFromTabOrder: EventEmitter<any> = new EventEmitter();
 
+  // Sự kiện xem thông tin từ comment bài post
+  public onLoadPartnerFormPostComment: EventEmitter<any> = new EventEmitter();
+
   public partnerStatus: any;
   public partnerStatus$ = new BehaviorSubject<any>(null);
 

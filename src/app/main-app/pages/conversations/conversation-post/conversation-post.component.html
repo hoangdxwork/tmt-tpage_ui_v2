@@ -97,7 +97,7 @@
     </div>
     <!-- Danh sách khách hàng, đơn hàng -->
     <div class="w-[576px] h-full flex flex-col">
-        <tds-tabset class="w-full h-full flex " [clsTab]="'flex-1'"
+        <tds-tabset class="w-full h-full flex " [clsTab]="'flex-1'" [(selectedIndex)]="currentOrderTab"
             [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
             <!-- tab Danh sách -->
             <tds-tab [title]="titleList" clsContent=" -mt-px h-full flex flex-col">
@@ -294,24 +294,28 @@
                 </div>
             </tds-tab>
             <!-- tab Khách hàng -->
-            <tds-tab [title]="titlePartner">
+            <tds-tab [title]="titlePartner" clsContent=" -mt-px h-full flex flex-col" [disabled]="isDisableTab">
                 <ng-template #titlePartner let-active="active">
                     <div class=" p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center justify-center"
                         [ngClass]='{"border-primary-1 bg-white":active,"border-transparent text-neutral-1-400 bg-neutral-3-50 hover:border-primary-1":!active}'>
                         <span class="mr-2">Khách hàng</span>
                     </div>
                 </ng-template>
-                <div></div>
+                <div>
+                  <conversation-partner [team]="currentTeam"></conversation-partner>
+                </div>
             </tds-tab>
             <!-- tab đơn hàng -->
-            <tds-tab [title]="titleOrder">
+            <tds-tab [title]="titleOrder" clsContent=" -mt-px h-full flex flex-col" [disabled]="isDisableTab">
                 <ng-template #titleOrder let-active="active">
                     <div class="p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center justify-center"
                         [ngClass]='{"border-primary-1 bg-white":active,"border-transparent text-neutral-1-400 bg-neutral-3-50 hover:border-primary-1":!active}'>
                         <span class="mr-2">Đơn hàng</span>
                     </div>
                 </ng-template>
-                <div></div>
+                <div>
+                  <post-order [team]="currentTeam"></post-order>
+                </div>
             </tds-tab>
         </tds-tabset>
     </div>

@@ -1,14 +1,14 @@
-<div *ngIf="data?.id">
+<div>
   <form [formGroup]="_form" novalidate>
     <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-y-auto tds-custom-scroll flex-col flex">
       <div class="bg-white px-6 py-4">
         <div class="flex gap-6">
-          <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="data.psid" [token]="team?.Facebook_PageToken">
+          <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="formData?.Facebook_ASUserId" [token]="team?.Facebook_PageToken">
           </tpage-avatar-facebook>
           <div class="flex flex-col gap-2">
             <div class="flex gap-4 items-center" style="min-height: 34px;">
               <div class="text-heading-4 font-sans font-semibold text-neutral-1-900">
-                  {{_form.controls['Name'].value}}
+                  {{ formData?.Facebook_UserName || formData?.Name}}
               </div>
               <button type="button" tds-button color="secondary" (click)="onEditPartner()" *ngIf="!isEditPartner">
                 <span class="flex items-center ">

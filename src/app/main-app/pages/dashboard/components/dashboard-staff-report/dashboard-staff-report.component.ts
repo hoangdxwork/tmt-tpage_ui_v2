@@ -1,7 +1,11 @@
+import { finalize } from 'rxjs/operators';
 import { Color } from 'echarts';
 import { TDSPieChartComponent, TDSChartOptions } from 'tds-report';
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
+import { SummaryFacade } from 'src/app/main-app/services/facades/summary.facede';
+import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
+import { SummaryActivityByStaffDTO, SummaryFilterDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
 
 @Component({
   selector: 'app-dashboard-staff-report',
@@ -13,28 +17,61 @@ export class DashboardStaffReportComponent implements OnInit {
   staffOption:TDSSafeAny;
   chartOption = TDSChartOptions();
 
-  filterList= [
-    {id:1, name:'Tuần này'},
-    {id:2, name:'Tháng này'}
-  ]
-  currentFilter = this.filterList[0].name;
+  // filterList= [
+  //   {id:1, name:'Tuần này'},
+  //   {id:2, name:'Tháng này'}
+  // ]
+  // currentFilter = this.filterList[0].name;
   colors:Color[] = [];
   staffsData:TDSSafeAny[] = [];
   emptyData = false;
   //#endregion
 
-  constructor() { }
+  currentFilter!: SummaryFilterDTO;
+  filterList: SummaryFilterDTO[] = [];
+  isLoading: boolean = false;
+
+  lstSummaryActivityByStaff: SummaryActivityByStaffDTO[] = [];
+
+  constructor(
+    private summaryFacade: SummaryFacade,
+    private reportFacebookService: ReportFacebookService
+  ) { }
 
   ngOnInit(): void {
-    this.loadData();
+    this.loadFilter();
+    this.loadOverviewEmploy();
   }
 
-  loadData(){
-    this.staffsData = [
-      { id:1, name:'Nguyễn Bính', value:70 },
-      { id:2, name:'Nguyễn Thuần', value:15 },
-      { id:3, name:'Nguyễn jolie', value:15 },
-    ];
+  loadFilter() {
+    this.filterList = this.summaryFacade.getFilter();
+    this.currentFilter = this.filterList[0];
+  }
+
+  loadOverviewEmploy() {
+    let startDate = this.currentFilter.startDate.toISOString();
+    let endDate = this.currentFilter.endDate.toISOString();
+
+    this.isLoading = true;
+
+    this.reportFacebookService.getSummaryByStaffs(startDate, endDate)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe(res => {
+        this.lstSummaryActivityByStaff = res;
+        this.loadDataChart(this.lstSummaryActivityByStaff);
+      }, error => this.emptyData = true);
+  }
+
+  loadDataChart(data: SummaryActivityByStaffDTO[]){
+    this.staffsData = [];
+
+    this.staffsData = data.map(x => {
+      return {
+        id: x.StaffId,
+        name: x.StaffName,
+        value: x.TotalCount
+      }
+    });
 
     this.colors= ['#28A745','#2684FF','#FF8900'];
 
@@ -127,5 +164,6 @@ export class DashboardStaffReportComponent implements OnInit {
 
   onChangeFilter(data:any){
     this.currentFilter = data;
+    this.loadOverviewEmploy();
   }
 }

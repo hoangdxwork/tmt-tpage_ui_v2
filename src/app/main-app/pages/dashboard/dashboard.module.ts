@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TDSEchartsModule } from 'tds-report';
-import { TDSAvatarModule, TDSCardModule, TDSFlexModule, TDSSelectModule, TDSTabsModule, TDSFormFieldModule, TDSEmptyModule, TDSTableModule } from 'tmt-tang-ui';
+import { TDSAvatarModule, TDSCardModule, TDSFlexModule, TDSSelectModule, TDSTabsModule, TDSFormFieldModule, TDSEmptyModule, TDSTableModule, TDSSpinnerModule } from 'tmt-tang-ui';
 import { OverviewComponent } from './components/overview/overview.component';
 import { FacebookReportComponent } from './components/facebook-report/facebook-report.component';
 import { LabelReportComponent } from './components/label-report/label-report.component';
@@ -26,9 +26,11 @@ import { DashboardProductReportComponent } from './components/dashboard-product-
 import { DashboardEmptyDataComponent } from './components/dashboard-empty-data/dashboard-empty-data.component';
 import { ReportFacebookService } from '../../services/report-facebook.service';
 import { SummaryFacade } from '../../services/facades/summary.facede';
+import { CRMMatchingService } from '../../services/crm-matching.service';
 
 const SERVICES = [
   ReportFacebookService,
+  CRMMatchingService,
   SummaryFacade
 ]
 
@@ -69,7 +71,8 @@ const SERVICES = [
     TDSSelectModule,
     TDSFormFieldModule,
     TDSEmptyModule,
-    TDSTableModule
+    TDSTableModule,
+    TDSSpinnerModule
   ],
   providers: [ ...SERVICES]
 })

@@ -2,7 +2,7 @@ import { DeliveryCarrierDTO } from "../carrier/delivery-carrier.dto";
 
 export interface ConversationOrderForm {
   Id?: string;
-  Code: string;
+  Code: string | undefined;
   LiveCampaignId: string;
   Facebook_UserId: string;
   Facebook_ASUserId: string;

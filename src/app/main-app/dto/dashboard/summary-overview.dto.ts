@@ -33,10 +33,30 @@ export interface InputSummaryPostDTO {
   DateEnd: Date;
 }
 
+export interface InputSummaryTimelineDTO {
+  PageId?: string;
+  DateStart: Date;
+  DateEnd: Date;
+}
+
+export interface MDBTotalCommentMessageFbDTO {
+  Date: Date;
+  Hours: number;
+  TotalMessage: number;
+  TotalComment: number;
+  TotalLike: number;
+}
+
 export interface MDBSummaryByPostDTO {
   TotalMessage: number;
   TotalComment: number;
   TotalLike: number;
   TotalConversation: number;
   TotalPost: number;
+}
+
+export interface SummaryActivityByStaffDTO {
+  StaffId: string;
+  StaffName: string;
+  TotalCount: number;
 }

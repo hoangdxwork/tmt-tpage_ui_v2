@@ -2,6 +2,12 @@ import { Color } from 'echarts';
 import { TDSChartOptions, TDSLineChartComponent, TDSLineChartDataSeries } from 'tds-report';
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
+import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
+import { MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
+import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
+import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
+import { takeUntil, finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard-daily-report',
@@ -15,7 +21,23 @@ export class DashboardDailyReportComponent implements OnInit {
     {id:2, name:'Tháng này'}
   ]
   currentFilter = this.filterList[0].name;
-  labelData:TDSSafeAny[] = [];
+  labelData = [
+    {
+      value:300,
+      percent:20,
+      decrease:false
+    },
+    {
+      value:300,
+      percent:20,
+      decrease:true
+    },
+    {
+      value:300,
+      percent:20,
+      decrease:false
+    }
+  ];
   emptyData = false;
 
   dailyOption:any;
@@ -25,43 +47,70 @@ export class DashboardDailyReportComponent implements OnInit {
   colors:Color[] = [];
   //#endregion
 
-  constructor() { }
+  currentTeam!: CRMTeamDTO | null;
+  private destroy$ = new Subject<void>();
+  isLoading: boolean = false;
+
+  dataCurrentDate: MDBTotalCommentMessageFbDTO[] = [];
+  dataOverviewCurrentDay!: MDBSummaryByPostDTO;
+
+  constructor(
+    private crmTeamService: CRMTeamService,
+    private reportFacebookService: ReportFacebookService
+  ) { }
 
   ngOnInit(): void {
-    this.loadData();
+    this.loadAxisData();
+    this.loadCurrentTeam();
   }
 
-  loadData(){
-    this.labelData = [
-      {
-        value:300,
-        percent:20,
-        decrease:false
-      },
-      {
-        value:300,
-        percent:20,
-        decrease:true
-      },
-      {
-        value:300,
-        percent:20,
-        decrease:false
-      }
-    ];
+  loadCurrentTeam() {
+    this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
+      this.currentTeam = res;
+      this.loadSummaryCurrentDay(this.currentTeam?.Facebook_PageId);
+      this.loadSummaryOverviewCurrentDay(this.currentTeam?.Facebook_PageId);
+    });
+  }
 
+  loadSummaryCurrentDay(pageId: string | undefined) {
+    this.isLoading = true;
+    this.reportFacebookService.getSummaryCurrentDay('')
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe(res => {
+        this.dataCurrentDate = res;
+        this.loadSeriesData(res);
+        this.loadDataChart();
+      }, error => this.emptyData = true);
+  }
+
+  loadSummaryOverviewCurrentDay(pageId: string | undefined) {
+    this.reportFacebookService.getSummaryOverviewCurrentDay('').subscribe(res => {
+      this.dataOverviewCurrentDay = res;
+    });
+  }
+
+  loadAxisData() {
     this.axisData = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23'];
+  }
+
+  loadSeriesData(data: MDBTotalCommentMessageFbDTO[]) {
+    let dataMessage: number[] = [];
+
+    this.axisData.forEach((axis) => {
+      let find = data.find(x => JSON.stringify(x.Hours) === axis);
+      dataMessage.push(find?.TotalMessage || 0);
+    });
+
     this.seriesData = [
       {
-        name:'Tin nhắn',
-        data:[49,65,80,99,98,97,101,135,165,135,101,68,61,63,88,101,135,145,155,166,158,151,150]
+        name: 'Tin nhắn',
+        data: dataMessage
       }
     ];
-    this.colors = ['#28A745','#1A6DE3','#F59E0B','#F33240'];
+  }
 
-    if(this.labelData.length < 3 || this.axisData.length == 0 || this.seriesData.length == 0){
-      this.emptyData = true;
-    }
+  loadDataChart(){
+    this.colors = ['#28A745','#1A6DE3','#F59E0B','#F33240'];
 
     let chart:TDSLineChartComponent ={
       color:this.colors,
@@ -194,5 +243,10 @@ export class DashboardDailyReportComponent implements OnInit {
 
   onChangeFilter(data:any){
     this.currentFilter = data;
+  }
+
+  refreshData() {
+    this.loadSummaryCurrentDay(this.currentTeam?.Facebook_PageId);
+    this.loadSummaryOverviewCurrentDay(this.currentTeam?.Facebook_PageId);
   }
 }

@@ -6,7 +6,7 @@ import { TDSHelperArray } from 'tmt-tang-ui';
 import { RequestCommentByGroup } from '../dto/conversation/post/comment-group.dto';
 import { OdataCommentOrderPostDTO } from '../dto/conversation/post/comment-order-post.dto';
 import { RequestCommentByPost } from '../dto/conversation/post/comment-post.dto';
-import { FacebookPostDTO, FacebookPostItem } from '../dto/facebook-post/facebook-post.dto';
+import { CheckFacebookIdDTO, FacebookPostDTO, FacebookPostItem } from '../dto/facebook-post/facebook-post.dto';
 import { ArrayHelper } from '../shared/helper/array.helper';
 import { BaseSevice } from './base.service';
 
@@ -140,9 +140,18 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost${postId}/getreport?id=${postId}`,
       method: TApiMethodType.post
     }
+
     return this.apiService.getData<any>(api, null);
   }
 
+  getCustomersByFacebookId(psid: string, postId: string, teamId: number): Observable<CheckFacebookIdDTO> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/api/facebook/checkfacebookid?asuid=${psid}&postid=${postId}&teamId=${teamId}`,
+      method: TApiMethodType.get
+    }
+
+    return this.apiService.getData<CheckFacebookIdDTO>(api, null);
+  }
 
   onResolveData(data: RequestCommentByPost, postId: string) {
     this.allItems = this.allItems || {};
@@ -154,7 +163,7 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
     this.dataResponse = data;
     this.currentItems = data.Items;
     this.allItems[postId] = ArrayHelper.makeUniqueArray(this.allItems[postId], data.Items, "Id");
-}
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();
