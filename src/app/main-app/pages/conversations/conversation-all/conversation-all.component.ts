@@ -53,6 +53,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   ngOnInit(): void {
+    // TODO: change team tds header
+    this.crmService.changeTeamFromLayout.pipe(takeUntil(this.destroy$)).subscribe((team) => {
+        this.onClickTeam(team);
+    })
+
+    // TODO: change team in component
     this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe(([team, params]: any) => {
       if (!TDSHelperObject.hasValue(team)) {
         return this.onRedirect();
@@ -75,10 +81,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     });
   }
 
-
   onChangeConversation(team: any) {
     this.validateData();
-    this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
+    this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);debugger
     this.loadConversations((this.dataSource$));
   }
 

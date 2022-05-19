@@ -26,6 +26,7 @@ import { DraftMessageService } from '../../services/conversation/draft-message.s
 import { CRMTagService } from '../../services/crm-tag.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { HttpResponse } from '@microsoft/signalr';
+import { CRMTeamService } from '../../services/crm-team.service';
 
 @Component({
   selector: 'shared-tds-conversations',
@@ -68,6 +69,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     private conversationEventFacade: ConversationEventFacade,
     private sgRConnectionService: SignalRConnectionService,
     private router: Router,
+    private crmTeamService: CRMTeamService,
     private resizeObserver: TDSResizeObserver,
     private viewContainerRef: ViewContainerRef) {
   }

@@ -1,21 +1,12 @@
 import { EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
-import { map, shareReplay, takeUntil } from "rxjs/operators";
-import { TCommonService } from "src/app/lib";
+import { TCommonService, THelperCacheService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
-import { ConversationService } from "../conversation/conversation.service";
-import { ConversationFacebookState } from "../facebook-state/conversation-facebook.state";
 import { SharedService } from "../shared.service";
-import { SignalRConnectionService } from "../signalR/signalR-connection.service";
-import { CRMMatchingDTO } from '../../dto/conversation-all/crm-matching.dto';
-import { CRMMatchingMappingDTO } from "../../dto/conversation-all/conversation-all.dto";
-import { DataUpdate } from "../../dto/conversation/conversation.dto";
-import { CRMTeamService } from "../crm-team.service";
-import { HrefPageService } from "../href-page.service";
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSNotificationService } from "tmt-tang-ui";
-import { StringHelperV2 } from "../../shared/helper/string.helper";
-import { ActivatedRoute, Router } from "@angular/router";
+import { TDSHelperString, TDSMessageService } from "tmt-tang-ui";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
+import { map, takeUntil } from "rxjs/operators";
+import { PartnerService } from "../partner.service";
 
 @Injectable({
   providedIn: 'root'
@@ -38,17 +29,14 @@ export class ConversationPostFacade extends BaseSevice implements OnDestroy {
 
   public onCommentSelected$ = new EventEmitter<any>();
   public onPostChanged$ = new EventEmitter<any>(); // Sự kiện thay đổi bài viết
-  private _dicPartnerSimplest$: BehaviorSubject<any> = new BehaviorSubject({ data: {} }); // Danh sách trạng thái khách hàng hiện tại
+  private _dicPartnerSimplest$!: Observable<any>; // Danh sách trạng thái khách hàng hiện tại
+  private _keyCachePartnerSimplest = "_dict_partner_simplest";
+  fbPartnerSimplest: any = {};
 
   constructor(private message: TDSMessageService,
       private apiService: TCommonService,
-      private cvsFbState: ConversationFacebookState,
-      private service: ConversationService,
-      private crmTeamService: CRMTeamService,
-      private hrefService: HrefPageService,
-      private notification: TDSNotificationService,
-      private router: Router,
-      private sgRConnectionService: SignalRConnectionService,
+      private partnerService: PartnerService,
+      private cacheApi: THelperCacheService,
       private sharedService: SharedService) {
         super(apiService);
         this.initialize();
@@ -67,33 +55,46 @@ export class ConversationPostFacade extends BaseSevice implements OnDestroy {
     });
   }
 
-  public setTeam(team: CRMTeamDTO) {
+  public setPartnerSimplest(team: CRMTeamDTO) {
     this.team = team;
-
-    this.initDicPartnerSimplest(team.Id);
+   // this.initDicPartnerSimplest(team.Id);
   }
 
-  public getDicPartnerSimplest$() {
+  public getDicPartnerSimplest$(): Observable<any> {
     return this._dicPartnerSimplest$;
   }
 
-  public initDicPartnerSimplest(teamId: number) {
-    // this._dicPartnerSimplest$ = new BehaviorSubject<any>({ data: {} });
+  // public initDicPartnerSimplest(teamId: number): any {
+  //   let keyCache = `${this._keyCachePartnerSimplest}[${teamId}]`;
 
-    // pouchDBFb.get(this.team.Facebook_PageId, (err, doc) => {
+  //   this.cacheApi.getItem(keyCache).pipe(takeUntil(this.destroy$))
+  //     .subscribe((res: any) => {
+  //       if(TDSHelperString.hasValueString(res)) {
+  //         let obs = JSON.parse(res.value);
+  //       } else {
+  //         this.getPartnersByTimestamp(teamId, undefined);
+  //       }
+  //   })
+  // }
 
-    //   this._dicPartnerSimplest$.next(doc || { data: {} });
+  // getPartnersByTimestamp(teamId: any, timestamp: number | undefined) {debugger
+  //    this.partnerService.getPartnersByTimestamp(teamId, timestamp)
+  //     .subscribe((res: any) => {debugger
+  //       this.fbPartnerSimplest = Object.assign(this.fbPartnerSimplest, res.Data);
+  //       timestamp = res.Next || res.Last
+  //       if(timestamp) {
+  //         return  this.getPartnersByTimestamp(teamId, timestamp);
+  //       }
+  //       // let obj = {
+  //       //   id: teamId,
+  //       //   last: res.Next || res.Last,
+  //       //   data: res.Data
+  //       // } as any;
 
-    //   let timestamp = (doc || {}).last;
-    //   this.onTeamReplayFbPartnersPage(teamId, timestamp).subscribe(res => {
-    //     console.log(res);
-    //     if (!res) {
-    //       this._dicPartnerSimplest$.next({ data: res || {} });
-    //     }
-    //   });
-    // });
-  }
-
+  //       // let keyCache = `${this._keyCachePartnerSimplest}[${teamId}]`;
+  //       // this.cacheApi.setItem(key, JSON.stringify(obj));
+  //   })
+  // }
 
   ngOnDestroy(): void {
     this.destroy$.next();
