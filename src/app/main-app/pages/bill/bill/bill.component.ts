@@ -4,7 +4,7 @@ import { SortEnum } from 'src/app/lib/enum/sort.enum';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { OdataFastSaleOrderService } from 'src/app/main-app/services/mock-odata/odata-fastsaleorder.service';
-import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperString, TDSI18nService, ToastrService, toArray, TDSTableQueryParams, TDSHelperArray, TDSMessageService } from 'tmt-tang-ui';
+import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperString, TDSI18nService, ToastrService, toArray, TDSTableQueryParams, TDSHelperArray, TDSMessageService, TDSResizeObserver } from 'tmt-tang-ui';
 import { addDays, getISODay } from 'date-fns/esm';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { THelperCacheService } from 'src/app/lib';
@@ -23,12 +23,17 @@ import { FastSaleOrderDTO, FastSaleOrderSummaryStatusDTO, ODataFastSaleOrderDTO 
 export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('innerText') innerText!: ElementRef;
+  @ViewChild('WidthTable') widthTable!: ElementRef;
+  @ViewChild('BillOrderLines') billOrderLines!: ElementRef;
 
   lstOfData: Array<FastSaleOrderDTO> = [];
   pageSize = 20;
   pageIndex = 1;
   isLoading: boolean = false;
   count: number = 1;
+  widthCollapse: number = 0;
+  paddingCollapse: number = 32;
+  marginLeftCollapse: number = 0;
 
   public filterObj: TDSSafeAny = {
     tags: [],
@@ -89,6 +94,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       private cacheApi: THelperCacheService,
       private message: TDSMessageService,
       private fastSaleOrderService :FastSaleOrderService,
+      private resizeObserver: TDSResizeObserver,
       private viewContainerRef: ViewContainerRef) {
   }
 
@@ -278,6 +284,25 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this.widthCollapse = this.widthTable.nativeElement.offsetWidth - this.paddingCollapse
+    this.resizeObserver
+      .observe(this.widthTable)
+      .subscribe(() => {
+        this.widthCollapse = this.widthTable.nativeElement.offsetWidth - this.paddingCollapse;
+        this.widthTable.nativeElement.click()
+      });
+      setTimeout(() => {
+        let that = this;
+        
+        if(that.billOrderLines){
+          let wrapScroll = that.billOrderLines.nativeElement.closest('.tds-table-body');
+          
+          wrapScroll.addEventListener('scroll', function() {
+            let scrollleft = wrapScroll.scrollLeft;
+            that.marginLeftCollapse = scrollleft;
+          });
+        }
+      }, 500);
     fromEvent(this.innerText.nativeElement, 'keyup').pipe(
         map((event: any) => { return event.target.value }),
         debounceTime(750),
