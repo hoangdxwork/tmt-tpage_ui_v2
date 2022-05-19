@@ -34,21 +34,21 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
   lstTeam!: any[];
 
   constructor(private apiService: TCommonService,
-      private activityFbState: ActivityFacebookState,
-      private facebookPostService: FacebookPostService,
-      private crmTeamService: CRMTeamService,
-      private message: TDSMessageService,
-      private service: ActivityMatchingService,
-      private sgRConnectionService: SignalRConnectionService,
-      private sharedService: SharedService) {
-        super(apiService);
+    private activityFbState: ActivityFacebookState,
+    private facebookPostService: FacebookPostService,
+    private crmTeamService: CRMTeamService,
+    private message: TDSMessageService,
+    private service: ActivityMatchingService,
+    private sgRConnectionService: SignalRConnectionService,
+    private sharedService: SharedService) {
+      super(apiService);
 
-        this.crmTeamService.onChangeListFaceBook().subscribe((res :any) => {
-          if(res && TDSHelperArray.isArray(res.Items)){
-              this.lstTeam = res.Items;
-          }
-        });
-        this.initialize();
+      this.crmTeamService.onChangeListFaceBook().subscribe((res :any) => {
+        if(res && TDSHelperArray.isArray(res.Items)){
+            this.lstTeam = res.Items;
+        }
+      });
+      this.initialize();
   }
 
   initialize() {

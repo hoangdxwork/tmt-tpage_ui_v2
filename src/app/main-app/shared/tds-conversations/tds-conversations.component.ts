@@ -7,11 +7,11 @@ import { ConversationDataFacade } from 'src/app/main-app/services/facades/conver
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Optional, Output, Self,
   SimpleChanges, TemplateRef, ViewContainerRef, Host, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSResizeObserver } from 'tmt-tang-ui';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSResizeObserver, TDSUploadChangeParam, TDSUploadFile } from 'tmt-tang-ui';
 import { ConversationMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
-import { finalize, takeUntil, debounceTime } from 'rxjs/operators';
+import { finalize, takeUntil, debounceTime, filter } from 'rxjs/operators';
 import { MakeActivityItem, MakeActivityItemWebHook, MakeActivityMessagesDTO } from '../../dto/conversation/make-activity.dto';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ActivityMatchingService } from '../../services/conversation/activity-matching.service';
@@ -24,6 +24,8 @@ import { SignalRConnectionService } from '../../services/signalR/signalR-connect
 import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
 import { DraftMessageService } from '../../services/conversation/draft-message.service';
 import { CRMTagService } from '../../services/crm-tag.service';
+import { Message } from 'src/app/lib/consts/message.const';
+import { HttpResponse } from '@microsoft/signalr';
 
 @Component({
   selector: 'shared-tds-conversations',
@@ -235,6 +237,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   loadEmojiMart(event: any) {
+    this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
   }
 
   validateData(){
@@ -315,10 +318,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
         if (res?.conversation?.psid == this.data.id) {
-            if (res.conversation.name) {
+            if (res.conversation?.name) {
               this.data.name = res.conversation.name;
             }
-            if (res.conversation.from) {
+            if (res.conversation?.from) {
               this.data.from = res.conversation.from;
             }
         }
@@ -332,7 +335,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getExtrasPosts(data: any, item: MakeActivityItemWebHook): any  {
-    console.log(data?.extras?.posts[item?.object_id])
       return (data?.extras?.posts[item?.object_id] as any) || [];
   }
 
@@ -353,22 +355,22 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     event.preventDefault();
   }
 
-  messageSendingToServer(){
+  messageSendingToServer(): any{
     let message = this.messageModel;
-    if(TDSHelperString.hasValueString(message)) {
-      let activityFinal = this.activityDataFacade.getMessageNearest(this.team.Facebook_PageId, this.data.psid, this.type ? this.type : 'all') as any;
+    if(!TDSHelperArray.hasListValue(this.uploadedImages) && !TDSHelperString.hasValueString(message)){
+      return  this.message.error('Hãy nhập nội dung cần gửi');
+    }
 
-      if(TDSHelperObject.hasValue(activityFinal) && activityFinal.type === 2) {
-        if(this.type === 'all'){
-            this.sendPrivateReplies(activityFinal, message);
-        } else if(this.type === 'comment') {
-            this.replyComment(activityFinal, message);
-        }
-      } else {
-          this.sendMessage(message);
+    let activityFinal = this.activityDataFacade.getMessageNearest(this.team.Facebook_PageId, this.data.psid, this.type ? this.type : 'all') as any;
+
+    if(TDSHelperObject.hasValue(activityFinal) && activityFinal.type === 2) {
+      if(this.type === 'all') {
+          this.sendPrivateReplies(activityFinal, message);
+      } else if(this.type === 'comment') {
+          this.replyComment(activityFinal, message);
       }
     } else {
-      this.message.error('Hãy nhập nội dung cần gửi');
+        this.sendMessage(message);
     }
   }
 
@@ -503,11 +505,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     };
     model.message = message;
     model.created_time = (new Date()).toISOString();
+    model.attachments = {
+      data: []
+    }
 
     let exist = TDSHelperArray.hasListValue(this.uploadedImages) && this.type != 'comment'
     if(exist) {
-      this.uploadedImages.map((x) => {
-        (model.attachments?.data as any).push({
+      this.uploadedImages.map((x: string) => {
+        (model.attachments?.data as any[]).push({
             image_data: {
               url: x
             }
@@ -527,6 +532,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.assignIndexDbTag(item);
     }
+  }
+
+  onRemoteTag(item: any){
+    item.Id = item.id
+    this.removeIndexDbTag(item);
   }
 
   assignIndexDbTag(item: any){
@@ -591,6 +601,41 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  handleChange(info: TDSUploadChangeParam): void {
+    if (info.file.status !== 'uploading') {
+        console.log(info.file, info.fileList);
+    }
+    if (info.file.status === 'done') {
+        this.message.success(`${info.file.name} file uploaded successfully`);
+    } else if (info.file.status === 'error') {
+        this.message.error(`${info.file.name} file upload failed.`);
+    }
+  }
+
+  handleDownload=(file: TDSUploadFile)=>{
+    window.open(file.response.url);
+  }
+
+  handleUpload = (item: any) => {
+    const formData = new FormData();
+    formData.append('files', item.file as any, item.file.name);
+    formData.append('id', '0000000000000051');
+
+    return this.sharedService.saveImageV2(formData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
+        if(Message.Upload.Success) {
+          let x = res[0].urlImageProxy;
+
+          this.currentImage = x;
+          this.uploadedImages.push(x);
+        }
+    }, error => {
+        let message = JSON.parse(error.Message);
+        this.message.error(`${message.message}`);
+    });
   }
 
 }

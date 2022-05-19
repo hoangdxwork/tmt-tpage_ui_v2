@@ -10,6 +10,7 @@ import { YiDiffDateTimePipe } from './yi-diff-datetime.pipe';
 import { ShowAvatarPipe } from './show-avatar.pipe';
 import { FormatIconLikePipe } from './format-icon-like.pipe';
 import { YiDateTimeV3Pipe } from './yi-datetimeV3.pipe';
+import { YiDateTimeFormatPipe } from './yi-datetimeV2.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -19,7 +20,8 @@ const cmp =[
   YiDiffDateTimePipe,
   ShowAvatarPipe,
   FormatIconLikePipe,
-  YiDateTimeV3Pipe
+  YiDateTimeV3Pipe,
+  YiDateTimeFormatPipe
 ]
 
 @NgModule({

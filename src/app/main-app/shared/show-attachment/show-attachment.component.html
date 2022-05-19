@@ -14,17 +14,17 @@
 
 <!-- video/mp4 -->
 <video *ngIf="currentType == enumAttachmentType.VIDEO_MP4 && isControls" autoplay="autoplay" id="{{url}}" [muted]="!isMuted ? 'muted' : ''"
-  controls="controls" [ngStyle]="{'max-width': width ? width : '95%', 'max-height': height ? height : 'calc(100vh - 20px)', 'height': '100%'}">
+  controls="controls" style="max-width: 160px; max-height: 160px; width: auto; height: auto">
   <source [src]="url" type="video/mp4" id="videomp4" (error)="error()"/>
 </video>
 
 <video *ngIf="currentType == enumAttachmentType.VIDEO_MP4 && !isControls" autoplay="autoplay" id="{{url}}" [muted]="!isMuted ? 'muted' : ''"
-  [ngStyle]="{'max-width': width ? width : '95%', 'max-height': height ? height : 'calc(100vh - 20px)', 'width': '100%', 'height': '100%'}">
+style="max-width: 160px; max-height: 160px; width: auto; height: auto">
   <source [src]="url" type="video/mp4" id="videomp4" (error)="error()"/>
 </video>
 
 <!-- video/ogg -->
 <video *ngIf="currentType == enumAttachmentType.VIDEO_OGG" autoplay="autoplay" [muted]="!isMuted ? 'muted' : ''"
-  controls="controls" [ngStyle]="{'max-width': width ? width : '95%', 'max-height': height ? height : '95%', 'height': '100%'}">
+  controls="controls" style="max-width: 160px; max-height: 160px; width: auto; height: auto">
   <source [src]="url" type="video/ogg" (error)="error()"/>
 </video>

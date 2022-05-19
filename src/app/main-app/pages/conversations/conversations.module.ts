@@ -1,4 +1,3 @@
-import { YiDateTimeV2Pipe } from './../../shared/pipe/yi-datetimeV2.pipe';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -55,6 +54,10 @@ import { PipeModule } from '../../shared/pipe/pipe.module';
 import { CRMTagService } from '../../services/crm-tag.service';
 import { ModalListBlockComponent } from './components/modal-list-block/modal-list-block.component';
 import { PostCommentAllComponent } from './components/post-filter/post-comment-all.component';
+import { PostCommentGroupComponent } from './components/post-filter/post-comment-group.component';
+import { PostCommentFilterComponent } from './components/post-filter/post-comment-filter.component';
+import { ExcelExportService } from '../../services/excel-export.service';
+import { ManagePostCommentComponent } from './components/post-filter/manage-post-comment.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -85,6 +88,7 @@ const SERVICES = [
   FacebookCommentService,
   SharedService,
   CRMTagService,
+  ExcelExportService
 ]
 
 @NgModule({
@@ -101,12 +105,14 @@ const SERVICES = [
     ModalConfirmShippingAddressComponent,
     ModalConfirmPaymentComponent,
     ModalAddQuickReplyComponent,
-    YiDateTimeV2Pipe,
     ModalBlockPhoneComponent,
     ConversationPostViewComponent,
     ItemPostCommentComponent,
     ModalListBlockComponent,
-    PostCommentAllComponent
+    PostCommentAllComponent,
+    PostCommentGroupComponent,
+    PostCommentFilterComponent,
+    ManagePostCommentComponent
   ],
   imports: [
     CommonModule,

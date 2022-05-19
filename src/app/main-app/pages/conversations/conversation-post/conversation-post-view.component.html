@@ -3,15 +3,15 @@
   <div class="bg-white">
     <div class="flex p-2" style="justify-content: space-between;">
       <div>
-          <span *ngIf="data.type" class="mr-2">{{translateType(data.type, data.status_type)}}</span>
-          <a href="{{data.permalink_url}}" target="_blank" class="text-info-500 mr-2">Link</a>
-          <span>{{data.created_time | date: 'dd/MM/yyyy HH:mm'}}</span>
+        <span *ngIf="data.type" class="mr-2">{{translateType(data.type, data.status_type)}}</span>
+        <a href="{{data.permalink_url}}" target="_blank" class="text-info-500 mr-2">Link</a>
+        <span>{{data.created_time | date: 'dd/MM/yyyy HH:mm'}}</span>
       </div>
       <div class="flex">
         <div class="mr-2">
           <tds-form-field>
             <tds-select valueField="value" textField="text" placeholder='select item'
-              [(ngModel)]="currentFilter" [allowClear]="true" [valuePrimitive]="false"
+              [(ngModel)]="currentFilter" [valuePrimitive]="false"
               [data]="filterOptions" (ngModelChange)="onChangeFilter($event)" >
             </tds-select>
           </tds-form-field>
@@ -19,14 +19,14 @@
         <div class="mr-2">
           <tds-form-field>
             <tds-select valueField="value" textField="text" placeholder='select item'
-              [(ngModel)]="currentSort" [allowClear]="true" [valuePrimitive]="false"
+              [(ngModel)]="currentSort" [valuePrimitive]="false"
               [data]="sortOptions" (ngModelChange)="onChangeSort($event)" >
             </tds-select>
           </tds-form-field>
         </div>
         <button tds-button-icon color="primary" (click)="fetchComments()">
           <i class="tdsi-reload-fill"></i>
-          </button>
+        </button>
       </div>
     </div>
     <hr>

@@ -1,65 +1,89 @@
 
 .is_admin
-  justify-content: flex-end
+  display: block
+  text-align: right
+  margin: 12px 0
   .chat-body
-    color: #fff
-    border-radius: 12px 0px 12px 12px
-    display: flex
-    flex-direction: column
-    align-items: flex-start
-    padding: 8px 16px
-    gap: 4px
-  .chat-option
-    width: fit-content,
-    height: 100%
-  .chat-date
-    color: #929DAA
-    font-size: 12px
-    line-height: 16px
-    font-weight: 400
-    text-align: right
-.is_client
-  justify-content: flex-start
-  .chat-body
-    background: #fff
-    color: #2C333A
-    border-radius: 0px 12px 12px 12px
-    display: flex
-    flex-direction: column
-    align-items: flex-start
-    padding: 8px 16px
-    gap: 4px
-    max-width: 80%
-  .chat-option
-    width: 80px
-    height: 100%
-  .chat-reply
-    background: #fff
-    color: #2C333A
-    border-radius: 12px
-    display: flex
-    flex-direction: column
-    align-items: flex-start
-    padding: 8px 16px
-    gap: 4px
+    justify-content: end
+    flex-direction: row-reverse
+    .message-inner
+      background-color: #28A745
+      color: #fff
+      border-radius: 12px 12px 0px 12px
+      padding: 8px 16px
+    .message-inner.error
+      background-color: #7ECA8F !important
 
-.chat-content
+.is_client
+  display: block
+  text-align: left
+  margin: 12px 0
+  .chat-body
+    justify-content: start
+    .message-inner
+      background-color: #FFFFFF
+      color: #2C333A
+      border-radius: 12px 12px 12px 0px
+      padding: 8px 16px
+
+.chat-body
+  display: flex
+  align-items: center
+  flex-wrap: wrap
+.chat-by
+  font-weight: 400
+  font-size: 12px
+  line-height: 16px
+  color: #929DAA
+
+.chat-body
+  margin: 6px 0
+  .select-icon
+    display: none
+    a[tds-tooltip] span
+      padding: 2px 3px 2px 2px
+      border-radius: 6px
+      font-size: 16px
+      line-height: 20px
+      color: #fff
+      margin: 0 4px
+      &:hover
+        cursor: pointer
+    a[tds-tooltip] span.tdsi-call-fill
+        background: #52BF50
+    a[tds-tooltip] span.tdsi-pin-fill
+        background: #FF6720
+    a[tds-tooltip] span.tdsi-note-2-fill
+        background: #3E89FC
+
+.is_client .chat-body:hover  div.select-icon
+    display: block !important
+    margin-left: 8px
+.is_admin .chat-body:hover  div.select-icon
+    display: block !important
+    margin-right: 8px
+
+.message-inner
   display: block
   white-space: pre-line
   word-break: break-word
   position: relative
+  max-width: 80%
 
-.date-line 
-  &::after
-    content: ""
-    width: 100%
-    height: 1px
-    background: #CAD1D8
-    display: block
-.date-value
-  position: absolute
-  left: 38%
-  right: 38%
-  top: 14px
+.date-v3
   text-align: center
-  
+  margin: 8px 0
+  padding: 10px 0 20px 0
+  z-index: 10
+  display: block
+  span
+    z-index: 10
+    background: #ebedef
+    padding: 0 20px
+  .hr
+    height: 1px
+    width: 100%
+    background: #CAD1D8
+    margin-top: -10px
+    z-index: 1
+    display: block

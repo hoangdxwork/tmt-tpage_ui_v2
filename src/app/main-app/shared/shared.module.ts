@@ -50,6 +50,7 @@ const cmp =[
   TpageUploadImagesComponent,
   TpageConfigProductComponent,
   TpageConversationAddressComponent,
+
 ]
 
 const SERVICES = [

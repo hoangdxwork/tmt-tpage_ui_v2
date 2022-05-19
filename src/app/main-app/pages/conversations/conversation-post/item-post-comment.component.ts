@@ -1,26 +1,17 @@
-import { CRMActivityCampaignService } from './../../../services/crm-activity-campaign.service';
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
-import { map, mergeMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Observable, Subject, Subscription } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
-import { FacebookPostDTO, FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
+import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
-import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { SignalRConnectionService } from 'src/app/main-app/services/signalR/signalR-connection.service';
-import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService } from 'tmt-tang-ui';
-import { SendMessageModelDTO } from 'src/app/main-app/dto/conversation/send-message.dto';
-import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
-import { ActivityDataFacade } from 'src/app/main-app/services/facades/activity-data.facade';
-import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
-import { CommentByPost, RequestCommentByPost } from 'src/app/main-app/dto/conversation/post/comment-post.dto';
+import { TDSHelperArray, TDSHelperObject, TDSMessageService } from 'tmt-tang-ui';
+import { RequestCommentByPost } from 'src/app/main-app/dto/conversation/post/comment-post.dto';
 import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from 'src/app/main-app/dto/conversation/post/comment-order-post.dto';
 import { RequestCommentByGroup } from 'src/app/main-app/dto/conversation/post/comment-group.dto';
 
@@ -39,7 +30,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   team!: CRMTeamDTO;
   data: any = { Items: []};
   enumActivityStatus = ActivityStatus;
-  partners$: any = {};
+  partners$!: Observable<any>;
   facebookComment$!: Subscription;
   facebookScanData$!: Subscription;
   childs: any = {};
@@ -48,49 +39,75 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   destroy$ = new Subject();
   messageModel!: string;
+  isLoading: boolean = false;
 
   currentSort = { value: "DateCreated desc", text: "Mới nhất" };
   currentFilter = { value: "all", text: "Tất cả bình luận" };
 
   constructor(private message: TDSMessageService,
-    private crmTeamService: CRMTeamService,
-    private crmMatchingService: CRMMatchingService,
-    private activityMatchingService: ActivityMatchingService,
-    private activityDataFacade: ActivityDataFacade,
-    private conversationDataFacade: ConversationDataFacade,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private sgRConnectionService: SignalRConnectionService,
     private conversationPostFacade: ConversationPostFacade,
     private facebookCommentService: FacebookCommentService,
     private facebookPostService: FacebookPostService,
     public crmService: CRMTeamService) {
-      this.initialize();
   }
 
   ngOnInit() {
+    this.initialize();
     //TODO xử lý lấy thông tin order tại đây
     if(this.post) {
       this.post = {...this.post};
       this.onSetCommentOrders();
       this.loadData();
     }
+    // Gán dictionary
+    this.partners$ = this.conversationPostFacade.getDicPartnerSimplest$();
+    // TODO: filter & sort bài viết
+    this.onFilterSortPost();
+  }
+
+  onFilterSortPost(){
+    this.facebookCommentService.onFilterSortCommentPost$.subscribe((res: any) => {
+      switch(res?.type){
+        case 'sort':
+            this.currentSort = {...res.data};
+            this.facebookCommentService.setSort(res.data.value);
+            this.loadData();
+          break;
+        case 'filter':
+            this.currentFilter = {...res.data};
+            this.loadData();
+          break;
+        default:
+          this.facebookCommentService.fetchComments(this.team.Id, this.post.fbid)
+            .subscribe((res: any) => {
+              this.message.success('Tải lại dữ liệu thành công!');
+              this.currentSort = { value: "DateCreated desc", text: "Mới nhất" };
+              this.currentFilter = { value: "all", text: "Tất cả bình luận" };
+
+              this.facebookCommentService.setSort(this.currentSort.value);
+              this.loadData();
+          }, error => {
+            this.message.error('Thao tác thất bại');
+          })
+          break;
+      }
+    })
   }
 
   initialize(){
-    // Gán và khởi tạo dictionary
     this.team = this.crmService.getCurrentTeam() as any;
     if(TDSHelperObject.hasValue(this.team)) {
         this.conversationPostFacade.setTeam(this.team);
     }
-    // Gán dictionary
-    this.partners$ = this.conversationPostFacade.getDicPartnerSimplest$();
 
     this.facebookComment$ = this.sgRConnectionService._onFacebookEvent$.subscribe((res: any) => {
       if(res?.data?.last_activity?.comment_obj &&  res?.data?.last_activity?.type == 2) {
         let comment_obj = res.data?.last_activity?.comment_obj;
 
         if (comment_obj?.object?.id == this.post?.fbid) {
-          if(comment_obj.parent.id != this.post.fbid) {
+          if(comment_obj?.parent?.id != this.post.fbid) {
             this.childs[comment_obj.parent.id].unshift(comment_obj);
           } else {
             this.data.Items.unshift(comment_obj);
@@ -132,10 +149,10 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
 
     this.facebookPostService.onRemoveOrderComment
       .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-          let keys = Object.keys(this.commentOrders);
-          keys.forEach(key => {
-            this.commentOrders[key] = this.commentOrders[key].filter((x: any) => x.id && !res.includes(x.id));
-          })
+        let keys = Object.keys(this.commentOrders);
+        keys.forEach(key => {
+          this.commentOrders[key] = this.commentOrders[key].filter((x: any) => x.id && !res.includes(x.id));
+        })
     })
 
     this.sgRConnectionService._onSaleOnlineOrder$
@@ -176,18 +193,23 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   loadData() {
+    this.isLoading = true;
     this.validateData();
     this.getCommentOrders(this.post.fbid);
 
     switch(this.currentFilter.value){
-      // case 'group':
-      //   // TODO: Lọc theo người dùng
-      //   this.loadGroupCommentsByPost();
-      //   break;
-      // case 'filter':
-      //   // TODO: Lọc theo bình luận
-      //   this.loadFilterCommentsByPost();
-      //   break;
+      case 'group':
+        // TODO: Lọc theo người dùng
+        this.loadGroupCommentsByPost();
+        break;
+      case 'filter':
+        // TODO: Lọc theo bình luận
+        this.loadFilterCommentsByPost();
+        break;
+      case 'manage':
+          // TODO:Quản lý bình luận
+          this.loadManageCommentsByPost();
+          break;
       default:
         // TODO: Tất cả bình luận
         this.loadAllCommentsByPost();
@@ -198,11 +220,12 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   loadGroupCommentsByPost() {
     this.facebookCommentService.getGroupCommentsByPostId(this.post?.fbid)
       .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => {this.isLoading = false }))
       .subscribe((res: RequestCommentByGroup) => {
         if(TDSHelperArray.hasListValue(res.Items)) {
           res.Items.map((x: any) => {
-              let first = x.activities[0];
-              x.created_time = first.created_time;
+            let first = x.activities[0];
+            x.created_time = first.created_time;
           });
         }
         this.data = res;
@@ -214,12 +237,13 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   loadFilterCommentsByPost(){
     this.facebookCommentService.getFilterCommentsByPostId(this.post?.fbid)
       .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => {this.isLoading = false }))
       .subscribe((res: RequestCommentByGroup) => {
         if(TDSHelperArray.hasListValue(res.Items)) {
           res.Items.map((x: any) => {
-              let first = x.activities[0];
-              x.message = first.message;
-              x.created_time = first.created_time;
+            let first = x.activities[0];
+            x.message = first.message;
+            x.created_time = first.created_time;
           });
         }
         this.data = res;
@@ -228,9 +252,27 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  loadManageCommentsByPost(){
+    this.facebookCommentService.getManageCommentsByLimit(this.post?.fbid)
+      .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => {this.isLoading = false }))
+      .subscribe((res: RequestCommentByPost) => {
+        if(TDSHelperArray.hasListValue(res.Items)) {
+          res.Items.forEach((x: any) => {
+            x["selected"] = false;
+            x["error_message"] = null;
+          });
+        }
+        this.data = res;
+      }, error => {
+        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
+      });
+  }
+
   loadAllCommentsByPost() {
     this.facebookCommentService.getCommentsByPostId(this.post?.fbid)
       .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => {this.isLoading = false }))
       .subscribe((res: RequestCommentByPost) => {
         // Xử lý nếu bình luận đó là bình luận của 1 post child
         const childIds = Object.keys(res.Extras['childs']);
@@ -245,7 +287,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
           })
         }
         this.data = res;
-        this.childs = res.Extras['childs'] || null;
+        this.childs = res.Extras['childs'] || {};
     }, error => {
       this.message.error(`${error?.error?.message}` || 'Load comment bài viết đã xảy ra lỗi')
     });
@@ -276,142 +318,15 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  isReply(item: any) {
-    item.is_reply = !item.is_reply;
-  }
-
-  isPrivateReply(item: CommentByPost){
-    item.isPrivateReply = !item.isPrivateReply;
-  }
-
-  editOrder(id: any, item: CommentByPost){
-    this.conversationPostFacade.onCommentSelected$.emit(item);
-  }
-
-  addComment(item: CommentByPost) {
-  }
-
-  onEnter(item: CommentByPost, event: any) {
-    let message = this.messageModel;
-    if(TDSHelperString.hasValueString(message)) {
-      const model = this.prepareModel(item, message);
-
-      if(item.isPrivateReply){
-        model.comment_id = item.id;
-        this.crmMatchingService.addQuickReplyComment(model)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((res: any) => {
-              this.message.success('Gửi tin thành công');
-              if(TDSHelperArray.hasListValue(res)){
-                res.forEach((x: any) => {
-                    x["status"] = ActivityStatus.sending;
-                    this.activityDataFacade.messageServer({...x});
-                });
-              }
-              let items = res.pop();
-              this.conversationDataFacade.messageServer(items);
-          }, error => {
-            this.message.error('Gửi tin nhắn thất bại');
-            console.log(error);
-         })
-      } else {
-        // TODO: Trả lời bình luận
-        model.parent_id = item.id;
-        model.fbid = item.from?.id;
-
-        this.activityMatchingService.replyComment(this.team.Id, model)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((res: any) => {
-            this.message.success("Trả lời bình luận thành công.");
-            this.addReplyComment(item, model);
-        }, error => {
-          this.message.error(`${error?.error?.message}` || "Trả lời bình luận thất bại.");
-          console.log(error);
-        })
-      }
-    }
-
-    (this.messageModel as any) = null;
-    event.preventDefault();
-  }
-
-  addReplyComment(item: CommentByPost, model: SendMessageModelDTO) {
-    let comment = {
-      created_time: model.created_time,
-      from: model.from,
-      message: model.message,
-      parent_id: item.id,
-      post_id: item.object?.id
-    }
-
-    let replyComment = {
-      created_time: model.created_time,
-      message_format: model.message,
-      message: model.message,
-      from_id: item.from?.id,
-      comment: comment,
-      from: comment.from
-    }
-
-    if (this.childs[item.id]) {
-      this.childs[item.id].push(replyComment);
-    } else {
-      this.childs[item.id] = [];
-      this.childs[item.id].push(replyComment);
-    }
-
-    const addActive = {...item, ...model};
-    addActive["status"] = this.enumActivityStatus.sending;
-    this.activityDataFacade.messageReplyCommentServer(addActive);
-  }
-
-  prepareModel(item: CommentByPost, message: string): any {
-    const model = {} as SendMessageModelDTO;
-    model.from = {
-      id: this.team?.Facebook_PageId,
-      name: this.team?.Facebook_PageName
-    }
-    model.to = {
-      id: item.from?.id,
-      name: item.from?.name
-    }
-    model.to_id = item.from?.id;
-    model.to_name = item.from?.name;
-    model.post_id = item.object?.id;
-    model.message = message;
-    model.created_time = (new Date()).toISOString();
-
-    return model;
-  }
-
   ngOnChanges(changes: SimpleChanges) {
     if(changes["post"] && !changes["post"].firstChange) {
       this.post = {...changes["post"].currentValue};
-      this.loadData();
-    }
 
-    if(changes["sort"] && !changes["sort"].firstChange) {
-      this.currentSort = changes["sort"].currentValue as any;
+      this.currentSort = { value: "DateCreated desc", text: "Mới nhất" };
+      this.currentFilter = { value: "all", text: "Tất cả bình luận" };
+
       this.facebookCommentService.setSort(this.currentSort.value);
       this.loadData();
-    }
-
-    if(changes["filter"] && !changes["filter"].firstChange) {
-      this.currentFilter = changes["filter"].currentValue as any;
-      this.loadData();
-    }
-
-    if(changes["sort"] && !changes["sort"].firstChange && changes["filter"] && !changes["filter"].firstChange) {
-      this.facebookCommentService.fetchComments(this.team.Id, this.post.fbid)
-        .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-          this.message.success('Tải lại dữ liệu thành công!');
-
-          let sort = changes["sort"].currentValue as any;
-          this.facebookCommentService.setSort(sort.value);
-          this.loadData();
-      }, error => {
-        this.message.error(`${error?.error?.message}` || 'Thao tác thất bại');
-      })
     }
   }
 
