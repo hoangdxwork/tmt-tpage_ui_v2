@@ -7,6 +7,7 @@ import { FacebookCommentService } from 'src/app/main-app/services/facebook-comme
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
 import { TDSHelperString, TDSMessageService } from 'tmt-tang-ui';
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
+import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 
 @Component({
   selector: 'conversation-post-view',
@@ -41,6 +42,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
   constructor(private facebookPostService: FacebookPostService,
     private excelExportService: ExcelExportService,
     private facebookCommentService: FacebookCommentService,
+    private conversationPostFacade: ConversationPostFacade,
     private message: TDSMessageService){
   }
 
