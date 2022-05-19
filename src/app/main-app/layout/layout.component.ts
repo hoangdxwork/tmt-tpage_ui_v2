@@ -34,7 +34,6 @@ export class LayoutComponent implements OnInit {
     private signalRConnectionService: SignalRConnectionService,
     public crmService: CRMTeamService,
     private modalService: TDSModalService,
-    // private modal: TDSModalRef,
     private message: TDSMessageService,
     private activatedRoute: ActivatedRoute,
     private productDataFacade: ProductDataFacade,
@@ -225,19 +224,13 @@ export class LayoutComponent implements OnInit {
     })
   }
 
-  /**
-   * xử lý chọn team:
-   * cập nhật url
-   * update team
-  */
-  onClickTeam(data: CRMTeamDTO) {
-    if (this.params?.teamId) {
-      let url = this.router.url.split("?")[0];
-      const params = { ...this.params };
-      params.teamId = data.Id;
-      this.router.navigate([url], { queryParams: params })
+  onClickTeam(data: CRMTeamDTO): any{
+    let uri = this.router.url;
+    if(uri && uri.startsWith("/conversation")){
+      this.crmService.changeTeamFromLayout.emit(data);
+    } else {
+      this.crmService.onUpdateTeam(data);
     }
-    this.crmService.onUpdateTeam(data);
   }
 
   onSave() {

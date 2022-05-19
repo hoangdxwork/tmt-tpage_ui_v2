@@ -1,5 +1,5 @@
 import { TDSHelperArray } from 'tmt-tang-ui';
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
@@ -23,6 +23,8 @@ export class CRMTeamService extends BaseSevice {
   private readonly listFaceBook$ = new ReplaySubject<PagedList2<CRMTeamDTO> | null>(1);
   private readonly currentTeam$ = new ReplaySubject<CRMTeamDTO | null>(1);
   private _currentTeam!: CRMTeamDTO | null;
+
+  @Output() changeTeamFromLayout = new EventEmitter<any>();
 
   constructor(private apiService: TCommonService, public caheApi: THelperCacheService) {
     super(apiService);

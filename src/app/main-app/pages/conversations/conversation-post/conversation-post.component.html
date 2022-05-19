@@ -7,7 +7,7 @@
                 </div>
                 <div class="flex">
                     <tds-form-field class="w-full mr-2">
-                        <input tdsInput placeholder="Tìm kiếm theo họ tên, SĐT" autocomplete="off" />
+                        <input tdsInput placeholder="Tìm kiếm theo họ tên, SĐT" autocomplete="off" #innerText/>
                         <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
                     </tds-form-field>
                     <button tds-flat-button-icon tds-dropdown trigger="click" placement="bottomRight"
@@ -24,7 +24,7 @@
                     <!-- droupdown filter -->
                     <tds-dropdown-menu #btnFilter="tdsDropdownMenu">
                         <div class="w-[225px] py-2">
-                            <div tds-dropdown-item  *ngFor="let item of items"  (click)="setType(item, 'TYPE')">
+                            <div tds-dropdown-item  *ngFor="let item of lstType"  (click)="setType(item, 'TYPE')">
                               {{item.text}}
                             </div>
                         </div>
@@ -38,7 +38,7 @@
                     <!-- droupdown up down -->
                     <tds-dropdown-menu #btnUpDown="tdsDropdownMenu">
                         <div class="w-[225px] py-2">
-                            <div tds-dropdown-item *ngFor="let item of lstTimes" (click)="setType(item, 'SORT')">
+                            <div tds-dropdown-item *ngFor="let item of lstTime" (click)="setType(item, 'SORT')">
                               {{item.text}}
                             </div>
                         </div>

@@ -39,12 +39,12 @@
               Không tải được tin nhắn! </div>
 
           <!-- Tin nhắn lỗi -->
-          <div *ngIf="data.error_message || data.status == enumActivityStatus.fail" class="select-icon">
+          <div *ngIf="data.error_message || data.status == enumActivityStatus.fail" class="select-message">
               <a *ngIf="!checkErrorMessage(data.error_message)" tds-tooltip tooltipTitle="{{data.error_message}}">
-                  <span class="tdsi-info-line" style="color: red !important"></span>
+                  <span class="tdsi-info-line" ></span>
               </a>
               <a *ngIf="checkErrorMessage(data.error_message)" tds-tooltip tooltipTitle="{{data.error_message}}" (click)="retryMessage()">
-                  <span class="tdsi-reload-fill text-error-500" style="color: red !important"></span>
+                  <span class="tdsi-reload-fill"></span>
               </a>
           </div>
 
@@ -74,9 +74,9 @@
 		<div class="w-full flex flex-row">
 			<!-- Avatar Facebook_PageId -->
 			<div class="mr-2">
-				<tpage-avatar-facebook [shape]="'circle'" [size]="36"
-					[psid]="!data.is_admin ? data.from_id : team.Facebook_PageId" [token]="team?.Facebook_PageToken">
-				</tpage-avatar-facebook>
+          <tpage-avatar-facebook [shape]="'circle'" [size]="36"
+            [psid]="!data.is_admin ? data.from_id : team.Facebook_PageId" [token]="team?.Facebook_PageToken">
+          </tpage-avatar-facebook>
 			</div>
 			<!-- comment block -->
 			<div class="flex flex-col w-full commnent-block">
@@ -182,7 +182,6 @@
                           <div (onIconShowButtonSelected)="onIconShowButtonSelected($event)" icon-show-button></div>
                           </ng-template> -->
 								</span>
-
 								<span class="sub cursor-pointer" (onQuickReplySelected)="onQuickReplySelected($event)"
 									title="Tin nhắn nhanh" placement="left" quick-reply-button>
 									<i class="tdsi-message-template-line text-xl"></i>

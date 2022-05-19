@@ -202,4 +202,12 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<CheckConversationDTO>(api, { PageId: page_id, UserId: psid });
   }
 
+  getPartnersByTimestamp(teamId: any, timestamp: any): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/getfacebookdictionarybytimestamp?teamId=${teamId}&timestamp=${timestamp}`,
+        method: TApiMethodType.get,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
 }
