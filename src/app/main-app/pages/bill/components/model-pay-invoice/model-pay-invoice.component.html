@@ -1,0 +1,50 @@
+<form [formGroup]="_form" autocomplete="off">
+    <div class="grid grid-cols-5 gap-y-4 w-full">
+
+        <tds-label>Khách hàng</tds-label>
+        <div class="text-primary-1 font-semibold col-span-4 w-full mb-3">
+            <input tdsInput formControlName="Name"/>
+        </div>
+
+        <tds-label>Phương thức</tds-label>
+        <tds-form-field class="col-span-4 w-full mb-3">
+            <tds-select valueField="Id" textField="Name" placeholder='Chọn phương thức thanh toán' 
+                formControlName="Journal" [data]="lstOfAccPayment" [allowClear]="true" [valuePrimitive]="false"
+                (selectChange)="onchangeJournal($event)">
+            </tds-select>
+            <tds-error>Vui lòng chọn phương thức thanh toán</tds-error>
+        </tds-form-field>
+
+        <tds-label>Số tiền</tds-label>
+        <tds-form-field class="col-span-4 w-full mb-3">
+            <input tdsInput type="number" formControlName="Amount" placeholder="Nhập số tiền"/>
+            <tds-error>Vui lòng nhập số tiền</tds-error>
+        </tds-form-field>
+
+        <tds-label>Ngày thanh toán</tds-label>
+        <tds-form-field class="col-span-4 w-full mb-3">
+            <tds-date-picker formControlName="PaymentDate">
+            </tds-date-picker>
+            <tds-error>Vui lòng chọn ngày thanh toán</tds-error>
+        </tds-form-field>
+
+        <tds-label>Nội dung</tds-label>
+        <tds-form-field class="col-span-4 w-full">
+            <textarea tdsInput formControlName="Communication" class="resize-none"></textarea>
+        </tds-form-field>
+    </div>
+</form>
+
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-4" color="secondary" (click)="cancel()">
+        Đóng
+    </button>
+
+    <button tds-button class="mr-4" type="submit" [disabled]="checkValidate() || isSubmit" 
+        color="info" (click)="save('saveAndPrint')">Thanh toán và in
+    </button>
+
+    <button tds-button type="submit" [disabled]="checkValidate() || isSubmit" 
+        color="primary" (click)="save('save')">Thanh toán
+    </button>
+</div>

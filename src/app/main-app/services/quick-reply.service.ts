@@ -1,3 +1,4 @@
+import { map } from 'rxjs/operators';
 import { CreateQuickReplyDTO, QuickReplyDTO } from './../dto/quick-reply.dto.ts/quick-reply.dto';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable} from 'rxjs';
@@ -16,6 +17,18 @@ export class QuickReplyService extends BaseSevice {
 
   constructor(private apiService: TCommonService) {
       super(apiService);
+      this.makeOnlyActive();
+  }
+
+  makeOnlyActive() {
+    if(this.dataActive) {
+      this.dataActive$.next(this.dataActive);
+    } else {
+      this.getOnlyActive().pipe(map(res => res)).subscribe((res: any) => {
+        this.dataActive = res;
+        this.dataActive$.next(this.dataActive);
+      })
+    }
   }
 
   get(): Observable<any> {
