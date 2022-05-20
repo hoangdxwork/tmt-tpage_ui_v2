@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit {
 
   }
 
-  ngOnInit(): void {
+  ngOnInit(): void {debugger
     let that = this
 
     that.loginForm = this.formBuilder.group({
@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
       this.returnUrl = returnUrl;
     } else {
       this.returnUrl = '/dashboard';
-    }   
+    }
     this.loader.show()
     this.authen.getCacheToken().subscribe(
       data => {
@@ -48,8 +48,8 @@ export class LoginComponent implements OnInit {
           TDSHelperString.hasValueString(data.access_token)) {
           that.router.navigate([that.returnUrl]);
           this.isSubmit = false;
-          
-        } 
+
+        }
         this.loader.hidden();
       },
       error => {
@@ -80,7 +80,7 @@ export class LoginComponent implements OnInit {
             //this.loader.hidden();
           }, 100);
           that.router.navigate([that.returnUrl]);
-       
+
         },
         (error: TDSSafeAny) => {
           this.message.error("Tài khoản hoặc mật khẩu không đúng");
@@ -91,7 +91,7 @@ export class LoginComponent implements OnInit {
         }
       );
   }
-  
+
   showPass(){
     if(TDSHelperString.hasValueString(this.loginForm.value.password))
     this.isShowPass = !this.isShowPass

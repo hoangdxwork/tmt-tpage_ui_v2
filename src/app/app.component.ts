@@ -10,6 +10,7 @@ import { PageLoadingService } from './shared/services/page-loading.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
+
 export class AppComponent {
   title = 'T-Page';
   public isLoaded: boolean = false;
@@ -23,6 +24,7 @@ export class AppComponent {
 
     this.loader.show();
   }
+
   ngOnInit() {
     let that = this;
     that.init().subscribe(res => {
@@ -43,8 +45,8 @@ export class AppComponent {
 
       });
     })
-
   }
+
   private setGlobalConfig() {
     let objConfig = {
       Authen: {

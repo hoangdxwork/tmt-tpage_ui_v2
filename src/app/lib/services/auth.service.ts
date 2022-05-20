@@ -5,23 +5,23 @@ import { Observable, of, Subject } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
-import { FacebookTokenDTO, GoogleTokenDTO, TTokenDTO, UserInitDTO } from '../dto';
+import { TTokenDTO, UserInitDTO } from '../dto';
 import { TApiMethodType } from '../enum';
 import { THelperCacheService } from '../utility';
 import { TCommonService } from './common.service';
-import { TGlobalConfig } from './global-config';
 
 
 @Injectable({
     providedIn: 'root'
 })
+
 export class TAuthService {
     private readonly __keyBearerToken = 'TpageBearerToken';
     private _accessToken!: TTokenDTO;
     private readonly authenObs = new Subject<boolean>();
     private _isLogin: boolean = false;
 
-    constructor( private router: Router,
+    constructor(private router: Router,
         private apiService: TCommonService,
         private cacheService: THelperCacheService) {
     }
@@ -128,7 +128,7 @@ export class TAuthService {
     redirectLogin(urlLogin: string = environment.urlLogin) {
       setTimeout(() => {
          this.router.navigateByUrl(urlLogin);
-      }, 750);
+      }, 500);
     };
     getAuthenIsLogin() {
         return this.authenObs.asObservable();
