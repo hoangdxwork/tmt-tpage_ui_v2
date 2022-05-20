@@ -54,6 +54,7 @@
             <div class="flex flex-col items-end w-full h-full">
                 <tds-table #basicTable 
                     [listData]="lstOfData"
+                    [loading]="lstOfData.length == 0"
                     [showPagination]="false">
                     <thead>
                         <tr>
@@ -92,10 +93,7 @@
                         <span class="text-header-1 font-semibold w-full col-span-2 text-right">{{ (billData.AmountTotal | number) || 0 }}</span>
 
                         <span class="text-right">Nợ</span>
-                        <span class="font-semibold w-full col-span-2 text-right">{{ billData.AmountDeposit < 0 ? (billData.AmountDeposit | number) : 0 }}</span>
-
-                        <!-- <span class="text-right">Tiền cọc</span>
-                        <span class="font-semibold w-full col-span-2 text-right">{{ billData.AmountDeposit > 0 ? (billData.AmountDeposit | number) : 0 }}</span> -->
+                        <span class="font-semibold w-full col-span-2 text-right">{{ (billData.Residual | number) || 0 }}</span>
                     </div>
                     <button tds-button color="primary" (click)="showPayInvoiceModal(billData.Id)">Thanh toán</button>
                 </div>

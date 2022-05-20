@@ -1,10 +1,10 @@
+import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
 import { ModalSendMessageComponent } from './../../../partner/components/modal-send-message/modal-send-message.component';
-import { ModelPayInvoiceComponent } from './../model-pay-invoice/model-pay-invoice.component';
 import { ExcelExportService } from './../../../../services/excel-export.service';
 import { PrinterService } from './../../../../services/printer.service';
 import { FastSaleOrderDTO } from './../../../../dto/fastsaleorder/fastsaleorder.dto';
 import { OdataFSOrderLinesV2, FSOrderLinesV2 } from './../../../../dto/fastsaleorder/fastsale-orderline.dto';
-import { Subject, pipe } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { TDSSafeAny, TDSMessageService, TDSHelperObject, TDSModalService } from 'tmt-tang-ui';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
@@ -81,7 +81,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
   }
 
   showMessageModal(){
-    const modal = this.modalService.create({
+    this.modalService.create({
       title: 'Gửi tin nhắn Facebook',
       size:'lg',
       content: ModalSendMessageComponent,
@@ -96,18 +96,18 @@ export class BillExpandComponent implements OnInit, OnDestroy {
     this.fSOService.getRegisterPayment({ids: [Id]}).pipe(takeUntil(this.destroy$)).subscribe(
       (res)=>{
         delete res['@odata.context'];
-        const modal = this.modalService.create({
+        this.modalService.create({
           title: 'Đăng ký thanh toán',
           size:'lg',
-          content: ModelPayInvoiceComponent,
+          content: ModalPaymentComponent,
           viewContainerRef: this.viewContainerRef,
           componentParams: {
-            dataModel: res
+            dataModel : res
           }
         });
       },
       err=>{
-        this.message.error(err.error.message??'Không tải được dữ liệu');
+        this.message.error(err.error.message ?? 'Không tải được dữ liệu');
       }
     )
   }
