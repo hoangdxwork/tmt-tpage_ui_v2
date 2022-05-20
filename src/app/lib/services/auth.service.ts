@@ -1,5 +1,6 @@
 import { HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable, of, Subject } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -19,11 +20,12 @@ export class TAuthService {
     private _accessToken!: TTokenDTO;
     private readonly authenObs = new Subject<boolean>();
     private _isLogin: boolean = false;
-    constructor(
+
+    constructor( private router: Router,
         private apiService: TCommonService,
-        private cacheService: THelperCacheService
-    ) {
+        private cacheService: THelperCacheService) {
     }
+
     //Thực thi việc đăng nhập và lấy token
     signInPassword(username: string, password: string): Observable<TDSSafeAny> {
         let that = this;
@@ -123,11 +125,10 @@ export class TAuthService {
         that.redirectLogin(urlLogin);
     }
 
-
     redirectLogin(urlLogin: string = environment.urlLogin) {
-        setTimeout(() => {
-            window.location.href = urlLogin;
-        }, 1);
+      setTimeout(() => {
+         this.router.navigateByUrl(urlLogin);
+      }, 750);
     };
     getAuthenIsLogin() {
         return this.authenObs.asObservable();
