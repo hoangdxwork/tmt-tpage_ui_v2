@@ -24,7 +24,10 @@
             </tds-select>
           </tds-form-field>
         </div>
-        <button tds-button-icon color="primary" (click)="fetchComments()">
+        <button tds-button-icon color="primary" (click)="openConfigPost()">
+          <i class="tdsi-column-setting-fill "></i>
+        </button>
+        <button tds-button-icon color="secondary" (click)="fetchComments()">
           <i class="tdsi-reload-fill"></i>
         </button>
       </div>

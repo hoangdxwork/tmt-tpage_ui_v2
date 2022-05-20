@@ -159,8 +159,23 @@ export class FacebookPostService extends BaseSevice implements OnInit, OnDestroy
             }
         });
     }
-
     this.responseData = data;
+  }
+
+  getAutoReplyConfigs(key: any): Observable<any> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${key}/AutoReplyConfigs`,
+      method: TApiMethodType.get
+    }
+    return this.apiService.getData<any>(api, null);
+  }
+
+  updateAutoReplyConfigs(key: any, data: any): Observable<any> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${key}/AutoReplyConfigs`,
+      method: TApiMethodType.put
+    }
+    return this.apiService.getData<any>(api, data);
   }
 
   ngOnDestroy(): void {

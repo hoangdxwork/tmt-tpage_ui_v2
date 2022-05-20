@@ -16,7 +16,6 @@ import { TDSHelperObject, TDSMessageService, TDSHelperArray, TDSHelperString } f
 @Component({
   selector: 'app-conversation-all',
   templateUrl: './conversation-all.component.html',
-  styleUrls: ['./conversation-all.component.scss']
 })
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
