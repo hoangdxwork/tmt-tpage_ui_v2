@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { PageLoadingComponent } from './components/page-loading/page-loading.component';
 import { TDSSpinnerModule } from 'tmt-tang-ui';
 import { PageLoadingService } from './services/page-loading.service';
+import { PageErrorComponent } from './components/error/page-error.component';
 
 @NgModule({
   declarations: [
     PageLoadingComponent,
+    PageErrorComponent
   ],
   imports: [
     CommonModule,
@@ -14,6 +16,7 @@ import { PageLoadingService } from './services/page-loading.service';
   ],
   exports: [
     PageLoadingComponent,
+    PageErrorComponent
   ],
   providers: [
     PageLoadingService,

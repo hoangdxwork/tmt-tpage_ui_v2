@@ -1,13 +1,15 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewContainerRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
-import { TDSHelperString, TDSMessageService } from 'tmt-tang-ui';
+import { TDSHelperString, TDSMessageService, TDSModalService } from 'tmt-tang-ui';
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
+import { ConfigPostReleaseComponent } from '../components/config-post/config-post-release.component';
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'conversation-post-view',
@@ -41,6 +43,8 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
 
   constructor(private facebookPostService: FacebookPostService,
     private excelExportService: ExcelExportService,
+    private modalService: TDSModalService,
+    private viewContainerRef: ViewContainerRef,
     private facebookCommentService: FacebookCommentService,
     private conversationPostFacade: ConversationPostFacade,
     private message: TDSMessageService){
@@ -73,7 +77,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
     this.currentFilter = event;
     switch(event.value) {
       case "report":
-        // this.facebookCommentService.getReportCommentByPost(this.data.fbid)
+        this.reportCommentByPost();
         break;
       case "excel":
         this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.fbid}`,
@@ -92,6 +96,16 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
           this.facebookCommentService.onFilterSortCommentPost$.emit({type: 'filter', data: event});
         break;
     }
+  }
+
+  reportCommentByPost(){
+    // this.facebookCommentService.getReportCommentByPost();
+    // this.modalService.create({
+    //   title: 'Thống kê đơn tạo bị lỗi',
+    //   content: ,
+    //   size: "xl",
+    //   viewContainerRef: this.viewContainerRef
+    // });
   }
 
   fetchComments() {
@@ -129,6 +143,20 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
       }, error => {
         this.message.error('Refetch bài viết đã xảy ra lỗi');
       });
+  }
+
+  openConfigPost() {
+    let date = formatDate(this.data.created_time, 'dd/MM/yyyy HH:mm', 'en-US')
+    this.modalService.create({
+      title: `Cấu hình bài viết - ${date}` ,
+      content: ConfigPostReleaseComponent,
+      size: "xl",
+      footer: null,
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        data:  this.data
+      }
+    });
   }
 
   ngOnDestroy(): void {

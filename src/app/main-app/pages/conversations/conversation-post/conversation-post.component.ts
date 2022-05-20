@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, fromEvent, Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, mergeMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, finalize, map, mergeMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { FacebookPostDTO, FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
@@ -51,6 +51,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   data$!: Observable<FacebookPostItem[]>;
   currentPost!: FacebookPostItem | undefined;
   destroy$ = new Subject();
+  isLoading: boolean = false;
 
   @ViewChild('innerText') innerText!: ElementRef;
 
@@ -124,13 +125,15 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   loadData(){
+    this.isLoading = true;
     this.validateData();
     if(this.currentTeam?.Id) {
       const batchMap = this.offset.pipe(throttleTime(500),
         mergeMap((x: any) => this.getData(x, this.currentType.type, this.keyFilter)));
 
       if(batchMap){
-        this.data$ = batchMap.pipe(takeUntil(this.destroy$)).pipe(map((dict: any) => {
+        this.data$ = batchMap.pipe(takeUntil(this.destroy$))
+        .pipe(map((dict: any) => {
           let items = Object.values(dict);
           items.map((x: any) => {
             if (this.data.filter((f: any) => f.fbid === x.fbid).length === 0) {
@@ -147,6 +150,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 this.selectPost(this.data[0]);
             }
           }
+          this.isLoading = false;
           return this.data;
         }));
       }

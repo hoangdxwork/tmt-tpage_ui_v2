@@ -58,6 +58,8 @@ import { PostCommentGroupComponent } from './components/post-filter/post-comment
 import { PostCommentFilterComponent } from './components/post-filter/post-comment-filter.component';
 import { ExcelExportService } from '../../services/excel-export.service';
 import { ManagePostCommentComponent } from './components/post-filter/manage-post-comment.component';
+import { ConfigPostReleaseComponent } from './components/config-post/config-post-release.component';
+import { AutoReplyConfigComponent } from './components/config-post/auto-reply-config.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -112,7 +114,9 @@ const SERVICES = [
     PostCommentAllComponent,
     PostCommentGroupComponent,
     PostCommentFilterComponent,
-    ManagePostCommentComponent
+    ManagePostCommentComponent,
+    ConfigPostReleaseComponent,
+    AutoReplyConfigComponent
   ],
   imports: [
     CommonModule,
