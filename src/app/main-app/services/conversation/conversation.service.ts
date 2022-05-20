@@ -13,6 +13,16 @@ export interface QueryStateConversationDTO {
   page: number;
   limit: number;
   type: string;
+  tag_ids?: string[];
+  user_ids?: string[];
+  start?: string;
+  end?: string;
+  has_phone?: boolean;
+  has_address?: boolean;
+  has_order?: boolean;
+  has_unread?: boolean;
+  not_address?: boolean;
+  not_phone?: boolean;
 }
 
 export interface ResponseStateConversationDTO {
@@ -102,6 +112,72 @@ export class ConversationService extends BaseSevice implements OnInit {
     }
 
     return this.apiService.getData<undefined>(api, null);
+  }
+
+  setExtrasQuery(pageId: any, type: any, data: any) {
+    var query = this.createQuery(pageId, type);
+
+    if (data.tag_ids) {
+      query["tag_ids"] = data.tag_ids.join(',');
+    } else {
+      delete query["tag_ids"];
+    }
+
+    if (data.user_ids) {
+      query["user_ids"] = data.user_ids.join(',');
+    } else {
+      delete query["user_ids"];
+    }
+
+    if (data.from_date) {
+      query["start"] = encodeURIComponent(data.from_date);
+    } else {
+      delete query["start"];
+    }
+
+    if (data.to_date) {
+      query["end"] = encodeURIComponent(data.to_date);
+    } else {
+      delete query["end"];
+    }
+
+    if (data.hasPhone) {
+      query["has_phone"] = data.hasPhone;
+    } else {
+      delete query["has_phone"];
+    }
+
+    if (data.hasAddress) {
+      query["has_address"] = data.hasAddress;
+    } else {
+      delete query["has_address"];
+    }
+
+    if (data.hasOrder) {
+      query["has_order"] = data.hasOrder;
+    } else {
+      delete query["has_order"];
+    }
+
+    if (data.hasUnread) {
+      query["has_unread"] = data.hasUnread;
+    } else {
+      delete query["has_unread"];
+    }
+
+    if (data.notAddress) {
+      query["not_address"] = data.notAddress;
+    } else {
+      delete query["not_address"];
+    }
+
+    if (data.notPhone) {
+      query["not_phone"] = data.notPhone;
+    } else {
+      delete query["not_phone"];
+    }
+
+    return query;
   }
 
 
