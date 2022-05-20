@@ -1,8 +1,8 @@
-import { TDSNotificationService, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSSafeAny } from 'tmt-tang-ui';
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, pipe, Subject, Subscription } from 'rxjs';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { finalize, takeUntil, map } from 'rxjs/operators';
 import { ConversationMatchingItem, CRMMatchingMappingDTO } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
@@ -29,13 +29,16 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   activeCvsItem!: ConversationMatchingItem;
   isFastSend: boolean = false;
   currentOrderCode!: string | undefined;
-  visibleDrawerFillter: boolean = false;
-  rangeDate = null;
   checked: boolean = false;
   isOpenCollapCheck: boolean = false;
   isSort: boolean = false;
   indeterminate: boolean = false;
   setOfCheckedId = new Set<string>();
+  filterValue: TDSSafeAny;
+  queryFilter: TDSSafeAny;
+  total: number = 0;
+  isSearching: boolean = false;
+  isRefresh: boolean = false;
 
   currentOrderTab: number = 0;
 
@@ -96,7 +99,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   loadConversations(dataSource$: Observable<any>) {
     if (dataSource$) {
       this.isLoading = true;
-      dataSource$.pipe(takeUntil(this.destroy$)).pipe(finalize(() => { this.isLoading = false }))
+      dataSource$.pipe(takeUntil(this.destroy$)).pipe(finalize(() => { setTimeout(() => {
+        this.isLoading = false 
+      }, 200); }))
         .subscribe((res: CRMMatchingMappingDTO) => {
           if (res && TDSHelperArray.hasListValue(res.items)) {
               this.lstMatchingItem = [...res.items];
@@ -109,6 +114,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                 //TODO: load lần đầu tiên
                 this.getActiveCvsItem(this.lstMatchingItem[0]);
               }
+          }else{
+            this.validateData();
           }
         }, error => {
           this.message.error('Load thông tin CRMMatching đã xảy ra lỗi');
@@ -162,18 +169,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.currentOrderCode = orderCode;
   }
 
-  openDrawerFillter(){
-    this.visibleDrawerFillter = true;
-  }
-
-  close(): void {
-      this.visibleDrawerFillter = false;
-  }
-
-  onChange(result: Date): void {
-    // console.log('onChange: ', result);
-  }
-
   setCheck(){
     this.isOpenCollapCheck = !this.isOpenCollapCheck;
   }
@@ -207,6 +202,42 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onTabOrder(event: boolean) {
     event && (this.currentOrderTab = 1);
+  }
+
+  onSubmitFilter(data: any) {
+    this.filterValue = data;
+
+    if (Object.keys(data || {}).length > 0) {
+      var queryObj = this.conversationDataFacade.setExtrasQuery(this.currentTeam.Facebook_PageId, this.type, data);
+      this.queryFilter = queryObj;
+
+      this.makeDataSource(queryObj);
+    } else {
+      this.total = 0;
+      (this.queryFilter as any) = null;
+      this.makeDataSource({});
+    }
+  }
+
+  makeDataSource(queryObj: any) {
+    (this.dataSource$ as any) = null;
+
+    if (Object.keys(queryObj || {}).length <= 4) {
+      // this.dataSource$ = this.conversationService.makeDataSource(this.currentTeam.Facebook_PageId, this.type);
+      this.dataSource$ = this.conversationDataFacade.makeDataSource(this.currentTeam.Facebook_PageId, this.type);
+    } else {
+      this.dataSource$ = this.conversationDataFacade.makeDataSourceWithQuery(this.currentTeam.Facebook_PageId, this.type, queryObj).pipe(map((res => {
+        if (res && res.items) {
+          this.total = res.items.length;
+        }
+        return res;
+      })));
+    }
+    if(this.dataSource$){
+        this.isSearching = false;
+        TDSHelperString.hasValueString(this.queryFilter) ? (this.isRefresh = true) : (this.isRefresh = false);
+        this.loadConversations(this.dataSource$);
+    }
   }
 
   ngOnDestroy(): void {

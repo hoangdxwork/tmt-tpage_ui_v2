@@ -5,7 +5,7 @@ import { ConversationsRoutingModule } from './conversations-routing.module';
 import { ConversationAllComponent } from './conversation-all/conversation-all.component';
 import { ConversationPostComponent } from './conversation-post/conversation-post.component';
 import { MainSharedModule } from '../../shared/shared.module';
-import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSMessageModule, TDSModalModule, TDSPopoverModule, TDSRadioModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSToolTipModule, TDSTypographyModule, TDSSwitchModule, TDSDrawerModule, TDSDatePickerModule,TDSImageModule } from 'tmt-tang-ui';
+import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSMessageModule, TDSModalModule, TDSPopoverModule, TDSRadioModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSToolTipModule, TDSTypographyModule, TDSSwitchModule, TDSDrawerModule, TDSDatePickerModule, TDSImageModule, TDSEmptyModule } from 'tmt-tang-ui';
 import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conversations.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalImageStoreComponent } from './components/modal-image-store/modal-image-store.component';
@@ -58,6 +58,7 @@ import { PostCommentGroupComponent } from './components/post-filter/post-comment
 import { PostCommentFilterComponent } from './components/post-filter/post-comment-filter.component';
 import { ExcelExportService } from '../../services/excel-export.service';
 import { ManagePostCommentComponent } from './components/post-filter/manage-post-comment.component';
+import { ConversationAllFilterComponent } from './components/conversation-all-filter/conversation-all-filter.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -112,7 +113,8 @@ const SERVICES = [
     PostCommentAllComponent,
     PostCommentGroupComponent,
     PostCommentFilterComponent,
-    ManagePostCommentComponent
+    ManagePostCommentComponent,
+    ConversationAllFilterComponent
   ],
   imports: [
     CommonModule,
@@ -149,7 +151,8 @@ const SERVICES = [
     TDSDrawerModule,
     TDSDatePickerModule,
     TDSImageModule,
-    PipeModule
+    PipeModule,
+    TDSEmptyModule,
   ],
   providers: [ ...SERVICES]
 })
