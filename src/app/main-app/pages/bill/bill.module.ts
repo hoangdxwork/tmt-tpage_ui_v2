@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 import { BillRoutingModule } from './bill-routing.module';
 import { BillComponent } from './bill/bill.component';
 import { MainSharedModule } from '../../shared/shared.module';
-import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSContextMenuService, TDSFilterStatusModule, TDSSpinnerModule, TDSPageHeaderModule, TDSBreadCrumbModule, TDSCollapseModule, TDSStepsModule, TDSScrollIntoViewModule } from 'tmt-tang-ui';
+import { TDSButtonModule, TDSTabsModule, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSFilterStatusModule, TDSSpinnerModule, TDSPageHeaderModule, TDSBreadCrumbModule, TDSCollapseModule, TDSStepsModule } from 'tmt-tang-ui';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
 import { OdataFastSaleOrderService } from '../../services/mock-odata/odata-fastsaleorder.service';
@@ -30,7 +30,6 @@ import { DeliveryCarrierService } from '../../services/delivery-carrier.service'
 import { PartnerService } from '../../services/partner.service';
 import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.service';
 import { BillExpandComponent } from './components/bill-expand/bill-expand.component';
-import { ModelPayInvoiceComponent } from './components/model-pay-invoice/model-pay-invoice.component';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -59,8 +58,7 @@ const SERVICES = [
     AddBillComponent,
     ModalSearchPartnerComponent,
     DetailBillComponent,
-    BillExpandComponent,
-    ModelPayInvoiceComponent,
+    BillExpandComponent
   ],
 
   imports: [
@@ -100,8 +98,7 @@ const SERVICES = [
     TDSTabsModule,
     TDSCollapseModule,
     TDSStepsModule,
-    TDSButtonSpitModule,
-    TDSScrollIntoViewModule
+    TDSButtonSpitModule
   ],
   providers: [
    ...SERVICES,

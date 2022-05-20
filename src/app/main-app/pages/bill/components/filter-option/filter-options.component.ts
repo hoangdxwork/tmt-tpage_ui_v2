@@ -1,6 +1,5 @@
-import { formatDate } from "@angular/common";
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
-import { addDays, format } from "date-fns";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { addDays } from "date-fns";
 import { DeliveryCarrierService } from "src/app/main-app/services/delivery-carrier.service";
 import { TagService } from "src/app/main-app/services/tag.service";
 import { TDSContextMenuService, TDSSafeAny } from "tmt-tang-ui";
@@ -13,6 +12,7 @@ import { TDSContextMenuService, TDSSafeAny } from "tmt-tang-ui";
 
 export class FilterOptionsComponent implements OnInit {
 
+  @Input() lstTags: Array<TDSSafeAny> = [];
   @Output() onLoadOption = new EventEmitter<TDSSafeAny>();
 
   public filterObj: TDSSafeAny = {
@@ -47,7 +47,6 @@ export class FilterOptionsComponent implements OnInit {
   lstCarriers: Array<TDSSafeAny> = [];
   modelCarrier: TDSSafeAny;
 
-  lstTags: Array<TDSSafeAny> = [];
   selectTags:  Array<TDSSafeAny> = [];
 
   isActive: boolean = false;
@@ -62,11 +61,6 @@ export class FilterOptionsComponent implements OnInit {
     this.carrierService.get().subscribe((res: TDSSafeAny) => {
         this.lstCarriers = res.value;
     });
-
-    let type = "fastsaleorder";
-    this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
-        this.lstTags = res.value;
-    })
   }
 
   onChangeDate(event: any[]) {

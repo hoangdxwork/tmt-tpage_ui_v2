@@ -349,4 +349,13 @@ export class FastSaleOrderService extends BaseSevice {
     }
     return this.apiService.getData<ODataPaymentJsonDTO>(api, null);
   }
+
+  updateShipStatus(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.table}/UpdateShipStatus`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
 }

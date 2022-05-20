@@ -12,48 +12,54 @@
                   </div>
               </div>
               <div class="flex gap-x-2">
-                  <button tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" (click)="onSavePrint('print')"
-                      class="mr-2" (click)="comfirmAndPrint()">Xác nhận và in (F9)</button>
-                  <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button"  (click)="onSavePrint('printship')"
-                      class="mr-2" (click)="comfirmAndPrint()">Xác nhận và in ship</button>
-                  <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button"  (click)="onSavePrint('confirm')"
-                      class="mr-2" (click)="comfirmAndPrint()">Xác nhận và xem (F8)</button>
+                <button tds-button-icon color="secondary" class="mr-2" [disabled]="isProcessing" (click)="back()">
+                    <span class="flex items-center">
+                        <i class="tdsi-back-fill text-xl leading-none"></i>
+                    </span>
+                </button>
+                  <button tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" [disabled]="isProcessing" (click)="onSavePrint('print')"
+                      class="mr-2">Xác nhận và in (F9)</button>
+                  <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" [disabled]="isProcessing" (click)="onSavePrint('printship')"
+                      class="mr-2">Xác nhận và in ship</button>
+                  <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" [disabled]="isProcessing" (click)="onSavePrint('confirm')"
+                      class="mr-2">Xác nhận và xem (F8)</button>
 
-                  <button  tds-button color="primary" *ngIf="dataModel.State == 'open'" type="button"
+                  <button  tds-button color="primary" *ngIf="dataModel.State == 'open'" type="button" [disabled]="isProcessing"
                       class="mr-2" (click)="showModalRegisterPayment()">
                       <span class="flex items-center">
                           <i class="tdsi-revenue-fill text-lg leading-none mr-2"></i>Thanh toán
                       </span>
                   </button>
-                  <button tds-button type="button" color="primary"  *ngIf="dataModel.State !== 'cancel' && dataModel.State !== 'draft' && dataModel.Carrier != null && !dataModel.TrackingRef"
+                  <button tds-button type="button" color="primary" [disabled]="isProcessing" 
+                    *ngIf="dataModel.State !== 'cancel' && dataModel.State !== 'draft' && dataModel.Carrier != null && !dataModel.TrackingRef"
                       class="mr-2" (click)="sendToShipper()">
                       <span class="flex items-center">
                           <i class="tdsi-transport-fill text-lg leading-none mr-2"></i>Gửi vận đơn
                       </span>
                   </button>
-                  <button type="button"  tds-button color="primary" class="mr-2"  (click)="actionRefund()"
+                  <button type="button"  tds-button color="primary" class="mr-2" [disabled]="isProcessing" (click)="actionRefund()"
                      *ngIf="!(dataModel.Type  =='refund' || ['open', 'paid'].indexOf(dataModel.State) === -1)">
                       <span class="flex items-center">
                           <i class="tdsi-reply-fill text-lg leading-none mr-2"></i>Tạo trả hàng
                       </span>
                   </button>
-                  <button tds-button color="info" class="mr-2">
+                  <button tds-button color="info" class="mr-2" [disabled]="isProcessing">
                       <span class="flex items-center">
                           <i class="tdsi-copy-fill text-lg leading-none mr-2"></i>Sao chép
                       </span>
                   </button>
 
-                  <button type="button" tds-button color="info" class="mr-2" (click)="onCreate()">
+                  <button type="button" tds-button color="info" class="mr-2" [disabled]="isProcessing" (click)="onCreate()">
                       <span class="flex items-center">
                           <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
                       </span>
                   </button>
-                  <button type="button"  tds-button color="secondary" class="mr-2" (click)="onEdit()" *ngIf="dataModel.State !='cancel'">
+                  <button type="button"  tds-button color="secondary" class="mr-2" [disabled]="isProcessing" (click)="onEdit()" *ngIf="dataModel.State !='cancel'">
                       <span class="flex items-center">
                           <i class="tdsi-edit-fill text-lg leading-none mr-2"></i>Chỉnh sửa
                       </span>
                   </button>
-                  <button type="button"  tds-button color="error" *ngIf="dataModel.State =='open' || dataModel.State === 'paid'"
+                  <button type="button"  tds-button color="error" [disabled]="isProcessing" *ngIf="dataModel.State =='open' || dataModel.State === 'paid'"
                       class="mr-2" (click)="actionCancel()">
                       <span class="flex items-center"> Hủy hóa đơn </span>
                   </button>
@@ -98,8 +104,10 @@
                   </div>
                   <div class="grid grid-cols-2 gap-y-4 gap-x-8">
                       <div class="flex gap-x-6 items-center">
-                          <tds-avatar class="bg-accent-4  text-white" [size]="84" tdsSrc="dataModel.ImageUrl"> </tds-avatar>
-                          <div class="flex flex-col gap-y-2">
+                          <div class="flex w-fit">
+                            <tds-avatar [size]="84" [tdsSrc]="dataModel.Partner.ImageUrl"></tds-avatar>
+                          </div>
+                          <div class="flex flex-auto flex-col gap-y-2">
                               <div class="flex items-center">
                                   <span class="text-header-2 font-semibold mr-2">{{dataModel.Partner?.DisplayName || dataModel.PartnerNameNoSign}}</span>
                                   <tds-tag status='primary' rounded="rounded-full">{{dataModel.Partner?.StatusText}}</tds-tag>
@@ -113,23 +121,24 @@
                           </div>
                       </div>
                       <div class="flex gap-x-6 items-center">
-                          <tds-avatar class="bg-[#FFEEB9]  text-white " [size]="84" tdsSrc="assets/images/status_bill.png">
-                          </tds-avatar>
-                          <div class="flex flex-col gap-y-2">
-                              <div class="flex items-center">
-                                  <span class="text-neutral-1-600 mr-2">Trạng thái ĐH</span>
-                                  <span class="text-header-2  font-semibold"> {{dataModel.ShowState}}</span>
-                              </div>
-                              <div class="flex items-center">
-                                  <span class="font-semibold ml-2"> {{dataModel.CarrierName}} </span>
-                              </div>
-                              <div class="flex items-center">
-                                  <div class="rounded-full bg-neutral-3-100 px-2">
-                                      <span class="text-neutral-1-700 font-semibold">{{dataModel.ShowShipStatus}}</span>
-                                  </div>
-                                  <span class="text-info-500 font-semibold ml-2">{{dataModel.TrackingRef}}</span>
-                              </div>
-                          </div>
+                        <div class="flex w-fit">
+                            <tds-avatar [size]="84" tdsSrc="assets/images/status_bill.png"></tds-avatar>
+                        </div>
+                        <div class="flex flex-auto flex-col gap-y-2">
+                            <div class="flex items-center">
+                                <span class="text-neutral-1-600 mr-2">Trạng thái ĐH</span>
+                                <span class="text-header-2  font-semibold"> {{dataModel.ShowState}}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="font-semibold ml-2"> {{dataModel.CarrierName}} </span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="rounded-full bg-neutral-3-100 px-2">
+                                    <span class="text-neutral-1-700 font-semibold">{{dataModel.ShowShipStatus}}</span>
+                                </div>
+                                <span class="text-info-500 font-semibold ml-2">{{dataModel.TrackingRef}}</span>
+                            </div>
+                        </div>
                       </div>
                       <div class="flex gap-x-6 items-center">
                           <div class="w-1/3">
