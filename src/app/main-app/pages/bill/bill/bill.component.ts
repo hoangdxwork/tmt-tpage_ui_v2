@@ -1,11 +1,11 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib/enum/sort.enum';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { OdataFastSaleOrderService } from 'src/app/main-app/services/mock-odata/odata-fastsaleorder.service';
-import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperString, TDSI18nService, ToastrService, toArray, TDSTableQueryParams, TDSHelperArray, TDSMessageService, TDSResizeObserver } from 'tmt-tang-ui';
-import { addDays, getISODay } from 'date-fns/esm';
+import { TDSModalService, TDSSafeAny, TDSHelperString, TDSTableQueryParams, TDSMessageService, TDSResizeObserver } from 'tmt-tang-ui';
+import { addDays } from 'date-fns/esm';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { THelperCacheService } from 'src/app/lib';
 import { ColumnTableDTO } from '../components/config-column/config-column.component';
@@ -16,8 +16,7 @@ import { FastSaleOrderDTO, FastSaleOrderSummaryStatusDTO, ODataFastSaleOrderDTO 
 
 @Component({
   selector: 'app-bill',
-  templateUrl: './bill.component.html',
-  styleUrls: ['./bill.component.scss']
+  templateUrl: './bill.component.html'
 })
 
 export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -47,19 +46,30 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  public lstShipStatus: any[] = [
+    {value:'none', text:'Chưa tiếp nhận'},
+    {value:'refund', text:'Hàng trả về'},
+    {value:'other', text:'Đối soát không thành công'},
+    {value:'sent', text:'Đã tiếp nhận'},
+    {value:'cancel', text:'Hủy bỏ'},
+    {value:'done', text:'Đã thu tiền'},
+    {value:'done_and_refund', text:'Đã thu tiền và trả hàng về'}
+  ]
+
   public hiddenColumns = new Array<ColumnTableDTO>();
   public columns: any[] = [
     {value: 'Number', name: 'Số HĐ', isChecked: true},
-    {value: 'CRMTeamName', name: 'Kênh kết nối', isChecked: true},
-    {value: 'DateInvoice', name: 'Ngày bán', isChecked: true},
-    {value: 'DateCreated', name: 'Ngày tạo', isChecked: true},
     {value: 'PartnerDisplayName', name: 'Khách hàng', isChecked: true},
+    {value: 'CRMTeamName', name: 'Thông tin', isChecked: true},
+    {value: 'DateCreated', name: 'Ngày tạo đơn', isChecked: true},
+    {value: 'CarrierName', name: 'Đối tác giao hàng', isChecked: true},
+    {value: 'TrackingRef', name: 'Mã vận đơn', isChecked: true},
     {value: 'AmountTotal', name: 'Tổng tiền', isChecked: true},
     {value: 'Residual', name: 'Còn nợ', isChecked: true},
     {value: 'ShowState', name: 'Trạng thái', isChecked: true},
-    {value: 'CarrierName', name: 'Đối tác giao hàng', isChecked: true},
-    {value: 'TrackingRef', name: 'Mã vận đơn', isChecked: true},
+    {value: 'ShowShipStatus', name: 'Đối soát GH', isChecked: true},
     {value: 'ShipPaymentStatus', name: 'Trạng thái GH', isChecked: false},
+    {value: 'DateInvoice', name: 'Ngày bán', isChecked: false},
     {value: 'CashOnDelivery', name: 'Tiền thu hộ', isChecked: false},
     {value: 'IsRefund', name: 'Đơn hàng trả', isChecked: false},
     {value: 'CustomerDeliveryPrice', name: 'Phí ship giao hàng', isChecked: false},
@@ -79,7 +89,10 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   indClickTag = -1
   tabIndex: number = 1;
 
-  public lstDataTag: Array<TDSSafeAny> = [];
+  indClickStatus = -1;
+  currentStatus:TDSSafeAny;
+
+  public lstTags: Array<TDSSafeAny> = [];
   expandSet = new Set<number>();
 
   checked = false;
@@ -94,8 +107,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       private cacheApi: THelperCacheService,
       private message: TDSMessageService,
       private fastSaleOrderService :FastSaleOrderService,
-      private resizeObserver: TDSResizeObserver,
-      private viewContainerRef: ViewContainerRef) {
+      private resizeObserver: TDSResizeObserver) {
   }
 
   ngOnInit(): void {
@@ -163,7 +175,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.getViewData(params).subscribe((res: ODataFastSaleOrderDTO) => {
         this.count = res['@odata.count'] as number;
-        this.lstOfData = res.value;
+        this.lstOfData = res.value;console.log(this.lstOfData)
     }, error => {
         this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
     });
@@ -177,6 +189,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   loadSummaryStatus(){
+    this.tabNavs = [];
     let model = {
         DateStart: this.filterObj.dateRange.startDate,
         DateEnd: this.filterObj.dateRange.endDate,
@@ -216,7 +229,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   loadTags(){
     let type = "fastsaleorder";
     this.tagService.getByType(type).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-        this.lstDataTag = res.value;
+        this.lstTags = res.value;
     })
   }
 
@@ -259,7 +272,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   closeTag(): void {
-    this.indClickTag = -1
+    this.indClickTag = -1;
   }
 
   assignTags(id: number, tags: TDSSafeAny) {
@@ -281,6 +294,37 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       this.indClickTag = -1;
       this.message.error('Gán nhãn thất bại!');
     });
+  }
+
+  openShipStatus(data:FastSaleOrderDTO, dataId:number){
+    this.indClickStatus = dataId;
+    this.currentStatus = {
+      value: data.ShipStatus,
+      text: data.ShowShipStatus
+    }
+  }
+
+  changeShipStatus(status: TDSSafeAny) {
+    this.currentStatus = status;
+  }
+
+  closeShipStatus(): void {
+    this.indClickStatus = -1;
+  }
+
+  assignShipStatus(dataId: number){
+    let model = {id:dataId,status:this.currentStatus.value};
+    this.fastSaleOrderService.updateShipStatus(model).pipe(takeUntil(this.destroy$)).subscribe(
+      (res)=>{
+        this.message.success('Cập nhật thành công');
+        this.loadData(this.pageSize,this.pageIndex);
+        this.indClickStatus = -1;
+      },
+      err=>{
+        this.message.error('Cập nhật thất bại');
+        this.indClickStatus = -1;
+      }
+    )
   }
 
   ngAfterViewInit(): void {
@@ -393,6 +437,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       onOk: () => {
         this.fastSaleOrderService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe(() => {
             this.message.success('Xóa hóa đơn thành công!');
+            this.loadSummaryStatus();
             this.loadData(this.pageSize, this.pageIndex);
         }, error => {
             this.message.error(`${error?.error?.message}`);

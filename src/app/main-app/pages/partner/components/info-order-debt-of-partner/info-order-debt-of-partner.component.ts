@@ -126,7 +126,7 @@ export class InfoOrderDebtOfPartnerComponent implements OnInit, AfterViewInit {
   }
 
   showModalPayment(){
-    this.partnerService.getRegisterPaymentPartner({id: this.dataPartner.Id}).subscribe((res: ODataRegisterPartnerDTO) => {
+    this.partnerService.getRegisterPaymentPartner({id: this.dataPartner.Id}).subscribe((res) => {
         if(res) {
           this.modalService.create({
               title: 'Đăng ký thanh toán',
@@ -134,7 +134,7 @@ export class InfoOrderDebtOfPartnerComponent implements OnInit, AfterViewInit {
               size: "lg",
               viewContainerRef: this.viewContainerRef,
               componentParams:{
-                data : res
+                dataModel : res
               }
           });
        }
