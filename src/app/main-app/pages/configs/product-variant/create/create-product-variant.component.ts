@@ -1,27 +1,26 @@
-import { POS_CategoryDTO } from './../../../dto/category/category.dto';
-import { ProductUOMDTO } from './../../../dto/product/product-uom.dto';
-import { ProductCategoryDTO } from './../../../dto/product/product-category.dto';
-import { ProductCategoryService } from './../../../services/product-category.service';
-import { ProductUOMService } from './../../../services/product-uom.service';
-import { ProductService } from 'src/app/main-app/services/product.service';
-import { ProductDTO } from './../../../dto/product/product.dto';
-import { Router } from '@angular/router';
 
+import { ProductService } from 'src/app/main-app/services/product.service';
+import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { takeUntil } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
 import { TDSSafeAny, TDSMessageService, TDSUploadFile } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
-
+import { ProductCategoryDTO } from 'src/app/main-app/dto/product/product-category.dto';
+import { ProductDTO, ProductUOMDTO } from 'src/app/main-app/dto/product/product.dto';
+import { POS_CategoryDTO } from 'src/app/main-app/dto/category/category.dto';
+import { ProductUOMService } from 'src/app/main-app/services/product-uom.service';
+import { ProductCategoryService } from 'src/app/main-app/services/product-category.service';
 
 @Component({
-  selector: 'app-config-add-product-variant',
-  templateUrl: './config-add-product-variant.component.html',
-  styleUrls: ['./config-add-product-variant.component.scss']
+  selector: 'create-product-variant',
+  templateUrl: './create-product-variant.component.html',
 })
-export class ConfigAddProductVariantComponent implements OnInit {
-  listCateg: Array<TDSSafeAny> = [];
+
+export class CreateProductVariantComponent implements OnInit {
+
+  _form!: FormGroup;
+
   lstAttributeValues: Array<ProductCategoryDTO> = [];
   lstUOM: Array<ProductUOMDTO> = [];
   lstUOMPO: Array<ProductUOMDTO> = [];
@@ -32,22 +31,21 @@ export class ConfigAddProductVariantComponent implements OnInit {
   previewVisible = false;
   uploadUrl = '';
 
-  addProductForm!: FormGroup;
   modelDefault!: ProductDTO;
   private destroy$ = new Subject<void>();
+  listCateg = [
+    { value: "product", text: "Có thể lưu trữ" },
+    { value: "consu", text: "Có thể tiêu thụ" },
+    { value: "service", text: "Dịch vụ" }
+  ];
 
-  constructor(
-    private msg: TDSMessageService,
-    private http: HttpClient,
-    private formBuilder: FormBuilder,
+  constructor(private fb: FormBuilder,
     private router: Router,
     private message: TDSMessageService,
     private productService: ProductService,
     private productUOMService: ProductUOMService,
-    private productCategoryService: ProductCategoryService,
-  ) {
+    private productCategoryService: ProductCategoryService) {
     this.createForm();
-    this.loadData();
   }
 
   ngOnInit(): void {
@@ -55,24 +53,9 @@ export class ConfigAddProductVariantComponent implements OnInit {
       delete res['@odata.context'];
       this.modelDefault = res;
     });
-    this.loadCateg();
-    // this.loadPOSCateg();
     this.loadAttributeValues();
     this.loadUOM();
     this.loadUOMPO();
-    this.loadData();
-  }
-
-  loadData() {
-
-  }
-
-  loadCateg() {
-    this.listCateg = [
-      { value: "product", text: "Có thể lưu trữ" },
-      { value: "consu", text: "Có thể tiêu thụ" },
-      { value: "service", text: "Dịch vụ" }
-    ];
   }
 
   loadAttributeValues() {
@@ -99,17 +82,8 @@ export class ConfigAddProductVariantComponent implements OnInit {
     });
   }
 
-  // loadPOSCateg() {
-  //   this.productUOMService.getUOMCateg().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-  //     this.lstPOSCateg = res.value;
-  //   }, err => {
-  //     this.message.error('Load dữ liệu nhóm Pos thất bại!')
-  //   });
-  // }
-
-
   createForm() {
-    this.addProductForm = this.formBuilder.group({
+    this._form = this.fb.group({
       Active: [true], //hiệu lực
       AmountTotal: [null],
       AttributeValues: [null], //nhóm
@@ -178,67 +152,24 @@ export class ConfigAddProductVariantComponent implements OnInit {
       VirtualAvailable: [0],
       Weight: [0], //tồn kho
     });
-
-    this.addProductForm.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => { });
   }
 
-  resetForm() {
-    this.addProductForm.reset({
-      name: '',
-      sellable: false,
-      buyable: false,
-      active: false,
-      pointOfSale: false,
-      type: '',
-      productCode: '',
-      QRCode: '',
-      group: '',
-      attribute: '',
-      variantPrice: 0,
-      capital: 0,
-      defaultUnit: '',
-      unit: '',
-      inventory: '1',
-      netWeight: 0,
-      timeOut: 0,
-      PosGroup: '',
-      salePolicy: '0',
-    });
-  }
-
-  backToMain() {
-    this.resetForm();
-    this.router.navigate(['/configs/product-variant']);
+  onBack() {
+    this.router.navigateByUrl('/configs/product-variant');
   }
 
   onSave() {
-    if (this.modelDefault) {
-      this.addGeneralPackage();
-    }
-    else {
-      this.productService.getDefault().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        delete res['@odata.context'];
-        this.modelDefault = res;
-        this.addGeneralPackage();
-      });
-    }
-
-  }
-  addGeneralPackage() {
     let model = this.prepareModel();
-
     if (!model.Name) {
       this.message.error('Vui lòng nhập tên sản phẩm');
-    } else {
-      let data = JSON.stringify(model)
-      this.productService.insertProduct(data).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.message.success('Thêm mới thành công!');
-        this.createForm();
-        this.router.navigate(['/configs/product-variant']);
-      }, error => {
-        this.message.error('Thao tác thất bại!');
-      });
     }
+    this.productService.insertProduct(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.message.success('Thêm mới thành công!');
+      this.createForm();
+      this.router.navigateByUrl('/configs/product-variant');
+    }, error => {
+      this.message.error('Thao tác thất bại!');
+    });
   }
 
   getUrl(ev: string){
@@ -246,8 +177,7 @@ export class ConfigAddProductVariantComponent implements OnInit {
   }
 
   prepareModel() {
-    let formModel = this.addProductForm.value;
-
+    let formModel = this._form.value;
     if (formModel.Name) {
       this.modelDefault.Name = formModel.Name;
     }

@@ -161,21 +161,8 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   private getViewData(params: string): Observable<ODataPartnerDTO> {
     this.isLoading = true;
     return this.odataPartnerService
-        .getView(params, this.filterObj).pipe(takeUntil(this.destroy$))
+        .getView(params).pipe(takeUntil(this.destroy$))
         .pipe(finalize(() => {this.isLoading = false }));
-  }
-
-  onSelectChange(value: TDSSafeAny) {
-    this.pageIndex = 1;
-    this.indClickTag = -1;
-    this.tabIndex = value;
-
-    this.filterObj = {
-      searchText: '',
-      statusText: value
-    };
-
-    this.loadData(this.pageSize, this.pageIndex);
   }
 
   loadTags() {
@@ -213,6 +200,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
+    this.pageSize = params.pageSize;
     this.loadData(params.pageSize, params.pageIndex);
   }
 
@@ -280,6 +268,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   ngAfterViewInit(): void {
     this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse
+
     this.resizeObserver
       .observe(this.viewChildWidthTable)
       .subscribe(() => {
@@ -294,6 +283,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
           that.marginLeftCollapse = scrollleft;
         });
       }, 500);
+
     fromEvent(this.innerText.nativeElement, 'keyup').pipe(
         map((event: any) => { return event.target.value }),
         debounceTime(750),
@@ -309,8 +299,8 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
           let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
           return this.getViewData(params);
-      })
-    ).subscribe((res: any) => {
+      }))
+      .subscribe((res: any) => {
         this.count = res['@odata.count'] as number;
         this.lstOfData = res.value;
     }, error => {
@@ -376,30 +366,29 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.checkValueEmpty() == 1) {
       switch (type) {
         case "active":
-          let model1 = { Active: true, Ids: this.idsModel }
-          this.partnerService.setActive({ model: model1 }).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-            this.message.success('Đã mở hiệu lực thành công!');
-            setTimeout(() => {
+          let active = { Active: true, Ids: this.idsModel };
+
+          this.partnerService.setActive({ model: active }).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+              this.message.success('Đã mở hiệu lực thành công!');
               this.loadData(this.pageSize, this.pageIndex);
-            }, 350)
           }, error => {
             this.message.error('Mở hiệu lực thất bại!');
           })
           break;
 
         case "unactive":
-          let model2 = { Active: false, Ids: this.idsModel }
-          this.partnerService.setActive({ model: model2 }).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-            this.message.success('Đóng hiệu lực thành công!');
-            setTimeout(() => {
+          let unactive = { Active: false, Ids: this.idsModel };
+
+          this.partnerService.setActive({ model: unactive }).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+              this.message.success('Đóng hiệu lực thành công!');
               this.loadData(this.pageSize, this.pageIndex);
-            }, 350)
           }, error => {
             this.message.error('Đóng hiệu lực thất bại!');
           })
           break;
 
-        default: break;
+        default:
+          break;
       }
     }
   }

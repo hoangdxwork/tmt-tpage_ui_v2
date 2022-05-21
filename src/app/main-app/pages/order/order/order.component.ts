@@ -20,8 +20,7 @@ import { ExcelExportService } from 'src/app/main-app/services/excel-export.servi
 
 @Component({
   selector: 'app-order',
-  templateUrl: './order.component.html',
-  styleUrls: ['./order.component.scss']
+  templateUrl: './order.component.html'
 })
 export class OrderComponent implements OnInit {
 
@@ -113,7 +112,7 @@ export class OrderComponent implements OnInit {
       .subscribe(() => {
         this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse;
         this.viewChildWidthTable.nativeElement.click()
-      });     
+      });
       setTimeout(() => {
         let that = this;
         let wrapScroll = this.viewChildDetailPartner.nativeElement.closest('.tds-table-body');
@@ -356,6 +355,7 @@ export class OrderComponent implements OnInit {
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
+    this.pageSize = params.pageSize;
     this.loadData(params.pageSize, params.pageIndex);
   }
 

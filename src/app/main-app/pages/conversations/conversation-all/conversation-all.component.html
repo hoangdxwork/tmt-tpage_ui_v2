@@ -29,11 +29,12 @@
               </tds-form-field>
               <div class="flex gap-0.5">
                 <!-- button fillter -->
-                <conversation-all-filter 
-                  (onFilter)="onSubmitFilter($event)" 
+                <conversation-all-filter
+                  (onFilter)="onSubmitFilter($event)"
                   [totalCount]="total"
-                  [data]="currentTeam?.Id">
+                  [team]="currentTeam">
                 </conversation-all-filter>
+
                 <button (click)="setSort()" class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center"
                 [ngClass]="isSort?'bg-primary-3 text-primary-1':'bg-white text-neutral-1-500'">
                   <span class="flex items-center text-neutral-1-500">

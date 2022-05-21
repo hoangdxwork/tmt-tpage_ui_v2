@@ -27,17 +27,15 @@ export class OdataProductService extends BaseSevice {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}?${params}&$count=true`,
         method: TApiMethodType.get,
     }
-
     return this.apiService.getData<ODataProductDTO>(api, null);
   }
 
   getProductOnFacebookPage(params: string, pageId: string): Observable<TDSSafeAny>{
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetProductOnFacebookPage?pageId=${pageId}&${params}&$count=true`,
-      method: TApiMethodType.get,
-  }
-
-  return this.apiService.getData<ODataProductDTO>(api, null);
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetProductOnFacebookPage?pageId=${pageId}&${params}&$count=true`,
+        method: TApiMethodType.get,
+    }
+    return this.apiService.getData<ODataProductDTO>(api, null);
   }
 
   public buildFilter(filterObj: FilterObjDTO) {
@@ -46,10 +44,10 @@ export class OdataProductService extends BaseSevice {
         filters: []
     }
 
-    // dataFilter.filters.push({ field: "Active", operator: OperatorEnum.eq, value: true })
+    dataFilter.filters.push({ field: "Active", operator: OperatorEnum.eq, value: true });
     dataFilter.logic = "and";
 
-    if (TDSHelperString.hasValueString(filterObj.searchText)) {
+    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
         dataFilter.filters.push( {
             filters: [
               { field: "NameGet", operator: OperatorEnum.contains, value: filterObj.searchText },

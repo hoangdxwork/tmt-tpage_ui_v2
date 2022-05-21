@@ -337,10 +337,10 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       });
       setTimeout(() => {
         let that = this;
-        
+
         if(that.billOrderLines){
           let wrapScroll = that.billOrderLines.nativeElement.closest('.tds-table-body');
-          
+
           wrapScroll.addEventListener('scroll', function() {
             let scrollleft = wrapScroll.scrollLeft;
             that.marginLeftCollapse = scrollleft;
@@ -377,15 +377,15 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.indClickTag = -1;
 
     this.filterObj = {
-        tags: event.tags,
-        status: event.status,
-        bill: event.bill,
-        deliveryType: event.deliveryType,
-        searchText: event.searchText,
-        dateRange: {
-            startDate: event.dateRange.startDate,
-            endDate: event.dateRange.endDate
-        }
+      tags: event.tags,
+      status: event.status,
+      bill: event.bill,
+      deliveryType: event.deliveryType,
+      searchText: event.searchText,
+      dateRange: {
+        startDate: event.dateRange.startDate,
+        endDate: event.dateRange.endDate
+      }
     }
     this.loadData(this.pageSize, this.pageIndex);
   }
@@ -400,6 +400,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
+    this.pageSize = params.pageSize;
     this.loadData(params.pageSize, params.pageIndex);
   }
 

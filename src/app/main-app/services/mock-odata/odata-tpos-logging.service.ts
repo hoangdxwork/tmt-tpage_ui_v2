@@ -35,7 +35,7 @@ export class OdataTPosLoggingService extends BaseSevice {
         filters: []
     }
 
-    if (filterObj.dateRange && filterObj.dateRange.startDate && filterObj.dateRange.endDate) {
+    if (filterObj?.dateRange && filterObj?.dateRange.startDate && filterObj?.dateRange.endDate) {
       dataFilter.filters.push({
           filters: [
             { field: "DateCreated", operator: OperatorEnum.gte, value: new Date(filterObj.dateRange.startDate) },
@@ -45,7 +45,7 @@ export class OdataTPosLoggingService extends BaseSevice {
       })
     }
 
-    if (TDSHelperString.hasValueString(filterObj.searchText)) {
+    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
         dataFilter.filters.push( {
             filters: [
               { field: "Content", operator: OperatorEnum.contains, value: filterObj.searchText }
@@ -54,7 +54,7 @@ export class OdataTPosLoggingService extends BaseSevice {
         })
     }
 
-    if (TDSHelperString.hasValueString(filterObj.name)) {
+    if (TDSHelperString.hasValueString(filterObj?.name)) {
       dataFilter.filters.push( {
           filters: [
             { field: "Name", operator: OperatorEnum.eq, value: filterObj.name }

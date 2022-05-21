@@ -26,7 +26,7 @@ export class OdataPartnerService extends BaseSevice {
     super(apiService)
   }
 
-  getView(params: string, filterObj: FilterObjDTO): Observable<TDSSafeAny>{
+  getView(params: string): Observable<TDSSafeAny>{
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?${params}&$count=true`,
         method: TApiMethodType.get,
@@ -48,7 +48,7 @@ export class OdataPartnerService extends BaseSevice {
         dataFilter.logic = "and";
     }
 
-    if (TDSHelperString.hasValueString(filterObj.searchText)) {
+    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
         let value = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim());
         dataFilter.filters.push( {
             filters: [

@@ -1,0 +1,18 @@
+<tds-upload listType="picture-card"
+  [(fileList)]="fileList"
+  [showButton]="isArray ? true : (fileList.length == 0 ? true : false)"
+  [preview]="handlePreview"
+  [customRequest]="handleUpload">
+  <div class="w-full text-neutral-1-300">
+    <div class="flex items-center justify-center">
+      <span class="tdsi-images-fill text-xl leading-5"></span>
+    </div>
+    <div class="mt-2 text-body-2 font-regular">Upload</div>
+  </div>
+</tds-upload>
+
+<tds-modal [visible]="previewVisible" [content]="modalContent" [footer]="null" (onCancel)="previewVisible = false">
+  <ng-template #modalContent>
+    <img [src]="previewImage" [ngStyle]="{ width: '100%' }" />
+  </ng-template>
+</tds-modal>

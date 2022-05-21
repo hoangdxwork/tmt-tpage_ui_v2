@@ -47,7 +47,7 @@ export class OdataFastSaleOrderService extends BaseSevice {
     dataFilter.filters.push({ field: "Type", operator: OperatorEnum.eq, value: "invoice"})
     dataFilter.logic = "and";
 
-    if (filterObj.dateRange && filterObj.dateRange.startDate && filterObj.dateRange.endDate) {
+    if (filterObj?.dateRange && filterObj?.dateRange.startDate && filterObj?.dateRange.endDate) {
         dataFilter.filters.push({
             filters: [
               { field: "DateInvoice", operator: OperatorEnum.gte, value: new Date(filterObj.dateRange.startDate) },
@@ -57,7 +57,7 @@ export class OdataFastSaleOrderService extends BaseSevice {
         })
     }
 
-    if (TDSHelperString.hasValueString(filterObj.searchText)) {
+    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
         let value =  TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim())
         dataFilter.filters.push( {
             filters: [
