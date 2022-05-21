@@ -1,10 +1,10 @@
-<tds-spin [spinning]="isLoading">
+<tds-spin [spinning]="isLoading" *ngIf="dataModel">
     <tds-tabset class="border border-neutral-2-100 rounded-md">
     <tds-tab title="Thông tin chung">
-        <form [formGroup]="editForm" autocomplete="off" (ngSubmit)="onSubmit()">
+        <form [formGroup]="_form" novalidate>
             <div class="flex flex-col w-full">
                 <div class="mb-4">
-                    <tpage-upload-avatar class="rounded-lg" (getResult)="getUrl($event)" [size]="88" [imageUrl]="editForm.value?.ImageUrl"></tpage-upload-avatar>
+                  <upload-pictures-wall [data]="[_form.controls['ImageUrl'].value]" [isArray]="false" (onLoadImage)="onLoadImage($event)"></upload-pictures-wall>
                 </div>
                 <tds-form-field class="mb-4">
                     <tds-label>Tên sản phẩm:</tds-label>
@@ -18,18 +18,18 @@
                     <tds-label>Nhóm sản phẩm:</tds-label>
                     <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm sản phẩm'
                         disabledField="isActive" formControlName="CategId"
-                        [data]="listProductCategory" [allowClear]="true">
+                        [data]="lstProductCategory" [allowClear]="true">
                     </tds-select>
                     <tds-error>
                         Vui lòng chọn nhóm sản phẩm
                     </tds-error>
                 </tds-form-field>
-        
+
                 <tds-form-field class="mb-4">
                     <tds-label>Đơn vị mua:</tds-label>
                     <tds-select valueField="Id" textField="Name" placeholder='Chọn đơn vị mua'
                         disabledField="isActive" formControlName="UOMId"
-                        [data]="listProductUOM" [allowClear]="true">
+                        [data]="lstProductUOM" [allowClear]="true">
                     </tds-select>
                     <tds-error>
                         Vui lòng chọn đơn vị mua
@@ -47,19 +47,18 @@
         </form>
     </tds-tab>
     <tds-tab title="Hình ảnh">
-        <div class="w-full">
-            <tpage-upload-images [showName]="false" [inputImages]="imageList" (getResult)="getImageArray($event)"></tpage-upload-images>
-        </div>
+      <div class="w-full">
+          <!-- <upload-pictures-wall [data]="dataModel.Images" [isArray]="true"></upload-pictures-wall> -->
+      </div>
     </tds-tab>
     </tds-tabset>
 </tds-spin>
-
 
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
     <button tds-button class="mr-2" color="secondary" (click)="cancel()">
         Hủy bỏ
     </button>
-    <button tds-button type="submit" [disabled]="!editForm?.valid" color="primary" (click)="onSave()">
+    <button tds-button type="button" [disabled]="!_form?.valid" color="primary" (click)="onSave()">
         Lưu thay đổi
     </button>
 </div>

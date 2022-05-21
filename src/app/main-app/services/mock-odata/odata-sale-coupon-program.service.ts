@@ -36,7 +36,7 @@ export class OdataSaleCouponProgramService extends BaseSevice {
         filters: []
     }
 
-    if (TDSHelperString.hasValueString(filterObj.searchText)) {
+    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
         dataFilter.filters.push( {
             filters: [
               { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText }
@@ -45,7 +45,7 @@ export class OdataSaleCouponProgramService extends BaseSevice {
         })
     }
 
-    if(TDSHelperString.hasValueString(filterObj.programType)) {
+    if(TDSHelperString.hasValueString(filterObj?.programType)) {
         dataFilter.filters.push( {
           filters: [
             { field: "ProgramType", operator: OperatorEnum.eq, value: filterObj.programType }

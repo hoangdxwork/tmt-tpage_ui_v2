@@ -11,8 +11,8 @@
                     </button>
                     <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">CHỈNH SỬA SẢN PHẨM</span>
                 </div>
-                <button tds-button color="primary" type="submit" class="w-[100px]" 
-                  [disabled]="!editProductForm.valid" 
+                <button tds-button color="primary" type="submit" class="w-[100px]"
+                  [disabled]="!editProductForm.valid"
                   (click)="onSubmit()">
                     <span class="text-body-2 font-semibold">Lưu</span>
                 </button>
@@ -149,12 +149,12 @@
                             </div>
                         </tds-tab>
                         <tds-tab title="Hình ảnh">
-                          <tpage-upload-images 
-                            [size]="112" 
-                            [inputImages]="imageList" 
+                          <!-- <tpage-upload-images
+                            [size]="112"
+                            [inputImages]="imageList"
                             [productInput]="true"
                             (getResult)="getImageList($event)">
-                          </tpage-upload-images>
+                          </tpage-upload-images> -->
                         </tds-tab>
                         <tds-tab title="tồn kho">
                           <div class="grid grid-cols-2 gap-y-4 gap-x-8">
@@ -192,7 +192,7 @@
                           <div class="grid grid-cols-2 gap-y-4 gap-x-8 items-center text-neutral-1-600 text-header-2 font-semibold">
                             <span>Điểm bán hàng</span>
                           </div>
-                          
+
                           <div class="grid grid-cols-2 gap-y-4 gap-x-8 mt-4">
                             <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
                               <tds-label>Nhóm Pos:</tds-label>
@@ -222,11 +222,11 @@
                                     <span class="text-body-2 font-semibold">Quản lý thuộc tính</span>
                                   </span>
                                 </button>
-                                <div tds-tooltip 
+                                <div tds-tooltip
                                   tooltipTitle="Thêm trước thuộc tính để tạo biến thể"
                                   tooltipPlacement="top"
                                   [tooltipTrigger]="'hover'">
-                                  <button tds-button color="primary" type="button" 
+                                  <button tds-button color="primary" type="button"
                                     [disabled]="attributeList.length == 0"
                                     (click)="showCreateVariantModal()">
                                     <span class="flex items-center">
@@ -240,7 +240,7 @@
                             <div class="w-full h-full pb-3">
                               <tds-table #basicTable
                                   [listData]="variantTableData"
-                                  [showSizeChanger]="true" 
+                                  [showSizeChanger]="true"
                                   [loading]="isLoadingVariant"
                                   [pageSize]="variantPageSize"
                                   [pageIndex]="variantPageIndex"
@@ -265,16 +265,16 @@
                                                   <span class="mb-2">{{ data.NameGet }}</span>
                                                   <div *ngIf="data.DisplayAttributeValues" class="flex flex-wrap items-center">
                                                     <div *ngFor="let value of data.AttributeValues">
-                                                      <tds-tag status='secondary' rounded="rounded-full mr-2 mb-2">{{ value }}</tds-tag> 
+                                                      <tds-tag status='secondary' rounded="rounded-full mr-2 mb-2">{{ value }}</tds-tag>
                                                     </div>
                                                   </div>
                                                 </div>
                                               </td>
                                               <td>
-                                                <tds-input-number 
-                                                  [(ngModel)]="data.PriceVariant" 
-                                                  [ngModelOptions]="{standalone: true}" 
-                                                  [min]="0" 
+                                                <tds-input-number
+                                                  [(ngModel)]="data.PriceVariant"
+                                                  [ngModelOptions]="{standalone: true}"
+                                                  [min]="0"
                                                   class="text-neutral-1-900 text-body-2 font-regular">
                                                 </tds-input-number>
                                               </td>
@@ -314,7 +314,7 @@
                                 <textarea tdsInput formControlName="Description" placeholder="Nhập mô tả sản phẩm"></textarea>
                               </tds-form-field>
                             </div>
-                            
+
                             <div class="grid grid-cols-8 gap-x-8">
                               <tds-label>Mô tả trên báo giá bán hàng</tds-label>
                               <tds-form-field class="w-full col-span-7">
@@ -338,7 +338,7 @@
                                     </span>
                                   </button>
                                 </div>
-                                
+
                                 <tds-label>Nhà nhập khẩu</tds-label>
                                 <div class="flex space-x-2 items-center col-span-3">
                                   <tds-form-field class="w-full">
@@ -402,7 +402,7 @@
                                 <tds-form-field class="w-full col-span-3">
                                   <textarea tdsInput formControlName="Specifications" placeholder="Nhập thông số kỹ thuật"></textarea>
                                 </tds-form-field>
-                                
+
                                 <tds-label>Thông tin cảnh báo</tds-label>
                                 <tds-form-field class="w-full col-span-3">
                                   <textarea tdsInput formControlName="InfoWarning" placeholder="Nhập thông tin cảnh báo"></textarea>

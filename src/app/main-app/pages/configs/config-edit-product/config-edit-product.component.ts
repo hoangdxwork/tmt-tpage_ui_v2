@@ -42,7 +42,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
 
   editProductForm!: FormGroup;
   productModel!:ProductTemplateDTO;
-  
+
   variantPageSize = 20;
   variantPageIndex = 1;
   isLoadingVariant = false;
@@ -58,7 +58,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
     private productService: ProductService,
     private productTemplateService: ProductTemplateService,
     private productTemplateOUMLine: ProductTemplateOUMLineService,
-  ) { 
+  ) {
     this.loadProductTypeList();
     this.loadProductCategory();
     this.loadProductUOM();
@@ -86,7 +86,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
       (res:TDSSafeAny)=>{
         delete res['@odata.context'];
         this.productModel = res;
-        
+
         if(this.productModel.ImageUrl){
           this.editProductForm.controls.ImageUrl.setValue(this.productModel.ImageUrl);
         }
@@ -108,7 +108,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
         if(res.ProductVariants.length > 0){
           this.variantTableData = res.ProductVariants;
         }
-    
+
         console.log('edit-page')
         this.editProductForm.patchValue(res);
       },
@@ -323,7 +323,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
       size: "lg",
       viewContainerRef: this.viewContainerRef
     });
-    
+
     modal.afterClose.subscribe(result => {
       if (TDSHelperObject.hasValue(result)) {
         let AttributeLines = result.AttributeLines as Array<TDSSafeAny>;
@@ -349,7 +349,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
       Barcode: this.editProductForm.controls.Barcode.value,
       DefaultCode: this.editProductForm.controls.DefaultCode.value
     }
-    
+
     if(modelData.Name){
       const modal = this.modalService.create({
         title: 'Thêm biến thể sản phẩm',
@@ -361,7 +361,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
           attributeList: this.attributeList
         }
       });
-      
+
       modal.afterClose.subscribe(result => {
         if (TDSHelperObject.hasValue(result)) {
           //lấy thuộc tính biến thể
@@ -371,7 +371,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
           lines.forEach(attr => {
             attributes.push(attr.Values[0].NameGet)
           });
-        
+
           this.variantTableData = [
             ...this.variantTableData,{
               Name: modelData.Name,
@@ -401,7 +401,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
       size: "lg",
       viewContainerRef: this.viewContainerRef
     });
-    
+
     modal.afterClose.subscribe(result => {
       this.loadProductCategory();
     });
@@ -417,7 +417,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
         type: 'producer'
       }
     });
-    
+
     modal.afterClose.subscribe(result => {
       this.loadUOMAddType();
     });
@@ -433,7 +433,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
         type: 'importer'
       }
     });
-    
+
     modal.afterClose.subscribe(result => {
       this.loadUOMAddType();
     });
@@ -449,7 +449,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
         type: 'distributor'
       }
     });
-    
+
     modal.afterClose.subscribe(result => {
       this.loadUOMAddType();
     });
@@ -462,7 +462,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
       size: "lg",
       viewContainerRef: this.viewContainerRef
     });
-    
+
     modal.afterClose.subscribe(result => {
       this.loadOriginCountry();
     });
@@ -496,7 +496,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
 
   editProduct(){
     let model = this.prepareModel();
-    
+
     if(model.Name){
       this.productTemplateService.updateProductTemplate(model).subscribe(
         (res:TDSSafeAny)=>{
@@ -513,7 +513,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
   prepareModel(){
     let formModel = this.editProductForm.value;
     this.insertImageToForm();
-    
+
     if(formModel.Name){
       this.productModel.Name = formModel.Name;
     }

@@ -7,12 +7,11 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, AfterViewIni
 @Component({
   selector: 'tpage-upload-avatar',
   templateUrl: './tpage-upload-avatar.component.html',
-  styleUrls: ['./tpage-upload-avatar.component.scss']
 })
 
 export class TpageUploadAvatarComponent implements OnInit, AfterViewInit , OnDestroy {
 
-  @Input() size:number = 112;
+  @Input() size: number = 112;
   @Input() imageUrl:string = '';
   @Input() shape: 'square'|'circle' = 'square';
   @Input() isAvatar: boolean = false;

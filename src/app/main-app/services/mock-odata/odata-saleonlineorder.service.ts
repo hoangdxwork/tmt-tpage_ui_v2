@@ -54,7 +54,7 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
         filters: [],
     }
 
-    if (filterObj.dateRange && filterObj.dateRange.startDate && filterObj.dateRange.endDate) {
+    if (filterObj?.dateRange && filterObj?.dateRange.startDate && filterObj?.dateRange.endDate) {
         dataFilter.filters.push({
             filters: [
               { field: "DateCreated", operator: OperatorEnum.gte, value: new Date(filterObj.dateRange.startDate) },
@@ -64,7 +64,7 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
         })
     }
 
-    if (TDSHelperString.hasValueString(filterObj.searchText)) {
+    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
         dataFilter.filters.push( {
             filters: [
               { field: "Code", operator: OperatorEnum.contains, value: filterObj.searchText },

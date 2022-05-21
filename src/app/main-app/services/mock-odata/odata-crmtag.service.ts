@@ -36,7 +36,7 @@ export class OdataCRMTagService extends BaseSevice {
         filters: []
     }
 
-    if (TDSHelperString.hasValueString(filterObj.searchText)) {
+    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
         dataFilter.filters.push( {
             filters: [
               { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText }

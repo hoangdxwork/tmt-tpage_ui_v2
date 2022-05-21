@@ -21,16 +21,17 @@ import { SortEnum } from 'src/app/lib';
 
 @Component({
   selector: 'app-config-products',
-  templateUrl: './config-products.component.html',
-  styleUrls: ['./config-products.component.scss']
+  templateUrl: './config-products.component.html'
 })
+
 export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy {
+
   @ViewChild('viewChildProductTable') parentElement!: ElementRef;
   @ViewChild('filterText') filterText!: ElementRef;
 
   lstOfData:Array<ProductTemplateDTO> = [];
   private destroy$ = new Subject<void>();
-  
+
   expandSet = new Set<number>();
   setOfCheckedId = new Set<number>();
   listOfCurrentPageData: readonly ProductTemplateDTO[] = [];
@@ -48,7 +49,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
   count: number = 1;
   tableWidth:number = 0;
   paddingCollapse: number = 32;
- 
+
   checked = false;
   indeterminate = false;
   pageSize = 20;
@@ -131,7 +132,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
       filter = this.odataService.buildFilter(this.filterObj);
     }
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filter, sort);
-    
+
     this.getViewData(params).subscribe((res: ODataProductTemplateDTO) => {
       this.count = res['@odata.count'] as number;
       this.lstOfData = res.value;
@@ -146,7 +147,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
         .getView(params, this.filterObj).pipe(takeUntil(this.destroy$))
         .pipe(finalize(() => {this.isLoading = false }));
   }
-  
+
   //store data on indexedDB
   storeIndexedDB(key:string, value:TDSSafeAny){
     const gridConfig = { data: value };
@@ -237,8 +238,8 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     };
 
     let sort = [
-      { 
-        field: columnValue, 
+      {
+        field: columnValue,
         dir: SortEnum.desc
       }
     ];
@@ -307,7 +308,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
       ProductTmplId: Id,
       Tags: Tags,
     }
-    
+
     this.productTagService.assignTag(model).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
       if(res && res.PartnerId) {
           var exits = this.lstOfData.filter(x => x.Id == Id)[0] as TDSSafeAny;

@@ -1,9 +1,10 @@
 import { ApplicationUserService } from './../../../../services/application-user.service';
-import { TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperArray, TDSSafeAny } from 'tmt-tang-ui';
 import { CRMMatchingService } from './../../../../services/crm-matching.service';
 import { CRMTagService } from './../../../../services/crm-tag.service';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
+import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 
 @Component({
   selector: 'conversation-all-filter',
@@ -11,7 +12,10 @@ import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChange
   styleUrls: ['./conversation-all-filter.component.scss']
 })
 export class ConversationAllFilterComponent implements OnInit, OnChanges {
-  @Input() data: any;
+
+  _form !: FormGroup;
+
+  @Input() team!: CRMTeamDTO;
   @Input() totalCount!: number;
   @Output() onFilter: EventEmitter<any> = new EventEmitter();
 
@@ -25,13 +29,11 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
   toggle_Key: boolean = true;
   filtered: boolean = false;
 
-  _form !: FormGroup;
-  constructor(
+  constructor(private fb: FormBuilder,
     private crmTagService: CRMTagService,
     private crmMatchingService: CRMMatchingService,
-    private applicationUserService: ApplicationUserService,
-  ) {
-    this.createForm();
+    private applicationUserService: ApplicationUserService) {
+      this.createForm();
   }
 
   ngOnChanges(simpleChange: SimpleChanges) {
@@ -45,25 +47,30 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.applicationUserService.dataSource$.subscribe((res) => {
-      if (this.crmMatchingService.queryObj.user_ids) {
+      if (this.crmMatchingService.queryObj.user_ids && TDSHelperArray.hasListValue(res)) {
         res.forEach((element: TDSSafeAny) => {
+
           let value = this.crmMatchingService.queryObj.user_ids
             .split(",")
             .find((x: TDSSafeAny) => x === element.Id);
+
           if (value) {
             element.selected = true;
           }
         });
       }
+
       this.users = res;
     });
 
     this.crmTagService.dataSource$.subscribe((res) => {
-      if (this.crmMatchingService.queryObj.tag_ids) {
+      if (this.crmMatchingService.queryObj.tag_ids && TDSHelperArray.hasListValue(res)) {
         res.forEach((element: TDSSafeAny) => {
+
           let value = this.crmMatchingService.queryObj.tag_ids
             .split(",")
             .find((x: TDSSafeAny) => x === element.Id);
+
           if (value) {
             this.keyTags[element.Id] = true;
           }
@@ -74,15 +81,16 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
   }
 
   createForm() {
-    this._form = new FormGroup({
-      hasOrder: new FormControl(false),
-      hasAddress: new FormControl(false),
-      hasPhone: new FormControl(false),
-      hasUnread: new FormControl(false),
-      notAddress: new FormControl(false),
-      notPhone: new FormControl(false),
+    this._form = this.fb.group({
+      hasOrder: [false],
+      hasAddress: [false],
+      hasPhone: [false],
+      hasUnread: [false],
+      notAddress: [false],
+      notPhone: [false]
     });
   }
+
   openDrawerFillter() {
     this.visibleDrawerFillter = true;
   }
@@ -149,7 +157,8 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
         userIds.push(x.Id);
       }
     });
-    let data = {
+
+    let model = {
       from_date: this.daterange[0] ? this.daterange[0].toISOString() : null,
       to_date: this.daterange[1] ? this.daterange[1].toISOString() : null,
       tag_ids: tagIds,
@@ -157,9 +166,9 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
     };
 
     let checkModel = this.prepareValues();
-    data = Object.assign(data, checkModel);
+    model = Object.assign(model, checkModel);
 
-    this.onFilter.emit(data);
+    this.onFilter.emit(model);
     this.toggle_Key = !this.toggle_Key;
     this.visibleDrawerFillter = false;
     this.filtered = true;

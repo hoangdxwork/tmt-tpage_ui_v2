@@ -30,7 +30,7 @@ export class OdataProductTemplateService extends BaseSevice {
 
     return this.apiService.getData<ODataProductTemplateDTO>(api, null);
   }
-  
+
   public buildFilter(filterObj: FilterObjDTO) {
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",
@@ -40,7 +40,7 @@ export class OdataProductTemplateService extends BaseSevice {
     dataFilter.filters.push({ field: "Active", operator: OperatorEnum.eq, value: true})
     dataFilter.logic = "and";
 
-    if (TDSHelperString.hasValueString(filterObj.searchText)) {
+    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
         dataFilter.filters.push( {
             filters: [
               { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText },

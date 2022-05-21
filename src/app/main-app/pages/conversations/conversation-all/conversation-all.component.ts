@@ -85,7 +85,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onChangeConversation(team: any) {
     this.validateData();
-    this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);debugger
+    this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
     this.loadConversations((this.dataSource$));
   }
 
@@ -98,9 +98,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   loadConversations(dataSource$: Observable<any>) {
     if (dataSource$) {
       this.isLoading = true;
-      dataSource$.pipe(takeUntil(this.destroy$)).pipe(finalize(() => { setTimeout(() => {
-        this.isLoading = false 
-      }, 200); }))
+      dataSource$.pipe(takeUntil(this.destroy$))
+        .pipe(finalize(() => { this.isLoading = false }))
         .subscribe((res: CRMMatchingMappingDTO) => {
           if (res && TDSHelperArray.hasListValue(res.items)) {
               this.lstMatchingItem = [...res.items];
@@ -113,11 +112,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                 //TODO: load lần đầu tiên
                 this.getActiveCvsItem(this.lstMatchingItem[0]);
               }
-          }else{
+          } else {
+            //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
             this.validateData();
           }
         }, error => {
-          this.message.error('Load thông tin CRMMatching đã xảy ra lỗi');
+          this.message.error('Load CRMMatching đã xảy ra lỗi');
         })
     }
   }
@@ -222,7 +222,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     (this.dataSource$ as any) = null;
 
     if (Object.keys(queryObj || {}).length <= 4) {
-      // this.dataSource$ = this.conversationService.makeDataSource(this.currentTeam.Facebook_PageId, this.type);
       this.dataSource$ = this.conversationDataFacade.makeDataSource(this.currentTeam.Facebook_PageId, this.type);
     } else {
       this.dataSource$ = this.conversationDataFacade.makeDataSourceWithQuery(this.currentTeam.Facebook_PageId, this.type, queryObj).pipe(map((res => {

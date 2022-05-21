@@ -1,18 +1,17 @@
-<form [formGroup]="addProductForm" autocomplete="off" (ngSubmit)="onSave()">
+<form [formGroup]="_form" autocomplete="off" (ngSubmit)="onSave()">
     <div class="w-full pb-4 px-4">
         <div class="flex flex-col w-full bg-white rounded-xl">
             <div class="flex flex-row items-center justify-between px-4 py-3">
                 <div class="flex flex-row items-center">
-                    <button tds-flat-button-icon size="md" type="button"
-                        (click)="backToMain()">
+                    <button tds-flat-button-icon size="md" type="button" (click)="onBack()">
                         <span class="flex items-center">
                             <i class="tdsi-back-fill text-xl leading-5"></i>
                         </span>
                     </button>
                     <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">THÊM MỚI BIẾN THỂ SẢN PHẨM</span>
                 </div>
-                <button tds-button color="primary" type="submit" class="w-[100px]" 
-                  [disabled]="!addProductForm?.valid">
+                <button tds-button color="primary" type="submit" class="w-[100px]"
+                  [disabled]="!_form?.valid">
                     <span class="text-body-2 font-semibold">Lưu</span>
                 </button>
             </div>
@@ -47,7 +46,7 @@
                                 <tds-label>Loại sản phẩm:</tds-label>
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-select valueField="value" textField="text" placeholder='Chọn loại sản phẩm'
-                                      disabledField="isActive" formControlName="Type" 
+                                      disabledField="isActive" formControlName="Type"
                                       [data]="listCateg" [allowClear]="true">
                                   </tds-select>
                                   <tds-error>
@@ -74,7 +73,7 @@
                                 <tds-label>Nhóm sản phẩm:</tds-label>
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm sản phẩm'
-                                  disabledField="isActive" formControlName="Categ" 
+                                  disabledField="isActive" formControlName="Categ"
                                   [data]="lstAttributeValues" [allowClear]="true">
                                   </tds-select>
                                   <tds-error>
@@ -111,7 +110,7 @@
                                 <tds-label>Đơn vị mặc định:</tds-label>
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị'
-                                  disabledField="isActive" formControlName="UOM" 
+                                  disabledField="isActive" formControlName="UOM"
                                   [data]="lstUOM" [allowClear]="true">
                                   </tds-select>
                                   <tds-error>
@@ -122,7 +121,7 @@
                                 <tds-label>Đơn vị mua:</tds-label>
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị'
-                                  disabledField="isActive" formControlName="UOMPO" 
+                                  disabledField="isActive" formControlName="UOMPO"
                                   [data]="lstUOMPO" [allowClear]="true">
                                   </tds-select>
                                   <tds-error>
@@ -156,7 +155,7 @@
                             <span>Chính sách bán hàng</span>
                             <span>Điểm bán hàng</span>
                           </div>
-                          
+
                           <div class="grid grid-cols-2 gap-y-4 gap-x-8 mt-4">
                             <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
                               <tds-label>Thời gian chờ:</tds-label>
@@ -172,7 +171,7 @@
                               <tds-label>Nhóm Pos:</tds-label>
                               <tds-form-field class="w-full col-span-2">
                                 <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm Pos'
-                                  disabledField="isActive" formControlName="POSCateg" 
+                                  disabledField="isActive" formControlName="POSCateg"
                                   [data]="lstPOSCateg" [allowClear]="true">
                                 </tds-select>
                                 <tds-error>
