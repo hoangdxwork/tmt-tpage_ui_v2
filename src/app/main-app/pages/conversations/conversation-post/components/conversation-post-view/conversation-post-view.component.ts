@@ -8,13 +8,12 @@ import { FacebookPostService } from 'src/app/main-app/services/facebook-post.ser
 import { TDSHelperString, TDSMessageService, TDSModalService } from 'tmt-tang-ui';
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
-import { ConfigPostReleaseComponent } from '../components/config-post/config-post-release.component';
 import { formatDate } from '@angular/common';
+import { ConfigPostReleaseComponent } from '../../../components/config-post/config-post-release.component';
 
 @Component({
   selector: 'conversation-post-view',
-  templateUrl: './conversation-post-view.component.html',
-  styleUrls: ['./conversation-post.component.scss']
+  templateUrl: './conversation-post-view.component.html'
 })
 
 export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestroy {

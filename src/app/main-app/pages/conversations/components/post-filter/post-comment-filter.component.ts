@@ -1,4 +1,3 @@
-import { ItemPostCommentComponent } from '../../conversation-post/item-post-comment.component';
 import { Component, OnChanges, OnDestroy, OnInit, Optional, Host, SkipSelf, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { fromEvent, Observable, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, finalize, map, takeUntil } from 'rxjs/operators';
@@ -7,6 +6,7 @@ import { ConversationPostFacade } from 'src/app/main-app/services/facades/conver
 import { TDSHelperArray, TDSHelperObject } from 'tmt-tang-ui';
 import { CommentByPost } from 'src/app/main-app/dto/conversation/post/comment-post.dto';
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
+import { ItemPostCommentComponent } from '../../conversation-post/components/item-post-comment/item-post-comment.component';
 
 @Component({
   selector: 'post-comment-filter',
