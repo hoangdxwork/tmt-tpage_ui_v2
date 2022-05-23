@@ -13,7 +13,6 @@ import { Message } from 'src/app/lib/consts/message.const';
 @Component({
   selector: 'app-config-promotions',
   templateUrl: './config-promotions.component.html',
-  styleUrls: ['./config-promotions.component.scss']
 })
 export class ConfigPromotionsComponent implements OnInit {
   dropdownList:Array<TDSSafeAny> = [

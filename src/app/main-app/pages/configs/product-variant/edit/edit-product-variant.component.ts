@@ -134,8 +134,8 @@ export class EditProductVariantComponent implements OnInit {
       return this.fb.group({
           MineType: [data.MineType],
           Name: [data.Name],
-          ResModel: [data.ResModel],
-          Type: [data.Type],
+          ResModel: ['product.product'],
+          Type: ['url'],
           Url: [data.Url]
       });
     } else {
@@ -150,9 +150,23 @@ export class EditProductVariantComponent implements OnInit {
   }
 
   onLoadImage(event: any) {
-    (event as any[]).map(x => {
+    let datas: any[] = [];
+    event?.files.forEach((x: any) => {
+      let item = {
+        MineType: null,
+        Name: x.name,
+        ResModel: 'product.product',
+        Type: ['url'],
+        Url: x.url
+      };
+      datas.push(item);
+    });
 
-    })
+    if(event.isArray == true){
+      datas.forEach(x => { this.addImages(x) });
+    } else {
+      this._form.controls['ImageUrl'].setValue(event.files[0].url);
+    }
   }
 
   onSave(): any {
