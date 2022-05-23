@@ -1,4 +1,3 @@
-import { ItemPostCommentComponent } from './../../conversation-post/item-post-comment.component';
 import { Component, OnChanges, OnDestroy, OnInit, Optional, Host, SkipSelf, Self } from '@angular/core';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -14,6 +13,7 @@ import { ActivityDataFacade } from 'src/app/main-app/services/facades/activity-d
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import { CommentByPost } from 'src/app/main-app/dto/conversation/post/comment-post.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
+import { ItemPostCommentComponent } from '../../conversation-post/components/item-post-comment/item-post-comment.component';
 
 @Component({
   selector: 'post-comment-all',

@@ -17,8 +17,7 @@ import { RequestCommentByGroup } from 'src/app/main-app/dto/conversation/post/co
 
 @Component({
   selector: 'item-post-comment',
-  templateUrl: './item-post-comment.component.html',
-  styleUrls: ['./conversation-post.component.scss']
+  templateUrl: './item-post-comment.component.html'
 })
 
 export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {

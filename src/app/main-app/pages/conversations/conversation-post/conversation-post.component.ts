@@ -104,6 +104,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         this.loadBadgeComments();
       }
     });
+
+    this.loadPartnerByPostComment();
   }
 
   //TODO: khi có comment mới vào bài viết

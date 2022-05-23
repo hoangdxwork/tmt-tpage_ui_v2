@@ -1,10 +1,10 @@
-import { ItemPostCommentComponent } from '../../conversation-post/item-post-comment.component';
 import { Component, OnChanges, OnDestroy, OnInit, Optional, Host, SkipSelf } from '@angular/core';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService } from 'tmt-tang-ui';
 import { CommentByPost } from 'src/app/main-app/dto/conversation/post/comment-post.dto';
+import { ItemPostCommentComponent } from '../../conversation-post/components/item-post-comment/item-post-comment.component';
 
 @Component({
   selector: 'post-comment-group',

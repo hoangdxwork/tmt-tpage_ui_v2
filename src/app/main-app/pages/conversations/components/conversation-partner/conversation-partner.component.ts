@@ -81,6 +81,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.loadPartnerStatus();
 
     this.loadPartnerByOrder();
+    debugger;
     this.loadPartnerByPostComment();
 
     if(this.data?.id) {
@@ -121,6 +122,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.partnerService.onLoadPartnerFormPostComment
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
+        debugger;
         let psid = res?.from?.id;
         let pageId = this.team.Facebook_PageId;
         this.loadDataPartner(pageId, psid);
