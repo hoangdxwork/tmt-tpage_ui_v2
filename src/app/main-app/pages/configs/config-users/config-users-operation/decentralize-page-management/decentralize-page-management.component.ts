@@ -4,7 +4,6 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 @Component({
   selector: 'app-decentralize-page-management',
   templateUrl: './decentralize-page-management.component.html',
-  styleUrls: ['./decentralize-page-management.component.scss']
 })
 export class DecentralizePageManagementComponent implements OnInit {
 
@@ -53,6 +52,6 @@ export class DecentralizePageManagementComponent implements OnInit {
   }
 
   onModelChangePermission(ev: TDSSafeAny){
-    
+
   }
 }

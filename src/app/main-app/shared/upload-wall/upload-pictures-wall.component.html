@@ -1,5 +1,6 @@
 <tds-upload listType="picture-card"
   [(fileList)]="fileList"
+  [remove]="handleRemove"
   [showButton]="isArray ? true : (fileList.length == 0 ? true : false)"
   [preview]="handlePreview"
   [customRequest]="handleUpload">

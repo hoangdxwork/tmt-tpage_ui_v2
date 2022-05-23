@@ -103,13 +103,8 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
         this.indClickTag = -1;
 
         this.filterObj.searchText = text;
-
-        let filters;
-        if(TDSHelperString.hasValueString(this.filterObj.searchText)){
-          filters = this.odataService.buildFilter(this.filterObj);
-        }
-
-        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
+        let filters = this.odataService.buildFilter(this.filterObj);
+        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters || null);
         return this.getViewData(params);
       })
     ).subscribe((res: any) => {
@@ -124,14 +119,13 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   onQueryParamsChange(params: TDSTableQueryParams){
+    this.pageSize = params.pageSize;
     this.loadData(params.pageSize, params.pageIndex);
   }
 
   loadData(pageSize: number, pageIndex: number, filter?:FilterDataRequestDTO, sort?:SortDataRequestDTO[]) {
-    if(TDSHelperString.hasValueString(this.filterObj.searchText)){
-      filter = this.odataService.buildFilter(this.filterObj);
-    }
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filter, sort);
+    filter = this.odataService.buildFilter(this.filterObj);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filter || null, sort);
 
     this.getViewData(params).subscribe((res: ODataProductTemplateDTO) => {
       this.count = res['@odata.count'] as number;
