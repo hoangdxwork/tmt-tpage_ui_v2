@@ -1,6 +1,6 @@
 import { vi_VN } from 'tmt-tang-ui';
 import { isToday, isYesterday } from 'date-fns';
-import { DatePipe, formatDate, WeekDay } from '@angular/common';
+import { DatePipe, formatDate } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
