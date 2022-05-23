@@ -1,50 +1,48 @@
-import { OnDestroy } from '@angular/core';
-import { SaleSettingsDTO } from './../../../../dto/setting/setting-sale-online.dto';
-import { CommonService } from 'src/app/main-app/services/common.service';
-import { User } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
-import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, Output, SimpleChanges, SkipSelf, EventEmitter, ViewContainerRef } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ChangeDetectorRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewContainerRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, pipe, Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs/operators';
+import { Message } from 'src/app/lib/consts/message.const';
+import { CheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
+import { CalculateFeeResponse_Data_ServiceDTO, CalculateFeeResponse_Data_Service_ExtraDTO, DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
 import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
-import { CheckConversationData } from 'src/app/main-app/dto/partner/check-conversation.dto';
+import { ConversationOrderForm, ConversationOrderProductDefaultDTO } from 'src/app/main-app/dto/coversation-order/conversation-order.dto';
+import { FastSaleOrderRestDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
+import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
+import { SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
+import { SaleSettingsDTO } from 'src/app/main-app/dto/setting/setting-sale-online.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
+import { ApplicationUserDTO } from 'src/app/main-app/dto/user/application-user.dto';
+import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
+import { CommonService } from 'src/app/main-app/services/common.service';
 import { DraftMessageService } from 'src/app/main-app/services/conversation/draft-message.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
+import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { ConversationEventFacade } from 'src/app/main-app/services/facades/conversation-event.facade';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
-import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TDSMessageService, TDSSafeAny, TDSHelperString, TDSHelperObject, TDSModalService } from 'tmt-tang-ui';
-import { takeUntil, finalize } from 'rxjs/operators';
-import { ConversationOrderForm, ConversationOrderProductDefaultDTO } from 'src/app/main-app/dto/coversation-order/conversation-order.dto';
-import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
-import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
-import { CheckFormHandler } from 'src/app/main-app/services/handlers/check-form.handler';
-import { FastSaleOrderRestDTO, FastSaleOrder_ServiceExtraDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { GeneralConfigsFacade } from 'src/app/main-app/services/facades/general-config.facade';
-import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
-import { CalculateFeeResponse_Data_ServiceDTO, CalculateFeeResponse_Data_Service_ExtraDTO, DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
-import { Message } from 'src/app/lib/consts/message.const';
-import { SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
-import { PartnerService } from 'src/app/main-app/services/partner.service';
+import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
+import { CarrierHandler } from 'src/app/main-app/services/handlers/carier.handler';
+import { CheckFormHandler } from 'src/app/main-app/services/handlers/check-form.handler';
+import { OrderFormHandler } from 'src/app/main-app/services/handlers/order-form.handler';
+import { SaleHandler } from 'src/app/main-app/services/handlers/sale.handler';
+import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { OrderFormHandler } from 'src/app/main-app/services/handlers/order-form.handler';
-import { CarrierHandler } from 'src/app/main-app/services/handlers/carier.handler';
-import { SaleHandler } from 'src/app/main-app/services/handlers/sale.handler';
-import { ModalListProductComponent } from '../modal-list-product/modal-list-product.component';
-import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
+import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-product/tpage-add-product.component';
 import { TpageConfigProductComponent } from 'src/app/main-app/shared/tpage-config-product/tpage-config-product.component';
-import { CheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
+import { TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSSafeAny } from 'tmt-tang-ui';
+import { ModalListProductComponent } from '../modal-list-product/modal-list-product.component';
 
 @Component({
-    selector: 'conversation-order',
-    templateUrl: './conversation-order.component.html'
+  selector: 'post-order',
+  templateUrl: './post-order.component.html'
 })
-
-export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy {
+export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() data!: ConversationMatchingItem;
   @Input() team!: CRMTeamDTO;
@@ -77,7 +75,6 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
     private conversationEventFacade: ConversationEventFacade,
     private conversationOrderFacade: ConversationOrderFacade,
     private saleOnline_OrderService: SaleOnline_OrderService,
-    private modal: TDSModalService,
     private applicationUserService: ApplicationUserService,
     private crmService: CRMTeamService,
     private fb: FormBuilder,
@@ -97,6 +94,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
     private carrierHandler: CarrierHandler,
     private viewContainerRef: ViewContainerRef,
     private saleHandler: SaleHandler,
+    private facebookCommentService: FacebookCommentService,
     private router: Router) {
   }
 
@@ -172,7 +170,8 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   loadOrder() {
-    this.conversationOrderFacade.onLastOrderCheckCvs$.pipe(takeUntil(this.destroy$)).subscribe(res => {
+    this.conversationOrderFacade.onOrderCheckPost$.pipe(takeUntil(this.destroy$)).subscribe(res => {
+      debugger;
       this.updateFormOrder(res);
       this.updateBillByForm(this.orderForm);
       this.currentOrderCode.emit(res?.Code);

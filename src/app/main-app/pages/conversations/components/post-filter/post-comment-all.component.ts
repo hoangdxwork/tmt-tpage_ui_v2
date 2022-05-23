@@ -13,6 +13,7 @@ import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.servi
 import { ActivityDataFacade } from 'src/app/main-app/services/facades/activity-data.facade';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import { CommentByPost } from 'src/app/main-app/dto/conversation/post/comment-post.dto';
+import { PartnerService } from 'src/app/main-app/services/partner.service';
 
 @Component({
   selector: 'post-comment-all',
@@ -36,6 +37,7 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
     private activityDataFacade: ActivityDataFacade,
     private conversationDataFacade: ConversationDataFacade,
     private conversationPostFacade: ConversationPostFacade,
+    private partnerService: PartnerService,
     @Host() @SkipSelf() @Optional() public itemPostCommentCmp: ItemPostCommentComponent,
     public crmService: CRMTeamService) {
   }
@@ -157,6 +159,11 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
     const addActive = {...item, ...model};
     addActive["status"] = this.enumActivityStatus.sending;
     this.activityDataFacade.messageReplyCommentServer(addActive);
+  }
+
+  onInformation(item: any) { // Chưa có dữ liệu DTO cụ thể (any)
+    console.log(item);
+    this.partnerService.onLoadPartnerFormPostComment.emit(item);
   }
 
   ngOnDestroy(): void {

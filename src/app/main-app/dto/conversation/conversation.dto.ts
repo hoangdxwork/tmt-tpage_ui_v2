@@ -85,3 +85,12 @@ export interface ConversationOrderBillByPartnerResultDTO {
   data: ViewConversation_FastSaleOrdersDTO[];
   total: number;
 }
+
+export interface ConversationSummaryByTagDTO {
+  id: string;
+  name: string;
+  icon: string;
+  color_class: string;
+  color_code: string;
+  count: number;
+}

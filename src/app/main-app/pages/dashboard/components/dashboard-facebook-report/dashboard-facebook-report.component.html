@@ -4,41 +4,41 @@
         <div class="flex flex-row items-center">
             <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị:</span>
             <tds-select valueField="name" textField="name" [ngModel]="currentFilter" [border]="false"
-                [data]="filterList" size="md" class="tds-dashboard-filter w-[120px] truncate ..."
+                [data]="filterList" size="md" class="tds-dashboard-filter w-[120px] truncate ..." [valuePrimitive]="false"
                 (ngModelChange)="onChangeFilter($event)" classIcon="tdsi-arrow-down-fill">
             </tds-select>
         </div>
     </div>
-    <div *ngIf="!emptyData;else emptyTmp">
+    <div>
         <div class="flex flex-col items-center">
             <div class="flex flex-row items-center justify-center w-full divide-x py-4">
                 <div class="flex flex-col items-center justify-center w-full">
                     <img src="assets/images/dashboard/like-icon.svg">
                     <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng lượt thích</span>
-                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData[0])}}</span>
+                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(dataSummaryPost?.TotalLike || 0)}}</span>
                 </div>
                 <div class="flex flex-col items-center justify-center w-full">
                     <img src="assets/images/dashboard/comment-icon.svg">
                     <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng bình luận</span>
-                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData[1])}}</span>
+                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(dataSummaryPost?.TotalComment || 0)}}</span>
                 </div>
                 <div class="flex flex-col items-center justify-center w-full">
                     <img src="assets/images/dashboard/chat-icon.svg">
                     <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng tin nhắn</span>
-                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData[2])}}</span>
+                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(dataSummaryPost?.TotalMessage || 0)}}</span>
                 </div>
                 <div class="flex flex-col items-center justify-center w-full">
                     <img src="assets/images/dashboard/note-icon.svg">
                     <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng bài viết</span>
-                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData[3])}}</span>
+                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(dataSummaryPost?.TotalPost || 0)}}</span>
                 </div>
                 <div class="flex flex-col items-center justify-center w-full">
                     <img src="assets/images/dashboard/conversation-icon.svg">
                     <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Hội thoại</span>
-                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(labelData[4])}}</span>
+                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(dataSummaryPost?.TotalConversation || 0)}}</span>
                 </div>
             </div>
-            <div class="w-full pb-6">
+            <div class="w-full pb-6" *ngIf="!emptyData;else emptyTmp">
                 <div echarts [options]="fbReportOption" [size]="['auto',446]"></div>
             </div>
         </div>

@@ -1,8 +1,12 @@
 import { formatNumber } from '@angular/common';
 import { Color } from 'echarts';
 import { TDSChartOptions, TDSBarChartComponent, TDSBarChartDataSeries } from 'tds-report';
-import { TDSSafeAny, vi_VN } from 'tmt-tang-ui';
+import { TDSSafeAny, vi_VN, TDSHelperArray } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
+import { InputSummaryPostDTO, InputSummaryTimelineDTO, MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO, SummaryFilterDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
+import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
+import { SummaryFacade } from 'src/app/main-app/services/facades/summary.facede';
+import { format } from 'date-fns';
 
 @Component({
   selector: 'app-dashboard-facebook-report',
@@ -10,7 +14,6 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./dashboard-facebook-report.component.scss']
 })
 export class DashboardFacebookReportComponent implements OnInit {
-  //#region variable
   fbReportOption:TDSSafeAny;
   chartOption = TDSChartOptions();
   labelData:TDSSafeAny[] = [];
@@ -18,42 +21,88 @@ export class DashboardFacebookReportComponent implements OnInit {
   seriesData:TDSSafeAny[] = [];
   colors:Color[] = [];
 
-  filterList= [
-    {id:1, name:'Tuần này'},
-    {id:2, name:'Tháng này'}
-  ]
-  currentFilter = this.filterList[0].name;
   emptyData = false;
-  //#endregion
 
-  constructor() { }
+  filterList: SummaryFilterDTO[] = [];
+  currentFilter!: SummaryFilterDTO;
+
+  dataSummaryPost!: MDBSummaryByPostDTO;
+  dataCommentAndMessage: MDBTotalCommentMessageFbDTO[] = [];
+
+  constructor(
+    private summaryFacade: SummaryFacade,
+    private reportFacebookService: ReportFacebookService
+  ) { }
 
   ngOnInit(): void {
-    this.loadData();
+    this.loadFilter();
+
+    this.loadSummary();
+    this.loadCommentAndMessage();
   }
 
-  loadData(){
-    this.labelData = [60000,60000,60000,60000,60000];
+  loadFilter() {
+    this.filterList = this.summaryFacade.getFilter();
+    this.currentFilter = this.filterList[0];
+  }
 
-    this.axisData = ['06/06','07/06','08/06','09/06','10/06','11/06','12/06'];
-    this.seriesData = [
-      {
-        name:'Tin nhắn',
-        data:[1500,2510,2400,1100,1500,2000,900]
-      },
-      {
-        name:'Bình luận',
-        data:[1900,1200,1600,2100,900,1500,1800]
+  loadSummary() {
+    let model = {} as InputSummaryPostDTO;
+    model.PageId = undefined;
+    model.DateStart = this.currentFilter.startDate;
+    model.DateEnd = this.currentFilter.endDate;
+
+    this.reportFacebookService.getSummaryPost(model).subscribe(res => {
+      this.dataSummaryPost = res;
+    });
+  }
+
+  loadCommentAndMessage() {
+    let model = {} as InputSummaryTimelineDTO;
+    model.PageId = undefined;
+    model.DateStart = this.currentFilter.startDate;
+    model.DateEnd = this.currentFilter.endDate;
+
+    this.reportFacebookService.getCommentAndMessage(model).subscribe(res => {
+      this.dataCommentAndMessage = res;
+
+      if(TDSHelperArray.hasListValue(res)) {
+        let newArr: any[] = [];
+
+        res.forEach((a: any) => {
+          let find = newArr.find(x => x.Date == a.Date);
+          if(!find) {
+            newArr.push(a);
+          }
+        });
+
+        this.handlerAxisData(newArr);
+        this.handlerSeriesData(newArr);
+        this.loadDataChart();
       }
-    ];
+      else {
+        this.emptyData = true;
+      }
+    }, error => this.emptyData = true);
+  }
+
+  handlerAxisData(data: MDBTotalCommentMessageFbDTO[]) {
+    this.axisData = data.map(value => format(new Date(value.Date), "dd/MM"));
+  }
+
+  handlerSeriesData(data: MDBTotalCommentMessageFbDTO[]) {
+    let arrMessage = data.map(x => x.TotalMessage);
+    let arrComment = data.map(x => x.TotalComment);
+
+    this.seriesData = [{name: 'Tin nhắn', data: arrMessage}, { name: 'Bình luận', data: arrComment }];
+  }
+
+  loadDataChart(){
+    this.labelData = [60000,60000,60000,60000,60000];
     this.colors = ['#28A745','#1A6DE3','#F59E0B','#F33240'];
 
-    if(this.labelData.length < 5 || this.axisData.length == 0 || this.seriesData.length == 0){
-      this.emptyData = true;
-    }
-
     let chart:TDSBarChartComponent ={
-      color:this.colors,
+      color: this.colors,
       legend:{
         show:true,
         itemHeight:16,
@@ -162,11 +211,14 @@ export class DashboardFacebookReportComponent implements OnInit {
     return list;
   }
 
-  formatValue(value:number){
+  formatValue(value:number | undefined){
+    if(!value) return 0;
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   }
 
   onChangeFilter(data:any){
     this.currentFilter = data;
+    this.loadSummary();
+    this.loadCommentAndMessage();
   }
 }

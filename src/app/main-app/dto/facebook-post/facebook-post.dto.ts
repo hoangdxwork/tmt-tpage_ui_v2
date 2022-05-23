@@ -1,3 +1,6 @@
+import { PartnerDTO } from "../partner/partner.dto";
+import { SaleOnline_OrderDTO } from "../saleonlineorder/sale-online-order.dto";
+
 export interface Data {
   height: number;
   is_silhouette: boolean;
@@ -149,4 +152,11 @@ export interface FacebookPostDTO {
   PreviousPage?: any;
   HasPreviousPage: boolean;
   HasNextPage: boolean;
+}
+
+export interface CheckFacebookIdDTO {
+  orders: SaleOnline_OrderDTO[];
+  customers: PartnerDTO[];
+  success: boolean;
+  uid?: any;
 }

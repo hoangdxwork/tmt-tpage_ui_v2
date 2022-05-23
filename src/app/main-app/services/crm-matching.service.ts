@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
+import { ConversationSummaryByTagDTO } from '../dto/conversation/conversation.dto';
 import { InputReasonCannelOrderDTO, MDBFacebookMappingNoteDTO, MDBPhoneReportDTO } from '../dto/partner/partner.dto';
 import { ArrayHelper } from '../shared/helper/array.helper';
 import { BaseSevice } from './base.service';
@@ -121,6 +122,15 @@ export class CRMMatchingService extends BaseSevice {
       method: TApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  getSummaryByTags(pageId: string, start: string, end: string): Observable<ConversationSummaryByTagDTO[]> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/summarybytags?PageId=${pageId}&Start=${start}&End=${end}`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<ConversationSummaryByTagDTO[]>(api, null);
   }
 
   private setQuery(query?: any) {

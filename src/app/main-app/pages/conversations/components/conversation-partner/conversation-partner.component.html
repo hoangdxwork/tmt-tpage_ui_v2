@@ -1,14 +1,14 @@
-<div *ngIf="data?.id">
+<div>
   <form [formGroup]="_form" novalidate>
     <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-y-auto tds-custom-scroll flex-col flex">
       <div class="bg-white px-6 py-4">
         <div class="flex gap-6">
-          <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="data.psid" [token]="team?.Facebook_PageToken">
+          <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="formData?.Facebook_ASUserId" [token]="team?.Facebook_PageToken">
           </tpage-avatar-facebook>
           <div class="flex flex-col gap-2">
             <div class="flex gap-4 items-center" style="min-height: 34px;">
               <div class="text-heading-4 font-sans font-semibold text-neutral-1-900">
-                  {{_form.controls['Name'].value}}
+                  {{ formData?.Facebook_UserName || formData?.Name}}
               </div>
               <button type="button" tds-button color="secondary" (click)="onEditPartner()" *ngIf="!isEditPartner">
                 <span class="flex items-center ">
@@ -69,7 +69,7 @@
         </div>
         <div class="pt-4 flex gap-2 pb-4" *ngIf="!isEditPartner">
           <tds-button-group>
-            <button tds-dropdown color="secondary" trigger="click" [tdsDropdownMenu]="menuRevenue"
+            <button type="button" tds-dropdown color="secondary" trigger="click" [tdsDropdownMenu]="menuRevenue"
               class="rounded-full border border-neutral-2-100 border-solid bg-white py-1.5 px-4">
               <span class="flex items-center text-body-2 font-semibold text-neutral-1-500 cursor-pointer">
                 Tổng doanh số: <span class="pl-2 text-primary-1">{{objRevenue?.RevenueTotal || 0 | number: '1.0-3'}}đ</span><i
@@ -78,13 +78,13 @@
             </button>
             <tds-dropdown-menu #menuRevenue="tdsDropdownMenu">
               <div class="w-full">
-                  <div tds-dropdown-item>Doanh số đầu kỳ:{{objRevenue?.RevenueBegan || 0 | number: '1.0-3'}}đ</div>
+                  <div tds-dropdown-item>Doanh số đầu kỳ: {{objRevenue?.RevenueBegan || 0 | number: '1.0-3'}}đ</div>
                   <div tds-dropdown-item>Doanh số: {{objRevenue?.Revenue || 0 | number: '1.0-3'}}đ</div>
                   <div tds-dropdown-item>Tổng doanh số: {{objRevenue?.RevenueTotal || 0 | number: '1.0-3'}}đ</div>
               </div>
             </tds-dropdown-menu>
           </tds-button-group>
-          <button class="border border-neutral-2-100 border-solid px-4 rounded-full" (click)="showModalBlockPhone()">
+          <button type="button" class="border border-neutral-2-100 border-solid px-4 rounded-full" (click)="showModalBlockPhone()">
             <span class="flex items-center text-body-2 font-semibold font-sans text-neutral-1-900">
               <i class="tdsi-block-fill text-lg mr-2 text-neutral-1-400"></i> Chặn SĐT
             </span>

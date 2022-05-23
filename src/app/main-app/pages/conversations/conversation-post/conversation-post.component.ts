@@ -9,6 +9,7 @@ import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
+import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService } from 'tmt-tang-ui';
 
@@ -55,6 +56,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   @ViewChild('innerText') innerText!: ElementRef;
 
+  currentOrderTab: number = 0;
+  isDisableTab: boolean = true;
+
   constructor(private facebookPostService: FacebookPostService,
     private conversationPostFacade: ConversationPostFacade,
     private facebookGraphService: FacebookGraphService,
@@ -62,7 +66,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private message: TDSMessageService,
     public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
-    public router: Router) {
+    private partnerService: PartnerService,
+    public router: Router
+  ) {
       super(crmService, activatedRoute, router);
   }
 
@@ -110,6 +116,15 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           this.listBadge[post_id]["count"] = (this.listBadge[post_id]["count"] || 0) + 1;
         }
     });
+  }
+
+  loadPartnerByPostComment() {
+    this.partnerService.onLoadPartnerFormPostComment
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        this.currentOrderTab = 1;
+        this.isDisableTab = false;
+      });
   }
 
   public setType(item: any, eventType: string): void {

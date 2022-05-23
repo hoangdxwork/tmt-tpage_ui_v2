@@ -58,6 +58,7 @@ import { PostCommentGroupComponent } from './components/post-filter/post-comment
 import { PostCommentFilterComponent } from './components/post-filter/post-comment-filter.component';
 import { ExcelExportService } from '../../services/excel-export.service';
 import { ManagePostCommentComponent } from './components/post-filter/manage-post-comment.component';
+import { PostOrderComponent } from './components/post-order/post-order.component';
 import { ConfigPostReleaseComponent } from './components/config-post/config-post-release.component';
 import { AutoReplyConfigComponent } from './components/config-post/auto-reply-config.component';
 import { ConversationAllFilterComponent } from './components/conversation-all-filter/conversation-all-filter.component';
@@ -116,9 +117,10 @@ const SERVICES = [
     PostCommentGroupComponent,
     PostCommentFilterComponent,
     ManagePostCommentComponent,
+    PostOrderComponent,
     ConfigPostReleaseComponent,
-        AutoReplyConfigComponent,
-        ConversationAllFilterComponent
+    AutoReplyConfigComponent,
+    ConversationAllFilterComponent
   ],
   imports: [
     CommonModule,

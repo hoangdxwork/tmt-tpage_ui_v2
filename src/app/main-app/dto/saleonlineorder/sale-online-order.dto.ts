@@ -120,22 +120,22 @@ export interface SaleOnline_Order_FacebookCommentDTO {
 }
 
 export interface SaleOnline_Order_DetailDTO {
-  id: string;
-  quantity: number;
-  price: number;
-  productId?: number;
-  productName: string;
-  productNameGet: string;
-  productCode: string;
-  uomId?: number;
-  uomName: string;
-  note: string;
-  dactor?: number;
-  orderId: string;
+  Id: string;
+  Quantity: number;
+  Price: number;
+  ProductId?: number;
+  ProductName: string;
+  ProductNameGet: string;
+  ProductCode: string;
+  UOMId?: number;
+  UOMName: string;
+  Note: string;
+  Dactor?: number;
+  OrderId: string;
 
   // Thứ tự ưu tiên, thứ tự <= 0 => hiển thị trạng thái hết hàng lúc người dùng cập nhật giỏ hàng
-  priority: number;
-  imageUrl: string;
+  Priority: number;
+  ImageUrl: string;
 }
 
 export interface SaleOnlineDeliveryInfoDTO {

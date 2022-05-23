@@ -73,16 +73,20 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private modalService: TDSModalService,
     private crmMatchingService: CRMMatchingService,
     private saleOnline_OrderService: SaleOnline_OrderService,
-    public router: Router) {
+    private router: Router) {
   }
 
   ngOnInit(): void  {
     this.createForm();
+    this.loadPartnerStatus();
+
+    this.loadPartnerByOrder();
+    this.loadPartnerByPostComment();
 
     if(this.data?.id) {
         this.loadData(this.data);
     }
-    this.loadPartnerStatus();
+
   }
 
   createForm(){
@@ -103,38 +107,68 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     });
   }
 
-  loadData(data: ConversationMatchingItem) {
-    if(data?.page_id && data?.psid) {
-      this.loadNotes(data?.page_id, data?.psid);
-    }
-
-    if(data?.partner && (data?.partner_id || data?.partner?.id)) {
-      let id = data?.partner_id || data?.partner?.id;
-      this.loadPartnerRevenue(id);
-      this.loadBill(this.data.partner_id || this.data.partner.id);
-    }
-
-    this.partner = data?.partner;
-    //TODO: checkconversation để đẩy dữ liệu sang tab đơn hàng vs tab khách hàng
-    let page_id = data?.page_id;
-    let psid = data?.psid;
-    this.partnerService.checkConversation(page_id, psid)
+  loadPartnerByOrder() {
+    this.partnerService.onLoadPartnerFromTabOrder
       .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        if(res?.psid && this.data?.psid && res.psid === this.data.psid) {
+          this.loadData(res);
+        }
+      });
+  }
+
+  loadPartnerByPostComment() {
+    this.partnerService.onLoadPartnerFormPostComment
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        let psid = res?.from?.id;
+        let pageId = this.team.Facebook_PageId;
+        this.loadDataPartner(pageId, psid);
+      });
+  }
+
+  loadDataPartner(pageId: string, psid: string, partnerId?: number) {
+    if(!TDSHelperString.hasValueString(pageId) || !TDSHelperString.hasValueString(psid)) {
+      this.message.error(Message.ErrorOccurred);
+      return;
+    }
+
+    this.partnerService.checkConversation(pageId, psid)
       .subscribe((res: CheckConversationDTO) => {
         if(res?.Data && res?.Success) {
+          res.Data.Name = res.Data.Name || res.Data.Facebook_UserName;
 
-          res.Data.Name = res.Data.Name || data.name || res.Data.Facebook_UserName;
-          res.Data.Facebook_ASUserId = res.Data.Facebook_ASUserId || this.data.psid;
-          res.Data.Phone = res.Data.Phone || this.data.phone;
-          res.Data.Street = res.Data.Street || this.data.address;
+          if(this.data) { // Cập nhật theo partner mapping
+            res.Data.Name = res.Data.Name || this.data.name || res.Data.Facebook_UserName;
+            res.Data.Facebook_ASUserId = res.Data.Facebook_ASUserId || this.data.psid;
+            res.Data.Phone = res.Data.Phone || this.data.phone;
+            res.Data.Street = res.Data.Street || this.data.address;
+          }
+
           this.formData = res.Data;
           this.updateForm(res.Data);
 
+          partnerId = partnerId || res.Data?.Id;
+          if(partnerId) {
+            this.loadPartnerRevenue(partnerId);
+            this.loadBill(partnerId);
+          }
+
+          this.loadNotes(pageId, psid);
           this.partnerService.onLoadOrderFromTabPartner.emit(res.Data);
+        }
+        else {
+          this.message.error(Message.ErrorOccurred);
         }
       }, error => {
         this.message.error('Check conversation đã xảy ra lỗi!');
       });
+  }
+
+  loadData(data: ConversationMatchingItem) {
+    let psid = data?.psid;
+    let pageId = data?.page_id;
+    this.loadDataPartner(pageId, psid);
   }
 
   loadPartnerStatus() {
@@ -172,6 +206,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       this._form.patchValue(data);
       this._form.controls['FacebookASIds'].setValue(data.Facebook_ASUserId);
     }
+    else {
+      this._form.patchValue(data);
+      this._form.controls['FacebookASIds'].setValue(data.Facebook_ASUserId);
+    }
   }
 
   addNote() {
@@ -181,16 +219,16 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     }
 
     let model = {} as MDBFacebookMappingNoteDTO;
-    model.message = this.innerNote,
-    model.psid = this.data?.psid,
-    model.page_id = this.data?.page_id
+    model.message = this.innerNote;
+    model.psid = this.formData.Facebook_ASUserId;
+    model.page_id = this.team?.Facebook_PageId;
 
     // TODO: Thêm loading
-    this.crmMatchingService.addNote(this.data?.psid, model)
+    this.crmMatchingService.addNote(model.psid, model)
       .subscribe(res => {
         this.innerNote = '';
         this.message.success(Message.Partner.AddNoteSuccess);
-        this.loadNotes(this.data?.page_id, this.data?.psid);
+        this.loadNotes(model.page_id, model.psid);
       }, error => {
         this.message.error(`${error?.error?.message}` || JSON.stringify(error));
       });
@@ -261,7 +299,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   showModalBlockPhone() {
-    let phone = this.data?.phone;
+    let phone = this.formData?.Phone;
 
     const modal = this.modalService.create({
       title: '',
@@ -282,7 +320,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   showModalListBlock() {
-    let phone = this.data?.phone;
+    let phone = this.formData?.Phone;
     let currentTeam = this.crmTeamService.getCurrentTeam();
     let phoneReport = this._form.value?.PhoneReport;
 
@@ -293,9 +331,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       size: 'lg',
       componentParams: {
         phone: phone,
-        psid: this.data?.psid,
+        psid: this.formData?.Facebook_ASUserId,
         accessToken: currentTeam?.Facebook_PageToken,
-        facebookName: this.data?.name,
+        facebookName: this.formData?.Facebook_UserName,
         isReport: phoneReport
       }
     });
@@ -352,7 +390,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       .subscribe(res => {
         this.message.success(Message.Partner.UpdateStatus);
         this.isEditPartner = false;
-        this.loadData(this.data);
+        this.loadDataPartner(this.team?.Facebook_PageId, this.formData?.Facebook_ASUserId);
       }, error => {
         this.message.error(`${error?.error?.message}` || JSON.stringify(error));
       });

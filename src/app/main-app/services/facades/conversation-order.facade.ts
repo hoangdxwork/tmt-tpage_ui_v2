@@ -3,7 +3,7 @@ import { Observable, Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { TAuthService, TCommonService, UserInitDTO } from "src/app/lib";
 import { TDSHelperObject, TDSHelperString, TDSMessageService } from "tmt-tang-ui";
-import { CheckConversationData, ConversationLastOrder, ConversationLastOrderDetailDTO } from "../../dto/partner/check-conversation.dto";
+import { CheckConversationData, ConversationLastOrderDetailDTO } from "../../dto/partner/check-conversation.dto";
 import { BaseSevice } from "../base.service";
 import { ConversationService } from "../conversation/conversation.service";
 import { CRMTeamService } from "../crm-team.service";
@@ -13,6 +13,8 @@ import { SignalRConnectionService } from "../signalR/signalR-connection.service"
 import { ConversationOrderForm, ConversationOrderProductDefaultDTO } from '../../dto/coversation-order/conversation-order.dto';
 import { GeneralConfigsFacade } from "./general-config.facade";
 import { ProductDTO } from "../../dto/product/product.dto";
+import { FacebookCommentService } from "../facebook-comment.service";
+import { SaleOnline_OrderDTO, SaleOnline_Order_DetailDTO } from "../../dto/saleonlineorder/sale-online-order.dto";
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +35,8 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
   public onLastOrderCheckCvs$: EventEmitter<ConversationOrderForm> = new EventEmitter<ConversationOrderForm>();
   public onConversationOrder$: EventEmitter<any> = new EventEmitter<any>();
 
+  public onOrderCheckPost$: EventEmitter<ConversationOrderForm> = new EventEmitter<ConversationOrderForm>();
+
   constructor(private apiService: TCommonService,
       private message: TDSMessageService,
       private crmTeamService: CRMTeamService,
@@ -40,6 +44,7 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
       private partnerService: PartnerService,
       private sgRConnectionService: SignalRConnectionService,
       private generalConfigsFacade: GeneralConfigsFacade,
+      private facebookCommentService: FacebookCommentService,
       private auth: TAuthService,
       private sharedService: SharedService) {
         super(apiService);
@@ -62,6 +67,7 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
 
   initialize() {
     this.changePartner();
+    this.changePartnerByComment();
   }
 
   loadSaleConfig() {
@@ -120,8 +126,8 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((res: CheckConversationData) => {
         // Partner có đơn hàng gần nhất LastOrder
-        if(res && res.LastOrder) {
-          this.order = this.loadLastOrder(res);
+        if(res?.LastOrder) {
+          this.order = this.loadLastOrder(res.LastOrder, res);
         }
         //Không có đơn hàng gần nhất thì sử dụng order form mặc định
         else {
@@ -132,8 +138,27 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
       });
   }
 
-  loadLastOrder(data: CheckConversationData): any {
-    const order = data.LastOrder;
+  changePartnerByComment() {
+    this.partnerService.onLoadPartnerFormPostComment
+      .subscribe((res: any) => {
+        let psid = res?.from?.id;
+        let postId = res?.object?.id;
+        let teamId = this.crmTeamService.getCurrentTeam();
+
+        this.facebookCommentService.getCustomersByFacebookId(psid, postId, teamId?.Id).subscribe(res => {
+          console.log(res);
+          if(res?.orders) {
+            this.order = this.loadLastOrder(res.orders[0]);
+          }
+
+          this.onOrderCheckPost$.emit(this.order);
+        });
+
+      });
+  }
+
+  loadLastOrder(data: SaleOnline_OrderDTO, conversationData?: CheckConversationData): any {
+    const order = conversationData?.LastOrder || data;
     const model = {} as ConversationOrderForm;
 
     model.Id = order.Id;
@@ -141,7 +166,7 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
     model.LiveCampaignId = order.LiveCampaignId;
     model.Facebook_UserId = order.Facebook_UserId;
     model.Facebook_ASUserId = order.Facebook_ASUserId;
-    model.Facebook_UserName = TDSHelperString.hasValueString(order.Facebook_UserName) ? order.Facebook_UserName : data.Facebook_UserName;
+    model.Facebook_UserName = TDSHelperString.hasValueString(order.Facebook_UserName) ? order.Facebook_UserName : (conversationData?.Facebook_UserName || '');
     model.Facebook_CommentId = order.Facebook_CommentId;
     model.Facebook_PostId = order.Facebook_PostId;
     model.PartnerId = order.PartnerId || order.Partner?.Id;
@@ -168,12 +193,13 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
       model.District = order.DistrictCode ? { Code: order.DistrictCode, Name: order.DistrictName } : undefined;
       model.Ward = order.WardCode ? { Code: order.WardCode, Name: order.WardName } : undefined;
     }
+
     // Nếu đơn hàng không cho địa chỉ thì gán địa chỉ partner
-    else if(data.Street) {
-      model.Street = data.Street;
-      model.City = data.City;
-      model.District = data.District;
-      model.Ward = data.Ward;
+    else if(conversationData?.Street) {
+      model.Street = conversationData.Street;
+      model.City = conversationData.City;
+      model.District = conversationData.District;
+      model.Ward = conversationData.Ward;
     }
 
     model.User = order.User ? { Id: order.User?.Id, Name: order.User?.Name } : undefined;
@@ -181,7 +207,7 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
     return model;
   }
 
-  updateDetail(details: ConversationLastOrderDetailDTO[]) {
+  updateDetail(details: SaleOnline_Order_DetailDTO[]) {
     let formDetails = [] as ConversationOrderProductDefaultDTO[];
 
     formDetails = details.map(detail => {
