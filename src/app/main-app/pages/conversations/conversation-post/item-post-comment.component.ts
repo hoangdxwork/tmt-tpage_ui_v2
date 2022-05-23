@@ -61,8 +61,6 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
       this.onSetCommentOrders();
       this.loadData();
     }
-    // Gán dictionary
-    this.partners$ = this.conversationPostFacade.getDicPartnerSimplest$();
     // TODO: filter & sort bài viết
     this.onFilterSortPost();
   }
@@ -98,9 +96,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   initialize(){
     this.team = this.crmService.getCurrentTeam() as any;
-    if(TDSHelperObject.hasValue(this.team)) {
-        this.conversationPostFacade.setTeam(this.team);
-    }
+    // this.conversationPostFacade.setPartnerSimplest(this.team);
 
     this.facebookComment$ = this.sgRConnectionService._onFacebookEvent$.subscribe((res: any) => {
       if(res?.data?.last_activity?.comment_obj &&  res?.data?.last_activity?.type == 2) {

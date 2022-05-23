@@ -7,7 +7,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TDSButtonModule, TDSCheckBoxModule, TDSFormFieldModule, TDSInputModule, TDSMessageModule, TDSSpinnerModule } from 'tmt-tang-ui';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 
-
 @NgModule({
   declarations: [
     LoginComponent,
@@ -23,7 +22,6 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
     TDSButtonModule,
     TDSCheckBoxModule,
     TDSMessageModule,
-    TDSSpinnerModule,
     TDSSpinnerModule,
   ]
 })

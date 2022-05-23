@@ -1,4 +1,4 @@
-<div class="w-full h-full pb-4 px-4">
+<div class="w-full h-full pb-4 px-4" >
     <div class="flex flex-col w-full h-full bg-white rounded-xl">
         <div class="flex flex-row items-center justify-between px-4 py-3">
             <div class="flex flex-row items-center">
@@ -16,7 +16,7 @@
             <tds-filter-status [(ngModel)]='selected' (selectChange)="onSelectChange($event)" class="h-full tds-tab-config">
                 <tds-filter-status-item name="Tất cả" [disabled]="isLoading" [value]="0" class="h-full">
                 </tds-filter-status-item>
-                <tds-filter-status-item name="Kênh kết nối ({{pageName ? pageName : 'Chưa chọn kênh'}})" [disabled]="isLoading" [value]="1">
+                <tds-filter-status-item name="Kênh kết nối ({{team ? team.Facebook_PageName : 'Chưa chọn kênh'}})" [disabled]="isLoading" [value]="1">
                 </tds-filter-status-item>
             </tds-filter-status>
             <div class="absolute top-0 right-4 pt-3 w-1/3 flex flex-row items-center justify-end">
@@ -52,24 +52,23 @@
                 </tds-button-group>
                 <tds-form-field class="w-2/3">
                     <input tdsInput class="text-neutral-1-900" [(ngModel)]="filterObj.searchText" #innerText
-                        placeholder="Tìm kiếm sản phẩm" autocomplete="off" />
+                      placeholder="Tìm kiếm sản phẩm" autocomplete="off" [ngModelOptions]="{standalone: true}"/>
                     <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
                 </tds-form-field>
             </div>
         </div>
         <div class="w-full h-full pb-2.5">
-            <tds-table #rowSelectionTable 
-            [listData]="listOfDataTableProduct" 
-            [showSizeChanger]="true" 
-            [frontPagination]="false"
-            [loading]="isLoading"
-            [scroll]="{y:'auto'}" 
-            [pageSize]="pageSize" 
-            [pageIndex]="pageIndex" 
-            [total]="count" 
-            (clickRefresh)="refreshData()"
-            (queryParams)="onQueryParamsChange($event)"
-            (currentPageDataChange)="onCurrentPageDataChange($event)">
+            <tds-table #rowSelectionTable
+              [listData]="lstOfData"
+              [showSizeChanger]="true"
+              [frontPagination]="false"
+              [loading]="isLoading"
+              [scroll]="{y:'auto'}"
+              [pageSize]="pageSize"
+              [pageIndex]="pageIndex"
+              [total]="count"
+              (clickRefresh)="refreshData()"
+              (queryParams)="onQueryParamsChange($event)">
                 <thead>
                     <tr class="text-neutral-1-900 text-body-2 font-semibold">
                         <th width="44px" class="hover:bg-neutral-3-100" [checked]="checked"
@@ -99,8 +98,7 @@
                             <td>{{ data.ListPrice | number: '1.0-3' }}</td>
                             <td>
                                 <span class="flex items-center">
-                                    <i
-                                        class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
+                                    <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
                                 </span>
                             </td>
                             <td>

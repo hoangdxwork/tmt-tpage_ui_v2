@@ -38,7 +38,7 @@ export class OdataQuickReplyService extends BaseSevice {
         filters: []
     }
 
-    if (TDSHelperString.hasValueString(filterObj.searchText)) {
+    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
         let key = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim())
         dataFilter.filters.push( {
             filters: [

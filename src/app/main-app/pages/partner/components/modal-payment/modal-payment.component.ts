@@ -1,15 +1,15 @@
-import { AccountDTO } from './../../../../dto/account/account.dto';
-import { da } from 'date-fns/locale';
-import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
-import { TDSHelperObject, TDSMessageService, TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
-import { AccountRegisterPaymentService } from 'src/app/main-app/services/account-register-payment.service';
-import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { takeUntil } from 'rxjs/operators';
+import { Journal } from './../../../../dto/fastsaleorder/register-payment';
+import { PrinterService } from '../../../../services/printer.service';
+import { TDSSafeAny } from 'tmt-tang-ui';
+import { OdataAccountRegisterPayment, AccountRegisterPayment } from '../../../../dto/fastsaleorder/account-register-payment';
+import { AccountRegisterPaymentService } from '../../../../services/account-register-payment.service';
+import { RegisterPayment } from '../../../../dto/fastsaleorder/register-payment';
+import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { Subject } from 'rxjs';
-import { ODataRegisterPartnerDTO } from 'src/app/main-app/dto/partner/partner-register-payment.dto';
+import { TDSMessageService } from 'tmt-tang-ui';
+import { TDSModalRef } from 'tmt-tang-ui';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-modal-payment',
@@ -17,108 +17,130 @@ import { ODataRegisterPartnerDTO } from 'src/app/main-app/dto/partner/partner-re
   styleUrls: ['./modal-payment.component.scss']
 })
 export class ModalPaymentComponent implements OnInit, OnDestroy {
+  @Input() dataModel!:RegisterPayment;
 
-  @Input() data!: ODataRegisterPartnerDTO;
-
-  isProcessing: boolean = false;
-  lstAcJournal: any = [];
-  acJournal: any = {};
-
-  modelForm: any = {
-    acJournal: {},
-    amount: 0,
-    paymentDate: new Date(),
-    communication: null
-  }
+  lstAcJournal:AccountRegisterPayment[] = [];
   private destroy$ = new Subject();
+  isSubmit = false;
 
-  constructor(private modal: TDSModalRef,
+  _form!: FormGroup;
+
+  constructor(
+    private modal: TDSModalRef,
+    private fb: FormBuilder,
     private message: TDSMessageService,
-    private printerService: PrinterService,
-    private registerPaymentService: AccountRegisterPaymentService,
-    private fb: FormBuilder) {
-  }
+    private accRegisterPayment: AccountRegisterPaymentService,
+    private printerService: PrinterService) { 
+      this.createForm();
+    }
 
   ngOnInit(): void {
-    if(this.data) {
-      this.registerPaymentService.getWithCompanyPayment().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-          this.lstAcJournal = res.value;
-          this.modelForm.acJournal = res.value[0];
-      });
-
-      this.modelForm.amount = this.data.Amount;
+    if(this.dataModel){
+      this.updateForm(this.dataModel);
+      this.loadAccountPayment();
     }
   }
 
-  onChangeAcJournal(event: any) {
-    let exits =  this.lstAcJournal.filter((x: any) => x.Id === event)[0];
-    if(exits) {
-      this.modelForm.acJournal = exits;
+  createForm(){
+    this._form = this.fb.group({
+      Amount: [null,Validators.required],
+      Communication: [null,Validators.required],
+      Journal: [null,[Validators.required]],
+      Name: [{value:null,disabled:true}],
+      PaymentDate: [null,Validators.required]
+    });
+  }
+
+  updateForm(data:RegisterPayment){
+    if(data.PaymentDate){
+      data.PaymentDate = new Date(data.PaymentDate);
     }
+    this._form.controls['Name'].setValue(data.Partner?.DisplayName || data.Partner?.Name);
+    this._form.patchValue(data);
   }
 
-  calendarChange(event: any) {
-    this.modelForm.paymentDate = event;
-  }
-
-  changeAmount(event: any) {
-    this.modelForm.amount = event as number;
-  }
-
-  cancel() {
-    this.modal.destroy(null);
-  }
-
-  onSave(type: string) {
-    let that = this;
-    if (this.isProcessing) {
-      return
-    }
-    if(!TDSHelperObject.hasValue(this.modelForm.acJournal)) {
-        this.message.error('Vui lòng chọn phương thức thanh toán!')
-    }
-
-    delete this.data['@odata.context'];
-
-    this.data.Amount = this.modelForm.amount;
-    this.data.PaymentDate = this.modelForm.paymentDate;
-    this.data.Communication = this.modelForm.communication;
-    this.data.JournalId = this.modelForm.acJournal.Id;
-    this.data.Journal = this.modelForm.acJournal;
-    this.data.PaymentMethodId = this.modelForm.acJournal.Id;
-
-    this.registerPaymentService.insert(this.data).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      let model = {
-        id: res.Id
+  loadAccountPayment(){
+    this.accRegisterPayment.getWithCompanyPayment().pipe(takeUntil(this.destroy$)).subscribe(
+      (res:OdataAccountRegisterPayment)=>{
+        this.lstAcJournal = res.value;
+      },
+      (err)=>{
+        this.message.error('Không tải được dữ liệu phương thức thanh toán')
       }
+    )
+  }
 
-      this.registerPaymentService.createPayment(model).subscribe((x: any) => {
-        let obs: TDSSafeAny;
+  onchangeJournal(data:Journal){
+    this.dataModel.Journal = data;
+    this.accRegisterPayment.onchangeJournal({model: this.dataModel}).pipe(takeUntil(this.destroy$)).subscribe(
+      (res)=>{
+        this.dataModel.PaymentMethodId = res.PaymentMethodId;
+      },
+      (err)=>{
+        this.dataModel.PaymentMethodId = 0;
+        this.message.error(err.error.message ?? 'Lỗi tải phương thức thanh toán');
+      }
+    )
+  }
 
-        if(type == 'print') {
-            obs =  this.printerService.printUrl(`/AccountPayment/PrintThuChiThuan?id=${x.value}`)
-        }
-        if (TDSHelperObject.hasValue(obs)) {
-            obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-              that.printerService.printHtml(res);
-              that.isProcessing = false;
-            })
-        }
-        this.message.success('Thanh toán thành công!');
-        this.modal.destroy(null);
-      }, error => {
-        this.modal.destroy(null);
-        // this.message.error(`${error?.error.message}`)
-      })
-
-    }, error => {
-      this.modal.destroy(null);
-      this.message.error('Thanh toán đã xảy ra lỗi!');
-    })
+  prepareModel(){
+    let formModel = this._form.value as RegisterPayment;
+    
+    this.dataModel.Amount = formModel.Amount ?? this.dataModel.Amount;
+    this.dataModel.Communication = formModel.Communication ?? this.dataModel.Communication;
+    this.dataModel.JournalId = formModel.Journal.Id ?? this.dataModel.JournalId;
+    this.dataModel.PaymentDate = formModel.PaymentDate ?? this.dataModel.PaymentDate;
+    
+    return this.dataModel
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  checkValidate(){
+    if(this._form.touched)
+      return !this._form.valid
+    return true
+  }
+
+  createPayment(data:TDSSafeAny, type:string){
+    this.accRegisterPayment.createPayment({id: data.Id}).pipe(takeUntil(this.destroy$)).subscribe(
+      (res)=>{
+        this.message.success('Xác nhận thanh toán thành công');
+        this.modal.destroy(res);
+        if(type === 'saveAndPrint'){
+          this.printerService.printUrl(`/AccountPayment/PrintThuChiThuan?id=${res.value}`);
+        }
+        this.isSubmit = false;
+      },
+      (err)=>{
+        this.message.error(err.error.message ?? 'Xác nhận thanh toán thất bại');
+        this.isSubmit = false;
+      }
+    );
+  }
+
+  onSubmit(type:string) {
+    let model = this.prepareModel();
+    this.isSubmit = true;
+    this.accRegisterPayment.insert(model).pipe(takeUntil(this.destroy$)).subscribe(
+      (res)=>{
+        this.createPayment(res,type);
+      },
+      (err)=>{
+        this.message.error('Dữ liệu nhập vào bị lỗi');
+        this.isSubmit = false;
+      }
+    )
+  }
+
+  cancel() {
+      this.modal.destroy(null);
+  }
+
+  save(type:string) {
+      this.onSubmit(type);
   }
 }

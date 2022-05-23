@@ -85,20 +85,20 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
     let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
     this.cacheApi.getItem(keyCache).subscribe((obs: TDSSafeAny) => {
 
-        if(TDSHelperString.hasValueString(obs)) {
-            let cache = JSON.parse(obs['value']) as TDSSafeAny;
-            let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
+      if(TDSHelperString.hasValueString(obs)) {
+          let cache = JSON.parse(obs['value']) as TDSSafeAny;
+          let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
 
-            this.indexDbVersion = cacheDB.cacheVersion;
-            this.indexDbProductCount = cacheDB.cacheCount;
-            this.indexDbStorage = cacheDB.cacheDbStorage;
-        }
+          this.indexDbVersion = cacheDB.cacheVersion;
+          this.indexDbProductCount = cacheDB.cacheCount;
+          this.indexDbStorage = cacheDB.cacheDbStorage;
+      }
 
-        if(this.indexDbProductCount == -1 && this.indexDbVersion == 0) {
-           this.loadProductIndexDB(this.indexDbProductCount, this.indexDbVersion);
-        } else {
-            this.loadDataTable();
-        }
+      if(this.indexDbProductCount == -1 && this.indexDbVersion == 0) {
+          this.loadProductIndexDB(this.indexDbProductCount, this.indexDbVersion);
+      } else {
+          this.loadDataTable();
+      }
     })
   }
 
@@ -108,6 +108,10 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
       .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => {this.isLoading = false }))
       .subscribe((data: ProductPouchDBDTO) => {
+
+        if(data.IsDelete === true) {
+          (this.indexDbStorage as any) = [];
+        }
 
         if(TDSHelperArray.hasListValue(data.Datas)) {
           if(productCount == -1 && version == 0) {

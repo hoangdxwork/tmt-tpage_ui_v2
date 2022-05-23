@@ -158,5 +158,14 @@ export class ConversationFacebookState implements OnInit{
     }
 
   }
+  public getByQuery(query: any) {
+    let exist = _get(this.dataSource, `${query}`);
+    return exist;
+  }
+
+  public setConversationQuery(query: any, data: any) {
+    this.dataSource[query] = data;
+    return this.dataSource[query];
+  }
 
 }

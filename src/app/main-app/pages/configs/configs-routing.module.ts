@@ -1,6 +1,5 @@
-import { ConfigEditProductComponent } from './config-edit-product/config-edit-product.component';
+
 import { ConfigAddProductComponent } from './config-add-product/config-add-product.component';
-import { ConfigAddProductVariantComponent } from './config-add-product-variant/config-add-product-variant.component';
 import { ConfigDecentralizePageComponent } from './config-users/config-decentralize-page/config-decentralize-page.component';
 import { ConfigUsersDivideTaskComponent } from './config-users/config-users-divide-task/config-users-divide-task.component';
 import { ConfigPrintBillsComponent } from './config-print-bills/config-print-bills.component';
@@ -11,7 +10,6 @@ import { ConfigUsersOperationComponent } from './config-users/config-users-opera
 import { ConfigPromotionsComponent } from './config-promotions/config-promotions.component';
 import { ConfigActivitiesComponent } from './config-activities/config-activities.component';
 import { ConfigProductsComponent } from './config-products/config-products.component';
-import { ConfigProductVariantComponent } from './config-product-variant/config-product-variant.component';
 import { ConfigSmsMessagesComponent } from './config-sms-messages/config-sms-messages.component';
 import { ConfigAutoChatComponent } from './config-auto-chat/config-auto-chat.component';
 import { ConfigOverviewComponent } from './config-overview/config-overview.component';
@@ -21,6 +19,8 @@ import { ConfigComponent } from './config/config.component';
 import { ConfigConversationTagsComponent } from './config-conversation-tags/config-conversation-tags.component';
 import { ConfigAddPromotionComponent } from './config-promotions/components/config-add-promotion/config-add-promotion.component';
 import { ConfigEditPromotionComponent } from './config-promotions/components/config-edit-promotion/config-edit-promotion.component';
+import { ListProductVariantComponent } from './product-variant/list-product-variant.component';
+import { CreateProductVariantComponent } from './product-variant/create/create-product-variant.component';
 
 const routes: Routes = [
   {
@@ -54,12 +54,12 @@ const routes: Routes = [
       },
       {
         path:'product-variant',
-        component: ConfigProductVariantComponent,
+        component: ListProductVariantComponent,
 
       },
       {
         path:'product-variant/create',
-        component: ConfigAddProductVariantComponent
+        component: CreateProductVariantComponent
       },
       {
         path:'products',

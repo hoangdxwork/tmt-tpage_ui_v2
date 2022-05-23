@@ -341,6 +341,21 @@ export class FastSaleOrderService extends BaseSevice {
 
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
+  
+  getOrderLineData(key: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})/OrderLines?$expand=Product,ProductUOM,Account,SaleLine,User`,
+        method: TApiMethodType.get
+    }
+    return this.apiService.getData<ODataPaymentJsonDTO>(api, null);
+  }
 
+  updateShipStatus(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.table}/UpdateShipStatus`,
+      method: TApiMethodType.post,
+    }
 
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
 }

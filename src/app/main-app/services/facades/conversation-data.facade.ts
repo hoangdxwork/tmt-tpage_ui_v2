@@ -524,6 +524,35 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     });
     return datas;
   }
+  makeDataSourceWithQuery(pageId: any, type: any, query: any): Observable<any> {
+    this.dataSource$ = this.getConversationWithQuery(pageId, type, query);
+    return this.dataSource$;
+  }
+
+  getConversationWithQuery(pageId: string, type: string, queryObj: any): Observable<any> {
+    var query = Object.keys(queryObj).map(key => {
+      return key + '=' + queryObj[key]
+    }).join('&');
+
+    let exist = this.cvsFbState.getByQuery(query);
+
+    if (exist) {
+      return Observable.create((observer: any) => {
+        observer.next(exist);
+        observer.complete();
+      })
+    } else {
+      return this.service.get(queryObj).pipe(map((res: any) => {
+        let create = this.createConversation(res, queryObj, type);
+        let result = this.cvsFbState.setConversationQuery(query, create);
+        return result;
+      }), shareReplay());
+    }
+  }
+
+  setExtrasQuery(pageId: any, type: any, data: any) {
+    return this.service.setExtrasQuery(pageId, type, data);
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();

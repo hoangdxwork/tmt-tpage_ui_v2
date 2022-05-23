@@ -1,6 +1,6 @@
+import { ModalPaymentComponent } from './../../partner/components/modal-payment/modal-payment.component';
 import { TDSModalService, TDSHelperObject, TDSStatusType, TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
-import { ModalPaymentComponent } from '../../partner/components/modal-payment/modal-payment.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
@@ -12,8 +12,7 @@ import { PaymentJsonDTO } from 'src/app/main-app/dto/bill/payment-json.dto';
 
 @Component({
   selector: 'app-detail-bill',
-  templateUrl: './detail-bill.component.html',
-  styleUrls: ['./detail-bill.component.scss']
+  templateUrl: './detail-bill.component.html'
 })
 export class DetailBillComponent implements OnInit, OnDestroy{
 
@@ -77,6 +76,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
         this.dataModel = res;
         this.isLoading = false;
+        // console.log(this.dataModel)
 
         for (var item of this.dataModel.OrderLines) {
             this.productUOMQtyTotal = this.productUOMQtyTotal + item.ProductUOMQty;
@@ -181,7 +181,8 @@ export class DetailBillComponent implements OnInit, OnDestroy{
               that.isProcessing = false;
               that.loadData();
           }, error => {
-              that.message.error(`${error?.error.message}`);
+            let err = error.error.message.split('Error:')?.[1];
+              that.message.error(err ?? 'Gửi vận đơn thất bại');
               that.isProcessing = false;
           })
       },
@@ -192,6 +193,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   }
 
   actionCancel() {
+    console.log(this.isProcessing)
     if (this.isProcessing) {
       return
     }
@@ -212,7 +214,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
               that.isProcessing = false;
               this.loadData();
           }, error => {
-              that.message.error(`${error?.error.message}`);
+              that.message.error(error.error.message ?? 'Xác nhận hủy hóa đơn thất bại');
               that.isProcessing = false;
           })
       },
@@ -225,9 +227,6 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   onClickButton(e: MouseEvent) {
   }
 
-  comfirmAndPrint() {
-  }
-
   showModalRegisterPayment() {
     let model = { ids: [parseInt(this.id)] };
     this.fastSaleOrderService.getRegisterPayment(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
@@ -237,10 +236,10 @@ export class DetailBillComponent implements OnInit, OnDestroy{
             content: ModalPaymentComponent,
             size: "lg",
             viewContainerRef: this.viewContainerRef,
-            componentParams:{ data : res }
+            componentParams:{ dataModel : res }
         });
     }, error => {
-        this.message.error(`${error.error.message}`);
+        this.message.error(error.error.message ?? 'Không tải được dữ liệu');
     })
   }
 
@@ -276,7 +275,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
               that.isProcessing = false;
               this.loadData();
           }, error => {
-              that.message.error(`${error?.error.message}`);
+              that.message.error(error.error.message ?? 'Tạo trả hàng thất bại');
               that.isProcessing = false;
           })
       },
@@ -322,18 +321,20 @@ export class DetailBillComponent implements OnInit, OnDestroy{
               }
 
               if (TDSHelperObject.hasValue(obs)) {
-                that.isProcessing = true;
                 obs.pipe(takeUntil(that.destroy$)).subscribe((res: TDSSafeAny) => {
                   that.printerService.printHtml(res);
                   that.isProcessing = false;
                   this.isLoading = false;
                 })
+              }else{
+                this.isProcessing = false;
+                this.isLoading = false;
               }
-
               this.loadData();
               this.loadInventoryIds();
           }
         }, error => {
+            this.isProcessing = false;
             this.isLoading = false;
             that.message.error(`${error.error.message || 'Xác nhận bán hàng thất bại'}`);
         })
@@ -369,6 +370,10 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   onEdit(){
     this.router.navigateByUrl(`bill/edit/${this.id}`);
+  }
+
+  back(){
+    history.back();
   }
 
   ngOnDestroy(): void {

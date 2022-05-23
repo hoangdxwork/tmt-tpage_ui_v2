@@ -1,3 +1,5 @@
+import { RestSMSService } from './../../services/sms.service';
+import { QuickReplyService } from './../../services/quick-reply.service';
 import { DetailBillComponent } from './detail-bill/detail-bill.component';
 import { AddBillComponent } from './add-bill/add-bill.component';
 import { NgModule } from '@angular/core';
@@ -5,7 +7,7 @@ import { CommonModule } from '@angular/common';
 import { BillRoutingModule } from './bill-routing.module';
 import { BillComponent } from './bill/bill.component';
 import { MainSharedModule } from '../../shared/shared.module';
-import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSContextMenuService, TDSFilterStatusModule, TDSSpinnerModule, TDSPageHeaderModule, TDSBreadCrumbModule, TDSCollapseModule, TDSStepsModule } from 'tmt-tang-ui';
+import { TDSButtonModule, TDSTabsModule, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSFilterStatusModule, TDSSpinnerModule, TDSPageHeaderModule, TDSBreadCrumbModule, TDSCollapseModule, TDSStepsModule } from 'tmt-tang-ui';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
 import { OdataFastSaleOrderService } from '../../services/mock-odata/odata-fastsaleorder.service';
@@ -27,6 +29,7 @@ import { CommonService } from '../../services/common.service';
 import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { PartnerService } from '../../services/partner.service';
 import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.service';
+import { BillExpandComponent } from './components/bill-expand/bill-expand.component';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -38,7 +41,9 @@ const SERVICES = [
   AccountRegisterPaymentService,
   CommonService,
   PartnerService,
-  FastSaleOrderLineService
+  FastSaleOrderLineService,
+  QuickReplyService,
+  RestSMSService
 ]
 
 @NgModule({
@@ -53,6 +58,7 @@ const SERVICES = [
     AddBillComponent,
     ModalSearchPartnerComponent,
     DetailBillComponent,
+    BillExpandComponent
   ],
 
   imports: [
@@ -92,7 +98,7 @@ const SERVICES = [
     TDSTabsModule,
     TDSCollapseModule,
     TDSStepsModule,
-    TDSButtonSpitModule,
+    TDSButtonSpitModule
   ],
   providers: [
    ...SERVICES,

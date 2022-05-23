@@ -1,3 +1,4 @@
+import { TDSSafeAny } from 'tmt-tang-ui';
 import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { ConfigConversationTagsCreateDataModalComponent } from './../../pages/configs/components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
 import { ModalListBillComponent } from './../../pages/conversations/components/modal-list-bill/modal-list-bill.component';
@@ -11,8 +12,8 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TD
 import { ConversationMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
-import { finalize, takeUntil, debounceTime, filter } from 'rxjs/operators';
-import { MakeActivityItem, MakeActivityItemWebHook, MakeActivityMessagesDTO } from '../../dto/conversation/make-activity.dto';
+import { finalize, takeUntil } from 'rxjs/operators';
+import { MakeActivityItemWebHook, MakeActivityMessagesDTO } from '../../dto/conversation/make-activity.dto';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ActivityMatchingService } from '../../services/conversation/activity-matching.service';
 import { Router } from '@angular/router';
@@ -26,6 +27,7 @@ import { DraftMessageService } from '../../services/conversation/draft-message.s
 import { CRMTagService } from '../../services/crm-tag.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { HttpResponse } from '@microsoft/signalr';
+import { CRMTeamService } from '../../services/crm-team.service';
 
 @Component({
   selector: 'shared-tds-conversations',
@@ -54,6 +56,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   messageModel: any = null;
   tags: any[] = [];
   postPictureError:any[] = [];
+  listOfTag: TDSSafeAny[] = [];
+  keyFilter: string = '';
 
   constructor(private modalService: TDSModalService,
     private message: TDSMessageService,
@@ -68,6 +72,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     private conversationEventFacade: ConversationEventFacade,
     private sgRConnectionService: SignalRConnectionService,
     private router: Router,
+    private crmTeamService: CRMTeamService,
     private resizeObserver: TDSResizeObserver,
     private viewContainerRef: ViewContainerRef) {
   }
@@ -281,7 +286,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
       if(!TDSHelperArray.hasListValue(this.tags)) {
         this.crmTagService.dataActive$.subscribe((res: any) => {
             this.tags = res;
+            this.listOfTag = this.tags;
             this.sortTagsByParent();
+            this.searchTag();
         })
       } else {
           this.sortTagsByParent();
@@ -387,7 +394,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
           this.messageResponse(res, model);
       }, error => {
         this.message.error("Like thất bại");
-        console.log(error);
       });
   }
 
@@ -573,6 +579,17 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     this.data.tags = this.data.tags || [];
     this.data.tags = this.data.tags.filter(x => x.id != tag.Id);
     delete this.data.keyTags[tag.Id];
+  }
+
+  searchTag(){
+    let data = this.tags;
+    let key = this.keyFilter;
+    if(TDSHelperString.hasValueString(key)) {
+      key = TDSHelperString.stripSpecialChars(key.trim());
+    }
+    data = data.filter((x) =>
+      (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
+    this.listOfTag = data
   }
 
   onSendSucceed(data: any) {

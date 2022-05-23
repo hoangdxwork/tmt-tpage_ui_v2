@@ -117,17 +117,17 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
 
   addLike(event: any) {
     let model = {
-        TeamId: this.team.Id,
-        CommentId: this.data.id,
-        Content: this.data.comment?.user_likes ? 'hủy thích' : 'thích',
-        Message: this.data.message_formatted || this.data.message,
-        UserName: this.data.comment?.from?.name,
-        fbid: this.data.comment?.from?.id
+      TeamId: this.team.Id,
+      CommentId: this.data.id,
+      Content: this.data.comment?.user_likes ? 'hủy thích' : 'thích',
+      Message: this.data.message_formatted || this.data.message,
+      UserName: this.data.comment?.from?.name,
+      fbid: this.data.comment?.from?.id
     }
 
     this.activityMatchingService.addLikeComment(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.tdsMessage.success('Thao tác thành công!');
-        this.data.comment.user_likes = !this.data.comment.user_likes;
+      this.tdsMessage.success('Thao tác thành công!');
+      this.data.comment.user_likes = !this.data.comment.user_likes;
     }, error => {
       this.tdsMessage.error('Đã xảy ra lỗi');
     });
@@ -233,7 +233,6 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   }
 
   replyComment(event :any) {
-
   }
 
   ngOnDestroy(): void {

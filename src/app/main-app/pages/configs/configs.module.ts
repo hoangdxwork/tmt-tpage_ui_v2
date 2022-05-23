@@ -17,7 +17,7 @@ import { ConfigOverviewComponent } from './config-overview/config-overview.compo
 import { ConfigAutoChatComponent } from './config-auto-chat/config-auto-chat.component';
 import { ConfigConversationTagsComponent } from './config-conversation-tags/config-conversation-tags.component';
 import { ConfigSmsMessagesComponent } from './config-sms-messages/config-sms-messages.component';
-import { ConfigProductVariantComponent } from './config-product-variant/config-product-variant.component';
+
 import { ConfigProductsComponent } from './config-products/config-products.component';
 import { ConfigActivitiesComponent } from './config-activities/config-activities.component';
 import { ConfigPromotionsComponent } from './config-promotions/config-promotions.component';
@@ -30,7 +30,6 @@ import { ConfigPrintBillsComponent } from './config-print-bills/config-print-bil
 import { ConfigConversationTagsEditDataModalComponent } from './components/config-conversation-tags-edit-data-modal/config-conversation-tags-edit-data-modal.component';
 import { AutoChatAddDataModalComponent } from './components/auto-chat-add-data-modal/auto-chat-add-data-modal.component';
 import { SMSMessagesAddServiceModalComponent } from './components/sms-messages-add-service-modal/sms-messages-add-service-modal.component';
-import { ProductVariantEditTableModalComponent } from './components/product-variant-edit-table-modal/product-variant-edit-table-modal.component';
 import { OdataCRMTagService } from '../../services/mock-odata/odata-crmtag.service';
 import { QuickReplyService } from '../../services/quick-reply.service';
 import { OdataQuickReplyService } from '../../services/mock-odata/odata-quick-reply.service';
@@ -48,7 +47,6 @@ import { TDSAvatarModule, TDSBadgeModule, TDSBreadCrumbModule, TDSButtonMenuModu
 import { ConfigAddVariantProductModalComponent } from './components/config-add-variant-product-modal/config-add-variant-product-modal.component';
 import { ConfigAddUOMModalComponent } from './components/config-add-UOM-modal/config-add-UOM-modal.component';
 import { ConfigAddOriginCountryModalComponent } from './components/config-add-origin-country-modal/config-add-origin-country-modal.component';
-import { ConfigAddProductVariantComponent } from './config-add-product-variant/config-add-product-variant.component';
 import { ConfigAddProductComponent } from './config-add-product/config-add-product.component';
 import { OdataTPosLoggingService } from '../../services/mock-odata/odata-tpos-logging.service';
 import { OdataSaleCouponProgramService } from '../../services/mock-odata/odata-sale-coupon-program.service';
@@ -73,6 +71,11 @@ import { ConfigPromotionComboComponent } from './config-promotions/components/co
 import { ConfigPromotionAllComponent } from './config-promotions/components/config-promotion-all/config-promotion-all.component';
 import { ConfigEditPromotionComponent } from './config-promotions/components/config-edit-promotion/config-edit-promotion.component';
 import { ConfigAddPromotionComponent } from './config-promotions/components/config-add-promotion/config-add-promotion.component';
+import { ListProductVariantComponent } from './product-variant/list-product-variant.component';
+import { EditProductVariantComponent } from './product-variant/edit/edit-product-variant.component';
+import { CreateProductVariantComponent } from './product-variant/create/create-product-variant.component';
+import { ProductIndexDBService } from '../../services/product-indexDB.service';
+import { THelperCacheService } from 'src/app/lib';
 
 const SERVICES = [
     TDSModalService,
@@ -95,7 +98,9 @@ const SERVICES = [
     ExcelExportService,
     ApplicationRoleService,
     UserRestHandler,
-    CompanyService
+    CompanyService,
+    ProductIndexDBService,
+    THelperCacheService
 ]
 
 @NgModule({
@@ -105,7 +110,7 @@ const SERVICES = [
     ConfigAutoChatComponent,
     ConfigConversationTagsComponent,
     ConfigSmsMessagesComponent,
-    ConfigProductVariantComponent,
+    ListProductVariantComponent,
     ConfigProductsComponent,
     ConfigActivitiesComponent,
     ConfigPromotionsComponent,
@@ -118,7 +123,7 @@ const SERVICES = [
     ConfigConversationTagsEditDataModalComponent,
     AutoChatAddDataModalComponent,
     SMSMessagesAddServiceModalComponent,
-    ProductVariantEditTableModalComponent,
+    EditProductVariantComponent,
     ModalUpdateUserComponent,
     ModalChangePasswordUserComponent,
     ModalAddUserComponent,
@@ -128,7 +133,7 @@ const SERVICES = [
     ConfigAddVariantProductModalComponent,
     ConfigAddUOMModalComponent,
     ConfigAddOriginCountryModalComponent,
-    ConfigAddProductVariantComponent,
+    CreateProductVariantComponent,
     ConfigAddProductComponent,
     ConfigDecentralizePageComponent,
     ConfigAutoReplyComponent,

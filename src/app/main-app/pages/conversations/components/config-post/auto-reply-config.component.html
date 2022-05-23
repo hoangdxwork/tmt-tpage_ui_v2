@@ -1,0 +1,75 @@
+<div *ngIf="dataModel">
+  <tds-spin [spinning]="isLoading">
+    <form [formGroup]="_form">
+      <div class="w-full flex">
+        <tds-switch size="md" class="mt-2" formControlName="IsEnableAutoReplyComment"></tds-switch>
+        <label for="IsEnableAutoReplyComment">Phản hồi bình luận tự động?</label>
+      </div>
+      <div *ngIf="_form.controls['IsEnableAutoReplyComment'].value">
+        <div class="ml-4">
+          <div class="w-full flex">
+            <tds-switch size="md" class="mt-2" formControlName="IsEnableAutoReplyMultiple"></tds-switch>
+            <label for="IsEnableAutoReplyMultiple">Cho phép phản hồi nhiều lần</label>
+            <div *ngIf="_form.controls['IsEnableAutoReplyMultiple'].value">
+              Số lần tối đa phản hồi/bài viết/người dùng
+              <input class="form-control" formControlName="MaxForAutoReplyMultiple" type="number" min="1" max="10" />
+            </div>
+          </div>
+          <div class="w-full flex">
+            <tds-switch size="md" class="mt-2" formControlName="IsEnableAutoReplyAllComment"></tds-switch>
+            <label for="IsEnableAutoReplyAllComment">Phản hồi tất cả bình luận</label>
+          </div>
+          <div *ngIf="!_form['controls'].IsEnableAutoReplyAllComment.value">
+            <div class="w-full flex">
+              <tds-switch size="md" class="mt-2" formControlName="IsEnableAutoReplyCommentWithPhone"></tds-switch>
+              <label for="IsEnableAutoReplyCommentWithPhone">Phản hồi bình luận có điện thoại</label>
+            </div>
+            <div class="w-full flex">
+              <tds-switch size="md" class="mt-2" formControlName="IsEnableAutoReplyCommentWithEmail"></tds-switch>
+              <label for="IsEnableAutoReplyCommentWithEmail">Phản hồi bình luận có địa chỉ email</label>
+            </div>
+            <div class="w-full flex">
+              <tds-form-field>
+                <tds-label> Phản hồi nếu bình luận chứa nội dung bất kỳ </tds-label>
+                <tds-select placeholder='select item' mode="multiple" mode="tags" [(ngModel)]="selectedWord1"
+                  [ngModelOptions]="{standalone: true}" [data]="selectedWord1">
+                </tds-select>
+              </tds-form-field>
+            </div>
+          </div>
+          <div class="w-full flex" *ngIf="_form['controls'].IsEnableAutoReplyAllComment.value">
+            <tds-form-field>
+              <tds-label>Không phản hồi nếu bình luận chứa nội dung</tds-label>
+              <tds-select placeholder='select item' mode="multiple" mode="tags" [(ngModel)]="selectedWord2"
+                [ngModelOptions]="{standalone: true}" [data]="selectedWord2">
+              </tds-select>
+            </tds-form-field>
+          </div>
+        </div>
+        <div class="w-full flex">
+          <label>Nội dung phản hồi tự động</label>
+          <tds-form-field class="w-full">
+            <textarea tdsInput placeholder="Nội dung phản hồi tự động..."
+              formControlName="ContentForAutoReplyWithComment"></textarea>
+          </tds-form-field>
+        </div>
+        <div class="w-full flex">
+          <tds-switch size="md" formControlName="IsEnableAutoReplyCommentInMessage"></tds-switch>
+          <label for="IsEnableAutoReplyMultiple">Phản hồi với tin nhắn?</label>
+        </div>
+        <div class="w-full flex" *ngIf="_form['controls'].IsEnableAutoReplyCommentInMessage.value">
+          <label>Nội dung phản hồi với tin nhắn</label>
+          <tds-form-field class="w-full">
+            <textarea tdsInput placeholder="Nội dung phản hồi với tin nhắn..."
+              formControlName="ContentForAutoReplyWithMessage"></textarea>
+          </tds-form-field>
+        </div>
+      </div>
+      <hr>
+      <div>
+        <button tds-button size="md" color="error" (click)="onClose()">Đóng</button>
+        <button tds-button size="md" color="primary" (click)="onSave()">Lưu</button>
+      </div>
+    </form>
+  </tds-spin>
+</div>

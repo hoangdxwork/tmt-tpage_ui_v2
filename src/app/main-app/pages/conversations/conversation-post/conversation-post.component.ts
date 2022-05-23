@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { map, mergeMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
+import { BehaviorSubject, fromEvent, Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, finalize, map, mergeMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { FacebookPostDTO, FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
@@ -19,10 +19,10 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService } f
   styleUrls: ['./conversation-post.component.scss']
 })
 
-export class ConversationPostComponent extends TpageBaseComponent implements OnInit, OnDestroy {
+export class ConversationPostComponent extends TpageBaseComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  public items: any[] = [
-    { type: '', text: 'Tất cả bài viêt' },
+  public lstType: any[] = [
+    { type: '', text: 'Tất cả bài viết' },
     { type: 'added_video', text: 'Video' },
     { type: 'added_photos', text: 'Hình ảnh' },
     { type: 'mobile_status_update', text: 'Status' },
@@ -30,7 +30,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     { type: 'shared_story', text: 'Story đã chia sẻ' }
   ];
 
-  lstTimes: any[] = [
+  lstTime: any[] = [
     { type: 'created_time desc', text: 'Ngày tạo mới nhất' },
     { type: 'created_time asc', text: 'Ngày tạo cũ nhất' },
     { type: 'updated_time desc', text: 'Ngày update mới nhất' },
@@ -39,7 +39,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   type = 'All';
   eventType: string = 'TYPE';
-  currentType: any = this.items[0];
+  currentType: any = this.lstType[0];
   postId: any;
   postChilds = [];
   listBadge: any = {};
@@ -52,6 +52,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   data$!: Observable<FacebookPostItem[]>;
   currentPost!: FacebookPostItem | undefined;
   destroy$ = new Subject();
+  isLoading: boolean = false;
+
+  @ViewChild('innerText') innerText!: ElementRef;
 
   currentOrderTab: number = 0;
   isDisableTab: boolean = true;
@@ -70,6 +73,12 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   ngOnInit(): void {
+    // TODO: change team tds header
+    this.crmService.changeTeamFromLayout.pipe(takeUntil(this.destroy$)).subscribe((team) => {
+        this.onClickTeam(team);
+    })
+
+    // TODO: change team in component
     this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe(([team, params]: any) => {
       if (!TDSHelperObject.hasValue(team)) {
         return this.onRedirect();
@@ -95,8 +104,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         this.loadBadgeComments();
       }
     });
-
-    this.loadPartnerByPostComment();
   }
 
   //TODO: khi có comment mới vào bài viết
@@ -122,7 +129,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   public setType(item: any, eventType: string): void {
     this.eventType = eventType;
-    if (this.currentType.type !== item.type) {
+    if (this.currentType.type != item.type) {
       this.currentType = item;
       this.loadData();
     }
@@ -133,13 +140,15 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   loadData(){
+    this.isLoading = true;
     this.validateData();
     if(this.currentTeam?.Id) {
       const batchMap = this.offset.pipe(throttleTime(500),
         mergeMap((x: any) => this.getData(x, this.currentType.type, this.keyFilter)));
 
       if(batchMap){
-        this.data$ = batchMap.pipe(takeUntil(this.destroy$)).pipe(map((dict: any) => {
+        this.data$ = batchMap.pipe(takeUntil(this.destroy$))
+        .pipe(map((dict: any) => {
           let items = Object.values(dict);
           items.map((x: any) => {
             if (this.data.filter((f: any) => f.fbid === x.fbid).length === 0) {
@@ -156,6 +165,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 this.selectPost(this.data[0]);
             }
           }
+          this.isLoading = false;
           return this.data;
         }));
       }
@@ -254,6 +264,17 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       return true;
     }
     return false;
+  }
+
+  ngAfterViewInit() {
+    fromEvent(this.innerText?.nativeElement, 'keyup').pipe(
+      map((event: any) => { return event.target.value }),
+      debounceTime(750),
+      distinctUntilChanged())
+        .subscribe((text: string) => {
+          this.keyFilter = text;
+          this.loadData();
+      });
   }
 
   ngOnDestroy(): void {

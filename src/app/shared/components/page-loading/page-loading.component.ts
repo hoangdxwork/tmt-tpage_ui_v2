@@ -4,7 +4,6 @@ import { PageLoadingService } from '../../services/page-loading.service';
 @Component({
   selector: 'app-page-loading',
   templateUrl: './page-loading.component.html',
-  styleUrls: ['./page-loading.component.scss']
 })
 export class PageLoadingComponent implements OnInit {
   isLoading: boolean = false;

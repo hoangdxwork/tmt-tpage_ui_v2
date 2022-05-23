@@ -69,7 +69,6 @@ export class ProductService extends BaseSevice {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.AddProductOnFacebookPage`,
         method: TApiMethodType.post,
     }
-
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
@@ -91,7 +90,7 @@ export class ProductService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
-  getSetActive(data: string): Observable<any> {
+  setActive(data: any): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.SetActive`,
       method: TApiMethodType.post,
@@ -99,7 +98,7 @@ export class ProductService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  insertProduct(data: string): Observable<any>{
+  insertProduct(data: any): Observable<any>{
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
       method: TApiMethodType.post,
@@ -107,7 +106,7 @@ export class ProductService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  updateProduct(key: any,data: string): Observable<any>{
+  updateProduct(key: any, data: any): Observable<any>{
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
       method: TApiMethodType.put,

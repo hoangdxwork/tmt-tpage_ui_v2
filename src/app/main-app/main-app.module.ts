@@ -57,13 +57,6 @@ const SERVICES = [
     TDSUploadModule
   ],
   providers:[
-    //SignalRConnectionService,
-    // {
-    //     provide: APP_INITIALIZER,
-    //     useFactory: (signalrService: SignalRConnectionService) => () => signalrService.initiateSignalRConnection(),
-    //     deps: [SignalRConnectionService],
-    //     multi: true,
-    // }
     ...SERVICES,
   ]
 })
