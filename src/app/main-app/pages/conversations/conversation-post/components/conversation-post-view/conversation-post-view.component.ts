@@ -9,7 +9,7 @@ import { TDSHelperString, TDSMessageService, TDSModalService } from 'tmt-tang-ui
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { formatDate } from '@angular/common';
-import { ConfigPostReleaseComponent } from '../../../components/config-post/config-post-release.component';
+import { ConfigPostOutletComponent } from '../../../components/config-post/config-post-outlet.component';
 
 @Component({
   selector: 'conversation-post-view',
@@ -148,7 +148,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
     let date = formatDate(this.data.created_time, 'dd/MM/yyyy HH:mm', 'en-US')
     this.modalService.create({
       title: `Cấu hình bài viết - ${date}` ,
-      content: ConfigPostReleaseComponent,
+      content: ConfigPostOutletComponent,
       size: "xl",
       footer: null,
       viewContainerRef: this.viewContainerRef,

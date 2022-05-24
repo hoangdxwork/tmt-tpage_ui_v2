@@ -4,7 +4,10 @@
         <form [formGroup]="_form" novalidate>
             <div class="flex flex-col w-full">
                 <div class="mb-4">
-                  <upload-pictures-wall [data]="[_form.controls['ImageUrl'].value]" [isArray]="false" (onLoadImage)="onLoadImage($event)"></upload-pictures-wall>
+                  <upload-pictures-wall
+                    [isArray]="false" [data]="[_form.controls['ImageUrl'].value]"
+                    (onLoadImage)="onLoadImage($event)">
+                  </upload-pictures-wall>
                 </div>
                 <tds-form-field class="mb-4">
                     <tds-label>Tên sản phẩm:</tds-label>
@@ -48,7 +51,10 @@
     </tds-tab>
     <tds-tab title="Hình ảnh">
       <div class="w-full">
-          <!-- <upload-pictures-wall [data]="dataModel.Images" [isArray]="true"></upload-pictures-wall> -->
+        <upload-pictures-wall
+          [isArray]="true" [data]="_form.controls['Images'].value"
+          (onLoadImage)="onLoadImage($event)">
+        </upload-pictures-wall>
       </div>
     </tds-tab>
     </tds-tabset>

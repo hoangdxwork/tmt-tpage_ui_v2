@@ -54,7 +54,7 @@ import { ModalListBlockComponent } from './components/modal-list-block/modal-lis
 import { ExcelExportService } from '../../services/excel-export.service';
 import { ManagePostCommentComponent } from './components/post-filter/manage-post-comment.component';
 import { PostOrderComponent } from './components/post-order/post-order.component';
-import { ConfigPostReleaseComponent } from './components/config-post/config-post-release.component';
+import { ConfigPostOutletComponent } from './components/config-post/config-post-outlet.component';
 import { AutoReplyConfigComponent } from './components/config-post/auto-reply-config.component';
 import { ConversationAllFilterComponent } from './components/conversation-all-filter/conversation-all-filter.component';
 import { ConversationPostViewComponent } from './conversation-post/components/conversation-post-view/conversation-post-view.component';
@@ -64,6 +64,7 @@ import { PostCommentGroupComponent } from './components/post-filter/post-comment
 import { PostCommentFilterComponent } from './components/post-filter/post-comment-filter.component';
 import { ConversationOrderListComponent } from './components/conversation-order-list/conversation-order-list.component';
 import { OdataSaleOnline_OrderService } from '../../services/mock-odata/odata-saleonlineorder.service';
+import { AutoLabelConfigComponent } from './components/config-post/auto-label-config.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -121,11 +122,14 @@ const SERVICES = [
     PostCommentFilterComponent,
     ManagePostCommentComponent,
     PostOrderComponent,
-    ConfigPostReleaseComponent,
+    ConfigPostOutletComponent,
     AutoReplyConfigComponent,
     ConversationAllFilterComponent,
-    ConversationOrderListComponent
+    ConversationOrderListComponent,
+    AutoLabelConfigComponent,
+    ConversationAllFilterComponent
   ],
+
   imports: [
     CommonModule,
     ConversationsRoutingModule,

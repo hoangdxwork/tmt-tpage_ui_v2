@@ -19,12 +19,12 @@ const routes: Routes = [
   {
     path: 'post',
     component: ConversationPostComponent
-  },
-
+  }
 ];
 
 @NgModule({
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule]
 })
+
 export class ConversationsRoutingModule { }

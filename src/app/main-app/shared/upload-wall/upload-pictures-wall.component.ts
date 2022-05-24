@@ -1,10 +1,11 @@
 
 import { Component, Input, OnDestroy, OnInit, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { TDSHelperArray, TDSMessageService, TDSUploadFile } from 'tmt-tang-ui';
-import { takeUntil } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import { SharedService } from '../../services/shared.service';
-import { Subject } from 'rxjs';
-import { Message } from 'src/app/lib/consts/message.const';
+import { Observable, Subject } from 'rxjs';
+import { HttpResponse } from '@microsoft/signalr';
+import da from 'date-fns/esm/locale/da/index.js';
 
 const getBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
 new Promise((resolve, reject) => {
@@ -22,9 +23,8 @@ new Promise((resolve, reject) => {
 export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy {
 
     destroy$ = new Subject();
-
-    @Input() data!: any[];
-    @Input() isArray: boolean = false;
+    @Input() data: any[] = [];
+    @Input() isArray!: boolean;
     @Output() onLoadImage = new EventEmitter();
 
     fileList: TDSUploadFile[] = [];
@@ -35,72 +35,79 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
       private sharedService: SharedService) { }
 
     ngOnInit(): void {
+      this.fileList = [];
       if(TDSHelperArray.hasListValue(this.data)) {
+        let dataModel: any = [];
         this.data.map((x: any, i: number) => {
-          this.fileList.push({
+          dataModel.push({
             uid: `${i}`,
             name: x,
             status: 'done',
-            url: x
+            url: x,
+            size: undefined
           })
-        })
+        });
+        this.fileList = [...dataModel];
       }
     }
 
     handlePreview = async (file: TDSUploadFile) => {
       if (!file.url && !file.preview) {
-          file.preview = await getBase64(file.originFileObj!);
+        file.preview = await getBase64(file.originFileObj!);
       }
       this.previewImage = file.url || file.preview;
       this.previewVisible = true;
     };
 
-    handleUpload = (item: any) => {
+    handleUpload = (item: any): any => {
       const formData = new FormData();
       formData.append('files', item.file as any, item.file.name);
       formData.append('id', '0000000000000051');
 
-      return this.sharedService.saveImageV2(formData)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((res: any) => {
+      let dataModel = this.fileList as any[];
+      return this.sharedService.saveImageV2(formData).subscribe((res: any) => {
+        if(res){
+          let x = {
+            uid: res[0].eTag,
+            name: res[0].url,
+            status: 'done',
+            url: res[0].urlImageProxy,
+            size: res[0].size
+          } as any;
 
-          if(Message.Upload.Success) {
-            this.fileList.push({
-              uid: `${this.data.length + 1}`,
-              name: res[0].url,
-              status: 'done',
-              url: res[0].urlImageProxy
-            });
-          }
-
-          let datas: any[] = [];
-          this.fileList.map((a: any) => {
-            let model = {
-              MineType: [null],
-              Name: [null],
-              ResModel: ['product.product'],
-              Type: ['url'],
-              Url: [null]
-            }
-            datas.push(model);
-          });
-
-          this.onLoadImage.emit(datas);
+          dataModel.push({...x});
+          this.fileList = [...dataModel];
+          this.emitFile();
+        }
       }, error => {
-          let message = JSON.parse(error.Message);
-          this.msg.error(`${message.message}`);
+        let message = JSON.parse(error.Message);
+        this.msg.error(`${message.message}`);
       });
     }
 
-    handleDownload=(file: TDSUploadFile)=>{
-        window.open(file.response.url);
+    handleRemove = (file: TDSUploadFile):any => {
+      return new Observable(res => {
+        let items = this.fileList.filter(x => !(x.url === file.url));
+        this.fileList = items;
+        this.emitFile();
+        res.next();
+        res.complete();
+      })
+    }
+
+    emitFile(){
+      let data = {
+        isArray: this.isArray,
+        files: [...this.fileList]
+      } as any;
+      this.onLoadImage.emit(data);
+    }
+
+    handleDownload = (file: TDSUploadFile): any => {
+      window.open(file.response.url);
     }
 
     ngOnChanges(changes: SimpleChanges) {
-      // if(changes["data"] && !changes["data"].firstChange) {
-      //   (this.data as any) =  changes["data"].currentValue  as TDSUploadFile[];
-      //   this.fileList = this.data;debugger
-      // }
     }
 
     ngOnDestroy(){
