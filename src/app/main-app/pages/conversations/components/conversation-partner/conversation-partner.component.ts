@@ -81,7 +81,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.loadPartnerStatus();
 
     this.loadPartnerByOrder();
-    debugger;
     this.loadPartnerByPostComment();
 
     if(this.data?.id) {

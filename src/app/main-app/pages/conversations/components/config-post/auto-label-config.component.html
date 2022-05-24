@@ -1,0 +1,99 @@
+<form [formGroup]="_form">
+  <div class="row">
+    <div class="col-6">
+      <div>
+        <tds-switch size="md" class="mt-2" formControlName="AssignOnPhone"></tds-switch>
+        <label for="AssignOnPhone"> Tự động gắn thẻ vào hội thoại có chứa số điện thoại?</label>
+      </div>
+      <div *ngIf="_form.controls['AssignOnPhone'].value">
+        <tds-form-field>
+          <tds-select [data]="tags" placeholder='Chọn nhãn' valueField="Id" textField="Name"
+            formControlName="TagOnPhone" [allowClear]="true" disabledField="isActive" (ngModelChange)="changeTagOnPhone($event)">
+          </tds-select>
+        </tds-form-field>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <div>
+        <tds-switch size="md" class="mt-2" formControlName="AssignOnOrder"></tds-switch>
+        <label for="AssignOnPhone"> Gắn thẻ vào hội thoại sau khi tạo đơn hàng?</label>
+      </div>
+      <div *ngIf="_form.controls['AssignOnOrder'].value">
+        <tds-form-field>
+          <tds-select placeholder='Chọn nhãn'valueField="Id" textField="Name"
+            formControlName="TagOnOrder" [data]="tags"  [allowClear]="true">
+          </tds-select>
+        </tds-form-field>
+      </div>
+    </div>
+    <div class="col-6">
+      <div>
+        <tds-switch size="md" class="mt-2" formControlName="AssignOnBillDraft"></tds-switch>
+        <label for="AssignOnPhone">Tự động gắn nhãn vào hội thoại sau khi lưu nháp hóa đơn?</label>
+      </div>
+      <div *ngIf="_form.controls['AssignOnBillDraft'].value">
+        <tds-form-field>
+          <tds-select placeholder='Chọn nhãn'valueField="Id" textField="Name"
+            formControlName="TagOnBillDraft" [data]="tags"  [allowClear]="true">
+          </tds-select>
+        </tds-form-field>
+      </div>
+    </div>
+  </div>
+  <div class="row ">
+    <div class="col-6">
+      <div>
+        <tds-switch size="md" class="mt-2" formControlName="AssignOnBillPrint"></tds-switch>
+        <label for="AssignOnPhone">Gắn thẻ vào hội thoại sau khi tạo đơn hàng và in hóa đơn?</label>
+      </div>
+      <div *ngIf="_form.controls['AssignOnBillPrint'].value">
+        <tds-form-field>
+          <tds-select placeholder='Chọn nhãn'valueField="Id" textField="Name"
+            formControlName="TagOnBillPrint" [data]="tags"  [allowClear]="true">
+          </tds-select>
+        </tds-form-field>
+      </div>
+    </div>
+    <div class="col-6">
+      <div>
+        <tds-switch size="md" class="mt-2" formControlName="AssignOnBillPrintShip"></tds-switch>
+        <label for="AssignOnPhone">Gắn thẻ vào hội thoại sau khi tạo đơn hàng và in phiếu ship? </label>
+      </div>
+      <div *ngIf="_form.controls['AssignOnBillPrintShip'].value">
+        <tds-form-field>
+          <tds-select placeholder='Chọn nhãn' valueField="Id" textField="Name"
+            formControlName="TagOnBillPrintShip" [data]="tags"  [allowClear]="true">
+          </tds-select>
+        </tds-form-field>
+      </div>
+    </div>
+  </div>
+  <div class="row ">
+    <div class="col-12">
+      <div>
+        <tds-switch size="md" class="mt-2" formControlName="AssignOnPattern"></tds-switch>
+        <label for="AssignOnPhone">ự động gắn thẻ vào hội thoại có chứa từ khóa?</label>
+      </div>
+      <div formArrayName="TagOnPattern" *ngIf="_form.controls['AssignOnPattern'].value == true">
+        <div *ngFor="let item of getControls();let i = index" [formGroupName]="i">
+          <tds-form-field>
+            <tds-select placeholder='Chọn nhãn'valueField="Id" textField="Name"
+              formControlName="CrmTag" [data]="tags"  [allowClear]="true">
+            </tds-select>
+          </tds-form-field>
+          <tds-form-field>
+            <tds-select placeholder='Chọn từ khóa' mode="tags" mode="multiple"
+               formControlName="CrmKey"valueField="Id" textField="Name"
+              [data]="tags" [allowClear]="true">
+            </tds-select>
+          </tds-form-field>
+          <button tds-button size="md" color="error" (click)="deleteCRMKeyTag(i)">Xóa</button>
+        </div>
+        <button tds-button size="md" color="primary" (click)="addCRMKeyTag(null)">Thêm nhãn</button>
+      </div>
+    </div>
+  </div>
+  <button class="btn button-success button-nor" (click)="onSave()">Lưu cấu hình</button>
+</form>
