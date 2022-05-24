@@ -6,6 +6,7 @@ import { FacebookPostDTO, FacebookPostItem } from 'src/app/main-app/dto/facebook
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
+import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
@@ -67,6 +68,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
     private partnerService: PartnerService,
+    private conversationOrderFacade: ConversationOrderFacade,
     public router: Router
   ) {
       super(crmService, activatedRoute, router);
@@ -105,7 +107,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       }
     });
 
-    this.loadPartnerByPostComment();
+    this.onChangeTabEvent();
   }
 
   //TODO: khi có comment mới vào bài viết
@@ -120,16 +122,32 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     });
   }
 
-  loadPartnerByPostComment() {
-    this.partnerService.onLoadPartnerFormPostComment
+  onChangeTabEvent() {
+    this.partnerService.onLoadPartnerFromPostComment
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
-        this.currentOrderTab = 1;
-        this.isDisableTab = false;
+        this.changeTab(1, false);
+      });
+
+    this.conversationOrderFacade.onCreateOrderFromPostComment
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        this.changeTab(2, false);
+      });
+
+    this.conversationOrderFacade.onEditOrderFromPostComment
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        this.changeTab(2, false);
       });
   }
 
-  public setType(item: any, eventType: string): void {
+  changeTab(tabIndex: number, isDisable: boolean = true) {
+    this.currentOrderTab = tabIndex;
+    this.isDisableTab = isDisable;
+  }
+
+  setType(item: any, eventType: string) {
     this.eventType = eventType;
     if (this.currentType.type != item.type) {
       this.currentType = item;
@@ -200,19 +218,20 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   selectPost(item: FacebookPostItem): any {
     if(TDSHelperObject.hasValue(item)){
       this.currentPost = {...item};
-      this.facebookPostService.loadPost(item);
+      // this.facebookPostService.loadPost(item);
 
       //load danh sách bài viết con từ bài viết chính
       if(TDSHelperString.hasValueString(item.parent_id)) {
         this.facebookPostService.getByPostParent(this.currentTeam.Id, item.parent_id)
           .pipe(takeUntil(this.destroy$))
           .subscribe((res: any) => {
-
             if(res && TDSHelperArray.hasListValue(res.Items)) {
               this.postChilds = res.Items;
             }
         });
       }
+
+      this.changeTab(0, true);
       this.conversationPostFacade.onPostChanged$.emit(item);
 
       let uri = this.router.url.split("?")[0];

@@ -117,6 +117,20 @@ export interface SaleOnline_Order_FacebookCommentDTO {
   from: SaleOnline_Facebook_FromDTO;
   comments: Array<SaleOnline_Order_FacebookCommentDTO>;
   saleOnlineDeliveyInfo: SaleOnlineDeliveryInfoDTO;
+  attachment: SaleOnline_Order_FacebookCommentAttachmentDTO[];
+}
+
+export interface SaleOnline_Order_FacebookCommentAttachmentDTO
+{
+  payload: SaleOnline_Order_FacebookCommentPayloadDTO;
+  type: string;
+}
+
+export interface SaleOnline_Order_FacebookCommentPayloadDTO
+{
+  thumbnail: string;
+  id: string;
+  url: string;
 }
 
 export interface SaleOnline_Order_DetailDTO {

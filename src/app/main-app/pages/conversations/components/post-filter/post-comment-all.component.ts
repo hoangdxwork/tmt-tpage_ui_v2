@@ -14,6 +14,7 @@ import { ConversationDataFacade } from 'src/app/main-app/services/facades/conver
 import { CommentByPost } from 'src/app/main-app/dto/conversation/post/comment-post.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { ItemPostCommentComponent } from '../../conversation-post/components/item-post-comment/item-post-comment.component';
+import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 
 @Component({
   selector: 'post-comment-all',
@@ -37,6 +38,7 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
     private activityDataFacade: ActivityDataFacade,
     private conversationDataFacade: ConversationDataFacade,
     private conversationPostFacade: ConversationPostFacade,
+    private conversationOrderFacade: ConversationOrderFacade,
     private partnerService: PartnerService,
     @Host() @SkipSelf() @Optional() public itemPostCommentCmp: ItemPostCommentComponent,
     public crmService: CRMTeamService) {
@@ -163,7 +165,12 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
 
   onInformation(item: any) { // Chưa có dữ liệu DTO cụ thể (any)
     console.log(item);
-    this.partnerService.onLoadPartnerFormPostComment.emit(item);
+    this.partnerService.onLoadPartnerFromPostComment.emit(item);
+  }
+
+  onCreateOrder(item: any) { // Chưa có dữ liệu DTO cụ thể (any)
+    console.log(item);
+    this.conversationOrderFacade.onCreateOrderFromPostComment.emit(item);
   }
 
   ngOnDestroy(): void {

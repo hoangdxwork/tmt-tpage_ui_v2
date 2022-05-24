@@ -125,6 +125,14 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<SaleOnline_OrderDTO>(api, data);
   }
 
+  insertFromPost(data: SaleOnline_OrderDTO, isIncrease: boolean = false): Observable<SaleOnline_OrderDTO> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}?IsIncrease=${isIncrease}&$expand=Details,User`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<SaleOnline_OrderDTO>(api, data);
+  }
 
   createUpdatePartner(data: ODataModelTeamDTO<PartnerTempDTO>): Observable<PartnerTempDTO> {
     const api: TAPIDTO = {

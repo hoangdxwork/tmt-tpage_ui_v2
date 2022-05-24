@@ -26,6 +26,7 @@ import { CheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { ODataModelTeamDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { ModalListBlockComponent } from '../modal-list-block/modal-list-block.component';
+import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 
 @Component({
     selector: 'conversation-partner',
@@ -73,6 +74,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private modalService: TDSModalService,
     private crmMatchingService: CRMMatchingService,
     private saleOnline_OrderService: SaleOnline_OrderService,
+    private conversationOrderFacade: ConversationOrderFacade,
     private router: Router) {
   }
 
@@ -80,14 +82,14 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.createForm();
     this.loadPartnerStatus();
 
+    this.eventLoading();
+    this.eventLoadPartner();
+  }
+
+  eventLoadPartner() {
     this.loadPartnerByOrder();
-    debugger;
     this.loadPartnerByPostComment();
-
-    if(this.data?.id) {
-        this.loadData(this.data);
-    }
-
+    this.loadPartnerByEditOrderComment();
   }
 
   createForm(){
@@ -115,15 +117,26 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         if(res?.psid && this.data?.psid && res.psid === this.data.psid) {
           this.loadData(res);
         }
+
+        this.isLoading = false;
       });
   }
 
   loadPartnerByPostComment() {
-    this.partnerService.onLoadPartnerFormPostComment
+    this.partnerService.onLoadPartnerFromPostComment
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
-        debugger;
         let psid = res?.from?.id;
+        let pageId = this.team.Facebook_PageId;
+        this.loadDataPartner(pageId, psid);
+      });
+  }
+
+  loadPartnerByEditOrderComment() {
+    this.conversationOrderFacade.onEditOrderFromPostComment
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        let psid = res.Facebook_ASUserId || res.Facebook_UserId;
         let pageId = this.team.Facebook_PageId;
         this.loadDataPartner(pageId, psid);
       });
@@ -135,7 +148,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       return;
     }
 
+    this.isLoading = true;
     this.partnerService.checkConversation(pageId, psid)
+      .pipe(finalize(() => this.isLoading = false))
       .subscribe((res: CheckConversationDTO) => {
         if(res?.Data && res?.Success) {
           res.Data.Name = res.Data.Name || res.Data.Facebook_UserName;
@@ -189,6 +204,14 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     });
   }
 
+  eventLoading() {
+    this.conversationOrderFacade.onCreateOrderFromPostComment
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        this.isLoading = true;
+      });
+  }
+
   loadBill(partnerId: number) {
     this.lstBill = [];
     this.totalBill = 0;
@@ -240,7 +263,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.noteData = { items: [] };
     this.conversationService.getNotes(page_id, psid).pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
-        this.noteData.items = [...this.noteData.items, ...res.Items];
+        this.noteData.items = res.Items;
     }, error => {
         this.message.error('Load ghi chú khách hàng đã xảy ra lỗi');
     });
@@ -262,14 +285,14 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   selectStatus(status: PartnerStatusDTO) {
-    if(this.partner?.id) {
+    if(this.formData?.Id) {
       let data = {
         status: `${status.value}_${status.text}`
       }
 
-      this.partnerService.updateStatus(this.partner?.id, data).subscribe(res => {
+      this.partnerService.updateStatus(this.formData.Id, data).subscribe(res => {
         this.message.success(Message.Partner.UpdateStatus);
-        this.partner.status_text = status.text;
+        this.formData.StatusText = status.text;
         // this.formEditOrder.controls["Partner"].setValue(partner);
       });
     }
@@ -278,9 +301,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     }
   }
 
-  getStatusColor() {
-    if(this.partner && TDSHelperArray.hasListValue(this.lstPartnerStatus)) {
-      let value = this.lstPartnerStatus.find(x => x.text == this.partner.status_text);
+  getStatusColor(statusText: string | undefined) {
+    if(TDSHelperArray.hasListValue(this.lstPartnerStatus)) {
+      let value = this.lstPartnerStatus.find(x => x.text == statusText);
       if(value) return value.value;
       else return '#e5e7eb';
     }
@@ -315,10 +338,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
     modal.afterClose.subscribe(result => {
       if (TDSHelperObject.hasValue(result)) {
-        // Cập nhật form PhoneReport.value;
+        this._form.controls.PhoneReport.setValue(true);
       }
     });
-
   }
 
   showModalListBlock() {
@@ -411,10 +433,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     return model;
   }
 
-  validateData() {
+  validateData(isFirstChange: boolean) {
     (this.data as any) = null;
     (this.partner as any) = null;
-    this._form.reset();
+
+    if(isFirstChange) this.createForm();
+    else this._form.reset();
   }
 
   createOrder() {
@@ -422,8 +446,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if(changes["data"] && !changes["data"].firstChange) {
-        this.validateData();
+    if(changes["data"]) {
+        this.validateData(changes.data.firstChange);
         this.data = changes["data"].currentValue;
         this.loadData(this.data);
     }
