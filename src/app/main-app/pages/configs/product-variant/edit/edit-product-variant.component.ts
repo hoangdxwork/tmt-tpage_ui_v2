@@ -185,7 +185,6 @@ export class EditProductVariantComponent implements OnInit {
   mappingCacheDB() {
     let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
     this.cacheApi.getItem(keyCache).subscribe((obs: TDSSafeAny) => {
-
       if(TDSHelperString.hasValueString(obs)) {
         let cache = JSON.parse(obs['value']) as TDSSafeAny;
         let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
