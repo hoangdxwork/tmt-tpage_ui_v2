@@ -8,8 +8,7 @@ import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-config-sms-messages',
-  templateUrl: './config-sms-messages.component.html',
-  styleUrls: ['./config-sms-messages.component.scss']
+  templateUrl: './config-sms-messages.component.html'
 })
 export class ConfigSmsMessagesComponent implements OnInit {
   listOfDataRestSMS: Array<RestSMSDTO> = [];

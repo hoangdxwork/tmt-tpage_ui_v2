@@ -13,8 +13,7 @@ import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-modal-add-user',
-  templateUrl: './modal-add-user.component.html',
-  styleUrls: ['./modal-add-user.component.scss']
+  templateUrl: './modal-add-user.component.html'
 })
 export class ModalAddUserComponent implements OnInit, OnDestroy {
 

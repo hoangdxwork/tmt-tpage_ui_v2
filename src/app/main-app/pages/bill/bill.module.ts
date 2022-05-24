@@ -30,6 +30,8 @@ import { DeliveryCarrierService } from '../../services/delivery-carrier.service'
 import { PartnerService } from '../../services/partner.service';
 import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.service';
 import { BillExpandComponent } from './components/bill-expand/bill-expand.component';
+import { HistoryDeliveryStatusComponent } from './history-delivery-status/history-delivery-status.component';
+import { HistoryDeliveryStatusDetailComponent } from './history-delivery-status-detail/history-delivery-status-detail.component';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -58,7 +60,9 @@ const SERVICES = [
     AddBillComponent,
     ModalSearchPartnerComponent,
     DetailBillComponent,
-    BillExpandComponent
+    BillExpandComponent,
+    HistoryDeliveryStatusComponent,
+    HistoryDeliveryStatusDetailComponent
   ],
 
   imports: [

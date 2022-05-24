@@ -15,8 +15,7 @@ import { TAuthService, UserInitDTO } from 'src/app/lib';
 
 @Component({
   selector: 'app-modal-update-user',
-  templateUrl: './modal-update-user.component.html',
-  styleUrls: ['./modal-update-user.component.scss']
+  templateUrl: './modal-update-user.component.html'
 })
 export class ModalUpdateUserComponent implements OnInit, OnDestroy {
 

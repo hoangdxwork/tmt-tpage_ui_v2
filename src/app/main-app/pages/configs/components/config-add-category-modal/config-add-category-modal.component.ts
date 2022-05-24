@@ -8,8 +8,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-config-add-category-modal',
-  templateUrl: './config-add-category-modal.component.html',
-  styleUrls: ['./config-add-category-modal.component.scss']
+  templateUrl: './config-add-category-modal.component.html'
 })
 export class ConfigAddCategoryModalComponent implements OnInit, OnDestroy {
   categoryList:Array<TDSSafeAny> = [];

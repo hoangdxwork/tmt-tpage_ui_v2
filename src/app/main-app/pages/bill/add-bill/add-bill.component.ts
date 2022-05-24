@@ -112,6 +112,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get("id");
+    
     if (this.id) {
       this.loadBill(this.id);
     } else {
@@ -1645,6 +1646,10 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.visibleShipFee = false;
   }
 
+  onChange(evt:any){
+    console.log(evt)
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -1700,7 +1705,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   editPartner(data: any) {
     let modal = this.modalService.create({
-      title: 'Sửa Khách hàng',
+      title: 'Thêm khách hàng',
       content: ModalEditPartnerComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,

@@ -3,8 +3,7 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-config-print-bills',
-  templateUrl: './config-print-bills.component.html',
-  styleUrls: ['./config-print-bills.component.scss']
+  templateUrl: './config-print-bills.component.html'
 })
 export class ConfigPrintBillsComponent implements OnInit {
   printerList:TDSSafeAny[] = [];

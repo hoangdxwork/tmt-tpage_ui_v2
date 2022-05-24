@@ -102,7 +102,6 @@ export interface FastSaleOrderSummaryStatusDTO {
 
 export interface FastSaleOrderRestDTO {
   Id: number;
-
   Name: string;
   PrintShipCount?: number;
   PrintDeliveryCount?: number;
@@ -207,4 +206,16 @@ export interface HistoryDeliveryStatusDetailDTO {
   DateOrder?: Date;
   State: string;
   ShowState: string;
+}
+
+export interface HistoryDeliveryDTO {
+  Id: number;
+  Date: Date;
+  Note: string;
+  CountSuccess: number;
+  CountError: number;
+  TotalCOD: number;
+  TotalCODShip: number;
+  CarrierId?: number;
+  CarrierName: string;
 }

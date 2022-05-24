@@ -358,4 +358,12 @@ export class FastSaleOrderService extends BaseSevice {
 
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
+
+  getHistoryDeliveryStatus(params:string): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/HistoryDeliveryStatus?&%24${params}&%24orderby=Date+desc&%24count=true`,
+        method: TApiMethodType.get
+    }
+    return this.apiService.getData<ODataPaymentJsonDTO>(api, null);
+  }
 }

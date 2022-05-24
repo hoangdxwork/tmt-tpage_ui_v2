@@ -7,8 +7,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 
 @Component({
   selector: 'app-config-overview',
-  templateUrl: './config-overview.component.html',
-  styleUrls: ['./config-overview.component.scss']
+  templateUrl: './config-overview.component.html'
 })
 export class ConfigOverviewComponent implements OnInit {
   shippingUnitForm!:FormControl;
