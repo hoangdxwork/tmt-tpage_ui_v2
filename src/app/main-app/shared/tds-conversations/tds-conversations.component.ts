@@ -671,4 +671,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     }
     this.uploadedImages = [...data]
   }
+
+  closeImages(){
+    this.uploadedImages = [];
+  }
 }
