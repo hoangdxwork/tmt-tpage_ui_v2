@@ -198,7 +198,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   selectPost(item: FacebookPostItem): any {
-    if(TDSHelperObject.hasValue(item)){debugger
+    if(TDSHelperObject.hasValue(item)){
       this.currentPost = {...item};
       this.facebookPostService.loadPost(item);
 

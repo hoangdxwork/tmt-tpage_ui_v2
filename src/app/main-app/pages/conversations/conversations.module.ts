@@ -63,6 +63,7 @@ import { PostCommentAllComponent } from './components/post-filter/post-comment-a
 import { PostCommentGroupComponent } from './components/post-filter/post-comment-group.component';
 import { PostCommentFilterComponent } from './components/post-filter/post-comment-filter.component';
 import { AutoLabelConfigComponent } from './components/config-post/auto-label-config.component';
+import { PostOrderConfigComponent } from './components/config-post/order-config/post-order-config.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -122,7 +123,8 @@ const SERVICES = [
     ConfigPostOutletComponent,
     AutoReplyConfigComponent,
     AutoLabelConfigComponent,
-    ConversationAllFilterComponent
+    ConversationAllFilterComponent,
+    PostOrderConfigComponent
   ],
 
   imports: [
