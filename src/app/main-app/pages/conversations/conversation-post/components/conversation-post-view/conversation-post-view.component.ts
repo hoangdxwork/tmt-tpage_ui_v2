@@ -53,7 +53,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
     if(this.data){
       this.data = {...this.data};
     }
-    this.openConfigPost();
   }
 
   ngOnChanges(changes: SimpleChanges) {
