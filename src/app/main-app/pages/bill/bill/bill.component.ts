@@ -175,7 +175,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.getViewData(params).subscribe((res: ODataFastSaleOrderDTO) => {
         this.count = res['@odata.count'] as number;
-        this.lstOfData = res.value;console.log(this.lstOfData)
+        this.lstOfData = res.value;
     }, error => {
         this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
     });
@@ -231,6 +231,31 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.tagService.getByType(type).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
         this.lstTags = res.value;
     })
+  }
+
+  exportExcel(type:string){
+    switch(type){
+      case 'excel':
+        
+        let model = {
+          ids: [],
+          data: {
+
+          }
+        }
+    }
+  }
+
+  updateTransport(type:string){
+    
+  }
+
+  updateDeliveryStatus(type:string){
+
+  }
+
+  showHistoryDS(){
+    this.router.navigateByUrl('bill/historyds/list');
   }
 
   onSelectChange(Index: TDSSafeAny) {
@@ -313,18 +338,22 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   assignShipStatus(dataId: number){
-    let model = {id:dataId,status:this.currentStatus.value};
-    this.fastSaleOrderService.updateShipStatus(model).pipe(takeUntil(this.destroy$)).subscribe(
-      (res)=>{
-        this.message.success('Cập nhật thành công');
-        this.loadData(this.pageSize,this.pageIndex);
-        this.indClickStatus = -1;
-      },
-      err=>{
-        this.message.error('Cập nhật thất bại');
-        this.indClickStatus = -1;
-      }
-    )
+    if(this.currentStatus){
+      let model = { id:dataId, status:this.currentStatus.value };
+      this.fastSaleOrderService.updateShipStatus(model).pipe(takeUntil(this.destroy$)).subscribe(
+        (res)=>{
+          this.message.success('Cập nhật thành công');
+          this.loadData(this.pageSize,this.pageIndex);
+          this.indClickStatus = -1;
+        },
+        err=>{
+          this.message.error('Cập nhật thất bại');
+          this.indClickStatus = -1;
+        }
+      )
+    }else{
+      this.message.error('Vui lòng chọn đối soát giao hàng');
+    }
   }
 
   ngAfterViewInit(): void {

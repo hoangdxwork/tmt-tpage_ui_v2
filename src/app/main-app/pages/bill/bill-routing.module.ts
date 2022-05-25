@@ -1,3 +1,4 @@
+import { HistoryDeliveryStatusComponent } from './history-delivery-status/history-delivery-status.component';
 import { DetailBillComponent } from './detail-bill/detail-bill.component';
 import { AddBillComponent } from './add-bill/add-bill.component';
 import { NgModule } from '@angular/core';
@@ -21,6 +22,10 @@ const routes: Routes = [
     path: 'detail/:id',
     component: DetailBillComponent
   },
+  {
+    path: 'historyds/list',
+    component: HistoryDeliveryStatusComponent
+  }
 ];
 
 @NgModule({

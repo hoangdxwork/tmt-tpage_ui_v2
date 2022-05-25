@@ -12,7 +12,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 
 @Component({
   selector: 'app-config-decentralize-page',
-  templateUrl: './config-decentralize-page.component.html',
+  templateUrl: './config-decentralize-page.component.html'
 })
 export class ConfigDecentralizePageComponent implements OnInit, OnDestroy {
 

@@ -37,8 +37,7 @@ import { ProductDTO } from 'src/app/main-app/dto/product/product.dto';
 
 @Component({
   selector: 'app-config-add-promotion',
-  templateUrl: './config-add-promotion.component.html',
-  styleUrls: ['./config-add-promotion.component.scss'],
+  templateUrl: './config-add-promotion.component.html'
 })
 export class ConfigAddPromotionComponent implements OnInit, OnDestroy {
   lstDiscountType: any = [

@@ -167,7 +167,7 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
 
   loadDataTable() {
     let data = this.indexDbStorage;
-
+    
     if(TDSHelperObject.hasValue(this.currentOption)) {
         if(TDSHelperString.hasValueString(this.innerText)) {
             this.keyFilter = TDSHelperString.stripSpecialChars(this.keyFilter.trim());
@@ -241,7 +241,6 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
           }
         })
     }
-
     return this.lstOfData = data;
   }
 
@@ -322,13 +321,17 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
     this.tableComponent?.cdkVirtualScrollViewport?.scrolledIndexChange
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: number) => {});
-
+    
     fromEvent(this.innerText.nativeElement, 'keyup').pipe(
       map((event: any) => {
         return event.target.value
-      }), debounceTime(750), distinctUntilChanged()).subscribe((text: string) => {
+      }), debounceTime(750)).subscribe((text: string) => {
+        this.isLoading = true;
         this.keyFilter = text;
-        this.loadDataTable();
+        setTimeout(()=>{
+          this.loadDataTable();
+          this.isLoading = false;
+        },750);
     });
   }
 

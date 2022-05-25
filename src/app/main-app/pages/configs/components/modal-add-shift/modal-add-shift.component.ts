@@ -8,8 +8,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 
 @Component({
   selector: 'app-modal-add-shift',
-  templateUrl: './modal-add-shift.component.html',
-  styleUrls: ['./modal-add-shift.component.scss']
+  templateUrl: './modal-add-shift.component.html'
 })
 export class ModalAddShiftComponent implements OnInit {
 

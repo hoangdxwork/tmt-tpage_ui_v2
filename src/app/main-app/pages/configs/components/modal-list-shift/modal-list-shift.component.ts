@@ -9,8 +9,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 
 @Component({
   selector: 'app-modal-list-shift',
-  templateUrl: './modal-list-shift.component.html',
-  styleUrls: ['./modal-list-shift.component.scss']
+  templateUrl: './modal-list-shift.component.html'
 })
 export class ModalListShiftComponent implements OnInit {
 

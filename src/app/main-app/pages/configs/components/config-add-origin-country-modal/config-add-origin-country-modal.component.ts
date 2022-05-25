@@ -8,8 +8,7 @@ import { TDSSafeAny, TDSUploadFile, TDSMessageService, TDSUploadChangeParam, TDS
 
 @Component({
   selector: 'app-config-add-origin-country-modal',
-  templateUrl: './config-add-origin-country-modal.component.html',
-  styleUrls: ['./config-add-origin-country-modal.component.scss']
+  templateUrl: './config-add-origin-country-modal.component.html'
 })
 export class ConfigAddOriginCountryModalComponent implements OnInit, OnDestroy {
   originCountyForm!:FormGroup;

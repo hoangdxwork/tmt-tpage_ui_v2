@@ -17,8 +17,7 @@ import { Component, OnInit, ViewContainerRef } from '@angular/core';
 
 @Component({
   selector: 'app-config-edit-product',
-  templateUrl: './config-edit-product.component.html',
-  styleUrls: ['./config-edit-product.component.scss']
+  templateUrl: './config-edit-product.component.html'
 })
 export class ConfigEditProductComponent implements OnInit, OnDestroy {
   variantTableData:Array<TDSSafeAny> = [];

@@ -11,8 +11,7 @@ import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-config-users-shift',
-  templateUrl: './config-users-shift.component.html',
-  styleUrls: ['./config-users-shift.component.scss'],
+  templateUrl: './config-users-shift.component.html'
 })
 export class ConfigUsersShiftComponent implements OnInit {
   visible: boolean = false;

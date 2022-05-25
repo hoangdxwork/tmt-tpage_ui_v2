@@ -1,0 +1,71 @@
+<div class="w-full h-full flex flex-col">
+    <div class="bg-white flex justify-between items-center">
+        <div class="flex flex-col gap-y-1">
+            <tds-breadcrumb tds-page-header-breadcrumb>
+                <tds-breadcrumb-item>Phiếu bán hàng</tds-breadcrumb-item>
+                <tds-breadcrumb-item>Lịch sử đối soát</tds-breadcrumb-item>
+            </tds-breadcrumb>
+            <div class="pl-4 pb-2.5">
+                <span class="text-header-1 text-neutral-1-900 font-semibold">Lịch sử đối soát</span>
+            </div>
+        </div>
+
+        <div class="flex gap-x-2">
+            <button tds-button color="primary" (click)="onSave()">Lưu lại</button>
+            <button tds-button color="secondary" class="mr-4" (click)="onBack()">Quay lại</button>
+        </div>
+    </div>
+    <div class="flex w-full h-full p-4">
+        <div class="rounded-md bg-white w-full h-full pb-3">
+            <tds-table #basicTable 
+                [listData]="lstHistoryDS"
+                [showSizeChanger]="true"
+                [frontPagination]="false"
+                [(pageSize)]="pageSize"
+                [(pageIndex)]="pageIndex"
+                [total]="count" 
+                [scroll]="{y:'auto', x: 'auto'}" 
+                [loading]="isLoading"
+                (queryParams)="onQueryParamsChange($event)"
+                (clickRefresh)="refreshData()">
+                <thead>
+                    <tr>
+                        <th [width]="'220px'" [align]="'center'">Ngày</th>
+                        <th [width]="'203px'">Đối tác</th>
+                        <th [width]="'203px'" [align]="'right'">Tổng COD</th>
+                        <th [width]="'203px'" [align]="'right'">Tổng COD ship</th>
+                        <th [width]="'203px'" [align]="'right'">Thành công</th>
+                        <th [width]="'203px'" [align]="'right'">Thất bại</th>
+                        <th>Ghi chú</th>
+                        <th [width]="'92px'" [align]="'center'">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-template ngFor let-data [ngForOf]="basicTable.data" >
+                        <tr>
+                            <td class="border-r text-center">{{ data.Date | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                            <td class="border-r">{{ data.CarrierName }}</td>
+                            <td class="border-r text-right">{{ data.TotalCOD | number }} đ</td>
+                            <td class="border-r text-right">{{ data.TotalCODShip | number }} đ</td>
+                            <td class="border-r text-right">{{ data.CountSuccess | number }}</td>
+                            <td class="border-r text-right">{{ data.CountError | number }}</td>
+                            <td class="border-r">{{ data.Note }}</td>
+                            <td class="border-r flex items-center justify-between">
+                                <button tds-button-icon color="secondary" size="sm">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-category-fill"></i>
+                                    </span>
+                                </button>
+                                <button tds-button-icon color="secondary" size="sm">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-trash-fill"></i>
+                                    </span>
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </tds-table>
+        </div>
+    </div>
+</div>
