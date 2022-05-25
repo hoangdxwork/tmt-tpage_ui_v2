@@ -99,7 +99,7 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   get detailsFormGroups() {
-    return (this.orderForm?.get("Details") as FormArray).controls;
+    return (this.orderForm?.get("Details") as FormArray);
   }
 
   ngOnInit(): void {
@@ -110,6 +110,7 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
     this.loadUsers();
     this.loadCarrier();
     this.loadCurrentTeam();
+    this.eventLoading();
   }
 
   createForm(): void {
@@ -171,10 +172,10 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
 
   loadOrder() {
     this.conversationOrderFacade.onOrderCheckPost$.pipe(takeUntil(this.destroy$)).subscribe(res => {
-      debugger;
       this.updateFormOrder(res);
       this.updateBillByForm(this.orderForm);
       this.currentOrderCode.emit(res?.Code);
+      this.isLoading = false;
     });
   }
 
@@ -194,6 +195,20 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
     this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.currentTeam = res;
     });
+  }
+
+  eventLoading() {
+    this.partnerService.onLoadPartnerFromPostComment
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        this.isLoading = true;
+      });
+
+    this.conversationOrderFacade.onCreateOrderFromPostComment
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        this.isLoading = true;
+      });
   }
 
   updateFormOrder(order: ConversationOrderForm) {
@@ -509,7 +524,8 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
       componentParams: {
-        useListPrice: true
+        useListPrice: true,
+        isSelectProduct: true
       }
     });
 

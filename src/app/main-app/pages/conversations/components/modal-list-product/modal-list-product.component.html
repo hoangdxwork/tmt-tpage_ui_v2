@@ -50,11 +50,18 @@
                         <td>{{ data.Price | number: '1.0-3'}} đ</td>
                         <td>
                             <div>
-                                <button tds-button color="secondary" (click)="onSelectProduct(data)">
+                                <button tds-button color="secondary" (click)="onSelectProduct(data)" *ngIf="!isSelectProduct; else btnSelectProduct">
                                     <span class="flex items-center text-primary-1">
                                       <i class="tdsi-reply-fill text-lg leading-none mr-2"></i>Gửi sản phẩm
                                     </span>
-                                  </button>
+                                </button>
+                                <ng-template #btnSelectProduct>
+                                  <button tds-button color="secondary" (click)="onSelectProduct(data)">
+                                    <span class="flex items-center text-primary-1">
+                                      <i class="tdsi-add-fill text-lg leading-none mr-2"></i>Thêm vào
+                                    </span>
+                                </button>
+                                </ng-template>
                             </div>
                         </td>
                     </tr>

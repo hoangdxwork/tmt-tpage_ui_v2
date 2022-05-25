@@ -279,3 +279,29 @@ export interface PartnerTempDTO {
   District: string;
   Ward: string;
 }
+
+export interface InputCheckInfoPartnerDTO {
+  UserId: string; // Id người dùng (đối với page tương ứng)
+  PageId: string;
+}
+
+export interface CheckInfoPartnerDTO {
+  Success: boolean;
+  Data: DataCheckInfoPartnerDTO;
+}
+
+export interface DataCheckInfoPartnerDTO {
+  Id?: number;
+  Name: string;
+  Ref: string;
+  Phone: string;
+  PhoneReport: string;
+  Status: PartnerStatus;
+  StatusText: string;
+  Email: string;
+  Street: string;
+  City: PartnerCityDTO;
+  District: PartnerDistrictDTO;
+  Ward: PartnerWardDTO;
+  Facebook_ASUserId: string;
+}

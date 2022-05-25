@@ -60,7 +60,7 @@ export class THelperDataRequest {
             result += `${this._skipCount}=${skipCount}`
         }
 
-        if (TDSHelperObject.hasValue(filter)) {
+        if (TDSHelperObject.hasValue(filter) && TDSHelperArray.hasListValue(filter?.filters)) {
             if (result.length > 0) {
                 result += '&'
             }

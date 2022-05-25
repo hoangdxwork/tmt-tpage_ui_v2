@@ -8,7 +8,7 @@ import { PartnerBirthdayDTO } from '../dto/partner/partner-birthday.dto';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
 import { PartnerDetailDTO } from '../dto/partner/partner-detail.dto';
 import { ODataRegisterPartnerDTO } from '../dto/partner/partner-register-payment.dto';
-import { PartnerTempDTO, ResRevenueCustomerDTO } from '../dto/partner/partner.dto';
+import { CheckInfoPartnerDTO, InputCheckInfoPartnerDTO, PartnerTempDTO, ResRevenueCustomerDTO } from '../dto/partner/partner.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class PartnerService extends BaseSevice {
   public onLoadPartnerFromTabOrder: EventEmitter<any> = new EventEmitter();
 
   // Sự kiện xem thông tin từ comment bài post
-  public onLoadPartnerFormPostComment: EventEmitter<any> = new EventEmitter();
+  public onLoadPartnerFromPostComment: EventEmitter<any> = new EventEmitter();
 
   public partnerStatus: any;
   public partnerStatus$ = new BehaviorSubject<any>(null);
@@ -205,6 +205,15 @@ export class PartnerService extends BaseSevice {
     }
 
     return this.apiService.getData<CheckConversationDTO>(api, { PageId: page_id, UserId: psid });
+  }
+
+  checkInfo(data: InputCheckInfoPartnerDTO) : Observable<CheckInfoPartnerDTO> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/checkinfo`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<CheckInfoPartnerDTO>(api, data);
   }
 
   getPartnersByTimestamp(teamId: any, timestamp: any): Observable<TDSSafeAny> {

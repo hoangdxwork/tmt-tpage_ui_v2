@@ -101,7 +101,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   get detailsFormGroups() {
-    return (this.orderForm?.get("Details") as FormArray).controls;
+    return (this.orderForm?.get("Details") as FormArray);
   }
 
   ngOnInit(): void {
@@ -510,7 +510,8 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
       componentParams: {
-        useListPrice: true
+        useListPrice: true,
+        isSelectProduct: true
       }
     });
 

@@ -16,6 +16,8 @@ import { ProductDataFacade } from 'src/app/main-app/services/facades/product.dat
 export class ModalListProductComponent implements OnInit, OnDestroy {
 
   @Input() useListPrice: boolean = false;
+  @Input() isSelectProduct: boolean = false;
+
   @Output() selectProduct = new EventEmitter<ProductTemplateV2DTO>();
 
   @ViewChild('basicTable', { static: false }) tableComponent?: TDSTableComponent<DataPouchDBDTO>;

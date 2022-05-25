@@ -62,6 +62,8 @@ import { ItemPostCommentComponent } from './conversation-post/components/item-po
 import { PostCommentAllComponent } from './components/post-filter/post-comment-all.component';
 import { PostCommentGroupComponent } from './components/post-filter/post-comment-group.component';
 import { PostCommentFilterComponent } from './components/post-filter/post-comment-filter.component';
+import { ConversationOrderListComponent } from './components/conversation-order-list/conversation-order-list.component';
+import { OdataSaleOnline_OrderService } from '../../services/mock-odata/odata-saleonlineorder.service';
 import { AutoLabelConfigComponent } from './components/config-post/auto-label-config.component';
 
 const SERVICES = [
@@ -93,7 +95,8 @@ const SERVICES = [
   FacebookCommentService,
   SharedService,
   CRMTagService,
-  ExcelExportService
+  ExcelExportService,
+  OdataSaleOnline_OrderService
 ]
 
 @NgModule({
@@ -121,6 +124,8 @@ const SERVICES = [
     PostOrderComponent,
     ConfigPostOutletComponent,
     AutoReplyConfigComponent,
+    ConversationAllFilterComponent,
+    ConversationOrderListComponent,
     AutoLabelConfigComponent,
     ConversationAllFilterComponent
   ],

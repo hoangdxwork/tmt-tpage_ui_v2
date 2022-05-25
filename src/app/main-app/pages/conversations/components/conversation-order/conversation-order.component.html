@@ -100,7 +100,7 @@
                 </button>
               </div>
               <div class="rounded-t-xl h-60 w-full">
-                <tds-table #basicTable class="w-full h-full bg-neutral-2-50 px-0.5" [listData]="detailsFormGroups" showPagination="false" [scroll]="{y:'auto'}">
+                <tds-table #basicTable class="w-full h-full" [listData]="detailsFormGroups.value" showPagination="false" [scroll]="{y:'auto'}">
                   <thead class="bg-neutral-2-50">
                     <tr class="bg-neutral-2-50">
                       <th width="228px" class="bg-neutral-2-50"><div class="uppercase text-caption-2">Sản phẩm</div></th>
@@ -110,7 +110,7 @@
                     </tr>
                   </thead>
                   <tbody formArrayName="Details">
-                    <tr class="bg-white editable-row" *ngFor="let detail of detailsFormGroups; let index=index" [formGroupName]="index">
+                    <tr class="bg-white editable-row" *ngFor="let detail of detailsFormGroups.controls; let index=index" [formGroupName]="index">
                       <td class="border-b border-dashed border-neutral-1-200">
                         <div class="text-body-2">
                           {{detail?.value?.ProductNameGet}}
