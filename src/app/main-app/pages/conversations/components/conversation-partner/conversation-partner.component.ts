@@ -121,6 +121,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.partnerService.onLoadPartnerFormPostComment
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
+        debugger;
         let psid = res?.from?.id;
         let pageId = this.team.Facebook_PageId;
         this.loadDataPartner(pageId, psid);

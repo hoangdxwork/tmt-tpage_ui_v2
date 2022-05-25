@@ -12,6 +12,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { Observable } from 'rxjs';
+
 export interface DataUser {
   id: number;
   name: string;
@@ -24,6 +25,7 @@ export interface DataUser {
   selector: 'app-config-users-operation',
   templateUrl: './config-users-operation.component.html'
 })
+
 export class ConfigUsersOperationComponent implements OnInit {
 
   currentComponent = 1;

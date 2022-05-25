@@ -46,22 +46,23 @@ import { ModalBlockPhoneComponent } from './components/modal-block-phone/modal-b
 import { CRMMatchingService } from '../../services/crm-matching.service';
 import { FacebookPostService } from '../../services/facebook-post.service';
 import { ConversationPostFacade } from '../../services/facades/conversation-post.facade';
-import { ConversationPostViewComponent } from './conversation-post/conversation-post-view.component';
-import { ItemPostCommentComponent } from './conversation-post/item-post-comment.component';
 import { FacebookCommentService } from '../../services/facebook-comment.service';
 import { SharedService } from '../../services/shared.service';
 import { PipeModule } from '../../shared/pipe/pipe.module';
 import { CRMTagService } from '../../services/crm-tag.service';
 import { ModalListBlockComponent } from './components/modal-list-block/modal-list-block.component';
-import { PostCommentAllComponent } from './components/post-filter/post-comment-all.component';
-import { PostCommentGroupComponent } from './components/post-filter/post-comment-group.component';
-import { PostCommentFilterComponent } from './components/post-filter/post-comment-filter.component';
 import { ExcelExportService } from '../../services/excel-export.service';
 import { ManagePostCommentComponent } from './components/post-filter/manage-post-comment.component';
 import { PostOrderComponent } from './components/post-order/post-order.component';
-import { ConfigPostReleaseComponent } from './components/config-post/config-post-release.component';
+import { ConfigPostOutletComponent } from './components/config-post/config-post-outlet.component';
 import { AutoReplyConfigComponent } from './components/config-post/auto-reply-config.component';
 import { ConversationAllFilterComponent } from './components/conversation-all-filter/conversation-all-filter.component';
+import { ConversationPostViewComponent } from './conversation-post/components/conversation-post-view/conversation-post-view.component';
+import { ItemPostCommentComponent } from './conversation-post/components/item-post-comment/item-post-comment.component';
+import { PostCommentAllComponent } from './components/post-filter/post-comment-all.component';
+import { PostCommentGroupComponent } from './components/post-filter/post-comment-group.component';
+import { PostCommentFilterComponent } from './components/post-filter/post-comment-filter.component';
+import { AutoLabelConfigComponent } from './components/config-post/auto-label-config.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -118,10 +119,12 @@ const SERVICES = [
     PostCommentFilterComponent,
     ManagePostCommentComponent,
     PostOrderComponent,
-    ConfigPostReleaseComponent,
+    ConfigPostOutletComponent,
     AutoReplyConfigComponent,
+    AutoLabelConfigComponent,
     ConversationAllFilterComponent
   ],
+
   imports: [
     CommonModule,
     ConversationsRoutingModule,

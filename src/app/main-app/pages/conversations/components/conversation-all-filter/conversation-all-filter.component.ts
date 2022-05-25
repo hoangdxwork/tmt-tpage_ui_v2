@@ -9,7 +9,6 @@ import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 @Component({
   selector: 'conversation-all-filter',
   templateUrl: './conversation-all-filter.component.html',
-  styleUrls: ['./conversation-all-filter.component.scss']
 })
 export class ConversationAllFilterComponent implements OnInit, OnChanges {
 

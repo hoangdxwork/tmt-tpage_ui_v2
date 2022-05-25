@@ -122,7 +122,6 @@ export class ListProductTmpComponent implements OnInit, AfterViewInit, OnDestroy
               data.Datas.forEach((x: DataPouchDBDTO) => {
                   this.indexDbStorage.push(x);
               });
-
               // TODO: trường hợp thêm mới push sp vào orderLines
               if(TDSHelperObject.hasValue(this.productTmplItems) && this.productTmplItems.Id) {
                   var item = this.indexDbStorage.filter((x: DataPouchDBDTO) =>

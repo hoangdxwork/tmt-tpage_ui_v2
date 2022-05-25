@@ -52,6 +52,6 @@ export class DecentralizePageManagementComponent implements OnInit {
   }
 
   onModelChangePermission(ev: TDSSafeAny){
-    
+
   }
 }

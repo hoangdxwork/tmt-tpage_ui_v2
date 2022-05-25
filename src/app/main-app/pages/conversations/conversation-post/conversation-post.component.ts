@@ -104,6 +104,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         this.loadBadgeComments();
       }
     });
+
+    this.loadPartnerByPostComment();
   }
 
   //TODO: khi có comment mới vào bài viết
@@ -196,7 +198,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   selectPost(item: FacebookPostItem): any {
-    if(TDSHelperObject.hasValue(item)){
+    if(TDSHelperObject.hasValue(item)){debugger
       this.currentPost = {...item};
       this.facebookPostService.loadPost(item);
 

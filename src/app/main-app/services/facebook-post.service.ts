@@ -178,6 +178,22 @@ export class FacebookPostService extends BaseSevice implements OnInit, OnDestroy
     return this.apiService.getData<any>(api, data);
   }
 
+  getAutoLabelConfigs(key: any): Observable<any> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${key}/AutoLabelConfigs`,
+      method: TApiMethodType.get
+    }
+    return this.apiService.getData<any>(api, null);
+  }
+
+  updateAutoLabelConfigs(key: any,data: any): Observable<any> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${key}/AutoLabelConfigs`,
+      method: TApiMethodType.put
+    }
+    return this.apiService.getData<any>(api, data);
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
