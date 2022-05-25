@@ -20,6 +20,8 @@ import { SaleOnline_OrderDTO, SaleOnline_Order_DetailDTO } from "../../dto/saleo
 import { CheckFormHandler } from '../handlers/check-form.handler';
 import { SaleOnline_OrderService } from '../sale-online-order.service';
 import { FormGroup } from '@angular/forms';
+import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
+import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -36,8 +38,10 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
   private order!: ConversationOrderForm;
   private productDefault!: ConversationOrderProductDefaultDTO | undefined;
 
-  // Event Input
 
+  public onAddProductOrder = new EventEmitter<DataPouchDBDTO>();
+
+  // Event Input
   // Sự kiện tạo đơn hàng từ comment bài post
   public onCreateOrderFromPostComment: EventEmitter<any> = new EventEmitter();
 

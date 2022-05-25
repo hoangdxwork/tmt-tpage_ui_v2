@@ -5,7 +5,7 @@ import { ConversationsRoutingModule } from './conversations-routing.module';
 import { ConversationAllComponent } from './conversation-all/conversation-all.component';
 import { ConversationPostComponent } from './conversation-post/conversation-post.component';
 import { MainSharedModule } from '../../shared/shared.module';
-import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSMessageModule, TDSModalModule, TDSPopoverModule, TDSRadioModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSToolTipModule, TDSTypographyModule, TDSSwitchModule, TDSDrawerModule, TDSDatePickerModule, TDSImageModule, TDSEmptyModule } from 'tmt-tang-ui';
+import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSMessageModule, TDSModalModule, TDSPopoverModule, TDSRadioModule, TDSScrollIntoViewModule, TDSSelectModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSToolTipModule, TDSTypographyModule, TDSSwitchModule, TDSDrawerModule, TDSDatePickerModule, TDSImageModule, TDSEmptyModule, TDSUploadModule } from 'tmt-tang-ui';
 import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conversations.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalImageStoreComponent } from './components/modal-image-store/modal-image-store.component';
@@ -65,6 +65,10 @@ import { PostCommentFilterComponent } from './components/post-filter/post-commen
 import { ConversationOrderListComponent } from './components/conversation-order-list/conversation-order-list.component';
 import { OdataSaleOnline_OrderService } from '../../services/mock-odata/odata-saleonlineorder.service';
 import { AutoLabelConfigComponent } from './components/config-post/auto-label-config.component';
+import { AttachmentDataFacade } from '../../services/facades/attachment-data.facade';
+import { AttachmentService } from '../../services/attachment.server';
+import { AttachmentState } from '../../services/facebook-state/attachment.state';
+import { ModalAddCollectionComponent } from './components/modal-add-collection/modal-add-collection.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -96,7 +100,10 @@ const SERVICES = [
   SharedService,
   CRMTagService,
   ExcelExportService,
-  OdataSaleOnline_OrderService
+  OdataSaleOnline_OrderService,
+  AttachmentDataFacade,
+  AttachmentService,
+  AttachmentState
 ]
 
 @NgModule({
@@ -127,7 +134,8 @@ const SERVICES = [
     ConversationAllFilterComponent,
     ConversationOrderListComponent,
     AutoLabelConfigComponent,
-    ConversationAllFilterComponent
+    ConversationAllFilterComponent,
+    ModalAddCollectionComponent
   ],
 
   imports: [
@@ -167,6 +175,7 @@ const SERVICES = [
     TDSImageModule,
     PipeModule,
     TDSEmptyModule,
+    TDSUploadModule
   ],
   providers: [ ...SERVICES]
 })

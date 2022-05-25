@@ -131,8 +131,9 @@ export class ConversationOrderListComponent implements OnInit,OnDestroy {
 
   loadSummaryStatus() {
     let model : SaleOnlineOrderSummaryStatusDTO = {
-      searchText: this.filterObj.searchText,
-      tagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+      SearchText: this.filterObj.searchText,
+      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+      PostId: this.currentPost.fbid
     }
 
     this.isLoading = true;
