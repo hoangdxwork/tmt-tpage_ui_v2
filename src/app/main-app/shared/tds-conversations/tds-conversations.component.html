@@ -188,11 +188,13 @@
                     <div class="w-[336px] max-h-[500px] flex flex-col gap-y-3">
                         <div class="flex justify-between">
                             <span class="font-semibold text-title-1">Gắn nhãn hội thoại</span>
-                            <button tds-button-icon color="secondary" rounded="!rounded-full"
+                            <button tds-button-icon color="secondary" class="!rounded-full"
                                 (click)="showModalAddTag()"
                                 tds-tooltip
                                 tooltipTitle="Thêm nhãn mới">
-                                <i class="tdsi-plus-fill"></i>
+                                <span class="flex items-center">
+                                    <i class="tdsi-plus-fill"></i>
+                                </span>
                             </button>
                         </div>
                         <tds-form-field class="w-full">
@@ -210,9 +212,9 @@
                     </div>
                 </ng-template>
             </div>
-            <div class="flex-auto flex flex-nowrap gap-2.5 ">
-                <div *ngFor="let item of data.tags | slice:0:7" (click)="onRemoteTag(item)" class="relative group text-caption-2 flex items-center w-24 truncate">
-                    <div class="cursor-pointer w-full px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-5"
+            <div class="flex-auto flex gap-2.5 ">
+                <div *ngFor="let item of data.tags | slice:0:6" (click)="onRemoteTag(item)" class="relative group text-caption-2 flex items-center w-24 truncate">
+                    <div class="cursor-pointer w-full px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
                         [ngStyle]="{'background-color': [item.color_class]}">
                         {{item.name}}
                     </div>
@@ -221,26 +223,53 @@
                         Gỡ nhãn
                     </button>
                 </div>
-                <span *ngIf="data.tags.length > 7" class="font-semibold">...</span>
+                <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded cursor-pointer" *ngIf="data.tags && data.tags.length - 6 > 0" tds-popover
+                    [popoverContent]="popoverContentTag"
+                    popoverPlacement="topRight">
+                    +{{data.tags.length - 6}}
+                </div>
+                <ng-template #popoverContentTag>
+                    <div class="flex gap-1 flex-wrap items-center max-w-[336px]">
+                        <div *ngFor="let tag of data.tags |  slice:6:data.tags.length" (click)="onRemoteTag(tag)" class="relative group flex items-center text-caption-2 font-regular text-neutral-1-900 rounded truncate">
+                            <div class="cursor-pointer w-full px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
+                            [ngStyle]="{'background-color': [tag.color_class]}">
+                            {{tag.name}}
+                        </div>
+                        <button
+                            class="group-hover:text-accent-3 font-semibold absolute group-hover:flex w-full items-center justify-center hidden truncate">
+                            Gỡ nhãn
+                        </button>
+                        </div>
+                    </div>
+                </ng-template>
             </div>
         </div>
         <!-- editer+toolbars -->
         <div class="flex flex-col w-full px-4 bg-white rounded-xl">
             <!-- upload-wall -->
-            <div [ngClass]="uploadedImages.length>0?'translate-y-0 pb-4 pt-2 border-b':'translate-y-full h-0 overflow-hidden'"
-                class=" border-neutral-2-300 ease-in-out duration-300 !z-10">
-                <upload-pictures-wall 
-                [isArray]="true"
-                [data]="uploadedImages"
-                (onLoadImage)="onLoadImage($event)">
-                </upload-pictures-wall>
+            <div [ngClass]="uploadedImages.length>0?'translate-y-0 pb-4 pt-2 border-b':'translate-y-full h-0 '"
+                class=" border-neutral-2-300 ease-in-out duration-300 !z-10 max-h-40 overflow-hidden flex">
+                <div class="overflow-hidden overflow-y-auto tds-custom-scroll flex justify-between w-full h-full">
+                    <upload-pictures-wall 
+                    [isArray]="true"
+                    [data]="uploadedImages"
+                    (onLoadImage)="onLoadImage($event)">
+                    </upload-pictures-wall>
+                    <div class="pt-2 pr-1">
+                        <button tds-button-icon color="secondary" size="sm" class="!rounded-full" (click)="closeImages()">
+                            <span class="flex items-center">
+                                <i class="tdsi-close-fill"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="w-full pt-4 flex flex-row z-20">
                 <textarea tdsInput placeholder="Nhập nội dung tin nhắn, nhấn [Enter] để gửi"
                   [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
-                  (keydown.enter)="onEnter($event)" class="h-16 resize-none !p-0"></textarea>
+                  (keydown.enter)="onEnter($event)" class="h-16 resize-none !p-0 !m-0"></textarea>
 
-                <button tds-button type="button" color="primary" class="!rounded-full ml-2 mt-2" [size]="'lg'"(click)="onClickSender()">
+                <button tds-button type="button" color="primary" class="!rounded-full ml-2" [size]="'lg'"(click)="onClickSender()">
                     <span class="flex items-center px-6">
                         <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
                     </span>

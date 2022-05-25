@@ -30,6 +30,7 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
     fileList: TDSUploadFile[] = [];
     previewImage: string | undefined = '';
     previewVisible = false;
+    isUploading: boolean = false;
 
     constructor(private msg: TDSMessageService,
       private sharedService: SharedService,
@@ -50,7 +51,6 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
           })
         });
         this.fileList = [...dataModel];
-        
       }
     }
 
@@ -64,6 +64,7 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
     };
 
     handleUpload = (item: any): any => {
+      this.isUploading = true;
       const formData = new FormData();
       formData.append('files', item.file as any, item.file.name);
       formData.append('id', '0000000000000051');
@@ -81,12 +82,15 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
           } as any;
           dataModel.push({...x});
           this.fileList = [...dataModel];
+          this.isUploading = false;
           this.emitFile();
         
         }
       }, error => {
         let message = JSON.parse(error.Message);
         this.msg.error(`${message.message}`);
+        this.fileList = [...dataModel];
+        this.isUploading = false;
       });
     }
 
@@ -98,6 +102,12 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
         res.next();
         res.complete();
       })
+    }
+
+    removeImage(file:TDSUploadFile){
+      let items = this.fileList.filter(x => !(x.url === file.url));
+      this.fileList = items;
+      this.emitFile();
     }
 
     emitFile(){
