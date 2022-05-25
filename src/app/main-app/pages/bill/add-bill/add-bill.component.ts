@@ -81,6 +81,9 @@ export class AddBillComponent implements OnInit, OnDestroy {
   visiblePopoverTax: boolean = false;
   visibleDiscountLines: boolean = false;
   visibleShipFee: boolean = false;
+  visibleShipExtraMoney: boolean = false;
+  extraMoney:number = 0;
+  insuranceFee:number = 0;
   indClickTag = -1;
 
   apiDeliveries: any = ['GHTK', 'ViettelPost', 'GHN', 'TinToc', 'SuperShip', 'FlashShip', 'OkieLa', 'MyVNPost', 'DHL', 'FulltimeShip', 'JNT', 'EMS', 'AhaMove', 'Snappy', 'NhatTin', 'HolaShip'];
@@ -241,7 +244,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
           TotalFee: data.CustomerDeliveryPrice
         });
       }
-
+      
       if (data.Ship_ServiceExtras && data.Ship_ServiceExtras.length > 0) {
         for (var item of data.Ship_ServiceExtras) {
           var exits = ((item.Id == '16' || item.Id == "GBH" || item.Id == "GHN" || item.Id == "OrderAmountEvaluation" &&
@@ -487,7 +490,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       this.shipExtraServices = [];
       this.enableInsuranceFee = false;
       const model = this.prepareModel();
-
+      
       this._form.controls['Ship_InsuranceFee'].setValue(null);
       this._form.controls['Ship_ServiceId'].setValue(null);
       this._form.controls['Ship_ServiceName'].setValue(null);
@@ -523,7 +526,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
             this._form.controls['Ship_InsuranceFee'].setValue(model.Ship_Extras?.InsuranceFee || model.AmountTotal)
           }
         }
-        this.calculateFee(event).then(() => { });
+        this.calculateFee(event);
       }
     }
   }
@@ -784,7 +787,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   calcFee() {
-    let model = this._form.controls['Carrier'].value;
+    let model = this._form.controls['Carrier'].value as DeliveryCarrierDTOV2;
     this.calculateFee(model);
   }
 
@@ -834,8 +837,8 @@ export class AddBillComponent implements OnInit, OnDestroy {
           this.isCalcFee = false;
         }, error => {
             this.isCalcFee = false;
-            this.message.error(`${error.error.message}` || `${error.error_description}` || 'Tính phí đã xảy ra lỗi!');
-            reject(error);
+            this.message.error(`${error.error_description}` || 'Tính phí đã xảy ra lỗi!');
+            // reject(error);
         })
       }
     });
@@ -1634,17 +1637,45 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   changeShipInsuranceFee() {
+    this._form.controls["Ship_InsuranceFee"].setValue(this.insuranceFee);
+    // add
     let event = this._form.controls['Carrier'].value;
-    this.calculateFee(event).then((res: any) => { });
+    this.calculateFee(event).then((res:any)=>{
+      this.message.success('Cập nhật thành công');
+    });
+    this.visibleShipFee = false;
   }
 
   openPopoverShipFee() {
+    this.insuranceFee = this._form.controls["Ship_InsuranceFee"].value;
     this.visibleShipFee = true;
   }
 
   closePopoverShipFee() {
     this.visibleShipFee = false;
   }
+
+  changeShipExtraMoney() {
+    let arr = this.shipExtraServices as any[];
+    let idx = arr.findIndex(f=>f.ServiceId === 'XMG');
+    this.shipExtraServices[idx].ExtraMoney = this.extraMoney;
+    
+    let event = this._form.controls['Carrier'].value;
+    this.calculateFee(event).then((res:any)=>{
+      this.message.success('Cập nhật thành công');
+    });
+    this.visibleShipExtraMoney = false;
+  }
+
+  openPopoverShipExtraMoney(value:number) {
+    this.extraMoney = value;
+    this.visibleShipExtraMoney = true;
+  }
+
+  closePopoverShipExtraMoney() {
+    this.visibleShipExtraMoney = false;
+  }
+
 
   onChange(evt:any){
     console.log(evt)
@@ -1657,7 +1688,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   onSave(): any {
     let model = this.prepareModel();
-
+    console.log(model)
     if (!TDSHelperObject.hasValue(this._form.controls['Partner'].value) || !this._form.controls['PartnerId'].value) {
       return this.message.error('Vui lòng chọn khách hàng!');
     }
@@ -1755,6 +1786,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     model.DeliveryNote = formModel.DeliveryNote ? formModel.DeliveryNote : model.DeliveryNote;
     model.Ship_ServiceId = formModel.Ship_ServiceId ? formModel.Ship_ServiceId : model.Ship_ServiceId;
     model.Ship_ServiceName = formModel.Ship_ServiceName ? formModel.Ship_ServiceName : model.Ship_ServiceName;
+    // model.Ship_ServiceExtras = formModel.Ship_ServiceExtras ? formModel.Ship_ServiceExtras : model.Ship_ServiceExtras;
     model.Ship_ServiceExtrasText = formModel.Ship_ServiceExtrasText ? formModel.Ship_ServiceExtrasText : model.Ship_ServiceExtrasText;
     model.Ship_ExtrasText = formModel.Ship_ExtrasText ? formModel.Ship_ExtrasText : model.Ship_ExtrasText;
     model.Ship_InsuranceFee = formModel.Ship_InsuranceFee ? formModel.Ship_InsuranceFee : model.Ship_InsuranceFee;
