@@ -89,7 +89,7 @@ const SERVICES = [
     TDSSpinnerModule,
     TDSTabsModule,
     PipeModule,
-    UploadImageModule
+    UploadImageModule,
   ],
   exports:[
    ...cmp

@@ -1,7 +1,7 @@
 <div class="w-full h-full flex items-stretch bg-neutral-3-200 text-body-2 text-neutral-1-900">
   <!-- conversation list -->
   <div class="w-1/5 h-full ">
-      <div class="w-full flex flex-col gap-1 px-1 h-full">
+      <div class="w-full flex flex-col gap-1 pl-1 h-full">
           <div class="bg-white  flex flex-col gap-y-4 p-2.5 z-10">
             <div class="block items-center">
                   <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)"></tpage-team-dropdown>
@@ -92,8 +92,9 @@
   <!--Nội dung cuộc hội thoại-->
   <tds-spin class="flex w-1/2" [spinning]="isLoading">
     <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
-        <div *ngIf="activeCvsItem?.id && currentTeam">
+        <div class="flex w-full flex-col h-full" *ngIf="activeCvsItem?.id && currentTeam">
             <shared-tds-conversations
+            class="flex w-full h-full"
                 [data]="activeCvsItem"
                 [type]="type" [team]="currentTeam"
                 (onLoadMiniChat)="onLoadMiniChat($event)">
