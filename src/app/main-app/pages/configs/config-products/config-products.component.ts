@@ -80,7 +80,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
   ngOnInit(): void {
     this.loadGridConfig();
     this.loadTagList();
-    this.configService.set('message',{maxStack:1});
+    // this.configService.set('message',{maxStack:1});
   }
 
   ngAfterViewInit(): void {

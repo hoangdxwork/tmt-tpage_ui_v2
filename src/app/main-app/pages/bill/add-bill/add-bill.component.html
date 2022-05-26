@@ -12,8 +12,8 @@
             </div>
 
             <div class="flex gap-x-2">
-                <button tds-button color="primary" (click)="onSave()">Lưu lại</button>
-                <button tds-button color="secondary" class="mr-4"  (click)="onBack()">Quay lại</button>
+                <button tds-button color="primary" type="button" (click)="onSave()">Lưu lại</button>
+                <button tds-button color="secondary" type="button" class="mr-4" (click)="onBack()">Quay lại</button>
             </div>
         </div>
         <div class="flex flex-col h-full gap-y-4 px-4 pb-4 overflow-auto tds-custom-scroll" *ngIf="dataModel">
@@ -42,7 +42,7 @@
                                     </tds-form-field>
                                     <div class="flex justify-between">
                                         <tds-button-group>
-                                        <button tds-dropdown trigger="click" [tdsDropdownMenu]="menu1">
+                                        <button tds-dropdown trigger="click" type="button" [tdsDropdownMenu]="menu1">
                                             <span class="flex items-center font-semibold text-primary-1">
                                                 {{_form.controls["Partner"].value ? _form.controls["Partner"].value.StatusText : "N/A" }}
                                                 <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
@@ -57,17 +57,17 @@
                                         </tds-dropdown-menu>
                                     </tds-button-group>
                                         <div class="flex gap-x-2">
-                                            <button tds-button-icon color="secondary" *ngIf="_form.controls['Partner'].value" (click)="editPartner(_form.controls['Partner'].value)">
+                                            <button tds-button-icon color="secondary" type="button" *ngIf="_form.controls['Partner'].value" (click)="editPartner(_form.controls['Partner'].value)">
                                                 <span class="flex items-center">
                                                     <i class="tdsi-edit-fill"></i>
                                                 </span>
                                             </button>
-                                            <button tds-button-icon color="primary" (click)="editPartner(null)">
+                                            <button tds-button-icon color="primary" type="button" (click)="editPartner(null)">
                                                 <span class="flex items-center">
                                                     <i class="tdsi-plus-fill"></i>
                                                 </span>
                                             </button>
-                                            <button tds-button-icon color="secondary" (click)="showModalSearchPartner()">
+                                            <button tds-button-icon color="secondary" type="button" (click)="showModalSearchPartner()">
                                                 <span class="flex items-center">
                                                     <i class="tdsi-search-fill"></i>
                                                 </span>
@@ -220,8 +220,9 @@
                                 </div>
                                 <div class="w-2/3"  *ngIf="dataModel.State != 'open'">
                                     <tds-form-field>
-                                        <input tdsInput autocomplete="off" placeholder="Nhập tiền cọc"
-                                        formControlName="AmountDeposit" (ngModelChange)="changeAmountDeposit($event)" />
+                                        <tds-input-number [min]='0' [step]="1" placeholder="Nhập tiền cọc" formControlName="AmountDeposit" 
+                                            (ngModelChange)="changeAmountDeposit($event)">
+                                        </tds-input-number>
                                     </tds-form-field>
                                 </div>
                                 <div class="w-2/3" *ngIf="dataModel.State == ('open' || 'cancel') ">
@@ -342,12 +343,12 @@
                                                             </ng-template>
                                                             <ng-template #popoverFooterShip_InsuranceFee>
                                                                 <div class="flex justify-end gap-x-2 mt-2">
-                                                                    <button tds-button-icon color="primary"(click)="changeShipInsuranceFee()">
+                                                                    <button tds-button-icon color="primary" type="button" (click)="changeShipInsuranceFee()">
                                                                         <span class="flex items-center">
                                                                             <i class="tdsi-checkbox-check-fill"></i>
                                                                         </span>
                                                                     </button>
-                                                                    <button tds-button-icon color="secondary" (click)="closePopoverShipFee()">
+                                                                    <button tds-button-icon color="secondary" type="button" (click)="closePopoverShipFee()">
                                                                     <span class="flex items-center">
                                                                         <i class="tdsi-close-fill"></i>
                                                                     </span>
@@ -400,7 +401,8 @@
                                                         <tds-checkbox [(ngModel)]="child.IsSelected" [ngModelOptions]="{standalone: true}"> 
                                                             <div class="flex flex-row items-center w-full">
                                                                 <span class="mr-2">{{child.ServiceName}}</span> 
-                                                                <div *ngIf="_form.controls['Carrier'].value?.DeliveryType == 'ViettelPost' && child.ServiceId == 'XMG' && child.IsSelected == true">
+                                                                <div *ngIf="child.ServiceId == 'XMG' && child.IsSelected == true">
+                                                                    <!-- _form.controls['Carrier'].value?.DeliveryType === 'ViettelPost' &&  -->
                                                                     <button type="button" style="border-bottom: dashed 2px #2395FF;"
                                                                             tds-popover popoverTrigger="click"
                                                                             (click)="openPopoverShipExtraMoney(child.ExtraMoney)"
@@ -422,12 +424,12 @@
                                                                     </ng-template>
                                                                     <ng-template #popoverFooterShip_ExtraMoney>
                                                                         <div class="flex justify-end gap-x-2 mt-2">
-                                                                            <button tds-button-icon color="primary"(click)="changeShipExtraMoney()">
+                                                                            <button tds-button-icon color="primary" type="button" (click)="changeShipExtraMoney()">
                                                                                 <span class="flex items-center">
                                                                                     <i class="tdsi-checkbox-check-fill"></i>
                                                                                 </span>
                                                                             </button>
-                                                                            <button tds-button-icon color="secondary" (click)="closePopoverShipExtraMoney()">
+                                                                            <button tds-button-icon color="secondary" type="button" (click)="closePopoverShipExtraMoney()">
                                                                             <span class="flex items-center">
                                                                                 <i class="tdsi-close-fill"></i>
                                                                             </span>
@@ -894,12 +896,12 @@
                                         <td>{{data.PriceTotal || 0 | number: '1.0-3' }}</td>
                                         <td>
                                             <div class="flex gap-x-2">
-                                                <button tds-button-icon color="primary" size="sm" (click)="copyOrderLine(data, i)">
+                                                <button tds-button-icon color="primary" size="sm" type="button" (click)="copyOrderLine(data, i)">
                                                     <span class="flex items-center">
                                                         <i class="tdsi-copy-fill"></i>
                                                     </span>
                                                 </button>
-                                                <button tds-button-icon color="error" size="sm" (click)="removeOrderLines(data, i)">
+                                                <button tds-button-icon color="error" size="sm" type="button" (click)="removeOrderLines(data, i)">
                                                     <span class="flex items-center">
                                                         <i class="tdsi-trash-fill"></i>
                                                     </span>
@@ -919,7 +921,7 @@
                                                     <div><span class="font-regular">Tổng tạm tính</span></div>
                                                     <div class="col-span-2"><span>{{totalAmountLines | number: '1.0-3' }}đ</span></div>
 
-                                                    <button tds-button color="secondary"
+                                                    <button tds-button color="secondary" type="button"
                                                         tds-popover popoverTrigger="click"
                                                         (click)="openPopoverDiscount()"
                                                         [(popoverVisible)]="visiblePopoverDiscount"
@@ -935,7 +937,7 @@
                                                     <div class="col-span-2">
                                                         <span>{{(_form.controls["DecreaseAmount"].value + _form.controls["DiscountAmount"].value) || 0 | number}} đ</span>
                                                     </div>
-                                                    <button tds-button color="secondary" tds-popover
+                                                    <button tds-button color="secondary" type="button" tds-popover
                                                         popoverTrigger="click"
                                                         (click)="openPopoverTax()"
                                                         [(popoverVisible)]="visiblePopoverTax"
@@ -988,7 +990,7 @@
                         </ng-template>
                         <ng-template #popoverFooterDiscount>
                             <div class="flex justify-end gap-x-2 mt-2">
-                                <button tds-button-icon color="secondary" (click)="closePopoverDiscount()">
+                                <button tds-button-icon color="secondary" type="button" (click)="closePopoverDiscount()">
                                     <span class="flex items-center">
                                         <i class="tdsi-close-fill"></i>
                                     </span>
@@ -999,17 +1001,17 @@
                         <!-- popover button Thuế -->
                         <ng-template #popoverContentTax>
                             <div class="flex gap-x-2">
-                                <button tds-button color="secondary" (click)="selectTax(null)" [color]="(_form.controls['Tax'].value ? _form.controls['Tax'].value.Amount : 0) == 0 ? 'primary' : 'secondary'">
+                                <button tds-button color="secondary" type="button" (click)="selectTax(null)" [color]="(_form.controls['Tax'].value ? _form.controls['Tax'].value.Amount : 0) == 0 ? 'primary' : 'secondary'">
                                     <span class="flex items-center">Thuế GTGT 0%</span>
                                 </button>
-                                <button tds-button color="secondary" (click)="selectTax(tax)" *ngFor="let tax of lstTax" [color]="(_form.controls['Tax'].value ? _form.controls['Tax'].value.Amount : 0) == tax.Amount ? 'primary' : 'secondary'">
+                                <button tds-button color="secondary" type="button" (click)="selectTax(tax)" *ngFor="let tax of lstTax" [color]="(_form.controls['Tax'].value ? _form.controls['Tax'].value.Amount : 0) == tax.Amount ? 'primary' : 'secondary'">
                                     <span class="flex items-center">{{tax.Name}}</span>
                                 </button>
                             </div>
                         </ng-template>
                         <ng-template #popoverFooterTax>
                             <div class="flex justify-end gap-x-2 mt-2">
-                                <button tds-button-icon color="secondary" (click)="closePopoverTax()">
+                                <button tds-button-icon color="secondary" type="button" (click)="closePopoverTax()">
                                     <span class="flex items-center">
                                         <i class="tdsi-close-fill"></i>
                                     </span>
