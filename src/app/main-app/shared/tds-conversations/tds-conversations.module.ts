@@ -1,3 +1,4 @@
+import { ReactiveFormsModule } from '@angular/forms';
 import { CRMTagService } from './../../services/crm-tag.service';
 import { QuickReplyService } from './../../services/quick-reply.service';
 import { NgModule } from '@angular/core';
@@ -18,6 +19,7 @@ import { TDSImageModule } from 'tmt-tang-ui';
 import {  TDSAlertModule } from 'tmt-tang-ui';
 import { TDSCollapseModule } from 'tmt-tang-ui';
 import { TDSUploadModule } from "tmt-tang-ui";
+import { MainSharedModule } from 'src/app/main-app/shared/shared.module';
 
 const CMP =[
   TDSConversationsComponent,
@@ -33,6 +35,7 @@ const CMP =[
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     ScrollingModule,
     TDSOutletModule,
     TDSAvatarModule,
@@ -58,7 +61,8 @@ const CMP =[
     TDSAlertModule,
     TDSTagModule,
     TDSCheckBoxModule,
-    TDSUploadModule
+    TDSUploadModule,
+    MainSharedModule,
   ],
   exports:[
     ...CMP

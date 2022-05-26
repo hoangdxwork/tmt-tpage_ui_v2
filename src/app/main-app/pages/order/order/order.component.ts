@@ -169,10 +169,10 @@ export class OrderComponent implements OnInit {
 
   loadSummaryStatus() {
     let model : SaleOnlineOrderSummaryStatusDTO = {
-      dateStart: this.filterObj.dateRange.startDate,
-      dateEnd: this.filterObj.dateRange.endDate,
-      searchText: this.filterObj.searchText,
-      tagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+      DateStart: this.filterObj.dateRange.startDate,
+      DateEnd: this.filterObj.dateRange.endDate,
+      SearchText: this.filterObj.searchText,
+      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
     }
 
     this.isLoading = true;

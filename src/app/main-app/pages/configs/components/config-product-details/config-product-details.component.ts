@@ -13,14 +13,13 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'config-product-details',
-  templateUrl: './config-product-details.component.html',
-  styleUrls: ['./config-product-details.component.scss']
+  templateUrl: './config-product-details.component.html'
 })
 export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
   @Input() productTemplate!: ProductTemplateDTO;
 
-  stockMoveData:Array<ConfigStockMoveDTO> = [];
-  productInventoryData: Array<ConfigProductInventoryDTO> = [];
+  lstStockMove:Array<ConfigStockMoveDTO> = [];
+  lstProductInventory: Array<ConfigProductInventoryDTO> = [];
   private destroy$ = new Subject<void>();
 
   pageSize_stockMove = 10;
@@ -41,11 +40,7 @@ export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
     private stokeMoveService: StockMoveService
   ) {}
 
-  ngOnInit(): void {
-    console.log(this.productTemplate)
-    this.getStockMoveProduct(this.pageSize_stockMove,this.pageIndex_stockMove);
-    this.getProductInventory(this.pageSize_productInventory,this.pageIndex_productInventory);
-  }
+  ngOnInit(): void {}
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -60,17 +55,13 @@ export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
     this.stokeMoveService.getStockMoveProduct(this.productTemplate.Id,params).pipe(takeUntil(this.destroy$)).subscribe(
       (res:ODataStokeMoveDTO)=>{
         this.count_stockMove = res['@odata.count'] as number;
-        this.stockMoveData = res.value;
+        this.lstStockMove = res.value;
         this.isLoading_stockMove = false;
       }, error => {
         this.isLoading_stockMove = false;
         this.message.error('Tải dữ liệu thẻ kho thất bại!');
       }
     );
-  }
-
-  onStockMoveQueryParamsChange(params: TDSTableQueryParams){
-    this.getStockMoveProduct(params.pageSize, params.pageIndex);
   }
 
   refreshStockMoveTable(){
@@ -87,17 +78,13 @@ export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
     this.productService.getInventoryProduct(this.productTemplate.Id,params).pipe(takeUntil(this.destroy$)).subscribe(
       (res:ODataProductInventoryDTO)=>{
         this.count_stockMove = res['@odata.count'] as number;
-        this.productInventoryData = res.value;
+        this.lstProductInventory = res.value;
         this.isLoading_productInventory = false;
       }, error => {
         this.isLoading_productInventory = false;
         this.message.error('Tải dữ liệu tồn kho thất bại!');
       }
     );
-  }
-
-  onProductInventoryQueryParamsChange(params: TDSTableQueryParams){
-    this.getProductInventory(params.pageSize, params.pageIndex);
   }
 
   refreshProductInventoryTable(){

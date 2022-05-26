@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Subject, Observable } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
-import { TDSHelperArray, TDSHelperString, TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperArray, TDSHelperString, TDSMessageService, TDSSafeAny, TDSHelperObject } from 'tmt-tang-ui';
 import { CheckAddressDTO, CityDTO, DistrictDTO, ResultCheckAddressDTO, WardDTO } from '../../dto/address/address.dto';
 import { AddressService } from '../../services/address.service';
 
@@ -168,18 +168,19 @@ export class TpageConversationAddressComponent implements OnInit {
     let value = this.formAddress.controls["street"].value;
     if(!TDSHelperString.hasValueString(value)) {
       this.message.error('Vui lòng nhập dữ liệu trước khi kiểm tra!');
-      return
+      return;
     }
 
     this.addressService.checkAddress(value).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-      if (res.success && TDSHelperArray.isArray(res.data)) {
+      if (res.success && TDSHelperArray.hasListValue(res.data)) {
         this.index = 0;
         res.success && (this.lstResultCheck = res.data);
-        res.success && this.setValueSelect(res.data[0], 0);
+        res.success && this.setValueSelect(0, res.data[0]);
         this.isSuggest = true;
       }
       else{
         this.message.error('Không tìm thấy kết quả phù hợp!');
+        this.setValueSelect(0);
       }
     });
   }
@@ -188,23 +189,23 @@ export class TpageConversationAddressComponent implements OnInit {
     this.prepareAddress();
   }
 
-  setValueSelect(value: ResultCheckAddressDTO, index: number) {
+  setValueSelect(index: number, value?: ResultCheckAddressDTO) {
     this.index = index;
     let formControls = this.formAddress.controls;
 
-    formControls["street"].setValue(value.Address);
+    formControls["street"].setValue(value?.Address);
 
-    formControls["city"].setValue(value.CityCode ? {
+    formControls["city"].setValue(value?.CityCode ? {
       Code: value.CityCode,
       Name: value.CityName
     } : null);
 
-    formControls["district"].setValue(value.DistrictCode ? {
+    formControls["district"].setValue(value?.DistrictCode ? {
       Code: value.DistrictCode,
       Name: value.DistrictName
     }: null);
 
-    formControls["ward"].setValue(value.WardCode ? {
+    formControls["ward"].setValue(value?.WardCode ? {
       Code: value.WardCode,
       Name: value.WardName
     } : null);

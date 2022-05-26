@@ -20,8 +20,7 @@ import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-config-add-product',
-  templateUrl: './config-add-product.component.html',
-  styleUrls: ['./config-add-product.component.scss']
+  templateUrl: './config-add-product.component.html'
 })
 export class ConfigAddProductComponent implements OnInit, OnDestroy {
   _form!: FormGroup;

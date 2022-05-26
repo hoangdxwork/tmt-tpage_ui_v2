@@ -14,9 +14,7 @@ import { Model, number } from 'echarts';
 
 @Component({
   selector: 'app-auto-chat-add-data-modal',
-  templateUrl: './auto-chat-add-data-modal.component.html',
-  styleUrls: ['./auto-chat-add-data-modal.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+  templateUrl: './auto-chat-add-data-modal.component.html'
 })
 
 export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {

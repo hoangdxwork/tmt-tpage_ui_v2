@@ -10,8 +10,7 @@ import { ListSMSDTO, RestSMSDTO } from 'src/app/main-app/dto/sms/sms.dto';
 
 @Component({
   selector: 'app-sms-messages-add-service-modal',
-  templateUrl: './sms-messages-add-service-modal.component.html',
-  styleUrls: ['./sms-messages-add-service-modal.component.scss']
+  templateUrl: './sms-messages-add-service-modal.component.html'
 })
 export class SMSMessagesAddServiceModalComponent implements OnInit {
   @Input() dataId!: number;

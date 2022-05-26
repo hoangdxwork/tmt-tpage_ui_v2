@@ -5,8 +5,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 
 @Component({
   selector: 'app-modal-change-password-user',
-  templateUrl: './modal-change-password-user.component.html',
-  styleUrls: ['./modal-change-password-user.component.scss']
+  templateUrl: './modal-change-password-user.component.html'
 })
 export class ModalChangePasswordUserComponent implements OnInit {
 

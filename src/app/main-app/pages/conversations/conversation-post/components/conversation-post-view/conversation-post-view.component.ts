@@ -150,7 +150,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
       title: `Cấu hình bài viết - ${date}` ,
       content: ConfigPostOutletComponent,
       size: "xl",
-      footer: null,
+      centered: true,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         data:  this.data

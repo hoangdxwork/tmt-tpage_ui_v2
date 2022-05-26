@@ -13,8 +13,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 
 @Component({
   selector: 'app-config-promotion-combo',
-  templateUrl: './config-promotion-combo.component.html',
-  styleUrls: ['./config-promotion-combo.component.scss']
+  templateUrl: './config-promotion-combo.component.html'
 })
 export class ConfigPromotionComboComponent implements OnInit {
   @Input() form!: FormGroup;

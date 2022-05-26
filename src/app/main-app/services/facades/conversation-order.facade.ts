@@ -1,8 +1,10 @@
+import { Message } from './../../../lib/consts/message.const';
+import { OrderFormHandler } from './../handlers/order-form.handler';
 import { EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { TAuthService, TCommonService, UserInitDTO } from "src/app/lib";
-import { TDSHelperObject, TDSHelperString, TDSMessageService } from "tmt-tang-ui";
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSSafeAny } from "tmt-tang-ui";
 import { CheckConversationData, ConversationLastOrderDetailDTO } from "../../dto/partner/check-conversation.dto";
 import { BaseSevice } from "../base.service";
 import { ConversationService } from "../conversation/conversation.service";
@@ -15,6 +17,11 @@ import { GeneralConfigsFacade } from "./general-config.facade";
 import { ProductDTO } from "../../dto/product/product.dto";
 import { FacebookCommentService } from "../facebook-comment.service";
 import { SaleOnline_OrderDTO, SaleOnline_Order_DetailDTO } from "../../dto/saleonlineorder/sale-online-order.dto";
+import { CheckFormHandler } from '../handlers/check-form.handler';
+import { SaleOnline_OrderService } from '../sale-online-order.service';
+import { FormGroup } from '@angular/forms';
+import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
+import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -31,13 +38,25 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
   private order!: ConversationOrderForm;
   private productDefault!: ConversationOrderProductDefaultDTO | undefined;
 
+
+  public onAddProductOrder = new EventEmitter<DataPouchDBDTO>();
+
+  // Event Input
+  // Sự kiện tạo đơn hàng từ comment bài post
+  public onCreateOrderFromPostComment: EventEmitter<any> = new EventEmitter();
+
+  // Sự kiện sửa đơn hàng từ comment bài post
+  public onEditOrderFromPostComment: EventEmitter<any> = new EventEmitter();
+
   public onLastOrderUpdated$: EventEmitter<any> = new EventEmitter<any>();
   public onLastOrderCheckCvs$: EventEmitter<ConversationOrderForm> = new EventEmitter<ConversationOrderForm>();
   public onConversationOrder$: EventEmitter<any> = new EventEmitter<any>();
 
+  // Event Output
   public onOrderCheckPost$: EventEmitter<ConversationOrderForm> = new EventEmitter<ConversationOrderForm>();
 
-  constructor(private apiService: TCommonService,
+  constructor(
+      private apiService: TCommonService,
       private message: TDSMessageService,
       private crmTeamService: CRMTeamService,
       private service: ConversationService,
@@ -45,8 +64,12 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
       private sgRConnectionService: SignalRConnectionService,
       private generalConfigsFacade: GeneralConfigsFacade,
       private facebookCommentService: FacebookCommentService,
+      private orderFormHandler: OrderFormHandler,
+      private checkFormHandler: CheckFormHandler,
+      private saleOnline_OrderService: SaleOnline_OrderService,
       private auth: TAuthService,
-      private sharedService: SharedService) {
+      private sharedService: SharedService
+  ) {
         super(apiService);
         this.onInit();
   }
@@ -68,6 +91,8 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
   initialize() {
     this.changePartner();
     this.changePartnerByComment();
+    this.onCreateOrderByComment();
+    this.changeByOrderId();
   }
 
   loadSaleConfig() {
@@ -139,22 +164,86 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
   }
 
   changePartnerByComment() {
-    this.partnerService.onLoadPartnerFormPostComment
+    this.partnerService.onLoadPartnerFromPostComment
       .subscribe((res: any) => {
         let psid = res?.from?.id;
         let postId = res?.object?.id;
-        let teamId = this.crmTeamService.getCurrentTeam();
+        let currentTeam = this.crmTeamService.getCurrentTeam();
 
-        this.facebookCommentService.getCustomersByFacebookId(psid, postId, teamId?.Id).subscribe(res => {
-          console.log(res);
-          if(res?.orders) {
-            this.order = this.loadLastOrder(res.orders[0]);
+        this.facebookCommentService.getCustomersByFacebookId(psid, postId, currentTeam?.Id).subscribe(customer => {
+          if(TDSHelperArray.hasListValue(customer?.orders)) {
+            this.order = this.loadLastOrder(customer.orders[0]);
+            this.onOrderCheckPost$.emit(this.order);
           }
+          else {
+            let userId = res?.from?.id;
+            let pageId = res?.object?.id.split("_")[0];
 
-          this.onOrderCheckPost$.emit(this.order);
+            this.checkInfoPartner(userId, pageId).subscribe(partner => {
+              this.order = this.loadOrderDefault(partner?.Data);
+              this.onOrderCheckPost$.emit(this.order);
+            });
+          }
         });
-
       });
+  }
+
+  changeByOrderId() {
+    this.onEditOrderFromPostComment.subscribe((order: TDSSafeAny) => {
+      this.saleOnline_OrderService.getById(order.Id).subscribe(res => {
+        this.order = this.loadLastOrder(res);
+        this.onOrderCheckPost$.emit(this.order);
+      });
+    });
+  }
+
+  onCreateOrderByComment() {
+    this.onCreateOrderFromPostComment.subscribe(res => {
+      let userId = res?.from?.id;
+      let pageId = res?.object?.id.split("_")[0];
+
+      this.checkInfoPartner(userId, pageId).subscribe(infoPartner => {
+        if(infoPartner?.Data) {
+          // Tạo order form, update theo comment
+          let formOrder = this.orderFormHandler.createOrderFormGroup();
+          this.orderFormHandler.updateFormByComment(formOrder, res, infoPartner?.Data);
+
+          // Gán Facebook_Comments
+          let fbComment = this.checkFormHandler.prepareOrderComment(res);
+          formOrder.controls.Facebook_Comments.setValue([fbComment]);
+
+          // Chuẩn bị model
+          let model = this.checkFormHandler.prepareOrder(formOrder);
+
+          // Tạo đơn theo bình luận
+          this.saleOnline_OrderService.insertFromPost(model, true).subscribe((res) => {
+            this.order = this.loadLastOrder(res);
+            this.onOrderCheckPost$.emit(this.order);
+            this.message.success(Message.Order.UpdateSuccess);
+          }, error => {
+            this.message.error(`${error?.error?.message}` || JSON.stringify(error));
+          });
+        }
+      });
+    });
+  }
+
+  checkInfoPartner(userId: string, pageId: string): Observable<any> {
+    return new Observable(observer => {
+      let model = {
+        UserId: userId,
+        PageId: pageId
+      };
+
+      this.partnerService.checkInfo(model).subscribe(res => {
+        observer.next(res);
+        observer.complete();
+      }, error => observer.error(error));
+    });
+  }
+
+  updateOrderFormByComment(form: FormGroup, comment: any) {
+    form.reset();
   }
 
   loadLastOrder(data: SaleOnline_OrderDTO, conversationData?: CheckConversationData): any {
@@ -250,10 +339,6 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
     model.User = this.userInit ? { Id: this.userInit?.Id, Name: this.userInit?.Name } : undefined;
 
     return model;
-  }
-
-  prepareModel(data: any){
-
   }
 
   orderDefault() {

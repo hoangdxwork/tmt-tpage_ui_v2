@@ -50,12 +50,23 @@
 
           <!-- Chọn số điện thoại, địa chỉ, ghi chú -->
           <div *ngIf="!data.message?.attachments" class="select-icon">
-            <a tds-tooltip tooltipTitle="Chọn làm số điện thoại" (click)="selectOrder('phone')">
-                <span class="tdsi-call-fill"></span></a>
-            <a tds-tooltip tooltipTitle="Chọn làm địa chỉ" (click)="selectOrder('address')">
-                <span class="tdsi-pin-fill"></span></a>
-            <a tds-tooltip tooltipTitle="Chọn làm ghi chú" (click)="selectOrder('note')">
-                <span class="tdsi-note-2-fill"></span></a>
+            <div class="select-order flex flex-row items-center w-fit h-full px-3">
+				<span tds-tooltip tooltipTitle="Chọn làm số điện thoại"
+					class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+					(click)="selectOrder('phone')">
+					<i class="tdsi-call-fill text-xs text-white"></i>
+				</span>
+				<span tds-tooltip tooltipTitle="Chọn làm địa chỉ"
+					class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+					(click)="selectOrder('address')">
+					<i class="tdsi-pin-fill text-xs text-white"></i>
+				</span>
+				<span tds-tooltip tooltipTitle="Chọn làm ghi chú"
+					class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
+					(click)="selectOrder('note')">
+					<i class="tdsi-note-2-fill text-xs text-white"></i>
+				</span>
+			</div>
           </div>
       </div>
 
@@ -93,9 +104,9 @@
 				</div>
 				<div class="inline-flex w-fit chat-main-block group">
 					<!-- Nội dung bình luận -->
-					<div class="chat-body w-full" tds-tooltip
+					<div class="chat-body w-full !m-0" tds-tooltip
 						tooltipTitle="{{data.DateCreated | date:'dd'}}/{{data.DateCreated | date:'MM'}} {{data.DateCreated | date:'HH:mm'}}">
-						<div class="chat-content">
+						<div class="chat-content bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
 							<div class="flex flex-auto">
 								<!--Nội dung-->
 								<div *ngIf="data.message_formatted">
@@ -159,18 +170,25 @@
 					</span>
 				</div>
 				<!-- Input trả lời bình luận -->
-				<div class="chat-reply bg-white rounded-xl w-full mt-1" *ngIf="isReply == true">
+				<div class="chat-reply flex flex-col gap-y-5 bg-white rounded-xl w-full p-4 mt-4 border-b-2 border-primary-1" *ngIf="isReply == true">
 					<div class="flex flex-row w-full">
 						<textarea id="inputReply" #contentReply tdsInput placeholder="Nhập nội dung trả lời"
-							class="w-full resize-none" (change)="replyComment($event)"></textarea>
-						<div class="mx-2">
-							<div class="icon-send flex flex-row">
-								<span class="sub cursor-pointer mr-2" *ngIf="isPrivateReply"
-									(onProductSelected)="onProductSelected($event)" title="Sản phẩm"
-									product-show-button>
-									<i class="tdsi-product-line text-xl"></i>
+							class="w-full resize-none !p-0 !m-0" (change)="replyComment($event)"></textarea>
+						<div class="">
+							<button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'">
+								<span class="flex items-center px-5">
+									<i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
 								</span>
-
+							</button>
+						</div>
+					</div>
+					<!-- Check Private Reply -->
+					<div class="quick-message gap-5">
+						<div class="check gap-5 flex justify-between">
+							<tds-checkbox [checked]="isPrivateReply" (change)="changeIsPrivateReply()">
+								Gửi về tin nhắn
+							</tds-checkbox>
+							<div class="icon-send flex flex-row mr-2">
 								<span class="sub cursor-pointer mr-2" container="body" placement="auto" tds-popover
 									popoverTrigger="click" [popoverContent]="infoEmojiMart" [popoverAutoClose]="true"
 									[popoverBackdrop]="true" popoverPlacement="top">
@@ -178,10 +196,15 @@
 									<ng-template #infoEmojiMart>
 										<div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
 									</ng-template>
-									<!-- <ng-template #popContent>
-                          <div (onIconShowButtonSelected)="onIconShowButtonSelected($event)" icon-show-button></div>
-                          </ng-template> -->
 								</span>
+
+								<span class="sub cursor-pointer mr-2" *ngIf="isPrivateReply"
+									(onProductSelected)="onProductSelected($event)" title="Sản phẩm"
+									product-show-button>
+									<i class="tdsi-product-line text-xl"></i>
+								</span>
+
+
 								<span class="sub cursor-pointer" (onQuickReplySelected)="onQuickReplySelected($event)"
 									title="Tin nhắn nhanh" placement="left" quick-reply-button>
 									<i class="tdsi-message-template-line text-xl"></i>
@@ -189,18 +212,10 @@
 							</div>
 						</div>
 					</div>
-					<!-- Check Private Reply -->
-					<div class="quick-message d-flex gap-5">
-						<div class="check gap-5">
-							<tds-checkbox [checked]="isPrivateReply" (change)="changeIsPrivateReply()">
-								Gửi về tin nhắn
-							</tds-checkbox>
-						</div>
-					</div>
 				</div>
 				<!-- Phản hồi bình luận -->
 				<div *ngIf="children" class="chat-list">
-					<div class="chat-item mt-2 chat-comment flex flex-row"
+					<div class="chat-item mt-4 chat-comment flex flex-row"
 						*ngFor="let child of children; let i = index">
 						<div class="avatar mr-2">
 							<tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.from.id"
@@ -209,9 +224,9 @@
 						</div>
 						<div class="flex flex-col w-full">
 							<div class="inline-flex w-fit group">
-								<div class="chat-body" tds-tooltip
+								<div class="chat-body !m-0" tds-tooltip
 									tooltipTitle="{{child.created_time | date:'dd'}}/{{child.created_time | date:'MM'}} {{child.created_time | date:'HH:mm'}}">
-									<div class="chat-content flex-auto">
+									<div class="chat-content flex-auto bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
 										<div class="border-activety-comment" *ngIf="child.message_format">
 											<div class="name font-semibold pb-1">{{child.from.name}}</div>
 											<div class="content-message font-regular"
@@ -225,7 +240,7 @@
 								</div>
 								<div *ngIf="!child.message?.attachments"
 									class="chat-option invisible group-hover:visible">
-									<div class="select-order flex flex-row items-center w-fit h-full ml-3">
+									<div class="select-order flex flex-row items-center w-fit h-full pl-3">
 										<span tds-tooltip tooltipTitle="Chọn làm số điện thoại"
 											class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 											(click)="selectOrder('phone')">
@@ -279,9 +294,9 @@
 				</div>
 				<div class="inline-flex w-fit chat-main-block group">
 					<!--Nội dung-->
-					<div class="chat-body w-full" tds-tooltip
+					<div class="chat-body w-full !m-0" tds-tooltip
 						tooltipTitle="{{data.DateCreated | date:'dd'}}/{{data.DateCreated | date:'MM'}} {{data.DateCreated | date:'HH:mm'}}">
-						<div class="chat-content">
+						<div class="chat-content bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
 							<div *ngIf="data.message_formatted">
 								<span class="text-error-400">Lỗi hiển thị bài viết</span>
 								<div #contentMessage class="content-message"
@@ -332,18 +347,25 @@
 					</span>
 				</div>
 				<!-- Input trả lời bình luận -->
-				<div class="chat-reply bg-white rounded-xl w-full mt-1" *ngIf="isReply == true">
+				<div class="chat-reply flex flex-col gap-y-5 bg-white rounded-xl w-full p-4 mt-4 border-b-2 border-primary-1" *ngIf="isReply == true">
 					<div class="flex flex-row w-full">
 						<textarea id="inputReply" #contentReply tdsInput placeholder="Nhập nội dung trả lời"
-							class="w-full resize-none" (change)="replyComment($event)"></textarea>
-						<div class="mx-2">
-							<div class="icon-send flex flex-row">
-								<span class="sub cursor-pointer mr-2" *ngIf="isPrivateReply"
-									(onProductSelected)="onProductSelected($event)" title="Sản phẩm"
-									product-show-button>
-									<i class="tdsi-product-line text-xl"></i>
+							class="w-full resize-none !p-0 !m-0" (change)="replyComment($event)"></textarea>
+						<div class="">
+							<button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'">
+								<span class="flex items-center px-5">
+									<i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
 								</span>
-
+							</button>
+						</div>
+					</div>
+					<!-- Check Private Reply -->
+					<div class="quick-message  gap-5">
+						<div class="check gap-5 flex justify-between">
+							<tds-checkbox [checked]="isPrivateReply" (change)="changeIsPrivateReply()">
+								Gửi về tin nhắn
+							</tds-checkbox>
+							<div class="icon-send flex flex-row mr-2">
 								<span class="sub cursor-pointer mr-2" container="body" placement="auto" tds-popover
 									popoverTrigger="click" [popoverContent]="infoEmojiMart" [popoverAutoClose]="true"
 									[popoverBackdrop]="true" popoverPlacement="top">
@@ -353,6 +375,12 @@
 									</ng-template>
 								</span>
 
+								<span class="sub cursor-pointer mr-2" *ngIf="isPrivateReply"
+									(onProductSelected)="onProductSelected($event)" title="Sản phẩm"
+									product-show-button>
+									<i class="tdsi-product-line text-xl"></i>
+								</span>
+
 								<span class="sub cursor-pointer" (onQuickReplySelected)="onQuickReplySelected($event)"
 									title="Tin nhắn nhanh" placement="left" quick-reply-button>
 									<i class="tdsi-message-template-line text-xl"></i>
@@ -360,18 +388,10 @@
 							</div>
 						</div>
 					</div>
-					<!-- Check Private Reply -->
-					<div class="quick-message d-flex gap-5">
-						<div class="check gap-5">
-							<tds-checkbox [checked]="isPrivateReply" (change)="changeIsPrivateReply()">
-								Gửi về tin nhắn
-							</tds-checkbox>
-						</div>
-					</div>
 				</div>
 				<!-- Phản hồi bình luận -->
 				<div *ngIf="children" class="chat-list">
-					<div class="chat-item mt-2 chat-comment flex flex-row"
+					<div class="chat-item mt-4 chat-comment flex flex-row"
 						*ngFor="let child of children; let i = index">
 						<div class="avatar mr-2">
 							<tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.from.id"
@@ -380,9 +400,9 @@
 						</div>
 						<div class="flex flex-col w-full">
 							<div class="inline-flex w-fit group">
-								<div class="chat-body" tds-tooltip
+								<div class="chat-body !m-0" tds-tooltip
 									tooltipTitle="{{child.created_time | date:'dd'}}/{{child.created_time | date:'MM'}} {{child.created_time | date:'HH:mm'}}">
-									<div class="chat-content flex-auto">
+									<div class="chat-content flex-auto bg-white px-4 py-2 rounded-b-xl rounded-r-xl">
 										<div class="border-activety-comment" *ngIf="child.message_format">
 											<div class="name font-semibold pb-1">{{child.from.name}}</div>
 											<div class="content-message font-regular"
@@ -396,7 +416,7 @@
 								</div>
 								<div *ngIf="!child.message?.attachments"
 									class="chat-option invisible group-hover:visible">
-									<div class="select-order flex flex-row items-center w-fit h-full ml-3">
+									<div class="select-order flex flex-row items-center w-fit h-full pl-3">
 										<span tds-tooltip tooltipTitle="Chọn làm số điện thoại"
 											class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 											(click)="selectOrder('phone')">

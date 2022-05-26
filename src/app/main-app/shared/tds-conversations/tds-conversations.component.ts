@@ -5,8 +5,10 @@ import { ModalListBillComponent } from './../../pages/conversations/components/m
 import { ModalListProductComponent } from './../../pages/conversations/components/modal-list-product/modal-list-product.component';
 import { ModalImageStoreComponent } from './../../pages/conversations/components/modal-image-store/modal-image-store.component';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Optional, Output, Self,
-  SimpleChanges, TemplateRef, ViewContainerRef, Host, OnDestroy } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Optional, Output, Self,
+  SimpleChanges, TemplateRef, ViewContainerRef, Host, OnDestroy, ChangeDetectorRef
+} from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSResizeObserver, TDSUploadChangeParam, TDSUploadFile } from 'tmt-tang-ui';
 import { ConversationMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
@@ -28,12 +30,14 @@ import { CRMTagService } from '../../services/crm-tag.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { HttpResponse } from '@microsoft/signalr';
 import { CRMTeamService } from '../../services/crm-team.service';
+import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
+import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
 
 @Component({
   selector: 'shared-tds-conversations',
   templateUrl: './tds-conversations.component.html',
   styleUrls: ['./tds-conversations.component.sass'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
@@ -50,12 +54,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   partner: any;
   lstUser!: any[];
   isVisibleReply: boolean = false;
-  uploadedImages: any[] = [];
+  uploadedImages: string[] = [];
   currentImage: any;
   markSeenTimer: any;
   messageModel: any = null;
+  isVisbleTag: boolean = false
   tags: any[] = [];
-  postPictureError:any[] = [];
+  postPictureError: any[] = [];
   listOfTag: TDSSafeAny[] = [];
   keyFilter: string = '';
 
@@ -74,17 +79,20 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     private router: Router,
     private crmTeamService: CRMTeamService,
     private resizeObserver: TDSResizeObserver,
-    private viewContainerRef: ViewContainerRef) {
+    private conversationOrderFacade: ConversationOrderFacade,
+    private viewContainerRef: ViewContainerRef,
+    private cdr: ChangeDetectorRef
+  ) {
   }
 
   ngOnInit() {
     this.validateData();
-    if(this.data?.id && this.team && TDSHelperString.hasValueString(this.type)){
-       this.loadData(this.data);
+    if (this.data?.id && this.team && TDSHelperString.hasValueString(this.type)) {
+      this.loadData(this.data);
     }
   }
 
-  loadData(data: ConversationMatchingItem){
+  loadData(data: ConversationMatchingItem) {
     this.loadTags(data);
     this.initiateTimer();
     this.loadUser();
@@ -97,19 +105,19 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     this.isLoadMessage = true;
     this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
       .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => {this.isLoadMessage = false }));
+      .pipe(finalize(() => { this.isLoadMessage = false }));
   }
 
   loadUser() {
     this.applicationUserService.dataActive$.pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
-          this.lstUser = res;
+        this.lstUser = res;
       }, error => {
         this.message.error('Load user đã xảy ra lỗi');
       });
   }
 
-  initiateTimer(){
+  initiateTimer() {
     this.destroyTimer();
     this.markSeenTimer = setTimeout(() => {
       this.markSeen();
@@ -148,8 +156,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
         // Cập nhật count_unread
         this.conversationEventFacade.updateMarkSeenBadge(this.data.page_id, this.type, this.data.psid);
       }, error => {
-         this.message.error(`markseen: ${error?.error?.message}`);
-         console.log(error);
+        this.message.error(`markseen: ${error?.error?.message}`);
       });
   }
 
@@ -167,7 +174,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  showModalAddQuickReply(){
+  showModalAddQuickReply() {
     const modal = this.modalService.create({
       title: 'Thêm mới trả lời nhanh',
       content: ModalAddQuickReplyComponent,
@@ -187,27 +194,26 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  showModalListProduct(){
+  showModalListProduct() {
     const modal = this.modalService.create({
       title: 'Danh sách sản phẩm',
       content: ModalListProductComponent,
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
       componentParams: {
-
+        useListPrice: true,
+        isSelectProduct: true
       }
     });
-    modal.afterOpen.subscribe(() => {
 
-    });
-    // Return a result when closed
-    modal.afterClose.subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
+    modal.componentInstance?.selectProduct.subscribe((res: DataPouchDBDTO) =>{
+      if(TDSHelperObject.hasValue(res)) {
+        this.conversationOrderFacade.onAddProductOrder.emit(res);
       }
     });
   }
 
-  showModalListBill(){
+  showModalListBill() {
     const modal = this.modalService.create({
       title: 'Phiếu bán hàng',
       content: ModalListBillComponent,
@@ -227,71 +233,75 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  showModalAddTag(){
+  showModalAddTag() {
+    this.isVisbleTag = false
     const modal = this.modalService.create({
       title: 'Thêm thẻ hội thoại',
       content: ConfigConversationTagsCreateDataModalComponent,
       viewContainerRef: this.viewContainerRef,
     });
-
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if(TDSHelperObject.hasValue(result)){
+      if (TDSHelperObject.hasValue(result)) {
 
       }
     });
+  }
+
+  CallbackTag(ev: boolean) {
+    this.isVisbleTag = ev
   }
 
   loadEmojiMart(event: any) {
     this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
   }
 
-  validateData(){
+  validateData() {
     this.messageModel = null;
     this.tags = [];
     (this.dataSource$ as any) = null;
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if(changes["data"] && !changes["data"].firstChange) {
-        (this.data as any) = null;
-        this.validateData();
+    if (changes["data"] && !changes["data"].firstChange) {
+      (this.data as any) = null;
+      this.validateData();
 
-        this.data = changes["data"].currentValue;
-        let object ={
-            psid: this.data.psid,
-            messages: this.messageModel,
-            images: this.uploadedImages
-        }
-        this.draftMessageService.onUpdateDraftMessage$.emit(object);
-        let draftMessage = this.draftMessageService.getMessageByASIds(this.data.psid);
-        this.messageModel = draftMessage?.message;
+      this.data = changes["data"].currentValue;
+      let object = {
+        psid: this.data.psid,
+        messages: this.messageModel,
+        images: this.uploadedImages
+      }
+      this.draftMessageService.onUpdateDraftMessage$.emit(object);
+      let draftMessage = this.draftMessageService.getMessageByASIds(this.data.psid);
+      this.messageModel = draftMessage?.message;
 
-        if ((draftMessage.images as any[]).length > 0) {
-            this.uploadedImages = draftMessage.images;
-            this.currentImage = draftMessage.images[draftMessage.images.length - 1];
-        } else {
-            delete this.currentImage;
-            this.uploadedImages = [];
-        }
-        // TODO: Refetch data
-        if(!this.data.name && this.data.psid && this.data.psid != "null") {
-          this.refetch(changes["data"].currentValue.psid);
-        }
-        this.loadData(this.data);
+      if ((draftMessage.images as any[]).length > 0) {
+        this.uploadedImages = draftMessage.images;
+        this.currentImage = draftMessage.images[draftMessage.images.length - 1];
+      } else {
+        delete this.currentImage;
+        this.uploadedImages = [];
+      }
+      // TODO: Refetch data
+      if (!this.data.name && this.data.psid && this.data.psid != "null") {
+        this.refetch(changes["data"].currentValue.psid);
+      }
+      this.loadData(this.data);
     }
   }
 
-  loadTags(data: ConversationMatchingItem){
-    if(data && data.keyTags) {
-      if(!TDSHelperArray.hasListValue(this.tags)) {
+  loadTags(data: ConversationMatchingItem) {
+    if (data && data.keyTags) {
+      if (!TDSHelperArray.hasListValue(this.tags)) {
         this.crmTagService.dataActive$.subscribe((res: any) => {
-            this.tags = res;
-            this.listOfTag = this.tags;
-            this.sortTagsByParent();
-            this.searchTag();
+          this.tags = res;
+          this.listOfTag = this.tags;
+          this.sortTagsByParent();
+          this.searchTag();
         })
       } else {
-          this.sortTagsByParent();
+        this.sortTagsByParent();
       }
     }
   }
@@ -299,7 +309,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   sortTagsByParent() {
     let tags = this.tags || [];
     let local = this.crmTagService.getTagLocalStorage() as any;
-    if(TDSHelperArray.hasListValue(tags) && local) {
+    if (TDSHelperArray.hasListValue(tags) && local) {
       tags.sort((a: any, b: any) => {
         if (!local[a.Id]) {
           local[a.Id] = { "point": 0 };
@@ -325,12 +335,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
         if (res?.conversation?.psid == this.data.id) {
-            if (res.conversation?.name) {
-              this.data.name = res.conversation.name;
-            }
-            if (res.conversation?.from) {
-              this.data.from = res.conversation.from;
-            }
+          if (res.conversation?.name) {
+            this.data.name = res.conversation.name;
+          }
+          if (res.conversation?.from) {
+            this.data.from = res.conversation.from;
+          }
         }
       }, error => {
         this.message.error(`${error?.Error?.Message}` || 'Refetch đã xảy ra lỗi');
@@ -338,22 +348,22 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getExtrasChildren(data: any, item: any): any {
-      return (data?.extras?.children[item?.id] as any) || [];
+    return (data?.extras?.children[item?.id] as any) || [];
   }
 
-  getExtrasPosts(data: any, item: MakeActivityItemWebHook): any  {
-      return (data?.extras?.posts[item?.object_id] as any) || [];
+  getExtrasPosts(data: any, item: MakeActivityItemWebHook): any {
+    return (data?.extras?.posts[item?.object_id] as any) || [];
   }
 
-  errorPostPicture(item: MakeActivityItemWebHook){
+  errorPostPicture(item: MakeActivityItemWebHook) {
     this.postPictureError.push(item?.object_id);
   }
 
-  checkPostPictureError(item: MakeActivityItemWebHook){
-    return this.postPictureError.find(f=>f == item?.object_id);
+  checkPostPictureError(item: MakeActivityItemWebHook) {
+    return this.postPictureError.find(f => f == item?.object_id);
   }
 
-  onClickSender(){
+  onClickSender() {
     this.messageSendingToServer();
   }
 
@@ -362,26 +372,26 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     event.preventDefault();
   }
 
-  messageSendingToServer(): any{
+  messageSendingToServer(): any {
     let message = this.messageModel;
-    if(!TDSHelperArray.hasListValue(this.uploadedImages) && !TDSHelperString.hasValueString(message)){
-      return  this.message.error('Hãy nhập nội dung cần gửi');
+    if (!TDSHelperArray.hasListValue(this.uploadedImages) && !TDSHelperString.hasValueString(message)) {
+      return this.message.error('Hãy nhập nội dung cần gửi');
     }
 
     let activityFinal = this.activityDataFacade.getMessageNearest(this.team.Facebook_PageId, this.data.psid, this.type ? this.type : 'all') as any;
 
-    if(TDSHelperObject.hasValue(activityFinal) && activityFinal.type === 2) {
-      if(this.type === 'all') {
-          this.sendPrivateReplies(activityFinal, message);
-      } else if(this.type === 'comment') {
-          this.replyComment(activityFinal, message);
+    if (TDSHelperObject.hasValue(activityFinal) && activityFinal.type === 2) {
+      if (this.type === 'all') {
+        this.sendPrivateReplies(activityFinal, message);
+      } else if (this.type === 'comment') {
+        this.replyComment(activityFinal, message);
       }
     } else {
-        this.sendMessage(message);
+      this.sendMessage(message);
     }
   }
 
-  sendIconLike(){
+  sendIconLike() {
     const message = "(y)";
     let model = this.prepareModel(message);
     model.attachment = {
@@ -391,7 +401,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     this.crmMatchingService.addMessage(this.data.psid, model)
       .pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
-          this.messageResponse(res, model);
+        this.messageResponse(res, model);
       }, error => {
         this.message.error("Like thất bại");
       });
@@ -402,37 +412,36 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     this.crmMatchingService.addMessage(this.data.psid, model)
       .pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
-          this.messageResponse(res, model);
+        this.messageResponse(res, model);
       }, error => {
         this.message.error("Trả lời bình luận thất bại");
-        console.log(error);
-    });
+      });
   }
 
   sendPrivateReplies(activityFinal: any, message: string) {
     const model = this.prepareModel(message);
     model.to = {
-      id: activityFinal?.from_id || activityFinal?.comment?.from?.id ||  null,
+      id: activityFinal?.from_id || activityFinal?.comment?.from?.id || null,
       name: activityFinal?.comment?.from?.name || null,
     };
     model.comment_id = activityFinal?.comment?.id || activityFinal?.id || null;
 
     this.crmMatchingService.addQuickReplyComment(model)
       .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => {  }))
+      .pipe(finalize(() => { }))
       .subscribe((res: any) => {
 
         this.message.success('Gửi tin thành công');
         let countImageAdd = 0;
-        if(TDSHelperArray.hasListValue(res)){
+        if (TDSHelperArray.hasListValue(res)) {
           res.forEach((x: any) => {
-              x["status"] = ActivityStatus.sending;
+            x["status"] = ActivityStatus.sending;
 
-              if(!x.message_formatted) {
-                x["message"] = this.activityDataFacade.createDataAttachments(this.uploadedImages[countImageAdd]);
-                countImageAdd += 1;
-              }
-              this.activityDataFacade.messageServer({...x});
+            if (!x.message_formatted) {
+              x["message"] = this.activityDataFacade.createDataAttachments(this.uploadedImages[countImageAdd]);
+              countImageAdd += 1;
+            }
+            this.activityDataFacade.messageServer({ ...x });
           });
         }
         let items = res.pop();
@@ -441,10 +450,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
         this.currentImage = null;
         this.uploadedImages = [];
         this.messageModel = null;
-    }, error => {
-      this.message.error('Gửi tin nhắn thất bại');
-      console.log(error);
-    })
+      }, error => {
+        this.message.error('Gửi tin nhắn thất bại');
+      })
   }
 
   replyComment(activityFinal: any, message: string) {
@@ -457,38 +465,37 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
 
     this.activityMatchingService.replyComment(this.team?.Id, model)
       .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => {  }))
+      .pipe(finalize(() => { }))
       .subscribe((res: any) => {
 
         this.message.success("Trả lời bình luận thành công.");
         this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });
-        this.conversationDataFacade.messageServer({...res});
+        this.conversationDataFacade.messageServer({ ...res });
 
         this.currentImage = null;
         this.uploadedImages = [];
         this.messageModel = null;
-    }, error => {
-      this.message.error(`${error?.error?.message}` || "Trả lời bình luận thất bại.");
-      console.log(error);
-    });
+      }, error => {
+        this.message.error(`${error?.error?.message}` || "Trả lời bình luận thất bại.");
+      });
   }
 
-  messageResponse(res: any, model: SendMessageModelDTO){
-    if(TDSHelperArray.hasListValue(res)) {
-        res.map((x: any, i: number) => {
-            x["status"] = ActivityStatus.sending;
-            this.activityDataFacade.messageServer({...x});
+  messageResponse(res: any, model: SendMessageModelDTO) {
+    if (TDSHelperArray.hasListValue(res)) {
+      res.map((x: any, i: number) => {
+        x["status"] = ActivityStatus.sending;
+        this.activityDataFacade.messageServer({ ...x });
 
-            if(TDSHelperArray.hasListValue(this.uploadedImages)){
-                x["message"] = this.activityDataFacade.createDataAttachments(this.uploadedImages[i]);
-            }
-        });
+        if (TDSHelperArray.hasListValue(this.uploadedImages)) {
+          x["message"] = this.activityDataFacade.createDataAttachments(this.uploadedImages[i]);
+        }
+      });
     }
 
     let items = res.pop();
     this.conversationDataFacade.messageServer(items);
 
-    if(TDSHelperArray.hasListValue(this.uploadedImages) && TDSHelperArray.hasListValue(model?.attachments?.data)){
+    if (TDSHelperArray.hasListValue(this.uploadedImages) && TDSHelperArray.hasListValue(model?.attachments?.data)) {
       items["message_formatted"] = items["message_formatted"] || `Đã gửi ${model?.attachments?.data.length} ảnh.`;
     }
 
@@ -505,7 +512,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
       id: this.team.Facebook_PageId,
       name: this.team.Facebook_PageName
     }
-    model.to =  {
+    model.to = {
       id: this.data.psid,
       name: this.data.name
     };
@@ -516,23 +523,23 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     let exist = TDSHelperArray.hasListValue(this.uploadedImages) && this.type != 'comment'
-    if(exist) {
+    if (exist) {
       this.uploadedImages.map((x: string) => {
         (model.attachments?.data as any[]).push({
-            image_data: {
-              url: x
-            }
+          image_data: {
+            url: x
+          }
         });
       });
     }
     return model;
   }
 
-  assignUser(){
+  assignUser() {
   }
 
-  onSelectTag(item: any){
-    let tags = {...this.data.keyTags};
+  onSelectTag(item: any) {
+    let tags = { ...this.data.keyTags };
     if (tags[item.Id]) {
       this.removeIndexDbTag(item);
     } else {
@@ -540,16 +547,16 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  onRemoteTag(item: any){
+  onRemoteTag(item: any) {
     item.Id = item.id
     this.removeIndexDbTag(item);
   }
 
-  assignIndexDbTag(item: any){
+  assignIndexDbTag(item: any) {
     this.assignTagOnView(item);
     this.activityMatchingService.assignTagToConversation(this.data.id, item.Id, this.team.Facebook_PageId)
       .subscribe(() => {
-          this.crmTagService.addTagLocalStorage(item.Id);
+        this.crmTagService.addTagLocalStorage(item.Id);
       }, error => {
         this.removeTagOnView(item);
       });
@@ -568,9 +575,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   assignTagOnView(tag: any) {
     this.data.tags = this.data.tags || [];
     (this.data.tags as any[]).push({
-        id: tag.Id,
-        name: tag.Name,
-        color_class: tag.ColorClassName
+      id: tag.Id,
+      name: tag.Name,
+      color_class: tag.ColorClassName
     });
     this.data.keyTags[tag.Id] = true;
   }
@@ -581,10 +588,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     delete this.data.keyTags[tag.Id];
   }
 
-  searchTag(){
+  searchTag() {
     let data = this.tags;
     let key = this.keyFilter;
-    if(TDSHelperString.hasValueString(key)) {
+    if (TDSHelperString.hasValueString(key)) {
       key = TDSHelperString.stripSpecialChars(key.trim());
     }
     data = data.filter((x) =>
@@ -600,16 +607,16 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     this.sgRConnectionService.sendMessage('onSentConversation', dataToBroadcast);
   }
 
-  openPost(item: any, type :any) {
-    if(type === 'post' && item.object_id){
+  openPost(item: any, type: any) {
+    if (type === 'post' && item.object_id) {
       this.router.navigateByUrl(`/conversation/post?teamId=${this.team.Id}&type=post&post_id=${item.object_id}`);
     }
-    if(type === 'all' && item.object_id) {
-       //TODO xử lý tiếp
+    if (type === 'all' && item.object_id) {
+      //TODO xử lý tiếp
     }
   }
 
-  refreshRead(){
+  refreshRead() {
     this.messageModel = null;
     this.uploadedImages = [];
     this.loadMessages(this.data);
@@ -622,16 +629,16 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
 
   handleChange(info: TDSUploadChangeParam): void {
     if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList);
+      // console.log(info.file, info.fileList);
     }
     if (info.file.status === 'done') {
-        this.message.success(`${info.file.name} file uploaded successfully`);
+      this.message.success(`${info.file.name} file uploaded successfully`);
     } else if (info.file.status === 'error') {
-        this.message.error(`${info.file.name} file upload failed.`);
+      this.message.error(`${info.file.name} file upload failed.`);
     }
   }
 
-  handleDownload=(file: TDSUploadFile)=>{
+  handleDownload = (file: TDSUploadFile) => {
     window.open(file.response.url);
   }
 
@@ -643,16 +650,30 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     return this.sharedService.saveImageV2(formData)
       .pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
-        if(Message.Upload.Success) {
-          let x = res[0].urlImageProxy;
-
+        if (Message.Upload.Success) {
+          let x = res[0].urlImageProxy as string;
           this.currentImage = x;
-          this.uploadedImages.push(x);
+          const dataItem = [...this.uploadedImages, x];
+          this.uploadedImages = dataItem;
+          this.cdr.markForCheck();
         }
-    }, error => {
+      }, error => {
         let message = JSON.parse(error.Message);
         this.message.error(`${message.message}`);
-    });
+      });
   }
 
+  onLoadImage(ev: TDSSafeAny) {
+    let data:string[] = [];
+    if (TDSHelperObject.hasValue(ev) && TDSHelperArray.hasListValue(ev.files)) {
+      ev.files.forEach((e: TDSSafeAny) => {
+        data.push(e.url)
+      });
+    }
+    this.uploadedImages = [...data]
+  }
+
+  closeImages(){
+    this.uploadedImages = [];
+  }
 }

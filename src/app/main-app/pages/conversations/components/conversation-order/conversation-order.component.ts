@@ -9,7 +9,6 @@ import { Subject, pipe, Observable } from 'rxjs';
 import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CheckConversationData } from 'src/app/main-app/dto/partner/check-conversation.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { DraftMessageService } from 'src/app/main-app/services/conversation/draft-message.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationEventFacade } from 'src/app/main-app/services/facades/conversation-event.facade';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
@@ -73,7 +72,6 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
 
   constructor(
     private message: TDSMessageService,
-    private draftMessageService: DraftMessageService,
     private conversationEventFacade: ConversationEventFacade,
     private conversationOrderFacade: ConversationOrderFacade,
     private saleOnline_OrderService: SaleOnline_OrderService,
@@ -101,7 +99,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   get detailsFormGroups() {
-    return (this.orderForm?.get("Details") as FormArray).controls;
+    return (this.orderForm?.get("Details") as FormArray);
   }
 
   ngOnInit(): void {
@@ -112,6 +110,14 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
     this.loadUsers();
     this.loadCarrier();
     this.loadCurrentTeam();
+    this.eventAddProduct();
+  }
+
+  eventAddProduct() {
+    this.conversationOrderFacade.onAddProductOrder.pipe(takeUntil(this.destroy$)).subscribe(res => {
+      let product = this.convertDetail(res);
+      this.selectProduct(product);
+    });
   }
 
   createForm(): void {
@@ -510,7 +516,8 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
       componentParams: {
-        useListPrice: true
+        useListPrice: true,
+        isSelectProduct: true
       }
     });
 

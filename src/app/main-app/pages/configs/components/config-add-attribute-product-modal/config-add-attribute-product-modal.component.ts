@@ -8,8 +8,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-config-add-attribute-product-modal',
-  templateUrl: './config-add-attribute-product-modal.component.html',
-  styleUrls: ['./config-add-attribute-product-modal.component.scss']
+  templateUrl: './config-add-attribute-product-modal.component.html'
 })
 export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestroy {
   ValuesList:Array<ConfigAttributeValue> = [];

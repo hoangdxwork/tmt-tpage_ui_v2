@@ -372,7 +372,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
     this.router.navigateByUrl(`bill/edit/${this.id}`);
   }
 
-  back(){
+  onBack(){
     history.back();
   }
 

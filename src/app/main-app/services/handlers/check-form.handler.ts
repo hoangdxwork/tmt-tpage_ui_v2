@@ -11,7 +11,7 @@ import { FormGroup } from '@angular/forms';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { CRMTeamService } from '../crm-team.service';
 import { FastSaleOrderLineDTO, FastSaleOrderRestDTO, FastSaleOrder_ReceiverDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
-import { SaleOnline_OrderDTO } from '../../dto/saleonlineorder/sale-online-order.dto';
+import { SaleOnline_OrderDTO, SaleOnline_Order_FacebookCommentDTO } from '../../dto/saleonlineorder/sale-online-order.dto';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
 
 
@@ -79,6 +79,9 @@ export class CheckFormHandler {
     model.Facebook_UserId = formValue.Facebook_UserId,
     model.Facebook_ASUserId = formValue.Facebook_ASUserId,
     model.Facebook_UserName = formValue.Facebook_UserName || formValue.PartnerName,
+    model.Facebook_CommentId = formValue.Facebook_CommentId,
+    model.Facebook_Comments = formValue.Facebook_Comments,
+    model.Facebook_PostId = formValue.Facebook_PostId,
     model.PartnerName = formValue.PartnerName,
     model.Name = formValue.PartnerName || formValue.Name,
     model.Email = formValue.Email,
@@ -195,6 +198,29 @@ export class CheckFormHandler {
 
     model.PageId = this.currentTeam ? this.currentTeam.Facebook_PageId : undefined;
     model.PageName = this.currentTeam ? this.currentTeam.Facebook_PageName : undefined;
+
+    return model;
+  }
+
+  prepareOrderComment(dataComment: any): SaleOnline_Order_FacebookCommentDTO { // Chưa có data DTO
+    let model = {} as SaleOnline_Order_FacebookCommentDTO;
+
+    model.id = dataComment.id;
+    model.message = dataComment.message;
+    model.created_time = String(dataComment.created_time);
+    model.created_time_converted = dataComment.created_time;
+    model.can_hide = dataComment.can_hide;
+    model.can_remove = dataComment.can_remove;
+    model.like_count = dataComment.like_count;
+    model.is_hidden = dataComment.is_hidden;
+    model.post_id = dataComment.object && dataComment.object.id;
+    model.object = dataComment.object;
+    model.from = dataComment.from;
+    model.attachment = dataComment.attachment;
+
+    if (dataComment.comments && dataComment.comments.data) {
+      model["comments"] = dataComment.comments.data.map((x: any) => this.prepareOrderComment(x));
+    }
 
     return model;
   }

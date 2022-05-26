@@ -15,8 +15,7 @@ import { CTMTagFilterObjDTO } from 'src/app/main-app/dto/odata/odata.dto';
 
 @Component({
   selector: 'app-config-conversation-tags',
-  templateUrl: './config-conversation-tags.component.html',
-  styleUrls: ['./config-conversation-tags.component.scss']
+  templateUrl: './config-conversation-tags.component.html'
 })
 export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('filterText') filterText!: ElementRef;

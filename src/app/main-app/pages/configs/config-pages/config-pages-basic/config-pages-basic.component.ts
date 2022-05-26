@@ -8,8 +8,7 @@ import { AutoReplyConfigDTO } from 'src/app/main-app/dto/configs/page-config.dto
 
 @Component({
   selector: 'app-config-pages-basic',
-  templateUrl: './config-pages-basic.component.html',
-  styleUrls: ['./config-pages-basic.component.scss']
+  templateUrl: './config-pages-basic.component.html'
 })
 export class ConfigPagesBasicComponent implements OnInit {
 
