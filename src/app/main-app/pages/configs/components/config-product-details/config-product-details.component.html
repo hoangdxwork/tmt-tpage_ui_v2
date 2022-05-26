@@ -170,14 +170,13 @@
         </div>
       </div>
     </tds-tab>
-    <tds-tab title="Thẻ kho">
+    <tds-tab title="Thẻ kho" (tabClick)="getStockMoveProduct(pageSize_stockMove,pageIndex_stockMove)">
       <tds-table 
-        [listData]="stockMoveData"
+        [listData]="lstStockMove"
         [loading]="isLoading_stockMove"
         [showSizeChanger]="true"
         [(pageSize)]="pageSize_stockMove" 
         [(pageIndex)]="pageIndex_stockMove"
-        (queryParams)="onStockMoveQueryParamsChange($event)"
         (clickRefresh)="refreshStockMoveTable()">
         <thead>
               <tr>
@@ -192,7 +191,7 @@
               </tr>
         </thead>
         <tbody>
-            <ng-template ngFor let-data [ngForOf]="stockMoveData" >
+            <ng-template ngFor let-data [ngForOf]="lstStockMove" >
                 <tr>
                     <td>{{ data.Type }}</td>
                     <td>{{ data.PickingName }}</td>
@@ -207,15 +206,14 @@
         </tbody>
     </tds-table>
     </tds-tab>
-    <tds-tab title="Tồn kho">
+    <tds-tab title="Tồn kho" (tabClick)="getProductInventory(pageSize_productInventory,pageIndex_productInventory)">
       <tds-table 
-        [listData]="productInventoryData"
+        [listData]="lstProductInventory"
         [loading]="isLoading_productInventory"
         [showPagination]="true"
         [showSizeChanger]="true"
         [(pageSize)]="pageSize_productInventory" 
         [(pageIndex)]="pageIndex_productInventory"
-        (queryParams)="onProductInventoryQueryParamsChange($event)"
         (clickRefresh)="refreshProductInventoryTable()">
         <thead>
               <tr>
@@ -224,7 +222,7 @@
               </tr>
         </thead>
         <tbody>
-            <ng-template ngFor let-data [ngForOf]="productInventoryData" >
+            <ng-template ngFor let-data [ngForOf]="lstProductInventory" >
                 <tr>
                     <td>{{ data.Name }}</td>
                     <td>{{ data.Quantity }}</td>

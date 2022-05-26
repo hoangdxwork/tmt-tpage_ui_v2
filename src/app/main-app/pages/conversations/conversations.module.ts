@@ -69,6 +69,7 @@ import { AttachmentDataFacade } from '../../services/facades/attachment-data.fac
 import { AttachmentService } from '../../services/attachment.server';
 import { AttachmentState } from '../../services/facebook-state/attachment.state';
 import { ModalAddCollectionComponent } from './components/modal-add-collection/modal-add-collection.component';
+import { PostOrderConfigComponent } from './components/config-post/order-config/post-order-config.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -135,7 +136,8 @@ const SERVICES = [
     ConversationOrderListComponent,
     AutoLabelConfigComponent,
     ConversationAllFilterComponent,
-    ModalAddCollectionComponent
+    ModalAddCollectionComponent,
+    PostOrderConfigComponent
   ],
 
   imports: [

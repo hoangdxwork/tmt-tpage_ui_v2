@@ -7,8 +7,7 @@ import { TDSSafeAny, TDSMessageService, TDSModalRef } from 'tmt-tang-ui';
 
 @Component({
   selector: 'app-config-add-variant-product-modal',
-  templateUrl: './config-add-variant-product-modal.component.html',
-  styleUrls: ['./config-add-variant-product-modal.component.scss']
+  templateUrl: './config-add-variant-product-modal.component.html'
 })
 export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy {
   @Input() data!:TDSSafeAny;

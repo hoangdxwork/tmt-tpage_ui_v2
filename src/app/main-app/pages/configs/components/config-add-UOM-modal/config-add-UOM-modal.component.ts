@@ -8,8 +8,7 @@ import { TDSMessageService, TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
 
 @Component({
   selector: 'app-config-add-uom-modal',
-  templateUrl: './config-add-uom-modal.component.html',
-  styleUrls: ['./config-add-uom-modal.component.scss']
+  templateUrl: './config-add-uom-modal.component.html'
 })
 export class ConfigAddUOMModalComponent implements OnInit, OnDestroy {
   @Input() type!:string;

@@ -11,8 +11,7 @@ import { ProductDTO } from 'src/app/main-app/dto/product/product.dto';
 
 @Component({
   selector: 'app-config-edit-promotion',
-  templateUrl: './config-edit-promotion.component.html',
-  styleUrls: ['./config-edit-promotion.component.scss']
+  templateUrl: './config-edit-promotion.component.html'
 })
 export class ConfigEditPromotionComponent implements OnInit {
 

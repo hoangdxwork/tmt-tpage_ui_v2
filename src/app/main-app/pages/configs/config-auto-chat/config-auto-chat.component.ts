@@ -15,8 +15,7 @@ import { ODataQuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quic
 
 @Component({
   selector: 'app-config-auto-chat',
-  templateUrl: './config-auto-chat.component.html',
-  styleUrls: ['./config-auto-chat.component.scss']
+  templateUrl: './config-auto-chat.component.html'
 })
 export class ConfigAutoChatComponent implements OnInit, AfterViewInit {
   @ViewChild('innerText') innerText!: ElementRef;

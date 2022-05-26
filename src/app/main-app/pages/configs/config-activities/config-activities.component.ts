@@ -23,8 +23,7 @@ interface ColumnItem {
 
 @Component({
   selector: 'app-config-activities',
-  templateUrl: './config-activities.component.html',
-  styleUrls: ['./config-activities.component.scss']
+  templateUrl: './config-activities.component.html'
 })
 export class ConfigActivitiesComponent implements OnInit {
   fromDate!: FormControl;

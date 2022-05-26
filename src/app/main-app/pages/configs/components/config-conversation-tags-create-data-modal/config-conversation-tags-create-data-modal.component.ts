@@ -6,8 +6,7 @@ import { TDSModalRef, TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
 
 @Component({
   selector: 'app-config-conversation-tags-create-data-modal',
-  templateUrl: './config-conversation-tags-create-data-modal.component.html',
-  styleUrls: ['./config-conversation-tags-create-data-modal.component.scss']
+  templateUrl: './config-conversation-tags-create-data-modal.component.html'
 })
 export class ConfigConversationTagsCreateDataModalComponent implements OnInit {
   public createForm!: FormGroup;

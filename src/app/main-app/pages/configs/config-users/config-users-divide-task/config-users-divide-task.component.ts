@@ -5,7 +5,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 
 @Component({
   selector: 'app-config-users-divide-task',
-  templateUrl: './config-users-divide-task.component.html',
+  templateUrl: './config-users-divide-task.component.html'
 })
 export class ConfigUsersDivideTaskComponent implements OnInit {
 

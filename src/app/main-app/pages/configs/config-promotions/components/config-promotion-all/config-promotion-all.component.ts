@@ -13,8 +13,7 @@ import { showDiscountFixedAmount, showDiscountPercentageOnOrder, showDiscountPer
 
 @Component({
   selector: 'app-config-promotion-all',
-  templateUrl: './config-promotion-all.component.html',
-  styleUrls: ['./config-promotion-all.component.scss']
+  templateUrl: './config-promotion-all.component.html'
 })
 export class ConfigPromotionAllComponent implements OnInit {
   @Input() form!: FormGroup;

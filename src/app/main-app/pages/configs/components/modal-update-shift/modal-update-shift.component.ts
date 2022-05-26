@@ -8,8 +8,7 @@ import { AddShiftDTO, ShiftDTO } from 'src/app/main-app/dto/account/application-
 
 @Component({
   selector: 'app-modal-update-shift',
-  templateUrl: './modal-update-shift.component.html',
-  styleUrls: ['./modal-update-shift.component.scss']
+  templateUrl: './modal-update-shift.component.html'
 })
 export class ModalUpdateShiftComponent implements OnInit {
 

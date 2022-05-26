@@ -14,8 +14,7 @@ import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-config-promotion-group',
-  templateUrl: './config-promotion-group.component.html',
-  styleUrls: ['./config-promotion-group.component.scss']
+  templateUrl: './config-promotion-group.component.html'
 })
 export class ConfigPromotionGroupComponent implements OnInit {
   @Input() form!: FormGroup;

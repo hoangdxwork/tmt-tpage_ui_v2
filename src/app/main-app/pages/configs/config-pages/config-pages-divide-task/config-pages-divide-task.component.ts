@@ -11,8 +11,7 @@ import { TagOnPatternDTO } from 'src/app/main-app/dto/configs/page-config.dto';
 
 @Component({
   selector: 'app-config-pages-divide-task',
-  templateUrl: './config-pages-divide-task.component.html',
-  styleUrls: ['./config-pages-divide-task.component.scss']
+  templateUrl: './config-pages-divide-task.component.html'
 })
 export class ConfigPagesDivideTaskComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject();
