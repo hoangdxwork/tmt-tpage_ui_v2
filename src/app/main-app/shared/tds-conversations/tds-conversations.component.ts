@@ -7,7 +7,7 @@ import { ModalImageStoreComponent } from './../../pages/conversations/components
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import {
   ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Optional, Output, Self,
-  SimpleChanges, TemplateRef, ViewContainerRef, Host, OnDestroy, ChangeDetectorRef
+  SimpleChanges, TemplateRef, ViewContainerRef, Host, OnDestroy, ChangeDetectorRef, HostListener, HostBinding
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSResizeObserver, TDSUploadChangeParam, TDSUploadFile } from 'tmt-tang-ui';
@@ -50,17 +50,23 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   isLoadMessage: boolean = false;
   dataSource$!: Observable<MakeActivityMessagesDTO>;
   partner: any;
-  lstUser!: any[];
+ 
   isVisibleReply: boolean = false;
   uploadedImages: string[] = [];
   currentImage: any;
+  displayDropZone: boolean = false;
   markSeenTimer: any;
   messageModel: any = null;
-  isVisbleTag: boolean = false
-  tags: any[] = [];
   postPictureError: any[] = [];
-  listOfTag: TDSSafeAny[] = [];
-  keyFilter: string = '';
+
+  lstUser!: TDSSafeAny[];
+  users: TDSSafeAny[] = [];
+  keyFilterUser: string = '';
+  
+  lstOfTag: TDSSafeAny[] = [];
+  tags: TDSSafeAny[] = [];
+  keyFilterTag: string = '';
+  isVisbleTag: boolean = false
 
   constructor(private modalService: TDSModalService,
     private message: TDSMessageService,
@@ -109,6 +115,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   loadUser() {
     this.applicationUserService.dataActive$.pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
+        this.users = res;
         this.lstUser = res;
       }, error => {
         this.message.error('Load user đã xảy ra lỗi');
@@ -295,7 +302,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
       if (!TDSHelperArray.hasListValue(this.tags)) {
         this.crmTagService.dataActive$.subscribe((res: any) => {
           this.tags = res;
-          this.listOfTag = this.tags;
+          this.lstOfTag = this.tags;
           this.sortTagsByParent();
           this.searchTag();
         })
@@ -534,7 +541,28 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     return model;
   }
 
-  assignUser() {
+  assignUser(item: TDSSafeAny) {
+    this.activityMatchingService.assignUserToConversation(this.data.id, item.Id, this.team.Facebook_PageId)
+      .subscribe(res => {
+        this.data.assigned_to = res;
+        this.message.success("Thao tác thành công");
+        //update user from control
+        // this.orderService.setUserOrder(res);
+      },
+      err=>{
+        this.message.error("Thao tác thất bại");
+      });
+  }
+
+  searchUser() {
+    let data = this.users;
+    let key = this.keyFilterUser;
+    if (TDSHelperString.hasValueString(key)) {
+      key = TDSHelperString.stripSpecialChars(key.trim());
+    }
+    data = data.filter((x) =>
+      (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
+    this.lstUser = data
   }
 
   onSelectTag(item: any) {
@@ -589,13 +617,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
 
   searchTag() {
     let data = this.tags;
-    let key = this.keyFilter;
+    let key = this.keyFilterTag;
     if (TDSHelperString.hasValueString(key)) {
       key = TDSHelperString.stripSpecialChars(key.trim());
     }
     data = data.filter((x) =>
       (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
-    this.listOfTag = data
+    this.lstOfTag = data
   }
 
   onSendSucceed(data: any) {
@@ -654,9 +682,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
           this.currentImage = x;
           const dataItem = [...this.uploadedImages, x];
           this.uploadedImages = dataItem;
+          this.displayDropZone = false;
           this.cdr.markForCheck();
         }
       }, error => {
+        this.displayDropZone = false;
         let message = JSON.parse(error.Message);
         this.message.error(`${message.message}`);
       });
@@ -674,5 +704,29 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
 
   closeImages(){
     this.uploadedImages = [];
+  }
+
+  @HostListener('window:dragover', ['$event']) onDragOver(evt: TDSSafeAny) {
+    evt.preventDefault();
+    evt.stopPropagation();
+    this.displayDropZone = true;
+  }
+
+  @HostListener("window:dragleave", ["$event"])
+  onDragLeave(evt: any) {
+    if (evt.fromElement) { 
+      this.displayDropZone = true;
+    } else {
+      this.displayDropZone = false;
+    }
+    evt.preventDefault();
+    evt.stopPropagation();
+  }
+
+  @HostListener('window:drop', ['$event']) 
+  ondrop(evt:any) {
+    evt.preventDefault();
+    evt.stopPropagation();
+    this.displayDropZone = false;
   }
 }
