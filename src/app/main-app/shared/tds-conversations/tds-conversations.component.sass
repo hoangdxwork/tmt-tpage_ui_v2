@@ -1,3 +1,12 @@
+$color-primary-1: #28A745
+$color-neutral-1-900: #2C333A
+$color-neutral-1-400: #929DAA
+$color-neutral-2-400: #CAD1D8
+$color-green-400: #52BF50
+$color-orange-500: #FF6720
+$color-secondary-1: #3E89FC
+$color-accent-3: #F33240
+$color-light-200: #EBEDEF
 
 .is_admin
   display: block
@@ -7,7 +16,7 @@
     justify-content: end
     flex-direction: row-reverse
     .message-inner
-      background-color: #28A745
+      background-color: $color-primary-1
       color: #fff
       border-radius: 12px 12px 0px 12px
       padding: 8px 16px
@@ -22,7 +31,7 @@
     justify-content: start
     .message-inner
       background-color: #FFFFFF
-      color: #2C333A
+      color: $color-neutral-1-900
       border-radius: 12px 12px 12px 0px
       padding: 8px 16px
 
@@ -34,7 +43,7 @@
   font-weight: 400
   font-size: 12px
   line-height: 16px
-  color: #929DAA
+  color: $color-neutral-1-400
 
 .chat-body
   margin: 6px 0
@@ -50,16 +59,16 @@
       &:hover
         cursor: pointer
     a[tds-tooltip] span.tdsi-call-fill
-        background: #52BF50
+        background: $color-green-400
     a[tds-tooltip] span.tdsi-pin-fill
-        background: #FF6720
+        background: $color-orange-500
     a[tds-tooltip] span.tdsi-note-2-fill
-        background: #3E89FC
+        background: $color-secondary-1
 
 .select-message
   margin: 0 8px
   a span
-    color: #F33240
+    color: $color-accent-3
     font-size: 16px
 
 .is_client .chat-body:hover  div.select-icon
@@ -82,12 +91,12 @@
   display: block
   span
     z-index: 10
-    background: #ebedef
+    background: $color-light-200
     padding: 0 20px
   .hr
     height: 1px
     width: 100%
-    background: #CAD1D8
+    background: $color-neutral-2-400
     margin-top: -10px
     z-index: 1
     display: block
