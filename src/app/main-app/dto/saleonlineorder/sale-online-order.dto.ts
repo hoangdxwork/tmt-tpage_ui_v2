@@ -5,10 +5,11 @@ import { PartnerDTO, PartnerStatus } from '../partner/partner.dto';
 import { StockWarehouseDTO } from '../product/warehouse.dto';
 
 export interface SaleOnlineOrderSummaryStatusDTO {
-  dateStart?: Date;
-  dateEnd?: Date;
-  tagIds: string;
-  searchText: string;
+  DateStart?: Date;
+  DateEnd?: Date;
+  TagIds: string;
+  SearchText: string;
+  PostId?: string;
 }
 
 export interface SaleOnline_OrderDTO {

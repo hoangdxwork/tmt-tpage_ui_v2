@@ -30,6 +30,8 @@ import { CRMTagService } from '../../services/crm-tag.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { HttpResponse } from '@microsoft/signalr';
 import { CRMTeamService } from '../../services/crm-team.service';
+import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
+import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
 
 @Component({
   selector: 'shared-tds-conversations',
@@ -77,8 +79,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     private router: Router,
     private crmTeamService: CRMTeamService,
     private resizeObserver: TDSResizeObserver,
+    private conversationOrderFacade: ConversationOrderFacade,
     private viewContainerRef: ViewContainerRef,
-
     private cdr: ChangeDetectorRef
   ) {
   }
@@ -199,15 +201,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
       componentParams: {
-
+        useListPrice: true,
+        isSelectProduct: true
       }
     });
-    modal.afterOpen.subscribe(() => {
 
-    });
-    // Return a result when closed
-    modal.afterClose.subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
+    modal.componentInstance?.selectProduct.subscribe((res: DataPouchDBDTO) =>{
+      if(TDSHelperObject.hasValue(res)) {
+        this.conversationOrderFacade.onAddProductOrder.emit(res);
       }
     });
   }
