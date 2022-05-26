@@ -38,8 +38,7 @@ export class ModalListProductComponent implements OnInit, OnDestroy {
     return data.index;
   }
 
-  constructor(
-    private modal: TDSModalRef,
+  constructor(private modal: TDSModalRef,
     private message: TDSMessageService,
     private commonService: CommonService,
     private productDataFacade: ProductDataFacade

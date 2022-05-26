@@ -71,7 +71,6 @@ export class ConfigPromotionAllComponent implements OnInit {
       // } else {
           // this.loadDataTable();
       // }
-
     });
   }
 
