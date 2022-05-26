@@ -1,14 +1,12 @@
 
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
-import { TCommonService, THelperCacheService } from 'src/app/lib';
+import { map } from 'rxjs/operators';
+import { THelperCacheService } from 'src/app/lib';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny, TDSHelperObject } from 'tmt-tang-ui';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
-import { BaseSevice } from '../base.service';
 import { ProductIndexDBService } from '../product-indexDB.service';
-import { SharedService } from '../shared.service';
 
 @Injectable()
 export class ProductDataFacade {
@@ -22,8 +20,7 @@ export class ProductDataFacade {
 
   constructor(
     private cacheApi: THelperCacheService,
-    private productIndexDBService: ProductIndexDBService,
-  ) {
+    private productIndexDBService: ProductIndexDBService) {
     this.initialize();
   }
 

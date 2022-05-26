@@ -1530,7 +1530,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
         this.addOrderLines(item);
         this.computeAmountTotal();
     }, error => {
-      this.message.error('Thêm mới sản phẩm vào PBH đã xảy ra lỗi!');
+      this.message.error(`${error?.error?.message}`)
     })
   }
 

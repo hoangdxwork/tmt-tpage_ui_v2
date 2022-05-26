@@ -1,13 +1,12 @@
-import { APP_INITIALIZER, Component, Injector, OnInit } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular/router';
-import { Observable, Subject } from 'rxjs';
-import { debounceTime, filter, finalize, map, mergeMap, startWith, take, takeUntil } from 'rxjs/operators';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { filter, finalize, map, mergeMap,take, takeUntil } from 'rxjs/operators';
 import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { environment } from 'src/environments/environment';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMenuDTO, TDSMessageService, TDSModalRef, TDSModalService, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperObject, TDSMenuDTO, TDSMessageService, TDSModalService, TDSSafeAny } from 'tmt-tang-ui';
 import { CRMTeamDTO } from '../dto/team/team.dto';
 import { CRMTeamService } from '../services/crm-team.service';
-import { ProductDataFacade } from '../services/facades/product.data.facade';
 import { TPageHelperService } from '../services/helper.service';
 import { SignalRConnectionService } from '../services/signalR/signalR-connection.service';
 import { NetworkHelper } from '../shared/helper/network.helper';
@@ -36,7 +35,6 @@ export class LayoutComponent implements OnInit {
     private modalService: TDSModalService,
     private message: TDSMessageService,
     private activatedRoute: ActivatedRoute,
-    private productDataFacade: ProductDataFacade,
     private router: Router) {
 
     router.events.pipe(

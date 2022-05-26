@@ -1,7 +1,7 @@
 import { Observable, Subject, Subscriber, Subscription } from 'rxjs';
 import { TDSSafeAny, TDSModalRef, TDSMessageService, TDSModalService, TDSUploadChangeParam, TDSUploadXHRArgs, TDSHelperObject, TDSUploadFile, TDSHelperString, TDSHelperArray } from 'tmt-tang-ui';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone, OnDestroy } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone, OnDestroy, Input } from '@angular/core';
 import { ProductTemplateDTO, ProductType, ProductUOMDTO } from '../../dto/product/product.dto';
 import { ProductTemplateService } from '../../services/product-template.service';
 import { ProductCategoryService } from '../../services/product-category.service';
@@ -12,9 +12,10 @@ import { TpageAddCategoryComponent } from '../tpage-add-category/tpage-add-categ
 import { TpageSearchUOMComponent } from '../tpage-search-uom/tpage-search-uom.component';
 import { THelperCacheService } from 'src/app/lib';
 import { SharedService } from '../../services/shared.service';
-import { takeUntil } from 'rxjs/operators';
+import { map, takeUntil, mergeMap, finalize, tap } from 'rxjs/operators';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { ProductDataFacade } from '../../services/facades/product.data.facade';
+import { DataPouchDBDTO, KeyCacheIndexDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 
 @Component({
   selector: 'tpage-add-product',
@@ -31,6 +32,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   lstCategory!: Array<ProductCategoryDTO>;
   lstUOMCategory!: Array<ProductUOMDTO>;
 
+  isLoading: boolean = false;
   imageUrl = "https://randomuser.me/api/portraits/women/68.jpg";
   public readonly lstProductType = ProductType;
   fileList: TDSUploadFile[] = [];
@@ -42,10 +44,10 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     private modalRef: TDSModalRef,
     private message: TDSMessageService,
     private viewContainerRef: ViewContainerRef,
+    private productIndexDBService: ProductIndexDBService,
     private productTemplateService: ProductTemplateService,
     private productCategoryService: ProductCategoryService,
     private productUOMService: ProductUOMService,
-    private productDataFacade: ProductDataFacade,
     public zone: NgZone) {
   }
 
@@ -78,28 +80,30 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSave(type?: string) {
+  onSave(type?: string) :any {
     let model = this.prepareModel();
-    this.productTemplateService.insert(model)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-        delete res['@odata.context'];
+    this.isLoading = true;
 
+    this.productTemplateService.insert(model)
+      .pipe(map((res: any) => { return res}),
+        mergeMap((res) => {
+          return this.productIndexDBService.loadProductIndexDBV2()
+            .pipe(map((x: KeyCacheIndexDBDTO) => { return [res, x] }
+          ))}
+      )).subscribe(([res, x]) => {
+
+        delete res['@odata.context'];
         this.message.success(Message.Product.InsertSuccess);
 
         if (type == "select") {
-          this.onLoadedProductSelect.emit(res);
+          this.onLoadedProductSelect.emit(x);
+          this.onCancel([res, x]);
+        } else {
           this.onCancel(null);
         }
-        else {
-          this.onCancel(null);
-        }
-
-        this.productDataFacade.initialize();
-
       }, error => {
         this.message.error(`${error.error.message}`);
-      });
+    });
   }
 
   onCancel(result: TDSSafeAny) {
@@ -112,8 +116,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
       content: TpageAddCategoryComponent,
       size: 'lg',
       viewContainerRef: this.viewContainerRef,
-      componentParams: {
-      }
+      componentParams: {}
     });
 
     modal.afterClose.subscribe(result => {
@@ -252,5 +255,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
 }
+
+
+

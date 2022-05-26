@@ -172,7 +172,7 @@ export class EditProductVariantComponent implements OnInit {
   onSave(): any {
     let model = this.prepareModel();
     if (!model.Name) {
-      return  this.message.error('Vui lòng nhập tên sản phẩm');
+      return this.message.error('Vui lòng nhập tên sản phẩm');
     }
     this.productService.updateProduct(this.id, model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.message.success('Cập nhật thành công!');
@@ -192,7 +192,7 @@ export class EditProductVariantComponent implements OnInit {
         let indexDbVersion = cacheDB.cacheVersion;
         let indexDbProductCount = cacheDB.cacheCount;
         let indexDbStorage = cacheDB.cacheDbStorage;
-        this.loadProductIndexDB(indexDbVersion, indexDbProductCount, indexDbStorage);
+        this.loadProductIndexDB(indexDbProductCount, indexDbVersion, indexDbStorage);
       }
     });
   }
