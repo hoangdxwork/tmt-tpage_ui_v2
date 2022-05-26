@@ -102,6 +102,34 @@ export class AttachmentService extends BaseSevice {
     return this.apiService.getFileUpload<MDBAttachmentDTO[]>(api, files);
   }
 
+  createAttachment(name: string, files: Array<File>, attachments: Array<any>): Observable<any> {
+    let formData = new FormData();
+
+    for (let file of files) {
+      formData.append("files", file, file.name);
+    }
+
+    for(let att of attachments) {
+      formData.append("attachment", JSON.stringify(att));
+    }
+
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/createattachment?name=${name}`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getFileUpload<any>(api, formData);
+  }
+
+  addInnerByAttachment(id: string, ids: Array<string | undefined>): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${id}/addinnerbyattachment?id=${id}`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getFileUpload<any>(api, ids);
+  }
+
   createQuery(page?: any, limit?: any) {
     let obj: any = {
       page: page || 0,

@@ -32,6 +32,7 @@ export interface MDBAttachmentDTO {
   DateCreated: Date;
   LastUpdated?: Date;
   Select?: boolean;
+  SelectAddInner?: boolean;
 }
 
 export interface MDBCollectionDTO {

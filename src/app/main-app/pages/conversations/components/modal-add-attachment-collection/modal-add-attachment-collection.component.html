@@ -1,0 +1,19 @@
+<tds-spin [spinning]="isLoading">
+  <p class="font-semibold text-sm mb-1">Chọn bộ sưu tập</p>
+  <tds-form-field>
+    <tds-select
+        valueField="id" textField="Name"
+        placeholder='Chọn bảng giá' [required]='true'
+        [(ngModel)]="select" [valuePrimitive]="false"
+        [data]="(lstData$ | async) || []">
+    </tds-select>
+    <tds-error>
+        Vui lòng chọn bảng giá
+    </tds-error>
+  </tds-form-field>
+</tds-spin>
+
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+  <button tds-button class="mr-2" color="secondary" (click)="onCancel()">Hủy bỏ</button>
+  <button tds-button type="submit" color="primary" (click)="onSave()">Lưu</button>
+</div>

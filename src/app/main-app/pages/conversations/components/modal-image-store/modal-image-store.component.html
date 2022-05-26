@@ -19,7 +19,7 @@
                 </div>
                 <div class="py-5 flex items-center justify-between">
                     <div class="flex gap-5 items-center">
-                        <tds-checkbox (change)="checkAll($event.checked)">Chọn tất cả</tds-checkbox>
+                        <tds-checkbox (change)="checkAllAttachment($event.checked)">Chọn tất cả</tds-checkbox>
                         <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Số ảnh đã chọn
                           <span class="pl-1 text-primary-1 font-bold"> {{ numberSelect }} </span>
                         </div>
@@ -28,17 +28,17 @@
                         <span class="flex items-center">
                           <i class="tdsi-trash-line text-lg leading-none mr-2"></i>Xóa ảnh
                         </span>
-                      </button>
+                    </button>
                 </div>
                 <div class="max-h-[calc(100vh-375px)] h-[calc(100vh-375px)] w-full overflow-y-auto tds-custom-scroll">
-                    <div class="grid grid-cols-4 gap-5 h-full w-full">
+                    <div class="grid grid-cols-4 gap-5 h-full w-full" *ngIf="(lstAll$ | async)?.Items; else lstAllNoData">
                         <ng-template ngFor let-data [ngForOf]="(lstAll || (lstAll$ | async))?.Items">
-                            <div *ngIf="data.Select === false; else noActive">
-                                <div class="relative rounded-lg border border-transparent border-solid group">
+                            <div *ngIf="!data.Select; else noActive">
+                                <div class="relative rounded-lg border border-transparent border-solid group flex items-center h-[230px] justify-center">
                                     <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100">
                                         <tds-checkbox [(ngModel)]="data.Select" (change)="checkValue(data)"></tds-checkbox>
                                     </div>
-                                    <img [src]="data.Url">
+                                    <img [src]="data.Url" class="w-auto h-auto max-w-full max-h-full">
                                     <div class="absolute bottom-0 opacity-0 group-hover:opacity-100 w-full">
                                         <div class="flex p-2.5 gap-2.5 bg-gradient-to-b from-black/0 to-black/100 items-center rounded-b-lg justify-between">
                                             <div class="text-body-2 text-white font-semibold font-sans"> {{ data.Name }} </div>
@@ -47,7 +47,8 @@
                                                   <i class="tdsi-edit-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i>
                                                 </div>
 
-                                                <div class="flex items-center" tds-flat-button-icon tds-tooltip tooltipTitle="Thêm vào bộ sưu tập">
+                                                <div class="flex items-center" tds-flat-button-icon tds-tooltip tooltipTitle="Thêm vào bộ sưu tập"
+                                                  (click)="showModalAddAttachmentCollection()">
                                                   <i class="tdsi-add-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i>
                                                 </div>
 
@@ -60,11 +61,11 @@
                                 </div>
                             </div>
                             <ng-template #noActive>
-                                <div class="relative rounded-lg border border-primary-1 border-solid group">
+                                <div class="relative rounded-lg border border-primary-1 border-solid group flex items-center h-[230px] justify-center">
                                     <div class="absolute top-1 right-1 opacity-100">
                                         <tds-checkbox [(ngModel)]="data.Select" (change)="checkValue(data)"></tds-checkbox>
                                     </div>
-                                    <img [src]="data.Url">
+                                    <img [src]="data.Url" class="w-auto h-auto max-w-full max-h-full">
                                     <div class="absolute bottom-0 opacity-0 group-hover:opacity-100 w-full">
                                         <div class="flex p-2.5 gap-2.5 bg-gradient-to-b from-black/0 to-black/100 items-center rounded-b-lg justify-between">
                                             <div class="text-body-2 text-white font-semibold font-sans"> {{ data.Name }} </div>
@@ -73,7 +74,8 @@
                                                   <i class="tdsi-edit-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i>
                                                 </div>
 
-                                                <div class="flex items-center" tds-flat-button-icon tds-tooltip tooltipTitle="Thêm vào bộ sưu tập">
+                                                <div class="flex items-center" tds-flat-button-icon tds-tooltip tooltipTitle="Thêm vào bộ sưu tập"
+                                                  (click)="showModalAddAttachmentCollection()">
                                                   <i class="tdsi-add-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i>
                                                 </div>
 
@@ -87,6 +89,12 @@
                               </ng-template>
                         </ng-template>
                     </div>
+                    <ng-template #lstAllNoData>
+                      <div class="flex flex-col items-center justify-center w-full">
+                        <img src="assets/images/attachment/no-data.svg" class="my-4 py-2.5">
+                        <span class="text-neutral-1-400 text-body-2 font-regular text-center font-sans pb-6">Không có dữ liệu</span>
+                      </div>
+                    </ng-template>
                 </div>
             </div>
         </tds-tab>
@@ -106,7 +114,7 @@
                 </div>
                 <div class="py-5 flex items-center justify-between">
                     <div class="flex gap-5 items-center">
-                        <tds-checkbox>Chọn tất cả</tds-checkbox>
+                        <tds-checkbox (change)="checkAllCollection($event.checked)">Chọn tất cả</tds-checkbox>
                         <div class="text-body-2 font-regular text-neutral-1-900 font-sans">
                           Số bộ sưu tập đã chọn <span class="pl-1 text-primary-1 font-bold"> {{ numberSelectColl }} </span>
                         </div>
@@ -117,24 +125,30 @@
                         </span>
                       </button>
                 </div>
-                <div class="max-h-[calc(100vh-375px)] w-full overflow-y-auto tds-custom-scroll">
-                    <div class="grid grid-cols-3 gap-5 ">
-                        <ng-template ngFor let-data [ngForOf]="lstColl$ | async">
-                            <div *ngIf="data.Select === false; else noCollectActive">
-                                <div class="relative rounded-lg border border-transparent border-solid group">
+                <div class="max-h-[calc(100vh-375px)] h-[calc(100vh-375px)] w-full overflow-y-auto tds-custom-scroll">
+                    <div class="grid grid-cols-3 gap-5" *ngIf="(lstColl$ | async); else lstCollNoData">
+                        <ng-template ngFor let-data [ngForOf]="(lstColl$ | async)">
+                            <div *ngIf="!data.Select; else noCollectActive">
+                                <div class="relative rounded-lg border border-transparent border-solid group flex items-center h-[316px]">
                                     <div class="absolute top-2 right-1 opacity-0 group-hover:opacity-100">
                                         <tds-checkbox [(ngModel)]="data.Select"></tds-checkbox>
                                     </div>
-                                    <div class="flex gap-1 rounded-lg items-center">
-                                        <ng-template ngFor let-att [ngForOf]="data.Attachments" let-index="index">
-                                            <div class="w-3/5 rounded-l-lg" *ngIf="index == 0">
-                                                <img [src]="att.Url" class="rounded-l-lg">
-                                            </div>
-                                            <div class="w-2/5 flex flex-col gap-1 rounded-r-lg">
-                                                <img [src]="att.Url" class="h-[145px] rounded-tr-lg" *ngIf="index == 1">
-                                                <img [src]="att.Url" class="h-[145px] rounded-br-lg" *ngIf="index == 2">
-                                            </div>
-                                        </ng-template>
+                                    <div class="flex rounded-lg items-center gap-1" *ngIf="data.Attachments">
+                                      <div class="w-3/5 rounded-l-lg" *ngIf="data.Attachments[0]">
+                                          <img [src]="data.Attachments[0].Url" class="rounded-l-lg" onerror="this.scr='assets/images/attachment/images-empty.svg'">
+                                      </div>
+                                      <div class="w-2/5 flex flex-col gap-1 rounded-r-lg" *ngIf="data.Attachments && data.Attachments[1]">
+                                          <img [src]="data.Attachments[1].Url" class="h-[145px] rounded-tr-lg"
+                                          onerror="this.scr='assets/images/attachment/images-empty.svg'">
+                                          <img [src]="data.Attachments[2].Url" class="h-[145px] rounded-br-lg" *ngIf="data.Attachments && data.Attachments[2]"
+                                          onerror="this.scr='assets/images/attachment/images-empty.svg'">
+                                      </div>
+                                    </div>
+                                    <div class="flex w-full rounded-lg items-center justify-center" *ngIf="!data.Attachments">
+                                      <div class="rounded-l-lg">
+                                          <img [src]="'assets/images/attachment/images-empty.svg'" class="rounded-l-lg">
+                                          <p class="font-normal mb-6 text-sm text-neutral-1-400 text-center">Chưa có ảnh</p>
+                                      </div>
                                     </div>
                                     <div class="absolute bottom-0 right-0 left-0 opacity-0 group-hover:opacity-100">
                                         <div class="flex p-2.5 gap-2.5 bg-gradient-to-b from-black/0 to-black/100 items-center rounded-b-lg justify-between w-full">
@@ -156,20 +170,26 @@
                                 </div>
                             </div>
                             <ng-template #noCollectActive>
-                                <div class="relative rounded-lg border border-transparent border-solid group">
+                                <div class="relative rounded-lg border border-transparent border-solid group flex items-center h-[316px]">
                                     <div class="absolute top-2 right-1 opacity-100">
                                         <tds-checkbox [(ngModel)]="data.Select"></tds-checkbox>
                                     </div>
-                                    <div class="flex gap-1 rounded-lg items-center">
-                                        <ng-template ngFor let-att [ngForOf]="data.Attachments" let-index="index">
-                                            <div class="w-3/5 rounded-l-lg" *ngIf="index == 0">
-                                                <img [src]="att.Url" class="rounded-l-lg">
-                                            </div>
-                                            <div class="w-2/5 flex flex-col gap-1 rounded-r-lg">
-                                                <img [src]="att.Url" class="h-[145px] rounded-tr-lg" *ngIf="index == 1">
-                                                <img [src]="att.Url" class="h-[145px] rounded-br-lg" *ngIf="index == 2">
-                                            </div>
-                                        </ng-template>
+                                    <div class="flex rounded-lg items-center gap-1" *ngIf="data.Attachments">
+                                        <div class="w-3/5 rounded-l-lg" *ngIf="data.Attachments[0]">
+                                            <img [src]="data.Attachments[0].Url" class="rounded-l-lg" onerror="this.scr='assets/images/attachment/images-empty.svg'">
+                                        </div>
+                                        <div class="w-2/5 flex flex-col gap-1 rounded-r-lg" *ngIf="data.Attachments && data.Attachments[1]">
+                                            <img [src]="data.Attachments[1].Url" class="h-[145px] rounded-tr-lg"
+                                            onerror="this.scr='assets/images/attachment/images-empty.svg'">
+                                            <img [src]="data.Attachments[2].Url" class="h-[145px] rounded-br-lg" *ngIf="data.Attachments && data.Attachments[2]"
+                                            onerror="this.scr='assets/images/attachment/images-empty.svg'">
+                                        </div>
+                                    </div>
+                                    <div class="flex w-full rounded-lg items-center justify-center" *ngIf="!data.Attachments">
+                                        <div class="rounded-l-lg">
+                                            <img [src]="'assets/images/attachment/images-empty.svg'" class="rounded-l-lg">
+                                            <p class="font-normal mb-6 text-sm text-neutral-1-400 text-center">Chưa có ảnh</p>
+                                        </div>
                                     </div>
                                     <div class="absolute bottom-0 right-0 left-0 opacity-0 group-hover:opacity-100">
                                         <div class="flex p-2.5 gap-2.5 bg-gradient-to-b from-black/0 to-black/100 items-center rounded-b-lg justify-between w-full">
@@ -192,6 +212,12 @@
                               </ng-template>
                         </ng-template>
                     </div>
+                    <ng-template #lstCollNoData>
+                      <div class="flex flex-col items-center justify-center w-full">
+                        <img src="assets/images/attachment/no-data.svg" class="my-4 py-2.5">
+                        <span class="text-neutral-1-400 text-body-2 font-regular text-center font-sans pb-6">Không có dữ liệu</span>
+                      </div>
+                    </ng-template>
                 </div>
             </div>
         </tds-tab>
