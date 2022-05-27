@@ -1,172 +1,27 @@
+import { OnDestroy } from '@angular/core';
+import { TDSSafeAny, TDSHelperArray } from 'tmt-tang-ui';
 import { TDSModalService } from 'tmt-tang-ui';
 import { TDSMessageService, TDSTabChangeEvent, TDSHelperString, TDSUploadFile } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, finalize } from 'rxjs/operators';
-import { AttachmentDataFacade } from 'src/app/main-app/services/facades/attachment-data.facade';
 import { TACheckboxChange, TDSModalRef } from 'tmt-tang-ui';
 import { Message } from 'src/app/lib/consts/message.const';
-import { AttachmentService } from 'src/app/main-app/services/attachment.server';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { MDBAttachmentDTO, MDBCollectionDTO } from 'src/app/main-app/dto/attachment/attachment.dto';
 import { PagedList2 } from 'src/app/main-app/dto/pagedlist2.dto';
+import { AttachmentDataFacade } from 'src/app/main-app/services/facades/attachment-data.facade';
+import { AttachmentService } from 'src/app/main-app/services/attachment.server';
 import { ModalAddCollectionComponent } from '../modal-add-collection/modal-add-collection.component';
+import { ModalAddAttachmentCollectionComponent } from '../modal-add-attachment-collection/modal-add-attachment-collection.component';
 
 @Component({
   selector: 'app-modal-image-store',
   templateUrl: './modal-image-store.component.html',
   styleUrls: ['./modal-image-store.component.scss']
 })
-export class ModalImageStoreComponent implements OnInit {
+export class ModalImageStoreComponent implements OnInit, OnDestroy {
   inputValue?: string;
-
-  listImage=[
-    {
-      id: '1',
-      image:'/assets/images/conversation/imageAll-1.svg',
-      choose: false,
-    },
-    {
-      id: '2',
-      image:'/assets/images/conversation/imageAll-2.svg',
-      choose: true,
-    },
-    {
-      id: '3',
-      image:'/assets/images/conversation/imageAll-3.svg',
-      choose: false,
-    },
-    {
-      id: '4',
-      image:'/assets/images/conversation/imageAll-4.svg',
-      choose: false,
-    },
-    {
-      id: '5',
-      image:'/assets/images/conversation/imageAll-1.svg',
-      choose: false,
-    },
-    {
-      id: '6',
-      image:'/assets/images/conversation/imageAll-2.svg',
-      choose: false,
-    },
-    {
-      id: '7',
-      image:'/assets/images/conversation/imageAll-3.svg',
-      choose: false,
-    },
-    {
-      id: '8',
-      image:'/assets/images/conversation/imageAll-4.svg',
-      choose: false,
-    },
-    {
-      id: '5',
-      image:'/assets/images/conversation/imageAll-1.svg',
-      choose: false,
-    },
-    {
-      id: '6',
-      image:'/assets/images/conversation/imageAll-2.svg',
-      choose: false,
-    },
-    {
-      id: '7',
-      image:'/assets/images/conversation/imageAll-3.svg',
-      choose: false,
-    },
-    {
-      id: '8',
-      image:'/assets/images/conversation/imageAll-4.svg',
-      choose: false,
-    },
-
-  ]
-
-  listCollect = [
-    {
-      id:'1',
-      image1: '/assets/images/conversation/imageCollection-1.svg',
-      image2: '/assets/images/conversation/imageCollection-2.svg',
-      image3: '/assets/images/conversation/imageCollection-3.svg',
-      soLuong: 12,
-      name:'Bộ sưu tập thời trang thu đông',
-      choose: true,
-    },
-    {
-      id:'2',
-      image1: '/assets/images/conversation/imageCollection-7.svg',
-      image2: '/assets/images/conversation/imageCollection-8.svg',
-      image3: '/assets/images/conversation/imageCollection-9.svg',
-      soLuong: 12,
-      name:'Bộ sưu tập thời trang thu đông',
-      choose: false,
-    },
-    {
-      id:'3',
-      image1: '/assets/images/conversation/imageCollection-4.svg',
-      image2: '/assets/images/conversation/imageCollection-5.svg',
-      image3: '/assets/images/conversation/imageCollection-6.svg',
-      soLuong: 12,
-      name:'Bộ sưu tập thời trang thu đông',
-      choose: false,
-    },
-    {
-      id:'4',
-      image1: '/assets/images/conversation/imageCollection-1.svg',
-      image2: '/assets/images/conversation/imageCollection-2.svg',
-      image3: '/assets/images/conversation/imageCollection-3.svg',
-      soLuong: 12,
-      name:'Bộ sưu tập thời trang thu đông',
-      choose: false,
-    },
-    {
-      id:'5',
-      image1: '/assets/images/conversation/imageCollection-4.svg',
-      image2: '/assets/images/conversation/imageCollection-5.svg',
-      image3: '/assets/images/conversation/imageCollection-6.svg',
-      soLuong: 12,
-      name:'Bộ sưu tập thời trang thu đông',
-      choose: false,
-    },
-    {
-      id:'6',
-      image1: '/assets/images/conversation/imageCollection-7.svg',
-      image2: '/assets/images/conversation/imageCollection-8.svg',
-      image3: '/assets/images/conversation/imageCollection-9.svg',
-      soLuong: 12,
-      name:'Bộ sưu tập thời trang thu đông',
-      choose: false,
-    },
-    {
-      id:'7',
-      image1: '/assets/images/conversation/imageCollection-7.svg',
-      image2: '/assets/images/conversation/imageCollection-8.svg',
-      image3: '/assets/images/conversation/imageCollection-9.svg',
-      soLuong: 12,
-      name:'Bộ sưu tập thời trang thu đông',
-      choose: false,
-    },
-    {
-      id:'8',
-      image1: '/assets/images/conversation/imageCollection-4.svg',
-      image2: '/assets/images/conversation/imageCollection-5.svg',
-      image3: '/assets/images/conversation/imageCollection-6.svg',
-      soLuong: 12,
-      name:'Bộ sưu tập thời trang thu đông',
-      choose: false,
-    },
-    {
-      id:'9',
-      image1: '/assets/images/conversation/imageCollection-1.svg',
-      image2: '/assets/images/conversation/imageCollection-2.svg',
-      image3: '/assets/images/conversation/imageCollection-3.svg',
-      soLuong: 12,
-      name:'Bộ sưu tập thời trang thu đông',
-      choose: false,
-    },
-  ]
 
   public lstAll$!: Observable<PagedList2<MDBAttachmentDTO>>;
   public lstColl$!: Observable<MDBCollectionDTO[]>;
@@ -214,13 +69,23 @@ export class ModalImageStoreComponent implements OnInit {
     this.numberSelect = item["Select"] ? this.numberSelect + 1 : this.numberSelect - 1;
   }
 
-  checkAll(event: boolean) {
+  checkAllAttachment(event: boolean) {
     this.lstAll$.subscribe(res => {
       res.Items.forEach((x:any) => {
         x["Select"] = event;
       });
 
       this.numberSelect = !event ? 0 : res.Items.length;
+    });
+  }
+
+  checkAllCollection(event: boolean) {
+    this.lstColl$.subscribe(res => {
+      res.forEach((x:any) => {
+        x["Select"] = event;
+      });
+
+      this.numberSelectColl = !event ? 0 : res.length;
     });
   }
 
@@ -231,11 +96,17 @@ export class ModalImageStoreComponent implements OnInit {
   }
 
   removeAttachmentChecked() {
+    let isEmpty = false;
     this.lstAll$.subscribe(res => {
-      res.Items.forEach((x:any) => {
+      res.Items.forEach((x:any, index: number) => {
         if(x["Select"]) {
+          isEmpty = true;
           this.removeAttachment(x.id);
           this.numberSelect--;
+        }
+
+        if(index == res.Items.length - 1 && !isEmpty) {
+          this.message.error(Message.SelectOneLine);
         }
       });
     });
@@ -248,11 +119,17 @@ export class ModalImageStoreComponent implements OnInit {
   }
 
   removeCollectionChecked() {
+    let isEmpty = false;
     this.lstColl$.subscribe(res => {
-      res.forEach((x:any) => {
+      res.forEach((x:any, index: number) => {
         if(x["Select"]) {
+          isEmpty = true;
           this.removeCollection(x.id);
           this.numberSelectColl--;
+        }
+
+        if(index == res.length - 1 && !isEmpty) {
+          this.message.error(Message.SelectOneLine);
         }
       });
     });
@@ -311,7 +188,6 @@ export class ModalImageStoreComponent implements OnInit {
     let formData: any = new FormData();
     formData.append("files", file as any, file.name);
     formData.append('id', '0000000000000051');
-    formData.append("files", file, file.name);
 
     return this.attachmentService.add(formData).subscribe((res: any) => {
       this.attachmentDataFacade.addAttachment(res);
@@ -324,7 +200,7 @@ export class ModalImageStoreComponent implements OnInit {
 
   showModalAddCollection() {
     const modal = this.modal.create({
-      title: 'Tạo bộ sưu tập',
+      title: 'Tạo mới bộ sưu tập',
       content: ModalAddCollectionComponent,
       size: 'xl',
       viewContainerRef: this.viewContainerRef,
@@ -333,7 +209,31 @@ export class ModalImageStoreComponent implements OnInit {
     });
   }
 
+  showModalAddAttachmentCollection() {
+    this.lstAll$.subscribe(res => {
+      let ids = res.Items.filter(x => x.Select).map(x => x.id);
+
+      const modal = this.modal.create({
+        title: 'Thêm vào bộ sưu tập khác',
+        content: ModalAddAttachmentCollectionComponent,
+        size: 'md',
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          attachmentIds: ids
+        }
+      });
+    });
+
+  }
+
+
+
   onCancel() {
     this.modalRef.destroy(null);
+  }
+
+  ngOnDestroy(): void {
+    this.checkAllAttachment(false);
+    this.checkAllCollection(false);
   }
 }

@@ -60,6 +60,9 @@ export const Message = {
     Success: 'Tải tập thành công.',
     RemoveImageSuccess: 'Xóa ảnh thành công.',
     RemoveCollectionSuccess: 'Xóa bộ sưu tập thành công.',
+    NameEmpty: 'Tên không được để trống.',
+    SelectAttachmentSuccess: 'Chọn ảnh thành công.',
+    CollectionEmpty: 'Chưa chọn bộ sư tập'
   },
   Partner: {
     UpdateStatus: 'Cập nhật trạng thái khách hàng thành công.',
