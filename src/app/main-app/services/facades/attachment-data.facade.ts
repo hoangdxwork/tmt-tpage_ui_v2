@@ -137,11 +137,33 @@ export class AttachmentDataFacade {
 
         observer.next();
         observer.complete();
-      }, error => observer.error());
+      }, error => observer.error(error));
     });
   }
 
   addAttachment(value: MDBAttachmentDTO[]) {
     this.attachmentState.pushItemAttachment(value);
+  }
+
+  createAttachment(name: string, files: Array<File>, attachments: Array<any>): Observable<any> {
+    return new Observable(observer => {
+      this.attachmentService.createAttachment(name, files, attachments).subscribe(res => {
+        this.attachmentState.addCollection(res);
+
+        observer.next();
+        observer.complete();
+      }, error => observer.error(error));
+    });
+  }
+
+  addInnerByAttachment(collectionId: string, ids: Array<string | undefined>): Observable<any> {
+    return new Observable(observer => {
+      this.attachmentService.addInnerByAttachment(collectionId, ids).subscribe(res => {
+        this.attachmentState.setInner(collectionId, res["Attachments"], res["LastUrl"], res["LastUrlId"]);
+
+        observer.next();
+        observer.complete();
+      }, error => observer.error(error));
+    });
   }
 }
