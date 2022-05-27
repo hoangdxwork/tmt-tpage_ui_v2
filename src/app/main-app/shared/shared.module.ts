@@ -28,7 +28,6 @@ import { TpageUploadAvatarComponent } from './tpage-upload-avatar/tpage-upload-a
 import { UploadImageModule } from './upload-image/tpage-avatar-facebook/upload-image.module';
 import { TpageConfigProductComponent } from './tpage-config-product/tpage-config-product.component';
 import { ProductPriceListService } from '../services/product-price-list.service';
-import { StockWarehouseService } from '../services/stock-warehouse.service';
 import { TpageConversationAddressComponent } from './tpage-conversation-address/tpage-conversation-address.component';
 import { UploadPicturesWallComponent } from './upload-wall/upload-pictures-wall.component';
 
@@ -57,8 +56,7 @@ const SERVICES = [
   SuggestAddressService,
   SharedService,
   ImageFacade,
-  ProductPriceListService,
-  StockWarehouseService
+  ProductPriceListService
 ]
 
 @NgModule({

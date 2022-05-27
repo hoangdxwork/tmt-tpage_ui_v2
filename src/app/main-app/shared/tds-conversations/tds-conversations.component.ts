@@ -37,7 +37,6 @@ import { ConversationOrderFacade } from '../../services/facades/conversation-ord
   selector: 'shared-tds-conversations',
   templateUrl: './tds-conversations.component.html',
   styleUrls: ['./tds-conversations.component.sass'],
-  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {

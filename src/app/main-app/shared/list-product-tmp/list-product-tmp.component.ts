@@ -21,7 +21,7 @@ import { InitSaleDTO, SaleSettingsDTO } from '../../dto/setting/setting-sale-onl
 
 export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestroy, OnChanges {
 
-  @ViewChild('basicTable', { static: false }) tableComponent?: TDSTableComponent<DataPouchDBDTO>;
+  @ViewChild('basicTable', { static: false }) tableComponent?: TDSTableComponent<any>;
   @ViewChild('innerText') innerText!: ElementRef;
 
   @Input() priceListItems: any;
@@ -46,12 +46,12 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
   @Input() isLoadingProduct: boolean = false;
 
   options: Array<TDSSafeAny> = [
-    { text: 'Tất cả', value: 'all'},
-    { text: 'Mã', value: 'code'},
-    { text: 'Tên', value: 'name'},
+    { text: 'Tất cả', value: 'all' },
+    { text: 'Mã', value: 'code' },
+    { text: 'Tên', value: 'name' },
     { text: 'Barcode', value: 'barcode'}
   ];
-  currentOption: any = { text: 'Tất cả', value: 'all'};
+  currentOption: any = { text: 'Tất cả', value: 'all' };
 
   types: Array<TDSSafeAny> = [
     { text: "Bán chạy", value: "PosSalesCount" },
@@ -80,6 +80,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
 
   loadData(): void {
     this.validateData();
+    this.isLoading = true;
     this.productIndexDBService.loadProductIndexDBV2()
       .pipe(takeUntil(this.destroy$)).pipe(finalize(() => {this.isLoading = false }))
       .subscribe((res: KeyCacheIndexDBDTO) => {
@@ -184,18 +185,13 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
     });
 
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$))
-      .subscribe((res: CompanyCurrentDTO) => {
-        if(res.DefaultWarehouseId) {
-          let warehouseId = res.DefaultWarehouseId;
-          this.commonService.getInventoryWarehouseId(warehouseId).subscribe((obj: any) => {
-              this.inventories = obj;
-          }, error =>{
-              this.message.error('Load thông tin tồn kho đã xảy ra lỗi!');
-          });
-        }
-    }, error => {
-        this.message.error('Load thông tin công ty đã xảy ra lỗi!');
-    })
+      .pipe(map((x: CompanyCurrentDTO) => { return x.DefaultWarehouseId }),
+        mergeMap((warehouseId: any) => {
+           return this.commonService.getInventoryWarehouseId(warehouseId)
+        }))
+        .subscribe((obj: CompanyCurrentDTO) => {
+          this.inventories = obj;
+      });
   }
 
   showModalAddProduct() {
@@ -255,17 +251,15 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
     this.tableComponent?.cdkVirtualScrollViewport?.scrolledIndexChange
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: number) => {});
-    
+
     fromEvent(this.innerText.nativeElement, 'keyup').pipe(
       map((event: any) => {
         return event.target.value
       }), debounceTime(750)).subscribe((text: string) => {
         this.isLoading = true;
         this.keyFilter = text;
-        setTimeout(()=>{
-          this.loadDataTable();
-          this.isLoading = false;
-        },750);
+        this.loadDataTable();
+        this.isLoading = false;
     });
   }
 
@@ -282,6 +276,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
   ngOnChanges(changes: SimpleChanges) {
     if(changes["priceListItems"] && !changes["priceListItems"].firstChange) {
       this.priceListItems = changes["priceListItems"].currentValue;
+      this.loadDataTable();
     }
 
     if(changes['isLoadingProduct'] && (changes['isLoadingProduct'].currentValue == true || changes['isLoadingProduct'].currentValue == false)) {
