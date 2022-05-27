@@ -70,6 +70,7 @@ import { AttachmentService } from '../../services/attachment.server';
 import { AttachmentState } from '../../services/facebook-state/attachment.state';
 import { ModalAddCollectionComponent } from './components/modal-add-collection/modal-add-collection.component';
 import { PostOrderConfigComponent } from './components/config-post/order-config/post-order-config.component';
+import { ProductIndexDBService } from '../../services/product-indexDB.service';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -104,7 +105,8 @@ const SERVICES = [
   OdataSaleOnline_OrderService,
   AttachmentDataFacade,
   AttachmentService,
-  AttachmentState
+  AttachmentState,
+  ProductIndexDBService,
 ]
 
 @NgModule({

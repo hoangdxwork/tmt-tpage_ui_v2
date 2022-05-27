@@ -75,7 +75,7 @@ export class SharedService extends BaseSevice {
 
   getStockWarehouse(): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/odata/StockWarehouse//OdataService.getByCompany`,
+        url: `${this._BASE_URL}/odata/StockWarehouse/OdataService.GetByCompany`,
         method: TApiMethodType.get,
     }
 

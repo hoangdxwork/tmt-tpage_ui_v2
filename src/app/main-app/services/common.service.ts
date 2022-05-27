@@ -1,5 +1,7 @@
+import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable} from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
@@ -17,7 +19,8 @@ export class CommonService extends BaseSevice {
   baseRestApi: string = "api/common";
 
   // Dữ liệu bảng giá
-  public dataPriceLists$ = new BehaviorSubject<any>({ currentId: null });
+  public shopPaymentProviders$ = new BehaviorSubject<any>({ });
+  public priceListItems$ = new BehaviorSubject<any>([]);
 
   constructor(private apiService: TCommonService) {
     super(apiService);
@@ -26,8 +29,16 @@ export class CommonService extends BaseSevice {
 
   initialize() {
     this.getShopPaymentProviders().subscribe((res: any) => {
-      this.dataPriceLists$.next(res);
+      this.shopPaymentProviders$.next(res);
     });
+
+    let date = formatDate(new Date(), 'yyyy-MM-ddTHH:mm:ss', 'en-US');
+    this.getPriceListAvailable(date)
+      .pipe(map((x: any) => { return x.value[0] }),
+       mergeMap((item: any) => { return this.getPriceListItems(item.Id)}))
+        .subscribe((res: any) => {
+          this.priceListItems$.next(res);
+      })
   }
 
   getPartnerStatusReport(): Observable<PartnerStatusReport> {
@@ -35,7 +46,6 @@ export class CommonService extends BaseSevice {
         url: `${this._BASE_URL}/${this.baseRestApi}/getpartnerstatusreport`,
         method: TApiMethodType.get,
     }
-
     return this.apiService.getData<PartnerStatusReport>(api,null);
   }
 
