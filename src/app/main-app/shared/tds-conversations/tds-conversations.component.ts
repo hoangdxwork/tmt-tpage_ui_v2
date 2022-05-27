@@ -53,6 +53,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   dataSource$!: Observable<MakeActivityMessagesDTO>;
   partner: any;
  
+  isEnterSend: boolean = true;
   isVisibleReply: boolean = false;
   uploadedImages: string[] = [];
   currentImage: any;
@@ -375,7 +376,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   onEnter(event: any) {
-    this.messageSendingToServer();
+    if(this.isEnterSend){
+      this.messageSendingToServer();
+    }else{
+      this.message.info('Thay đổi tuỳ chọn gửi tin nhắn để Enter');
+    }
     event.preventDefault();
   }
 
@@ -705,6 +710,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
 
   closeImages(){
     this.uploadedImages = [];
+  }
+
+  changeEnterSend(ev: any){
+    if(ev){
+    this.isEnterSend = ev.checked;
+    }
   }
 
   @HostListener('window:dragover', ['$event']) onDragOver(evt: TDSSafeAny) {
