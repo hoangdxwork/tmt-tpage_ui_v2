@@ -36,7 +36,7 @@
                                     <tds-avatar size="sm" [tdsSrc]="item.Avatar"></tds-avatar>
                                     <span>{{item.Name}}</span>
                                 </div>
-                                <span class="tdsi-success-fill text-success-500" *ngIf="item?.Id && item?.Id == data?.assigned_to?.Id"></span>
+                                <span class="tdsi-success-fill text-success-500" *ngIf="item.Id == data.assigned_to?.Id"></span>
                             </div>
                         </div>
                         </tds-dropdown-menu>
@@ -82,13 +82,13 @@
                                 <div class="post-content flex flex-col">
                                     <div class="post-type flex flex-row items-center mb-3">
                                         <tds-avatar
-                                            [tdsSrc]="'assets/images/conversation/facebook-circle.svg'"
+                                            [tdsSrc]="getExtrasPosts((dataSource$ | async), item)?.status_type=='added_video'?'assets/images/conversation/live-circle.svg':'assets/images/conversation/facebook-circle.svg'"
                                             [size]="24"
                                             [shape]="'circle'"
                                             [isAvatar]="false"
                                             class="mr-1">
                                         </tds-avatar>
-                                        <tds-tag status='info' type="outline" rounded="rounded-full">
+                                        <tds-tag [status]="getExtrasPosts((dataSource$ | async), item)?.status_type=='added_video'?'error':'info'" type="outline" rounded="rounded-full">
                                             <span class="flex items-center py-0.5">
                                             <span>{{getExtrasPosts((dataSource$ | async), item)?.created_time | date: "dd-MM-yyyy HH:mm"}}</span>
                                             </span>
@@ -153,6 +153,7 @@
                         [team]="team" [psid]="data.psid || item.psid"
                         [data]="item" [index]="i"
                         [type]="type" [partner]="partner"
+                        [name]="data.name"
                         [children]="getExtrasChildren((dataSource$ | async), item)">
                     </tds-conversation-item>
                 </div>
@@ -174,7 +175,7 @@
                         <span class="font-semibold text-title-1">Tuỳ chọn gửi tin nhắn</span>
                         <div class="w-full flex justify-between">
                         <span class="text-neutral-1-400">Nhấn [Enter] để gửi</span>
-                        <tds-switch size="md" [checked]="true"></tds-switch>
+                        <tds-switch size="md" (change)="changeEnterSend($event)" [checked]="isEnterSend"></tds-switch>
                         </div>
                     </div>
                 </ng-template>

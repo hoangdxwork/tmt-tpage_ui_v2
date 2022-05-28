@@ -1,75 +1,62 @@
-<div class="flex flex-col gap-y-4">
-    <div class="flex gap-x-2.5">
-        <tds-form-field class="w-full">
-            <input tdsInput class="text-neutral-1-600" placeholder="Nhập tên sản phẩm" autocomplete="off" #innerText />
-            <span tdsPrefix><i class="text-neutral-1-600 tdsi-search-fill"></i></span>
-        </tds-form-field>
-        <!-- <button tds-button color="primary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
-            <span class="flex items-center">
-                Sắp xếp
-                <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
-            </span>
-        </button>
-        <tds-dropdown-menu #menu="tdsDropdownMenu">
-            <div class="w-full">
-                <div tds-dropdown-item>
-                    <a> Item 1 </a>
-                </div>
-            </div>
-        </tds-dropdown-menu> -->
-    </div>
-    <div class="w-full">
-        <tds-table
-          #basicTable
+
+<div class="rounded-xl bg-white pt-2 px-3 flex h-full flex-col gap-y-2">
+  <div class="flex gap-x-2">
+      <tds-form-field class="w-full">
+          <input tdsInput placeholder="Tìm kiếm ..." autocomplete="off" #innerText />
+          <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+      </tds-form-field>
+  </div>
+  <div class="w-full h-full">
+      <tds-table #basicTable
           [listData]="lstOfData"
-          [scroll]="{y:'500px',x:'hidden'}"
+          [scroll]="{y:'50vh',x:'hidden'}"
           [showPagination]="false"
           [frontPagination]="false"
           [virtualItemSize]="20"
           [loading]="isLoading"
           [virtualForTrackBy]="trackByIndex">
-            <thead>
-                <tr>
-                    <th>Sản phẩm</th>
-                    <th>Đơn vị tính</th>
-                    <th>Giá</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                <ng-template ngFor let-data tds-virtual-scroll>
-                    <tr>
-                        <td>
-                            <div class="flex items-center">
-                                <tds-avatar class="rounded-lg mr-1" [shape]="'square'" [size]="65" [tdsSrc]="data.ImageUrl">
-                                </tds-avatar>
-                                <span>{{ data.NameGet }}</span>
-                            </div>
-                        </td>
-                        <td>{{ data.UOMName }}</td>
-                        <td>{{ data.Price | number: '1.0-3'}} đ</td>
-                        <td>
-                            <div>
-                                <button tds-button color="secondary" (click)="onSelectProduct(data)" *ngIf="!isSelectProduct; else btnSelectProduct">
-                                    <span class="flex items-center text-primary-1">
-                                      <i class="tdsi-reply-fill text-lg leading-none mr-2"></i>Gửi sản phẩm
-                                    </span>
-                                </button>
-                                <ng-template #btnSelectProduct>
-                                  <button tds-button color="secondary" (click)="onSelectProduct(data)">
-                                    <span class="flex items-center text-primary-1">
-                                      <i class="tdsi-add-fill text-lg leading-none mr-2"></i>Thêm vào
-                                    </span>
-                                </button>
-                                </ng-template>
-                            </div>
-                        </td>
-                    </tr>
-                </ng-template>
-            </tbody>
-        </tds-table>
-    </div>
+          <thead>
+              <tr>
+                  <th width="60px">Ảnh</th>
+                  <th width="220px">Tên sản Phẩm</th>
+                  <th width="80px">Đơn vị</th>
+                  <th width="96px">Giá</th>
+                  <th width="45px"></th>
+              </tr>
+          </thead>
+          <tbody>
+              <ng-template tds-virtual-scroll let-data let-index="index" >
+                  <tr class="group" *ngIf="data">
+                      <td>
+                          <div class="">
+                              <tds-avatar [isAvatar]="false" [shape]="'square'" [size]="'lg'" [tdsSrc]="data.ImageUrl">
+                              </tds-avatar>
+                          </div>
+                      </td>
+                      <td>
+                          <div class="flex flex-col">
+                              <span class="text-body-2">{{ data.NameGet }}</span>
+                              <span class="text-neutral-1-400 font-regular text-body-2"> Tồn kho:
+                                <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].QtyAvailable || 0}}</span>
+                              </span>
+                              <span class="text-neutral-1-400 font-regular text-body-2"> Tồn dự báo:
+                                <span class="text-primary-1" *ngIf="inventories && inventories[data.Id]">{{inventories[data.Id].VirtualAvailable || 0}}</span>
+                              </span>
+                          </div>
+                      </td>
+                      <td class="text-body-2">{{ data.UOMName }}</td>
+                      <td class="text-body-2">{{ data.Price | number: '1.0-3'}} đ</td>
+                      <td>
+                          <button type="button" title="Thêm sản phẩm vào đơn hàng" tds-button-icon color="primary" size="sm" (click)="addItem(data)">
+                              <span class="flex items-center">
+                                  <i class="tdsi-arrow-right-line"></i>
+                              </span>
+                          </button>
+                      </td>
+                  </tr>
+              </ng-template>
+          </tbody>
+      </tds-table>
+  </div>
 </div>
-<div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button class="mr-2" color="secondary" (click)="cancel()">Đóng</button>
-</div>
+
