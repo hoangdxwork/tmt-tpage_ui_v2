@@ -1,305 +1,260 @@
-<div class="w-full h-full flex flex-col gap-4">
-	<div class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full">
-		<div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Cấu hình tạo đơn tự động</div>
-		<div class="flex flex-col gap-y-4 pt-4">
-			<div class="flex flex-col gap-y-4">
-				<div class="flex gap-x-2 items-center">
-					<tds-switch size="md" [checked]='true' ></tds-switch>
-					<div class="text-body-2 font-regular text-neutral-1-900 font-sans">Bật tạo đơn tự động?</div>
-				</div>
-				<div class="pl-4 flex gap-x-2 items-center">
-					<tds-switch size="md" [checked]='false'></tds-switch>
-					<div class="text-body-2 font-regular text-neutral-1-900 font-sans">Tạo tự động với bình luận bất kỳ?</div>
-				</div>
-			</div>
-			<div class="flex gap-x-2 items-center">
-				<tds-switch size="md" [checked]='true' ></tds-switch>
-				<div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Áp dụng ngay cho những bình luận đã có?</div>
-			</div>
-			<div class="flex items-center">
-				<div class="text-body-2 font-semibold text-neutral-1-900 font-sans w-1/4">Bình luận có độ dài lớn hơn (Ký tự) : </div>
-				<div class="flex w-40"><tds-input-number [min]="1" [max]="100" [step]="1" placeholder="0"></tds-input-number></div>
-			</div>
-		</div>
-	</div>
-	<div class="border border-neutral-3-300 border-solid rounded-xl p-4 flex justify-between w-full h-full">
-		<div class="flex items-center gap-x-4">
-			<div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Đồng bộ sản phẩm từ chiến dịch</div>
-			<div class="flex gap-x-1 py-0.5 px-2 bg-base-orange-50 items-center rounded">
-				<div class="text-caption-1 font-regular text-base-orange-500">Chiến dịch Valentine 2022 - chiến dịch mới setting</div>
-				<div class="flex items-center"><span class="tdsi-arrow-right-line text-base-orange-500 text-md flex items-center"></span></div>
-			</div>
-		</div>
-		<button tds-button color="primary">
-			<span class="flex items-center">
-			  <i class="tdsi-download-fill text-lg leading-none mr-2"></i>Tải cấu hình
-			</span>
-		</button>
-	</div>
-	<div class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full">
-		<div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Tạo đơn với</div>
-		<div class="flex flex-col gap-y-4 pt-4">
-			<div class="flex items-center gap-x-2">
-				<tds-switch size="md" [checked]='true' ></tds-switch>
-				<div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Bình luận của khách đã có thông tin (điện thoại, địa chỉ)</div>
-			</div>
-			<div class="flex flex-col gap-y-4">
-				<div class="flex items-center gap-x-2">
-					<tds-switch size="md" [checked]='true' ></tds-switch>
-					<div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Bình luận có số điện thoại</div>
-				</div>
-				<div class="flex items-center gap-x-2 pl-4">
-					<tds-switch size="md" [checked]='true' ></tds-switch>
-					<div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Ép buộc tạo đơn với số điện thoại</div>
-				</div>
-				<div class="flex items-center gap-x-2 pl-4">
-					<tds-switch size="md" [checked]='true' ></tds-switch>
-					<div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Ép buộc in nhiều lần với số điện thoại</div>
-				</div>
-			</div>
-			<div class="flex items-center">
-				<div class="text-body-2 font-semibold text-neutral-1-900 font-sans w-1/4">Bình luận có độ dài lớn hơn (Ký tự) :</div>
-				<div class="flex w-56"><tds-input-number [min]="1" [max]="100" [step]="1" placeholder="0"></tds-input-number></div>
-			</div>
-			<div class="flex items-center">
-				<div class="text-body-2 font-semibold text-neutral-1-900 font-sans w-1/4">Chốt tự động với nội dung:</div>
-				<div class="flex items-center gap-x-2.5">
-					<button tds-button color="secondary">
-						<span class="flex items-center text-primary-1">
-						  <i class="tdsi-plus-fill text-lg leading-none mr-2 text-primary-1"></i>Thêm mẫu
-						</span>
-					</button>
-					<button tds-button color="secondary">
-						<span class="flex items-center text-accent-9">
-						  <i class="tdsi-plus-fill text-lg leading-none mr-2 text-accent-9"></i>Thêm mẫu hàng loạt
-						</span>
-					</button>
-					<button tds-button color="secondary">
-						<span class="flex items-center text-accent-3">
-						  <i class="tdsi-trash-fill text-lg leading-none mr-2 text-accent-3"></i>Xóa hết mẫu
-						</span>
-					</button>
-				</div>
-			</div>
-			<div class="border border-neutral-3-300 border-solid rounded-xl py-3 px-4 ">
-				<div class="grid grid-cols-2 gap-4">
-					<tds-form-field>
-						<tds-label>Từ bắt đầu <span class="text-neutral-1-300">( không áp dụng )</span> </tds-label>
-						<input tdsInput autocomplete="off"  placeholder="Placeholder"  />
-					</tds-form-field>
-					<tds-form-field>
-						<tds-label>Từ kết thúc <span class="text-neutral-1-300">( không áp dụng )</span> </tds-label>
-						<input tdsInput autocomplete="off"  placeholder="Placeholder"  />
-					</tds-form-field>
-					<tds-form-field>
-						<tds-label>Từ số</tds-label>
-						<tds-input-number
-						  [min]="1" [max]="100" [step]="1" placeholder="0">
-						</tds-input-number>
-					</tds-form-field>
-					<tds-form-field>
-						<tds-label>Đến số</tds-label>
-						<tds-input-number
-						  [min]="1" [max]="100" [step]="1" placeholder="0">
-						</tds-input-number>
-					</tds-form-field>
-				</div>
-				<div class="flex justify-end gap-2.5 pt-4">
-					<button tds-button color="secondary">Hủy bỏ</button>
-					<button tds-button color="primary">Tạo mẫu</button>
-				</div>
-			</div>
-			<div class="grid grid-cols-2 gap-4">
-				<div class="bg-neutral-3-50 rounded-lg pt-3 px-4 pb-4">
-					<div class="flex gap-2.5 items-center">
-						<tds-badge [count]="iconTemplate">
-							<a class="tdsi-box-fill text-lg text-neutral-1-500 p-0.5"></a>
-						</tds-badge>
-						
-						<ng-template #iconTemplate>
-							<span class="tdsi-add-fill text-primary-1 absolute bottom-1 right-1 
-								inline-block transform translate-x-1/2 translate-y-1/2 text-[12px] p-0.5 bg-neutral-3-50 rounded-full">
-							</span>
-						</ng-template>
+<tds-spin [spinning]="isLoading">
+  <form [formGroup]="formOrderConfig">
+    <div class="w-full h-full flex flex-col gap-4">
+      <div class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full">
+        <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Cấu hình tạo đơn tự động</div>
+        <div class="flex flex-col gap-y-4 pt-4">
+          <div class="flex flex-col gap-y-4">
+            <div class="flex gap-x-2 items-center">
+              <tds-switch size="md" formControlName="IsEnableOrderAuto" ></tds-switch>
+              <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Bật tạo đơn tự động?</div>
+            </div>
+            <div class="pl-4 flex gap-x-2 items-center" *ngIf="formOrderConfig.value.IsEnableOrderAuto">
+              <tds-switch size="md" formControlName="IsForceOrderWithAllMessage"></tds-switch>
+              <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Tạo tự động với bình luận bất kỳ?</div>
+            </div>
+          </div>
+          <div class="flex gap-x-2 items-center">
+            <tds-switch size="md" formControlName="immediateApply" ></tds-switch>
+            <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Áp dụng ngay cho những bình luận đã có?</div>
+          </div>
+          <div class="flex items-center" *ngIf="formOrderConfig.value.IsEnableOrderAuto">
+            <div class="text-body-2 font-semibold text-neutral-1-900 font-sans w-1/4">Bình luận có độ dài lớn hơn (Ký tự) : </div>
+            <div class="flex w-40">
+              <tds-input-number [min]="1" [max]="100" [step]="1" placeholder="0" formControlName="MinLengthToOrder"></tds-input-number>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="border border-neutral-3-300 border-solid rounded-xl p-4 flex justify-between w-full h-full"
+        *ngIf="formOrderConfig.value.IsEnableOrderAuto && formOrderConfig.value.LiveCampaignId">
+        <div class="flex items-center gap-x-4">
+          <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Đồng bộ sản phẩm từ chiến dịch</div>
+          <div class="flex gap-x-1 py-0.5 px-2 bg-base-orange-50 items-center rounded">
+            <div class="text-caption-1 font-regular text-base-orange-500">Chiến dịch Valentine 2022 - chiến dịch mới setting</div>
+            <div class="flex items-center"><span class="tdsi-arrow-right-line text-base-orange-500 text-md flex items-center"></span></div>
+          </div>
+        </div>
+        <button tds-button color="primary">
+          <span class="flex items-center">
+            <i class="tdsi-download-fill text-lg leading-none mr-2"></i>Tải cấu hình
+          </span>
+        </button>
+      </div>
+      <div class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full"
+      *ngIf="formOrderConfig.value.IsEnableOrderAuto && !formOrderConfig.value.IsForceOrderWithAllMessage">
+        <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Tạo đơn với</div>
+        <div class="flex flex-col gap-y-4 pt-4">
+          <div class="flex items-center gap-x-2">
+            <tds-switch size="md" formControlName="IsOnlyOrderWithPartner" ></tds-switch>
+            <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Bình luận của khách đã có thông tin (điện thoại, địa chỉ)</div>
+          </div>
+          <div class="flex flex-col gap-y-4">
+            <div class="flex items-center gap-x-2">
+              <tds-switch size="md" formControlName="IsOnlyOrderWithPhone" ></tds-switch>
+              <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Bình luận có số điện thoại</div>
+            </div>
+            <div class="flex items-center gap-x-2 pl-4" *ngIf="formOrderConfig.value.IsOnlyOrderWithPhone">
+              <tds-switch size="md" formControlName="IsForceOrderWithPhone" ></tds-switch>
+              <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Ép buộc tạo đơn với số điện thoại</div>
+            </div>
+            <div class="flex items-center gap-x-2 pl-4"
+              *ngIf="formOrderConfig.value.IsForceOrderWithPhone && formOrderConfig.value.IsOnlyOrderWithPhone">
+              <tds-switch size="md" formControlName="IsForcePrintWithPhone" ></tds-switch>
+              <div class="text-body-2 font-regular text-neutral-1-900 font-sans"> Ép buộc in nhiều lần với số điện thoại</div>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="text-body-2 font-semibold text-neutral-1-900 font-sans w-1/4">Bình luận có độ dài lớn hơn (Ký tự) :</div>
+            <div class="flex w-56">
+              <tds-input-number [min]="1" [max]="100" [step]="1" placeholder="0" formControlName="MinLengthToOrder"></tds-input-number>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="text-body-2 font-semibold text-neutral-1-900 font-sans w-1/4">Chốt tự động với nội dung:</div>
+            <div class="flex items-center gap-x-2.5">
+              <button tds-button color="secondary" (click)="addTemplate()">
+                <span class="flex items-center text-primary-1">
+                  <i class="tdsi-plus-fill text-lg leading-none mr-2 text-primary-1"></i>Thêm mẫu
+                </span>
+              </button>
+              <button tds-button color="secondary" (click)="changeMoreTemplate()">
+                <span class="flex items-center text-accent-9">
+                  <i class="tdsi-plus-fill text-lg leading-none mr-2 text-accent-9"></i>Thêm mẫu hàng loạt
+                </span>
+              </button>
+              <button tds-button color="secondary" (click)="removeAllTemplate()">
+                <span class="flex items-center text-accent-3">
+                  <i class="tdsi-trash-fill text-lg leading-none mr-2 text-accent-3"></i>Xóa hết mẫu
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="border border-neutral-3-300 border-solid rounded-xl py-3 px-4 " *ngIf="isVisibleRangeGenerate">
+            <div class="grid grid-cols-2 gap-4">
+              <tds-form-field>
+                <tds-label>Từ bắt đầu <span class="text-neutral-1-300">( không áp dụng )</span> </tds-label>
+                <input tdsInput autocomplete="off"  placeholder="Nhập từ bắt đầu" [(ngModel)]="prefixMoreTemplate" [ngModelOptions]="{standalone: true}"/>
+              </tds-form-field>
+              <tds-form-field>
+                <tds-label>Từ kết thúc <span class="text-neutral-1-300">( không áp dụng )</span> </tds-label>
+                <input tdsInput autocomplete="off"  placeholder="Nhập từ kết thúc" [(ngModel)]="suffixMoreTemplate" [ngModelOptions]="{standalone: true}"/>
+              </tds-form-field>
+              <tds-form-field>
+                <tds-label>Từ số</tds-label>
+                <tds-input-number [min]="1" [max]="100" [step]="1" placeholder="0" [(ngModel)]="fromMoreTemplate" [ngModelOptions]="{standalone: true}">
+                </tds-input-number>
+              </tds-form-field>
+              <tds-form-field>
+                <tds-label>Đến số</tds-label>
+                <tds-input-number [min]="1" [max]="100" [step]="1" placeholder="0" [(ngModel)]="toMoreTemplate" [ngModelOptions]="{standalone: true}">
+                </tds-input-number>
+              </tds-form-field>
+            </div>
+            <div class="flex justify-end gap-2.5 pt-4">
+              <button tds-button color="secondary" (click)="onCannelMoreTemplate()" >Hủy bỏ</button>
+              <button tds-button color="primary" (click)="addMoreTemplate()" >Tạo mẫu</button>
+            </div>
+          </div>
 
-						<div class="text-info-500 text-body-2 font-semibold ">[NH500] Nước Hoa Dior  /  500,000</div>
-					</div>	
-					<div class="pt-6">
-						<div class="flex p-2 bg-white rounded-md gap-x-1">
-							<tds-tag mode="closeable">
-								Nước khoáng
-							</tds-tag>
-							<tds-tag mode="closeable">
-								nuoc khoang
-							</tds-tag>
-							<tds-tag mode="closeable">
-								nuockhoang
-							</tds-tag>
-						</div>
-					</div>
-					<div class="pt-4 flex items-center">
-						<div class="text-neutral-1-900 font-semibold text-body-2 w-1/4">Số lượng tối đa</div>
-						<div class="w-3/4">
-							<tds-form-field class="w-full">
-								<tds-input-number
-								[min]="1" [max]="100" [step]="1" placeholder="0">
-								</tds-input-number>
-							</tds-form-field>
-						</div>
-					</div>
-					<div class="pt-3">
-						<tds-checkbox [checked]="true">Kiểm tra thuộc tính? ([])</tds-checkbox>
-					</div>
-					<div class="pt-3">
-						<div class="flex p-2 bg-white rounded-md gap-x-1">
-							<tds-tag mode="closeable">
-								Nước khoáng
-							</tds-tag>
-							<tds-tag mode="closeable">
-								nuoc khoang
-							</tds-tag>
-							<tds-tag mode="closeable">
-								nuockhoang
-							</tds-tag>
-						</div>
-					</div>
-					<div class="pt-3">
-						<tds-checkbox> Bật xử lý số lượng?</tds-checkbox>
-					</div>
-					<div class="pt-3">
-						<tds-checkbox> Cho phép chốt nhiều lần (nhưng không cho trùng nội dung chốt)</tds-checkbox>
-					</div>
-					<div class="pt-6">
-						<div class="rounded-md border border-accent-3 border-solid flex justify-center items-center py-2">
-							<span class="flex items-center text-accent-3 text-body-2 font-semibold">
-								<i class="tdsi-trash-fill text-lg leading-none mr-2 text-accent-3"></i>Xóa mẫu
-							</span>
-						</div>
-					</div>
+          <!-- Config Product -->
+          <div class="grid grid-cols-2 gap-4" formArrayName="TextContentToOrders">
+            <div *ngFor="let configProduct of textContentToOrdersFormGroups.controls; let index = index" [formGroupName]="index"
+              class="bg-neutral-3-50 rounded-lg pt-3 px-4 pb-4">
+              <div class="flex gap-2.5 items-center">
+                <tds-badge [count]="iconTemplate">
+                  <a class="tdsi-box-fill text-lg text-neutral-1-500 p-0.5"></a>
+                </tds-badge>
 
-				</div> 
+                <ng-template #iconTemplate>
+                  <span class="tdsi-add-fill text-primary-1 absolute bottom-1 right-1
+                    inline-block transform translate-x-1/2 translate-y-1/2 text-[12px] p-0.5 bg-neutral-3-50 rounded-full"
+                      (click)="showModalListProduct(index)">
+                  </span>
+                </ng-template>
 
-				<div class="bg-neutral-3-50 rounded-lg pt-3 px-4 pb-4">
-					<div class="flex gap-2.5 items-center">
-						<tds-badge [count]="iconTemplate">
-							<a class="tdsi-box-fill text-lg text-neutral-1-500 p-0.5"></a>
-						</tds-badge>
-						
-						<ng-template #iconTemplate>
-							<span class="tdsi-add-fill text-primary-1 absolute bottom-1 right-1 
-								inline-block transform translate-x-1/2 translate-y-1/2 text-[12px] p-0.5 bg-neutral-3-50 rounded-full">
-							</span>
-						</ng-template>
+                <div class="text-info-500 text-body-2 font-semibold " *ngIf="configProduct.value?.Product; else notProduct">
+                  {{configProduct.value?.Product?.ProductNameGet}}  /  {{configProduct.value?.Product?.Price | number}}
+                </div>
+                <ng-template #notProduct>
+                  <div class="text-info-500 text-body-2 font-semibold ">
+                    Chưa gán sản phẩm
+                  </div>
+                </ng-template>
+              </div>
+              <div class="pt-6">
+                <div class="flex p-2 bg-white rounded-md gap-x-1">
+                  <tds-form-field class="p-3 w-full">
+                      <tds-select valueField="id" textField="name" formControlName="selectedWord2s"
+                          placeholder='Nội dung nhập' mode="tags" [maxTagCount]="10">
+                      </tds-select>
+                  </tds-form-field>
+                </div>
+              </div>
+              <div *ngIf="configProduct.value.Product">
+                <div class="pt-4 flex items-center">
+                  <div class="text-neutral-1-900 font-semibold text-body-2 w-1/4">Số lượng tối đa</div>
+                  <div class="w-3/4">
+                    <tds-form-field class="w-full">
+                      <tds-input-number [min]="1" [max]="100" [step]="1" placeholder="0" [(ngModel)]="configProduct.value.Product.Quantity"
+                        [ngModelOptions]="{standalone: true}">
+                      </tds-input-number>
+                    </tds-form-field>
+                  </div>
+                </div>
+                <div class="pt-3">
+                  <tds-checkbox [checked]="true">Kiểm tra thuộc tính? ([{{configProduct.value.Product.DescriptionAttributeValues | json}}])</tds-checkbox>
+                </div>
+                <div class="pt-3">
+                  <div class="flex p-2 bg-white rounded-md gap-x-1">
+                    <tds-form-field class="p-3 w-full">
+                      <tds-select valueField="id" textField="name" formControlName="selectedWord3s"
+                          placeholder='Nội dung nhập' mode="tags" [maxTagCount]="10">
+                      </tds-select>
+                    </tds-form-field>
+                  </div>
+                </div>
+                <div class="pt-3">
+                  <tds-checkbox [(ngModel)]="configProduct.value.Product.IsEnableRegexQty" [ngModelOptions]="{standalone: true}">
+                    Bật xử lý số lượng?
+                  </tds-checkbox>
+                </div>
+                <div class="pt-3">
+                  <tds-checkbox [(ngModel)]="configProduct.value.Product.IsEnableOrderMultiple" [ngModelOptions]="{standalone: true}">
+                    Cho phép chốt nhiều lần (nhưng không cho trùng nội dung chốt)
+                  </tds-checkbox>
+                </div>
+              </div>
+              <div class="pt-6">
+                <button tds-button color="secondary" class="rounded-md border border-accent-3 border-solid w-full flex justify-center"
+                  (click)="removeTemplate(index)">
+                  <span class="flex items-center text-accent-3 text-body-2 font-semibold">
+                    <i class="tdsi-trash-fill text-lg leading-none mr-2 text-accent-3"></i>Xóa mẫu
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
 
-						<div class="text-info-500 text-body-2 font-semibold ">[NH500] Nước Hoa Dior  /  500,000</div>
-					</div>	
-					<div class="pt-6">
-						<div class="flex p-2 bg-white rounded-md gap-x-1">
-							<tds-tag mode="closeable">
-								Nước khoáng
-							</tds-tag>
-							<tds-tag mode="closeable">
-								nuoc khoang
-							</tds-tag>
-							<tds-tag mode="closeable">
-								nuockhoang
-							</tds-tag>
-						</div>
-					</div>
-					<div class="pt-4 flex items-center">
-						<div class="text-neutral-1-900 font-semibold text-body-2 w-1/4">Số lượng tối đa</div>
-						<div class="w-3/4">
-							<tds-form-field class="w-full">
-								<tds-input-number
-								[min]="1" [max]="100" [step]="1" placeholder="0">
-								</tds-input-number>
-							</tds-form-field>
-						</div>
-					</div>
-					<div class="pt-3">
-						<tds-checkbox [checked]="true">Kiểm tra thuộc tính? ([])</tds-checkbox>
-					</div>
-					<div class="pt-3">
-						<div class="flex p-2 bg-white rounded-md gap-x-1">
-							<tds-tag mode="closeable">
-								Nước khoáng
-							</tds-tag>
-							<tds-tag mode="closeable">
-								nuoc khoang
-							</tds-tag>
-							<tds-tag mode="closeable">
-								nuockhoang
-							</tds-tag>
-						</div>
-					</div>
-					<div class="pt-3">
-						<tds-checkbox> Bật xử lý số lượng?</tds-checkbox>
-					</div>
-					<div class="pt-3">
-						<tds-checkbox> Cho phép chốt nhiều lần (nhưng không cho trùng nội dung chốt)</tds-checkbox>
-					</div>
-					<div class="pt-6">
-						<div class="rounded-md border border-accent-3 border-solid flex justify-center items-center py-2">
-							<span class="flex items-center text-accent-3 text-body-2 font-semibold">
-								<i class="tdsi-trash-fill text-lg leading-none mr-2 text-accent-3"></i>Xóa mẫu
-							</span>
-						</div>
-					</div>
+          <div class="border border-neutral-3-300 border-solid rounded-lg p-4 w-full h-full">
+            <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Không tạo đơn với</div>
+            <div class="pt-4 grid grid-cols-2 gap-x-4">
+              <tds-form-field>
+                <tds-label>Khách hàng thuộc trạng thái</tds-label>
+                <tds-select valueField="Id" textField="Name" placeholder='Nhập nội dung và nhấn [Enter]' formControlName="ExcludedStatusNames"
+                    [data]="(lstTags$ | async) || []" mode="multiple" >
+                </tds-select>
+              </tds-form-field>
+              <tds-form-field>
+                <tds-label>Bình luận có nội dung</tds-label>
+                  <tds-select valueField="id" textField="name" formControlName="selectedWord1s" placeholder='Nhập nội dung và nhấn [Enter]'
+                      mode="tags" [maxTagCount]="10">
+                  </tds-select>
+              </tds-form-field>
+            </div>
+            <div class="pt-4 ">
+              <tds-label>Danh sách số điện thoại seeding</tds-label>
+              <div class="flex gap-x-4 pt-2 items-center">
+                <tds-form-field class="w-full">
+                    <tds-select valueField="id" textField="name" formControlName="ExcludedPhones" placeholder='Nhập nội dung và nhấn [Enter]'
+                        mode="tags" [maxTagCount]="10">
+                    </tds-select>
+                </tds-form-field>
+                <button tds-button-icon color="secondary">
+                  <input type="file" (change)="addExcludedPhone($event)" id="ip_add_excel_phone" class="hidden">
+                  <label class="tdsi-note-fill flex items-center" for="ip_add_excel_phone"></label>
+                </button>
+                <button tds-button-icon color="secondary">
+                  <input type="file" (change)="addExcludedPhone($event)" id="ip_add_txt_phone" class="hidden">
+                  <label class="tdsi-excel-fill flex items-center" for="ip_add_txt_phone"></label>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="border border-neutral-3-300 border-solid rounded-lg p-4 w-full h-full">
+            <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Phân công hội thoại tự động</div>
+            <div class="flex flex-col gap-y-4 pt-4">
+              <div class="flex gap-x-2 items-center">
+                <tds-switch size="md" formControlName="IsEnableAutoAssignUser" ></tds-switch>
+                <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Bật phân công đơn hàng tự động cho nhân viên?</div>
+              </div>
 
-				</div>
-			</div>
-			<div class="border border-neutral-3-300 border-solid rounded-lg p-4 w-full h-full">
-				<div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Không tạo đơn với</div>
-				<div class="pt-4 grid grid-cols-2 gap-x-4">
-					<tds-form-field>
-						<tds-label>Khách hàng thuộc trạng thái</tds-label>
-						<input tdsInput autocomplete="off"  placeholder="Nhập nội dung và nhấn [Enter]"  />
-					</tds-form-field>
-					<tds-form-field>
-						<tds-label>Bình luận có nội dung</tds-label>
-						<input tdsInput autocomplete="off"  placeholder="Nhập nội dung và nhấn [Enter]"  />
-					</tds-form-field>
-				</div>
-				<div class="pt-4 ">
-					<tds-label>Khách hàng thuộc trạng thái</tds-label>
-					<div class="flex gap-x-4 pt-2 items-center">
-						<tds-form-field class="w-full">
-							<input tdsInput autocomplete="off"  placeholder="Nhập nội dung và nhấn [Enter]"  />
-						</tds-form-field>
-						<button tds-button-icon color="secondary">
-							<i class="tdsi-note-fill flex items-center"></i>
-						</button>
-	
-						<button tds-button-icon color="secondary">
-							<i class="tdsi-excel-fill flex items-center"></i>
-						</button>
-					</div>
-				</div>
-			</div> 
-			<div class="border border-neutral-3-300 border-solid rounded-lg p-4 w-full h-full">
-				<div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Phân công hội thoại tự động</div>
-				<div class="flex flex-col gap-y-4 pt-4">
-					<div class="flex gap-x-2 items-center">
-						<tds-switch size="md" [checked]='true' ></tds-switch>
-						<div class="text-body-2 font-regular text-neutral-1-900 font-sans">Bật phân công đơn hàng tự động cho nhân viên?</div>
-					</div>
+              <tds-form-field *ngIf="formOrderConfig.value.IsEnableAutoAssignUser">
+                <tds-label> Chọn nhân viên để phân công: </tds-label>
+                <tds-select valueField="Id" textField="Name" mode="tags" [maxTagCount]="10"
+                  placeholder='Chọn nhân viên' formControlName="Users" [allowClear]="true" [data]="(lstUser$ | async) || []" mode="multiple" >
+                </tds-select>
+              </tds-form-field>
+            </div>
+          </div>
 
-					<tds-form-field>
-						<tds-label> Chọn nhân viên để phân công: </tds-label>
-						<tds-select 
-							valueField="id" textField="name" 
-							placeholder='select item' [(ngModel)]="listSelected" 
-							(ngModelChange)="onModelChange($event)" [allowClear]="true"
-							[data]="listData" mode="multiple" >      
-						</tds-select>
-					</tds-form-field>
-				</div>
-			</div>
-			
-		</div>
-	</div>
-	<div class="w-full flex justify-end p-4" *tdsModalFooter>
-		<button tds-button class="mr-2" color="secondary">Đóng</button>
-		<button tds-button type="submit" color="primary">Lưu</button>
-	</div>
-</div> 
+        </div>
+      </div>
+      <div class="w-full flex justify-end p-4 gap-x-4" *tdsModalFooter>
+        <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Đóng</button>
+        <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
+      </div>
+    </div>
+  </form>
+</tds-spin>
+

@@ -1,8 +1,9 @@
 import { EventEmitter, Injectable, OnDestroy, OnInit } from '@angular/core';
-import {  Observable, ReplaySubject, Subject } from 'rxjs';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSHelperArray } from 'tmt-tang-ui';
+import { AutoOrderConfigDTO } from '../dto/configs/post/order-config.dto';
 import { FacebookPostDTO, FacebookPostItem } from '../dto/facebook-post/facebook-post.dto';
 import { BaseSevice } from './base.service';
 
@@ -192,6 +193,17 @@ export class FacebookPostService extends BaseSevice implements OnInit, OnDestroy
       method: TApiMethodType.put
     }
     return this.apiService.getData<any>(api, data);
+  }
+
+  // POST CONFIG
+
+  getOrderConfig(postId: string): Observable<AutoOrderConfigDTO> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoorderconfigs`,
+      method: TApiMethodType.get
+    }
+
+    return this.apiService.getData<AutoOrderConfigDTO>(api, null);
   }
 
   ngOnDestroy(): void {

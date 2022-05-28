@@ -96,5 +96,11 @@ export const Message = {
     CreateChatbotSuccess: 'Tạo chatbot thành công.',
     OnChatbotSuccess: 'Bật chatbot thành công.',
     OffChatbotSuccess: 'Tắt chatbot thành công.',
+  },
+  ConversationPost: {
+    AddTemplateSuccess: 'Thêm mẫu thành công.',
+    ErrorNumberMoreTemplate: 'Số sau không được lớn hơn số trước.',
+    AddMoreTemplateSuccess: 'Tạo thành công, nhớ [Lưu cấu hình] trước khi thực hiện thao tác khác.',
+    FileNotFormat: 'File không đúng định dạng.'
   }
 }
