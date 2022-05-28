@@ -44,11 +44,11 @@ export interface AutoOrderConfig_ContentToOrderDTO {
 }
 
 export interface AutoOrderConfig_ProductDTO {
-  ProductId: number;
+  ProductId?: number;
   ProductCode: string;
   ProductName: string;
   ProductNameGet: string;
-  Price: number;
+  Price?: number;
   UOMId?: number;
   UOMName: string;
   // Số lượng tối đa

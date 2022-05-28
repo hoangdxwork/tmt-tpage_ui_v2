@@ -101,6 +101,8 @@ export const Message = {
     AddTemplateSuccess: 'Thêm mẫu thành công.',
     ErrorNumberMoreTemplate: 'Số sau không được lớn hơn số trước.',
     AddMoreTemplateSuccess: 'Tạo thành công, nhớ [Lưu cấu hình] trước khi thực hiện thao tác khác.',
-    FileNotFormat: 'File không đúng định dạng.'
+    FileNotFormat: 'File không đúng định dạng.',
+    TextContentProductEmpty: 'Vui lòng nhập đầy đủ nội dung mẫu.',
+    LoadConfigSuccess: 'Tải cấu hình thành công.'
   }
 }

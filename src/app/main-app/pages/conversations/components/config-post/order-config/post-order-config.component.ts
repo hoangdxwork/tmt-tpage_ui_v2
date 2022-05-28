@@ -1,19 +1,25 @@
+import { StringHelperV2 } from './../../../../../shared/helper/string.helper';
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from "@angular/core";
 import { FormArray, FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Observable, Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
 import { ApplicationUserDTO } from "src/app/main-app/dto/account/application-user.dto";
-import { AutoOrderConfigDTO, AutoOrderConfig_ContentToOrderDTO } from "src/app/main-app/dto/configs/post/order-config.dto";
+import { AutoOrderConfigDTO, AutoOrderConfig_ContentToOrderDTO, AutoOrderConfig_ProductDTO } from "src/app/main-app/dto/configs/post/order-config.dto";
 import { CRMTagDTO } from "src/app/main-app/dto/crm-tag/odata-crmtag.dto";
 import { FacebookPostItem } from "src/app/main-app/dto/facebook-post/facebook-post.dto";
 import { DataPouchDBDTO } from "src/app/main-app/dto/product-pouchDB/product-pouchDB.dto";
+import { ProductDTO } from "src/app/main-app/dto/product/product.dto";
 import { ApplicationUserService } from "src/app/main-app/services/application-user.service";
 import { CRMTagService } from "src/app/main-app/services/crm-tag.service";
 import { FacebookPostService } from "src/app/main-app/services/facebook-post.service";
+import { ProductService } from "src/app/main-app/services/product.service";
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalRef, TDSModalService, TDSSafeAny } from "tmt-tang-ui";
 import * as XLSX from 'xlsx';
 import { ModalListProductComponent } from "../../modal-list-product/modal-list-product.component";
+import { MDBInnerCreatedByDTO } from 'src/app/main-app/dto/conversation/inner.dto';
+import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
+import { LiveCampaignDetailDataDTO, SaleOnline_LiveCampaignDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
 
 @Component({
   selector: 'post-order-config',
@@ -36,9 +42,11 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
   fromMoreTemplate: number = 0;
   toMoreTemplate: number = 1;
   isVisibleRangeGenerate: boolean = false;
+  isImmediateApply: boolean = false;
 
   lstTags$!: Observable<CRMTagDTO[]>;
   lstUser$!: Observable<ApplicationUserDTO[]>;
+  currentLiveCampaign!: SaleOnline_LiveCampaignDTO | undefined;
 
   constructor(
     private fb: FormBuilder,
@@ -48,7 +56,9 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
     private applicationUserService: ApplicationUserService,
     private modelRef: TDSModalRef,
     private viewContainerRef: ViewContainerRef,
-    private modalService: TDSModalService
+    private modalService: TDSModalService,
+    private productService: ProductService,
+    private liveCampaignService: LiveCampaignService
   ) { }
 
   get textContentToOrdersFormGroups() {
@@ -78,6 +88,18 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
     this.lstUser$ = this.applicationUserService.dataActive$.pipe(takeUntil(this.destroy$));
   }
 
+  loadLiveCampaignById(liveCampaignId: string | undefined) {
+    if(liveCampaignId) {
+      this.liveCampaignService.getById(this.data.live_campaign_id).subscribe(res => {
+        this.currentLiveCampaign = res;
+      });
+    }
+    else {
+      this.currentLiveCampaign = undefined;
+    }
+
+  }
+
   createForm() {
     this.formOrderConfig = this.fb.group({
       IsEnableOrderAuto: [false],
@@ -92,9 +114,8 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
       MaxCreateOrder: [0],
       TextContentToOrders: this.fb.array([]),
       selectedWord1s: [null],
-      immediateApply: [false],
       ExcludedPhones: [null],
-      ExcludedStatusNames: this.fb.array([]),
+      ExcludedStatusNames: [null],
       IsEnableAutoAssignUser: [false],
       Users: [null],
       LiveCampaignId: [null]
@@ -110,8 +131,8 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
     this.facebookPostService.getOrderConfig(postId)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
-        console.log(res);
         this.updateForm(res);
+        this.loadLiveCampaignById(res?.LiveCampaignId);
       });
   }
 
@@ -129,14 +150,12 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     if (data.ExcludedStatusNames) {
-      this.formOrderConfig.setControl('ExcludedStatusNames', this.fb.array(data.ExcludedStatusNames));
+      this.formOrderConfig.controls.ExcludedStatusNames.setValue(data.ExcludedStatusNames);
     }
 
     if(TDSHelperArray.hasListValue(data.TextContentToOrders)) {
       this.initTextContentToOrders(data.TextContentToOrders);
     }
-
-    console.log(this.formOrderConfig.value);
   }
 
   initTextContentToOrders(data: AutoOrderConfig_ContentToOrderDTO[]) {
@@ -170,6 +189,53 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
         formGroup.controls['selectedWord3s'].setValue(data.ContentWithAttributes.split(','));
       }
     }
+
+    return formGroup;
+  }
+
+  initTextContentToDetail(details: LiveCampaignDetailDataDTO[], liveCampaign: SaleOnline_LiveCampaignDTO) {
+    details.forEach(content => {
+      const control = <FormArray>this.formOrderConfig.controls['TextContentToOrders'];
+      control.push(this.initOrderContentLiveCampaign(content, liveCampaign));
+    });
+  }
+
+  initOrderContentLiveCampaign(data: LiveCampaignDetailDataDTO, liveCampaign: SaleOnline_LiveCampaignDTO): FormGroup {
+    let currentIndex = this.formOrderConfig.value.TextContentToOrders.length;
+
+    let formGroup = this.fb.group({
+      Index: [currentIndex, Validators.required],
+      Content: [null],
+      IsActive: [true],
+      ContentWithAttributes: [null],
+      Product: [null],
+      selectedWord2s: [null],
+      selectedWord3s: [null],
+    });
+
+    let product = this.defaultOrderConfigProductByLiveCampaignDetail(data, liveCampaign.EnableQuantityHandling);
+    let selectedWord2s: string[] = [];
+    let selectedWord3s: string[] = [];
+
+    if(TDSHelperObject.hasValue(data) && data) {
+      formGroup.patchValue(data);
+
+      if(TDSHelperString.hasValueString(data.Tags)) {
+        selectedWord2s = data.Tags.split(',');
+      }
+
+      if(TDSHelperString.hasValueString(data.ProductTemplateName)) {
+        if(TDSHelperString.hasValueString(data.Tags)) {
+          selectedWord3s = data.Tags.split(',');
+        }
+      }
+    }
+
+    formGroup.controls.Product.setValue(product);
+    formGroup.controls.selectedWord2s.setValue(selectedWord2s);
+    formGroup.controls.Content.setValue(selectedWord2s.toString());
+    formGroup.controls.selectedWord3s.setValue(selectedWord3s);
+    formGroup.controls.ContentWithAttributes.setValue(selectedWord3s.toString());
 
     return formGroup;
   }
@@ -234,7 +300,6 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   addExcludedPhone(event: any) {
-    debugger;
     const target: DataTransfer = <DataTransfer>(event.target);
     const reader: FileReader = new FileReader();
 
@@ -289,10 +354,6 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
     return null;
   }
 
-  onSave() {
-
-  }
-
   showModalListProduct(index: number) {
     const modal = this.modalService.create({
       title: 'Danh sách sản phẩm',
@@ -307,10 +368,222 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
 
     modal.componentInstance?.selectProduct.subscribe((res: DataPouchDBDTO) =>{
       if(TDSHelperObject.hasValue(res)) {
-        // let product = this.convertDetail(res);
-        // this.selectProduct(product);
+        this.selectProduct(res, index);
+        modal.close();
       }
     });
+  }
+
+  selectProduct(product: DataPouchDBDTO, index: number) {
+    this.productService.getAttributeValuesById(product.Id).subscribe(res => {
+      let defaultProductConfig = this.defaultOrderConfigProduct(res);
+      let selectedWord2s = this.handleAddWord2s(defaultProductConfig);
+      let selectedWord3s = selectedWord2s;
+
+      let currentIndex = (this.formOrderConfig.get("TextContentToOrders") as FormArray).at(index).value;
+      currentIndex.Product = defaultProductConfig;
+      currentIndex.selectedWord2s = selectedWord2s;
+      currentIndex.Content = selectedWord2s;
+      currentIndex.selectedWord3s = selectedWord3s; // Gán 3s thành 2s
+      currentIndex.ContentWithAttributes = selectedWord3s;
+
+      (this.formOrderConfig.get("TextContentToOrders") as FormArray).at(index).setValue(currentIndex);
+    });
+  }
+
+  defaultOrderConfigProduct(product: ProductDTO): AutoOrderConfig_ProductDTO {
+    let result = {} as AutoOrderConfig_ProductDTO;
+
+    result.ProductId = product.Id;
+    result.ProductCode = product.DefaultCode;
+    result.ProductName = product.Name;
+    result.ProductNameGet = product.NameGet;
+    result.Price = product.LstPrice;
+    result.UOMId = product.UOMId;
+    result.UOMName = product.UOMName;
+
+    result.Quantity = undefined;
+    result.QtyLimit = undefined;
+    result.QtyDefault = undefined;
+    result.IsEnableRegexQty = false;
+    result.IsEnableRegexAttributeValues = false;
+    result.IsEnableOrderMultiple = false;
+    result.AttributeValues = [];
+    result.DescriptionAttributeValues = [];
+
+    if(TDSHelperArray.hasListValue(product?.AttributeValues)) {
+      let listName = product.AttributeValues.map(x => x.Name);
+      let listNameGet = product.AttributeValues.map(x => x.NameGet);
+
+      result.AttributeValues = listName;
+      result.DescriptionAttributeValues = listNameGet;
+
+      result.IsEnableRegexAttributeValues = true;
+    }
+
+    return result;
+  }
+
+  defaultOrderConfigProductByLiveCampaignDetail(detail: LiveCampaignDetailDataDTO, isEnableQuantityHandling: boolean): AutoOrderConfig_ProductDTO {
+    let result = {} as AutoOrderConfig_ProductDTO;
+
+    result.ProductId = detail.ProductId;
+    result.ProductCode = detail.ProductCode;
+    result.ProductName = detail.ProductName;
+    result.ProductNameGet = detail.ProductName;
+    result.Price = detail.Price;
+    result.UOMId = detail.UOMId;
+    result.UOMName = detail.UOMName;
+
+    result.Quantity = detail.Quantity;
+    result.QtyLimit = detail.LimitedQuantity;
+    result.QtyDefault = undefined;
+    result.IsEnableRegexQty = isEnableQuantityHandling;
+    result.IsEnableRegexAttributeValues = false;
+    result.IsEnableOrderMultiple = false;
+    result.AttributeValues = [];
+    result.DescriptionAttributeValues = [];
+
+    if(TDSHelperArray.hasListValue(detail?.AttributeValues)) {
+      let listName = detail.AttributeValues.map(x => x.Name);
+      let listNameGet = detail.AttributeValues.map(x => x.NameGet);
+
+      result.AttributeValues = listName;
+      result.DescriptionAttributeValues = listNameGet;
+
+      result.IsEnableRegexAttributeValues = true;
+    }
+
+    return result;
+  }
+
+  handleAddWord2s(productConfig: AutoOrderConfig_ProductDTO) {
+    let productName = productConfig.ProductNameGet;
+    productName =  productName.replace(`[${productConfig.ProductCode}]`,"");
+    productName =  productName.trim();
+
+    let result = this.handleWord(productName, productConfig.ProductCode);
+    return result;
+  }
+
+  handleWord(text: string, code?: string): string[] {
+    let result: string[] = [];
+
+    let word = StringHelperV2.removeSpecialCharacters(text);
+    let wordNoSignCharacters = StringHelperV2.nameNoSignCharacters(word);
+    let wordNameNoSpace = StringHelperV2.nameCharactersSpace(wordNoSignCharacters);
+
+    result.push(word);
+
+    if(!result.includes(wordNoSignCharacters)) {
+      result.push(wordNoSignCharacters);
+    }
+
+    if(!result.includes(wordNameNoSpace)) {
+      result.push(wordNameNoSpace);
+    }
+
+    if(TDSHelperString.hasValueString(code) && code) {
+      result.push(code);
+    }
+
+    return result;
+  }
+
+  loadConfigLiveCampaign(liveCampaignId: string) {
+    this.isLoading = true;
+    this.liveCampaignService.getDetailAndAttributes(liveCampaignId)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe(res => {
+        let users: MDBInnerCreatedByDTO[] = [];
+
+        if(TDSHelperArray.hasListValue(res?.LiveCampaign?.Users)) {
+          users = this.prepareUser(res?.LiveCampaign?.Users);
+          this.formOrderConfig.controls.IsEnableAutoAssignUser.setValue(true);
+        }
+        this.formOrderConfig.controls.Users.setValue(users);
+
+        if(TDSHelperArray.hasListValue(res?.Details)) {
+          (this.formOrderConfig.controls['TextContentToOrders'] as FormArray).clear();
+          this.initTextContentToDetail(res.Details, res.LiveCampaign);
+        }
+
+        this.message.info(Message.ConversationPost.LoadConfigSuccess);
+      }, error => {
+        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+      });
+  }
+
+  onSave() {
+    let model = this.prepareModelOrderConfig();
+
+    this.isLoading = true;
+    if(this.isCheckValue(model) === 1) {
+      this.facebookPostService.updateOrderConfig(this.data.fbid, this.isImmediateApply, model)
+        .pipe(finalize(() => this.isLoading = false))
+        .subscribe(res => {
+          this.message.success(Message.UpdatedSuccess);
+        }, error => {
+          this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+        });
+    }
+  }
+
+  prepareModelOrderConfig() {
+    let model = {} as AutoOrderConfigDTO;
+
+    let formValue = this.formOrderConfig.value;
+
+    model.IsEnableOrderAuto = formValue.IsEnableOrderAuto;
+    model.IsForceOrderWithAllMessage = formValue.IsForceOrderWithAllMessage;
+    model.IsOnlyOrderWithPartner = formValue.IsOnlyOrderWithPartner;
+    model.IsOnlyOrderWithPhone = formValue.IsOnlyOrderWithPhone;
+    model.IsForceOrderWithPhone = formValue.IsForceOrderWithPhone;
+    model.IsForcePrintWithPhone = formValue.IsForcePrintWithPhone;
+    // model.MinLengthToVisible = formValue.MinLengthToVisible;
+    model.MinLengthToOrder = formValue.MinLengthToOrder;
+    model.TextContentToExcludeOrder = formValue.TextContentToExcludeOrder;
+    model.TextContentToOrders = formValue.TextContentToOrders;
+    model.ExcludedPhones = formValue.ExcludedPhones;
+    model.ExcludedStatusNames = formValue.ExcludedStatusNames;
+    model.MaxCreateOrder = formValue.MaxCreateOrder;
+    model.IsEnableAutoAssignUser = formValue.IsEnableAutoAssignUser;
+    model.LiveCampaignId = formValue.LiveCampaignId;
+    model.Users = this.prepareUser(formValue.Users);
+
+    if(TDSHelperString.hasValueString(formValue.selectedWord1s)) {
+      model.TextContentToExcludeOrder = formValue.selectedWord1s.join(",");
+    }
+
+    return model;
+  }
+
+  prepareUser(data: any[]) {
+    let result: MDBInnerCreatedByDTO[] = data.map((user: ApplicationUserDTO) => {
+      let inner = {} as MDBInnerCreatedByDTO;
+      inner.Id = user.Id;
+      inner.Avatar = user.Avatar;
+      inner.Name = user.Name;
+      inner.UserName = user.UserName;
+
+      return inner;
+    });
+
+    return result;
+  }
+
+  isCheckValue(model: AutoOrderConfigDTO): number {
+    if(TDSHelperArray.hasListValue(model.TextContentToOrders)) {
+      debugger;
+      let findIndex = model.TextContentToOrders.findIndex(x => !TDSHelperString.hasValueString(x?.Content));
+
+      if(findIndex >= 0) {
+        this.message.error(Message.ConversationPost.TextContentProductEmpty);
+        return 0;
+      }
+    }
+
+    return 1;
   }
 
   onCannel() {

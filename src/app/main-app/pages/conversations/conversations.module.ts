@@ -73,6 +73,7 @@ import { PostOrderConfigComponent } from './components/config-post/order-config/
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { ModalSelectAttachmentComponent } from './components/modal-select-attachment/modal-select-attachment.component';
 import { ModalAddAttachmentCollectionComponent } from './components/modal-add-attachment-collection/modal-add-attachment-collection.component';
+import { LiveCampaignService } from '../../services/live-campaign.service';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -109,6 +110,7 @@ const SERVICES = [
   AttachmentService,
   AttachmentState,
   ProductIndexDBService,
+  LiveCampaignService
 ]
 
 @NgModule({

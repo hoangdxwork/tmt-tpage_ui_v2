@@ -206,6 +206,15 @@ export class FacebookPostService extends BaseSevice implements OnInit, OnDestroy
     return this.apiService.getData<AutoOrderConfigDTO>(api, null);
   }
 
+  updateOrderConfig(postId: string, isImmediateApply: boolean, model: AutoOrderConfigDTO): Observable<undefined> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoorderconfigs?immediateApply=${isImmediateApply}`,
+      method: TApiMethodType.put
+    }
+
+    return this.apiService.getData<undefined>(api, model);
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
