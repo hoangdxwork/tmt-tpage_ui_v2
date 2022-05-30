@@ -1,15 +1,19 @@
 
-<tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
-  <tds-tab title="Chốt đơn" clsContent="px-0 py-4 border-t border-neutral-2-200">
-    <post-order-config></post-order-config>
-  </tds-tab>
-  <tds-tab title="Tương tác chốt đơn">Tương tác chốt đơn</tds-tab>
-  <tds-tab title="Ẩn bình luận">Ẩn bình luận</tds-tab>
-  <tds-tab title="Phản hồi bình luận">
-    <auto-reply-config [data]="data"></auto-reply-config>
-  </tds-tab>
-  <tds-tab title="Gán thẻ hội thoại">
-    <auto-label-config [data]="data"></auto-label-config>
-  </tds-tab>
+<tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex" class="border border-neutral-2-200 rounded-md">
+    <tds-tab title="Chốt đơn" clsContent="p-4 border-t border-neutral-2-200">
+        <post-order-config [data]="data"></post-order-config>
+    </tds-tab>
+    <tds-tab title="Tương tác chốt đơn" clsContent="p-4 border-t border-neutral-2-200">
+        <post-order-interaction-config [data]="data"></post-order-interaction-config>
+    </tds-tab>
+    <tds-tab title="Ẩn bình luận" clsContent="p-4 border-t border-neutral-2-200">
+        <post-hidden-comment-config [data]="data"></post-hidden-comment-config>
+    </tds-tab>
+    <tds-tab title="Phản hồi bình luận" clsContent="p-4 border-t border-neutral-2-200">
+        <auto-reply-config [data]="data"></auto-reply-config>
+    </tds-tab>
+    <tds-tab title="Gán thẻ hội thoại" clsContent="p-4 border-t border-neutral-2-200">
+        <auto-label-config [data]="data"></auto-label-config>
+    </tds-tab>
 </tds-tabset>
 

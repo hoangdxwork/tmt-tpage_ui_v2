@@ -14,6 +14,7 @@ import { AttachmentDataFacade } from 'src/app/main-app/services/facades/attachme
 import { AttachmentService } from 'src/app/main-app/services/attachment.server';
 import { ModalAddCollectionComponent } from '../modal-add-collection/modal-add-collection.component';
 import { ModalAddAttachmentCollectionComponent } from '../modal-add-attachment-collection/modal-add-attachment-collection.component';
+import { ModalListCollectionComponent } from '../modal-list-collection/modal-list-collection.component';
 
 @Component({
   selector: 'app-modal-image-store',
@@ -67,6 +68,10 @@ export class ModalImageStoreComponent implements OnInit, OnDestroy {
 
   checkValue(item: any) {
     this.numberSelect = item["Select"] ? this.numberSelect + 1 : this.numberSelect - 1;
+  }
+
+  checkValueCollection(item: any) {
+    this.numberSelectColl = item["Select"] ? this.numberSelectColl + 1 : this.numberSelectColl - 1;
   }
 
   checkAllAttachment(event: boolean) {
@@ -219,14 +224,24 @@ export class ModalImageStoreComponent implements OnInit, OnDestroy {
         size: 'md',
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          attachmentIds: ids
+          attachmentIds: ids,
         }
       });
     });
 
   }
 
-
+  showModalListCollection(id: any, name: string) {
+    const modal = this.modal.create({
+      title: `Bộ sưu tập ${name}`,
+      content: ModalListCollectionComponent,
+      size: 'xl',
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        collectionId: id
+      }
+    });
+  }
 
   onCancel() {
     this.modalRef.destroy(null);

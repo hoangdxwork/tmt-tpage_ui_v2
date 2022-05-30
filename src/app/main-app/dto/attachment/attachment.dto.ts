@@ -55,4 +55,5 @@ export interface InnerAttachmentDTO {
   Ext: string;
   Size: number;
   DateCreated: Date;
+  Select?: boolean;
 }

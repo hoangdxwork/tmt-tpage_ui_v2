@@ -123,10 +123,19 @@ export class ProductService extends BaseSevice {
     return this.apiService.getData<ProductDTO>(api, null);
   }
 
-  delete_product(key: any): Observable<TDSSafeAny> {
+  deleteProduct(key: any): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
       method: TApiMethodType.delete,
+    }
+
+    return this.apiService.getData<ProductDTO>(api, null);
+  }
+
+  getAttributeValuesById(productId: number): Observable<ProductDTO> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${productId})?$expand=UOM,Categ,UOMPO,POSCateg,AttributeValues`,
+      method: TApiMethodType.get,
     }
 
     return this.apiService.getData<ProductDTO>(api, null);

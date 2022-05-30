@@ -128,10 +128,10 @@
                 <div class="max-h-[calc(100vh-375px)] h-[calc(100vh-375px)] w-full overflow-y-auto tds-custom-scroll">
                     <div class="grid grid-cols-3 gap-5" *ngIf="(lstColl$ | async); else lstCollNoData">
                         <ng-template ngFor let-data [ngForOf]="(lstColl$ | async)">
-                            <div *ngIf="!data.Select; else noCollectActive">
+                            <div *ngIf="!data.Select; else noCollectActive" (click)="showModalListCollection(data.id, data.Name)">
                                 <div class="relative rounded-lg border border-transparent border-solid group flex items-center h-[316px]">
                                     <div class="absolute top-2 right-1 opacity-0 group-hover:opacity-100">
-                                        <tds-checkbox [(ngModel)]="data.Select"></tds-checkbox>
+                                        <tds-checkbox [(ngModel)]="data.Select" (change)="checkValueCollection(data)"></tds-checkbox>
                                     </div>
                                     <div class="flex rounded-lg items-center gap-1" *ngIf="data.Attachments">
                                       <div class="w-3/5 rounded-l-lg" *ngIf="data.Attachments[0]">
@@ -172,7 +172,7 @@
                             <ng-template #noCollectActive>
                                 <div class="relative rounded-lg border border-transparent border-solid group flex items-center h-[316px]">
                                     <div class="absolute top-2 right-1 opacity-100">
-                                        <tds-checkbox [(ngModel)]="data.Select"></tds-checkbox>
+                                        <tds-checkbox [(ngModel)]="data.Select" (change)="checkValueCollection(data)"></tds-checkbox>
                                     </div>
                                     <div class="flex rounded-lg items-center gap-1" *ngIf="data.Attachments">
                                         <div class="w-3/5 rounded-l-lg" *ngIf="data.Attachments[0]">

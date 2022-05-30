@@ -138,11 +138,11 @@ export interface StoryAttachmentTargetDTO {
   url: string;
 }
 
-export interface InnerCreatedByDTO {
-  id: string;
-  userName: string;
-  name: string;
-  avatar: string;
+export interface MDBInnerCreatedByDTO {
+  Id: string;
+  UserName: string;
+  Name: string;
+  Avatar: string;
 }
 
 // MDB_Inner_SaleOnline_Order
