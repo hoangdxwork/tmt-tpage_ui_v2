@@ -49,12 +49,12 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
   currentLiveCampaign!: SaleOnline_LiveCampaignDTO | undefined;
 
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: FormBuilder,
     private message: TDSMessageService,
     private facebookPostService: FacebookPostService,
     private crmTagService: CRMTagService,
     private applicationUserService: ApplicationUserService,
-    private modelRef: TDSModalRef,
+    private modalRef: TDSModalRef,
     private viewContainerRef: ViewContainerRef,
     private modalService: TDSModalService,
     private productService: ProductService,
@@ -101,7 +101,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   createForm() {
-    this.formOrderConfig = this.fb.group({
+    this.formOrderConfig = this.formBuilder.group({
       IsEnableOrderAuto: [false],
       IsForceOrderWithAllMessage: [false],
       IsOnlyOrderWithPartner: [false],
@@ -112,7 +112,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
       MinLengthToOrder: [0],
       MinLengthToVisible: [0],
       MaxCreateOrder: [0],
-      TextContentToOrders: this.fb.array([]),
+      TextContentToOrders: this.formBuilder.array([]),
       selectedWord1s: [null],
       ExcludedPhones: [null],
       ExcludedStatusNames: [null],
@@ -168,7 +168,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
   initOrderContent(data: AutoOrderConfig_ContentToOrderDTO | undefined): FormGroup {
     let currentIndex = this.formOrderConfig.value.TextContentToOrders.length;
 
-    let formGroup = this.fb.group({
+    let formGroup = this.formBuilder.group({
       Index: [currentIndex, Validators.required],
       Content: [null],
       IsActive: [true],
@@ -203,7 +203,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
   initOrderContentLiveCampaign(data: LiveCampaignDetailDataDTO, liveCampaign: SaleOnline_LiveCampaignDTO): FormGroup {
     let currentIndex = this.formOrderConfig.value.TextContentToOrders.length;
 
-    let formGroup = this.fb.group({
+    let formGroup = this.formBuilder.group({
       Index: [currentIndex, Validators.required],
       Content: [null],
       IsActive: [true],
@@ -285,7 +285,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
     for(let i = this.fromMoreTemplate; i <= this.toMoreTemplate; i++) {
       let content = `${this.prefixMoreTemplate}${i}${this.suffixMoreTemplate}`;
 
-      let control = this.fb.group({
+      let control = this.formBuilder.group({
         Index: currentIndex,
         Content: [content],
         Product: null,
@@ -587,7 +587,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   onCannel() {
-    this.modelRef.destroy(null);
+    this.modalRef.destroy(null);
   }
 
   ngOnDestroy(): void {

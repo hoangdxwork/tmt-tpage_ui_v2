@@ -103,6 +103,7 @@ export const Message = {
     AddMoreTemplateSuccess: 'Tạo thành công, nhớ [Lưu cấu hình] trước khi thực hiện thao tác khác.',
     FileNotFormat: 'File không đúng định dạng.',
     TextContentProductEmpty: 'Vui lòng nhập đầy đủ nội dung mẫu.',
-    LoadConfigSuccess: 'Tải cấu hình thành công.'
+    LoadConfigSuccess: 'Tải cấu hình thành công.',
+    TagOnPatternEmpty: 'Vui lòng nhập đầy đủ nhãn và nội dung.'
   }
 }
