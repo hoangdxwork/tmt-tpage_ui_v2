@@ -73,6 +73,7 @@ import { PostOrderConfigComponent } from './components/config-post/order-config/
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { ModalSelectAttachmentComponent } from './components/modal-select-attachment/modal-select-attachment.component';
 import { ModalAddAttachmentCollectionComponent } from './components/modal-add-attachment-collection/modal-add-attachment-collection.component';
+import { ModalSendMessageAllComponent } from './components/modal-send-message-all/modal-send-message-all.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -143,7 +144,8 @@ const SERVICES = [
     ModalAddCollectionComponent,
     PostOrderConfigComponent,
     ModalSelectAttachmentComponent,
-    ModalAddAttachmentCollectionComponent
+    ModalAddAttachmentCollectionComponent,
+    ModalSendMessageAllComponent
   ],
 
   imports: [
@@ -183,7 +185,7 @@ const SERVICES = [
     TDSImageModule,
     PipeModule,
     TDSEmptyModule,
-    TDSUploadModule
+    TDSUploadModule,
   ],
   providers: [ ...SERVICES]
 })

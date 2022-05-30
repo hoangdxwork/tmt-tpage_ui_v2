@@ -54,12 +54,12 @@
           <!-- Xử lý click button checkbox -->
           <div [ngClass]="isOpenCollapCheck?'translate-y-0 py-3 ':'-translate-y-full h-0 overflow-hidden'"  class="ease-in-out duration-300 w-full px-3.5  flex justify-between items-center bg-white">
             <div class="flex gap-x-2">
-              <button tds-button color="primary">
+              <button tds-button color="primary" (click)="showModalSendMessage()">
                 <span class="flex items-center">
                   <i class="tdsi-messenger-fill text-lg leading-none mr-2"></i>Gửi tin nhắn
                 </span>
               </button>
-              <button tds-button color="info">
+              <button tds-button color="info" (click)="printData()">
                 <span class="flex items-center">
                   <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In thông tin
                 </span>
@@ -78,8 +78,8 @@
                             [activeCvsItem]="activeCvsItem"
                             [team]="currentTeam" [isFastSend]="isFastSend"
                             [isOpenCollapCheck]="isOpenCollapCheck"
-                            [checked]="setOfCheckedId.has(item.id)"
-                            (checkedChange)="onItemChecked(item.id, $event)">
+                            [checked]="setOfCheckedId.has(item.psid)"
+                            (checkedChange)="onItemChecked(item.psid, $event)">
                         </current-conversation-item>
                     </a>
                 </div>

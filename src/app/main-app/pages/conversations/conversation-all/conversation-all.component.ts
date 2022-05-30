@@ -1,15 +1,15 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { ModalSendMessageAllComponent } from './../components/modal-send-message-all/modal-send-message-all.component';
+import { PrinterService } from 'src/app/main-app/services/printer.service';
+import { TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { finalize, takeUntil, map } from 'rxjs/operators';
 import { ConversationMatchingItem, CRMMatchingMappingDTO } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
-import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { TDSHelperObject, TDSMessageService, TDSHelperArray, TDSHelperString } from 'tmt-tang-ui';
 
@@ -46,11 +46,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
     public crmService: CRMTeamService,
-    private conversationService: ConversationService,
-    private partnerService: PartnerService,
     private fbGraphService: FacebookGraphService,
     public activatedRoute: ActivatedRoute,
-    public router: Router) {
+    public router: Router,
+    private printerService: PrinterService,
+    private modalService: TDSModalService,
+    private viewContainerRef: ViewContainerRef) {
       super(crmService, activatedRoute, router);
   }
 
@@ -197,6 +198,47 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   refreshCheckedStatus(): void {
     this.checked = this.lstMatchingItem.every(item => this.setOfCheckedId.has(item.id));
     this.indeterminate = this.lstMatchingItem.some(item => this.setOfCheckedId.has(item.id)) && !this.checked;
+  }
+
+  printData(){
+    let lstCheck = [...this.setOfCheckedId]
+    if(lstCheck.length < 1){
+      this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
+      return;
+    }
+    let user_ids = "";
+    lstCheck.forEach((x,i)=>{
+      if(i == lstCheck.length - 1) {
+        user_ids += x.toString();
+      }
+      else {
+        user_ids += x.toString() + ",";
+      }
+    })
+    if(lstCheck.length > 0) {
+      this.printerService.printUrl(`/fastsaleorder/PrintCRMMatching?pageId=${this.currentTeam.Facebook_PageId}&psids=${user_ids.toString()}`);
+    }
+  }
+
+  showModalSendMessage(){
+    if(this.setOfCheckedId.size < 1){
+      this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
+      return;
+    }
+    const modal = this.modalService.create({
+      title: 'Gửi tin nhắn nhanh',
+      content: ModalSendMessageAllComponent,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        lstUserCheck: this.setOfCheckedId,
+        team: this.currentTeam
+    }
+    });
+    modal.afterClose.subscribe(result => {
+      if (TDSHelperObject.hasValue(result)) {
+      }
+    });
   }
 
   onTabOrder(event: boolean) {

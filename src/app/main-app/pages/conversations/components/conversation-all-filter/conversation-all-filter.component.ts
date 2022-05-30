@@ -1,8 +1,9 @@
+import { startOfMonth, endOfMonth, startOfYesterday, endOfYesterday, subDays } from 'date-fns';
 import { ApplicationUserService } from './../../../../services/application-user.service';
-import { TDSHelperArray, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperArray, TDSSafeAny, TDSI18nService, vi_VN } from 'tmt-tang-ui';
 import { CRMMatchingService } from './../../../../services/crm-matching.service';
 import { CRMTagService } from './../../../../services/crm-tag.service';
-import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 
@@ -28,10 +29,19 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
   toggle_Key: boolean = true;
   filtered: boolean = false;
 
+  leftControl = {
+    'Hôm nay': [new Date(), new Date()],
+    'Hôm qua': [startOfYesterday(), endOfYesterday()],
+    '7 ngày trước': [subDays(new Date(), 7), new Date()],
+    '30 ngày trước': [subDays(new Date(), 30), new Date()],
+    'Tháng này': [startOfMonth( new Date()), endOfMonth(new Date())],
+  };
+
   constructor(private fb: FormBuilder,
     private crmTagService: CRMTagService,
     private crmMatchingService: CRMMatchingService,
-    private applicationUserService: ApplicationUserService) {
+    private applicationUserService: ApplicationUserService,
+    private i18n: TDSI18nService) {
       this.createForm();
   }
 
@@ -45,6 +55,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    this.i18n.setLocale(vi_VN);
     this.applicationUserService.dataSource$.subscribe((res) => {
       if (this.crmMatchingService.queryObj.user_ids && TDSHelperArray.hasListValue(res)) {
         res.forEach((element: TDSSafeAny) => {

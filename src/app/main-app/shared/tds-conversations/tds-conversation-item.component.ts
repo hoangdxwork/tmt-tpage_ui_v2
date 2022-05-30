@@ -1,9 +1,8 @@
-import { Message } from './../../../lib/consts/message.const';
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ActivityStatus } from "src/app/lib/enum/message/coversation-message";
-import { TDSHelperObject, TDSHelperString, TDSMessageService } from "tmt-tang-ui";
+import { TDSHelperString, TDSMessageService } from "tmt-tang-ui";
 import { MakeActivityItemWebHook } from "../../dto/conversation/make-activity.dto";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
 import { ActivityMatchingService } from "../../services/conversation/activity-matching.service";
