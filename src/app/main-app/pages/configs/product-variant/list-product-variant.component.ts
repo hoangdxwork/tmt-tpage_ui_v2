@@ -244,7 +244,7 @@ export class ListProductVariantComponent  {
       okText: "Xác nhận",
       cancelText: "Hủy bỏ",
       onOk: () => {
-        this.productService.delete_product(key).pipe(takeUntil(this.destroy$)).subscribe(res=>{
+        this.productService.deleteProduct(key).pipe(takeUntil(this.destroy$)).subscribe(res=>{
           this.message.success('Xóa sản phẩm thành công!')
           this.onSelectChange(this.selected);
           return

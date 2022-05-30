@@ -1,0 +1,41 @@
+<tds-spin [spinning]="isLoading">
+  <form [formGroup]="formHiddenComment">
+    <div class="w-full h-full flex flex-col gap-y-3">
+      <div class="flex items-center gap-x-2">
+        <tds-switch size="md" formControlName="IsEnableAutoHideComment"></tds-switch>
+        <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Tự động ẩn bình luận?</div>
+      </div>
+
+      <div class="flex flex-col gap-y-3 px-4" *ngIf="formHiddenComment.value.IsEnableAutoHideComment">
+        <div class="flex items-center gap-x-2">
+          <tds-switch size="md" formControlName="IsEnableAutoHideAllComment"></tds-switch>
+          <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Ẩn tất cả bình luận</div>
+        </div>
+
+        <div class="flex flex-col gap-y-3" *ngIf="!formHiddenComment.value.IsEnableAutoHideAllComment">
+          <div class="flex items-center gap-x-2">
+            <tds-switch size="md" formControlName="IsEnableAutoHideCommentWithPhone"></tds-switch>
+            <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Ẩn bình luận có điện thoại</div>
+          </div>
+          <div class="flex items-center gap-x-2">
+            <tds-switch size="md" formControlName="IsEnableAutoHideCommentWithEmail"></tds-switch>
+            <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Ẩn bình luận có địa chỉ email</div>
+          </div>
+          <tds-form-field class="mt-1">
+            <tds-label>Ẩn nếu bình luận chứa nội dung bất kỳ:</tds-label>
+            <tds-select valueField="id" textField="name" placeholder='Nhập nội dung và nhấn [Enter]' formControlName="selectedWord1s"
+                mode="tags" [maxTagCount]="20" >
+            </tds-select>
+          </tds-form-field>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="w-full flex justify-end p-4 gap-x-4" *tdsModalFooter>
+      <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Đóng</button>
+      <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
+    </div>
+
+  </form>
+</tds-spin>

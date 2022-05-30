@@ -10,6 +10,7 @@ import { ExcelExportService } from 'src/app/main-app/services/excel-export.servi
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { formatDate } from '@angular/common';
 import { ConfigPostOutletComponent } from '../../../components/config-post/config-post-outlet.component';
+import { ModalReportOrderPostComponent } from '../../../components/post-filter/modal-report-order-post.component';
 
 @Component({
   selector: 'conversation-post-view',
@@ -98,13 +99,15 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
   }
 
   reportCommentByPost(){
-    // this.facebookCommentService.getReportCommentByPost();
-    // this.modalService.create({
-    //   title: 'Thống kê đơn tạo bị lỗi',
-    //   content: ,
-    //   size: "xl",
-    //   viewContainerRef: this.viewContainerRef
-    // });
+    const modal = this.modalService.create({
+      title: 'Thống kê đơn tạo bị lỗi',
+      content: ModalReportOrderPostComponent,
+      size: "xl",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        postId: this.data.fbid
+      }
+    });
   }
 
   fetchComments() {

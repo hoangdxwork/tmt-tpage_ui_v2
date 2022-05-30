@@ -13,6 +13,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 export class ModalAddAttachmentCollectionComponent implements OnInit {
 
   @Input() attachmentIds: Array<string | undefined> = [];
+  @Input() collectionId?: string;
 
   isLoading: boolean = false;
   public lstData$!: Observable<MDBCollectionDTO[]>;
@@ -39,10 +40,20 @@ export class ModalAddAttachmentCollectionComponent implements OnInit {
 
   onSave() {
     if(this.isCheckValue() === 1) {
-      if(this.attachmentIds) {
+      if(this.attachmentIds && !this.collectionId) {
         this.attachmentDataFacade.addInnerByAttachment(this.select.id, this.attachmentIds).subscribe(res => {
-          this.message.success(Message.SaveSuccess);
+          this.message.success(Message.InsertSuccess);
           this.onCancel();
+        }, error => {
+          this.message.error(`${error?.Message || JSON.stringify(error)}`);
+        });
+      }
+      else if(this.attachmentIds && this.collectionId) {
+        this.attachmentDataFacade.addInnerByCollection(this.select.id, this.collectionId, this.attachmentIds).subscribe(res => {
+          this.message.success(Message.InsertSuccess);
+          this.onCancel();;
+        }, error => {
+          this.message.error(`${error?.Message || JSON.stringify(error)}`);
         });
       }
     }

@@ -96,7 +96,7 @@ export class AttachmentDataFacade {
   getInner(id: string): Observable<MDBCollectionDTO | undefined> {
     let collection = this.attachmentState.getInner(id);
 
-    if(collection && collection.Attachments) {
+    if(collection && collection.Attachments && collection.Attachments.length > 3) {
       return new Observable(observer => {
         observer.next(collection);
         observer.complete();
@@ -166,4 +166,33 @@ export class AttachmentDataFacade {
       }, error => observer.error(error));
     });
   }
+
+  insertInner(collectionId: string, data: any) {
+    this.attachmentState.addInner(collectionId, data);
+    this.attachmentState.pushItemAttachment(data);
+  }
+
+  removeInners(collectionId: string, ids: Array<string>): Observable<any> {
+    return new Observable(observer => {
+      this.attachmentService.removeInners(collectionId, ids).subscribe(res => {
+
+        this.attachmentState.removeInners(collectionId, res);
+
+        observer.next();
+        observer.complete();
+      }, error => observer.error(error));
+    });
+  }
+
+  addInnerByCollection(collectionId: string, fromCollectionId: string, ids: Array<string | undefined>): Observable<any> {
+    return new Observable(observer => {
+      this.attachmentService.addInnerByCollection(collectionId, fromCollectionId, ids).subscribe(res => {
+        this.attachmentState.setInner(collectionId, res["Attachments"], res["LastUrl"], res["LastUrlId"]);
+
+        observer.next();
+        observer.complete();
+      }, error => observer.error(error));
+    });
+  }
+
 }

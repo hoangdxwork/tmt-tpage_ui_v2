@@ -55,7 +55,6 @@ import { ExcelExportService } from '../../services/excel-export.service';
 import { ManagePostCommentComponent } from './components/post-filter/manage-post-comment.component';
 import { PostOrderComponent } from './components/post-order/post-order.component';
 import { ConfigPostOutletComponent } from './components/config-post/config-post-outlet.component';
-import { AutoReplyConfigComponent } from './components/config-post/auto-reply-config.component';
 import { ConversationAllFilterComponent } from './components/conversation-all-filter/conversation-all-filter.component';
 import { ConversationPostViewComponent } from './conversation-post/components/conversation-post-view/conversation-post-view.component';
 import { ItemPostCommentComponent } from './conversation-post/components/item-post-comment/item-post-comment.component';
@@ -64,7 +63,6 @@ import { PostCommentGroupComponent } from './components/post-filter/post-comment
 import { PostCommentFilterComponent } from './components/post-filter/post-comment-filter.component';
 import { ConversationOrderListComponent } from './components/conversation-order-list/conversation-order-list.component';
 import { OdataSaleOnline_OrderService } from '../../services/mock-odata/odata-saleonlineorder.service';
-import { AutoLabelConfigComponent } from './components/config-post/auto-label-config.component';
 import { AttachmentDataFacade } from '../../services/facades/attachment-data.facade';
 import { AttachmentService } from '../../services/attachment.server';
 import { AttachmentState } from '../../services/facebook-state/attachment.state';
@@ -74,6 +72,13 @@ import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { ModalSelectAttachmentComponent } from './components/modal-select-attachment/modal-select-attachment.component';
 import { ModalAddAttachmentCollectionComponent } from './components/modal-add-attachment-collection/modal-add-attachment-collection.component';
 import { ModalSendMessageAllComponent } from './components/modal-send-message-all/modal-send-message-all.component';
+import { LiveCampaignService } from '../../services/live-campaign.service';
+import { PostOrderInteractionConfigComponent } from './components/config-post/interaction-config/post-order-interaction-config.component';
+import { PostHiddenCommentConfigComponent } from './components/config-post/hidden-comment-config/post-hidden-comment-config.component';
+import { AutoLabelConfigComponent } from './components/config-post/label-config/auto-label-config.component';
+import { AutoReplyConfigComponent } from './components/config-post/reply-config/auto-reply-config.component';
+import { ModalReportOrderPostComponent } from './components/post-filter/modal-report-order-post.component';
+import { ModalListCollectionComponent } from './components/modal-list-collection/modal-list-collection.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -110,6 +115,7 @@ const SERVICES = [
   AttachmentService,
   AttachmentState,
   ProductIndexDBService,
+  LiveCampaignService
 ]
 
 @NgModule({
@@ -136,7 +142,6 @@ const SERVICES = [
     ManagePostCommentComponent,
     PostOrderComponent,
     ConfigPostOutletComponent,
-    AutoReplyConfigComponent,
     ConversationAllFilterComponent,
     ConversationOrderListComponent,
     AutoLabelConfigComponent,
@@ -145,7 +150,12 @@ const SERVICES = [
     PostOrderConfigComponent,
     ModalSelectAttachmentComponent,
     ModalAddAttachmentCollectionComponent,
-    ModalSendMessageAllComponent
+    ModalSendMessageAllComponent,
+    PostOrderInteractionConfigComponent,
+    PostHiddenCommentConfigComponent,
+    AutoReplyConfigComponent,
+    ModalReportOrderPostComponent,
+    ModalListCollectionComponent
   ],
 
   imports: [
