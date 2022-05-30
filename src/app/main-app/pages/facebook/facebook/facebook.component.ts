@@ -26,6 +26,7 @@ import {
   TDSMessageService,
   TDSHelperString,
   TDSCollapsePanelComponent,
+  TDSHelperArray,
 } from 'tmt-tang-ui';
 import { AddPageComponent } from '../components/add-page/add-page.component';
 import { ViewportScroller } from '@angular/common';
@@ -111,7 +112,7 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoading: boolean = true;
   lastScrollPosition: TDSSafeAny = null;
 
-  private _destroy = new Subject<void>();
+  private _destroy$ = new Subject<void>();
 
   constructor(
     private modal: TDSModalService,
@@ -151,7 +152,7 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.loadListTeam(false);
     this.crmTeamService.onChangeTeam()
-      .pipe(takeUntil(this._destroy))
+      .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
         this.currentTeam = res;
       });
@@ -305,17 +306,8 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getListData(id);
   }
 
-  onClickFieldListSetting(value: TDSSafeAny, id: number) {
-    if (value.id == 1) {
-      this.hideChannel(id);
-    } else if (value.id == 2) {
-      let user = this.data.find((x) => x.Id == id);
-      if (user) {
-        this.unConnected(id, user.Facebook_UserId);
-      } else {
-        this.message.error(Message.ErrorOccurred);
-      }
-    }
+  onUnConnect() {
+
   }
 
   onClickFieldListAll(value: TDSSafeAny) {
@@ -342,13 +334,13 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
     e.stopPropagation();
   }
 
-  unConnected(id: number, userId: any): void {
+  unConnected(id: number, name?: string): void {
     this.lastScrollPosition = this.viewportScroller.getScrollPosition();
     this.modal.error({
       title: 'Hủy kết nối Facebook',
-      content: 'Bạn có chắc muốn hủy kết nối',
+      content: `Bạn có chắc muốn hủy kết nối với: ${name}.`,
       onOk: () => {
-        this.delete(id, userId)
+        this.delete(id)
       },
       onCancel: () => {
         console.log('cancel');
@@ -359,7 +351,7 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  delete(id: number, userId: any) {
+  delete(id: number) {
     this.crmTeamService.delete(id).subscribe(
       (res) => {
         this.message.success(Message.DeleteSuccess);
@@ -397,13 +389,13 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  hideChannel(id: number) {
+  onActive(id: number, isUser: boolean) {
     this.isLoading = true;
     this.crmTeamService.updateActive(id).subscribe(
       (res: any) => {
         this.message.success(Message.ManipulationSuccessful);
         // this.loadListTeam(true);
-        this.updateActiveData(id);
+        this.updateActiveData(id, isUser);
         this.isLoading = false;
       },
       (error) => {
@@ -417,9 +409,23 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  updateActiveData(id: number) {
-    let channel = this.data.find((x) => x.Id == id);
-    channel && (channel.Active = !channel.Active);
+  updateActiveData(id: number, isUser: boolean) {
+    if(isUser) {
+      let channel = this.data.find((x) => x.Id == id);
+      channel && (channel.Active = !channel.Active);
+    }
+    else {
+      for(let i = 0; i < this.data.length; i++) {
+        if(TDSHelperArray.hasListValue(this.data[i]?.Childs)) {
+          let channel = this.data[i].Childs.find((x) => x.Id == id);
+          if(channel) {
+            channel.Active = !channel.Active;
+            break;
+          }
+        }
+      }
+    }
+
     this.crmTeamService.onRefreshListFacebook();
   }
 
@@ -527,8 +533,12 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  mergePage() {
+    this.message.info(Message.FunctionNotWorking);
+  }
+
   ngOnDestroy(): void {
-    this._destroy.next();
-    this._destroy.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

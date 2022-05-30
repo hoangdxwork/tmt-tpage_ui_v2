@@ -339,6 +339,28 @@
                 </tds-collapse-panel>
               </tds-collapse>
           </div>
+          <!-- List Comment -->
+          <div>
+            <div class="flex flex-col gap-y-1">
+              <div class="flex items-center gap-x-4 bg-white py-3 px-6 cursor-pointer hover:bg-neutral-3-50"
+                *ngFor="let comment of lstComment" (click)="addTextAddress(comment)">
+                <tds-tag status='error' *ngIf="!comment.selected; else tagSuggestCheck">
+                  <span class="flex items-center justify-center h-[20px] rounded-md">
+                    <i class="tdsi-checkbox-check-fill text-lg leading-none"></i>
+                  </span>
+                </tds-tag>
+                <ng-template #tagSuggestCheck>
+                  <tds-tag status='primary'>
+                    <span class="flex items-center justify-center h-[20px] rounded-md">
+                      <i class="tdsi-checkbox-check-fill text-lg leading-none"></i>
+                    </span>
+                  </tds-tag>
+                </ng-template>
+                <a class="text-body-2"> {{ comment.message }} </a>
+              </div>
+            </div>
+          </div>
+
           <div class="pt-1">
               <div class="bg-white py-3 px-6 flex gap-3" *ngIf="!isEnableCreateOrder">
                 <button tds-button color="primary" (click)="onSave()">Lưu nháp</button>

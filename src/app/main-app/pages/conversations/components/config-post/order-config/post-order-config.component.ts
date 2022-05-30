@@ -1,7 +1,7 @@
 import { StringHelperV2 } from './../../../../../shared/helper/string.helper';
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from "@angular/core";
 import { FormArray, FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { Observable, Subject } from "rxjs";
+import { Observable, Subject, Subscription } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
 import { ApplicationUserDTO } from "src/app/main-app/dto/account/application-user.dto";
@@ -72,7 +72,6 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
     if(changes?.data?.currentValue) {
       this.loadOrderConfig(this.data.fbid);
     }
-
   }
 
   ngOnInit(): void {
@@ -591,7 +590,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
+    // this.destroy$.next();
     this.destroy$.complete();
   }
 

@@ -52,3 +52,13 @@ export interface ConversationOrderProductDefaultDTO {
   UOMName: string,
 }
 
+export interface SaleOnline_Facebook_CommentFilterResultDTO {
+  id: string;
+  post_id: string;
+  message: string;
+  like_count: number;
+  comment_count: number;
+  created_time: string;
+  selected?: boolean;
+}
+
