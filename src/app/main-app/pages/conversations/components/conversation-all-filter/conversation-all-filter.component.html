@@ -58,7 +58,7 @@
                         <span class="text-title-1 font-semibold">Lọc theo thời gian</span>
                         <span class="text-neutral-1-400">Từ ngày - Đến ngày</span>
                     </div>
-                    <tds-range-picker [(ngModel)]="rangeDate"  [ngModelOptions]="{standalone: true}" (ngModelChange)="onChange($event)">
+                    <tds-range-picker [(ngModel)]="rangeDate"  [ngModelOptions]="{standalone: true}" [ranges]="leftControl"  (ngModelChange)="onChange($event)">
                     </tds-range-picker>
                 </div>
                 <div class="flex flex-col gap-y-4 px-4">
