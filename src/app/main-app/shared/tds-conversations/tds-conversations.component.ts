@@ -6,11 +6,11 @@ import { ModalListProductComponent } from './../../pages/conversations/component
 import { ModalImageStoreComponent } from './../../pages/conversations/components/modal-image-store/modal-image-store.component';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import {
-  ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Optional, Output, Self,
-  SimpleChanges, TemplateRef, ViewContainerRef, Host, OnDestroy, ChangeDetectorRef, HostListener, HostBinding
+  Component, EventEmitter, Input, OnChanges, OnInit, Output,
+  SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSResizeObserver, TDSUploadChangeParam, TDSUploadFile } from 'tmt-tang-ui';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSUploadChangeParam, TDSUploadFile } from 'tmt-tang-ui';
 import { ConversationMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
@@ -28,8 +28,6 @@ import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
 import { DraftMessageService } from '../../services/conversation/draft-message.service';
 import { CRMTagService } from '../../services/crm-tag.service';
 import { Message } from 'src/app/lib/consts/message.const';
-import { HttpResponse } from '@microsoft/signalr';
-import { CRMTeamService } from '../../services/crm-team.service';
 import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
 
@@ -37,7 +35,6 @@ import { ConversationOrderFacade } from '../../services/facades/conversation-ord
   selector: 'shared-tds-conversations',
   templateUrl: './tds-conversations.component.html',
   styleUrls: ['./tds-conversations.component.sass'],
-  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
@@ -53,6 +50,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   dataSource$!: Observable<MakeActivityMessagesDTO>;
   partner: any;
  
+  isEnterSend: boolean = true;
   isVisibleReply: boolean = false;
   uploadedImages: string[] = [];
   currentImage: any;
@@ -83,8 +81,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     private conversationEventFacade: ConversationEventFacade,
     private sgRConnectionService: SignalRConnectionService,
     private router: Router,
-    private crmTeamService: CRMTeamService,
-    private resizeObserver: TDSResizeObserver,
     private conversationOrderFacade: ConversationOrderFacade,
     private viewContainerRef: ViewContainerRef,
     private cdr: ChangeDetectorRef
@@ -375,7 +371,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   onEnter(event: any) {
-    this.messageSendingToServer();
+    if(this.isEnterSend){
+      this.messageSendingToServer();
+    }else{
+      this.message.info('Thay đổi tuỳ chọn gửi tin nhắn để Enter');
+    }
     event.preventDefault();
   }
 
@@ -705,6 +705,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
 
   closeImages(){
     this.uploadedImages = [];
+  }
+
+  changeEnterSend(ev: any){
+    if(ev){
+    this.isEnterSend = ev.checked;
+    }
   }
 
   @HostListener('window:dragover', ['$event']) onDragOver(evt: TDSSafeAny) {

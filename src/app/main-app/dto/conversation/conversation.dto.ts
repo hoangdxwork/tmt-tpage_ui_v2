@@ -1,5 +1,5 @@
 import { ViewConversation_FastSaleOrdersDTO } from "../fastsaleorder/view_fastsaleorder.dto";
-import { FacebookUserPictureDTO, InnerActivityDTO, InnerCreatedByDTO, InnerPartnerDTO, InnerSaleOnlineOrderDTO, InnerTagDTO } from "./inner.dto";
+import { FacebookUserPictureDTO, InnerActivityDTO, InnerPartnerDTO, InnerSaleOnlineOrderDTO, InnerTagDTO, MDBInnerCreatedByDTO } from "./inner.dto";
 
 // MDB_Facebook_Partner_Mapping
 export interface ConversationDTO { // /rest/v1.0/crmmatching/406109210143079_2869571179747239
@@ -52,7 +52,7 @@ export interface ConversationDTO { // /rest/v1.0/crmmatching/406109210143079_286
   last_message:InnerActivityDTO;
 
   assigned_to_id: string;
-  assigned_to: InnerCreatedByDTO;
+  assigned_to: MDBInnerCreatedByDTO;
 
   /// Các tag cố định theo tính năng
   /// aship: đang giao hàng, sắp giao hàng, đã giao hàng

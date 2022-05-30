@@ -1,8 +1,10 @@
 import { EventEmitter, Injectable, OnDestroy, OnInit } from '@angular/core';
-import {  Observable, ReplaySubject, Subject } from 'rxjs';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSHelperArray } from 'tmt-tang-ui';
+import { AutoReplyConfigDTO } from '../dto/configs/page-config.dto';
+import { AutoHiddenConfigDTO, AutoLabelConfigDTO, AutoOrderConfigDTO, MDBFacebookMappingPostAutoConfigDTO, TBotRequestCallbackFailedDTO } from '../dto/configs/post/order-config.dto';
 import { FacebookPostDTO, FacebookPostItem } from '../dto/facebook-post/facebook-post.dto';
 import { BaseSevice } from './base.service';
 
@@ -162,36 +164,90 @@ export class FacebookPostService extends BaseSevice implements OnInit, OnDestroy
     this.responseData = data;
   }
 
-  getAutoReplyConfigs(key: any): Observable<any> {
+  getAutoReplyConfigs(postId: string): Observable<AutoReplyConfigDTO> {
     let api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${key}/AutoReplyConfigs`,
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoreplyconfigs`,
       method: TApiMethodType.get
     }
-    return this.apiService.getData<any>(api, null);
+    return this.apiService.getData<AutoReplyConfigDTO>(api, null);
   }
 
-  updateAutoReplyConfigs(key: any, data: any): Observable<any> {
+  updateAutoReplyConfigs(postId: string, data: AutoReplyConfigDTO): Observable<MDBFacebookMappingPostAutoConfigDTO> {
     let api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${key}/AutoReplyConfigs`,
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoreplyconfigs`,
       method: TApiMethodType.put
     }
-    return this.apiService.getData<any>(api, data);
+    return this.apiService.getData<MDBFacebookMappingPostAutoConfigDTO>(api, data);
   }
 
-  getAutoLabelConfigs(key: any): Observable<any> {
+  getAutoLabelConfigs(pageId: string): Observable<AutoLabelConfigDTO> {
     let api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${key}/AutoLabelConfigs`,
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${pageId}/autolabelconfigs`,
       method: TApiMethodType.get
     }
-    return this.apiService.getData<any>(api, null);
+    return this.apiService.getData<AutoLabelConfigDTO>(api, null);
   }
 
-  updateAutoLabelConfigs(key: any,data: any): Observable<any> {
+  updateAutoLabelConfigs(pageId: string, data: AutoLabelConfigDTO): Observable<MDBFacebookMappingPostAutoConfigDTO> {
     let api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${key}/AutoLabelConfigs`,
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${pageId}/autolabelconfigs`,
       method: TApiMethodType.put
     }
-    return this.apiService.getData<any>(api, data);
+    return this.apiService.getData<MDBFacebookMappingPostAutoConfigDTO>(api, data);
+  }
+
+  getOrderConfig(postId: string): Observable<AutoOrderConfigDTO> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoorderconfigs`,
+      method: TApiMethodType.get
+    }
+
+    return this.apiService.getData<AutoOrderConfigDTO>(api, null);
+  }
+
+  updateOrderConfig(postId: string, isImmediateApply: boolean, data: AutoOrderConfigDTO): Observable<undefined> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoorderconfigs?immediateApply=${isImmediateApply}`,
+      method: TApiMethodType.put
+    }
+
+    return this.apiService.getData<undefined>(api, data);
+  }
+
+  updateInteractionConfig(postId: string, data: AutoOrderConfigDTO): Observable<undefined> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoorderreplyconfigs`,
+      method: TApiMethodType.put
+    }
+
+    return this.apiService.getData<undefined>(api, data);
+  }
+
+  getHiddenCommentConfigs(postId: string): Observable<AutoHiddenConfigDTO> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/AutoHiddenConfigs`,
+      method: TApiMethodType.get
+    }
+
+    return this.apiService.getData<AutoHiddenConfigDTO>(api, null);
+  }
+
+  updateHiddenCommentConfigs(postId: string, data: AutoHiddenConfigDTO): Observable<MDBFacebookMappingPostAutoConfigDTO> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/AutoHiddenConfigs`,
+      method: TApiMethodType.put
+    }
+
+    return this.apiService.getData<MDBFacebookMappingPostAutoConfigDTO>(api, data);
+  }
+
+  getReport(postId: string): Observable<TBotRequestCallbackFailedDTO[]> {
+    let api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/getreport?id=${postId}`,
+      method: TApiMethodType.get
+    }
+
+    return this.apiService.getData<TBotRequestCallbackFailedDTO[]>(api, null);
   }
 
   ngOnDestroy(): void {

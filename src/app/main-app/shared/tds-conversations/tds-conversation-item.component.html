@@ -173,9 +173,10 @@
 				<div class="chat-reply flex flex-col gap-y-5 bg-white rounded-xl w-full p-4 mt-4 border-b-2 border-primary-1" *ngIf="isReply == true">
 					<div class="flex flex-row w-full">
 						<textarea id="inputReply" #contentReply tdsInput placeholder="Nhập nội dung trả lời"
-							class="w-full resize-none !p-0 !m-0" (change)="replyComment($event)"></textarea>
+							[(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
+							class="w-full resize-none !p-0 !m-0" (keydown.enter)="onEnter($event)"></textarea>
 						<div class="">
-							<button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'">
+							<button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'" (click)="messageSendingToServer()">
 								<span class="flex items-center px-5">
 									<i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
 								</span>
@@ -350,9 +351,10 @@
 				<div class="chat-reply flex flex-col gap-y-5 bg-white rounded-xl w-full p-4 mt-4 border-b-2 border-primary-1" *ngIf="isReply == true">
 					<div class="flex flex-row w-full">
 						<textarea id="inputReply" #contentReply tdsInput placeholder="Nhập nội dung trả lời"
-							class="w-full resize-none !p-0 !m-0" (change)="replyComment($event)"></textarea>
+						[(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
+							class="w-full resize-none !p-0 !m-0" (keydown.enter)="onEnter($event)"></textarea>
 						<div class="">
-							<button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'">
+							<button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'" (click)="messageSendingToServer()">
 								<span class="flex items-center px-5">
 									<i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
 								</span>

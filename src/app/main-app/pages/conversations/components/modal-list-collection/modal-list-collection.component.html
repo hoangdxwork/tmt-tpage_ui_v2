@@ -1,0 +1,103 @@
+<tds-spin [spinning]="isLoading">
+  <div class="flex flex-col h-full w-full">
+    <div class="flex items-center gap-2.5">
+        <tds-form-field class="w-full">
+            <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm hình ảnh" tdsInput (keyup.enter)="onSearch($event)" />
+            <span tdsPrefix ><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
+        </tds-form-field>
+        <tds-upload [beforeUpload]="beforeUpload">
+          <button tds-button color="primary">
+            <span class="flex items-center">
+                <i class="tdsi-upload-fill text-lg leading-none mr-2"></i>Tải ảnh lên
+            </span>
+          </button>
+        </tds-upload>
+    </div>
+    <div class="py-5 flex items-center justify-between">
+        <div class="flex gap-5 items-center">
+            <tds-checkbox (change)="checkAll($event.checked)">Chọn tất cả</tds-checkbox>
+            <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Số ảnh đã chọn
+              <span class="pl-1 text-primary-1 font-bold"> {{ numberSelect }} </span>
+            </div>
+        </div>
+        <button tds-button color="error" (click)="removeChecked()">
+            <span class="flex items-center">
+              <i class="tdsi-trash-line text-lg leading-none mr-2"></i>Xóa ảnh
+            </span>
+        </button>
+    </div>
+    <div class="max-h-[calc(100vh-375px)] h-[calc(100vh-375px)] w-full overflow-y-auto tds-custom-scroll">
+        <div class="grid grid-cols-4 gap-5 h-full w-full" *ngIf="(lstData$ | async)?.Attachments; else lstAllNoData">
+            <ng-template ngFor let-data [ngForOf]="(lstDataSearch || (lstData$ | async))?.Attachments">
+                <div *ngIf="!data.Select; else noActive">
+                    <div class="relative rounded-lg border border-transparent border-solid group flex items-center h-[230px] justify-center">
+                        <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100">
+                            <tds-checkbox [(ngModel)]="data.Select" (change)="checkValue(data)"></tds-checkbox>
+                        </div>
+                        <img [src]="data.Url" class="w-auto h-auto max-w-full max-h-full">
+                        <div class="absolute bottom-0 opacity-0 group-hover:opacity-100 w-full">
+                            <div class="flex p-2.5 gap-2.5 bg-gradient-to-b from-black/0 to-black/100 items-center rounded-b-lg justify-between">
+                                <div class="text-body-2 text-white font-semibold font-sans"> {{ data.Name }} </div>
+                                <div class="flex gap-0.5">
+                                    <div class="flex items-center">
+                                      <i class="tdsi-edit-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i>
+                                    </div>
+
+                                    <div class="flex items-center" tds-flat-button-icon tds-tooltip tooltipTitle="Thêm vào bộ sưu tập"
+                                      (click)="showModalAddAttachmentCollection(data.id)">
+                                      <i class="tdsi-add-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i>
+                                    </div>
+
+                                    <div class="flex items-center" (click)="remove(data.id, data?.Select)">
+                                      <i class="tdsi-trash-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ng-template #noActive>
+                    <div class="relative rounded-lg border border-primary-1 border-solid group flex items-center h-[230px] justify-center">
+                        <div class="absolute top-1 right-1 opacity-100">
+                            <tds-checkbox [(ngModel)]="data.Select" (change)="checkValue(data)"></tds-checkbox>
+                        </div>
+                        <img [src]="data.Url" class="w-auto h-auto max-w-full max-h-full">
+                        <div class="absolute bottom-0 opacity-0 group-hover:opacity-100 w-full">
+                            <div class="flex p-2.5 gap-2.5 bg-gradient-to-b from-black/0 to-black/100 items-center rounded-b-lg justify-between">
+                                <div class="text-body-2 text-white font-semibold font-sans"> {{ data.Name }} </div>
+                                <div class="flex gap-0.5">
+                                    <div class="flex items-center">
+                                      <i class="tdsi-edit-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i>
+                                    </div>
+
+                                    <div class="flex items-center" tds-flat-button-icon tds-tooltip tooltipTitle="Thêm vào bộ sưu tập"
+                                      (click)="showModalAddAttachmentCollection(data.id)">
+                                      <i class="tdsi-add-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i>
+                                    </div>
+
+                                    <div class="flex items-center" (click)="remove(data.id, data?.Select)">
+                                      <i class="tdsi-trash-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </ng-template>
+            </ng-template>
+        </div>
+        <ng-template #lstAllNoData>
+          <div class="flex flex-col items-center justify-center w-full">
+            <img src="assets/images/attachment/no-data.svg" class="my-4 py-2.5">
+            <span class="text-neutral-1-400 text-body-2 font-regular text-center font-sans pb-6">Không có dữ liệu</span>
+          </div>
+        </ng-template>
+    </div>
+  </div>
+
+  <div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2 w-[100px]" color="secondary" (click)="onCancel()">Hủy bỏ</button>
+    <button tds-button class="w-[100px]" type="submit" color="primary">Gửi</button>
+  </div>
+
+</tds-spin>
+

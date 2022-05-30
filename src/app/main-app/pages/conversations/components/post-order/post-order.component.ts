@@ -509,12 +509,6 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
         size: "lg",
         viewContainerRef: this.viewContainerRef
     });
-
-    modal.componentInstance?.onSaveConfig
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-        debugger;
-      });
   }
 
   showModalListProduct(){

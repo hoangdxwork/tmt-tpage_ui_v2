@@ -8,5 +8,7 @@ import { FacebookPostItem } from "src/app/main-app/dto/facebook-post/facebook-po
 
 export class ConfigPostOutletComponent  {
 
+  selectedIndex: number = 0;
+
   @Input() data!: FacebookPostItem;
 }

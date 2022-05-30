@@ -1,0 +1,87 @@
+<div class="flex flex-col w-full p-4 border border-neutral-2-200 bg-white rounded-xl relative">
+    <!-- upload-wall -->
+    <div [ngClass]="uploadedImages.length>0?'translate-y-0 pb-4 pt-2 border-b':'translate-y-full h-0 '"
+        class=" border-neutral-2-300 ease-in-out duration-300 max-h-40 overflow-hidden flex">
+        <div class="overflow-hidden overflow-y-auto tds-custom-scroll flex justify-between w-full h-full">
+            <upload-pictures-wall [isArray]="true" [data]="uploadedImages" (onLoadImage)="onLoadImage($event)">
+            </upload-pictures-wall>
+            <div class="pt-2 pr-1">
+                <button tds-button-icon color="secondary" size="sm" class="!rounded-full" (click)="closeImages()">
+                    <span class="flex items-center">
+                        <i class="tdsi-close-fill"></i>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="w-full pt-4 flex flex-row">
+        <textarea tdsInput placeholder="Nhập nội dung tin nhắn" [(ngModel)]="messageModel"
+            [ngModelOptions]="{standalone: true}" class="h-16 resize-none !p-0 !m-0"></textarea>
+
+        <button tds-button type="button" color="primary" class="!rounded-full ml-2" [size]="'lg'"
+            (click)="onClickSender()">
+            <span class="flex items-center px-6">
+                <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
+            </span>
+        </button>
+    </div>
+    <!-- toolbar -->
+    <div class="w-full flex justify-end items-center">
+        <a class="p-2" type="button" (click)="sendIconLike()">
+            <div class="tdsi-like-line text-neutral-1-400 text-xl cursor-pointer"></div>
+        </a>
+        <a class="tdsi-emotion-line text-neutral-1-400 text-xl cursor-pointer p-2" type="button" tds-popover
+            popoverTrigger="click" [popoverContent]="infoEmojiMart" [popoverAutoClose]="true" [popoverBackdrop]="true"
+            popoverPlacement="top">
+            <ng-template #infoEmojiMart>
+                <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
+            </ng-template>
+        </a>
+        <tds-upload listType="picture" [customRequest]="handleUpload" [showUploadList]="false">
+            <a type="button" class="tdsi-image-line text-neutral-1-400 text-xl cursor-pointer">
+            </a>
+        </tds-upload>
+
+        <div class="p-2" (click)="showModalListProduct()">
+            <div class="tdsi-product-line text-neutral-1-400 text-xl cursor-pointer"></div>
+        </div>
+        <div class="p-2">
+            <div class="tdsi-message-template-line text-neutral-1-400 text-xl cursor-pointer" tds-popover
+                [(popoverVisible)]="isVisibleReply" popoverTrigger="click" [popoverContent]="contentTemplate"></div>
+            <ng-template #contentTemplate>
+                <div class="w-[336px] flex flex-col gap-y-4">
+                    <div class="flex justify-between">
+                        <div class="">
+                            <span class="text-title-1 font-semibold">Trả lời nhanh</span>
+                        </div>
+                        <div>
+                            <button tds-button color="secondary" (click)="showModalAddQuickReply()">
+                                <span class="flex items-center text-primary-1">
+                                    <i class="tdsi-plus-fill text-lg leading-none mr-2"></i>Thêm mới
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="w-full">
+                        <tds-form-field class="w-full">
+                            <input tdsInput placeholder="Tìm kiếm tin nhắn" autocomplete="off" />
+                            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                        </tds-form-field>
+                    </div>
+                    <div
+                        class="flex flex-col divide-y divide-neutral-2-300 border-y border-neutral-2-300 divide-dotted border-dotted">
+                        <div class="py-3 px-1 flex flex-col cursor-pointer hover:bg-neutral-3-50">
+                            <span class="font-semibold">Mã đặt hàng</span>
+                            <span>placeholder.code</span>
+                        </div>
+                        <div class="py-3 px-1 flex flex-col cursor-pointer hover:bg-neutral-3-50">
+                            <span class="font-semibold">Mã đặt hàng</span>
+                            <span>placeholder.code</span>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</div>
+<div *tdsModalFooter></div>

@@ -1,125 +1,68 @@
-import { finalize } from 'rxjs/operators';
-import { TDSSafeAny, TDSModalRef, TDSMessageService } from 'tmt-tang-ui';
+import { TDSSafeAny, TDSModalRef, TDSMessageService, TDSHelperObject } from 'tmt-tang-ui';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonService } from '../../services/common.service';
-import { format } from 'date-fns';
 import { ProductPriceListService } from '../../services/product-price-list.service';
-import { StockWarehouseService } from '../../services/stock-warehouse.service';
+import { SharedService } from '../../services/shared.service';
+import { formatDate } from '@angular/common';
 import { Message } from 'src/app/lib/consts/message.const';
+
 
 @Component({
   selector: 'app-tpage-config-product',
   templateUrl: './tpage-config-product.component.html'
 })
+
 export class TpageConfigProductComponent implements OnInit {
 
-  @Output() onSaveConfig = new EventEmitter<any>();
-
-  formConfigProduct!: FormGroup;
-
+  _form!: FormGroup;
   isLoading: boolean = false;
+  lstPrices: any[] = [];
+  priceListItems: any;
+  shopPaymentProviders: any;
 
-  lstPriceLists: Array<any> = [];
-  lstWareHouses: Array<any> = [];
-
-  itemPriceLists: any;
-  itemWareHouses: any;
-
-  dataPriceLists: any;
-  dataWareHouses: any;
-
-  constructor(
+  constructor(private sharedService: SharedService,
     private formBuilder: FormBuilder,
     private commonService: CommonService,
     private productPriceListService: ProductPriceListService,
-    private stockWarehouseService: StockWarehouseService,
     private message: TDSMessageService,
-    private modalRef: TDSModalRef
-  ) { }
+    private modalRef: TDSModalRef) {
+      this.createForm();
+  }
 
   ngOnInit(): void {
-    this.createForm();
-    this.loadData();
+    this.loadListPrice();
   }
 
   createForm() {
-    this.formConfigProduct = this.formBuilder.group({
+    this._form = this.formBuilder.group({
       PriceList: [null, Validators.required],
-      WareHouse: [],
     });
   }
 
-  loadData() {
-    this.commonService.dataPriceLists$.subscribe(res => {
-      this.dataPriceLists = res;
-    });
-
-    let dateNow = format(new Date(), "yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-    this.loadPriceList(dateNow);
-    this.loadWareHouses();
+  loadListPrice() {
+    let date = formatDate(new Date(), 'yyyy-MM-ddTHH:mm:ss', 'en-US');
+    this.commonService.getPriceListAvailable(date).subscribe((res: any) => {
+      this.lstPrices = res.value;
+      let item = {};
+      if(!this._form.controls['PriceList'].value) {
+        item = res.value[0];
+      }
+      this.onChangePriceList(item);
+    })
   }
 
-  loadPriceList(dateNow: any) {
-    this.isLoading = true;
-    this.productPriceListService.getPriceListAvailable(dateNow)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe((res: any) => {
-        if(res && res.value && res.value.length > 0) {
-          this.lstPriceLists = res.value;
-
-          let valueDefault = this.lstPriceLists[0];
-
-          this.formConfigProduct.controls['PriceList'].setValue(valueDefault);
-          this.changePriceList(valueDefault);
-        }
-      });
-  }
-
-  loadWareHouses() {
-    this.stockWarehouseService.getByCompany().subscribe((res: any) => {
-      this.lstWareHouses = res.value;
-
-      let valueDefault = this.lstWareHouses[0];
-
-      this.changeWareHouse(valueDefault);
-      this.formConfigProduct.controls['WareHouse'].setValue(valueDefault);
-    });
-  }
-
-  changePriceList(event: TDSSafeAny) {
-    this.itemPriceLists = event;
-  }
-
-  changeWareHouse(event: TDSSafeAny) {
-    this.itemWareHouses = event;
+  onChangePriceList(event: any) {
+    this._form.controls['PriceList'].setValue(event);
   }
 
   onSave() {
-    let model: any = {};
-
-    let valueForm = this.formConfigProduct.value;
-
-    model["PriceList"] = valueForm.PriceList;
-    model["WareHouse"] = valueForm.WareHouse;
-
-    if(!this.dataPriceLists || !this.dataPriceLists[this.itemPriceLists.Id]) {
-      this.commonService.getPriceListItems(this.itemPriceLists.Id).subscribe((res: any) => {
-
-        this.dataPriceLists[this.itemPriceLists.Id] = res;
-        this.dataPriceLists["currentId"] = this.itemPriceLists.Id;
-        this.commonService.dataPriceLists$.next(this.dataPriceLists);
-      });
-    }
-    else {
-      this.dataPriceLists["currentId"] = this.itemPriceLists.Id;
-      this.commonService.dataPriceLists$.next(this.dataPriceLists);
-    }
-
-    this.message.success(Message.Product.UpdateListPriceSuccess);
-
-    this.onCancel();
+    let model: any = this._form.controls['PriceList'].value;
+    this.commonService.getPriceListItems(model.Id).subscribe((res: any) => {
+      this.commonService.priceListItems$.next(res);
+      this.message.success(Message.Product.UpdateListPriceSuccess);
+      this.onCancel();
+    });
   }
 
   onCancel() {
