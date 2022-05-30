@@ -1,7 +1,8 @@
+import { ModalSendMessageComponent } from './../../../partner/components/modal-send-message/modal-send-message.component';
 import { Component, Input, OnDestroy, OnInit, ViewContainerRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subject } from "rxjs";
-import { takeUntil } from "rxjs/operators";
+import { finalize, takeUntil } from "rxjs/operators";
 import { OperatorEnum } from "src/app/lib";
 import { ExcelExportService } from "src/app/main-app/services/excel-export.service";
 import { FastSaleOrderService } from "src/app/main-app/services/fast-sale-order.service";
@@ -23,6 +24,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   @Input() filterObj: any;
   @Input() setOfCheckedId: any = [];
   @Input() lstOfData: any = [];
+  @Input() _type!:string;
 
   isProcessing: boolean = false;
   tagIds: any = [];
@@ -49,7 +51,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     if (this.isProcessing) {
       return
     }
-
+    debugger
     let dateStart = this.filterObj.dateRange.startDate;
     let dateEnd = this.filterObj.dateRange.endDate;
 
@@ -70,13 +72,12 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     let callBackFn = () => {
       that.isProcessing = false;
     }
-
+    
     switch (type) {
       case "excels":
         this.isProcessing = true;
-        this.excelExportService.exportPost(`/fastsaleorder/ExportFile?TagIds=
-            ${this.tagIds}`, { data: JSON.stringify(data), ids: this.idsModel },
-          `ban-hang`, callBackFn);
+        this.excelExportService.exportPost(`/fastsaleorder/ExportFile?TagIds=${this.tagIds}`, 
+          { data: JSON.stringify(data), ids: this.idsModel }, `ban-hang`, callBackFn);
         break;
 
       case "details":
@@ -85,13 +86,15 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
           this.excelExportService.exportPost(`/fastsaleorder/ExportFileDetail?TagIds=${this.tagIds}`,
             { data: JSON.stringify(data), ids: this.idsModel }, "ban-hang-chi-tiet", callBackFn);
         }
-      break;
+        break;
+
       case "products":
         if(this.checkValueEmpty() == 1) {
+          this.isProcessing = true;
           this.excelExportService.exportPost(`/fastsaleorder/ExportFileOrderDetailByStatus?TagIds=${this.tagIds}`,
             { data: JSON.stringify(data), ids: this.idsModel }, "danh-sach-san-pham-don-hang", callBackFn);
         }
-      break;
+        break;
 
       default:
         break;
@@ -105,7 +108,6 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     }
 
     if (this.checkValueEmpty() == 1) {
-
       let obs: TDSSafeAny;
       switch (type) {
         case "print":
@@ -120,12 +122,41 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
       }
       if (TDSHelperObject.hasValue(obs)) {
         this.isProcessing = true;
-        obs.pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+        obs.pipe(takeUntil(this._destroy), finalize(()=>this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
           that.printerService.printHtml(res);
-          that.isProcessing = false;
         })
       }
     }
+  }
+
+  showMessageModal(){
+    if(this.checkValueEmpty()){
+      this.modal.create({
+        title: 'Gửi tin nhắn Facebook',
+        size:'lg',
+        content: ModalSendMessageComponent,
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          partnerIds: this.idsModel
+        }
+      });
+    }
+  }
+
+  onCreate() {
+    this.router.navigateByUrl('bill/create');
+  }
+
+  updateDelivery(){
+
+  }
+
+  updateDeliveryStatus(type:string){
+
+  }
+
+  showHistoryDS(){
+    this.router.navigateByUrl('bill/historyds/list');
   }
 
   checkValueEmpty() {
