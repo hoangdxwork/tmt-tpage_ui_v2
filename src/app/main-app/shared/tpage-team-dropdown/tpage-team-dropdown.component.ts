@@ -17,6 +17,8 @@ export class TpageTeamDropdownComponent implements OnInit {
   currentTeam!: CRMTeamDTO | null;
   visible = false;
   @Output() readonly tdsClickItem = new EventEmitter<CRMTeamDTO>();
+  @Output() isRefresh = new EventEmitter<boolean>();
+
   constructor(
     private crmTeamService: CRMTeamService,
     @Optional() @Host() public headerCmp: TDSHeaderComponent
@@ -43,5 +45,8 @@ export class TpageTeamDropdownComponent implements OnInit {
   }
   get parentIsHeaderCpm() {
     return TDSHelperObject.hasValue(this.headerCmp);
+  }
+  onRefresh(){
+    this.isRefresh.emit(true);
   }
 }

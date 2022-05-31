@@ -1,4 +1,4 @@
-<div class="flex flex-col w-full p-4 border border-neutral-2-200 bg-white rounded-xl relative">
+<div class="flex flex-col w-full px-4 border border-neutral-2-200 bg-neutral-3-50 rounded-xl relative">
     <!-- upload-wall -->
     <div [ngClass]="uploadedImages.length>0?'translate-y-0 pb-4 pt-2 border-b':'translate-y-full h-0 '"
         class=" border-neutral-2-300 ease-in-out duration-300 max-h-40 overflow-hidden flex">
@@ -17,13 +17,6 @@
     <div class="w-full pt-4 flex flex-row">
         <textarea tdsInput placeholder="Nhập nội dung tin nhắn" [(ngModel)]="messageModel"
             [ngModelOptions]="{standalone: true}" class="h-16 resize-none !p-0 !m-0"></textarea>
-
-        <button tds-button type="button" color="primary" class="!rounded-full ml-2" [size]="'lg'"
-            (click)="onClickSender()">
-            <span class="flex items-center px-6">
-                <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
-            </span>
-        </button>
     </div>
     <!-- toolbar -->
     <div class="w-full flex justify-end items-center">
@@ -84,4 +77,15 @@
         </div>
     </div>
 </div>
-<div *tdsModalFooter></div>
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2" color="secondary" (click)="onCancel()">
+        <span class="flex items-center">
+            Hủy
+        </span>
+    </button>
+    <button tds-button color="primary" type="submit" type="submit" (click)="onClickSender()">
+            <span class="flex items-center">
+                <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
+            </span>
+    </button>
+</div>

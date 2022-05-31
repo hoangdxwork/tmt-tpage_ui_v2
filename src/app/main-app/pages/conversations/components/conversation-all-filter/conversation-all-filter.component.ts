@@ -1,6 +1,6 @@
 import { startOfMonth, endOfMonth, startOfYesterday, endOfYesterday, subDays } from 'date-fns';
 import { ApplicationUserService } from './../../../../services/application-user.service';
-import { TDSHelperArray, TDSSafeAny, TDSI18nService, vi_VN } from 'tmt-tang-ui';
+import { TDSHelperArray, TDSSafeAny, TDSI18nService, vi_VN, TDSHelperObject } from 'tmt-tang-ui';
 import { CRMMatchingService } from './../../../../services/crm-matching.service';
 import { CRMTagService } from './../../../../services/crm-tag.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
@@ -49,7 +49,10 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
     if (simpleChange.totalCount) {
       this.total = simpleChange.totalCount.currentValue || 0;
     }
-    if (simpleChange.data) {
+    if (simpleChange.team) {
+      this.resetFilter();
+    }
+    if (simpleChange.totalCount && simpleChange.totalCount.currentValue == 0 && TDSHelperObject.hasValue(this.prepareValues())) {
       this.resetFilter();
     }
   }
