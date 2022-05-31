@@ -186,6 +186,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.pageIndex = 1;
     this.indClickTag = -1;
     this.tabIndex = null;
+    this.innerText.nativeElement.value = '';
 
     this.checked = false;
     this.indeterminate = false;

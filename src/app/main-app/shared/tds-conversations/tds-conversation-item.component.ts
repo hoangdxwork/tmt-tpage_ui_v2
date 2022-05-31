@@ -35,7 +35,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   destroy$ = new Subject();
   isReply: boolean = false;
   isPrivateReply: boolean = false;
-  messageModel: any
+  messageModel: any;
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
   @ViewChild('contentMessage') contentMessage: any;
@@ -45,7 +45,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     private activityDataFacade: ActivityDataFacade,
     private conversationDataFacade: ConversationDataFacade,
     private conversationOrderFacade: ConversationOrderFacade,
-    private activityMatchingService: ActivityMatchingService,) {
+    private activityMatchingService: ActivityMatchingService) {
   }
 
   ngOnInit(): void {
