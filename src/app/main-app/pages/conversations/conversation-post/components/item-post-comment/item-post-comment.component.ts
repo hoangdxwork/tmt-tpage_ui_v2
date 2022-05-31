@@ -26,7 +26,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   @Input() sort: any;
   @Input() filter: any;
 
-  team!: CRMTeamDTO;
+  team!: CRMTeamDTO | null;
   data: any = { Items: []};
   enumActivityStatus = ActivityStatus;
   partners$!: Observable<any>;
@@ -65,7 +65,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   onFilterSortPost(){
-    this.facebookCommentService.onFilterSortCommentPost$.subscribe((res: any) => {
+    this.facebookCommentService.onFilterSortCommentPost$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       switch(res?.type){
         case 'sort':
             this.currentSort = {...res.data};
@@ -77,7 +77,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
             this.loadData();
           break;
         default:
-          this.facebookCommentService.fetchComments(this.team.Id, this.post.fbid)
+          this.facebookCommentService.fetchComments(this.team?.Id, this.post.fbid)
             .subscribe((res: any) => {
               this.message.success('Tải lại dữ liệu thành công!');
               this.currentSort = { value: "DateCreated desc", text: "Mới nhất" };
@@ -94,10 +94,14 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   initialize(){
-    this.team = this.crmService.getCurrentTeam() as any;
+    // this.team = this.crmService.getCurrentTeam() as any;
     // this.conversationPostFacade.setPartnerSimplest(this.team);
 
-    this.facebookComment$ = this.sgRConnectionService._onFacebookEvent$.subscribe((res: any) => {
+    this.crmService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
+      this.team = res;
+    })
+
+    this.facebookComment$ = this.sgRConnectionService._onFacebookEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if(res?.data?.last_activity?.comment_obj &&  res?.data?.last_activity?.type == 2) {
         let comment_obj = res.data?.last_activity?.comment_obj;
 
@@ -111,7 +115,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
 
-    this.facebookScanData$ = this.sgRConnectionService._onFacebookScanData$.subscribe((res: any) => {
+    this.facebookScanData$ = this.sgRConnectionService._onFacebookScanData$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if(res.data) {
         let data = Object.assign({}, res.data);
         if(res.type == "update_scan_feed") {

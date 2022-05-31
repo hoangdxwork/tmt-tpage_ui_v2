@@ -12,8 +12,8 @@ export interface SendMessageModelDTO {
 }
 
 export interface FromMessage {
-  id: string;
-  name: string;
+  id?: string;
+  name?: string;
 }
 
 export interface ToMessage {

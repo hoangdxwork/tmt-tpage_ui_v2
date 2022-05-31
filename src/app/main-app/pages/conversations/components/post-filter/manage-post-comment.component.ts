@@ -13,7 +13,7 @@ import { ItemPostCommentComponent } from '../../conversation-post/components/ite
 
 export class ManagePostCommentComponent implements OnInit, OnDestroy {
 
-  team!: CRMTeamDTO;
+  team!: CRMTeamDTO | null;
   data: any = { Items: []};
   childs: any = {};
   commentOrders: any = [];
@@ -31,7 +31,7 @@ export class ManagePostCommentComponent implements OnInit, OnDestroy {
   initialize() {
     if(TDSHelperObject.hasValue(this.itemPostCommentCmp?.data)) {
       this.data = {...this.itemPostCommentCmp.data};
-      this.team = {...this.itemPostCommentCmp.team};
+      this.team = {...this.itemPostCommentCmp.team} as CRMTeamDTO | null;
       this.partners$ = this.itemPostCommentCmp.partners$;
     }
   }

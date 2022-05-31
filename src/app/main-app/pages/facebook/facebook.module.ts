@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { FacebookRoutingModule } from './facebook-routing.module';
 import { FacebookComponent } from './facebook/facebook.component';
-import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCollapseModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSModalModule, TDSPageHeaderModule, TDSSpinnerModule, TDSSwitchModule } from 'tmt-tang-ui';
+import { TDSAutocompleteModule, TDSAvatarModule, TDSBadgeModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCollapseModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSModalModule, TDSPageHeaderModule, TDSSpinnerModule, TDSSwitchModule, TDSToolTipModule } from 'tmt-tang-ui';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AddPageComponent } from './components/add-page/add-page.component';
 import { MainSharedModule } from '../../shared/shared.module';
@@ -43,7 +43,8 @@ const SERVICES = [
     TDSModalModule,
     PipeModule,
     TDSSpinnerModule,
-    UploadImageModule
+    UploadImageModule,
+    TDSToolTipModule
   ],
   providers: [
     ...SERVICES,
