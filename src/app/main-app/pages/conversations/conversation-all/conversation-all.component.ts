@@ -38,6 +38,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   total: number = 0;
   isSearching: boolean = false;
   isRefresh: boolean = false;
+  isProcessing:boolean = false;
 
   currentOrderTab: number = 0;
 
@@ -157,6 +158,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.crmService.onUpdateTeam(data);
   }
 
+  onRefresh(ev: boolean){
+    if(ev){
+      this.isRefresh = true
+      this.onSubmitFilter({});
+    }
+  }
+
   onLoadMiniChat(event: any): void {
   }
 
@@ -202,10 +210,15 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   printData(){
     let lstCheck = [...this.setOfCheckedId]
+    let that = this;
+    if (this.isProcessing) {
+      return
+    }
     if(lstCheck.length < 1){
       this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
       return;
     }
+    this.isProcessing = true
     let user_ids = "";
     lstCheck.forEach((x,i)=>{
       if(i == lstCheck.length - 1) {
@@ -216,8 +229,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       }
     })
     if(lstCheck.length > 0) {
-      this.printerService.printUrl(`/fastsaleorder/PrintCRMMatching?pageId=${this.currentTeam.Facebook_PageId}&psids=${user_ids.toString()}`);
-    }
+      this.printerService.printUrl(`/fastsaleorder/PrintCRMMatching?pageId=${this.currentTeam.Facebook_PageId}&psids=${user_ids.toString()}`)
+      .pipe(takeUntil(this.destroy$), finalize(()=>this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
+        that.printerService.printHtml(res);
+    })}
   }
 
   showModalSendMessage(){
@@ -228,7 +243,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     const modal = this.modalService.create({
       title: 'Gửi tin nhắn nhanh',
       content: ModalSendMessageAllComponent,
-      size: "lg",
+      size: "md",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         lstUserCheck: this.setOfCheckedId,
@@ -275,7 +290,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
     if(this.dataSource$){
         this.isSearching = false;
-        TDSHelperString.hasValueString(this.queryFilter) ? (this.isRefresh = true) : (this.isRefresh = false);
+        !TDSHelperString.hasValueString(this.queryFilter) ? (this.isRefresh = true) : (this.isRefresh = false);
         this.loadConversations(this.dataSource$);
     }
   }

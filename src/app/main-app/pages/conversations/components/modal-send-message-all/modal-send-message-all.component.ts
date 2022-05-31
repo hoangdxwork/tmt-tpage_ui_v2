@@ -168,4 +168,7 @@ export class ModalSendMessageAllComponent implements OnInit {
       return;
     }
   }
+  onCancel(){
+
+  }
 }

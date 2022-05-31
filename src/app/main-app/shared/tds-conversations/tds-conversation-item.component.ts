@@ -36,6 +36,9 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   isReply: boolean = false;
   isPrivateReply: boolean = false;
   messageModel: any
+  isLiking: boolean = false;
+  isHiding: boolean = false;
+  isReplyingComment: boolean = false;
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
   @ViewChild('contentMessage') contentMessage: any;
@@ -119,6 +122,10 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   }
 
   addLike(event: any) {
+    if(this.isLiking){
+      return
+    }
+    this.isLiking = true;
     let model = {
       TeamId: this.team.Id,
       CommentId: this.data.id,
@@ -128,15 +135,19 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
       fbid: this.data.comment?.from?.id
     }
 
-    this.activityMatchingService.addLikeComment(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.activityMatchingService.addLikeComment(model).pipe(takeUntil(this.destroy$)).pipe(finalize (()=>{this.isLiking = false})).subscribe((res: any) => {
       this.tdsMessage.success('Thao tác thành công!');
       this.data.comment.user_likes = !this.data.comment.user_likes;
     }, error => {
-      this.tdsMessage.error('Đã xảy ra lỗi');
+      this.tdsMessage.error(error.error? error.error.message : 'Đã xảy ra lỗi');
     });
   }
 
   hideComment(status: any) {
+    if(this.isHiding){
+      return
+    }
+    this.isHiding = true;
     let model = {
         TeamId: this.team.Id,
         CommentId: this.data.id,
@@ -146,11 +157,11 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
         fbid: this.data.comment?.from?.id
     };
 
-    this.activityMatchingService.hideComment(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.activityMatchingService.hideComment(model).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{this.isHiding = false})).subscribe((res: any) => {
         this.tdsMessage.success('Thao tác thành công!');
         this.data.comment.is_hidden = !this.data.comment.is_hidden;
     }, error => {
-      this.tdsMessage.error('Đã xảy ra lỗi');
+      this.tdsMessage.error(error.error? error.error.message :'Đã xảy ra lỗi');
     });
   }
 
@@ -249,12 +260,16 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   }
 
   replyComment(message: string) {
+    if(this.isReplyingComment){
+      return;
+    }
+    this.isReplyingComment = true
     if(this.isPrivateReply){
       this.isReply = false;
       const model = this.prepareModel(message);
       this.activityMatchingService.addQuickReplyComment(model)
         .pipe(takeUntil(this.destroy$))
-        .pipe(finalize(() => { }))
+        .pipe(finalize(() => { this.isReplyingComment = false }))
         .subscribe((res: any) => {
         this.tdsMessage.success('Gửi tin thành công');
         res.forEach((item: any) => {
@@ -263,6 +278,8 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
           this.messageModel = null;
         });
         this.conversationDataFacade.messageServer(res.pop());
+      }, error => {
+        this.tdsMessage.error(`${error?.error?.message}` || "Gửi tin nhắn thất bại.");
       });
     }else{
       this.isReply = false;
@@ -273,7 +290,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
       model.to_name = this.data?.comment?.from?.name || null;
       this.activityMatchingService.replyComment(this.team?.Id, model)
         .pipe(takeUntil(this.destroy$))
-        .pipe(finalize(() => { }))
+        .pipe(finalize(() => { this.isReplyingComment = false }))
         .subscribe((res: any) => {
           this.tdsMessage.success("Trả lời bình luận thành công.");
           this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });

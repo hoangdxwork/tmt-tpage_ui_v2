@@ -1,6 +1,6 @@
 <!-- image/jpeg -->
 <img *ngIf="currentType == enumAttachmentType.IMAGE_JPEG"
-  [src]="url" class="img-rounded" (error)="error()"/>
+  [src]="url" class="img-rounded max-w-[225px] max-h-[225px] object-cover rounded-xl" (error)="error()"/>
 
 <!-- image/gif -->
 <img *ngIf="currentType == enumAttachmentType.IMAGE_GIF"

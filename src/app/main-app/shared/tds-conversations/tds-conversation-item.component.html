@@ -34,8 +34,8 @@
           </div>
 
           <!-- Tin nhắn không tải được -->
-          <div *ngIf="!data.message_formatted && !data.message?.attachments" class="message-inner"
-              style="color: #F33240 !important; background-color: #f7d3d6 !important"  tds-tooltip tooltipTitle="{{data.DateCreated | yiDateTimeFormat}}">
+          <div *ngIf="!data.message_formatted && !data.message?.attachments" class="message-inner !text-accent-3 !bg-accent-3 !bg-opacity-20"
+            tds-tooltip tooltipTitle="{{data.DateCreated | yiDateTimeFormat}}">
               Không tải được tin nhắn! </div>
 
           <!-- Tin nhắn lỗi -->
@@ -145,20 +145,23 @@
 				<!--Thích hiện ẩn + CreatedBy.Name-->
 				<div class="chat-meta bg-transparent text-neutral-1-600 text-caption-2 font-regular mt-1.5">
 					<div class="chat-acts flex flex-row items-center" style="position: relative;">
-						<a class="link-act cursor-pointer hover:underline"
+						<button class="link-act hover:underline" [disabled]="isReplyingComment"
 							(click)="clickReply(data.comment ? data.comment.can_remove : null)">
 							Phản hồi
-						</a>
+						</button>
+						<tds-spinner *ngIf="isReplyingComment" [color]="'primary'" class="ml-1 w-2 h-2"></tds-spinner>
 						<div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
-						<a class="link-act cursor-pointer hover:underline"
+						<button class="link-act hover:underline" [disabled]="isLiking"
 							(click)="addLike(data.comment ? data.comment.can_like : null)">
 							{{data.comment.user_likes ? 'Đã thích' : 'Thích'}}
-						</a>
+						</button>
+						<tds-spinner *ngIf="isLiking" [color]="'primary'" class="ml-1 w-2 h-2"></tds-spinner>
 						<div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
-						<a class="link-act cursor-pointer hover:underline"
+						<button class="link-act hover:underline" [disabled]="isHiding"
 							(click)="hideComment(data.comment ? data.comment.can_hide: null)">
 							{{data.comment.is_hidden ? 'Hiện' : 'Ẩn'}}
-						</a>
+						</button>
+						<tds-spinner *ngIf="isHiding" [color]="'primary'" class="ml-1 w-2 h-2"></tds-spinner>
 						<div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 						<span *ngIf="data.DateCreated" class="date-diff cursor-pointer hover:underline" tds-tooltip
 							tooltipTitle="{{data.DateCreated | date:'dd'}} Tháng {{data.DateCreated | date:'MM'}}, {{data.DateCreated | date:'yyyy'}} lúc {{data.DateCreated | date:'HH:mm'}}">
