@@ -2,7 +2,7 @@ import { ModalSendMessageComponent } from './../../../partner/components/modal-s
 import { Component, Input, OnDestroy, OnInit, ViewContainerRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subject } from "rxjs";
-import { finalize, takeUntil } from "rxjs/operators";
+import { finalize, map, takeUntil } from "rxjs/operators";
 import { OperatorEnum } from "src/app/lib";
 import { ExcelExportService } from "src/app/main-app/services/excel-export.service";
 import { FastSaleOrderService } from "src/app/main-app/services/fast-sale-order.service";
@@ -11,7 +11,6 @@ import { TDSHelperArray, TDSHelperObject, TDSMessageService, TDSModalService, TD
 import { PaymentMultipComponent } from "../payment-multip/payment-multip.component";
 import { PaymentRequestComponent } from "../payment-request/payment-request.component";
 import { SendDeliveryComponent } from "../send-delivery/send-delivery.component";
-
 
 @Component({
   selector: 'action-dropdown',
@@ -51,7 +50,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     if (this.isProcessing) {
       return
     }
-    debugger
+    
     let dateStart = this.filterObj.dateRange.startDate;
     let dateEnd = this.filterObj.dateRange.endDate;
 
@@ -69,22 +68,23 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     };
 
     let that = this;
-    let callBackFn = () => {
-      that.isProcessing = false;
-    }
     
     switch (type) {
       case "excels":
         this.isProcessing = true;
         this.excelExportService.exportPost(`/fastsaleorder/ExportFile?TagIds=${this.tagIds}`, 
-          { data: JSON.stringify(data), ids: this.idsModel }, `ban-hang`, callBackFn);
+          { data: JSON.stringify(data), ids: this.idsModel }, `ban-hang`)
+          .pipe(finalize(()=>this.isProcessing = false), takeUntil(this._destroy))
+          .subscribe();
         break;
 
       case "details":
         if (this.checkValueEmpty() == 1) {
           this.isProcessing = true;
           this.excelExportService.exportPost(`/fastsaleorder/ExportFileDetail?TagIds=${this.tagIds}`,
-            { data: JSON.stringify(data), ids: this.idsModel }, "ban-hang-chi-tiet", callBackFn);
+            { data: JSON.stringify(data), ids: this.idsModel }, "ban-hang-chi-tiet")
+            .pipe(finalize(()=>this.isProcessing = false), takeUntil(this._destroy))
+            .subscribe();
         }
         break;
 
@@ -92,7 +92,9 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         if(this.checkValueEmpty() == 1) {
           this.isProcessing = true;
           this.excelExportService.exportPost(`/fastsaleorder/ExportFileOrderDetailByStatus?TagIds=${this.tagIds}`,
-            { data: JSON.stringify(data), ids: this.idsModel }, "danh-sach-san-pham-don-hang", callBackFn);
+            { data: JSON.stringify(data), ids: this.idsModel }, "danh-sach-san-pham-don-hang")
+            .pipe(finalize(()=>this.isProcessing = false), takeUntil(this._destroy))
+            .subscribe();
         }
         break;
 
@@ -273,6 +275,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     if (this.isProcessing) {
       return
     }
+
     if (this.checkValueEmpty() == 1) {
       let that = this;
       that.isProcessing = true;

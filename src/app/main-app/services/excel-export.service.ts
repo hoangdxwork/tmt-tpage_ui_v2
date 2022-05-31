@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable, Output, Renderer2, RendererFactory2 } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TAuthService, TCommonService } from 'src/app/lib';
 import { TDSHelperObject, TDSHelperString, TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
 import { BaseSevice } from './base.service';
@@ -20,7 +21,7 @@ export class ExcelExportService extends BaseSevice {
     super(apiService)
   }
 
-  exportPost(url: string, data: any, name: string, callBackFn?: Function) {
+  exportPost(url: string, data: any, name: string): Observable<TDSSafeAny> {
     let xhttp = new XMLHttpRequest();
     // Post data to URL which handles post request
     let urlStr = this._BASE_URL + url;
@@ -28,8 +29,8 @@ export class ExcelExportService extends BaseSevice {
     xhttp.setRequestHeader("Content-Type", "application/json");
     xhttp.setRequestHeader('Access-Control-Allow-Origin', '*');
 
-    this.authen.getCacheToken().subscribe(
-      response => {
+    return  this.authen.getCacheToken()
+      .pipe(map((response: TDSSafeAny) => {
         if (TDSHelperObject.hasValue(response) && TDSHelperString.hasValueString(response.access_token)) {
 
           let auth = "Bearer " + `${response.access_token}`;
@@ -53,15 +54,10 @@ export class ExcelExportService extends BaseSevice {
               a.style.display = "none";
               document.body.appendChild(a);
               a.click();
-
             }
-            if (TDSHelperObject.hasValue(callBackFn)) {
-              callBackFn?.bind(xhttp)
-            }
-
           };
         }
-      })
+      }))
   }
 
   transferCompletePost = (evt: any) => {
