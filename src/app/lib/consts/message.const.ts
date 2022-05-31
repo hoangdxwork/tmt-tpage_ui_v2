@@ -105,5 +105,8 @@ export const Message = {
     TextContentProductEmpty: 'Vui lòng nhập đầy đủ nội dung mẫu.',
     LoadConfigSuccess: 'Tải cấu hình thành công.',
     TagOnPatternEmpty: 'Vui lòng nhập đầy đủ nhãn và nội dung.'
+  },
+  LiveCampaign: {
+    ErrorNumberDetail: 'Số lượng, số tiền, giới hạn trên đơn không được để trống.'
   }
 }

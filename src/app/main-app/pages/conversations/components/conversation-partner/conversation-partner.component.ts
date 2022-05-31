@@ -61,8 +61,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   isLoading: boolean = false;
 
   constructor(private message: TDSMessageService,
-    private draftMessageService: DraftMessageService,
-    private conversationEventFacade: ConversationEventFacade,
     private conversationService: ConversationService,
     private fastSaleOrderService: FastSaleOrderService,
     private partnerService: PartnerService,
@@ -89,7 +87,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   eventLoadPartner() {
     this.loadPartnerByOrder();
     this.loadPartnerByPostComment();
-    this.loadPartnerByEditOrderComment();
   }
 
   createForm(){
@@ -123,23 +120,32 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   loadPartnerByPostComment() {
-    this.partnerService.onLoadPartnerFromPostComment
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-        let psid = res?.from?.id;
-        let pageId = this.team.Facebook_PageId;
-        this.loadDataPartner(pageId, psid);
-      });
+    this.conversationOrderFacade.onLoadConversationPartner$.pipe(takeUntil(this.destroy$)).subscribe(res => {
+      this.loadPartner(res);
+    });
   }
 
-  loadPartnerByEditOrderComment() {
-    this.conversationOrderFacade.onEditOrderFromPostComment
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-        let psid = res.Facebook_ASUserId || res.Facebook_UserId;
-        let pageId = this.team.Facebook_PageId;
-        this.loadDataPartner(pageId, psid);
-      });
+  loadPartner(data: CheckConversationData) {
+    data.Name = data.Name || data.Facebook_UserName;
+
+    if(this.data) { // Cập nhật theo partner mapping
+      data.Name = data.Name || this.data.name || data.Facebook_UserName;
+      data.Facebook_ASUserId = data.Facebook_ASUserId || this.data.psid;
+      data.Phone = data.Phone || this.data.phone;
+      data.Street = data.Street || this.data.address;
+    }
+
+    this.formData = data;
+    this.updateForm(data);
+
+    let partnerId = data?.Id;
+    if(partnerId) {
+      this.loadPartnerRevenue(partnerId);
+      this.loadBill(partnerId);
+    }
+
+    this.loadNotes(this.team.Facebook_PageId, data.Facebook_ASUserId);
+    this.partnerService.onLoadOrderFromTabPartner.emit(data);
   }
 
   loadDataPartner(pageId: string, psid: string, partnerId?: number) {
@@ -205,10 +211,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   eventLoading() {
-    this.conversationOrderFacade.onCreateOrderFromPostComment
+    this.conversationOrderFacade.isLoadingPartner$
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
-        this.isLoading = true;
+        this.isLoading = res;
       });
   }
 

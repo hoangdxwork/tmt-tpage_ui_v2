@@ -83,6 +83,14 @@
                       <p *ngIf="!item.story && !item.description && !item.message">
                         (Chưa có tiêu đề)
                       </p>
+                      <div *ngIf="item.live_campaign" class="mt-1">
+                        <tds-tag status='warning' type="outline" (click)="showModalLiveCampaign(item)">
+                          <span class="flex items-center py-0.5 cursor-pointer" tds-tooltip [tooltipTitle]="item.live_campaign?.name">
+                            <span class="truncate max-w-[150px] flex">{{item.live_campaign?.name}}</span>
+                            <i class="tdsi-arrow-right-line text-lg leading-none ml-2"></i>
+                          </span>
+                        </tds-tag>
+                      </div>
                     </div>
                   </div>
               </ng-container>
@@ -122,7 +130,7 @@
                       </div>
                   </ng-template>
                   <div>
-                    <conversation-partner [team]="currentTeam"></conversation-partner>
+                    <conversation-partner [team]="currentTeam" (onTabOrder)="onTabOrder($event)"></conversation-partner>
                   </div>
               </tds-tab>
               <!-- tab đơn hàng -->

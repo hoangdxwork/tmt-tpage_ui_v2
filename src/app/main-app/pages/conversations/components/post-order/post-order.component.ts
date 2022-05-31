@@ -210,23 +210,21 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   eventLoading() {
-    this.partnerService.onLoadPartnerFromPostComment
+    this.conversationOrderFacade.isLoadingPartner$
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
-        this.isLoading = true;
+        this.isLoading = res;
       });
 
-    this.conversationOrderFacade.onCreateOrderFromPostComment
+    this.conversationOrderFacade.isLoadingOrder$
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
-        this.isLoading = true;
+        this.isLoading = res;
       });
   }
 
   updateFormOrder(order: ConversationOrderForm) {
     this.resetForm();
-
-    order.Facebook_UserName = this.data?.name;
 
     let details = new FormArray([]);
 

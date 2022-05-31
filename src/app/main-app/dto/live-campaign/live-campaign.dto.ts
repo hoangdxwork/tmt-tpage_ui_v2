@@ -8,8 +8,8 @@ export interface LiveCampaign_SimpleDataDTO {
 }
 
 export interface SaleOnline_LiveCampaignDTO {
-  Id: string;
-  Name: string;
+  Id?: string;
+  Name?: string;
   NameNoSign?: string;
   Facebook_UserId?: string;
   Facebook_UserName?: string;
@@ -91,4 +91,9 @@ export interface ProductAttributeValueSimpleDTO {
   Id: number;
   Name: string;
   NameGet: string;
+}
+
+export interface UpdateFacebookLiveCampaignDTO {
+  action: string;
+  model: SaleOnline_LiveCampaignDTO;
 }

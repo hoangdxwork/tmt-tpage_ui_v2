@@ -56,6 +56,8 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
   userFBLogin?: FacebookUser;
   userFBAuth?: FacebookAuth;
 
+  isUserConnectChannel: boolean = false;
+
   listsFieldListAll: any = {
     id: 1,
     name: 'Tất cả',
@@ -298,16 +300,16 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
       this.data.unshift(item);
 
       this.onChangeCollapse(item.Id, true);
+      this.isUserConnectChannel = true;
+    }
+    else {
+      this.isUserConnectChannel = false;
     }
   }
 
   onClickFieldListFilter(value: TDSSafeAny, id: number) {
     this.fieldListFilter[id] = value;
     this.getListData(id);
-  }
-
-  onUnConnect() {
-
   }
 
   onClickFieldListAll(value: TDSSafeAny) {

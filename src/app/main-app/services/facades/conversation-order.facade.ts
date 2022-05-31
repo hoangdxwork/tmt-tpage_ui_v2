@@ -2,10 +2,10 @@ import { Message } from './../../../lib/consts/message.const';
 import { OrderFormHandler } from './../handlers/order-form.handler';
 import { EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
 import { Observable, Subject } from "rxjs";
-import { takeUntil } from "rxjs/operators";
+import { finalize, takeUntil } from "rxjs/operators";
 import { TAuthService, TCommonService, UserInitDTO } from "src/app/lib";
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSSafeAny } from "tmt-tang-ui";
-import { CheckConversationData, ConversationLastOrderDetailDTO } from "../../dto/partner/check-conversation.dto";
+import { CheckConversationData, CheckConversationDTO, ConversationLastOrderDetailDTO } from "../../dto/partner/check-conversation.dto";
 import { BaseSevice } from "../base.service";
 import { ConversationService } from "../conversation/conversation.service";
 import { CRMTeamService } from "../crm-team.service";
@@ -22,6 +22,7 @@ import { SaleOnline_OrderService } from '../sale-online-order.service';
 import { FormGroup } from '@angular/forms';
 import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
 import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
+import { ChangeTabConversationEnum } from '../../dto/conversation/conversation.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -38,21 +39,19 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
   private order!: ConversationOrderForm;
   private productDefault!: ConversationOrderProductDefaultDTO | undefined;
 
-
   public onAddProductOrder = new EventEmitter<DataPouchDBDTO>();
 
-  // Event Input
-  // Sự kiện tạo đơn hàng từ comment bài post
-  public onCreateOrderFromPostComment: EventEmitter<any> = new EventEmitter();
+  // Event loading tab partner, order
+  public isLoadingOrder$ = new EventEmitter<boolean>();
+  public isLoadingPartner$ = new EventEmitter<boolean>();
+  public onChangeTab$ = new EventEmitter<ChangeTabConversationEnum>();
 
-  // Sự kiện sửa đơn hàng từ comment bài post
-  public onEditOrderFromPostComment: EventEmitter<any> = new EventEmitter();
-
+  // Event Output
   public onLastOrderUpdated$: EventEmitter<any> = new EventEmitter<any>();
   public onLastOrderCheckCvs$: EventEmitter<ConversationOrderForm> = new EventEmitter<ConversationOrderForm>();
   public onConversationOrder$: EventEmitter<any> = new EventEmitter<any>();
 
-  // Event Output
+  public onLoadConversationPartner$ = new EventEmitter<CheckConversationData>();
   public onOrderCheckPost$: EventEmitter<ConversationOrderForm> = new EventEmitter<ConversationOrderForm>();
 
   constructor(
@@ -90,9 +89,6 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
 
   initialize() {
     this.changePartner();
-    this.changePartnerByComment();
-    this.onCreateOrderByComment();
-    this.changeByOrderId();
   }
 
   loadSaleConfig() {
@@ -103,7 +99,6 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
         if(TDSHelperObject.hasValue(saleSetting?.Product)) {
           this.productDefault = this.updateProductDefault(saleSetting?.Product);
         }
-
       }
     });
   }
@@ -163,71 +158,6 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
       });
   }
 
-  changePartnerByComment() {
-    this.partnerService.onLoadPartnerFromPostComment
-      .subscribe((res: any) => {
-        let psid = res?.from?.id;
-        let postId = res?.object?.id;
-        let currentTeam = this.crmTeamService.getCurrentTeam();
-
-        this.facebookCommentService.getCustomersByFacebookId(psid, postId, currentTeam?.Id).subscribe(customer => {
-          if(TDSHelperArray.hasListValue(customer?.orders)) {
-            this.order = this.loadLastOrder(customer.orders[0]);
-            this.onOrderCheckPost$.emit(this.order);
-          }
-          else {
-            let userId = res?.from?.id;
-            let pageId = res?.object?.id.split("_")[0];
-
-            this.checkInfoPartner(userId, pageId).subscribe(partner => {
-              this.order = this.loadOrderDefault(partner?.Data);
-              this.onOrderCheckPost$.emit(this.order);
-            });
-          }
-        });
-      });
-  }
-
-  changeByOrderId() {
-    this.onEditOrderFromPostComment.subscribe((order: TDSSafeAny) => {
-      this.saleOnline_OrderService.getById(order.Id).subscribe(res => {
-        this.order = this.loadLastOrder(res);
-        this.onOrderCheckPost$.emit(this.order);
-      });
-    });
-  }
-
-  onCreateOrderByComment() {
-    this.onCreateOrderFromPostComment.subscribe(res => {
-      let userId = res?.from?.id;
-      let pageId = res?.object?.id.split("_")[0];
-
-      this.checkInfoPartner(userId, pageId).subscribe(infoPartner => {
-        if(infoPartner?.Data) {
-          // Tạo order form, update theo comment
-          let formOrder = this.orderFormHandler.createOrderFormGroup();
-          this.orderFormHandler.updateFormByComment(formOrder, res, infoPartner?.Data);
-
-          // Gán Facebook_Comments
-          let fbComment = this.checkFormHandler.prepareOrderComment(res);
-          formOrder.controls.Facebook_Comments.setValue([fbComment]);
-
-          // Chuẩn bị model
-          let model = this.checkFormHandler.prepareOrder(formOrder);
-
-          // Tạo đơn theo bình luận
-          this.saleOnline_OrderService.insertFromPost(model, true).subscribe((res) => {
-            this.order = this.loadLastOrder(res);
-            this.onOrderCheckPost$.emit(this.order);
-            this.message.success(Message.Order.UpdateSuccess);
-          }, error => {
-            this.message.error(`${error?.error?.message}` || JSON.stringify(error));
-          });
-        }
-      });
-    });
-  }
-
   checkInfoPartner(userId: string, pageId: string): Observable<any> {
     return new Observable(observer => {
       let model = {
@@ -240,6 +170,117 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
         observer.complete();
       }, error => observer.error(error));
     });
+  }
+
+  editOrderFormPost(order: TDSSafeAny) {
+    this.isLoadingOrder$.emit(true);
+    this.onChangeTab$.emit(ChangeTabConversationEnum.order);
+    this.saleOnline_OrderService.getById(order.Id)
+      .pipe(finalize(() => this.isLoadingOrder$.emit(false)))
+      .subscribe(res => {
+        let pageId = res?.Facebook_PostId.split("_")[0];
+        let psid = res?.Facebook_ASUserId || res?.Facebook_UserId;
+
+        this.order = this.loadLastOrder(res);
+        this.onOrderCheckPost$.emit(this.order);
+        this.checkConversation(pageId, psid, res);
+      });
+  }
+
+  commentFormPost(data: any, isCreateOrder: boolean) { // Chưa có DTO đầu vào
+    let psid = data?.from?.id;
+    let postId = data?.object?.id;
+    let pageId = postId.split("_")[0];
+    let currentTeam = this.crmTeamService.getCurrentTeam();
+
+    if(isCreateOrder === true) {
+      this.isLoadingOrder$.emit(true);
+      this.onChangeTab$.emit(ChangeTabConversationEnum.order);
+      this.createOrderByComment(data, psid, pageId).pipe(finalize(() => this.isLoadingOrder$.emit(false)))
+        .subscribe(res => {
+          this.checkConversation(pageId, psid, data);
+        }, error => {});
+    }
+    else {
+      this.isLoadingPartner$.emit(true);
+      this.onChangeTab$.emit(ChangeTabConversationEnum.partner);
+      this.loadPartnerByComment(data, psid, postId, currentTeam?.Id).pipe(finalize(() => this.isLoadingPartner$.emit(false)))
+        .subscribe(res => {
+          this.checkConversation(pageId, psid, data);
+        }, error => {});
+    }
+  }
+
+  createOrderByComment(comment: TDSSafeAny, psid: string, pageId: string): Observable<any> {
+    return new Observable(observer => {
+
+      this.checkInfoPartner(psid, pageId).subscribe(infoPartner => {
+        if(infoPartner?.Data) {
+          // Tạo order form, update theo comment
+          let formOrder = this.orderFormHandler.createOrderFormGroup();
+          this.orderFormHandler.updateFormByComment(formOrder, comment, infoPartner?.Data);
+
+          // Gán Facebook_Comments
+          let fbComment = this.checkFormHandler.prepareOrderComment(comment);
+          formOrder.controls.Facebook_Comments.setValue([fbComment]);
+
+          // Chuẩn bị model
+          let model = this.checkFormHandler.prepareOrder(formOrder);
+
+          // Tạo đơn theo bình luận
+          this.saleOnline_OrderService.insertFromPost(model, true).subscribe((res) => {
+            this.order = this.loadLastOrder(res);
+            this.onOrderCheckPost$.emit(this.order);
+            this.message.success(Message.Order.UpdateSuccess);
+
+            observer.next();
+            observer.complete();
+          }, error => {
+            this.message.error(`${error?.error?.message}` || JSON.stringify(error));
+            observer.next(error);
+          });
+        }
+      });
+    });
+  }
+
+  loadPartnerByComment(comment: TDSSafeAny, psid: string, postId: string, teamId: number): Observable<any> {
+    return new Observable(observer => {
+
+      this.facebookCommentService.getCustomersByFacebookId(psid, postId, teamId).subscribe(customer => {
+        if(TDSHelperArray.hasListValue(customer?.orders)) {
+          this.order = this.loadLastOrder(customer.orders[0]);
+          this.onOrderCheckPost$.emit(this.order);
+
+          observer.next();
+          observer.complete();
+        }
+        else {
+          let pageId = postId.split("_")[0];
+
+          this.checkInfoPartner(psid, pageId).subscribe(partner => {
+            this.order = this.loadOrderDefault(partner?.Data, comment);
+            this.onOrderCheckPost$.emit(this.order);
+
+            observer.next();
+            observer.complete();
+          });
+        }
+      });
+    });
+  }
+
+  checkConversation(pageId: string, psid: string, dataComment?: any ) {
+    this.isLoadingPartner$.emit(true);
+    this.partnerService.checkConversation(pageId, psid)
+      .pipe(finalize(() => this.isLoadingPartner$.emit(false)))
+      .subscribe(res => {
+        if(res?.Data && res.Success === true) {
+          res.Data.Facebook_UserName = res.Data.Facebook_UserName || dataComment?.from?.name || dataComment?.Facebook_UserName;
+        }
+
+        this.onLoadConversationPartner$.emit(res?.Data)
+      });
   }
 
   updateOrderFormByComment(form: FormGroup, comment: any) {
@@ -318,7 +359,7 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
     return formDetails;
   }
 
-  loadOrderDefault(data: CheckConversationData){
+  loadOrderDefault(data: CheckConversationData, dataComment?: TDSSafeAny){
     const model = this.orderDefault() as ConversationOrderForm;
 
     model.Name = data.Name || "";
@@ -337,6 +378,13 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
 
     model.Details = this.productDefault ?  [this.productDefault] : [];
     model.User = this.userInit ? { Id: this.userInit?.Id, Name: this.userInit?.Name } : undefined;
+
+    if(TDSHelperObject.hasValue(dataComment)) {
+      model.Facebook_CommentId  = dataComment.id;
+      model.Facebook_PostId = dataComment?.object?.id;
+      model.Facebook_UserName = dataComment?.from?.name;
+      model.Facebook_UserId = dataComment?.from?.id;
+    }
 
     return model;
   }
