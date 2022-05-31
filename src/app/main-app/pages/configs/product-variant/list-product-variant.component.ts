@@ -1,3 +1,4 @@
+import { OnDestroy } from '@angular/core';
 import { THelperCacheService } from '../../../../lib/utility/helper-cache';
 import { ExcelExportService } from '../../../services/excel-export.service';
 import { ProductService } from '../../../services/product.service';
@@ -21,7 +22,7 @@ import { EditProductVariantComponent } from './edit/edit-product-variant.compone
   encapsulation: ViewEncapsulation.None,
 })
 
-export class ListProductVariantComponent  {
+export class ListProductVariantComponent  implements OnDestroy  {
 
   @ViewChild('innerText') innerText!: ElementRef;
   setOfCheckedId = new Set<number>();
@@ -196,7 +197,9 @@ export class ListProductVariantComponent  {
     let callBackFn = () => {
       that.isProcessing = false;
     }
-    this.excelExportService.exportPost('/Product/ExportProduct', { data: JSON.stringify(data) }, 'bien_the_san_pham_kiem_kho_theo_id', callBackFn);
+    this.excelExportService.exportPost('/Product/ExportProduct', { data: JSON.stringify(data) }, 'bien_the_san_pham_kiem_kho_theo_id')
+    .pipe(finalize(()=>this.isProcessing = false), takeUntil(this.destroy$))
+    .subscribe();;
   }
 
   addNewData(data: TDSSafeAny) {
@@ -273,4 +276,8 @@ export class ListProductVariantComponent  {
     this.indeterminate = this.lstOfData.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

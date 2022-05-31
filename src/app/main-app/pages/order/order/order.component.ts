@@ -81,7 +81,7 @@ export class OrderComponent implements OnInit {
   setOfCheckedId = new Set<string>();
 
   widthTable: number = 0;
-  paddingCollapse: number = 32;
+  paddingCollapse: number = 36;
   marginLeftCollapse: number = 0;
   isLoadingCollapse: boolean = false
   @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
