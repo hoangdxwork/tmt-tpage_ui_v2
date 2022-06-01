@@ -164,13 +164,11 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
   }
 
   onInformation(item: any) { // Chưa có dữ liệu DTO cụ thể (any)
-    console.log(item);
-    this.partnerService.onLoadPartnerFromPostComment.emit(item);
+    this.conversationOrderFacade.commentFormPost(item, false);
   }
 
   onCreateOrder(item: any) { // Chưa có dữ liệu DTO cụ thể (any)
-    console.log(item);
-    this.conversationOrderFacade.onCreateOrderFromPostComment.emit(item);
+    this.conversationOrderFacade.commentFormPost(item, true);
   }
 
   ngOnDestroy(): void {

@@ -62,21 +62,6 @@
                     <div class="flex flex-col gap-1">
                         <div class="flex gap-2 items-center">
                             <div class="text-title-1 font-sans font-semibold"> {{team?.Name}} </div>
-                            <!-- <div class="flex gap-1 text-white py-0.5 px-2.5 bg-success-400 rounded-full items-center" *ngIf="team.Active">
-                                <div class="tdsi-eye-open-fill"></div>
-                                <div class="text-white text-caption-2 font-sans font-semibold">Trang đang hiện</div>
-                            </div>
-                            <div class="flex gap-1 text-white py-0.5 px-2.5 bg-neutral-1-300 rounded-full items-center" *ngIf="!team.Active">
-                              <div class="tdsi-eye-close-fill"></div>
-                              <div class="text-white text-caption-2 font-sans font-semibold">Trang đang ẩn</div>
-                            </div> -->
-                            <!-- <div class="flex items-center pl-2">
-                                <div *ngFor="let child of team.Childs; let iChild = index" class="bg-white p-0.5 rounded-full"
-                                  [ngClass]="iChild ? '-ml-3 relative' : ''">
-                                  <tpage-avatar-facebook [fbid]="child?.Facebook_PageId" [token]="child?.Facebook_PageToken" [size]="'sm'">
-                                  </tpage-avatar-facebook>
-                                </div>
-                            </div> -->
                         </div>
                         <div *ngIf="team.Active" class="text-body-2 font-regular font-sans text-xs flex gap-x-2">
                           <p *ngIf="!lstData[team.Id]?.data || lstData[team.Id].data.length < 1" class="text-neutral-1-400">Chưa có trang nào được kết nối</p>
@@ -93,42 +78,6 @@
                 <!-- Header Icon -->
                 <ng-template #icon>
                   <div class="flex gap-4">
-                      <!-- <tds-button-group>
-                          <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menuSetting" (click)="onClickDropdown($event)" placement ="bottomRight">
-                              <span class="text-neutral-1-900 flex  items-center justify-center text-body-2 font-semibold">
-                                  Cài đặt trang hệ thống <i class="tdsi-arrow-down-fill text-base leading-none ml-1.5 text-neutral-1-900"></i>
-                              </span>
-                          </button>
-                          <tds-dropdown-menu #menuSetting="tdsDropdownMenu">
-                              <div class="w-full">
-                                  <ng-template ngFor let-item [ngForOf]="listSetting">
-                                      <div tds-dropdown-item (click)="onClickFieldListSetting(item, team.Id)">
-                                          <a class="text-primary-1 flex items-center">
-                                              <div class="pl-2 text-neutral-1-900">{{ item.name }}</div>
-                                          </a>
-                                      </div>
-                                  </ng-template>
-                              </div>
-                          </tds-dropdown-menu>
-                      </tds-button-group>
-                      <tds-button-group>
-                          <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" (click)="onClickDropdown($event)" placement ="bottomRight">
-                              <span class="text-neutral-1-900 flex  items-center justify-center text-body-2 font-semibold">
-                                  {{ fieldListFilter[team.Id].name }} <i class="tdsi-arrow-down-fill text-base leading-none ml-1.5 text-neutral-1-900"></i>
-                              </span>
-                          </button>
-                          <tds-dropdown-menu #menu="tdsDropdownMenu">
-                              <div class="w-full">
-                                  <ng-template ngFor let-item [ngForOf]="listFilter">
-                                      <div tds-dropdown-item (click)="onClickFieldListFilter(item, team.Id)">
-                                          <a class="text-primary-1 flex items-center">
-                                              <div class="pl-2 text-neutral-1-900">{{ item.name }}</div>
-                                          </a>
-                                      </div>
-                                  </ng-template>
-                              </div>
-                          </tds-dropdown-menu>
-                      </tds-button-group> -->
                       <div class="border border-neutral-2-200 border-solid rounded-md" (click)="onActive(team.Id, true)" tds-tooltip [tooltipTitle]="'Ẩn/ Hiện User'">
                         <div *ngIf="!team.Active" class="tdsi-eye-open-fill p-2 text-neutral-1-500"></div>
                         <div *ngIf="team.Active" class="tdsi-eye-close-fill p-2 text-neutral-1-500"></div>
@@ -181,7 +130,6 @@
                                     <span class="text-sm font-semibold">Ẩn Page</span>
                                   </div>
                                   <div class="text-neutral-1-900 flex items-center gap-x-2" *ngIf="!child.Active">
-                                    <!-- <i class="tdsi-eye-open-fill text-neutral-1-500 text-base"></i> -->
                                     <span class="text-sm text-neutral-400 font-normal">
                                       Đã ẩn trang
                                     </span>
@@ -274,35 +222,38 @@
               </span>
             </button>
           </div>
+
           <ng-template #userLoggedFacebook>
             <div class="bg-white rounded-xl w-full p-4 flex flex-col gap-y-4">
-              <button class="bg-secondary-1 mr-2 gap-x-1 flex rounded-md items-center px-2.5 py-1.5 cursor-pointer w-[210px]">
-                <div class="pr-2"><img src="/assets/images/conversation/facebook.svg"></div>
-                <div class="w-full flex items-center justify-center p-0"
-                  tds-dropdown [tdsDropdownMenu]="dropdownFacebook" trigger="click">
-                    <tds-avatar class="w-[20px] h-[20px]" size="sm" [tdsSrc]="userFBLogin?.picture?.data.url" [shape]="'circle'">
+              <div class="flex gap-4 items-center bg-neutral-3-500">
+                <tds-badge [count]="iconTemplate1">
+                    <tds-avatar [size]="'xl'" [tdsSrc]="userFBLogin?.picture?.data.url" [shape]="'circle'">
                     </tds-avatar>
-                    <div class="px-2 flex-auto text-white text-body-2 font-regular truncate">
-                        {{userFBLogin?.name}}
+                </tds-badge>
+                <ng-template #iconTemplate1>
+                    <div class="absolute top-5 right-2  transform translate-x-1.5 translate-y-full rounded-full  bg-white flex items-center justify-center">
+                        <span class="p-0.5"><img src="/assets/images/conversation/facebook-circle.svg"></span>
                     </div>
-                    <div>
-                        <i class="text-base text-white leading-4 tdsi-arrow-down-fill"></i>
+                </ng-template>
+                <div class="flex flex-col gap-1">
+                    <div class="flex flex-col">
+                        <div class="text-title-1 font-sans font-semibold"> {{userFBLogin?.name}} </div>
+                        <div class="text-body-2 font-regular font-sans flex gap-x-2 cursor-pointer">
+                          <p class="text-error-400" (click)="facebookSignOut()">Đăng xuất</p>
+                        </div>
                     </div>
                 </div>
-
-                <tds-dropdown-menu #dropdownFacebook="tdsDropdownMenu">
-                  <div class="w-56">
-                      <div tds-dropdown-item (click)="onFacebookConnected()">
-                          Kết nối
-                      </div>
-                      <div tds-dropdown-item>
-                          <a class="text-error-400" (click)="facebookSignOut()">Đăng xuất</a>
-                      </div>
-                  </div>
-                </tds-dropdown-menu>
-              </button>
+                <div *ngIf="!isUserConnectChannel">
+                  <button tds-button color="primary" class="mr-2" (click)="onFacebookConnected()">
+                    <span class="flex items-center">
+                      <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Kết nối
+                    </span>
+                  </button>
+                </div>
+              </div>
             </div>
           </ng-template>
+
           <div class="bg-white rounded-xl w-full p-4 gap-y-4">
             <div class="flex gap-x-2 items-center">
               <p class="text-lg font-semibold">Thông tin chi tiết</p>

@@ -1,5 +1,5 @@
 import { PartnerDTO } from "../partner/partner.dto";
-import { SaleOnline_OrderDTO } from "../saleonlineorder/sale-online-order.dto";
+import { SaleOnlineFacebookFromDTO, SaleOnline_OrderDTO } from "../saleonlineorder/sale-online-order.dto";
 
 export interface Data {
   height: number;
@@ -100,9 +100,9 @@ export interface Reactions {
 }
 
 export interface LiveCampaign {
-  name: string;
-  note: string;
-  id: string;
+  name?: string;
+  note?: string;
+  id?: string;
 }
 
 export interface FacebookPostItem {
@@ -137,8 +137,8 @@ export interface FacebookPostItem {
   comments: Comments;
   reactions: Reactions;
   shares?: any;
-  live_campaign_id: string;
-  live_campaign: LiveCampaign;
+  live_campaign_id?: string;
+  live_campaign?: LiveCampaign;
 }
 
 export interface FacebookPostDTO {

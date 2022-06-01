@@ -1,7 +1,9 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { TDSModalService } from 'tmt-tang-ui';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, fromEvent, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, finalize, map, mergeMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
+import { ChangeTabConversationEnum } from 'src/app/main-app/dto/conversation/conversation.dto';
 import { FacebookPostDTO, FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
@@ -13,6 +15,7 @@ import { FacebookPostService } from 'src/app/main-app/services/facebook-post.ser
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService } from 'tmt-tang-ui';
+import { ListLiveCampaignComponent } from 'src/app/main-app/shared/list-live-campaign/list-live-campaign.component';
 
 @Component({
   selector: 'app-conversation-post',
@@ -68,6 +71,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
     private partnerService: PartnerService,
+    private modal: TDSModalService,
+    private viewContainerRef: ViewContainerRef,
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router
   ) {
@@ -123,22 +128,15 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   onChangeTabEvent() {
-    this.partnerService.onLoadPartnerFromPostComment
+    this.conversationOrderFacade.onChangeTab$
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
-        this.changeTab(1, false);
-      });
-
-    this.conversationOrderFacade.onCreateOrderFromPostComment
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-        this.changeTab(2, false);
-      });
-
-    this.conversationOrderFacade.onEditOrderFromPostComment
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-        this.changeTab(2, false);
+        if(res === ChangeTabConversationEnum.order) {
+          this.changeTab(2, false);
+        }
+        else if(res === ChangeTabConversationEnum.partner) {
+          this.changeTab(1, false);
+        }
       });
   }
 
@@ -186,6 +184,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             }
           }
           this.isLoading = false;
+          console.log(this.data);
+
           return this.data;
         }));
       }
@@ -285,6 +285,24 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       return true;
     }
     return false;
+  }
+
+  onTabOrder(event: boolean) {
+    this.currentOrderTab = 2;
+  }
+
+  showModalLiveCampaign(item: FacebookPostItem) {
+    const modal = this.modal.create({
+      title: 'Chiến dịch',
+      content: ListLiveCampaignComponent,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef,
+      componentParams:{
+        post: item
+      }
+    });
+
+    // modal.containerInstance
   }
 
   ngAfterViewInit() {
