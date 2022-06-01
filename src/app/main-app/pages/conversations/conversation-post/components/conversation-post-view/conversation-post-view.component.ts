@@ -22,7 +22,8 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
   @Input() data!: FacebookPostItem;
   @Input() team!: CRMTeamDTO;
 
-  destroy$ = new Subject();
+  isCollapse = false;
+  private destroy$ = new Subject();
   sortOptions: any[] = [
     { value: "DateCreated desc", text: "Mới nhất" },
     { value: "DateCreated asc", text: "Cũ nhất" },
@@ -54,6 +55,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
     if(this.data){
       this.data = {...this.data};
     }
+    console.log(this.data)
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -99,7 +101,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
   }
 
   reportCommentByPost(){
-    const modal = this.modalService.create({
+    this.modalService.create({
       title: 'Thống kê đơn tạo bị lỗi',
       content: ModalReportOrderPostComponent,
       size: "xl",
@@ -159,6 +161,10 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
         data:  this.data
       }
     });
+  }
+
+  openChat(){
+    this.isCollapse = !this.isCollapse;
   }
 
   ngOnDestroy(): void {
