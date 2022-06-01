@@ -8,7 +8,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { CheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { CalculateFeeResponse_Data_ServiceDTO, CalculateFeeResponse_Data_Service_ExtraDTO, DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
 import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
-import { ConversationOrderForm, ConversationOrderProductDefaultDTO } from 'src/app/main-app/dto/coversation-order/conversation-order.dto';
+import { ConversationOrderForm, ConversationOrderProductDefaultDTO, SaleOnline_Facebook_CommentFilterResultDTO } from 'src/app/main-app/dto/coversation-order/conversation-order.dto';
 import { FastSaleOrderRestDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
@@ -32,10 +32,11 @@ import { SaleHandler } from 'src/app/main-app/services/handlers/sale.handler';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
+import { SaleOnline_FacebookCommentService } from 'src/app/main-app/services/sale-online-facebook-comment.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-product/tpage-add-product.component';
 import { TpageConfigProductComponent } from 'src/app/main-app/shared/tpage-config-product/tpage-config-product.component';
-import { TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSSafeAny, TDSHelperArray } from 'tmt-tang-ui';
 import { ModalListProductComponent } from '../modal-list-product/modal-list-product.component';
 
 @Component({
@@ -64,6 +65,7 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
   lstUser!: Array<ApplicationUserDTO>;
   lstCarriers: DeliveryCarrierDTO[] = [];
   lstShipServices: CalculateFeeResponse_Data_ServiceDTO[] = []; //  Dịch vụ bổ xung
+  lstComment: SaleOnline_Facebook_CommentFilterResultDTO[] = [];
 
   saleModel!: FastSaleOrderRestDTO;
   shipExtraServices: CalculateFeeResponse_Data_Service_ExtraDTO[] = [];
@@ -95,6 +97,7 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
     private viewContainerRef: ViewContainerRef,
     private saleHandler: SaleHandler,
     private facebookCommentService: FacebookCommentService,
+    private saleOnline_FacebookCommentService: SaleOnline_FacebookCommentService,
     private router: Router) {
   }
 
@@ -175,6 +178,7 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
       this.updateFormOrder(res);
       this.updateBillByForm(this.orderForm);
       this.currentOrderCode.emit(res?.Code);
+      this.loadCommentPartner(res.Facebook_ASUserId, res.Facebook_PostId);
       this.isLoading = false;
     });
   }
@@ -197,24 +201,30 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  loadCommentPartner(psid: string, postId: string) {
+    this.saleOnline_FacebookCommentService.getCommentsByUserAndPost(psid, postId).subscribe(res => {
+      this.lstComment = res?.value;
+    }, error => {
+      this.lstComment = [];
+    })
+  }
+
   eventLoading() {
-    this.partnerService.onLoadPartnerFromPostComment
+    this.conversationOrderFacade.isLoadingPartner$
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
-        this.isLoading = true;
+        this.isLoading = res;
       });
 
-    this.conversationOrderFacade.onCreateOrderFromPostComment
+    this.conversationOrderFacade.isLoadingOrder$
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
-        this.isLoading = true;
+        this.isLoading = res;
       });
   }
 
   updateFormOrder(order: ConversationOrderForm) {
     this.resetForm();
-
-    order.Facebook_UserName = this.data?.name;
 
     let details = new FormArray([]);
 
@@ -606,6 +616,20 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
       Name: event.Ward?.Name,
     } : null);
 
+  }
+
+  addTextAddress(comment: SaleOnline_Facebook_CommentFilterResultDTO) {
+    comment.selected = !comment.selected;
+
+    let findSelected = this.lstComment.filter(x => x.selected);
+
+    if(TDSHelperArray.hasListValue(findSelected)) {
+      let text = findSelected.map(x => x.message).join(" ");
+      this.orderForm.controls.Street.setValue(text);
+    }
+    else {
+      this.orderForm.controls.Street.setValue(this.data?.address);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {

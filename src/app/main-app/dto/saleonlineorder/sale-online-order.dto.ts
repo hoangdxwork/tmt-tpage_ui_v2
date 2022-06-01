@@ -1,3 +1,4 @@
+import { NumericDictionaryIteratee } from 'lodash';
 import { ApplicationUserDTO } from '../account/application-user.dto';
 import { CompanyDTO } from '../company/company.dto';
 import { ObjectDataDTO } from '../conversation/inner.dto';
@@ -115,7 +116,7 @@ export interface SaleOnline_Order_FacebookCommentDTO {
   is_hidden: boolean;
   post_id: string;
   object: ObjectDataDTO;
-  from: SaleOnline_Facebook_FromDTO;
+  from: SaleOnlineFacebookFromDTO;
   comments: Array<SaleOnline_Order_FacebookCommentDTO>;
   saleOnlineDeliveyInfo: SaleOnlineDeliveryInfoDTO;
   attachment: SaleOnline_Order_FacebookCommentAttachmentDTO[];
@@ -170,13 +171,25 @@ export interface ShipReceiverDTO {
   address: string;
 }
 
-export interface SaleOnline_Facebook_FromDTO {
+export interface SaleOnlineFacebookFromDTO {
   id: string;
   uid: string;
   asid: string;
   picture: string;
   name: string;
+  last_name: string;
+  first_name: string;
+  middle_name: string;
   mobile_phone: string;
+  email: string;
+  gender: string;
+  locale: string;
+  age_range: SaleOnlineFacebookFromAgeRangeDTO;
+}
+
+export interface SaleOnlineFacebookFromAgeRangeDTO {
+  min?: number;
+  max?: number;
 }
 
 export interface UpdateStatusTextSaleOnlineDTO { // /odata/SaleOnline_Order/ODataService.UpdateStatusTextSaleOnline
@@ -221,23 +234,41 @@ export interface SaleOnlineFacebookCommentChildFilterResultDTO {
   from: SaleOnlineFacebookFromDTO;
 }
 
-export interface SaleOnlineFacebookFromDTO {
-  id: string;
-  uid: string;
-  asid: string;
-  picture: string;
-  name: string;
-  last_name: string;
-  first_name: string;
-  middle_name: string;
-  mobile_phone: string;
-  email: string;
-  gender: string;
-  locale: string;
-  age_range: SaleOnlineFacebookFromAgeRangeDTO;
-}
-
 export interface SaleOnlineFacebookFromAgeRangeDTO {
   min?: number;
   max?: number;
+}
+
+export interface SaleOnlineFacebookPostDTO {
+  Id: string;
+  facebook_id: string;
+  message: string;
+  source: string;
+  story: string;
+  description: string;
+  link: string;
+  caption: string;
+  picture: string;
+  full_picture: string;
+  icon: string;
+  object_id: string;
+  parent_id: string;
+  permalink_url: string;
+  place: string;
+  promotable_id: string;
+  is_expired: boolean;
+  is_hidden: boolean;
+  is_published: boolean;
+  str_attachments: string;
+  str_child_attachments: string;
+  str_targeting: string;
+  str_shares: string;
+  created_time: Date;
+  updated_time?: Date;
+  count_comments: number;
+  count_reactions: number;
+  count_shares: number;
+  from: SaleOnlineFacebookFromDTO;
+  LiveCampaignId?: string;
+  LiveCampaignName: string;
 }

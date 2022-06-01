@@ -5,84 +5,7 @@
         <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Phiếu bán hàng</span>
       </h1>
       <div class="flex gap-x-2">
-        <button tds-button color="primary" size="md" (click)="onCreate()">
-          <span class="flex items-center">
-            <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
-          </span>
-        </button>
-        <tds-button-group>
-          <button tds-button color="primary" size="md" [placement]="'bottomRight'" tds-dropdown trigger="click" [tdsDropdownMenu]="exportExcelMenu">
-            <span class="flex items-center">
-              <i class="tdsi-excel-fill text-lg leading-none mr-2"></i>
-              <span class="mr-2">Xuất Excel</span>
-              <i class="tdsi-arrow-down-fill text-lg leading-none"></i>
-            </span>
-          </button>
-          <tds-dropdown-menu #exportExcelMenu="tdsDropdownMenu">
-            <div class="w-full">
-                <div (click)="exportExcel('excel')" tds-dropdown-item>
-                    <a> Xuất Excel </a>
-                </div>
-                <div (click)="exportExcel('detail')" tds-dropdown-item>
-                    <a> Xuất Excel chi tiết </a>
-                </div>
-                <div (click)="exportExcel('productDetail')" tds-dropdown-item>
-                    <a> Xuất Excel chi tiết sản phẩm </a>
-                </div>
-            </div>
-          </tds-dropdown-menu>
-        </tds-button-group>
-        <tds-button-group>
-          <button tds-button color="info" size="md" [placement]="'bottomRight'" tds-dropdown trigger="click" [tdsDropdownMenu]="transportMenu">
-            <span class="flex items-center">
-              <i class="tdsi-transport-fill text-lg leading-none mr-2"></i>
-              <span class="mr-2">Cập nhật GH</span>
-              <i class="tdsi-arrow-down-fill text-lg leading-none"></i>
-            </span>
-          </button>
-          <tds-dropdown-menu #transportMenu="tdsDropdownMenu">
-            <div class="w-full">
-                <div (click)="updateTransport('handicraft')" tds-dropdown-item>
-                    <a> Cập nhật GH thủ công </a>
-                </div>
-                <div (click)="updateTransport('fromFile')" tds-dropdown-item>
-                    <a> Cập nhật GH từ file </a>
-                </div>
-            </div>
-          </tds-dropdown-menu>
-        </tds-button-group>
-
-        <tds-button-group>
-          <button tds-button color="info" size="md" [placement]="'bottomRight'" tds-dropdown trigger="click" [tdsDropdownMenu]="deliveryStatusMenu">
-            <span class="flex items-center">
-              <i class="tdsi-inventory-check-fill text-lg leading-none mr-2"></i>
-              <span class="mr-2">Đối soát</span>
-              <i class="tdsi-arrow-down-fill text-lg leading-none"></i>
-            </span>
-          </button>
-          <tds-dropdown-menu #deliveryStatusMenu="tdsDropdownMenu">
-            <div class="w-full">
-                <div (click)="updateDeliveryStatus('handicraft')" tds-dropdown-item>
-                    <a> Đối soát giao hàng thủ công </a>
-                </div>
-                <div (click)="updateDeliveryStatus('fromFile')" tds-dropdown-item>
-                    <a> Đối soát giao hàng từ file </a>
-                </div>
-            </div>
-          </tds-dropdown-menu>
-        </tds-button-group>
-        
-        <button tds-button color="secondary" size="md" 
-          (click)="showHistoryDS()">
-          <span class="flex items-center">
-            <i class="tdsi-order-fill text-lg leading-none mr-2"></i>Lịch sử đối soát
-          </span>
-        </button>
-        <button tds-button color="secondary" size="md" (click)="onCreate()">
-          <span class="flex items-center">
-            <i class="tdsi-upload-fill text-lg leading-none mr-2"></i>Mã vận đơn từ file
-          </span>
-        </button>
+        <action-dropdown [_type]="'all'" [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]></action-dropdown>
       </div>
     </div>
   </div>
@@ -115,7 +38,8 @@
           [(pageSize)]="pageSize"
           [(pageIndex)]="pageIndex"
           [total]="count" [scroll]="{y:'auto', x: 'auto'}" [loading]="isLoading"
-          (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
+          (clickRefresh)="refreshData()"
+          (queryParams)="onQueryParamsChange($event)">
           <thead>
             <tr>
               <th [tdsLeft]="true" [align]="'center'" width="50px" class="border-r"></th>

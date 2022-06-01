@@ -31,7 +31,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   isLoading: boolean = false;
   count: number = 1;
   widthCollapse: number = 0;
-  paddingCollapse: number = 32;
+  paddingCollapse: number = 36;
   marginLeftCollapse: number = 0;
 
   public filterObj: TDSSafeAny = {
@@ -246,18 +246,6 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  updateTransport(type:string){
-    
-  }
-
-  updateDeliveryStatus(type:string){
-
-  }
-
-  showHistoryDS(){
-    this.router.navigateByUrl('bill/historyds/list');
-  }
-
   onSelectChange(Index: TDSSafeAny) {
     const dataItem =  this.tabNavs.find(f =>{ return f.Index == Index })
     this.pageIndex = 1;
@@ -276,10 +264,6 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
     this.loadData(this.pageSize, this.pageIndex);
-  }
-
-  onCreate() {
-      this.router.navigateByUrl('bill/create');
   }
 
   onExpandChange(id: number, checked: boolean): void {
@@ -379,7 +363,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     fromEvent(this.innerText.nativeElement, 'keyup').pipe(
         map((event: any) => { return event.target.value }),
         debounceTime(750),
-        distinctUntilChanged(),
+        // distinctUntilChanged(),
         // TODO: switchMap xử lý trường hợp sub in sub
         switchMap((text: TDSSafeAny) => {
 
@@ -436,7 +420,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   refreshData(){
     this.pageIndex = 1;
     this.indClickTag = -1;
-
+    this.innerText.nativeElement.value = '';
     this.checked = false;
     this.indeterminate = false;
     this.setOfCheckedId = new Set<number>();

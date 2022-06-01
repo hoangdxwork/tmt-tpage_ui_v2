@@ -115,6 +115,30 @@ export class ActivityMatchingService extends BaseSevice implements OnInit {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
+  addQuickReplyComment(data: any): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/rest/v1.0/crmactivity/quickreplycomment`,
+      method: TApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  addManyMailTemplateMessage(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/rest/v1.0/crmactivity/addmailtemplatemessage`,
+      method: TApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+  
+  addManyMessage(data: TDSSafeAny, psid: TDSSafeAny): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/rest/v1.0/crmactivity/${psid}/addmanymessage`,
+      method: TApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
   addTemplateMessage(psid: string, data: any): Observable<TDSSafeAny> {
     if(data.to_id) {
       psid = data.to_id;

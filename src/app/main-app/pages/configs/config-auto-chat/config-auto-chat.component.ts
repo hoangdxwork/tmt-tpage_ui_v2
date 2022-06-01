@@ -101,6 +101,7 @@ export class ConfigAutoChatComponent implements OnInit, AfterViewInit {
   refreshData() {
     this.pageIndex = 1;
     this.filterObj.searchText = '';
+    this.innerText.nativeElement.value = '';
     this.loadData(this.pageSize, this.pageIndex);
   }
 

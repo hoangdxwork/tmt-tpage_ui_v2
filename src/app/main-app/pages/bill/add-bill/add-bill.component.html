@@ -1,4 +1,4 @@
-<tds-spin [spinning]="isLoading">
+<tds-spin [spinning]="isLoading" class="w-full h-full">
     <form [formGroup]="_form"  class="flex flex-col w-full h-full">
         <div class="bg-white flex justify-between items-center mb-4">
             <div class="flex flex-col gap-y-1">
@@ -16,7 +16,7 @@
                 <button tds-button color="secondary" type="button" class="mr-4" (click)="onBack()">Quay lại</button>
             </div>
         </div>
-        <div class="flex flex-col h-full gap-y-4 px-4 pb-4 overflow-auto tds-custom-scroll" *ngIf="dataModel">
+        <div class="flex flex-col h-full gap-y-4 px-4 pb-4 overflow-scroll tds-custom-scroll" *ngIf="dataModel">
             <div class="bg-white rounded-xl">
                 <tds-tabset class="w-full">
                     <tds-tab title="Thông tin">
@@ -26,10 +26,10 @@
                                 <div class="w-1/3">
                                     <span class="font-semibold">Khách hàng</span>
                                 </div>
-                                <div class="w-2/3 flex flex-col gap-y-2" *ngIf="dataModel.State == 'draft'">
+                                <div class="w-2/3 flex flex-col gap-y-2" *ngIf="dataModel.State === 'draft'">
                                     <tds-form-field>
                                         <tds-select valueField="Id" textField="DisplayName" [valuePrimitive]="false"
-                                            placeholder='Chọn tên khách hàng' formControlName="Partner" (selectChange)="selectChangePartner($event)"
+                                            placeholder='Chọn tên khách hàng' formControlName="Partner" (onSearch)="onSearchPartner($event)" (selectChange)="selectChangePartner($event)"
                                             disabledField="isActive" [data]="(lstCustomers | async) || []" [allowClear]="true">
                                             <ng-template tds-label-tmp let-item="item">
                                                 {{item.data.DisplayName || item.data.Name}}
@@ -189,7 +189,7 @@
                                 </div>
                                 <div class="w-2/3" *ngIf="dataModel.State != 'open'">
                                     <tds-form-field >
-                                        <tds-select valueField="Id" textField="Name" (selectChange)="onChangeCarrier($event)"
+                                        <tds-select valueField="Id" textField="Name" (selectChange)="onChangeCarrier($event,true)"
                                             placeholder='Chọn đối tác giao hàng' formControlName="Carrier" [valuePrimitive]="false"
                                             disabledField="isActive" [data]="(lstCarriers | async) || []" [allowClear]="true">
                                         </tds-select>
@@ -257,7 +257,7 @@
                                 </div>
                                 <div class="w-2/3"  *ngIf="dataModel.State != 'open'">
                                     <tds-form-field>
-                                        <tds-input-number [min]='0' [step]="1" placeholder="Nhập khối lượng"
+                                        <tds-input-number [min]='0' [step]="1" placeholder="Nhập khối lượng" 
                                             (ngModelChange)="changeShipWeight($event)" formControlName="ShipWeight">
                                         </tds-input-number>
                                     </tds-form-field>
@@ -782,7 +782,7 @@
                                     <th width="80px">Số lượng</th>
                                     <th width="96px">Đơn giá</th>
                                     <th width="96px">Giá gần đây</th>
-                                    <th width="96px" >Giảm giá</th>
+                                    <th width="96px">Giảm giá</th>
                                     <th width="100px" class="truncate">Khối lượng(g)</th>
                                     <th width="96px">Thành tiền</th>
                                     <th width="90px">

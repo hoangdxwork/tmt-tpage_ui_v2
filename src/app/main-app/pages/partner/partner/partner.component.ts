@@ -186,6 +186,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.pageIndex = 1;
     this.indClickTag = -1;
     this.tabIndex = null;
+    this.innerText.nativeElement.value = '';
 
     this.checked = false;
     this.indeterminate = false;
@@ -359,7 +360,9 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
       that.isProcessing = false;
     }
 
-    this.excelExportService.exportPost('/Partner/ExportFile', { data: JSON.stringify(data) }, 'danh-sach-kh', callBackFn);
+    this.excelExportService.exportPost('/Partner/ExportFile', { data: JSON.stringify(data) }, 'danh-sach-kh')
+    .pipe(finalize(()=>this.isProcessing = false), takeUntil(this._destroy))
+    .subscribe();;
   }
 
   setActive(type: string) {

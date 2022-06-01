@@ -5,10 +5,12 @@ import { ModalListBillComponent } from './../../pages/conversations/components/m
 import { ModalListProductComponent } from './../../pages/conversations/components/modal-list-product/modal-list-product.component';
 import { ModalImageStoreComponent } from './../../pages/conversations/components/modal-image-store/modal-image-store.component';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
-import {Component, EventEmitter, Input, OnChanges, OnInit, Optional, Output, Self,
-  SimpleChanges, TemplateRef, ViewContainerRef, Host, OnDestroy, ChangeDetectorRef, HostListener, HostBinding, ViewChild, AfterViewInit, ElementRef, AfterContentInit, ChangeDetectionStrategy, ViewEncapsulation, AfterViewChecked } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, Subscription, of } from 'rxjs';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSResizeObserver, TDSUploadChangeParam, TDSUploadFile } from 'tmt-tang-ui';
+import {
+  Component, EventEmitter, Input, OnChanges, OnInit, Output,
+  SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener
+} from '@angular/core';
+import { Observable, Subject } from 'rxjs';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSUploadChangeParam, TDSUploadFile } from 'tmt-tang-ui';
 import { ConversationMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
@@ -51,15 +53,18 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   destroy$ = new Subject();
   isLoadMessage: boolean = false;
   dataSource$!: Observable<MakeActivityMessagesDTO>;
-  partner: any;
-
+  partner: TDSSafeAny;
+ 
+  isEnterSend: boolean = true;
   isVisibleReply: boolean = false;
   uploadedImages: string[] = [];
-  currentImage: any;
+  currentImage: TDSSafeAny;
+  isLoadingImage: boolean = false
   displayDropZone: boolean = false;
-  markSeenTimer: any;
-  messageModel: any = null;
+  markSeenTimer: TDSSafeAny;
+  messageModel: TDSSafeAny = null;
   postPictureError: any[] = [];
+  isLoadingSendMess: boolean = false;
 
   lstUser!: TDSSafeAny[];
   users: TDSSafeAny[] = [];
@@ -377,7 +382,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   onEnter(event: any) {
-    this.messageSendingToServer();
+    if(this.isEnterSend){
+      this.messageSendingToServer();
+    }else{
+      this.message.info('Thay đổi tuỳ chọn gửi tin nhắn để Enter');
+    }
     event.preventDefault();
   }
 
@@ -386,6 +395,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     if (!TDSHelperArray.hasListValue(this.uploadedImages) && !TDSHelperString.hasValueString(message)) {
       return this.message.error('Hãy nhập nội dung cần gửi');
     }
+    if(this.isLoadingSendMess){
+      return;
+    }
+    this.isLoadingSendMess = true;
 
     let activityFinal = this.activityDataFacade.getMessageNearest(this.team.Facebook_PageId, this.data.psid, this.type ? this.type : 'all') as any;
 
@@ -420,6 +433,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     const model = this.prepareModel(message);
     this.crmMatchingService.addMessage(this.data.psid, model)
       .pipe(takeUntil(this.destroy$))
+      .pipe(finalize( () => { this.isLoadingSendMess = false; }))
       .subscribe((res: any) => {
         this.messageResponse(res, model);
       }, error => {
@@ -437,7 +451,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
     this.crmMatchingService.addQuickReplyComment(model)
       .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => { }))
+      .pipe(finalize(() => { this.isLoadingSendMess = false; }))
       .subscribe((res: any) => {
 
         this.message.success('Gửi tin thành công');
@@ -474,7 +488,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
     this.activityMatchingService.replyComment(this.team?.Id, model)
       .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => { }))
+      .pipe(finalize(() => { this.isLoadingSendMess = false; }))
       .subscribe((res: any) => {
 
         this.message.success("Trả lời bình luận thành công.");
@@ -672,28 +686,28 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
   }
 
-  handleDownload = (file: TDSUploadFile) => {
-    window.open(file.response.url);
-  }
 
   handleUpload = (item: any) => {
+    this.isLoadingImage = true;
     const formData = new FormData();
     formData.append('files', item.file as any, item.file.name);
     formData.append('id', '0000000000000051');
 
     return this.sharedService.saveImageV2(formData)
       .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(()=>{
+        this.displayDropZone = false;
+        this.isLoadingImage = false;
+      }))
       .subscribe((res: any) => {
         if (Message.Upload.Success) {
           let x = res[0].urlImageProxy as string;
           this.currentImage = x;
           const dataItem = [...this.uploadedImages, x];
           this.uploadedImages = dataItem;
-          this.displayDropZone = false;
           this.cdr.markForCheck();
         }
       }, error => {
-        this.displayDropZone = false;
         let message = JSON.parse(error.Message);
         this.message.error(`${message.message}`);
       });
@@ -711,6 +725,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   closeImages(){
     this.uploadedImages = [];
+  }
+
+  changeEnterSend(ev: any){
+    if(ev){
+    this.isEnterSend = ev.checked;
+    }
   }
 
   @HostListener('window:dragover', ['$event']) onDragOver(evt: TDSSafeAny) {

@@ -75,7 +75,7 @@ export const Message = {
   },
   ConnectionChannel: {
     NotFoundUserPage: 'Không tìm thấy kênh kết nối nào',
-    TokenExpires: 'Kết nối trang hết hạn',
+    TokenExpires: 'Kết nối trang hết hạn.',
     ChannelExist: 'Kênh đã tồn tại.',
     RefreshTokenSuccess: 'Cập nhật token thành công.',
     RefreshTokenFail: 'Cập nhật token thất bại!',
@@ -96,5 +96,17 @@ export const Message = {
     CreateChatbotSuccess: 'Tạo chatbot thành công.',
     OnChatbotSuccess: 'Bật chatbot thành công.',
     OffChatbotSuccess: 'Tắt chatbot thành công.',
+  },
+  ConversationPost: {
+    AddTemplateSuccess: 'Thêm mẫu thành công.',
+    ErrorNumberMoreTemplate: 'Số sau không được lớn hơn số trước.',
+    AddMoreTemplateSuccess: 'Tạo thành công, nhớ [Lưu cấu hình] trước khi thực hiện thao tác khác.',
+    FileNotFormat: 'File không đúng định dạng.',
+    TextContentProductEmpty: 'Vui lòng nhập đầy đủ nội dung mẫu.',
+    LoadConfigSuccess: 'Tải cấu hình thành công.',
+    TagOnPatternEmpty: 'Vui lòng nhập đầy đủ nhãn và nội dung.'
+  },
+  LiveCampaign: {
+    ErrorNumberDetail: 'Số lượng, số tiền, giới hạn trên đơn không được để trống.'
   }
 }

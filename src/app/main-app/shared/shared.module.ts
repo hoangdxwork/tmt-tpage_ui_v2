@@ -2,7 +2,7 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TDSAvatarModule, TDSBadgeModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSOutletModule, TDSScrollIntoViewModule, TDSSelectModule, TDSSpinnerModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTypographyModule, TDSUploadModule, TDSImageModule } from 'tmt-tang-ui';
+import { TDSAvatarModule, TDSBadgeModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSOutletModule, TDSScrollIntoViewModule, TDSSelectModule, TDSSpinnerModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTypographyModule, TDSUploadModule, TDSImageModule, TDSToolTipModule } from 'tmt-tang-ui';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TpageTeamDropdownComponent } from './tpage-team-dropdown/tpage-team-dropdown.component';
 import { TpageBaseComponent } from './tpage-base/tpage-base.component';
@@ -30,6 +30,9 @@ import { TpageConfigProductComponent } from './tpage-config-product/tpage-config
 import { ProductPriceListService } from '../services/product-price-list.service';
 import { TpageConversationAddressComponent } from './tpage-conversation-address/tpage-conversation-address.component';
 import { UploadPicturesWallComponent } from './upload-wall/upload-pictures-wall.component';
+import { ListLiveCampaignComponent } from './list-live-campaign/list-live-campaign.component';
+import { OdataLiveCampaignService } from '../services/mock-odata/odata-live-campaign.service';
+import { AddLiveCampaignComponent } from './add-live-campaign/add-live-campaign.component';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -48,7 +51,9 @@ const cmp =[
   TpageUploadAvatarComponent,
   TpageConfigProductComponent,
   TpageConversationAddressComponent,
-  UploadPicturesWallComponent
+  UploadPicturesWallComponent,
+  ListLiveCampaignComponent,
+  AddLiveCampaignComponent,
 ]
 
 const SERVICES = [
@@ -56,12 +61,13 @@ const SERVICES = [
   SuggestAddressService,
   SharedService,
   ImageFacade,
-  ProductPriceListService
+  ProductPriceListService,
+  OdataLiveCampaignService,
 ]
 
 @NgModule({
   declarations: [
-    ...cmp,
+    ...cmp
   ],
   imports: [
     CommonModule,
@@ -88,7 +94,8 @@ const SERVICES = [
     TDSTabsModule,
     PipeModule,
     UploadImageModule,
-    TDSImageModule
+    TDSImageModule,
+    TDSToolTipModule
   ],
   exports:[
    ...cmp

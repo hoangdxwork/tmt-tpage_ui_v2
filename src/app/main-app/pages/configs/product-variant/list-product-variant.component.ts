@@ -1,3 +1,4 @@
+import { OnDestroy } from '@angular/core';
 import { THelperCacheService } from '../../../../lib/utility/helper-cache';
 import { ExcelExportService } from '../../../services/excel-export.service';
 import { ProductService } from '../../../services/product.service';
@@ -21,7 +22,7 @@ import { EditProductVariantComponent } from './edit/edit-product-variant.compone
   encapsulation: ViewEncapsulation.None,
 })
 
-export class ListProductVariantComponent  {
+export class ListProductVariantComponent  implements OnDestroy  {
 
   @ViewChild('innerText') innerText!: ElementRef;
   setOfCheckedId = new Set<number>();
@@ -196,7 +197,9 @@ export class ListProductVariantComponent  {
     let callBackFn = () => {
       that.isProcessing = false;
     }
-    this.excelExportService.exportPost('/Product/ExportProduct', { data: JSON.stringify(data) }, 'bien_the_san_pham_kiem_kho_theo_id', callBackFn);
+    this.excelExportService.exportPost('/Product/ExportProduct', { data: JSON.stringify(data) }, 'bien_the_san_pham_kiem_kho_theo_id')
+    .pipe(finalize(()=>this.isProcessing = false), takeUntil(this.destroy$))
+    .subscribe();;
   }
 
   addNewData(data: TDSSafeAny) {
@@ -206,6 +209,7 @@ export class ListProductVariantComponent  {
   refreshData() {
     this.pageIndex = 1;
     this.filterObj.searchText = '';
+    this.innerText.nativeElement.value = '';
 
     this.checked = false;
     this.indeterminate = false;
@@ -244,7 +248,7 @@ export class ListProductVariantComponent  {
       okText: "Xác nhận",
       cancelText: "Hủy bỏ",
       onOk: () => {
-        this.productService.delete_product(key).pipe(takeUntil(this.destroy$)).subscribe(res=>{
+        this.productService.deleteProduct(key).pipe(takeUntil(this.destroy$)).subscribe(res=>{
           this.message.success('Xóa sản phẩm thành công!')
           this.onSelectChange(this.selected);
           return
@@ -273,4 +277,8 @@ export class ListProductVariantComponent  {
     this.indeterminate = this.lstOfData.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

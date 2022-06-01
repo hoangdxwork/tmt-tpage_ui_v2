@@ -26,7 +26,7 @@ export class QuickReplyService extends BaseSevice {
     } else {
       this.getOnlyActive().pipe(map(res => res)).subscribe((res: any) => {
         this.dataActive = res;
-        this.dataActive$.next(this.dataActive);
+        this.dataActive$.next(this.dataActive?.value);
       })
     }
   }
@@ -63,7 +63,7 @@ export class QuickReplyService extends BaseSevice {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
       method: TApiMethodType.post
     }
-    
+
     return this.apiService.getData<any>(api, data);
   }
 
