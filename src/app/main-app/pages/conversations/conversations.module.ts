@@ -73,6 +73,7 @@ import { PostOrderConfigComponent } from './components/config-post/order-config/
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { ModalSelectAttachmentComponent } from './components/modal-select-attachment/modal-select-attachment.component';
 import { ModalAddAttachmentCollectionComponent } from './components/modal-add-attachment-collection/modal-add-attachment-collection.component';
+import { DirectivesModule } from '../../shared/directives/directives.module';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -183,8 +184,10 @@ const SERVICES = [
     TDSImageModule,
     PipeModule,
     TDSEmptyModule,
-    TDSUploadModule
+    TDSUploadModule,
+    DirectivesModule
   ],
   providers: [ ...SERVICES]
 })
+
 export class ConversationsModule { }

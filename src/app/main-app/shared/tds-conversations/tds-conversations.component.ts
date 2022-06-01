@@ -5,17 +5,15 @@ import { ModalListBillComponent } from './../../pages/conversations/components/m
 import { ModalListProductComponent } from './../../pages/conversations/components/modal-list-product/modal-list-product.component';
 import { ModalImageStoreComponent } from './../../pages/conversations/components/modal-image-store/modal-image-store.component';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
-import {
-  ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Optional, Output, Self,
-  SimpleChanges, TemplateRef, ViewContainerRef, Host, OnDestroy, ChangeDetectorRef, HostListener, HostBinding
-} from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Optional, Output, Self,
+  SimpleChanges, TemplateRef, ViewContainerRef, Host, OnDestroy, ChangeDetectorRef, HostListener, HostBinding, ViewChild, AfterViewInit, ElementRef, AfterContentInit, ChangeDetectionStrategy, ViewEncapsulation, AfterViewChecked } from '@angular/core';
+import { BehaviorSubject, Observable, Subject, Subscription, of } from 'rxjs';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSResizeObserver, TDSUploadChangeParam, TDSUploadFile } from 'tmt-tang-ui';
 import { ConversationMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
-import { finalize, takeUntil } from 'rxjs/operators';
-import { MakeActivityItemWebHook, MakeActivityMessagesDTO } from '../../dto/conversation/make-activity.dto';
+import { auditTime, delay, filter, finalize, map, mergeMap, takeUntil, tap } from 'rxjs/operators';
+import { CRMMessagesRequest, MakeActivityItemWebHook, MakeActivityMessagesDTO } from '../../dto/conversation/make-activity.dto';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ActivityMatchingService } from '../../services/conversation/activity-matching.service';
 import { Router } from '@angular/router';
@@ -28,18 +26,21 @@ import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
 import { DraftMessageService } from '../../services/conversation/draft-message.service';
 import { CRMTagService } from '../../services/crm-tag.service';
 import { Message } from 'src/app/lib/consts/message.const';
-import { HttpResponse } from '@microsoft/signalr';
-import { CRMTeamService } from '../../services/crm-team.service';
 import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
+import { YiAutoScrollDirective } from '../directives/yi-auto-scroll.directive';
+import { ActivityFacebookState } from '../../services/facebook-state/activity-facebook.state';
 
 @Component({
   selector: 'shared-tds-conversations',
   templateUrl: './tds-conversations.component.html',
-  styleUrls: ['./tds-conversations.component.sass'],
+  styleUrls: ['./tds-conversations.component.sass']
 })
 
-export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
+export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+
+  @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
+  @ViewChild('scrollToIndex') scrollToIndex!: ElementRef<any>;
 
   @Input() tdsHeader?: string | TemplateRef<void>;
   @Input() data!: ConversationMatchingItem;
@@ -51,7 +52,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   isLoadMessage: boolean = false;
   dataSource$!: Observable<MakeActivityMessagesDTO>;
   partner: any;
- 
+
   isVisibleReply: boolean = false;
   uploadedImages: string[] = [];
   currentImage: any;
@@ -63,11 +64,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   lstUser!: TDSSafeAny[];
   users: TDSSafeAny[] = [];
   keyFilterUser: string = '';
-  
+
   lstOfTag: TDSSafeAny[] = [];
   tags: TDSSafeAny[] = [];
   keyFilterTag: string = '';
-  isVisbleTag: boolean = false
+  isVisbleTag: boolean = false;
+  isNextData: boolean = false;
+  lockYOffset: number = 40;
 
   constructor(private modalService: TDSModalService,
     private message: TDSMessageService,
@@ -82,18 +85,25 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     private conversationEventFacade: ConversationEventFacade,
     private sgRConnectionService: SignalRConnectionService,
     private router: Router,
-    private crmTeamService: CRMTeamService,
-    private resizeObserver: TDSResizeObserver,
     private conversationOrderFacade: ConversationOrderFacade,
     private viewContainerRef: ViewContainerRef,
-    private cdr: ChangeDetectorRef
-  ) {
+    private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit() {
     this.validateData();
     if (this.data?.id && this.team && TDSHelperString.hasValueString(this.type)) {
       this.loadData(this.data);
+
+      if(this.yiAutoScroll) {
+        this.yiAutoScroll.forceScrollDown();
+      }
+    }
+  }
+
+  ngAfterViewInit(){
+    if(this.yiAutoScroll) {
+      this.yiAutoScroll.forceScrollDown();
     }
   }
 
@@ -101,6 +111,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     this.loadTags(data);
     this.initiateTimer();
     this.loadUser();
+
     // TODO: Nội dung tin nhắn
     this.loadMessages(data);
   }
@@ -108,7 +119,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   //TODO: data.id = data.psid
   loadMessages(data: ConversationMatchingItem): any {
     this.isLoadMessage = true;
-    this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
+    this.dataSource$ =  this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
       .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => { this.isLoadMessage = false }));
   }
@@ -167,36 +178,22 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   showImageStore(): void {
-    const modal = this.modalService.create({
-      title: 'Kho hình ảnh',
-      content: ModalImageStoreComponent,
-      centered: true,
-      size: "xl",
-      viewContainerRef: this.viewContainerRef,
-    });
-    modal.afterClose.subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
-      }
+    this.modalService.create({
+        title: 'Kho hình ảnh',
+        content: ModalImageStoreComponent,
+        centered: true,
+        size: "xl",
+        viewContainerRef: this.viewContainerRef
     });
   }
 
   showModalAddQuickReply() {
-    const modal = this.modalService.create({
+    this.modalService.create({
       title: 'Thêm mới trả lời nhanh',
       content: ModalAddQuickReplyComponent,
       viewContainerRef: this.viewContainerRef,
       size: 'md',
-      componentParams: {
-
-      }
-    });
-    modal.afterOpen.subscribe(() => {
-
-    });
-    // Return a result when closed
-    modal.afterClose.subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
-      }
+      componentParams: {}
     });
   }
 
@@ -220,40 +217,25 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   showModalListBill() {
-    const modal = this.modalService.create({
+    this.modalService.create({
       title: 'Phiếu bán hàng',
       content: ModalListBillComponent,
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
-      componentParams: {
-
-      }
-    });
-    modal.afterOpen.subscribe(() => {
-
-    });
-    // Return a result when closed
-    modal.afterClose.subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
-      }
+      componentParams: {}
     });
   }
 
   showModalAddTag() {
     this.isVisbleTag = false
-    const modal = this.modalService.create({
+    this.modalService.create({
       title: 'Thêm thẻ hội thoại',
       content: ConfigConversationTagsCreateDataModalComponent,
       viewContainerRef: this.viewContainerRef,
     });
-    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
-
-      }
-    });
   }
 
-  CallbackTag(ev: boolean) {
+  callbackTag(ev: boolean) {
     this.isVisbleTag = ev
   }
 
@@ -265,6 +247,25 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     this.messageModel = null;
     this.tags = [];
     (this.dataSource$ as any) = null;
+    this.isNextData = false;
+  }
+
+  loadPrevMessages(): any {
+    this.scrollToIndex?.nativeElement?.scrollTo(0, 1);
+
+    let pageId = this.team?.Facebook_PageId;
+    let psid = this.data.psid;
+    let type = this.type ? this.type : 'all';
+
+    this.isNextData = true;
+    this.activityDataFacade.nextData(pageId, psid, type)
+      .pipe(takeUntil(this.destroy$)).subscribe(() => {
+        setTimeout(() => {
+          this.isNextData = false;
+        }, 350);
+      }, error => {
+        this.isNextData = false;
+    })
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -295,6 +296,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
       }
       this.loadData(this.data);
     }
+
   }
 
   loadTags(data: ConversationMatchingItem) {
@@ -303,6 +305,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
         this.crmTagService.dataActive$.subscribe((res: any) => {
           this.tags = res;
           this.lstOfTag = this.tags;
+
           this.sortTagsByParent();
           this.searchTag();
         })
@@ -420,7 +423,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe((res: any) => {
         this.messageResponse(res, model);
       }, error => {
-        this.message.error("Trả lời bình luận thất bại");
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại' );
       });
   }
 
@@ -522,6 +525,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
       id: this.data.psid,
       name: this.data.name
     };
+    model.to_id = this.data.psid;
+    model.to_name = this.data.name;
+
     model.message = message;
     model.created_time = (new Date()).toISOString();
     model.attachments = {
@@ -650,6 +656,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroyTimer();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -714,7 +721,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
 
   @HostListener("window:dragleave", ["$event"])
   onDragLeave(evt: any) {
-    if (evt.fromElement) { 
+    if (evt.fromElement) {
       this.displayDropZone = true;
     } else {
       this.displayDropZone = false;
@@ -723,10 +730,15 @@ export class TDSConversationsComponent implements OnInit, OnChanges, OnDestroy {
     evt.stopPropagation();
   }
 
-  @HostListener('window:drop', ['$event']) 
+  @HostListener('window:drop', ['$event'])
   ondrop(evt:any) {
     evt.preventDefault();
     evt.stopPropagation();
     this.displayDropZone = false;
   }
+
+  trackByIndex(_: number, data: any): number {
+    return data.psid;
+  }
+
 }

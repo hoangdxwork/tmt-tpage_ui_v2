@@ -5,6 +5,7 @@ import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tmt-tang-ui";
 import { BaseSevice } from "../base.service";
 import { SignalRConnectionService } from "../signalR/signalR-connection.service";
+import { CRMMessagesRequest } from '../../dto/conversation/make-activity.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -43,16 +44,16 @@ export class ActivityMatchingService extends BaseSevice implements OnInit {
         url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/messages?${queryString}`,
         method: TApiMethodType.get,
       }
-      return this.apiService.getData<TDSSafeAny>(api, null);
+      return this.apiService.getData<CRMMessagesRequest>(api, null);
     }
   }
 
   getLink(url: string): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${url}`,
+      url: `${url}`,
       method: TApiMethodType.get,
     }
-    return this.apiService.getData<TDSSafeAny>(api, null);
+    return this.apiService.getData<CRMMessagesRequest>(api, null);
   }
 
   createQuery(pageId: any, type: any, page?: any, limit?: any) {
