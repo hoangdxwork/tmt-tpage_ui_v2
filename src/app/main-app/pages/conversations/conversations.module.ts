@@ -71,6 +71,7 @@ import { PostOrderConfigComponent } from './components/config-post/order-config/
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { ModalSelectAttachmentComponent } from './components/modal-select-attachment/modal-select-attachment.component';
 import { ModalAddAttachmentCollectionComponent } from './components/modal-add-attachment-collection/modal-add-attachment-collection.component';
+import { ModalSendMessageAllComponent } from './components/modal-send-message-all/modal-send-message-all.component';
 import { LiveCampaignService } from '../../services/live-campaign.service';
 import { PostOrderInteractionConfigComponent } from './components/config-post/interaction-config/post-order-interaction-config.component';
 import { PostHiddenCommentConfigComponent } from './components/config-post/hidden-comment-config/post-hidden-comment-config.component';
@@ -149,6 +150,7 @@ const SERVICES = [
     PostOrderConfigComponent,
     ModalSelectAttachmentComponent,
     ModalAddAttachmentCollectionComponent,
+    ModalSendMessageAllComponent,
     PostOrderInteractionConfigComponent,
     PostHiddenCommentConfigComponent,
     AutoReplyConfigComponent,
@@ -193,7 +195,7 @@ const SERVICES = [
     TDSImageModule,
     PipeModule,
     TDSEmptyModule,
-    TDSUploadModule
+    TDSUploadModule,
   ],
   providers: [ ...SERVICES]
 })

@@ -174,8 +174,7 @@ export class DashboardFacebookReportComponent implements OnInit {
               fontSize:14,
               lineHeight:20,
               align:'right'
-            },
-            interval:500
+            }
           }
         ]
       },
@@ -203,7 +202,7 @@ export class DashboardFacebookReportComponent implements OnInit {
         {
           name: series.name,
           type:'bar',
-          barWidth:34,
+          barWidth: 15,//set độ rộng của các series
           data: series.data
         }
       );
