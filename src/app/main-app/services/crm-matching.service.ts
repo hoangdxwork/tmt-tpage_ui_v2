@@ -48,7 +48,7 @@ export class CRMMatchingService extends BaseSevice {
 
   getLink(url: string): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${url}`,
+        url: `${url}`,
         method: TApiMethodType.get
     }
     return this.apiService.getData<TDSSafeAny>(api, null)

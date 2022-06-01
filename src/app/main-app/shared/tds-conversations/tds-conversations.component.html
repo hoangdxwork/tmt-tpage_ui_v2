@@ -19,7 +19,7 @@
                             [tdsDropdownMenu]="menu2"
                             [placement]="'bottomRight'">
                             <span class="text-neutral-1-400 text-caption-1 font-regular pr-1">{{ data.assigned_to ? 'Đã gán cho' : 'Gán cuộc hội thoại' }}</span>
-                            <span class="text-primary-1 text-caption-1 font-semibold pr-1">{{data.assigned_to ? data.assigned_to.Name:''}}</span>
+                            <span class="text-primary-1 text-caption-1 font-semibold pr-1">{{data.assigned_to ? data.assigned_to?.Name:''}}</span>
                             <i class="tdsi-arrow-down-line"></i>
                         </button>
                         <tds-dropdown-menu #menu2="tdsDropdownMenu">
@@ -60,14 +60,23 @@
         </div>
     </div>
     <!-- main -->
-    <div #MainChat class="flex-auto w-full flex overflow-hidden">
-        <div class="h-full overflow-y-auto tds-custom-scroll w-full">
-            <div *ngIf="(dataSource$ | async )?.items?.length == 0" class="h-full w-full flex items-center justify-center">
-                <span class="text-neutral-1-400 text-heading-3 font-semibold">
-                    Không tìm thấy nội dung
-                </span>
-            </div>
-            <ng-container *ngFor="let item of (dataSource$ | async )?.items | showAvatar; let i = index ">
+
+    <div class="flex-auto w-full flex overflow-hidden relative">
+      <div class="absolute flex justify-center w-full z-10" *ngIf="isNextData">
+          <tds-spinner [color]="'secondary'" class="mr-1 h-5 w-5"></tds-spinner>
+      </div>
+      <div class="h-full overflow-y-auto tds-custom-scroll w-full" id="myScroll"
+        yiAutoScroll is-lock="true" lock-y-offset="40" observe-attributes
+        scroll-end="true" #scrollToIndex (onScrollToTop)="loadPrevMessages()">
+
+          <div *ngIf="(dataSource$ | async )?.items?.length == 0" class="h-full w-full flex items-center justify-center">
+              <span class="text-neutral-1-400 text-heading-3 font-semibold">
+                  Không tìm thấy nội dung
+              </span>
+          </div>
+
+          <div *ngIf="(dataSource$ | async )?.items">
+            <div  *ngFor="let item of (dataSource$ | async )?.items | showAvatar | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex">
                 <div *ngIf="item">
                     <div *ngIf="item.is_show_break && i!= 0" class="w-full relative">
                         <div class="date-v3">
@@ -76,7 +85,8 @@
                         </div>
                     </div>
                     <!-- Thông tin bài post -->
-                    <div *ngIf="item.type == 2 && item.object_id && getExtrasPosts((dataSource$ | async), item)" class="pl-2">
+                    <div *ngIf="item.type == 2 && item.object_id && getExtrasPosts((dataSource$ | async), item) &&
+                    (i == 0 || !(i == 0 || (item.object_id == (dataOrderBy[i-1])?.object_id)))" class="pl-2">
                         <div class="post-block mb-3 bg-white flex flex-col">
                             <div class="post-body flex flex-row justify-between p-4">
                                 <div class="post-content flex flex-col">
@@ -157,8 +167,9 @@
                         [children]="getExtrasChildren((dataSource$ | async), item)">
                     </tds-conversation-item>
                 </div>
-            </ng-container>
-        </div>
+            </div>
+          </div>
+      </div>
     </div>
     <!-- footer  -->
     <div #chatFooter class="chat-footer w-full flex flex-col px-2 pb-3">
@@ -183,7 +194,7 @@
                     [popoverContent]="popoverContentTagConversat"
                     popoverTrigger="click"
                     [popoverVisible]="isVisbleTag"
-                    (popoverVisibleChange)="CallbackTag($event)"
+                    (popoverVisibleChange)="callbackTag($event)"
                     [popoverPlacement]="['topLeft', 'leftTop']"
                     class="bg-white text-neutral-1-400 cursor-pointer" icon="tdsi-tag-fill">
                 </tds-avatar>

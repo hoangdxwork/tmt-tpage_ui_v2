@@ -79,6 +79,7 @@ import { AutoLabelConfigComponent } from './components/config-post/label-config/
 import { AutoReplyConfigComponent } from './components/config-post/reply-config/auto-reply-config.component';
 import { ModalReportOrderPostComponent } from './components/post-filter/modal-report-order-post.component';
 import { ModalListCollectionComponent } from './components/modal-list-collection/modal-list-collection.component';
+import { DirectivesModule } from '../../shared/directives/directives.module';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -196,7 +197,9 @@ const SERVICES = [
     PipeModule,
     TDSEmptyModule,
     TDSUploadModule,
+    DirectivesModule
   ],
   providers: [ ...SERVICES]
 })
+
 export class ConversationsModule { }

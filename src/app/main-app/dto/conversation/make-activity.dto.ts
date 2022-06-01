@@ -228,3 +228,16 @@ export interface MakeActivityMessagesDTO {
   query: MakeActivityQueryObj;
   response: MakeActivityResponse;
 }
+
+export interface CRMMessagesRequest {
+  Items: MakeActivityItemWebHook[];
+  Extras: MakeActivityExtras;
+  PageIndex: number;
+  PageSize: number;
+  TotalCount: number;
+  TotalPages: number;
+  NextPage: string;
+  PreviousPage?: any;
+  HasPreviousPage: boolean;
+  HasNextPage: boolean;
+}

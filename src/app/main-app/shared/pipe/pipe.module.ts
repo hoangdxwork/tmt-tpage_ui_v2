@@ -11,6 +11,7 @@ import { ShowAvatarPipe } from './show-avatar.pipe';
 import { FormatIconLikePipe } from './format-icon-like.pipe';
 import { YiDateTimeV3Pipe } from './yi-datetimeV3.pipe';
 import { YiDateTimeFormatPipe } from './yi-datetimeV2.pipe';
+import { ScrollConversationPipe } from './scroll-conversation.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -21,7 +22,8 @@ const cmp =[
   ShowAvatarPipe,
   FormatIconLikePipe,
   YiDateTimeV3Pipe,
-  YiDateTimeFormatPipe
+  YiDateTimeFormatPipe,
+  ScrollConversationPipe
 ]
 
 @NgModule({

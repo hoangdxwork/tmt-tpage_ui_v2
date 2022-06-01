@@ -70,7 +70,7 @@ export class ConversationService extends BaseSevice implements OnInit {
 
   getLink(url: string): Observable<CRMMatchingDTO> {
     let api: TAPIDTO = {
-      url: `${this._BASE_URL}/${url}`,
+      url: `${url}`,
       method: TApiMethodType.get
     }
     return this.apiService.getData<CRMMatchingDTO>(api, null);

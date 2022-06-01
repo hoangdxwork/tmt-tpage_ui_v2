@@ -165,8 +165,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
   }
 
-  onLoadMiniChat(event: any): void {
-  }
+  onLoadMiniChat(event: any): void {}
 
   fetchLiveConversations(team: CRMTeamDTO): void {
     this.fbGraphService.api(`me/conversations?fields=id,link,participants,senders&access_token=${team.Facebook_PageToken}`)
