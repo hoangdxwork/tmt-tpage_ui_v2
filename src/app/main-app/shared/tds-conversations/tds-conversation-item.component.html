@@ -151,7 +151,7 @@
 						</button>
 						<tds-spinner *ngIf="isReplyingComment" [color]="'primary'" class="ml-1 w-2 h-2"></tds-spinner>
 						<div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
-						<button class="link-act hover:underline" [disabled]="isLiking"
+						<button class="link-act hover:underline" [disabled]="isLiking" [ngClass]="data.comment.user_likes?'text-secondary-1':''"
 							(click)="addLike(data.comment ? data.comment.can_like : null)">
 							{{data.comment.user_likes ? 'Đã thích' : 'Thích'}}
 						</button>
@@ -306,7 +306,7 @@
 								<div #contentMessage class="content-message"
 									[innerHTML]="data.message_formatted | formatIconLike | safeHtml"></div>
 							</div>
-							<div class="" *ngIf="!data.message_formatted">
+							<div *ngIf="!data.message_formatted">
 								<div class="content-message" #contentMessage>
 									{{data.message_formatted | formatIconLike | safeHtml}}
 								</div>
