@@ -7,7 +7,7 @@ import { ModalImageStoreComponent } from './../../pages/conversations/components
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import {
   Component, EventEmitter, Input, OnChanges, OnInit, Output,
-  SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener
+  SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSUploadChangeParam, TDSUploadFile } from 'tmt-tang-ui';
@@ -54,7 +54,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   isLoadMessage: boolean = false;
   dataSource$!: Observable<MakeActivityMessagesDTO>;
   partner: TDSSafeAny;
- 
+
   isEnterSend: boolean = true;
   isVisibleReply: boolean = false;
   uploadedImages: string[] = [];
