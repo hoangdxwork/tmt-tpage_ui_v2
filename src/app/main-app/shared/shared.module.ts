@@ -2,7 +2,7 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TDSAvatarModule, TDSBadgeModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSOutletModule, TDSScrollIntoViewModule, TDSSelectModule, TDSSpinnerModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTypographyModule, TDSUploadModule, TDSImageModule, TDSToolTipModule } from 'tmt-tang-ui';
+import { TDSAvatarModule, TDSBadgeModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSOutletModule, TDSScrollIntoViewModule, TDSSelectModule, TDSSpinnerModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTypographyModule, TDSUploadModule, TDSImageModule, TDSToolTipModule, TDSDatePickerModule } from 'tmt-tang-ui';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TpageTeamDropdownComponent } from './tpage-team-dropdown/tpage-team-dropdown.component';
 import { TpageBaseComponent } from './tpage-base/tpage-base.component';
@@ -33,6 +33,8 @@ import { UploadPicturesWallComponent } from './upload-wall/upload-pictures-wall.
 import { ListLiveCampaignComponent } from './list-live-campaign/list-live-campaign.component';
 import { OdataLiveCampaignService } from '../services/mock-odata/odata-live-campaign.service';
 import { AddLiveCampaignComponent } from './add-live-campaign/add-live-campaign.component';
+import { OverviewLiveCampaignComponent } from './overview-live-campaign/overview-live-campaign.component';
+import { FastSaleOrderLineService } from '../services/fast-sale-orderline.service';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -63,11 +65,13 @@ const SERVICES = [
   ImageFacade,
   ProductPriceListService,
   OdataLiveCampaignService,
+  FastSaleOrderLineService,
 ]
 
 @NgModule({
   declarations: [
-    ...cmp
+    ...cmp,
+    OverviewLiveCampaignComponent
   ],
   imports: [
     CommonModule,
@@ -95,7 +99,8 @@ const SERVICES = [
     PipeModule,
     UploadImageModule,
     TDSImageModule,
-    TDSToolTipModule
+    TDSToolTipModule,
+    TDSDatePickerModule
   ],
   exports:[
    ...cmp

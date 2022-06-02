@@ -10,6 +10,18 @@
       </span>
     </button>
   </div>
+  <div class="flex gap-x-2">
+    <button tds-button color="info" size="md" class="flex items-center" (click)="showModelOverViewLiveCampaign(currentLiveCampaign?.Id, currentLiveCampaign?.Name)">
+      <span class="flex items-center gap-x-2">
+        <i class="tdsi-eye-open-fill text-lg"></i> <span>Tổng quan chiến dịch</span>
+      </span>
+    </button>
+    <button tds-button color="primary" size="md" class="flex items-center" (click)="showModelEditLiveCampaign(currentLiveCampaign?.Id)">
+      <span class="flex items-center gap-x-2">
+        <i class="tdsi-edit-fill text-lg"></i><span>Chỉnh sửa</span>
+      </span>
+    </button>
+  </div>
   <div class="pr-2 h-[calc(100vh-375px)] overflow-auto tds-custom-scroll">
     <div class="flex flex-col gap-y-2">
       <div *ngFor="let liveCampaign of lstOfData" class="border border-solid rounded-xl p-4 w-full h-full flex gap-x-2 cursor-pointer
@@ -22,9 +34,9 @@
           {{ liveCampaign.DateCreated | date : "dd/MM/yyyy HH:mm" }}
         </div>
         <div class="w-1/5 flex gap-x-6 justify-end items-center text-xl">
-          <i class="tdsi-eye-open-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Chi tiết'"></i>
-          <i class="tdsi-share-screen-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Sao chép'"></i>
-          <i class="tdsi-edit-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Chỉnh sửa'"></i>
+          <i class="tdsi-eye-open-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Chi tiết'" (click)="showModelOverViewLiveCampaign(liveCampaign.Id, liveCampaign.Name)"></i>
+          <i class="tdsi-share-screen-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Sao chép'" (click)="showModelCopyLiveCampaign(liveCampaign.Id)"></i>
+          <i class="tdsi-edit-fill text-neutral-1-500" tds-tooltip [tooltipTitle]="'Chỉnh sửa'" (click)="showModelEditLiveCampaign(liveCampaign.Id)"></i>
         </div>
       </div>
     </div>

@@ -35,6 +35,7 @@ import { FSOrderLines } from 'src/app/main-app/dto/fastsaleorder/fastsale-orderl
 import { CompanyCurrentDTO } from 'src/app/main-app/dto/configs/company-current.dto';
 import { CalculateFeeResponse_DataDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
 import { InitSaleDTO, SaleSettingsDTO } from 'src/app/main-app/dto/setting/setting-sale-online.dto';
+import { AccountTaxService } from 'src/app/main-app/services/account-tex.service';
 
 @Component({
   selector: 'app-add-bill',
@@ -110,6 +111,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     private cRMTeamService: CRMTeamService,
     private applicationUserService: ApplicationUserService,
     private registerPaymentService: AccountRegisterPaymentService,
+    private accountTaxService: AccountTaxService,
     private viewContainerRef: ViewContainerRef) {
     this.createForm();
   }
@@ -1291,7 +1293,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   openPopoverTax() {
     this.visiblePopoverTax = true;
-    this.fastSaleOrderService.getTax().subscribe((res: any) => {
+    this.accountTaxService.getTax().subscribe((res: any) => {
       if (TDSHelperArray.hasListValue(res.value)) {
         this.lstTax = res.value;
         this.lstTax = this.lstTax.sort((a, b) => a.Amount - b.Amount);
@@ -1723,7 +1725,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   // TODO: cập nhật giá xem hàng
   updateShipExtras() {
     const model = this._form.value as FastSaleOrder_DefaultDTOV2;
-    
+
     if (this.shipExtraServices && model.Ship_Extras) {
       this.shipExtraServices.forEach((service: TDSSafeAny) => {
         if (service.ServiceId === 'XMG') {

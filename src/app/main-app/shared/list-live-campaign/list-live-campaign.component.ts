@@ -1,4 +1,4 @@
-import { TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
+import { TDSModalService, TDSHelperObject, TDSHelperString } from 'tmt-tang-ui';
 import { Observable } from 'rxjs';
 import { TDSModalRef, TDSSafeAny, TDSMessageService } from 'tmt-tang-ui';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
@@ -14,6 +14,7 @@ import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib';
 import { finalize } from 'rxjs/operators';
 import { AddLiveCampaignComponent } from '../add-live-campaign/add-live-campaign.component';
+import { OverviewLiveCampaignComponent } from '../overview-live-campaign/overview-live-campaign.component';
 
 @Component({
   selector: 'list-live-campaign',
@@ -61,11 +62,18 @@ export class ListLiveCampaignComponent implements OnInit {
     let filters = this.odataLiveCampaignService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.getViewData(params).subscribe((res: TDSSafeAny) => {
-        // this.count = res['@odata.count'] as number;
+    this.isLoading = true;
+    this.getViewData(params).pipe(finalize(() => this.isLoading = false)).subscribe((res: TDSSafeAny) => {
         this.lstOfData = res.value;
-        console.log(this.lstOfData);
+        this.getCurrentLiveCampaign(this.post?.live_campaign_id);
     }, error => this.message.error(`${error?.error?.message}` || Message.CanNotLoadData));
+  }
+
+  getCurrentLiveCampaign(liveCampaignId: string | undefined) {
+    if(TDSHelperString.hasValueString(liveCampaignId)) {
+      let find = this.lstOfData.find(x => x.Id === liveCampaignId);
+      this.currentLiveCampaign = find;
+    }
   }
 
   getViewData(params: string) {
@@ -155,7 +163,6 @@ export class ListLiveCampaignComponent implements OnInit {
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams:{
-        // post: item
       }
     });
 
@@ -164,6 +171,71 @@ export class ListLiveCampaignComponent implements OnInit {
         // Add live campaign vào dữ liệu
       }
     })
+  }
+
+  showModelEditLiveCampaign(id?: string) {
+    if(!id) {
+      this.message.info(Message.SelectOneLine);
+      return;
+    }
+
+    const modal = this.modal.create({
+      title: 'Chỉnh sửa chiến dịch',
+      content: AddLiveCampaignComponent,
+      size: "xl",
+      viewContainerRef: this.viewContainerRef,
+      componentParams:{
+        id: id
+      }
+    });
+
+    modal.componentInstance?.onSuccess.subscribe(res => {
+      if(TDSHelperObject.hasValue(res)) {
+        // Add live campaign vào dữ liệu
+      }
+    })
+  }
+
+  showModelCopyLiveCampaign(id?: string) {
+    if(!id) {
+      this.message.info(Message.SelectOneLine);
+      return;
+    }
+
+    const modal = this.modal.create({
+      title: 'Sao chép chiến dịch',
+      content: AddLiveCampaignComponent,
+      size: "xl",
+      viewContainerRef: this.viewContainerRef,
+      componentParams:{
+        id: id,
+        isCopy: true
+      }
+    });
+
+    modal.componentInstance?.onSuccess.subscribe(res => {
+      if(TDSHelperObject.hasValue(res)) {
+        // Add live campaign vào dữ liệu
+      }
+    })
+  }
+
+  showModelOverViewLiveCampaign(id?: string, name?: string) {
+    if(!id) {
+      this.message.info(Message.SelectOneLine);
+      return;
+    }
+
+    const modal = this.modal.create({
+      title: `${name}`,
+      content: OverviewLiveCampaignComponent,
+      size: "xl",
+      viewContainerRef: this.viewContainerRef,
+      componentParams:{
+        id: id
+      }
+    });
+
   }
 
   onCannel() {

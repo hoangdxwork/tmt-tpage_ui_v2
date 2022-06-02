@@ -32,6 +32,7 @@ import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.ser
 import { BillExpandComponent } from './components/bill-expand/bill-expand.component';
 import { HistoryDeliveryStatusComponent } from './history-delivery-status/history-delivery-status.component';
 import { HistoryDeliveryStatusDetailComponent } from './history-delivery-status-detail/history-delivery-status-detail.component';
+import { AccountTaxService } from '../../services/account-tex.service';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -45,7 +46,8 @@ const SERVICES = [
   PartnerService,
   FastSaleOrderLineService,
   QuickReplyService,
-  RestSMSService
+  RestSMSService,
+  AccountTaxService
 ]
 
 @NgModule({

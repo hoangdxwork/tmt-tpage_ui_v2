@@ -79,11 +79,8 @@
             <div class="flex items-center gap-x-2">
               <tds-label class="w-1/3">Thời gian kết thúc tổng hợp (phút)</tds-label>
               <tds-form-field class="w-2/3" class="w-full">
-                  <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="EndDate"
-                  ></tds-input-number>
-                  <!-- <tds-error>
-                      Vui lòng nhập số tiền tối thiểu
-                  </tds-error> -->
+                  <tds-date-picker showTime placeholder="Chọn ngày kết thúc" formControlName="EndDate">
+                  </tds-date-picker>
               </tds-form-field>
             </div>
 
@@ -145,7 +142,7 @@
                         <th width="15%">Giới hạn trên đơn</th>
                         <th width="15%">Giá bán</th>
                         <th width="13%" class="text-center">
-                          <button tds-button-icon color="secondary" size="sm">
+                          <button tds-button-icon color="secondary" size="sm" (click)="removeAllDetail()">
                             <span class="flex items-center">
                               <i class="tdsi-trash-fill"></i>
                             </span>
@@ -153,14 +150,24 @@
                         </th>
                     </tr>
                 </thead>
-                <tbody formArrayName="TextContentToOrders">
+                <tbody formArrayName="Details">
                       <tr *ngFor="let detail of detailsFormGroups.controls; let index = index" [formGroupName]="index">
 
                           <td> {{ index + 1 }} </td>
 
                           <!-- Sản phẩm -->
                           <td>
-                            {{detail?.value.ProductNameGet || detail?.value.ProductName}}
+                            <div class="flex gap-x-2 items-center">
+                              <tds-avatar size="xl" [shape]="'square'" class="bg-accent-4 text-white h-[60px] w-[60px]" tdsSrc="{{ detail?.value?.ImageUrl }}">
+                              </tds-avatar>
+                              <div class="flex flex-col gap-y-1">
+                                <span class="font-semibold text-sm">
+                                  {{detail?.value.ProductNameGet || detail?.value.ProductName}}
+                                  <span *ngIf="detail?.value?.UOMName">({{detail?.value?.UOMName}})</span>
+                                </span>
+                                <span class="text-info-500 font-normal text-sm">+Thêm cú pháp chốt đơn</span>
+                              </div>
+                            </div>
                           </td>
 
                           <!-- Số lượng -->
@@ -188,8 +195,8 @@
                           </td>
 
                           <!-- Thao tác -->
-                          <td>
-                            <button tds-button-icon color="secondary" size="sm" (click)="removeDetail(index, detail)">
+                          <td class="text-center">
+                            <button tds-button-icon color="secondary" size="sm" (click)="removeDetail(index, detail.value)">
                               <span class="flex items-center">
                                 <i class="tdsi-trash-fill"></i>
                               </span>
