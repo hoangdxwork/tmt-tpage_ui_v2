@@ -38,6 +38,7 @@ import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-prod
 import { TpageConfigProductComponent } from 'src/app/main-app/shared/tpage-config-product/tpage-config-product.component';
 import { TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSSafeAny, TDSHelperArray } from 'tmt-tang-ui';
 import { ModalListProductComponent } from '../modal-list-product/modal-list-product.component';
+import { ModalTaxComponent } from '../modal-tax/modal-tax.component';
 
 @Component({
   selector: 'post-order',
@@ -70,6 +71,9 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
   saleModel!: FastSaleOrderRestDTO;
   shipExtraServices: CalculateFeeResponse_Data_Service_ExtraDTO[] = [];
   saleSettings!: SaleSettingsDTO;
+
+  visibleIndex: number = -1;
+  detailEdit?: TDSSafeAny;
 
   constructor(
     private message: TDSMessageService,
@@ -631,6 +635,73 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
       this.orderForm.controls.Street.setValue(this.data?.address);
     }
   }
+
+  showModalTax() {
+    const modal = this.modalService.create({
+      title: 'Danh sách thuế',
+      content: ModalTaxComponent,
+      viewContainerRef: this.viewContainerRef,
+      size: 'xl',
+      componentParams: {
+        currentTax: this.orderForm.value.Tax
+      }
+    });
+
+    modal.componentInstance?.onSuccess.subscribe(res => {
+      this.orderForm.controls.Tax.setValue(res);
+      this.updateTotalAmount();
+    });
+  }
+
+  visibleChange($event: TDSSafeAny) {
+    console.log($event)
+  }
+
+  closePriceDetail() {
+    this.visibleIndex = -1;
+  }
+
+  openPriceDetail(index: number, detail: TDSSafeAny) {
+    this.visibleIndex = index;
+    this.detailEdit = Object.assign({}, detail);
+  }
+
+  editPriceDetail() {
+    let formDetail = this.orderForm.value.Details;
+
+    let findProduct = formDetail.find((x: any, index: number) =>
+      x.ProductId == this.detailEdit.ProductId &&
+      index == this.visibleIndex &&
+      x.UOMId == this.detailEdit.UOMId
+    );
+
+    if(findProduct) {
+      findProduct.Price = this.detailEdit.Price;
+    }
+
+    (this.orderForm?.get("Details") as FormArray).patchValue(formDetail);
+    this.updateTotalAmount();
+    this.visibleIndex = -1;
+  }
+
+  changeQuantityDetail(detail: TDSSafeAny, isMinus: boolean) {
+    let formDetail = this.orderForm.value.Details;
+
+    let findProduct = formDetail.find((x: any) =>
+        x.ProductId == detail.ProductId &&
+        x.Price == detail.Price &&
+        x.UOMId == detail.UOMId
+    );
+
+    if(findProduct) {
+      if(isMinus) (findProduct?.Quantity > 1) && (findProduct.Quantity--)
+      else (findProduct.Quantity++)
+    }
+
+    (this.orderForm?.get("Details") as FormArray).patchValue(formDetail);
+    this.updateTotalAmount();
+  }
+
 
   ngOnChanges(changes: SimpleChanges): void {
     // console.log(changes.data);
