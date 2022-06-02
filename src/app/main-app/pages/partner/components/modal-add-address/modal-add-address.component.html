@@ -3,13 +3,14 @@
         <tds-label>Địa chỉ</tds-label>
     </div>
     <div>
-        <tpage-check-address
-            [streetText]="_street"
-            [city]="_cities"
-            [district]="_districts"
-            [ward]="_wards"
-            (onChangeAddress)="onChangeAddress($event)">
-        </tpage-check-address>
+      <suggest-address
+          [_isExpanded]="true"
+          [_cities]="_cities"
+          [_districts]="_districts"
+          [_wards]="_wards"
+          [_street]="_street"
+          (onLoadSuggestion)="onLoadSuggestion($event)">
+      </suggest-address>
     </div>
     <div class="w-full flex justify-end p-4" *tdsModalFooter>
         <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>

@@ -79,7 +79,7 @@ export interface PropertyProductPricelist {
 }
 
 export interface AddressesV2 {
-  Id: number;
+  Id: number | null;
   PartnerId: number;
   CityCode: string;
   CityName: string;

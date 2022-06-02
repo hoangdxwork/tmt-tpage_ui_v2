@@ -317,13 +317,13 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   mappingAddress(data: any) {
-    if (data && data.Ship_Receiver.City?.code) {
+    if (data && data.Ship_Receiver?.City?.code) {
       this._cities = {
         code: data.Ship_Receiver.City.code,
         name: data.Ship_Receiver.City.name
       }
     }
-    if (data && data.Ship_Receiver.District?.code) {
+    if (data && data.Ship_Receiver?.District?.code) {
       this._districts = {
         cityCode: data.Ship_Receiver.City?.code,
         cityName: data.Ship_Receiver.City?.name,
@@ -331,7 +331,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
         name: data.Ship_Receiver.District.name
       }
     }
-    if (data && data.Ship_Receiver.Ward?.code) {
+    if (data && data.Ship_Receiver?.Ward?.code) {
       this._wards = {
         cityCode: data.Ship_Receiver.City?.code,
         cityName: data.Ship_Receiver.City?.name,
@@ -341,7 +341,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
         name: data.Ship_Receiver.Ward.name
       }
     }
-    if (data && data.Ship_Receiver.Street) {
+    if (data && data.Ship_Receiver?.Street) {
       this._street = data.Ship_Receiver.Street;
     }
   }
@@ -1723,7 +1723,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   // TODO: cập nhật giá xem hàng
   updateShipExtras() {
     const model = this._form.value as FastSaleOrder_DefaultDTOV2;
-    
+
     if (this.shipExtraServices && model.Ship_Extras) {
       this.shipExtraServices.forEach((service: TDSSafeAny) => {
         if (service.ServiceId === 'XMG') {
