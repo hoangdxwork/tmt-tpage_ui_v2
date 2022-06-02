@@ -9,8 +9,8 @@ import { AddressService } from '../../services/address.service';
 @Component({
   selector: 'tpage-conversation-address',
   templateUrl: './tpage-conversation-address.component.html',
-  styleUrls: ['./tpage-conversation-address.component.scss']
 })
+
 export class TpageConversationAddressComponent implements OnInit {
 
   @Input() streetText: string = "";
