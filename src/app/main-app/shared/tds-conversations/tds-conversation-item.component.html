@@ -19,7 +19,7 @@
 		  <div *ngIf="data.message?.attachments && data.message.attachments.data.length==1" class="flex flex-wrap w-[225px]">
             <div *ngFor="let att of data.message.attachments.data" class="p-0.5">
 				<a *ngIf="att.image_data" (click)="open_gallery(att)">
-					<show-attachment class="w-full h-full" [type]="att.mime_type" [height]="'225px'" [url]="att.image_data?.url" [oneImg]="true" (onError)="isErrorAttachment(att, data)">
+					<show-attachment class="w-full h-full" [type]="att.mime_type" [height]="'225px'" [url]="att.image_data?.url" (onError)="isErrorAttachment(att, data)">
 					</show-attachment>
 				</a>
 				<a *ngIf="att.video_data" (click)="open_gallery(att)">
