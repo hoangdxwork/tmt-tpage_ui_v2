@@ -5,16 +5,14 @@ import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { ConversationService } from "../conversation/conversation.service";
 import { ConversationFacebookState } from "../facebook-state/conversation-facebook.state";
-import { SharedService } from "../shared.service";
 import { SignalRConnectionService } from "../signalR/signalR-connection.service";
 import { CRMMatchingDTO } from '../../dto/conversation-all/crm-matching.dto';
 import { CRMMatchingMappingDTO } from "../../dto/conversation-all/conversation-all.dto";
 import { DataUpdate } from "../../dto/conversation/conversation.dto";
 import { CRMTeamService } from "../crm-team.service";
-import { HrefPageService } from "../href-page.service";
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSNotificationService, TDSSafeAny } from "tmt-tang-ui";
+import { TDSHelperArray, TDSHelperObject, TDSMessageService, TDSNotificationService, TDSSafeAny } from "tmt-tang-ui";
 import { StringHelperV2 } from "../../shared/helper/string.helper";
-import { ActivatedRoute, Router } from "@angular/router";
+import { Router } from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -30,25 +28,26 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   private currentTeam: any;
   private currentUrl!: string;
   public lstTeam!: any[];
+  private nextPageUrlCurrent!: string;
+  isProcessing: boolean = false;
   public onUpdateInfoByConversation$ = new EventEmitter<any>();
 
   constructor(private message: TDSMessageService,
-    private apiService: TCommonService,
     private cvsFbState: ConversationFacebookState,
     private service: ConversationService,
     private crmTeamService: CRMTeamService,
-    private hrefService: HrefPageService,
     private notification: TDSNotificationService,
     private router: Router,
-    private sgRConnectionService: SignalRConnectionService,
-    private sharedService: SharedService) {
+    private apiService: TCommonService,
+    private sgRConnectionService: SignalRConnectionService) {
       super(apiService);
 
       this.crmTeamService.onChangeListFaceBook().subscribe((res :any) => {
         if(res && TDSHelperArray.isArray(res.Items)){
             this.lstTeam = res.Items;
         }
-      });
+      })
+
       this.currentTeam = this.crmTeamService.getCurrentTeam();
       this.currentUrl = this.router.routerState.snapshot.url;
       this.initialize();
@@ -123,7 +122,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     let pageId = data.page_id;
     let psid = data.psid;
 
-    if(value.action == "facebook_messages_delivery"){
+    if(value.action == "facebook_messages_delivery") {
       return
     };
 
@@ -501,6 +500,82 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     return model;
   }
 
+  isEmpty(obj: any) {
+    return Object.keys(obj).length === 0;
+  }
+
+  nextData(pageId: any, type: any): Observable<any> {
+    const data = this.cvsFbState.get(pageId, type);
+    let exist = data && data.response?.hasNextPage || data && data.response?.nextPageUrl != this.nextPageUrlCurrent;
+
+    return new Observable(observer => {
+      if(this.isProcessing) {
+        observer.next(false);
+        observer.complete();
+        return;
+      }
+
+      if(!exist) {
+        observer.next();
+        observer.complete();
+      } else {
+        this.nextPageUrlCurrent = data.response.nextPageUrl;
+        this.service.getLink(this.nextPageUrlCurrent).subscribe((res: any) => {
+
+          if(TDSHelperArray.hasListValue(res.Items)) {
+            data.items = [...data.items, ...this.prepareData(res.Items)];
+            data.response = this.service.createResponse(res);
+
+            observer.next(data);
+            observer.complete();
+          } else {
+            this.isProcessing = true;
+            observer.next();
+            observer.complete();
+          }
+        }, error => {
+          (this.nextPageUrlCurrent as any) = null;
+          observer.next();
+          observer.complete();
+        });
+      }
+    });
+  }
+
+  nextDataWithQuery(pageId: string, type: string, queryObj: any): Observable<any> {
+    let query = Object.keys(queryObj).map(key => {
+      return key + '=' + queryObj[key]
+    }).join('&');
+
+    const data = this.cvsFbState.getByQuery(query);
+    let exist = data && data.response?.hasNextPage || data && data.response?.nextPageUrl != this.nextPageUrlCurrent;
+
+    return new Observable(observer => {
+      if(!exist) {
+        observer.next(false);
+        observer.complete();
+      } else {
+        this.nextPageUrlCurrent = data.response.nextPageUrl;
+        this.service.getLink(this.nextPageUrlCurrent).subscribe((res: any) => {
+
+          if(TDSHelperArray.hasListValue(res.Items)) {
+            data.items = [...data.items, ...this.prepareData(res.Items)];
+            data.response = this.service.createResponse(res);
+
+            observer.next(data);
+            observer.complete();
+          } else {
+            observer.next(false);
+            observer.complete();
+          }
+        }, error => {
+            (this.nextPageUrlCurrent as any) = null;
+            observer.next(false);
+            observer.complete();
+        });
+      }
+    })
+  }
 
   prepareData(datas: Array<any>) {
     datas.forEach((item: any) => {
@@ -524,6 +599,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     });
     return datas;
   }
+
   makeDataSourceWithQuery(pageId: any, type: any, query: any): Observable<any> {
     this.dataSource$ = this.getConversationWithQuery(pageId, type, query);
     return this.dataSource$;

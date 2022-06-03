@@ -12,6 +12,8 @@ import { ConversationOrderFacade } from "../../services/facades/conversation-ord
 import { PhoneHelper } from "../helper/phone.helper";
 import { ReplaceHelper } from "../helper/replace.helper";
 import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
+import { SignalRConnectionService } from "../../services/signalR/signalR-connection.service";
+import { SharedService } from "../../services/shared.service";
 
 @Component({
   selector: "tds-conversation-item",
@@ -44,7 +46,9 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   @ViewChild('contentMessage') contentMessage: any;
 
   constructor(private element: ElementRef,
+    private sharedService: SharedService,
     private tdsMessage: TDSMessageService,
+    private sgRConnectionService: SignalRConnectionService,
     private activityDataFacade: ActivityDataFacade,
     private conversationDataFacade: ConversationDataFacade,
     private conversationOrderFacade: ConversationOrderFacade,
@@ -263,39 +267,51 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     if(this.isReplyingComment){
       return;
     }
+
     this.isReplyingComment = true
-    if(this.isPrivateReply){
+    if(this.isPrivateReply) {
+
       this.isReply = false;
       const model = this.prepareModel(message);
+
       this.activityMatchingService.addQuickReplyComment(model)
         .pipe(takeUntil(this.destroy$))
         .pipe(finalize(() => { this.isReplyingComment = false }))
         .subscribe((res: any) => {
+
         this.tdsMessage.success('Gửi tin thành công');
         res.forEach((item: any) => {
           item["status"] = this.enumActivityStatus.sending;
           this.activityDataFacade.messageServer({ ...item });
           this.messageModel = null;
         });
+
         this.conversationDataFacade.messageServer(res.pop());
+
       }, error => {
         this.tdsMessage.error(`${error?.error?.message}` || "Gửi tin nhắn thất bại.");
       });
-    }else{
+
+    } else {
+
       this.isReply = false;
       const model = this.prepareModel(message);
+
       model.post_id = this.data?.comment?.object?.id || null;
       model.parent_id = this.data?.comment?.id || null;
       model.to_id = this.data.from_id || this.data?.comment?.from?.id || null;
       model.to_name = this.data?.comment?.from?.name || null;
+
       this.activityMatchingService.replyComment(this.team?.Id, model)
         .pipe(takeUntil(this.destroy$))
         .pipe(finalize(() => { this.isReplyingComment = false }))
         .subscribe((res: any) => {
+
           this.tdsMessage.success("Trả lời bình luận thành công.");
           this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });
           this.conversationDataFacade.messageServer({ ...res });
           this.messageModel = null;
+
         }, error => {
           this.tdsMessage.error(`${error?.error?.message}` || "Trả lời bình luận thất bại.");
         });

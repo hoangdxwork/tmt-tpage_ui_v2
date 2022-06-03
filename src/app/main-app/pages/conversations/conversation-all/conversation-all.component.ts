@@ -1,7 +1,7 @@
 import { ModalSendMessageAllComponent } from './../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { finalize, takeUntil, map } from 'rxjs/operators';
@@ -12,6 +12,7 @@ import { ConversationDataFacade } from 'src/app/main-app/services/facades/conver
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { TDSHelperObject, TDSMessageService, TDSHelperArray, TDSHelperString } from 'tmt-tang-ui';
+import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
 
 @Component({
   selector: 'app-conversation-all',
@@ -20,7 +21,10 @@ import { TDSHelperObject, TDSMessageService, TDSHelperArray, TDSHelperString } f
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
+
   isLoading: boolean = false;
+  isLoadingCrm: boolean = false;
   dataSource$!: Observable<any> | undefined;
   lstMatchingItem!: ConversationMatchingItem[];
   destroy$ = new Subject();
@@ -39,9 +43,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   isSearching: boolean = false;
   isRefresh: boolean = false;
   isProcessing:boolean = false;
+  isNextData: boolean = false;
 
   currentOrderTab: number = 0;
-
   letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
   constructor(private message: TDSMessageService,
@@ -99,9 +103,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   loadConversations(dataSource$: Observable<any>) {
     if (dataSource$) {
-      this.isLoading = true;
+      this.isLoadingCrm = true;
       dataSource$.pipe(takeUntil(this.destroy$))
-        .pipe(finalize(() => { this.isLoading = false }))
+        .pipe(finalize(() => { this.isLoadingCrm = false }))
         .subscribe((res: CRMMatchingMappingDTO) => {
           if (res && TDSHelperArray.hasListValue(res.items)) {
               this.lstMatchingItem = [...res.items];
@@ -144,6 +148,47 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   changeCurrentCvsItem(item: any){
     (this.activeCvsItem as any) = null;
     this.getActiveCvsItem(item);
+  }
+
+  trackByIndex(_: number, data: any): number {
+    return data.psid;
+  }
+
+  nextData(event: any) {
+    if(event) {
+      if (this.isLoadingCrm) {
+        return;
+      }
+
+      this.isLoadingCrm = true;
+      if (this.queryFilter) {
+        this.conversationDataFacade.nextDataWithQuery(this.currentTeam?.Facebook_PageId, this.type, this.queryFilter)
+          .pipe(takeUntil(this.destroy$))
+          .pipe(finalize(() => { this.isLoadingCrm = false }))
+          .subscribe(data => {
+            if(data == false) {
+              this.isLoadingCrm = true;
+              return;
+            }
+            if(TDSHelperArray.hasListValue(data?.items)) {
+              this.lstMatchingItem = [...data.items];
+            }
+          })
+      } else {
+        this.conversationDataFacade.nextData(this.currentTeam?.Facebook_PageId, this.type)
+          .pipe(takeUntil(this.destroy$))
+          .pipe(finalize(() => this.isLoadingCrm = false))
+          .subscribe(data => {
+            if(data == false) {
+              this.isLoadingCrm = true;
+              return;
+            }
+            if(TDSHelperArray.hasListValue(data?.items)) {
+              this.lstMatchingItem = [...data.items];
+            }
+          })
+      }
+    }
   }
 
   ngAfterViewInit(): void {
