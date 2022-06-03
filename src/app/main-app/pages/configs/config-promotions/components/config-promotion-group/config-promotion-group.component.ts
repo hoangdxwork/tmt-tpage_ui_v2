@@ -54,6 +54,10 @@ export class ConfigPromotionGroupComponent implements OnInit {
     private message: TDSMessageService,
   ) { }
 
+  get getRewardTypeFormGroup() {
+    return this.form.value.RewardType;
+  }
+
   ngOnInit(): void {
     this.loadProductCategory();
     this.loadCompany();
@@ -272,5 +276,9 @@ export class ConfigPromotionGroupComponent implements OnInit {
         id++;
       }
     });
+  }
+
+  onChangeRewardType(value: string) {
+    this.form.controls.RewardType.setValue(value);
   }
 }
