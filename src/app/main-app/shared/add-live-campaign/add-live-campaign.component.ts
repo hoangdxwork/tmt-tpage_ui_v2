@@ -1,22 +1,26 @@
 import { finalize } from 'rxjs/operators';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { id } from 'date-fns/locale';
 import { Message } from 'src/app/lib/consts/message.const';
-import { TDSMessageService, TDSModalRef, TDSModalService, TDSSafeAny, TDSHelperArray } from 'tmt-tang-ui';
+import { TDSMessageService, TDSModalRef, TDSModalService, TDSSafeAny, TDSHelperArray, TDSHelperString } from 'tmt-tang-ui';
 import { SaleOnlineLiveCampaignDetailDTO, SaleOnline_LiveCampaignDTO } from '../../dto/live-campaign/live-campaign.dto';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
 import { Observable } from 'rxjs';
 import { QuickReplyService } from '../../services/quick-reply.service';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
+import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.service';
 
 @Component({
   selector: 'add-live-campaign',
   templateUrl: './add-live-campaign.component.html'
 })
 export class AddLiveCampaignComponent implements OnInit {
+
+  @Input() id?: string;
+  @Input() isCopy?: boolean;
 
   @Output() onSuccess = new EventEmitter<SaleOnline_LiveCampaignDTO>();
 
@@ -39,6 +43,7 @@ export class AddLiveCampaignComponent implements OnInit {
     private liveCampaignService: LiveCampaignService,
     private applicationUserService: ApplicationUserService,
     private quickReplyService: QuickReplyService,
+    private fastSaleOrderLineService: FastSaleOrderLineService,
     private message: TDSMessageService,
   ) { }
 
@@ -49,6 +54,7 @@ export class AddLiveCampaignComponent implements OnInit {
   ngOnInit(): void {
     this.createForm();
 
+    this.loadData(this.id);
     this.loadUser();
     this.loadQuickReply();
   }
@@ -81,8 +87,86 @@ export class AddLiveCampaignComponent implements OnInit {
     this.lstQuickReplies$ = this.quickReplyService.dataActive$;
   }
 
-  removeDetail(index: number, detail: TDSSafeAny) {
+  loadData(id?: string) {
+    if(id) {
+      this.isLoading = true;
+      this.liveCampaignService.getDetailById(id)
+        .pipe(finalize(() => this.isLoading = false))
+        .subscribe(res => {
+          this.updateForm(res);
+        });
+    }
+  }
 
+  updateForm(data: SaleOnline_LiveCampaignDTO) {
+    if(!this.isCopy) data.Id = undefined;
+
+    this.formCreateLiveCampaign.patchValue(data);
+
+    this.initFormDetails(data.Details);
+  }
+
+  initFormDetails(details: SaleOnlineLiveCampaignDetailDTO[]) {
+    if(TDSHelperArray.hasListValue(details)) {
+      details.forEach(detail => {
+        const control = <FormArray>this.formCreateLiveCampaign.controls['Details'];
+        control.push(this.initDetail(detail));
+      });
+    }
+  }
+
+  initDetail(detail?: SaleOnlineLiveCampaignDetailDTO) {
+    let detailFormGroup = this.formBuilder.group({
+        Id: [null],
+        Index: [null],
+        Quantity: [null],
+        RemainQuantity: [null],
+        ScanQuantity: [null],
+        UsedQuantity: [null],
+        Price: [null],
+        Note: [null],
+        ProductId: [null],
+        ProductName: [null],
+        ProductNameGet: [null],
+        UOMId: [null],
+        UOMName: [null],
+        Tags: [null],
+        LimitedQuantity: [null],
+        ProductCode: [null],
+        ImageUrl: [null],
+        IsActive: true
+    });
+
+    if(detail) {
+      detailFormGroup.patchValue(detail);
+    }
+
+    return detailFormGroup;
+  }
+
+  removeDetail(index: number, detail: TDSSafeAny) {
+    if(TDSHelperString.hasValueString(detail?.Id) && !this.isCopy) {
+      this.isLoading = true;
+      this.fastSaleOrderLineService.getByLiveCampaignId(detail.Id, detail.ProductId, detail.UOMId).pipe(finalize(() => this.isLoading = false)).subscribe(res => {
+        if(TDSHelperArray.hasListValue(res?.value)) {
+          this.message.error(Message.LiveCampaign.ErrorRemoveLine);
+        }
+        else {
+          const control = <FormArray>this.formCreateLiveCampaign.controls['Details'];
+          control.removeAt(index);
+        }
+      }, error => {
+        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
+      });
+    }
+    else {
+      const control = <FormArray>this.formCreateLiveCampaign.controls['Details'];
+      control.removeAt(index);
+    }
+  }
+
+  removeAllDetail() {
+    this.message.info('Chưa thể xóa tất cả sản phẩm.');
   }
 
   onSave() {
@@ -144,7 +228,6 @@ export class AddLiveCampaignComponent implements OnInit {
         return 0;
       }
     }
-
 
     return 1;
   }

@@ -80,7 +80,7 @@ export class CheckFormHandler {
     model.Facebook_ASUserId = formValue.Facebook_ASUserId,
     model.Facebook_UserName = formValue.Facebook_UserName || formValue.PartnerName,
     model.Facebook_CommentId = formValue.Facebook_CommentId,
-    model.Facebook_Comments = formValue.Facebook_Comments,
+    model.Facebook_Comments = formValue.Facebook_Comments || [],
     model.Facebook_PostId = formValue.Facebook_PostId,
     model.PartnerName = formValue.PartnerName,
     model.Name = formValue.PartnerName || formValue.Name,

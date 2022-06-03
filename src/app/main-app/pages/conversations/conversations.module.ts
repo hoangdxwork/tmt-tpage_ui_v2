@@ -79,6 +79,8 @@ import { AutoLabelConfigComponent } from './components/config-post/label-config/
 import { AutoReplyConfigComponent } from './components/config-post/reply-config/auto-reply-config.component';
 import { ModalReportOrderPostComponent } from './components/post-filter/modal-report-order-post.component';
 import { ModalListCollectionComponent } from './components/modal-list-collection/modal-list-collection.component';
+import { ModalTaxComponent } from './components/modal-tax/modal-tax.component';
+import { AccountTaxService } from '../../services/account-tex.service';
 import { DirectivesModule } from '../../shared/directives/directives.module';
 
 const SERVICES = [
@@ -116,7 +118,8 @@ const SERVICES = [
   AttachmentService,
   AttachmentState,
   ProductIndexDBService,
-  LiveCampaignService
+  LiveCampaignService,
+  AccountTaxService
 ]
 
 @NgModule({
@@ -156,7 +159,8 @@ const SERVICES = [
     PostHiddenCommentConfigComponent,
     AutoReplyConfigComponent,
     ModalReportOrderPostComponent,
-    ModalListCollectionComponent
+    ModalListCollectionComponent,
+    ModalTaxComponent
   ],
 
   imports: [

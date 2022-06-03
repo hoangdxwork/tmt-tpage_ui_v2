@@ -34,6 +34,15 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<SaleOnline_LiveCampaignDTO>(api, null);
 	}
 
+  getDetailById(id: string): Observable<SaleOnline_LiveCampaignDTO> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})?$expand=Details,Users,Preliminary_Template,ConfirmedOrder_Template`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<SaleOnline_LiveCampaignDTO>(api, null);
+  }
+
   getAvailables(): Observable<ODataResponsesDTO<SaleOnline_LiveCampaignDTO>> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetAvailables?$orderby=DateCreated%20desc&$top=${30}`,

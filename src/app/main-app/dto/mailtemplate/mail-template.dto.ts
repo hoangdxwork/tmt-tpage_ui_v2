@@ -1,9 +1,9 @@
 export interface MailTemplateDTO {
-  id: string;
-  name: string;
-  postId: string;
-  crmTeamId?: number;
-  messageId: string;
+  Id: string;
+  Name: string;
+  PostId: string;
+  CRMTeamId?: number;
+  MessageId: string;
 }
 
 export interface MailTemplateUpdateDTO {

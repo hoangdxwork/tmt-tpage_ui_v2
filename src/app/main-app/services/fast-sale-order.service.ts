@@ -304,14 +304,6 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  getTax(): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/AccountTax/ODataService.GetWithCompany`,
-      method: TApiMethodType.get,
-    }
-    return this.apiService.getData<ODataTaxDTO>(api, null);
-  }
-
   getConversationOrderBillByPartner(id: number): Observable<ConversationOrderBillByPartnerDTO> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/get_conversationorderbill_bypartner(${id})`,
@@ -341,7 +333,7 @@ export class FastSaleOrderService extends BaseSevice {
 
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
-  
+
   getOrderLineData(key: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})/OrderLines?$expand=Product,ProductUOM,Account,SaleLine,User`,

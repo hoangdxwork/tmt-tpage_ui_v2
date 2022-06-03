@@ -28,6 +28,7 @@ export const Message = {
     EmptyProduct: 'Hãy nhập sản phẩm!',
     DeleteSuccess: 'Xóa thành công đơn hàng',
     LoadUpdatePartnerFail: 'Không thể cập nhật không tin khách hàng',
+    UpdateTax: 'Cập nhật thuế cho đơn hàng thành công.'
   },
   Bill: {
     InsertSuccess: 'Tạo hóa đơn thành công.',
@@ -107,6 +108,7 @@ export const Message = {
     TagOnPatternEmpty: 'Vui lòng nhập đầy đủ nhãn và nội dung.'
   },
   LiveCampaign: {
-    ErrorNumberDetail: 'Số lượng, số tiền, giới hạn trên đơn không được để trống.'
+    ErrorNumberDetail: 'Số lượng, số tiền, giới hạn trên đơn không được để trống.',
+    ErrorRemoveLine: 'Sản phẩm đã có hóa đơn không thể xóa.'
   }
 }

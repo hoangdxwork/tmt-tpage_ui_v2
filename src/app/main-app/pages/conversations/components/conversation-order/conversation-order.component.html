@@ -65,6 +65,7 @@
         </tds-collapse>
       </div>
 
+      <!-- Detail Product -->
       <div class="pt-1">
         <tds-collapse [expandIconPosition]="'right'" class="bg-neutral-3-50 collapse-content-bg-white">
           <tds-collapse-panel [header]="headerProduct" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
@@ -87,13 +88,13 @@
                   <span tdsSuffix class="cursor-pointer" title="Chọn sản phẩm" (click)="showModalListProduct()"><i class="tdsi-product-fill"></i></span>
                 </tds-form-field>
 
-                <button tds-button-icon color="secondary" class="cursor-pointer" title="Thêm sản phẩm" (click)="showModalAddProduct()">
+                <button tds-button-icon type="button" color="secondary" class="cursor-pointer" title="Thêm sản phẩm" (click)="showModalAddProduct()">
                   <span class="flex items-center">
                     <i class="tdsi-add-fill text-primary-1"></i>
                   </span>
                 </button>
 
-                <button tds-button-icon color="secondary" class="cursor-pointer" title="Cấu hình sản phẩm" (click)="showModalConfigProduct()">
+                <button tds-button-icon type="button" color="secondary" class="cursor-pointer" title="Cấu hình sản phẩm" (click)="showModalConfigProduct()">
                   <span class="flex items-center">
                     <i class="tdsi-gear-2-fill text-neutral-1-400"></i>
                   </span>
@@ -103,44 +104,106 @@
                 <tds-table #basicTable class="w-full h-full" [listData]="detailsFormGroups.value" showPagination="false" [scroll]="{y:'auto'}">
                   <thead class="bg-neutral-2-50">
                     <tr class="bg-neutral-2-50">
-                      <th width="228px" class="bg-neutral-2-50"><div class="uppercase text-caption-2">Sản phẩm</div></th>
-                      <th width="88px" class="bg-neutral-2-50"><div class="uppercase text-caption-2">Số lượng</div></th>
-                      <th width="137px" class="bg-neutral-2-50"><div class="uppercase text-caption-2">Giá bán</div></th>
-                      <th class="bg-neutral-2-50"><i class="tdsi-trash-line text-error-500 text-lg"></i></th>
+                      <!-- <th width="50%" class="bg-neutral-2-50"><div class="uppercase text-caption-2">Sản phẩm</div></th>
+                      <th width="26%" class="bg-neutral-2-50"><div class="uppercase text-caption-2">Số lượng</div></th> -->
+                      <!-- <th width="137px" class="bg-neutral-2-50"><div class="uppercase text-caption-2">Giá bán</div></th> -->
+                      <!-- <th width="23%" class="bg-neutral-2-50 flex w-full justify-end"><i class="tdsi-trash-line text-error-500 text-lg"></i></th> -->
                     </tr>
                   </thead>
                   <tbody formArrayName="Details">
                     <tr class="bg-white editable-row" *ngFor="let detail of detailsFormGroups.controls; let index=index" [formGroupName]="index">
-                      <td class="border-b border-dashed border-neutral-1-200">
+                      <!-- Sản phẩm -->
+                      <td class="border-b border-dashed border-neutral-1-200" width="50%">
                         <div class="text-body-2">
                           {{detail?.value?.ProductNameGet}}
-                          <div *ngIf="detail?.value?.Note" class="editable-cell cursor-pointer flex items-center italic" [class.hidden]="editNoteProduct === detail?.value?.ProductId"
-                            (click)="startEdit(detail?.value?.ProductId)">
+
+                           <!-- giá bán -->
+                          <div class="text-neutral-1-400 flex items-center gap-x-2">
+                            <span class="text-[13px] flex">
+                              <span *ngIf="detail?.value?.UOMName" class="text-[13px] flex">
+                                {{ detail?.value?.UOMName }} -&nbsp;
+                              </span>
+                              {{ detail?.value?.Price | number: '1.0-3' }}đ</span>
+                            <i class="tdsi-edit-line flex text-base cursor-pointer" (click)="openPriceDetail(index, detail.value)" (visibleChange)="visibleChange($event)"
+                            tds-popover [popoverVisible]="visibleIndex == index " popoverTrigger="click" [popoverContent]="tmpEditPrice" [popoverAutoClose]="true"
+                            [popoverBackdrop]="true"></i>
+
+                            <ng-template #tmpEditPrice>
+                              <div class="w-[336px] flex flex-col gap-y-4" *ngIf="detailEdit">
+                                <div class="flex gap-x-4 items-center">
+                                  <tds-label class="w-1/3">Đơn giá</tds-label>
+                                  <tds-form-field class="w-2/3">
+                                    <tds-input-number autocomplete="off" placeholder="0" [min]="0" [step]="1000"
+                                      [(ngModel)]="detailEdit.Price" [ngModelOptions]="{standalone: true}">
+                                    </tds-input-number>
+                                  </tds-form-field>
+                                </div>
+                                <div class="flex gap-x-4 items-center">
+                                  <tds-label class="w-1/3">Giảm giá</tds-label>
+                                  <tds-form-field class="w-2/3">
+                                    <tds-input-number autocomplete="off" placeholder="0" [disabled]="true" ></tds-input-number>
+                                    <span tdsSuffix>
+                                      <span class="text-body-2 font-semibold font-sans text-primary-1">%</span>
+                                      <span class="text-body-2 font-semibold font-sans text-neutral-1-400 pl-2">VNĐ</span>
+                                    </span>
+                                  </tds-form-field>
+                                </div>
+                                <div class="flex gap-x-2 mt-4 justify-end">
+                                  <button class="text-sm font-semibold py-1 pl-3 pr-3" tds-button color="secondary" size="'sm'"
+                                    (click)="closePriceDetail()">Huỷ bỏ</button>
+                                  <button class="text-sm font-semibold py-1 pl-3 pr-3" tds-button color="primary" size="'sm'"
+                                    (click)="editPriceDetail()">Áp dụng</button>
+                                </div>
+                              </div>
+                            </ng-template>
+                          </div>
+
+                          <!-- ghi chú -->
+                          <div *ngIf="detail?.value?.Note" class="editable-cell cursor-pointer flex items-center italic"
+                            [class.hidden]="editNoteProduct === detail?.value?.ProductId" (click)="startEdit(detail?.value?.ProductId)">
                               <span class="text-neutral-1-400">{{detail?.value?.Note}}</span>
                               <span class="text-neutral-1-400 text-lg ml-1 tdsi-edit-line"></span>
                           </div>
                           <div *ngIf="!detail?.value?.Note" class="editable-cell cursor-pointer flex items-center italic">
                             <span class="text-[#006EEF]" (click)="startEdit(detail?.value?.ProductId)">Ghi chú</span>
                           </div>
+
                         </div>
                         <tds-form-field [class.hidden]="editNoteProduct !== detail?.value?.ProductId" class="pt-2">
-                          <input tdsInput placeholder="Ghi chú" formControlName="Note" (blur)="stopEdit()" />
+                          <input tdsInput placeholder="Ghi chú" formControlName="Note" (blur)="stopEdit()" (keyup.enter)="stopEdit()" />
                         </tds-form-field>
                       </td>
-                      <td class="border-b border-dashed border-neutral-1-200">
-                        <tds-form-field>
-                          <tds-input-number placeholder="Số lượng" [min]="0" [step]="1" formControlName="Quantity"
-                          (ngModelChange)="updateTotalAmount()"></tds-input-number>
-                        </tds-form-field>
+
+                      <!-- Số lượng -->
+                      <td class="border-b border-dashed border-neutral-1-200" width="26%">
+                        <div class="flex items-center gap-x-2">
+                          <span class="flex items-center text-xl" (click)="changeQuantityDetail(detail.value, true)">
+                            <i class="tdsi-block-fill text-neutral-1-100 hover:text-primary-1 cursor-pointer"></i>
+                          </span>
+
+                          <tds-form-field class="w-[48px]">
+                            <input tdsInput class="text-center" placeholder="Số lượng" [min]="0" [step]="1" formControlName="Quantity"
+                            (ngModelChange)="updateTotalAmount()" />
+                          </tds-form-field>
+
+                          <span class="flex items-center text-xl" (click)="changeQuantityDetail(detail.value, false)">
+                            <i class="tdsi-add-fill text-neutral-1-100 hover:text-primary-1 cursor-pointer"></i>
+                          </span>
+                        </div>
                       </td>
-                      <td class="border-b border-dashed border-neutral-1-200">
+                      <!-- Giá bán -->
+                      <!-- <td class="border-b border-dashed border-neutral-1-200">
                         <tds-form-field>
                           <tds-input-number placeholder="Giá bán" [min]="0" [step]="1000" formControlName="Price"
                           (ngModelChange)="updateTotalAmount()"></tds-input-number>
                         </tds-form-field>
-                      </td>
-                      <td class="border-b border-dashed border-neutral-1-200">
-                        <i class="tdsi-trash-line text-error-500 text-xl cursor-pointer" (click)="removeDetail(index)"></i>
+                      </td> -->
+
+                      <!-- Thao tác -->
+                      <td class="border-b border-dashed border-neutral-1-200" width="23%">
+                        <div class="flex w-full justify-end">
+                          <i class="tdsi-trash-line text-error-500 text-xl cursor-pointer" (click)="removeDetail(index)"></i>
+                        </div>
                       </td>
                     </tr>
                   </tbody>
@@ -159,11 +222,46 @@
                     <div class="w-1/3 text-body-2 font-regular font-sans text-neutral-1-900">Giảm giá</div>
                     <div class="w-2/3">
                       <tds-form-field>
-                        <tds-input-number autocomplete="off" placeholder="0" [disabled]="true" [ngModelOptions]="{standalone: true}"
+                        <tds-input-number autocomplete="off" placeholder="0" [ngModelOptions]="{standalone: true}"
                         [ngModel]="orderForm.value?.DecreaseAmount + orderForm.value?.DiscountAmount | number" ></tds-input-number>
                         <span tdsSuffix>
-                          <span class="text-body-2 font-semibold font-sans text-primary-1">%</span>
-                          <span class="text-body-2 font-semibold font-sans text-neutral-1-400 pl-2">VNĐ</span>
+                          <span class="tdsi-discount-fill text-primary-1 text-xl" tds-popover popoverTrigger="click"
+                            [popoverContent]="tmpDiscount" [popoverAutoClose]="true" [popoverBackdrop]="true">
+                          </span>
+
+                          <ng-template #tmpDiscount>
+                            <div class="flex flex-col gap-y-2">
+
+                              <div class="flex items-center">
+                                <tds-label class="w-[35%] font-normal text-sm">Chiếc khấu (%)</tds-label>
+
+                                <tds-form-field class="w-[35%]">
+                                  <tds-input-number autocomplete="off" placeholder="0" [min]="0" [max]="100" [step]="1" formControlName="Discount"
+                                  (ngModelChange)="updateTotalAmount()"></tds-input-number>
+                                  <span tdsSuffix>
+                                    <span class="text-body-2 font-semibold font-sans text-primary-1">%</span>
+                                  </span>
+                                </tds-form-field>
+                                <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
+                                  <span> -{{ orderForm.value?.DiscountAmount || 0 | number: '1.0-3' }} </span>
+                                </div>
+                              </div>
+
+                              <div class="flex items-center">
+                                <tds-label class="w-[35%] font-normal text-sm">Giảm tiền</tds-label>
+
+                                <tds-form-field class="w-[35%]">
+                                  <tds-input-number autocomplete="off" placeholder="0" [min]="0" [step]="1000" formControlName="DecreaseAmount"
+                                  (ngModelChange)="updateTotalAmount()"></tds-input-number>
+                                </tds-form-field>
+                                <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
+                                  <span> -{{ orderForm.value?.DecreaseAmount || 0 | number: '1.0-3' }} </span>
+                                </div>
+                              </div>
+
+                            </div>
+                          </ng-template>
+
                         </span>
                       </tds-form-field>
                     </div>
@@ -183,7 +281,7 @@
                       <tds-form-field>
                         <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0"
                           formControlName="AmountTax" ></tds-input-number>
-                        <span tdsSuffix><i class="tdsi-revenue-fill text-primary-1 text-xl"></i></span>
+                        <span tdsSuffix><i class="tdsi-revenue-fill text-primary-1 text-xl" (click)="showModalTax()"></i></span>
                       </tds-form-field>
                     </div>
                   </div>
@@ -223,11 +321,13 @@
           </tds-collapse-panel>
         </tds-collapse>
       </div>
+
       <div class="pt-1">
         <div class="py-4 bg-primary-3 px-6">
           <tds-checkbox [(ngModel)]="isEnableCreateOrder" [ngModelOptions]="{standalone: true}">Tạo hoá đơn bán hàng</tds-checkbox>
         </div>
       </div>
+
       <div class="pt-1">
         <tds-spin [spinning]="isLoadingCarrier">
           <div class="pt-1" *ngIf="isEnableCreateOrder">
@@ -273,7 +373,7 @@
                       <div class="text-body-2 font-regular font-sans text-info-500">
                         Phí ship (đối tác): <span class="pl-2 font-semibold"> {{ saleModel.CustomerDeliveryPrice  || 0 | number}} </span>
                       </div>
-                      <button tds-button-icon color="info" (click)="calcFee()">
+                      <button type="button" tds-button-icon color="info" (click)="calcFee()">
                         <span class="flex items-center">
                           <i class="tdsi-reload-fill"></i>
                         </span>
@@ -284,7 +384,7 @@
                       <div class="text-body-2 font-regular font-sans text-info-500">
                         Giá trị hàng hóa: = Tổng hóa đơn {{ saleModel.Ship_InsuranceFee || 0 | number }}
                       </div>
-                      <button tds-button-icon color="info">
+                      <button type="button" tds-button-icon color="info">
                         <span class="flex items-center">
                           <i class="tdsi-reload-fill"></i>
                         </span>
@@ -298,7 +398,7 @@
                           <input tdsInput autocomplete="off" placeholder="1" [required]='true'
                           [(ngModel)]="saleModel.ShipWeight" [ngModelOptions]="{standalone: true}" />
                         </tds-form-field>
-                        <button tds-button-icon color="primary">
+                        <button type="button" tds-button-icon color="primary">
                           <span class="flex items-center">
                             <i class="tdsi-location-fill"></i>
                           </span>
@@ -335,13 +435,13 @@
           </div>
           <div class="pt-1">
               <div class="bg-white py-3 px-6 flex gap-3" *ngIf="!isEnableCreateOrder">
-                <button tds-button color="primary" (click)="onSave()">Lưu nháp</button>
-                <button tds-button color="info" (click)="onSave('print')">Lưu & in</button>
+                <button tds-button type="button" color="primary" (click)="onSave()">Lưu nháp</button>
+                <button tds-button type="button" color="info" (click)="onSave('print')">Lưu & in</button>
               </div>
               <div class="bg-white py-3 px-6 flex gap-3" *ngIf="isEnableCreateOrder">
-                <button tds-button color="primary" (click)="onSave('draft')">Lưu nháp</button>
-                <button tds-button color="info" (click)="onSave('print')">Xác nhận & in</button>
-                <button tds-button color="info" (click)="onSave('printShip')">Xác nhận & in ship</button>
+                <button tds-button type="button" color="primary" (click)="onSave('draft')">Lưu nháp</button>
+                <button tds-button type="button" color="info" (click)="onSave('print')">Xác nhận & in</button>
+                <button tds-button type="button" color="info" (click)="onSave('printShip')">Xác nhận & in ship</button>
               </div>
           </div>
         </tds-spin>
