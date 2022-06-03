@@ -38,11 +38,15 @@ export class LayoutComponent implements OnInit {
       icon: "tdsi-edit-paper-fill",
       link: '/conversation/post',
     },
-
     {
       name: "Đơn hàng",
       icon: "tdsi-bag-fill",
       link: '/order',
+    },
+    {
+      name: "Chiến dịch live",
+      icon: "tdsi-marketing-fill",
+      link: '/live-campaign',
     },
     {
       name: "Phiếu bán hàng",
