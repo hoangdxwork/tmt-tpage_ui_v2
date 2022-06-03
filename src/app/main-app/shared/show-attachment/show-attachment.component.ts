@@ -15,6 +15,7 @@ export class ShowAttachmentComponent implements OnInit, OnChanges {
   @Input() width!: string;
   @Input() isMuted: boolean = true;
   @Input() isControls: boolean = true;
+  @Input() oneImg: boolean = false;
   @Output() onError: EventEmitter<any> = new EventEmitter<any>();
 
   public currentType!: string;
