@@ -20,8 +20,75 @@ import { NetworkHelper } from '../shared/helper/network.helper';
 export class LayoutComponent implements OnInit {
 
   userInit!: UserInitDTO;
+<<<<<<< HEAD
+  lstMenu = [
+    {
+      name: "Tổng quan",
+      icon: "tdsi-home-fill",
+      link: '/dashboard',
+    },
+    {
+      name: "Tất cả",
+      icon: "tdsi-drawer-fill",
+      link: '/conversation/all',
+    },
+    {
+      name: "Tin nhắn",
+      icon: "tdsi-email-fill",
+      link: '/conversation/inbox',
+    },
+
+    {
+      name: "Bình luận",
+      icon: "tdsi-comment-fill",
+      link: '/conversation/comment',
+    },
+
+    {
+      name: "Bài viết",
+      icon: "tdsi-edit-paper-fill",
+      link: '/conversation/post',
+    },
+    {
+      name: "Đơn hàng",
+      icon: "tdsi-bag-fill",
+      link: '/order',
+    },
+    {
+      name: "Chiến dịch live",
+      icon: "tdsi-marketing-fill",
+      link: '/live-campaign',
+    },
+    {
+      name: "Phiếu bán hàng",
+      icon: "tdsi-dataset-fill",
+      link: '/bill',
+    },
+    {
+      name: "Khách hàng",
+      icon: "tdsi-user-fill",
+      link: '/partner',
+    },
+    {
+      name: "Kênh kết nối",
+      icon: "tdsi-facebook-2-fill",
+      link: '/facebook',
+    },
+    {
+      name: "Thống kê",
+      icon: "tdsi-chart-pie-fill",
+      link: '/report',
+    },
+    {
+      name: "Cấu hình",
+      icon: "tdsi-gear-line",
+      link: '/configs',
+    },
+  ];
+=======
   currentTeam!: CRMTeamDTO | null;
   lstMenu!: TDSSafeAny;
+>>>>>>> dev
   inlineCollapsed = false;
   params!: TDSSafeAny;
   private destroy$ = new Subject<void>();

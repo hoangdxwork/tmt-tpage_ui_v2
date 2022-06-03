@@ -39,9 +39,15 @@ const routes: Routes = [
       {
         path: "live-campaign",
         data: {
+<<<<<<< HEAD
+          breadcrumb: 'Live Campaign'
+        },
+        loadChildren: () => import('./pages/live-campaign/live-campaign.module').then(m => m.LiveCampaignModule)
+=======
           breadcrumb: 'LiveCampaign'
         },
         loadChildren: () => import('./pages/livecampaign/livecampaign.module').then(m => m.LiveCampaignModule)
+>>>>>>> dev
       },
       {
         path: "bill",
