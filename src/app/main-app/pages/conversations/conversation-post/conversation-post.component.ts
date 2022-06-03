@@ -184,7 +184,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
             }
           }
           this.isLoading = false;
-          console.log(this.data);
 
           return this.data;
         }));

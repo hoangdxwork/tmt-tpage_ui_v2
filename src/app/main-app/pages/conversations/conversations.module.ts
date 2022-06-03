@@ -195,7 +195,7 @@ const SERVICES = [
     TDSImageModule,
     PipeModule,
     TDSEmptyModule,
-    TDSUploadModule,
+    TDSUploadModule
   ],
   providers: [ ...SERVICES]
 })

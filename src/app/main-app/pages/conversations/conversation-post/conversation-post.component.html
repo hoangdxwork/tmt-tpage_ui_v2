@@ -1,6 +1,6 @@
 <tds-spin [spinning]="isLoading">
   <div class="w-full h-full flex items-stretch bg-neutral-3-200 overflow-hidden">
-      <div class="w-[357px] h-full flex flex-col gap-y-1 text-body-2 text-neutral-1-900 overflow-hidden">
+      <div class="w-[20%] h-full flex flex-col gap-y-1 text-body-2 text-neutral-1-900 overflow-hidden">
           <div class="w-full flex flex-col gap-1 px-1">
               <div class="bg-white p-2.5 flex flex-col gap-y-4">
                   <div class="w-full">
@@ -97,16 +97,16 @@
           </div>
       </div>
       <!--Chọn bài viết để hiển thị chi tiết-->
-      <div class="flex flex-auto flex-col  h-full overflow-hidden">
-          <div *ngIf="currentPost && currentTeam">
+      <div class="w-[50%] flex flex-col h-full overflow-hidden">
+          <div *ngIf="currentPost && currentTeam" class="h-full w-full">
             <conversation-post-view [data]="currentPost" [team]="currentTeam"></conversation-post-view>
           </div>
-          <div *ngIf="!currentPost">
+          <div *ngIf="!currentPost" class="h-full w-full">
               Hãy chọn một bài viết.
           </div>
       </div>
       <!-- Danh sách khách hàng, đơn hàng -->
-      <div class="w-[576px] h-full flex flex-col">
+      <div class="w-[30%] h-full flex flex-col">
           <tds-tabset class="w-full h-full flex " [clsTab]="'flex-1'" [(selectedIndex)]="currentOrderTab"
               [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
               <!-- tab Danh sách -->
