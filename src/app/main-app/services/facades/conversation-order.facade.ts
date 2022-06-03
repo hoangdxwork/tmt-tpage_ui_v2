@@ -1,3 +1,4 @@
+import { ActivityByGroup } from './../../dto/conversation/post/comment-group.dto';
 import { Message } from './../../../lib/consts/message.const';
 import { OrderFormHandler } from './../handlers/order-form.handler';
 import { EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
@@ -187,27 +188,32 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
       });
   }
 
-  commentFormPost(data: any, isCreateOrder: boolean) { // Chưa có DTO đầu vào
+  commentFormPost(data: ActivityByGroup, isCreateOrder: boolean) {
     let psid = data?.from?.id;
     let postId = data?.object?.id;
-    let pageId = postId.split("_")[0];
-    let currentTeam = this.crmTeamService.getCurrentTeam();
 
-    if(isCreateOrder === true) {
-      this.isLoadingOrder$.emit(true);
-      this.onChangeTab$.emit(ChangeTabConversationEnum.order);
-      this.createOrderByComment(data, psid, pageId).pipe(finalize(() => this.isLoadingOrder$.emit(false)))
-        .subscribe(res => {
-          this.checkConversation(pageId, psid, data);
-        }, error => {});
-    }
-    else {
-      this.isLoadingPartner$.emit(true);
-      this.onChangeTab$.emit(ChangeTabConversationEnum.partner);
-      this.loadPartnerByComment(data, psid, postId, currentTeam?.Id).pipe(finalize(() => this.isLoadingPartner$.emit(false)))
-        .subscribe(res => {
-          this.checkConversation(pageId, psid, data);
-        }, error => {});
+    if(postId){
+      let pageId = postId.split("_")[0];
+      let currentTeam = this.crmTeamService.getCurrentTeam();
+
+      if(isCreateOrder === true) {
+        this.isLoadingOrder$.emit(true);
+        this.onChangeTab$.emit(ChangeTabConversationEnum.order);
+        this.createOrderByComment(data, psid, pageId).pipe(finalize(() => this.isLoadingOrder$.emit(false)))
+          .subscribe(res => {
+            this.checkConversation(pageId, psid, data);
+          }, error => {});
+      }
+      else {
+        this.isLoadingPartner$.emit(true);
+        this.onChangeTab$.emit(ChangeTabConversationEnum.partner);
+        this.loadPartnerByComment(data, psid, postId, currentTeam?.Id).pipe(finalize(() => this.isLoadingPartner$.emit(false)))
+          .subscribe(res => {
+            this.checkConversation(pageId, psid, data);
+          }, error => {});
+      }
+    }else{
+      this.message.error('Không tìm thấy thông tin page')
     }
   }
 

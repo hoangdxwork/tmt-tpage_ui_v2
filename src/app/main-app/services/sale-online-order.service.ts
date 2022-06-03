@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tmt-tang-ui";
 import { ODataModelDTO, ODataModelTeamDTO } from "../dto/odata/odata.dto";
@@ -16,10 +16,8 @@ export class SaleOnline_OrderService extends BaseSevice {
   prefix: string = "odata";
   table: string = "SaleOnline_Order";
   baseRestApi: string = "rest/v1.0/saleonline_order";
-
-  public onSetCommentOrders: EventEmitter<any> = new EventEmitter();
-
   public _keyCacheGrid: string = 'saleonline_order-page:grid_saleonline_order:settings';
+  public onSetCommentOrders: EventEmitter<any> = new EventEmitter();
 
   constructor(private apiService: TCommonService) {
     super(apiService)
@@ -146,5 +144,4 @@ export class SaleOnline_OrderService extends BaseSevice {
   setCommentOrder(data: any, fbid: string) {
     this.onSetCommentOrders.emit({ data: data, fbid: fbid });
   }
-
 }

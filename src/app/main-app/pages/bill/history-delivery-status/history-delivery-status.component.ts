@@ -13,6 +13,7 @@ import { Component, OnInit } from '@angular/core';
 export class HistoryDeliveryStatusComponent implements OnInit, OnDestroy {
 
   lstHistoryDS:HistoryDeliveryDTO[] = [];
+  expandSet = new Set<number>();
   pageSize = 20;
   pageIndex = 1;
   isLoading: boolean = false;
@@ -50,6 +51,14 @@ export class HistoryDeliveryStatusComponent implements OnInit, OnDestroy {
   refreshData(){
     this.pageIndex = 1;
     this.loadHistoryDS(this.pageSize,this.pageIndex);
+  }
+
+  onExpandChange(id: number, checked: boolean): void {
+    if (checked) {
+        this.expandSet.add(id);
+    } else {
+        this.expandSet.delete(id);
+    }
   }
 
   ngOnDestroy(): void {
