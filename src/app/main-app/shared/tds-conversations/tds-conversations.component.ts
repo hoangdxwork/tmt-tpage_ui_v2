@@ -1,5 +1,4 @@
 import { TDSSafeAny } from 'tmt-tang-ui';
-import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { ConfigConversationTagsCreateDataModalComponent } from './../../pages/configs/components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
 import { ModalListBillComponent } from './../../pages/conversations/components/modal-list-bill/modal-list-bill.component';
 import { ModalListProductComponent } from './../../pages/conversations/components/modal-list-product/modal-list-product.component';
@@ -10,12 +9,12 @@ import {
   SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSUploadChangeParam, TDSUploadFile } from 'tmt-tang-ui';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSUploadChangeParam } from 'tmt-tang-ui';
 import { ConversationMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
-import { auditTime, delay, filter, finalize, map, mergeMap, takeUntil, tap } from 'rxjs/operators';
-import { CRMMessagesRequest, MakeActivityItemWebHook, MakeActivityMessagesDTO } from '../../dto/conversation/make-activity.dto';
+import { finalize, takeUntil } from 'rxjs/operators';
+import { MakeActivityItemWebHook, MakeActivityMessagesDTO } from '../../dto/conversation/make-activity.dto';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ActivityMatchingService } from '../../services/conversation/activity-matching.service';
 import { Router } from '@angular/router';
@@ -31,7 +30,6 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
 import { YiAutoScrollDirective } from '../directives/yi-auto-scroll.directive';
-import { ActivityFacebookState } from '../../services/facebook-state/activity-facebook.state';
 
 @Component({
   selector: 'shared-tds-conversations',
@@ -56,7 +54,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   partner: TDSSafeAny;
 
   isEnterSend: boolean = true;
-  isVisibleReply: boolean = false;
   uploadedImages: string[] = [];
   currentImage: TDSSafeAny;
   isLoadingImage: boolean = false
@@ -192,15 +189,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     });
   }
 
-  showModalAddQuickReply() {
-    this.modalService.create({
-      title: 'Thêm mới trả lời nhanh',
-      content: ModalAddQuickReplyComponent,
-      viewContainerRef: this.viewContainerRef,
-      size: 'md',
-      componentParams: {}
-    });
-  }
 
   showModalListProduct() {
     const modal = this.modalService.create({
