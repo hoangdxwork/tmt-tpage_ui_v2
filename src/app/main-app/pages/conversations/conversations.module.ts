@@ -81,6 +81,7 @@ import { ModalReportOrderPostComponent } from './components/post-filter/modal-re
 import { ModalListCollectionComponent } from './components/modal-list-collection/modal-list-collection.component';
 import { ModalTaxComponent } from './components/modal-tax/modal-tax.component';
 import { AccountTaxService } from '../../services/account-tex.service';
+import { DirectivesModule } from '../../shared/directives/directives.module';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -200,7 +201,9 @@ const SERVICES = [
     PipeModule,
     TDSEmptyModule,
     TDSUploadModule,
+    DirectivesModule
   ],
   providers: [ ...SERVICES]
 })
+
 export class ConversationsModule { }

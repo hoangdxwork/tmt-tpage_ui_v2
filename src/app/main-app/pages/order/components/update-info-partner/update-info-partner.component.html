@@ -1,4 +1,4 @@
-<form [formGroup]="formUpdateInfo">
+<form [formGroup]="_form">
   <div class="flex flex-col gap-y-6">
     <div class="flex items-center gap-x-4">
       <div class="w-1/3">
@@ -20,14 +20,20 @@
         </tds-form-field>
       </div>
     </div>
-    <div class="flex w-full">
-      <tpage-check-address class="w-full"
-        [streetText]="formUpdateInfo.controls['Street'].value"
-        [city]="formUpdateInfo.controls['City'].value"
-        [district]="formUpdateInfo.controls['District'].value"
-        [ward]="formUpdateInfo.controls['Ward'].value"
-        (onChangeAddress)="onChangeAddress($event)">
-      </tpage-check-address>
+    <div class="flex items-start gap-x-4">
+      <div class="w-1/3">
+        <tds-label>Địa chỉ</tds-label>
+      </div>
+      <div class="w-2/3">
+        <suggest-address
+            [_isExpanded]="true"
+            [_cities]="_cities"
+            [_districts]="_districts"
+            [_wards]="_wards"
+            [_street]="_street"
+            (onLoadSuggestion)="onLoadSuggestion($event)">
+        </suggest-address>
+      </div>
     </div>
   </div>
 </form>

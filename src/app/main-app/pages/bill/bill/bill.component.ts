@@ -363,7 +363,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     fromEvent(this.innerText.nativeElement, 'keyup').pipe(
         map((event: any) => { return event.target.value }),
         debounceTime(750),
-        distinctUntilChanged(),
+        // distinctUntilChanged(),
         // TODO: switchMap xử lý trường hợp sub in sub
         switchMap((text: TDSSafeAny) => {
 
@@ -420,7 +420,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   refreshData(){
     this.pageIndex = 1;
     this.indClickTag = -1;
-
+    this.innerText.nativeElement.value = '';
     this.checked = false;
     this.indeterminate = false;
     this.setOfCheckedId = new Set<number>();

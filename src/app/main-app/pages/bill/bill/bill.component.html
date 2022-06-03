@@ -38,7 +38,8 @@
           [(pageSize)]="pageSize"
           [(pageIndex)]="pageIndex"
           [total]="count" [scroll]="{y:'auto', x: 'auto'}" [loading]="isLoading"
-          (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
+          (clickRefresh)="refreshData()"
+          (queryParams)="onQueryParamsChange($event)">
           <thead>
             <tr>
               <th [tdsLeft]="true" [align]="'center'" width="50px" class="border-r"></th>

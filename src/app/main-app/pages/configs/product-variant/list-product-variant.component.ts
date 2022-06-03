@@ -209,6 +209,7 @@ export class ListProductVariantComponent  implements OnDestroy  {
   refreshData() {
     this.pageIndex = 1;
     this.filterObj.searchText = '';
+    this.innerText.nativeElement.value = '';
 
     this.checked = false;
     this.indeterminate = false;

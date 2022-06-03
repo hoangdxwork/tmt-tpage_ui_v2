@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
-import { Observable, Subject } from "rxjs";
+import { Observable, of, Subject } from "rxjs";
 import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { SharedService } from "../shared.service";
@@ -9,10 +9,11 @@ import { ActivityStatus, ConversationType } from "src/app/lib/enum/message/cover
 import { ActivityFacebookState } from "../facebook-state/activity-facebook.state";
 import { CRMTeamService } from "../crm-team.service";
 import { FacebookPostService } from "../facebook-post.service";
-import { TDSHelperArray, TDSHelperString, TDSMessageService } from "tmt-tang-ui";
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService } from "tmt-tang-ui";
 import { ActivityMatchingService } from "../conversation/activity-matching.service";
-import { map, shareReplay, takeUntil } from "rxjs/operators";
-import { MakeActivityItemWebHook } from "../../dto/conversation/make-activity.dto";
+import { finalize, map, shareReplay, takeUntil } from "rxjs/operators";
+import { CRMMessagesRequest, MakeActivityItemWebHook, MakeActivityMessagesDTO } from "../../dto/conversation/make-activity.dto";
+import { tr } from "date-fns/locale";
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +30,7 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
   private postIdExist: Array<any> = [];
   public dataSource$!: Observable<any>;
 
-  public statusNextData$: EventEmitter<any> = new EventEmitter<any>();
+  public hasNextData$: EventEmitter<boolean> = new EventEmitter<boolean>();
   private destroy$ = new Subject();
   lstTeam!: any[];
 
@@ -707,6 +708,38 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
       return (exist[messageId] || { attachments: { data: null } }).attachments.data;
     }
     return null;
+  }
+
+  isEmpty(obj: any) {
+    return Object.keys(obj).length === 0;
+  }
+
+  nextData(pageId: string, psid: string, type: string): Observable<any> {
+    const exist = this.activityFbState.getByType(pageId, psid, type) as MakeActivityMessagesDTO;
+
+    let hasNextPage = exist?.response?.hasNextPage == true && (exist?.response?.nextPageUrl != this.nextPageUrlCurrent);
+    if (!(hasNextPage && exist)) {
+      return of(false);
+    }
+
+    let value = TDSHelperArray.hasListValue(exist.items) || !this.isEmpty(exist.extras?.posts) || !this.isEmpty(exist.extras?.children);
+    if (!value) {
+      return of(false);
+    }
+
+    this.nextPageUrlCurrent = exist?.response?.nextPageUrl;
+    return this.service.getLink(this.nextPageUrlCurrent).pipe(map((res: CRMMessagesRequest): any => {
+
+      let model = TDSHelperArray.hasListValue(res.Items) || !this.isEmpty(res.Extras?.posts) || !this.isEmpty(res.Extras?.children);
+      if(model && res.HasNextPage == true) {
+
+        exist.extras.children = {...exist.extras?.children, ...res.Extras?.children};
+        exist.extras.posts = {...exist.extras?.posts, ...res.Extras?.posts};
+        exist.items = [...res.Items, ...exist.items];
+
+        exist.response = this.service.createResponse(res);
+      }
+    }))
   }
 
   refreshData(pageId: string, psid: string, type: string): Observable<any> {

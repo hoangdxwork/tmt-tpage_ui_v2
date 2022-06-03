@@ -48,7 +48,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     private activityDataFacade: ActivityDataFacade,
     private conversationDataFacade: ConversationDataFacade,
     private conversationOrderFacade: ConversationOrderFacade,
-    private activityMatchingService: ActivityMatchingService,) {
+    private activityMatchingService: ActivityMatchingService) {
   }
 
   ngOnInit(): void {
@@ -87,17 +87,17 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
       if (!phone) {
         return this.tdsMessage.error("Không tìm thấy số điện thoại");
       }
-      this.tdsMessage.info("Chọn làm số điện thoại thành công");
+      this.tdsMessage.info("Chờn làm số điện thoại thành công");
       data.phone = phone;
     } else if (type == 'address') {
       data.address = value;
       if (value) {
-        this.tdsMessage.info("Chọn làm  địa chỉ thành công");
+        this.tdsMessage.info("Chờn làm  địa chỉ thành công");
       }
     } else if (type == 'note') {
       data.note = value;
       if (value) {
-        this.tdsMessage.info("Chọn làm ghi chú thành công");
+        this.tdsMessage.info("Chờn làm ghi chú thành công");
       }
     }
 
@@ -139,7 +139,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
       this.tdsMessage.success('Thao tác thành công!');
       this.data.comment.user_likes = !this.data.comment.user_likes;
     }, error => {
-      this.tdsMessage.error(error.error? error.error.message : 'Đã xảy ra lỗi');
+      this.tdsMessage.error(error.error? error.error.message : 'ĝã xảy ra lỗi');
     });
   }
 
@@ -161,7 +161,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
         this.tdsMessage.success('Thao tác thành công!');
         this.data.comment.is_hidden = !this.data.comment.is_hidden;
     }, error => {
-      this.tdsMessage.error(error.error? error.error.message :'Đã xảy ra lỗi');
+      this.tdsMessage.error(error.error? error.error.message :'ĝã xảy ra lỗi');
     });
   }
 

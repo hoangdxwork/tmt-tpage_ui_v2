@@ -1,7 +1,8 @@
 import { TDSSafeAny, TDSModalRef } from 'tmt-tang-ui';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, Input, OnInit } from '@angular/core';
-import { CheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
+import { CheckAddressDTO, ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
+import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 
 @Component({
   selector: 'app-update-info-partner',
@@ -9,22 +10,25 @@ import { CheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 })
 export class UpdateInfoPartnerComponent implements OnInit {
 
+  _form!: FormGroup;
+
   @Input() partner: TDSSafeAny;
+  _cities!: SuggestCitiesDTO;
+  _districts!: SuggestDistrictsDTO;
+  _wards!: SuggestWardsDTO;
+  _street!: string;
 
-  formUpdateInfo!: FormGroup;
-
-  constructor(
-    private fb: FormBuilder,
-    private modalRef: TDSModalRef,
-  ) { }
+  constructor(private fb: FormBuilder,
+    private modalRef: TDSModalRef) {
+      this.createForm();
+  }
 
   ngOnInit(): void {
-    this.createForm();
     this.updateForm();
   }
 
   createForm() {
-    this.formUpdateInfo = this.fb.group({
+    this._form = this.fb.group({
       Name: [null, [Validators.required]],
       Phone: [null],
       Street: [null],
@@ -36,37 +40,83 @@ export class UpdateInfoPartnerComponent implements OnInit {
 
   updateForm() {
     if(this.partner) {
-      this.formUpdateInfo.controls["Name"].setValue(this.partner.Name);
-      this.formUpdateInfo.controls["Phone"].setValue(this.partner.Phone);
-      this.formUpdateInfo.controls["Street"].setValue(this.partner.Street || this.partner.Address);
+      this._form.controls["Name"].setValue(this.partner.Name);
+      this._form.controls["Phone"].setValue(this.partner.Phone);
+      this.mappingAddress(this.partner);
+    }
+  }
 
-      this.formUpdateInfo.controls["City"].setValue( this.partner?.City?.code ? {
-        Code: this.partner.City.code,
-        Name: this.partner.City.name,
-      } : null);
+  mappingAddress(data: any) {
+    if (data && data.City?.code) {
+      this._cities = {
+        code: data.City.code,
+        name: data.City.name
+      }
+    }
+    if (data && data.District?.code) {
+      this._districts = {
+        cityCode: data.City?.code,
+        cityName: data.City?.name,
+        code: data.District.code,
+        name: data.District.name
+      }
+    }
+    if (data && data.Ward?.code) {
+      this._wards = {
+        cityCode: data.City?.code,
+        cityName: data.City?.name,
+        districtCode: data.District?.code,
+        districtName: data.District?.name,
+        code: data.Ward.code,
+        name: data.Ward.name
+      }
+    }
+    if (data && data?.Street || data?.Address) {
+      this._street = data?.Street || data?.Address;
+    }
+  }
 
-      this.formUpdateInfo.controls["District"].setValue( this.partner?.District?.code ? {
-        Code: this.partner.District.code,
-        Name: this.partner.District.name,
-      } : null);
 
-      this.formUpdateInfo.controls["Ward"].setValue( this.partner?.Ward?.code ? {
-        Code: this.partner.Ward.code,
-        Name: this.partner.Ward.name,
-      } : null);
+  onLoadSuggestion(item: ResultCheckAddressDTO) {
+    this._form.controls['Street'].setValue( item.Address ? item.Address : null);
 
+    if(item && item.CityCode) {
+      this._form.controls['City'].patchValue({
+          code: item.CityCode,
+          name: item.CityName
+      });
+    } else{
+      this._form.controls['City'].setValue(null)
+    }
+
+    if(item && item.DistrictCode) {
+      this._form.controls['District'].patchValue({
+          code: item.DistrictCode,
+          name: item.DistrictName
+      });
+    } else {
+      this._form.controls['District'].setValue(null)
+    }
+
+    if(item && item.WardCode) {
+      this._form.controls['Ward'].patchValue({
+          code: item.WardCode,
+          name: item.WardName
+      });
+    } else {
+      this._form.controls['Ward'].setValue(null)
     }
   }
 
   save() {
-    if (this.formUpdateInfo.valid) {
+    if (this._form.valid) {
       let result = this.prepareModel();
       this.modalRef.destroy(result);
     }
   }
 
   prepareModel() {
-    let formValue = this.formUpdateInfo.value;
+    let formValue = this._form.value;
 
     let model: TDSSafeAny = {
       Name: formValue["Name"],
@@ -78,27 +128,6 @@ export class UpdateInfoPartnerComponent implements OnInit {
     };
 
     return model;
-  }
-
-  onChangeAddress(event: CheckAddressDTO) {
-    let formControls = this.formUpdateInfo.controls;
-
-    formControls["Street"].setValue(event.Street);
-
-    formControls["City"].setValue( event.City?.Code ? {
-      Code: event.City?.Code,
-      Name: event.City?.Name
-    } : null);
-
-    formControls["District"].setValue( event.District?.Code ? {
-      Code: event.District?.Code,
-      Name: event.District?.Name,
-    } : null);
-
-    formControls["Ward"].setValue( event.Ward?.Code ? {
-      Code: event.Ward?.Code,
-      Name: event.Ward?.Name,
-    } : null);
   }
 
   onCancel() {

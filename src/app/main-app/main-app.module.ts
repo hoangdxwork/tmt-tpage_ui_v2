@@ -24,6 +24,7 @@ import {
 } from 'tmt-tang-ui';
 import { UploadImageModule } from './shared/upload-image/tpage-avatar-facebook/upload-image.module';
 import { ProductDataFacade } from './services/facades/product.data.facade';
+import { DirectivesModule } from './shared/directives/directives.module';
 
 const SERVICES = [
   ProductDataFacade,
@@ -54,7 +55,8 @@ const SERVICES = [
     TDSNotificationModule,
     UploadImageModule,
     TDSToolTipModule,
-    TDSUploadModule
+    TDSUploadModule,
+    DirectivesModule
   ],
   providers:[
     ...SERVICES,
