@@ -51,7 +51,7 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
     fromEvent(this.filterText.nativeElement, 'keyup').pipe(
       map((event: any) => { return event.target.value }),
       debounceTime(750),
-      distinctUntilChanged(),
+      // distinctUntilChanged(),
       // TODO: switchMap xử lý trường hợp sub in sub
       switchMap((text: TDSSafeAny) => {
         this.pageIndex = 1;
@@ -99,9 +99,8 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
 
   refreshData() {
     this.pageIndex = 1;
-    this.filterObj = {
-      searchText: '',
-    }
+    this.filterObj.searchText = '';
+    this.filterText.nativeElement.value = '';
     this.loadData(this.pageSize, this.pageIndex);
   }
 

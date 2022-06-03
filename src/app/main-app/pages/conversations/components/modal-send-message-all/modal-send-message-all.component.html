@@ -83,9 +83,14 @@
             Hủy
         </span>
     </button>
-    <button tds-button color="primary" type="submit" type="submit" (click)="onClickSender()">
-            <span class="flex items-center">
-                <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
-            </span>
-    </button>
+    <tds-spin [spinning]="isSending" [indicator]="indicatorTemplate">
+        <button tds-button color="primary" type="submit" type="submit" (click)="onClickSender()">
+                <span class="flex items-center">
+                    <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
+                </span>
+        </button>
+    </tds-spin>
 </div>
+<ng-template #indicatorTemplate>
+    <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
+</ng-template>

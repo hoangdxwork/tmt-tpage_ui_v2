@@ -1,4 +1,3 @@
-import { ResultCheckAddressDTO } from './../../../../dto/address/address.dto';
 import { FilterObjDTO, OdataProductService } from './../../../../services/mock-odata/odata-product.service';
 import { TDSHelperObject } from 'tmt-tang-ui';
 import { CommonService } from 'src/app/main-app/services/common.service';
@@ -7,7 +6,7 @@ import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 import { TAuthService } from 'src/app/lib';
 import { UserInitDTO } from 'src/app/lib/dto';
-import { CheckAddressDTO, DataSuggestionDTO } from 'src/app/main-app/dto/address/address.dto';
+import { CheckAddressDTO, DataSuggestionDTO, ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SaleOnlineFacebookCommentFilterResultDTO, SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_FacebookCommentService } from 'src/app/main-app/services/sale-online-facebook-comment.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
@@ -28,16 +27,18 @@ import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { finalize } from 'rxjs/operators';
 import { CheckFormHandler } from 'src/app/main-app/services/handlers/check-form.handler';
+import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 
 @Component({
   selector: 'edit-order',
   templateUrl: './edit-order.component.html'
 })
+
 export class EditOrderComponent implements OnInit {
 
   @Input() idOrder: string = "";
 
-  formEditOrder!: FormGroup;
+  _form!: FormGroup;
 
   dataSuggestion!: DataSuggestionDTO;
   userInit!: UserInitDTO;
@@ -60,6 +61,11 @@ export class EditOrderComponent implements OnInit {
     billPrint: 4,
     billPrintShip: 5
   }
+
+  _cities!: SuggestCitiesDTO;
+  _districts!: SuggestDistrictsDTO;
+  _wards!: SuggestWardsDTO;
+  _street!: string;
 
   numberWithCommas = (value: number) => `${value} đ`;
   parserComas = (value: string) => value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -85,11 +91,11 @@ export class EditOrderComponent implements OnInit {
     private partnerService: PartnerService,
     private odataProductService: OdataProductService,
     private deliveryCarrierService: DeliveryCarrierService,
-    private checkFormHandler: CheckFormHandler
-  ) { }
+    private checkFormHandler: CheckFormHandler) {
+      this.createForm();
+   }
 
   ngOnInit(): void {
-    this.createForm();
     this.loadUserInfo();
     this.loadDeliveryCarrier();
     this.loadUser();
@@ -114,7 +120,7 @@ export class EditOrderComponent implements OnInit {
     });
   }
 
-  onSave(type: TDSSafeAny) {
+  onSave(type: TDSSafeAny) {debugger
     let model = this.prepareOrderModel();
 
     this.saleOnline_OrderService.update(this.idOrder, model).subscribe((res: any) => {
@@ -162,7 +168,6 @@ export class EditOrderComponent implements OnInit {
       delete res["@odata.context"];
       this.model = res;
 
-      this.updateSuggestion(res);
       this.updateForm(res);
       this.getCommentsByUserAndPost(res.Facebook_ASUserId, res.Facebook_PostId);
     });
@@ -207,7 +212,7 @@ export class EditOrderComponent implements OnInit {
     this.fastSaleOrderService.defaultGet().subscribe(res => {
       delete res["@odata.context"];
       this.defaultBill = res;
-      this.updateBillByForm(this.formEditOrder);
+      this.updateBillByForm(this._form);
     });
   }
 
@@ -234,7 +239,7 @@ export class EditOrderComponent implements OnInit {
 
     modal.componentInstance?.onLoadedProductSelect.subscribe(result => {
       if(TDSHelperObject.hasValue(result)) {
-        let details = this.formEditOrder.controls['Details'];
+        let details = this._form.controls['Details'];
 
         let productAdd = {
             Factor: 1,
@@ -263,23 +268,24 @@ export class EditOrderComponent implements OnInit {
   }
 
   prepareOrderModel() {
-    let formValue = this.formEditOrder.value;
+    let formValue = this._form.value;
 
     this.model.Partner = formValue.Partner;
     this.model.Name = formValue.Name;
     this.model.Telephone = formValue.Telephone;
     this.model.Email = formValue.Email;
-    this.model.Address = formValue.Address;
     this.model.Note = formValue.Note;
 
-    this.model.CityCode = formValue.City?.Code ? formValue.City.Code : null;
-    this.model.CityName = formValue.City?.Name ? formValue.City.Name : null;
+    this.model.Address = formValue.Address;
 
-    this.model.DistrictCode = formValue.District?.Code ? formValue.District.Code : null;
-    this.model.DistrictName = formValue.District?.Name ? formValue.District.Name : null;
+    this.model.CityCode = formValue.City?.code ? formValue.City.code : null;
+    this.model.CityName = formValue.City?.name ? formValue.City.name : null;
 
-    this.model.WardCode = formValue.Ward?.Code ? formValue.Ward.Code : null;
-    this.model.WardName = formValue.Ward?.Name ? formValue.Ward.Name : null;
+    this.model.DistrictCode = formValue.District?.code ? formValue.District.code : null;
+    this.model.DistrictName = formValue.District?.name ? formValue.District.name : null;
+
+    this.model.WardCode = formValue.Ward?.code ? formValue.Ward.code : null;
+    this.model.WardName = formValue.Ward?.name ? formValue.Ward.name : null;
 
     if (formValue.User) {
       this.model.User = formValue.User;
@@ -301,7 +307,7 @@ export class EditOrderComponent implements OnInit {
       return false;
     }
 
-    let formValue = this.formEditOrder.value;
+    let formValue = this._form.value;
 
     this.defaultBill.SaleOnlineIds = this.model.Id ? [this.model.Id] : [];
 
@@ -375,7 +381,7 @@ export class EditOrderComponent implements OnInit {
 
     this.defaultBill.Ship_ServiceExtrasText = JSON.stringify(this.defaultBill.Ship_ServiceExtras);
 
-    let formControl = this.formEditOrder.controls;
+    let formControl = this._form.controls;
     let carrierValue = formControl.Carrier.value;
 
     if (carrierValue && carrierValue.DeliveryType == 'NinjaVan') {
@@ -426,7 +432,7 @@ export class EditOrderComponent implements OnInit {
     this.enableInsuranceFee = false;
     this.isLoadCarrier = true;
 
-    this.carrierHandler.changeCarrierV2(this.defaultBill, this.formEditOrder, event, this.shipExtraServices)
+    this.carrierHandler.changeCarrierV2(this.defaultBill, this._form, event, this.shipExtraServices)
       .pipe(finalize(() => this.isLoadCarrier = false))
       .subscribe(res => {
           this.shipServices = res?.Services || [];
@@ -440,10 +446,10 @@ export class EditOrderComponent implements OnInit {
 
   updateShipExtraServices(carrier: any) {
     if(carrier) {
-      let insuranceFee = this.formEditOrder.value.Ship_Extras?.InsuranceFee || 0;
+      let insuranceFee = this._form.value.Ship_Extras?.InsuranceFee || 0;
 
       this.enableInsuranceFee = this.carrierHandler.getShipExtraServices(carrier, this.shipExtraServices);
-      this.enableInsuranceFee && (this.formEditOrder.controls.Ship_InsuranceFee.setValue(insuranceFee));
+      this.enableInsuranceFee && (this._form.controls.Ship_InsuranceFee.setValue(insuranceFee));
     }
   }
 
@@ -457,7 +463,7 @@ export class EditOrderComponent implements OnInit {
   }
 
   onUpdateInsuranceFee(serviceId: any): Observable<any> {
-    return this.carrierHandler.onUpdateInsuranceFee(serviceId, this.defaultBill, this.formEditOrder, this.shipExtraServices);
+    return this.carrierHandler.onUpdateInsuranceFee(serviceId, this.defaultBill, this._form, this.shipExtraServices);
   }
 
   existDeliveryTypes(deliveryType: string) {
@@ -474,7 +480,7 @@ export class EditOrderComponent implements OnInit {
   }
 
   calculateFee(item: any) {
-    this.carrierHandler.calculateFee(item, this.defaultBill, this.formEditOrder, this.shipExtraServices).subscribe(res => {
+    this.carrierHandler.calculateFee(item, this.defaultBill, this._form, this.shipExtraServices).subscribe(res => {
         this.shipServices = res?.Services || [];
     }, (error: TDSSafeAny) => {
       if(error && typeof error == 'string') {
@@ -483,22 +489,8 @@ export class EditOrderComponent implements OnInit {
     });
   }
 
-  updateSuggestion(data: any) {
-    let model: DataSuggestionDTO = {
-      Street: data.Address,
-      CityCode: data.CityCode,
-      CityName: data.CityName,
-      DistrictCode: data.DistrictCode,
-      DistrictName: data.DistrictName,
-      WardCode: data.WardCode,
-      WardName: data.WardName,
-    }
-
-    this.dataSuggestion = model;
-  }
-
   updateForm(data: any) {
-    let formControls = this.formEditOrder.controls;
+    let formControls = this._form.controls;
 
     formControls["Facebook_UserName"].setValue(data.Facebook_UserName);
     formControls["Facebook_UserId"].setValue(data.Facebook_UserId);
@@ -506,26 +498,10 @@ export class EditOrderComponent implements OnInit {
     formControls["Partner"].setValue(data.Partner);
     formControls["Telephone"].setValue(data.Telephone);
     formControls["Email"].setValue(data.Email);
-    formControls["Address"].setValue(data.Address);
     formControls["AmountDeposit"].setValue(data.AmountDeposit || 0);
 
     formControls["Company"].setValue(this.userInit?.Company);
     formControls["CompanyId"].setValue(this.userInit?.Company?.Id);
-
-    formControls["City"].setValue({
-      Code: data.CityCode,
-      Name: data.CityName,
-    });
-
-    formControls["District"].setValue({
-      Code: data.DistrictCode,
-      Name: data.DistrictName,
-    });
-
-    formControls["Ward"].setValue({
-      Code: data.WardCode,
-      Name: data.WardName,
-    });
 
     formControls["User"].setValue(data.User);
     formControls["Note"].setValue(data.Note);
@@ -536,27 +512,75 @@ export class EditOrderComponent implements OnInit {
       formControls["TotalAmount"].value
     );
 
-    // if (formControls["Address"].value) {
-    //   formControls["Ship_Receiver"].setValue({
-    //     Name: formControls["Name"].value,
-    //     Street: formControls["Address"].value,
-    //     Phone: formControls["Telephone"].value,
-    //     City: formControls["City"].value,
-    //     District: formControls["District"].value,
-    //     Ward: formControls["Ward"].value,
-    //   });
-    // }
-    // else {
-    //   formControls["Ship_Receiver"].setValue(null)
-    // }
-
-    this.formEditOrder.setControl("Details", this.fb.array(data.Details || []));
+    this.mappingAddress(data);
+    this._form.setControl("Details", this.fb.array(data.Details || []));
   }
+
+  mappingAddress(data: any) {
+    if (data && data.CityCode) {
+      this._cities = {
+        code: data.CityCode,
+        name: data.CityName
+      }
+    }
+    if (data && data.DistrictCode) {
+      this._districts = {
+        cityCode: data.CityCode,
+        cityName: data.CityName,
+        code: data.DistrictCode,
+        name: data.DistrictName
+      }
+    }
+    if (data && data.WardCode) {
+      this._wards = {
+        cityCode: data.CityCode,
+        cityName: data.CityName,
+        districtCode: data.DistrictCode,
+        districtName: data.DistrictName,
+        code: data.WardCode,
+        name: data.WardName
+      }
+    }
+    if (data && (data.Address)) {
+      this._street = data.Address;
+    }
+  }
+
+  onLoadSuggestion(item: ResultCheckAddressDTO) {
+    this._form.controls['Address'].setValue( item.Address ? item.Address : null);
+
+  if(item && item.CityCode) {debugger
+    this._form.controls['City'].patchValue({
+        code: item.CityCode,
+        name: item.CityName
+    });
+  } else{
+    this._form.controls['City'].setValue(null)
+  }
+
+  if(item && item.DistrictCode) {
+    this._form.controls['District'].patchValue({
+        code: item.DistrictCode,
+        name: item.DistrictName
+    });
+  } else {
+    this._form.controls['District'].setValue(null)
+  }
+
+  if(item && item.WardCode) {
+    this._form.controls['Ward'].patchValue({
+        code: item.WardCode,
+        name: item.WardName
+    });
+  } else {
+    this._form.controls['Ward'].setValue(null)
+  }
+}
 
   updateFormByBillDefault(billDefault: FastSaleOrderRestDTO) {
     billDefault.Ship_ServiceExtras = JSON.parse(billDefault.Ship_ServiceExtrasText) || [];
 
-    let formControl = this.formEditOrder.controls;
+    let formControl = this._form.controls;
 
     formControl["Carrier"].setValue(billDefault.Carrier);
     formControl["Ship_Extras"].setValue(billDefault.Ship_Extras);
@@ -648,7 +672,7 @@ export class EditOrderComponent implements OnInit {
   }
 
   initOkieLa() {
-    let formControls = this.formEditOrder.controls;
+    let formControls = this._form.controls;
 
     if (formControls.Carrier.value && formControls.Carrier.value.DeliveryType === "OkieLa" && this.shipExtraServices.length === 0) {
       this.shipExtraServices = [
@@ -665,7 +689,7 @@ export class EditOrderComponent implements OnInit {
   }
 
   initNinjaVan() {
-    let formControls = this.formEditOrder.controls;
+    let formControls = this._form.controls;
 
     if (formControls.Carrier.value && formControls.Carrier.value.DeliveryType == 'NinjaVan' && formControls.Ship_Extras.value) {
       this.shipExtraServices.length = 0;
@@ -705,7 +729,7 @@ export class EditOrderComponent implements OnInit {
   }
 
   onRemoveProduct(product: TDSSafeAny, index: number) {
-    (this.formEditOrder.controls["Details"] as FormArray).removeAt(index);
+    (this._form.controls["Details"] as FormArray).removeAt(index);
 
     this.updateTotalAmount();
     this.updateTotalQuantity();
@@ -713,7 +737,7 @@ export class EditOrderComponent implements OnInit {
   }
 
   updateTotalAmount() {
-    let lstDetail = this.formEditOrder.controls["Details"].value;
+    let lstDetail = this._form.controls["Details"].value;
 
     let total: number = 0;
 
@@ -721,11 +745,11 @@ export class EditOrderComponent implements OnInit {
       total += detail.Quantity * detail.Price;
     });
 
-    this.formEditOrder.controls["TotalAmount"].setValue(total);
+    this._form.controls["TotalAmount"].setValue(total);
   }
 
   updateTotalQuantity() {
-    let lstDetail = this.formEditOrder.controls["Details"].value;
+    let lstDetail = this._form.controls["Details"].value;
 
     let quantity: number = 0;
 
@@ -733,40 +757,18 @@ export class EditOrderComponent implements OnInit {
       quantity += detail.Quantity;
     });
 
-    this.formEditOrder.controls["TotalQuantity"].setValue(quantity);
+    this._form.controls["TotalQuantity"].setValue(quantity);
   }
 
   updateCoDAmount() {
     if (this.defaultBill && this.isEnableCreateOrder) {
-      let coDAmount = this.formEditOrder.controls["TotalAmount"].value + this.formEditOrder.controls["DeliveryPrice"].value;
-      this.formEditOrder.controls["CashOnDelivery"].setValue(coDAmount);
+      let coDAmount = this._form.controls["TotalAmount"].value + this._form.controls["DeliveryPrice"].value;
+      this._form.controls["CashOnDelivery"].setValue(coDAmount);
     }
   }
 
-  onChangeAddress(event: CheckAddressDTO) {
-    let formControls = this.formEditOrder.controls;
-
-    formControls["Address"].setValue(event.Street);
-
-    formControls["City"].setValue( event.City?.Code ? {
-      Code: event.City?.Code,
-      Name: event.City?.Name
-    } : null);
-
-    formControls["District"].setValue( event.District?.Code ? {
-      Code: event.District?.Code,
-      Name: event.District?.Name,
-    } : null);
-
-    formControls["Ward"].setValue( event.Ward?.Code ? {
-      Code: event.Ward?.Code,
-      Name: event.Ward?.Name,
-    } : null);
-
-  }
-
   createForm() {
-    this.formEditOrder = this.fb.group({
+    this._form = this.fb.group({
       isEnableCreateOrder: [false],
       Facebook_UserName: [null],
       Facebook_UserId: [null],
@@ -807,7 +809,7 @@ export class EditOrderComponent implements OnInit {
   }
 
   getStatusColor(): string {
-    let partner = this.formEditOrder.controls["Partner"].value;
+    let partner = this._form.controls["Partner"].value;
 
     if(partner) {
       let value = this.lstPartnerStatus.find(x => x.text == partner.StatusText);
@@ -819,7 +821,7 @@ export class EditOrderComponent implements OnInit {
   }
 
   selectStatus(status: PartnerStatusDTO) {
-    let partner = this.formEditOrder.controls["Partner"].value;
+    let partner = this._form.controls["Partner"].value;
 
     if(partner) {
       let data = {
@@ -829,7 +831,7 @@ export class EditOrderComponent implements OnInit {
       this.partnerService.updateStatus(partner.Id, data).subscribe(res => {
         this.message.success(Message.Partner.UpdateStatus);
         partner.StatusText = status.text;
-        this.formEditOrder.controls["Partner"].setValue(partner);
+        this._form.controls["Partner"].setValue(partner);
       });
     }
   }

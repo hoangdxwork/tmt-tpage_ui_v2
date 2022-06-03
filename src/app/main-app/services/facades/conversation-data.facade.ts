@@ -12,7 +12,7 @@ import { CRMMatchingMappingDTO } from "../../dto/conversation-all/conversation-a
 import { DataUpdate } from "../../dto/conversation/conversation.dto";
 import { CRMTeamService } from "../crm-team.service";
 import { HrefPageService } from "../href-page.service";
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSNotificationService } from "tmt-tang-ui";
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSNotificationService, TDSSafeAny } from "tmt-tang-ui";
 import { StringHelperV2 } from "../../shared/helper/string.helper";
 import { ActivatedRoute, Router } from "@angular/router";
 
@@ -552,6 +552,27 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
 
   setExtrasQuery(pageId: any, type: any, data: any) {
     return this.service.setExtrasQuery(pageId, type, data);
+  }
+
+  getChecked(pageId: any, type: any, lstPsid: string[]) {
+    let result: TDSSafeAny[] = [];
+    var exist = this.cvsFbState.get(pageId, type);
+    if(exist && exist.items && lstPsid) {
+      var data: TDSSafeAny[] = [];
+      lstPsid.forEach((id: TDSSafeAny) => {
+        data.push(exist.items.find((x : TDSSafeAny)=>x.psid == id))
+      })
+      data.forEach((x: TDSSafeAny) => {
+        var r = {
+          to_id: x.psid,
+          to_name: x.name,
+          partner_id: x.partner_id
+        }
+        result.push(r);
+      });
+    }
+
+    return result;
   }
 
   ngOnDestroy(): void {

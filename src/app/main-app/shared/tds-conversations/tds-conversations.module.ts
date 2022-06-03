@@ -16,10 +16,12 @@ import { TDSCardModule } from 'tmt-tang-ui';
 import { ShowAttachmentComponent } from '../show-attachment/show-attachment.component';
 import { PipeModule } from '../pipe/pipe.module';
 import { TDSImageModule } from 'tmt-tang-ui';
-import {  TDSAlertModule } from 'tmt-tang-ui';
+import { TDSAlertModule } from 'tmt-tang-ui';
 import { TDSCollapseModule } from 'tmt-tang-ui';
 import { TDSUploadModule } from "tmt-tang-ui";
 import { MainSharedModule } from 'src/app/main-app/shared/shared.module';
+import { DirectivesModule } from '../directives/directives.module';
+import { ActivityFacebookState } from '../../services/facebook-state/activity-facebook.state';
 
 const CMP =[
   TDSConversationsComponent,
@@ -63,6 +65,7 @@ const CMP =[
     TDSCheckBoxModule,
     TDSUploadModule,
     MainSharedModule,
+    DirectivesModule
   ],
   exports:[
     ...CMP
@@ -70,6 +73,7 @@ const CMP =[
   providers:[
     QuickReplyService,
     CRMTagService,
+    ActivityFacebookState
   ]
 })
 

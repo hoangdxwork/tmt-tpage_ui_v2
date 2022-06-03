@@ -186,6 +186,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.pageIndex = 1;
     this.indClickTag = -1;
     this.tabIndex = null;
+    this.innerText.nativeElement.value = '';
 
     this.checked = false;
     this.indeterminate = false;
@@ -267,18 +268,18 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   ngAfterViewInit(): void {
-    this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse
+    this.widthTable = this.viewChildWidthTable?.nativeElement?.offsetWidth - this.paddingCollapse
 
     this.resizeObserver
       .observe(this.viewChildWidthTable)
       .subscribe(() => {
-        this.widthTable = this.viewChildWidthTable.nativeElement.offsetWidth - this.paddingCollapse;
-        this.viewChildWidthTable.nativeElement.click()
+        this.widthTable = this.viewChildWidthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
+        this.viewChildWidthTable?.nativeElement.click()
       });
       setTimeout(() => {
         let that = this;
-        let wrapScroll = this.viewChildDetailPartner.nativeElement.closest('.tds-table-body');
-        wrapScroll.addEventListener('scroll', function() {
+        let wrapScroll = this.viewChildDetailPartner?.nativeElement?.closest('.tds-table-body');
+        wrapScroll?.addEventListener('scroll', function() {
           let scrollleft = wrapScroll.scrollLeft;
           that.marginLeftCollapse = scrollleft;
         });

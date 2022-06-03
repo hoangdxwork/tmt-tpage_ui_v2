@@ -52,7 +52,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
     if (simpleChange.team) {
       this.resetFilter();
     }
-    if (simpleChange.totalCount && simpleChange.totalCount.currentValue == 0 && TDSHelperObject.hasValue(this.prepareValues())) {
+    if (simpleChange.totalCount && simpleChange.totalCount.currentValue < 0 && TDSHelperObject.hasValue(this.prepareValues())) {
       this.resetFilter();
     }
   }

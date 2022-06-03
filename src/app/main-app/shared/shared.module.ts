@@ -12,7 +12,6 @@ import { TpageMenuItemComponent } from './tpage-menu-item/tpage-menu-item.compon
 import { SendMessageComponent } from './tpage-send-message/send-message.component';
 import { PipeModule } from './pipe/pipe.module';
 import { BrowserModule } from '@angular/platform-browser';
-import { TpageCheckAddressComponent } from './tpage-check-address/tpage-check-address.component';
 import { TpageAddProductComponent } from './tpage-add-product/tpage-add-product.component';
 import { TpageAddCategoryComponent } from './tpage-add-category/tpage-add-category.component';
 import { TpageSearchUOMComponent } from './tpage-search-uom/tpage-search-uom.component';
@@ -41,7 +40,6 @@ const cmp =[
   TpageBaseComponent,
   TpageMenuLayoutComponent,
   SendMessageComponent,
-  TpageCheckAddressComponent,
   SuggestAddressComponent,
   TpageMenuItemComponent,
   TpageAddProductComponent,

@@ -165,8 +165,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
   }
 
-  onLoadMiniChat(event: any): void {
-  }
+  onLoadMiniChat(event: any): void {}
 
   fetchLiveConversations(team: CRMTeamDTO): void {
     this.fbGraphService.api(`me/conversations?fields=id,link,participants,senders&access_token=${team.Facebook_PageToken}`)
@@ -246,8 +245,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       size: "md",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        lstUserCheck: this.setOfCheckedId,
-        team: this.currentTeam
+        setOfCheckedId: this.setOfCheckedId,
+        team: this.currentTeam,
+        type: this.type
     }
     });
     modal.afterClose.subscribe(result => {
@@ -269,7 +269,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
       this.makeDataSource(queryObj);
     } else {
-      this.total = 0;
+      this.total = -1;
       (this.queryFilter as any) = null;
       this.makeDataSource({});
     }
