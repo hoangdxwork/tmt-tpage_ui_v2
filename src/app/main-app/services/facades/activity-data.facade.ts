@@ -33,6 +33,7 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
   public hasNextData$: EventEmitter<boolean> = new EventEmitter<boolean>();
   private destroy$ = new Subject();
   lstTeam!: any[];
+  isProcessing: boolean = false;
 
   constructor(private apiService: TCommonService,
     private activityFbState: ActivityFacebookState,
@@ -48,7 +49,7 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
         if(res && TDSHelperArray.isArray(res.Items)){
             this.lstTeam = res.Items;
         }
-      });
+      })
       this.initialize();
   }
 
@@ -715,31 +716,52 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
   }
 
   nextData(pageId: string, psid: string, type: string): Observable<any> {
-    const exist = this.activityFbState.getByType(pageId, psid, type) as MakeActivityMessagesDTO;
+    const data = this.activityFbState.getByType(pageId, psid, type) as any;
+    let exist = data && data.response?.hasNextPage || data && data.response?.nextPageUrl != this.nextPageUrlCurrent;
 
-    let hasNextPage = exist?.response?.hasNextPage == true && (exist?.response?.nextPageUrl != this.nextPageUrlCurrent);
-    if (!(hasNextPage && exist)) {
-      return of(false);
-    }
+    return new Observable(observer => {
 
-    let value = TDSHelperArray.hasListValue(exist.items) || !this.isEmpty(exist.extras?.posts) || !this.isEmpty(exist.extras?.children);
-    if (!value) {
-      return of(false);
-    }
-
-    this.nextPageUrlCurrent = exist?.response?.nextPageUrl;
-    return this.service.getLink(this.nextPageUrlCurrent).pipe(map((res: CRMMessagesRequest): any => {
-
-      let model = TDSHelperArray.hasListValue(res.Items) || !this.isEmpty(res.Extras?.posts) || !this.isEmpty(res.Extras?.children);
-      if(model && res.HasNextPage == true) {
-
-        exist.extras.children = {...exist.extras?.children, ...res.Extras?.children};
-        exist.extras.posts = {...exist.extras?.posts, ...res.Extras?.posts};
-        exist.items = [...res.Items, ...exist.items];
-
-        exist.response = this.service.createResponse(res);
+      if(this.isProcessing) {
+          this.hasNextData$.emit(false);
+          return;
       }
-    }))
+
+      if(!exist) {
+        this.hasNextData$.emit(false);
+        return;
+      } else {
+          this.hasNextData$.emit(true);
+          this.nextPageUrlCurrent = data?.response?.nextPageUrl;
+
+          this.service.getLink(this.nextPageUrlCurrent)
+            .subscribe((res: CRMMessagesRequest): any => {
+
+              if(TDSHelperArray.hasListValue(res.Items)) {
+                data.extras.children = { ...data.extras?.children, ...res.Extras?.children };
+                data.extras.posts = { ...data.extras?.posts, ...res.Extras?.posts };
+                data.items = [ ...res.Items, ...data.items ];
+
+                data.response = this.service.createResponse(res);
+
+                this.hasNextData$.emit(false);
+                observer.next(data);
+                observer.complete();
+
+              } else {
+                this.isProcessing = true;
+                this.hasNextData$.emit(false);
+
+                observer.next();
+                observer.complete();
+              }
+            }, error => {
+              this.hasNextData$.emit(false);
+              (this.nextPageUrlCurrent as any) = null;
+              observer.next();
+              observer.complete();
+          });
+      }
+    });
   }
 
   refreshData(pageId: string, psid: string, type: string): Observable<any> {
@@ -761,10 +783,10 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
 
   createType(data: any, query: any) {
     return {
-      items: data.Items,
-      extras: data.Extras || {},
-      query: query,
-      response: this.service.createResponse(data)
+        items: data.Items,
+        extras: data.Extras || {},
+        query: query,
+        response: this.service.createResponse(data)
     } as any;
   }
 

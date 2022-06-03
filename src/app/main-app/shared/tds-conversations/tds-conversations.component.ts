@@ -7,7 +7,7 @@ import { ModalImageStoreComponent } from './../../pages/conversations/components
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import {
   Component, EventEmitter, Input, OnChanges, OnInit, Output,
-  SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef
+  SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSUploadChangeParam, TDSUploadFile } from 'tmt-tang-ui';
@@ -31,12 +31,12 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
 import { YiAutoScrollDirective } from '../directives/yi-auto-scroll.directive';
-import { ActivityFacebookState } from '../../services/facebook-state/activity-facebook.state';
 
 @Component({
   selector: 'shared-tds-conversations',
   templateUrl: './tds-conversations.component.html',
-  styleUrls: ['./tds-conversations.component.sass']
+  styleUrls: ['./tds-conversations.component.sass'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
@@ -104,6 +104,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         this.yiAutoScroll.forceScrollDown();
       }
     }
+
+    // this.activityDataFacade.hasNextData$.subscribe(data => {
+    //   this.isNextData = data;
+    // })
   }
 
   ngAfterViewInit(){
@@ -256,21 +260,19 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   loadPrevMessages(): any {
+    if (this.isNextData) {
+      return;
+    }
+
     this.scrollToIndex?.nativeElement?.scrollTo(0, 1);
 
     let pageId = this.team?.Facebook_PageId;
     let psid = this.data.psid;
     let type = this.type ? this.type : 'all';
 
-    this.isNextData = true;
     this.activityDataFacade.nextData(pageId, psid, type)
-      .pipe(takeUntil(this.destroy$)).subscribe(() => {
-        setTimeout(() => {
-          this.isNextData = false;
-        }, 350);
-      }, error => {
-        this.isNextData = false;
-    })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -421,9 +423,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     this.crmMatchingService.addMessage(this.data.psid, model)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-        this.messageResponse(res, model);
+      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+          this.messageResponse(res, model);
       }, error => {
         this.message.error("Like thất bại");
       });
@@ -432,12 +433,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   sendMessage(message: string) {
     const model = this.prepareModel(message);
     this.crmMatchingService.addMessage(this.data.psid, model)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize( () => { this.isLoadingSendMess = false; }))
+      .pipe(takeUntil(this.destroy$)).pipe(finalize( () => { this.isLoadingSendMess = false; }))
       .subscribe((res: any) => {
-        this.messageResponse(res, model);
+           this.messageResponse(res, model);
       }, error => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại' );
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại' );
       });
   }
 
@@ -506,6 +506,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   messageResponse(res: any, model: SendMessageModelDTO) {
     if (TDSHelperArray.hasListValue(res)) {
       res.map((x: any, i: number) => {
+
         x["status"] = ActivityStatus.sending;
         this.activityDataFacade.messageServer({ ...x });
 
