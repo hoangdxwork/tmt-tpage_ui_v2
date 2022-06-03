@@ -1,0 +1,53 @@
+<tds-spin [spinning]="isLoading">
+  <tds-table #tableReport [frontPagination]="false" [showPagination]="false" [listData]="lstReport" [scroll]="{y:'450px'}">
+    <thead>
+      <tr>
+          <th>STT</th>
+          <th>Khách hàng</th>
+          <th>Bình luận</th>
+          <th>Thời gian</th>
+          <th>Lí do</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-template ngFor let-data let-index="index" [ngForOf]="tableReport.data">
+        <tr>
+          <!-- STT -->
+          <td>{{ index + 1 }}</td>
+          <!-- Khách hàng -->
+          <td>
+            <span *ngIf="data?.Data?.model">
+              {{data.Data.model?.Facebook_UserName}}
+            </span>
+          </td>
+          <!-- Bình luận -->
+          <td>
+            <span *ngIf="data?.Data?.model">
+              {{data.Data.model?.Facebook_Comments[0]?.message}}
+            </span>
+          </td>
+          <!-- Thời gian -->
+          <td>
+            <span *ngIf="data?.Data?.model">
+              {{data.Data.model?.Facebook_Comments[0]?.created_time_converted || data.Data.model?.Facebook_Comments[0]?.created_time | yiDateTimeFormat}}
+            </span>
+          </td>
+          <!-- Lí do -->
+          <td>
+            <button tds-button-icon color="error" size="md" tds-tooltip [tooltipTitle]="data.ResponseContext" >
+              <span class="flex items-center">
+                  <i class="tdsi-eye-line"></i>
+              </span>
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+    </tbody>
+  </tds-table>
+
+  <div class="w-full flex justify-end p-4 gap-x-4" *tdsModalFooter>
+    <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Đóng</button>
+  </div>
+
+</tds-spin>
+

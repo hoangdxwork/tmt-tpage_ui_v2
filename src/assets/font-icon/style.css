@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'TDSIcons';
   src:
-    url('fonts/TDSIcons.ttf?omiwib') format('truetype'),
-    url('fonts/TDSIcons.woff?omiwib') format('woff'),
-    url('fonts/TDSIcons.svg?omiwib#TDSIcons') format('svg');
+    url('fonts/TDSIcons.ttf?31e2fm') format('truetype'),
+    url('fonts/TDSIcons.woff?31e2fm') format('woff'),
+    url('fonts/TDSIcons.svg?31e2fm#TDSIcons') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -24,6 +24,165 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.tdsi-password-reset-fill:before {
+  content: "\ead3";
+}
+.tdsi-color-fill:before {
+  content: "\eacf";
+}
+.tdsi-content-fill:before {
+  content: "\ead0";
+}
+.tdsi-help-circle-fill:before {
+  content: "\ead1";
+}
+.tdsi-module-fill:before {
+  content: "\ead2";
+}
+.tdsi-block-line:before {
+  content: "\eabc";
+}
+.tdsi-external-link-line:before {
+  content: "\eaca";
+}
+.tdsi-play-fill:before {
+  content: "\eacb";
+}
+.tdsi-shine-fill:before {
+  content: "\eacc";
+}
+.tdsi-blur-fill:before {
+  content: "\eacd";
+}
+.tdsi-mic-setting-fill:before {
+  content: "\eace";
+}
+.tdsi-arrow-left-bottom-fill:before {
+  content: "\eabd";
+}
+.tdsi-arrow-left-top-fill:before {
+  content: "\eabe";
+}
+.tdsi-arrow-right-bottom-fill:before {
+  content: "\eabf";
+}
+.tdsi-arrow-right-top-fill:before {
+  content: "\eac0";
+}
+.tdsi-call-incoming-fill:before {
+  content: "\eac1";
+}
+.tdsi-call-missed-fill:before {
+  content: "\eac2";
+}
+.tdsi-call-missing-fill:before {
+  content: "\eac3";
+}
+.tdsi-call-outgoing-fill:before {
+  content: "\eac4";
+}
+.tdsi-video-incoming-fill:before {
+  content: "\eac5";
+}
+.tdsi-video-missed-fill:before {
+  content: "\eac6";
+}
+.tdsi-video-missing-fill:before {
+  content: "\eac7";
+}
+.tdsi-video-outgoing-fill:before {
+  content: "\eac8";
+}
+.tdsi-wifi-warning-fill:before {
+  content: "\eac9";
+}
+.tdsi-block-fill:before {
+  content: "\eabb";
+}
+.tdsi-design-tool-fill:before {
+  content: "\eab2";
+}
+.tdsi-language-2-fill:before {
+  content: "\eab3";
+}
+.tdsi-note-2-fill:before {
+  content: "\eab4";
+}
+.tdsi-unblock-fill:before {
+  content: "\eab5";
+}
+.tdsi-ungroup-fill:before {
+  content: "\eab6";
+}
+.tdsi-waving-fill:before {
+  content: "\eab7";
+}
+.tdsi-widget-fill:before {
+  content: "\eab8";
+}
+.tdsi-chat-setting-fill:before {
+  content: "\eab9";
+}
+.tdsi-conversation-2-fill:before {
+  content: "\eaba";
+}
+.tdsi-hand-line:before {
+  content: "\eab1";
+}
+.tdsi-call-end-fill:before {
+  content: "\ea11";
+}
+.tdsi-chat-2-fill:before {
+  content: "\ea14";
+}
+.tdsi-check-all-fill:before {
+  content: "\ea15";
+}
+.tdsi-friend-fill:before {
+  content: "\ea16";
+}
+.tdsi-group-2-fill:before {
+  content: "\ea17";
+}
+.tdsi-group-plus-fill:before {
+  content: "\eaa4";
+}
+.tdsi-log-out-fill:before {
+  content: "\eaa5";
+}
+.tdsi-notification-fill:before {
+  content: "\eaa6";
+}
+.tdsi-notifications-off-fill:before {
+  content: "\eaa7";
+}
+.tdsi-push-pin-fill:before {
+  content: "\eaa8";
+}
+.tdsi-quote-fill:before {
+  content: "\eaa9";
+}
+.tdsi-tag-2-fill:before {
+  content: "\eaaa";
+}
+.tdsi-unfriend-fill:before {
+  content: "\eaab";
+}
+.tdsi-unpin-fill:before {
+  content: "\eaac";
+}
+.tdsi-video-2-fill:before {
+  content: "\eaad";
+}
+.tdsi-addfriend-fill:before {
+  content: "\eaae";
+}
+.tdsi-adjustments-fill:before {
+  content: "\eaaf";
+}
+.tdsi-apps-fill:before {
+  content: "\eab0";
+}
 .tdsi-code-embed-fill:before {
   content: "\ea7f";
 }
@@ -117,7 +276,7 @@
 .tdsi-anchor-fill:before {
   content: "\ea78";
 }
-.tdsi-backgroundcolor-fill:before {
+.tdsi-background-color-fill:before {
   content: "\ea79";
 }
 .tdsi-bold-fill:before {
@@ -134,6 +293,9 @@
 }
 .tdsi-column-properties-fill:before {
   content: "\ea7e";
+}
+.tdsi-cut-column-fill:before {
+  content: "\eaa3";
 }
 .tdsi-cut-fill:before {
   content: "\ea80";
@@ -270,7 +432,7 @@
 .tdsi-command-line:before {
   content: "\ea3a";
 }
-.tdsi-Countdown-line:before {
+.tdsi-countdown-line:before {
   content: "\ea3b";
 }
 .tdsi-dropdown-line:before {
@@ -369,7 +531,7 @@
 .tdsi-paragraph-top-line:before {
   content: "\ea5c";
 }
-.tdsi-Pentool-line:before {
+.tdsi-pentool-line:before {
   content: "\ea5d";
 }
 .tdsi-plus-circle-line:before {
@@ -475,26 +637,11 @@
 .tdsi-domain-fill:before {
   content: "\ea10";
 }
-.tdsi-font-bold-fill:before {
-  content: "\ea11";
-}
 .tdsi-font-cap-off-fill:before {
   content: "\ea12";
 }
 .tdsi-font-cap-on-fill:before {
   content: "\ea13";
-}
-.tdsi-font-color-fill:before {
-  content: "\ea14";
-}
-.tdsi-font-italic-fill:before {
-  content: "\ea15";
-}
-.tdsi-font-strike-fill:before {
-  content: "\ea16";
-}
-.tdsi-font-underline-fill:before {
-  content: "\ea17";
 }
 .tdsi-form-fill:before {
   content: "\ea18";

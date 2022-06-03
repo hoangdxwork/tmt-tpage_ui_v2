@@ -1,0 +1,16 @@
+<tds-spin [spinning]="isLoading">
+  <div *ngIf="data && data?.Items" class="flex flex-auto overflow-hidden">
+    <div *ngIf="currentFilter.value === 'all'" class="h-full w-full">
+      <post-comment-all></post-comment-all>
+    </div>
+    <div *ngIf="currentFilter.value === 'group'">
+      <post-comment-group></post-comment-group>
+    </div>
+    <div *ngIf="currentFilter.value === 'filter'">
+      <post-comment-filter></post-comment-filter>
+    </div>
+    <div *ngIf="currentFilter.value === 'manage'">
+      <manage-post-comment></manage-post-comment>
+    </div>
+  </div>
+</tds-spin>

@@ -1,0 +1,61 @@
+<form class="flex flex-col"[formGroup]="formAddUOM">
+  <div class="w-full text-body-2 text-neutral-1-900">
+      <div class="grid grid-cols-3 gap-x-8">
+          <div class="flex items-center w-full">
+              <tds-label>Tên đơn vị</tds-label>
+          </div>
+          <div class="col-span-3 mt-1">
+              <tds-form-field class="w-full">
+                  <input tdsInput placeholder="Nhập tên" formControlName="Name" />
+              </tds-form-field>
+          </div>
+      </div>
+      <div class="grid grid-cols-3 gap-x-8 mt-4">
+          <div class="flex items-center w-full">
+              <tds-label>Nhóm đơn vị</tds-label>
+          </div>
+          <div class="col-span-3 mt-1">
+              <tds-form-field>
+                  <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm đơn vị' formControlName="Category"
+                      disabledField="isActive" [required]='true' [data]="lstUOMCategory" [allowClear]="true">
+                  </tds-select>
+              </tds-form-field>
+          </div>
+      </div>
+      <div class="grid grid-cols-3 gap-x-8 mt-4">
+          <div class="flex items-center w-full">
+              <tds-label>Loại</tds-label>
+          </div>
+          <div class="col-span-3 mt-1">
+            <tds-form-field>
+              <tds-select valueField="type" textField="text" placeholder='Chọn nhóm đơn vị' formControlName="UOMType"
+                  disabledField="isActive" [required]='true' [data]="lstUOMType" [allowClear]="true">
+              </tds-select>
+          </tds-form-field>
+          </div>
+      </div>
+      <div class="grid grid-cols-3 gap-x-8 mt-4">
+          <div class="flex items-center w-full">
+              <tds-label>Làm tròn</tds-label>
+          </div>
+          <div class="col-span-3 mt-1">
+              <tds-form-field>
+                  <tds-input-number [min]="1" [step]="1" formControlName="Rounding">
+                  </tds-input-number>
+              </tds-form-field>
+          </div>
+      </div>
+      <div class="grid grid-cols-3 gap-x-8 mt-4">
+          <div class="col-span-3 flex items-center gap-x-4">
+              <tds-checkbox id="idActive" formControlName="Active"></tds-checkbox>
+              <tds-label for="idActive" >Hiệu lực</tds-label>
+          </div>
+      </div>
+
+      <div class="w-full flex justify-end p-4" *tdsModalFooter>
+        <button tds-button class="mr-4 w-[100px]" color="secondary" (click)="onCancel(null)">Đóng</button>
+        <button tds-button type="submit" class="w-[100px]" color="primary" (click)="onSave()">Lưu</button>
+      </div>
+
+  </div>
+</form>

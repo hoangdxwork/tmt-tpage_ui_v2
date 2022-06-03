@@ -1,1 +1,263 @@
-<p>order works!</p>
+<div class="w-full h-full flex flex-col">
+  <div class="p-4 w-full bg-white">
+    <div class="w-full flex justify-between">
+        <h1 class="flex cursor-pointer items-center group whitespace-pre-wrap font-semibold">
+            <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Đơn hàng</span>
+        </h1>
+        <div class="flex gap-x-2">
+            <button tds-button color="primary" size="md" (click)="onCreateBillFast()">
+                <span class="flex items-center">
+                    <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Tạo HĐ (F9)
+                </span>
+            </button>
+            <button tds-button color="secondary" size="md" (click)="onCreateBillDefault()">
+                <span class="flex items-center">
+                    <i class="tdsi-in-out-fill text-lg leading-none mr-2 text-neutral-500"></i>Tạo HĐ SP mặc định (F8)
+                </span>
+            </button>
+            <button tds-button color="secondary" size="md" (click)="onUrlCreateInvoiceFast()">
+                <span class="flex items-center">
+                    <i class="tdsi-reload-fill text-lg leading-none mr-2 text-neutral-500"></i>Tạo nhanh HĐ (F10)
+                </span>
+            </button>
+            <button tds-button color="secondary" size="md" (click)="onExportExcel()">
+                <span class="flex items-center">
+                    <i class="tdsi-excel-fill text-lg leading-none mr-2 text-neutral-500"></i>Xuất Excel
+                </span>
+            </button>
+        </div>
+    </div>
+  </div>
+
+  <div class="p-4 h-full">
+    <div class="bg-white w-full h-full rounded-md border border-neutral-200 flex flex-col">
+      <div class="flex justify-between">
+        <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
+          <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
+            <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
+            </tds-filter-status-item>
+          </ng-template>
+        </tds-filter-status>
+
+        <!-- TODO: Thao tác -->
+        <div class="flex items-center gap-x-2 pr-4">
+          <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]
+          (onRefreshData)="refreshDataCurrent()"></action-dropdown>
+          <tds-form-field class="w-full">
+            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keydown.enter)="applyFilter($event)" />
+            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+          </tds-form-field>
+          <filter-options (onLoadOption)="onLoadOption($event)"></filter-options>
+          <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
+        </div>
+
+      </div>
+      <div #viewChildWidthTable class="flex-auto w-full py-4">
+        <tds-table #rowSelectionTable
+          [showSizeChanger]="true"
+          [frontPagination]="false"
+          [listData]="lstOfData"
+          [(pageSize)]="pageSize"
+          [(pageIndex)]="pageIndex"
+          [total]="count" [scroll]="{y:'auto', x: 'auto'}" [loading]="isLoading"
+          (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
+          <thead>
+            <tr>
+              <th [align]="'center'" width="50px" [tdsLeft]="true" class="border-r"></th>
+              <th [(checked)]="checked" [indeterminate]="indeterminate" width="50px" class="border-r" [align]="'center'"
+                (checkedChange)="onAllChecked($event)" [tdsLeft]="true"></th>
+              <th width="80px" [tdsLeft]="true" [align]="'center'" class="border-r">STT</th>
+              <th *ngIf="isHidden('Code')" width="240px" [tdsLeft]="true" class="border-r">Mã</th>
+              <th *ngIf="isHidden('CRMTeamName')" width="240px" class="border-r">Kênh kết nối</th>
+              <th *ngIf="isHidden('Name')" width="240px" class="border-r">Tên</th>
+              <th *ngIf="isHidden('Address')" width="380px" class="border-r">Địa chỉ</th>
+              <th *ngIf="isHidden('TotalAmount')" [align]="'right'" width="240px" class="border-r">Tổng tiền</th>
+              <th *ngIf="isHidden('TotalQuantity')" [align]="'right'" width="240px" class="border-r">Tổng SL</th>
+              <th *ngIf="isHidden('DateCreated')" [align]="'center'" width="240px" class="border-r">Ngày hóa đơn</th>
+              <th *ngIf="isHidden('StatusText')" width="140px" class="border-r">Trạng thái</th>
+              <th *ngIf="isHidden('UserName')" width="240px" class="border-r">Nhân viên</th>
+              <th width="140px" [align]="'center'" [tdsRight]="true" class="border-r">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd' let-index="index">
+              <tr class="text-body-2 text-neutral-900 font-regular"
+                [ngClass]="setOfCheckedId.has(data.Id)?'bg-[#F2FCF5]':''">
+
+                <!-- Detail -->
+                <td [expand]="expandSet.has(data.Id)" class="text-center border-r"
+                  (expandChange)="onExpandChange(data.Id, $event)" [tdsLeft]="true">
+                </td>
+
+                <!-- Checked -->
+                <td [checked]="setOfCheckedId.has(data.Id)" (checkedChange)="onItemChecked(data.Id, $event)"
+                  class="text-center border-r" [tdsLeft]="true">
+                </td>
+
+                <!-- STT -->
+                <td class="text-center border-r"  [tdsLeft]="true">
+                  <span> {{ index + 1 }}</span>
+                </td>
+
+                <!-- Code -->
+                <td *ngIf="isHidden('Code')" class="border-r"  [tdsLeft]="true">
+                  <div class="w-full flex ">
+                    <span [ngClass]="data.Code ? '' : 'text-error-500'">{{data.Code || 'N/A'}}</span>
+                  </div>
+                  <!-- Nhãn -->
+                  <div class="flex w-full gap-x-2 items-center">
+                    <div *ngIf='data.Tags && data.Tags !== "[]"' class="flex w-full flex-wrap gap-2">
+                      <tds-tag *ngFor="let item of data.Tags | prettyjson" status='primary' tds-tooltip [tooltipTitle]="item.Name" >
+                        <div class="truncate max-w-[100px]">
+                          {{item.Name}}
+                        </div>
+                      </tds-tag>
+                    </div>
+
+                    <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover
+                      [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
+                      [popoverContent]="contentAddtag" [popoverBackdrop]="true" popoverPlacement="left" color="secondary" size="sm"
+                      class=" border-0">
+                      <div class="w-5 h-5 relative">
+                        <i class="tdsi-tag-fill text-base leading-4 select-all absolute top-0 left-0"></i>
+                        <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12" height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.00263 0.185353C5.78089 0.14704 5.55607 0.129611 5.3311 0.133295C3.96134 0.134421 2.64803 0.680863 1.67966 1.65259C0.711296 2.62431 0.167057 3.94186 0.166496 5.3158C0.162824 5.54146 0.180199 5.76697 0.218396 5.98938C0.342953 6.94846 0.732804 7.85338 1.34378 8.60162C1.95476 9.34986 2.76244 9.91151 3.67532 10.2229C4.5882 10.5344 5.56979 10.5831 6.50889 10.3637C7.44798 10.1443 8.30703 9.66541 8.98873 8.98138C9.67042 8.29736 10.1475 7.4355 10.3659 6.49346C10.5843 5.55142 10.5354 4.56685 10.2246 3.65129C9.91374 2.73574 9.3535 1.92579 8.60732 1.31322C7.86114 0.70065 6.95883 0.309939 6.00263 0.185353ZM8.09029 5.79283H5.80879V8.08342H4.85553V5.79283H2.57403V4.83665H4.85764V2.53756H5.81091V4.83878H8.09452L8.09029 5.79283Z" fill="#28A745"/>
+                        </svg>
+                      </div>
+                    </button>
+
+                    <!-- Button thêm nhãn -->
+                    <ng-template #contentAddtag>
+                      <div class="w-96">
+                        <tds-form-field>
+                          <tds-select valueField="Id" textField="Name" placeholder='select item' [(ngModel)]="modelTags"
+                            [allowClear]="true" [valuePrimitive]="false" [data]="lstDataTag" mode="multiple">
+                          </tds-select>
+                        </tds-form-field>
+                      </div>
+                    </ng-template>
+
+                    <ng-template #footerAddTag>
+                      <div class="flex justify-end pt-2">
+                        <button tds-button-icon color="secondary" class="mr-2" size="sm" (click)="closeTag()">
+                          <span class="flex items-center">
+                            <i class="tdsi-close-fill"></i>
+                          </span>
+                        </button>
+                        <button tds-button-icon size="sm" (click)="assignTags(data.Id, modelTags)">
+                          <span class="flex items-center">
+                            <i class="tdsi-tick-fill"></i>
+                          </span>
+                        </button>
+                      </div>
+                    </ng-template>
+                  </div>
+
+                  <div class="flex mt-1">
+                    <div class="flex text-xs text-error-500" *ngIf="!data.PrintCount || data.PrintCount == 0">
+                      Chưa in
+                    </div>
+
+                    <div class="flex text-xs text-success-500" *ngIf="data.PrintCount && data.PrintCount > 0">
+                      Đã in: {{data.PrintCount}}
+                    </div>
+                  </div>
+
+                </td>
+
+                <!-- Kênh kết nối -->
+                <td *ngIf="isHidden('CRMTeamName')" class="border-r">
+                  <div class="w-full flex">
+                    <span class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
+                    <span class="ml-1">{{data.CRMTeamName}}</span>
+                  </div>
+                </td>
+
+                <!-- Tên -->
+                <td *ngIf="isHidden('Name')" class="border-r">
+                  <div class="w-full">
+                    <p>{{data.PartnerName}}</p>
+
+                    <div class="flex items-center gap-1">
+                      <p class="text-[#929DAA]">{{data.Telephone}}</p>
+                      <tds-tag class="ml-1" *ngIf="data.Telephone" [status]="checkPhone(data.Telephone)=='Viettel'?'error':(checkPhone(data.Telephone)=='Mobifone'?'success':'info')" type="outline">
+                        {{checkPhone(data.Telephone)}}
+                      </tds-tag>
+                      <button *ngIf="data.Address" class="bg-orange-500 rounded-md p-1">
+                        <span class="flex items-center text-white ">
+                            <i class="tdsi-pin-fill"></i>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Địa chỉ -->
+                <td *ngIf="isHidden('Address')" class="border-r">
+                  <span>{{data.Address}}</span>
+                </td>
+
+                <!-- Tổng tiền -->
+                <td *ngIf="isHidden('TotalAmount')" class="text-right border-r">
+                  <span>{{data.TotalAmount || 0 | number :'1.0-3'}} đ</span>
+                </td>
+
+                <!-- Tổng SL -->
+                <td *ngIf="isHidden('TotalQuantity')" class="text-right border-r">
+                  <span>{{data.TotalQuantity || 0 | number}}</span>
+                </td>
+
+                <!-- Ngày hóa đơn -->
+                <td *ngIf="isHidden('DateCreated')" class="text-center border-r">
+                  <span>{{data.DateCreated | date:"dd-MM-yyyy HH:mm"}}</span>
+                </td>
+
+                <!-- Trạng thái -->
+                <td *ngIf="isHidden('StatusText')" class="border-r">
+                  <tds-tag [status]="getColorStatusText(data.StatusText)" type="outline">
+                    {{ data.StatusText }}
+                  </tds-tag>
+                </td>
+
+                <!-- Nhân viên -->
+                <td *ngIf="isHidden('UserName')" class="border-r">
+                  <span>{{data.UserName}}</span>
+                </td>
+
+                <!-- Thao tác -->
+                <td [tdsRight]="true" class="border-r">
+                  <div class="flex justify-center gap-x-2">
+                    <button tds-button-icon color="secondary" size="sm">
+                      <span class="flex items-center">
+                        <i class="tdsi-messenger-fill"></i>
+                      </span>
+                    </button>
+                    <button tds-button-icon color="secondary" size="sm" (click)="onEdit(data.Id)">
+                      <span class="flex items-center">
+                        <i class="tdsi-edit-fill"></i>
+                      </span>
+                    </button>
+                    <button tds-button-icon color="secondary" size="sm" (click)="onRemove(data.Id, data.Code)">
+                      <span class="flex items-center">
+                        <i class="tdsi-trash-fill"></i>
+                      </span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <!-- expand order details -->
+              <tr [expand]="expandSet.has(data.Id)"
+              class="border-b border-neutral-2-100 text-neutral-1-900 bg-light-50">
+              <div #viewChildDetailPartner [ngStyle]="{'max-width.px': widthTable, 'margin-left.px': marginLeftCollapse}"  class="flex items-center justify-center k-grid-table-wrap-detail">
+                <info-order-debt class="w-full" *ngIf="expandSet.has(data.Id)" [dataOrder]="data">
+                </info-order-debt>
+              </div>
+            </tr>
+            </ng-template>
+          </tbody>
+        </tds-table>
+      </div>
+    </div>
+  </div>
+
+</div>

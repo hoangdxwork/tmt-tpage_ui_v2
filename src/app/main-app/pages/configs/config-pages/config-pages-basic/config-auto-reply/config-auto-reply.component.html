@@ -1,0 +1,89 @@
+<tds-spin [spinning]="isLoading">
+  <form [formGroup]="formConfigAutoReply">
+    <div class="w-full h-full flex flex-col gap-y-4 ">
+        <div>
+            <span class="text-title-1 font-semibold">Cấu hình phản hồi tự động</span>
+        </div>
+        <div class="flex gap-x-2 items-center">
+            <tds-switch formControlName="IsEnableAutoReplyComment" size="md"></tds-switch>
+            <span class="">Phản hồi bình luận tự động?</span>
+        </div>
+        <div *ngIf="formConfigAutoReply.value?.IsEnableAutoReplyComment"
+            class="rounded-xl bg-neutral-3-50 flex flex-col w-full  gap-y-4 p-4">
+            <div class="flex w-1/3 justify-start gap-x-2">
+                <tds-switch formControlName="IsEnableAutoReplyMultiple" size="md"></tds-switch>
+                <div class="flex flex-col w-full gap-y-2">
+                    <span>Cho phép phản hồi nhiều lần</span>
+                    <div class="flex flex-col w-full gap-y-2"  *ngIf="formConfigAutoReply.value?.IsEnableAutoReplyMultiple">
+                        <span>
+                          Số lần tối đa phản hồi/bài viết/người dùng
+                          <span *ngIf="formConfigAutoReply.value?.MaxForAutoReplyMultiple <= 0" class="text-neutral-1-400">
+                            (Không áp dụng)
+                          </span>
+                        </span>
+                        <tds-form-field class="w-full">
+                        <tds-input-number [min]="0" [max]="1000000" [step]="1" formControlName="MaxForAutoReplyMultiple">
+                        </tds-input-number>
+                    </tds-form-field>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-x-2 items-center">
+                <tds-switch formControlName="IsEnableAutoReplyAllComment" size="md"></tds-switch>
+                <span class="">Phản hồi tất cả bình luận</span>
+            </div>
+            <div class="flex flex-col gap-y-2" *ngIf="formConfigAutoReply.value?.IsEnableAutoReplyAllComment">
+                <!-- <tds-label>Không phản hồi nếu bình luận chứa nội dung:</tds-label> -->
+                <!-- <div class="p-3 rounded bg-white border border-neutral-2-200">
+                    <span>
+                        {{'.'}}
+                    </span>
+                </div> -->
+                <tds-form-field class="p-3">
+                    <tds-label>Không phản hồi nếu bình luận chứa nội dung:</tds-label>
+                    <tds-select valueField="id" textField="name" formControlName="selectedWord3s"
+                        placeholder='Nội dung bình luận' mode="tags" [maxTagCount]="10">
+                    </tds-select>
+                </tds-form-field>
+            </div>
+            <div class="flex gap-x-2 items-center" *ngIf="!formConfigAutoReply.value?.IsEnableAutoReplyAllComment">
+                <tds-switch formControlName="IsEnableAutoReplyCommentWithPhone" size="md"></tds-switch>
+                <span class="">Phản hồi bình luận có điện thoại</span>
+            </div>
+            <div class="flex gap-x-2 items-center" *ngIf="!formConfigAutoReply.value?.IsEnableAutoReplyAllComment">
+                <tds-switch formControlName="IsEnableAutoReplyCommentWithEmail" size="md"></tds-switch>
+                <span class="">Phản hồi bình luận có địa chỉ email</span>
+            </div>
+            <div class="flex flex-col gap-y-2"
+              *ngIf="formConfigAutoReply.value?.IsEnableAutoReplyComment && !formConfigAutoReply.value?.IsEnableAutoReplyAllComment">
+                <!-- <tds-label>Phản hồi nếu bình luận chứa nội dung bất kỳ:</tds-label>
+                <div class="p-3 rounded bg-white border border-neutral-2-200">
+                    <span>
+                        {{'Xin chào {{partner.name}}, bạn vui lòng để lại số điện thoại để chúng tôi có thể tư vấn cho bạn.'}}
+                    </span>
+                </div> -->
+                <tds-form-field class="p-3">
+                    <tds-label>Phản hồi nếu bình luận chứa nội dung bất kỳ:</tds-label>
+                    <tds-select valueField="id" textField="name" formControlName="selectedWord2s"
+                        placeholder='Nội dung bình luận' mode="tags" [maxTagCount]="10">
+                    </tds-select>
+                </tds-form-field>
+            </div>
+            <!-- Nội dung phản hồi -->
+            <tds-form-field>
+                <tds-label>Nội dung phản hồi tự động:</tds-label>
+                <textarea class="resize-none" tdsInput placeholder="Nhập nội dung" formControlName="ContentForAutoReplyWithComment"></textarea>
+            </tds-form-field>
+            <!-- Phản hồi với tin nhắn -->
+            <div class="flex gap-x-2 items-center">
+                <tds-switch formControlName="IsEnableAutoReplyCommentInMessage" size="md"></tds-switch>
+                <span class="">Phản hồi với tin nhắn?</span>
+            </div>
+            <tds-form-field *ngIf="formConfigAutoReply.value?.IsEnableAutoReplyCommentInMessage">
+                <tds-label>Nội dung phản hồi với tin nhắn:</tds-label>
+                <textarea class="resize-none" tdsInput placeholder="Nhập nội dung" formControlName="ContentForAutoReplyWithMessage"></textarea>
+            </tds-form-field>
+        </div>
+    </div>
+  </form>
+</tds-spin>

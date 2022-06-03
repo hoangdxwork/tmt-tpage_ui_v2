@@ -1,0 +1,196 @@
+  <div class="flex items-center justify-between gap-x-2">
+    <tds-form-field class="w-full w-5/6">
+      <input tdsInput placeholder="Tìm kiếm" autocomplete="off"  [(ngModel)]="textSearch" (keydown.enter)="onSearch($event)"/>
+      <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+    </tds-form-field>
+
+    <tds-form-field>
+      <tds-range-picker [(ngModel)]="rangeDate" size="sm" (ngModelChange)="onChangeRangePicker($event)">
+      </tds-range-picker>
+      <!-- <tds-error *ngIf="formDate.invalid">Validation message text</tds-error> -->
+    </tds-form-field>
+  </div>
+
+  <tds-tabset class="bg-white w-full border rounded-md mt-4" (selectedIndexChange)="onSelectedTab($event)">
+    <tds-tab [title]="'Thông tin'">
+      <tds-spin [spinning]="isLoading">
+        <div class="grid grid-cols-2 gap-x-4">
+          <div>
+            <div class="grid grid-cols-3 gap-x-4 mt-4">
+              <div>
+                <span>Tên</span>
+              </div>
+              <div class="col-span-2 w-full">
+                <tds-label> {{data.Name || 'N/A'}} </tds-label>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-x-4 mt-4">
+              <div>
+                <span class="grid-span-1">Số điện thoại</span>
+              </div>
+              <div class="col-span-2 w-full">
+                <tds-label> {{data.Phone || 'N/A'}} </tds-label>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-x-4 mt-4">
+              <div>
+                <span class="grid-span-1">Mã</span>
+              </div>
+              <div class="col-span-2 w-full">
+                <tds-label> {{data.Ref || 'N/A'}} </tds-label>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-x-4 mt-4">
+              <div>
+                <span class="grid-span-1">Địa chỉ</span>
+              </div>
+              <div class="col-span-2 w-full">
+                <tds-label> {{data.Street || 'N/A'}} </tds-label>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="grid grid-cols-3 gap-x-4 mt-4">
+              <div>
+                <span class="grid-span-1">Doanh số đầu kỳ</span>
+              </div>
+              <div class="col-span-2 w-full">
+                <tds-label> {{revenue ? (revenue.RevenueBegan || 0 | number) : 0}} </tds-label>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-x-4 mt-4">
+              <div>
+                <span class="grid-span-1">Doanh số</span>
+              </div>
+              <div class="col-span-2 w-full">
+                <tds-label> {{revenue ? (revenue.Revenue || 0 | number) : 0}} </tds-label>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-x-4 mt-4">
+              <div>
+                <span class="grid-span-1">Nợ hiện tại</span>
+              </div>
+              <div class="col-span-2 w-full">
+                <tds-label> {{data.Credit || 0 | number}} </tds-label>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-x-4 mt-4">
+              <div>
+                <span class="grid-span-1">Tổng doanh số</span>
+              </div>
+              <div class="col-span-2 w-full">
+                <tds-label> {{revenue ? (revenue.RevenueTotal || 0 | number) : 0}} </tds-label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </tds-spin>
+    </tds-tab>
+    <tds-tab [title]="'Hóa đơn'">
+      <ng-template tds-tab>
+        <tds-table #rowSelectionTable
+        [showSizeChanger]="true"
+        [frontPagination]="false"
+        [listData]="lstOfDataOrder"
+        [(pageSize)]="pageSize"
+        [(pageIndex)]="pageIndex"
+        [total]="count" [scroll]="{y:'450px', x: 'auto'}" [loading]="isLoading"
+        (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
+        <thead>
+          <tr>
+            <th class="text-left" width="20%">Số HĐ</th>
+            <th class="text-left" width="20%">Ngày hóa đơn</th>
+            <th class="text-left" width="20%">Trạng thái</th>
+            <th class="text-left" width="20%">Tổng tiền</th>
+            <th class="text-left" width="20%">Còn nợ</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm">
+          <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd' let-index="index">
+            <tr>
+              <!-- Số HĐ -->
+              <td class="text-left">
+                <div class="w-full">
+                  <span>{{data.Code}} {{data.PartnerId}}</span>
+                </div>
+              </td>
+              <!-- Ngày hóa đơn -->
+              <td class="text-left">
+                <div class="w-full">
+                  <span>{{data.DateCreated | date:"dd-MM-yyyy HH:mm"}}</span>
+                </div>
+              </td>
+              <!-- Trạng thái -->
+              <td class="text-left">
+                <div class="w-full">
+                  <span>{{data.StatusText}}</span>
+                </div>
+              </td>
+              <!-- Tổng tiền -->
+              <td class="text-left">
+                <div class="w-full">
+                  <span>{{data.AmountTotal || 0 | number :'1.0-3'}}</span>
+                </div>
+              </td>
+              <!-- Còn nợ -->
+              <td class="text-left">
+                <div class="w-full">
+                  <span>Chưa có dữ liệu</span>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </tbody>
+        </tds-table>
+      </ng-template>
+    </tds-tab>
+    <tds-tab [title]="'Chi tiết nợ'">
+      <ng-template tds-tab>
+        <tds-table #rowCreditDebitTable
+        [showSizeChanger]="true"
+        [frontPagination]="false"
+        [listData]="lstDebitDetailsSearch || lstDebitDetails"
+        [(pageSize)]="pageSize"
+        [(pageIndex)]="pageIndex"
+        [total]="count" [scroll]="{y:'450px', x: 'auto'}" [loading]="isLoading"
+        (clickRefresh)="refreshCreditDebit()" (queryParams)="onQueryParamsChangeCreditDebit($event)">
+        <thead>
+          <tr>
+            <th class="text-left" width="33%">Ngày</th>
+            <th class="text-left" width="33%">Chứng từ / Hóa đơn</th>
+            <th class="text-left" width="33%">Còn nợ</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm">
+          <ng-template ngFor let-data [ngForOf]="rowCreditDebitTable.data" let-odd='odd' let-index="index">
+            <tr>
+              <!-- Ngày -->
+              <td class="text-left">
+                <div class="w-full">
+                  <span>{{data.Date | date: 'dd/MM/yyyy'}}</span>
+                </div>
+              </td>
+              <!-- Chứng từ / Hóa đơn -->
+              <td class="text-left">
+                <div class="w-full">
+                  <span>{{data.DisplayedName}}</span>
+                </div>
+              </td>
+              <!-- Còn nợ -->
+              <td class="text-left">
+                <div class="w-full">
+                  <span>{{data.AmountResidual | number}}</span>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </tbody>
+        </tds-table>
+      </ng-template>
+    </tds-tab>
+  </tds-tabset>
+
+  <div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+  </div>

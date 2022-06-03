@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, pipe, throwError } from 'rxjs';
 import { TAuthService } from './auth.service';
 import { TCommonService } from './common.service';
 import { environment } from 'src/environments/environment';
-import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 import { catchError, filter, switchMap, take } from "rxjs/operators";
 import { TGlobalConfig } from './global-config';
 
@@ -24,7 +24,7 @@ export class TAuthInterceptorService implements HttpInterceptor {
             environment.apiAccount.signInGoogle,
             environment.apiAccount.signInVerifyOtpsms,
         ];
-
+        req = this.addAuthenticationToken(req)
         return next.handle(req).pipe(catchError(err => {
             //Lỗi do đăng nhập chưa xóa dữ liệu trên cache
             if (lstUrlLogin.indexOf(req.url) > -1) {
@@ -69,13 +69,14 @@ export class TAuthInterceptorService implements HttpInterceptor {
 
                     TGlobalConfig.Authen.refreshTokenInProgress = true;
                     TGlobalConfig.Authen.refreshTokenSubject.next(null);
-                    that.auth.refreshToken(TGlobalConfig.Authen.token).subscribe((data) => {
+                    that.auth.refreshToken(this.auth.getAccessToken())
+                    .subscribe((data) => {
                         TGlobalConfig.Authen.refreshTokenInProgress = false;
                         TGlobalConfig.Authen.refreshTokenSubject.next(data);
                         return next.handle(that.auth.addAuthenticationToken(req));
                     },
                         error => {
-                            that.auth.clearToken("AuthInterceptor");
+                             that.auth.clearToken("AuthInterceptor");
                             that.auth.redirectLogin();
                             return throwError(error);
                         });
@@ -87,6 +88,23 @@ export class TAuthInterceptorService implements HttpInterceptor {
                 );
             }
         }));
+    }
+    addAuthenticationToken = (req: HttpRequest<any>): HttpRequest<any> => {
+        let accessToken =this.auth.getAccessToken();
+        if (TDSHelperObject.hasValue(this.auth.isLogin())
+            && TDSHelperObject.hasValue(accessToken)
+            && TDSHelperString.hasValueString(accessToken?.access_token)
+        ) {
+            
+            req = req.clone({
+                setHeaders:
+                {
+                    Authorization: "Bearer " + accessToken?.access_token,
+                }
+            });
+
+        }
+        return req;
     }
 }
 

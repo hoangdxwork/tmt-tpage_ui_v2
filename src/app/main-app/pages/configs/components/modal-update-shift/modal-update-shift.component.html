@@ -1,0 +1,26 @@
+<tds-spin [spinning]="isLoading">
+    <form class="flex flex-col gap-y-4" [formGroup]="formUpdateShift">
+        <tds-form-field>
+            <tds-label>Tên ca làm việc</tds-label>
+            <input tdsInput autocomplete="off" placeholder="Nhập tên ca làm việc" formControlName="Name"
+                [required]='true' />
+            <tds-error>Vui lòng nhập tên ca làm việc</tds-error>
+        </tds-form-field>
+        <tds-form-field>
+            <tds-label>Thời gian bắt đầu</tds-label>
+            <tds-time-picker formControlName="FromHour" [required]='true'>
+            </tds-time-picker>
+            <tds-error>Vui lòng chọn thời gian bắt đầu</tds-error>
+        </tds-form-field>
+        <tds-form-field>
+            <tds-label>Thời gian kết thúc</tds-label>
+            <tds-time-picker formControlName="ToHour" [required]='true'>
+            </tds-time-picker>
+            <tds-error>Vui lòng chọn thời gian kết thúc</tds-error>
+        </tds-form-field>
+        <div class="w-full flex justify-end p-4" *tdsModalFooter>
+            <button tds-button class="mr-2" color="secondary" (click)="cancel()">Hủy bỏ</button>
+            <button tds-button type="submit" color="primary" (click)="onSubmitAddShift()" [disabled]="!formUpdateShift?.valid">Lưu thay đổi</button>
+        </div>
+    </form>
+</tds-spin>

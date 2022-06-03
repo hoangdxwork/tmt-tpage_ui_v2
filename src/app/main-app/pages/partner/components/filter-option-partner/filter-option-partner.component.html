@@ -1,0 +1,35 @@
+
+<button tds-button-icon color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" size="md" class="relative"  [(visible)]="isVisible">
+  <span class="flex items-center">
+      <i class="tdsi-filter-2-line text-lg leading-none"></i>
+  </span>
+  <span *ngIf="isActive == true" class="tdsi-success-fill absolute text-[#28A745] text-body-2 top-[4px]"></span>
+</button>
+<tds-dropdown-menu #menu="tdsDropdownMenu">
+  <div class="w-full p-4" style="max-width: 450px;">
+      <div class="w-full mb-4">
+          <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">TRẠNG THÁI</p>
+          <div class="flex flex-wrap">
+              <a (click)="selectState('all')" [ngClass]="currentStatus.value == 'all' ? 'bg-primary-1 text-[#fff]' : 'bg-neutral-3-200 '"
+                class="items-center  dark:bg-d-neutral-3-200 group  hover:bg-neutral-3-300 dark:hover:bg-d-neutral-3-300 rounded py-0.5 pl-2 pr-2 mr-2 mb-2">
+                <span class="text-body-2 font-regular  dark:text-d-neutral-1-900 whitespace-nowrap box-border truncate">Tất cả</span>
+              </a>
+              <a *ngFor="let item of status" (click)="selectState(item)" [ngClass]="item.StatusText === currentStatus.value ? 'bg-primary-1 text-[#fff]' : 'bg-neutral-3-200 '"
+                class="items-center  dark:bg-d-neutral-3-200 group  hover:bg-neutral-3-300 dark:hover:bg-d-neutral-3-300 rounded py-0.5 pl-2 pr-2 mr-2 mb-2">
+                <span class="text-body-2 font-regular  dark:text-d-neutral-1-900 whitespace-nowrap box-border truncate"> {{item.StatusText}}</span>
+              </a>
+          </div>
+      </div>
+      <div class="w-full flex align-center justify-between">
+          <button tds-button color="primary" size="sm" (click)="onCancel()">
+              <span class="flex items-center">
+                  <i class="tdsi-close-fill text-sm leading-none mr-2"></i> Bỏ lọc
+              </span>
+          </button>
+          <div>
+            <button tds-button color="secondary" size="sm" (click)="closeMenu()">Đóng</button>
+            <button tds-button color="primary"  class="ml-2" size="sm" (click)="onApply()">Áp dụng</button>
+          </div>
+      </div>
+  </div>
+</tds-dropdown-menu>

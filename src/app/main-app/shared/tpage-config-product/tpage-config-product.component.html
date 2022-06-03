@@ -1,0 +1,22 @@
+<tds-spin [spinning]="isLoading">
+  <form [formGroup]="_form">
+    <div class="w-full text-body-2 text-neutral-1-900">
+      <div class="flex items-baseline gap-x-8 gap-y-4">
+          <p class="mb-2 font-semibold text-[#5A6271] size-[14px] w-1/4">Chọn bảng giá</p>
+          <div class="w-3/4">
+            <tds-form-field>
+              <tds-select valueField="Id" textField="Name" (selectChange)="onChangePriceList($event)"
+                  placeholder='Chọn bảng giá' formControlName="PriceList" [valuePrimitive]="false"
+                  disabledField="isActive" [data]="lstPrices" [allowClear]="true">
+              </tds-select>
+          </tds-form-field>
+          </div>
+      </div>
+    </div>
+
+    <div class="w-full flex justify-end p-4" *tdsModalFooter>
+      <button tds-button class="mr-4 w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
+      <button tds-button type="submit" class="w-[100px] mr-4" color="primary" (click)="onSave()" [disabled]="!_form?.valid">Áp dụng</button>
+    </div>
+  </form>
+</tds-spin>

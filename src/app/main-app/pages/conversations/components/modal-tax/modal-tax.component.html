@@ -1,0 +1,18 @@
+<tds-spin [spinning]="isLoading">
+  <div class="w-full h-full flex flex-col gap-y-2">
+    <div class="px-1.5 py-4 flex justify-between border-b border-neutral-3-300 border-solid">
+      <span> Không thuế 0% </span>
+      <tds-checkbox [checked]="taxSelect == null" (change)="changeTax($event)"></tds-checkbox>
+    </div>
+    <div class="px-1.5 py-4 flex justify-between border-b border-neutral-3-300 border-solid" *ngFor="let tax of lstTax">
+      <span> {{tax.Name}} </span>
+      <tds-checkbox [checked]="taxSelect?.Id == tax.Id" (change)="changeTax($event, tax)"></tds-checkbox>
+    </div>
+  </div>
+
+  <div class="w-full flex justify-end p-4 gap-x-4" *tdsModalFooter>
+    <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Đóng</button>
+    <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
+  </div>
+
+</tds-spin>

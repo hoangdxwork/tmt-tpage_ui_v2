@@ -1,0 +1,48 @@
+<div *ngFor="let item of menuData">
+    <div *ngIf="item.listChild; else childTmp">
+        <tds-collapse [bordered]="false" [expandIconPosition]="'right'">
+            <tds-collapse-panel [header]="headerTpl" [active]="openCollapsePanel(item.link)" [tdsClass]="'p-0'">
+                <ng-template #headerTpl>
+                    <div class="flex items-center px-2 border-transparent cursor-pointer text-neutral-500">
+                        <i class="text-lg leading-none mr-2 
+                            {{item.icon ?? 'p-2.5'}}">
+                        </i>
+                        <span class="font-semibold text-body-2 font-sans w-full">{{item.name}}</span>
+                    </div>
+                </ng-template>
+                <div *ngFor="let child of item.listChild">
+                    <div class="w-full px-2 cursor-pointer m-0"
+                        (click)="onChangePage(child.link)" 
+                        [routerLink]="child.link">
+                        <span class="flex items-center rounded-lg p-4 
+                        {{(currentURL === child.link)||(currentURL.includes(child.link)) ? 'bg-primary-1' : 'bg-transparent hover:bg-neutral-3-50 group'}}">
+                            <i class="text-lg leading-none mr-2 
+                                {{child.icon ?? 'p-2.5'}}
+                                {{(currentURL === child.link)||(currentURL.includes(child.link)) ? 'text-white' : 'text-neutral-1-500'}}">
+                            </i>
+                            <span class="font-semibold text-body-2 font-sans w-full 
+                                {{(currentURL === child.link)||(currentURL.includes(child.link)) ? 'text-white' : 'text-neutral-1-600 group-hover:text-neutral-1-900'}}">
+                                {{child.name}}
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </tds-collapse-panel>
+        </tds-collapse>
+    </div>
+    <ng-template #childTmp>
+        <div class="w-full px-2 cursor-pointer" (click)="onChangePage(item.link)" [routerLink]="item.link">
+            <span class="flex items-center rounded-lg p-4 
+                {{(currentURL === item.link)||(currentURL.includes(item.link)) ? 'bg-primary-1' : 'bg-transparent hover:bg-neutral-3-50 group'}}">
+                <i class="text-lg leading-none mr-2 
+                    {{item.icon ?? 'p-2.5'}}
+                    {{(currentURL === item.link)||(currentURL.includes(item.link)) ? 'text-white' : 'text-neutral-1-500'}}">
+                </i>
+                <span class="font-semibold text-body-2 font-sans w-full 
+                    {{(currentURL === item.link)||(currentURL.includes(item.link)) ? 'text-white' : 'text-neutral-1-600 group-hover:text-neutral-1-900'}}">
+                    {{item.name}}
+                </span>
+            </span>
+        </div>
+    </ng-template>
+</div>

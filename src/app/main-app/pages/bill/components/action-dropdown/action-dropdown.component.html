@@ -1,0 +1,100 @@
+
+
+<tds-button-group *ngIf="!_type">
+  <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate" >
+    <button tds-button color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'" [tdsDropdownMenu]="menu">
+      <span class="flex items-center">
+        Thao tác <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+      </span>
+    </button>
+  </tds-spin>
+
+  <tds-dropdown-menu #menu="tdsDropdownMenu">
+    <div class="w-[272px]">
+      <div tds-dropdown-item (click)="sendPaymentRequest()">Gửi yêu cầu thanh toán</div>
+      <div tds-dropdown-item (click)="sendDelivery()">Gửi lại mã vận đơn</div>
+      <div tds-dropdown-item (click)="showMessageModal()">Gửi tin nhắn Facebook</div>
+      <hr/>
+      <div tds-dropdown-item (click)="print('print')">In phiếu</div>
+      <div tds-dropdown-item (click)="print('printShips')"> In phiếu ship </div>
+      <div tds-dropdown-item (click)="print('printDeliveries')">In phiếu giao hàng</div>
+      <hr/>
+      <div tds-dropdown-item (click)="approveOrder()">Xác nhận bán hàng</div>
+      <div tds-dropdown-item (click)="registerPaymentMulti()">Xác nhận thanh toán</div>
+      <div tds-dropdown-item (click)="registerPayment()">Thanh toán</div>
+      <div tds-dropdown-item >Trả hàng hàng loạt</div>
+      <hr/>
+      <div tds-dropdown-item class="text-error-500" (click)="cancelDelivery()">Hủy vận đơn </div>
+      <div tds-dropdown-item class="text-error-500" (click)="cancelInvoice()">Hủy hóa đơn </div>
+      <div tds-dropdown-item class="text-error-500" (click)="unLink()">Xóa</div>
+    </div>
+  </tds-dropdown-menu>
+</tds-button-group>
+
+<div class="flex flex-row items-center gap-x-2">
+  <!-- create bill -->
+  <button *ngIf="_type === 'new' || _type === 'all'" tds-button color="primary" size="md" [disabled]="isProcessing" (click)="onCreate()">
+    <span class="flex items-center">
+      <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
+    </span>
+  </button>
+
+  <!-- excel -->
+  <tds-button-group *ngIf="_type === 'excel' || _type === 'all'">
+    <button tds-button color="primary" size="md" [disabled]="isProcessing" [placement]="'bottomRight'" tds-dropdown trigger="click" [tdsDropdownMenu]="exportExcelMenu">
+      <span class="flex items-center">
+        <i class="tdsi-excel-fill text-lg leading-none mr-2"></i>
+        <span class="mr-2">Xuất Excel</span>
+        <i class="tdsi-arrow-down-fill text-lg leading-none"></i>
+      </span>
+    </button>
+    <tds-dropdown-menu #exportExcelMenu="tdsDropdownMenu">
+      <div class="w-full">
+        <div tds-dropdown-item (click)="exportExcel('excels')">Xuất excel</div>
+        <div tds-dropdown-item (click)="exportExcel('details')">Xuất excel chi tiết</div>
+        <div tds-dropdown-item (click)="exportExcel('products')">Xuất excel chi tiết sản phẩm </div>
+      </div>
+    </tds-dropdown-menu>
+  </tds-button-group>
+
+  <!-- update delivery -->
+  <button *ngIf="_type === 'delivery' || _type === 'all'" tds-button color="info" size="md" [disabled]="isProcessing" (click)="updateDelivery()">
+    <span class="flex items-center">
+      <i class="tdsi-transport-fill text-lg leading-none mr-2"></i>
+      <span>Cập nhật GH</span>
+    </span>
+  </button>
+
+  <!-- delivery status -->
+  <tds-button-group *ngIf="_type === 'DS' || _type === 'all'">
+    <button tds-button color="info" size="md" [disabled]="isProcessing" [placement]="'bottomRight'" tds-dropdown trigger="click" [tdsDropdownMenu]="deliveryStatusMenu">
+      <span class="flex items-center">
+        <i class="tdsi-inventory-check-fill text-lg leading-none mr-2"></i>
+          <span class="mr-2">Đối soát</span>
+        <i class="tdsi-arrow-down-fill text-lg leading-none"></i>
+      </span>
+    </button>
+    <tds-dropdown-menu #deliveryStatusMenu="tdsDropdownMenu">
+      <div class="w-full">
+          <div (click)="updateDeliveryStatus('handicraft')" tds-dropdown-item>
+              <a> Đối soát giao hàng thủ công </a>
+          </div>
+          <div (click)="updateDeliveryStatus('fromFile')" tds-dropdown-item>
+              <a> Đối soát giao hàng từ file </a>
+          </div>
+      </div>
+    </tds-dropdown-menu>
+  </tds-button-group>
+
+  <!-- HDS -->
+  <button *ngIf="_type === 'HDS' || _type === 'all'" tds-button color="secondary" size="md" [disabled]="isProcessing"
+    (click)="showHistoryDS()">
+    <span class="flex items-center">
+      <i class="tdsi-order-fill text-lg leading-none mr-2"></i>Lịch sử đối soát
+    </span>
+  </button>
+</div>
+
+<ng-template #indicatorTemplate>
+  <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
+</ng-template>

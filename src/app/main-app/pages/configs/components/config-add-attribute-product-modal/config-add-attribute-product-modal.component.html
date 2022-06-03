@@ -1,0 +1,74 @@
+<form [formGroup]="createAttributeForm" autocomplete="off">
+    <div class="flex flex-row mb-4">
+        <tds-form-field class="flex-auto col-span-3 mr-4">
+            <tds-select valueField="Id" textField="Name" placeholder='Chọn thuộc tính'
+                disabledField="isActive" formControlName="Attributes" [autoClose]="true"
+                [data]="attributeList" [allowClear]="true" [mode]="'multiple'" [valuePrimitive]="false">
+            </tds-select>
+            <tds-error>
+                Vui lòng chọn thuộc tính
+            </tds-error>
+        </tds-form-field>
+        <button tds-button color="primary" type="button"
+            [disabled]="!createAttributeForm.controls.Attributes.valid"
+            (click)="onSelectAttribute()">
+            <span class="flex items-center">
+              <i class="tdsi-tick-fill text-lg leading-none mr-2"></i>Thêm thuộc tính
+            </span>
+        </button>
+    </div>
+    <div>
+        <tds-table #basicTable 
+            [listData]="lstOfData"
+            [showPagination]="false"
+            [loading]="isLoading"
+            [noResult]="NoResultTable">
+            <thead>
+                  <tr>
+                        <th [width]="'160px'">Tên thuộc tính</th>
+                        <th [width]="'492px'">Giá trị thuộc tính</th>
+                        <th [width]="'116px'" [align]="'center'">Thao tác</th>
+                  </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let data of lstOfData; let i = index">
+                    <td [width]="'160px'">{{ data.Attribute.Name }}</td>
+                    <td [width]="'492px'">
+                        <tds-form-field>
+                            <tds-select valueField="Id" textField="Name" placeholder='Chọn giá trị thuộc tính'
+                                disabledField="isActive" mode="multiple" [valuePrimitive]="false"
+                                [data]="data.Values" [autoClose]="true" [allowClear]="true" (selectChange)="onSelectValues($event,data.AttributeId)">
+                            </tds-select>
+                            <tds-error>
+                                Vui lòng chọn giá trị thuộc tính
+                            </tds-error>
+                        </tds-form-field>
+                    </td>
+                    <td [width]="'116px'" [align]="'center'">
+                        <button tds-button-flat-icon type="button" size="sm"
+                            (click)="deleteAttribute(data.AttributeId)">
+                            <span class="flex items-center">
+                              <i class="tdsi-trash-line text-error-400 text-xl leading-none"></i>
+                            </span>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </tds-table>
+        <ng-template #NoResultTable>
+            <div class="flex flex-col items-center justify-center w-full h-[150px]">
+              <tds-avatar [tdsSrc]="'assets/images/config/Empty_Table.svg'" [isAvatar]="false" [size]="90" [shape]="'square'"></tds-avatar>
+              <span class="text-neutral-1-400 text-body-2 text-center font-regular mt-3">Chưa có thuộc tính nào</span>
+            </div>
+          </ng-template>
+    </div>
+</form>
+<!-- footer -->
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2" color="secondary" (click)="cancel()">
+        Hủy bỏ
+    </button>
+    <button tds-button type="submit" [disabled]="checkValidate()" color="primary" type="submit" (click)="save()">
+        Lưu thay đổi
+    </button>
+</div>

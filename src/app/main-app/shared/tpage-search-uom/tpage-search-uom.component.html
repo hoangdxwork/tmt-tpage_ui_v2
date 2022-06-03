@@ -1,0 +1,50 @@
+<div class="w-full flex flex-col">
+    <div class="flex gap-4">
+        <tds-form-field class="w-full w-5/6">
+            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keydown.enter)="onSearch($event)" />
+            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+        </tds-form-field>
+
+        <button class="w-1/6" tds-button color="primary" size="md" (click)="onAddUOM()">
+            <span class="flex items-center">
+                <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i> Thêm mẫu mới
+            </span>
+        </button>
+    </div>
+
+    <div class="w-full mt-4 rounded-md h-[240px]" >
+      <div class="w-full h-full ">
+        <tds-table class="tds-table-rounded" #basicTable [bordered]="true" [listData]="lstSearch || lstProductUOM" [showPagination]="false" [scroll]="{y:'auto'}">
+          <thead class="rounded">
+              <tr>
+                  <th>STT</th>
+                  <th>Tên</th>
+                  <th>Loại</th>
+              </tr>
+          </thead>
+          <tbody>
+            <ng-template ngFor let-data [ngForOf]="basicTable.data" let-index="index">
+                <tr>
+                    <td> {{ index + 1 }} </td>
+                    <td>
+                      <p class="text-sm font-semibold">
+                        {{ data.Name }}
+                      </p>
+                    </td>
+                    <td>
+                      <p>
+                        {{ data.ShowUOMType}}
+                      </p>
+                    </td>
+                </tr>
+            </ng-template>
+        </tbody>
+        </tds-table>
+      </div>
+    </div>
+
+    <div class="w-full flex justify-end p-4" *tdsModalFooter>
+      <button tds-button class="mr-4 w-[100px]" color="secondary" (click)="onCancel(null)">Đóng</button>
+    </div>
+
+</div>

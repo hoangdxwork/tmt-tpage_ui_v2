@@ -1,0 +1,41 @@
+
+<tds-spin [spinning]="isLoading">
+  <form [formGroup]="formHideComment">
+    <div class="w-full h-full flex flex-col gap-y-4 ">
+      <div>
+          <span class="text-title-1 font-semibold">Cấu hình bình luận</span>
+      </div>
+      <div class="flex gap-x-2 items-center">
+          <tds-switch formControlName="IsEnableAutoHideComment" size="md"></tds-switch>
+          <span class="">Tự động ẩn bình luận?</span>
+      </div>
+      <div class="rounded-xl bg-neutral-3-50 flex flex-col gap-y-4 p-4" *ngIf="formHideComment.value?.IsEnableAutoHideComment">
+          <div class="flex gap-x-2 items-center">
+              <tds-switch formControlName="IsEnableAutoHideAllComment" size="md"></tds-switch>
+              <span class="">Ẩn tất cả bình luận</span>
+          </div>
+          <div class="flex gap-x-2 items-center" *ngIf="!formHideComment.value?.IsEnableAutoHideAllComment">
+              <tds-switch formControlName="IsEnableAutoHideCommentWithPhone" size="md"></tds-switch>
+              <span class="">Ẩn bình luận có điện thoại</span>
+          </div>
+          <div class="flex gap-x-2 items-center" *ngIf="!formHideComment.value?.IsEnableAutoHideAllComment">
+              <tds-switch formControlName="IsEnableAutoHideCommentWithEmail"></tds-switch>
+              <span class="">Ẩn bình luận có địa chỉ email</span>
+          </div>
+          <div class="flex flex-col gap-y-2" *ngIf="!formHideComment.value?.IsEnableAutoHideAllComment">
+              <!-- <tds-label>Ẩn nếu bình luận chứa nội dung bất kỳ:</tds-label>
+              <div class="p-3 rounded bg-white border border-neutral-2-200">
+                  <span>{{'.'}}</span>
+              </div> -->
+              <tds-form-field class="p-3">
+                <tds-label>Ẩn nếu bình luận chứa nội dung bất kỳ:</tds-label>
+                <tds-select valueField="id" textField="name" formControlName="selectedWord1s"
+                    placeholder='Nội dung bình luận' mode="tags" [maxTagCount]="10">
+                </tds-select>
+              </tds-form-field>
+          </div>
+      </div>
+    </div>
+  </form>
+</tds-spin>
+

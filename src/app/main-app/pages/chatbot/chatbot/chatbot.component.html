@@ -1,0 +1,62 @@
+<div class="w-full h-full flex flex-col">
+  <div class="p-4 w-full bg-white">
+    <div class="w-full flex justify-between">
+        <h1 class="flex cursor-pointer items-center group whitespace-pre-wrap font-semibold">
+            <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Chatbot</span>
+        </h1>
+
+    </div>
+  </div>
+
+  <div class="p-4 w-full">
+    <div class="w-full background-content">
+      <div class="rounded-2xl bg-cover" style="background-image: url(/assets/images/background-chatbot.png);">
+        <div class="text-white p-11">
+          <p class="title">Kết nối T-Page với Chatbot</p>
+          <p class="text-sm mt-[17px]" >
+            Kết nối tài khoản Facebook của bạn với Chatbot để tự động trả lời hội <br>
+            thoại, chốt đơn nhanh chóng, tiết kiệm tối đa công sức cho bạn.
+          </p>
+          <button tds-button color="secondary" size="xl" class="flex mt-[43px] py-[9px] px-[17px]" (click)="showModalConnectChatbot()">
+            <span class="flex items-center text-primary-2 text-sm">
+              <i class="tdsi-callcenter-fill text-lg leading-none mr-2"></i>Kết nối với Chatbot
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <tds-spin [spinning]="isLoading">
+      <div class="p-3 grid grid-cols-3 gap-y-4 gap-x-12 mt-8" *ngIf="lstChannelChatbot && lstChannelChatbot.length > 0">
+        <div class="flex justify-between items-center p-8 border-solid bg-white rounded-2xl col-span-1"
+          *ngFor="let channel of lstChannelChatbot">
+          <div class="flex gap-x-6">
+            <div class="flex gap-x-4">
+              <tds-avatar class="bg-[#D8E8FF] w-[65px] h-[65px]" tdsSrc="assets/images/icon-chatbot.svg"></tds-avatar>
+            </div>
+            <div>
+              <p class="text-lg font-semibold"> {{channel.FacebookName}} </p>
+              <p class="text-sm text-[#ABABAB] mt-2" *ngIf="!channel.IsEnableChatbot">Đang tắt</p>
+              <p class="text-sm text-success-400 mt-2 font-bold" *ngIf="channel.IsEnableChatbot">Đang kết nối</p>
+            </div>
+          </div>
+          <div>
+            <div class="gap-2">
+              <div class="text-xs text-[#6C6C6C]">Bật/Tắt</div>
+              <tds-switch size="md" class="mt-2" [checked]="channel.IsEnableChatbot" (change)="changeEnableChatbot(channel)"></tds-switch>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="p-20 justify-center flex" *ngIf="!lstChannelChatbot || lstChannelChatbot.length < 1">
+        <div class="justify-center flex flex-col gap-y-4">
+          <img src="../../../../../assets/images/chabot-empty.svg" alt="">
+          <p class="text-[#717171] text-xl">
+            Chưa có page nào kết nối chatbot
+          </p>
+        </div>
+      </div>
+    </tds-spin>
+  </div>
+</div>
+

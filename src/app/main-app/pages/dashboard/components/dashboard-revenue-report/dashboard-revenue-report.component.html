@@ -1,0 +1,38 @@
+<div class="bg-white flex flex-col rounded-xl px-4 mb-4">
+    <div class="flex flex-row items-center justify-between border-b border-neutral-2-200 py-4">
+        <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Báo cáo doanh thu đơn hàng</span>
+        <div class="flex flex-row items-center">
+            <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị:</span>
+            <tds-select valueField="name" textField="name" [ngModel]="currentFilter" [border]="false"
+                [data]="filterList" size="md" class="tds-dashboard-filter w-[120px] truncate ..."
+                (ngModelChange)="onChangeFilter($event)" classIcon="tdsi-arrow-down-fill">
+            </tds-select>
+        </div>
+    </div>
+    <div *ngIf="!emptyData;else emptyTmp">
+        <div class="flex flex-col items-center">
+            <div class="flex flex-row items-center justify-center w-full divide-x py-8">
+                <div class="flex flex-col items-center justify-center w-full">
+                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng doanh thu</span>
+                    <span class="text-primary-1 text-heading-4 font-semibold font-sans text-center">
+                        {{labelData[0].value|number}}
+                        <i [class]="labelData[0].decrease ? 'tdsi-chart-down-line text-error-400' : 'tdsi-chart-up-line text-success-400' "></i>
+                    </span>
+                </div>
+                <div class="flex flex-col items-center justify-center w-full">
+                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng lợi nhuận</span>
+                    <span class="text-accent-10 text-heading-4 font-semibold font-sans text-center">
+                        {{labelData[1].value|number}}
+                        <i [class]="labelData[1].decrease ? 'tdsi-chart-down-line text-error-400' : 'tdsi-chart-up-line text-success-400' "></i>
+                    </span>
+                </div>
+            </div>
+            <div class="w-full pb-6">
+                <div echarts [options]="revenueOption" [size]="['auto',439]"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #emptyTmp>
+    <app-dashboard-empty-data></app-dashboard-empty-data>
+</ng-template>

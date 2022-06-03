@@ -10,8 +10,9 @@ import { PageLoadingService } from './shared/services/page-loading.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
+
 export class AppComponent {
-  title = 'source';
+  title = 'T-Page';
   public isLoaded: boolean = false;
   constructor(
     public libCommon: TCommonService,
@@ -19,17 +20,19 @@ export class AppComponent {
     public cache: THelperCacheService,
     public zone: NgZone,
     public router: Router,
-    private loader: PageLoadingService,
-  ) {
+    private loader: PageLoadingService) {
+
     this.loader.show();
   }
+
   ngOnInit() {
     let that = this;
     that.init().subscribe(res => {
-      this.loader.hidden();
-      that.isLoaded = true;
+        this.loader.hidden();
+        that.isLoaded = true;
     });
   }
+
   init(): Observable<boolean> {
     let that = this;
     return new Observable(obs => {
@@ -42,8 +45,8 @@ export class AppComponent {
 
       });
     })
-
   }
+
   private setGlobalConfig() {
     let objConfig = {
       Authen: {
@@ -53,8 +56,8 @@ export class AppComponent {
         refreshTokenSubject: new BehaviorSubject<any>(null),
       },
       cache: {
-        timerPermission: 0,
-        timerApi: 0,
+        timerPermission: 100,
+        timerApi: 100,
         companyid: "1"
       }
     };

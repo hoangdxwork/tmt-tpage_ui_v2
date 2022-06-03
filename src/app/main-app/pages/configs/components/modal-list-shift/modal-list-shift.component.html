@@ -1,0 +1,51 @@
+<tds-spin [spinning]="isLoading">
+  <div>
+    <div>
+        <tds-table #basicTable [listData]="lstShifts" [showPagination]="false">
+            <thead>
+                <tr>
+                      <th>STT</th>
+                      <th>Tên ca làm việc</th>
+                      <th>Thời gian bắt đầu</th>
+                      <th>Thời gian kết thúc</th>
+                      <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-template ngFor let-data [ngForOf]="basicTable.data" let-index="index" >
+                    <tr>
+                        <td>{{ data.Id }}</td>
+                        <td>{{ data.Name }}</td>
+                        <td>{{ data.FromHour }}</td>
+                        <td>{{ data.ToHour }}</td>
+                        <td>
+                            <div class="flex gap-x-2" >
+                                <button tds-button-icon color="secondary" size="sm" (click)="showModalUpdateShift(data)">
+                                    <span class="flex items-center">
+                                        <i class="tdsi-edit-fill"></i>
+                                    </span>
+                                </button>
+                                <button tds-button-icon color="secondary" size="sm" (click)="showModalRemove(data)">
+                                    <span class="flex items-center">
+                                        <i class="tdsi-trash-fill"></i>
+                                    </span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </tbody>
+        </tds-table>
+    </div>
+    <div class="w-full flex justify-between p-4" *tdsModalFooter>
+        <button tds-button color="primary" (click)="showModalAddShift()">
+            <span class="flex items-center">
+                <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+                <span class="text-body-2 font-semibold">Thêm mới</span>
+            </span>
+        </button>
+        <button tds-button class="mr-2" color="secondary" (click)="cancel()">Đóng</button>
+    </div>
+  </div>
+</tds-spin>
+

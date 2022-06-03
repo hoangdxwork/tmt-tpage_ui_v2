@@ -1,0 +1,204 @@
+<div class="w-full h-full px-4 overflow-auto tds-custom-scroll">
+    <div class="w-full">
+        <div class="bg-white rounded-xl p-4 mb-4">
+            <div class="flex flex-row items-center pb-4">
+                <tds-avatar class="bg-primary-1 text-white" icon="tdsi-gear-2-fill"></tds-avatar>
+                <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">CẤU HÌNH CHUNG</span>
+            </div>
+            <div class="flex flex-col">
+                <div class="flex flex-col pb-6">
+                    <span class="text-neutral-1-900 text-title-1 font-semibold pt-4">Cấu hình hội thoại</span>
+                    <div class="flex flex-row items-center pt-4">
+                        <tds-switch size="md" [ngModel]="enableOverview1" (ngModelChange)="onChangeOverviewSwitch1($event)"></tds-switch>
+                        <span class="text-neutral-1-900 text-body-2 font-semibold pl-2">Hiển thị hội thoại chưa đọc lên đầu</span>
+                    </div>
+                    <div class="flex flex-row items-center pt-4">
+                        <tds-switch size="md" [ngModel]="enableOverview2" (ngModelChange)="onChangeOverviewSwitch2($event)"></tds-switch>
+                        <span class="text-neutral-1-900 text-body-2 font-semibold pl-2">Thông báo âm thanh khi có hội thoại mới</span>
+                    </div>
+                </div>
+                <div class="flex flex-col pb-6">
+                    <span class="text-neutral-1-900 text-title-1 font-semibold pt-4">Cấu hình thông báo</span>
+                    <div class="flex flex-row items-center pt-4">
+                        <tds-switch size="md" [ngModel]="enableOverview3" (ngModelChange)="onChangeOverviewSwitch3($event)"></tds-switch>
+                        <span class="text-neutral-1-900 text-body-2 font-semibold pl-2">Bật âm thanh cho tin nhắn mới</span>
+                    </div>
+                </div>
+                <div class="flex flex-col pb-6">
+                    <span class="text-neutral-1-900 text-title-1 font-semibold pt-4">Cấu hình vận chuyển</span>
+                    <div class="flex flex-row items-center pt-4">
+                        <tds-switch size="md" [ngModel]="enableOverview4" (ngModelChange)="onChangeOverviewSwitch4($event)"></tds-switch>
+                        <span class="text-neutral-1-900 text-body-2 font-semibold pl-2">Vận chuyển mặc định</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-4 gap-x-16 bg-neutral-3-50 rounded-md p-4 mt-4 {{enableOverview4 ? '' : 'hidden'}}">
+                        <tds-form-field class="w-full">
+                            <tds-label class="text-neutral-1-900 text-body-2 font-semibold">Đơn vị vận chuyển</tds-label>
+                            <tds-select valueField="id" textField="name" placeholder='Chọn đơn vị vận chuyển'
+                                [formControl]="shippingUnitForm" [required]='true'
+                                [data]="shippingUnitList" [allowClear]="true" (selectChange)="onSelectShippingUnit($event)">
+                            </tds-select>
+                            <tds-error>Vui lòng nhập đơn vị vận chuyển</tds-error>
+                        </tds-form-field>
+
+                        <tds-form-field class="w-full">
+                            <tds-label class="text-neutral-1-900 text-body-2 font-semibold">Chọn kho mặc định</tds-label>
+                            <tds-select valueField="id" textField="name" placeholder='Chọn kho'
+                                [formControl]="repositoryForm" [required]='true'
+                                [data]="repoList" [allowClear]="true" (selectChange)="onSelectRepository($event)">
+                            </tds-select>
+                            <tds-error>Vui lòng nhập kho mặc định</tds-error>
+                        </tds-form-field>
+
+                        <div class="flex flex-row items-end">
+                            <tds-form-field class="w-full mr-2.5">
+                                <tds-label class="text-neutral-1-900 text-body-2 font-semibold">Đồng bộ tồn kho</tds-label>
+                                <tds-select valueField="id" textField="name" placeholder='Chọn kho đồng bộ'
+                                    [formControl]="asynRepositoryForm" [required]='true'
+                                    [data]="asynRepoList" [allowClear]="true" (selectChange)="onSelectAsynRepository($event)">
+                                </tds-select>
+                                <tds-error>Vui lòng chọn kho đồng bộ</tds-error>
+                            </tds-form-field>
+                            <button tds-button color="primary" (click)="onAsynRepository($event)">
+                                <span class="flex items-center">
+                                  <i class="tdsi-reload-fill text-lg leading-none mr-2"></i>
+                                  <span class="text-white text-body-2 font-semibold">Đồng bộ ngay</span>
+                                </span>
+                            </button>
+                        </div>
+
+                        <div class="flex flex-row items-end">
+                            <tds-form-field class="w-full mr-2.5">
+                                <tds-label class="text-neutral-1-900 text-body-2 font-semibold">Đồng bộ khách hàng với TPos</tds-label>
+                                <tds-select valueField="id" textField="name" placeholder='Điều kiện đồng bộ'
+                                    [formControl]="asynCustomerForm" [required]='true'
+                                    [data]="asynCustomerList" [allowClear]="true" (selectChange)="onSelectAsynCustomer($event)">
+                                </tds-select>
+                                <tds-error>Vui lòng chọn điều kiện đồng bộ</tds-error>
+                            </tds-form-field>
+                            <button tds-button color="primary" (click)="onAsynCustomer($event)">
+                                <span class="flex items-center">
+                                  <i class="tdsi-reload-fill text-lg leading-none mr-2"></i>
+                                  <span class="text-white text-body-2 font-semibold">Đồng bộ ngay</span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-row items-center justify-end">
+                <button tds-button color="secondary" class="mr-2.5" (click)="onCancelOverview($event)">
+                    <span class="text-neutral-1-900 text-body-2 font-semibold">Hủy</span>
+                </button>
+                <button tds-button color="primary" (click)="onSaveChangeOverview($event)">
+                    <span class="flex items-center">
+                      <i class="tdsi-save-fill text-lg leading-none mr-2"></i>
+                      <span class="text-white text-body-2 font-semibold">Lưu thay đổi</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <!-- CẤU HÌNH TƯƠNG TÁC TỰ ĐỘNG -->
+        <form [formGroup]="formInteraction">
+          <div class="w-full h-full bg-white rounded-xl p-4 mb-4">
+            <div class="flex flex-row items-center pb-4">
+                <tds-avatar class="bg-primary-1 text-white" icon="tdsi-gear-2-fill"></tds-avatar>
+                <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">TƯƠNG TÁC TỰ ĐỘNG</span>
+            </div>
+            <div class="flex flex-col pb-6">
+                <span class="text-neutral-1-900 text-title-1 font-semibold pt-4">Cấu hình nội dung mẫu chốt đơn</span>
+                    <div class="flex flex-row items-center pt-4">
+                        <tds-switch size="md" formControlName="IsEnableOrder"></tds-switch>
+                        <span class="text-neutral-1-900 text-body-2 font-semibold pl-2">Phản hồi tự động khi chốt đơn?</span>
+                    </div>
+                    <div class="flex flex-col bg-neutral-3-50 rounded-md p-4 mt-4 {{formInteraction.value.IsEnableOrder ? '' : 'hidden'}}">
+                        <div class="flex flex-col pb-4">
+                            <span class="text-neutral-1-900 text-body-2 font-semibold pb-2">Nội dung mẫu</span>
+                            <textarea class="resize rounded w-full h-[104px] focus:ring-3 focus:ring-primary-1 focus:ring-opacity-30 focus:border-primary-1"
+                            formControlName="OrderTemplate"></textarea>
+                            <!-- formControlName="OrderTemplate" (keyup)="onAreaForm1(areaText1)"></textarea> -->
+                        </div>
+                        <div class="flex flex-col">
+                            <div class="flex flex-row items-center pb-4">
+                                <div class="flex flex-col mr-6">
+                                    <span class="text-neutral-1-900 text-body-2 font-semibold">Bật giỏ hàng?</span>
+                                    <span class="text-neutral-1-400 text-body-2 font-semibold">Cho phép khách hàng kiểm tra giỏ hàng, cập nhật thông tin xác nhận giỏ hàng.</span>
+                                </div>
+                                <tds-switch size="md" formControlName="IsEnableShopLink"></tds-switch>
+                            </div>
+                            <div class="flex flex-col border-l border-neutral-2-100 ml-1 pl-4 {{formInteraction.value.IsEnableShopLink ? '' : 'hidden'}}">
+                                <tds-form-field class="w-1/3 pb-4">
+                                    <tds-label class="text-neutral-1-900 text-body-2 font-semibold">Tiêu đề nút</tds-label>
+                                    <input tdsInput autocomplete="off"  placeholder="Tiêu đề nút xem giỏ hàng"
+                                        formControlName="ShopLabel" (keyup)="onInputTitle1($event)" />
+                                    <!-- <tds-error *ngIf="btnTitleForm1.invalid">You must enter a value</tds-error> -->
+                                </tds-form-field>
+                                <tds-form-field class="w-1/3">
+                                    <tds-label class="text-neutral-1-900 text-body-2 font-semibold">Tiêu đề nút 2</tds-label>
+                                    <input tdsInput autocomplete="off"  placeholder="Tiêu đề nút xác nhận đồng ý"
+                                    formControlName="ShopLabel2" (keyup)="onInputTitle2($event)"/>
+                                    <!-- <tds-error *ngIf="btnTitleForm2.invalid">You must enter a value</tds-error> -->
+                                </tds-form-field>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+            <div class="flex flex-col pb-6">
+                <span class="text-neutral-1-900 text-title-1 font-semibold pt-4">Cấu hình nội dung mẫu tạo hóa đơn</span>
+                    <div class="flex flex-row items-center pt-4">
+                        <tds-switch size="md" formControlName="IsEnableBill"></tds-switch>
+                        <span class="text-neutral-1-900 text-body-2 font-semibold pl-2">Phản hồi tự động khi tạo hóa đơn?</span>
+                    </div>
+                    <div class="flex flex-col bg-neutral-3-50 rounded-md p-4 mt-4 {{formInteraction.value.IsEnableBill ? '' : 'hidden'}} gap-y-4">
+                        <div class="flex flex-row items-center">
+                            <tds-switch size="md" formControlName="IsUsingProviderTemplate"></tds-switch>
+                            <span class="text-neutral-1-900 text-body-2 font-semibold pl-2">Sử dụng mẫu nhà cung cấp?</span>
+                        </div>
+                        <div class="flex flex-col" *ngIf="formInteraction.value.IsUsingProviderTemplate ? '' : 'hidden'">
+                            <span class="text-neutral-1-900 text-body-2 font-semibold pb-2">Nội dung mẫu</span>
+                            <textarea class="resize rounded w-full h-[104px] focus:ring-3 focus:ring-primary-1 focus:ring-opacity-30 focus:border-primary-1"
+                                formControlName="BillTemplate" (keyup)="onAreaForm2(areaText2)"></textarea>
+                        </div>
+                    </div>
+            </div>
+
+            <div class="flex flex-col pb-6">
+                <span class="text-neutral-1-900 text-title-1 font-semibold pt-4">Trạng thái vận chuyển</span>
+                    <div class="flex flex-row items-center pt-4">
+                        <tds-switch size="md" formControlName="IsEnableShipping"></tds-switch>
+                        <span class="text-neutral-1-900 text-body-2 font-semibold pl-2">Thông báo khi có sự thay đổi trạng thái vận đơn?</span>
+                    </div>
+                    <div class="flex flex-col bg-neutral-3-50 rounded-md p-4 mt-4 {{formInteraction.value.IsEnableShipping ? '' : 'hidden'}}">
+                        <tds-form-field class="w-1/3 pb-4">
+                            <tds-label class="text-neutral-1-900 text-body-2 font-semibold">Chọn trạng thái gửi</tds-label>
+                            <tds-select valueField="Code" textField="Name" placeholder='Chọn trạng thái gửi'
+                                formControlName="ShippingStatues" mode="multiple"
+                                [data]="lstShippingStatues" [allowClear]="true" (selectChange)="onSelectStatus($event)">
+                            </tds-select>
+                            <!-- <tds-error>You must enter a value</tds-error> -->
+                        </tds-form-field>
+                        <div class="flex flex-col">
+                            <span class="text-neutral-1-900 text-body-2 font-semibold pb-2">Nội dung mẫu</span>
+                            <textarea class="resize rounded w-full h-[104px] focus:ring-3 focus:ring-primary-1 focus:ring-opacity-30 focus:border-primary-1"
+                            formControlName="ShippingTemplate" (keyup)="onAreaForm3(areaText3)"></textarea>
+                        </div>
+                    </div>
+            </div>
+
+            <div class="flex flex-row items-center justify-end">
+                <button tds-button color="secondary" class="mr-2.5" (click)="onCancelAutoReact($event)">
+                    <span class="text-neutral-1-900 text-body-2 font-semibold">Hủy</span>
+                </button>
+                <button tds-button color="primary" (click)="onSaveInteraction($event)" [disabled]="!formInteraction.valid">
+                    <span class="flex items-center">
+                      <i class="tdsi-save-fill text-lg leading-none mr-2"></i>
+                      <span class="text-white text-body-2 font-semibold">Lưu thay đổi</span>
+                    </span>
+                </button>
+            </div>
+          </div>
+        </form>
+    </div>
+</div>

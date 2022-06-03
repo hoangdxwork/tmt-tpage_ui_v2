@@ -1,0 +1,51 @@
+<div>
+  <div class="flex justify-end mb-4">
+    <div class="flex items-center gap-x-2 pr-4">
+      <tds-form-field>
+        <tds-select valueField="value" [(ngModel)]="statusAll" textField="text" placeholder='Chọn trạng thái'
+            [allowClear]="true" [valuePrimitive]="false"
+            [data]="lstStatus">
+        </tds-select>
+      </tds-form-field>
+      <button tds-button color="primary" size="md" (click)="onAllStatus()">
+        <span class="flex items-center">
+            Áp dụng tất cả
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <div class="w-full" *ngIf="listData">
+    <tds-table #rowSelectionTable [listData]="listData">
+        <thead>
+            <tr class="bg-neutral-3-50" >
+                <th class="text-body-2">STT</th>
+                <th class="text-body-2">Khách hàng</th>
+                <th class="text-body-2">Mã</th>
+                <th class="text-body-2">Số tiền</th>
+                <th class="text-body-2">Trạng thái đơn hàng</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of listData; let index = index">
+                <td class="text-body-2">{{ index + 1 }}</td>
+                <td class="text-body-2">{{ item.PartnerName }}</td>
+                <td class="text-body-2">{{ item.Code }}</td>
+                <td class="text-body-2">{{ item.AmountTotal || 0 | number : '1.0-3'}}</td>
+                <td>
+                  <tds-form-field>
+                      <tds-select valueField="value" textField="text" placeholder='Chọn trạng thái'
+                          [(ngModel)]="item.StatusText" [allowClear]="true" [valuePrimitive]="false"
+                          [data]="lstStatus" (ngModelChange)="onChangeStatus($event, item)" >
+                      </tds-select>
+                  </tds-form-field>
+                </td>
+            </tr>
+        </tbody>
+    </tds-table>
+  </div>
+  <div class="w-full flex justify-end p-4" *tdsModalFooter>
+      <button tds-button class="mr-2 w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
+      <button tds-button class=" w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
+  </div>
+</div>

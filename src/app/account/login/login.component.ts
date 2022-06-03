@@ -15,6 +15,8 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   returnUrl!: string;
   isSubmit: boolean = false;
+  isLoading: boolean = false;
+  isShowPass: boolean = false;
   constructor(private formBuilder: FormBuilder,
     private router: Router,
     private authen: TAuthService,
@@ -28,7 +30,7 @@ export class LoginComponent implements OnInit {
     let that = this
 
     that.loginForm = this.formBuilder.group({
-      phoneNumber: ['', Validators.required],
+      userName: ['', Validators.required],
       password: ['', Validators.required],
     });
 
@@ -38,16 +40,16 @@ export class LoginComponent implements OnInit {
       this.returnUrl = returnUrl;
     } else {
       this.returnUrl = '/dashboard';
-    }   
+    }
     this.loader.show()
     this.authen.getCacheToken().subscribe(
       data => {
         if (TDSHelperObject.hasValue(data) &&
-          TDSHelperString.hasValueString(data.accessToken)) {
+          TDSHelperString.hasValueString(data.access_token)) {
           that.router.navigate([that.returnUrl]);
           this.isSubmit = false;
-          
-        } 
+
+        }
         this.loader.hidden();
       },
       error => {
@@ -65,23 +67,39 @@ export class LoginComponent implements OnInit {
       return
     }
     this.isSubmit = true;
-    this.loader.show()
-    const { phoneNumber, password } = this.loginForm.value;
+    this.isLoading = true;
+    //this.loader.show()
+    const { userName, password } = this.loginForm.value;
 
-    this.authen.signInPassword(phoneNumber, password)
+    this.authen.signInPassword(userName, password)
       .subscribe(
         data => {
+          setTimeout(() => {
+            this.isSubmit = false;
+            this.isLoading = false;
+            //this.loader.hidden();
+          }, 100);
           that.router.navigate([that.returnUrl]);
-          this.isSubmit = false;
-          this.loader.hidden();
+
         },
         (error: TDSSafeAny) => {
-          this.message.error(error.error.message);
+          this.message.error("Tài khoản hoặc mật khẩu không đúng");
           this.isSubmit = false;
-          this.loader.hidden();
+          this.isLoading = false;
+          console.log(this.loginForm)
+          //this.loader.hidden();
         }
       );
+  }
 
+  showPass(){
+    if(TDSHelperString.hasValueString(this.loginForm.value.password))
+    this.isShowPass = !this.isShowPass
+  }
+
+  onChangeInputPass(){
+    if(this.loginForm.value.password=='')
+    this.isShowPass = false
   }
 
 

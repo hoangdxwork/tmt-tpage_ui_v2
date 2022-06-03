@@ -1,0 +1,58 @@
+<tds-spin [spinning]="isLoading">
+  <div class="bg-white flex flex-col rounded-xl px-4 mb-4">
+    <div class="flex flex-row items-center justify-between py-4">
+        <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Thống kê trong ngày</span>
+        <button class="bg-primary-3 text-primary-1 h-[34px] w-[34px] flex items-center justify-center rounded-xl" (click)="refreshData()">
+            <span class="flex items-center">
+                <i class="tdsi-reload-fill"></i>
+            </span>
+        </button>
+    </div>
+    <div>
+        <div class="flex flex-col items-center">
+            <div class="flex flex-row items-center justify-center w-full py-6">
+                <div class="flex flex-col justify-center w-full">
+                    <span class="text-neutral-1-900 text-body-2 font-regular text-left font-sans py-2">Hội thoại</span>
+                    <div class="flex flex-row items-center">
+                        <span class="text-neutral-1-900 text-heading-3 font-semibold font-sans pr-2">{{dataOverviewCurrentDay?.TotalConversation || 0|number:'2.0-0'}}</span>
+                        <span class="text-caption-2 font-regular font-sans text-center py-0.5 px-2 rounded-full"
+                            [class]="labelData[0].decrease ? 'bg-error-100 text-error-400' : 'bg-primary-3 text-success-400' ">
+                            {{labelData[0].percent}}%
+                            <i [class]="labelData[0].decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="flex flex-col justify-center w-full">
+                    <span class="text-neutral-1-900 text-body-2 font-regular text-left font-sans py-2">Tin nhắn mới</span>
+                    <div class="flex flex-row items-center">
+                        <span class="text-neutral-1-900 text-heading-3 font-semibold font-sans pr-2">{{dataOverviewCurrentDay?.TotalMessage || 0|number:'2.0-0'}}</span>
+                        <span class="text-caption-2 font-regular font-sans text-center py-0.5 px-2 rounded-full"
+                            [class]="labelData[1].decrease ? 'bg-error-100 text-error-400' : 'bg-primary-3 text-success-400' ">
+                            {{labelData[1].percent}}%
+                            <i [class]="labelData[1].decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="flex flex-col justify-center w-full">
+                    <span class="text-neutral-1-900 text-body-2 font-regular text-left font-sans py-2">Bình luận mới</span>
+                    <div class="flex flex-row items-center">
+                        <span class="text-neutral-1-900 text-heading-3 font-semibold font-sans pr-2">{{dataOverviewCurrentDay?.TotalComment || 0|number:'2.0-0'}}</span>
+                        <span class="text-caption-2 font-regular font-sans text-center py-0.5 px-2 rounded-full"
+                            [class]="labelData[2].decrease ? 'bg-error-100 text-error-400' : 'bg-primary-3 text-success-400' ">
+                            {{labelData[2].percent}}%
+                            <i [class]="labelData[2].decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full pb-6" *ngIf="!emptyData;else emptyTmp">
+                <div echarts [options]="dailyOption" [size]="['auto',245]"></div>
+            </div>
+        </div>
+    </div>
+  </div>
+  <ng-template #emptyTmp>
+      <app-dashboard-empty-data></app-dashboard-empty-data>
+  </ng-template>
+</tds-spin>
+

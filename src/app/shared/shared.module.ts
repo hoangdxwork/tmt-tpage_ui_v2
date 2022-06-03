@@ -1,16 +1,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CustomCurrencyPipe } from './components/pipe/custom-currency.pipe';
 import { PageLoadingComponent } from './components/page-loading/page-loading.component';
 import { TDSSpinnerModule } from 'tmt-tang-ui';
 import { PageLoadingService } from './services/page-loading.service';
-
-
+import { PageErrorComponent } from './components/error/page-error.component';
 
 @NgModule({
   declarations: [
     PageLoadingComponent,
-    CustomCurrencyPipe,
+    PageErrorComponent
   ],
   imports: [
     CommonModule,
@@ -18,7 +16,7 @@ import { PageLoadingService } from './services/page-loading.service';
   ],
   exports: [
     PageLoadingComponent,
-    CustomCurrencyPipe
+    PageErrorComponent
   ],
   providers: [
     PageLoadingService,

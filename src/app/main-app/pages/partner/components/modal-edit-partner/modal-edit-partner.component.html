@@ -1,0 +1,273 @@
+
+<tds-spin [spinning]="isLoading">
+  <form class="flex flex-col"[formGroup]="_form" >
+      <div action="" class="grid grid-cols-1">
+          <div class="w-full grid grid-cols-2  gap-x-8">
+              <div class="flex gap-x-4">
+                  <div class="w-1/3">
+                      <tpage-upload-avatar (getResult)="getUrl($event)" [isAvatar]="true" [shape]="'circle'" [size]="84" [imageUrl]="partnerId ? _form.controls['ImageUrl'].value : _form.controls['Image'].value">
+                      </tpage-upload-avatar>
+                  </div>
+                  <div class="w-2/3 flex flex-col gap-y-4">
+                      <tds-form-field>
+                          <tds-label>Tên Khách hàng</tds-label>
+                          <input tdsInput autocomplete="off" placeholder="Nhập tên Khách hàng" [required]='true' formControlName="Name" />
+                          <tds-error>Vui lòng nhập tên khách hàng</tds-error>
+                      </tds-form-field>
+                      <tds-radio-group formControlName="CompanyType">
+                          <label class="mr-10" tds-radio value="person"> Cá nhân </label>
+                          <label class="" tds-radio value="company">Công ty </label>
+                      </tds-radio-group>
+                  </div>
+              </div>
+          </div>
+          <div class="grid grid-cols-2 gap-x-8">
+              <div>
+                  <div class="grid grid-cols-3 gap-x-4 mt-4">
+                      <div class="flex items-center">
+                          <tds-label>Mã</tds-label>
+                      </div>
+                      <div class="col-span-2">
+                          <tds-form-field>
+                              <input tdsInput placeholder="Để trống sẽ phát sinh tự động" formControlName="Ref" />
+                          </tds-form-field>
+                      </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-x-4 mt-4">
+                      <div class="flex items-center">
+                          <tds-label>Ngày sinh</tds-label>
+                      </div>
+                      <div class="col-span-2">
+                          <tds-date-picker formControlName="BirthDay" placeholder="Chọn ngày">
+                          </tds-date-picker>
+                      </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-x-4 mt-4">
+                      <div class="flex items-center">
+                          <tds-label>Group</tds-label>
+                      </div>
+                      <div class="col-span-2">
+                        <tds-form-field>
+                          <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm'
+                              formControlName="Categories" mode="multiple"
+                              (FocusChange)="openCategory($event)"  [valuePrimitive]="false"
+                              disabledField="isActive" [data]="lstCategory" [allowClear]="true">
+                          </tds-select>
+                        </tds-form-field>
+                      </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-x-4 mt-4">
+                      <div class="flex items-center">
+                          <tds-label>Trạng thái</tds-label>
+                      </div>
+                      <div class="col-span-2">
+                          <tds-select valueField="Id" textField="Name" placeholder='Chọn trạng thái'
+                              (FocusChange)="openStatus($event)" [valuePrimitive]="false" [allowClear]="true"
+                              formControlName="StatusText" disabledField="isActive" [data]="lstStatus"
+                              [allowClear]="true">
+                          </tds-select>
+                      </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-x-4 mt-4">
+                      <div class="flex items-center">
+                          <tds-label>Active</tds-label>
+                      </div>
+                      <div class="col-span-2 flex">
+                          <tds-checkbox formControlName="Active"></tds-checkbox>
+                      </div>
+                  </div>
+              </div>
+              <div>
+                  <div class="grid grid-cols-3 gap-x-4 mt-4">
+                      <div class="flex items-center">
+                          <tds-label>Diện thoại</tds-label>
+                      </div>
+                      <div class="col-span-2 flex">
+                          <tds-form-field class="w-full rounded-br-none rounded-tr-none">
+                              <input tdsInput placeholder="Nhập số điện thoại" formControlName="Phone" />
+                              <button tds-button-icon type="button" tdsAddOnRight size="md" color="secondary" size="md" class="">
+                                  <span class="flex items-center text-neutral-1-900">
+                                      <i class="tdsi-search-fill"></i>
+                                  </span>
+                              </button>
+                          </tds-form-field>
+                      </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-x-4 mt-4">
+                      <div class="flex items-center">
+                          <tds-label>Email</tds-label>
+                      </div>
+                      <div class="col-span-2 flex">
+                          <tds-form-field class="w-full rounded-br-none rounded-tr-none">
+                              <input tdsInput placeholder="Nhập email" formControlName="Email" />
+                          </tds-form-field>
+                      </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-x-4 mt-4">
+                      <div class="flex items-center">
+                          <tds-label>Zalo</tds-label>
+                      </div>
+                      <div class="col-span-2 flex">
+                          <tds-form-field class="w-full rounded-br-none rounded-tr-none">
+                              <input tdsInput placeholder="Nhập zalo" formControlName="Zalo" />
+                          </tds-form-field>
+                      </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-x-4 mt-4">
+                      <div class="flex items-center">
+                          <tds-label>Facebook</tds-label>
+                      </div>
+                      <div class="col-span-2 flex">
+                          <tds-form-field class="w-full rounded-br-none rounded-tr-none">
+                              <input tdsInput placeholder="Nhập facebook" formControlName="Facebook" />
+                          </tds-form-field>
+                      </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-x-4 mt-4">
+                      <div class="flex items-center">
+                          <tds-label>Website</tds-label>
+                      </div>
+                      <div class="col-span-2 flex">
+                          <tds-form-field class="w-full rounded-br-none rounded-tr-none">
+                              <input tdsInput placeholder="Nhập website" formControlName="Website" />
+                          </tds-form-field>
+                      </div>
+                  </div>
+              </div>
+              <div class="">
+                  <div class="grid grid-cols-3 gap-x-4 mt-4 w-full">
+                      <div class="flex">
+                          <tds-label>Địa chỉ</tds-label>
+                      </div>
+                      <div class="block col-span-2">
+                          <suggest-address
+                              [_isExpanded]="true"
+                              [_cities]="_cities"
+                              [_districts]="_districts"
+                              [_wards]="_wards"
+                              [_street]="_street"
+                              (onLoadSuggestion)="onLoadSuggestion($event)">
+                          </suggest-address>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="mt-6 rounded-xl border border-light-50">
+          <tds-tabset>
+              <tds-tab title="Bán & mua hàng">
+                  <div class="grid grid-cols-2 gap-x-12">
+                      <div class="grid grid-cols-1">
+                          <div>
+                              <h2 class="text-header-2 text-neutral-600 font-semibold">Bán hàng</h2>
+                          </div>
+                          <div class="grid grid-cols-5 gap-x-4 mt-4">
+                              <div class=" col-span-2 flex items-center">
+                                  <tds-label>Là khách hàng</tds-label>
+                              </div>
+                              <div class="col-span-3">
+                                  <tds-checkbox formControlName="Customer"></tds-checkbox>
+                              </div>
+                          </div>
+                          <div class="grid grid-cols-5 gap-x-4 mt-4">
+                              <div class=" col-span-2 flex items-center">
+                                  <tds-label>Bảng giá</tds-label>
+                              </div>
+                              <div class="col-span-3">
+                                <tds-select valueField="Id" textField="Name" placeholder='Chọn bảng giá'
+                                    (FocusChange)="openlstPrice($event)" [valuePrimitive]="false" [allowClear]="true"
+                                    formControlName="PropertyProductPricelist" disabledField="isActive" [data]="lstPrice"
+                                    [allowClear]="true">
+                                </tds-select>
+                              </div>
+                          </div>
+                          <div class="grid grid-cols-5 gap-x-4 mt-4">
+                              <div class=" col-span-2 flex items-center">
+                                  <tds-label>Chiết khấu mặc định(%)</tds-label>
+                              </div>
+                              <div class="col-span-3">
+                                  <tds-input-number [min]="1" [max]="100" [step]="1"
+                                      formControlName="Discount" [formatter]="formatterPercent"
+                                      [parser]="parserPercent">
+                                  </tds-input-number>
+                              </div>
+                          </div>
+                          <div class="grid grid-cols-5 gap-x-4 mt-4">
+                              <div class=" col-span-2 flex items-center">
+                                  <tds-label>Chiết khấu mặc định (số tiền)</tds-label>
+                              </div>
+                              <div class="col-span-3">
+                                  <tds-input-number [min]="1" [step]="1" [formControlName]="'AmountDiscount' "
+                                      [formatter]="formatterVND" [parser]="parserVND">
+                                  </tds-input-number>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="flex flex-col">
+                          <div>
+                              <h2 class="text-header-2 text-neutral-600 font-semibold">Mua hàng</h2>
+                          </div>
+                          <div class="grid grid-cols-5 gap-x-4 mt-4">
+                              <div class=" col-span-2 flex items-center">
+                                  <tds-label>Là nhà cung cấp</tds-label>
+                              </div>
+                              <div class="col-span-3">
+                                  <tds-checkbox formControlName="Supplier"></tds-checkbox>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </tds-tab>
+              <tds-tab title="Danh sách địa chỉ ({{_form.controls['Addresses'].value.length}})">
+                  <div class="flex flex-col gap-y-4">
+                      <div>
+                          <button tds-button color="primary" type="button" (click)="showModalAddAddress()">
+                              <span class="flex items-center">
+                                  <i class="tdsi-add-fill text-lg leading-none mr-2"></i>Thêm mới
+                              </span>
+                          </button>
+                      </div>
+                      <div>
+                          <tds-table #basicTable [listData]="_form.controls['Addresses'].value" [showPagination]="false">
+                              <thead>
+                                  <tr>
+                                      <th>STT</th>
+                                      <th>Địa chỉ</th>
+                                      <th>Thao tác</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
+                                      <tr>
+                                          <td>{{ i + 1 }}</td>
+                                          <td>{{ data.Street }}</td>
+                                          <td>
+                                              <div class="flex gap-x-2">
+                                                  <button tds-button-icon  type="button" color="secondary" size="sm" class="" (click)="openItemAddresses(data, i)">
+                                                      <span class="flex items-center">
+                                                          <i class="tdsi-edit-fill"></i>
+                                                      </span>
+                                                  </button>
+                                                  <button tds-button-icon  type="button" color="secondary" size="sm" class="" (click)="removeAddresses(i)">
+                                                      <span class="flex items-center">
+                                                          <i class="tdsi-trash-fill"></i>
+                                                      </span>
+                                                  </button>
+                                              </div>
+                                          </td>
+                                      </tr>
+                                  </ng-template>
+                              </tbody>
+                          </tds-table>
+                      </div>
+                  </div>
+              </tds-tab>
+          </tds-tabset>
+      </div>
+      <div class="w-full flex justify-end p-4" *tdsModalFooter>
+          <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Hủy</button>
+          <button tds-button type="button" color="primary" (click)="onSave()" [disabled]="_form?.invalid"> Áp dụng </button>
+      </div>
+  </form>
+</tds-spin>
+

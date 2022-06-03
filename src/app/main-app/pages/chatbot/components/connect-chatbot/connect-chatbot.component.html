@@ -1,0 +1,72 @@
+<tds-spin [spinning]="isLoading">
+
+  <form [formGroup]="formConnectChatbot">
+    <div class="flex gap-y-4 gap-x-8 mt-4">
+      <tds-label class="w-1/3">Tên chatbot</tds-label>
+      <tds-form-field class="w-2/3">
+          <input tdsInput formControlName="Name" placeholder="Nhập tên chatbot" class="text-neutral-1-900 text-body-2 font-regular" [required]='true'/>
+          <tds-error>
+              Vui lòng nhập tên chatbot
+          </tds-error>
+      </tds-form-field>
+    </div>
+    <div class="flex gap-y-4 gap-x-8 mt-4">
+      <tds-label class="w-1/3">Số điện thoại</tds-label>
+      <tds-form-field class="w-2/3">
+          <input tdsInput formControlName="Phone" placeholder="Nhập số điện thoại" class="text-neutral-1-900 text-body-2 font-regular" [required]='true'/>
+          <tds-error>
+              Vui lòng nhập số điện thoại
+          </tds-error>
+      </tds-form-field>
+    </div>
+    <div class="flex gap-y-4 gap-x-8 mt-4">
+      <tds-label class="w-1/3">Địa chỉ</tds-label>
+      <tds-form-field class="w-2/3">
+          <input tdsInput formControlName="Address" placeholder="Nhập địa chỉ" class="text-neutral-1-900 text-body-2 font-regular" [required]='true'/>
+          <tds-error>
+              Vui lòng nhập địa chỉ
+          </tds-error>
+      </tds-form-field>
+    </div>
+    <div class="flex gap-y-4 gap-x-8 mt-4">
+      <tds-label class="w-1/3">Thể loại</tds-label>
+      <tds-form-field class="w-2/3">
+          <input tdsInput formControlName="Category" placeholder="Nhập thể loại" class="text-neutral-1-900 text-body-2 font-regular"
+            [required]='true' [disabled]='true'/>
+          <tds-error>
+              Vui lòng nhập thể loại
+          </tds-error>
+      </tds-form-field>
+    </div>
+    <div class="flex gap-y-4 gap-x-8 mt-4">
+      <tds-label class="w-1/3">Đối tác</tds-label>
+      <tds-form-field class="w-2/3">
+          <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác'
+              disabledField="isActive" formControlName="Company"
+              [data]="lstCarriers" [allowClear]="true" [valuePrimitive]='false' mode="multiple">
+          </tds-select>
+          <tds-error>
+              Chọn đối tác
+          </tds-error>
+      </tds-form-field>
+    </div>
+    <div class="flex gap-y-4 gap-x-8 mt-4">
+      <tds-label class="w-1/3">Công ty</tds-label>
+      <tds-form-field class="w-2/3">
+          <tds-select valueField="Id" textField="Name" placeholder='Chọn công ty'
+              disabledField="isActive" formControlName="Company"
+              [data]="lstCompany" [allowClear]="true" [valuePrimitive]='false'>
+          </tds-select>
+          <tds-error>
+              Chọn công ty
+          </tds-error>
+      </tds-form-field>
+    </div>
+  </form>
+
+  <div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2 w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+    <button tds-button class="w-[100px]" type="button" color="primary" [disabled]="!formConnectChatbot?.valid" (click)="onSave()">Tạo</button>
+  </div>
+</tds-spin>
+

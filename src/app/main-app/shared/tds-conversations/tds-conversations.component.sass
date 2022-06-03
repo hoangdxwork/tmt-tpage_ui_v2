@@ -1,0 +1,101 @@
+$color-primary-1: #28A745
+$color-neutral-1-900: #2C333A
+$color-neutral-1-400: #929DAA
+$color-neutral-2-400: #CAD1D8
+$color-green-400: #52BF50
+$color-orange-500: #FF6720
+$color-secondary-1: #3E89FC
+$color-accent-3: #F33240
+$color-light-200: #EBEDEF
+
+.is_admin
+  display: block
+  text-align: right
+  margin: 12px 0
+  .chat-body
+    justify-content: end
+    flex-direction: row-reverse
+    .message-inner
+      background-color: $color-primary-1
+      color: #fff
+      border-radius: 12px 12px 0px 12px
+      padding: 8px 16px
+    .message-inner.error
+      background-color: #7ECA8F !important
+
+.is_client
+  display: block
+  text-align: left
+  margin: 12px 0
+  .chat-body
+    justify-content: start
+    .message-inner
+      background-color: #FFFFFF
+      color: $color-neutral-1-900
+      border-radius: 12px 12px 12px 0px
+      padding: 8px 16px
+
+.chat-body
+  display: flex
+  flex-wrap: wrap
+.chat-by
+  font-weight: 400
+  font-size: 12px
+  line-height: 16px
+  color: $color-neutral-1-400
+
+.chat-body
+  margin: 6px 0
+  .select-icon
+    display: none
+    a[tds-tooltip] span
+      padding: 2px
+      border-radius: 6px
+      font-size: 16px
+      line-height: 20px
+      color: #fff
+      margin: 0 4px
+      &:hover
+        cursor: pointer
+    a[tds-tooltip] span.tdsi-call-fill
+        background: $color-green-400
+    a[tds-tooltip] span.tdsi-pin-fill
+        background: $color-orange-500
+    a[tds-tooltip] span.tdsi-note-2-fill
+        background: $color-secondary-1
+
+.select-message
+  margin: 0 8px
+  a span
+    color: $color-accent-3
+
+.is_client .chat-body:hover  div.select-icon
+    display: block !important
+.is_admin .chat-body:hover  div.select-icon
+    display: block !important
+
+.message-inner
+  display: block
+  white-space: pre-line
+  word-break: break-word
+  position: relative
+  max-width: 80%
+
+.date-v3
+  text-align: center
+  margin: 8px 0
+  padding: 10px 0 20px 0
+  z-index: 10
+  display: block
+  span
+    z-index: 10
+    background: $color-light-200
+    padding: 0 20px
+  .hr
+    height: 1px
+    width: 100%
+    background: $color-neutral-2-400
+    margin-top: -10px
+    z-index: 1
+    display: block
+

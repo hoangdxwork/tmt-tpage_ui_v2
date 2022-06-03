@@ -1,0 +1,40 @@
+<tds-image-group class="flex flex-wrap gap-x-2">
+  <div *ngFor="let item of fileList; let indx = index" class="pt-2">
+    <tds-spin [spinning]="isUploading && indx == fileList.length-1">
+      <div class="relative w-28 h-28 overflow-hidden rounded-lg border border-neutral-2-100">
+        <!-- image source -->
+        <div class="text-center" >
+          <span class="cursor-pointer" >
+              <img tds-image class="rounded-lg object-cover h-28 w-28"
+              [tdsSrc]="item.url?item.url:''">
+          </span>
+        </div>
+        <!-- button close -->
+        <div class="text-heading-4 leading-none absolute top-1 right-1 cursor-pointer bg-black rounded-full bg-opacity-25 flex items-center" (click)="removeImage(item)">
+          <i class="tdsi-error-line text-white"></i>
+        </div>
+      </div>
+    </tds-spin>
+  </div>
+
+  <tds-upload class="flex flex-row flex-wrap" 
+    listType="picture-card" 
+    [(fileList)]="fileList"
+    [showUploadList]="false" 
+    [showButton]="isArray ? true : (fileList.length == 0 ? true : false)"
+    [customRequest]="handleUpload">
+    <div class="w-full text-neutral-1-300">
+      <div class="flex items-center justify-center">
+        <span class="tdsi-images-fill text-xl leading-5"></span>
+      </div>
+      <div class="mt-2 text-body-2 font-regular">Upload</div>
+    </div>
+  </tds-upload>
+</tds-image-group>
+
+
+<tds-modal [visible]="previewVisible" [content]="modalContent" [footer]="null" (onCancel)="previewVisible = false">
+  <ng-template #modalContent>
+    <img [src]="previewImage" [ngStyle]="{ width: '100%' }" />
+  </ng-template>
+</tds-modal>

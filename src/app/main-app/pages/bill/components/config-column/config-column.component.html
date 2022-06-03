@@ -1,0 +1,16 @@
+<tds-button-group>
+  <button tds-button-icon color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" [autoClose]="false">
+    <span class="flex items-center">
+      <i class="tdsi-column-setting-fill text-lg leading-none"></i>
+    </span>
+  </button>
+  <tds-dropdown-menu #menu="tdsDropdownMenu">
+    <div class="w-full">
+        <ng-container *ngFor="let column of columns">
+          <div class="p-2">
+            <tds-checkbox [checked]="column.isChecked" (change)="onChecked($event, column)">{{column.name}}</tds-checkbox>
+          </div>
+        </ng-container>
+    </div>
+  </tds-dropdown-menu>
+</tds-button-group>

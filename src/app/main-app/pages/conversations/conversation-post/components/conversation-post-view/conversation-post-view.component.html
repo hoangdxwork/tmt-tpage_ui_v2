@@ -1,0 +1,141 @@
+<div class="flex flex-col relative pr-1 py-1 h-full w-full" *ngIf="data">
+  <!-- Tổng quan bài viết-->
+  <div class="post-view bg-white h-auto w-full mb-1">
+    <div class="flex flex-row justify-between p-2 border-b-3 border-neutral-3-200">
+      <div class="flex items-center">
+        <tds-avatar
+          [tdsSrc]="data.status_type === 'added_video' ? 'assets/images/conversation/live-circle.svg' : 'assets/images/conversation/facebook-circle.svg'"
+          [size]="36"
+          [shape]="'circle'"
+          [isAvatar]="false"
+          class="mr-1">
+        </tds-avatar>
+        <tds-tag [status]="data.status_type === 'added_video' ? 'error' : 'info'" type="outline" rounded="rounded-full">
+          <span class="flex flex-row items-center py-0.5">
+            <div class="font-semibold mr-3">
+              <span>{{translateType(data.type, data.status_type)}}</span>
+              {{data.created_time | date: "dd-MM-yyyy HH:mm"}}
+            </div>
+            <!-- truy cập bài viết -->
+            <a href="{{data.permalink_url}}" target="_blank" class="text-neutral-1-400 text-xs pr-1.5">
+              <i class="tdsi-expand-line"></i>
+            </a>
+          </span>
+        </tds-tag>
+      </div>
+      <div class="post-option flex flex-row items-center gap-3">
+        <!-- filter -->
+        <tds-form-field>
+          <tds-select valueField="value" textField="text" placeholder='Lọc theo' tooltipTitle="Lọc bài viết" tooltipPlacement="bottom" tds-tooltip
+            [(ngModel)]="currentFilter" [valuePrimitive]="false"
+            [data]="filterOptions" (ngModelChange)="onChangeFilter($event)">
+          </tds-select>
+        </tds-form-field>
+        <!-- sort -->
+        <tds-form-field>
+          <tds-select valueField="value" textField="text" placeholder='Sắp xếp theo' tooltipTitle="Sắp xếp bài viết" tooltipPlacement="bottom" tds-tooltip
+            [(ngModel)]="currentSort" [valuePrimitive]="false"
+            [data]="sortOptions" (ngModelChange)="onChangeSort($event)">
+          </tds-select>
+        </tds-form-field>
+        <!-- cài đặt-->
+        <button tds-button-icon color="secondary" size="md" tooltipTitle="Cài đặt" tooltipPlacement="bottom" tds-tooltip>
+          <span class="flex items-center justify-center">
+            <i class="tdsi-gear-2-fill"></i>
+          </span>
+        </button>
+        <!-- cấu hình bài viết -->
+        <button tds-button-icon color="secondary" size="md" tooltipTitle="Cấu hình bài viết" tooltipPlacement="bottom" tds-tooltip
+          (click)="openConfigPost()">
+          <span class="flex items-center justify-center">
+            <i class="tdsi-setting-print-fill"></i>
+          </span>
+        </button>
+        <!-- đơn hàng -->
+        <tds-badge [count]="3" [tdsClass]="'bg-error-400 text-white'" tooltipTitle="Đơn hàng" tooltipPlacement="bottom" tds-tooltip>
+          <button tds-button-icon color="secondary" size="md">
+            <span class="flex items-center justify-center">
+              <i class="tdsi-bag-fill"></i>
+            </span>
+          </button>
+        </tds-badge>
+        <!-- reload -->
+        <button tds-button-icon color="secondary" size="md" tooltipTitle="Tải lại trang" tooltipPlacement="bottom" tds-tooltip 
+          (click)="fetchComments()">
+          <span class="flex items-center justify-center">
+            <i class="tdsi-reload-fill"></i>
+          </span>
+        </button>
+      </div>
+    </div>
+      <div class="post-block bg-white flex flex-col">
+          <div class="post-body flex flex-row justify-between p-4">
+            <div class="post-item">
+              <div class="w-full block">
+                  <p class="story font-semibold" *ngIf="data.story">
+                      {{data.story}}
+                  </p>
+                  <p class="message font-regular" *ngIf="data.message"
+                      tds-typography ellipsis expandable [ellipsisRows]="2"
+                      [content]="data.message">
+                  </p>
+                  <p *ngIf="!data.message && !data.story" class="italic text-neutral-1-900 text-caption-1">(Chưa có nội dung tiêu đề)</p>
+                  <p class="description" *ngIf="data.description">{{data.description}}</p>
+              </div>
+          </div>
+          <div class="post-picture" *ngIf="data.picture">
+              <img tds-image [tdsSrc]="data.picture" class="rounded-xl"/>
+          </div>
+      </div>
+      <div class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 px-4">
+          <div class="emotion-count flex flex-row items-center">
+            <div class="flex flex-row mr-1">
+              <img src="assets/images/conversation/like-circle.svg" width="20px" height="20px" class="rounded-full z-50">
+              <img src="assets/images/conversation/love-circle.svg" width="20px" height="20px" class="rounded-full z-40 -ml-2">
+            </div>
+            <span>
+              {{data.count_reactions || 0}}
+            </span>
+          </div>
+          <div class="comment flex flex-row items-center gap-3">
+              <span class="comment-count">
+                {{data.count_comments || 0}} bình luận
+              </span>
+              <span class="share-count  mr-3">
+                {{data.count_shares || 0}} lượt chia sẻ
+              </span>
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer"
+                [ngClass]="showComment?'bg-primary-3 text-primary-1 border border-primary-1':'border border-transparent'" 
+                (click)="openChat()">
+                <div class="flex items-center justify-center">
+                  <i class="tdsi-livechat-line text-xl"></i>
+                </div>
+              </div>
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer">
+                <i class="tdsi-user-line text-xl"></i>
+              </div>
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer">
+                <a href="{{data.permalink_url}}" target="_blank">
+                    <i class="tdsi-eye-line text-xl"></i>
+                </a>
+              </div>
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer">
+                <i class="tdsi-search-fill text-xl"></i>
+              </div>
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer">
+                <i class="tdsi-chart-pie-fill text-xl"></i>
+              </div>
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer">
+                <i class="tdsi-sort-arrow-down-fill text-xl"></i>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+  <!-- Danh sách bình luận -->
+  <div *ngIf="showComment" class="flex w-full flex-auto overflow-hidden">
+      <item-post-comment [post]="data"
+        [sort]="currentSort" [filter]="currentFilter" class="h-full w-full">
+      </item-post-comment>
+  </div>
+</div>

@@ -1,0 +1,159 @@
+<div class="bg-white w-full mb-4 rounded-xl">
+    <div class="border-b flex flex-row align-center justify-between p-4">
+        <div class="flex flex-row items-center w-full">
+            <tds-avatar class="bg-primary-1 text-white mr-2.5" icon="tdsi-chat-fill"></tds-avatar>
+            <span class="text-neutral-1-900 text-header-1 font-semibold">TIN NHẮN - BÌNH LUẬN MỚI</span>
+        </div>
+        <div class="flex flex-row items-center">
+            <div class="relative">
+                <button tds-button class="h-9 border-transparent mr-3" color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" [placement]="'bottomRight'">
+                    <span class="flex flex-row items-center">
+                        <img src="assets/images/Avatar-user.png" alt="" class="h-6 mr-2.5">
+                        App Quản Lí Bán Hàng TPos 1 <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                    </span>
+                </button>
+                <tds-dropdown-menu #menu="tdsDropdownMenu">
+                    <div class="w-[500px] tds-report-dropdown">
+                        <div class="flex flex-row items-center justify-between border-b border-neutral-2-100 p-4">
+                            <span class="text-neutral-1-900 text-title-1 font-semibold font-sans">Chọn trang facebook</span>
+                            <button tds-flat-button-icon (click)="onClose($event)">
+                                <span class="flex items-center">
+                                    <i class="tdsi-close-fill text-xl leading-5"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="flex flex-col p-4">
+                            <span class="text-neutral-1-900 text-body-2 font-semibold font-sans pb-4">Tất cả kênh</span>
+                            <div *ngFor="let item of ItemList">
+                                <tds-collapse [expandIconPosition]="'right'" [bordered]="false" class="tds-choose-page-collapse mb-3">
+                                    <tds-collapse-panel [header]="headerTpl" [active]="true" [disabled]="false" [expandedIcon]="'tdsi-arrow-right-line'">
+                                        <ng-template #headerTpl>
+                                            <div class="flex items-center">
+                                                <img [src]="item.image" class="h-6 w-6 rounded-full" alt="">
+                                                <span class="text-neutral-1-900 text-body-2 font-semibold font-sans pl-2">{{item.name}}</span>
+                                            </div>
+                                        </ng-template>
+                                        <div style="margin:0;">
+                                            <div *ngFor="let child of item.children">
+                                                <div class="flex flex-row items-center justify-between rounded-20 hover:bg-neutral-3-50" (click)="getConversations(child,item)" tds-dropdown-item>
+                                                    <div class="flex flex-row items-center">
+                                                        <img [src]="child.image" class="h-6 w-6" alt="">
+                                                        <span class="text-neutral-1-900 text-body-2 font-regular font-sans pl-2">{{child.name}}</span>
+                                                    </div>
+                                                    <div *ngIf="child.active" class="flex items-center justify-center">
+                                                        <i class="tdsi-success-fill text-primary-1"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </tds-collapse-panel>
+                                </tds-collapse>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </tds-dropdown-menu>
+            </div>
+            <tds-range-picker [(ngModel)]="rangeDate" (ngModelChange)="onChangeDate($event)" class="w-[266px]"></tds-range-picker>
+        </div>
+    </div>
+    <div *ngIf="!emptyData; else emptyTmp">
+        <div class="flex flex-col w-full px-4 py-9">
+            <div class="flex flex-row items-center justify-center w-full">
+                <div echarts [options]="option" [size]="['auto',400]" class="w-full"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white w-full rounded-xl">
+    <tds-table #basicTable [listData]="tableData" [showPagination]="false" class="tds-report-table" [noResult]="emptyTable">
+        <thead class="text-neutral-1-900 text-body-2 font-semibold font-sans">
+              <tr>
+                    <th>Thời gian</th>
+                    <th>Tổng hội thoại</th>
+                    <th>Tin nhắn</th>
+                    <th>Bình luận</th>
+                    <th>Số điện thoại mới</th>
+                    <th>Thời gian phản hồi trung bình (phút)</th>
+                    <th>Hội thoại chưa trả lời</th>
+                    <th>Tỉ lệ chốt đơn</th>
+                    <th>Chi tiết</th>
+              </tr>
+        </thead>
+        <tbody class="text-neutral-1-900 text-body-2 font-regular font-sans">
+            <ng-template ngFor let-data [ngForOf]="basicTable.data" >
+                <tr>
+                    <td>{{ data.reportDate }}</td>
+                    <td>{{ data.conversations|number }}</td>
+                    <td>{{ data.messages|number }}</td>
+                    <td>{{ data.comments|number }}</td>
+                    <td>{{ data.newPhoneNumber|number }}</td>
+                    <td>{{ data.responseTime|number }}</td>
+                    <td>{{ data.noReplyMessages|number }}</td>
+                    <td>
+                        <span class="text-primary-1">{{ (data.completeOrders/data.orders)|percent}}</span>
+                        <br>
+                        <span class="text-neutral-1-400">{{data.completeOrders|number}}/{{data.orders|number}}</span>
+                    </td>
+                    <td>
+                        <a [routerLink]="'/report/conversations'" class="text-info-500">Xem chi tiết</a>
+                    </td>
+                </tr>
+            </ng-template>
+        </tbody>
+    </tds-table>
+</div>
+<!-- empty -->
+<ng-template #emptyTmp>
+    <div class="h-[434px]">
+        <app-report-empty-data></app-report-empty-data>
+    </div>
+</ng-template>
+
+<ng-template #emptyTable>
+    <div class="h-[344px]">
+        <app-report-empty-data></app-report-empty-data>
+    </div>
+</ng-template>
+
+<!-- modal -->
+<tds-modal [(visible)]="showModal" title="Danh sách hội thoại" [size]="'xl'">
+    <ng-container *tdsModalContent>
+        <tds-table #basicTable [listData]="modalData" [bordered]="true" [showSizeChanger]="true" class="rounded-md">
+            <thead>
+                  <tr>
+                        <th>STT</th>
+                        <th >Khách hàng</th>
+                        <th>Hội thoại tin nhắn</th>
+                        <th>Hội thoại bình luận</th>
+                        <th>Thời gian</th>
+                        <th>Trạng thái đơn hàng</th>
+                  </tr>
+            </thead>
+            <tbody>
+                <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data" >
+                    <tr>
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ data.name }}</td>
+                        <td>
+                            <tds-badge [color]="data.replyMessenger ? '#28A745' : '#A1ACB8' " [text]="data.replyMessenger ? 'Đã trả lời' : 'Chưa trả lời' "></tds-badge>
+                        </td>
+                        <td>
+                            <tds-badge [color]="data.replyComment ? '#28A745' : '#A1ACB8' " [text]="data.replyComment ? 'Đã trả lời' : 'Chưa trả lời' "></tds-badge>
+                        </td>
+                        <td>{{ data.createdDate }}</td>
+                        <td>
+                            <tds-badge [color]="data.orderStatus.color" [text]="data.orderStatus.name"></tds-badge>
+                        </td>
+                    </tr>
+                </ng-template>
+            </tbody>
+        </tds-table>
+    </ng-container>
+    <div class="flex justify-end p-4" *tdsModalFooter>
+        <button tds-button color="secondary" class="w-[100px] h-[34px]" (click)="handleCancel()">
+            Đóng
+        </button>
+    </div>
+</tds-modal>

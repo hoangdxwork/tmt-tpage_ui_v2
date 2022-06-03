@@ -1,0 +1,25 @@
+<div class="bg-white w-full mb-4 rounded-md">
+    <div class="border-b flex flex-row align-center justify-between p-4">
+        <tds-flex flex="row" class="w-full" alignItems="center">
+            <tds-avatar class="bg-primary-1 text-white mr-2.5" icon="tdsi-report-fill"></tds-avatar>
+            <span class="text-neutral-1-900 text-header-1 font-semibold">THỐNG KÊ THEO SẢN PHẨM</span>
+        </tds-flex>
+        <tds-flex flex="row" alignItems="baseline">
+            <tds-flex flex="row" alignItems="center" class="border rounded w-[152px]">
+                <i class="tdsi-calendar-fill mx-2 h-5 w-5"></i>
+                <tds-select valueField="name" textField="name" [ngModel]="currentFilter"
+                    [placeholder]="currentFilter" [data]="filterList" [border]="false" class="truncate ..."
+                    (ngModelChange)="onChangeFilter($event)" size="md">
+                </tds-select>
+            </tds-flex>
+        </tds-flex>
+    </div>
+    <div *ngIf="showData;else emptyData" class="flex flex-col justify-center w-full">
+      <div echarts [options]="productOption" [size]="['auto',500]"></div>
+    </div>
+</div>
+<ng-template #emptyData>
+    <div class="flex items-center justify-center w-full h-[204px]">
+        <tds-empty notFoundImage="assets/images/dashboard-empty-icon.svg" [notFoundContent]="null"></tds-empty>
+    </div>
+</ng-template>

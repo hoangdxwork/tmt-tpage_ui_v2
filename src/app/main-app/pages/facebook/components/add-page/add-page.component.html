@@ -1,0 +1,34 @@
+<tds-spin tip="Loading..." [spinning]="isLoading">
+  <form [formGroup]="addPageForm" autocomplete="off" (ngSubmit)="onSubmit()">
+    <div class="w-full flex flex-col gap-8">
+        <tds-form-field >
+            <tds-label>Facebook</tds-label>
+            <input tdsInput class="bg-neutral-3-50"
+            [required]='true' formControlName="userName"
+            />
+        </tds-form-field>
+
+        <tds-form-field >
+            <tds-label>Page</tds-label>
+            <input tdsInput class="bg-neutral-3-50"
+            [required]='true' formControlName="pageName"
+            />
+        </tds-form-field>
+
+        <tds-form-field >
+            <tds-label>Tên</tds-label>
+            <input tdsInput placeholder="Mèo nhạt nhẽo"
+            [required]='true' formControlName="name"/>
+            <tds-error>Bạn phải nhập tên</tds-error>
+        </tds-form-field>
+    </div>
+  </form>
+  <div class="w-full flex justify-end p-4" *tdsModalFooter>
+      <button tds-button color="secondary" (click)="onCancel(null)" class="mr-4">
+          Hủy
+      </button>
+      <button tds-button color="primary" (click)="onSubmit()" [disabled]="!addPageForm?.valid || isLoading" >
+          Lưu
+      </button>
+  </div>
+</tds-spin>

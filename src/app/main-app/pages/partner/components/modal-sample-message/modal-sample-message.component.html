@@ -1,0 +1,27 @@
+<div class="rounded-md border border-light-50">
+    <tds-table templateMode >
+        <thead>
+            <tr>
+                <th width="">STT</th>
+                <th width="30%">Tên mẫu</th>
+                <th width="55%">Nội dung</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let data of listSampleMessage; let idx = index" class="cursor-pointer">
+                <td>{{ idx }}</td>
+                <td>{{ data.Name }}</td>
+                <td>
+                    <p tds-typography ellipsis expandable [ellipsisRows]="2" [content]=" data.BodyPlain" [contentCollapse]="'Ẩn'"></p>
+                </td>
+                <td>
+                    <button tds-button color="primary" (click)="chooseQuickReply(data)">Chọn</button>
+                </td>
+            </tr>
+        </tbody>
+    </tds-table>
+</div>
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">Đóng</button>
+</div>

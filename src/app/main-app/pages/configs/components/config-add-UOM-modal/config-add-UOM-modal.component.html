@@ -1,0 +1,60 @@
+<form [formGroup]="addUOMForm" autocomplete="off" (ngSubmit)="onSubmit()">
+    <div class="grid grid-cols-4 gap-y-4 items-center">
+        <tds-label>Tên</tds-label>
+        <tds-form-field class="w-full col-span-3">
+          <input tdsInput formControlName="Name" autocomplete="off" placeholder="Nhập tên"/>
+          <tds-error>
+              Vui lòng nhập tên
+          </tds-error>
+        </tds-form-field>
+
+        <tds-label>Mã</tds-label>
+        <tds-form-field class="w-full col-span-3">
+          <input tdsInput formControlName="Code" autocomplete="off" placeholder="Nhập mã"/>
+          <tds-error>
+            Vui lòng nhập mã
+        </tds-error>
+        </tds-form-field>
+
+        <tds-label>Địa chỉ</tds-label>
+        <tds-form-field class="w-full col-span-3">
+          <input tdsInput formControlName="Address" autocomplete="off" placeholder="Nhập địa chỉ"/>
+          <tds-error>
+            Vui lòng nhập địa chỉ
+        </tds-error>
+        </tds-form-field>
+
+        <tds-label>Số điện thoại</tds-label>
+        <tds-form-field class="w-full col-span-3">
+          <input tdsInput formControlName="Phone" autocomplete="off" placeholder="Nhập số điện thoại"/>
+          <tds-error>
+            Vui lòng nhập số điện thoại
+        </tds-error>
+        </tds-form-field>
+
+        <tds-label>Email</tds-label>
+        <tds-form-field class="w-full col-span-3">
+          <input tdsInput formControlName="Email" autocomplete="off" placeholder="Nhập email"/>
+          <tds-error>
+            Vui lòng nhập email
+        </tds-error>
+        </tds-form-field>
+
+        <tds-label>Ghi chú</tds-label>
+        <tds-form-field class="w-full col-span-3">
+          <input tdsInput formControlName="Note" autocomplete="off" placeholder="Nhập ghi chú"/>
+          <tds-error>
+            Vui lòng nhập ghi chú
+        </tds-error>
+        </tds-form-field>
+      </div>
+</form>
+<!-- footer -->
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2" color="secondary" (click)="cancel()">
+        Hủy bỏ
+    </button>
+    <button tds-button type="submit" [disabled]="!addUOMForm.valid" color="primary" (click)="save()">
+        Lưu thay đổi
+    </button>
+</div>

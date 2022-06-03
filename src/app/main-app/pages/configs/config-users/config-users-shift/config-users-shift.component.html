@@ -1,0 +1,145 @@
+<tds-spin [spinning]="isLoading">
+  <div class="w-full h-full pb-4 px-4 text-body-2">
+    <div class="flex flex-col w-full h-full bg-white rounded-xl">
+        <div class="flex flex-row items-center justify-between px-4 py-3 border-b border-neutral-2-100">
+            <div class="flex flex-row items-center">
+                <tds-avatar class="bg-primary-1 text-white" icon="tdsi-group-people-fill"></tds-avatar>
+                <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">CA LÀM VIỆC</span>
+            </div>
+            <div class="flex gap-x-2">
+                <button tds-button color="primary" (click)="showModalListShift()">
+                    <span class="flex items-center">
+                        Danh sách ca làm việc
+                    </span>
+                </button>
+                <tds-button-group>
+                    <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
+                        <span class="flex items-center">
+                            Điều kiện lọc <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                        </span>
+                    </button>
+                    <tds-dropdown-menu #menu="tdsDropdownMenu">
+                        <div class="w-full">
+                            <div *ngFor="let filter of listFilter" tds-dropdown-item (click)="onFilter(filter)">
+                              <a> {{ filter.text }} </a>
+                            </div>
+                        </div>
+                    </tds-dropdown-menu>
+                </tds-button-group>
+            </div>
+        </div>
+        <div class="w-full h-full flex flex-col pb-4">
+            <div class="flex justify-center items-center py-4 ">
+                <div class="flex p-2 bg-neutral-3-50 rounded-md font-semibold">
+                    <button (click)="onLastWeek()">
+                        <span class="flex items-center">
+                            <i class="tdsi-arrow-left-line"></i>
+                        </span>
+                    </button>
+                    <div class="px-6">
+                        {{startOFWeek | date:"dd/MM/yyyy"}} - {{endOFWeek | date:"dd/MM/yyyy"}}
+                    </div>
+                    <button (click)="onNextWeek()">
+                        <span class="flex items-center">
+                            <i class="tdsi-arrow-right-line"></i>
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <div class="w-full h-full">
+                <tds-table templateMode #basicTable [listData]="lstUserShifts" [showPagination]="false"
+                    [pageSize]="lstUserShifts.length" [scroll]="{ y : 'auto'}">
+                    <thead>
+                        <tr>
+                            <th width="296px">Nhân viên</th>
+                            <th>
+                                <div class="flex w-full items-center">
+                                    <div *ngFor="let item of listDataWeek" class="w-[14.28%] flex flex-col justify-center items-center">
+                                        <span *ngIf="currentDateFormat == item.date" class="text-success-400 font-semibold text-heading-4">{{item.date}}</span>
+                                        <span *ngIf="currentDateFormat == item.date" class="text-caption-1 text-success-400">{{item.dayOfWeek}}</span>
+                                        <span *ngIf="currentDateFormat != item.date" class="text-neutral-1-700 font-semibold text-heading-4">{{item.date}}</span>
+                                        <span *ngIf="currentDateFormat != item.date" class="text-caption-1 text-neutral-1-400">{{item.dayOfWeek}}</span>
+                                    </div>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-template ngFor let-user [ngForOf]="basicTable.data">
+                            <tr>
+                                <td class="!align-top">
+                                    <div class="flex items-center gap-x-2 truncate">
+                                        <tds-avatar class="bg-accent-4 text-white" tdsSrc="{{user.Avatar}}">
+                                        </tds-avatar>
+                                        <div><span class="">{{user.Name}}</span></div>
+                                    </div>
+                                </td>
+                                <td class="!align-top">
+                                    <div class="flex items-center gap-x-2">
+                                        <div *ngFor="let item of listDataWeek" class=" w-[14.28%] flex flex-col">
+                                            <div class="flex justify-center">
+                                                <button (click)="openTag(user.Id, item.week, item.id)" tds-popover
+                                                    [popoverVisible]="indClickTag == user.Id && isChooseDayOfWeek == item.id && isChooseWeek == item.week" popoverTrigger="click"
+                                                    [popoverFooter]="footerAddTag" [popoverContent]="contentAddShifts" [popoverAutoClose]="false"
+                                                    [popoverBackdrop]="true">
+                                                    <span class="flex items-center text-primary-1">
+                                                        <i class="text-2xl leading-6 tdsi-plus-fill"></i>
+                                                    </span>
+                                                </button>
+                                            </div>
+                                            <!-- <div class="flex flex-col gap-y-2" *ngIf="user?.UserShifts?.ShiftId == item.week">
+                                                <div class="flex w-full" *ngFor="let itemTag of user.UserShifts">
+                                                    <div  class="flex w-full justify-center rounded px-5"
+                                                        *ngIf="itemTag.idDayOfWeek == item.id"
+                                                        [ngClass]="itemTag.idTag==1?'bg-blue-200 text-blue-500':(itemTag.idTag==2?'bg-green-200 text-green-500':(itemTag.idTag==3?'bg-orange-200 text-orange-500':'bg-indigo-200 text-indigo-500'))">
+                                                        <span>{{itemTag.name}}</span>
+                                                    </div>
+                                                </div>
+                                            </div> -->
+                                            <div *ngFor="let userShifts of user?.UserShifts">
+                                                <div class="flex flex-col gap-y-2 mt-1" *ngIf="formatDate(userShifts.WorkingDay) == item.date">
+                                                    <div *ngFor="let shift of userShifts.Shifts" class="flex w-full justify-center rounded px-5"
+                                                        [ngClass]="userShifts.Id==1?'bg-blue-200 text-blue-500':(userShifts.Id==2?
+                                                        'bg-green-200 text-green-500':(userShifts.Id==3?
+                                                        'bg-orange-200 text-orange-500':'bg-indigo-200 text-indigo-500'))">
+                                                        <span>{{shift.Name}}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <ng-template #contentAddShifts>
+                                              <div class="w-96">
+                                                  <tds-form-field>
+                                                      <tds-select valueField="Id" textField="Name" placeholder='Chọn ca làm việc'
+                                                          [(ngModel)]="modelShifts" [allowClear]="true" [valuePrimitive]="false"
+                                                          [data]="lstShifts" mode="multiple">
+                                                      </tds-select>
+                                                  </tds-form-field>
+                                              </div>
+                                            </ng-template>
+                                            <ng-template #footerAddTag>
+                                                <div class="flex justify-end pt-2">
+                                                    <button tds-button color="secondary" class="mr-2" size="sm" (click)="closeTag()">
+                                                        <span class="">
+                                                            Đóng
+                                                        </span>
+                                                    </button>
+                                                    <button tds-button size="sm" (click)="assignTags(user, item.workingDay)">
+                                                        <span class="">
+                                                            Lưu
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </tbody>
+                </tds-table>
+            </div>
+        </div>
+    </div>
+  </div>
+</tds-spin>
+

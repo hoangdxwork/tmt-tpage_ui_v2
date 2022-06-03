@@ -17,26 +17,30 @@ export class TAuthGuardService implements CanActivate, CanActivateChild {
 
     ) { }
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
+
         let isDev = false;//!environment.production;
+        let access_Token = this.auth.getAccessToken();
         return new Promise<boolean>((resolve) => {
             if (isDev) {
                 resolve(true);
             } else {
-                if (TDSHelperObject.hasValue(TGlobalConfig.Authen.token) &&
-                    TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.access_token)) {
+                if (TDSHelperObject.hasValue(access_Token) &&
+                    TDSHelperString.hasValueString(access_Token?.access_token)) {
                     resolve(true);
                 } else {
-                    this.auth.getCacheToken().subscribe(() => {
-                        if (TDSHelperObject.hasValue(TGlobalConfig.Authen.token) &&
-                            TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.access_token)) {
+                    this.auth.getCacheToken().subscribe((accessToken) => {
+                        if (TDSHelperObject.hasValue(accessToken) &&
+                            TDSHelperString.hasValueString(accessToken?.access_token)) {
                             resolve(true);
                         } else {
+
                             setTimeout(() => {
                                 this.auth.logout(environment.urlLogin);
                             }, 100);
                             resolve(false);
                         }
                     }, f => {
+
                         setTimeout(() => {
                             this.auth.logout(environment.urlLogin);
                         }, 100);
@@ -48,20 +52,22 @@ export class TAuthGuardService implements CanActivate, CanActivateChild {
     }
     canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
         let isDev = false;
+        let access_Token = this.auth.getAccessToken();
         return new Promise<boolean>((resolve) => {
             if (isDev) {
                 resolve(true);
             } else {
-                if (TDSHelperObject.hasValue(TGlobalConfig.Authen.token) &&
-                    TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.access_token)) {
+                if (TDSHelperObject.hasValue(access_Token) &&
+                    TDSHelperString.hasValueString(access_Token?.access_token)) {
                     resolve(true);
                 } else {
-                    this.auth.getCacheToken().subscribe(() => {
+                    this.auth.getCacheToken().subscribe((accessToken) => {
 
-                        if (TDSHelperObject.hasValue(TGlobalConfig.Authen.token) &&
-                            TDSHelperString.hasValueString(TGlobalConfig.Authen.token?.access_token)) {
+                        if (TDSHelperObject.hasValue(accessToken) &&
+                            TDSHelperString.hasValueString(accessToken?.access_token)) {
                             resolve(true);
                         } else {
+
                             setTimeout(() => {
                                 this.auth.logout(environment.urlLogin)
                             }, 100);

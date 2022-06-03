@@ -1,0 +1,110 @@
+<tds-spin [spinning]="isLoading">
+  <div class="w-full h-full pb-4 px-4 text-body-2">
+    <div class="flex flex-col w-full h-full bg-white rounded-xl">
+        <div class="flex flex-row items-center justify-between px-4 py-3">
+            <div class="flex flex-row items-center">
+                <tds-avatar class="bg-primary-1 text-white" icon="tdsi-group-people-fill"></tds-avatar>
+                <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">QUẢN LÝ NGƯỜI DÙNG</span>
+            </div>
+            <div class="flex gap-x-2">
+                <button tds-button color="secondary" (click)="decentralizePageManagement()">
+                    <span class="flex items-center">
+                        Phân quyền quản lý Page
+                    </span>
+                </button>
+                <button tds-button color="primary" (click)="showModalAddUser()">
+                    <span class="flex items-center">
+                        <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+                        <span class="text-body-2 font-semibold">Thêm mới</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div class="w-full h-full pb-4">
+            <tds-table #tableUser [listData]="lstUsers" showPagination showSizeChanger [scroll]="{y:'auto'} ">
+                <thead>
+                    <tr>
+                        <th>Người dùng</th>
+                        <th>Phân quyền</th>
+                        <th>Page quản lý</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-template ngFor let-data [ngForOf]="tableUser.data">
+                        <tr>
+                            <td>{{ data.Name }}</td>
+                            <td>
+                              <div *ngFor="let userRole of data?.Roles">
+                                {{getNameRole(userRole.RoleId)}}
+                              </div>
+                            </td>
+                            <td>
+                                <div class="flex items-center pl-2" *ngIf="userManagerPage && userManagerPage[data.Id]">
+
+                                    <div *ngFor="let crmTeam of userManagerPage[data.Id]?.pageShow; let index = index"
+                                      tds-tooltip tooltipTitle="{{crmTeam?.Facebook_PageName}}"
+                                      class="bg-white p-0.5 rounded-full" [ngClass]="index ? '-ml-5 relative' : ''">
+                                        <tpage-avatar-facebook class="bg-white  text-white" [size]="44"
+                                          [fbid]="crmTeam?.Facebook_PageId" [token]="crmTeam?.Facebook_PageToken">
+                                        </tpage-avatar-facebook>
+                                    </div>
+
+                                    <div *ngIf="userManagerPage[data.Id]?.pageHide && userManagerPage[data.Id]?.pageHide.length > 0" class="-ml-3 bg-white relative z-[4] p-0.5 rounded-full" tds-popover
+                                        popoverPlacement="bottomLeft" [popoverContent]="popoverPageFacebook">
+                                        <tds-avatar class="bg-primary-3  text-primary-1" [size]="44" text="+{{userManagerPage[data.Id]?.pageHide.length}}">
+                                        </tds-avatar>
+                                    </div>
+
+                                    <ng-template #popoverPageFacebook>
+                                        <div class="w-[217px] flex flex-col gap-y-4">
+                                            <div *ngFor="let crmTeam of userManagerPage[data.Id]?.pageHide; let index = index"
+                                              class="flex gap-x-4 items-center">
+                                                <tpage-avatar-facebook class="bg-white  text-white" [size]="44"
+                                                    [fbid]="crmTeam?.Facebook_PageId" [token]="crmTeam?.Facebook_PageToken">
+                                                </tpage-avatar-facebook>
+                                                <div>
+                                                    <span>{{crmTeam.Facebook_PageName}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+
+                                </div>
+                                <ng-template #isOne>
+                                    <div class="flex">
+                                        <div class="bg-white p-0.5 rounded-full" tds-tooltip tooltipTitle="Page test">
+                                            <tds-avatar class="bg-white  text-white" [size]="44"
+                                                tdsSrc="assets/images/config/SP1120.png">
+                                            </tds-avatar>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </td>
+                            <td>
+                                <tds-switch [checked]="data.Active || false" size="md" (change)="updateStatus(data.Id)"></tds-switch>
+                            </td>
+                            <td>
+                                <div class="flex gap-x-2">
+                                    <button tds-button-icon color="secondary" size="sm" (click)="showModalUpdateUser(data.Id)">
+                                        <span class="flex items-center">
+                                            <i class="tdsi-edit-fill text-lg leading-none"></i>
+                                        </span>
+                                    </button>
+                                    <button tds-button-icon color="secondary" size="sm" (click)="onDelete(data.Id)">
+                                        <span class="flex items-center">
+                                            <i class="tdsi-trash-fill text-lg leading-none"></i>
+                                        </span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </tds-table>
+        </div>
+    </div>
+  </div>
+</tds-spin>
+

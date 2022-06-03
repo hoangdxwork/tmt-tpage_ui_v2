@@ -1,0 +1,257 @@
+<div class="mt-1">
+    <form [formGroup]="form" autocomplete="off">
+      <div class="grid grid-cols-2 gap-y-4 gap-x-8 text-neutral-1-600 text-header-2 font-semibold">
+          <span>Điều kiện áp dụng</span>
+          <span>Giá trị</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-y-4 gap-x-8 mt-4">
+          <div class="grid grid-cols-3 gap-y-4 items-center">
+              <tds-label class="flex gap-x-1 items-center">
+                <span>Số lượng tối thiểu</span>
+                <span class="flex items-center text-sm" tds-tooltip [tooltipTitle]="'Số lượng mua tối thiểu để được phần thưởng'">
+                  <i class="tdsi-bar-chart-circle-fill text-neutral-1-400"></i>
+                </span>
+              </tds-label>
+              <tds-form-field class="w-full col-span-2">
+                  <tds-input-number formControlName="RuleMinQuantity" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                  <tds-error>
+                      Vui lòng nhập số lượng
+                  </tds-error>
+              </tds-form-field>
+          </div>
+
+          <div class="grid grid-cols-3 gap-y-4 items-center">
+              <tds-label>Sử dụng cho</tds-label>
+              <tds-form-field class="w-full col-span-2">
+                  <tds-input-number formControlName="MaximumUseNumber" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                  <tds-error>
+                      Vui lòng nhập giá trị
+                  </tds-error>
+              </tds-form-field>
+          </div>
+
+          <div class="grid grid-cols-3 gap-y-4 items-center">
+              <tds-label class="flex gap-x-1 items-center">
+                <span>Số tiền tối thiểu</span>
+                <span class="flex items-center text-sm" tds-tooltip [tooltipTitle]="'Số tiền mua tối thiểu để được phần thưởng'">
+                  <i class="tdsi-bar-chart-circle-fill text-neutral-1-400"></i>
+                </span>
+              </tds-label>
+              <tds-form-field class="w-full col-span-2">
+                  <tds-input-number formControlName="RuleMinimumAmount" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                  <tds-error>
+                      Vui lòng nhập số tiền tối thiểu
+                  </tds-error>
+              </tds-form-field>
+          </div>
+
+          <div class="grid grid-cols-3 gap-y-4 items-baseline">
+              <tds-label>
+                Ngày bắt đầu
+                <span class="text-error-500 text-body-2 font-semibold">*</span>
+              </tds-label>
+              <tds-form-field class="w-full col-span-2">
+                  <tds-date-picker showTime formControlName="RuleDateFrom" placeholder="Chọn ngày bắt đầu" [required]='true'>
+                  </tds-date-picker>
+                  <tds-error>Vui lòng nhập ngày bắt đầu</tds-error>
+              </tds-form-field>
+          </div>
+
+          <div class="grid grid-cols-3 gap-y-4 items-center">
+            <tds-label>Công ty</tds-label>
+            <tds-form-field class="w-full col-span-2">
+                <tds-select valueField="Id" textField="Name" placeholder='Chọn công ty'
+                    disabledField="isActive" formControlName="Company"
+                    [data]="lstCompany" [allowClear]="true" [valuePrimitive]='false'>
+                </tds-select>
+                <tds-error>
+                    Chọn công ty
+                </tds-error>
+            </tds-form-field>
+          </div>
+
+          <div class="grid grid-cols-3 gap-y-4 items-baseline">
+              <tds-label>
+                Ngày kết thúc
+                <span class="text-error-500 text-body-2 font-semibold">*</span>
+              </tds-label>
+              <tds-form-field class="w-full col-span-2">
+                  <tds-date-picker showTime formControlName="RuleDateTo" placeholder="Chọn ngày kết thúc" [required]='true'>
+                  </tds-date-picker>
+                  <tds-error>Vui lòng nhập ngày kết thúc</tds-error>
+              </tds-form-field>
+          </div>
+
+          <!-- bonus type -->
+          <div class="grid grid-cols-3 gap-y-4 items-center">
+            <span class="text-neutral-1-900 text-body-2 font-semibold">
+              Loại phần thưởng
+            </span>
+
+            <!-- <button tds-button-outline color="primary" rounded="!rounded-full">
+              <span class="flex items-center">
+                <i class="tdsi-discount-fill text-lg leading-none mr-2"></i>Chiết khấu
+              </span>
+            </button>
+
+            <button tds-button-outline color="secondary">
+              <span class="flex items-center">
+                <i class="tdsi-gift-fill text-lg leading-none mr-2"></i>Quà tặng
+              </span>
+            </button> -->
+
+            <div class="flex gap-x-2 col-span-2">
+              <div class="py-1.5 px-4 flex items-center border border-solid rounded-full mr-2 w-fit cursor-pointer" (click)="onChangeRewardType('discount')"
+                [ngClass]="getRewardTypeFormGroup == 'discount' ? 'border-primary-1 text-primary-1' : 'border-neutral-2-100 text-neutral-1-400'">
+                <span class="flex items-center text-sm font-semibold">
+                  <i class="tdsi-discount-fill text-lg leading-none mr-2"></i>Chiết khấu
+                </span>
+              </div>
+
+              <div class="py-1.5 px-4 flex items-center border border-solid rounded-full mr-2 w-fit cursor-pointer" (click)="onChangeRewardType('product')"
+                [ngClass]="getRewardTypeFormGroup == 'product' ? 'border-primary-1 text-primary-1' : 'border-neutral-2-100 text-neutral-1-400'">
+                <span class="flex items-center text-sm font-semibold">
+                  <i class="tdsi-gift-fill text-lg leading-none mr-2"></i>Quà tặng
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-y-4 items-center">
+              <tds-label>Hiệu lực</tds-label>
+              <div class="w-full col-span-2">
+                  <tds-switch size="md" formControlName="Active"></tds-switch>
+              </div>
+          </div>
+      </div>
+      <div class="flex gap-x-8 mt-4 items-baseline">
+          <div class="grid grid-colfa-stack-1x gap-y-4 items-center w-1/2">
+              <!-- discount for -->
+              <div *ngIf="isShow('DiscountType')" class="grid grid-cols-3 gap-y-4 items-center">
+                <span class="text-neutral-1-900 text-body-2 font-semibold">
+                  Áp dụng chiết khấu
+                </span>
+                <div class="flex flex-row items-center col-span-2 gap-x-4">
+                    <div class="w-1/2">
+                        <tds-form-field class="w-full">
+                            <tds-select valueField="value" textField="text" placeholder='Chọn chiết khấu'
+                                disabledField="isActive" formControlName="DiscountType" [required]='true'
+                                [data]="lstDiscountType" [allowClear]="false">
+                            </tds-select>
+                            <tds-error>
+                                Vui lòng chọn loại chiết khấu
+                            </tds-error>
+                        </tds-form-field>
+                    </div>
+                    <tds-form-field class="w-1/2" *ngIf="isShow('DiscountPercentage')">
+                        <tds-input-number formControlName="DiscountPercentage" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                        <tds-error>
+                            Vui lòng nhập giá trị chiết khấu
+                        </tds-error>
+                    </tds-form-field>
+                    <span class="font-normal text-sm" *ngIf="isShow('DiscountPercentage')">%</span>
+                </div>
+              </div>
+
+              <!-- DiscountFixedAmount -->
+              <div *ngIf="isShow('DiscountFixedAmount')" class="grid grid-cols-3 gap-y-4 items-center">
+                <span class="text-neutral-1-900 text-body-2 font-semibold">
+                    Tiền cố định
+                </span>
+                <tds-form-field class="col-span-2">
+                    <tds-input-number formControlName="DiscountFixedAmount" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                    <tds-error>
+                        Vui lòng nhập tiền cố định
+                    </tds-error>
+                </tds-form-field>
+              </div>
+
+              <!-- discount on -->
+              <div *ngIf="isShow('DiscountApplyOn')" class="grid grid-cols-3 gap-y-4 items-start">
+                  <span class="text-neutral-1-900 text-body-2 font-semibold">
+                      Chiết khấu trên
+                  </span>
+                  <tds-radio-group class="flex flex-col col-span-2 gap-y-2" formControlName="DiscountApplyOn">
+                      <label tds-radio value="on_order" class="w-1/2">Trên đơn hàng</label>
+                      <label tds-radio value="specific_product" class="w-1/2">Trên sản phẩm cụ thể</label>
+                  </tds-radio-group>
+              </div>
+
+              <!-- gift -->
+              <div *ngIf="isShow('DiscountSpecificProduct')" class="grid grid-cols-3 gap-y-4 items-baseline">
+                  <span class="text-neutral-1-900 text-body-2 font-semibold">
+                      Sản phẩm quà tặng
+                  </span>
+                  <div class="flex flex-row items-center col-span-2">
+                      <tds-form-field class="w-full">
+                          <tds-select valueField="Id" textField="NameGet" placeholder='Chọn sản phẩm'
+                              disabledField="isActive" formControlName="DiscountSpecificProduct" [required]='true'
+                              [data]="lstProduct" [allowClear]="true">
+                          </tds-select>
+                          <tds-error>
+                              Vui lòng chọn quà tặng
+                          </tds-error>
+                      </tds-form-field>
+                  </div>
+              </div>
+
+              <!-- maximum discount -->
+              <div *ngIf="isShow('DiscountMaxAmount')" class="grid grid-cols-3 gap-y-4 items-center">
+                  <span class="text-neutral-1-900 text-body-2 font-semibold">
+                      Tiền chiết khấu tối đa
+                  </span>
+                  <div class="col-span-2 flex gap-x-4 items-center">
+                    <div class="flex items-center w-3/5">
+                      <tds-form-field class="w-full">
+                        <tds-input-number formControlName="DiscountMaxAmount" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                        <tds-error>
+                            Vui lòng nhập giá trị chiết khấu tối đa
+                        </tds-error>
+                      </tds-form-field>
+                      <span class="ml-2 text-neutral-1-400 text-sm font-normal">đ</span>
+                    </div>
+                    <span class="w-2/5 text-neutral-1-400 text-sm font-normal text-right"> (Nếu 0, không giới hạn) </span>
+                  </div>
+              </div>
+
+              <!-- gift quantity -->
+              <div *ngIf="isShow('RewardProductQuantity')" class="grid grid-cols-3 gap-y-4 items-center">
+                  <span class="text-neutral-1-900 text-body-2 font-semibold">
+                      Số lượng tặng
+                  </span>
+                  <div class="flex flex-row items-center col-span-2">
+                      <tds-form-field class="w-full">
+                          <tds-input-number formControlName="RewardProductQuantity" [min]="0" [step]="1" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                          <tds-error>
+                              Vui lòng nhập số lượng tặng
+                          </tds-error>
+                      </tds-form-field>
+                  </div>
+              </div>
+
+              <!-- duplicate quantity -->
+              <div *ngIf="isShow('NoIncrease')" class="grid grid-cols-3 gap-y-4 items-center">
+                  <span class="text-neutral-1-900 text-body-2 font-semibold">
+                      Nhân số lượng KM
+                  </span>
+                  <div class="flex flex-row items-start col-span-2">
+                      <tds-checkbox class="text-neutral-1-400 text-sm " formControlName="NoIncrease">(VD: mua 2 tặng 1, mua 4 tặng 2)</tds-checkbox>
+                  </div>
+              </div>
+          </div>
+          <div class="grid grid-colfa-stack-1x gap-y-4 items-center w-1/2">
+              <!-- apply for -->
+              <div class="grid grid-cols-3 gap-y-4 items-center">
+                <span class="text-neutral-1-900 text-body-2 font-semibold">
+                  Áp dụng
+                </span>
+                <div class="flex flex-row items-start col-span-2">
+                  <tds-checkbox formControlName="PromoApplicability">Áp dụng trên đơn hàng hiện tại</tds-checkbox>
+                </div>
+              </div>
+          </div>
+      </div>
+    </form>
+</div>
+

@@ -1,0 +1,26 @@
+<div class="w-full flex p-3">
+  <div class="tds-modal-confirm-icon text-error-400">
+    <i class="text-[32px] leading-8 tdsi-error-fill"></i>
+  </div>
+  <div class="pl-6 flex-auto">
+    <div class="tds-modal-confirm-body w-full">
+      <div class="tds-modal-confirm-title break-words text-header-1 text-neutral-1-900 dark:text-d-neutral-1-900 font-semibold">
+        <span>
+          Chặn khách hàng
+        </span>
+      </div>
+      <div class="tds-modal-confirm-content break-words text=neutral-1-900 dark:text-d-neutral-1-900 text-body-2 font-regular pt-2">
+        <div>Bạn có chắc chặn muốn chặn khách hàng này</div>
+      </div>
+      <div class="w-full pt-4">
+        <tds-form-field>
+          <input tdsInput autocomplete="off" placeholder="Nhập lí do chặn" [(ngModel)]="reasonBlock" />
+        </tds-form-field>
+      </div>
+    </div>
+  </div>
+  <div class="w-full flex justify-end p-4 pt-0" *tdsModalFooter>
+    <button tds-button class="mr-3 w-[100px]" type="button" color="secondary" (click)="onCancel()">Hủy</button>
+    <button tds-button class="w-[100px]" type="submit" color="error" (click)="onSave()">Chặn</button>
+  </div>
+</div>

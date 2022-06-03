@@ -1,0 +1,83 @@
+<div class="bg-white flex flex-col rounded-xl px-4">
+    <div class="flex flex-row items-center justify-between py-4">
+        <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Tổng quan</span>
+        <div class="flex flex-row items-center">
+            <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị:</span>
+            <tds-select valueField="name" textField="name" [ngModel]="currentFilter" [border]="false"
+                [data]="filterList" size="md" class="tds-dashboard-filter w-[120px] truncate ..." [valuePrimitive]="false"
+                (ngModelChange)="onChangeFilter($event)" classIcon="tdsi-arrow-down-fill">
+            </tds-select>
+        </div>
+    </div>
+    <div *ngIf="!emptyData;else emptyTmp">
+        <div class="flex flex-row items-center justify-between py-6">
+            <div class="flex flex-row items-center justify-center py-4 w-full">
+                <span class="bg-[#C9FCFF] border border-transparent rounded-2xl p-2">
+                    <img src="assets/images/dashboard/customers-icon.svg">
+                </span>
+                <div class="flex flex-col pl-6">
+                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans pb-1">{{dataSummaryOverview?.TotalPartner|number:'2.0-0'}} Khách hàng</span>
+                    <div class="flex flex-row items-center">
+                        <span class="border-transparent rounded-full text-body-2 font-regular font-sans text-center px-2 mr-2"
+                            [class]="labelData[0].decrease ? 'text-error-400 bg-[#FCE6EA]' : 'text-success-400 bg-[#F2FCF5]' ">
+                            {{labelData[0].percent}}%
+                            <i [class]="labelData[0].decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
+                        </span>
+                        <span class="text-neutral-1-400 text-body-2 font-regular font-sans">{{currentFilter.name}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-row items-center justify-center py-4 w-full">
+                <span class="bg-[#F2EDFF] border border-transparent rounded-2xl p-2">
+                    <img src="assets/images/dashboard/messenger-icon.svg">
+                </span>
+                <div class="flex flex-col pl-6">
+                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans pb-1">{{dataSummaryOverview?.TotalReaction|number:'2.0-0'}} Tương tác</span>
+                    <div class="flex flex-row items-center">
+                        <span class="border-transparent rounded-full text-body-2 font-regular font-sans text-center px-2 mr-2"
+                            [class]="labelData[1].decrease ? 'text-error-400 bg-[#FCE6EA]' : 'text-success-400 bg-[#F2FCF5]' ">
+                            {{labelData[1].percent}}%
+                            <i [class]="labelData[1].decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
+                        </span>
+                        <span class="text-neutral-1-400 text-body-2 font-regular font-sans">{{currentFilter.name}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-row items-center justify-center py-4 w-full">
+                <span class="bg-[#DCEAFF] border border-transparent rounded-2xl p-2">
+                    <img src="assets/images/dashboard/bill-icon.svg">
+                </span>
+                <div class="flex flex-col pl-6">
+                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans pb-1">{{dataSummaryOverview?.TotalBill|number:'2.0-0'}} Phiếu bán hàng</span>
+                    <div class="flex flex-row items-center">
+                        <span class="border-transparent rounded-full text-body-2 font-regular font-sans text-center px-2 mr-2"
+                            [class]="labelData[2].decrease ? 'text-error-400 bg-[#FCE6EA]' : 'text-success-400 bg-[#F2FCF5]' ">
+                            {{labelData[2].percent}}%
+                            <i [class]="labelData[2].decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
+                        </span>
+                        <span class="text-neutral-1-400 text-body-2 font-regular font-sans">{{currentFilter.name}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-row items-center justify-center py-4 w-full">
+                <span class="bg-[#FFEEB9] border border-transparent rounded-2xl p-2">
+                    <img src="assets/images/dashboard/orders-icon.svg">
+                </span>
+                <div class="flex flex-col pl-6">
+                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans pb-1">{{dataSummaryOverview?.TotalOrder|number:'2.0-0'}} Đơn hàng</span>
+                    <div class="flex flex-row items-center">
+                        <span class="border-transparent rounded-full text-body-2 font-regular font-sans text-center px-2 mr-2"
+                            [class]="labelData[3].decrease ? 'text-error-400 bg-[#FCE6EA]' : 'text-success-400 bg-[#F2FCF5]' ">
+                            {{labelData[3].percent}}%
+                            <i [class]="labelData[3].decrease ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
+                        </span>
+                        <span class="text-neutral-1-400 text-body-2 font-regular font-sans">{{currentFilter.name}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #emptyTmp>
+    <app-dashboard-empty-data></app-dashboard-empty-data>
+</ng-template>

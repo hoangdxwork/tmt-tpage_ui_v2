@@ -1,0 +1,581 @@
+<tds-spin [spinning]="isLoading">
+    <div class="flex flex-col w-full h-full text-body-2 text-neutral-1-900 " *ngIf="dataModel">
+        <div class="bg-white flex flex-col">
+            <div class=" flex justify-between items-center">
+                <div class="flex flex-col gap-y-1">
+                    <tds-breadcrumb tds-page-header-breadcrumb>
+                        <tds-breadcrumb-item>Phiếu bán hàng</tds-breadcrumb-item>
+                        <tds-breadcrumb-item>{{dataModel.Number}}</tds-breadcrumb-item>
+                    </tds-breadcrumb>
+                    <div class="pl-4 pb-2.5">
+                        <span class="text-header-1 text-neutral-1-900 font-semibold">{{dataModel.Number}}</span>
+                    </div>
+                </div>
+                <div class="flex gap-x-2">
+                    <button tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" [disabled]="isProcessing" 
+                        (click)="onSavePrint('print')">Xác nhận và in (F9)</button>
+                    <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" [disabled]="isProcessing" 
+                        (click)="onSavePrint('printship')">Xác nhận và in ship</button>
+                    <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" [disabled]="isProcessing" 
+                        (click)="onSavePrint('confirm')">Xác nhận và xem (F8)</button>
+
+                    <button  tds-button color="primary" *ngIf="dataModel.State == 'open'" type="button" [disabled]="isProcessing"
+                        (click)="showModalRegisterPayment()">
+                        <span class="flex items-center">
+                            <i class="tdsi-revenue-fill text-lg leading-none mr-2"></i>Thanh toán
+                        </span>
+                    </button>
+                    <button tds-button type="button" color="primary" [disabled]="isProcessing" 
+                        *ngIf="dataModel.State !== 'cancel' && dataModel.State !== 'draft' && dataModel.Carrier != null && !dataModel.TrackingRef"
+                        (click)="sendToShipper()">
+                        <span class="flex items-center">
+                            <i class="tdsi-transport-fill text-lg leading-none mr-2"></i>Gửi vận đơn
+                        </span>
+                    </button>
+                    <button type="button"  tds-button color="primary" [disabled]="isProcessing" 
+                        (click)="actionRefund()"
+                        *ngIf="!(dataModel.Type  =='refund' || ['open', 'paid'].indexOf(dataModel.State) === -1)">
+                        <span class="flex items-center">
+                            <i class="tdsi-reply-fill text-lg leading-none mr-2"></i>Tạo trả hàng
+                        </span>
+                    </button>
+                    <button tds-button color="info" [disabled]="isProcessing">
+                        <span class="flex items-center">
+                            <i class="tdsi-copy-fill text-lg leading-none mr-2"></i>Sao chép
+                        </span>
+                    </button>
+
+                    <button type="button" tds-button color="info" [disabled]="isProcessing" 
+                        (click)="onCreate()">
+                        <span class="flex items-center">
+                            <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
+                        </span>
+                    </button>
+                    <button type="button" tds-button color="error" [disabled]="isProcessing" *ngIf="dataModel.State =='open' || dataModel.State === 'paid'"
+                        (click)="actionCancel()">
+                        <span class="flex items-center"> Hủy hóa đơn </span>
+                    </button>
+                    <button type="button"  tds-button color="secondary" [disabled]="isProcessing" 
+                        (click)="onEdit()" 
+                        *ngIf="dataModel.State !='cancel'">
+                        <span class="flex items-center">
+                            <i class="tdsi-edit-fill text-lg leading-none mr-2"></i>Chỉnh sửa
+                        </span>
+                    </button>
+                    <button tds-button color="secondary" class="mr-4" [disabled]="isProcessing" 
+                        (click)="onBack()">
+                        Quay lại
+                    </button>
+                </div>
+            </div>
+            <div  class="flex justify-end items-center py-4" *ngIf="dataModel.State !== 'cancel'">
+                <tds-button-split class="mr-2" (clickButton)="onClickButton($event)" color="secondary">
+                    <span class="flex items-center js-label font-semibold">
+                        <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In phiếu</span>
+                    <div class="js-content flex flex-col ">
+                        <button tds-button-menu-item class="text-left p-3" (click)="print('bill80')">Bill 80</button>
+                        <button tds-button-menu-item class="text-left p-3" (click)="print('bill58')">Bill 58</button>
+                        <button tds-button-menu-item class="text-left p-3" (click)="print('A4')">In A4</button>
+                        <button tds-button-menu-item class="text-left p-3" (click)="print('A5')">In A5</button>
+                    </div>
+                </tds-button-split>
+                <button tds-button color="secondary" class="mr-2" *ngIf="dataModel.Type === 'invoice'" (click)="print('delivery')">
+                    <span class="flex items-center">
+                        <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In giao hàng
+                    </span>
+                </button>
+                <button tds-button color="secondary" class="mr-2" *ngIf="dataModel.Type === 'invoice' && dataModel.Carrier" (click)="print('ship')">
+                    <span class="flex items-center">
+                        <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In phiếu ship
+                    </span>
+                </button>
+                <tds-steps [current]="indexStep" [status]="isStatusStep">
+                    <tds-step tdsTitle="Nháp"></tds-step>
+                    <tds-step [tdsTitle]="dataModel.State == 'cancel' ? 'Đã hủy' : 'Xác nhận'"></tds-step>
+                    <tds-step tdsTitle="Đã thanh toán"></tds-step>
+                </tds-steps>
+            </div>
+        </div>
+        <div class="flex gap-x-4 p-4 tds-custom-scroll">
+            <div class="w-2/3 flex flex-col gap-y-4">
+                <!-- Thông tin đơn hàng -->
+                <div class="rounded-xl bg-white p-4 flex flex-col">
+                    <div class="mb-7">
+                        <h1 class="text-header-1 font-semibold flex items-center">
+                            <i class="tdsi-paper-fill mr-2 text-neutral-1-500"></i>Đơn hàng: {{dataModel.Number}}
+                        </h1>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-4 gap-x-8">
+                        <div class="flex gap-x-6 items-center">
+                            <div class="flex w-fit">
+                                <tds-avatar [size]="84" [tdsSrc]="dataModel.Partner.ImageUrl"></tds-avatar>
+                            </div>
+                            <div class="flex flex-auto flex-col gap-y-2">
+                                <div class="flex items-center">
+                                    <span class="text-header-2 font-semibold mr-2">{{dataModel.Partner?.DisplayName || dataModel.PartnerNameNoSign}}</span>
+                                    <tds-tag status='primary' rounded="rounded-full">{{dataModel.Partner?.StatusText}}</tds-tag>
+                                </div>
+                                <span class="text-neutral-1-600">
+                                    <i class="tdsi-call-fill mr-2"></i> {{dataModel.Ship_Receiver?.Phone}}
+                                </span>
+                                <span class="text-neutral-1-600">
+                                    <i class="tdsi-pin-fill mr-2"></i> {{dataModel.Ship_Receiver?.Street}}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="flex w-fit">
+                                <tds-avatar [size]="84" tdsSrc="assets/images/status_bill.png"></tds-avatar>
+                            </div>
+                            <div class="flex flex-auto flex-col gap-y-2">
+                                <div class="flex items-center">
+                                    <span class="text-neutral-1-600 mr-2">Trạng thái ĐH</span>
+                                    <span class="text-header-2  font-semibold"> {{dataModel.ShowState}}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="font-semibold ml-2"> {{dataModel.CarrierName}} </span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="rounded-full bg-neutral-3-100 px-2">
+                                        <span class="text-neutral-1-700 font-semibold">{{dataModel.ShowShipStatus}}</span>
+                                    </div>
+                                    <span class="text-info-500 font-semibold ml-2">{{dataModel.TrackingRef}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Nợ cũ</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.PreviousBalance || 0 | number :'1.0-3'}} đ</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Tiền thu hộ</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.CashOnDelivery || 0 | number :'1.0-3'}} đ</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Bảng giá</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.PriceList?.Name}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Phí giao hàng</span>
+                            </div>
+                            <div class="w-2/3 flex gap-x-6">
+                                <span class="font-semibold">{{dataModel.DeliveryPrice || 0 | number :'1.0-3'}} đ</span>
+                                <div class="rounded-full bg-info-200 px-2 " *ngIf="dataModel.ShipWeight">
+                                    <span class="text-info-500 font-semibold flex items-center">
+                                        <svg class="mr-1" width="17" height="16" viewBox="0 0 17 16" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                                d="M14.3158 12.4617C14.3501 12.7851 14.3844 13.1085 14.4209 13.4316C14.4312 13.5257 14.4503 13.619 14.4695 13.7131C14.4801 13.765 14.4908 13.8171 14.5 13.8696V14.3446C14.4147 14.4592 14.2988 14.549 14.1649 14.6044C14.0311 14.6598 13.8842 14.6787 13.7401 14.659H3.27072C3.12867 14.6601 2.98726 14.6404 2.85122 14.6006C2.53986 14.5043 2.45375 14.2629 2.52183 13.8735C2.57842 13.5526 2.61465 13.2281 2.65086 12.9037C2.66077 12.8149 2.67069 12.7261 2.68102 12.6373C2.70345 12.4453 2.72375 12.2519 2.74399 12.059C2.7653 11.8559 2.78655 11.6534 2.81018 11.4537C2.8359 11.2359 2.86366 11.0184 2.89141 10.801C2.91873 10.587 2.94603 10.373 2.97137 10.1591C2.9933 9.97366 3.01296 9.78825 3.03262 9.60285C3.05424 9.3989 3.07587 9.19495 3.10052 8.991C3.12474 8.78211 3.15293 8.57373 3.18114 8.3652C3.20775 8.16854 3.23438 7.97175 3.2577 7.77427C3.28102 7.57689 3.30056 7.37882 3.32011 7.18073C3.34085 6.97049 3.3616 6.76021 3.38686 6.55072C3.41609 6.31164 3.45026 6.07319 3.4845 5.8343C3.52414 5.5577 3.56387 5.28051 3.5961 5.00108C3.59161 4.95837 3.59161 4.91531 3.5961 4.8726C3.61988 4.7137 3.70759 4.5705 3.83996 4.47448C3.97233 4.37846 4.13851 4.3375 4.30194 4.36059H5.95089C5.9579 3.95858 5.9579 3.55073 5.95089 3.3872C5.93714 3.08927 6.00531 2.79315 6.14837 2.52933C6.29144 2.26552 6.50423 2.04354 6.76485 1.88624C7.20755 1.57533 7.72907 1.38766 8.27329 1.34341C8.81751 1.29916 9.36384 1.40001 9.85351 1.63511C10.1538 1.75804 10.4213 1.94601 10.6356 2.18471C10.8499 2.4234 11.0053 2.70651 11.09 3.01245V4.36449H12.78C12.9335 4.35335 13.0858 4.39931 13.2058 4.49309C13.3259 4.58687 13.4048 4.72147 13.4267 4.86968L13.4269 4.87285C13.4379 5.0402 13.4489 5.2085 13.4698 5.37584C13.5163 5.75303 13.5646 6.13022 13.613 6.5074C13.6613 6.88459 13.7096 7.26178 13.7561 7.63897C13.8251 8.19434 13.8895 8.74703 13.9547 9.30559L13.9634 9.38036C13.9841 9.55627 14.005 9.73219 14.0259 9.9081C14.0886 10.4359 14.1513 10.9638 14.2107 11.4916C14.2472 11.8148 14.2815 12.1382 14.3158 12.4617ZM8.81799 2.4152C8.61201 2.37268 8.39876 2.37654 8.19454 2.42647C7.93096 2.4635 7.69043 2.59304 7.51835 2.79065C7.34626 2.98827 7.25452 3.24028 7.26044 3.49914V4.36643H9.78342V3.39305C9.78046 3.25052 9.74258 3.11074 9.67294 2.9853C9.60329 2.85986 9.50388 2.75237 9.38295 2.67176C9.21722 2.54547 9.02397 2.45772 8.81799 2.4152ZM11.8237 8.28542C11.8301 8.23659 11.8333 8.17846 11.8333 8.11103C11.8333 7.99477 11.8269 7.90758 11.8141 7.84945C11.8013 7.78899 11.7799 7.74249 11.7499 7.70993C11.7221 7.67738 11.6719 7.63902 11.5991 7.59484C11.5264 7.55066 11.4344 7.50997 11.3232 7.47276C11.2141 7.43324 11.0858 7.40068 10.9382 7.37511C10.7907 7.3472 10.627 7.33325 10.4474 7.33325C10.1201 7.33325 9.82285 7.38789 9.5555 7.49718C9.29029 7.60646 9.06358 7.76458 8.87536 7.97152C8.68715 8.17614 8.54171 8.42609 8.43904 8.72139C8.33638 9.01437 8.28505 9.34571 8.28505 9.71542C8.28505 10.0735 8.33317 10.3944 8.42942 10.678C8.52567 10.9594 8.66469 11.1989 8.84649 11.3965C9.02829 11.5918 9.24965 11.7418 9.51059 11.8465C9.77366 11.9488 10.071 11.9999 10.4025 11.9999C10.5158 11.9999 10.6281 11.9941 10.7393 11.9825C10.8527 11.9709 10.9639 11.9534 11.073 11.9302C11.1842 11.9069 11.2911 11.879 11.3938 11.8465C11.4965 11.8139 11.582 11.7825 11.6505 11.7523C11.721 11.7221 11.767 11.6814 11.7884 11.6302C11.8119 11.5767 11.8237 11.5151 11.8237 11.4454V9.64915C11.8237 9.60264 11.8184 9.56195 11.8077 9.52707C11.797 9.48987 11.7809 9.45848 11.7595 9.4329C11.7403 9.40733 11.7168 9.38872 11.689 9.3771C11.6633 9.36315 11.6334 9.35617 11.5991 9.35617H10.1971C10.1779 9.35617 10.1608 9.36315 10.1458 9.3771C10.1308 9.38872 10.118 9.40849 10.1073 9.43639C10.0966 9.46197 10.0881 9.49685 10.0816 9.54103C10.0774 9.5852 10.0752 9.63985 10.0752 9.70495C10.0752 9.83051 10.0859 9.92003 10.1073 9.97351C10.1287 10.0247 10.1586 10.0502 10.1971 10.0502H10.9832V11.0966C10.904 11.1431 10.8185 11.178 10.7265 11.2012C10.6345 11.2245 10.5415 11.2361 10.4474 11.2361C10.2549 11.2361 10.0784 11.2024 9.91803 11.1349C9.75976 11.0675 9.62394 10.9675 9.51059 10.835C9.39723 10.7025 9.30847 10.5385 9.24431 10.3432C9.18228 10.1456 9.15127 9.91771 9.15127 9.65961C9.15127 9.42477 9.18228 9.21085 9.24431 9.01786C9.30633 8.82254 9.39509 8.65629 9.51059 8.5191C9.62608 8.37959 9.7651 8.27263 9.92765 8.19822C10.0902 8.12149 10.272 8.08313 10.4731 8.08313C10.6613 8.08313 10.826 8.10405 10.9671 8.14591C11.1104 8.18776 11.2334 8.2331 11.3361 8.28193C11.4387 8.33076 11.5211 8.3761 11.5831 8.41796C11.6451 8.45981 11.69 8.48074 11.7178 8.48074C11.7371 8.48074 11.7531 8.47492 11.766 8.4633C11.7809 8.45167 11.7927 8.43191 11.8013 8.404C11.8119 8.37378 11.8194 8.33425 11.8237 8.28542ZM8.17918 11.8569C8.19201 11.836 8.19843 11.8127 8.19843 11.7872C8.19843 11.7686 8.19308 11.7441 8.18239 11.7139C8.17383 11.6814 8.14603 11.6174 8.09897 11.5221L6.85739 9.48173L7.99631 7.85991C8.04978 7.76923 8.08614 7.70296 8.10539 7.6611C8.12464 7.61925 8.13426 7.57856 8.13426 7.53903C8.13426 7.51578 8.12785 7.49485 8.11501 7.47625C8.10218 7.45765 8.07865 7.44254 8.04443 7.43091C8.01235 7.41696 7.96851 7.4065 7.9129 7.39952C7.85729 7.39254 7.78671 7.38906 7.70115 7.38906C7.61774 7.38906 7.5493 7.39138 7.49583 7.39603C7.44236 7.40068 7.39851 7.40882 7.36429 7.42045C7.33007 7.43207 7.30227 7.44835 7.28088 7.46928C7.25949 7.48788 7.24131 7.51229 7.22634 7.54252L6.01043 9.46081V7.53903C6.01043 7.51345 6.00401 7.49137 5.99118 7.47276C5.97834 7.45416 5.95589 7.43905 5.9238 7.42742C5.89172 7.4158 5.84895 7.4065 5.79548 7.39952C5.74201 7.39254 5.67356 7.38906 5.59015 7.38906C5.50888 7.38906 5.44043 7.39254 5.38482 7.39952C5.33135 7.4065 5.28858 7.4158 5.2565 7.42742C5.22441 7.43905 5.20089 7.45416 5.18592 7.47276C5.17308 7.49137 5.16667 7.51345 5.16667 7.53903V11.7907C5.16667 11.8162 5.17308 11.8383 5.18592 11.8569C5.20089 11.8755 5.22441 11.8918 5.2565 11.9057C5.28858 11.9174 5.33135 11.9267 5.38482 11.9337C5.44043 11.9406 5.50888 11.9441 5.59015 11.9441C5.67356 11.9441 5.74201 11.9406 5.79548 11.9337C5.84895 11.9267 5.89172 11.9174 5.9238 11.9057C5.95589 11.8918 5.97834 11.8755 5.99118 11.8569C6.00401 11.8383 6.01043 11.8162 6.01043 11.7907V9.64915L7.26484 11.7907C7.27981 11.8232 7.30013 11.8511 7.32579 11.8744C7.3536 11.8976 7.39744 11.915 7.45733 11.9267C7.51936 11.9383 7.61988 11.9441 7.7589 11.9441C7.84659 11.9441 7.91931 11.9406 7.97706 11.9337C8.03481 11.9267 8.07972 11.9174 8.11181 11.9057C8.14603 11.8918 8.16848 11.8755 8.17918 11.8569Z"
+                                                fill="#2395FF" />
+                                        </svg>
+                                        {{dataModel.ShipWeight}}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Số tiền trả</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.PaymentAmount || 0 | number :'1.0-3'}} đ</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Kho hàng</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.Warehouse?.Name}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Phương thức TT</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.PaymentJournal?.Name}} ({{dataModel.PaymentJournal?.Type}})</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Người giao hàng</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.Deliver}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Kênh</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.Team?.Facebook_UserName}} - {{dataModel.Team?.Facebook_PageName}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Tham chiếu</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.Reference}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Danh sách sản phẩm -->
+                <div class="rounded-xl bg-white flex flex-col">
+                    <div class="p-4">
+                        <h1 class="text-header-1 font-semibold flex items-center">
+                            <i class="tdsi-group-product-fill mr-2 text-neutral-1-500"></i>Danh sách sản phẩm
+                        </h1>
+                    </div>
+                    <div class="w-full">
+                        <tds-table #tableProduct [listData]="dataModel.OrderLines" [showPagination]="false">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Sản phẩm</th>
+                                    <th>Đơn vị tính</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Giảm giá</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-template ngFor let-data let-i="index" [ngForOf]="tableProduct.data">
+                                    <tr>
+                                        <td>{{ i +1 }}</td>
+                                        <td>
+                                            {{ data.Product.NameGet }}
+                                            <p class="text-[13px] italic text-[#0184FF]" *ngIf="data.User && data.User.Name">Nhân viên: {{data.User.Name}}</p>
+                                        </td>
+                                        <td>{{ data.ProductUOMName }}</td>
+                                        <td>{{ data.ProductUOMQty }}</td>
+                                        <td>{{ data.PriceUnit | number: '1.0-3' }} đ</td>
+                                        <td>{{ data.Discount}} %</td>
+                                        <td>{{ data.PriceTotal | number: '1.0-3' }} đ</td>
+                                    </tr>
+                                </ng-template>
+                            </tbody>
+                        </tds-table>
+                    </div>
+                    <div class="w-full flex justify-end pb-4 pr-4 border-b border-neutral-2-100">
+                        <div class="w-1/2 text-right flex flex-col">
+                            <div class="flex mb-5">
+                                <span class="w-1/2"> Tổng số lượng</span>
+                                <span class="w-1/2 font-semibold">{{productUOMQtyTotal || 0 | number: '1.0-3'}} </span>
+                            </div>
+                            <div class="flex mb-5" *ngIf="dataModel && (dataModel.Discount > 0 || dataModel.DecreaseAmount > 0 || dataModel.AmountTax > 0)">
+                                <span class="w-1/2"> Tổng trước thuế</span>
+                                <span class="w-1/2 font-semibold"> {{productPriceTotal || 0 | number: '1.0-3'}} đ</span>
+                            </div>
+                            <div class="flex mb-5" *ngIf="dataModel.DiscountAmount > 0">
+                                <span class="w-1/2"> Chiết khấu ({{dataModel.Discount || 0}}%)</span>
+                                <span class="w-1/2 font-semibold"> {{dataModel.DiscountAmount || 0 | number: '1.0-3'}} đ</span>
+                            </div>
+                            <div class="flex mb-5" *ngIf="dataModel.DecreaseAmount > 0">
+                                <span class="w-1/2"> Giảm giá</span>
+                                <span class="w-1/2 font-semibold"> {{dataModel.DecreaseAmount || 0 | number: '1.0-3'}} đ</span>
+                            </div>
+                            <div class="flex mb-5" *ngIf="dataModel.AmountTax > 0">
+                                <span class="w-1/2"> Thuế ({{dataModel.Tax?.Amount}}%)</span>
+                                <span class="w-1/2 font-semibold"> {{dataModel.AmountTax || 0 | number: '1.0-3'}} đ</span>
+                            </div>
+                            <div class="flex mb-5 border-b border-neutral-2-100">
+                                <span class="w-1/2 font-semibold">Tổng tiền</span>
+                                <span class="w-1/2 text-header-1 font-semibold">{{dataModel.AmountTotal || 0 | number: '1.0-3'}} đ</span>
+                            </div>
+                            <div class="flex mb-5" *ngFor="let payment of payments; let i = index">
+                                <span class="w-1/2 flex items-center  justify-end" >
+                                    <span class="tdsi-information-fill mr-2 text-info-500 text-xl leading-5" type="button"
+                                        tds-button tds-popover popoverTrigger="click" popoverTitle="Thông tin thanh toán"
+                                        [(popoverVisible)]="popoverVisible" [popoverContent]="infoPricePay">
+                                    </span>
+                                    Trả lúc {{payment.Date | date: "dd-MM-yyyy"}}</span>
+                                <span class="w-1/2 font-semibold"> {{payment.Amount || 0 | number : '1.0-3'}} {{payment.Currency}}</span>
+
+                                <ng-template #infoPricePay>
+                                    <div class="w-w-full text-left flex flex-col">
+                                        <div class="flex mb-3">
+                                            <span class="w-1/3 text-body-2"> Tên</span>
+                                            <span class="w-2/3 text-body-2"> {{payment.Name}}</span>
+                                        </div>
+                                        <div class="flex mb-3">
+                                            <span class="w-1/3 text-body-2"> Ngày</span>
+                                            <span class="w-2/3 text-body-2"> {{payment.Date | date:"dd-MM-yyyy"}}</span>
+                                        </div>
+                                        <div class="flex mb-3">
+                                            <span class="w-1/3 text-body-2"> Phương thức</span>
+                                            <span class="w-2/3 text-body-2"> {{payment.JournalName}}</span>
+                                        </div>
+                                        <div class="flex mb-3">
+                                            <span class="w-1/3 text-body-2">Tham chiếu</span>
+                                            <span class="w-2/3 text-body-2 text-[#0184FF]">{{payment.Ref}}</span>
+                                        </div>
+                                        <div class="flex mb-3">
+                                            <span class="w-1/3 text-body-2">Số tiền</span>
+                                            <span class="w-2/3 text-body-2">{{payment.Amount || 0 | number : '1.0-3'}} đ</span>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </div>
+                            <div class="flex" >
+                                <span class="w-1/2">Còn nợ</span>
+                                <span class="w-1/2 text-header-1 text-error-400 font-semibold">{{dataModel.Residual || 0 | number: '1.0-3'}} đ</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Thông tin khác -->
+                <div class="rounded-xl bg-white p-4 flex flex-col">
+                    <div class="mb-7">
+                        <h1 class="text-header-1 font-semibold flex items-center">
+                            <i class="tdsi-information-fill mr-2 text-neutral-1-500"></i>Thông tin khác
+                        </h1>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-4 gap-x-8">
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Người bán</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.User?.Name}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Seri</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.Seri}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Ngày hóa đơn</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.DateInvoice | date:"dd-MM-yyyy HH:mm"}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Trạng thái</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{getShowState(dataModel.State)}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Ngày hóa đơn đỏ</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.DateOrderRed | date:"dd-MM-yyyy HH:mm"}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Ghi chú đơn hàng</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.Comment}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Số hóa đơn đỏ</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.NumberOrder}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-1/3 flex flex-col gap-y-4">
+                <!-- Giao hàng -->
+                <div class="rounded-xl bg-white p-4 flex flex-col">
+                    <div class="mb-7">
+                        <h1 class="text-header-1 font-semibold flex items-center">
+                            <i class="tdsi-transport-fill mr-2 text-neutral-1-500"></i>Giao hàng
+                        </h1>
+                    </div>
+                    <div class="grid grid-cols-1 gap-y-4 gap-x-8">
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Đối tác giao hàng</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.Carrier?.Name}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Giao hàng thu tiền</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.CashOnDelivery || 0 | number :'1.0-3'}} đ</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Đối soát GH</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.ShowShipStatus}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Phí giao hàng</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.DeliveryPrice || 0 | number :'1.0-3'}} đ</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Khối lượng ship (g)</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.ShipWeight}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Tiền cọc</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.AmountDeposit || 0 | number :'1.0-3'}} đ</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Mã vận đơn</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold text-info-500">{{dataModel.TrackingRef}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Trạng thái vận đơn</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.ShipPaymentStatus}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 ">
+                            <div class="w-1/3">
+                                <span>Ghi chú giao hàng</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span >{{dataModel.DeliveryNote}}</span>
+                            </div>
+                        </div>
+                        <!-- Thông tin nâng cao -->
+                        <div class="w-full">
+                            <tds-collapse accordion="true">
+                                <tds-collapse-panel header="Thông tin nâng cao" [active]="false" [disabled]=false
+                                    [expandedIcon]="'tdsi-arrow-up-line'">
+                                    <div class=" flex flex-col gap-y-4">
+                                        <div class="flex gap-x-6 items-center">
+                                            <div class="w-1/3">
+                                                <span>Người nhận</span>
+                                            </div>
+                                            <div class="w-2/3">
+                                                <span class="font-semibold">{{dataModel.Ship_Receiver?.Name}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-x-6 items-center">
+                                            <div class="w-1/3">
+                                                <span>Điện thoại</span>
+                                            </div>
+                                            <div class="w-2/3">
+                                                <span class="font-semibold">{{dataModel.Ship_Receiver?.Phone}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-x-6 items-center">
+                                            <div class="w-1/3">
+                                                <span>Địa chỉ</span>
+                                            </div>
+                                            <div class="w-2/3">
+                                                <span class="font-semibold">{{dataModel.Ship_Receiver?.Street}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </tds-collapse-panel>
+                            </tds-collapse>
+                        </div>
+                    </div>
+                </div>
+                <div class="rounded-xl bg-white p-4 flex flex-col">
+                    <div class="mb-7">
+                        <h1 class="text-header-1 font-semibold flex items-center">
+                            <i class="tdsi-hand-product-line mr-2 text-neutral-1-500"></i>Thông tin người nhận
+                        </h1>
+                    </div>
+                    <div class="grid grid-cols-1 gap-y-4 gap-x-8">
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Tên người nhận</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.ReceiverName}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Điện thoại</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.ReceiverPhone}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Ngày giao</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.ReceiverDate | date:"dd-MM-yyyy"}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Địa chỉ giao hàng</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.ReceiverAddress}}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-x-6 items-center">
+                            <div class="w-1/3">
+                                <span>Ghi chú</span>
+                            </div>
+                            <div class="w-2/3">
+                                <span class="font-semibold">{{dataModel.ReceiverNote}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</tds-spin>

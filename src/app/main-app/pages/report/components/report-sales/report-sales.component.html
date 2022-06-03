@@ -1,0 +1,183 @@
+<div *ngIf="!emptyData" class="flex flex-row items-baseline w-full mb-4">
+    <div class="bg-white rounded-md flex flex-row w-full py-4 px-5 mr-4">
+        <div class="flex flex-col w-3/4">
+            <div class="w-full flex flex-row items-center pb-2">
+                <span class="flex items-center justify-center bg-success-200 rounded-md w-8 h-8">
+                    <i class="tdsi-paper-fill text-success-400"></i>
+                </span>
+                <span class="text-success-400 text-title-1 font-semibold pl-3">{{pageData[0].name}}</span>
+            </div>
+            <div class="flex flex-row items-end">
+                <span class="text-neutral-1-800 text-heading-2 font-semibold">{{pageData[0].value|number}}</span>
+                <span class="text-neutral-1-800 text-header-2 font-semibold pl-2 pb-1">VND</span>
+            </div>
+        </div>
+        <div class="w-1/4 flex items-center justify-end">
+            <svg width="48" height="29" viewBox="0 0 48 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect y="26.5" width="3" height="2" fill="#28A745"/>
+                <rect x="25" y="24.5" width="3" height="4" fill="#28A745"/>
+                <rect x="30" y="12.5" width="3" height="16" fill="#28A745"/>
+                <rect x="35" y="13.5" width="3" height="15" fill="#28A745"/>
+                <rect x="40" y="17.5" width="3" height="11" fill="#28A745"/>
+                <rect x="45" y="20.5" width="3" height="8" fill="#28A745"/>
+                <rect x="5" y="21.5" width="3" height="7" fill="#28A745"/>
+                <rect x="10" y="23.5" width="3" height="5" fill="#28A745"/>
+                <rect x="15" y="7.5" width="3" height="21" fill="#28A745"/>
+                <rect x="20" y="0.5" width="3" height="28" fill="#28A745"/>
+            </svg>
+        </div>
+    </div>
+    <div class="bg-white rounded-md flex flex-row w-full py-4 px-5 mr-4">
+        <div class="flex flex-col w-3/4">
+            <div class="w-full flex flex-row items-center pb-2">
+                <span class="flex items-center justify-center bg-info-200 rounded-md w-8 h-8">
+                    <i class="tdsi-message-fill text-info-400"></i>
+                </span>
+                <span class="text-info-400 text-title-1 font-semibold pl-3">{{pageData[1].name}}</span>
+            </div>
+            <span class="text-neutral-1-800 text-heading-2 font-semibold">{{pageData[2].value}}</span>
+        </div>
+        <div class="w-1/4 flex items-center justify-end">
+            <svg width="48" height="29" viewBox="0 0 48 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect y="26.5" width="3" height="2" fill="#2395FF"/>
+                <rect x="25" y="24.5" width="3" height="4" fill="#2395FF"/>
+                <rect x="30" y="12.5" width="3" height="16" fill="#2395FF"/>
+                <rect x="35" y="13.5" width="3" height="15" fill="#2395FF"/>
+                <rect x="40" y="17.5" width="3" height="11" fill="#2395FF"/>
+                <rect x="45" y="20.5" width="3" height="8" fill="#2395FF"/>
+                <rect x="5" y="21.5" width="3" height="7" fill="#2395FF"/>
+                <rect x="10" y="23.5" width="3" height="5" fill="#2395FF"/>
+                <rect x="15" y="7.5" width="3" height="21" fill="#2395FF"/>
+                <rect x="20" y="0.5" width="3" height="28" fill="#2395FF"/>
+            </svg>
+        </div>
+    </div>
+    <div class="bg-white rounded-md flex flex-row w-full py-4 px-5 mr-4">
+        <div class="flex flex-col w-3/4">
+            <div class="w-full flex flex-row items-center pb-2">
+                <span class="flex items-center justify-center bg-error-200 rounded-md w-8 h-8">
+                    <i class="tdsi-like-fill text-error-400"></i>
+                </span>
+                <span class="text-error-400 text-title-1 font-semibold pl-3">{{pageData[2].name}}</span>
+            </div>
+            <span class="text-neutral-1-800 text-heading-2 font-semibold">{{pageData[2].value}}</span>
+        </div>
+        <div class="w-1/4 flex items-center justify-end">
+            <svg width="48" height="29" viewBox="0 0 48 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect y="26.5" width="3" height="2" fill="#EB3B5B"/>
+                <rect x="25" y="24.5" width="3" height="4" fill="#EB3B5B"/>
+                <rect x="30" y="12.5" width="3" height="16" fill="#EB3B5B"/>
+                <rect x="35" y="13.5" width="3" height="15" fill="#EB3B5B"/>
+                <rect x="40" y="17.5" width="3" height="11" fill="#EB3B5B"/>
+                <rect x="45" y="20.5" width="3" height="8" fill="#EB3B5B"/>
+                <rect x="5" y="21.5" width="3" height="7" fill="#EB3B5B"/>
+                <rect x="10" y="23.5" width="3" height="5" fill="#EB3B5B"/>
+                <rect x="15" y="7.5" width="3" height="21" fill="#EB3B5B"/>
+                <rect x="20" y="0.5" width="3" height="28" fill="#EB3B5B"/>
+            </svg>
+        </div>
+    </div>
+    <div class="bg-white rounded-md flex flex-row w-full py-4 px-5">
+        <div class="flex flex-col w-3/4">
+            <div class="w-full flex flex-row items-center pb-2">
+                <span class="flex items-center justify-center bg-warning-200 rounded-md w-8 h-8">
+                    <i class="tdsi-quotation-fill text-warning-400"></i>
+                </span>
+                <span class="text-warning-400 text-title-1 font-semibold pl-3">{{pageData[3].name}}</span>
+            </div>
+            <span class="text-neutral-1-800 text-heading-2 font-semibold">{{pageData[3].value}}</span>
+        </div>
+        <div class="w-1/4 flex items-center justify-end">
+            <svg width="48" height="29" viewBox="0 0 48 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect y="26.5" width="3" height="2" fill="#FFC107"/>
+                <rect x="25" y="24.5" width="3" height="4" fill="#FFC107"/>
+                <rect x="30" y="12.5" width="3" height="16" fill="#FFC107"/>
+                <rect x="35" y="13.5" width="3" height="15" fill="#FFC107"/>
+                <rect x="40" y="17.5" width="3" height="11" fill="#FFC107"/>
+                <rect x="45" y="20.5" width="3" height="8" fill="#FFC107"/>
+                <rect x="5" y="21.5" width="3" height="7" fill="#FFC107"/>
+                <rect x="10" y="23.5" width="3" height="5" fill="#FFC107"/>
+                <rect x="15" y="7.5" width="3" height="21" fill="#FFC107"/>
+                <rect x="20" y="0.5" width="3" height="28" fill="#FFC107"/>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white w-full mb-4 rounded-md">
+    <div class="border-b flex flex-row align-center justify-between p-4">
+        <div class="flex flex-row items-center w-full">
+            <tds-avatar class="bg-primary-1 text-white mr-2.5" icon="tdsi-cart-fill"></tds-avatar>
+            <span class="text-neutral-1-900 text-header-1 font-semibold">DOANH THU BÁN HÀNG</span>
+        </div>
+        <div class="flex flex-row items-center">
+            <div class="flex flex-row items-center w-[300px] mr-2.5">
+                <tds-avatar tdsSrc="assets/images/Avatar-user.png"></tds-avatar>
+                <tds-select valueField="name" textField="name" [ngModel]="selectedItem"
+                [placeholder]="selectedItem" [data]="selectList" [border]="false" class="truncate ... w-[250px] tds-report-filter"
+                (ngModelChange)="onChangeSelect($event)" size="md" classIcon="tdsi-arrow-down-fill">
+                </tds-select>
+            </div>
+            <tds-range-picker [(ngModel)]="rangeDate" (ngModelChange)="onChangeDate($event)" class="w-[266px]"></tds-range-picker>
+        </div>
+    </div>
+    <div *ngIf="!emptyData; else emptyTmp">
+        <div class="flex flex-col w-full px-4 py-9">
+            <div class="flex flex-row items-center justify-center w-full">
+                <div echarts [options]="option" [size]="['auto',400]" class="w-full"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white w-full rounded-md">
+    <tds-table #basicTable [listData]="tableData" [showPagination]="false" class="tds-report-table" [noResult]="emptyTable">
+        <thead class="text-neutral-1-900 text-body-2 font-semibold font-sans">
+              <tr>
+                    <th>Thời gian</th>
+                    <th>Đơn hàng</th>
+                    <th>Khách hàng mới</th>
+                    <th>Khách hàng cũ</th>
+                    <th>Số đơn chốt</th>
+                    <th>Doanh thu</th>
+                    <th>Tỉ lệ đơn chốt/ KH mới</th>
+                    <th>Tỉ lệ đơn chốt/ KH cũ</th>
+              </tr>
+        </thead>
+        <tbody class="text-neutral-1-900 text-body-2 font-regular font-sans">
+            <ng-template ngFor let-data [ngForOf]="basicTable.data" >
+                <tr>
+                    <td>{{ data.reportDate }}</td>
+                    <td>{{ data.orders|number }}</td>
+                    <td>{{ data.newCustomers|number }}</td>
+                    <td>{{ data.oldCustomers|number }}</td>
+                    <td>{{ data.completeOrders|number }}</td>
+                    <td>{{ data.revenue|number }}</td>
+                    <td>
+                        <span class="text-primary-1">{{ (data.completeOrders/data.newCustomers)|percent}}</span>
+                        <br>
+                        <span class="text-neutral-1-400">{{data.completeOrders|number}}/{{data.newCustomers|number}}</span>
+                    </td>
+                    <td>
+                        <span class="text-primary-1">{{ (data.completeOrders/data.oldCustomers)|percent}}</span>
+                        <br>
+                        <span class="text-neutral-1-400">{{data.completeOrders|number}}/{{data.oldCustomers|number}}</span>
+                    </td>
+                </tr>
+            </ng-template>
+        </tbody>
+    </tds-table>
+</div>
+
+<!-- empty -->
+<ng-template #emptyTmp>
+    <div class="h-[434px]">
+        <app-report-empty-data></app-report-empty-data>
+    </div>
+</ng-template>
+
+<ng-template #emptyTable>
+    <div class="h-[344px]">
+        <app-report-empty-data></app-report-empty-data>
+    </div>
+</ng-template>

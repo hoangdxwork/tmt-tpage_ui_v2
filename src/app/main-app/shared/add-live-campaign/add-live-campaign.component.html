@@ -1,0 +1,225 @@
+<tds-spin [spinning]="isLoading">
+  <form [formGroup]="formCreateLiveCampaign">
+    <tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
+      <tds-tab title="Thông tin" clsContent="p-4 border-t border-neutral-2-200">
+        <div class="w-full h-full grid grid-cols-2 gap-y-4 gap-x-8">
+          <div class="grid grid-cols-1 gap-y-4 grid grid-cols-1">
+
+            <div class="flex items-center gap-x-2">
+              <tds-label class="w-1/3">Tên chiến dịch</tds-label>
+              <tds-form-field class="w-2/3">
+                <input tdsInput placeholder="Nhập tên chiến dịch" [required]='true' formControlName="Name" />
+                <tds-error>
+                    Vui lòng nhập tên chiến dịch
+                </tds-error>
+              </tds-form-field>
+            </div>
+
+            <div class="flex items-center gap-x-2">
+              <tds-label class="w-1/3">Chốt đơn xác nhận</tds-label>
+              <tds-form-field class="w-2/3">
+                <tds-select valueField="value" textField="text"
+                    placeholder='Trạng thái chốt đơn' [valuePrimitive]="false" formControlName="Config"
+                    disabledField="isActive" [data]="lstConfig" [allowClear]="true">
+                </tds-select>
+              </tds-form-field>
+            </div>
+
+            <div class="flex items-center gap-x-2">
+              <tds-label class="w-1/3">Nhân viên chốt đơn</tds-label>
+              <tds-form-field class="w-2/3">
+                <tds-select valueField="Id" textField="Name"
+                    placeholder='Chọn nhân viên chốt đơn' [valuePrimitive]="false" mode="multiple" formControlName="Users"
+                    disabledField="isActive" [data]="(lstUser$ | async) || []" [allowClear]="true">
+                </tds-select>
+              </tds-form-field>
+            </div>
+
+            <div class="flex items-center gap-x-2">
+              <tds-label class="w-1/3">Ghi chú</tds-label>
+              <tds-form-field class="w-2/3">
+                <input tdsInput placeholder="Nhập ghi chú" formControlName="Note" />
+              </tds-form-field>
+            </div>
+
+            <div class="flex items-center gap-x-2">
+              <tds-label class="w-1/3">Mẫu tin chốt đơn</tds-label>
+              <tds-form-field class="w-2/3">
+                <tds-select valueField="Id" textField="Name"
+                    placeholder='Chọn mẫu tin' [valuePrimitive]="false" formControlName="ConfirmedOrder_Template"
+                    disabledField="isActive" [data]="(lstQuickReplies$ | async) || []" [allowClear]="true">
+                </tds-select>
+              </tds-form-field>
+            </div>
+
+            <div class="flex items-center gap-x-2">
+              <tds-label class="w-1/3">Mẫu tin dự bị</tds-label>
+              <tds-form-field class="w-2/3">
+                <tds-select valueField="Id" textField="Name"
+                    placeholder='Chọn mẫu tin' [valuePrimitive]="false" formControlName="Preliminary_Template"
+                    disabledField="isActive" [data]="(lstQuickReplies$ | async) || []" [allowClear]="true">
+                </tds-select>
+              </tds-form-field>
+            </div>
+
+          </div>
+          <div class="grid grid-cols-1 gap-y-4">
+
+            <div class="flex items-center gap-x-2">
+              <tds-label class="w-1/3">Thời gian tổng hợp (phút)</tds-label>
+              <tds-form-field class="w-2/3" class="w-full">
+                  <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="ResumeTime"
+                  ></tds-input-number>
+                  <!-- <tds-error>
+                      Vui lòng nhập số tiền tối thiểu
+                  </tds-error> -->
+              </tds-form-field>
+            </div>
+
+            <div class="flex items-center gap-x-2">
+              <tds-label class="w-1/3">Thời gian kết thúc tổng hợp (phút)</tds-label>
+              <tds-form-field class="w-2/3" class="w-full">
+                  <tds-date-picker showTime placeholder="Chọn ngày kết thúc" formControlName="EndDate">
+                  </tds-date-picker>
+              </tds-form-field>
+            </div>
+
+            <div class="flex items-center gap-x-2">
+              <tds-label class="w-1/3">Số tiền cọc bắt buộc</tds-label>
+              <tds-form-field class="w-2/3" class="w-full">
+                  <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MaxAmountDepositRequired"
+                  ></tds-input-number>
+                  <!-- <tds-error>
+                      Vui lòng nhập số tiền tối thiểu
+                  </tds-error> -->
+              </tds-form-field>
+            </div>
+
+            <div class="flex items-center gap-x-2">
+              <tds-label class="w-1/3">Số tiền tối thiểu đặt cọc</tds-label>
+              <tds-form-field class="w-2/3" class="w-full">
+                  <tds-input-number [min]="0" class="text-neutral-1-900 text-body-2 font-regular" formControlName="MinAmountDeposit"
+                  ></tds-input-number>
+                  <!-- <tds-error>
+                      Vui lòng nhập số tiền tối thiểu
+                  </tds-error> -->
+              </tds-form-field>
+            </div>
+
+            <div class="flex items-center gap-x-2">
+              <tds-label class="w-1/3">Bật số lượng</tds-label>
+              <tds-checkbox formControlName="EnableQuantityHandling"></tds-checkbox>
+            </div>
+
+          </div>
+        </div>
+      </tds-tab>
+      <tds-tab title="Sản phẩm" clsContent="p-4 border-t border-neutral-2-200">
+        <div class="w-full h-full flex flex-col gap-y-2">
+
+          <div class="w-full">
+            <div class="w-1/2 flex gap-x-2">
+              <tds-form-field class="w-full">
+                <input tdsInput placeholder="Tìm kiếm tên sản phẩm" autocomplete="off"/>
+                <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+              </tds-form-field>
+              <button tds-button color="primary" size="md">
+                <span class="flex items-center">
+                  <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div class="w-full mt-4 rounded-md" >
+            <div class="w-full h-full">
+              <tds-table class="tds-table-rounded" #detailTable [bordered]="true" [listData]="detailsFormGroups.value" [showPagination]="false" [scroll]="{y:'240px'}">
+                <thead class="rounded">
+                    <tr>
+                        <th width="6%">STT</th>
+                        <th width="37%">Sản phẩm</th>
+                        <th width="15%">Số lượng</th>
+                        <th width="15%">Giới hạn trên đơn</th>
+                        <th width="15%">Giá bán</th>
+                        <th width="13%" class="text-center">
+                          <button tds-button-icon color="secondary" size="sm" (click)="removeAllDetail()">
+                            <span class="flex items-center">
+                              <i class="tdsi-trash-fill"></i>
+                            </span>
+                          </button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody formArrayName="Details">
+                      <tr *ngFor="let detail of detailsFormGroups.controls; let index = index" [formGroupName]="index">
+
+                          <td> {{ index + 1 }} </td>
+
+                          <!-- Sản phẩm -->
+                          <td>
+                            <div class="flex gap-x-2 items-center">
+                              <tds-avatar size="xl" [shape]="'square'" class="bg-accent-4 text-white h-[60px] w-[60px]" tdsSrc="{{ detail?.value?.ImageUrl }}">
+                              </tds-avatar>
+                              <div class="flex flex-col gap-y-1">
+                                <span class="font-semibold text-sm">
+                                  {{detail?.value.ProductNameGet || detail?.value.ProductName}}
+                                  <span *ngIf="detail?.value?.UOMName">({{detail?.value?.UOMName}})</span>
+                                </span>
+                                <span class="text-info-500 font-normal text-sm">+Thêm cú pháp chốt đơn</span>
+                              </div>
+                            </div>
+                          </td>
+
+                          <!-- Số lượng -->
+                          <td>
+                            <tds-form-field>
+                              <tds-input-number [min]="0" [step]="1" formControlName="Quantity">
+                              </tds-input-number>
+                            </tds-form-field>
+                          </td>
+
+                          <!-- Giới hạn trên đơn -->
+                          <td>
+                            <tds-form-field>
+                              <tds-input-number [min]="0" [step]="1" formControlName="LimitedQuantity">
+                              </tds-input-number>
+                            </tds-form-field>
+                          </td>
+
+                          <!-- Giá bán -->
+                          <td>
+                            <tds-form-field>
+                              <tds-input-number [min]="0" [step]="1000" formControlName="Price">
+                              </tds-input-number>
+                            </tds-form-field>
+                          </td>
+
+                          <!-- Thao tác -->
+                          <td class="text-center">
+                            <button tds-button-icon color="secondary" size="sm" (click)="removeDetail(index, detail.value)">
+                              <span class="flex items-center">
+                                <i class="tdsi-trash-fill"></i>
+                              </span>
+                            </button>
+                          </td>
+                      </tr>
+              </tbody>
+              </tds-table>
+            </div>
+          </div>
+
+        </div>
+      </tds-tab>
+    </tds-tabset>
+
+    <div class="w-full flex justify-end p-4 gap-x-2" *tdsModalFooter>
+      <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Đóng</button>
+      <button tds-button class="w-[100px]" type="submit" color="primary" [disabled]="!formCreateLiveCampaign?.valid" (click)="onSave()">Lưu</button>
+    </div>
+
+  </form>
+</tds-spin>
+
+
+
+

@@ -1,1 +1,28 @@
-<p>report works!</p>
+<div class="w-full h-full flex flex-col overflow-hidden">
+    <div class="p-4 w-full bg-white">
+      <div class="w-full flex flex-row items-center justify-between">
+        <h1 class="flex cursor-pointer items-center group whitespace-pre-wrap font-semibold">
+          <span class="text-neutral-1-900 text-header-1 font-semibold font-sans"> Thống kê </span>
+        </h1>
+        <div class="flex flex-row">
+            <button tds-button color="primary" class="mr-2">
+                <span class="flex items-center">
+                  <i class="tdsi-excel-fill text-lg leading-none mr-2"></i>Xuất Excel
+                </span>
+              </button>
+              <button tds-button color="secondary">
+                <span class="flex items-center">
+                  <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In thống kê
+                </span>
+              </button>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-row w-full h-full pl-4 pt-4 overflow-hidden">
+      <tpage-menu-layout [menuData]="reportMenuData"></tpage-menu-layout>
+      <div class="w-full font-sans overflow-auto tds-custom-scroll h-full px-4">
+          <router-outlet></router-outlet>
+      </div>
+    </div>
+</div>
+

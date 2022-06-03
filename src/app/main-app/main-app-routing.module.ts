@@ -24,7 +24,8 @@ const routes: Routes = [
       {
         path: "conversation",
         data: {
-          breadcrumb: 'Conversation'
+          breadcrumb: 'Conversation',
+          collapse: true
         },
         loadChildren: () => import('./pages/conversations/conversations.module').then(m => m.ConversationsModule)
       },
@@ -38,9 +39,15 @@ const routes: Routes = [
       {
         path: "live-campaign",
         data: {
+<<<<<<< HEAD
           breadcrumb: 'Live Campaign'
         },
         loadChildren: () => import('./pages/live-campaign/live-campaign.module').then(m => m.LiveCampaignModule)
+=======
+          breadcrumb: 'LiveCampaign'
+        },
+        loadChildren: () => import('./pages/livecampaign/livecampaign.module').then(m => m.LiveCampaignModule)
+>>>>>>> dev
       },
       {
         path: "bill",
@@ -48,6 +55,13 @@ const routes: Routes = [
           breadcrumb: 'Order'
         },
         loadChildren: () => import('./pages/bill/bill.module').then(m => m.BillModule)
+      },
+      {
+        path: "chatbot",
+        data: {
+          breadcrumb: 'Chatbot'
+        },
+        loadChildren: () => import('./pages/chatbot/chatbot.module').then(m => m.ChatbotModule)
       },
       {
         path: "configs",
@@ -76,6 +90,17 @@ const routes: Routes = [
           breadcrumb: 'Partner'
         },
         loadChildren: () => import('./pages/facebook/facebook.module').then(m => m.FacebookModule)
+      },
+      {
+        path: "user",
+        data: {
+          breadcrumb: 'User'
+        },
+        loadChildren: () => import('./pages/user/user.module').then(m => m.UserModule)
+      },
+      {
+        path:  "*",
+        redirectTo: '/dashboard',
       },
     ]
 
