@@ -1,3 +1,4 @@
+import { ShowItemImageComponent } from './../show-item-image/show-item-image.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CRMTagService } from './../../services/crm-tag.service';
 import { QuickReplyService } from './../../services/quick-reply.service';
@@ -25,7 +26,8 @@ const CMP =[
   TDSConversationsComponent,
   TDSConversationItemComponent,
   IconEmojiMartComponent,
-  ShowAttachmentComponent
+  ShowAttachmentComponent,
+  ShowItemImageComponent,
 ]
 
 @NgModule({
