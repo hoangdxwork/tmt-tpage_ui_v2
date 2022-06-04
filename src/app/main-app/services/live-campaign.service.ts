@@ -70,6 +70,15 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<SaleOnline_LiveCampaignDTO>(api, data);
   }
 
+  update(data: SaleOnline_LiveCampaignDTO, isUpdate: boolean): Observable<SaleOnline_LiveCampaignDTO> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${data.Id})?isUpdate=${isUpdate}`,
+      method: TApiMethodType.put,
+    }
+
+    return this.apiService.getData<SaleOnline_LiveCampaignDTO>(api, data);
+  }
+
   updateLiveCampaignPost(id: string | undefined, data: UpdateFacebookLiveCampaignDTO): Observable<boolean> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})/ODataService.UpdateFacebook`,

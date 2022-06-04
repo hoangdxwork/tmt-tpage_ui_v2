@@ -1,3 +1,4 @@
+import { TDSSafeAny } from 'tmt-tang-ui';
 import { ApplicationUserDTO } from "../account/application-user.dto";
 import { MailTemplateDTO } from "../mailtemplate/mail-template.dto";
 import { SaleOnlineFacebookPostDTO, SaleOnline_Order_DetailDTO } from "../saleonlineorder/sale-online-order.dto";
@@ -60,7 +61,7 @@ export interface SaleOnlineLiveCampaignDetailDTO {
   ProductNameGet: string;
   UOMId?: number;
   UOMName: string;
-  Tags: string;
+  Tags: TDSSafeAny; // string
   LimitedQuantity: number;
   ProductCode: string;
   ImageUrl: string;
