@@ -1,6 +1,6 @@
 <tds-spin [spinning]="isLoading">
-  <div *ngIf="data && data?.Items">
-    <div *ngIf="currentFilter.value === 'all'">
+  <div *ngIf="data && data?.Items" class="flex flex-auto overflow-hidden">
+    <div *ngIf="currentFilter.value === 'all'" class="h-full w-full">
       <post-comment-all></post-comment-all>
     </div>
     <div *ngIf="currentFilter.value === 'group'">

@@ -1,16 +1,16 @@
-<div class="flex flex-col relative pr-1 py-1" *ngIf="data">
+<div class="flex flex-col relative pr-1 py-1 h-full w-full" *ngIf="data">
   <!-- Tổng quan bài viết-->
-  <div class="post-view bg-white">
+  <div class="post-view bg-white h-auto w-full mb-1">
     <div class="flex flex-row justify-between p-2 border-b-3 border-neutral-3-200">
       <div class="flex items-center">
         <tds-avatar
-          [tdsSrc]="translateType(data.type, data.status_type) === 'Video' ? 'assets/images/conversation/live-circle.svg' : 'assets/images/conversation/facebook-circle.svg'"
+          [tdsSrc]="data.status_type === 'added_video' ? 'assets/images/conversation/live-circle.svg' : 'assets/images/conversation/facebook-circle.svg'"
           [size]="36"
           [shape]="'circle'"
           [isAvatar]="false"
           class="mr-1">
         </tds-avatar>
-        <tds-tag [status]="translateType(data.type, data.status_type) === 'Video' ? 'error' : 'info'" type="outline" rounded="rounded-full">
+        <tds-tag [status]="data.status_type === 'added_video' ? 'error' : 'info'" type="outline" rounded="rounded-full">
           <span class="flex flex-row items-center py-0.5">
             <div class="font-semibold mr-3">
               <span>{{translateType(data.type, data.status_type)}}</span>
@@ -104,53 +104,38 @@
               <span class="share-count  mr-3">
                 {{data.count_shares || 0}} lượt chia sẻ
               </span>
-              <button tds-button-flat-icon (click)="openChat()">
-                <div [ngClass]="isCollapse?'bg-primary-3 text-primary-1 border border-primary-1':''">
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer"
+                [ngClass]="showComment?'bg-primary-3 text-primary-1 border border-primary-1':'border border-transparent'" 
+                (click)="openChat()">
+                <div class="flex items-center justify-center">
                   <i class="tdsi-livechat-line text-xl"></i>
                 </div>
-                
-              </button>
-              <button tds-button-flat-icon>
+              </div>
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer">
                 <i class="tdsi-user-line text-xl"></i>
-              </button>
-              <button tds-button-flat-icon>
+              </div>
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer">
                 <a href="{{data.permalink_url}}" target="_blank">
                     <i class="tdsi-eye-line text-xl"></i>
                 </a>
-              </button>
-              <button tds-button-flat-icon>
+              </div>
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer">
                 <i class="tdsi-search-fill text-xl"></i>
-              </button>
-              <button tds-button-flat-icon>
+              </div>
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer">
                 <i class="tdsi-chart-pie-fill text-xl"></i>
-              </button>
-              <button tds-button-flat-icon>
+              </div>
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer">
                 <i class="tdsi-sort-arrow-down-fill text-xl"></i>
-              </button>
+              </div>
           </div>
       </div>
     </div>
-    <!-- <div class="w-full">
-      <div class="flex" style="justify-content: space-between;">
-        <div class="content">
-          <p *ngIf="data.story">{{data.story}}</p>
-          <p *ngIf="data.message">{{data.message}} </p>
-          <p *ngIf="!data.message && !data.story">(Chưa có nội dung tiêu đề)</p>
-        </div>
-        <div *ngIf="data.picture" class="picture">
-          <img tds-image [tdsSrc]="data.picture" />
-        </div>
-      </div>
-      <div class="flex">
-        <span>Like: {{data.count_reactions || 0}}</span>
-        <span class="ml-2"> Bình luận: {{data.count_comments || 0}}</span>
-      </div>
-    </div> -->
   </div>
   <!-- Danh sách bình luận -->
-  <div class="row-row">
+  <div *ngIf="showComment" class="flex w-full flex-auto overflow-hidden">
       <item-post-comment [post]="data"
-        [sort]="currentSort" [filter]="currentFilter">
+        [sort]="currentSort" [filter]="currentFilter" class="h-full w-full">
       </item-post-comment>
   </div>
 </div>

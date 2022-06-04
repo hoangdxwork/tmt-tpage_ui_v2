@@ -1,93 +1,177 @@
-<div *ngIf="data && data?.Items" class="p-2" style="max-height: 750px;overflow: auto">
-  <div *ngFor="let item of data.Items; let i= index" class="mb-3 mt-3">
-    <div *ngIf="item" class="flex">
+<div *ngIf="data && data?.Items" class="h-full w-full overflow-auto tds-custom-scroll p-2">
+  <div *ngFor="let item of data.Items; let i= index" class="flex flex-auto w-full mb-3">
+    <div *ngIf="item" class="flex flex-auto w-full">
       <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="item.from.id" [token]="team?.Facebook_PageToken">
       </tpage-avatar-facebook>
-      <div class="ml-2 w-full">
-        <div class="bg-white p-2">
-          <div class="flex" style="justify-content: space-between">
+      <div class="ml-2 w-full h-full">
+        <div class="bg-white rounded-2xl px-4 py-3">
+          <div class="flex items-center justify-between pb-2">
             <label class="font-semibold">{{item.from?.name}} </label>
-            <p>{{item.created_time | date:'dd/MM/yyyy HH:mm aa'}}</p>
+            <span class="text-neutral-1-400 text-right text-caption-1">{{item.created_time | date:'dd/MM/yyyy HH:mm aa'}}</span>
           </div>
-          <div [innerHTML]="item.message | safeHtml"></div>
+          <div *ngIf="(partners$ | async)?.data[item.from.id] || commentOrders[item.from.id]?.length > 0 || currentId === item.id" 
+            class="w-full flex flex-row items-center justify-between pb-2">
+            <!-- trạng thái khách hàng & mã đơn hàng -->
+            <div class="flex items-center gap-1.5">
+              <!-- trạng thái khách hàng -->
+              <div *ngIf="(partners$ | async)?.data[item.from.id] as partner" class="button-status flex items-center gap-1.5 mr-4">
+                <span *ngIf="partner.p" tds-tooltip tooltipTitle="Chọn làm số điện thoại"
+                  class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer">
+                  <i class="tdsi-call-fill text-xs text-white"></i>
+                </span>
+                <span *ngIf="partner.a" tds-tooltip tooltipTitle="Chọn làm địa chỉ"
+                  class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer">
+                  <i class="tdsi-pin-fill text-xs text-white"></i>
+                </span>
+                <tds-tag *ngIf="partner.st" [ngStyle]="{ 'color' : partner.ss }" type="outline">
+                  {{partner.st || 'Bình thường'}}
+                </tds-tag>
+              </div>
+              <!-- mã đơn hàng -->
+              <div *ngIf="commentOrders" class="flex flex-row items-center">
+                <div *ngFor="let order of commentOrders[item.from.id]" 
+                  class="text-info-500 font-semibold flex flex-row items-center gap-2">
+                  <div class="flex flex-row cursor-pointer hover:underline" (click)="editOrder(order.id, item)">
+                    <span *ngIf="!order.code.includes('#')">#</span>{{order.code}}
+                  </div>
+                </div>
+                <button *ngIf="currentId === item.id" tds-button-outline-icon color="primary" rounded="!rounded-full" class="ml-2" 
+                  tooltipTitle="Thêm vào ghi chú" tooltipPlacement="top" tds-tooltip>
+                  <i class="tdsi-plus-circle-line"></i>
+                </button>
+              </div>
+            </div>
+            <div *ngIf="(partners$ | async)?.data[item.from.id] as partner" class="tag-status w-1/2">
+              <div *ngIf="partner.t" class="w-full flex flex-wrap items-center justify-end">
+                <a class="tdsi-radio-circle-fill" 
+                    *ngFor="let tag of partner.t" 
+                    [ngStyle]="{ 'color' : [tag.color_class] }" 
+                    [title]="tag.name">
+                </a>
+              </div>
+            </div>
+          </div>
+          <!-- nội dung bình luận -->
+          <div class="flex flex-row">
+            <p tds-typography ellipsis expandable [ellipsisRows]="3" [innerHTML]="item.message | safeHtml"></p>
+          </div>
+          <!-- hình ảnh đính kèm -->
           <div *ngIf="item.attachment">
             <img tds-image *ngIf="item.attachment?.type != 'sticker'" [tdsSrc]="item.attachment?.media?.image?.src"
-              style="max-width: 200px;" />
+              class="max-w-[200px]" />
             <img tds-image *ngIf="item.attachment?.type == 'sticker'" [tdsSrc]="item.attachment?.media?.image?.src"
-              style="max-width: 100px;" />
+              class="max-w-[100px]" />
           </div>
-          <div class="flex">
-            <div *ngIf="commentOrders">
-              <a class="text-info-500 font-semibold" (click)="editOrder(order.id, item)"
-                *ngFor="let order of commentOrders[item.from.id];index as i">
-                {{order.code}}
-              </a>
-            </div>
-            <a class="ml-2">Thêm ghi chú</a>
-          </div>
-          <div class="flex">
-            <button tds-button color="primary" class="mr-2" (click)="onCreateOrder(item)"> Tạo đơn hàng </button>
-            <button tds-button color="warning" class="mr-2" (click)="onInformation(item)">Thông tin</button>
-            <button tds-button color="error" (click)="isReply(item)">Trả lời</button>
-          </div>
-          <div>
-            <div class="flex" *ngIf="(partners$ | async)?.data[item.from.id] as partner">
-              <div class="key-tags" *ngIf="partner && partner.t">
-                <a class="tdsi-radio-circle-fill" *ngFor="let tag of partner.t"
-                  [ngStyle]="{'color': [tag.color_class] }" title="{{tag.name}}"></a>
-              </div>
-              <span *ngIf="partner.st" [ngStyle]="{'color': partner.ss}">
-                {{partner.st}}
+          <!-- thao tác -->
+          <div class="flex items-center pt-3">
+            <button tds-button color="primary" class="mr-2"
+              (click)="onCreateOrder(item)">
+              Tạo đơn hàng
+            </button>
+            <button tds-button-icon color="secondary" class="mr-2" tooltipTitle="Thông tin khách hàng" tooltipPlacement="top" tds-tooltip
+              (click)="onInformation(item)">
+              <span class="flex items-center justify-center">
+                <i class="tdsi-information-fill"></i>
               </span>
-              <span *ngIf="partner.p">phone</span>
-              <span *ngIf="partner.a">street</span>
-            </div>
+            </button>
+            <button tds-button-icon color="secondary" class="mr-2" tooltipTitle="Phản hồi bình luận" tooltipPlacement="top" tds-tooltip
+              (click)="isReply(item)">
+              <span class="flex items-center justify-center">
+                <i class="tdsi-reply-fill"></i>
+              </span>
+            </button>
+            <button tds-button-icon color="secondary" class="mr-2" tooltipTitle="Gửi tin nhắn" tooltipPlacement="top" tds-tooltip>
+              <span class="flex items-center justify-center">
+                <i class="tdsi-messenger-fill"></i>
+              </span>
+            </button>
+            <button tds-button-icon color="secondary" class="mr-2" tooltipTitle="Hiển thị bài viết" tooltipPlacement="top" tds-tooltip>
+              <span class="flex items-center justify-center">
+                <i class="tdsi-eye-close-fill"></i>
+              </span>
+            </button>
           </div>
         </div>
         <!-- Input trả lời bình luận -->
-        <div class="bg-white" *ngIf="item.is_reply">
-          <textarea tdsInput placeholder="Nhập nội dung tin nhắn, nhấn [Enter] để gửi" [(ngModel)]="messageModel"
-            [ngModelOptions]="{standalone: true}" (keydown.enter)="onEnter(item, $event)" class="resize-none" rows="3">
-              </textarea>
+        <div class="bg-white rounded-2xl border-b-2 border-primary-1 p-4 mt-3" *ngIf="item.is_reply">
+          <div class="flex justify-between gap-2 pb-2">
+            <textarea tdsInput placeholder="Nhập nội dung tin nhắn, nhấn [Enter] để gửi" [(ngModel)]="messageModel"
+              [ngModelOptions]="{standalone: true}" (keydown.enter)="onEnter(item, $event)" class="resize-none" rows="3"></textarea>
+            <button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'" (click)="messageSendingToServer(item)">
+              <span class="flex items-center px-5">
+                <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
+              </span>
+            </button>
+          </div>
           <!-- Check Private Reply -->
-          <div class="flex">
-            <input type="checkbox" [checked]="item.isPrivateReply" (change)="isPrivateReply(item)"
-              id="id_replycomment{{i}}">
-            <label class="ml-2" for="id_replycomment{{i}}">Gửi về tin nhắn</label>
+          <div class="quick-message gap-5">
+            <div class="check gap-5 flex justify-between">
+              <tds-checkbox [checked]="item.isPrivateReply" (change)="isPrivateReply(item)">
+                Gửi về tin nhắn
+              </tds-checkbox>
+              <div class="icon-send flex flex-row mr-2">
+                <span class="cursor-pointer mr-2" *ngIf="item.isPrivateReply"
+                  (onProductSelected)="onProductSelected($event)" title="Sản phẩm"
+                  product-show-button>
+                  <i class="tdsi-product-line text-xl"></i>
+                </span>
+
+                <span class="cursor-pointer mr-2" container="body" placement="auto" 
+                  tds-popover popoverTrigger="click" [popoverContent]="infoEmojiMart" [popoverAutoClose]="true"
+                  [popoverBackdrop]="true" popoverPlacement="top">
+                  <i class="tdsi-emotion-line text-xl"></i>
+                  <ng-template #infoEmojiMart>
+                    <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
+                  </ng-template>
+                </span>
+  
+                <span class="cursor-pointer" (onQuickReplySelected)="onQuickReplySelected($event)"
+                  title="Tin nhắn nhanh" placement="left" quick-reply-button>
+                  <i class="tdsi-message-template-line text-xl"></i>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
         <!-- Trả lời bình luận -->
         <div *ngIf="childs[item.id]">
-          <div *ngFor="let child of childs[item.id]" class="mt-2 mb-2">
+          <div *ngFor="let child of childs[item.id]" class="mt-3">
             <div *ngIf="child" class="flex">
               <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="child.from?.id"
                 [token]="team?.Facebook_PageToken">
               </tpage-avatar-facebook>
-              <div class="list bg-white ml-2 p-2 w-full">
-                <div class="flex" style="justify-content: space-between">
-                  <label class="font-semibold">{{child.from?.name}} </label>
-                  <p>{{child.created_time | date:'dd/MM/yyyy HH:mm aa'}}</p>
+              <div class="list bg-white rounded-2xl ml-2 p-4 w-full">
+                <div class="flex justify-between">
+                  <div class="flex flex-row items-center">
+                    <label class="font-semibold">{{child.from?.name}}</label>
+                    <div *ngIf="commentOrders">
+                      <a class="text-info-500 font-semibold" (click)="editOrder(order.id, child)"
+                        *ngFor="let order of commentOrders[child.from.id]">
+                        {{order.code}}
+                      </a>
+                    </div>
+                  </div>
+                  <span class="text-neutral-1-400 text-right text-caption-1">{{child.created_time | date:'dd/MM/yyyy HH:mm aa'}}</span>
                 </div>
-                <p>{{child.message}} </p>
+                <!-- nội dung tin nhắn -->
+                <div tds-typography ellipsis expandable [ellipsisRows]="3">{{child.message}}</div>
                 <div *ngIf="child.attachment">
                   <img tds-image *ngIf="child.attachment?.type != 'sticker'"
-                    [tdsSrc]="child.attachment?.media?.image?.src" style="max-width: 200px;" />
+                    [tdsSrc]="child.attachment?.media?.image?.src" style="max-width: 200px;"/>
                   <img tds-image *ngIf="child.attachment?.type == 'sticker'"
-                    [tdsSrc]="child.attachment?.media?.image?.src" style="max-width: 100px;" />
+                    [tdsSrc]="child.attachment?.media?.image?.src" style="max-width: 100px;"/>
                 </div>
-                <div class="flex">
-                  <div *ngIf="commentOrders">
-                    <a class="text-info-500 font-semibold" (click)="editOrder(order.id, child)"
-                      *ngFor="let order of commentOrders[child.from.id];index as i">
-                      {{order.code}}
-                    </a>
-                  </div>
-                  <a class="ml-2">Thêm ghi chú</a>
-                </div>
-                <div class="flex">
-                  <button tds-button color="primary" *ngIf="item.from?.id != team?.Facebook_PageId" class="mr-2">
-                    Tạo đơn hàng </button>
-                  <button tds-button color="warning" class="mr-2">Thông tin</button>
+                <button *ngIf="currentId === child.id" tds-button-outline-icon color="primary" rounded="!rounded-full" class="ml-2" 
+                  tooltipTitle="Thêm vào ghi chú" tooltipPlacement="top" tds-tooltip>
+                  <i class="tdsi-plus-circle-line"></i>
+                </button>
+                <div class="flex pt-4">
+                  <button tds-button-icon color="secondary" class="mr-2" tooltipTitle="Thông tin" tooltipPlacement="top" tds-tooltip
+                    (click)="onInformation(child)">
+                    <span class="flex items-center justify-center">
+                      <i class="tdsi-information-fill"></i>
+                    </span>
+                  </button>
                 </div>
               </div>
             </div>

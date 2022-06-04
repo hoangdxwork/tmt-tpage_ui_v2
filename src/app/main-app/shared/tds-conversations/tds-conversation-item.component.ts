@@ -2,7 +2,7 @@ import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from "@ang
 import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ActivityStatus } from "src/app/lib/enum/message/coversation-message";
-import { TDSHelperString, TDSMessageService } from "tmt-tang-ui";
+import { TDSHelperString, TDSMessageService, TDSSafeAny } from "tmt-tang-ui";
 import { MakeActivityItemWebHook } from "../../dto/conversation/make-activity.dto";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
 import { ActivityMatchingService } from "../../services/conversation/activity-matching.service";
@@ -12,6 +12,8 @@ import { ConversationOrderFacade } from "../../services/facades/conversation-ord
 import { PhoneHelper } from "../helper/phone.helper";
 import { ReplaceHelper } from "../helper/replace.helper";
 import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
+import { SignalRConnectionService } from "../../services/signalR/signalR-connection.service";
+import { SharedService } from "../../services/shared.service";
 
 @Component({
   selector: "tds-conversation-item",
@@ -39,12 +41,18 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   isLiking: boolean = false;
   isHiding: boolean = false;
   isReplyingComment: boolean = false;
+  gallery: TDSSafeAny[] = [];
+  listAtts: TDSSafeAny[] = []; 
+  isShowItemImage: boolean = false;
+  imageClick!: number;
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
   @ViewChild('contentMessage') contentMessage: any;
 
   constructor(private element: ElementRef,
+    private sharedService: SharedService,
     private tdsMessage: TDSMessageService,
+    private sgRConnectionService: SignalRConnectionService,
     private activityDataFacade: ActivityDataFacade,
     private conversationDataFacade: ConversationDataFacade,
     private conversationOrderFacade: ConversationOrderFacade,
@@ -87,17 +95,17 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
       if (!phone) {
         return this.tdsMessage.error("Không tìm thấy số điện thoại");
       }
-      this.tdsMessage.info("Chờn làm số điện thoại thành công");
+      this.tdsMessage.info("Chọn làm số điện thoại thành công");
       data.phone = phone;
     } else if (type == 'address') {
       data.address = value;
       if (value) {
-        this.tdsMessage.info("Chờn làm  địa chỉ thành công");
+        this.tdsMessage.info("Chọn làm  địa chỉ thành công");
       }
     } else if (type == 'note') {
       data.note = value;
       if (value) {
-        this.tdsMessage.info("Chờn làm ghi chú thành công");
+        this.tdsMessage.info("Chọn làm ghi chú thành công");
       }
     }
 
@@ -139,7 +147,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
       this.tdsMessage.success('Thao tác thành công!');
       this.data.comment.user_likes = !this.data.comment.user_likes;
     }, error => {
-      this.tdsMessage.error(error.error? error.error.message : 'ĝã xảy ra lỗi');
+      this.tdsMessage.error(error.error? error.error.message : 'đã xảy ra lỗi');
     });
   }
 
@@ -161,7 +169,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
         this.tdsMessage.success('Thao tác thành công!');
         this.data.comment.is_hidden = !this.data.comment.is_hidden;
     }, error => {
-      this.tdsMessage.error(error.error? error.error.message :'ĝã xảy ra lỗi');
+      this.tdsMessage.error(error.error? error.error.message :'đã xảy ra lỗi');
     });
   }
 
@@ -243,7 +251,36 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     this.message = text;
   }
 
-  open_gallery(send_picture: any, att: any) {
+  open_gallery(att: any) {
+    this.isShowItemImage = true;
+    this.activityDataFacade.getActivity(this.team.Facebook_PageId, this.psid, this.type).subscribe((res: any) => {
+      // this.messages = res.items;
+      this.gallery = res.items.filter((x: TDSSafeAny) => x.message && x.message.attachments != null);
+      let result:TDSSafeAny[]= [];
+
+      this.gallery.map((obj: any) => {
+        obj.message.attachments.data.map((data: any) => {
+
+          if(data.mime_type != 'audio/mpeg') {
+            result.push({
+              date_time: obj.DateCreated,
+              id: obj.from_id,
+              url: data.image_data ? data.image_data.url : data.video_data.url,
+              type: data.mime_type ? data.mime_type : null
+            });
+          }
+
+        })
+      });
+
+      this.listAtts = result;
+    });
+    if(att.image_data && att.image_data.url) this.imageClick = this.listAtts.findIndex(x => x.url == att.image_data.url);
+    if(att.video_data && att.video_data.url) this.imageClick = this.listAtts.findIndex(x => x.url == att.video_data.url);
+  }
+
+  onCloseShowItemImage(ev: boolean){
+    this.isShowItemImage = ev;
   }
 
   onEnter(ev: any){
@@ -263,39 +300,51 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     if(this.isReplyingComment){
       return;
     }
+
     this.isReplyingComment = true
-    if(this.isPrivateReply){
+    if(this.isPrivateReply) {
+
       this.isReply = false;
       const model = this.prepareModel(message);
+
       this.activityMatchingService.addQuickReplyComment(model)
         .pipe(takeUntil(this.destroy$))
         .pipe(finalize(() => { this.isReplyingComment = false }))
         .subscribe((res: any) => {
+
         this.tdsMessage.success('Gửi tin thành công');
         res.forEach((item: any) => {
           item["status"] = this.enumActivityStatus.sending;
           this.activityDataFacade.messageServer({ ...item });
           this.messageModel = null;
         });
+
         this.conversationDataFacade.messageServer(res.pop());
+
       }, error => {
         this.tdsMessage.error(`${error?.error?.message}` || "Gửi tin nhắn thất bại.");
       });
-    }else{
+
+    } else {
+
       this.isReply = false;
       const model = this.prepareModel(message);
+
       model.post_id = this.data?.comment?.object?.id || null;
       model.parent_id = this.data?.comment?.id || null;
       model.to_id = this.data.from_id || this.data?.comment?.from?.id || null;
       model.to_name = this.data?.comment?.from?.name || null;
+
       this.activityMatchingService.replyComment(this.team?.Id, model)
         .pipe(takeUntil(this.destroy$))
         .pipe(finalize(() => { this.isReplyingComment = false }))
         .subscribe((res: any) => {
+
           this.tdsMessage.success("Trả lời bình luận thành công.");
           this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });
           this.conversationDataFacade.messageServer({ ...res });
           this.messageModel = null;
+
         }, error => {
           this.tdsMessage.error(`${error?.error?.message}` || "Trả lời bình luận thất bại.");
         });

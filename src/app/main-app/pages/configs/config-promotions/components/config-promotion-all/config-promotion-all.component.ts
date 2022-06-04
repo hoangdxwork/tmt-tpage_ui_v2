@@ -41,6 +41,10 @@ export class ConfigPromotionAllComponent implements OnInit {
     private cacheApi: THelperCacheService,
   ) { }
 
+  get getRewardTypeFormGroup() {
+    return this.form.value.RewardType;
+  }
+
   ngOnInit(): void {
     this.loadCompany();
     this.loadProduct();
@@ -110,6 +114,10 @@ export class ConfigPromotionAllComponent implements OnInit {
     }
 
     return result;
+  }
+
+  onChangeRewardType(value: string) {
+    this.form.controls.RewardType.setValue(value);
   }
 
 }

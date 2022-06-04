@@ -17,8 +17,8 @@
                     <span class="text-body-2 font-semibold">Lưu</span>
                 </button>
             </div>
-            <div class="flex flex-col p-4">
-                <div class="flex flex-row items-center justify-start w-full pb-6">
+            <div class="flex flex-col bg-neutral-3-100 gap-y-1">
+                <div class="flex flex-row items-center justify-start w-full pb-6 bg-white p-4">
                     <div class="flex flex-col w-full">
                         <div class="flex flex-row items-baseline w-full">
                             <span class="text-neutral-1-900 text-body-2 font-semibold w-1/6">
@@ -44,13 +44,13 @@
                         </div>
                     </div>
                 </div>
-                <div *ngIf="formEditPromotion.value.RuleBasedOn === 'all' " class="w-full border border-neutral-2-100 rounded-md">
+                <div *ngIf="formEditPromotion.value.RuleBasedOn === 'all' " class="w-full border border-neutral-2-100 bg-white p-4">
                     <app-config-promotion-all [form]="formEditPromotion"></app-config-promotion-all>
                 </div>
-                <div *ngIf="formEditPromotion.value.RuleBasedOn === 'product_category' " class="w-full border border-neutral-2-100 rounded-md">
+                <div *ngIf="formEditPromotion.value.RuleBasedOn === 'product_category' " class="w-full border border-neutral-2-100 bg-white p-4">
                     <app-config-promotion-group [form]="formEditPromotion"></app-config-promotion-group>
                 </div>
-                <div *ngIf="formEditPromotion.value.RuleBasedOn === 'combo' " class="w-full border border-neutral-2-100 rounded-md">
+                <div *ngIf="formEditPromotion.value.RuleBasedOn === 'combo' " class="w-full border border-neutral-2-100">
                     <app-config-promotion-combo [form]="formEditPromotion"></app-config-promotion-combo>
                 </div>
             </div>

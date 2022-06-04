@@ -2,7 +2,7 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TDSAvatarModule, TDSBadgeModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSOutletModule, TDSScrollIntoViewModule, TDSSelectModule, TDSSpinnerModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTypographyModule, TDSUploadModule, TDSImageModule, TDSToolTipModule, TDSDatePickerModule } from 'tmt-tang-ui';
+import { TDSAvatarModule, TDSBadgeModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSOutletModule, TDSScrollIntoViewModule, TDSSelectModule, TDSSpinnerModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTypographyModule, TDSUploadModule, TDSImageModule, TDSToolTipModule, TDSDatePickerModule, TDSPopoverModule } from 'tmt-tang-ui';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TpageTeamDropdownComponent } from './tpage-team-dropdown/tpage-team-dropdown.component';
 import { TpageBaseComponent } from './tpage-base/tpage-base.component';
@@ -34,6 +34,7 @@ import { OdataLiveCampaignService } from '../services/mock-odata/odata-live-camp
 import { AddLiveCampaignComponent } from './add-live-campaign/add-live-campaign.component';
 import { OverviewLiveCampaignComponent } from './overview-live-campaign/overview-live-campaign.component';
 import { FastSaleOrderLineService } from '../services/fast-sale-orderline.service';
+import { QuickReplyButtonComponent } from './quick-reply-button/quick-reply-button.component';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -54,6 +55,7 @@ const cmp =[
   UploadPicturesWallComponent,
   ListLiveCampaignComponent,
   AddLiveCampaignComponent,
+  QuickReplyButtonComponent,
 ]
 
 const SERVICES = [
@@ -98,7 +100,8 @@ const SERVICES = [
     UploadImageModule,
     TDSImageModule,
     TDSToolTipModule,
-    TDSDatePickerModule
+    TDSDatePickerModule,
+    TDSPopoverModule
   ],
   exports:[
    ...cmp

@@ -22,7 +22,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
   @Input() data!: FacebookPostItem;
   @Input() team!: CRMTeamDTO;
 
-  isCollapse = false;
+  showComment = true;
   private destroy$ = new Subject();
   sortOptions: any[] = [
     { value: "DateCreated desc", text: "Mới nhất" },
@@ -55,7 +55,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
     if(this.data){
       this.data = {...this.data};
     }
-    console.log(this.data)
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -164,7 +163,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
   }
 
   openChat(){
-    this.isCollapse = !this.isCollapse;
+    this.showComment = !this.showComment;
   }
 
   ngOnDestroy(): void {

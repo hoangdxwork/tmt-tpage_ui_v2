@@ -33,6 +33,7 @@ export class CommonService extends BaseSevice {
     });
 
     let date = formatDate(new Date(), 'yyyy-MM-ddTHH:mm:ss', 'en-US');
+
     this.getPriceListAvailable(date)
       .pipe(map((x: any) => { return x.value[0] }),
        mergeMap((item: any) => { return this.getPriceListItems(item.Id)}))

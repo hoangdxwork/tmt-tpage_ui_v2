@@ -1,0 +1,52 @@
+<div class="p-2">
+    <div class="tdsi-message-template-line text-neutral-1-400 text-xl cursor-pointer"
+    tds-popover [(popoverVisible)]="isVisibleReply"
+    popoverTrigger="click"
+    [popoverContent]="contentTemplate"></div>
+    <ng-template #contentTemplate>
+        <div class="w-[336px] max-h-[500px] overflow-hidden flex flex-col gap-y-4">
+            <div class="flex justify-between">
+                <div class="">
+                    <span class="text-title-1 font-semibold">Trả lời nhanh</span>
+                </div>
+                <div>
+                    <button tds-button color="secondary" (click)="showModalAddQuickReply()">
+                        <span class="flex items-center text-primary-1">
+                          <i class="tdsi-plus-fill text-lg leading-none mr-2"></i>Thêm mới
+                        </span>
+                      </button>
+                </div>
+            </div>
+            <div class="w-full">
+                <tds-form-field class="w-full">
+                    <input tdsInput placeholder="Tìm kiếm tin nhắn" autocomplete="off" />
+                    <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                  </tds-form-field>
+            </div>
+            <div class="flex flex-col divide-y divide-neutral-2-300 border-y border-neutral-2-300 divide-dotted border-dotted overflow-y-auto tds-custom-scroll">
+                <div class="py-3 px-1 flex flex-col cursor-pointer hover:bg-neutral-3-50">
+                    <span class="font-semibold">Mã đặt hàng</span>
+                    <span>placeholder.code</span>
+                </div>
+                <div class="py-3 px-1 flex flex-col cursor-pointer hover:bg-neutral-3-50">
+                    <span class="font-semibold">Mã đặt hàng</span>
+                    <span>placeholder.code</span>
+                </div>
+                <div class="py-3 px-1 flex flex-col cursor-pointer hover:bg-neutral-3-50">
+                    <span class="font-semibold">Mã đặt hàng</span>
+                    <span>placeholder.code</span>
+                </div><div class="py-3 px-1 flex flex-col cursor-pointer hover:bg-neutral-3-50">
+                    <span class="font-semibold">Mã đặt hàng</span>
+                    <span>placeholder.code</span>
+                </div>
+                <div class="py-3 px-1 flex flex-col cursor-pointer hover:bg-neutral-3-50">
+                    <span class="font-semibold">Mã đặt hàng</span>
+                    <span>placeholder.code</span>
+                </div><div class="py-3 px-1 flex flex-col cursor-pointer hover:bg-neutral-3-50">
+                    <span class="font-semibold">Mã đặt hàng</span>
+                    <span>placeholder.code</span>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</div>

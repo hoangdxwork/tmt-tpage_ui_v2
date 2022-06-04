@@ -42,11 +42,15 @@ export class ConfigPromotionComboComponent implements OnInit {
   ) { }
 
   get detailsFormGroups() {
-    return (this.form?.get("Details") as FormArray).controls;
+    return (this.form?.get("Details") as FormArray);
   }
 
   get discountApplyOnForm() {
     return this.form?.value.DiscountApplyOn;
+  }
+
+  get getRewardTypeFormGroup() {
+    return this.form.value.RewardType;
   }
 
   ngOnInit(): void {
@@ -202,7 +206,8 @@ export class ConfigPromotionComboComponent implements OnInit {
     return fb;
   }
 
-  onChangeRewardType(event: TDSSafeAny) {
+  onChangeRewardType(value: string) {
+    this.form.controls.RewardType.setValue(value);
     (<FormArray>this.form.get('Details')).clear();
   }
 
