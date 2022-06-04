@@ -1,0 +1,14 @@
+<div class="w-full h-full">
+  <tds-tabset class="bg-white border border-neutral-2-200 h-full" [clsTab]="'flex-1'"
+      [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
+
+      <tds-tab [title]="'Đơn hàng'" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
+        <table-order-message [liveCampaignId]="liveCampaignId"></table-order-message>
+      </tds-tab>
+
+      <tds-tab [title]="'Phiếu bán hàng'" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
+        <table-bill-message [liveCampaignId]="liveCampaignId"></table-bill-message>
+      </tds-tab>
+
+  </tds-tabset>
+</div>

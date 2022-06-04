@@ -23,13 +23,13 @@ export class SaleOnline_OrderService extends BaseSevice {
     super(apiService)
   }
 
-  getById(id: string): Observable<TDSSafeAny> {
+  getById(id: string): Observable<SaleOnline_OrderDTO> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})?$expand=Details,User,Partner`,
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, null);
+    return this.apiService.getData<SaleOnline_OrderDTO>(api, null);
   }
 
   getLines(id: string): Observable<TDSSafeAny> {

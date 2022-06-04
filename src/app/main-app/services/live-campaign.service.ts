@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
-import { LiveCampaign_SimpleDataDTO, SaleOnline_LiveCampaignDTO, UpdateFacebookLiveCampaignDTO } from "../dto/live-campaign/live-campaign.dto";
-import { ODataResponsesDTO } from "../dto/odata/odata.dto";
+import { FacebookMappingPostDTO } from "../dto/conversation/post/post.dto";
+import { ApproveLiveCampaignDTO, DetailReportLiveCampaignDTO, LiveCampaign_SimpleDataDTO, ReportLiveCampaignOverviewDTO, SaleOnlineLiveCampaignDetailDTO, SaleOnline_LiveCampaignDTO, SearchReportLiveCampaignOverviewDTO, UpdateFacebookLiveCampaignDTO } from "../dto/live-campaign/live-campaign.dto";
+import { ODataModelDTO, ODataResponsesDTO } from "../dto/odata/odata.dto";
 import { BaseSevice } from "./base.service";
 
 @Injectable()
@@ -10,6 +11,7 @@ export class LiveCampaignService extends BaseSevice {
   prefix: string = "odata";
   table: string = "SaleOnline_LiveCampaign";
   baseRestApi: string = "rest/v1.0/saleonine_livecampaign";
+  public _keyCacheGrid: string = 'saleonine_livecampaign-page:grid_saleonine_livecampaign:settings';
 
   public dataActive$ = new BehaviorSubject<SaleOnline_LiveCampaignDTO[]>([]);
 
@@ -34,7 +36,7 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<SaleOnline_LiveCampaignDTO>(api, null);
 	}
 
-  getDetailById(id: string): Observable<SaleOnline_LiveCampaignDTO> {
+  getDetailById(id: string | undefined): Observable<SaleOnline_LiveCampaignDTO> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})?$expand=Details,Users,Preliminary_Template,ConfirmedOrder_Template`,
       method: TApiMethodType.get,
@@ -86,6 +88,69 @@ export class LiveCampaignService extends BaseSevice {
     }
 
     return this.apiService.getData<boolean>(api, data);
+  }
+
+  getReportLiveCampaignOverview(data: ODataModelDTO<SearchReportLiveCampaignOverviewDTO>): Observable<ReportLiveCampaignOverviewDTO>{
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.ReportLiveCampaignOverview`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<ReportLiveCampaignOverviewDTO>(api, data);
+  }
+
+  approve(id: string | undefined): Observable<ApproveLiveCampaignDTO> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.table}/Approve?id=${id}`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<ApproveLiveCampaignDTO>(api, null);
+  }
+
+  delete(id: string | undefined): Observable<undefined> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})`,
+      method: TApiMethodType.delete,
+    }
+
+    return this.apiService.getData<undefined>(api, null);
+  }
+
+  updateActiveDetail(id: string, isActive: boolean): Observable<SaleOnlineLiveCampaignDetailDTO> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdateActiveDetail?key=${id}&isActive=${isActive}`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<SaleOnlineLiveCampaignDetailDTO>(api, null);
+  }
+
+  getAllFacebookPost(id: string | undefined): Observable<FacebookMappingPostDTO[]> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${id}/getallfacebookpost`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<FacebookMappingPostDTO[]>(api, null);
+  }
+
+  getReport(id: string): Observable<DetailReportLiveCampaignDTO> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${id}/getreport`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<DetailReportLiveCampaignDTO>(api, null);
+  }
+
+  updateProductQuantity(id: string, quantity: number | undefined, liveCampaignId: string): Observable<boolean> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${id}/updateproductquantity?quantity=${quantity}&liveCampaignId=${liveCampaignId}`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<boolean>(api, null);
   }
 
 }

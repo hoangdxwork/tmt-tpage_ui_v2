@@ -30,3 +30,7 @@ export interface ODataModelTeamDTO<T> {
   model: T;
   teamId?: number;
 }
+
+export interface ODataParamsDTO<T> {
+  params: T;
+}

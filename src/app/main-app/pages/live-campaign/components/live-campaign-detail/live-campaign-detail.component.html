@@ -1,0 +1,58 @@
+<div class="w-full h-full flex flex-col">
+  <div class="bg-white flex justify-between items-center py-2.5 px-4">
+    <div class="flex flex-col gap-y-1">
+      <tds-breadcrumb tds-page-header-breadcrumb class="px-0 pt-0 pb-0">
+          <tds-breadcrumb-item>Chiến dịch live</tds-breadcrumb-item>
+          <tds-breadcrumb-item>Chiến dịch sale 20/10</tds-breadcrumb-item>
+      </tds-breadcrumb>
+      <div class="">
+          <span class="text-header-1 text-neutral-1-900 font-semibold">Chiến dịch sale 20/10</span>
+      </div>
+    </div>
+
+    <div class="flex gap-x-2">
+        <button tds-button class="w-[100px]" color="primary" type="button">
+          <span class="tdsi-edit-fill"></span>
+          Chỉnh sửa
+        </button>
+    </div>
+  </div>
+
+  <div class="bg-white py-2.5 px-4">
+    <tds-filter-status (selectChange)="onChangeMenu($event)" [(ngModel)]='tabCurrent' [ngModelOptions]="{standalone: true}">
+      <tds-filter-status-item *ngFor="let menu of lstMenu; let index = index"
+        [name]='menu' [value]='index'>
+        <ng-template tds-filter-status-template let-active='active' let-count='count' let-name='name' let-value>
+          <div class="py-1.5 px-4 flex items-center rounded-full mr-2" [ngClass]="active ? 'text-white bg-primary-1' : 'text-neutral-1-700 ng-white'">
+              <span class="text-body-2 text-sm font-semibold" >
+                {{name}}
+              </span>
+          </div>
+        </ng-template>
+      </tds-filter-status-item>
+    </tds-filter-status>
+  </div>
+
+  <div class="flex flex-col flex-auto gap-y-4 p-4">
+    <div class="rounded-xl h-full">
+      <div class="h-full" *ngIf="tabCurrent == 0">
+        <detail-report [liveCampaignId]="liveCampaignId"></detail-report>
+      </div>
+      <div class="h-full" *ngIf="tabCurrent == 1">
+        <detail-product [liveCampaignId]="liveCampaignId"></detail-product>
+      </div>
+      <div class="h-full" *ngIf="tabCurrent == 2">
+        <detail-message [liveCampaignId]="liveCampaignId"></detail-message>
+      </div>
+      <div class="h-full" *ngIf="tabCurrent == 3">
+        <detail-order [liveCampaignId]="liveCampaignId"></detail-order>
+      </div>
+      <div class="h-full" *ngIf="tabCurrent == 4">
+        <detail-bill-payment [liveCampaignId]="liveCampaignId"></detail-bill-payment>
+      </div>
+      <div class="h-full" *ngIf="tabCurrent == 5">
+        <detail-bill [liveCampaignId]="liveCampaignId"></detail-bill>
+      </div>
+    </div>
+  </div>
+</div>

@@ -6,6 +6,7 @@ export const Message = {
   DeleteSuccess: 'Xóa thành công.',
   DeleteFail: 'Xóa thất bại.',
   UpdatedSuccess: 'Cập nhật thành công.',
+  UpdatedActiveSuccess: 'Cập nhật trạng thái thành công.',
   UpdatedFail: 'Cập nhật thất bại.',
   ManipulationSuccessful: 'Thao tác thành công.',
   EmptyData: 'Không có dữ liệu!',

@@ -1,7 +1,10 @@
 import { TDSSafeAny } from 'tmt-tang-ui';
-import { ApplicationUserDTO } from "../account/application-user.dto";
-import { MailTemplateDTO } from "../mailtemplate/mail-template.dto";
-import { SaleOnlineFacebookPostDTO, SaleOnline_Order_DetailDTO } from "../saleonlineorder/sale-online-order.dto";
+import { ApplicationUserDTO } from '../account/application-user.dto';
+import { MailTemplateDTO } from '../mailtemplate/mail-template.dto';
+import {
+  SaleOnlineFacebookPostDTO,
+  SaleOnline_Order_DetailDTO,
+} from '../saleonlineorder/sale-online-order.dto';
 
 export interface LiveCampaign_SimpleDataDTO {
   LiveCampaign: SaleOnline_LiveCampaignDTO;
@@ -43,7 +46,7 @@ export interface SaleOnline_LiveCampaignDTO {
   SumOrderWaitCheckOut: number;
   SumOrderCheckOut: number;
   SumOrderCancelCheckOut: number;
-  // IsShift?: any;
+  IsShift?: boolean;
 }
 
 export interface SaleOnlineLiveCampaignDetailDTO {
@@ -97,4 +100,105 @@ export interface ProductAttributeValueSimpleDTO {
 export interface UpdateFacebookLiveCampaignDTO {
   action: string;
   model: SaleOnline_LiveCampaignDTO;
+}
+
+export interface SearchReportLiveCampaignOverviewDTO {
+  Ids?: string[];
+  Text: string;
+  StartDate?: Date;
+  EndDate?: Date;
+}
+
+export interface ReportLiveCampaignOverviewDTO {
+  SumQtyInCart: number;
+  SumQtyWaitCheckOut: number;
+  SumQtyCheckOut: number;
+  SumCancelCheckout: number;
+  SumOrderWaitCheckOut: number;
+  SumOrderCheckOut: number;
+  SumOrderCancelCheckOut: number;
+  SumAmountWaitCheckOut: number;
+  SumAmountWaitingPayment: number;
+  SumAmountPaid: number;
+}
+
+export interface ApproveLiveCampaignDTO {
+  success: boolean;
+}
+
+export interface DetailReportLiveCampaignDTO {
+  Id: string;
+  Name: string;
+  Details: SaleOnlineLiveCampaignDetailReportDTO[];
+  OrderSummary: SaleOnlineLiveCampaignSummaryReportDTO;
+  BillSummary: SaleOnlineLiveCampaignSummaryReportDTO;
+  PaySummary: SaleOnlineLiveCampaignSummaryReportDTO;
+}
+
+export interface SaleOnlineLiveCampaignDetailReportDTO {
+  ImageUrl: string;
+  QueueQuantity: number;
+  ListSaleOnlineOrder: ViewReportSaleOnlineOrderLiveCampaignDTO[];
+  ListFastSaleOrder: ViewReportFastSaleOrderLiveCampaignDTO[];
+  Id: string;
+  /// Thứ tự dùng cho live
+  Index: number;
+  /// Số lượng giới hạn
+  Quantity?: number;
+  RemainQuantity: number;
+  ScanQuantity: number;
+  /// Số lượng còn lại thực tế fastsaleorder
+  RemainRealQuantity: number;
+  UsedQuantity: number;
+  Price: number;
+  Note: string;
+  ProductId?: number;
+  ProductName: string;
+  ProductNameGet: string;
+  UOMId?: number;
+  UOMName: string;
+  Tags: string;
+  LimitedQuantity: number;
+  ProductCode: string;
+  IsActive: boolean;
+}
+
+export interface ViewReportSaleOnlineOrderLiveCampaignDTO {
+  Id: string;
+  Quantity: number;
+  ProductId: number;
+  Price: number;
+  OrderId?: string;
+  Facebook_UserName: string;
+  PartnerId: number;
+  Facebook_ASUserId: string;
+  TotalAmount: number;
+  LiveCampaign_DetailId?: string;
+  LiveCampaignId?: string;
+  ImageUrl: string;
+}
+
+export interface ViewReportFastSaleOrderLiveCampaignDTO {
+  Id: number;
+  ProductId: number;
+  PriceTotal?: number;
+  OrderId?: number;
+  FacebookName: string;
+  PartnerId?: number;
+  FacebookId: string;
+  State: string;
+  Type: string;
+  AmountTotal: number;
+  LiveCampaign_DetailId?: string;
+  LiveCampaignId?: string;
+  ImageUrl: string;
+  ProductUOMId: number;
+  ProductUOMQty: number;
+  CashOnDelivery?: number;
+}
+
+export interface SaleOnlineLiveCampaignSummaryReportDTO {
+  OrderQuantity?: number;
+  ProductQuantity?: number;
+  TotalAmount?: number;
 }
