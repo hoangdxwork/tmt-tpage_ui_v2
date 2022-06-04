@@ -22,7 +22,6 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
     cacheVersion: 0,
     cacheDbStorage: []
   }
-
   private destroy$ = new Subject();
 
   constructor(private apiService: TCommonService,

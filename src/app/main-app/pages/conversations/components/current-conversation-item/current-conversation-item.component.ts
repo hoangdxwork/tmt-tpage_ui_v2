@@ -86,6 +86,7 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if(changes["activeCvsItem"] && !changes["activeCvsItem"].firstChange) {
         this.activeCvsItem = changes["activeCvsItem"].currentValue;
+        this.cdr.detectChanges();
     }
   }
 
@@ -113,6 +114,6 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges {
   }
 
   clickCheckbox(ev: TDSSafeAny){
-    ev.stopPropagation()
+    ev.preventDefault()
   }
 }

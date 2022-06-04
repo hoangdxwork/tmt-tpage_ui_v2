@@ -1,7 +1,7 @@
 import { ShipExtras, ShipServiceExtra } from './../../../dto/fastsaleorder/fastsaleorder-default.dto';
 import { DecimalPipe, formatNumber } from '@angular/common';
 import { TDSModalService, TDSHelperObject, TDSMessageService, TDSHelperArray, TDSSafeAny, TDSHelperString, vi_VN } from 'tmt-tang-ui';
-import { Component, OnDestroy, OnInit, ViewContainerRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewContainerRef, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
 import { ModalSearchPartnerComponent } from '../components/modal-search-partner/modal-search-partner.component';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { SharedService } from 'src/app/main-app/services/shared.service';
@@ -42,7 +42,7 @@ import { AccountTaxService } from 'src/app/main-app/services/account-tex.service
   templateUrl: './add-bill.component.html',
 })
 
-export class AddBillComponent implements OnInit, OnDestroy {
+export class AddBillComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
 
   _form!: FormGroup;
   id: any;
@@ -109,6 +109,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     private fastSaleOrderService: FastSaleOrderService,
     private modalService: TDSModalService,
     private cRMTeamService: CRMTeamService,
+    private cdRef : ChangeDetectorRef,
     private applicationUserService: ApplicationUserService,
     private registerPaymentService: AccountRegisterPaymentService,
     private accountTaxService: AccountTaxService,
@@ -268,6 +269,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
       this.mappingAddress(this.dataModel);
       this.updateForm(this.dataModel);
+      this.cdRef.detectChanges();
     }, error => {
       this.message.error('Load hóa đơn đã xảy ra lỗi!');
     })
@@ -460,8 +462,10 @@ export class AddBillComponent implements OnInit, OnDestroy {
           this.message.error('Thay đổi khách hàng đã xảy ra lỗi!');
         });
       }
+      this.cdRef.detectChanges();
     }, error => {
       this.message.error('Không tìm thấy khách hàng!');
+      this.cdRef.detectChanges();
     })
   }
 
@@ -555,6 +559,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
         });
       }
     }
+    this.cdRef.detectChanges();
   }
 
   validateInsuranceFee(): any {
@@ -833,9 +838,11 @@ export class AddBillComponent implements OnInit, OnDestroy {
         this.setCarrier(exits);
       }
       this.isCalcFee = false;
+      this.cdRef.detectChanges();
     }, error => {
       this.isCalcFee = false;
-      this.message.error(`${error.error_description}` || 'Gợi ý tính phí đã xảy ra lỗi!');
+      this.message.error(`${error.error_description}` ? `${error.error_description}` : 'Gợi ý tính phí đã xảy ra lỗi!');
+      this.cdRef.detectChanges();
     });
   }
 
@@ -869,11 +876,13 @@ export class AddBillComponent implements OnInit, OnDestroy {
           }
 
           this.isCalcFee = false;
+          this.cdRef.detectChanges();
         }, error => {
           this.isCalcFee = false;
           if (showMessage) {
             this.message.error(`${error.error_description}` || 'Tính phí đã xảy ra lỗi!');
           }
+          this.cdRef.detectChanges();
           reject(error);
         })
       }
@@ -1573,6 +1582,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
         }
         this.addOrderLines(item);
         this.computeAmountTotal();
+        this.cdRef.detectChanges();
       }, error => {
         this.message.error(`${error?.error?.message}` || 'Thêm sản phẩm thất bại')
       })
@@ -1920,6 +1930,14 @@ export class AddBillComponent implements OnInit, OnDestroy {
     })
 
     return model;
+  }
+
+  ngAfterViewInit() {
+    this.cdRef.detectChanges();
+  }
+
+  ngAfterViewChecked() {
+    this.cdRef.detectChanges();
   }
 
 }

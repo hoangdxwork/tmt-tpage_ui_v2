@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http';
-import { Observable, pipe, throwError } from 'rxjs';
+import { HttpInterceptor, HttpHandler, HttpRequest, HttpEvent, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
 import { TAuthService } from './auth.service';
 import { TCommonService } from './common.service';
 import { environment } from 'src/environments/environment';
@@ -11,12 +11,17 @@ import { TGlobalConfig } from './global-config';
 @Injectable()
 export class TAuthInterceptorService implements HttpInterceptor {
 
-    constructor(public auth: TAuthService,
-        public libcommon: TCommonService
-    ) {
-    }
+    constructor(public auth: TAuthService, public libcommon: TCommonService) {}
 
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<TDSSafeAny> {
+    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<TDSSafeAny>> {
+
+        let showt = req.url.indexOf("/print/html") > -1;
+        if(showt) {
+          req = req.clone({
+              headers: new HttpHeaders({})
+          });
+        }
+
         let that = this;
         let lstUrlLogin = [
             environment.apiAccount.signInPassword,
@@ -24,6 +29,7 @@ export class TAuthInterceptorService implements HttpInterceptor {
             environment.apiAccount.signInGoogle,
             environment.apiAccount.signInVerifyOtpsms,
         ];
+
         req = this.addAuthenticationToken(req)
         return next.handle(req).pipe(catchError(err => {
             //Lỗi do đăng nhập chưa xóa dữ liệu trên cache
@@ -64,7 +70,6 @@ export class TAuthInterceptorService implements HttpInterceptor {
             //Lỗi 401
             else {
 
-
                 if (!TGlobalConfig.Authen.refreshTokenInProgress) {
 
                     TGlobalConfig.Authen.refreshTokenInProgress = true;
@@ -89,13 +94,13 @@ export class TAuthInterceptorService implements HttpInterceptor {
             }
         }));
     }
+
     addAuthenticationToken = (req: HttpRequest<any>): HttpRequest<any> => {
         let accessToken =this.auth.getAccessToken();
         if (TDSHelperObject.hasValue(this.auth.isLogin())
             && TDSHelperObject.hasValue(accessToken)
-            && TDSHelperString.hasValueString(accessToken?.access_token)
-        ) {
-            
+            && TDSHelperString.hasValueString(accessToken?.access_token)) {
+
             req = req.clone({
                 setHeaders:
                 {

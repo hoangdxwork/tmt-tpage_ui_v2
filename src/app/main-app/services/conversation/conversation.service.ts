@@ -37,18 +37,14 @@ export interface ResponseStateConversationDTO {
   providedIn: 'root'
 })
 
-export class ConversationService extends BaseSevice implements OnInit {
+export class ConversationService extends BaseSevice {
 
   prefix: string = "";
   table: string = "";
   baseRestApi: string = "rest/v1.0/crmmatching";
 
-  constructor(private apiService: TCommonService,
-      private sgRConnectionService: SignalRConnectionService) {
+  constructor(private apiService: TCommonService) {
       super(apiService)
-  }
-
-  ngOnInit(): void {
   }
 
   get(queryObj: any, url?: string): Observable<CRMMatchingDTO> {

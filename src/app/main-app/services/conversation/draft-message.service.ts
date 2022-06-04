@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, OnInit } from "@angular/core";
+import { ChangeDetectorRef, EventEmitter, Injectable, OnInit } from "@angular/core";
 import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { PartnerService } from "../partner.service";

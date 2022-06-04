@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Injectable, OnDestroy, OnInit } from "@angular/core";
 import { Subject } from "rxjs";
 import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
@@ -24,6 +24,7 @@ export class ConversationEventFacade extends BaseSevice implements OnDestroy {
       public crmService: CRMTeamService,
       private sgRConnectionService: SignalRConnectionService) {
         super(apiService);
+
         this.initialize();
   }
 

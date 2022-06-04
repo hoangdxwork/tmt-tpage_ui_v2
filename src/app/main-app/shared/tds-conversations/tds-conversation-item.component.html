@@ -176,46 +176,55 @@
 				<!--Thích hiện ẩn + CreatedBy.Name-->
 				<div class="chat-meta bg-transparent text-neutral-1-600 text-caption-2 font-regular mt-1.5">
 					<div class="chat-acts flex flex-row items-center" style="position: relative;">
+
 						<button class="link-act hover:underline" [disabled]="isReplyingComment"
-							(click)="clickReply(data.comment ? data.comment.can_remove : null)">
-							Phản hồi
+					  		(click)="clickReply(data.comment ? data.comment.can_remove : null)"> Phản hồi
 						</button>
-						<tds-spinner *ngIf="isReplyingComment" [color]="'primary'" class="ml-1 w-2 h-2"></tds-spinner>
+            <span *ngIf="isReplyingComment" class="ml-1">
+                <tds-spinner [color]="'primary'" class="w-2 h-2"></tds-spinner>
+            </span>
 						<div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
-						<button class="link-act hover:underline" [disabled]="isLiking" [ngClass]="data.comment.user_likes?'text-secondary-1':''"
+
+						<button class="link-act hover:underline" [disabled]="isLiking" [ngClass]="data.comment.user_likes ? 'text-secondary-1' : ''"
 							(click)="addLike(data.comment ? data.comment.can_like : null)">
 							{{data.comment.user_likes ? 'Đã thích' : 'Thích'}}
 						</button>
+
 						<tds-spinner *ngIf="isLiking" [color]="'primary'" class="ml-1 w-2 h-2"></tds-spinner>
 						<div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
+
 						<button class="link-act hover:underline" [disabled]="isHiding"
 							(click)="hideComment(data.comment ? data.comment.can_hide: null)">
 							{{data.comment.is_hidden ? 'Hiện' : 'Ẩn'}}
 						</button>
+
 						<tds-spinner *ngIf="isHiding" [color]="'primary'" class="ml-1 w-2 h-2"></tds-spinner>
 						<div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
+
 						<span *ngIf="data.DateCreated" class="date-diff cursor-pointer hover:underline" tds-tooltip
 							tooltipTitle="{{data.DateCreated | date:'dd'}} Tháng {{data.DateCreated | date:'MM'}}, {{data.DateCreated | date:'yyyy'}} lúc {{data.DateCreated | date:'HH:mm'}}">
 							{{data.DateCreated | yiDiffDateTime}}
 						</span>
 					</div>
+
 					<span class="chat-by font-regular" *ngIf="data.IsHandledBySystem && data.CreatedBy"> Được gửi bởi
 						<span class="font-semibold" style="color: #03468b;">{{data.CreatedBy.Name}}</span>
 					</span>
 				</div>
+
 				<!-- Input trả lời bình luận -->
-				<div class="chat-reply flex flex-col gap-y-5 bg-white rounded-xl w-full p-4 mt-4 border-b-2 border-primary-1" *ngIf="isReply == true">
+				<div *ngIf="isReply == true" class="chat-reply flex flex-col gap-y-5 bg-white rounded-xl w-full p-4 mt-4 border-b-2 border-primary-1" >
 					<div class="flex flex-row w-full">
 						<textarea id="inputReply" #contentReply tdsInput placeholder="Nhập nội dung trả lời"
 							[(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
 							class="w-full resize-none !p-0 !m-0" (keydown.enter)="onEnter($event)"></textarea>
-						<div class="">
-							<button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'" (click)="messageSendingToServer()">
-								<span class="flex items-center px-5">
-									<i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
-								</span>
-							</button>
-						</div>
+
+            <button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'" (click)="onEnter($event)">
+              <span class="flex items-center px-5">
+                <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
+              </span>
+            </button>
+
 					</div>
 					<!-- Check Private Reply -->
 					<div class="quick-message gap-5">
@@ -239,7 +248,6 @@
 									<i class="tdsi-product-line text-xl"></i>
 								</span>
 
-
 								<span class="sub cursor-pointer" (onQuickReplySelected)="onQuickReplySelected($event)"
 									title="Tin nhắn nhanh" placement="left" quick-reply-button>
 									<i class="tdsi-message-template-line text-xl"></i>
@@ -248,10 +256,10 @@
 						</div>
 					</div>
 				</div>
+
 				<!-- Phản hồi bình luận -->
 				<div *ngIf="children" class="chat-list">
-					<div class="chat-item mt-4 chat-comment flex flex-row"
-						*ngFor="let child of children; let i = index">
+					<div class="chat-item mt-4 chat-comment flex flex-row" *ngFor="let child of children; let i = index">
 						<div class="avatar mr-2">
 							<tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.from.id"
 								[token]="team?.Facebook_PageToken">
@@ -294,11 +302,9 @@
 									</div>
 								</div>
 							</div>
-							<div class="chat-meta text-neutral-1-600 text-caption-2 font-regular mt-1.5"
-								style="position: relative;">
-								<div class="chat-acts flex flex-row items-center" style="position: relative;">
-									<span *ngIf="child.created_time" class="date-diff cursor-pointer hover:underline"
-										tds-tooltip
+							<div class="chat-meta text-neutral-1-600 text-caption-2 font-regular mt-1.5 relative">
+								<div class="chat-acts flex flex-row items-center relative" >
+									<span *ngIf="child.created_time" class="date-diff cursor-pointer hover:underline"	tds-tooltip
 										tooltipTitle="{{child.created_time | date:'dd'}} Tháng {{child.created_time | date:'MM'}}, {{child.created_time | date:'yyyy'}} lúc {{child.created_time | date:'HH:mm'}}">
 										{{child.created_time | yiDiffDateTime}}
 									</span>
@@ -388,7 +394,7 @@
 						[(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
 							class="w-full resize-none !p-0 !m-0" (keydown.enter)="onEnter($event)"></textarea>
 						<div class="">
-							<button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'" (click)="messageSendingToServer()">
+							<button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'" (click)="onEnter($event)">
 								<span class="flex items-center px-5">
 									<i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
 								</span>

@@ -4,7 +4,7 @@ import { AfterContentInit, AfterViewInit, Directive, ElementRef, EventEmitter, H
     selector: "[yiAutoScroll]",
 })
 
-export class YiAutoScrollDirective implements  OnDestroy, AfterContentInit {
+export class YiAutoScrollDirective implements  OnDestroy, AfterViewInit {
 
     @Input("lock-y-offset") public lockYOffset!: string;
     @Input("observe-attributes") public observeAttributes: string = "false";
@@ -29,10 +29,10 @@ export class YiAutoScrollDirective implements  OnDestroy, AfterContentInit {
     }
 
     public getObserveAttributes(): boolean {
-        return this.observeAttributes !== "" && this.observeAttributes.toLowerCase() !== "false";
+      return this.observeAttributes !== "" && this.observeAttributes.toLowerCase() !== "false";
     }
 
-    ngAfterContentInit() {
+    ngAfterViewInit() {
       this._isLocked = this.isLock;
 
       if(!this._isLocked) {
@@ -54,7 +54,7 @@ export class YiAutoScrollDirective implements  OnDestroy, AfterContentInit {
         this.mutationObserver && this.mutationObserver.disconnect();
     }
 
-    public forceScrollDown(ms: number = 750): any {
+    public forceScrollDown(ms: number = 1000): any {
         this.scrollDown(ms);
     }
 
@@ -62,8 +62,12 @@ export class YiAutoScrollDirective implements  OnDestroy, AfterContentInit {
         return this._isLocked;
     }
 
-    public scrollDown(ms: number = 750): any {
-        setTimeout(() =>  this.scrollTo(this.nativeElement, this.nativeElement.scrollHeight, ms, true), 750);
+    public scrollDown(ms: number = 1000): any {
+      let scroll = () => {
+        this.scrollTo(this.nativeElement, this.nativeElement.scrollHeight, ms, true);
+      };
+
+      setTimeout(() => scroll(), 500);
     }
 
     /**
@@ -167,7 +171,6 @@ export class YiAutoScrollDirective implements  OnDestroy, AfterContentInit {
 
     @HostListener("scroll", ['$event'])
     public scrollHandler(event: any): void {
-      if(event){
         const yBottom = this.nativeElement.scrollHeight - this.nativeElement.scrollTop - this.nativeElement.clientHeight;
         this._isLocked = yBottom > Number(this.lockYOffset);
 
@@ -179,11 +182,12 @@ export class YiAutoScrollDirective implements  OnDestroy, AfterContentInit {
             this.onScrollToBottom.emit();
         }
 
-        if (yBottom <= 10 && this.scrollEnd) {
+        if (yBottom <= Number(this.lockYOffset) && this.scrollEnd) {
             this.onchangeBottom.emit(yBottom);
             this._isLocked = true;
         }
-      }
+
+        event.preventDefault();
     }
 
 }

@@ -1,11 +1,10 @@
-import { getCurrencySymbol } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
-import { TDSHelperObject } from 'tmt-tang-ui';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 
 @Pipe({
   name: 'fieldChannel'
 })
+
 export class FieldChannelPipe implements PipeTransform {
 
   constructor(){}

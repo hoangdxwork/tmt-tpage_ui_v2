@@ -23,24 +23,23 @@ export class QuickReplyButtonComponent implements OnInit {
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private quickReplyService: QuickReplyService,
-    private partnerService: PartnerService
-  ) { }
+    private partnerService: PartnerService) { }
 
   ngOnInit(): void {
     this.getData();
   }
 
   getData() {
-    this.quickReplyService.dataActive$
-    .pipe(takeUntil(this.destroy$))
-    .pipe(finalize( ()=>{ }))
-    .subscribe(res => {
-      if(res) {
-        let local = localStorage.getItem('arrOBJQuickReply')
-          // let getArr = JSON.parse(local) || {};
-          this.quickReplies = [...res.value]
-      }
-    });
+    // this.quickReplyService.dataActive$
+    // .pipe(takeUntil(this.destroy$))
+    // .pipe(finalize( ()=>{ }))
+    // .subscribe(res => {
+    //   if(res) {
+    //     let local = localStorage.getItem('arrOBJQuickReply')
+    //       // let getArr = JSON.parse(local) || {};
+    //       this.quickReplies = [...res.value]
+    //   }
+    // });
   }
 
   showModalAddQuickReply() {

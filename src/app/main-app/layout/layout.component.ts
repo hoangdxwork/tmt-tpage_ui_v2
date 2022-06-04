@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { filter, finalize, map, mergeMap,take, takeUntil } from 'rxjs/operators';
@@ -33,6 +33,7 @@ export class LayoutComponent implements OnInit {
     public crmService: CRMTeamService,
     private modalService: TDSModalService,
     private message: TDSMessageService,
+    private cdRef : ChangeDetectorRef,
     private activatedRoute: ActivatedRoute,
     private router: Router) {
 
@@ -59,6 +60,7 @@ export class LayoutComponent implements OnInit {
     this.signalRConnectionService.initiateSignalRConnection();
     this.signalRConnectionService._connectionEstablished$.subscribe((res: any) => {
       this._connectionEstablished = res;
+      this.cdRef.detectChanges();
     });
 
     NetworkHelper.checkNetwork().subscribe(isNetwork => {
@@ -75,6 +77,14 @@ export class LayoutComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe(res => {
       this.params = res;
     });
+  }
+
+  ngAfterViewChecked() {
+    this.cdRef.detectChanges();
+  }
+
+  ngAfterViewInit(): void {
+    this.cdRef.detectChanges();
   }
 
   onSelectShopChange(event: TDSSafeAny) {
