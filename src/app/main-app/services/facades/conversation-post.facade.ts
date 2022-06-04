@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
+import { ChangeDetectorRef, EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { TCommonService, THelperCacheService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
@@ -33,12 +33,11 @@ export class ConversationPostFacade extends BaseSevice implements OnDestroy {
   private _keyCachePartnerSimplest = "_dict_partner_simplest";
   fbPartnerSimplest: any = {};
 
-  constructor(private message: TDSMessageService,
+  constructor(private cacheApi: THelperCacheService,
       private apiService: TCommonService,
-      private partnerService: PartnerService,
-      private cacheApi: THelperCacheService,
       private sharedService: SharedService) {
         super(apiService);
+
         this.initialize();
   }
 

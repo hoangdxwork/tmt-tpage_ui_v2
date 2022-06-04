@@ -73,18 +73,16 @@
             <tds-checkbox (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
           </div>
           <!-- List danh sách chat -->
-          <tds-spin class="overflow-hidden flex flex-auto" size="sm" [spinning]="isLoadingCrm">
+          <tds-spin class="overflow-hidden flex flex-auto" size="sm" [spinning]="isProcessing" [color]="'secondary'">
             <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstMatchingItem" >
               <div class="overflow-y-auto tds-custom-scroll flex flex-col"
                   yiAutoScroll lock-y-offset="10" scroll-end="true"
                   (on-change-bottom)="nextData($event)"
-                  id="myScroll" is-lock="true"
-                  observe-attributes >
+                  id="myScroll" is-lock="true" observe-attributes >
                   <div *ngFor="let item of lstMatchingItem; let i= index; trackBy: trackByIndex">
                       <a *ngIf="activeCvsItem?.id && currentTeam" (click)="changeCurrentCvsItem(item)" type="button" class="w-full cursor-pointer">
                         <current-conversation-item
-                          [item]="item"
-                          [psid]="item.psid" [type]="type"
+                          [item]="item" [psid]="item.psid" [type]="type"
                           [activeCvsItem]="activeCvsItem"
                           [team]="currentTeam" [isFastSend]="isFastSend"
                           [isOpenCollapCheck]="isOpenCollapCheck"

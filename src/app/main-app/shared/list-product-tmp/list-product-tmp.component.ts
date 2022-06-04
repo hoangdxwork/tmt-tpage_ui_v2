@@ -1,13 +1,13 @@
-import { mergeMap, switchMap, tap } from 'rxjs/operators';
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
+import { mergeMap } from 'rxjs/operators';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSSafeAny, TDSTableComponent } from 'tmt-tang-ui';
-import { DataPouchDBDTO, KeyCacheIndexDBDTO,  ProductPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
+import { DataPouchDBDTO, KeyCacheIndexDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { CompanyCurrentDTO } from '../../dto/configs/company-current.dto';
 import { CommonService } from '../../services/common.service';
-import { debounceTime, distinctUntilChanged, finalize, map, takeUntil } from 'rxjs/operators';
-import { fromEvent, Observable, Subject, Subscription } from 'rxjs';
+import { debounceTime, finalize, map, takeUntil } from 'rxjs/operators';
+import { fromEvent, Subject } from 'rxjs';
 import { orderBy as _orderBy } from 'lodash';
 import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
 import { SharedService } from '../../services/shared.service';
@@ -17,6 +17,7 @@ import { InitSaleDTO, SaleSettingsDTO } from '../../dto/setting/setting-sale-onl
 @Component({
   selector: 'list-product-tmp',
   templateUrl: './list-product-tmp.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestroy, OnChanges {
@@ -26,6 +27,8 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
 
   @Input() priceListItems: any;
   @Output() onLoadProductToOrderLines: EventEmitter<any> = new EventEmitter<any>();
+  @Input() isLoadingProduct: boolean = false;
+
   private destroy$ = new Subject();
   lstOfData!: DataPouchDBDTO[];
 
@@ -43,7 +46,6 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
   roleConfigs!: SaleSettingsDTO;
   inventories!: TDSSafeAny;
   isLoading: boolean = false;
-  @Input() isLoadingProduct: boolean = false;
 
   options: Array<TDSSafeAny> = [
     { text: 'Tất cả', value: 'all' },
@@ -70,6 +72,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
       private message: TDSMessageService,
       private commonService: CommonService,
       public apiService: TCommonService,
+      private cdRef : ChangeDetectorRef,
       private viewContainerRef: ViewContainerRef) {
   }
 
@@ -90,6 +93,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
             this.indexDbVersion = res.cacheVersion;
             this.indexDbStorage = res.cacheDbStorage;
             this.loadDataTable();
+            this.cdRef.detectChanges();
         }
     })
   }
@@ -261,6 +265,11 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
         this.loadDataTable();
         this.isLoading = false;
     });
+    this.cdRef.detectChanges();
+  }
+
+  ngAfterViewChecked() {
+    this.cdRef.detectChanges();
   }
 
   trackByIndex(_: number, data: DataPouchDBDTO): number {
