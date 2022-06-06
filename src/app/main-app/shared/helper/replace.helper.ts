@@ -11,6 +11,9 @@ export class ReplaceHelper {
         text = text.replace(new RegExp(QuickReply.partner_phone, 'g'), partner.Phone || "chưa có số điện thoại");
         text = text.replace(new RegExp(QuickReply.partner_address, 'g'), partner.Street || "chưa có địa chỉ");
     }
+    else{
+      return text
+    }
 
     if (partner && partner.LastOrder) {
         let lastOrder = partner.LastOrder;

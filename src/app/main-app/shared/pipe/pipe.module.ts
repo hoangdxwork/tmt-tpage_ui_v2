@@ -1,3 +1,4 @@
+import { ReplacePartnerPipe } from './replace-partner.pipe';
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -25,7 +26,8 @@ const cmp =[
   FormatIconLikePipe,
   YiDateTimeV3Pipe,
   YiDateTimeFormatPipe,
-  ScrollConversationPipe
+  ScrollConversationPipe,
+  ReplacePartnerPipe
 ]
 
 @NgModule({
