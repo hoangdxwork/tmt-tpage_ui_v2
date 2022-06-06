@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TDSAutocompleteModule, TDSAvatarModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDatePickerModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSModalService, TDSPageHeaderModule, TDSPopoverModule, TDSSelectModule, TDSSpinnerModule, TDSSwitchModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSToolTipModule, TDSTypographyModule } from 'tmt-tang-ui';
+import { TDSAutocompleteModule, TDSAvatarModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDatePickerModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSModalService, TDSPageHeaderModule, TDSPopoverModule, TDSSelectModule, TDSSpinnerModule, TDSSwitchModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTimelineModule, TDSToolTipModule, TDSTypographyModule } from 'tmt-tang-ui';
 import { LiveCampaignRoutingModule } from './live-campaign-routing.module';
 import { MainSharedModule } from '../../shared/shared.module';
 import { PipeModule } from '../../shared/pipe/pipe.module';
@@ -102,7 +102,8 @@ const SERVICES = [
     TDSToolTipModule,
     TDSPopoverModule,
     TDSModalModule,
-    TDSFilterStatusModule
+    TDSFilterStatusModule,
+    TDSTimelineModule
   ],
   providers: [
     ...SERVICES
