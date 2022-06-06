@@ -37,6 +37,7 @@ import { FastSaleOrderLineService } from '../services/fast-sale-orderline.servic
 import { QuickReplyButtonComponent } from './quick-reply-button/quick-reply-button.component';
 import { OrderFilterOptionsComponent } from './order-filter-options/order-filter-options.component';
 import { BillFilterOptionsComponent } from './bill-filter-options/bill-filter-options.component';
+import { ModalEditOrderComponent } from './modal-edit-order/modal-edit-order.component';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -75,7 +76,8 @@ const SERVICES = [
 
 @NgModule({
   declarations: [
-    ...cmp
+    ...cmp,
+    ModalEditOrderComponent
   ],
   imports: [
     CommonModule,

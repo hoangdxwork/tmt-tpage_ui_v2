@@ -2,6 +2,16 @@ export interface CTMTagFilterObjDTO  {
   searchText: string,
 }
 
+export interface FilterLiveCampaignOrderDTO {
+  tags: Array<string>,
+  status: string,
+  searchText: string,
+  dateRange: {
+    startDate: Date,
+    endDate: Date
+  }
+}
+
 export interface TposLoggingFilterObjDTO {
   name: string,
   searchText: string,

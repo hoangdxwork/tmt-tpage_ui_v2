@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TDSAutocompleteModule, TDSAvatarModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDatePickerModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSModalService, TDSPageHeaderModule, TDSPopoverModule, TDSSelectModule, TDSSpinnerModule, TDSSwitchModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSToolTipModule, TDSTypographyModule } from 'tmt-tang-ui';
+import { TDSAutocompleteModule, TDSAvatarModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDatePickerModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSModalService, TDSPageHeaderModule, TDSPopoverModule, TDSSelectModule, TDSSpinnerModule, TDSSwitchModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTimelineModule, TDSToolTipModule, TDSTypographyModule } from 'tmt-tang-ui';
 import { LiveCampaignRoutingModule } from './live-campaign-routing.module';
 import { MainSharedModule } from '../../shared/shared.module';
 import { PipeModule } from '../../shared/pipe/pipe.module';
@@ -31,6 +31,7 @@ import { TableBillMessageComponent } from './components/table-bill-message/table
 import { ModalInfoBillComponent } from './components/modal-info-bill/modal-info-bill.component';
 import { TagService } from '../../services/tag.service';
 import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
+import { ODataLiveCampaignOrderService } from '../../services/mock-odata/odata-live-campaign-order.service';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -62,7 +63,8 @@ const SERVICES = [
   ApplicationUserService,
   SummaryFacade,
   TagService,
-  DeliveryCarrierService
+  DeliveryCarrierService,
+  ODataLiveCampaignOrderService
 ]
 
 @NgModule({
@@ -100,7 +102,8 @@ const SERVICES = [
     TDSToolTipModule,
     TDSPopoverModule,
     TDSModalModule,
-    TDSFilterStatusModule
+    TDSFilterStatusModule,
+    TDSTimelineModule
   ],
   providers: [
     ...SERVICES
