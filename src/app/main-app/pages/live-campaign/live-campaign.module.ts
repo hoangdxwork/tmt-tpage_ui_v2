@@ -32,6 +32,11 @@ import { ModalInfoBillComponent } from './components/modal-info-bill/modal-info-
 import { TagService } from '../../services/tag.service';
 import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { ODataLiveCampaignOrderService } from '../../services/mock-odata/odata-live-campaign-order.service';
+import { FastSaleOrderService } from '../../services/fast-sale-order.service';
+import { CarrierHandler } from '../../services/handlers/carier.handler';
+import { PartnerService } from '../../services/partner.service';
+import { OdataProductService } from '../../services/mock-odata/odata-product.service';
+import { CheckFormHandler } from '../../services/handlers/check-form.handler';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -64,7 +69,12 @@ const SERVICES = [
   SummaryFacade,
   TagService,
   DeliveryCarrierService,
-  ODataLiveCampaignOrderService
+  ODataLiveCampaignOrderService,
+  FastSaleOrderService,
+  CarrierHandler,
+  PartnerService,
+  OdataProductService,
+  CheckFormHandler
 ]
 
 @NgModule({
