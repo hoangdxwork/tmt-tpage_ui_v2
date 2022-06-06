@@ -58,8 +58,8 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   loadBill() {
     this.isLoading = true;
-    this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        delete res['@odata.context'];
+    // this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    //     delete res['@odata.context'];
 
     //     if (res.DateCreated) {
     //       res.DateCreated = new Date(res.DateCreated);
