@@ -7,7 +7,7 @@ import { SaleOnline_LiveCampaignDTO, UpdateFacebookLiveCampaignDTO } from '../..
 import { FacebookPostItem, From } from '../../dto/facebook-post/facebook-post.dto';
 import { SaleOnlineFacebookFromDTO, SaleOnlineFacebookPostDTO } from '../../dto/saleonlineorder/sale-online-order.dto';
 import { Message } from 'src/app/lib/consts/message.const';
-import { FilterLiveCampaignDTO, OdataLiveCampaignService } from '../../services/mock-odata/odata-live-campaign.service';
+import { ODataLiveCampaignService } from '../../services/mock-odata/odata-live-campaign.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { addDays } from 'date-fns';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
@@ -15,6 +15,7 @@ import { SortEnum } from 'src/app/lib';
 import { finalize } from 'rxjs/operators';
 import { AddLiveCampaignComponent } from '../add-live-campaign/add-live-campaign.component';
 import { OverviewLiveCampaignComponent } from '../overview-live-campaign/overview-live-campaign.component';
+import { FilterLiveCampaignDTO } from '../../dto/odata/odata.dto';
 
 @Component({
   selector: 'list-live-campaign',
@@ -48,7 +49,7 @@ export class ListLiveCampaignComponent implements OnInit {
   constructor(
     private modalRef: TDSModalRef,
     private message: TDSMessageService,
-    private odataLiveCampaignService: OdataLiveCampaignService,
+    private oDataLiveCampaignService: ODataLiveCampaignService,
     private liveCampaignService: LiveCampaignService,
     private viewContainerRef: ViewContainerRef,
     private modal: TDSModalService
@@ -59,7 +60,7 @@ export class ListLiveCampaignComponent implements OnInit {
   }
 
   loadData(pageSize: number, pageIndex: number) {
-    let filters = this.odataLiveCampaignService.buildFilter(this.filterObj);
+    let filters = this.oDataLiveCampaignService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
     this.isLoading = true;
@@ -78,7 +79,7 @@ export class ListLiveCampaignComponent implements OnInit {
 
   getViewData(params: string) {
     this.isLoading = true;
-    return this.odataLiveCampaignService
+    return this.oDataLiveCampaignService
         .get(params)
         .pipe(finalize(() => this.isLoading = false ));
   }

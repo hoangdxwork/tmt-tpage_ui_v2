@@ -165,5 +165,12 @@ export class DetailOrderComponent implements OnInit {
     }
   }
 
+  onSearch(event: TDSSafeAny) {
+    let text =  event?.target.value;
+
+    this.pageIndex = 1;
+    this.filterObj.searchText = text;
+    this.loadData(this.pageSize, this.pageIndex);
+  }
 
 }

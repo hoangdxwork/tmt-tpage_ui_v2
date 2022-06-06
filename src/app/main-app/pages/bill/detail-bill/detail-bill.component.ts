@@ -61,46 +61,46 @@ export class DetailBillComponent implements OnInit, OnDestroy{
     this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         delete res['@odata.context'];
 
-    //     if (res.DateCreated) {
-    //       res.DateCreated = new Date(res.DateCreated);
-    //     }
-    //     if (res.DateInvoice) {
-    //       res.DateInvoice = new Date(res.DateInvoice);
-    //     }
-    //     if (res.DateOrderRed) {
-    //       res.DateOrderRed = new Date(res.DateOrderRed);
-    //     }
-    //     if (res.ReceiverDate) {
-    //       res.ReceiverDate = new Date(res.ReceiverDate);
-    //     }
+        if (res.DateCreated) {
+          res.DateCreated = new Date(res.DateCreated);
+        }
+        if (res.DateInvoice) {
+          res.DateInvoice = new Date(res.DateInvoice);
+        }
+        if (res.DateOrderRed) {
+          res.DateOrderRed = new Date(res.DateOrderRed);
+        }
+        if (res.ReceiverDate) {
+          res.ReceiverDate = new Date(res.ReceiverDate);
+        }
 
-    //     this.dataModel = res;
-    //     this.isLoading = false;
-    //     // console.log(this.dataModel)
+        this.dataModel = res;
+        this.isLoading = false;
+        // console.log(this.dataModel)
 
-    //     for (var item of this.dataModel.OrderLines) {
-    //         this.productUOMQtyTotal = this.productUOMQtyTotal + item.ProductUOMQty;
-    //         this.productPriceTotal = this.productPriceTotal + item.PriceTotal;
-    //     }
+        for (var item of this.dataModel.OrderLines) {
+            this.productUOMQtyTotal = this.productUOMQtyTotal + item.ProductUOMQty;
+            this.productPriceTotal = this.productPriceTotal + item.PriceTotal;
+        }
 
-    //     switch(res.State) {
-    //       case 'draft':
-    //           this.indexStep = 1;
-    //           break;
-    //       case 'open':
-    //          this.indexStep = 2;
-    //          break;
-    //       case 'cancel':
-    //          this.indexStep = 2;
-    //         break;
-    //       case 'paid':
-    //            this.indexStep = 3;
-    //           break;
-    //     }
-    // }, error => {
-    //   this.isLoading = false;
-    //   this.message.error('Load dữ liệu PBH đã xảy ra lỗi!')
-    // })
+        switch(res.State) {
+          case 'draft':
+              this.indexStep = 1;
+              break;
+          case 'open':
+             this.indexStep = 2;
+             break;
+          case 'cancel':
+             this.indexStep = 2;
+            break;
+          case 'paid':
+               this.indexStep = 3;
+              break;
+        }
+    }, error => {
+      this.isLoading = false;
+      this.message.error('Load dữ liệu PBH đã xảy ra lỗi!')
+    })
   }
 
   loadPaymentInfoJson() {
