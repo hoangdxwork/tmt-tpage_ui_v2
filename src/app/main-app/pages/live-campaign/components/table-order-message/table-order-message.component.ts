@@ -1,4 +1,4 @@
-import { TDSMessageService } from 'tmt-tang-ui';
+import { TDSMessageService, TDSTableQueryParams } from 'tmt-tang-ui';
 import { Component, Input, OnInit } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 import { MessageDeliveryHistoryLiveCampaignParamsDTO, MessageHistorySaleOnlineDTO } from 'src/app/main-app/dto/common/table.dto';
@@ -21,37 +21,62 @@ export class TableOrderMessageComponent implements OnInit {
   isLoading: boolean = false;
   lstData: MessageHistorySaleOnlineDTO[] = [];
 
+  isOpenMessageFacebook: boolean = false;
+
   constructor(
     private commonService: CommonService,
     private message: TDSMessageService
   ) { }
 
   ngOnInit(): void {
-    this.resetFilter();
-    this.loadMessage();
   }
 
   resetFilter() {
     this.filterObj.Take = this.pageSize;
-    this.filterObj.Skip = this.pageIndex * this.pageSize;
+    this.filterObj.Skip = (this.pageIndex - 1) * this.pageSize;
     this.filterObj.LiveCampaignId = this.liveCampaignId;
   }
 
-  loadMessage() {
+  loadData() {
     this.isLoading = true;
-
     this.resetFilter();
-    let params: ODataParamsDTO<MessageDeliveryHistoryLiveCampaignParamsDTO> = {params: this.filterObj};
 
-    this.commonService.getHistoryMessageSentSaleOnline(params)
+    this.commonService.getHistoryMessageSentSaleOnline(this.filterObj)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.count = res?.Total;
         this.lstData = res?.Datas;
-        console.log(this.lstData);
       }, error => {
         this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
       });
+  }
+
+  getTooltipSuccess(total: number) {
+    return `${total || 0} tin nhắn thành công`;
+  }
+
+  getTooltipEror(total: number) {
+    return `${total || 0} tin nhắn thất bại`;
+  }
+
+  openDrawerMessage() {
+    this.isOpenMessageFacebook = true;
+  }
+
+  closeDrawerMessage() {
+    this.isOpenMessageFacebook = false;
+  }
+
+  refreshData() {
+    this.pageIndex = 1;
+    this.filterObj = {} as MessageDeliveryHistoryLiveCampaignParamsDTO;
+
+    this.loadData();
+  }
+
+  onQueryParamsChange(params: TDSTableQueryParams) {
+    this.pageSize = params.pageSize;
+    this.loadData();
   }
 
 }

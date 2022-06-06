@@ -1,8 +1,18 @@
-<div class="w-full text-body-2 text-neutral-1-900">
-  <tds-table #tableMessage [showSizeChanger]="true" [frontPagination]="false" [listData]="lstData" [scroll]="{y:'auto'}">
+<div class="w-full text-body-2 text-neutral-1-900 h-full pb-2">
+  <tds-table #tableMessage
+    [showSizeChanger]="true"
+    [frontPagination]="false"
+    [listData]="lstData"
+    [(pageSize)]="pageSize"
+    [(pageIndex)]="pageIndex"
+    [loading]="isLoading"
+    [total]="count"
+    [scroll]="{y:'auto'}"
+    (clickRefresh)="refreshData()"
+    (queryParams)="onQueryParamsChange($event)">
     <thead>
       <tr>
-        <th [width]="'13%'">Số hóa đơn</th>
+        <th [width]="'13%'">Mã đơn hàng</th>
         <th [width]="'13%'">Tên khách hàng</th>
         <th [width]="'13%'">Số điện thoại</th>
         <th [width]="'21%'">Địa chỉ</th>
@@ -12,40 +22,33 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let detail of tableMessage.data; let index=index">
-        <!-- Số hóa đơn -->
+      <tr *ngFor="let order of tableMessage.data; let index=index">
+        <td>{{order.OrderCode}}</td>
+        <td>{{order.PartnerName}}</td>
+        <td>{{order.PhoneNumber}}</td>
+        <td>{{order.Address}}</td>
+        <td>{{order.TotalAmount || 0 | number}}</td>
         <td>
-
+          <div class="flex gap-x-4 items-center">
+            <div class="flex items-center gap-x-1">
+              <span>{{order.MessageCount}}</span>
+              <span class="tdsi-success-line text-success-400" tds-tooltip [tooltipTitle]="getTooltipSuccess(order.MessageCount)"></span>
+            </div>
+          </div>
         </td>
-
-        <!-- Tên khách hàng -->
         <td>
-
-        </td>
-
-        <!-- Số điện thoại -->
-        <td>
-
-        </td>
-
-        <!-- Địa chỉ -->
-        <td>
-
-        </td>
-
-        <!-- Tổng tiền -->
-        <td>
-
-        </td>
-
-        <!-- Tổng tin nhắn -->
-        <td>
-
-        </td>
-
-        <!-- Thao tác -->
-        <td>
-
+          <div class="flex gap-x-2">
+            <button tds-button-icon color="secondary" size="sm" (click)="openDrawerMessage()">
+              <span class="flex items-center">
+                <i class="tdsi-messenger-fill"></i>
+              </span>
+            </button>
+            <button tds-button-icon color="secondary" size="sm">
+              <span class="flex items-center">
+                <i class="tdsi-paper-fill"></i>
+              </span>
+            </button>
+          </div>
         </td>
       </tr>
     </tbody>

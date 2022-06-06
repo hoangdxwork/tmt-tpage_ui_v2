@@ -1,5 +1,5 @@
-<div class="w-full h-full bg-white rounded-xl">
-  <div class="flex flex-col">
+<div class="w-full h-full bg-white rounded-xl pb-2">
+  <div class="flex flex-col h-full">
     <div class="p-4 font-semibold text-xl flex gap-x-2 justify-end">
       <button tds-button type="button" color="info">
         <i class="tdsi-print-fill"></i>
@@ -12,8 +12,17 @@
       <order-filter-options (onLoadOption)="onLoadOption($event)"></order-filter-options>
     </div>
 
-    <div class="flex-auto">
-      <tds-table #tableMessage [showSizeChanger]="true" [frontPagination]="false" [listData]="[]" [scroll]="{y:'auto'}">
+    <div class="h-full text-body-2 text-neutral-1-900">
+      <tds-table #tableMessage
+        [showSizeChanger]="true"
+        [frontPagination]="false"
+        [listData]="lstOfData"
+        [scroll]="{y:'auto'}"
+        [loading]="isLoading"
+        [total]="count"
+        [scroll]="{y:'auto'}"
+        (clickRefresh)="refreshData()"
+        (queryParams)="onQueryParamsChange($event)">
         <thead>
           <tr>
             <th [width]="'4%'">STT</th>
@@ -22,55 +31,75 @@
             <th [width]="'11%'">Số điện thoại</th>
             <th [width]="'11%'">Tổng tiền</th>
             <th [width]="'11%'">Tổng sản phẩm chờ chốt</th>
+            <th [width]="'11%'">Trạng thái</th>
             <th [width]="'11%'">Nhân viên</th>
             <th [width]="'11%'">Thời gian</th>
             <th [width]="'11%'">Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let detail of tableMessage.data; let index=index">
+          <tr *ngFor="let order of tableMessage.data; let index=index">
             <td>
               {{index + 1}}
             </td>
 
             <!-- Mã đơn hàng -->
             <td>
-
+              {{order.Code}}
             </td>
 
             <!-- Tên khách hàng -->
             <td>
-
+              {{order.PartnerName}}
             </td>
 
             <!-- Số điện thoại -->
             <td>
-
+              {{order.Telephone}}
             </td>
 
             <!-- Tổng tiền -->
             <td>
-
+              {{order.TotalAmount || 0 | number}}
             </td>
 
             <!-- Tổng sản phẩm chờ chốt -->
             <td>
+              {{order.TotalAmount}}
+            </td>
 
+            <!-- Trạng thái -->
+            <td>
+              {{order.StatusText}}
             </td>
 
             <!-- Nhân viên -->
             <td>
-
+              {{order.UserName}}
             </td>
 
             <!-- Thời gian -->
             <td>
-
+              {{order.DateCreated | date: 'dd/MM/yyyy HH:mm'}}
             </td>
 
             <!-- Thao tác -->
             <td>
-
+              <button tds-button-icon color="secondary" size="sm">
+                <span class="flex items-center">
+                  <i class="tdsi-messenger-fill"></i>
+                </span>
+              </button>
+              <button tds-button-icon color="secondary" size="sm" (click)="onEdit(order.Id)">
+                <span class="flex items-center">
+                  <i class="tdsi-edit-fill"></i>
+                </span>
+              </button>
+              <button tds-button-icon color="secondary" size="sm" (click)="onRemove(order.Id, order.Code)">
+                <span class="flex items-center">
+                  <i class="tdsi-trash-fill"></i>
+                </span>
+              </button>
             </td>
           </tr>
         </tbody>

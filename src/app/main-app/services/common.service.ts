@@ -106,7 +106,7 @@ export class CommonService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api,null);
   }
 
-  getHistoryMessageSentSaleOnline(data: ODataParamsDTO<MessageDeliveryHistoryLiveCampaignParamsDTO>): Observable<MessageHistorySaleOnlineResultDTO> {
+  getHistoryMessageSentSaleOnline(data: MessageDeliveryHistoryLiveCampaignParamsDTO): Observable<MessageHistorySaleOnlineResultDTO> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/gethistorymessagesentsaleonline`,
       method: TApiMethodType.get,
@@ -115,7 +115,7 @@ export class CommonService extends BaseSevice {
     return this.apiService.getData<MessageHistorySaleOnlineResultDTO>(api, data);
   }
 
-  getHistoryMessageSentFSOrder(data: ODataParamsDTO<MessageDeliveryHistoryLiveCampaignParamsDTO>) {
+  getHistoryMessageSentFSOrder(data: MessageDeliveryHistoryLiveCampaignParamsDTO) {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/gethistorymessagesentfsorder`,
       method: TApiMethodType.get,
