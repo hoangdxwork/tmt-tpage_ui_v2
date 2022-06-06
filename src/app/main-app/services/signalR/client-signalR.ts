@@ -2,6 +2,14 @@ import * as signalR from "@microsoft/signalr";
 import { HttpRequest, HttpResponse } from '@microsoft/signalr';
 import { TAuthService } from "src/app/lib";
 
+export function getSignalR() {
+  if (document.getElementsByTagName('signalr').length > 0) {
+      return (document.getElementsByTagName('signalr')[0].attributes as any)['href'].value;
+  } else {
+      return '';
+  }
+}
+
 // As per @Brennan's answer I used his advice and extened the default one
 export class SignalRHttpClient extends signalR.DefaultHttpClient {
 
