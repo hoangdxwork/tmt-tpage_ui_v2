@@ -22,7 +22,6 @@ export class LiveCampaignDetailComponent implements OnInit {
   }
 
   onChangeMenu(event: TDSSafeAny) {
-    console.log(event);
   }
 
 }

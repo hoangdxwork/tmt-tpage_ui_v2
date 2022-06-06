@@ -31,6 +31,7 @@ import { TableBillMessageComponent } from './components/table-bill-message/table
 import { ModalInfoBillComponent } from './components/modal-info-bill/modal-info-bill.component';
 import { TagService } from '../../services/tag.service';
 import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
+import { ODataLiveCampaignOrderService } from '../../services/mock-odata/odata-live-campaign-order.service';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -62,7 +63,8 @@ const SERVICES = [
   ApplicationUserService,
   SummaryFacade,
   TagService,
-  DeliveryCarrierService
+  DeliveryCarrierService,
+  ODataLiveCampaignOrderService
 ]
 
 @NgModule({
