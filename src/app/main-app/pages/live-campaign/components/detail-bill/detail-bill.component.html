@@ -1,1 +1,58 @@
-<p>detail-bill works!</p>
+<div class="w-full h-full bg-white rounded-xl">
+  <div class="flex flex-col">
+    <div class="p-4 font-semibold text-xl flex gap-x-2 justify-end">
+      <tds-form-field>
+        <input tdsInput placeholder="Tìm kiếm" autocomplete="off"/>
+        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+      </tds-form-field>
+      <bill-filter-options (onLoadOption)="onLoadOption($event)"></bill-filter-options>
+    </div>
+
+    <div class="flex-auto">
+      <tds-table #tableMessage [showSizeChanger]="true" [frontPagination]="false" [listData]="[]" [scroll]="{y:'auto'}">
+        <thead>
+          <tr>
+            <th [width]="'3.5%'">STT</th>
+            <th [width]="'9.6%'">Số hóa đơn</th>
+            <th [width]="'9.6%'">Tên khách hàng</th>
+            <th [width]="'9.6%'">Số điện thoại</th>
+            <th [width]="'9.6%'">Tổng tiền</th>
+            <th [width]="'9.6%'">Đặt cọc</th>
+            <th [width]="'9.6%'">Còn nợ</th>
+            <th [width]="'9.6%'">Trạng thái</th>
+            <th [width]="'9.6%'">Nhân viên</th>
+            <th [width]="'9.6%'">Thời gian</th>
+            <th [width]="'9.6%'">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let detail of tableMessage.data; let index=index">
+            <td>
+              {{index + 1}}
+            </td>
+            <!-- Số hóa đơn -->
+            <td></td>
+            <!-- Tên khách hàng -->
+            <td></td>
+            <!-- Số điện thoại -->
+            <td></td>
+            <!-- Tổng tiền -->
+            <td></td>
+            <!-- Đặt cọc -->
+            <td></td>
+            <!-- Còn nợ -->
+            <td></td>
+            <!-- Trạng thái -->
+            <td></td>
+            <!-- Nhân viên -->
+            <td></td>
+            <!-- Thời gian -->
+            <td></td>
+            <!-- Thao tác -->
+            <td></td>
+          </tr>
+        </tbody>
+      </tds-table>
+    </div>
+  </div>
+</div>

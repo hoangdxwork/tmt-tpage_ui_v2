@@ -1,18 +1,80 @@
 <div class="w-full h-full bg-white rounded-xl">
-  <div class="flex flex-col gap-y-4">
-    <div class="p-4 font-semibold text-xl">
+  <div class="flex flex-col">
+    <div class="p-4 font-semibold text-xl flex gap-x-2 justify-end">
       <button tds-button type="button" color="info">
         <i class="tdsi-print-fill"></i>
         In danh sách
       </button>
-      <tds-form-field class="w-full">
+      <tds-form-field>
         <input tdsInput placeholder="Tìm kiếm" autocomplete="off"/>
         <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
       </tds-form-field>
+      <order-filter-options (onLoadOption)="onLoadOption($event)"></order-filter-options>
     </div>
 
     <div class="flex-auto">
+      <tds-table #tableMessage [showSizeChanger]="true" [frontPagination]="false" [listData]="[]" [scroll]="{y:'auto'}">
+        <thead>
+          <tr>
+            <th [width]="'4%'">STT</th>
+            <th [width]="'11%'">Mã đơn hàng</th>
+            <th [width]="'11%'">Tên khách hàng</th>
+            <th [width]="'11%'">Số điện thoại</th>
+            <th [width]="'11%'">Tổng tiền</th>
+            <th [width]="'11%'">Tổng sản phẩm chờ chốt</th>
+            <th [width]="'11%'">Nhân viên</th>
+            <th [width]="'11%'">Thời gian</th>
+            <th [width]="'11%'">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let detail of tableMessage.data; let index=index">
+            <td>
+              {{index + 1}}
+            </td>
 
+            <!-- Mã đơn hàng -->
+            <td>
+
+            </td>
+
+            <!-- Tên khách hàng -->
+            <td>
+
+            </td>
+
+            <!-- Số điện thoại -->
+            <td>
+
+            </td>
+
+            <!-- Tổng tiền -->
+            <td>
+
+            </td>
+
+            <!-- Tổng sản phẩm chờ chốt -->
+            <td>
+
+            </td>
+
+            <!-- Nhân viên -->
+            <td>
+
+            </td>
+
+            <!-- Thời gian -->
+            <td>
+
+            </td>
+
+            <!-- Thao tác -->
+            <td>
+
+            </td>
+          </tr>
+        </tbody>
+      </tds-table>
     </div>
   </div>
 </div>

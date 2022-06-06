@@ -80,7 +80,7 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api,null);
   }
 
-  getById(key: TDSSafeAny): Observable<TDSSafeAny> {
+  getById(key: TDSSafeAny): Observable<FastSaleOrder_DefaultDTOV2> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})?$expand=Partner,User,Warehouse,Company,PriceList,RefundOrder,Account,Journal,PaymentJournal,Carrier,Tax,SaleOrder,OrderLines($expand=Product,ProductUOM,Account,SaleLine,User),Ship_ServiceExtras,Team`,
         method: TApiMethodType.get,
