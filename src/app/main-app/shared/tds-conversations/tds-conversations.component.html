@@ -75,7 +75,7 @@
             </div>
 
             <div *ngIf="(dataSource$ | async ) && (dataSource$ | async )?.items">
-              <ng-container *ngFor="let item of (dataSource$ | async )?.items | showAvatar | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex">
+              <div *ngFor="let item of (dataSource$ | async )?.items | showAvatar | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex">
                   <div *ngIf="item">
                       <div *ngIf="item.is_show_break && i!= 0" class="w-full relative">
                           <div class="date-v3">
@@ -166,7 +166,7 @@
                           [children]="getExtrasChildren((dataSource$ | async), item)">
                       </tds-conversation-item>
                   </div>
-              </ng-container>
+              </div>
             </div>
         </div>
     </tds-spin>
