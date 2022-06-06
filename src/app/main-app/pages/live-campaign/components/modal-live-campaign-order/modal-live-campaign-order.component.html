@@ -1,0 +1,59 @@
+<div class="w-full h-full text-body-2 text-neutral-1-900 h-[473px]">
+  <tds-table #tableMessage [listData]="data" [scroll]="{y:'auto'}">
+    <thead>
+      <tr>
+        <th [width]="'5%'">STT</th>
+        <th [width]="'16%'">Khách hàng</th>
+        <th [width]="'16%'">Mã đơn hàng</th>
+        <th [width]="'16%'">Số lượng sản phẩm</th>
+        <th [width]="'16%'">Ngày tạo</th>
+        <th [width]="'16%'">Trạng thái</th>
+        <th [width]="'16%'"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of tableMessage.data; let index=index">
+        <!-- STT-->
+        <td>
+          {{index + 1}}
+        </td>
+
+        <!-- Khách hàng -->
+        <td>
+          {{data.Facebook_UserName}}
+        </td>
+
+        <!-- Mã đơn hàng -->
+        <td>
+          Chưa có
+        </td>
+
+        <!-- Số lượng sản phẩm -->
+        <td>
+          {{data.Quantity}}
+        </td>
+
+        <!-- Ngày tạo -->
+        <td>
+          Chưa có
+        </td>
+
+        <!-- Trạng thái -->
+        <td>
+          Chưa có
+        </td>
+
+        <!-- Xem chi tiết -->
+        <td>
+          <button tds-button type="submit" color="primary" (click)="showModelInfoOrder(data.OrderId)">
+            Xem chi tiết
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </tds-table>
+</div>
+
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+  <button tds-button class="mr-2" color="secondary" (click)="onCancel()">Đóng</button>
+</div>

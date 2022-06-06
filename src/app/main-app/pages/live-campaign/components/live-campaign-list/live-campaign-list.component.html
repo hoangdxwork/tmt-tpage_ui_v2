@@ -1,0 +1,147 @@
+<div class="h-full w-full bg-white rounded-xl flex flex-col">
+  <div class="w-full flex space-x-2 justify-end items-center px-4 py-2.5">
+    <div class="w-1/4">
+        <tds-form-field class="w-full">
+            <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm chiến dịch"
+                tdsInput (keyup.enter)="onSearch($event)" />
+            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
+        </tds-form-field>
+    </div>
+
+    <button tds-button-icon color="secondary">
+        <span class="flex items-center">
+            <i class="tdsi-filter-2-line"></i>
+        </span>
+    </button>
+
+    <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
+  </div>
+
+  <div class="h-full pb-2.5">
+    <tds-table class="table-vertical-line" #tableLiveCampaign
+      [listData]="lstOfData"
+      [(pageSize)]="pageSize"
+      [(pageIndex)]="pageIndex"
+      [loading]="isLoading"
+      [showSizeChanger]="true"
+      [frontPagination]="false"
+      [total]="count"
+      [scroll]="{y:'auto'}"
+      (clickRefresh)="refreshData()"
+      (queryParams)="onQueryParamsChange($event)">
+        <thead>
+            <tr>
+                <th rowSpan="2" width="68px"></th>
+                <th rowSpan="2" *ngIf="isHidden('Name')">Tên chiến dịch</th>
+                <th colSpan="3" *ngIf="isHidden('Order')" class="text-center">Đơn hàng</th>
+                <th colSpan="3" *ngIf="isHidden('Product')" class="text-center">Sản phẩm</th>
+                <th rowSpan="2" *ngIf="isHidden('Time')">Thống kê gửi tin</th>
+                <th rowSpan="2" *ngIf="isHidden('Active')">Hoạt động</th>
+                <th rowSpan="2" *ngIf="isHidden('DateCreated')">Ngày tạo</th>
+                <th rowSpan="2" *ngIf="isHidden('Action')">Thao tác</th>
+            </tr>
+            <tr class="">
+                <th *ngIf="isHidden('Order')">Chờ chốt</th>
+                <th *ngIf="isHidden('Order')">Đã chốt</th>
+                <th *ngIf="isHidden('Order')">Đã hủy</th>
+                <th *ngIf="isHidden('Product')">Chờ chốt</th>
+                <th *ngIf="isHidden('Product')">Đã chốt</th>
+                <th *ngIf="isHidden('Product')">Đã hủy</th>
+            </tr>
+        </thead>
+        <tbody>
+          <ng-template ngFor let-data [ngForOf]="tableLiveCampaign.data" let-odd='odd' let-index="index">
+            <tr>
+                <td [expand]="expandSet.has(data.Id)" (expandChange)="onExpandChange(data.Id, $event)">
+                </td>
+
+                <!-- Tên chiến dịch -->
+                <td *ngIf="isHidden('Name')">{{ data.Name }}</td>
+
+                <!-- Đơn hàng -->
+                <td *ngIf="isHidden('Order')">{{data.SumOrderWaitCheckOut || 0 | number}}</td>
+                <td *ngIf="isHidden('Order')">{{data.SumOrderCheckOut || 0 | number}}</td>
+                <td *ngIf="isHidden('Order')"> <!-- style chỉnh sửa sau -->
+                  <span class="text-error-400">
+                    {{data.SumOrderCancelCheckOut || 0 | number}}
+                  </span>
+                </td>
+
+                <!-- Sản phẩm -->
+                <td *ngIf="isHidden('Product')">{{data.SumQtyWaitCheckOut || 0 | number}}</td>
+                <td *ngIf="isHidden('Product')">{{data.SumQtyCheckOut || 0 | number}}</td>
+                <td *ngIf="isHidden('Product')"> <!-- style chỉnh sửa sau -->
+                  <span class="text-error-400">
+                    {{data.SumCancelCheckout || 0 | number}}
+                  </span>
+                </td>
+
+                <!-- Thống kê gửi tin -->
+                <td *ngIf="isHidden('Time')">
+                  <div class="flex space-x-1 font-semibold">
+                    <span>Tổng hợp: </span>
+                    <span class="text-info-400">
+                      {{data.ResumeTime || 0}} phút
+                    </span>
+                  </div>
+                  <div class="mt-1">
+                    <span>{{data.StartDate | date:'dd/MM/yyyy HH:mm'}} - {{data.EndDate | date:'dd/MM/yyyy HH:mm'}}</span>
+                  </div>
+                </td>
+
+                <!-- Hoạt động -->
+                <td *ngIf="isHidden('Active')">
+                  <div>
+                    <tds-switch size="md" [checked]="data.IsActive" (change)="onChangeActive($event, data)"></tds-switch>
+                  </div>
+                </td>
+
+                <!-- Ngày tạo -->
+                <td *ngIf="isHidden('DateCreated')">
+                  {{data.DateCreated | date:'dd/MM/yyyy HH:mm'}}
+                </td>
+
+                <!-- Thao tác -->
+                <td *ngIf="isHidden('Action')">
+                    <div class="flex space-x-2">
+                        <button tds-button-icon color="secondary" size="sm" (click)="onDetail(data.Id)">
+                            <span class="flex items-center">
+                                <i class="tdsi-eye-open-fill"></i>
+                            </span>
+                        </button>
+
+                        <button tds-button-icon color="secondary" size="sm" (click)="onEdit(data.Id)">
+                            <span class="flex items-center">
+                                <i class="tdsi-edit-fill"></i>
+                            </span>
+                        </button>
+
+                        <button tds-button-icon color="secondary" size="sm" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
+                            <span class="flex items-center">
+                                <i class="tdsi-three-dots-horizon-fill"></i>
+                            </span>
+                        </button>
+
+                        <tds-dropdown-menu #menu="tdsDropdownMenu">
+                            <div class="w-full">
+                                <div tds-dropdown-item (click)="onCopy(data.Id)">
+                                    <a> Sao chép chiến dịch </a>
+                                </div>
+                                <div tds-dropdown-item (click)="showModalRemove(data)">
+                                    <a class="text-error-400"> Xóa chiến dịch </a>
+                                </div>
+                            </div>
+                        </tds-dropdown-menu>
+                    </div>
+                </td>
+            </tr>
+            <tr [expand]="expandSet.has(data.Id)" class="bg-neutral-3-50">
+                <div class="w-full bg-white rounded-md">
+                  <live-campaign-debt *ngIf="expandSet.has(data.Id)" [liveCampaignId]="data.Id"></live-campaign-debt>
+                </div>
+            </tr>
+          </ng-template>
+        </tbody>
+    </tds-table>
+  </div>
+</div>

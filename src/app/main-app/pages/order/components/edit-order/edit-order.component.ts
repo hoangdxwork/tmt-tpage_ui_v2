@@ -165,7 +165,6 @@ export class EditOrderComponent implements OnInit {
 
   loadData() {
     this.saleOnline_OrderService.getById(this.idOrder).subscribe(res => {
-      delete res["@odata.context"];
       this.model = res;
 
       this.updateForm(res);

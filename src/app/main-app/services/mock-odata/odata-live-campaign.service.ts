@@ -39,6 +39,15 @@ export class OdataLiveCampaignService extends BaseSevice {
     return this.apiService.getData<ODataResponsesDTO<SaleOnline_LiveCampaignDTO>>(api, null);
   }
 
+  getView(params: string): Observable<ODataResponsesDTO<SaleOnline_LiveCampaignDTO>>{
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetViewCampaign?${params}&$count=true${params}&$count=true`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<ODataResponsesDTO<SaleOnline_LiveCampaignDTO>>(api, null);
+  }
+
   public buildFilter(filterObj: FilterLiveCampaignDTO) {
 
     let dataFilter: FilterDataRequestDTO = {
@@ -59,15 +68,9 @@ export class OdataLiveCampaignService extends BaseSevice {
     if (TDSHelperString.hasValueString(filterObj?.searchText)) {
         dataFilter.filters.push( {
             filters: [
-              // { field: "Code", operator: OperatorEnum.contains, value: filterObj.searchText },
               { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText },
-              // { field: "Telephone", operator: OperatorEnum.contains, value: filterObj.searchText },
-              // { field: "Address", operator: OperatorEnum.contains, value: filterObj.searchText },
-              // { field: "PartnerName", operator: OperatorEnum.contains, value: filterObj.searchText },
-              // { field: "PartnerNameNosign", operator: OperatorEnum.contains, value: filterObj.searchText },
-              // { field: "StatusText", operator: OperatorEnum.contains, value: filterObj.searchText },
-              // { field: "CRMTeamName", operator: OperatorEnum.contains, value: filterObj.searchText},
-              // { field: "UserName", operator: OperatorEnum.contains, value: filterObj.searchText}
+              { field: "NameNoSign", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "Facebook_UserName", operator: OperatorEnum.contains, value: filterObj.searchText },
             ],
             logic: 'or'
         })

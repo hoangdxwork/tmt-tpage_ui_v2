@@ -1,0 +1,33 @@
+<div class="w-full text-body-2 text-neutral-1-900">
+  <tds-table #tableMessage [showSizeChanger]="true" [frontPagination]="false" [listData]="lstData" [scroll]="{y:'auto'}">
+    <thead>
+      <tr>
+        <th [width]="'13%'">Mã đơn hàng</th>
+        <th [width]="'13%'">Tên khách hàng</th>
+        <th [width]="'13%'">Số điện thoại</th>
+        <th [width]="'21%'">Địa chỉ</th>
+        <th [width]="'13%'">Tổng tiền</th>
+        <th [width]="'13%'">Tổng tin nhắn</th>
+        <th [width]="'13%'">Thao tác</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let detail of tableMessage.data; let index=index">
+        <!-- Mã đơn hàng -->
+        <td></td>
+        <!-- Tên khách hàng -->
+        <td></td>
+        <!-- Số điện thoại -->
+        <td></td>
+        <!-- Địa chỉ -->
+        <td></td>
+        <!-- Tổng tiền -->
+        <td></td>
+        <!-- Tổng tin nhắn -->
+        <td></td>
+        <!-- Thao tác -->
+        <td></td>
+      </tr>
+    </tbody>
+  </tds-table>
+<div>
