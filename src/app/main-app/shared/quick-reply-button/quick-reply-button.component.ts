@@ -1,3 +1,4 @@
+import { TDSSafeAny, TDSMessageService, TDSHelperString } from 'tmt-tang-ui';
 import { PartnerService } from './../../services/partner.service';
 import { QuickReplyDTO } from './../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { QuickReplyService } from './../../services/quick-reply.service';
@@ -16,10 +17,15 @@ export class QuickReplyButtonComponent implements OnInit {
 
   isVisibleReply: boolean = false;
   quickReplies: Array<QuickReplyDTO> = [];
+  lstquickReplyDefault!: Array<QuickReplyDTO>
+  objQuickReply: TDSSafeAny = {};
+  partner: TDSSafeAny;
+  keyFilterMail!: string;
 
   destroy$ = new Subject();
 
   constructor(
+    private message: TDSMessageService,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private quickReplyService: QuickReplyService,
@@ -30,16 +36,26 @@ export class QuickReplyButtonComponent implements OnInit {
   }
 
   getData() {
-    // this.quickReplyService.dataActive$
-    // .pipe(takeUntil(this.destroy$))
-    // .pipe(finalize( ()=>{ }))
-    // .subscribe(res => {
-    //   if(res) {
-    //     let local = localStorage.getItem('arrOBJQuickReply')
-    //       // let getArr = JSON.parse(local) || {};
-    //       this.quickReplies = [...res.value]
-    //   }
-    // });
+    this.partnerService.onLoadOrderFromTabPartner.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.partner = res;
+    });
+    
+    this.quickReplyService.dataActive$
+      .pipe(takeUntil(this.destroy$)).pipe(finalize(() => { }))
+      .subscribe(res => {
+        if (res) {
+          let getArr = JSON.parse(localStorage.getItem('arrOBJQuickReply') || '{}');
+          this.quickReplies = res.sort((a: TDSSafeAny, b: TDSSafeAny) => {
+            if (getArr != null) {
+              return (getArr[b.Id] || { TotalView: 0 }).TotalView - (getArr[a.Id] || { TotalView: 0 }).TotalView;
+            }else
+            return
+          });
+          this.lstquickReplyDefault = this.quickReplies
+        }
+      },err=>{
+        this.message.error(err?.error? err?.error.message: 'Load trả lời nhanh thất bại');
+      });
   }
 
   showModalAddQuickReply() {
@@ -50,6 +66,46 @@ export class QuickReplyButtonComponent implements OnInit {
       size: 'md',
       componentParams: {}
     });
+  }
+
+  setTextquickReply(item: QuickReplyDTO) {
+    let getArr = JSON.parse(localStorage.getItem('arrOBJQuickReply') || '{}');
+    if (getArr === null) {
+      this.objQuickReply[item.Id] = {
+        TotalView: 1,
+        LastViewDate: new Date(),
+      };
+      localStorage.setItem('arrOBJQuickReply', JSON.stringify(this.objQuickReply));
+    } else {
+      let findIndex = getArr[item.Id];
+      if (findIndex === undefined) {
+        getArr[item.Id] = {
+          TotalView: 1,
+          LastViewDate: new Date()
+        };
+      } else {
+        findIndex.TotalView = findIndex.TotalView + 1;
+        findIndex.LastViewDate = new Date();
+      }
+
+      localStorage.setItem('arrOBJQuickReply', JSON.stringify(getArr));
+    }
+
+    this.onQuickReplySelected.emit(item);
+    this.isVisibleReply = false;
+
+  }
+
+  searchMail(){
+    let data = this.lstquickReplyDefault;
+    let key = this.keyFilterMail;
+    if (TDSHelperString.hasValueString(key)) {
+      key = TDSHelperString.stripSpecialChars(key.trim());
+    }
+    data = data.filter((x) =>
+      (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1) ||
+      (x.BodyPlain && TDSHelperString.stripSpecialChars(x.BodyPlain.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
+    this.quickReplies = data
   }
 
 }
