@@ -9,13 +9,10 @@ export interface EventDataDict {
     providedIn: 'root'
 })
 
-export class ConversationFacebookState implements OnInit{
+export class ConversationFacebookState {
 
   public dataSource: any = {};
   public eventData: EventDataDict = {};
-
-  ngOnInit(): void {
-  }
 
   get getEvent() {
       return this.eventData;

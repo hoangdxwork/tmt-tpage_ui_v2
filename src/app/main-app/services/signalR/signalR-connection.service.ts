@@ -1,18 +1,18 @@
-import { EventEmitter, Injectable } from "@angular/core";
+import { EventEmitter, Inject, Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
-import { TAuthService, TCommonService } from "src/app/lib";
-import { BaseSignalRSevice } from "./base-signalR.service";
-import { HttpTransportType } from '@microsoft/signalr';
+import { TAuthService } from "src/app/lib";
+
 import { SignalRHttpClient } from "./client-signalR";
 import * as signalR from "@microsoft/signalr";
 import { TDSSafeAny } from "tmt-tang-ui";
 import { HubEvents } from "./app-constant/hub-event";
+import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class SignalRConnectionService extends BaseSignalRSevice {
+export class SignalRConnectionService  {
 
   private _hubConnection!: signalR.HubConnection;
   retry: number = 0;
@@ -39,9 +39,8 @@ export class SignalRConnectionService extends BaseSignalRSevice {
   public _onAddTemplateMessage$ = new EventEmitter<any>();
   public _onFacebookScanData$ = new EventEmitter<any>();
 
-  constructor(private apiService: TCommonService,
+  constructor(@Inject('BASE_SIGNALR') private BASE_SIGNALR: string,
       private authen: TAuthService) {
-      super(apiService);
   }
 
   public configSignalR(): any {
@@ -167,7 +166,7 @@ export class SignalRConnectionService extends BaseSignalRSevice {
     let hubConnectionBuilder = new signalR.HubConnectionBuilder() as any;
 
     this._hubConnection = hubConnectionBuilder
-      .withUrl(`${this._SIGNALR_URL}/hub/` + configs.hubName + this._SIGNALR_APPENDER , {
+      .withUrl(`${this.BASE_SIGNALR}/hub/` + configs.hubName + environment.signalRAppend , {
           transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling,
           accessTokenFactory: () => {
               return configs.token;

@@ -1,7 +1,7 @@
 import { ModalSendMessageAllComponent } from './../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { finalize, takeUntil, map } from 'rxjs/operators';
@@ -17,14 +17,14 @@ import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-aut
 @Component({
   selector: 'app-conversation-all',
   templateUrl: './conversation-all.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ConversationAllComponent extends TpageBaseComponent implements OnInit, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
   isLoading: boolean = false;
-  isLoadingCrm: boolean = false;
   dataSource$!: Observable<any> | undefined;
   lstMatchingItem!: ConversationMatchingItem[];
   destroy$ = new Subject();
@@ -54,6 +54,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     private fbGraphService: FacebookGraphService,
     public activatedRoute: ActivatedRoute,
     public router: Router,
+    private ngZone: NgZone,
+    private cdRef : ChangeDetectorRef,
     private printerService: PrinterService,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef) {
@@ -91,8 +93,14 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onChangeConversation(team: any) {
     this.validateData();
-    this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
-    this.loadConversations((this.dataSource$));
+    if(this.isProcessing){
+      return;
+    }
+
+    this.ngZone.run(() => {
+      this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
+      this.loadConversations((this.dataSource$));
+    })
   }
 
   validateData(){
@@ -102,30 +110,30 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   loadConversations(dataSource$: Observable<any>) {
-    if (dataSource$) {
-      this.isLoadingCrm = true;
-      dataSource$.pipe(takeUntil(this.destroy$))
-        .pipe(finalize(() => { this.isLoadingCrm = false }))
-        .subscribe((res: CRMMatchingMappingDTO) => {
-          if (res && TDSHelperArray.hasListValue(res.items)) {
-              this.lstMatchingItem = [...res.items];
-              let psid = this.paramsUrl?.psid || null;
-              //TODO: check psid khi load lần 2,3,4...
-              let exits = this.lstMatchingItem.filter(x => x.psid == psid)[0];
-              if (exits) {
-                this.getActiveCvsItem(exits);
-              } else {
-                //TODO: load lần đầu tiên
-                this.getActiveCvsItem(this.lstMatchingItem[0]);
-              }
-          } else {
-            //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
-            this.validateData();
-          }
-        }, error => {
-          this.message.error('Load CRMMatching đã xảy ra lỗi');
-        })
-    }
+    this.isProcessing = true;
+    dataSource$.pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => { this.isProcessing = false }))
+      .subscribe((res: CRMMatchingMappingDTO) => {
+        if (res && TDSHelperArray.hasListValue(res.items)) {
+            this.lstMatchingItem = [...res.items];
+            let psid = this.paramsUrl?.psid || null;
+            //TODO: check psid khi load lần 2,3,4...
+            let exits = this.lstMatchingItem.filter(x => x.psid == psid)[0];
+            if (exits) {
+              this.getActiveCvsItem(exits);
+            } else {
+              //TODO: load lần đầu tiên
+              this.getActiveCvsItem(this.lstMatchingItem[0]);
+            }
+        } else {
+          //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
+          this.validateData();
+        }
+        this.cdRef.detectChanges();
+      }, error => {
+        this.message.error('Load CRMMatching đã xảy ra lỗi');
+        this.cdRef.detectChanges();
+      })
   }
 
   //TODO: matching đang chọn active
@@ -156,42 +164,45 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   nextData(event: any) {
     if(event) {
-      if (this.isLoadingCrm) {
+      if (this.isProcessing) {
         return;
       }
 
-      this.isLoadingCrm = true;
+      this.isProcessing = true;
       if (this.queryFilter) {
         this.conversationDataFacade.nextDataWithQuery(this.currentTeam?.Facebook_PageId, this.type, this.queryFilter)
           .pipe(takeUntil(this.destroy$))
-          .pipe(finalize(() => { this.isLoadingCrm = false }))
+          .pipe(finalize(() => { this.isProcessing = false }))
           .subscribe(data => {
             if(data == false) {
-              this.isLoadingCrm = true;
+              this.isProcessing = true;
               return;
             }
             if(TDSHelperArray.hasListValue(data?.items)) {
               this.lstMatchingItem = [...data.items];
             }
+            this.cdRef.detectChanges();
+          }, error => {
+            this.cdRef.detectChanges();
           })
       } else {
         this.conversationDataFacade.nextData(this.currentTeam?.Facebook_PageId, this.type)
           .pipe(takeUntil(this.destroy$))
-          .pipe(finalize(() => this.isLoadingCrm = false))
+          .pipe(finalize(() => this.isProcessing = false))
           .subscribe(data => {
             if(data == false) {
-              this.isLoadingCrm = true;
+              this.isProcessing = true;
               return;
             }
             if(TDSHelperArray.hasListValue(data?.items)) {
               this.lstMatchingItem = [...data.items];
             }
+            this.cdRef.detectChanges();
+          }, error => {
+            this.cdRef.detectChanges();
           })
       }
     }
-  }
-
-  ngAfterViewInit(): void {
   }
 
   onClickTeam(data: CRMTeamDTO): any {

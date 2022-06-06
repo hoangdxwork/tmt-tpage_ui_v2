@@ -1,10 +1,10 @@
-import { ElementRef, Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({ name: 'scrollConversation' })
 export class ScrollConversationPipe implements PipeTransform {
 
     transform(value: any[], element: any) {
-      let lockYOffset = 10;
+      let lockYOffset = 40;
       if(element && value?.length > 0) {
         const yBottom = (element.scrollHeight - element.scrollTop - element.clientHeight ) as number;
 
@@ -14,7 +14,6 @@ export class ScrollConversationPipe implements PipeTransform {
           }, 750)
         }
       }
-
       return value;
     }
 }

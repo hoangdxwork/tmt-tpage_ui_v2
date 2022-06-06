@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
@@ -49,7 +49,14 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
     private conversationPostFacade: ConversationPostFacade,
     private facebookCommentService: FacebookCommentService,
     private facebookPostService: FacebookPostService,
+    private cdRef : ChangeDetectorRef,
     public crmService: CRMTeamService) {
+
+      //Detach change detector to limit how often check occurs
+      cdRef.detach();
+      setInterval(() => {
+        this.cdRef.detectChanges();
+      }, 5000);
   }
 
   ngOnInit() {
@@ -85,8 +92,10 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
 
               this.facebookCommentService.setSort(this.currentSort.value);
               this.loadData();
+              this.cdRef.detectChanges();
           }, error => {
             this.message.error('Thao tác thất bại');
+            this.cdRef.detectChanges();
           })
           break;
       }
@@ -97,7 +106,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
     this.partners$ = this.conversationPostFacade.getDicPartnerSimplest$();
     // this.team = this.crmService.getCurrentTeam() as any;
     // this.conversationPostFacade.setPartnerSimplest(this.team);
-    
+
     this.crmService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.team = res;
     })
@@ -229,8 +238,10 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
           });
         }
         this.data = res;
+        this.cdRef.detectChanges();
     }, error => {
-      this.message.error(`${error?.error?.message}` || 'Lọc theo người dùng đã xảy ra lỗi')
+      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Lọc theo người dùng đã xảy ra lỗi');
+      this.cdRef.detectChanges();
     });
   }
 
@@ -247,8 +258,10 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
           });
         }
         this.data = res;
+        this.cdRef.detectChanges();
     }, error => {
-      this.message.error(`${error?.error?.message}` || 'Lọc theo bình luận đã xảy ra lỗi')
+      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}`: 'Lọc theo bình luận đã xảy ra lỗi');
+      this.cdRef.detectChanges();
     });
   }
 
@@ -264,8 +277,10 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
           });
         }
         this.data = res;
+        this.cdRef.detectChanges();
       }, error => {
-        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+        this.cdRef.detectChanges();
       });
   }
 
@@ -288,8 +303,10 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
         }
         this.data = res;
         this.childs = res.Extras['childs'] || {};
+        this.cdRef.detectChanges();
     }, error => {
-      this.message.error(`${error?.error?.message}` || 'Load comment bài viết đã xảy ra lỗi')
+      this.message.error(`${error?.error?.message}` || 'Load comment bài viết đã xảy ra lỗi');
+      this.cdRef.detectChanges();
     });
   }
 
@@ -315,6 +332,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
             }
           });
         }
+        this.cdRef.detectChanges();
     });
   }
 

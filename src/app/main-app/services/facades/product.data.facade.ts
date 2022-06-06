@@ -1,5 +1,5 @@
 
-import { Injectable } from '@angular/core';
+import { ChangeDetectorRef, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { THelperCacheService } from 'src/app/lib';
@@ -18,8 +18,7 @@ export class ProductDataFacade {
   isLoading: boolean = true;
   errorMessage: TDSSafeAny;
 
-  constructor(
-    private cacheApi: THelperCacheService,
+  constructor(private cacheApi: THelperCacheService,
     private productIndexDBService: ProductIndexDBService) {
     this.initialize();
   }

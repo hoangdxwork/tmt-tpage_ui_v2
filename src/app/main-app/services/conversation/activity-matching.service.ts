@@ -11,12 +11,11 @@ import { CRMMessagesRequest } from '../../dto/conversation/make-activity.dto';
   providedIn: 'root'
 })
 
-export class ActivityMatchingService extends BaseSevice implements OnInit {
+export class ActivityMatchingService extends BaseSevice  {
 
   prefix: string = "odata";
   table: string = "CRMActivity";
   baseRestApi: string = "rest/v1.0/crmmatching";
-
 
   private activity: any = {};
   private extras: any = {};
@@ -24,12 +23,8 @@ export class ActivityMatchingService extends BaseSevice implements OnInit {
   public dataSource$!: Observable<any>;
   public onGetComment$: EventEmitter<any> = new EventEmitter();
 
-  constructor(private apiService: TCommonService,
-      private sgRConnectionService: SignalRConnectionService) {
+  constructor(private apiService: TCommonService) {
       super(apiService)
-  }
-
-  ngOnInit(): void {
   }
 
   get(queryObj: any, psid: any, url?: any): Observable<any> {
@@ -130,7 +125,7 @@ export class ActivityMatchingService extends BaseSevice implements OnInit {
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
-  
+
   addManyMessage(data: TDSSafeAny, psid: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/crmactivity/${psid}/addmanymessage`,
@@ -198,4 +193,5 @@ export class ActivityMatchingService extends BaseSevice implements OnInit {
     }
     return this.apiService.getData<TDSSafeAny>(api, model);
   }
+
 }

@@ -1,15 +1,14 @@
-import { HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { HttpParams, HttpRequest } from '@angular/common/http';
+import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, of, Subject } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 import { TTokenDTO, UserInitDTO } from '../dto';
 import { TApiMethodType } from '../enum';
 import { THelperCacheService } from '../utility';
 import { TCommonService } from './common.service';
-
 
 @Injectable({
     providedIn: 'root'
@@ -22,6 +21,7 @@ export class TAuthService {
     private _isLogin: boolean = false;
 
     constructor(private router: Router,
+        @Inject('BASE_API') private _BASE_URL: string,
         private apiService: TCommonService,
         private cacheService: THelperCacheService) {
     }
@@ -35,7 +35,7 @@ export class TAuthService {
         data.set("username", username);
         data.set("password", password);
         data.set("scope", "profile");
-        return that.apiService.connect(TApiMethodType.post, environment.apiApp + environment.apiAccount.signInPassword, data,
+        return that.apiService.connect(TApiMethodType.post, `${this._BASE_URL}` + environment.apiAccount.signInPassword, data,
             this.apiService.getHeaderJSon(false, true), false)
             .pipe(
                 mergeMap((data: TDSSafeAny) => {
@@ -48,7 +48,7 @@ export class TAuthService {
     //Thực thi việc lấy thông tin userInit
     getUserInit(): Observable<UserInitDTO | undefined> {
         let that = this;
-        return that.apiService.connect(TApiMethodType.get, environment.apiApp + environment.apiAccount.userInit, null,
+        return that.apiService.connect(TApiMethodType.get, `${this._BASE_URL}` + environment.apiAccount.userInit, null,
             this.apiService.getHeaderJSon(true), false);
     }
     //Thực thi việc gọi về Server để refresh token
@@ -60,7 +60,7 @@ export class TAuthService {
             }
         });
         return that.apiService.connect(TApiMethodType.post,
-            environment.apiApp + environment.apiAccount.refreshToken, formURL, this.apiService.getHeaderJSon(false, true), false)
+           `${this._BASE_URL}` + environment.apiAccount.refreshToken, formURL, this.apiService.getHeaderJSon(false, true), false)
             .pipe(
                 mergeMap((data: TDSSafeAny) => {
                     return that.setCacheToken(data);

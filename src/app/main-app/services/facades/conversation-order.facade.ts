@@ -1,7 +1,7 @@
 import { ActivityByGroup } from './../../dto/conversation/post/comment-group.dto';
 import { Message } from './../../../lib/consts/message.const';
 import { OrderFormHandler } from './../handlers/order-form.handler';
-import { EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
+import { ChangeDetectorRef, EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { TAuthService, TCommonService, UserInitDTO } from "src/app/lib";
@@ -55,8 +55,7 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
   public onLoadConversationPartner$ = new EventEmitter<CheckConversationData>();
   public onOrderCheckPost$: EventEmitter<ConversationOrderForm> = new EventEmitter<ConversationOrderForm>();
 
-  constructor(
-      private apiService: TCommonService,
+  constructor( private apiService: TCommonService,
       private message: TDSMessageService,
       private crmTeamService: CRMTeamService,
       private service: ConversationService,
@@ -68,8 +67,7 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
       private checkFormHandler: CheckFormHandler,
       private saleOnline_OrderService: SaleOnline_OrderService,
       private auth: TAuthService,
-      private sharedService: SharedService
-  ) {
+      private sharedService: SharedService) {
         super(apiService);
         this.onInit();
   }

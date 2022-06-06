@@ -59,115 +59,118 @@
             </div>
         </div>
     </div>
+
     <!-- main -->
+    <tds-spin class="flex-auto w-full flex overflow-hidden" [color]="'secondary'" tip="Loading..." [spinning]="isLoadMessage">
+        <div class="h-full overflow-y-auto tds-custom-scroll w-full relative"
+            id="myScroll" #scrollToIndex yiAutoScroll is-lock="true" lock-y-offset="40"
+            observe-attributes scroll-end="true" (onScrollToTop)="loadPrevMessages()">
 
-    <tds-spin class="flex-auto w-full flex overflow-hidden" size="sm" [spinning]="isNextData">
-      <div class="h-full overflow-y-auto tds-custom-scroll w-full"
-          id="myScroll" #scrollToIndex yiAutoScroll is-lock="true" lock-y-offset="10"
-          observe-attributes scroll-end="true" (onScrollToTop)="loadPrevMessages()">
-
-          <div *ngIf="(dataSource$ | async )?.items?.length == 0" class="h-full w-full flex items-center justify-center">
-              <span class="text-neutral-1-400 text-heading-3 font-semibold">
-                  Không tìm thấy nội dung
-              </span>
-          </div>
-
-          <div *ngIf="(dataSource$ | async )?.items">
-            <div  *ngFor="let item of (dataSource$ | async )?.items | showAvatar | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex">
-                <div *ngIf="item">
-                    <div *ngIf="item.is_show_break && i!= 0" class="w-full relative">
-                        <div class="date-v3">
-                            <span class="text-neutral-1-400" [innerHTML]="item.DateCreated | yiDateTimeV3"></span>
-                            <span class="hr"></span>
-                        </div>
-                    </div>
-                    <!-- Thông tin bài post -->
-                    <div *ngIf="item.type == 2 && item.object_id && getExtrasPosts((dataSource$ | async), item) &&
-                        (i == 0 || !(i == 0 || (item.object_id == (dataOrderBy[i-1])?.object_id)))" class="pl-2">
-                        <div class="post-block mb-3 bg-white flex flex-col">
-                            <div class="post-body flex flex-row justify-between p-4">
-                                <div class="post-content flex flex-col">
-                                    <div class="post-type flex flex-row items-center mb-3">
-                                        <tds-avatar
-                                            [tdsSrc]="getExtrasPosts((dataSource$ | async), item)?.status_type=='added_video'?'assets/images/conversation/live-circle.svg':'assets/images/conversation/facebook-circle.svg'"
-                                            [size]="24"
-                                            [shape]="'circle'"
-                                            [isAvatar]="false"
-                                            class="mr-1">
-                                        </tds-avatar>
-                                        <tds-tag [status]="getExtrasPosts((dataSource$ | async), item)?.status_type=='added_video'?'error':'info'" type="outline" rounded="rounded-full">
-                                            <span class="flex items-center py-0.5">
-                                            <span>{{getExtrasPosts((dataSource$ | async), item)?.created_time | date: "dd-MM-yyyy HH:mm"}}</span>
-                                            </span>
-                                        </tds-tag>
-                                    </div>
-                                    <div class="post-item">
-                                        <div class="w-full block">
-                                            <p class="story font-semibold" *ngIf="getExtrasPosts((dataSource$ | async), item)?.story">
-                                                {{getExtrasPosts((dataSource$ | async), item).story}}
-                                            </p>
-                                            <p class="message font-regular" *ngIf="getExtrasPosts((dataSource$ | async), item)?.message"
-                                                tds-typography ellipsis expandable [ellipsisRows]="2"
-                                                [content]="getExtrasPosts((dataSource$ | async), item)?.message"
-                                                [contentCollapse]="'Ẩn'">
-                                            </p>
-                                            <p class="description" *ngIf="getExtrasPosts((dataSource$ | async), item)?.description">{{getExtrasPosts((dataSource$ | async), item).description}}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="post-picture" *ngIf="getExtrasPosts((dataSource$ | async), item)?.picture && !checkPostPictureError(item)">
-                                    <img tds-image (error)="errorPostPicture(item)"
-                                        [tdsSrc]="getExtrasPosts((dataSource$ | async), item)?.picture"
-                                        alt="{{getExtrasPosts((dataSource$ | async), item)?.story}}" class="rounded-xl"/>
-                                </div>
-                            </div>
-                            <div class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 px-4">
-                                <div class="emotion-count flex flex-row items-center">
-                                    <div class="flex flex-row mr-1">
-                                        <img src="assets/images/conversation/like-circle.svg" width="20px" height="20px"
-                                            class="rounded-full z-50">
-                                        <img src="assets/images/conversation/love-circle.svg" width="20px" height="20px"
-                                            class="rounded-full z-40 -ml-2">
-                                    </div>
-                                    <span>
-                                        {{getExtrasPosts((dataSource$ | async), item)?.count_reactions || 0}}
-                                    </span>
-                                </div>
-                                <div class="comment flex flex-row items-center">
-                                    <span class="comment-count  mr-4">
-                                        {{getExtrasPosts((dataSource$ | async), item)?.count_comments || 0}} Bình luận
-                                    </span>
-                                    <div class="comment-button">
-                                        <button tds-button-flat-icon color="secondary" class="mr-4"
-                                            (click)="openPost(item, 'all')">
-                                            <i class="tdsi-chart-pie-fill text-xl"></i>
-                                        </button>
-                                        <button tds-button-flat-icon color="secondary" class="mr-4"
-                                            (click)="openPost(item, 'post')">
-                                            <i class="tdsi-expand-line text-xl"></i>
-                                        </button>
-                                        <button tds-button-flat-icon color="secondary">
-                                            <a href="https://www.facebook.com/{{item.id}}" target="_blank">
-                                                <i class="tdsi-search-line text-xl"></i>
-                                            </a>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <tds-conversation-item
-                        [team]="team" [psid]="data.psid || item.psid"
-                        [data]="item" [index]="i"
-                        [type]="type" [partner]="partner"
-                        [name]="data.name"
-                        [children]="getExtrasChildren((dataSource$ | async), item)">
-                    </tds-conversation-item>
-                </div>
+            <div class="absolute w-full flex justify-center z-10" *ngIf="isNextData">
+                <tds-spinner [color]="'secondary'" class="mr-1 w-5 h-5"></tds-spinner>
             </div>
-          </div>
-      </div>
+
+            <div *ngIf="(dataSource$ | async ) && (dataSource$ | async )?.items?.length == 0" class="h-full w-full flex items-center justify-center">
+                <tds-empty notFoundContent="Không có nội dung"></tds-empty>
+            </div>
+
+            <div *ngIf="(dataSource$ | async ) && (dataSource$ | async )?.items">
+              <ng-container *ngFor="let item of (dataSource$ | async )?.items | showAvatar | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex">
+                  <div *ngIf="item">
+                      <div *ngIf="item.is_show_break && i!= 0" class="w-full relative">
+                          <div class="date-v3">
+                              <span class="text-neutral-1-400" [innerHTML]="item.DateCreated | yiDateTimeV3"></span>
+                              <span class="hr"></span>
+                          </div>
+                      </div>
+                      <!-- Thông tin bài post -->
+                      <div *ngIf="item.type == 2 && item.object_id && getExtrasPosts((dataSource$ | async), item) &&
+                          (i == 0 || !(i == 0 || (item.object_id == (dataOrderBy[i-1])?.object_id)))" class="pl-2">
+                          <div class="post-block mb-3 bg-white flex flex-col">
+                              <div class="post-body flex flex-row justify-between p-4">
+                                  <div class="post-content flex flex-col">
+                                      <div class="post-type flex flex-row items-center mb-3">
+                                          <tds-avatar
+                                              [tdsSrc]="getExtrasPosts((dataSource$ | async), item)?.status_type=='added_video'?'assets/images/conversation/live-circle.svg':'assets/images/conversation/facebook-circle.svg'"
+                                              [size]="24"
+                                              [shape]="'circle'"
+                                              [isAvatar]="false"
+                                              class="mr-1">
+                                          </tds-avatar>
+                                          <tds-tag [status]="getExtrasPosts((dataSource$ | async), item)?.status_type=='added_video'?'error':'info'" type="outline" rounded="rounded-full">
+                                              <span class="flex items-center py-0.5">
+                                                  <span>{{getExtrasPosts((dataSource$ | async), item)?.created_time | date: "dd-MM-yyyy HH:mm"}}</span>
+                                              </span>
+                                          </tds-tag>
+                                      </div>
+                                      <div class="post-item">
+                                          <div class="w-full block">
+                                              <p class="story font-semibold" *ngIf="getExtrasPosts((dataSource$ | async), item)?.story">
+                                                  {{getExtrasPosts((dataSource$ | async), item).story}}
+                                              </p>
+                                              <p class="message font-regular" *ngIf="getExtrasPosts((dataSource$ | async), item)?.message"
+                                                  tds-typography ellipsis expandable [ellipsisRows]="2"
+                                                  [content]="getExtrasPosts((dataSource$ | async), item)?.message"
+                                                  [contentCollapse]="'Ẩn'">
+                                              </p>
+                                              <p class="description" *ngIf="getExtrasPosts((dataSource$ | async), item)?.description">{{getExtrasPosts((dataSource$ | async), item).description}}</p>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div class="post-picture" *ngIf="getExtrasPosts((dataSource$ | async), item)?.picture && !checkPostPictureError(item)">
+                                      <img tds-image (error)="errorPostPicture(item)"
+                                          [tdsSrc]="getExtrasPosts((dataSource$ | async), item)?.picture"
+                                          alt="{{getExtrasPosts((dataSource$ | async), item)?.story}}" class="rounded-xl"/>
+                                  </div>
+                              </div>
+                              <div class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 px-4">
+                                  <div class="emotion-count flex flex-row items-center">
+                                      <div class="flex flex-row mr-1">
+                                          <img src="assets/images/conversation/like-circle.svg" width="20px" height="20px"
+                                              class="rounded-full z-50">
+                                          <img src="assets/images/conversation/love-circle.svg" width="20px" height="20px"
+                                              class="rounded-full z-40 -ml-2">
+                                      </div>
+                                      <span>
+                                          {{getExtrasPosts((dataSource$ | async), item)?.count_reactions || 0}}
+                                      </span>
+                                  </div>
+                                  <div class="comment flex flex-row items-center">
+                                      <span class="comment-count  mr-4">
+                                          {{getExtrasPosts((dataSource$ | async), item)?.count_comments || 0}} Bình luận
+                                      </span>
+                                      <div class="comment-button">
+                                          <button tds-button-flat-icon color="secondary" class="mr-4"
+                                              (click)="openPost(item, 'all')">
+                                              <i class="tdsi-chart-pie-fill text-xl"></i>
+                                          </button>
+                                          <button tds-button-flat-icon color="secondary" class="mr-4"
+                                              (click)="openPost(item, 'post')">
+                                              <i class="tdsi-expand-line text-xl"></i>
+                                          </button>
+                                          <button tds-button-flat-icon color="secondary">
+                                              <a href="https://www.facebook.com/{{item.id}}" target="_blank">
+                                                  <i class="tdsi-search-line text-xl"></i>
+                                              </a>
+                                          </button>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <tds-conversation-item
+                          [team]="team" [psid]="data.psid || item.psid"
+                          [data]="item" [index]="i"
+                          [type]="type" [partner]="partner"
+                          [name]="data.name"
+                          [children]="getExtrasChildren((dataSource$ | async), item)">
+                      </tds-conversation-item>
+                  </div>
+              </ng-container>
+            </div>
+        </div>
     </tds-spin>
+
     <!-- footer  -->
     <div #chatFooter class="chat-footer w-full flex flex-col px-2 pb-3">
         <div class="w-full pt-2 pb-3 flex items-center gap-x-2">
@@ -278,8 +281,9 @@
             </div>
             <div class="w-full pt-4 flex flex-row">
                 <textarea tdsInput placeholder="Nhập nội dung tin nhắn, nhấn [Enter] để gửi"
-                  [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
-                  (keydown.enter)="onEnter($event)" class="h-16 resize-none !p-0 !m-0"></textarea>
+                    [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
+                    (keydown.enter)="onEnter($event)" class="h-16 resize-none !p-0 !m-0">
+                </textarea>
                 <div>
                     <tds-spin [spinning]="isLoadingSendMess" [indicator]="indicatorTemplate">
                         <button tds-button type="button" color="primary" class="!rounded-full ml-2" [size]="'lg'"(click)="onClickSender()">

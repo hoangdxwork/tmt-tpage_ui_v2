@@ -176,7 +176,7 @@ export interface MakeActivityItemWebHook {
   page_id: string | null;
   last_activity: Object;
   last_message: Object;
-  attachment: any;
+  attachments: any;
   fbid: string;
   tpid: string;
   status: ActivityStatus;

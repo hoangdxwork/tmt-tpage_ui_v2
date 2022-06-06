@@ -1,15 +1,14 @@
-import { OnDestroy } from "@angular/core";
-import { Observable, Subject } from "rxjs";
-import { environment } from "src/environments/environment";
-import { TDSHelperObject, TDSSafeAny } from "tmt-tang-ui";
-import { TCommonService, THelperCacheService } from "../../lib";
+import { TCommonService } from "../../lib";
+import { BaseHelper } from "../shared/helper/base.helper";
 
 export abstract class BaseSevice {
+
     protected abstract prefix: string;
     protected abstract table: string;
     protected abstract baseRestApi: string;
+
     protected get _BASE_URL() {
-        return environment.apiApp
+        return BaseHelper.getBaseApi();
     };
 
     constructor(public libCommon: TCommonService) { }
