@@ -3,8 +3,6 @@ import { ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanActivate, CanAc
 import { environment } from 'src/environments/environment';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 import { TAuthService } from './auth.service';
-import { TGlobalConfig } from './global-config';
-
 
 @Injectable({
     providedIn: 'root'
