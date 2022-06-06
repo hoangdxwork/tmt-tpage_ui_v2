@@ -35,6 +35,8 @@ import { AddLiveCampaignComponent } from './add-live-campaign/add-live-campaign.
 import { OverviewLiveCampaignComponent } from './overview-live-campaign/overview-live-campaign.component';
 import { FastSaleOrderLineService } from '../services/fast-sale-orderline.service';
 import { QuickReplyButtonComponent } from './quick-reply-button/quick-reply-button.component';
+import { OrderFilterOptionsComponent } from './order-filter-options/order-filter-options.component';
+import { BillFilterOptionsComponent } from './bill-filter-options/bill-filter-options.component';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -56,6 +58,9 @@ const cmp =[
   ListLiveCampaignComponent,
   AddLiveCampaignComponent,
   QuickReplyButtonComponent,
+  OverviewLiveCampaignComponent,
+  OrderFilterOptionsComponent,
+  BillFilterOptionsComponent
 ]
 
 const SERVICES = [
@@ -70,8 +75,7 @@ const SERVICES = [
 
 @NgModule({
   declarations: [
-    ...cmp,
-    OverviewLiveCampaignComponent
+    ...cmp
   ],
   imports: [
     CommonModule,

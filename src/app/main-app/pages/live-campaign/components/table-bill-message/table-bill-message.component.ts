@@ -16,7 +16,7 @@ export class TableBillMessageComponent implements OnInit {
   pageIndex = 1;
   pageSize = 20;
   count: number = 0;
-  filterObj!: MessageDeliveryHistoryLiveCampaignParamsDTO;
+  filterObj = {} as MessageDeliveryHistoryLiveCampaignParamsDTO;
 
   isLoading: boolean = false;
   lstData: MessageHistoryFSOrderDTO[] = [];

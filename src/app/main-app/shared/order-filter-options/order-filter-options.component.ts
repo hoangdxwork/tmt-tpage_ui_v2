@@ -5,10 +5,10 @@ import { TagService } from 'src/app/main-app/services/tag.service';
 import { TDSContextMenuService, TDSSafeAny } from 'tmt-tang-ui';
 
 @Component({
-  selector: 'filter-options',
-  templateUrl: './filter-options.component.html',
+  selector: 'order-filter-options',
+  templateUrl: './order-filter-options.component.html',
 })
-export class FilterOptionsComponent implements OnInit { // Xóa
+export class OrderFilterOptionsComponent implements OnInit {
 
   @Output() onLoadOption = new EventEmitter<TDSSafeAny>();
 

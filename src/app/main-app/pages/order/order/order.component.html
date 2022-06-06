@@ -47,7 +47,7 @@
             <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keydown.enter)="applyFilter($event)" />
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
           </tds-form-field>
-          <filter-options (onLoadOption)="onLoadOption($event)"></filter-options>
+          <order-filter-options (onLoadOption)="onLoadOption($event)"></order-filter-options>
           <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
         </div>
 

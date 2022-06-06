@@ -28,6 +28,9 @@ import { DetailBillPaymentComponent } from './components/detail-bill-payment/det
 import { DetailBillComponent } from './components/detail-bill/detail-bill.component';
 import { TableOrderMessageComponent } from './components/table-order-message/table-order-message.component';
 import { TableBillMessageComponent } from './components/table-bill-message/table-bill-message.component';
+import { ModalInfoBillComponent } from './components/modal-info-bill/modal-info-bill.component';
+import { TagService } from '../../services/tag.service';
+import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -35,7 +38,19 @@ const cmp =[
   LiveCampaignListComponent,
   LiveCampaignDebtComponent,
   LiveCampaignDetailComponent,
-  ConfigColumnComponent
+  ConfigColumnComponent,
+  DetailReportComponent,
+  ModalLiveCampaignOrderComponent,
+  ModalLiveCampaignBillComponent,
+  ModalInfoOrderComponent,
+  DetailMessageComponent,
+  DetailProductComponent,
+  DetailOrderComponent,
+  DetailBillPaymentComponent,
+  DetailBillComponent,
+  TableOrderMessageComponent,
+  TableBillMessageComponent,
+  ModalInfoBillComponent
 ]
 
 const SERVICES = [
@@ -45,23 +60,14 @@ const SERVICES = [
   LiveCampaignService,
   FastSaleOrderLineService,
   ApplicationUserService,
-  SummaryFacade
+  SummaryFacade,
+  TagService,
+  DeliveryCarrierService
 ]
 
 @NgModule({
   declarations: [
-    ...cmp,
-    DetailReportComponent,
-    ModalLiveCampaignOrderComponent,
-    ModalLiveCampaignBillComponent,
-    ModalInfoOrderComponent,
-    DetailMessageComponent,
-    DetailProductComponent,
-    DetailOrderComponent,
-    DetailBillPaymentComponent,
-    DetailBillComponent,
-    TableOrderMessageComponent,
-    TableBillMessageComponent
+    ...cmp
   ],
   imports: [
     CommonModule,

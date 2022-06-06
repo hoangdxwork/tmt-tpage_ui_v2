@@ -1,5 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { ViewReportFastSaleOrderLiveCampaignDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
+import { TDSModalRef, TDSModalService } from 'tmt-tang-ui';
+import { ModalInfoBillComponent } from '../modal-info-bill/modal-info-bill.component';
 
 @Component({
   selector: 'modal-live-campaign-bill',
@@ -9,9 +11,29 @@ export class ModalLiveCampaignBillComponent implements OnInit {
 
   @Input() data: ViewReportFastSaleOrderLiveCampaignDTO[] = [];
 
-  constructor() { }
+  constructor(
+    private modalRef: TDSModalRef,
+    private modal: TDSModalService,
+    private viewContainerRef: ViewContainerRef
+  ) { }
 
   ngOnInit(): void {
+  }
+
+  showModelInfoOrder(id: number) {
+    this.modal.create({
+      title: 'Thông tin hóa đơn',
+      size:'xl',
+      content: ModalInfoBillComponent,
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        billId: id
+      }
+    });
+  }
+
+  onCancel() {
+    this.modalRef.destroy();
   }
 
 }

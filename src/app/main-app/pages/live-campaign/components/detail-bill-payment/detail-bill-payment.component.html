@@ -1,1 +1,61 @@
-<p>detail-bill-payment works!</p>
+<div class="w-full h-full bg-white rounded-xl">
+  <div class="flex flex-col">
+    <div class="p-4 font-semibold text-xl flex gap-x-2 justify-end">
+      <tds-form-field>
+        <input tdsInput placeholder="Tìm kiếm" autocomplete="off"/>
+        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+      </tds-form-field>
+      <bill-filter-options (onLoadOption)="onLoadOption($event)"></bill-filter-options>
+    </div>
+
+    <div class="flex-auto">
+      <tds-table #tableMessage [showSizeChanger]="true" [frontPagination]="false" [listData]="[]" [scroll]="{y:'auto'}">
+        <thead>
+          <tr>
+            <th [width]="'3.5%'">STT</th>
+            <th [width]="'10%'">Hình thanh toán</th>
+            <th [width]="'9%'">Số HĐ</th>
+            <th [width]="'8%'">Khách hàng</th>
+            <th [width]="'6%'">Tiền cọc</th>
+            <th [width]="'6%'">Còn nợ</th>
+            <th [width]="'6%'">Tổng tiền</th>
+            <th [width]="'7%'">Tiền thu hộ</th>
+            <th [width]="'7%'">Trạng thái</th>
+            <th [width]="'10%'">Nhân viên</th>
+            <th [width]="'9%'">Ngày cập nhật</th>
+            <th [width]="'16%'">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let detail of tableMessage.data; let index=index">
+            <td>
+              {{index + 1}}
+            </td>
+            <!-- Hình thanh toán -->
+            <td></td>
+            <!-- Số HĐ -->
+            <td></td>
+            <!-- Khách hàng -->
+            <td></td>
+            <!-- Tiền cọc -->
+            <td></td>
+            <!-- Còn nợ -->
+            <td></td>
+            <!-- Tổng tiền -->
+            <td></td>
+            <!-- Tiền thu hộ -->
+            <td></td>
+            <!-- Trạng thái -->
+            <td></td>
+            <!-- Nhân viên -->
+            <td></td>
+            <!-- Ngày cập nhật -->
+            <td></td>
+            <!-- Thao tác -->
+            <td></td>
+          </tr>
+        </tbody>
+      </tds-table>
+    </div>
+  </div>
+</div>

@@ -16,7 +16,7 @@ export class TableOrderMessageComponent implements OnInit {
   pageIndex = 1;
   pageSize = 20;
   count: number = 0;
-  filterObj!: MessageDeliveryHistoryLiveCampaignParamsDTO;
+  filterObj = {} as MessageDeliveryHistoryLiveCampaignParamsDTO;
 
   isLoading: boolean = false;
   lstData: MessageHistorySaleOnlineDTO[] = [];
@@ -48,6 +48,7 @@ export class TableOrderMessageComponent implements OnInit {
       .subscribe(res => {
         this.count = res?.Total;
         this.lstData = res?.Datas;
+        console.log(this.lstData);
       }, error => {
         this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
       });
