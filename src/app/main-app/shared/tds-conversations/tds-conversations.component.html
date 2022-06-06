@@ -61,15 +61,17 @@
     </div>
 
     <!-- main -->
-    <tds-spin class="flex-auto w-full flex overflow-hidden" [spinning]="isNextData" [color]="'secondary'" size="sm" >
-        <div class="h-full overflow-y-auto tds-custom-scroll w-full"
+    <tds-spin class="flex-auto w-full flex overflow-hidden" [color]="'secondary'" tip="Loading..." [spinning]="isLoadMessage">
+        <div class="h-full overflow-y-auto tds-custom-scroll w-full relative"
             id="myScroll" #scrollToIndex yiAutoScroll is-lock="true" lock-y-offset="40"
             observe-attributes scroll-end="true" (onScrollToTop)="loadPrevMessages()">
 
+            <div class="absolute w-full flex justify-center z-10" *ngIf="isNextData">
+                <tds-spinner [color]="'secondary'" class="mr-1 w-5 h-5"></tds-spinner>
+            </div>
+
             <div *ngIf="(dataSource$ | async ) && (dataSource$ | async )?.items?.length == 0" class="h-full w-full flex items-center justify-center">
-                <span class="text-neutral-1-400 text-heading-3 font-semibold">
-                    Không tìm thấy nội dung
-                </span>
+                <tds-empty notFoundContent="Không có nội dung"></tds-empty>
             </div>
 
             <div *ngIf="(dataSource$ | async ) && (dataSource$ | async )?.items">

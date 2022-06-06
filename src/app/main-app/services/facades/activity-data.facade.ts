@@ -715,52 +715,35 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
     return Object.keys(obj).length === 0;
   }
 
-  nextData(pageId: string, psid: string, type: string): Observable<any> {
+  nextData(pageId: string, psid: string, type: string){
     const data = this.activityFbState.getByType(pageId, psid, type) as any;
     let exist = data && data.response?.hasNextPage || data && data.response?.nextPageUrl != this.nextPageUrlCurrent;
 
-    return new Observable(observer => {
+    if(this.isProcessing || !exist) {
+      this.hasNextData$.emit(false);
+      return;
+    }
 
-      if(this.isProcessing) {
+    this.hasNextData$.emit(true);
+    this.nextPageUrlCurrent = data?.response?.nextPageUrl;
+
+    this.service.getLink(this.nextPageUrlCurrent)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res: CRMMessagesRequest): any => {
+        if(TDSHelperArray.hasListValue(res.Items)) {
+
+          data.extras.children = { ...data.extras?.children, ...res.Extras?.children };
+          data.extras.posts = { ...data.extras?.posts, ...res.Extras?.posts };
+          data.items = [ ...res.Items, ...data.items ];
+
+          data.response = this.service.createResponse(res);
           this.hasNextData$.emit(false);
-          return;
-      }
-
-      if(!exist) {
+        } else {
+          this.hasNextData$.emit(false);
+        }
+      }, error => {
         this.hasNextData$.emit(false);
-        return;
-      } else {
-          this.hasNextData$.emit(true);
-          this.nextPageUrlCurrent = data?.response?.nextPageUrl;
-
-          this.service.getLink(this.nextPageUrlCurrent)
-            .subscribe((res: CRMMessagesRequest): any => {
-
-              if(TDSHelperArray.hasListValue(res.Items)) {
-                data.extras.children = { ...data.extras?.children, ...res.Extras?.children };
-                data.extras.posts = { ...data.extras?.posts, ...res.Extras?.posts };
-                data.items = [ ...res.Items, ...data.items ];
-
-                data.response = this.service.createResponse(res);
-
-                this.hasNextData$.emit(false);
-                observer.next(data);
-                observer.complete();
-
-              } else {
-                this.isProcessing = true;
-                this.hasNextData$.emit(false);
-
-                observer.next();
-                observer.complete();
-              }
-            }, error => {
-              this.hasNextData$.emit(false);
-              (this.nextPageUrlCurrent as any) = null;
-              observer.next();
-              observer.complete();
-          });
-      }
+        (this.nextPageUrlCurrent as any) = null;
     });
   }
 

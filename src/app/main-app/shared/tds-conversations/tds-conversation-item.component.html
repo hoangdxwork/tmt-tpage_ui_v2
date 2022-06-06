@@ -67,7 +67,8 @@
           <!-- Tin nhắn không tải được -->
           <div *ngIf="!data.message_formatted && !data.message?.attachments" class="message-inner !text-accent-3 !bg-accent-3 !bg-opacity-20"
             tds-tooltip tooltipTitle="{{data.DateCreated | yiDateTimeFormat}}">
-              Không tải được tin nhắn! </div>
+              Không tải được tin nhắn!
+          </div>
 
           <!-- Tin nhắn lỗi -->
           <div *ngIf="data.error_message || data.status == enumActivityStatus.fail" class="select-message flex items-center">

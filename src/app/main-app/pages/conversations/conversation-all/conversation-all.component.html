@@ -73,12 +73,11 @@
             <tds-checkbox (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
           </div>
           <!-- List danh sách chat -->
-          <tds-spin class="overflow-hidden flex flex-auto" size="sm" [spinning]="isProcessing" [color]="'secondary'">
+          <div class="overflow-hidden flex flex-auto" >
             <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstMatchingItem" >
               <div class="overflow-y-auto tds-custom-scroll flex flex-col"
                   yiAutoScroll lock-y-offset="10" scroll-end="true"
-                  (on-change-bottom)="nextData($event)"
-                  id="myScroll" is-lock="true" observe-attributes >
+                  (on-change-bottom)="nextData($event)" id="myScroll" is-lock="true" observe-attributes >
                   <div *ngFor="let item of lstMatchingItem; let i= index; trackBy: trackByIndex">
                       <a *ngIf="activeCvsItem?.id && currentTeam" (click)="changeCurrentCvsItem(item)" type="button" class="w-full cursor-pointer">
                         <current-conversation-item
@@ -93,11 +92,11 @@
                   </div>
               </div>
             </div>
-          </tds-spin>
+          </div>
       </div>
   </div>
   <!--Nội dung cuộc hội thoại-->
-  <tds-spin class="flex w-1/2" [spinning]="isLoading">
+  <div class="flex w-1/2">
     <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
         <div class="flex w-full flex-col h-full" *ngIf="activeCvsItem?.id && currentTeam">
             <shared-tds-conversations
@@ -107,11 +106,8 @@
                 (onLoadMiniChat)="onLoadMiniChat($event)">
             </shared-tds-conversations>
         </div>
-        <div *ngIf="!activeCvsItem">
-          <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
-        </div>
     </div>
-  </tds-spin>
+  </div>
   <!--Xử lí thông tin khách hàng & Đơn hàng-->
   <!-- Dữ liệu load vào form partner trước từ funtion checkConversation(),sau đó lấy dữ liệu gán lại form order -->
   <tds-spin class="flex w-[30%] h-full" [spinning]="isLoading">

@@ -1,7 +1,7 @@
 import { ModalSendMessageAllComponent } from './../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
-import { AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { finalize, takeUntil, map } from 'rxjs/operators';
@@ -20,7 +20,7 @@ import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-aut
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
+export class ConversationAllComponent extends TpageBaseComponent implements OnInit, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
@@ -54,19 +54,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     private fbGraphService: FacebookGraphService,
     public activatedRoute: ActivatedRoute,
     public router: Router,
+    private ngZone: NgZone,
     private cdRef : ChangeDetectorRef,
     private printerService: PrinterService,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef) {
       super(crmService, activatedRoute, router);
-  }
-
-  ngAfterViewInit() {
-    this.cdRef.detectChanges();
-  }
-
-  ngAfterViewChecked() {
-    this.cdRef.detectChanges();
   }
 
   ngOnInit(): void {
@@ -100,8 +93,14 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onChangeConversation(team: any) {
     this.validateData();
-    this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
-    this.loadConversations((this.dataSource$));
+    if(this.isProcessing){
+      return;
+    }
+
+    this.ngZone.run(() => {
+      this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
+      this.loadConversations((this.dataSource$));
+    })
   }
 
   validateData(){
@@ -111,33 +110,30 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   loadConversations(dataSource$: Observable<any>) {
-    if (dataSource$) {
-      this.isProcessing = true;
-
-      dataSource$.pipe(takeUntil(this.destroy$))
-        .pipe(finalize(() => { this.isProcessing = false }))
-        .subscribe((res: CRMMatchingMappingDTO) => {
-          if (res && TDSHelperArray.hasListValue(res.items)) {
-              this.lstMatchingItem = [...res.items];
-              let psid = this.paramsUrl?.psid || null;
-              //TODO: check psid khi load lần 2,3,4...
-              let exits = this.lstMatchingItem.filter(x => x.psid == psid)[0];
-              if (exits) {
-                this.getActiveCvsItem(exits);
-              } else {
-                //TODO: load lần đầu tiên
-                this.getActiveCvsItem(this.lstMatchingItem[0]);
-              }
-          } else {
-            //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
-            this.validateData();
-          }
-          this.cdRef.detectChanges();
-        }, error => {
-          this.message.error('Load CRMMatching đã xảy ra lỗi');
-          this.cdRef.detectChanges();
-        })
-    }
+    this.isProcessing = true;
+    dataSource$.pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => { this.isProcessing = false }))
+      .subscribe((res: CRMMatchingMappingDTO) => {
+        if (res && TDSHelperArray.hasListValue(res.items)) {
+            this.lstMatchingItem = [...res.items];
+            let psid = this.paramsUrl?.psid || null;
+            //TODO: check psid khi load lần 2,3,4...
+            let exits = this.lstMatchingItem.filter(x => x.psid == psid)[0];
+            if (exits) {
+              this.getActiveCvsItem(exits);
+            } else {
+              //TODO: load lần đầu tiên
+              this.getActiveCvsItem(this.lstMatchingItem[0]);
+            }
+        } else {
+          //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
+          this.validateData();
+        }
+        this.cdRef.detectChanges();
+      }, error => {
+        this.message.error('Load CRMMatching đã xảy ra lỗi');
+        this.cdRef.detectChanges();
+      })
   }
 
   //TODO: matching đang chọn active
@@ -345,7 +341,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         if (res && res.items) {
           this.total = res.items.length;
         }
-
         return res;
       })));
     }
@@ -354,7 +349,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         !TDSHelperString.hasValueString(this.queryFilter) ? (this.isRefresh = true) : (this.isRefresh = false);
         this.loadConversations(this.dataSource$);
     }
-    this.cdRef.detectChanges();
   }
 
   ngOnDestroy(): void {

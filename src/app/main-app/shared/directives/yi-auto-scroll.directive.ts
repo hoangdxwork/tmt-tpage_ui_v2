@@ -171,23 +171,23 @@ export class YiAutoScrollDirective implements  OnDestroy, AfterViewInit {
 
     @HostListener("scroll", ['$event'])
     public scrollHandler(event: any): void {
-        const yBottom = this.nativeElement.scrollHeight - this.nativeElement.scrollTop - this.nativeElement.clientHeight;
-        this._isLocked = yBottom > Number(this.lockYOffset);
+      const yBottom = this.nativeElement.scrollHeight - this.nativeElement.scrollTop - this.nativeElement.clientHeight;
+      this._isLocked = yBottom > Number(this.lockYOffset);
 
-        if (this.nativeElement.scrollTop == 0) {
-            this.onScrollToTop.emit();
-        }
+      if (this.nativeElement.scrollTop == 0) {
+          this.onScrollToTop.emit();
+      }
 
-        if (this.nativeElement.scrollTop == this.nativeElement.scrollHeight) {
-            this.onScrollToBottom.emit();
-        }
+      if (this.nativeElement.scrollTop == this.nativeElement.scrollHeight) {
+          this.onScrollToBottom.emit();
+      }
 
-        if (yBottom <= Number(this.lockYOffset) && this.scrollEnd) {
-            this.onchangeBottom.emit(yBottom);
-            this._isLocked = true;
-        }
+      if (yBottom <= Number(this.lockYOffset) && this.scrollEnd) {
+          this.onchangeBottom.emit(yBottom);
+          this._isLocked = true;
+      }
 
-        event.preventDefault();
+      event.preventDefault();
     }
 
 }

@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ActivityStatus } from "src/app/lib/enum/message/coversation-message";
@@ -20,7 +20,7 @@ import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class TDSConversationItemComponent implements OnInit, AfterViewChecked, AfterViewInit, OnDestroy {
+export class TDSConversationItemComponent implements OnInit, OnDestroy {
 
   @Input() data!: MakeActivityItemWebHook;
   @Input() index!: number;
@@ -58,14 +58,6 @@ export class TDSConversationItemComponent implements OnInit, AfterViewChecked, A
     private activityMatchingService: ActivityMatchingService) {
   }
 
-  ngAfterViewInit() {
-    this.cdRef.detectChanges();
-  }
-
-  ngAfterViewChecked() {
-    this.cdRef.detectChanges();
-  }
-
   ngOnInit(): void {
     //TODO: mapping data from request to Webhook
     if(this.data) {
@@ -87,6 +79,7 @@ export class TDSConversationItemComponent implements OnInit, AfterViewChecked, A
       if (!this.data.message_formatted && this.data.id) {
         this.data['attachments'] = this.activityDataFacade.getMessageAttachments(this.team.Facebook_PageId, this.data.from_id, this.data.id);
       }
+      this.cdRef.detectChanges();
     }
   }
 
@@ -342,14 +335,15 @@ export class TDSConversationItemComponent implements OnInit, AfterViewChecked, A
           this.isReplyingComment = false;
           this.tdsMessage.success("Trả lời bình luận thành công");
 
-          this.cdRef.detectChanges();
           event.preventDefault();
+          this.cdRef.detectChanges();
+
         }, error => {
           this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
           this.isReplyingComment = false;
 
-          this.cdRef.detectChanges();
           event.preventDefault();
+          this.cdRef.detectChanges();
         });
     }
   }
@@ -376,15 +370,15 @@ export class TDSConversationItemComponent implements OnInit, AfterViewChecked, A
       this.isReplyingComment = false;
       this.tdsMessage.success('Gửi tin thành công');
 
-      this.cdRef.detectChanges();;
       event.preventDefault();
+      this.cdRef.detectChanges();
 
     }, error => {
       this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Gửi tin nhắn thất bại");
       this.isReplyingComment = false;
 
-      this.cdRef.detectChanges();
       event.preventDefault();
+      this.cdRef.detectChanges();
     });
   }
 

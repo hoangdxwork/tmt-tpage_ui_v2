@@ -6,7 +6,7 @@ import { ModalImageStoreComponent } from './../../pages/conversations/components
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import {
   Component, EventEmitter, Input, OnChanges, OnInit, Output,
-  SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, AfterViewChecked
+  SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSUploadChangeParam } from 'tmt-tang-ui';
@@ -14,7 +14,7 @@ import { ConversationMatchingItem } from '../../dto/conversation-all/conversatio
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
 import { finalize, takeUntil } from 'rxjs/operators';
-import { CRMMessagesRequest, MakeActivityItemWebHook, MakeActivityMessagesDTO } from '../../dto/conversation/make-activity.dto';
+import { MakeActivityItemWebHook, MakeActivityMessagesDTO } from '../../dto/conversation/make-activity.dto';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ActivityMatchingService } from '../../services/conversation/activity-matching.service';
 import { Router } from '@angular/router';
@@ -39,7 +39,7 @@ import { ActivityFacebookState } from '../../services/facebook-state/activity-fa
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewInit, AfterViewChecked, OnDestroy {
+export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @ViewChild('scrollToIndex') scrollToIndex!: ElementRef<any>;
@@ -74,7 +74,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   keyFilterTag: string = '';
   isVisbleTag: boolean = false;
   isNextData: boolean = false;
-  isProcessing: boolean = false;
   lockYOffset: number = 40;
   eventHandler!: Event;
 
@@ -94,8 +93,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private cdRef : ChangeDetectorRef,
     private activityFbState: ActivityFacebookState,
     private conversationOrderFacade: ConversationOrderFacade,
-    private viewContainerRef: ViewContainerRef,
-    private cdr: ChangeDetectorRef) {
+    private viewContainerRef: ViewContainerRef) {
   }
 
   ngOnInit() {
@@ -107,21 +105,16 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         this.yiAutoScroll.forceScrollDown();
       }
     }
-
     this.activityDataFacade.hasNextData$.subscribe(data => {
       this.isNextData = data;
+      this.cdRef.detectChanges();
     })
-  }
-
-  ngAfterViewChecked() {
-    this.cdRef.detectChanges();
   }
 
   ngAfterViewInit(){
     if(this.yiAutoScroll) {
       this.yiAutoScroll.forceScrollDown();
     }
-    this.cdRef.detectChanges();
   }
 
   loadData(data: ConversationMatchingItem) {
@@ -135,12 +128,17 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   //TODO: data.id = data.psid
   loadMessages(data: ConversationMatchingItem): any {
-    this.isLoadMessage = true;
-    this.dataSource$ =  this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => { this.isLoadMessage = false }));
+    if(this.isLoadMessage) {
+      return;
+    }
 
-    this.cdRef.detectChanges();
+    this.isLoadMessage = true;
+    this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
+      .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => {
+        this.isLoadMessage = false;
+        this.cdRef.detectChanges();
+      }));
   }
 
   loadUser() {
@@ -208,7 +206,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     });
   }
 
-
   showModalListProduct() {
     const modal = this.modalService.create({
       title: 'Danh sách sản phẩm',
@@ -263,29 +260,17 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   loadPrevMessages(): any {
-    if (this.isProcessing) {
-      return;
-    }
     if (this.isNextData) {
       return;
     }
+
     this.scrollToIndex?.nativeElement?.scrollTo(0, 1);
 
     let pageId = this.team?.Facebook_PageId;
     let psid = this.data.psid;
     let type = this.type ? this.type : 'all';
 
-    this.isNextData = true;
-    this.activityDataFacade.nextData(pageId, psid, type)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((res) => {
-        if(!(res && res.items)) {
-          this.isProcessing = true;
-        }
-        this.cdRef.detectChanges();
-      }, error => {
-        this.cdRef.detectChanges();
-      });
+    this.activityDataFacade.nextData(pageId, psid, type);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -372,7 +357,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           }
         }
       }, error => {
-        this.message.error(`${error?.Error?.Message}` || 'Refetch đã xảy ra lỗi');
+        this.message.error(`${error?.Error?.Message}` ? `${error?.Error?.Message}` : 'Refetch đã xảy ra lỗi');
       });
   }
 
@@ -457,7 +442,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.crmMatchingService.addMessage(this.data.psid, model)
       .pipe(takeUntil(this.destroy$)).pipe(finalize( () => { this.isLoadingSendMess = false; }))
       .subscribe((res: any) => {
-           this.messageResponse(res, model);
+          this.messageResponse(res, model);
       }, error => {
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại' );
           this.eventHandler.preventDefault();
@@ -468,7 +453,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     const model = this.prepareModel(message);
     model.to = {
       id: activityFinal?.from_id || activityFinal?.comment?.from?.id || null,
-      name: activityFinal?.comment?.from?.name || null,
+      name: activityFinal?.comment?.from?.name || null
     };
     model.comment_id = activityFinal?.comment?.id || activityFinal?.id || null;
 
@@ -497,12 +482,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         this.uploadedImages = [];
         delete this.messageModel;
 
-        this.cdRef.detectChanges();
         this.eventHandler.preventDefault();
+        this.cdRef.detectChanges();
+
       }, error => {
         this.message.error('Gửi tin nhắn thất bại');
-        this.cdRef.detectChanges();
         this.eventHandler.preventDefault();
+        this.cdRef.detectChanges();
       })
   }
 
@@ -562,8 +548,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.currentImage = null;
     delete this.messageModel;
     this.uploadedImages = [];
-    this.cdRef.detectChanges();
+
     this.eventHandler.preventDefault();
+    this.cdRef.detectChanges();
   }
 
   prepareModel(message: string): any {
@@ -723,7 +710,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
   }
 
-
   handleUpload = (item: any) => {
     this.isLoadingImage = true;
     const formData = new FormData();
@@ -742,12 +728,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           this.currentImage = x;
           const dataItem = [...this.uploadedImages, x];
           this.uploadedImages = dataItem;
-          this.cdr.markForCheck();
 
+          this.cdRef.markForCheck();
         }
       }, error => {
         let message = JSON.parse(error.Message);
         this.message.error(`${message.message}`);
+        this.cdRef.markForCheck();
       });
   }
 
@@ -767,14 +754,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   changeEnterSend(ev: any){
     if(ev){
-    this.isEnterSend = ev.checked;
+      this.isEnterSend = ev.checked;
     }
   }
 
   @HostListener('window:dragover', ['$event']) onDragOver(evt: TDSSafeAny) {
-    evt.preventDefault();
-    evt.stopPropagation();
     this.displayDropZone = true;
+    evt.preventDefault();
   }
 
   @HostListener("window:dragleave", ["$event"])
@@ -785,14 +771,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       this.displayDropZone = false;
     }
     evt.preventDefault();
-    evt.stopPropagation();
   }
 
   @HostListener('window:drop', ['$event'])
   ondrop(evt:any) {
-    evt.preventDefault();
-    evt.stopPropagation();
     this.displayDropZone = false;
+    evt.preventDefault();
   }
 
   trackByIndex(_: number, data: any): number {
