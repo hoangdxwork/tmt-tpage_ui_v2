@@ -1,14 +1,25 @@
+import { TDSMessageService, TDSTableQueryParams } from 'tmt-tang-ui';
+import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, Input, OnInit } from '@angular/core';
+import { FilterLiveCampaignProductDTO } from 'src/app/main-app/dto/odata/odata.dto';
+import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
+import { Message } from 'src/app/lib/consts/message.const';
+import { finalize } from 'rxjs/operators';
+import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { SortEnum } from 'src/app/lib';
+import { ODataLiveCampaignService } from 'src/app/main-app/services/mock-odata/odata-live-campaign.service';
+import { ReportLiveCampaignProductDataDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
 
 @Component({
   selector: 'detail-product',
   templateUrl: './detail-product.component.html'
 })
 export class DetailProductComponent implements OnInit {
+
   isVisible = false;
   @Input() liveCampaignId!: string;
 
-  expandSet = new Set<number>();
+  expandSet = new Set<number | undefined>();
 
   listOfData = [
     {
@@ -61,13 +72,45 @@ export class DetailProductComponent implements OnInit {
     },
   ];
 
-  constructor() { }
+  filterObj: FilterLiveCampaignProductDTO = {
+    searchText: ''
+  };
+
+  pageIndex = 1;
+  pageSize = 20;
+  count: number = 0;
+  isLoading: boolean = false;
+
+  lstOfData: ReportLiveCampaignProductDataDTO[] = [];
+
+  constructor(
+    private message: TDSMessageService,
+    private oDataLiveCampaignService: ODataLiveCampaignService
+  ) { }
 
   ngOnInit(): void {
 
   }
 
-  onExpandChange(id: number, checked: boolean): void {
+  loadData(pageSize: number, pageIndex: number) {
+    let filters = this.oDataLiveCampaignService.buildFilterProduct(this.filterObj);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
+
+    this.getViewData(params).subscribe((res: TDSSafeAny) => {
+        this.count = res['@odata.count'] as number;
+        this.lstOfData = res.value;
+
+    }, error => this.message.error(`${error?.error?.message}` || Message.CanNotLoadData));
+  }
+
+  getViewData(params: string) {
+    this.isLoading = true;
+    return this.oDataLiveCampaignService
+        .getProduct(this.liveCampaignId, params)
+        .pipe(finalize(() => this.isLoading = false ));
+  }
+
+  onExpandChange(id: number | undefined, checked: boolean): void {
     if (checked) {
       this.expandSet.add(id);
     } else {
@@ -75,19 +118,25 @@ export class DetailProductComponent implements OnInit {
     }
   }
 
-  // modal
-  showModal(): void {
-    this.isVisible = true;
+  refreshData() {
+    this.filterObj = {
+      searchText: '',
+    }
+
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
-  handleOk(): void {
-    console.log('Button ok clicked!');
-    this.isVisible = false;
+  onQueryParamsChange(params: TDSTableQueryParams) {
+    this.pageSize = params.pageSize;
+    this.loadData(params.pageSize, params.pageIndex);
   }
 
-  handleCancel(): void {
-    console.log('Button cancel clicked!');
-    this.isVisible = false;
+  onSearch(event: TDSSafeAny) {
+    let text =  event?.target.value;
+
+    this.pageIndex = 1;
+    this.filterObj.searchText = text;
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
 }

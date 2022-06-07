@@ -1,6 +1,7 @@
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 
 @Component({
   selector: 'live-campaign-detail',
@@ -12,16 +13,27 @@ export class LiveCampaignDetailComponent implements OnInit {
   tabCurrent: number = 0;
 
   liveCampaignId!: string;
+  liveCampaignName?: string;
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
+    private liveCampaignService: LiveCampaignService,
   ) { }
 
   ngOnInit(): void {
     this.liveCampaignId = this.route.snapshot.paramMap.get("id") || '';
+    this.loadData(this.liveCampaignId);
   }
 
-  onChangeMenu(event: TDSSafeAny) {
+  loadData(id: string) {
+    this.liveCampaignService.getById(id).subscribe(res => {
+      this.liveCampaignName = res?.Name;
+    });
+  }
+
+  onEdit() {
+    this.router.navigateByUrl(`live-campaign/edit/${this.liveCampaignId}`);
   }
 
 }

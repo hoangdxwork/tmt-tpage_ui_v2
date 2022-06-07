@@ -7,8 +7,9 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { SaleOnline_LiveCampaignDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
+import { FilterLiveCampaignDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { FilterLiveCampaignDTO, OdataLiveCampaignService } from 'src/app/main-app/services/mock-odata/odata-live-campaign.service';
+import { ODataLiveCampaignService } from 'src/app/main-app/services/mock-odata/odata-live-campaign.service';
 import { TDSMessageService, TDSSafeAny, TdsSwitchChange, TDSTableQueryParams, TDSModalService } from 'tmt-tang-ui';
 import { ColumnTableDTO } from '../../../order/components/config-column/config-column.component';
 
@@ -54,7 +55,7 @@ export class LiveCampaignListComponent implements OnInit {
     private message: TDSMessageService,
     private router: Router,
     private modal: TDSModalService,
-    private odataLiveCampaignService: OdataLiveCampaignService,
+    private oDataLiveCampaignService: ODataLiveCampaignService,
     private cacheApi: THelperCacheService,
     private liveCampaignService: LiveCampaignService,
   ) { }
@@ -77,7 +78,7 @@ export class LiveCampaignListComponent implements OnInit {
   }
 
   loadData(pageSize: number, pageIndex: number) {
-    let filters = this.odataLiveCampaignService.buildFilter(this.filterObj);
+    let filters = this.oDataLiveCampaignService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
     this.isLoading = true;
@@ -89,7 +90,7 @@ export class LiveCampaignListComponent implements OnInit {
 
   getViewData(params: string) {
     this.isLoading = true;
-    return this.odataLiveCampaignService
+    return this.oDataLiveCampaignService
         .get(params)
         .pipe(finalize(() => this.isLoading = false ));
   }

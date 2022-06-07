@@ -202,3 +202,40 @@ export interface SaleOnlineLiveCampaignSummaryReportDTO {
   ProductQuantity?: number;
   TotalAmount?: number;
 }
+
+export interface ReportLiveCampaignProductDataDTO {
+  ProductId: number; // Server đặt có thể null
+  ProductName: string;
+  ProductNameNoSign: string;
+  ProductQtyInCart: number;
+  ProductQtyWaitCheckOut: number;
+  ProductQtyCheckOut: number;
+  ProductQtyCancelCheckOut: number;
+  OrderQtyWaitCheckOut: number;
+  OrderQtyCancelCheckOut: number;
+  InvoiceQtyCheckOut: number;
+  InvoiceQtyCancelCheckOut: number;
+}
+
+export interface LiveCampaignSOOrderDTO {
+  OrderId?: string;
+  OrderCode: string;
+  TotalQuantity: number;
+  DateCreated: Date;
+  Status: string;
+  PartnerName: string;
+}
+
+export interface LiveCampaignFSOrderDTO {
+  OrderId?: string;
+  FSOrderId?: number;
+  FSOrderCode: string;
+  TotalQuantity: number;
+  DateCreated: Date;
+  PartnerName: string;
+  State: string;
+  ShowState: string;
+  /// status delete or cancel of product
+  /// delete,cancel
+  Status: string;
+}
