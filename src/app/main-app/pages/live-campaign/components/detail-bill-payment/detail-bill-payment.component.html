@@ -96,7 +96,7 @@
                     <i class="tdsi-messenger-fill"></i>
                   </span>
                 </button>
-                <button tds-button color="primary" size="sm">
+                <button tds-button color="primary" size="sm" (click)="showModalPayment()">
                   <span class="flex items-center">
                     <i class="tdsi-earning-fill text-lg leading-none mr-2"></i>Thanh toán
                   </span>
@@ -171,6 +171,64 @@
           Đơn tiếp theo<i class="tdsi-arrow-right-line text-lg leading-none ml-2"></i>
         </span>
 
+      </button>
+    </div>
+  </ng-template>
+</tds-modal>
+
+<tds-modal [(visible)]="isVisiblePayment" title="Đăng kí thanh toán" size="lg" [footer]="modalPaymentFooter"
+  (onCancel)="handleCancelPayment()" (onOk)="handleOkPayment()">
+  <ng-container *tdsModalContent>
+    <div class="flex flex-col text-body-2">
+      <div class="flex space-x-4">
+        <div class="h-[48px] w-[48px] rounded-full bg-teal-800"></div>
+        <div>
+          <div class="text-info-400 font-semibold text-header-2">[KH2906] Duyên Nguyễn</div>
+          <div class="mt-0.5 text-neutral-1-500 text-body-1">0325 025 026</div>
+        </div>
+      </div>
+      <div class="mt-6 grid grid-cols-2 gap-8">
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <div class="font-semibold">Phương thức</div>
+          <div class="col-span-2">
+            <tds-form-field>
+              <tds-select placeholder='Chuyển khoản' [required]='true'>
+              </tds-select>
+            </tds-form-field>
+          </div>
+          <div class="font-semibold">Sô tiền</div>
+          <div class="col-span-2">
+            <tds-form-field>
+              <tds-input-number [min]="1" [max]="999999999" [step]="1" [required]='true' placeholder="40.000">
+              </tds-input-number>
+            </tds-form-field>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <div class="font-semibold">Ngày thanh toán</div>
+          <div class="col-span-2">
+            <tds-form-field>
+              <tds-date-picker [required]='true'>
+              </tds-date-picker>
+            </tds-form-field>
+          </div>
+          <div class="font-semibold">Nội dung</div>
+          <div class="col-span-2">
+            <tds-form-field>
+              <input tdsInput autocomplete="off" placeholder="Nhập nội dung" [required]='true' />
+            </tds-form-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #modalPaymentFooter>
+    <div class="flex p-4 justify-end">
+      <button class="mr-2 min-w-[100px]" tds-button color="secondary" (click)="handleCancelPayment()">
+        Hủy bỏ
+      </button>
+      <button tds-button color="primary" (click)="handleOkPayment()">
+        Thanh toán
       </button>
     </div>
   </ng-template>

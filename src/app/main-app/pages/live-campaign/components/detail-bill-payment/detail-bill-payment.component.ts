@@ -34,6 +34,7 @@ export class DetailBillPaymentComponent implements OnInit {
   indeterminate = false;
   setOfCheckedId = new Set<number>();
   isVisible = false;
+  isVisiblePayment = false;
 
   constructor() { }
 
@@ -75,6 +76,10 @@ export class DetailBillPaymentComponent implements OnInit {
     this.isVisible = true;
   }
 
+  showModalPayment() {
+    this.isVisiblePayment = true;
+  }
+
   handleOk(): void {
     console.log('Button ok clicked!');
     this.isVisible = false;
@@ -83,6 +88,16 @@ export class DetailBillPaymentComponent implements OnInit {
   handleCancel(): void {
     console.log('Button cancel clicked!');
     this.isVisible = false;
+  }
+
+  handleOkPayment(): void {
+    console.log('Button ok clicked!');
+    this.isVisiblePayment = false;
+  }
+
+  handleCancelPayment(): void {
+    console.log('Button cancel clicked!');
+    this.isVisiblePayment = false;
   }
 
 }
