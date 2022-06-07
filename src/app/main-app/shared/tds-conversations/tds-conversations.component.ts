@@ -141,11 +141,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
     this.isLoadMessage = true;
     this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => {
-        this.isLoadMessage = false;
-        this.cdRef.detectChanges();
-      }));
+    .pipe(takeUntil(this.destroy$))
+    .pipe(finalize(() => {
+        setTimeout(() => {
+          this.isLoadMessage = false;
+          this.conversationDataFacade.changeCurrentCvs$.emit(false);
+          this.cdRef.detectChanges();
+        }, 350)
+    }))
   }
 
   loadUser() {
@@ -196,10 +199,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
         // Cập nhật count_unread
         this.conversationEventFacade.updateMarkSeenBadge(this.data.page_id, this.type, this.data.psid);
-        this.cdRef.detectChanges();
       }, error => {
         this.message.error(`markseen: ${error?.error?.message}`);
-        this.cdRef.detectChanges();
       });
   }
 
