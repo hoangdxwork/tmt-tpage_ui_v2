@@ -314,6 +314,7 @@ export class AddLiveCampaignComponent implements OnInit {
 
     let model = {} as SaleOnline_LiveCampaignDTO;
 
+    model.Id = (this.isEdit && this.liveCampaignId) ? this.liveCampaignId : undefined;
     model.Config = formValue.Config?.value;
     model.Name = formValue.Name;
     model.Users = formValue.Users || [];
@@ -347,7 +348,7 @@ export class AddLiveCampaignComponent implements OnInit {
     let details = formValue.Details;
 
     if(TDSHelperArray.hasListValue(details)) {
-      let find = details.findIndex((x: any) => !x.Quantity || !x.LimitedQuantity || !x.Price);
+      let find = details.findIndex((x: any) => !this.isNumber(x.Quantity) || !this.isNumber(x.LimitedQuantity) || !this.isNumber(x.Price));
       if(find > -1) {
         this.message.error(Message.LiveCampaign.ErrorNumberDetail);
         return 0;
@@ -355,6 +356,10 @@ export class AddLiveCampaignComponent implements OnInit {
     }
 
     return 1;
+  }
+
+  isNumber(value: TDSSafeAny): boolean {
+    return Number.isInteger(value);
   }
 
 }

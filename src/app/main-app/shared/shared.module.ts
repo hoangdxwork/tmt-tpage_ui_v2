@@ -30,14 +30,14 @@ import { ProductPriceListService } from '../services/product-price-list.service'
 import { TpageConversationAddressComponent } from './tpage-conversation-address/tpage-conversation-address.component';
 import { UploadPicturesWallComponent } from './upload-wall/upload-pictures-wall.component';
 import { ListLiveCampaignComponent } from './list-live-campaign/list-live-campaign.component';
-import { OdataLiveCampaignService } from '../services/mock-odata/odata-live-campaign.service';
+import { ODataLiveCampaignService } from '../services/mock-odata/odata-live-campaign.service';
 import { AddLiveCampaignComponent } from './add-live-campaign/add-live-campaign.component';
 import { OverviewLiveCampaignComponent } from './overview-live-campaign/overview-live-campaign.component';
 import { FastSaleOrderLineService } from '../services/fast-sale-orderline.service';
 import { QuickReplyButtonComponent } from './quick-reply-button/quick-reply-button.component';
+import { ModalEditOrderComponent } from './modal-edit-order/modal-edit-order.component';
 import { OrderFilterOptionsComponent } from './order-filter-options/order-filter-options.component';
 import { BillFilterOptionsComponent } from './bill-filter-options/bill-filter-options.component';
-import { ModalEditOrderComponent } from './modal-edit-order/modal-edit-order.component';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -70,7 +70,7 @@ const SERVICES = [
   SharedService,
   ImageFacade,
   ProductPriceListService,
-  OdataLiveCampaignService,
+  ODataLiveCampaignService,
   FastSaleOrderLineService,
 ]
 

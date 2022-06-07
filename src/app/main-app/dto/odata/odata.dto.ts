@@ -1,5 +1,34 @@
+import { TDSSafeAny } from 'tmt-tang-ui';
+
 export interface CTMTagFilterObjDTO  {
   searchText: string,
+}
+
+export interface FilterLiveCampaignProductDTO  {
+  searchText: '',
+}
+
+export interface FilterLiveCampaignDTO  {
+  status: '',
+  searchText: '',
+  dateRange: {
+    startDate: Date,
+    endDate: Date
+  }
+}
+
+export interface FilterLiveCampaignBillDTO {
+  tags: Array<string>,
+  status: string,
+  bill: TDSSafeAny,
+  deliveryType: string,
+  liveCampaignId: string,
+  isWaitPayment: boolean,
+  searchText: string,
+  dateRange: {
+      startDate: Date,
+      endDate: Date
+  }
 }
 
 export interface FilterLiveCampaignOrderDTO {

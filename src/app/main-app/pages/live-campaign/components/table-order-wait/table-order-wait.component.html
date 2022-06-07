@@ -1,0 +1,43 @@
+<div class="w-full h-full">
+  <tds-table #table class="w-full h-full"
+    [showSizeChanger]="true"
+    [frontPagination]="false"
+    [listData]="lstOfData"
+    [scroll]="{y:'auto'}"
+    [loading]="isLoading"
+    [total]="count"
+    [scroll]="{y:'auto'}"
+    (clickRefresh)="refreshData()"
+    (queryParams)="onQueryParamsChange($event)">
+    <thead>
+      <tr>
+        <th>Mã đơn hàng</th>
+        <th>Tên khách hàng</th>
+        <th>Số lượng sản phẩm</th>
+        <th>Ngày tạo</th>
+        <th>Trạng thái</th>
+        <th>
+          <button tds-button-icon color="secondary" size="sm">
+            <span class="flex items-center">
+              <i class="tdsi-reload-fill"></i>
+            </span>
+          </button>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of table.data">
+        <td>{{ data.OrderCode }}</td>
+        <td>{{ data.PartnerName }}</td>
+        <td>{{ data.TotalQuantity }}</td>
+        <td>{{ data.DateCreated | date: 'dd/MM/yyyy HH:mm' }}</td>
+        <td>
+          <tds-tag [status]="getColorStatusText(data.Status)" size="sm" type="outline">{{ data.Status }}</tds-tag>
+        </td>
+        <td>
+          <button tds-button color="primary" size="sm">Xem lịch sử</button>
+        </td>
+      </tr>
+    </tbody>
+  </tds-table>
+</div>

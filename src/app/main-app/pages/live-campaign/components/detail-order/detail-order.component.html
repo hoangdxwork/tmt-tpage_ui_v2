@@ -6,7 +6,7 @@
         In danh sách
       </button>
       <tds-form-field>
-        <input tdsInput placeholder="Tìm kiếm" autocomplete="off"/>
+        <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keyup.enter)="onSearch($event)"/>
         <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
       </tds-form-field>
       <order-filter-options (onLoadOption)="onLoadOption($event)"></order-filter-options>
@@ -70,7 +70,9 @@
 
             <!-- Trạng thái -->
             <td>
-              {{order.StatusText}}
+              <tds-tag [status]="getColorStatusText(order.StatusText)" type="outline">
+                {{ order.StatusText }}
+              </tds-tag>
             </td>
 
             <!-- Nhân viên -->
@@ -85,21 +87,23 @@
 
             <!-- Thao tác -->
             <td>
-              <button tds-button-icon color="secondary" size="sm">
-                <span class="flex items-center">
-                  <i class="tdsi-messenger-fill"></i>
-                </span>
-              </button>
-              <button tds-button-icon color="secondary" size="sm" (click)="onEdit(order.Id)">
-                <span class="flex items-center">
-                  <i class="tdsi-edit-fill"></i>
-                </span>
-              </button>
-              <button tds-button-icon color="secondary" size="sm" (click)="onRemove(order.Id, order.Code)">
-                <span class="flex items-center">
-                  <i class="tdsi-trash-fill"></i>
-                </span>
-              </button>
+              <div class="flex gap-x-2">
+                <button tds-button-icon color="secondary" size="sm">
+                  <span class="flex items-center">
+                    <i class="tdsi-messenger-fill"></i>
+                  </span>
+                </button>
+                <button tds-button-icon color="secondary" size="sm" (click)="onEdit(order.Id)">
+                  <span class="flex items-center">
+                    <i class="tdsi-edit-fill"></i>
+                  </span>
+                </button>
+                <button tds-button-icon color="secondary" size="sm" (click)="onRemove(order.Id, order.Code)">
+                  <span class="flex items-center">
+                    <i class="tdsi-trash-fill"></i>
+                  </span>
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
