@@ -9,7 +9,7 @@ import { ModalImageStoreComponent } from './../../pages/conversations/components
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import {
   Component, EventEmitter, Input, OnChanges, OnInit, Output,
-  SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy
+  SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, ViewRef, AfterViewChecked, NgZone
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSUploadChangeParam } from 'tmt-tang-ui';
@@ -94,6 +94,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private sgRConnectionService: SignalRConnectionService,
     private router: Router,
     private cdRef : ChangeDetectorRef,
+    private ngZone: NgZone,
     private activityFbState: ActivityFacebookState,
     private conversationOrderFacade: ConversationOrderFacade,
     private viewContainerRef: ViewContainerRef,
@@ -102,8 +103,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   ngOnInit() {
     this.validateData();
-    if (this.data?.id && this.team && TDSHelperString.hasValueString(this.type)) {
-      this.loadData(this.data);
+    if (this.data && this.team && TDSHelperString.hasValueString(this.type)) {
+      let data  = {...this.data};
+      this.loadData(data);
 
       if(this.yiAutoScroll) {
         this.yiAutoScroll.forceScrollDown();
@@ -135,14 +137,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   //TODO: data.id = data.psid
   loadMessages(data: ConversationMatchingItem): any {
-    if(this.isLoadMessage) {
+    if(this.isLoadMessage || this.isNextData) {
       return;
     }
 
     this.isLoadMessage = true;
     this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
-    .pipe(takeUntil(this.destroy$))
-    .pipe(finalize(() => {
+      .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => {
         setTimeout(() => {
           this.isLoadMessage = false;
           this.conversationDataFacade.changeCurrentCvs$.emit(false);
@@ -268,7 +270,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   loadPrevMessages(): any {
-    if (this.isNextData) {
+    if (this.isNextData || this.isLoadMessage) {
       return;
     }
 
@@ -283,10 +285,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes["data"] && !changes["data"].firstChange) {
-      (this.data as any) = null;
+      (this.data as any) = {};
       this.validateData();
 
-      this.data = changes["data"].currentValue;
+      this.data = {...changes["data"].currentValue};
       let object = {
         psid: this.data.psid,
         messages: this.messageModel,
