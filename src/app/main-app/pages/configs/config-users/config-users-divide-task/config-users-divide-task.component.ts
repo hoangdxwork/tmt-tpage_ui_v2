@@ -1,3 +1,4 @@
+import { ConfigDataFacade } from './../../../../services/facades/config-data.facade';
 import { TDSMessageService } from 'tmt-tang-ui';
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
@@ -22,7 +23,8 @@ export class ConfigUsersDivideTaskComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private message: TDSMessageService
+    private message: TDSMessageService,
+    private configDataService: ConfigDataFacade
   ) { }
 
   ngOnInit(): void {

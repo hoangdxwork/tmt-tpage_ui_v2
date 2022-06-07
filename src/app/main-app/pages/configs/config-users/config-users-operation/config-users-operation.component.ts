@@ -1,3 +1,4 @@
+import { ConfigDataFacade } from './../../../../services/facades/config-data.facade';
 import { finalize, shareReplay, take, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ModalAddUserComponent } from './../../components/modal-add-user/modal-add-user.component';
@@ -50,7 +51,8 @@ export class ConfigUsersOperationComponent implements OnInit {
     private applicationUserService: ApplicationUserService,
     private applicationRoleService: ApplicationRoleService,
     private router: Router,
-    private crmTeamService: CRMTeamService
+    private crmTeamService: CRMTeamService,
+    private configDataService: ConfigDataFacade
   ) { }
 
   ngOnInit(): void {
@@ -61,11 +63,13 @@ export class ConfigUsersOperationComponent implements OnInit {
 
   loadUser() {
     this.isLoading = true;
+    this.configDataService.onLoading$.emit(this.isLoading);
     this.applicationUserService.get()
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.lstUsers = res.value;
         this.loadCRMTeamUser();
+        this.configDataService.onLoading$.emit(false);
       });
   }
 

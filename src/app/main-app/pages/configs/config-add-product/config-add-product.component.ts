@@ -1,3 +1,4 @@
+import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
 import { ConfigImage, ConfigCateg, ConfigUOMPO, ConfigUOM, ConfigAttributeLine, ConfigSuggestVariants } from './../../../dto/configs/product/config-product-default.dto';
 import { ConfigUOMTypeDTO, ConfigOriginCountryDTO } from './../../../dto/configs/product/config-UOM-type.dto';
 import { ConfigProductVariant, ConfigAttributeValue } from '../../../dto/configs/product/config-product-default.dto';
@@ -11,7 +12,7 @@ import { ProductService } from 'src/app/main-app/services/product.service';
 import { ConfigAddOriginCountryModalComponent } from '../components/config-add-origin-country-modal/config-add-origin-country-modal.component';
 import { ConfigAddUOMModalComponent } from '../components/config-add-UOM-modal/config-add-UOM-modal.component';
 import { ConfigAddVariantProductModalComponent } from './../components/config-add-variant-product-modal/config-add-variant-product-modal.component';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, finalize } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder, FormArray } from '@angular/forms';
 import { TDSSafeAny, TDSMessageService, TDSModalService, TDSHelperObject, TDSHelperArray } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
@@ -44,6 +45,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
 
   dataModel!: ConfigProductDefaultDTO;
   
+  isLoading = false;
   isLoadingVariant = false;
   isLoadingAttribute = false;
   id: TDSSafeAny;
@@ -56,7 +58,8 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private productService: ProductService,
     private productTemplateService: ProductTemplateService,
-    private productTemplateOUMLine: ProductTemplateOUMLineService) { 
+    private productTemplateOUMLine: ProductTemplateOUMLineService,
+    private configDataService: ConfigDataFacade) { 
     this.createForm();
   }
 
@@ -118,7 +121,9 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   }
 
   loadData(id :TDSSafeAny) {
-    this.productTemplateService.getProductTemplateById(id).pipe(takeUntil(this.destroy$))
+    this.isLoading = true;
+    this.configDataService.onLoading$.emit(this.isLoading);
+    this.productTemplateService.getProductTemplateById(id).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
       .subscribe((res :TDSSafeAny) => {
           delete res['@odata.context'];
           if (res.ImageUrl) {
@@ -126,17 +131,20 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
           }
           this.dataModel = res;
           this.formatProperty(res);
+          this.configDataService.onLoading$.emit(false);
     }, error => {
       this.message.error('Không thể tải dữ liệu');
     })
   }
 
   loadDefault(){
-    this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$))
+    this.isLoading = true;
+    this.productTemplateService.getDefault().pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
       .subscribe((res:TDSSafeAny) => {
         delete res['@odata.context'];
         this.dataModel = res;
         this.formatProperty(res);
+        this.configDataService.onLoading$.emit(false);
       }, error => {
         this.message.error('Không thể tải dữ liệu mặc định');
       })

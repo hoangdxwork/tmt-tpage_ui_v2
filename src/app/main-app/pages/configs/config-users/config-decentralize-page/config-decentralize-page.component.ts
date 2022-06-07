@@ -1,3 +1,4 @@
+import { ConfigDataFacade } from './../../../../services/facades/config-data.facade';
 import { Router } from '@angular/router';
 import { TDSSafeAny, TDSMessageService, TDSHelperArray } from 'tmt-tang-ui';
 import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
@@ -56,7 +57,8 @@ export class ConfigDecentralizePageComponent implements OnInit, OnDestroy {
     private router: Router,
     private crmTeamService: CRMTeamService,
     private message: TDSMessageService,
-    private applicationUserService: ApplicationUserService
+    private applicationUserService: ApplicationUserService,
+    private configDataService: ConfigDataFacade
   ) { }
 
   ngOnInit(): void {
@@ -72,10 +74,12 @@ export class ConfigDecentralizePageComponent implements OnInit, OnDestroy {
 
   loadUser() {
     this.isLoading = true;
+    this.configDataService.onLoading$.emit(this.isLoading);
     this.applicationUserService.get()
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.lstUsers = res.value;
+        this.configDataService.onLoading$.emit(false);
       });
   }
 

@@ -1,3 +1,4 @@
+import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
 import { OnDestroy } from '@angular/core';
 import { THelperCacheService } from '../../../../lib/utility/helper-cache';
 import { ExcelExportService } from '../../../services/excel-export.service';
@@ -53,6 +54,7 @@ export class ListProductVariantComponent  implements OnDestroy  {
     private crmTeamService: CRMTeamService,
     private productService: ProductService,
     private excelExportService: ExcelExportService,
+    private configDataService: ConfigDataFacade,
     private cacheApi: THelperCacheService) {
 
     this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$))
@@ -61,6 +63,7 @@ export class ListProductVariantComponent  implements OnDestroy  {
 
   private getViewData(params: string): Observable<ODataProductDTO> {
     this.isLoading = true;
+    this.configDataService.onLoading$.emit(this.isLoading);
     if (this.selected == 0) {
       return this.odataProductService
         .getView(params).pipe(takeUntil(this.destroy$))
@@ -81,6 +84,7 @@ export class ListProductVariantComponent  implements OnDestroy  {
     this.getViewData(params).subscribe((res: any) => {
         this.count = res['@odata.count'] as number;
         this.lstOfData = [...res.value];
+        this.configDataService.onLoading$.emit(false);
     }, error => {
         this.message.error('Tải dữ liệu khách hàng thất bại!');
     });

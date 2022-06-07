@@ -1,3 +1,4 @@
+import { ConfigDataFacade } from './../../../../services/facades/config-data.facade';
 import { CRMTagDTO } from './../../../../dto/crm-tag/odata-crmtag.dto';
 import { CRMTagService } from './../../../../services/crm-tag.service';
 import { TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
@@ -25,7 +26,8 @@ export class ConfigPagesDivideTaskComponent implements OnInit, OnDestroy {
     private crmTeamService: CRMTeamService,
     private formBuilder: FormBuilder,
     private message: TDSMessageService,
-    private crmTagService: CRMTagService
+    private crmTagService: CRMTagService,
+    private configDataService: ConfigDataFacade
   ) { }
 
   ngOnInit(): void {

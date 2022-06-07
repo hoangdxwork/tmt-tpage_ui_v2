@@ -1,3 +1,4 @@
+import { ConfigDataFacade } from './../../../../services/facades/config-data.facade';
 import { TDSMessageService } from 'tmt-tang-ui';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { Component, OnInit } from '@angular/core';
@@ -26,6 +27,7 @@ export class ConfigPagesBasicComponent implements OnInit {
 
   constructor(
     private message: TDSMessageService,
+    private configDataService: ConfigDataFacade
   ) { }
 
   ngOnInit(): void {

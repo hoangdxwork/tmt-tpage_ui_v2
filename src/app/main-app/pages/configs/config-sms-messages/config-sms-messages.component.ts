@@ -1,3 +1,4 @@
+import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
 import { takeUntil } from 'rxjs/operators';
 import { RestSMSDTO } from './../../../dto/sms/sms.dto';
 import { RestSMSService } from './../../../services/sms.service';
@@ -20,6 +21,7 @@ export class ConfigSmsMessagesComponent implements OnInit {
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private restSMSService: RestSMSService,
+    private configDataService: ConfigDataFacade,
     private message: TDSMessageService) { }
 
   ngOnInit(): void {
@@ -28,9 +30,11 @@ export class ConfigSmsMessagesComponent implements OnInit {
 
   loadData() {
     this.isLoading = true;
+    this.configDataService.onLoading$.emit(this.isLoading);
     this.restSMSService.get().pipe(takeUntil(this.destroy$)).subscribe((res: Array<RestSMSDTO>) => {
       this.listOfDataRestSMS = res;
       this.isLoading = false;
+      this.configDataService.onLoading$.emit(this.isLoading);
     }, err => {
       this.message.error('Load dữ liệu thất bại!');
     })

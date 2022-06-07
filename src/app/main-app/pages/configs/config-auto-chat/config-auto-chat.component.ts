@@ -1,3 +1,4 @@
+import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
 import { switchMap, distinctUntilChanged, debounceTime, map, finalize } from 'rxjs/operators';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { SortEnum } from './../../../../lib/enum/sort.enum';
@@ -39,6 +40,7 @@ export class ConfigAutoChatComponent implements OnInit, AfterViewInit {
     private fb: FormBuilder,
     private odataQuickReplyService: OdataQuickReplyService,
     private quickReplyService: QuickReplyService,
+    private configDataService: ConfigDataFacade
   ) { }
 
   ngOnInit(): void {
@@ -78,6 +80,7 @@ export class ConfigAutoChatComponent implements OnInit, AfterViewInit {
 
   loadData(pageSize: number, pageIndex: number) {
     this.isLoading = true;
+    this.configDataService.onLoading$.emit(this.isLoading);
     let filters = this.odataQuickReplyService.buildFilter(this.filterObj);
     let params = TDSHelperString.hasValueString(this.filterObj.searchText)?
         THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters):
@@ -86,8 +89,8 @@ export class ConfigAutoChatComponent implements OnInit, AfterViewInit {
       this.AutoChatList = res.value
       this.count = res['@odata.count'] as number
       this.isLoading = false;
+      this.configDataService.onLoading$.emit(this.isLoading);
     }, error => {
-      this.isLoading = false;
       this.message.error(error.error.message || 'Tải dữ liệu thất bại!');
     });
 
