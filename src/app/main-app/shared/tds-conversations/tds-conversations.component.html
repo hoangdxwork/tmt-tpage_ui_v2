@@ -259,7 +259,7 @@
             </div>
         </div>
         <!-- editer+toolbars -->
-        <tds-spin [spinning]="isLoadingImage">
+        <tds-spin [spinning]="isLoadingImage || isLoadingSendMess">
         <div class="flex flex-col w-full px-4 bg-white rounded-xl relative">
             <!-- upload-wall -->
             <div [ngClass]="uploadedImages.length>0?'translate-y-0 pb-4 pt-2 border-b':'translate-y-full h-0 '"
@@ -285,17 +285,12 @@
                     (keydown.enter)="onEnter($event)" class="h-16 resize-none !p-0 !m-0">
                 </textarea>
                 <div>
-                    <tds-spin [spinning]="isLoadingSendMess" [indicator]="indicatorTemplate">
-                        <button tds-button type="button" color="primary" class="!rounded-full ml-2" [size]="'lg'"(click)="onClickSender()">
-                            <span class="flex items-center px-6">
-                                <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
-                            </span>
-                        </button>
-                    </tds-spin>
+                    <button tds-button type="button" color="primary" class="!rounded-full ml-2" [size]="'lg'"(click)="onClickSender()">
+                        <span class="flex items-center px-6">
+                            <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
+                        </span>
+                    </button>
                 </div>
-                <ng-template #indicatorTemplate>
-                    <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
-                  </ng-template>
             </div>
             <!-- toolbar -->
             <div class="w-full flex justify-end items-center">
@@ -335,7 +330,9 @@
                 <div class="p-2" (click)="showModalListProduct()">
                     <div class="tdsi-product-line text-neutral-1-400 text-xl cursor-pointer"></div>
                 </div>
-                <quick-reply-button (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
+                <div class="p-2">
+                    <quick-reply-button (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
+                </div>
                 <div class="p-2">
                     <div class="tdsi-paper-fill text-neutral-1-400 text-xl cursor-pointer" (click)="showModalListBill()"></div>
                 </div>

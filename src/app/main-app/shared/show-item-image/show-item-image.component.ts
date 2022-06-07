@@ -30,11 +30,15 @@ export class ShowItemImageComponent implements OnInit {
   onPrevious(){
     if(this.imageClick>0){
       this.imageClick -=1;
+    }else{
+      this.imageClick = this.lstImage.length-1;
     }
   }
   onNext(){
     if(this.imageClick<this.lstImage.length-1){
       this.imageClick +=1;
+    }else{
+      this.imageClick = 0;
     }
   }
   onChosseImage(idx: number){

@@ -214,50 +214,45 @@
 				</div>
 
 				<!-- Input trả lời bình luận -->
-				<div *ngIf="isReply == true" class="chat-reply flex flex-col gap-y-5 bg-white rounded-xl w-full p-4 mt-4 border-b-2 border-primary-1" >
-					<div class="flex flex-row w-full">
-						<textarea id="inputReply" #contentReply tdsInput placeholder="Nhập nội dung trả lời"
-							[(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
-							class="w-full resize-none !p-0 !m-0" (keydown.enter)="onEnter($event)"></textarea>
+				<tds-spin [spinning]="isReplyingComment">
+					<div *ngIf="isReply == true" class="chat-reply flex flex-col gap-y-5 bg-white rounded-xl w-full p-4 mt-4 border-b-2 border-primary-1" >
+						<div class="flex flex-row w-full">
+							<textarea id="inputReply" #contentReply tdsInput placeholder="Nhập nội dung trả lời"
+								[(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
+								class="w-full resize-none !p-0 !m-0" (keydown.enter)="onEnter($event)"></textarea>
+							<button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'" (click)="onEnter($event)">
+							<span class="flex items-center px-5">
+								<i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
+							</span>
+							</button>
+						</div>
+						<!-- Check Private Reply -->
+						<div class="quick-message gap-5">
+							<div class="check gap-5 flex justify-between">
+								<tds-checkbox [checked]="isPrivateReply" (change)="changeIsPrivateReply()">
+									Gửi về tin nhắn
+								</tds-checkbox>
+								<div class="icon-send flex flex-row mr-2">
+									<span class="sub text-neutral-1-400 cursor-pointer mr-2" container="body" placement="auto" tds-popover
+										popoverTrigger="click" [popoverContent]="infoEmojiMart" [popoverAutoClose]="true"
+										[popoverBackdrop]="true" popoverPlacement="top">
+										<i class="tdsi-emotion-line text-xl"></i>
+										<ng-template #infoEmojiMart>
+											<div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
+										</ng-template>
+									</span>
 
-            <button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'" (click)="onEnter($event)">
-              <span class="flex items-center px-5">
-                <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
-              </span>
-            </button>
-
-					</div>
-					<!-- Check Private Reply -->
-					<div class="quick-message gap-5">
-						<div class="check gap-5 flex justify-between">
-							<tds-checkbox [checked]="isPrivateReply" (change)="changeIsPrivateReply()">
-								Gửi về tin nhắn
-							</tds-checkbox>
-							<div class="icon-send flex flex-row mr-2">
-								<span class="sub cursor-pointer mr-2" container="body" placement="auto" tds-popover
-									popoverTrigger="click" [popoverContent]="infoEmojiMart" [popoverAutoClose]="true"
-									[popoverBackdrop]="true" popoverPlacement="top">
-									<i class="tdsi-emotion-line text-xl"></i>
-									<ng-template #infoEmojiMart>
-										<div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
-									</ng-template>
-								</span>
-
-								<span class="sub cursor-pointer mr-2" *ngIf="isPrivateReply"
-									(onProductSelected)="onProductSelected($event)" title="Sản phẩm"
-									product-show-button>
-									<i class="tdsi-product-line text-xl"></i>
-								</span>
-
-								<span class="sub cursor-pointer" (onQuickReplySelected)="onQuickReplySelected($event)"
-									title="Tin nhắn nhanh" placement="left" quick-reply-button>
-									<i class="tdsi-message-template-line text-xl"></i>
-								</span>
+									<span class="sub text-neutral-1-400 cursor-pointer mr-2" *ngIf="isPrivateReply"
+										(onProductSelected)="onProductSelected($event)" title="Sản phẩm"
+										product-show-button>
+										<i class="tdsi-product-line text-xl"></i>
+									</span>
+									<quick-reply-button  (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-
+				</tds-spin>
 				<!-- Phản hồi bình luận -->
 				<div *ngIf="children" class="chat-list">
 					<div class="chat-item mt-4 chat-comment flex flex-row" *ngFor="let child of children; let i = index">
