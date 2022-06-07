@@ -74,14 +74,14 @@
           </div>
           <!-- List danh sách chat -->
           <div class="overflow-hidden flex flex-auto" >
-            <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstMatchingItem" >
-              <div class="overflow-y-auto tds-custom-scroll flex flex-col"
-                  yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)"
-                  id="myScroll" is-lock="true" observe-attributes >
+            <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstMatchingItem && lstMatchingItem.length > 0" >
 
-                  <div *ngFor="let item of lstMatchingItem; let i= index; trackBy: trackByIndex">
-                      <a *ngIf="activeCvsItem?.id && currentTeam" (click)="changeCurrentCvsItem(item)"
-                          type="button" class="w-full {{isChanged ? 'cursor-wait' : 'cursor-pointer'}}">
+              <div class="overflow-y-auto tds-custom-scroll flex flex-col" id="myScroll" is-lock="true" observe-attributes
+                  yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
+
+                  <ng-container *ngFor="let item of lstMatchingItem; let i= index; trackBy: trackByIndex">
+                    <div *ngIf="item && item.psid && activeCvsItem && currentTeam">
+                      <a (click)="changeCurrentCvsItem(item)" type="button" class="w-full pb-1 {{isChanged ? 'cursor-wait' : 'cursor-pointer'}}">
                           <current-conversation-item
                               [item]="item" [psid]="item.psid" [type]="type"
                               [activeCvsItem]="activeCvsItem"
@@ -91,9 +91,10 @@
                               (checkedChange)="onItemChecked(item.psid, $event)">
                           </current-conversation-item>
                       </a>
-                  </div>
-
+                    </div>
+                  </ng-container>
               </div>
+
               <div class="flex-auto bg-white"></div>
             </div>
           </div>
@@ -102,14 +103,14 @@
   <!--Nội dung cuộc hội thoại-->
   <div class="flex w-1/2">
     <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
-        <div class="flex w-full flex-col h-full" *ngIf="activeCvsItem?.id && currentTeam">
+        <ng-container class="flex w-full flex-col h-full" *ngIf="activeCvsItem && currentTeam">
             <shared-tds-conversations
                 class="flex w-full h-full"
                 [data]="activeCvsItem"
                 [type]="type" [team]="currentTeam"
                 (onLoadMiniChat)="onLoadMiniChat($event)">
             </shared-tds-conversations>
-        </div>
+        </ng-container>
     </div>
   </div>
   <!--Xử lí thông tin khách hàng & Đơn hàng-->
@@ -129,7 +130,7 @@
                   </div>
               </div>
           </ng-template>
-          <div *ngIf="activeCvsItem?.id  && currentTeam">
+          <div *ngIf="activeCvsItem  && currentTeam">
               <conversation-partner [data]="activeCvsItem" [team]="currentTeam" (onTabOrder)="onTabOrder($event)"></conversation-partner>
           </div>
           <div *ngIf="!activeCvsItem">
@@ -150,7 +151,7 @@
               </div>
             </div>
           </ng-template>
-          <div *ngIf="activeCvsItem?.id && currentTeam">
+          <div *ngIf="activeCvsItem && currentTeam">
               <conversation-order [data]="activeCvsItem" [team]="currentTeam" (currentOrderCode)="changeOrderId($event)"></conversation-order>
           </div>
           <div *ngIf="!activeCvsItem">

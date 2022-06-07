@@ -1,4 +1,4 @@
-<div *ngIf="data?.id && team" class="chat-block text-body-2 text-neutral-1-900 w-full h-full flex flex-col">
+<div *ngIf="data && team" class="chat-block text-body-2 text-neutral-1-900 w-full h-full flex flex-col">
     <div #chatHeader class="chat-header flex items-center p-2">
         <div class="flex flex-row justify-between items-center bg-white w-full rounded-xl p-3">
             <div class="flex flex-row items-center">
@@ -44,14 +44,14 @@
                 </div>
             </div>
             <div class="flex flex-row items-center">
-                <button tds-button-flat-icon color="secondary" class="mr-3" (click)="showModalListProduct()">
+                <button type="button" tds-button-flat-icon color="secondary" class="mr-3" (click)="showModalListProduct()">
                     <img src="assets/images/conversation/box-add.svg" width="24px" height="24px">
                 </button>
-                <button tds-button-flat-icon color="secondary" class="mr-3">
+                <button type="button" tds-button-flat-icon color="secondary" class="mr-3">
                     <img src="assets/images/conversation/process-done.svg" width="24px" height="24px">
                 </button>
-                <button tds-button-flat-icon color="secondary" class="mr-3">
-                <i class="tdsi-search-fill text-2xl text-neutral-1-400"></i>
+                <button type="button" tds-button-flat-icon color="secondary" class="mr-3">
+                    <i class="tdsi-search-fill text-2xl text-neutral-1-400"></i>
                 </button>
                 <button type="button" tds-button-flat-icon color="secondary" class="mr-3" (click)="refreshRead()">
                     <i class="tdsi-reload-fill text-2xl text-neutral-1-400"></i>
@@ -75,7 +75,7 @@
             </div>
 
             <div *ngIf="(dataSource$ | async ) && (dataSource$ | async )?.items">
-              <div *ngFor="let item of (dataSource$ | async )?.items | showAvatar | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex">
+              <ng-container *ngFor="let item of (dataSource$ | async )?.items | showAvatar | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex">
                   <div *ngIf="item">
                       <div *ngIf="item.is_show_break && i!= 0" class="w-full relative">
                           <div class="date-v3">
@@ -158,15 +158,17 @@
                               </div>
                           </div>
                       </div>
-                      <tds-conversation-item
-                          [team]="team" [psid]="data.psid || item.psid"
-                          [data]="item" [index]="i"
-                          [type]="type" [partner]="partner"
-                          [name]="data.name"
-                          [children]="getExtrasChildren((dataSource$ | async), item)">
-                      </tds-conversation-item>
+                      <ng-container *ngIf="item && data.psid || item.psid && type && team">
+                        <tds-conversation-item
+                            [team]="team" [psid]="data.psid || item.psid"
+                            [data]="item" [index]="i"
+                            [type]="type" [partner]="partner"
+                            [name]="data.name"
+                            [children]="getExtrasChildren((dataSource$ | async), item)">
+                        </tds-conversation-item>
+                      </ng-container>
                   </div>
-              </div>
+              </ng-container>
             </div>
         </div>
     </tds-spin>

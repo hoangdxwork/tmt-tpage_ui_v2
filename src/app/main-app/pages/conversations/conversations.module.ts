@@ -80,7 +80,7 @@ import { AutoReplyConfigComponent } from './components/config-post/reply-config/
 import { ModalReportOrderPostComponent } from './components/post-filter/modal-report-order-post.component';
 import { ModalListCollectionComponent } from './components/modal-list-collection/modal-list-collection.component';
 import { ModalTaxComponent } from './components/modal-tax/modal-tax.component';
-import { AccountTaxService } from '../../services/account-tex.service';
+import { AccountTaxService } from '../../services/account-tax.service';
 import { DirectivesModule } from '../../shared/directives/directives.module';
 
 const SERVICES = [

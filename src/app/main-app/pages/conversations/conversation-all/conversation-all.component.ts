@@ -1,7 +1,8 @@
 import { ModalSendMessageAllComponent } from './../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef,
+   Component, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { finalize, takeUntil, map } from 'rxjs/operators';
@@ -17,7 +18,7 @@ import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-aut
 @Component({
   selector: 'app-conversation-all',
   templateUrl: './conversation-all.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, OnDestroy {
@@ -93,16 +94,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     // loading moused khi change, đợi phản hồi từ loadMessages trong shared-tds-conversations
     this.conversationDataFacade.changeCurrentCvs$.subscribe((data: boolean) => {
-      this.isChanged = data;
+        this.isChanged = data;
     })
   }
 
   onChangeConversation(team: any) {
     this.validateData();
-    if(this.isProcessing){
-      return;
-    }
-
     this.ngZone.run(() => {
       this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
       this.loadConversations((this.dataSource$));
@@ -116,13 +113,19 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   loadConversations(dataSource$: Observable<any>) {
+    if(this.isChanged || this.isProcessing){
+      return;
+    }
+
     this.isProcessing = true;
     dataSource$.pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => { this.isProcessing = false }))
       .subscribe((res: CRMMatchingMappingDTO) => {
         if (res && TDSHelperArray.hasListValue(res.items)) {
+
             this.lstMatchingItem = [...res.items];
             let psid = this.paramsUrl?.psid || null;
+
             //TODO: check psid khi load lần 2,3,4...
             let exits = this.lstMatchingItem.filter(x => x.psid == psid)[0];
             if (exits) {
@@ -135,10 +138,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
           this.validateData();
         }
-        this.cdRef.markForCheck();
       }, error => {
         this.message.error('Load CRMMatching đã xảy ra lỗi');
-        this.cdRef.markForCheck();
       })
   }
 
@@ -155,6 +156,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         let uri = this.router.url.split("?")[0];
         let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${item?.psid}`;
         this.router.navigateByUrl(uriParams);
+
+        this.cdRef.detectChanges();
       }
     }
   }
@@ -163,7 +166,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     if(item.psid == this.activeCvsItem.psid && item.page_id == this.activeCvsItem.page_id) {
       return;
     }
-    if (this.isChanged) {
+    if (this.isChanged || this.isProcessing) {
       return;
     }
 
@@ -178,7 +181,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   nextData(event: any) {
     if(event) {
-      if (this.isProcessing) {
+      if (this.isProcessing || this.isChanged) {
         return;
       }
 
@@ -309,7 +312,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
       return;
     }
-    const modal = this.modalService.create({
+    this.modalService.create({
       title: 'Gửi tin nhắn nhanh',
       content: ModalSendMessageAllComponent,
       size: "md",
@@ -318,10 +321,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         setOfCheckedId: this.setOfCheckedId,
         team: this.currentTeam,
         type: this.type
-    }
-    });
-    modal.afterClose.subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
       }
     });
   }
