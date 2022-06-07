@@ -51,12 +51,6 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
     private facebookPostService: FacebookPostService,
     private cdRef : ChangeDetectorRef,
     public crmService: CRMTeamService) {
-
-      //Detach change detector to limit how often check occurs
-      cdRef.detach();
-      setInterval(() => {
-        this.cdRef.detectChanges();
-      }, 5000);
   }
 
   ngOnInit() {

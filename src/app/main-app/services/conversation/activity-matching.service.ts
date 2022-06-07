@@ -1,10 +1,8 @@
-import { da } from 'date-fns/locale';
-import { EventEmitter, Injectable, OnInit } from "@angular/core";
+import { EventEmitter, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tmt-tang-ui";
 import { BaseSevice } from "../base.service";
-import { SignalRConnectionService } from "../signalR/signalR-connection.service";
 import { CRMMessagesRequest } from '../../dto/conversation/make-activity.dto';
 
 @Injectable({
@@ -24,7 +22,7 @@ export class ActivityMatchingService extends BaseSevice  {
   public onGetComment$: EventEmitter<any> = new EventEmitter();
 
   constructor(private apiService: TCommonService) {
-      super(apiService)
+    super(apiService)
   }
 
   get(queryObj: any, psid: any, url?: any): Observable<any> {

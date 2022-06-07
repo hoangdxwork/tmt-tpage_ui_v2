@@ -362,7 +362,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.excelExportService.exportPost('/Partner/ExportFile', { data: JSON.stringify(data) }, 'danh-sach-kh')
     .pipe(finalize(()=>this.isProcessing = false), takeUntil(this._destroy))
-    .subscribe();;
+    .subscribe();
   }
 
   setActive(type: string) {

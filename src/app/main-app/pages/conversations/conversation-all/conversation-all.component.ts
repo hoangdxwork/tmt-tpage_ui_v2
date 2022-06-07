@@ -1,7 +1,7 @@
 import { ModalSendMessageAllComponent } from './../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
-import { AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { finalize, takeUntil, map } from 'rxjs/operators';
@@ -44,6 +44,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   isRefresh: boolean = false;
   isProcessing:boolean = false;
   isNextData: boolean = false;
+  isChanged: boolean = false;
 
   currentOrderTab: number = 0;
   letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -89,6 +90,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         this.onChangeConversation(team);
       }
     });
+
+    // loading moused khi change, đợi phản hồi từ loadMessages trong shared-tds-conversations
+    this.conversationDataFacade.changeCurrentCvs$.subscribe((data: boolean) => {
+      this.isChanged = data;
+    })
   }
 
   onChangeConversation(team: any) {
@@ -129,10 +135,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
           this.validateData();
         }
-        this.cdRef.detectChanges();
+        this.cdRef.markForCheck();
       }, error => {
         this.message.error('Load CRMMatching đã xảy ra lỗi');
-        this.cdRef.detectChanges();
+        this.cdRef.markForCheck();
       })
   }
 
@@ -142,21 +148,30 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       if (this.isFastSend == true) {
           this.conversationDataFacade.checkSendMessage(item.page_id, this.type, item.psid);
       } else {
-          //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
-          this.psid = item.psid;
-          this.activeCvsItem = item;
+        //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
+        this.activeCvsItem = {...item};
+        this.psid = item.psid;
 
-          let uri = this.router.url.split("?")[0];
-          let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${item?.psid}`;
-          this.router.navigateByUrl(uriParams);
+        let uri = this.router.url.split("?")[0];
+        let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${item?.psid}`;
+        this.router.navigateByUrl(uriParams);
       }
     }
   }
 
-  changeCurrentCvsItem(item: any){
+    
+  changeCurrentCvsItem(item: any) {
     if(this.isOpenCollapCheck){
       return
     }
+    if(item.psid == this.activeCvsItem.psid && item.page_id == this.activeCvsItem.page_id) {
+      return;
+    }
+    if (this.isChanged) {
+      return;
+    }
+
+    this.isChanged = true;
     (this.activeCvsItem as any) = null;
     this.getActiveCvsItem(item);
   }

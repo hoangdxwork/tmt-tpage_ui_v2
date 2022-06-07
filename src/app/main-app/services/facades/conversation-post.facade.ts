@@ -48,6 +48,7 @@ export class ConversationPostFacade extends BaseSevice implements OnDestroy {
         this.from = Object.assign({}, res.from);
         this.partner = null;
         // TODO: Tải khách hàng theo id người dùng bình luận
+        
       } else {
         // Thông tin cũ, không làm gì cả
       }

@@ -74,8 +74,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private modal: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private conversationOrderFacade: ConversationOrderFacade,
-    public router: Router
-  ) {
+    public router: Router) {
       super(crmService, activatedRoute, router);
   }
 

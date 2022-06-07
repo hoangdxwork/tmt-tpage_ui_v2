@@ -1,4 +1,4 @@
-import { TDSModalService } from 'tmt-tang-ui';
+import { TDSModalService, TDSTagStatusType } from 'tmt-tang-ui';
 import { TDSHelperObject, TDSMessageService, TDSTableQueryParams } from 'tmt-tang-ui';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { addDays } from 'date-fns';
@@ -150,6 +150,27 @@ export class DetailOrderComponent implements OnInit {
         this.message.info(`${Message.Order.DeleteSuccess} ${code}`);
         this.loadData(this.pageSize, this.pageIndex);
       }, error => this.message.error(`${error?.error?.message}` || Message.ErrorOccurred));
+  }
+
+  getColorStatusText(status: string): TDSTagStatusType {
+    switch(status) {
+      case "Nháp":
+        return "info";
+      case "Đơn hàng":
+        return "success";
+      case "Hủy":
+        return "error";
+      default:
+        return "warning";
+    }
+  }
+
+  onSearch(event: TDSSafeAny) {
+    let text =  event?.target.value;
+
+    this.pageIndex = 1;
+    this.filterObj.searchText = text;
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
 }
