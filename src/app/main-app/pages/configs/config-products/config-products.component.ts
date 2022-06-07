@@ -1,3 +1,4 @@
+import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
 import { ProductTemplateDTO } from './../../../dto/product/product.dto';
 import { ColumnTableDTO } from './../../partner/components/config-column/config-column-partner.component';
 import { THelperCacheService } from './../../../../lib/utility/helper-cache';
@@ -68,19 +69,18 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     private modalService: TDSModalService,
     private message: TDSMessageService,
     private cacheApi: THelperCacheService,
-    private configService: TDSConfigService,
     private tagService: TagService,
     private productTagService: TagProductTemplateService,
     private productTemplateService: ProductTemplateService,
     private odataService: OdataProductTemplateService,
     private resizeObserver: TDSResizeObserver,
-    private excelExportService: ExcelExportService
+    private excelExportService: ExcelExportService,
+    private configDataService: ConfigDataFacade
   ){}
 
   ngOnInit(): void {
     this.loadGridConfig();
     this.loadTagList();
-    // this.configService.set('message',{maxStack:1});
   }
 
   ngAfterViewInit(): void {
@@ -113,11 +113,6 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   onQueryParamsChange(params: TDSTableQueryParams){
     this.pageSize = params.pageSize;
     this.loadData(params.pageSize, params.pageIndex);
@@ -130,6 +125,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     this.getViewData(params).subscribe((res: ODataProductTemplateDTO) => {
       this.count = res['@odata.count'] as number;
       this.lstOfData = res.value;
+      this.configDataService.onLoading$.emit(false);
     }, err => {
       this.message.error('Tải dữ liệu sản phẩm thất bại!');
     });
@@ -137,9 +133,10 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
 
   private getViewData(params: string): Observable<ODataProductTemplateDTO> {
     this.isLoading = true;
+    this.configDataService.onLoading$.emit(this.isLoading);
     return this.odataService
         .getView(params, this.filterObj).pipe(takeUntil(this.destroy$))
-        .pipe(finalize(() => {this.isLoading = false }));
+        .pipe(finalize(() => {this.isLoading = false}));
   }
 
   //store data on indexedDB
@@ -380,5 +377,10 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
           modal.close();
         },
       })
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

@@ -1,3 +1,4 @@
+import { ConfigDataFacade } from './../../../../services/facades/config-data.facade';
 import { addDays, getISODay, getISOWeek } from 'date-fns';
 import { ModalListShiftComponent } from './../../components/modal-list-shift/modal-list-shift.component';
 import { TDSModalService, TDSHelperObject, TDSSafeAny, TDSMessageService, TDSHelperArray } from 'tmt-tang-ui';
@@ -53,7 +54,8 @@ export class ConfigUsersShiftComponent implements OnInit {
     private modalService: TDSModalService,
     private message: TDSMessageService,
     private applicationUserService: ApplicationUserService,
-    private viewContainerRef: ViewContainerRef
+    private viewContainerRef: ViewContainerRef,
+    private configDataService: ConfigDataFacade
   ) {}
 
   ngOnInit(): void {
@@ -63,16 +65,19 @@ export class ConfigUsersShiftComponent implements OnInit {
   }
 
   loadUserShifts() {
+    this.isLoading = true;
+    this.configDataService.onLoading$.emit(this.isLoading);
     this.applicationUserService.getUserShifts()
       .pipe(finalize(() => {this.isLoading = false }))
       .subscribe(res => {
         this.lstUserShifts = res;
+        this.configDataService.onLoading$.emit(false);
       });
   }
 
   loadShifts() {
     this.applicationUserService.getShifts().subscribe(res => {
-      this.lstShifts = res.value;;
+      this.lstShifts = res.value;
     });
   }
 

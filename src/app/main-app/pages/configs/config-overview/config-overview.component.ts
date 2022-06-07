@@ -1,3 +1,4 @@
+import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
 import { TDSSafeAny, TDSMessageService } from 'tmt-tang-ui';
 import { FormControl, Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
@@ -46,7 +47,8 @@ export class ConfigOverviewComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private generalConfigService: GeneralConfigService,
-    private message: TDSMessageService
+    private message: TDSMessageService,
+    private configDataService: ConfigDataFacade
   ) { }
 
   ngOnInit(): void {

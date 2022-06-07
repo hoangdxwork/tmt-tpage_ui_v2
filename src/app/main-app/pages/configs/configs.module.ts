@@ -1,3 +1,4 @@
+import { ConfigDataFacade } from './../../services/facades/config-data.facade';
 import { ExcelExportService } from './../../services/excel-export.service';
 import { TagProductTemplateService } from './../../services/tag-product-template.service';
 import { TagService } from 'src/app/main-app/services/tag.service';
@@ -100,7 +101,8 @@ const SERVICES = [
     UserRestHandler,
     CompanyService,
     ProductIndexDBService,
-    THelperCacheService
+    THelperCacheService,
+    ConfigDataFacade
 ]
 
 @NgModule({

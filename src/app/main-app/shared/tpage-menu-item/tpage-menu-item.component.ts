@@ -1,16 +1,16 @@
 import { filter } from 'rxjs/operators';
 import { Event, RouterEvent, Router } from '@angular/router';
 import { TDSMenuDTO } from 'tmt-tang-ui';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'tpage-menu-item',
-  templateUrl: './tpage-menu-item.component.html',
-  styleUrls: ['./tpage-menu-item.component.scss']
+  templateUrl: './tpage-menu-item.component.html'
 })
 export class TpageMenuItemComponent implements OnInit {
   //#region variable
   @Input() menuData!:Array<TDSMenuDTO>;
+  @Input() loading!:boolean;
 
   currentURL!:string;
   active:boolean = false;

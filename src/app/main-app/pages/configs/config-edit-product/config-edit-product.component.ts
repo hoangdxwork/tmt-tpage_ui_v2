@@ -1,3 +1,4 @@
+import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
 import { ConfigAddAttributeProductModalComponent } from './../components/config-add-attribute-product-modal/config-add-attribute-product-modal.component';
 import { ProductTemplateDTO } from './../../../dto/product/product.dto';
 import { ConfigAddCategoryModalComponent } from './../components/config-add-category-modal/config-add-category-modal.component';
@@ -57,6 +58,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
     private productService: ProductService,
     private productTemplateService: ProductTemplateService,
     private productTemplateOUMLine: ProductTemplateOUMLineService,
+    private configDataService: ConfigDataFacade
   ) {
     this.loadProductTypeList();
     this.loadProductCategory();
@@ -81,6 +83,7 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
   }
 
   getData(){
+    this.configDataService.onLoading$.emit(true);
     this.productTemplateService.getProductTemplateById(this.productId).pipe(takeUntil(this.destroy$)).subscribe(
       (res:TDSSafeAny)=>{
         delete res['@odata.context'];
@@ -108,8 +111,8 @@ export class ConfigEditProductComponent implements OnInit, OnDestroy {
           this.variantTableData = res.ProductVariants;
         }
 
-        console.log('edit-page')
         this.editProductForm.patchValue(res);
+        this.configDataService.onLoading$.emit(false);
       },
       err=>{
         this.message.error(err.error.message??'Tải dữ liệu thất bại')

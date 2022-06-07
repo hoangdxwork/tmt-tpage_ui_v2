@@ -1,3 +1,4 @@
+import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
 import { Router } from '@angular/router';
 import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSMessageService } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
@@ -61,6 +62,7 @@ export class ConfigPromotionsComponent implements OnInit {
     private message: TDSMessageService,
     private odataSaleCouponProgramService: OdataSaleCouponProgramService,
     private saleCouponProgramService: SaleCouponProgramService,
+    private configDataService: ConfigDataFacade,
     private router:Router
   ) {
   }
@@ -71,6 +73,7 @@ export class ConfigPromotionsComponent implements OnInit {
 
   loadData(pageSize: number, pageIndex: number){
     this.isLoading = true;
+    this.configDataService.onLoading$.emit(this.isLoading);
     let filters = this.odataSaleCouponProgramService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
@@ -78,6 +81,7 @@ export class ConfigPromotionsComponent implements OnInit {
         this.count = res['@odata.count'] as number;
         this.lstData = res.value;
         this.isLoading = false;
+        this.configDataService.onLoading$.emit(this.isLoading);
     }, error => this.isLoading = false);
   }
 

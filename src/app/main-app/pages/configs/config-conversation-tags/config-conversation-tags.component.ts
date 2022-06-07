@@ -1,3 +1,4 @@
+import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
 import { switchMap } from 'rxjs/operators';
 import { SortEnum } from './../../../../lib/enum/sort.enum';
 import { SortDataRequestDTO, FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
@@ -36,6 +37,7 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
     // private configService: TDSConfigService,
     private message: TDSMessageService,
     private odataTagService:OdataCRMTagService,
+    private configDataService: ConfigDataFacade,
     private tagService:CRMTagService) { }
 
   ngOnDestroy(): void {
@@ -81,6 +83,7 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
     this.getViewData(params).subscribe((res: ODataCRMTagDTO) => {
       this.count = res['@odata.count'] as number;
       this.lstOfData = res.value;
+      this.configDataService.onLoading$.emit(false);
     }, err => {
       this.message.error('Tải dữ liệu thất bại!');
     });
@@ -92,6 +95,7 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
 
   private getViewData(params: string): Observable<ODataCRMTagDTO> {
     this.isLoading = true;
+    this.configDataService.onLoading$.emit(this.isLoading);
     return this.odataTagService
         .getView(params, this.filterObj).pipe(takeUntil(this.destroy$))
         .pipe(finalize(() => {this.isLoading = false }));

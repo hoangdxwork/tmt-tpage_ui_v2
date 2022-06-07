@@ -1,3 +1,5 @@
+import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
+import { ActivityDataFacade } from 'src/app/main-app/services/facades/activity-data.facade';
 import { FormControl, Validators } from '@angular/forms';
 import { TDSSafeAny, TDSTableFilterFn, TDSTableFilterList, TDSTableSortFn, TDSTableSortOrder } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
@@ -53,7 +55,8 @@ export class ConfigActivitiesComponent implements OnInit {
 
   constructor(
     private i18n: TDSI18nService,
-    private odataTPosLoggingService: OdataTPosLoggingService
+    private odataTPosLoggingService: OdataTPosLoggingService,
+    private configDataService: ConfigDataFacade
   ) {
     this.i18n.setLocale(vi_VN);
     this.fromDate = new FormControl(null,[Validators.required]);
@@ -67,6 +70,7 @@ export class ConfigActivitiesComponent implements OnInit {
 
   loadData(pageSize: number, pageIndex: number) {
     this.isLoading = true;
+    this.configDataService.onLoading$.emit(this.isLoading);
     let filters = this.odataTPosLoggingService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
 
@@ -74,6 +78,7 @@ export class ConfigActivitiesComponent implements OnInit {
         this.count = res['@odata.count'] as number;
         this.lstData = res.value;
         this.isLoading = false;
+        this.configDataService.onLoading$.emit(this.isLoading);
     });
   }
 
