@@ -33,8 +33,8 @@ export class DetailBillPaymentComponent implements OnInit {
     deliveryType: '',
     searchText: '',
     dateRange: {
-        startDate: addDays(new Date(), -30),
-        endDate: new Date(),
+      startDate: addDays(new Date(), -30),
+      endDate: new Date(),
     }
   }
 
@@ -50,6 +50,11 @@ export class DetailBillPaymentComponent implements OnInit {
   count: number = 1;
   tabIndex: number = 1;
   indClickTag = -1;
+  checked = false;
+  indeterminate = false;
+  setOfCheckedId = new Set<number>();
+  isVisible = false;
+  isVisiblePayment = false;
 
   public lstTags: TagsPartnerDTO[] = [];
   public modelTags: Array<TDSSafeAny> = [];
@@ -206,6 +211,34 @@ export class DetailBillPaymentComponent implements OnInit {
       default:
         return "warning";
     }
+  }
+
+  showModal() {
+    this.isVisible = true;
+  }
+
+  showModalPayment() {
+    this.isVisiblePayment = true;
+  }
+
+  handleOk(): void {
+    console.log('Button ok clicked!');
+    this.isVisible = false;
+  }
+
+  handleCancel(): void {
+    console.log('Button cancel clicked!');
+    this.isVisible = false;
+  }
+
+  handleOkPayment(): void {
+    console.log('Button ok clicked!');
+    this.isVisiblePayment = false;
+  }
+
+  handleCancelPayment(): void {
+    console.log('Button cancel clicked!');
+    this.isVisiblePayment = false;
   }
 
 }

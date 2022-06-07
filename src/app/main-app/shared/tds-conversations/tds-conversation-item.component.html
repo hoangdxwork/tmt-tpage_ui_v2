@@ -260,7 +260,7 @@
 
 				<!-- Phản hồi bình luận -->
 				<div *ngIf="children" class="chat-list">
-					<div class="chat-item mt-4 chat-comment flex flex-row" *ngFor="let child of children; let i = index">
+					<div class="chat-item mt-4 chat-comment flex flex-row" *ngFor="let child of children; let i = index;">
 						<div class="avatar mr-2">
 							<tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.from.id"
 								[token]="team?.Facebook_PageToken">

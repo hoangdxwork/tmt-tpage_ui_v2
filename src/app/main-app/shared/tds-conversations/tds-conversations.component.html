@@ -75,7 +75,7 @@
             </div>
 
             <div *ngIf="(dataSource$ | async ) && (dataSource$ | async )?.items">
-              <ng-container *ngFor="let item of (dataSource$ | async )?.items | showAvatar | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex">
+              <div *ngFor="let item of (dataSource$ | async )?.items | showAvatar | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex">
                   <div *ngIf="item">
                       <div *ngIf="item.is_show_break && i!= 0" class="w-full relative">
                           <div class="date-v3">
@@ -166,7 +166,7 @@
                           [children]="getExtrasChildren((dataSource$ | async), item)">
                       </tds-conversation-item>
                   </div>
-              </ng-container>
+              </div>
             </div>
         </div>
     </tds-spin>
@@ -335,7 +335,7 @@
                 <div class="p-2" (click)="showModalListProduct()">
                     <div class="tdsi-product-line text-neutral-1-400 text-xl cursor-pointer"></div>
                 </div>
-                <quick-reply-button></quick-reply-button>
+                <quick-reply-button (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
                 <div class="p-2">
                     <div class="tdsi-paper-fill text-neutral-1-400 text-xl cursor-pointer" (click)="showModalListBill()"></div>
                 </div>

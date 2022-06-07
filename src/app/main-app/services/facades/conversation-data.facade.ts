@@ -31,6 +31,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   private nextPageUrlCurrent!: string;
   isProcessing: boolean = false;
   public onUpdateInfoByConversation$ = new EventEmitter<any>();
+  public changeCurrentCvs$ = new EventEmitter<any>();
 
   constructor(private message: TDSMessageService,
     private cvsFbState: ConversationFacebookState,

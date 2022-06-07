@@ -1,7 +1,7 @@
 import { finalize, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-import { OnDestroy } from '@angular/core';
-import { TDSMessageService, TDSTableQueryParams } from 'tmt-tang-ui';
+import { OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { TDSMessageService, TDSTableQueryParams, TDSResizeObserver } from 'tmt-tang-ui';
 import { FastSaleOrderService } from './../../../services/fast-sale-order.service';
 import { HistoryDeliveryDTO } from './../../../dto/bill/bill.dto';
 import { Component, OnInit } from '@angular/core';
@@ -10,7 +10,9 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-history-delivery-status',
   templateUrl: './history-delivery-status.component.html'
 })
-export class HistoryDeliveryStatusComponent implements OnInit, OnDestroy {
+export class HistoryDeliveryStatusComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  @ViewChild('tableWidth') viewChildTableWidth!: ElementRef;
 
   lstHistoryDS:HistoryDeliveryDTO[] = [];
   expandSet = new Set<number>();
@@ -18,14 +20,36 @@ export class HistoryDeliveryStatusComponent implements OnInit, OnDestroy {
   pageIndex = 1;
   isLoading: boolean = false;
   count: number = 1;
+  tableWidth:number = 0;
+  paddingCollapse:number = 0;
 
   private destroy$ = new Subject();
 
   constructor(private fastSaleOrderService: FastSaleOrderService,
-    private message: TDSMessageService) { }
+    private message: TDSMessageService,
+    private resizeObserver: TDSResizeObserver) { }
 
   ngOnInit(): void {
     this.loadHistoryDS(this.pageSize,this.pageIndex);
+  }
+
+  ngAfterViewInit(): void {
+    // this.tableWidth = this.viewChildTableWidth?.nativeElement?.offsetWidth - this.paddingCollapse
+
+    // this.resizeObserver
+    //   .observe(this.viewChildTableWidth)
+    //   .subscribe(() => {
+    //     this.tableWidth = this.viewChildTableWidth?.nativeElement?.offsetWidth - this.paddingCollapse;
+    //     this.viewChildTableWidth?.nativeElement.click()
+    //   });
+    //   setTimeout(() => {
+    //     let that = this;
+    //     let wrapScroll = this.viewChildDetailPartner?.nativeElement?.closest('.tds-table-body');
+    //     wrapScroll?.addEventListener('scroll', function() {
+    //       let scrollleft = wrapScroll.scrollLeft;
+    //       that.marginLeftCollapse = scrollleft;
+    //     });
+    //   }, 500);  
   }
 
   loadHistoryDS(pageSize:number,pageIndex:number){

@@ -17,7 +17,6 @@ import { InitSaleDTO, SaleSettingsDTO } from '../../dto/setting/setting-sale-onl
 @Component({
   selector: 'list-product-tmp',
   templateUrl: './list-product-tmp.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestroy, OnChanges {

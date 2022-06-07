@@ -220,7 +220,7 @@
                                 </div>
                                 <div class="w-2/3"  *ngIf="dataModel.State != 'open'">
                                     <tds-form-field>
-                                        <tds-input-number [min]='0' [step]="1" placeholder="Nhập tiền cọc" formControlName="AmountDeposit" 
+                                        <tds-input-number [min]='0' [step]="1" placeholder="Nhập tiền cọc" formControlName="AmountDeposit"
                                             (ngModelChange)="changeAmountDeposit($event)">
                                         </tds-input-number>
                                     </tds-form-field>
@@ -257,7 +257,7 @@
                                 </div>
                                 <div class="w-2/3"  *ngIf="dataModel.State != 'open'">
                                     <tds-form-field>
-                                        <tds-input-number [min]='0' [step]="1" placeholder="Nhập khối lượng" 
+                                        <tds-input-number [min]='0' [step]="1" placeholder="Nhập khối lượng"
                                             (ngModelChange)="changeShipWeight($event)" formControlName="ShipWeight">
                                         </tds-input-number>
                                     </tds-form-field>
@@ -308,7 +308,7 @@
                                                                 placeholder='Chọn dịch vụ' [valuePrimitive]="false" formControlName="Ship_ServiceId"
                                                                 disabledField="isActive" [data]="shipServices" [allowClear]="true">
                                                                 <ng-template tds-label-tmp let-item="item">
-                                                                        {{item.data.ServiceName}} 
+                                                                        {{item.data.ServiceName}}
                                                                         <span *ngIf="item.data.TotalFee > 0">: {{item.data.TotalFee | number:'1.0-3'}}</span>
                                                                 </ng-template>
                                                             </tds-select>
@@ -398,9 +398,9 @@
                                             <div *ngIf="shipExtraServices && shipExtraServices.length > 0" class="col-span-3">
                                                 <div class="grid grid-cols-3 gap-y-4 gap-x-6">
                                                     <div *ngFor="let child of shipExtraServices; let i=index">
-                                                        <tds-checkbox [(ngModel)]="child.IsSelected" [ngModelOptions]="{standalone: true}"> 
+                                                        <tds-checkbox [(ngModel)]="child.IsSelected" [ngModelOptions]="{standalone: true}">
                                                             <div class="flex flex-row items-center w-full">
-                                                                <span class="mr-2">{{child.ServiceName}}</span> 
+                                                                <span class="mr-2">{{child.ServiceName}}</span>
                                                                 <div *ngIf="child.ServiceId == 'XMG' && child.IsSelected == true">
                                                                     <!-- _form.controls['Carrier'].value?.DeliveryType === 'ViettelPost' &&  -->
                                                                     <button type="button" style="border-bottom: dashed 2px #2395FF;"
@@ -683,7 +683,7 @@
                 <div class="w-full h-full">
                     <div class="rounded-xl pt-2 px-3 bg-white flex h-full w-full flex-col gap-y-2 text-body-2 text-neutral-1-900">
                         <tds-table templateMode #TableAddBill [listData]="_form['controls'].OrderLines.value"
-                            [scroll]="{y:'380px'}" [showPagination]="false">
+                            [scroll]="{y:'auto'}" [showPagination]="false">
                             <thead>
                                 <tr>
                                     <th width="10%">STT</th>
@@ -774,7 +774,7 @@
                 <div class="w-2/3 h-full">
                     <div class="rounded-xl pt-2 px-3 bg-white flex h-full w-full flex-col gap-y-2 text-body-2 text-neutral-1-900">
                         <tds-table templateMode #TableAddBill [listData]="_form['controls'].OrderLines.value"
-                            [scroll]="{y:'380px'}" [showPagination]="false">
+                            [scroll]="{y:'auto'}" [showPagination]="false">
                             <thead>
                                 <tr>
                                     <th width="50px">STT</th>
