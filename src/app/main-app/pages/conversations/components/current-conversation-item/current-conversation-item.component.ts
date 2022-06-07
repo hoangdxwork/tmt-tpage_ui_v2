@@ -109,11 +109,8 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges {
   }
 
   changeCheck(ev: TDSSafeAny){
-    if(ev)
-      this.checkedChange.emit(ev.checked)
+    this.checkedChange.emit(!this.checked);
+    ev.preventDefault();
   }
 
-  clickCheckbox(ev: TDSSafeAny){
-    ev.preventDefault()
-  }
 }

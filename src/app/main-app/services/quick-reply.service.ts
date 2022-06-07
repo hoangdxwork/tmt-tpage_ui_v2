@@ -30,6 +30,16 @@ export class QuickReplyService extends BaseSevice {
       })
     }
   }
+  addDataActive(data: any) {
+    if(data && data.Id && data.Active){
+      if(!this.dataActive || !this.dataActive.value) {
+        this.dataActive["value"] = [];
+      }
+      this.dataActive.value.push(data);
+    }
+
+    this.dataActive$.next(this.dataActive);
+  }
 
   get(): Observable<any> {
     let api: TAPIDTO = {

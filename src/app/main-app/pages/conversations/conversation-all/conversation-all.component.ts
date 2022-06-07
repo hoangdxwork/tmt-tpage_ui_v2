@@ -159,7 +159,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
   }
 
+    
   changeCurrentCvsItem(item: any) {
+    if(this.isOpenCollapCheck){
+      return
+    }
     if(item.psid == this.activeCvsItem.psid && item.page_id == this.activeCvsItem.page_id) {
       return;
     }

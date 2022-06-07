@@ -1,3 +1,5 @@
+import { ReplaceHelper } from './../../../../shared/helper/replace.helper';
+import { QuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-reply.dto';
 import { ActivityDataFacade } from 'src/app/main-app/services/facades/activity-data.facade';
 import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
@@ -97,6 +99,11 @@ export class ModalSendMessageAllComponent implements OnInit {
     this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
   }
 
+  onQuickReplySelected(event:QuickReplyDTO){
+    this.sendMessageType = SendMessageType.QuickMessage;
+    let text = event.BodyPlain || event.BodyHtml;
+    this.messageModel = text;
+  }
 
   prepareModel(message: string): any {
     let lstCheck = [...this.setOfCheckedId]
@@ -124,26 +131,6 @@ export class ModalSendMessageAllComponent implements OnInit {
     }
   }
 
-  showModalAddQuickReply() {
-    this.sendMessageType = SendMessageType.QuickMessage;
-    const modal = this.modalService.create({
-      title: 'Thêm mới trả lời nhanh',
-      content: ModalAddQuickReplyComponent,
-      viewContainerRef: this.viewContainerRef,
-      size: 'md',
-      componentParams: {
-
-      }
-    });
-    modal.afterOpen.subscribe(() => {
-
-    });
-    // Return a result when closed
-    modal.afterClose.subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
-      }
-    });
-  }
 
   showModalListProduct() {
     this.sendMessageType = SendMessageType.Product;

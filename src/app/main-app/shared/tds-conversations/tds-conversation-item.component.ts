@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ActivityStatus } from "src/app/lib/enum/message/coversation-message";
@@ -265,12 +265,13 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   onQuickReplySelected(event: any) {
     let text = event.BodyPlain || event.BodyHtml || event.text;
     text = ReplaceHelper.quickReply(text, this.partner);
-    this.message = text;
+    this.messageModel = text;
   }
 
   open_gallery(att: any) {
     this.isShowItemImage = true;
-    this.activityDataFacade.getActivity(this.team.Facebook_PageId, this.psid, this.type).subscribe((res: any) => {
+    this.activityDataFacade.getActivity(this.team.Facebook_PageId, this.psid, this.type)
+    .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       // this.messages = res.items;
       this.gallery = res.items.filter((x: TDSSafeAny) => x.message && x.message.attachments != null);
       let result:TDSSafeAny[]= [];
@@ -316,31 +317,21 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     if(this.isPrivateReply) {
       this.addQuickReplyComment(message, event);
     } else {
-
       const model = this.prepareModel(message);
-
       model.post_id = this.data.object_id || this.data.comment?.object?.id || null;
       model.parent_id = this.data.id || this.data?.comment?.id || null;
-
       this.activityMatchingService.replyComment(this.team?.Id, model)
         .pipe(takeUntil(this.destroy$))
-        .subscribe((res: any) => {
-
+        .pipe(finalize(()=> {this.isReplyingComment = false;} )).subscribe((res: any) => {
           this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });
           this.conversationDataFacade.messageServer(res);
-
           this.messageModel = null;
-          this.isReplyingComment = false;
           this.tdsMessage.success("Trả lời bình luận thành công");
-
           this.isReply = false;
           this.cdRef.markForCheck();
           event.preventDefault();
-
         }, error => {
           this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
-          this.isReplyingComment = false;
-
           this.cdRef.markForCheck();
           event.preventDefault();
         });
@@ -397,6 +388,23 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     model.created_time = (new Date()).toISOString();
 
     return model
+  }
+
+  @HostListener('click', ['$event']) onClick(e: TDSSafeAny) {
+    if (e.target.className.indexOf('text-copyable') >= 0) {
+      let selBox = document.createElement('textarea');
+      selBox.style.position = 'fixed';
+      selBox.style.left = '0';
+      selBox.style.top = '0';
+      selBox.style.opacity = '0';
+      selBox.value = e.target.getAttribute('data-value') || e.target.innerHTML;
+      document.body.appendChild(selBox);
+      selBox.focus();
+      selBox.select();
+      document.execCommand('copy');
+      document.body.removeChild(selBox);
+      this.tdsMessage.info('Đã copy số điện thoại');
+    }
   }
 
   ngOnDestroy(): void {
