@@ -1,5 +1,6 @@
+import { TDSModalService } from 'tmt-tang-ui';
 import { TDSMessageService, TDSTableQueryParams } from 'tmt-tang-ui';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 import { MessageDeliveryHistoryLiveCampaignParamsDTO, MessageHistorySaleOnlineDTO } from 'src/app/main-app/dto/common/table.dto';
 import { ODataParamsDTO } from 'src/app/main-app/dto/odata/odata.dto';
@@ -25,7 +26,7 @@ export class TableOrderMessageComponent implements OnInit {
 
   constructor(
     private commonService: CommonService,
-    private message: TDSMessageService
+    private message: TDSMessageService,
   ) { }
 
   ngOnInit(): void {

@@ -42,6 +42,7 @@ import { TableOrderWaitComponent } from './components/table-order-wait/table-ord
 import { TableOrderCancelComponent } from './components/table-order-cancel/table-order-cancel.component';
 import { TableBillConfirmedComponent } from './components/table-bill-confirmed/table-bill-confirmed.component';
 import { TableBillCancelComponent } from './components/table-bill-cancel/table-bill-cancel.component';
+import { ModalHistoryCartComponent } from './components/modal-history-cart/modal-history-cart.component';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -65,7 +66,8 @@ const cmp =[
   TableOrderWaitComponent,
   TableOrderCancelComponent,
   TableBillConfirmedComponent,
-  TableBillCancelComponent
+  TableBillCancelComponent,
+  ModalHistoryCartComponent
 ]
 
 const SERVICES = [

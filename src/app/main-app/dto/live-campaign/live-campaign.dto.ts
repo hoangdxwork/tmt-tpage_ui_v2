@@ -239,3 +239,15 @@ export interface LiveCampaignFSOrderDTO {
   /// delete,cancel
   Status: string;
 }
+
+export interface CartHistoryEventDTO {
+  EventName: string;
+  Quantity: number;
+  DateCreated: Date;
+}
+
+export interface FSOrderHistoryEventDTO {
+  TotalBeforeCheckOut: number;
+  TotalCheckOut: number;
+  HistoryEvents: CartHistoryEventDTO[];
+}

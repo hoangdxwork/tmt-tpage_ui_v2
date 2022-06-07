@@ -1,8 +1,9 @@
+import { TDSSafeAny } from 'tmt-tang-ui';
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { FacebookMappingPostDTO } from "../dto/conversation/post/post.dto";
-import { ApproveLiveCampaignDTO, DetailReportLiveCampaignDTO, LiveCampaign_SimpleDataDTO, ReportLiveCampaignOverviewDTO, SaleOnlineLiveCampaignDetailDTO, SaleOnline_LiveCampaignDTO, SearchReportLiveCampaignOverviewDTO, UpdateFacebookLiveCampaignDTO } from "../dto/live-campaign/live-campaign.dto";
+import { ApproveLiveCampaignDTO, CartHistoryEventDTO, DetailReportLiveCampaignDTO, FSOrderHistoryEventDTO, LiveCampaign_SimpleDataDTO, ReportLiveCampaignOverviewDTO, SaleOnlineLiveCampaignDetailDTO, SaleOnline_LiveCampaignDTO, SearchReportLiveCampaignOverviewDTO, UpdateFacebookLiveCampaignDTO } from "../dto/live-campaign/live-campaign.dto";
 import { ODataModelDTO, ODataResponsesDTO } from "../dto/odata/odata.dto";
 import { BaseSevice } from "./base.service";
 
@@ -151,6 +152,24 @@ export class LiveCampaignService extends BaseSevice {
     }
 
     return this.apiService.getData<boolean>(api, null);
+  }
+
+  getSOCartHistory(liveCampaignId: string, productId: number, orderId: TDSSafeAny): Observable<ODataResponsesDTO<CartHistoryEventDTO>> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetSOCartHistory?key=${liveCampaignId}&product_id=${productId}&order_id=${orderId}`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<ODataResponsesDTO<CartHistoryEventDTO>>(api, null);
+  }
+
+  getFSCartHistory(liveCampaignId: string, productId: number, orderId: TDSSafeAny): Observable<FSOrderHistoryEventDTO> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetFSCartHistory?key=${liveCampaignId}&product_id=${productId}&order_id=${orderId}`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<FSOrderHistoryEventDTO>(api, null);
   }
 
 }
