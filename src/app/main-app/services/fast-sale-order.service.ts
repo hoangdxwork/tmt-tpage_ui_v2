@@ -11,8 +11,9 @@ import { ConversationOrderBillByPartnerDTO } from '../dto/conversation/conversat
 import { ODataCalculatorListFeeDTO } from '../dto/fastsaleorder/calculate-listFee.dto';
 
 import { FastSaleOrder_DefaultDTOV2 } from '../dto/fastsaleorder/fastsaleorder-default.dto';
-import { FastSaleOrderDTO, FastSaleOrderRestDTO, FastSaleOrderSummaryStatusDTO } from '../dto/fastsaleorder/fastsaleorder.dto';
-import { ODataModelDTO } from '../dto/odata/odata.dto';
+import { FastSaleOrderDTO, FastSaleOrderRestDTO, FastSaleOrderSummaryStatusDTO, ListUpdateDepositDTO } from '../dto/fastsaleorder/fastsaleorder.dto';
+import { AccountRegisterPaymentDTO } from '../dto/fastsaleorder/payment.dto';
+import { ODataIdsDTO, ODataModelDTO } from '../dto/odata/odata.dto';
 import { PagedList2 } from '../dto/pagedlist2.dto';
 import { ODataTaxDTO } from '../dto/tax/tax.dto';
 import { CRMTeamDTO } from '../dto/team/team.dto';
@@ -30,6 +31,15 @@ export class FastSaleOrderService extends BaseSevice {
 
   constructor(private apiService: TCommonService) {
     super(apiService)
+  }
+
+  get(id: number) {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<FastSaleOrder_DefaultDTOV2>(api, null);
   }
 
   defaultGet(): Observable<any> {
@@ -280,6 +290,14 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
+  getRegisterPaymentV2(data: ODataIdsDTO<number[]>): Observable<AccountRegisterPaymentDTO> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetRegisterPayment?$expand=Partner`,
+        method: TApiMethodType.post
+    }
+    return this.apiService.getData<AccountRegisterPaymentDTO>(api, data);
+  }
+
   getTokenTrackingOrderGHN(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetTokenTrackingOrderGHN`,
@@ -365,5 +383,14 @@ export class FastSaleOrderService extends BaseSevice {
         method: TApiMethodType.get
     }
     return this.apiService.getData<ODataPaymentJsonDTO>(api, null);
+  }
+
+  listUpdateDeposit(data: ListUpdateDepositDTO): Observable<undefined> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/rest/v1.0/fastsaleorder/listupdatedeposit`,
+      method: TApiMethodType.post
+    }
+
+    return this.apiService.getData<undefined>(api, data);
   }
 }

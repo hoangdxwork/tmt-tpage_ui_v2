@@ -12,6 +12,9 @@ export class ModalLiveCampaignOrderComponent implements OnInit {
 
   @Input() data: ViewReportSaleOnlineOrderLiveCampaignDTO[] = [];
 
+  pageSize = 10;
+  pageIndex = 1;
+
   constructor(
     private modalRef: TDSModalRef,
     private modal: TDSModalService,

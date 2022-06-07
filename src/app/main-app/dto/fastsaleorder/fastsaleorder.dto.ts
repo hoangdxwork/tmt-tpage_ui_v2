@@ -798,3 +798,14 @@ export interface FastSaleOrderModelDTO {
   PaymentInfo: PaymentInfoContentDTO[];
   Search?: SearchStaffReportDTO;
 }
+
+export interface ListUpdateDepositDTO {
+  IsConfirmed: boolean;
+  List: UpdateDepositDTO[];
+}
+
+export interface UpdateDepositDTO {
+  Id: number;
+  AmountDeposit: number;
+  IsConfirmed: boolean;
+}

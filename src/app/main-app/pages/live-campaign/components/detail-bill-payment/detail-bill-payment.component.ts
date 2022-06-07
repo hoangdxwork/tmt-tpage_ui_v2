@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { TDSModalService } from 'tmt-tang-ui';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { addDays } from 'date-fns';
 import { Observable } from 'rxjs';
@@ -12,6 +13,9 @@ import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.
 import { ODataLiveCampaignBillService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-bill.service';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { TDSMessageService, TDSSafeAny, TDSTableQueryParams, TDSTagStatusType } from 'tmt-tang-ui';
+import { ModalConfirmedDepositComponent } from '../modal-confirmed-deposit/modal-confirmed-deposit.component';
+import { ModalPaymentComponent } from '../modal-payment/modal-payment.component';
+import { Message } from 'src/app/lib/consts/message.const';
 
 @Component({
   selector: 'detail-bill-payment',
@@ -19,6 +23,9 @@ import { TDSMessageService, TDSSafeAny, TDSTableQueryParams, TDSTagStatusType } 
   styles: [
     `tr:hover .show-payment {
       display: block
+    }
+    .image-payment:hover .show-img-payment {
+      display: flex
     }`
   ]
 })
@@ -63,6 +70,8 @@ export class DetailBillPaymentComponent implements OnInit {
     private tagService: TagService,
     private message: TDSMessageService,
     private router: Router,
+    private modal: TDSModalService,
+    private viewContainerRef: ViewContainerRef,
     private fastSaleOrderService: FastSaleOrderService,
     private oDataLiveCampaignBillService: ODataLiveCampaignBillService
   ) { }
@@ -213,32 +222,38 @@ export class DetailBillPaymentComponent implements OnInit {
     }
   }
 
-  showModal() {
-    this.isVisible = true;
+  showModalDeposit(data: FastSaleOrderModelDTO) {
+    let modal = this.modal.create({
+      title: 'Xác nhận tiền cọc',
+      content: ModalConfirmedDepositComponent,
+      size: 'xl',
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        data: data
+      }
+    });
+
+    modal.componentInstance?.eventConfirmed.subscribe(res => {
+      data.IsDeposited = true;
+      data.AmountDeposit = res;
+    });
   }
 
-  showModalPayment() {
-    this.isVisiblePayment = true;
-  }
+  showModalPayment(id: number, state: string) {
+    if(state != "open") {
+      this.message.info(Message.Bill.ErrorConfirmedSate);
+      return;
+    }
 
-  handleOk(): void {
-    console.log('Button ok clicked!');
-    this.isVisible = false;
-  }
-
-  handleCancel(): void {
-    console.log('Button cancel clicked!');
-    this.isVisible = false;
-  }
-
-  handleOkPayment(): void {
-    console.log('Button ok clicked!');
-    this.isVisiblePayment = false;
-  }
-
-  handleCancelPayment(): void {
-    console.log('Button cancel clicked!');
-    this.isVisiblePayment = false;
+    this.modal.create({
+      title: 'Đăng ký thanh toán',
+      content: ModalPaymentComponent,
+      size: 'xl',
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        id: [id]
+      }
+    });
   }
 
 }

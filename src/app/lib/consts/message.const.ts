@@ -36,7 +36,9 @@ export const Message = {
     UpdateSuccess: 'Cập nhật hóa đơn thành công.',
     EmptyProduct: 'Hãy nhập sản phẩm!',
     ErrorEmptyCarrier: 'Vui lòng chọn đối tác giao hàng!',
-    ErrorEmptyPartner: 'Vui lòng điền thông tin khách hàng!'
+    ErrorEmptyPartner: 'Vui lòng điền thông tin khách hàng!',
+    ErrorConfirmedSate: 'Chỉ xác nhận thanh toán với hóa đơn trạng thái đã xác nhận.',
+    PaymentSuccess: 'Thanh toán thành công',
   },
   Message: {
     SendSuccess: 'Gửi tin nhắn thành công.',
@@ -110,6 +112,7 @@ export const Message = {
   },
   LiveCampaign: {
     ErrorNumberDetail: 'Số lượng, số tiền, giới hạn trên đơn không được để trống.',
-    ErrorRemoveLine: 'Sản phẩm đã có hóa đơn không thể xóa.'
+    ErrorRemoveLine: 'Sản phẩm đã có hóa đơn không thể xóa.',
+    MethodPaymentEmpty: 'Chưa có phương thức thanh toán.'
   }
 }

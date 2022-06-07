@@ -22,7 +22,8 @@ export class TableOrderMessageComponent implements OnInit {
   isLoading: boolean = false;
   lstData: MessageHistorySaleOnlineDTO[] = [];
 
-  isOpenMessageFacebook: boolean = false;
+  isOpenDrawerOrderMessage: boolean = false;
+  openMessageByOrderId!: string;
 
   constructor(
     private commonService: CommonService,
@@ -60,12 +61,13 @@ export class TableOrderMessageComponent implements OnInit {
     return `${total || 0} tin nhắn thất bại`;
   }
 
-  openDrawerMessage() {
-    this.isOpenMessageFacebook = true;
+  openDrawerOrderMessage(orderId: string) {
+    this.isOpenDrawerOrderMessage = true;
+    this.openMessageByOrderId = orderId;
   }
 
-  closeDrawerMessage() {
-    this.isOpenMessageFacebook = false;
+  closeDrawerOrderMessage() {
+    this.isOpenDrawerOrderMessage = false;
   }
 
   refreshData() {

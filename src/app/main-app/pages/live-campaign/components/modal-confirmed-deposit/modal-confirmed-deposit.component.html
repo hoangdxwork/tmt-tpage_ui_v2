@@ -1,0 +1,72 @@
+<tds-spin [spinning]="isLoading">
+  <div class="w-full grid grid-cols-2 gap-8 text-body-2 p-4">
+    <div class="w-full">
+      <div class="text-heading-4 font-semibold flex">
+        <div>Hóa đơn:</div>
+        <div class="ml-2 text-info-400">{{data?.Number}}</div>
+      </div>
+
+      <div class="mt-1.5 text-neutral-1-500">Ngày tạo: {{data?.DateCreated | date:"dd/MM/yyyy"}}</div>
+
+      <div class="w-full mt-3 grid grid-cols-3 gap-3 text-body-1">
+        <div>Khách hàng:</div>
+        <div class="col-span-2 text-title-1 font-semibold">{{data?.PartnerDisplayName}}</div>
+
+        <div>Tổng tiền:</div>
+        <div class="col-span-2 text-title-1 font-semibold">{{data?.AmountTotal || 0 | number}}đ</div>
+
+        <div>Tiền thu hộ:</div>
+        <div class="col-span-2 text-title-1 font-semibold">{{data?.CashOnDelivery || 0 | number}}đ</div>
+
+        <div *ngIf="data.IsDeposited">Tiền cọc</div>
+        <div *ngIf="data.IsDeposited" class="col-span-2 text-title-1 font-semibold flex space-x-2">
+          <div>90.000đ</div>
+          <div class="flex items-center space-x-1">
+            <i class="tdsi-success-line text-base text-success-400"></i>
+            <div class="font-semibold text-success-400">Đã xác nhận</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-full mt-3 flex items-end" *ngIf="!data.IsDeposited">
+        <tds-form-field class="w-full">
+          <tds-label>Xác nhận tiền cọc:</tds-label>
+          <tds-input-number [ngModel]="currentDeposit" [min]="1" [max]="999999" [step]="1000">
+          </tds-input-number>
+        </tds-form-field>
+
+        <button tds-button color="primary" class="ml-2.5" (click)="onConfirmed()">
+          <span class="flex items-center">
+            <i class="tdsi-tick-fill text-lg leading-none mr-2"></i>Xác nhận
+          </span>
+        </button>
+      </div>
+
+    </div>
+    <div class="flex justify-center">
+      <div class="h-[350px] w-2/3 rounded-xl bg-neutral-3-50 border">
+        <img src="{{data?.IRAttachmentUrl}}" alt="">
+      </div>
+    </div>
+  </div>
+
+  <div class="w-full flex justify-end mt-4" *tdsModalFooter>
+    <div class="flex p-4 justify-end">
+      <button class="mr-2 min-w-[100px]" tds-button color="secondary" (click)="onCancel()">
+        Đóng
+      </button>
+
+      <button class="mr-2" tds-button color="info" (click)="onBefore()">
+        <span class="flex items-center">
+          <i class="tdsi-arrow-left-line text-lg leading-none mr-2"></i>Đơn trước
+        </span>
+      </button>
+
+      <button tds-button color="info" (click)="onNext()">
+        <span class="flex items-center">
+          Đơn tiếp theo<i class="tdsi-arrow-right-line text-lg leading-none ml-2"></i>
+        </span>
+      </button>
+    </div>
+  </div>
+</tds-spin>
