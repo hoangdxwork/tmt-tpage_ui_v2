@@ -16,8 +16,7 @@ import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
 @Component({
   selector: "tds-conversation-item",
   templateUrl:'./tds-conversation-item.component.html',
-  styleUrls: ['./tds-conversations.component.sass'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrls: ['./tds-conversations.component.sass']
 })
 
 export class TDSConversationItemComponent implements OnInit, OnDestroy {
@@ -79,7 +78,6 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
       if (!this.data.message_formatted && this.data.id) {
         this.data['attachments'] = this.activityDataFacade.getMessageAttachments(this.team.Facebook_PageId, this.data.from_id, this.data.id);
       }
-      this.cdRef.detectChanges();
     }
   }
 
@@ -155,10 +153,10 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
         this.tdsMessage.success('Thao tác thành công!');
         this.data.comment.user_likes = !this.data.comment.user_likes;
 
-        this.cdRef.detectChanges();
+        this.cdRef.markForCheck();
       }, error => {
       this.tdsMessage.error(error.error? error.error.message : 'đã xảy ra lỗi');
-      this.cdRef.detectChanges();
+      this.cdRef.markForCheck();
     });
   }
 
@@ -180,10 +178,10 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
         this.tdsMessage.success('Thao tác thành công!');
         this.data.comment.is_hidden = !this.data.comment.is_hidden;
 
-        this.cdRef.detectChanges();
+        this.cdRef.markForCheck();
     }, error => {
       this.tdsMessage.error(error.error? error.error.message :'đã xảy ra lỗi');
-      this.cdRef.detectChanges();
+      this.cdRef.markForCheck();
     });
   }
 
@@ -199,7 +197,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.tdsMessage.success('Thao tác thành công');
         this.activityDataFacade.refreshAttachment(res);
-        this.cdRef.detectChanges();
+        this.cdRef.markForCheck();
     }, error => {
       this.tdsMessage.error('Không thành công');
     })
@@ -241,15 +239,16 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     };
 
     this.activityMatchingService.addTemplateMessage(this.data.psid, model)
-      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
         this.activityDataFacade.messageServer(res);
         this.conversationDataFacade.messageServer(res);
 
         this.tdsMessage.success('Gửi thành công sản phẩm');
-        this.cdRef.detectChanges();
+        this.cdRef.markForCheck();
     }, error => {
       this.tdsMessage.error('Gửi sản phẩm thất bại');
-      this.cdRef.detectChanges();
+      this.cdRef.markForCheck();
     });
 
     this.message += event.Name, + " - " + event.Price;
@@ -278,7 +277,6 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
 
       this.gallery.map((obj: any) => {
         obj.message.attachments.data.map((data: any) => {
-
           if(data.mime_type != 'audio/mpeg') {
             result.push({
               date_time: obj.DateCreated,
@@ -287,12 +285,12 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
               type: data.mime_type ? data.mime_type : null
             });
           }
-
         })
       });
 
       this.listAtts = result;
     });
+
     if(att.image_data && att.image_data.url) this.imageClick = this.listAtts.findIndex(x => x.url == att.image_data.url);
     if(att.video_data && att.video_data.url) this.imageClick = this.listAtts.findIndex(x => x.url == att.video_data.url);
   }
@@ -319,13 +317,13 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
       this.addQuickReplyComment(message, event);
     } else {
 
-      this.isReply = false;
       const model = this.prepareModel(message);
 
       model.post_id = this.data.object_id || this.data.comment?.object?.id || null;
       model.parent_id = this.data.id || this.data?.comment?.id || null;
 
       this.activityMatchingService.replyComment(this.team?.Id, model)
+        .pipe(takeUntil(this.destroy$))
         .subscribe((res: any) => {
 
           this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });
@@ -335,15 +333,16 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
           this.isReplyingComment = false;
           this.tdsMessage.success("Trả lời bình luận thành công");
 
+          this.isReply = false;
+          this.cdRef.markForCheck();
           event.preventDefault();
-          this.cdRef.detectChanges();
 
         }, error => {
           this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
           this.isReplyingComment = false;
 
+          this.cdRef.markForCheck();
           event.preventDefault();
-          this.cdRef.detectChanges();
         });
     }
   }
@@ -357,28 +356,28 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
 
-      if(TDSHelperArray.hasListValue(res)){
-        res.forEach((item: any) => {
-          item["status"] = this.enumActivityStatus.sending;
-          this.activityDataFacade.messageServer({ ...item });
-        });
-      }
+        if(TDSHelperArray.hasListValue(res)){
+          res.forEach((item: any) => {
+            item["status"] = this.enumActivityStatus.sending;
+            this.activityDataFacade.messageServer({ ...item });
+          });
+        }
 
-      this.conversationDataFacade.messageServer(res.pop());
+        this.conversationDataFacade.messageServer(res.pop());
 
-      this.messageModel = null;
-      this.isReplyingComment = false;
-      this.tdsMessage.success('Gửi tin thành công');
+        this.messageModel = null;
+        this.isReplyingComment = false;
+        this.tdsMessage.success('Gửi tin thành công');
 
-      event.preventDefault();
-      this.cdRef.detectChanges();
+        event.preventDefault();
+        this.cdRef.markForCheck();
 
     }, error => {
       this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Gửi tin nhắn thất bại");
       this.isReplyingComment = false;
 
       event.preventDefault();
-      this.cdRef.detectChanges();
+      this.cdRef.markForCheck();
     });
   }
 

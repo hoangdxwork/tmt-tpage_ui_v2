@@ -7,10 +7,11 @@ import { AppComponent } from './app.component';
 import { TDS_I18N, vi_VN } from 'tmt-tang-ui';
 // Đa ngôn ngữ
 import localeVi from '@angular/common/locales/vi';
-import { registerLocaleData } from '@angular/common';
+import { HashLocationStrategy, LocationStrategy, registerLocaleData } from '@angular/common';
 import { TAuthGuardService, TAuthInterceptorService } from './lib';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { SharedModule } from './shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 // Thiết lập tiếng Việt
 registerLocaleData(localeVi);
 
@@ -21,6 +22,8 @@ registerLocaleData(localeVi);
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule,
     AppRoutingModule,
     ScrollingModule,
     HttpClientModule,
@@ -30,8 +33,10 @@ registerLocaleData(localeVi);
     TAuthGuardService, {
       provide: HTTP_INTERCEPTORS,
       useClass: TAuthInterceptorService, multi: true
-    }
+    },
+    { provide: LocationStrategy, useClass: HashLocationStrategy }
   ],
+
   bootstrap: [AppComponent]
 })
 export class AppModule { }

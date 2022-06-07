@@ -141,11 +141,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
     this.isLoadMessage = true;
     this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => {
-        this.isLoadMessage = false;
-        this.cdRef.detectChanges();
-      }));
+    .pipe(takeUntil(this.destroy$))
+    .pipe(finalize(() => {
+        setTimeout(() => {
+          this.isLoadMessage = false;
+          this.conversationDataFacade.changeCurrentCvs$.emit(false);
+          this.cdRef.detectChanges();
+        }, 350)
+    }))
   }
 
   loadUser() {
@@ -196,10 +199,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
         // Cập nhật count_unread
         this.conversationEventFacade.updateMarkSeenBadge(this.data.page_id, this.type, this.data.psid);
-        this.cdRef.detectChanges();
       }, error => {
         this.message.error(`markseen: ${error?.error?.message}`);
-        this.cdRef.detectChanges();
       });
   }
 
@@ -493,7 +494,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         this.cdRef.detectChanges();
 
       }, error => {
-        this.message.error('Gửi tin nhắn thất bại');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Gửi tin nhắn thất bại');
         this.eventHandler.preventDefault();
         this.cdRef.detectChanges();
       })
@@ -512,7 +513,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .pipe(finalize(() => { this.isLoadingSendMess = false; }))
       .subscribe((res: any) => {
 
-        this.message.success("Trả lời bình luận thành công.");
+        this.message.success("Trả lời bình luận thành công");
         this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });
         this.conversationDataFacade.messageServer({ ...res });
 
@@ -523,7 +524,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         this.cdRef.detectChanges();
         this.eventHandler.preventDefault();
       }, error => {
-        this.message.error(`${error?.error?.message}` || "Trả lời bình luận thất bại.");
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
         this.cdRef.detectChanges();
         this.eventHandler.preventDefault();
       });
