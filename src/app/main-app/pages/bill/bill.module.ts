@@ -33,6 +33,8 @@ import { BillExpandComponent } from './components/bill-expand/bill-expand.compon
 import { HistoryDeliveryStatusComponent } from './history-delivery-status/history-delivery-status.component';
 import { HistoryDeliveryStatusDetailComponent } from './history-delivery-status-detail/history-delivery-status-detail.component';
 import { AccountTaxService } from '../../services/account-tex.service';
+import { ManualCrossCheckingModalComponent } from './components/manual-cross-checking-modal/manual-cross-checking-modal.component';
+import { UpdateShipOrderInfoModalComponent } from './components/update-ship-order-info-modal/update-ship-order-info-modal.component';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -64,7 +66,9 @@ const SERVICES = [
     DetailBillComponent,
     BillExpandComponent,
     HistoryDeliveryStatusComponent,
-    HistoryDeliveryStatusDetailComponent
+    HistoryDeliveryStatusDetailComponent,
+    ManualCrossCheckingModalComponent,
+    UpdateShipOrderInfoModalComponent
   ],
 
   imports: [

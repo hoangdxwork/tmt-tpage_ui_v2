@@ -1,1 +1,58 @@
-<p>history-delivery-status-detail works!</p>
+<div class="bg-white rounded-lg flex flex-col h-full w-full">
+    <div class="flex justify-end w-full">
+        <div class="flex flex-row items-center w-1/4 px-4 py-2">
+            <button tds-button color="primary" class="mr-2">
+                <span class="flex items-center">
+                  <i class="tdsi-excel-fill text-lg leading-none mr-2"></i>Xuất file excel
+                </span>
+            </button>
+            <tds-form-field class="flex flex-auto">
+                <input tdsInput class="text-neutral-1-900" placeholder="Tìm kiếm" autocomplete="off" #filterText/>
+                <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+            </tds-form-field>
+        </div>
+    </div>
+    <!-- table -->
+    <div class="h-full w-full">
+        <tds-table #headerTable 
+        [listData]="lstOfData"
+        [showPagination]="false"
+        [scroll]="{x:'auto'}">
+            <thead>
+                <tr>
+                    <th width="80px" [align]="'center'" [tdsLeft]="true">STT</th>
+                    <th width="240px" [tdsLeft]="true">Mã hóa đơn</th>
+                    <th width="240px">Mã vận đơn</th>
+                    <th width="280px">Đối tác giao hàng</th>
+                    <th width="240px" [align]="'right'">COD hóa đơn</th>
+                    <th width="240px" [align]="'right'">Tổng COD</th>
+                    <th width="240px" [align]="'right'">Tổng COD đối tác</th>
+                    <th width="240px" [align]="'right'">Tiền thu hộ</th>
+                    <th width="240px" [align]="'right'">Phí ship giao hàng</th>
+                    <th width="240px" [align]="'right'">Phí ship</th>
+                    <th width="180px" [align]="'center'">Trạng thái</th>
+                    <th width="380px">Ghi chú</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-template ngFor let-data let-i="index" [ngForOf]="headerTable.data" >
+                    <tr>
+                        <td [tdsLeft]="true" class="text-center">{{ i + 1 }}</td>
+                        <td [tdsLeft]="true">{{ data.OrderCode }}</td>
+                        <td>{{ data.ShipCode }}</td>
+                        <td>{{ data.CarrierName }}</td>
+                        <td class="text-right">{{ data.OrderAmount || 0 | number }} đ</td>
+                        <td class="text-right">{{ HDSData.TotalCOD || 0 |number }} đ</td>
+                        <td class="text-right">{{ HDSData.TotalCODShip || 0 | number }} đ</td>
+                        <td class="text-right">{{ data.ShipAmount || 0 | number }} đ</td>
+                        <td class="text-right">{{ data.DeliveryPrice || 0 | number }} đ</td>
+                        <td class="text-right">{{ data.CustomerDeliveryPrice || 0 | number }} đ</td>
+                        <td class="text-center">{{ data.Status }}</td>
+                        <td>{{ data.Note }}</td>
+                    </tr>
+                </ng-template>
+            </tbody>
+        </tds-table>
+        
+    </div>
+</div>
