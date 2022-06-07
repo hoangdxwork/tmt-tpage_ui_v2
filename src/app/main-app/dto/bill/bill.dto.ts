@@ -218,4 +218,5 @@ export interface HistoryDeliveryDTO {
   TotalCODShip: number;
   CarrierId?: number;
   CarrierName: string;
+  Details: HistoryDeliveryStatusDetailDTO[];
 }
