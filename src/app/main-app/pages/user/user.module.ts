@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 
 import { UserRoutingModule } from './user-routing.module';
 import { UserComponent } from './user/user.component';
-import { TDSButtonModule, TDSAvatarModule, TDSFormFieldModule, TDSInputModule } from 'tmt-tang-ui';
+import { TDSButtonModule, TDSAvatarModule, TDSFormFieldModule, TDSInputModule, TDSUploadModule, TDSSpinnerModule } from 'tmt-tang-ui';
 import { NotificationUserComponent } from './components/notification-user/notification-user.component';
 
 
@@ -26,6 +26,8 @@ import { NotificationUserComponent } from './components/notification-user/notifi
     TDSInputModule,
     FormsModule,
     ReactiveFormsModule,
+    TDSUploadModule,
+    TDSSpinnerModule
   ]
 })
 export class UserModule { }

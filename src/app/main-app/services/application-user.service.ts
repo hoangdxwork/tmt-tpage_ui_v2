@@ -183,7 +183,7 @@ export class ApplicationUserService extends BaseSevice {
     return this.apiService.getData<ApplicationUserDTO>(api, null);
   }
 
-  getEmailExist(email: string, userId: string): Observable<ApplicationUserDTO> {
+  getEmailExist(email: string, userId?: string): Observable<ApplicationUserDTO> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${email}/${userId}/checkemailexist`,
       method: TApiMethodType.get,
