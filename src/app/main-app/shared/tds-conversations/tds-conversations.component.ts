@@ -145,15 +145,15 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     this.isLoadMessage = true;
-    this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => {
-        setTimeout(() => {
-          this.isLoadMessage = false;
-          this.conversationDataFacade.changeCurrentCvs$.emit(false);
-          this.cdRef.detectChanges();
-        }, 350)
-    }))
+      this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
+        .pipe(takeUntil(this.destroy$))
+        .pipe(finalize(() => {
+            setTimeout(() => {
+              this.isLoadMessage = false;
+              this.conversationDataFacade.changeCurrentCvs$.emit(false);
+              this.cdRef.detectChanges();
+            }, 350)
+        }))
   }
 
   loadUser() {
