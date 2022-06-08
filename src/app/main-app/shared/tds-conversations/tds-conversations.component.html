@@ -75,7 +75,7 @@
             </div>
 
             <div *ngIf="(dataSource$ | async ) && (dataSource$ | async )?.items">
-              <ng-container *ngFor="let item of (dataSource$ | async )?.items | showAvatar | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex">
+              <ng-container *ngFor="let item of (dataSource$ | async)!.items | orderBy:'DateCreated':'asc' | showAvatar | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex">
                   <div *ngIf="item" @eventFadeState>
                       <div *ngIf="item.is_show_break && i!= 0" class="w-full relative">
                           <div class="date-v3">

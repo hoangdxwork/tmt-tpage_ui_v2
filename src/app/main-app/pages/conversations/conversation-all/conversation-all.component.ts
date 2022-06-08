@@ -167,7 +167,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
   }
 
-  changeCurrentCvsItem(item: any) {
+  changeCurrentCvsItem(item: any) {debugger
     if(this.isOpenCollapCheck){
       return
     }
