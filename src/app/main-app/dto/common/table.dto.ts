@@ -64,3 +64,26 @@ export interface MessageHistoryFSOrderDTO {
   DateCreatedLastMessage: Date;
   TotalAmount?: number;
 }
+
+export interface MessageDeliveryHistoryResultDTO {
+  Total: number;
+  Datas: MessageDeliveryHistoryDTO[];
+}
+
+export interface MessageDeliveryHistoryDTO {
+  OrderId: string;
+  /// Id đơn hàng
+  OrderCode: string;
+  FSOrderId: number;
+  Number: string;
+  /// PSId facebook khách hàng
+  psid: string;
+  LiveCampaignId?: string;
+  PartnerId?: number;
+  /// Nội dung tin nhắn
+  Message: string;
+  /// Gửi tin nhắn thành công hay không?
+  IsSuccess: boolean;
+  ErrorMessage: string;
+  DateCreated: Date;
+}

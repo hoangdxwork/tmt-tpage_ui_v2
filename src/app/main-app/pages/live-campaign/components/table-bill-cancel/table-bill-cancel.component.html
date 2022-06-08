@@ -1,4 +1,4 @@
-<div class="w-full h-full">
+<div class="w-full h-full pb-2">
   <tds-table #table class="w-full h-full"
     [showSizeChanger]="true"
     [frontPagination]="false"
@@ -17,7 +17,7 @@
         <th>Ngày tạo</th>
         <th>Trạng thái</th>
         <th>
-          <button tds-button-icon color="secondary" size="sm">
+          <button tds-button-icon color="secondary" size="sm" (click)="refreshData()">
             <span class="flex items-center">
               <i class="tdsi-reload-fill"></i>
             </span>
@@ -39,70 +39,9 @@
           <tds-tag [status]="getColorStatusText(data.State)" size="sm" type="outline">{{data.ShowState}}</tds-tag>
         </td>
         <td>
-          <button tds-button color="primary" size="sm">Xem lịch sử</button>
+          <button tds-button color="primary" size="sm" (click)="showModelHistory(data.OrderId)">Xem lịch sử</button>
         </td>
       </tr>
     </tbody>
   </tds-table>
 </div>
-
-
-<tds-modal [(visible)]="isVisible" title="Lịch sử giỏ hàng" size="lg"
-    (onCancel)="handleCancel()" [footer]="modalFooter">
-    <ng-container *tdsModalContent>
-      <tds-timeline>
-        <tds-timeline-item [tdsDot]="dotTemplate">
-          <div class="px-6 py-4 mb-8 w-full border rounded-xl flex justify-between">
-            <div class="flex space-x-8">
-              <div class="flex items-center">
-                <img src="assets/images/live-campaign/detail-product-modal.svg" alt="">
-              </div>
-              <div class="flex flex-col space-y-3">
-                <div class="text-body-1 text-neutral-1-600">31/05/2022, 9:40 AM</div>
-                <div class="text-header-1 font-semibold">Thêm sản phẩm</div>
-              </div>
-            </div>
-            <div class="flex items-center text-info-400 text-title-1 font-semibold">Số lượng: 2</div>
-          </div>
-        </tds-timeline-item>
-        <tds-timeline-item [tdsDot]="dotTemplate">
-          <div class="px-6 py-4 mb-8 w-full border rounded-xl flex justify-between">
-            <div class="flex space-x-8">
-              <div class="flex items-center">
-                <img src="assets/images/live-campaign/detail-product-modal.svg" alt="">
-              </div>
-              <div class="flex flex-col space-y-3">
-                <div class="text-body-1 text-neutral-1-600">31/05/2022, 9:40 AM</div>
-                <div class="text-header-1 font-semibold text-error-400">Bỏ sản phẩm ra khỏi giỏ hàng</div>
-              </div>
-            </div>
-            <div class="flex items-center text-info-400 text-title-1 font-semibold">Số lượng: 2</div>
-          </div>
-        </tds-timeline-item>
-        <tds-timeline-item [tdsDot]="dotTemplate">
-          <div class="px-6 py-4 w-full border rounded-xl flex justify-between">
-            <div class="flex space-x-8">
-              <div class="flex items-center">
-                <img src="assets/images/live-campaign/detail-product-modal.svg" alt="">
-              </div>
-              <div class="flex flex-col space-y-3">
-                <div class="text-body-1 text-neutral-1-600">31/05/2022, 9:40 AM</div>
-                <div class="text-header-1 font-semibold text-success-400">Đã chốt</div>
-              </div>
-            </div>
-            <div class="flex items-center text-info-400 text-title-1 font-semibold">Số lượng: 2</div>
-          </div>
-        </tds-timeline-item>
-      </tds-timeline>
-      <ng-template #dotTemplate>
-        <div class="h-6 w-6 rounded-full border border-neutral-2-100 bg-transparent"></div>
-      </ng-template>
-    </ng-container>
-    <ng-template #modalFooter>
-      <div class="flex justify-end p-4">
-        <button tds-button color="secondary" class="min-w-[100px]" (click)="handleCancel()">
-            Đóng
-        </button>
-    </div>
-  </ng-template>
-</tds-modal>

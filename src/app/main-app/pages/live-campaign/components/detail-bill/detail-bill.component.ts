@@ -4,7 +4,7 @@ import { addDays } from 'date-fns';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { ODataLiveCampaignBillService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-bill.service';
 import { TDSSafeAny } from 'tmt-tang-ui';
-import { ODataFastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
+import { FastSaleOrderDTO, FastSaleOrderModelDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { SortEnum } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { Observable } from 'rxjs';
@@ -37,11 +37,11 @@ export class DetailBillComponent implements OnInit {
   }
 
   sort: Array<SortDataRequestDTO>= [{
-    field: "DateInvoice",
+    field: "DateCreated",
     dir: SortEnum.desc,
   }];
 
-  lstOfData: Array<TDSSafeAny> = [];
+  lstOfData: Array<FastSaleOrderModelDTO> = [];
   pageSize = 20;
   pageIndex = 1;
   isLoading: boolean = false;
@@ -61,7 +61,13 @@ export class DetailBillComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.setFilter();
     this.loadTags();
+  }
+
+  setFilter() {
+    this.filterObj.liveCampaignId = this.liveCampaignId;
+    this.filterObj.isWaitPayment = true;
   }
 
   loadTags(){
@@ -75,7 +81,7 @@ export class DetailBillComponent implements OnInit {
     let filters = this.oDataLiveCampaignBillService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.getViewData(params).subscribe((res: ODataFastSaleOrderDTO) => {
+    this.getViewData(params).subscribe(res => {
         this.count = res['@odata.count'] as number;
         this.lstOfData = res.value;
     }, error => {
@@ -83,7 +89,7 @@ export class DetailBillComponent implements OnInit {
     });
   }
 
-  private getViewData(params: string): Observable<ODataFastSaleOrderDTO> {
+  private getViewData(params: string) {
     this.isLoading = true;
     return this.oDataLiveCampaignBillService
         .getView(params, this.filterObj)
@@ -138,7 +144,7 @@ export class DetailBillComponent implements OnInit {
     this.loadData(params.pageSize, params.pageIndex);
   }
 
-  onEdit(id: string) {
+  onEdit(id: number) {
     this.router.navigateByUrl(`bill/detail/${id}`);
   }
 

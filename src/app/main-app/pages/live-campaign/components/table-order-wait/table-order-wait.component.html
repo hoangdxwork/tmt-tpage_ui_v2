@@ -1,4 +1,4 @@
-<div class="w-full h-full">
+<div class="w-full h-full pb-2">
   <tds-table #table class="w-full h-full"
     [showSizeChanger]="true"
     [frontPagination]="false"
@@ -17,7 +17,7 @@
         <th>Ngày tạo</th>
         <th>Trạng thái</th>
         <th>
-          <button tds-button-icon color="secondary" size="sm">
+          <button tds-button-icon color="secondary" size="sm" (click)="refreshData()">
             <span class="flex items-center">
               <i class="tdsi-reload-fill"></i>
             </span>
@@ -35,7 +35,9 @@
           <tds-tag [status]="getColorStatusText(data.Status)" size="sm" type="outline">{{ data.Status }}</tds-tag>
         </td>
         <td>
-          <button tds-button color="primary" size="sm">Xem lịch sử</button>
+          <button tds-button color="primary" size="sm" (click)="showModelHistory(data.OrderId)">
+            Xem lịch sử
+          </button>
         </td>
       </tr>
     </tbody>

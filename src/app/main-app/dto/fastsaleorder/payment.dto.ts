@@ -3,25 +3,25 @@ import { AccountJournalDTO } from './../account/account.dto';
 
 
 export interface AccountRegisterPaymentDTO { // /odata/AccountRegisterPayment/OdataService.OnchangeJournal (input, output) & /odata/AccountRegisterPayment (POST)
-  id: number;
-  paymentDate: Date;
-  communication: string;
+  Id: number;
+  PaymentDate: Date;
+  Communication: string;
 
-  journalId: number;
-  journal: AccountJournalDTO;
+  JournalId?: number;
+  Journal?: AccountJournalDTO;
 
-  currencyId: number;
-  partnerType: string;
-  amount: number;
-  paymentType: string;
+  CurrencyId: number;
+  PartnerType: string;
+  Amount: number;
+  PaymentType: string;
 
-  partnerId: number;
-  partner: PartnerDTO;
+  PartnerId: number;
+  Partner: PartnerDTO;
 
-  paymentMethodId: number;
+  PaymentMethodId: number;
 
-  fastSaleOrderIds: Array<number>;
-  fastPurchaseOrderIds: Array<number>;
+  FastSaleOrderIds: Array<number>;
+  FastPurchaseOrderIds: Array<number>;
 }
 
 export interface QueryGetInvoiceByShipPaymentDTO { // /rest/v1.0/fastsaleorder/group_invoice_byshippayment

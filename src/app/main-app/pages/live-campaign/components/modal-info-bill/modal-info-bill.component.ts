@@ -1,3 +1,4 @@
+import { TDSMessageService } from 'tmt-tang-ui';
 import { finalize } from 'rxjs/operators';
 import { TDSModalRef } from 'tmt-tang-ui';
 import { Component, Input, OnInit } from '@angular/core';
@@ -17,7 +18,8 @@ export class ModalInfoBillComponent implements OnInit {
 
   constructor(
     private fastSaleOrderService: FastSaleOrderService,
-    private modalRef: TDSModalRef
+    private modalRef: TDSModalRef,
+    private message: TDSMessageService
   ) { }
 
   ngOnInit(): void {
@@ -30,6 +32,8 @@ export class ModalInfoBillComponent implements OnInit {
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.data = res;
+      }, error => {
+        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
       });
   }
 

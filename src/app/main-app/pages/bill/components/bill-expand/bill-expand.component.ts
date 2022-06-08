@@ -25,7 +25,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
     private printerService: PrinterService,
     private excelExportService: ExcelExportService,
     private message: TDSMessageService,
-    private modalService: TDSModalService, 
+    private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {

@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable} from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSSafeAny } from 'tmt-tang-ui';
-import { MessageDeliveryHistoryLiveCampaignParamsDTO, MessageHistoryFSOrderResultDTO, MessageHistorySaleOnlineResultDTO } from '../dto/common/table.dto';
+import { MessageDeliveryHistoryLiveCampaignParamsDTO, MessageDeliveryHistoryResultDTO, MessageHistoryFSOrderResultDTO, MessageHistorySaleOnlineResultDTO } from '../dto/common/table.dto';
 import { ODataParamsDTO } from '../dto/odata/odata.dto';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
 import { PartnerStatusReport } from '../dto/partner/partner-status-report.dto';
@@ -122,6 +122,15 @@ export class CommonService extends BaseSevice {
     }
 
     return this.apiService.getData<MessageHistoryFSOrderResultDTO>(api, data);
+  }
+
+  getHistoryMessageSentSO(liveCampaignId: string, orderId: string, skip: number, take: number): Observable<MessageDeliveryHistoryResultDTO> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/gethistorymessagesentsaleonlinedetail?liveCampaignId=${liveCampaignId}&orderId=${orderId}&skip=${skip}&take=${take}`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<MessageDeliveryHistoryResultDTO>(api, null);
   }
 
 }

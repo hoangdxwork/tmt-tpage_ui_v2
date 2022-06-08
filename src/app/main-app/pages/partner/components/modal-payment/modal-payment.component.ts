@@ -30,7 +30,7 @@ export class ModalPaymentComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private message: TDSMessageService,
     private accRegisterPayment: AccountRegisterPaymentService,
-    private printerService: PrinterService) { 
+    private printerService: PrinterService) {
       this.createForm();
     }
 
@@ -85,12 +85,12 @@ export class ModalPaymentComponent implements OnInit, OnDestroy {
 
   prepareModel(){
     let formModel = this._form.value as RegisterPayment;
-    
+
     this.dataModel.Amount = formModel.Amount ?? this.dataModel.Amount;
     this.dataModel.Communication = formModel.Communication ?? this.dataModel.Communication;
     this.dataModel.JournalId = formModel.Journal.Id ?? this.dataModel.JournalId;
     this.dataModel.PaymentDate = formModel.PaymentDate ?? this.dataModel.PaymentDate;
-    
+
     return this.dataModel
   }
 

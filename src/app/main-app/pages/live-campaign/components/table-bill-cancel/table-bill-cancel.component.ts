@@ -1,10 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { TDSModalService } from 'tmt-tang-ui';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 import { Message } from 'src/app/lib/consts/message.const';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { LiveCampaignFSOrderDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
 import { ODataLiveCampaignService } from 'src/app/main-app/services/mock-odata/odata-live-campaign.service';
 import { TDSMessageService, TDSTableQueryParams, TDSTagStatusType } from 'tmt-tang-ui';
+import { ModalHistoryCartComponent } from '../modal-history-cart/modal-history-cart.component';
 
 @Component({
   selector: 'table-bill-cancel',
@@ -15,8 +17,6 @@ export class TableBillCancelComponent implements OnInit {
   @Input() liveCampaignId!: string;
   @Input() productId!: number;
 
-  isVisible: boolean = false;
-
   lstOfData: LiveCampaignFSOrderDTO[] = [];
   pageSize = 20;
   pageIndex = 1;
@@ -26,6 +26,8 @@ export class TableBillCancelComponent implements OnInit {
 
   constructor(
     private message: TDSMessageService,
+    private modal: TDSModalService,
+    private viewContainerRef: ViewContainerRef,
     private oDataLiveCampaignService: ODataLiveCampaignService
   ) { }
 
@@ -59,21 +61,6 @@ export class TableBillCancelComponent implements OnInit {
     this.loadData(params.pageSize, params.pageIndex);
   }
 
-  // modal
-  showModal(): void {
-    this.isVisible = true;
-  }
-
-  handleOk(): void {
-    console.log('Button ok clicked!');
-    this.isVisible = false;
-  }
-
-  handleCancel(): void {
-    console.log('Button cancel clicked!');
-    this.isVisible = false;
-  }
-
   getColorStatusText(status: string): TDSTagStatusType {
     switch(status) {
       case "draft":
@@ -87,6 +74,21 @@ export class TableBillCancelComponent implements OnInit {
       default:
         return "warning";
     }
+  }
+
+  showModelHistory(orderId: string | undefined) {
+    this.modal.create({
+      title: 'Lịch sử giỏ hàng',
+      size:'lg',
+      content: ModalHistoryCartComponent,
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        type: "SO",
+        liveCampaignId: this.liveCampaignId,
+        productId: this.productId,
+        orderId: orderId
+      }
+    });
   }
 
 }

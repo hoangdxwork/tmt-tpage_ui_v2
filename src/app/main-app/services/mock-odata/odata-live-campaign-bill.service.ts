@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tmt-tang-ui';
-import { ODataFastSaleOrderDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
+import { FastSaleOrderModelDTO, ODataFastSaleOrderDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
 import { SaleOnline_LiveCampaignDTO } from '../../dto/live-campaign/live-campaign.dto';
 import { FilterLiveCampaignBillDTO, FilterLiveCampaignOrderDTO, ODataResponsesDTO } from '../../dto/odata/odata.dto';
 import { BaseSevice } from '../base.service';
@@ -22,14 +22,14 @@ export class ODataLiveCampaignBillService extends BaseSevice {
     super(apiService)
   }
 
-  getView(params: string, filterObj: FilterLiveCampaignBillDTO): Observable<TDSSafeAny>{
+  getView(params: string, filterObj: FilterLiveCampaignBillDTO): Observable<ODataResponsesDTO<FastSaleOrderModelDTO>>{
     params += this.buildParams(filterObj);
 
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?${params}&$count=true`,
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetViewCampaign?${params}&$count=true`,
         method: TApiMethodType.get,
     }
-    return this.apiService.getData<ODataFastSaleOrderDTO>(api, null);
+    return this.apiService.getData<ODataResponsesDTO<FastSaleOrderModelDTO>>(api, null);
   }
 
   public buildFilter(filterObj: FilterLiveCampaignBillDTO) {
@@ -44,8 +44,8 @@ export class ODataLiveCampaignBillService extends BaseSevice {
     if (filterObj?.dateRange && filterObj?.dateRange.startDate && filterObj?.dateRange.endDate) {
         dataFilter.filters.push({
             filters: [
-              { field: "DateInvoice", operator: OperatorEnum.gte, value: new Date(filterObj.dateRange.startDate) },
-              { field: "DateInvoice", operator: OperatorEnum.lte, value: new Date(filterObj.dateRange.endDate) }
+              { field: "DateCreated", operator: OperatorEnum.gte, value: new Date(filterObj.dateRange.startDate) },
+              { field: "DateCreated", operator: OperatorEnum.lte, value: new Date(filterObj.dateRange.endDate) }
             ],
             logic: 'and'
         })
@@ -56,14 +56,12 @@ export class ODataLiveCampaignBillService extends BaseSevice {
         dataFilter.filters.push( {
             filters: [
               { field: "PartnerDisplayName", operator: OperatorEnum.contains, value: value },
-              { field: "Phone", operator: OperatorEnum.contains, value: value },
               { field: "Address", operator: OperatorEnum.contains, value: value },
               { field: "Number", operator: OperatorEnum.contains, value: value },
               { field: "State", operator: OperatorEnum.contains, value: value },
-              { field: "Phone", operator: OperatorEnum.contains, value: value },
               { field: "PartnerNameNoSign", operator: OperatorEnum.contains, value: value },
-              { field: "CarrierName", operator: OperatorEnum.contains, value: value},
-              { field: "TrackingRef", operator: OperatorEnum.contains, value: value}
+              { field: "TrackingRef", operator: OperatorEnum.contains, value: value},
+              { field: "PartnerPhone", operator: OperatorEnum.contains, value: value}
             ],
             logic: 'or'
         })
