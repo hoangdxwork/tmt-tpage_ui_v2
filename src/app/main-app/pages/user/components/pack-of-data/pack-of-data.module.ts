@@ -1,7 +1,7 @@
 import { PackOfDataComponent } from './pack-of-data/pack-of-data.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TDSEchartsModule } from 'tds-report';
-import { TDSCardModule, TDSError, TDSInputModule, TDSFormFieldModule, TDSSelectModule, TDSButtonModule } from 'tmt-tang-ui';
+import { TDSCardModule, TDSError, TDSInputModule, TDSFormFieldModule, TDSSelectModule, TDSButtonModule, TDSPopoverModule } from 'tmt-tang-ui';
 import { InfoPaymentPackOfDataComponent } from './info-payment-pack-of-data/info-payment-pack-of-data.component';
 import { ExtendPackOfDataComponent } from './extend-pack-of-data/extend-pack-of-data.component';
 import { ChoosePackOfDataComponent } from './choose-pack-of-data/choose-pack-of-data.component';
@@ -32,7 +32,8 @@ import { PackOfDataRoutingModule } from './pack-of-data-routing.module';
     TDSSelectModule,
     FormsModule,
     ReactiveFormsModule,
-    TDSButtonModule
+    TDSButtonModule,
+    TDSPopoverModule
   ]
 })
 export class PackOfDataModule { }
