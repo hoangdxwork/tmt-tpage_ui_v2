@@ -1,3 +1,4 @@
+import { FacebookRESTService } from './../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from './../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
@@ -50,6 +51,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   isProcessing:boolean = false;
   isNextData: boolean = false;
   isChanged: boolean = false;
+  clickReload: number = 0;
 
   currentOrderTab: number = 0;
   letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -64,7 +66,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     private cdRef : ChangeDetectorRef,
     private printerService: PrinterService,
     private modalService: TDSModalService,
-    private viewContainerRef: ViewContainerRef) {
+    private viewContainerRef: ViewContainerRef,
+    private facebookRESTService: FacebookRESTService) {
       super(crmService, activatedRoute, router);
   }
 
@@ -240,10 +243,28 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onRefresh(ev: boolean){
-    if(ev){
-      this.isRefresh = true
+    this.clickReload += 1;
+
+    if (this.clickReload >= 5) {
+      this.message.info("Đã kích hoạt cập nhật hội thoại.");
+      this.clickReload = 0;
+
+      if (this.currentTeam) {
+        this.facebookRESTService.rescan(this.currentTeam.Facebook_PageId, 2)
+          .pipe(takeUntil(this.destroy$)).subscribe(res => {
+          // console.log("Yêu cầu cập nhật thành công.");
+        }, error => {
+          // console.log("Yêu cầu cập nhật thất bại.");
+        });
+      }
+    }
+    else {
       this.onSubmitFilter({});
     }
+
+    setTimeout(() => {
+      this.clickReload = 0;
+    }, 3 * 1000);
   }
 
   onLoadMiniChat(event: any): void {}

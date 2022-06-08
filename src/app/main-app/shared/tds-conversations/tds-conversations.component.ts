@@ -651,14 +651,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   removeIndexDbTag(item: any): void {
-    this.removeTagOnView(item);
-
     this.activityMatchingService.removeTagFromConversation(this.data.id, item.Id, this.team.Facebook_PageId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
-        }, error => {
-          this.assignTagOnView(item);
-      });
+        this.removeTagOnView(item);
+        });
   }
 
   assignTagOnView(tag: any) {

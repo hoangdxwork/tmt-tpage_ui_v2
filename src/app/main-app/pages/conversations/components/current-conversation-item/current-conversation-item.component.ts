@@ -43,11 +43,6 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    if(this.item) {
-      this.item = {...this.item}
-      this.prepareModel(this.item);
-    }
-
     this.eventData = this.conversationEventFacade.getEvent();
     let draftMessage = this.draftMessageService.getMessageByASIds(this.item.psid) as any;
 
@@ -61,27 +56,6 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges {
         this.cdr.detectChanges();
       }
     })
-  }
-
-  // TODO: refactor
-  prepareModel(item: ConversationMatchingItem) {
-    item.LastActivityTimeConverted = item.LastUpdated;
-    let lastActivity = item.last_activity;
-    if(lastActivity) {
-      item.LastActivityTimeConverted = item.LastActivityTimeConverted || lastActivity.created_time;
-    }
-    //check send message
-    item['checkSendMessage'] = false;
-    //tags
-    item['keyTags'] = {};
-    if(TDSHelperObject.hasValue(item.tags)) {
-      item.tags.map((x: any) => {
-          (item['keyTags'] as any)[x.id] = true;
-      })
-    }  else {
-      item.tags = [];
-    }
-    return item;
   }
 
   ngOnChanges(changes: SimpleChanges): void {

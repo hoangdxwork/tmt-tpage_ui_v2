@@ -239,7 +239,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
 
   createConversation(data: any, query: any, type: string) {
     return {
-        items: data.Items,
+        items: [...this.prepareData(data.Items)],
         query: query,
         response: this.service.createResponse(data)
     } as CRMMatchingMappingDTO;

@@ -1,11 +1,8 @@
 
-import { Component, Input, OnDestroy, OnInit, OnChanges, SimpleChanges, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, OnChanges, SimpleChanges, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { TDSHelperArray, TDSMessageService, TDSUploadFile } from 'tmt-tang-ui';
-import { filter } from 'rxjs/operators';
 import { SharedService } from '../../services/shared.service';
 import { Observable, Subject } from 'rxjs';
-import { HttpResponse } from '@microsoft/signalr';
-import da from 'date-fns/esm/locale/da/index.js';
 
 const getBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
 new Promise((resolve, reject) => {
