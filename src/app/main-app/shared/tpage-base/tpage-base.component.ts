@@ -1,8 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, Observable, of, Subject, Subscription } from 'rxjs';
-import { map, mergeMap, takeUntil, tap, filter, distinctUntilChanged } from 'rxjs/operators';
-import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
+import { Observable, Subject } from 'rxjs';
+import { map, mergeMap, tap } from 'rxjs/operators';
+import { TDSSafeAny } from 'tmt-tang-ui';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { CRMTeamService } from '../../services/crm-team.service';
 import { TPageHelperService } from '../../services/helper.service';
@@ -10,7 +10,8 @@ import { TPageHelperService } from '../../services/helper.service';
 @Component({
   selector: 'app-tpage-base',
   templateUrl: './tpage-base.component.html',
-  styleUrls: ['./tpage-base.component.scss']
+  styleUrls: ['./tpage-base.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 
 export class TpageBaseComponent  {

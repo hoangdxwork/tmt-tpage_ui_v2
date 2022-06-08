@@ -80,7 +80,8 @@
                   yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
 
                   <ng-container *ngFor="let item of lstMatchingItem; let i= index; trackBy: trackByIndex">
-                    <div *ngIf="item && item.psid && activeCvsItem && currentTeam">
+                    <div *ngIf="item && item.psid && activeCvsItem && currentTeam" @eventFadeState>
+
                       <a (click)="changeCurrentCvsItem(item)" type="button" class="w-full pb-1 {{isChanged ? 'cursor-wait' : 'cursor-pointer'}}">
                           <current-conversation-item
                               [item]="item" [psid]="item.psid" [type]="type"
@@ -103,7 +104,7 @@
   <!--Nội dung cuộc hội thoại-->
   <div class="flex w-1/2">
     <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
-        <ng-container class="flex w-full flex-col h-full" *ngIf="activeCvsItem && currentTeam">
+        <ng-container class="flex w-full flex-col h-full" *ngIf="activeCvsItem && currentTeam" @eventFadeState>
             <shared-tds-conversations
                 class="flex w-full h-full"
                 [data]="activeCvsItem"
