@@ -8,7 +8,7 @@ import { UserRoutingModule } from './user-routing.module';
 import { UserComponent } from './user/user.component';
 import { TDSButtonModule, TDSAvatarModule, TDSFormFieldModule, TDSInputModule, TDSUploadModule, TDSSpinnerModule } from 'tmt-tang-ui';
 import { NotificationUserComponent } from './components/notification-user/notification-user.component';
-
+import { TenantService } from '../../services/tenant.service';
 
 @NgModule({
   declarations: [

@@ -1,4 +1,5 @@
-<div class="p-4 flex w-full justify-center">
+<tds-spin [spinning]="isLoading">
+  <div class="p-4 flex w-full justify-center">
     <div class="w-3/4 bg-white rounded-xl">
         <tds-card>
             <tds-card-header class="border-b border-light-200">Thông tin</tds-card-header>
@@ -16,27 +17,27 @@
                   <div class="flex flex-wrap text-body-2 text-neutral-900 gap-y-4">
                       <div class="w-1/2 flex">
                           <div class="w-1/3"><span class="font-regular">Địa chỉ gian hàng:</span></div>
-                          <div class="w-2/3"><span class="font-semibold">Test.tpos.dev</span></div>
+                          <div class="w-2/3"><span class="font-semibold">{{tenantInfo?.Tenant?.Host}}</span></div>
                       </div>
                       <div class="w-1/2 flex">
                         <div class="w-1/3"><span class="font-regular">Ngày bắt đầu:</span></div>
-                        <div class="w-2/3"><span class="font-semibold">30/06/2022</span></div>
+                        <div class="w-2/3"><span class="font-semibold">{{tenantInfo?.Tenant?.DateStarted | date: 'dd/MM/yyyy'}}</span></div>
                     </div>
                     <div class="w-1/2 flex">
                         <div class="w-1/3"><span class="font-regular">Gói cước đang dùng:</span></div>
-                        <div class="w-2/3"><span class="font-semibold">Livestream 1000k</span></div>
+                        <div class="w-2/3"><span class="font-semibold">{{tenantInfo?.Tenant?.PackageGroup}}</span></div>
                     </div>
                     <div class="w-1/2 flex">
                         <div class="w-1/3"><span class="font-regular">Ngày kết thúc:</span></div>
-                        <div class="w-2/3"><span class="font-semibold">30/12/2022</span></div>
+                        <div class="w-2/3"><span class="font-semibold">{{tenantInfo?.Tenant?.DateExpired | date: 'dd/MM/yyyy'}}</span></div>
                     </div>
                     <div class="w-1/2 flex">
                         <div class="w-1/3"><span class="font-regular">Thời gian sử dụng(Còn):</span></div>
-                        <div class="w-2/3"><span class="font-semibold">6 tháng</span></div>
+                        <div class="w-2/3"><span class="font-semibold">{{userTime}}</span></div>
                     </div>
                     <div class="w-1/2 flex">
                         <div class="w-1/3"><span class="font-regular">Tổng hoá đơn trên tháng:</span></div>
-                        <div class="w-2/3"><span class="font-semibold">80</span></div>
+                        <div class="w-2/3"><span class="font-semibold">{{tenantUsed?.fastSaleOrder}}</span></div>
                     </div>
                   </div>
               </div>
@@ -54,4 +55,6 @@
             </tds-card-content>
           </tds-card>
     </div>
-</div>
+  </div>
+</tds-spin>
+
