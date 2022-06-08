@@ -1,14 +1,12 @@
-import { Component, ElementRef, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { shareReplay } from 'rxjs/operators';
-import { THelperCacheService } from 'src/app/lib';
-import { ButtonSize, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 import { ImageFacade } from '../../../services/facades/image.facade';
 
 @Component({
   selector: 'tpage-avatar-facebook',
-  templateUrl: './tpage-avatar-facebook.component.html',
-  styleUrls: ['./tpage-avatar-facebook.component.scss']
+  templateUrl: './tpage-avatar-facebook.component.html'
 })
+
 export class TpageAvatarFacebookComponent implements OnInit {
 
   @Input() fbid!: TDSSafeAny;
@@ -22,7 +20,7 @@ export class TpageAvatarFacebookComponent implements OnInit {
   id: any;
 
   constructor(element: ElementRef,
-    private cacheApi :THelperCacheService,
+    private cdRef : ChangeDetectorRef,
     private imageFacade: ImageFacade) {
     this.nativeElement = element.nativeElement;
   }
@@ -54,6 +52,9 @@ export class TpageAvatarFacebookComponent implements OnInit {
         this.imageFacade.getImage(url)
           .subscribe(res => {
               this.url = res;
+              this.cdRef.markForCheck();
+        }, error => {
+          this.cdRef.markForCheck();
         });
     } else {
         this.url = '';

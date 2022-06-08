@@ -2,7 +2,7 @@ import { ModalSendMessageAllComponent } from './../components/modal-send-message
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
 import { ChangeDetectionStrategy, ChangeDetectorRef,
-   Component, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+   Component, HostBinding, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { finalize, takeUntil, map } from 'rxjs/operators';
@@ -14,16 +14,20 @@ import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.s
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { TDSHelperObject, TDSMessageService, TDSHelperArray, TDSHelperString } from 'tmt-tang-ui';
 import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
+import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
 
 @Component({
   selector: 'app-conversation-all',
   templateUrl: './conversation-all.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+  animations: [eventFadeStateTrigger]
 })
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
+  @HostBinding("@eventFadeState") eventAnimation = true;
 
   isLoading: boolean = false;
   dataSource$!: Observable<any> | undefined;
@@ -134,12 +138,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
               //TODO: load lần đầu tiên
               this.getActiveCvsItem(this.lstMatchingItem[0]);
             }
+
         } else {
           //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
           this.validateData();
         }
       }, error => {
-        this.message.error('Load CRMMatching đã xảy ra lỗi');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Load danh sách hội thoại đã xảy ra lỗi');
       })
   }
 
@@ -162,7 +167,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
   }
 
-    
   changeCurrentCvsItem(item: any) {
     if(this.isOpenCollapCheck){
       return
