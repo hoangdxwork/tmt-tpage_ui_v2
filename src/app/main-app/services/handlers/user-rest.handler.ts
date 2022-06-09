@@ -30,7 +30,7 @@ export class UserRestHandler {
     }
   }
 
-  validateExitEmail(userId: string) {
+  validateExitEmail(userId?: string) {
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
         return timer(1000).pipe(
             switchMap(() => {
@@ -66,7 +66,7 @@ export class UserRestHandler {
     return this.applicationUserService.getUserExist(userName, userId);
   }
 
-  findByEmail(email: string, userId: string) {
+  findByEmail(email: string, userId?: string) {
     return this.applicationUserService.getEmailExist(email, userId);
   }
 
