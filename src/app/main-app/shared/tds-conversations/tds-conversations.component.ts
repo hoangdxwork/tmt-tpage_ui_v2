@@ -401,12 +401,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       this.eventHandler.preventDefault();
       return;
     }
-
     if(this.isEnterSend){
       this.messageSendingToServer();
     } else {
-      this.message.info('Thay đổi tuỳ chọn gửi tin nhắn để Enter');
-      this.eventHandler.preventDefault();
+      return
     }
   }
 

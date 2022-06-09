@@ -22,7 +22,10 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
     destroy$ = new Subject();
     @Input() data!: string[];
     @Input() isArray!: boolean;
+    @Input() size: number = 112;
+    @Input() isAvatar!:boolean
     @Output() onLoadImage = new EventEmitter();
+    @Output() getResult = new EventEmitter<string>();
 
     fileList: TDSUploadFile[] = [];
     previewImage: string | undefined = '';
@@ -81,7 +84,7 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
           this.fileList = [...dataModel];
           this.isUploading = false;
           this.emitFile();
-        
+          this.getResult.emit(x.url);
         }
       }, error => {
         let message = JSON.parse(error.Message);
@@ -121,7 +124,7 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
 
     ngOnChanges(changes: SimpleChanges) {
       if(changes['data'] && !changes['data'].firstChange){
-        if(TDSHelperArray.hasListValue(this.data)) {
+        if(TDSHelperArray.hasListValue(this.data) && this.isArray) {
           let dataModel: any = [];
           this.data.map((x: any, i: number) => {
             let y ={

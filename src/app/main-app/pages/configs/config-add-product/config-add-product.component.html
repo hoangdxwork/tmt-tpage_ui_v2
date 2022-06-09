@@ -21,11 +21,11 @@
               </div>
               <div class="flex flex-col p-4">
                   <div class="flex flex-row items-center justify-start w-2/3 pb-6">
-                      <tpage-upload-avatar class="mr-12"
+                      <upload-pictures-wall class="mr-12"
                         [size]="112"
-                        [imageUrl]="_form.controls.ImageUrl.value"
+                        [data]="_form.controls.ImageUrl.value"
                         (getResult)="getAvatar($event)">
-                      </tpage-upload-avatar>
+                      </upload-pictures-wall>
                       <div class="flex flex-col w-full">
                           <tds-form-field>
                               <tds-label>Tên sản phẩm</tds-label>

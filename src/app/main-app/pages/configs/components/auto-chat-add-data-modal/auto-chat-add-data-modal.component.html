@@ -202,7 +202,7 @@
                     <div class="flex flex-col w-full">
                         <form [formGroup]="createImageForm" class="flex flex-col gap-y-2" autocomplete="off">
                             <span class="text-neutral-1-900 text-body-2 font-semibold">Phương tiện</span>
-                            <tpage-upload-avatar [imageUrl]="this.createImageForm.value?.image" (getResult)="getUrl($event)"></tpage-upload-avatar>
+                            <upload-pictures-wall [data]="this.createImageForm.value?.image" (getResult)="getUrl($event)"></upload-pictures-wall>
                         </form>
                     </div>
                 </div>
@@ -353,7 +353,7 @@
                     <div class="flex flex-col w-full">
                         <form [formGroup]="createImageForm" class="flex flex-col gap-y-2" autocomplete="off">
                             <span class="text-neutral-1-900 text-body-2 font-semibold">Phương tiện</span>
-                            <tpage-upload-avatar [imageUrl]="this.createImageForm.value?.image" (getResult)="getUrl($event)"></tpage-upload-avatar>
+                            <upload-pictures-wall [data]="this.createImageForm.value?.image" (getResult)="getUrl($event)"></upload-pictures-wall>
                         </form>
                     </div>
                 </div>
