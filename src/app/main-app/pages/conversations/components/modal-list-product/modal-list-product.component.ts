@@ -1,4 +1,4 @@
-import { AfterViewInit, ElementRef, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, ElementRef, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { BehaviorSubject, fromEvent, Subject } from 'rxjs';
 import { TDSModalRef, TDSTableComponent, TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
@@ -51,6 +51,7 @@ export class ModalListProductComponent implements OnInit, OnDestroy, AfterViewIn
 
   constructor(private modal: TDSModalRef,
     private sharedService: SharedService,
+    private cdRef : ChangeDetectorRef,
     private viewContainerRef: ViewContainerRef,
     private productIndexDBService: ProductIndexDBService,
     private commonService: CommonService,) {
@@ -59,11 +60,6 @@ export class ModalListProductComponent implements OnInit, OnDestroy, AfterViewIn
   ngOnInit(): void {
     this.loadData();
     this.loadConfig();
-    this.loadListPrice();
-  }
-
-  loadListPrice() {
-
   }
 
   loadConfig() {
@@ -96,6 +92,7 @@ export class ModalListProductComponent implements OnInit, OnDestroy, AfterViewIn
             this.indexDbStorage = res.cacheDbStorage;
 
             this.loadDataTable();
+            this.cdRef.markForCheck();
         }
     })
   }
