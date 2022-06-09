@@ -268,7 +268,7 @@ export class LayoutComponent implements OnInit {
   }
 
   onPackOfData() {
-    this.router.navigateByUrl(`user/pack-of-data/info`);
+    this.router.navigateByUrl(`user/pack-of-data`);
   }
 
 }
