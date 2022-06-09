@@ -10,10 +10,7 @@
             </div>
         </div>
 
-        <div class="flex gap-x-2">
-            <button tds-button color="primary" (click)="onSave()">Lưu lại</button>
-            <button tds-button color="secondary" class="mr-4" (click)="onBack()">Quay lại</button>
-        </div>
+        <button tds-button color="secondary" class="mr-4" (click)="onBack()">Quay lại</button>
     </div>
     <div class="flex w-full h-full p-4">
         <div #tableWidth *ngIf="lstHistoryDS" class="rounded-md bg-white w-full h-full pb-3">
@@ -24,7 +21,7 @@
                 [(pageSize)]="pageSize"
                 [(pageIndex)]="pageIndex"
                 [total]="count" 
-                [scroll]="{y:'auto', x: 'auto'}" 
+                [scroll]="{y:'auto'}" 
                 [loading]="isLoading"
                 (queryParams)="onQueryParamsChange($event)"
                 (clickRefresh)="refreshData()">
@@ -53,12 +50,12 @@
                             <td class="border-r text-right">{{ data.CountError || 0 | number }}</td>
                             <td class="border-r">{{ data.Note }}</td>
                             <td class="border-r flex items-center justify-between" [tdsRight]="true">
-                                <button tds-button-icon color="secondary" size="sm">
+                                <button tds-button-icon color="secondary" size="sm" (click)="showDetail(data.Id)">
                                     <span class="flex items-center">
                                       <i class="tdsi-category-fill"></i>
                                     </span>
                                 </button>
-                                <button tds-button-icon color="secondary" size="sm">
+                                <button tds-button-icon color="secondary" size="sm" (click)="deleteCrossChecking(data)">
                                     <span class="flex items-center">
                                       <i class="tdsi-trash-fill"></i>
                                     </span>
@@ -66,8 +63,8 @@
                             </td>
                         </tr>
                         <tr [expand]="expandSet.has(data.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 bg-gray-200">
-                            <div *ngIf="expandSet.has(data.Id)" class="h-full w-full">
-                                <history-delivery-status-detail [HDSData]="data"></history-delivery-status-detail>
+                            <div #detailHDS class="h-full w-full" [ngStyle]="{'max-width.px': tableWidth, 'margin-left.px': marginLeftCollapse}">
+                                <history-delivery-status-detail *ngIf="expandSet.has(data.Id)" [HDSData]="data"></history-delivery-status-detail>
                             </div>
                         </tr>
                     </ng-container>

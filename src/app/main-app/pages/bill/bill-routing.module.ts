@@ -1,3 +1,4 @@
+import { HistoryDeliveryStatusDetailComponent } from './history-delivery-status-detail/history-delivery-status-detail.component';
 import { HistoryDeliveryStatusComponent } from './history-delivery-status/history-delivery-status.component';
 import { DetailBillComponent } from './detail-bill/detail-bill.component';
 import { AddBillComponent } from './add-bill/add-bill.component';
@@ -25,6 +26,10 @@ const routes: Routes = [
   {
     path: 'historyds/list',
     component: HistoryDeliveryStatusComponent
+  },
+  {
+    path: 'historyds/:id',
+    component: HistoryDeliveryStatusDetailComponent
   }
 ];
 

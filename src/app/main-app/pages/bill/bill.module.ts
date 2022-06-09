@@ -35,6 +35,7 @@ import { HistoryDeliveryStatusDetailComponent } from './history-delivery-status-
 import { AccountTaxService } from '../../services/account-tex.service';
 import { ManualCrossCheckingModalComponent } from './components/manual-cross-checking-modal/manual-cross-checking-modal.component';
 import { UpdateShipOrderInfoModalComponent } from './components/update-ship-order-info-modal/update-ship-order-info-modal.component';
+import { FormFileCrossCheckingModalComponent } from './components/form-file-cross-checking-modal/form-file-cross-checking-modal.component';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -68,7 +69,8 @@ const SERVICES = [
     HistoryDeliveryStatusComponent,
     HistoryDeliveryStatusDetailComponent,
     ManualCrossCheckingModalComponent,
-    UpdateShipOrderInfoModalComponent
+    UpdateShipOrderInfoModalComponent,
+    FormFileCrossCheckingModalComponent
   ],
 
   imports: [

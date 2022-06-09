@@ -1,3 +1,5 @@
+import { FormFileCrossCheckingModalComponent } from './../form-file-cross-checking-modal/form-file-cross-checking-modal.component';
+import { ManualCrossCheckingModalComponent } from './../manual-cross-checking-modal/manual-cross-checking-modal.component';
 import { ModalSendMessageComponent } from './../../../partner/components/modal-send-message/modal-send-message.component';
 import { Component, Input, OnDestroy, OnInit, ViewContainerRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -154,7 +156,32 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   }
 
   updateDeliveryStatus(type:string){
+    switch(type){
+      case 'manual':
+        this.createManualCrossChecking();
+        break;
+      case 'fromFile':
+        this.createCrossCheckingFromFile();
+        break;
+    }
+  }
 
+  createManualCrossChecking(){
+    this.modal.create({
+      title: 'Đối soát giao hàng thủ công',
+      size:'xl',
+      content: ManualCrossCheckingModalComponent,
+      viewContainerRef: this.viewContainerRef
+    });
+  }
+
+  createCrossCheckingFromFile(){
+    this.modal.create({
+      title: 'Đối soát giao hàng từ file',
+      size:'xl',
+      content: FormFileCrossCheckingModalComponent,
+      viewContainerRef: this.viewContainerRef
+    });
   }
 
   showHistoryDS(){
