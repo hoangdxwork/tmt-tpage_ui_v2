@@ -80,7 +80,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   private destroy$ = new Subject<void>();
   private _destroy = new Subject<void>();
   widthTable: number = 0;
-  paddingCollapse: number = 32;
+  paddingCollapse: number = 36;
   marginLeftCollapse: number = 0;
   isLoadingCollapse: boolean = false
   @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
