@@ -42,8 +42,7 @@ interface infoPartnerDto {
 @Component({
   selector: 'app-info-order-debt-of-partner',
   templateUrl: './info-order-debt-of-partner.component.html',
-  styleUrls: ['./info-order-debt-of-partner.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrls: ['./info-order-debt-of-partner.component.scss']
 })
 
 export class InfoOrderDebtOfPartnerComponent implements OnInit, AfterViewInit {

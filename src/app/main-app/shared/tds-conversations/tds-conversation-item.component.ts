@@ -17,6 +17,7 @@ import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
   selector: "tds-conversation-item",
   templateUrl:'./tds-conversation-item.component.html',
   styleUrls: ['./tds-conversations.component.sass'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
 
@@ -61,29 +62,11 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     //TODO: mapping data from request to Webhook
     if(this.data) {
-      this.data = { ...this.data };
-      if(TDSHelperString.hasValueString(this.data.page_id)) {
-        this.data.page_id = this.team.Facebook_PageId;
-      }
-      if(TDSHelperString.hasValueString(this.data.psid)) {
-        this.data.psid = this.psid;
-      }
-      if(TDSHelperString.hasValueString(this.data.psid)) {
-        this.data.page_id = this.psid;
-      }
-      if(TDSHelperString.hasValueString(this.data.object_id)) {
-        this.data.page_id = this.data.comment?.object?.id || null;
-      }
-
       this.activityDataFacade.makeActivity(this.team.Facebook_PageId, this.data.from_id, this.type);
       if (!this.data.message_formatted && this.data.id) {
         this.data['attachments'] = this.activityDataFacade.getMessageAttachments(this.team.Facebook_PageId, this.data.from_id, this.data.id);
       }
     }
-  }
-
-  public getElement(): ElementRef {
-    return this.element;
   }
 
   selectOrder(type: string): any {
@@ -126,7 +109,11 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   }
 
   loadEmojiMart(event: any) {
-    // this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
+    if(TDSHelperString.hasValueString(this.messageModel)) {
+      this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
+    } else {
+      this.messageModel = `${event?.emoji?.native}`;
+    }
   }
 
   clickReply(event: any) {
@@ -326,15 +313,19 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
         .pipe(finalize(()=> {this.isReplyingComment = false;} )).subscribe((res: any) => {
           this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });
           this.conversationDataFacade.messageServer(res);
+
           this.messageModel = null;
           this.tdsMessage.success("Trả lời bình luận thành công");
+
           this.isReply = false;
-          this.cdRef.markForCheck();
           event.preventDefault();
+          this.cdRef.markForCheck();
+
         }, error => {
           this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
-          this.cdRef.markForCheck();
           event.preventDefault();
+          this.cdRef.markForCheck();
+
         });
     }
   }

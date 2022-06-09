@@ -105,14 +105,14 @@
   <!--Nội dung cuộc hội thoại-->
   <div class="flex w-1/2">
     <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
-        <ng-container class="flex w-full flex-col h-full" *ngIf="activeCvsItem && currentTeam" @eventFadeState>
+        <div class="flex w-full flex-col h-full" *ngIf="activeCvsItem && currentTeam" @eventFadeState>
             <shared-tds-conversations
                 class="flex w-full h-full"
                 [data]="activeCvsItem"
                 [type]="type" [team]="currentTeam"
                 (onLoadMiniChat)="onLoadMiniChat($event)">
             </shared-tds-conversations>
-        </ng-container>
+        </div>
     </div>
   </div>
   <!--Xử lí thông tin khách hàng & Đơn hàng-->

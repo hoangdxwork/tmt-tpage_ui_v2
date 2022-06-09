@@ -10,8 +10,7 @@ import { TPageHelperService } from '../../services/helper.service';
 @Component({
   selector: 'app-tpage-base',
   templateUrl: './tpage-base.component.html',
-  styleUrls: ['./tpage-base.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  styleUrls: ['./tpage-base.component.scss']
 })
 
 export class TpageBaseComponent  {

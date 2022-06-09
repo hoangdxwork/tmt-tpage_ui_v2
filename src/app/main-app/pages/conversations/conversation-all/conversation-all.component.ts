@@ -20,8 +20,6 @@ import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-anim
 @Component({
   selector: 'app-conversation-all',
   templateUrl: './conversation-all.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
   animations: [eventFadeStateTrigger]
 })
 
@@ -164,13 +162,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         let uri = this.router.url.split("?")[0];
         let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${item?.psid}`;
         this.router.navigateByUrl(uriParams);
-
-        this.cdRef.detectChanges();
       }
     }
   }
 
-  changeCurrentCvsItem(item: any) {debugger
+  changeCurrentCvsItem(item: any) {
     if(this.isOpenCollapCheck){
       return
     }
@@ -184,6 +180,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.isChanged = true;
     (this.activeCvsItem as any) = null;
     this.getActiveCvsItem(item);
+    this.cdRef.detectChanges();
   }
 
   trackByIndex(_: number, data: any): number {
@@ -257,8 +254,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           // console.log("Yêu cầu cập nhật thất bại.");
         });
       }
-    }
-    else {
+    } else {
       this.onSubmitFilter({});
     }
 
@@ -267,11 +263,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }, 3 * 1000);
   }
 
-  onLoadMiniChat(event: any): void {}
+  onLoadMiniChat(event: any): void {
+
+  }
 
   fetchLiveConversations(team: CRMTeamDTO): void {
     this.fbGraphService.api(`me/conversations?fields=id,link,participants,senders&access_token=${team.Facebook_PageToken}`)
-      .subscribe((res :any) => {});
+      .subscribe();
   }
 
   changeOrderId(orderCode: string | undefined) {

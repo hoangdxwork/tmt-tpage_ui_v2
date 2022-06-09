@@ -93,8 +93,9 @@ export class THelperDataRequest {
 
     private static p_convertFilterItemToString(filter: FilterItemDataRequestDTO) {
         let str = '';
-        const value = filter.value;
+        let value = filter.value;
         if (typeof value === 'string') {
+            value = encodeURIComponent(value);
             if(filter.operator === OperatorEnum.contains) {
                 str =`${filter.operator}(${filter.field},%27${value}%27)`
             } else {
