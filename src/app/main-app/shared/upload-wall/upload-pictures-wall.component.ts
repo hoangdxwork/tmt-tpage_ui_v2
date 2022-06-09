@@ -1,11 +1,8 @@
 
-import { Component, Input, OnDestroy, OnInit, OnChanges, SimpleChanges, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, OnChanges, SimpleChanges, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { TDSHelperArray, TDSMessageService, TDSUploadFile } from 'tmt-tang-ui';
-import { filter } from 'rxjs/operators';
 import { SharedService } from '../../services/shared.service';
 import { Observable, Subject } from 'rxjs';
-import { HttpResponse } from '@microsoft/signalr';
-import da from 'date-fns/esm/locale/da/index.js';
 
 const getBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
 new Promise((resolve, reject) => {
@@ -25,7 +22,10 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
     destroy$ = new Subject();
     @Input() data!: string[];
     @Input() isArray!: boolean;
+    @Input() size: number = 112;
+    @Input() isAvatar!:boolean
     @Output() onLoadImage = new EventEmitter();
+    @Output() getResult = new EventEmitter<string>();
 
     fileList: TDSUploadFile[] = [];
     previewImage: string | undefined = '';
@@ -84,7 +84,7 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
           this.fileList = [...dataModel];
           this.isUploading = false;
           this.emitFile();
-        
+          this.getResult.emit(x.url);
         }
       }, error => {
         let message = JSON.parse(error.Message);
@@ -124,7 +124,7 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
 
     ngOnChanges(changes: SimpleChanges) {
       if(changes['data'] && !changes['data'].firstChange){
-        if(TDSHelperArray.hasListValue(this.data)) {
+        if(TDSHelperArray.hasListValue(this.data) && this.isArray) {
           let dataModel: any = [];
           this.data.map((x: any, i: number) => {
             let y ={

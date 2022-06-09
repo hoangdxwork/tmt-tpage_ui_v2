@@ -38,12 +38,12 @@
         </td>
         <td>
           <div class="flex gap-x-2">
-            <button tds-button-icon color="secondary" size="sm" (click)="openDrawerMessage()">
+            <button tds-button-icon color="secondary" size="sm">
               <span class="flex items-center">
                 <i class="tdsi-messenger-fill"></i>
               </span>
             </button>
-            <button tds-button-icon color="secondary" size="sm">
+            <button tds-button-icon color="secondary" size="sm" (click)="openDrawerOrderMessage(order.OrderId)">
               <span class="flex items-center">
                 <i class="tdsi-paper-fill"></i>
               </span>
@@ -53,4 +53,11 @@
       </tr>
     </tbody>
   </tds-table>
+
+  <drawer-order-message *ngIf="isOpenDrawerOrderMessage && openMessageByOrderId" [isOpenDrawer]="isOpenDrawerOrderMessage"
+  [liveCampaignId]="liveCampaignId"
+  [orderId]="openMessageByOrderId"
+  (eventClose)="closeDrawerOrderMessage()">
+</drawer-order-message>
+
 <div>

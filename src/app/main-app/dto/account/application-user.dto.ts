@@ -1,9 +1,10 @@
+import { TDSSafeAny } from 'tmt-tang-ui';
 import { CompanyDTO } from '../company/company.dto';
 import { CRMTeam_UserDTO } from '../team/team.dto';
 
 export interface ApplicationUserDTO {
   Id: string;
-  Avatar: string;
+  Avatar?: string;
   Email: string;
   Name: string;
   UserName: string;
@@ -35,14 +36,19 @@ export interface ApplicationUserDTO {
 }
 
 export interface UpdateApplicationUserDTO {
-  Id: string;
+  Id?: string;
   Name: string;
   Email: string;
-  UserName: string;
-  Avatar: string;
+  UserName?: string;
+  Avatar?: string;
   PhoneNumber: string;
   Active: boolean;
   Roles: ApplicationUserRolesDTO[];
+  Company?: TDSSafeAny;
+}
+
+export interface UpdateChangePasswordDTO {
+  // Chưa có api
 }
 
 export interface AddApplicationUserDTO {

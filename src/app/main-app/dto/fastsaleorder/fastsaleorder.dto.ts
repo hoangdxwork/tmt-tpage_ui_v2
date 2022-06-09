@@ -673,9 +673,139 @@ export interface FastSaleOrderDTO {
   SaleOnlineIds: string[];
   Partner: PartnerDTO;
   PartnerName: string;
+  IRAttachmentUrl: string;
+  PartnerPhone: string;
 }
 
 export interface FastSaleOrderSummaryStatusDTO {
-Type: string;
-Total: number;
+  Type: string;
+  Total: number;
+}
+
+export interface FastSaleOrderModelDTO {
+  Id: number;
+  Name?: string;
+  PrintShipCount?: number;
+  PrintDeliveryCount?: number;
+  PaymentMessageCount?: number;
+  MessageCount?: number;
+  PartnerId: number;
+  Partner: PartnerDTO;
+  PartnerDisplayName: string;
+  PartnerEmail: string;
+  PartnerFacebookId: string;
+  PartnerFacebook: string;
+  PartnerPhone: string;
+  Reference: string;
+  PriceListId: number;
+  AmountTotal?: number;
+  TotalQuantity: number;
+  Discount?: number;
+  DiscountAmount?: number;
+  DecreaseAmount?: number;
+  WeightTotal: number;
+  AmountTax?: number;
+  AmountUntaxed?: number;
+  TaxId?: number;
+  Tax?: AccountTaxDTO;
+  UserId: string;
+  UserName: string;
+  DateInvoice?: Date;
+  DateCreated?: Date;
+  State: string;
+  ShowState: string;
+  CompanyId: number;
+  Comment: string;
+  WarehouseId: number;
+  SaleOnlineIds: string[];
+  SaleOnlineNames: string[];
+  Residual: number;
+  Type: string;
+  RefundOrderId?: number;
+  ReferenceNumber?: string;
+  AccountId: number;
+  JournalId: number;
+  Number: string;
+  PartnerNameNoSign: string;
+  DeliveryPrice?: number;
+  CustomerDeliveryPrice?: number;
+  CarrierId?: number;
+  CarrierName: string;
+  CarrierDeliveryType: string;
+  DeliveryNote: string;
+  ReceiverName: string;
+  ReceiverPhone: string;
+  ReceiverAddress: string;
+  ReceiverDate?: Date;
+  ReceiverNote: string;
+  CashOnDelivery?: number;
+  TrackingRef: string;
+  TrackingArea: string;
+  IsProductDefault: boolean;
+  TrackingRefSort: string;
+  ShipStatus: string;
+  ShowShipStatus: string;
+  SaleOnlineName: string;
+  PartnerShippingId?: number;
+  PaymentJournalId?: number;
+  PaymentAmount: number;
+  SaleOrderId?: number;
+  SaleOrderIds: number[];
+  FacebookName: string;
+  FacebookNameNosign: string;
+  FacebookId: string;
+  DisplayFacebookName: string;
+  Deliver: string;
+  ShipWeight: number;
+  ShipPaymentStatus: string;
+  OldCredit: number;
+  NewCredit: number;
+  Phone: string;
+  Address: string;
+  AmountTotalSigned?: number;
+  ResidualSigned?: number;
+  Origin: string;
+  AmountDeposit: number;
+  CompanyName: string;
+  PreviousBalance?: number;
+  ToPay?: number;
+  NotModifyPriceFromSO: boolean;
+  Ship_ServiceId: string;
+  Ship_ServiceName: string;
+  Ship_ServiceExtrasText: string;
+  Ship_ExtrasText: string;
+  Ship_InsuranceFee?: number;
+  CurrencyName: string;
+  TeamId?: number;
+  TeamOrderCode: string;
+  TeamOrderId: string;
+  TeamType: string;
+  Revenue?: number;
+  SaleOrderDeposit?: number;
+  Seri: string;
+  NumberOrder: string;
+  DateOrderRed?: Date;
+  ApplyPromotion?: boolean;
+  TimeLock?: number;
+  PageName: string;
+  Tags: string;
+  IRAttachmentUrl: string;
+  IsDeposited?: boolean;
+  LiveCampaignName: string;
+  LiveCampaignId?: string;
+  Ship_Receiver: FastSaleOrder_ReceiverDTO;
+  Ship_Extras?: DeliveryCarrier_ExtraDTO;
+  PaymentInfo: PaymentInfoContentDTO[];
+  Search?: SearchStaffReportDTO;
+}
+
+export interface ListUpdateDepositDTO {
+  IsConfirmed: boolean;
+  List: UpdateDepositDTO[];
+}
+
+export interface UpdateDepositDTO {
+  Id: number;
+  AmountDeposit: number;
+  IsConfirmed: boolean;
 }

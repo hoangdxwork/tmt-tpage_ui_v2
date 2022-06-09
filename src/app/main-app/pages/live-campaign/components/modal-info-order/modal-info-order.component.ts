@@ -2,7 +2,7 @@ import { finalize } from 'rxjs/operators';
 import { Component, Input, OnInit } from '@angular/core';
 import { SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TDSModalRef } from 'tmt-tang-ui';
+import { TDSMessageService, TDSModalRef } from 'tmt-tang-ui';
 
 @Component({
   selector: 'modal-info-order',
@@ -17,6 +17,7 @@ export class ModalInfoOrderComponent implements OnInit {
 
   constructor(
     private modalRef: TDSModalRef,
+    private message: TDSMessageService,
     private saleOnline_OrderService: SaleOnline_OrderService
   ) { }
 
@@ -29,8 +30,9 @@ export class ModalInfoOrderComponent implements OnInit {
     this.saleOnline_OrderService.getById(id)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
-        console.log(res);
         this.data = res;
+      }, error => {
+        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
       });
   }
 

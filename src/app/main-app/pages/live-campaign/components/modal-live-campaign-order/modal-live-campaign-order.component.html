@@ -1,5 +1,12 @@
 <div class="w-full h-full text-body-2 text-neutral-1-900 h-[473px]">
-  <tds-table #tableMessage [listData]="data" [scroll]="{y:'auto'}">
+  <tds-table #tableMessage
+    [listData]="data"
+    [scroll]="{y:'auto'}"
+    [showSizeChanger]="true"
+    [frontPagination]="false"
+    [(pageSize)]="pageSize"
+    [(pageIndex)]="pageIndex"
+    [total]="data.length">
     <thead>
       <tr>
         <th [width]="'5%'">STT</th>

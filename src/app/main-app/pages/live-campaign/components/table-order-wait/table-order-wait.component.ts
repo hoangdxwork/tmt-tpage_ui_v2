@@ -1,10 +1,11 @@
-import { TDSMessageService, TDSTableQueryParams, TDSTagStatusType } from 'tmt-tang-ui';
-import { Component, Input, OnInit } from '@angular/core';
+import { TDSMessageService, TDSModalService, TDSTableQueryParams, TDSTagStatusType } from 'tmt-tang-ui';
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { LiveCampaignSOOrderDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
 import { ODataLiveCampaignService } from 'src/app/main-app/services/mock-odata/odata-live-campaign.service';
 import { finalize } from 'rxjs/operators';
+import { ModalHistoryCartComponent } from '../modal-history-cart/modal-history-cart.component';
 
 @Component({
   selector: 'table-order-wait',
@@ -24,6 +25,8 @@ export class TableOrderWaitComponent implements OnInit {
 
   constructor(
     private message: TDSMessageService,
+    private modal: TDSModalService,
+    private viewContainerRef: ViewContainerRef,
     private oDataLiveCampaignService: ODataLiveCampaignService
   ) { }
 
@@ -68,6 +71,21 @@ export class TableOrderWaitComponent implements OnInit {
       default:
         return "warning";
     }
+  }
+
+  showModelHistory(orderId: string | undefined) {
+    this.modal.create({
+      title: 'Lịch sử giỏ hàng',
+      size:'lg',
+      content: ModalHistoryCartComponent,
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        type: "SO",
+        liveCampaignId: this.liveCampaignId,
+        productId: this.productId,
+        orderId: orderId
+      }
+    });
   }
 
 }

@@ -71,7 +71,7 @@ const SERVICES = [
   ImageFacade,
   ProductPriceListService,
   ODataLiveCampaignService,
-  FastSaleOrderLineService,
+  FastSaleOrderLineService
 ]
 
 @NgModule({

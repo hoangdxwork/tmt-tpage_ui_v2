@@ -142,7 +142,7 @@ export interface MDBInnerCreatedByDTO {
   Id: string;
   UserName: string;
   Name: string;
-  Avatar: string;
+  Avatar?: string;
 }
 
 // MDB_Inner_SaleOnline_Order

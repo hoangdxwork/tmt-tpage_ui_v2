@@ -263,4 +263,12 @@ export class LayoutComponent implements OnInit {
       });
   }
 
+  onProfile() {
+    this.router.navigateByUrl(`user/info`);
+  }
+
+  onPackOfData() {
+    this.router.navigateByUrl(`user/pack-of-data/info`);
+  }
+
 }

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TDSAutocompleteModule, TDSAvatarModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDatePickerModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSModalService, TDSPageHeaderModule, TDSPopoverModule, TDSSelectModule, TDSSpinnerModule, TDSSwitchModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTimelineModule, TDSToolTipModule, TDSTypographyModule } from 'tmt-tang-ui';
+import { TDSAutocompleteModule, TDSAvatarModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDatePickerModule, TDSDrawerModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSModalService, TDSPageHeaderModule, TDSPopoverModule, TDSSelectModule, TDSSpinnerModule, TDSSwitchModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTimelineModule, TDSToolTipModule, TDSTypographyModule } from 'tmt-tang-ui';
 import { LiveCampaignRoutingModule } from './live-campaign-routing.module';
 import { MainSharedModule } from '../../shared/shared.module';
 import { PipeModule } from '../../shared/pipe/pipe.module';
@@ -42,6 +42,12 @@ import { TableOrderWaitComponent } from './components/table-order-wait/table-ord
 import { TableOrderCancelComponent } from './components/table-order-cancel/table-order-cancel.component';
 import { TableBillConfirmedComponent } from './components/table-bill-confirmed/table-bill-confirmed.component';
 import { TableBillCancelComponent } from './components/table-bill-cancel/table-bill-cancel.component';
+import { ModalHistoryCartComponent } from './components/modal-history-cart/modal-history-cart.component';
+import { ModalConfirmedDepositComponent } from './components/modal-confirmed-deposit/modal-confirmed-deposit.component';
+import { ModalPaymentComponent } from './components/modal-payment/modal-payment.component';
+import { AccountJournalService } from '../../services/account-journal.service';
+import { AccountRegisterPaymentService } from '../../services/account-register-payment.service';
+import { DrawerOrderMessageComponent } from './components/drawer-order-message/drawer-order-message.component';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -65,7 +71,8 @@ const cmp =[
   TableOrderWaitComponent,
   TableOrderCancelComponent,
   TableBillConfirmedComponent,
-  TableBillCancelComponent
+  TableBillCancelComponent,
+  ModalHistoryCartComponent
 ]
 
 const SERVICES = [
@@ -84,12 +91,17 @@ const SERVICES = [
   PartnerService,
   OdataProductService,
   CheckFormHandler,
-  ODataLiveCampaignBillService
+  ODataLiveCampaignBillService,
+  AccountJournalService,
+  AccountRegisterPaymentService
 ]
 
 @NgModule({
   declarations: [
-    ...cmp
+    ...cmp,
+    ModalConfirmedDepositComponent,
+    ModalPaymentComponent,
+    DrawerOrderMessageComponent
   ],
   imports: [
     CommonModule,
@@ -123,7 +135,8 @@ const SERVICES = [
     TDSPopoverModule,
     TDSModalModule,
     TDSFilterStatusModule,
-    TDSTimelineModule
+    TDSTimelineModule,
+    TDSDrawerModule
   ],
   providers: [
     ...SERVICES

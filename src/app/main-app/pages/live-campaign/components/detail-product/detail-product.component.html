@@ -82,7 +82,7 @@
             <td>{{ product.OrderQtyWaitCheckOut || 0 | number }}</td>
           </tr>
 
-          <tr [expand]="expandSet.has(product.ProductId)" class="bg-neutral-3-50">
+          <tr [expand]="expandSet.has(product.ProductId)" *ngIf="expandSet.has(product.ProductId)" class="bg-neutral-3-50">
             <div class="w-full bg-white rounded-md">
               <tds-tabset>
                 <tds-tab title="Đơn hàng chờ chốt" clsContent="p-0">

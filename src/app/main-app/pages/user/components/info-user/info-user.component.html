@@ -1,139 +1,163 @@
-<div class="p-4 flex w-full justify-center">
-    <div class="w-3/4 flex flex-col gap-y-4 rounded-xl">
-        <div class="p-4 bg-white flex flex-col gap-y-5 rounded-xl">
-            <div class="flex justify-between">
-                <span class="text-header-2 flex items-center text-neutral-600 font-semibold">
-                    <i class="tdsi-user-line mr-2"></i>Thông tin cơ bản
+<tds-spin [spinning]="isLoading">
+  <div class="p-4 flex flex-col items-center w-full justify-center text-body-2">
+    <div class="w-3/4 flex flex-col rounded-xl bg-white">
+        <div class="flex justify-between px-4 py-2.5 border-x border-transparent">
+            <span class="text-header-1 flex items-center text-neutral-1-900 font-semibold">
+                Thông tin cá nhân
+            </span>
+            <button *ngIf="!isChangeInfoUser" tds-button color="primary" (click)="changeInfoUser()">
+                <span class="flex items-center">
+                    <i class="tdsi-edit-fill text-lg leading-none mr-2"></i>Thay đổi thông tin
                 </span>
-                <button *ngIf="!isChangeInfoUser" tds-button color="primary" (click)="changeInfoUser()">
+            </button>
+            <div *ngIf="isChangeInfoUser" class="flex gap-x-4">
+                <button tds-button color="primary" (click)="onUpdateInfo()" [disabled]="!formUser?.valid">
                     <span class="flex items-center">
-                        <i class="tdsi-edit-fill text-lg leading-none mr-2"></i>Thay đổi thông tin
+                        Lưu thay đổi
                     </span>
                 </button>
-                <div *ngIf="isChangeInfoUser" class="flex gap-x-4">
-                    <button tds-button color="primary" (click)="onSubmitUser()">
-                        <span class="flex items-center">
-                            Lưu thay đổi
-                        </span>
-                    </button>
-                    <button tds-button color="primary" (click)="cancelChangeInfoUser()">
-                        <span class="flex items-center">
-                            Hủy bỏ
-                        </span>
-                    </button>
-                </div>
-            </div>
-            <div class="flex h-full">
-                <div class="h-full  pr-6">
-                    <tds-avatar class="bg-accent-4  text-white " [size]="104"
-                        [tdsSrc]="userInit?.Avatar">
-                    </tds-avatar>
-                </div>
-                <form *ngIf="formUser" [formGroup]="formUser" (ngSubmit)="onSubmitUser()"
-                    class="flex flex-col w-full gap-y-4 pl-6 border-l border-neutral-200">
-                    <div class="flex gap-x-4">
-                        <div class="w-1/5"><span class="text-body-2 text-neutral-900 font-regular">Họ & tên:</span>
-                        </div>
-                        <div class="w-4/5">
-                            <span *ngIf="!isChangeInfoUser"
-                                class="text-body-2 text-neutral-900 font-semibold">{{formUser?.value?.name}}</span>
-                            <tds-form-field *ngIf="isChangeInfoUser" class="w-full">
-                                <input tdsInput autocomplete="off" placeholder="Nhập tên" formControlName="name" />
-                            </tds-form-field>
-                        </div>
-
-                    </div>
-                    <div class="flex gap-x-4">
-                        <div class="w-1/5"><span class="text-body-2 text-neutral-900 font-regular">Điện thoại:</span>
-                        </div>
-                        <div class="w-4/5">
-                            <span *ngIf="!isChangeInfoUser"
-                                class="text-body-2 text-neutral-900 font-semibold">{{formUser?.value?.phone}}</span>
-                            <tds-form-field *ngIf="isChangeInfoUser" class="w-full">
-                                <input tdsInput autocomplete="off" placeholder="Nhập số điện thoại"
-                                    formControlName="phone" />
-                            </tds-form-field>
-                        </div>
-                    </div>
-                    <div class="flex gap-x-4">
-                        <div class="w-1/5"><span class="text-body-2 text-neutral-900 font-regular">Email:</span></div>
-                        <div class="w-4/5">
-                            <span *ngIf="!isChangeInfoUser"
-                                class="text-body-2 text-neutral-900 font-semibold">{{formUser?.value?.email}}</span>
-                            <tds-form-field *ngIf="isChangeInfoUser" class="w-full">
-                                <input tdsInput autocomplete="off" placeholder="Nhập email" formControlName="email" />
-                            </tds-form-field>
-                        </div>
-                    </div>
-                </form>
+                <button tds-button color="secondary" (click)="cancelChangeInfoUser()">
+                    <span class="flex items-center">
+                        Hủy bỏ
+                    </span>
+                </button>
             </div>
         </div>
+        <div class="flex h-full p-4 items-center">
+            <div class="pr-6 border-r border-neutral-200">
+                <tds-avatar *ngIf="!isChangeInfoUser" class="bg-accent-4 text-white" [size]="104" [tdsSrc]="userInit?.Avatar">
+                </tds-avatar>
+                <div *ngIf="isChangeInfoUser">
+                  <tds-upload [beforeUpload]="beforeUpload" [showUploadList]="false">
+                    <tds-avatar class="bg-accent-4 text-white" [size]="104" [tdsSrc]="userInit?.Avatar">
+                    </tds-avatar>
+                  </tds-upload>
 
-        <!-- Password -->
-        <div class="p-4 bg-white flex flex-col gap-y-5 rounded-xl">
-            <div class="flex justify-between">
-                <span class="text-header-2 flex items-center text-neutral-600 font-semibold">
-                    <i class="tdsi-lock-line mr-2"></i>Bảo mật
-                </span>
-                <button *ngIf="!isChangeInfoPassword" tds-button color="primary" (click)="changePassword()">
-                    <span class="flex items-center">
-                        <i class="tdsi-edit-fill text-lg leading-none mr-2"></i>Đổi mật khẩu
-                    </span>
-                </button>
-                <div *ngIf="isChangeInfoPassword" class="flex gap-x-4">
-                    <button tds-button color="primary" (click)="onSubmitPassword()">
-                        <span class="flex items-center">
-                            Lưu thay đổi
-                        </span>
-                    </button>
-                    <button tds-button color="primary" (click)="cancelChangeInfoPassword()">
-                        <span class="flex items-center">
-                            Hủy bỏ
-                        </span>
-                    </button>
+                  <!-- <div class="w-[104px] h-[104px] rounded-full bg-black/40 flex flex-col gap-y-2 justify-center items-center text-white absolute">
+                    <i class="tdsi-camera-fill text-2xl"></i>
+                    <span class="text-xs">Cập nhật avatar</span>
+                  </div> -->
                 </div>
             </div>
-            <form [formGroup]="formPassword" (ngSubmit)="onSubmitPassword()" class="flex flex-col gap-y-4">
+            <form *ngIf="formUser" [formGroup]="formUser" (ngSubmit)="onSubmitUser()"
+                class="flex flex-col w-full gap-y-4 pl-6">
                 <div class="flex gap-x-4">
-                    <div class="w-1/6"><span class="text-body-2 text-neutral-900 font-semibold">Mật khẩu cũ:</span>
+                    <div class="w-1/5"><span class="text-neutral-900 font-semibold">Họ & tên:</span>
                     </div>
-                    <div *ngIf="!isChangeInfoPassword" class="w-5/6">
-                        <span class="text-body-2 text-neutral-1-400 font-semibold">**********</span>
-                    </div>
-                    <div *ngIf="isChangeInfoPassword" class="w-5/6">
-                        <tds-form-field class="w-full">
-                            <input tdsInput autocomplete="off" type="password" placeholder="Xác nhận mật khẩu hiện tại"
-                                formControlName="passwordOld" />
+
+                    <div class="w-4/5">
+                        <span *ngIf="!isChangeInfoUser"
+                            class="text-neutral-900 font-semibold">{{formUser?.value?.Name}}</span>
+                        <tds-form-field *ngIf="isChangeInfoUser" class="w-full">
+                            <input tdsInput autocomplete="off" placeholder="Nhập tên" formControlName="Name" [required]="true" />
+                            <tds-error>Vui lòng nhập tên.</tds-error>
                         </tds-form-field>
                     </div>
                 </div>
                 <div class="flex gap-x-4">
-                    <div class="w-1/6"><span class="text-body-2 text-neutral-900 font-semibold">Mật khẩu mới:</span>
+                    <div class="w-1/5"><span class="text-neutral-900 font-semibold">Điện thoại:</span>
                     </div>
-                    <div *ngIf="!isChangeInfoPassword" class="w-5/6">
-                        <span class="text-body-2 text-neutral-1-400 font-semibold">**********</span>
-                    </div>
-                    <div *ngIf="isChangeInfoPassword" class="w-5/6">
-                        <tds-form-field class="w-full">
-                            <input tdsInput autocomplete="off" type="password" placeholder="Nhập mật khẩu mới"
-                                formControlName="passwordNew" />
+
+                    <div class="w-4/5">
+                        <span *ngIf="!isChangeInfoUser"
+                            class="text-neutral-900 font-semibold">{{formUser?.value?.PhoneNumber}}</span>
+                        <tds-form-field *ngIf="isChangeInfoUser" class="w-full">
+                            <input tdsInput autocomplete="off" placeholder="Nhập số điện thoại" formControlName="PhoneNumber" [required]="true" />
+                            <tds-error>Vui lòng nhập số điện thoại.</tds-error>
                         </tds-form-field>
                     </div>
                 </div>
                 <div class="flex gap-x-4">
-                    <div class="w-1/6"><span class="text-body-2 text-neutral-900 font-semibold">Xác nhận mật khẩu
-                            mới:</span></div>
-                    <div *ngIf="!isChangeInfoPassword" class="w-5/6">
-                        <span class="text-body-2 text-neutral-1-400 font-semibold">**********</span>
-                    </div>
-                    <div *ngIf="isChangeInfoPassword" class="w-5/6">
-                        <tds-form-field class="w-full">
-                            <input tdsInput autocomplete="off" type="password" placeholder="Nhập mật khẩu mới"
-                                formControlName="passwordNewConfirm" />
+                    <div class="w-1/5"><span class="text-neutral-900 font-semibold">Email:</span></div>
+
+                    <div class="w-4/5">
+                        <span *ngIf="!isChangeInfoUser"
+                            class="text-neutral-900 font-semibold">{{formUser?.value?.Email}}</span>
+                        <tds-form-field *ngIf="isChangeInfoUser" class="w-full">
+                            <input tdsInput autocomplete="off" placeholder="Nhập email" formControlName="Email" [required]="true" />
+                            <tds-error>
+                              <span *ngIf="formUser.controls['Email'].errors?.emailExist; else emailEmpty">Email đã tồn tại.</span>
+                              <ng-template #emailEmpty>
+                                <span>Vui lòng nhập email.</span>
+                              </ng-template>
+                            </tds-error>
                         </tds-form-field>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-</div>
+    <div class="w-3/4 flex flex-col rounded-xl bg-white mt-4">
+        <div class="flex justify-between px-4 py-2.5 border-x border-transparent">
+            <span class="text-header-1 flex items-center text-neutral-1-900 font-semibold">
+                Bảo mật
+            </span>
+            <button *ngIf="!isChangeInfoPassword" tds-button color="primary" (click)="changePassword()">
+                <span class="flex items-center">
+                    <i class="tdsi-edit-fill text-lg leading-none mr-2"></i>Đổi mật khẩu
+                </span>
+            </button>
+            <div *ngIf="isChangeInfoPassword" class="flex gap-x-4">
+                <button tds-button color="primary" (click)="onSubmitPassword()">
+                    <span class="flex items-center">
+                        Lưu thay đổi
+                    </span>
+                </button>
+                <button tds-button color="secondary" (click)="cancelChangeInfoPassword()">
+                    <span class="flex items-center">
+                        Hủy bỏ
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <form [formGroup]="formPassword" (ngSubmit)="onSubmitPassword()" class="flex flex-col gap-y-4 w-1/2 p-4">
+            <div class="flex gap-x-4">
+                <div class="w-1/3"><span class="text-neutral-900 font-semibold">Mật khẩu cũ:</span>
+                </div>
+                <div *ngIf="!isChangeInfoPassword" class="w-2/3">
+                    <span class="text-neutral-1-400 font-semibold">**********</span>
+                </div>
+                <div *ngIf="isChangeInfoPassword" class="w-2/3">
+                    <tds-form-field class="w-full">
+                        <input tdsInput autocomplete="off" type="password" placeholder="Xác nhận mật khẩu hiện tại" formControlName="OldPassword" [required]="true" />
+                        <tds-error>Vui lòng nhập mật khẩu cũ.</tds-error>
+                    </tds-form-field>
+                </div>
+            </div>
+            <div class="flex gap-x-4">
+                <div class="w-1/3"><span class="text-neutral-900 font-semibold">Mật khẩu mới:</span>
+                </div>
+                <div *ngIf="!isChangeInfoPassword" class="w-2/3">
+                    <span class="text-neutral-1-400 font-semibold">**********</span>
+                </div>
+                <div *ngIf="isChangeInfoPassword" class="w-2/3">
+                    <tds-form-field class="w-full">
+                        <input tdsInput autocomplete="off" type="password" placeholder="Nhập mật khẩu mới" formControlName="NewPassword" [required]="true" />
+                        <tds-error>Vui lòng nhập mật khẩu mới.</tds-error>
+                    </tds-form-field>
+                </div>
+            </div>
+            <div class="flex gap-x-4">
+                <div class="w-1/3"><span class="text-neutral-900 font-semibold">Xác nhận mật khẩu mới:</span></div>
+                <div *ngIf="!isChangeInfoPassword" class="w-2/3">
+                    <span class="text-neutral-1-400 font-semibold">**********</span>
+                </div>
+                <div *ngIf="isChangeInfoPassword" class="w-2/3">
+                    <tds-form-field class="w-full">
+                        <input tdsInput autocomplete="off" type="password" placeholder="Nhập lại mật khẩu" formControlName="ConfirmPassword" [required]="true" />
+                        <tds-error>
+                          <span *ngIf="formPassword.controls['ConfirmPassword'].errors?.mustMatch; else mustMatch">
+                            Mật khẩu không khớp
+                          </span>
+                          <ng-template #mustMatch>
+                            <span>Vui lòng nhập lại mật khẩu</span>
+                          </ng-template>
+                        </tds-error>
+                    </tds-form-field>
+                </div>
+            </div>
+        </form>
+    </div>
+  </div>
+</tds-spin>

@@ -1,7 +1,9 @@
+import { FacebookRESTService } from './../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from './../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef,
+   Component, HostBinding, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { finalize, takeUntil, map } from 'rxjs/operators';
@@ -13,16 +15,20 @@ import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.s
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { TDSHelperObject, TDSMessageService, TDSHelperArray, TDSHelperString } from 'tmt-tang-ui';
 import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
+import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
 
 @Component({
   selector: 'app-conversation-all',
   templateUrl: './conversation-all.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+  animations: [eventFadeStateTrigger]
 })
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
+  @HostBinding("@eventFadeState") eventAnimation = true;
 
   isLoading: boolean = false;
   dataSource$!: Observable<any> | undefined;
@@ -45,6 +51,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   isProcessing:boolean = false;
   isNextData: boolean = false;
   isChanged: boolean = false;
+  clickReload: number = 0;
 
   currentOrderTab: number = 0;
   letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -59,7 +66,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     private cdRef : ChangeDetectorRef,
     private printerService: PrinterService,
     private modalService: TDSModalService,
-    private viewContainerRef: ViewContainerRef) {
+    private viewContainerRef: ViewContainerRef,
+    private facebookRESTService: FacebookRESTService) {
       super(crmService, activatedRoute, router);
   }
 
@@ -93,16 +101,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     // loading moused khi change, đợi phản hồi từ loadMessages trong shared-tds-conversations
     this.conversationDataFacade.changeCurrentCvs$.subscribe((data: boolean) => {
-      this.isChanged = data;
+        this.isChanged = data;
     })
   }
 
   onChangeConversation(team: any) {
     this.validateData();
-    if(this.isProcessing){
-      return;
-    }
-
     this.ngZone.run(() => {
       this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
       this.loadConversations((this.dataSource$));
@@ -116,13 +120,19 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   loadConversations(dataSource$: Observable<any>) {
+    if(this.isChanged || this.isProcessing){
+      return;
+    }
+
     this.isProcessing = true;
     dataSource$.pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => { this.isProcessing = false }))
       .subscribe((res: CRMMatchingMappingDTO) => {
         if (res && TDSHelperArray.hasListValue(res.items)) {
+
             this.lstMatchingItem = [...res.items];
             let psid = this.paramsUrl?.psid || null;
+
             //TODO: check psid khi load lần 2,3,4...
             let exits = this.lstMatchingItem.filter(x => x.psid == psid)[0];
             if (exits) {
@@ -131,14 +141,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
               //TODO: load lần đầu tiên
               this.getActiveCvsItem(this.lstMatchingItem[0]);
             }
+
         } else {
           //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
           this.validateData();
         }
-        this.cdRef.markForCheck();
       }, error => {
-        this.message.error('Load CRMMatching đã xảy ra lỗi');
-        this.cdRef.markForCheck();
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Load danh sách hội thoại đã xảy ra lỗi');
       })
   }
 
@@ -155,19 +164,20 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         let uri = this.router.url.split("?")[0];
         let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${item?.psid}`;
         this.router.navigateByUrl(uriParams);
+
+        this.cdRef.detectChanges();
       }
     }
   }
 
-    
-  changeCurrentCvsItem(item: any) {
+  changeCurrentCvsItem(item: any) {debugger
     if(this.isOpenCollapCheck){
       return
     }
     if(item.psid == this.activeCvsItem.psid && item.page_id == this.activeCvsItem.page_id) {
       return;
     }
-    if (this.isChanged) {
+    if (this.isChanged || this.isProcessing) {
       return;
     }
 
@@ -182,7 +192,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   nextData(event: any) {
     if(event) {
-      if (this.isProcessing) {
+      if (this.isProcessing || this.isChanged) {
         return;
       }
 
@@ -233,10 +243,28 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onRefresh(ev: boolean){
-    if(ev){
-      this.isRefresh = true
+    this.clickReload += 1;
+
+    if (this.clickReload >= 5) {
+      this.message.info("Đã kích hoạt cập nhật hội thoại.");
+      this.clickReload = 0;
+
+      if (this.currentTeam) {
+        this.facebookRESTService.rescan(this.currentTeam.Facebook_PageId, 2)
+          .pipe(takeUntil(this.destroy$)).subscribe(res => {
+          // console.log("Yêu cầu cập nhật thành công.");
+        }, error => {
+          // console.log("Yêu cầu cập nhật thất bại.");
+        });
+      }
+    }
+    else {
       this.onSubmitFilter({});
     }
+
+    setTimeout(() => {
+      this.clickReload = 0;
+    }, 3 * 1000);
   }
 
   onLoadMiniChat(event: any): void {}
@@ -313,7 +341,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
       return;
     }
-    const modal = this.modalService.create({
+    this.modalService.create({
       title: 'Gửi tin nhắn nhanh',
       content: ModalSendMessageAllComponent,
       size: "md",
@@ -322,10 +350,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         setOfCheckedId: this.setOfCheckedId,
         team: this.currentTeam,
         type: this.type
-    }
-    });
-    modal.afterClose.subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
       }
     });
   }

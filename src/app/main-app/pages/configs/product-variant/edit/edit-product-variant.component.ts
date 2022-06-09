@@ -104,7 +104,8 @@ export class EditProductVariantComponent implements OnInit {
     this._form.controls['POSCategId'].setValue(data.POSCateg ? data.POSCateg.Id : null);
     if(TDSHelperArray.hasListValue(data.Images)){
       data.Images.map((x: any) => {
-        this.initImages(x);
+        this.addImages(x);
+        this.imageListUpLoad.push(x.Url);
       })
     }
   }
@@ -150,6 +151,7 @@ export class EditProductVariantComponent implements OnInit {
   }
 
   onLoadImage(event: any) {
+    this._form.controls['Images'] = this.fb.array([]);
     let datas: any[] = [];
     event?.files.forEach((x: any) => {
       let item = {
@@ -163,7 +165,11 @@ export class EditProductVariantComponent implements OnInit {
     });
 
     if(event.isArray == true){
-      datas.forEach(x => { this.addImages(x) });
+      this.imageListUpLoad = [];
+      datas.forEach(x => { 
+        this.addImages(x);
+        this.imageListUpLoad.push(x.Url);
+      });
     } else {
       this._form.controls['ImageUrl'].setValue(event.files[0].url);
     }
@@ -177,6 +183,7 @@ export class EditProductVariantComponent implements OnInit {
     this.productService.updateProduct(this.id, model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.message.success('Cập nhật thành công!');
       this.mappingCacheDB();
+      this.modal.destroy(true);
     }, error => {
       this.message.error('Thao tác thất bại!');
     });
@@ -225,7 +232,6 @@ export class EditProductVariantComponent implements OnInit {
 
         let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
         this.cacheApi.setItem(keyCache, JSON.stringify(objCached));
-        this.modal.destroy(true);
     }, error => {
         this.modal.destroy(true);
     })
@@ -242,8 +248,7 @@ export class EditProductVariantComponent implements OnInit {
     model.PriceVariant = formModel.PriceVariant ? formModel.PriceVariant : model.PriceVariant
     model.UOMPOId = formModel.UOMPOId ? formModel.UOMPOId : model.UOMPOId;
     model.ImageUrl = formModel.ImageUrl ? formModel.ImageUrl : model.ImageUrl;
-    model.Images = formModel.Images ? formModel.Images : model.Images;
-
+    model.Images = this._form.controls['Images'].value ? this._form.controls['Images'].value : model.Images;
     return model;
   }
 }

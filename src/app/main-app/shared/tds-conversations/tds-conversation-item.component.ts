@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from "@angular/core";
 import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ActivityStatus } from "src/app/lib/enum/message/coversation-message";
@@ -16,7 +16,8 @@ import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
 @Component({
   selector: "tds-conversation-item",
   templateUrl:'./tds-conversation-item.component.html',
-  styleUrls: ['./tds-conversations.component.sass']
+  styleUrls: ['./tds-conversations.component.sass'],
+  encapsulation: ViewEncapsulation.None
 })
 
 export class TDSConversationItemComponent implements OnInit, OnDestroy {

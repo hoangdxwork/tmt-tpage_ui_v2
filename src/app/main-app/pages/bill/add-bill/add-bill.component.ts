@@ -35,7 +35,7 @@ import { FSOrderLines } from 'src/app/main-app/dto/fastsaleorder/fastsale-orderl
 import { CompanyCurrentDTO } from 'src/app/main-app/dto/configs/company-current.dto';
 import { CalculateFeeResponse_DataDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
 import { InitSaleDTO, SaleSettingsDTO } from 'src/app/main-app/dto/setting/setting-sale-online.dto';
-import { AccountTaxService } from 'src/app/main-app/services/account-tex.service';
+import { AccountTaxService } from 'src/app/main-app/services/account-tax.service';
 
 @Component({
   selector: 'app-add-bill',

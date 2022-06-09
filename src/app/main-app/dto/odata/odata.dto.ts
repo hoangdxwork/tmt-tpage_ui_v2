@@ -65,6 +65,10 @@ export interface ODataModelDTO<T> {
   model: T;
 }
 
+export interface ODataIdsDTO<T> {
+  ids: T;
+}
+
 export interface ODataModelTeamDTO<T> {
   model: T;
   teamId?: number;
