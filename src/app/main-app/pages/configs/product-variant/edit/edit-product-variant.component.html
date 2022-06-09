@@ -52,7 +52,7 @@
     <tds-tab title="Hình ảnh">
       <div class="w-full">
         <upload-pictures-wall
-          [isArray]="true" [data]="_form.controls['Images'].value"
+          [isArray]="true" [data]="imageListUpLoad"
           (onLoadImage)="onLoadImage($event)">
         </upload-pictures-wall>
       </div>

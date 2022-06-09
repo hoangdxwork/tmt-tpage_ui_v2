@@ -92,7 +92,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
             this.indexDbVersion = res.cacheVersion;
             this.indexDbStorage = res.cacheDbStorage;
             this.loadDataTable();
-            this.cdRef.detectChanges();
+
         }
     })
   }
@@ -167,6 +167,8 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
           }
         })
     }
+
+    this.cdRef.detectChanges();
     return this.lstOfData = data;
   }
 

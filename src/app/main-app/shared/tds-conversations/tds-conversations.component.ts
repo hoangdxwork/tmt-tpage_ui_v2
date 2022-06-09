@@ -7,9 +7,8 @@ import { ModalListBillComponent } from './../../pages/conversations/components/m
 import { ModalListProductComponent } from './../../pages/conversations/components/modal-list-product/modal-list-product.component';
 import { ModalImageStoreComponent } from './../../pages/conversations/components/modal-image-store/modal-image-store.component';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
-import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output,
-  SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, ViewRef, AfterViewChecked, NgZone
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output,
+  SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, ViewRef, AfterViewChecked, NgZone, HostBinding, ViewEncapsulation
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSUploadChangeParam } from 'tmt-tang-ui';
@@ -33,19 +32,22 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
 import { YiAutoScrollDirective } from '../directives/yi-auto-scroll.directive';
-import { ActivityFacebookState } from '../../services/facebook-state/activity-facebook.state';
+import { eventFadeStateTrigger } from '../helper/event-animations.helper';
 
 @Component({
   selector: 'shared-tds-conversations',
   templateUrl: './tds-conversations.component.html',
   styleUrls: ['./tds-conversations.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+  animations: [eventFadeStateTrigger]
 })
 
 export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @ViewChild('scrollToIndex') scrollToIndex!: ElementRef<any>;
+  @HostBinding("@eventFadeState") eventAnimation = true;
 
   @Input() tdsHeader?: string | TemplateRef<void>;
   @Input() data!: ConversationMatchingItem;
@@ -95,10 +97,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private router: Router,
     private cdRef : ChangeDetectorRef,
     private ngZone: NgZone,
-    private activityFbState: ActivityFacebookState,
     private conversationOrderFacade: ConversationOrderFacade,
     private viewContainerRef: ViewContainerRef,
-    private partnerService: PartnerService,) {
+    private partnerService: PartnerService) {
   }
 
   ngOnInit() {
@@ -111,10 +112,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         this.yiAutoScroll.forceScrollDown();
       }
     }
+
     this.activityDataFacade.hasNextData$.subscribe(data => {
-      this.isNextData = data;
-      this.cdRef.detectChanges();
+        this.isNextData = data;
+        this.cdRef.detectChanges();
     })
+
     this.partnerService.onLoadOrderFromTabPartner.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.partner = res;
     });
@@ -142,15 +145,15 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     this.isLoadMessage = true;
-    this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => {
-        setTimeout(() => {
-          this.isLoadMessage = false;
-          this.conversationDataFacade.changeCurrentCvs$.emit(false);
-          this.cdRef.detectChanges();
-        }, 350)
-    }))
+      this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
+        .pipe(takeUntil(this.destroy$))
+        .pipe(finalize(() => {
+            setTimeout(() => {
+              this.isLoadMessage = false;
+              this.conversationDataFacade.changeCurrentCvs$.emit(false);
+              this.cdRef.detectChanges();
+            }, 350)
+        }))
   }
 
   loadUser() {
@@ -275,6 +278,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     this.scrollToIndex?.nativeElement?.scrollTo(0, 1);
+    this.isNextData = true;
 
     let pageId = this.team?.Facebook_PageId;
     let psid = this.data.psid;
@@ -371,13 +375,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       });
   }
 
-  getExtrasChildren(data: any, item: any): any {
-    return (data?.extras?.children[item?.id] as any) || [];
-  }
+  // getExtrasChildren(data: any, item: any): any {
+  //   return (data?.extras?.children[item?.id] as any) || [];
+  // }
 
-  getExtrasPosts(data: any, item: MakeActivityItemWebHook): any {
-    return (data?.extras?.posts[item?.object_id] as any) || [];
-  }
+  // getExtrasPosts(data: any, item: MakeActivityItemWebHook): any {
+  //   return (data?.extras?.posts[item?.object_id] as any) || [];
+  // }
 
   errorPostPicture(item: MakeActivityItemWebHook) {
     this.postPictureError.push(item?.object_id);
@@ -439,9 +443,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     this.crmMatchingService.addMessage(this.data.psid, model)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((res: any) => {
-          this.messageResponse(res, model);
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
+        this.messageResponse(res, model);
       }, error => {
         this.message.error("Like thất bại");
       });
@@ -450,7 +454,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   sendMessage(message: string) {
     const model = this.prepareModel(message);
     this.crmMatchingService.addMessage(this.data.psid, model)
-      .pipe(takeUntil(this.destroy$)).pipe(finalize( () => { this.isLoadingSendMess = false; }))
+      .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => { this.isLoadingSendMess = false }))
       .subscribe((res: any) => {
           this.messageResponse(res, model);
       }, error => {
@@ -597,6 +602,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   assignUser(item: TDSSafeAny) {
     this.activityMatchingService.assignUserToConversation(this.data.id, item.Id, this.team.Facebook_PageId)
+      .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
         this.data.assigned_to = res;
         this.message.success("Thao tác thành công");
@@ -628,7 +634,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
   }
 
-  onRemoteTag(item: any) {
+  onRemoveTag(item: any) {
     item.Id = item.id
     this.removeIndexDbTag(item);
   }
@@ -636,6 +642,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   assignIndexDbTag(item: any) {
     this.assignTagOnView(item);
     this.activityMatchingService.assignTagToConversation(this.data.id, item.Id, this.team.Facebook_PageId)
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.crmTagService.addTagLocalStorage(item.Id);
       }, error => {
@@ -644,13 +651,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   removeIndexDbTag(item: any): void {
-    this.removeTagOnView(item);
-
     this.activityMatchingService.removeTagFromConversation(this.data.id, item.Id, this.team.Facebook_PageId)
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
-      }, error => {
-        this.assignTagOnView(item);
-      });
+        this.removeTagOnView(item);
+        });
   }
 
   assignTagOnView(tag: any) {
@@ -698,6 +703,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   refreshRead() {
+    if (this.isNextData || this.isLoadMessage) {
+      this.isNextData = false;
+      this.isLoadMessage = false;
+    }
     delete this.messageModel;
     this.uploadedImages = [];
     this.loadMessages(this.data);

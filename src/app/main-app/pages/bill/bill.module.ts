@@ -115,4 +115,4 @@ const SERVICES = [
   ],
 })
 
-export class BillModule { }
+export class BillModule {}

@@ -1,7 +1,7 @@
 <div class="w-full h-full flex items-stretch bg-neutral-3-200 text-body-2 text-neutral-1-900">
   <!-- conversation list -->
   <div class="w-1/5 h-full ">
-      <div class="w-full flex flex-col gap-1 pl-1 h-full">
+      <div class="w-full flex flex-col gap-0.5 pl-1 h-full">
           <div class="bg-white  flex flex-col gap-y-4 p-2.5 z-10">
             <div class="block items-center">
                   <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)" (isRefresh)="onRefresh($event)"></tpage-team-dropdown>
@@ -52,7 +52,7 @@
             </div>
           </div>
           <!-- Xử lý click button checkbox -->
-          <div [ngClass]="isOpenCollapCheck?'translate-y-0 py-3 ':'-translate-y-full h-0 overflow-hidden'"  class="ease-in-out duration-300 w-full px-3.5  flex justify-between items-center bg-white">
+          <div [ngClass]="isOpenCollapCheck?'translate-y-0 py-3 ':'-translate-y-full h-0 overflow-hidden'" class="ease-in-out duration-300 w-full px-3.5 flex justify-between items-center bg-white">
             <div class="flex gap-x-2">
               <button tds-button color="primary" (click)="showModalSendMessage()">
                 <span class="flex items-center">
@@ -72,6 +72,7 @@
             </div>
             <tds-checkbox (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
           </div>
+
           <!-- List danh sách chat -->
           <div class="overflow-hidden flex flex-auto" >
             <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstMatchingItem && lstMatchingItem.length > 0" >
@@ -80,16 +81,17 @@
                   yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
 
                   <ng-container *ngFor="let item of lstMatchingItem; let i= index; trackBy: trackByIndex">
-                    <div *ngIf="item && item.psid && activeCvsItem && currentTeam">
-                      <a (click)="changeCurrentCvsItem(item)" type="button" class="w-full pb-1 {{isChanged ? 'cursor-wait' : 'cursor-pointer'}}">
-                          <current-conversation-item
-                              [item]="item" [psid]="item.psid" [type]="type"
-                              [activeCvsItem]="activeCvsItem"
-                              [team]="currentTeam" [isFastSend]="isFastSend"
-                              [isOpenCollapCheck]="isOpenCollapCheck"
-                              [checked]="setOfCheckedId.has(item.psid)"
-                              (checkedChange)="onItemChecked(item.psid, $event)">
-                          </current-conversation-item>
+                    <div *ngIf="item && item.psid && activeCvsItem && currentTeam" @eventFadeState>
+
+                      <a (click)="changeCurrentCvsItem(item)" type="button" class="w-full gap-0.5 {{isChanged ? 'cursor-wait' : 'cursor-pointer'}}">
+                        <current-conversation-item
+                          [item]="item" [psid]="item.psid" [type]="type"
+                          [activeCvsItem]="activeCvsItem"
+                          [team]="currentTeam" [isFastSend]="isFastSend"
+                          [isOpenCollapCheck]="isOpenCollapCheck"
+                          [checked]="setOfCheckedId.has(item.psid)"
+                          (checkedChange)="onItemChecked(item.psid, $event)">
+                        </current-conversation-item>
                       </a>
                     </div>
                   </ng-container>
@@ -103,7 +105,7 @@
   <!--Nội dung cuộc hội thoại-->
   <div class="flex w-1/2">
     <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
-        <ng-container class="flex w-full flex-col h-full" *ngIf="activeCvsItem && currentTeam">
+        <ng-container class="flex w-full flex-col h-full" *ngIf="activeCvsItem && currentTeam" @eventFadeState>
             <shared-tds-conversations
                 class="flex w-full h-full"
                 [data]="activeCvsItem"

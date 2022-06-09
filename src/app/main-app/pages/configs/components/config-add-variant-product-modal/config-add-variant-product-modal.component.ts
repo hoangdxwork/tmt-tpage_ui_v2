@@ -14,17 +14,17 @@ export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy 
   @Input() attributeList:Array<TDSSafeAny> = [];
 
   productTypeList:Array<TDSSafeAny> = [];
-  
+
   addProductVariantForm!:FormGroup;
   private destroy$ = new Subject<void>();
   modelDefault:TDSSafeAny;
 
   constructor(
-    private modal: TDSModalRef, 
-    private message: TDSMessageService, 
+    private modal: TDSModalRef,
+    private message: TDSMessageService,
     private sharedService: SharedService,
     private formBuilder: FormBuilder
-  ) { 
+  ) {
       this.initForm();
       this.loadProductTypeList();
   }
@@ -150,7 +150,7 @@ export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy 
 
   prepareModel(){
     let formModel = this.addProductVariantForm.value;
-    
+
     if(formModel.Name){
       this.modelDefault.Name = formModel.Name;
     }
@@ -188,7 +188,7 @@ export class ConfigAddVariantProductModalComponent implements OnInit, OnDestroy 
   onSubmit() {
     if (!this.addProductVariantForm.invalid) {
       let model = this.prepareModel();
-      
+
       this.modal.destroy(model);
       this.addProductVariantForm.reset();
     }

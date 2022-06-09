@@ -14,41 +14,43 @@ import { DateHelperV2 } from 'src/app/main-app/shared/helper/date.helper';
 })
 export class InfoPackOfDataComponent implements OnInit {
   options: any;
+  array = [0, 1, 2, 3]
+  isIndex = -1
 
   size: any = ['auto', 300];
 
   chartOptions = TDSChartOptions();
 
   chartComponent: TDSBarChartComponent = {
-    legend:{
-      show:true,
-      right:-150,
-      top:'middle',
-      orient:'vertical',
-      icon:'circle',
+    legend: {
+      show: true,
+      right: -150,
+      top: 'middle',
+      orient: 'vertical',
+      icon: 'circle',
     },
-    grid:{
-      left:'20%',
-      right:'20%'
+    grid: {
+      left: '20%',
+      right: '20%'
     },
-    color:['#0184FF','#FF8900'],
+    color: ['#0184FF', '#FF8900'],
     axis: {
-      xAxis:[
+      xAxis: [
         {
-          show:true,
-          axisLabel:{
-            show:true
+          show: true,
+          axisLabel: {
+            show: true
           },
-          axisLine:{
-            show:true
+          axisLine: {
+            show: true
           },
-          interval:500,
-          splitNumber:4
+          interval: 500,
+          splitNumber: 4
         }
       ],
-      yAxis:[
+      yAxis: [
         {
-          data:[ '1'],
+          data: ['1'],
 
         }
       ]
@@ -122,4 +124,12 @@ export class InfoPackOfDataComponent implements OnInit {
       this.userTime = value;
     }
   }
+
+  focusData(idx: number) {
+    this.isIndex = idx
+  }
+
+  clickBackPageInfoData() {
+  }
+
 }

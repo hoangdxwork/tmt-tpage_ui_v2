@@ -104,7 +104,8 @@ export class EditProductVariantComponent implements OnInit {
     this._form.controls['POSCategId'].setValue(data.POSCateg ? data.POSCateg.Id : null);
     if(TDSHelperArray.hasListValue(data.Images)){
       data.Images.map((x: any) => {
-        this.initImages(x);
+        this.addImages(x);
+        this.imageListUpLoad.push(x.Url);
       })
     }
   }
@@ -163,7 +164,11 @@ export class EditProductVariantComponent implements OnInit {
     });
 
     if(event.isArray == true){
-      datas.forEach(x => { this.addImages(x) });
+      this.imageListUpLoad = [];
+      datas.forEach(x => { 
+        this.addImages(x);
+        this.imageListUpLoad.push(x.Url);
+      });
     } else {
       this._form.controls['ImageUrl'].setValue(event.files[0].url);
     }

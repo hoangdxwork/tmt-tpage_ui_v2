@@ -154,8 +154,7 @@ export class ModalListProductComponent implements OnInit, OnDestroy, AfterViewIn
 
   ngAfterViewInit(): void {
     this.tableComponent?.cdkVirtualScrollViewport?.scrolledIndexChange
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data: number) => {});
+      .pipe(takeUntil(this.destroy$)).subscribe();
 
     fromEvent(this.innerText.nativeElement, 'keyup').pipe(
       map((event: any) => {
