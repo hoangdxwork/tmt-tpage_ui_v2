@@ -14,8 +14,7 @@ import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/
 
 @Component({
   selector: 'app-modal-edit-partner',
-  templateUrl: './modal-edit-partner.component.html',
-  styleUrls: ['./modal-edit-partner.component.scss']
+  templateUrl: './modal-edit-partner.component.html'
 })
 
 export class ModalEditPartnerComponent implements OnInit {
@@ -203,7 +202,7 @@ export class ModalEditPartnerComponent implements OnInit {
   openCategory(event: any) {
     this.partnerService.getPartnerCategory().subscribe((res: any) =>  {
       if(TDSHelperString.hasValueString(res.value)) {
-        this.lstCategory = res.value;
+        this.lstCategory = [...res.value];
       }
     })
   }
@@ -218,7 +217,7 @@ export class ModalEditPartnerComponent implements OnInit {
     let date = formatDate(new Date(), 'yyyy-MM-ddTHH:mm:ss', 'en-US');
     this.commonService.getPriceListAvailable(date).subscribe((res: any) => {
       if(TDSHelperString.hasValueString(res.value)) {
-          this.lstPrice = res.value;
+          this.lstPrice = [...res.value];
       }
     })
   }

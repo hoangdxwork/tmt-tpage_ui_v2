@@ -41,8 +41,7 @@ interface infoPartnerDto {
 
 @Component({
   selector: 'app-info-order-debt-of-partner',
-  templateUrl: './info-order-debt-of-partner.component.html',
-  styleUrls: ['./info-order-debt-of-partner.component.scss']
+  templateUrl: './info-order-debt-of-partner.component.html'
 })
 
 export class InfoOrderDebtOfPartnerComponent implements OnInit, AfterViewInit {
@@ -83,7 +82,7 @@ export class InfoOrderDebtOfPartnerComponent implements OnInit, AfterViewInit {
     this.odataPartnerService.getInvoicePartner(partnerId, params).subscribe((res: any) => {
 
         this.countInvocie = res['@odata.count'];
-        this.lstInvocie = res.value;
+        this.lstInvocie = [...res.value];
         this.isLoading = false;
         this.cdr.markForCheck();
     })
@@ -96,7 +95,7 @@ export class InfoOrderDebtOfPartnerComponent implements OnInit, AfterViewInit {
     this.odataPartnerService.getCreditDebitPartner(partnerId, params).subscribe((res: any) => {
 
         this.countDebit = res['@odata.count'];
-        this.lstCreditDebit = res.value;
+        this.lstCreditDebit = [...res.value];
         this.isLoading = false;
         this.cdr.markForCheck();
     })

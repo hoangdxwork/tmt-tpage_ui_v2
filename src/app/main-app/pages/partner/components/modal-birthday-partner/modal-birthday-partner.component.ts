@@ -6,8 +6,7 @@ import { ExcelExportService } from 'src/app/main-app/services/excel-export.servi
 
 @Component({
   selector: 'app-modal-birthday-partner',
-  templateUrl: './modal-birthday-partner.component.html',
-  styleUrls: ['./modal-birthday-partner.component.scss']
+  templateUrl: './modal-birthday-partner.component.html'
 })
 
 export class ModalBirthdayPartnerComponent implements OnInit {
