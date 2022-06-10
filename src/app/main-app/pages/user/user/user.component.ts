@@ -18,7 +18,6 @@ export class UserComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject();
 
   constructor(
-    private route: ActivatedRoute,
     private router: Router
   ) { }
 
@@ -39,19 +38,14 @@ export class UserComponent implements OnInit, OnDestroy {
 
     if(find) {
       this.currentPage = find;
-      sessionStorage.setItem('userItem',JSON.stringify(find));
     }
     else {
-      let item = sessionStorage.getItem('userItem');
-      if(item){
-        this.currentPage = JSON.parse(item);
-      }
+      this.currentPage = this.menuData[0];
     }
   }
 
   onChangePageUser(page:TDSMenuDTO){
     this.currentPage = page;
-    sessionStorage.setItem('userItem',JSON.stringify(page));
   }
 
   ngOnDestroy(): void {

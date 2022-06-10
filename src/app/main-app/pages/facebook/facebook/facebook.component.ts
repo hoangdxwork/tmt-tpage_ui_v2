@@ -1,36 +1,16 @@
 import { FacebookUser } from './../../../../lib/dto/facebook.dto';
-import {
-  AfterViewInit,
-  Component,
-  OnDestroy,
-  OnInit,
-  QueryList,
-  ViewChild,
-  ViewContainerRef,
-} from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
+import { Subject } from 'rxjs';
 import { Message } from 'src/app/lib/consts/message.const';
-import {
-  FacebookAuth,
-  FacebookAuthResponse,
-} from 'src/app/lib/dto/facebook.dto';
-import { PagedList2 } from 'src/app/main-app/dto/pagedlist2.dto';
+import { FacebookAuth, FacebookAuthResponse } from 'src/app/lib/dto/facebook.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { UserPageDTO } from 'src/app/main-app/dto/team/user-page.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
-import {
-  TDSHelperObject,
-  TDSModalService,
-  TDSSafeAny,
-  TDSMessageService,
-  TDSHelperString,
-  TDSCollapsePanelComponent,
-  TDSHelperArray,
-} from 'tmt-tang-ui';
+import { TDSHelperObject, TDSModalService, TDSSafeAny, TDSMessageService, TDSHelperString, TDSHelperArray } from 'tmt-tang-ui';
 import { AddPageComponent } from '../components/add-page/add-page.component';
 import { ViewportScroller } from '@angular/common';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, finalize } from 'rxjs/operators';
 import { FacebookLoginService } from 'src/app/main-app/services/facebook-login.service';
 
 export interface PageNotConnectDTO {
@@ -113,6 +93,7 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isLoading: boolean = true;
   lastScrollPosition: TDSSafeAny = null;
+  isLoadChannel: boolean = false;
 
   private _destroy$ = new Subject<void>();
 
@@ -207,37 +188,40 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadListTeam(isRefresh: boolean) {
     this.isLoading = true;
-    this.crmTeamService.getAllChannels().subscribe(
-      (res: TDSSafeAny) => {
-        this.data = res;
+    this.isLoadChannel = true;
+    this.crmTeamService.getAllChannels()
+      .pipe(finalize(() => this.isLoadChannel = false))
+      .subscribe(
+        (res: TDSSafeAny) => {
+          this.data = res;
 
-        if(res && res.length > 0) {
-          res.sort((a: any, b: any) => {
-            if (a.Active) return -1;
-            return 1;
-          });
+          if(res && res.length > 0) {
+            res.sort((a: any, b: any) => {
+              if (a.Active) return -1;
+              return 1;
+            });
 
-          res.forEach((item: any) => {
-            this.fieldListFilter[item.Id] = this.listFilter[0];
-            this.getListData(item.Id);
-          });
+            res.forEach((item: any) => {
+              this.fieldListFilter[item.Id] = this.listFilter[0];
+              this.getListData(item.Id);
+            });
 
-          if (this.userFBLogin) {
-            this.sortByFbLogin(this.userFBLogin.id);
+            if (this.userFBLogin) {
+              this.sortByFbLogin(this.userFBLogin.id);
+            }
+            else {
+              this.onChangeCollapse(res[0].Id, true);
+            }
+
+            if(isRefresh){
+              this.crmTeamService.onRefreshListFacebook();
+              this.scrollToLastPosition();
+            }
           }
-          else {
-            this.onChangeCollapse(res[0].Id, true);
-          }
-
-          if(isRefresh){
-            this.crmTeamService.onRefreshListFacebook();
-            this.scrollToLastPosition();
-          }
-        }
-        this.isLoading = false;
-      },
-      (error) => (this.isLoading = false)
-    );
+          this.isLoading = false;
+        },
+        (error) => (this.isLoading = false)
+      );
   }
 
   onFacebookConnected() {
