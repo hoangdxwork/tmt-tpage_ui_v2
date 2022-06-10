@@ -3,6 +3,7 @@ export interface CrossCheckingOrder {
     CoDAmount: number;
     Note: string;
     ShipStatus: string;
+    hasError?:string;
 }
 
 export interface CrossCheckingDTO {

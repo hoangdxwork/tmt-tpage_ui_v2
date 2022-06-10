@@ -73,22 +73,22 @@
                                 <tds-form-field
                                     tds-tooltip
                                     [tooltipTrigger]="'click'"
-                                    [tooltipVisible]="hasTrackingRefError ? true : false"
+                                    [tooltipVisible]="data.hasError ? true : false"
                                     [tooltipColor]="'warning'"
-                                    [tooltipTitle]="hasTrackingRefError ? titleTemplateWarning : '' ">
+                                    [tooltipTitle]="data.hasError ? titleTemplateWarning : '' ">
                                     <input tdsInput autocomplete="off" placeholder="Nhập mã vận đơn" [ngModelOptions]="{standalone: true}"
                                         [ngModel]="data.TrackingRef" (change)="checkExistTrackingRef($event.target,i)"/>
                                 </tds-form-field>
 
                                 <ng-template #titleTemplateWarning>
                                     <span class="tdsi-warning-fill mr-2"></span>
-                                    <span>{{hasTrackingRefError}}</span>
+                                    <span>{{data.hasError}}</span>
                                 </ng-template>
                             </td>
                             <td>
                                 <tds-input-number 
                                     [ngModelOptions]="{standalone: true}"
-                                    [ngModel]="data.CoDAmount | number:'1.0-3'" 
+                                    [ngModel]="(data.CoDAmount || 0) | number:'1.0-3'" 
                                     [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                             </td>
                             <td>
