@@ -154,12 +154,16 @@ export class InfoUserComponent implements OnInit {
     formData.append("files", file as any, file.name);
     formData.append('id', '0000000000000051');
 
-    return this.sharedService.saveImageV2(formData).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.message.success(Message.Upload.Success);
-        this.userInit.Avatar = res[0].urlImageProxy;
-    }, error => {
-        let message = JSON.parse(error.Message);
-        this.message.error(`${message.message}`);
-    });
+    this.isLoading = true;
+    return this.sharedService.saveImageV2(formData)
+      .pipe(finalize(() => this.isLoading = false))
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
+          this.message.success(Message.Upload.Success);
+          this.userInit.Avatar = res[0].urlImageProxy;
+      }, error => {
+          let message = JSON.parse(error.Message);
+          this.message.error(`${message.message}`);
+      });
   }
 }
