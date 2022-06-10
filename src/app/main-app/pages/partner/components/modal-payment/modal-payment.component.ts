@@ -13,8 +13,7 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-modal-payment',
-  templateUrl: './modal-payment.component.html',
-  styleUrls: ['./modal-payment.component.scss']
+  templateUrl: './modal-payment.component.html'
 })
 export class ModalPaymentComponent implements OnInit, OnDestroy {
   @Input() dataModel!:RegisterPayment;
@@ -62,7 +61,7 @@ export class ModalPaymentComponent implements OnInit, OnDestroy {
   loadAccountPayment(){
     this.accRegisterPayment.getWithCompanyPayment().pipe(takeUntil(this.destroy$)).subscribe(
       (res:OdataAccountRegisterPayment)=>{
-        this.lstAcJournal = res.value;
+        this.lstAcJournal = [...res.value];
       },
       (err)=>{
         this.message.error('Không tải được dữ liệu phương thức thanh toán')

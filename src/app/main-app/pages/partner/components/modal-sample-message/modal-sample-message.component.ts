@@ -7,8 +7,7 @@ import { TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
 
 @Component({
   selector: 'app-modal-sample-message',
-  templateUrl: './modal-sample-message.component.html',
-  styleUrls: ['./modal-sample-message.component.scss']
+  templateUrl: './modal-sample-message.component.html'
 })
 export class ModalSampleMessageComponent implements OnInit {
 
