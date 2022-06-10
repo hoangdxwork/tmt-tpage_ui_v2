@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
-  signalRAppend: "",
-  urlLogin:'/tpagev2/account/login',
+  signalRAppend: "?host=admin.tpos.vn",
+  urlLogin:'/account/login',
   apiAccount:{
     signInPassword:"token",
     signInFacebook:"sign-in/facebook",

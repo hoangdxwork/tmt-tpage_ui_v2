@@ -232,7 +232,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
         if(create) {
           return this.cvsFbState.setConversation(pageId, type, create);
         }
-      }), shareReplay());
+      }), shareReplay(1));
     }
     return this.dataSource$;
   }

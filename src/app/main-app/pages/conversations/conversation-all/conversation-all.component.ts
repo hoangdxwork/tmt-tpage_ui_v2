@@ -6,7 +6,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef,
    Component, HostBinding, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
-import { finalize, takeUntil, map } from 'rxjs/operators';
+import { finalize, takeUntil, map, shareReplay } from 'rxjs/operators';
 import { ConversationMatchingItem, CRMMatchingMappingDTO } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -29,7 +29,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   @HostBinding("@eventFadeState") eventAnimation = true;
 
   isLoading: boolean = false;
-  dataSource$!: Observable<any> | undefined;
+  dataSource$!: Observable<any>;
   lstMatchingItem!: ConversationMatchingItem[];
   destroy$ = new Subject();
   psid!: string;
@@ -100,6 +100,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     // loading moused khi change, đợi phản hồi từ loadMessages trong shared-tds-conversations
     this.conversationDataFacade.changeCurrentCvs$.subscribe((data: boolean) => {
         this.isChanged = data;
+        this.cdRef.detectChanges();
     })
   }
 

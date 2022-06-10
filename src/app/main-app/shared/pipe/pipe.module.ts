@@ -15,6 +15,7 @@ import { YiDateTimeFormatPipe } from './yi-datetimeV2.pipe';
 import { ScrollConversationPipe } from './scroll-conversation.pipe';
 import { SplitCommaPipe } from './split-comma.pipe';
 import { OrderByPipe } from './order-by.pipe';
+import { GetLastActivityPipe } from './get-last-activity.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -29,7 +30,8 @@ const cmp =[
   YiDateTimeFormatPipe,
   ScrollConversationPipe,
   ReplacePartnerPipe,
-  OrderByPipe
+  OrderByPipe,
+  GetLastActivityPipe
 ]
 
 @NgModule({
