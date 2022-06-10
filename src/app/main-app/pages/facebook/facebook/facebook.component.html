@@ -30,7 +30,7 @@
 
                 <tds-form-field>
                     <input aria-colspan="" class="placeholder-neutral-1-400" (keydown.enter)="onSearch($event)"
-                        placeholder="Search..." tdsInput [(ngModel)]="inputValue"/>
+                        placeholder="Tìm kiếm..." tdsInput [(ngModel)]="inputValue"/>
                     <span tdsPrefix ><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
                 </tds-form-field>
 
@@ -63,7 +63,7 @@
                         <div class="flex gap-2 items-center">
                             <div class="text-title-1 font-sans font-semibold"> {{team?.Name}} </div>
                         </div>
-                        <div *ngIf="team.Active" class="text-body-2 font-regular font-sans text-xs flex gap-x-2">
+                        <div *ngIf="team.Active" class="font-regular font-sans text-xs flex gap-x-2">
                           <p *ngIf="!lstData[team.Id]?.data || lstData[team.Id].data.length < 1" class="text-neutral-1-400">Chưa có trang nào được kết nối</p>
                           <p class="text-success-400 font-semibold">Kết nối trang</p>
                         </div>
@@ -109,7 +109,7 @@
                                 </div>
                             </ng-template>
                             <div>
-                                <div class="text-body-2 text-neutral-1-900 font-sans font-semibold text-sm">{{ child.Name }}</div>
+                                <div class="text-neutral-1-900 font-sans font-semibold text-sm">{{ child.Name }}</div>
                                 <div class="flex gap-2 items-center">
                                     <div class="tdsi-success-fill text-primary-1 text-xl"></div>
                                     <div class="text-body-2 text-neutral-1-900 font-regular"> {{child.Active ? 'Đã kết nối' : 'Đóng kết nối'}}</div>
@@ -216,7 +216,7 @@
               Kết nối tài khoản Facebook của bạn để đồng bộ
               tin nhắn, bình luận, bài viết về TPage
             </span>
-            <button size="xl" class="flex py-[9px] px-[17px] bg-blue-600 rounded-md flex justify-center" (click)="facebookSignIn()">
+            <button size="xl" class="flex py-[9px] px-[17px] bg-blue-600 rounded-md justify-center" (click)="facebookSignIn()">
               <span class="flex items-center text-white text-sm gap-x-2">
                 <img src="/assets/images/facebook/icon-facebook-white.svg"> <span class="font-semibold text-sm">Kết nối với facebook</span>
               </span>
@@ -265,7 +265,7 @@
       </div>
 
       <!-- Data Empty -->
-      <div *ngIf="!data || data.length < 1">
+      <div *ngIf="!data || data.length < 1 && !isLoadChannel">
         <div class="rounded-2xl bg-cover background-content" style="background-image: url(/assets/images/facebook/background-facebook.png);">
           <div class="text-white p-11">
             <p class="title">Kết nối T-Page với tài khoản Facebook của bạn</p>

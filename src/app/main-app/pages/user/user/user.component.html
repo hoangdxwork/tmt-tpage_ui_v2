@@ -10,9 +10,8 @@
         <div class="p-4">
             <div class="w-full flex items-center justify-between">
                 <div class="flex">
-                    <button *ngFor="let item of menuData"
-                        [routerLink]="item.link"
-                        [ngClass]="currentPage.name==item.name?'bg-primary-1 text-white hover:bg-primary-2':'bg-white text-neutral-1-700'" (click)="onChangePageUser(item)" 
+                    <button *ngFor="let item of menuData" [routerLink]="item.link"
+                        [ngClass]="currentPage.name==item.name?'bg-primary-1 text-white hover:bg-primary-2':'bg-white text-neutral-1-700'" (click)="onChangePageUser(item)"
                         class="mr-2 text-body-2 rounded-full hover:bg-neutral-3-50 border border-neutral-2-200 font-semibold focus:outline-none py-1.5 px-4">
                         <span class="flex items-center">
                             <i [class]="item.icon + ' mr-2'"></i>{{item.name}}
@@ -23,5 +22,7 @@
         </div>
     </div>
     <!-- Trang Tài khoản -->
-    <router-outlet></router-outlet>
+    <div class="h-full">
+      <router-outlet></router-outlet>
+    </div>
 </div>

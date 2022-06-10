@@ -1,18 +1,18 @@
 import { TDSSafeAny } from 'tmt-tang-ui';
 import { TDSMessageService } from 'tmt-tang-ui';
 import { finalize } from 'rxjs/operators';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { TenantService } from 'src/app/main-app/services/tenant.service';
 import { TDSChartOptions, TDSBarChartComponent } from 'tds-report';
 import { TenantInfoDTO, TenantUsedDTO } from 'src/app/main-app/dto/tenant/tenant.dto';
 import { DateHelperV2 } from 'src/app/main-app/shared/helper/date.helper';
+import { PackOfDataEnum } from 'src/app/main-app/dto/account/account.dto';
 
 @Component({
-  selector: 'app-info-pack-of-data',
-  templateUrl: './info-pack-of-data.component.html',
-  styleUrls: ['./info-pack-of-data.component.scss']
+  selector: 'info-pack-of-data',
+  templateUrl: './info-pack-of-data.component.html'
 })
-export class InfoPackOfDataComponent implements OnInit {
+export class InfoPackOfDataComponent implements OnInit, OnChanges {
   options: any;
   array = [0, 1, 2, 3]
   isIndex = -1
@@ -72,43 +72,25 @@ export class InfoPackOfDataComponent implements OnInit {
   }
   // khởi tạo 1 object TDSBarChartComponent với 2 thành phần cơ bản axis, series
 
-  isLoading: boolean = false;
-  tenantInfo!: TenantInfoDTO;
-  tenantUsed!: TenantUsedDTO;
-  userTime?: TDSSafeAny;
+  @Input() tenantInfo!: TenantInfoDTO;
+  @Input() tenantUsed!: TenantUsedDTO;
+  @Input() userTime: TDSSafeAny;
 
-  constructor(
-    private tenantService: TenantService,
-    private message: TDSMessageService
-  ) {}
+  @Output() eventChangeTab = new EventEmitter<PackOfDataEnum>();
+
+  isLoading: boolean = false;
+  currentTab: PackOfDataEnum = PackOfDataEnum.INFO;
+
+  constructor() {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if(this.tenantInfo && this.tenantUsed) {
+      this.uploadChart(this.tenantUsed);
+    }
+  }
 
   ngOnInit(): void {
-    this.loadInfo();
     this.options = this.chartOptions.BarChartOption(this.chartComponent); //khởi tạo option bar chart cơ bản
-  }
-
-  loadInfo() {
-    this.isLoading = true;
-    this.tenantService.getInfo()
-      .subscribe(res => {
-        this.tenantInfo = res;
-        this.loadUsed();
-        this.updateUserTime(res?.Tenant?.DateExpired);
-      }, error => {
-        this.isLoading = false;
-        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
-      });
-  }
-
-  loadUsed() {
-    this.tenantService.getUsed()
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.tenantUsed = res;
-        this.uploadChart(res);
-      }, error => {
-        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
-      });
   }
 
   uploadChart(used: TenantUsedDTO) {
@@ -117,12 +99,12 @@ export class InfoPackOfDataComponent implements OnInit {
     this.options = this.chartOptions.BarChartOption(this.chartComponent); //khởi tạo option bar chart cơ bản
   }
 
-  updateUserTime(dateExpired: TDSSafeAny) {
-    if(dateExpired) {
-      let timer = DateHelperV2.getCountDownTimer(dateExpired);
-      let value = timer.days + " ngày " + timer.hours + " giờ " + timer.minutes + " phút ";
-      this.userTime = value;
-    }
+  onExpand() {
+    this.eventChangeTab.emit(PackOfDataEnum.EXPAND);
+  }
+
+  onChoose() {
+    this.eventChangeTab.emit(PackOfDataEnum.CHOOSE);
   }
 
   focusData(idx: number) {

@@ -130,3 +130,10 @@ export interface AccountPaymentTermLineDTO {
   /// Gives the sequence order when displaying a list of payment term lines.
   Sequence?: number;
 }
+
+export enum PackOfDataEnum {
+  INFO = 1,
+  CHOOSE = 2,
+  EXPAND = 3,
+  PAYMENT = 4
+}
