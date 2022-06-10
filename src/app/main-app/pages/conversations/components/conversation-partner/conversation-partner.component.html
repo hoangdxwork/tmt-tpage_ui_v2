@@ -73,15 +73,15 @@
               <button type="button" tds-dropdown color="secondary" trigger="click" [tdsDropdownMenu]="menuRevenue"
                 class="rounded-full border border-neutral-2-100 border-solid bg-white py-1.5 px-4">
                 <span class="flex items-center text-body-2 font-semibold text-neutral-1-500 cursor-pointer">
-                  Tổng doanh số: <span class="pl-2 text-primary-1">{{objRevenue?.RevenueTotal || 0 | number: '1.0-3'}}đ</span><i
+                  Tổng doanh số: <span class="pl-2 text-primary-1">{{objRevenue?.RevenueTotal || 0 | number: '1.0-3'}} đ</span><i
                     class="tdsi-arrow-down-line text-lg leading-none ml-2"></i>
                 </span>
               </button>
               <tds-dropdown-menu #menuRevenue="tdsDropdownMenu">
                 <div class="w-full">
-                    <div tds-dropdown-item>Doanh số đầu kỳ: {{objRevenue?.RevenueBegan || 0 | number: '1.0-3'}}đ</div>
+                    <div tds-dropdown-item>Doanh số đầu kỳ: {{objRevenue?.RevenueBegan || 0 | number: '1.0-3'}} đ</div>
                     <div tds-dropdown-item>Doanh số: {{objRevenue?.Revenue || 0 | number: '1.0-3'}}đ</div>
-                    <div tds-dropdown-item>Tổng doanh số: {{objRevenue?.RevenueTotal || 0 | number: '1.0-3'}}đ</div>
+                    <div tds-dropdown-item>Tổng doanh số: {{objRevenue?.RevenueTotal || 0 | number: '1.0-3'}} đ</div>
                 </div>
               </tds-dropdown-menu>
             </tds-button-group>
@@ -162,7 +162,7 @@
                   </div>
                 </div>
                 <div class="text-body-2 font-regular font-sans text-neutral-1-400">
-                  Tổng tiền: <span class="text-neutral-1-900 pl-0.5">{{ lastBill.AmountTotal }} ({{ lastBill.PaymentJournalName }})</span>
+                  Tổng tiền: <span class="text-neutral-1-900 pl-0.5">{{ lastBill.AmountTotal | number:'1.0-3' }} đ ({{ lastBill.PaymentJournalName }})</span>
                 </div>
                 <div class="text-body-2 font-regular font-sans text-neutral-1-400">
                   Thời gian giao hàng: <span class="text-neutral-1-900 pl-0.5">{{ lastBill.DateCreated | date: "HH:mm, dd/MM/yyyy" }}</span>

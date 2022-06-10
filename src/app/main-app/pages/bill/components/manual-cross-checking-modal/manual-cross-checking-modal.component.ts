@@ -26,7 +26,6 @@ export class ManualCrossCheckingModalComponent implements OnInit {
   ]
   _form!: FormGroup;
   hasTrackingRefError:string = '';
-  currentIndex:number = 0;
 
   constructor(private fb: FormBuilder,
     private modal: TDSModalRef,
@@ -48,8 +47,7 @@ export class ManualCrossCheckingModalComponent implements OnInit {
       shipStatus:[{value:'sent', text:'Đã tiếp nhận'}],
       note:[null],
       payment:[false],
-      isNoteOrder:[false],
-      datas: this.fb.array([])
+      isNoteOrder:[false]
     });
   }
 
@@ -68,45 +66,56 @@ export class ManualCrossCheckingModalComponent implements OnInit {
   }
 
   checkExistTrackingRef(event:TDSSafeAny,index:number){
-    this.currentIndex = index;
+    if(!TDSHelperString.hasValueString(event.value)){
+      this.listTempOfData[index].hasError = 'Vui lòng nhập mã vận đơn';
+      return;
+    }
+
     let duplicateTrackingRef = this.listOfData.find(f=>f.TrackingRef == event.value);
+          
     if(duplicateTrackingRef){
-      if(TDSHelperString.hasValueString(event.value)){
-        this.hasTrackingRefError = 'Trùng mã vận đơn';
-      }else{
-        this.hasTrackingRefError = 'Vui lòng nhập mã vận đơn';
-      }
-    }else{
-      let formModel = this._form.value;
-      let status = formModel.shipStatus.text.split(' ').join('+');
-      // TODO: Kiểm tra mã vận đơn
-      this.fashSaleOrder.checkTrackingRefIsExist(event.value,status,formModel.carrierId).subscribe(
-        (res:any)=>{
-          delete res['@odata.context'];
-          let model = res as ExistedCrossChecking;
-          this.listOfData[index].TrackingRef = model.TrackingRef;
+      this.message.warning('Trùng mã vận đơn');
+    }
+
+    let formModel = this._form.value;
+    let status = formModel.shipStatus.text.split(' ').join('+');
+    // TODO: Kiểm tra mã vận đơn
+    this.fashSaleOrder.checkTrackingRefIsExist(event.value,status,formModel.carrierId).subscribe(
+      (res:any)=>{
+        delete res['@odata.context'];
+        let model = res as ExistedCrossChecking;
+        
+        if(this.listOfData[index]){
+          // TODO: trường hợp chỉnh sửa trackingRef
+          this.listOfData[index].TrackingRef = model.TrackingRef || event.value;
           this.listOfData[index].CoDAmount = model.COD;
           this.listOfData[index].Note = model.Message;
           this.listOfData[index].ShipStatus = formModel.shipStatus.text;
-          this.hasTrackingRefError = model.Message;
-          this.listTempOfData = this.listOfData;
-        },
-        (err)=>{
-          this.message.error(err.error.message || 'Có lỗi xảy ra');
-        }
-      )
-    }
-  }
+          this.listTempOfData = [...this.listOfData];
+          // TODO: show lỗi
+          this.listTempOfData[index].hasError = model.Message;
+        }else{
+          // TODO: trường hợp thêm mới trackingRef
+          this.listOfData.push({
+            TrackingRef: model.TrackingRef || event.value,
+            CoDAmount: model.COD,
+            Note: model.Message,
+            ShipStatus: formModel.shipStatus.text
+          })
 
-  // pushTrackingRef(data:TDSSafeAny){
-  //   let model = this._form.value.datas as FormArray;
-  //   model.push(this.fb.group({
-  //     TrackingRef: [data.TrackingRef],
-  //     CoDAmount: [data.CoDAmount],
-  //     Note: [data.Note],
-  //     ShipStatus: [data.ShipStatus]
-  //   }))
-  // }
+          this.listTempOfData = [...this.listOfData];
+          // TODO: show lỗi
+          this.listTempOfData[index].hasError = model.Message;
+        }
+        
+        
+      },
+      (err)=>{
+        this.message.error(err.error.message || 'Có lỗi xảy ra');
+      }
+    )
+    
+  }
 
   removeCrossChecking(index:number){
     this.listOfData.splice(index,1);
@@ -120,7 +129,7 @@ export class ManualCrossCheckingModalComponent implements OnInit {
   }
 
   onOrderFilter(event:TDSSafeAny){
-    this.listTempOfData = this.listOfData.filter(f=>f.TrackingRef?.includes(event.value) || 
+    this.listTempOfData = this.listTempOfData.filter(f=>f.TrackingRef?.includes(event.value) || 
       f.ShipStatus?.includes(event.value) || 
       f.CoDAmount?.toString().includes(event.value));
   }
@@ -128,13 +137,12 @@ export class ManualCrossCheckingModalComponent implements OnInit {
   createDetails(){
     let isEmptyTrackingRef = this.listOfData.find(f=>f.TrackingRef == '');
     if(!isEmptyTrackingRef){
-      this.listOfData = [...this.listOfData,{
+      this.listTempOfData = [...this.listOfData,{
         TrackingRef: '',
         CoDAmount: 0,
         Note: '',
         ShipStatus: 'Đã tiếp nhận'
       }];
-      this.listTempOfData = this.listOfData;
     }else{
       this.message.error('Vui lòng nhập mã vận đơn');
     }
@@ -147,6 +155,7 @@ export class ManualCrossCheckingModalComponent implements OnInit {
     this.modelData.note =  formModel.note ? formModel.note : this.modelData.note;
     this.modelData.payment = formModel.payment;
     this.modelData.isNoteOrder = formModel.isNoteOrder;
+    this.modelData.datas = [];
     this.listOfData.forEach(data => {
       if(data.TrackingRef){
         this.modelData.datas.push(data);
@@ -155,30 +164,48 @@ export class ManualCrossCheckingModalComponent implements OnInit {
     return this.modelData;
   }
 
+  checkErrorOrderList(model:CrossCheckingDTO){
+    if(!model.carrierId){
+      this.message.error('Vui lòng chọn đối tác giao hàng');
+      return false;
+    }
+
+    if(model.datas){
+      let hasError = true;
+      model.datas.forEach(order => {
+        if(order.Note === 'Không tìm thấy vận đơn'){
+          this.message.error(`Không tìm thấy vận đơn [${order.TrackingRef}]`);
+          hasError = false;
+        }
+      });
+      return hasError;
+    }else{
+      this.message.error('Danh sách đối soát rỗng');
+      return false;
+    }
+  }
+
   updateCrossChecking(){
     let model = this.prepareModel();
-    if(model.carrierId){
-      if(model.datas.length > 0){
-        this.fashSaleOrder.postManualCrossChecking(model).subscribe(
-          (res:any)=>{
-            this.modal.destroy(null);
-          },
-          (err)=>{
-            this.message.error(err.error.message || 'Lỗi dữ liệu. Không thể tạo đối soát thủ công')
-          }
-        )
-      }else{
-        this.message.error('Không có đối soát');
-      }
-    }else{
-      this.message.error('Vui lòng chọn đối tác giao hàng');
+    // TODO: check validate
+    if(this.checkErrorOrderList(model)){
+      model.datas.forEach(order => {
+        delete order["hasError"];
+      });
+
+      this.fashSaleOrder.postManualCrossChecking(model).subscribe(
+        (res:any)=>{
+          this.modal.destroy(null);
+        },
+        (err)=>{
+          this.message.error(err?.error?.message || 'Lỗi dữ liệu. Không thể tạo đối soát thủ công');
+        }
+      )
     }
   }
 
   save(){
-    if(this._form.valid){
-      this.updateCrossChecking();
-    }
+    this.updateCrossChecking();
   }
 
   cancel(){
