@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PackOfDataComponent } from './pack-of-data/pack-of-data.component';
 import { NotificationComponent } from './notification/notification.component';
+import { NotificationDetailComponent } from './components/notification-detail/notification-detail.component';
 const routes: Routes = [
   {
     path: '',
@@ -25,7 +26,11 @@ const routes: Routes = [
       {
         path: 'notification',
         component: NotificationComponent,
-      }
+      },
+      {
+        path:'notification/:id',
+        component: NotificationDetailComponent
+      },
     ]
   },
 ];

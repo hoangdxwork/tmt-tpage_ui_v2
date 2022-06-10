@@ -9,6 +9,7 @@
 @import "./assets/font-icon/style.css";
 @import "./assets/scss/table-custom.scss";
 @import "./assets/scss/collapse-custom.scss";
+@import "./assets/scss/notification.scss";
 // @import "./assets/scss/carousel.scss";
 body{
     overflow: hidden;
@@ -29,4 +30,3 @@ select:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0px 1000px #000 inset;
   transition: background-color 5000s ease-in-out 0s;
 }
-

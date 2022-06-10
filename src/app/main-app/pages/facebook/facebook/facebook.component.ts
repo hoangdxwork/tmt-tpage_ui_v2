@@ -1,5 +1,5 @@
 import { FacebookUser } from './../../../../lib/dto/facebook.dto';
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, HostBinding, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FacebookAuth, FacebookAuthResponse } from 'src/app/lib/dto/facebook.dto';
@@ -12,6 +12,7 @@ import { AddPageComponent } from '../components/add-page/add-page.component';
 import { ViewportScroller } from '@angular/common';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { FacebookLoginService } from 'src/app/main-app/services/facebook-login.service';
+import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
 
 export interface PageNotConnectDTO {
   // /rest/v1.0/product/getinventory
@@ -22,8 +23,11 @@ export interface PageNotConnectDTO {
   selector: 'app-facebook',
   templateUrl: './facebook.component.html',
   styleUrls: ['./facebook.component.scss'],
+  animations: [eventFadeStateTrigger]
 })
 export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  @HostBinding("@eventFadeState") eventAnimation = true;
 
   data: CRMTeamDTO[] = [];
   dataSearch?: CRMTeamDTO[];
