@@ -1,10 +1,11 @@
-import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, SimpleChanges } from '@angular/core';
 import { TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 import { ImageFacade } from '../../../services/facades/image.facade';
 
 @Component({
   selector: 'tpage-avatar-facebook',
-  templateUrl: './tpage-avatar-facebook.component.html'
+  templateUrl: './tpage-avatar-facebook.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class TpageAvatarFacebookComponent implements OnInit {

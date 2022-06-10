@@ -1,40 +1,58 @@
 <tds-image-group class="flex flex-wrap gap-x-2">
-  <div *ngFor="let item of fileList; let indx = index" class="pt-2">
+  <div *ngFor="let item of fileList; let indx = index">
     <tds-spin [spinning]="isUploading && indx == fileList.length-1">
-      <div class="relative w-28 h-28 overflow-hidden rounded-lg border border-neutral-2-100">
+      <div [ngStyle]="{'width.px': size,'height.px': size}" [ngClass]="isAvatar?'rounded-full':'rounded-lg'"
+        class="relative overflow-hidden border border-neutral-2-100">
         <!-- image source -->
-        <div class="text-center" >
-          <span class="cursor-pointer" >
-              <img tds-image class="rounded-lg object-cover h-28 w-28"
+        <div class="text-center">
+          <span class="cursor-pointer">
+            <img tds-image class="rounded-lg object-cover" [ngStyle]="{'width.px': size,'height.px': size}"
               [tdsSrc]="item.url?item.url:''">
           </span>
         </div>
         <!-- button close -->
-        <div class="text-heading-4 leading-none absolute top-1 right-1 cursor-pointer bg-black rounded-full bg-opacity-25 flex items-center" (click)="removeImage(item)">
+        <div
+          class="text-heading-4 leading-none absolute top-1 right-1 cursor-pointer bg-black rounded-full bg-opacity-25 flex items-center"
+          (click)="removeImage(item)">
           <i class="tdsi-error-line text-white"></i>
         </div>
       </div>
     </tds-spin>
   </div>
 
-  <tds-upload class="flex flex-row flex-wrap" 
-    listType="picture-card" 
-    [(fileList)]="fileList"
-    [showUploadList]="false" 
-    [showButton]="isArray ? true : (fileList.length == 0 ? true : false)"
-    [customRequest]="handleUpload">
-    <div class="w-full text-neutral-1-300">
-      <div class="flex items-center justify-center">
-        <span class="tdsi-images-fill text-xl leading-5"></span>
-      </div>
-      <div class="mt-2 text-body-2 font-regular">Upload</div>
+  <tds-upload class="flex flex-row flex-wrap" [(fileList)]="fileList" [showUploadList]="false"
+    [showButton]="isArray ? true : (fileList.length == 0 ? true : false)" [customRequest]="handleUpload">
+    <div *ngIf="isAvatar; else noAvatar" [ngStyle]="{'width.px': size,'height.px': size}"
+      class="inline-flex border border-neutral-2-200 rounded-full dark:border-d-neutral-2-200 items-center justify-center overflow-hidden">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+        <path d="M36 0H0V36H36V0Z" fill="#F2F4F7"></path>
+        <path
+          d="M18 23.03C12.6318 23.0301 7.42685 24.876 3.258 28.258C2.07431 29.241 0.983696 30.3309 0 31.514L0 36H36V31.237C34.9771 30.1771 33.889 29.1822 32.742 28.258C28.5732 24.876 23.3682 23.0301 18 23.03Z"
+          fill="#D0D7DE"></path>
+        <path
+          d="M18 19.8C19.335 19.8 20.6401 19.4041 21.7501 18.6624C22.8601 17.9207 23.7253 16.8665 24.2362 15.6331C24.7471 14.3997 24.8808 13.0425 24.6203 11.7331C24.3598 10.4238 23.717 9.22102 22.773 8.27702C21.829 7.33302 20.6262 6.69014 19.3169 6.42969C18.0075 6.16924 16.6503 6.30291 15.4169 6.8138C14.1835 7.3247 13.1293 8.18986 12.3876 9.29989C11.6459 10.4099 11.25 11.715 11.25 13.05C11.25 14.8402 11.9612 16.5571 13.227 17.823C14.4929 19.0888 16.2098 19.8 18 19.8Z"
+          fill="#D0D7DE"></path><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"
+          class="w-full h-full ng-star-inserted">
+          <path d="M36 0H0V36H36V0Z" fill="#F2F4F7"></path>
+          <path
+            d="M18 23.03C12.6318 23.0301 7.42685 24.876 3.258 28.258C2.07431 29.241 0.983696 30.3309 0 31.514L0 36H36V31.237C34.9771 30.1771 33.889 29.1822 32.742 28.258C28.5732 24.876 23.3682 23.0301 18 23.03Z"
+            fill="#D0D7DE"></path>
+          <path
+            d="M18 19.8C19.335 19.8 20.6401 19.4041 21.7501 18.6624C22.8601 17.9207 23.7253 16.8665 24.2362 15.6331C24.7471 14.3997 24.8808 13.0425 24.6203 11.7331C24.3598 10.4238 23.717 9.22102 22.773 8.27702C21.829 7.33302 20.6262 6.69014 19.3169 6.42969C18.0075 6.16924 16.6503 6.30291 15.4169 6.8138C14.1835 7.3247 13.1293 8.18986 12.3876 9.29989C11.6459 10.4099 11.25 11.715 11.25 13.05C11.25 14.8402 11.9612 16.5571 13.227 17.823C14.4929 19.0888 16.2098 19.8 18 19.8Z"
+            fill="#D0D7DE"></path>
+        </svg>
+      </svg>
     </div>
+    <ng-template #noAvatar>
+      <div [ngStyle]="{'width.px': size,'height.px': size}"
+        class="inline-flex border border-dashed border-neutral-2-200 rounded-lg dark:border-d-neutral-2-200 items-center justify-center">
+        <div class="w-full text-neutral-1-300 flex flex-col justify-center items-center">
+          <div class="flex items-center justify-center">
+            <span class="tdsi-images-fill text-xl leading-5"></span>
+          </div>
+          <div class="mt-2 text-body-2 font-regular">Upload</div>
+        </div>
+      </div>
+    </ng-template>
   </tds-upload>
 </tds-image-group>
-
-
-<tds-modal [visible]="previewVisible" [content]="modalContent" [footer]="null" (onCancel)="previewVisible = false">
-  <ng-template #modalContent>
-    <img [src]="previewImage" [ngStyle]="{ width: '100%' }" />
-  </ng-template>
-</tds-modal>

@@ -5,8 +5,8 @@
           <div class="w-full grid grid-cols-2  gap-x-8">
               <div class="flex gap-x-4">
                   <div class="w-1/3">
-                      <tpage-upload-avatar (getResult)="getUrl($event)" [isAvatar]="true" [shape]="'circle'" [size]="84" [imageUrl]="partnerId ? _form.controls['ImageUrl'].value : _form.controls['Image'].value">
-                      </tpage-upload-avatar>
+                      <upload-pictures-wall (getResult)="getUrl($event)" [isAvatar]="true" [size]="84" [data]="partnerId ? _form.controls['ImageUrl'].value : _form.controls['Image'].value">
+                      </upload-pictures-wall>
                   </div>
                   <div class="w-2/3 flex flex-col gap-y-4">
                       <tds-form-field>
@@ -266,7 +266,7 @@
       </div>
       <div class="w-full flex justify-end p-4" *tdsModalFooter>
           <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Hủy</button>
-          <button tds-button type="button" color="primary" (click)="onSave()" [disabled]="_form?.invalid"> Áp dụng </button>
+          <button tds-button type="button" color="primary" (click)="onSave()" [disabled]="_form ? _form.invalid : false"> Áp dụng </button>
       </div>
   </form>
 </tds-spin>

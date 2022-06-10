@@ -28,6 +28,7 @@ export class FastSaleOrderService extends BaseSevice {
 
   public _keyCacheGrid: string = 'orderbill-page:grid_orderbill:settings';
   public _keyCacheDefaultGetV2: string = '_keycache_default_getV2';
+  public _keyCacheDHSDetails: string = '_keycache_dhs_details';
 
   constructor(private apiService: TCommonService) {
     super(apiService)
@@ -385,6 +386,33 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<ODataPaymentJsonDTO>(api, null);
   }
 
+  postManualCrossChecking(model:TDSSafeAny): Observable<TDSSafeAny>{
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.ManualCrossChecking`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, model);
+  }
+
+  checkTrackingRefIsExist(trackingRef:string,status:string,carrierId?:number): Observable<TDSSafeAny>{
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.CheckTrackingRefIsExisted?tracking_ref=${trackingRef}&status=${status}&carrier_id=${carrierId??''}`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  deleteCrossChecking(key:TDSSafeAny): Observable<TDSSafeAny>{
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/HistoryDeliveryStatus(${key})`,
+      method: TApiMethodType.delete,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+  
   listUpdateDeposit(data: ListUpdateDepositDTO): Observable<undefined> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/fastsaleorder/listupdatedeposit`,

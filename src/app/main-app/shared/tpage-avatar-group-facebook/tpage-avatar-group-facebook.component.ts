@@ -5,7 +5,6 @@ import { TpageAvatarFacebookComponent } from '../upload-image/tpage-avatar-faceb
   selector: 'tpage-avatar-group-facebook',
   templateUrl: './tpage-avatar-group-facebook.component.html',
   styleUrls: ['./tpage-avatar-group-facebook.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'tds-avatar-group-facebook inline-flex'
   }
