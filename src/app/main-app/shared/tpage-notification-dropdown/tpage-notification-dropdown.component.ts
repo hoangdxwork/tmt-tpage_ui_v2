@@ -1,17 +1,17 @@
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
-import { Component, Input, OnInit } from '@angular/core';
-import { NotificationGetMappingDTO, TPosAppMongoDBNotificationDTO } from 'src/app/main-app/dto/notification/notification.dto';
-import { NotificationService } from 'src/app/main-app/services/notification.service';
-import { Router } from '@angular/router';
+import { NotificationGetMappingDTO, TPosAppMongoDBNotificationDTO } from '../../dto/notification/notification.dto';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
-  selector: 'notification-list',
-  templateUrl: './notification-list.component.html'
+  selector: 'tpage-notification-dropdown',
+  templateUrl: './tpage-notification-dropdown.component.html',
+  styleUrls: ['./tpage-notification-dropdown.component.scss']
 })
-export class NotificationListComponent implements OnInit {
+export class TpageNotificationDropdownComponent implements OnInit {
 
-  @Input() isRead?: boolean | null = null;
-
+  visible = false;
   isLoading: boolean = false;
 
   lstData: TPosAppMongoDBNotificationDTO[] = [];
@@ -20,9 +20,13 @@ export class NotificationListComponent implements OnInit {
   hasNextPage: boolean = true;
 
   constructor(
-    private router: Router,
+    public router: Router,
     private notificationService: NotificationService
   ) { }
+
+  get getRead() {
+    return this.lstData.find(x => !x.DateRead);
+  }
 
   ngOnInit(): void {
     this.loadData(this.pageSize, this.pageIndex);
@@ -46,7 +50,7 @@ export class NotificationListComponent implements OnInit {
 
     model.Page = pageIndex;
     model.Limit = pageSize;
-    model.IsRead = this.isRead;
+    model.IsRead = undefined;
 
     return model;
   }
@@ -57,7 +61,13 @@ export class NotificationListComponent implements OnInit {
   }
 
   onDetail(id: string) {
+    this.visible = false;
     this.router.navigateByUrl(`user/notification/${id}`);
+  }
+
+  onAll() {
+    this.visible = false;
+    this.router.navigateByUrl(`user/notification`);
   }
 
 }

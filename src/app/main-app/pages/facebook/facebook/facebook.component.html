@@ -42,7 +42,7 @@
 
         <!-- Col Left -->
         <div class="w-3/4 gap-y-4 flex flex-col">
-          <ng-template ngFor let-team [ngForOf]="dataSearch || data" let-i="index">
+          <div *ngFor="let team of (dataSearch || data); let index = index" @eventFadeState>
             <tds-collapse [expandIconPosition]="'right'" class="bg-white rounded-xl w-full">
               <tds-collapse-panel  [header]="header" [active]="getIsIconCollapse(team.Id)" [disabled]=false
               [expandedIcon]="icon" bordered="false" (activeChange)="onChangeCollapse(team.Id, $event)">
@@ -204,7 +204,7 @@
 
               </tds-collapse-panel>
             </tds-collapse>
-          </ng-template>
+          </div>
         </div>
 
         <!-- Col Right -->

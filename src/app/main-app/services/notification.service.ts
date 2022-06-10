@@ -29,4 +29,13 @@ export class NotificationService extends BaseSevice {
     return this.apiService.getData<PagedList2<TPosAppMongoDBNotificationDTO>>(api, data);
   }
 
+  getById(id: string): Observable<TPosAppMongoDBNotificationDTO> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${id}`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TPosAppMongoDBNotificationDTO>(api, null);
+  }
+
 }

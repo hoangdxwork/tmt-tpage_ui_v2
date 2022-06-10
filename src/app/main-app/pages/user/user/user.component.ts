@@ -18,10 +18,14 @@ export class UserComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject();
 
   constructor(
+    private route: ActivatedRoute,
     private router: Router
   ) { }
 
   ngOnInit(): void {
+    let url = this.router.url;
+    this.changeUrl(url);
+
     this.loadUrl();
   }
 
@@ -34,7 +38,7 @@ export class UserComponent implements OnInit, OnDestroy {
   }
 
   changeUrl(url: string) {
-    let find = this.menuData.find(x => x.link == url);
+    let find = this.menuData.find(x => url.indexOf(x.link) != -1);
 
     if(find) {
       this.currentPage = find;
