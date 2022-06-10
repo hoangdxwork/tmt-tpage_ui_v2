@@ -400,6 +400,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.eventHandler = event;
     if(this.isLoadingSendMess) {
       this.eventHandler.preventDefault();
+      this.eventHandler.stopImmediatePropagation();
       return;
     }
     if(this.isEnterSend){
@@ -413,10 +414,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     let message = this.messageModel as string;
     if (!TDSHelperArray.hasListValue(this.uploadedImages) && !TDSHelperString.hasValueString(message)) {
       this.eventHandler.preventDefault();
+      this.eventHandler.stopImmediatePropagation();
       return this.message.error('Hãy nhập nội dung cần gửi');
     }
     if(this.isLoadingSendMess){
       this.eventHandler.preventDefault();
+      this.eventHandler.stopImmediatePropagation();
       return;
     }
 
@@ -460,6 +463,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       }, error => {
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại' );
           this.eventHandler.preventDefault();
+          this.eventHandler.stopImmediatePropagation();
       });
   }
 
@@ -476,7 +480,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .pipe(finalize(() => { this.isLoadingSendMess = false }))
       .subscribe((res: any) => {
 
-        this.message.success('Gửi tin thành công');
         let countImageAdd = 0;
         if (TDSHelperArray.hasListValue(res)) {
           res.forEach((x: any) => {
@@ -486,7 +489,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
               x["message"] = this.activityDataFacade.createDataAttachments(this.uploadedImages[countImageAdd]);
               countImageAdd += 1;
             }
-            this.activityDataFacade.messageServer({ ...x });
+            this.activityDataFacade.messageServer(x);
           });
         }
         let items = res.pop();
@@ -496,13 +499,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         this.uploadedImages = [];
         delete this.messageModel;
 
-        this.yiAutoScroll.forceScrollDown();
         this.eventHandler.preventDefault();
+        this.eventHandler.stopImmediatePropagation();
         this.cdRef.detectChanges();
 
       }, error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Gửi tin nhắn thất bại');
         this.eventHandler.preventDefault();
+        this.eventHandler.stopImmediatePropagation();
         this.cdRef.detectChanges();
       })
   }
@@ -520,21 +524,21 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .pipe(finalize(() => { this.isLoadingSendMess = false; }))
       .subscribe((res: any) => {
 
-        this.message.success("Trả lời bình luận thành công");
         this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });
-        this.conversationDataFacade.messageServer({ ...res });
+        this.conversationDataFacade.messageServer(res);
 
         this.currentImage = null;
         this.uploadedImages = [];
         delete this.messageModel;
 
-        this.yiAutoScroll.forceScrollDown();
         this.eventHandler.preventDefault();
+        this.eventHandler.stopImmediatePropagation();
         this.cdRef.detectChanges();
 
       }, error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
         this.eventHandler.preventDefault();
+        this.eventHandler.stopImmediatePropagation();
         this.cdRef.detectChanges();
       });
   }
@@ -544,7 +548,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       res.map((x: any, i: number) => {
 
         x["status"] = ActivityStatus.sending;
-        this.activityDataFacade.messageServer({ ...x });
+        this.activityDataFacade.messageServer(x);
 
         if (TDSHelperArray.hasListValue(this.uploadedImages)) {
           x["message"] = this.activityDataFacade.createDataAttachments(this.uploadedImages[i]);
@@ -567,7 +571,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.uploadedImages = [];
 
     this.eventHandler.preventDefault();
+    this.eventHandler.stopImmediatePropagation();
     this.cdRef.detectChanges();
+
+    this.yiAutoScroll.forceScrollDown();
   }
 
   prepareModel(message: string): any {
@@ -607,12 +614,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
         this.data.assigned_to = res;
-        this.message.success("Thao tác thành công");
-        this.cdRef.detectChanges();
+        this.message.success(`${this.data.name || this.data.partner_name} đã gán cho ${res.Name}`);
+        // this.cdRef.detectChanges();
       },
       err=>{
         this.message.error("Thao tác thất bại");
-        this.cdRef.detectChanges();
+        // this.cdRef.detectChanges();
       });
   }
 
@@ -698,9 +705,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   openPost(item: any, type: any) {
     if (type === 'post' && item.object_id) {
       this.router.navigateByUrl(`/conversation/post?teamId=${this.team.Id}&type=post&post_id=${item.object_id}`);
-    }
-    if (type === 'all' && item.object_id) {
-      //TODO xử lý tiếp
     }
   }
 
@@ -788,6 +792,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   @HostListener('window:dragover', ['$event']) onDragOver(evt: TDSSafeAny) {
     this.displayDropZone = true;
     evt.preventDefault();
+    evt.stopImmediatePropagation();
   }
 
   @HostListener("window:dragleave", ["$event"])
@@ -798,12 +803,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       this.displayDropZone = false;
     }
     evt.preventDefault();
+    evt.stopImmediatePropagation();
   }
 
   @HostListener('window:drop', ['$event'])
   ondrop(evt:any) {
     this.displayDropZone = false;
     evt.preventDefault();
+    evt.stopImmediatePropagation();
   }
 
   trackByIndex(_: number, data: any): number {

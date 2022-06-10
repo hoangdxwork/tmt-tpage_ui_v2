@@ -188,6 +188,7 @@ export class YiAutoScrollDirective implements  OnDestroy, AfterViewInit {
       }
 
       event.preventDefault();
+      event.stopImmediatePropagation();
     }
 
 }
