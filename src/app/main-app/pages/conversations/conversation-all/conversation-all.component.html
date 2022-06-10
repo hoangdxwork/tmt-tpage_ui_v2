@@ -80,21 +80,22 @@
               <div class="overflow-y-auto tds-custom-scroll flex flex-col" id="myScroll" is-lock="true" observe-attributes
                   yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
 
-                  <ng-container *ngFor="let item of lstMatchingItem; let i= index; trackBy: trackByIndex">
+                  <div *ngFor="let item of lstMatchingItem; let i= index; trackBy: trackByIndex">
                     <div *ngIf="item && item.psid && activeCvsItem && currentTeam" @eventFadeState>
 
-                      <a (click)="changeCurrentCvsItem(item)" type="button" class="w-full gap-0.5 {{isChanged ? 'cursor-wait' : 'cursor-pointer'}}">
+                      <a (click)="changeCurrentCvsItem(item)" type="button"
+                        class="w-full gap-0.5 {{isChanged ? 'cursor-wait' : 'cursor-pointer'}}">
                         <current-conversation-item
-                          [item]="item" [psid]="item.psid" [type]="type"
-                          [activeCvsItem]="activeCvsItem"
-                          [team]="currentTeam" [isFastSend]="isFastSend"
-                          [isOpenCollapCheck]="isOpenCollapCheck"
-                          [checked]="setOfCheckedId.has(item.psid)"
-                          (checkedChange)="onItemChecked(item.psid, $event)">
+                            [item]="item" [psid]="item.psid" [type]="type"
+                            [activeCvsItem]="activeCvsItem"
+                            [team]="currentTeam" [isFastSend]="isFastSend"
+                            [isOpenCollapCheck]="isOpenCollapCheck"
+                            [checked]="setOfCheckedId.has(item.psid)"
+                            (checkedChange)="onItemChecked(item.psid, $event)">
                         </current-conversation-item>
                       </a>
                     </div>
-                  </ng-container>
+                  </div>
               </div>
 
               <div class="flex-auto bg-white"></div>
@@ -109,8 +110,7 @@
             <shared-tds-conversations
                 class="flex w-full h-full"
                 [data]="activeCvsItem"
-                [type]="type" [team]="currentTeam"
-                (onLoadMiniChat)="onLoadMiniChat($event)">
+                [type]="type" [team]="currentTeam">
             </shared-tds-conversations>
         </div>
     </div>

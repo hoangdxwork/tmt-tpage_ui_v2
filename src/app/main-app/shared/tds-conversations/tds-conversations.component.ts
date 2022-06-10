@@ -457,7 +457,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .pipe(finalize(() => { this.isLoadingSendMess = false }))
       .subscribe((res: any) => {
           this.messageResponse(res, model);
-          this.yiAutoScroll.forceScrollDown();
       }, error => {
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại' );
           this.eventHandler.preventDefault();
@@ -497,6 +496,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         this.uploadedImages = [];
         delete this.messageModel;
 
+        this.yiAutoScroll.forceScrollDown();
         this.eventHandler.preventDefault();
         this.cdRef.detectChanges();
 
@@ -528,6 +528,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         this.uploadedImages = [];
         delete this.messageModel;
 
+        this.yiAutoScroll.forceScrollDown();
         this.eventHandler.preventDefault();
         this.cdRef.detectChanges();
 
