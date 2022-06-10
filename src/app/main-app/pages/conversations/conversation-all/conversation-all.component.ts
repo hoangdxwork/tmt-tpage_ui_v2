@@ -99,16 +99,16 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     // loading moused khi change, đợi phản hồi từ loadMessages trong shared-tds-conversations
     this.conversationDataFacade.changeCurrentCvs$.subscribe((data: boolean) => {
-        this.isChanged = data;
-        this.cdRef.detectChanges();
+      this.isChanged = data;
+      this.cdRef.detectChanges();
     })
   }
 
   onChangeConversation(team: any) {
     this.validateData();
     this.ngZone.run(() => {
-      this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
-      this.loadConversations((this.dataSource$));
+        this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
+        this.loadConversations((this.dataSource$));
     })
   }
 

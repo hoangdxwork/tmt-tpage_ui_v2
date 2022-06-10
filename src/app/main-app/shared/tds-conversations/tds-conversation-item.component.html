@@ -219,8 +219,9 @@
 					</div>
 					<div class="flex flex-row w-full">
 						<textarea id="inputReply" #contentReply tdsInput placeholder="Nhập nội dung trả lời"
-							[(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
-							class="w-full resize-none !p-0 !m-0 no-scrollbar" (keydown.enter)="onEnter($event)"></textarea>
+                [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
+                class="w-full resize-none !p-0 !m-0 no-scrollbar">
+            </textarea>
 						<button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'" (click)="onEnter($event)">
 						<span class="flex items-center px-5">
 							<i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
@@ -254,7 +255,7 @@
 					</div>
 				</div>
 				<!-- Phản hồi bình luận -->
-				<div *ngIf="children" class="chat-list">
+				<div *ngIf="children" class="chat-list" @eventReplyComment>
 					<div class="chat-item mt-4 chat-comment flex flex-row" *ngFor="let child of children; let i = index;">
 						<div class="avatar mr-2">
 							<tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.from.id"
@@ -389,8 +390,9 @@
 					</div>
 					<div class="flex flex-row w-full">
 						<textarea id="inputReply" #contentReply tdsInput placeholder="Nhập nội dung trả lời"
-						[(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
-							class="w-full resize-none !p-0 !m-0 no-scrollbar" (keydown.enter)="onEnter($event)"></textarea>
+                [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
+                class="w-full resize-none !p-0 !m-0 no-scrollbar" >
+            </textarea>
 						<div class="">
 							<button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'" (click)="onEnter($event)">
 								<span class="flex items-center px-5">
@@ -430,9 +432,8 @@
 					</div>
 				</div>
 				<!-- Phản hồi bình luận -->
-				<div *ngIf="children" class="chat-list">
-					<div class="chat-item mt-4 chat-comment flex flex-row"
-						*ngFor="let child of children; let i = index">
+				<div *ngIf="children" class="chat-list" @eventReplyComment>
+					<div class="chat-item mt-4 chat-comment flex flex-row" *ngFor="let child of children; let i = index">
 						<div class="avatar mr-2">
 							<tpage-avatar-facebook [shape]="'circle'" [size]="36" [psid]="child.from.id"
 								[token]="team?.Facebook_PageToken">

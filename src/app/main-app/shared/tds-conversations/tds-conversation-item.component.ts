@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from "@angular/core";
 import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ActivityStatus } from "src/app/lib/enum/message/coversation-message";
@@ -12,13 +12,15 @@ import { ConversationOrderFacade } from "../../services/facades/conversation-ord
 import { PhoneHelper } from "../helper/phone.helper";
 import { ReplaceHelper } from "../helper/replace.helper";
 import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
+import { eventReplyCommentTrigger } from "../helper/event-animations.helper";
 
 @Component({
   selector: "tds-conversation-item",
   templateUrl:'./tds-conversation-item.component.html',
   styleUrls: ['./tds-conversations.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  animations: [eventReplyCommentTrigger]
 })
 
 export class TDSConversationItemComponent implements OnInit, OnDestroy {
@@ -31,6 +33,8 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   @Input() children: any;
   @Input() type: any;
   @Input() name!: string;
+
+  @HostBinding("@eventReplyComment") eventAnimation = true;
 
   messages: any = [];
   message: string = '';
@@ -319,11 +323,13 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
 
           this.isReply = false;
           event.preventDefault();
+          event.stopImmediatePropagation();
           this.cdRef.markForCheck();
 
         }, error => {
           this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
           event.preventDefault();
+          event.stopImmediatePropagation();
           this.cdRef.markForCheck();
 
         });
@@ -353,6 +359,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
         this.tdsMessage.success('Gửi tin thành công');
 
         event.preventDefault();
+        event.stopImmediatePropagation();
         this.cdRef.markForCheck();
 
     }, error => {
@@ -360,6 +367,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
       this.isReplyingComment = false;
 
       event.preventDefault();
+      event.stopImmediatePropagation();
       this.cdRef.markForCheck();
     });
   }

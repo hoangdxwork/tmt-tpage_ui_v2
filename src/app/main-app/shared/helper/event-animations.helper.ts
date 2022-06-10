@@ -4,9 +4,20 @@ export const eventFadeStateTrigger = trigger("eventFadeState",
 [
     transition(':enter', [
       style({ opacity: 0 }),
-      animate('300ms', style({ opacity: 1 })),
+      animate('350ms', style({ opacity: 1 })),
     ]),
     transition(':leave', [
-      animate('300ms', style({ opacity: 0 }))
+      animate('350ms', style({ opacity: 0 }))
+    ])
+]);
+
+export const eventReplyCommentTrigger = trigger("eventReplyComment",
+[
+    transition(':enter', [
+      style({ opacity: 0 }),
+      animate('500ms', style({ opacity: 1 })),
+    ]),
+    transition(':leave', [
+      animate('500ms', style({ opacity: 0 }))
     ])
 ]);

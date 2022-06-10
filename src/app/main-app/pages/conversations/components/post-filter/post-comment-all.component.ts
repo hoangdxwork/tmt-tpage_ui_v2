@@ -130,6 +130,7 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
     this.replyComment(item,message);
     (this.messageModel as any) = null;
     event.preventDefault();
+    event.stopImmediatePropagation();
   }
 
   messageSendingToServer(item: CommentByPost) {
@@ -144,7 +145,7 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
   replyComment(item: CommentByPost, msg:string){debugger
     if(TDSHelperString.hasValueString(msg)) {
       const model = this.prepareModel(item, msg);
-      
+
       if(item.isPrivateReply){
         model.comment_id = item.id;
         this.crmMatchingService.addQuickReplyComment(model)
@@ -166,7 +167,7 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
         // TODO: Trả lời bình luận
         model.parent_id = item.id;
         model.fbid = item.from?.id;
-        
+
         this.activityMatchingService.replyComment(this.team?.Id, model)
           .pipe(takeUntil(this.destroy$))
           .subscribe((res: any) => {

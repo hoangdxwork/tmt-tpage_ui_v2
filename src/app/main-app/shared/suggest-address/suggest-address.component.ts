@@ -363,6 +363,7 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
           if (this.arrowkeyLocation > 0) {
             this.arrowkeyLocation--;
             event.preventDefault();
+            event.stopImmediatePropagation();
           }
 
           break;
@@ -373,6 +374,7 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
             this.arrowkeyLocation = 0;
           }
           event.preventDefault();
+          event.stopImmediatePropagation();
 
           break;
 

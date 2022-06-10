@@ -83,6 +83,7 @@ export class LayoutComponent implements OnInit {
   onLogout() {
     this.auth.logout(environment.urlLogin)
   }
+
   onOpenChange(e: boolean) {
     this.inlineCollapsed = e;
   }
@@ -268,7 +269,7 @@ export class LayoutComponent implements OnInit {
   }
 
   onPackOfData() {
-    this.router.navigateByUrl(`user/pack-of-data`);
+    this.router.navigateByUrl(`user/pack-of-data/info`);
   }
 
 }
