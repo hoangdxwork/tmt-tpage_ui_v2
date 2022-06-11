@@ -86,7 +86,7 @@ export class ConfigActivitiesComponent implements OnInit {
   //   this.TableData = [
   //     {
   //       id:1,
-  //       image:'assets/images/config/SP1120.png',
+  //       image:'../../../assets/imagesv2/config/SP1120.png',
   //       user:'Tpos.vn',
   //       content:'Xác nhận bán hàng có mã: INV/2022/0005 .Tổng tiền là: 48.000đ',
   //       createdDate: new Date('Thu Mar 17 2022 17:00:24'),
@@ -94,7 +94,7 @@ export class ConfigActivitiesComponent implements OnInit {
   //     },
   //     {
   //       id:2,
-  //       image:'assets/images/config/SP1120.png',
+  //       image:'../../../assets/imagesv2/config/SP1120.png',
   //       user:'Tpos.vn',
   //       content:'Hủy bán hàng với KH: 1010Ádsad.Mã hóa đơn: DJDE/2022/0176 Tổng tiền là: 85.000đ',
   //       createdDate: new Date('Thu Mar 17 2022 17:08:24'),
@@ -102,7 +102,7 @@ export class ConfigActivitiesComponent implements OnInit {
   //     },
   //     {
   //       id:3,
-  //       image:'assets/images/config/SP1120.png',
+  //       image:'../../../assets/imagesv2/config/SP1120.png',
   //       user:'Tpos.vn',
   //       content:'Thêm mới mua hàng với NCC: Công Ty Cổ Phần Công Nghệ Trường Minh Thịnh.Tổng tiền là: 180.000đ',
   //       createdDate: new Date('Thu Mar 17 2022 17:11:24'),
@@ -110,7 +110,7 @@ export class ConfigActivitiesComponent implements OnInit {
   //     },
   //     {
   //       id:4,
-  //       image:'assets/images/config/SP1120.png',
+  //       image:'../../../assets/imagesv2/config/SP1120.png',
   //       user:'Tpos.vn',
   //       content:'Thêm mới bán hàng với KH: Oanh Le. Tổng tiền là: 0',
   //       createdDate: new Date('Thu Mar 17 2022 17:10:24'),
@@ -118,7 +118,7 @@ export class ConfigActivitiesComponent implements OnInit {
   //     },
   //     {
   //       id:5,
-  //       image:'assets/images/config/SP1120.png',
+  //       image:'../../../assets/imagesv2/config/SP1120.png',
   //       user:'Tpos.vn',
   //       content:'Cập nhật trả hàng với KH: Hoàng. Tổng tiền là: 480.000đ',
   //       createdDate: new Date('Web Mar 16 2022 17:20:24'),
@@ -126,7 +126,7 @@ export class ConfigActivitiesComponent implements OnInit {
   //     },
   //     {
   //       id:6,
-  //       image:'assets/images/config/SP1120.png',
+  //       image:'../../../assets/imagesv2/config/SP1120.png',
   //       user:'Tpos.vn',
   //       content:'Xác nhận bán hàng có mã: INV/2022/0005 .Tổng tiền: 48.000đ',
   //       createdDate: new Date('Thu Mar 17 2022 17:22:24'),

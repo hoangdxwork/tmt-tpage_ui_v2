@@ -293,7 +293,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       (this.data as any) = {};
       this.validateData();
 
-      this.data = {...changes["data"].currentValue};
+      this.data = changes["data"].currentValue;
       let object = {
         psid: this.data.psid,
         messages: this.messageModel,
@@ -706,6 +706,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   refreshRead() {
+    this.validateData();
     if (this.isNextData || this.isLoadMessage) {
       this.isNextData = false;
       this.isLoadMessage = false;

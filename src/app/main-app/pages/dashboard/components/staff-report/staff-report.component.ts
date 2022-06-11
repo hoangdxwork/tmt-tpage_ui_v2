@@ -15,7 +15,7 @@ export class StaffReportComponent implements OnInit {
   chartOption = TDSChartOptions();
 
   showData = true;
-  
+
   filterList= [
     {id:1, name:'Tuần này'},
     {id:2, name:'Tháng này'}
@@ -127,7 +127,7 @@ export class StaffReportComponent implements OnInit {
                 width:48,
                 height:48,
                 backgroundColor:{
-                  image:'assets/images/Avatar-user.png'
+                  image:'../../../assets/imagesv2/Avatar-user.png'
                 }
               }
             }
@@ -141,7 +141,7 @@ export class StaffReportComponent implements OnInit {
       chart.legend.formatter = function(name:string){
         let staff = staffsData.find(s=>s.name === name) ?? { name:'', value:0 };
         let avg = staff.value/staffsData.reduce((pre,x)=> x.value + pre ,0);
-        
+
         return '{header|' + TruncateString(name,18) + '}' + '{body|' + staff.value + ' tương tác}' + '{value|' + formatPercent(avg,vi_VN.locale,'1.0-2') + '}';
       }
     }

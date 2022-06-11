@@ -138,7 +138,7 @@ export class DashboardStaffReportComponent implements OnInit {
                 width:36,
                 height:36,
                 backgroundColor:{
-                  image:'assets/images/Avatar-user.png'
+                  image:'../../../assets/imagesv2/Avatar-user.png'
                 }
               }
             }
