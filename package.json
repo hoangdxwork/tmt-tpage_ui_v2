@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "set NODE_ENV=production  && ng build --configuration production --output-hashing none",
     "postbuild": "robocopy ../../dist/tpagev2/assets ../../assets /r:60 /w:5 /MT:64 /e",
-    "build:test": "set NODE_ENV=production & ng build --configuration production --deploy-url=/dist/tpagev2/ --index=/src/index.html --output-path=../tposapp/myerp/dist/tpagev2/ --output-hashing none",
+    "build:test": "set NODE_ENV=production & ng build --configuration production --deploy-url=/dist/tpagev2/ --index=/src/index.html --output-path=../tposapp/myerp/dist/tpagev2/ ",
     "build:prod": "set NODE_ENV=production & ng build --configuration production --deploy-url=https://statics.tpos.vn/dist/tpagev2/ --index=/src/index.html --output-hashing none & npm run postbuild",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"

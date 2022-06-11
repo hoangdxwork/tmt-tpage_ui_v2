@@ -614,12 +614,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
         this.data.assigned_to = res;
-        this.message.success(`${this.data.name || this.data.partner_name} đã gán cho ${res.Name}`);
-        // this.cdRef.detectChanges();
       },
       err=>{
         this.message.error("Thao tác thất bại");
-        // this.cdRef.detectChanges();
       });
   }
 

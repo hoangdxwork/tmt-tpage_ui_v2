@@ -82,7 +82,7 @@ export class ConversationEventFacade extends BaseSevice implements OnDestroy {
         let psid = data.facebook.psId;
         let pageId = data.facebook.pageId;
         let event = {
-          message: `${user["Name"] || ""} đã phản hồi.`,
+          message: `${user["Name"] || ""} đã phản hồi`,
           time: new Date()
         };
         this.cvsFbState.setEvent(pageId, psid, event);
@@ -98,7 +98,7 @@ export class ConversationEventFacade extends BaseSevice implements OnDestroy {
       let psid = data.facebook.psId;
       let pageId = data.facebook.pageId;
       var event = {
-        message: `${user["Name"] || ""} đang xem.`,
+        message: `${user["Name"] || ""} đang xem`,
         time: new Date()
       };
       this.cvsFbState.setEvent(pageId, psid, event);
@@ -114,9 +114,9 @@ export class ConversationEventFacade extends BaseSevice implements OnDestroy {
       let pageId = facebook.pageId;
       let user = this.convertAssignUser(data.createdBy);
 
-      var message = `${user["Name"] || ""} đã tạo đơn hàng.`;
+      var message = `${user["Name"] || ""} đã tạo đơn hàng`;
       if (value.action == "updated") {
-          message = `${user["Name"] || ""} đã cập nhật đơn hàng.`;
+          message = `${user["Name"] || ""} đã cập nhật đơn hàng`;
       }
       var event = {
           message: message,
@@ -137,7 +137,7 @@ export class ConversationEventFacade extends BaseSevice implements OnDestroy {
 
         var message = `${user["Name"] || ""} đã tạo hoá đơn.`;
         if (value.action == "updated") {
-          message = `${user["Name"] || ""} đã cập nhật hoá đơn.`;
+          message = `${user["Name"] || ""} đã cập nhật hoá đơn`;
         }
         var event = {
           message: message,

@@ -114,18 +114,15 @@
         </div>
 
         <div class="flex justify-end gap-1 items-center" *ngIf="eventData && eventData[team.Facebook_PageId] && eventData[team.Facebook_PageId][psid]">
-            <div class="tdsi-flash-on-fill text-accent-3 px-1 text-2xl"></div>
+            <div class="tdsi-flash-on-fill text-accent-3"></div>
             <div class="text-accent-3 text-caption-1 font-regular font-sans">
+                <span class="mr-1">{{eventData[team.Facebook_PageId][psid].time | yiDateTimeFormat}}</span>
                 <span>{{eventData[team.Facebook_PageId][psid].message}}</span>
-                <span>{{eventData[team.Facebook_PageId][psid].time}}</span>
             </div>
         </div>
       </div>
     </div>
     <div *ngIf="isConversationOver">
-        <!-- <div class="absolute top-0 right-0 flex">
-            <span class="w-0 h-0 border-t-[41px] border-t-green-400 border-l-[41px] border-l-transparent border-solid"> </span>
-        </div> -->
         <div class="w-14 h-14 bg-green-400 rotate-45 absolute -top-7 -right-7"> </div>
         <div class="absolute top-0 right-0 flex">
             <div class="tdsi-tick-fill text-white text-lg px-1"></div>
