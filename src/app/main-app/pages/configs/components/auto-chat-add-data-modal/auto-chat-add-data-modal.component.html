@@ -19,7 +19,7 @@
                 </tds-form-field>
                 <div class="flex flex-wrap w-full">
                     <div *ngFor="let tag of nameTagList; let i=index">
-                        <div class="bg-primary-1 text-white text-caption-2 font-semibold rounded cursor-pointer px-2 py-0.5 mr-2 
+                        <div class="bg-primary-1 text-white text-caption-2 font-semibold rounded cursor-pointer px-2 py-0.5 mr-2
                             {{nameTagList[i] === formQuickReply.value.name ? 'shadow-lg' : '' }}"
                             (click)="onChangeTagName(tag.value)">
                             <span>{{tag.id}}</span>
@@ -105,7 +105,7 @@
         </div>
         <div *ngIf="templateType == 'generic'" class="flex flex-col bg-white w-[200px]">
             <div class="relative">
-                <img tds-image width="200px" height="200px" [fallback]="'assets/images/config/no-image-default.svg'"
+                <img tds-image width="200px" height="200px" [fallback]="'../../../assets/imagesv2/config/no-image-default.svg'"
                     [tdsSrc]="this.createImageForm.value?.image" alt="" class="cursor-pointer rounded-t-md" />
                 <div class="w-full h-full absolute top-0 rounded-t-md {{messageStructurePart == 1 ? 'border border-primary-1 bg-[#28A74533]/[0.2]' : ''}}"
                     (click)="onChangeStructurePart(1)"></div>
@@ -146,7 +146,7 @@
             class="flex flex-col items-center justify-between w-full h-full">
             <div class="bg-white w-[200px] mb-2">
                 <div class="relative">
-                    <img tds-image width="200px" height="200px" [fallback]="'assets/images/config/no-image-default.svg'"
+                    <img tds-image width="200px" height="200px" [fallback]="'../../../assets/imagesv2/config/no-image-default.svg'"
                         [tdsSrc]="this.createImageForm.value?.image" alt="" class="cursor-pointer rounded-t-md" />
                     <div class="w-full h-full absolute top-0 rounded-t-md {{messageStructurePart == 1 ? 'border border-primary-1 bg-[#28A74533]/[0.2]' : ''}}"
                         (click)="onChangeStructurePart(1)"></div>

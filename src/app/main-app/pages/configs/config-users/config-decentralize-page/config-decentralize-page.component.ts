@@ -28,22 +28,22 @@ export class ConfigDecentralizePageComponent implements OnInit, OnDestroy {
     { id: 6, name: 'nhân viên' },
 ]
   listOfDataPermission=[
-    {urlImg: 'assets/images/config/avatarPermission1.png', name: 'My Team', page: [
+    {urlImg: '../../../assets/imagesv2/config/avatarPermission1.png', name: 'My Team', page: [
       {namePage: 'HiHi House',permission: [1,2]},
       {namePage: `Le's Page`,permission: [1,2]},
       {namePage: 'Test Bot',permission: [1,2]},
       {namePage: 'Wiki Bot' ,permission: [1,2]},
     ]},
-    {urlImg: 'assets/images/config/avatarPermission1.png', name: 'Tester', page: [
+    {urlImg: '../../../assets/imagesv2/config/avatarPermission1.png', name: 'Tester', page: [
       {namePage: 'Ralph Edwards',permission: [2,3]},
       {namePage: 'Brooklyn Simmons',permission: [3,4]},
       {namePage: 'Savannah Nguyen'  ,permission: [1,2]},
     ]},
-    {urlImg: 'assets/images/config/avatarPermission1.png', name: 'John Designer', page: [
+    {urlImg: '../../../assets/imagesv2/config/avatarPermission1.png', name: 'John Designer', page: [
       {namePage: 'Kristin Watson',permission: [5,6]},
       {namePage: 'Cody Fisher',permission: [5,6]},
     ]},
-    {urlImg: 'assets/images/config/avatarPermission1.png', name: 'Hòa An Ngô', page: [
+    {urlImg: '../../../assets/imagesv2/config/avatarPermission1.png', name: 'Hòa An Ngô', page: [
       {namePage: 'Floyd Miles',permission: [5,6]},
     ]}
   ]

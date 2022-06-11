@@ -4,7 +4,7 @@
     <div class="flex flex-row justify-between p-2 border-b-3 border-neutral-3-200">
       <div class="flex items-center">
         <tds-avatar
-          [tdsSrc]="data.status_type === 'added_video' ? 'assets/images/conversation/live-circle.svg' : 'assets/images/conversation/facebook-circle.svg'"
+          [tdsSrc]="data.status_type === 'added_video' ? '../../../assets/imagesv2/conversation/live-circle.svg' : '../../../assets/imagesv2/conversation/facebook-circle.svg'"
           [size]="36"
           [shape]="'circle'"
           [isAvatar]="false"
@@ -60,7 +60,7 @@
           </button>
         </tds-badge>
         <!-- reload -->
-        <button tds-button-icon color="secondary" size="md" tooltipTitle="Tải lại trang" tooltipPlacement="bottom" tds-tooltip 
+        <button tds-button-icon color="secondary" size="md" tooltipTitle="Tải lại trang" tooltipPlacement="bottom" tds-tooltip
           (click)="fetchComments()">
           <span class="flex items-center justify-center">
             <i class="tdsi-reload-fill"></i>
@@ -90,8 +90,8 @@
       <div class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 px-4">
           <div class="emotion-count flex flex-row items-center">
             <div class="flex flex-row mr-1">
-              <img src="assets/images/conversation/like-circle.svg" width="20px" height="20px" class="rounded-full z-50">
-              <img src="assets/images/conversation/love-circle.svg" width="20px" height="20px" class="rounded-full z-40 -ml-2">
+              <img src="../../../assets/imagesv2/conversation/like-circle.svg" width="20px" height="20px" class="rounded-full z-50">
+              <img src="../../../assets/imagesv2/conversation/love-circle.svg" width="20px" height="20px" class="rounded-full z-40 -ml-2">
             </div>
             <span>
               {{data.count_reactions || 0}}
@@ -105,7 +105,7 @@
                 {{data.count_shares || 0}} lượt chia sẻ
               </span>
               <div class="h-[30px] w-[30px] rounded-md cursor-pointer"
-                [ngClass]="showComment?'bg-primary-3 text-primary-1 border border-primary-1':'border border-transparent'" 
+                [ngClass]="showComment?'bg-primary-3 text-primary-1 border border-primary-1':'border border-transparent'"
                 (click)="openChat()">
                 <div class="flex items-center justify-center">
                   <i class="tdsi-livechat-line text-xl"></i>

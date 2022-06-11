@@ -21,16 +21,16 @@ export class ReportConversationsComponent implements OnInit {
 
   showModal = false;
   ItemList = [
-    { 
-      id:1, 
-      name:'Quần áo XK Nhiên Trung 1', 
-      image:'assets/images/Avatar-user.png',
+    {
+      id:1,
+      name:'Quần áo XK Nhiên Trung 1',
+      image:'../../../assets/imagesv2/Avatar-user.png',
       active:false,
       children:[
         {
-          id:1, 
+          id:1,
           name:'Quản Lý TPos 1',
-          image:'assets/images/Avatar-user.png',
+          image:'../../../assets/imagesv2/Avatar-user.png',
           active:false,
           conversationList:[
             { id:1, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
@@ -48,9 +48,9 @@ export class ReportConversationsComponent implements OnInit {
           ]
         },
         {
-          id:2, 
+          id:2,
           name:'Quản Lý TPos 2',
-          image:'assets/images/Avatar-user.png',
+          image:'../../../assets/imagesv2/Avatar-user.png',
           active:false,
           conversationList:[
             { id:1, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
@@ -60,18 +60,18 @@ export class ReportConversationsComponent implements OnInit {
             { id:5, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
           ]
         }
-      ] 
+      ]
     },
-    { 
-      id:2, 
-      name:'Quần áo XK Nhiên Trung 2', 
-      image:'assets/images/Avatar-user.png',
+    {
+      id:2,
+      name:'Quần áo XK Nhiên Trung 2',
+      image:'../../../assets/imagesv2/Avatar-user.png',
       active:false,
       children:[
         {
-          id:1, 
+          id:1,
           name:'Quản Lý TPos 1',
-          image:'assets/images/Avatar-user.png',
+          image:'../../../assets/imagesv2/Avatar-user.png',
           active:false,
           conversationList:[
             { id:1, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
@@ -84,27 +84,27 @@ export class ReportConversationsComponent implements OnInit {
           ]
         },
         {
-          id:2, 
+          id:2,
           name:'Quản Lý TPos 2',
-          image:'assets/images/Avatar-user.png',
+          image:'../../../assets/imagesv2/Avatar-user.png',
           active:false,
           conversationList:[
             { id:1, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
             { id:2, name:'Harry Potter', replyMessenger:false, replyComment:true, orderStatus: {name:'Đã chốt', color:'#28A745'}, createdDate:'06/06/2022  16:20:20'},
           ]
         }
-      ] 
+      ]
     },
-    { 
-      id:3, 
-      name:'Quần áo XK Nhiên Trung 3', 
-      image:'assets/images/Avatar-user.png',
+    {
+      id:3,
+      name:'Quần áo XK Nhiên Trung 3',
+      image:'../../../assets/imagesv2/Avatar-user.png',
       active:false,
       children:[
         {
-          id:1, 
+          id:1,
           name:'Quản Lý TPos 1',
-          image:'assets/images/Avatar-user.png',
+          image:'../../../assets/imagesv2/Avatar-user.png',
           active:false,
           conversationList:[
             { id:1, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
@@ -116,15 +116,15 @@ export class ReportConversationsComponent implements OnInit {
           ]
         },
         {
-          id:2, 
+          id:2,
           name:'Quản Lý TPos 2',
-          image:'assets/images/Avatar-user.png',
+          image:'../../../assets/imagesv2/Avatar-user.png',
           active:false,
           conversationList:[
             { id:1, name:'Harry Potter', replyMessenger:true, replyComment:false, orderStatus: {name:'Đã hủy', color:'#EB3B5B'}, createdDate:'06/06/2022  16:20:20'},
           ]
         }
-      ] 
+      ]
     },
   ];
   selectedItem = this.ItemList[0].name;
@@ -141,63 +141,63 @@ export class ReportConversationsComponent implements OnInit {
   loadData(){
     this.tableData = [
       {
-        id:1, 
-        reportDate:'06/06/2021', 
-        conversations:50, 
-        messages:30, 
-        comments:20, 
-        newPhoneNumber:10, 
-        responseTime:10, 
-        orders:10, 
+        id:1,
+        reportDate:'06/06/2021',
+        conversations:50,
+        messages:30,
+        comments:20,
+        newPhoneNumber:10,
+        responseTime:10,
+        orders:10,
         completeOrders:2,
-        noReplyMessages:10, 
+        noReplyMessages:10,
       },
       {
-        id:2, 
-        reportDate:'06/06/2021', 
-        conversations:50, 
-        messages:30, 
-        comments:20, 
-        newPhoneNumber:10, 
-        responseTime:10, 
-        orders:10, 
-        completeOrders:2, 
+        id:2,
+        reportDate:'06/06/2021',
+        conversations:50,
+        messages:30,
+        comments:20,
+        newPhoneNumber:10,
+        responseTime:10,
+        orders:10,
+        completeOrders:2,
         noReplyMessages:10
       },
       {
-        id:3, 
-        reportDate:'06/06/2021', 
-        conversations:50, 
-        messages:30, 
-        comments:20, 
-        newPhoneNumber:10, 
-        responseTime:10, 
-        orders:10, 
-        completeOrders:2, 
+        id:3,
+        reportDate:'06/06/2021',
+        conversations:50,
+        messages:30,
+        comments:20,
+        newPhoneNumber:10,
+        responseTime:10,
+        orders:10,
+        completeOrders:2,
         noReplyMessages:10
       },
       {
-        id:4, 
-        reportDate:'06/06/2021', 
-        conversations:50, 
-        messages:30, 
-        comments:20, 
-        newPhoneNumber:10, 
-        responseTime:10, 
-        orders:10, 
-        completeOrders:2, 
+        id:4,
+        reportDate:'06/06/2021',
+        conversations:50,
+        messages:30,
+        comments:20,
+        newPhoneNumber:10,
+        responseTime:10,
+        orders:10,
+        completeOrders:2,
         noReplyMessages:10
       },
       {
-        id:5, 
-        reportDate:'06/06/2021', 
-        conversations:50, 
-        messages:30, 
-        comments:20, 
-        newPhoneNumber:10, 
-        responseTime:10, 
-        orders:10, 
-        completeOrders:2, 
+        id:5,
+        reportDate:'06/06/2021',
+        conversations:50,
+        messages:30,
+        comments:20,
+        newPhoneNumber:10,
+        responseTime:10,
+        orders:10,
+        completeOrders:2,
         noReplyMessages:10
       },
     ];
@@ -340,7 +340,7 @@ export class ReportConversationsComponent implements OnInit {
   }
 
   onChangeDate(result: Date[]): void {
-    
+
   }
 
   onShowModal(modalData:Array<TDSSafeAny>){

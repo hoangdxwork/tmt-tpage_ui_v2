@@ -10,7 +10,7 @@
 
   <div class="p-4 w-full">
     <div class="w-full background-content">
-      <div class="rounded-2xl bg-cover" style="background-image: url(/assets/images/background-chatbot.png);">
+      <div class="rounded-2xl bg-cover" style="background-image: url(../../../assets/imagesv2/background-chatbot.png);">
         <div class="text-white p-11">
           <p class="title">Kết nối T-Page với Chatbot</p>
           <p class="text-sm mt-[17px]" >
@@ -32,7 +32,7 @@
           *ngFor="let channel of lstChannelChatbot">
           <div class="flex gap-x-6">
             <div class="flex gap-x-4">
-              <tds-avatar class="bg-[#D8E8FF] w-[65px] h-[65px]" tdsSrc="assets/images/icon-chatbot.svg"></tds-avatar>
+              <tds-avatar class="bg-[#D8E8FF] w-[65px] h-[65px]" tdsSrc="../../../assets/imagesv2/icon-chatbot.svg"></tds-avatar>
             </div>
             <div>
               <p class="text-lg font-semibold"> {{channel.FacebookName}} </p>
@@ -50,7 +50,7 @@
       </div>
       <div class="p-20 justify-center flex" *ngIf="!lstChannelChatbot || lstChannelChatbot.length < 1">
         <div class="justify-center flex flex-col gap-y-4">
-          <img src="../../../../../assets/images/chabot-empty.svg" alt="">
+          <img src="../../../assets/imagesv2/chabot-empty.svg" alt="">
           <p class="text-[#717171] text-xl">
             Chưa có page nào kết nối chatbot
           </p>

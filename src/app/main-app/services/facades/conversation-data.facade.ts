@@ -58,8 +58,8 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   initialize() {
     //TODO: message from facebook
     this.sgRConnectionService._onFacebookEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.notificationMessage(res);
         this.messageWebhook(res);
+        this.notificationMessage(res);
     });
 
     //TODO: load message from messageJob
@@ -280,8 +280,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     if (existAll) {
       this.checkInfoUpdate(existAll, data);
       this.updateConversation(pageId, type, psid, message, dateCreated, is_admin);
-    }
-    else {
+    } else {
       this.cvsFbState.addConversation(pageId, "all", psid, data);
     }
 
