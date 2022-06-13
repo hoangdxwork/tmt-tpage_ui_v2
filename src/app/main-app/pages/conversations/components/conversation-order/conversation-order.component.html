@@ -14,7 +14,7 @@
             <div class="flex flex-col gap-4">
               <tds-form-field>
                 <input tdsInput autocomplete="off" placeholder="Tên khách hàng"
-                  formControlName="PartnerName" [required]='true' />
+                  formControlName="PartnerName" [required]='true'/>
                 <span tdsSuffix>
                   <tds-tag status='info' type="outline">
                     <span class="flex items-center text-neutral-1-900">
@@ -58,7 +58,7 @@
               </tds-form-field>
 
               <tds-form-field>
-                <textarea tdsInput placeholder="Nhập ghi chú" formControlName="Note"></textarea>
+                <textarea tdsInput placeholder="Nhập ghi chú" formControlName="Note" class="resize-none no-scrollbar"></textarea>
               </tds-form-field>
             </div>
           </tds-collapse-panel>
@@ -80,10 +80,10 @@
               </div>
             </ng-template>
 
-            <div class="flex flex-col gap-6 w-full h-full">
+            <div class="flex flex-col gap-4 w-full h-full">
               <div class="flex gap-1.5">
                 <tds-form-field class="w-full">
-                  <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Nhập tên sản phẩm" tdsInput />
+                  <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Nhập tên sản phẩm" tdsInput/>
                   <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
                   <span tdsSuffix class="cursor-pointer" title="Chọn sản phẩm" (click)="showModalListProduct()"><i class="tdsi-product-fill"></i></span>
                 </tds-form-field>
@@ -100,8 +100,8 @@
                   </span>
                 </button>
               </div>
-              <div class="rounded-t-xl h-60 w-full">
-                <tds-table #basicTable class="w-full h-full" [listData]="detailsFormGroups.value" showPagination="false" [scroll]="{y:'auto'}">
+              <div class="rounded-t-xl max-h-[270px] overflow-y-auto tds-custom-scroll w-full">
+                <tds-table #basicTable class="w-full h-full" [listData]="detailsFormGroups.value" showPagination="false">
                   <thead class="bg-neutral-2-50">
                     <tr class="bg-neutral-2-50">
                       <!-- <th width="50%" class="bg-neutral-2-50"><div class="uppercase text-caption-2">Sản phẩm</div></th>
@@ -170,7 +170,7 @@
 
                         </div>
                         <tds-form-field [class.hidden]="editNoteProduct !== detail?.value?.ProductId" class="pt-2">
-                          <input tdsInput placeholder="Ghi chú" formControlName="Note" (blur)="stopEdit()" (keyup.enter)="stopEdit()" />
+                          <input tdsInput placeholder="Ghi chú" formControlName="Note" (blur)="stopEdit()" (keyup.enter)="stopEdit()"/>
                         </tds-form-field>
                       </td>
 
@@ -209,112 +209,97 @@
                   </tbody>
                 </tds-table>
               </div>
-              <div class="w-ful h-full flex flex-col gap-3 p-4 bg-neutral-2-50 rounded-b-xl">
-                <div class="flex w-1/2 gap-2.5 ">
-                    <div class="w-1/3 text-body-2 font-regular font-sans text-neutral-1-900">Tổng</div>
-                    <div class="w-2/3 flex justify-end text-body-2 font-regular font-sans text-neutral-1-900">
-                      {{ orderForm?.value?.TotalAmount | number }}
-                    </div>
-                </div>
+              <div class="w-ful h-full flex p-4 bg-neutral-2-50 rounded-b-xl">
+                <div class="grid grid-cols-2 gap-x-6 gap-y-4 w-full">
+                  <div class="grid grid-cols-3 items-end">
+                    <label>Tổng</label>
+                    <span class="w-full col-span-2">{{ orderForm?.value?.TotalAmount | number:'1.0-3' }}</span>
+                  </div>
 
-                <div class="w-full flex gap-4" *ngIf="isEnableCreateOrder">
-                  <div class="w-1/2 gap-2.5 flex items-center">
-                    <div class="w-1/3 text-body-2 font-regular font-sans text-neutral-1-900">Giảm giá</div>
-                    <div class="w-2/3">
-                      <tds-form-field>
-                        <tds-input-number autocomplete="off" placeholder="0" [ngModelOptions]="{standalone: true}"
-                        [ngModel]="orderForm.value?.DecreaseAmount + orderForm.value?.DiscountAmount | number" ></tds-input-number>
-                        <span tdsSuffix>
-                          <span class="tdsi-discount-fill text-primary-1 text-xl" tds-popover popoverTrigger="click"
-                            [popoverContent]="tmpDiscount" [popoverAutoClose]="true" [popoverBackdrop]="true">
-                          </span>
+                  <div *ngIf="isEnableCreateOrder" class="grid grid-cols-3 items-end">
+                    <label class="font-semibold">Tổng tiền</label>
+                    <span class="w-full col-span-2 text-header-1 font-semibold">{{ orderForm?.value?.TotalAmountBill | number:'1.0-3' }}</span>
+                  </div>
 
-                          <ng-template #tmpDiscount>
-                            <div class="flex flex-col gap-y-2">
-
-                              <div class="flex items-center">
-                                <tds-label class="w-[35%] font-normal text-sm">Chiếc khấu (%)</tds-label>
-
-                                <tds-form-field class="w-[35%]">
-                                  <tds-input-number autocomplete="off" placeholder="0" [min]="0" [max]="100" [step]="1" formControlName="Discount"
-                                  (ngModelChange)="updateTotalAmount()"></tds-input-number>
-                                  <span tdsSuffix>
-                                    <span class="text-body-2 font-semibold font-sans text-primary-1">%</span>
-                                  </span>
-                                </tds-form-field>
-                                <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
-                                  <span> -{{ orderForm.value?.DiscountAmount || 0 | number: '1.0-3' }} </span>
-                                </div>
-                              </div>
-
-                              <div class="flex items-center">
-                                <tds-label class="w-[35%] font-normal text-sm">Giảm tiền</tds-label>
-
-                                <tds-form-field class="w-[35%]">
-                                  <tds-input-number autocomplete="off" placeholder="0" [min]="0" [step]="1000" formControlName="DecreaseAmount"
-                                  (ngModelChange)="updateTotalAmount()"></tds-input-number>
-                                </tds-form-field>
-                                <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
-                                  <span> -{{ orderForm.value?.DecreaseAmount || 0 | number: '1.0-3' }} </span>
-                                </div>
-                              </div>
-
-                            </div>
-                          </ng-template>
-
+                  <div *ngIf="isEnableCreateOrder" class="grid grid-cols-3 items-center">
+                    <label>Giảm giá</label>
+                    <tds-form-field class="w-full col-span-2">
+                      <tds-input-number autocomplete="off" placeholder="0" [ngModelOptions]="{standalone: true}"
+                      [ngModel]="orderForm.value?.DecreaseAmount + orderForm.value?.DiscountAmount | number" ></tds-input-number>
+                      <span tdsSuffix>
+                        <span class="tdsi-discount-fill text-primary-1 text-xl" tds-popover popoverTrigger="click"
+                          [popoverContent]="tmpDiscount" [popoverAutoClose]="true" [popoverBackdrop]="true">
                         </span>
-                      </tds-form-field>
-                    </div>
-                  </div>
-                  <div class="flex w-1/2 gap-2.5 items-center">
-                    <div class="w-1/3 text-body-2 font-semibold font-sans text-neutral-1-900">Tổng tiền</div>
-                    <div class="w-2/3 flex justify-end text-header-1 font-semibold font-sans text-neutral-1-900">
-                      {{ orderForm?.value?.TotalAmountBill | number:'1.0-3' }}
-                    </div>
-                  </div>
-                </div>
 
-                <div class="w-full flex gap-4" *ngIf="isEnableCreateOrder">
-                  <div class="w-1/2 gap-2.5 flex items-center">
-                    <div class="w-1/3 text-body-2 font-regular font-sans text-neutral-1-900">Thuế</div>
-                    <div class="w-2/3">
-                      <tds-form-field>
-                        <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0"
-                          formControlName="AmountTax" ></tds-input-number>
-                        <span tdsSuffix><i class="tdsi-revenue-fill text-primary-1 text-xl" (click)="showModalTax()"></i></span>
-                      </tds-form-field>
-                    </div>
-                  </div>
-                  <div class="flex w-1/2 gap-2.5 items-center">
-                    <div class="w-1/3 text-body-2 font-regular font-sans text-neutral-1-900">Tiền cọc</div>
-                    <div class="w-2/3">
-                      <tds-form-field>
-                        <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0"
-                          [(ngModel)]="saleModel.AmountDeposit" [ngModelOptions]="{standalone: true}" (ngModelChange)="updateTotalAmount()"></tds-input-number>
-                      </tds-form-field>
-                    </div>
-                  </div>
-                </div>
+                        <ng-template #tmpDiscount>
+                          <div class="flex flex-col gap-y-2">
 
-                <div class="w-full flex gap-4" *ngIf="isEnableCreateOrder">
-                  <div class="w-1/2 gap-2.5 flex items-center">
-                    <div class="w-1/3 text-body-2 font-regular font-sans text-neutral-1-900">Khuyến mãi</div>
-                    <div class="w-2/3">
-                      <!-- <tds-form-field>
-                        <tds-input-number [min]="0" autocomplete="off" placeholder="0" [formControl]="khuyenMai"></tds-input-number>
-                        <span tdsSuffix><i class="tdsi-gift-fill text-primary-1 text-xl"></i></span>
-                      </tds-form-field> -->
-                    </div>
+                            <div class="flex items-center">
+                              <tds-label class="w-[35%] font-normal text-sm">Chiếc khấu (%)</tds-label>
+
+                              <tds-form-field class="w-[35%]">
+                                <tds-input-number autocomplete="off" placeholder="0" [min]="0" [max]="100" [step]="1" formControlName="Discount"
+                                (ngModelChange)="updateTotalAmount()"></tds-input-number>
+                                <span tdsSuffix>
+                                  <span class="text-body-2 font-semibold font-sans text-primary-1">%</span>
+                                </span>
+                              </tds-form-field>
+                              <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
+                                <span> -{{ orderForm.value?.DiscountAmount || 0 | number: '1.0-3' }} </span>
+                              </div>
+                            </div>
+
+                            <div class="flex items-center">
+                              <tds-label class="w-[35%] font-normal text-sm">Giảm tiền</tds-label>
+
+                              <tds-form-field class="w-[35%]">
+                                <tds-input-number autocomplete="off" placeholder="0" [min]="0" [step]="1000" formControlName="DecreaseAmount"
+                                (ngModelChange)="updateTotalAmount()"></tds-input-number>
+                              </tds-form-field>
+                              <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
+                                <span> -{{ orderForm.value?.DecreaseAmount || 0 | number: '1.0-3' }} </span>
+                              </div>
+                            </div>
+
+                          </div>
+                        </ng-template>
+                      </span>
+                    </tds-form-field>
                   </div>
-                  <div class="flex w-1/2 gap-2.5 items-center">
-                    <div class="w-1/3 text-body-2 font-regular font-sans text-neutral-1-900">Thanh toán</div>
-                    <div class="w-2/3">
-                      <tds-form-field>
-                        <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0" [required]='true'
-                          formControlName="PaymentAmount"></tds-input-number>
-                      </tds-form-field>
-                    </div>
+
+                  <div *ngIf="isEnableCreateOrder" class="grid grid-cols-3 items-center">
+                    <label>Tiền cọc</label>
+                    <tds-form-field class="w-full col-span-2">
+                      <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0"
+                        [(ngModel)]="saleModel.AmountDeposit" [ngModelOptions]="{standalone: true}" (ngModelChange)="updateTotalAmount()"></tds-input-number>
+                    </tds-form-field>
                   </div>
+
+                  <div *ngIf="isEnableCreateOrder" class="grid grid-cols-3 items-center">
+                    <label>Thuế</label>
+                    <tds-form-field class="w-full col-span-2">
+                      <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0"
+                        formControlName="AmountTax" ></tds-input-number>
+                      <span tdsSuffix><i class="tdsi-revenue-fill text-primary-1 text-xl" (click)="showModalTax()"></i></span>
+                    </tds-form-field>
+                  </div>
+
+                  <div *ngIf="isEnableCreateOrder" class="grid grid-cols-3 items-center">
+                    <label>Thanh toán</label>
+                    <tds-form-field class="w-full col-span-2">
+                      <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0" [required]='true'
+                        formControlName="PaymentAmount"></tds-input-number>
+                    </tds-form-field>
+                  </div>
+                  
+                  <!-- <div *ngIf="isEnableCreateOrder" class="grid grid-cols-3 items-center">
+                    <label>Khuyến mãi</label>
+                    <tds-form-field class="w-full col-span-2">
+                      <tds-input-number [min]="0" autocomplete="off" placeholder="0" [formControl]="khuyenMai"></tds-input-number>
+                      <span tdsSuffix><i class="tdsi-gift-fill text-primary-1 text-xl"></i></span>
+                    </tds-form-field>
+                  </div> -->
+
                 </div>
               </div>
             </div>
@@ -425,7 +410,7 @@
                     <div>
                       <div class="text-body-2 font-semibold font-sans text-neutral-1-900 pb-2">Ghi chú giao hàng</div>
                       <tds-form-field class="w-full">
-                        <textarea tdsInput placeholder="Nhập ghi chú"
+                        <textarea tdsInput placeholder="Nhập ghi chú" class="resize-none no-scrollbar"
                         [(ngModel)]="saleModel.DeliveryNote" [ngModelOptions]="{standalone: true}"></textarea>
                       </tds-form-field>
                     </div>
