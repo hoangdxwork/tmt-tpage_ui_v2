@@ -1,0 +1,36 @@
+<tds-spin [spinning]="isLoading" class="w-full h-full">
+  <div class="w-full h-full pr-1">
+    <div class="flex flex-col gap-y-4 h-full">
+      <div class="h-full w-full relative">
+        <div class="absolute inset-0 overflow-y-auto overflow-x-hidden tds-custom-scroll flex flex-col gap-y-6">
+          <div class="flex gap-x-4 pr-4 relative w-full cursor-pointer" *ngFor="let item of lstData" (click)="onDetail(item.Id)">
+            <tds-avatar [shape]="'square'" [size]="80" tdsSrc="{{item.Image}}" [isAvatar]="false" class="rounded min-w-[80px]"></tds-avatar>
+
+            <div class="text-neutral-1-400 relative w-full">
+            <div class="flex flex-col flex-auto gap-y-1 absolute inset-0" *ngIf="item.DateRead else notRead">
+                <span class="text-base font-semibold w-full">{{item.Title}}</span>
+                <span class="truncate w-full">{{item.Description}}</span>
+                <span class="text-[13px] font-semibold w-full">{{item.DateCreated | yiDiffDateTime}} - {{item.DateCreated | date: 'dd/MM/yyyy'}}</span>
+            </div>
+
+            <ng-template #notRead>
+              <div class="flex flex-col flex-auto gap-y-1 absolute inset-0">
+                <span class="text-base font-semibold text-neutral-1-900">{{item.Title}}</span>
+                <span class="text-neutral-1-900 truncate">{{item.Description}}</span>
+                <span class="text-[13px] font-semibold text-info-400">{{item.DateCreated | yiDiffDateTime}} - {{item.DateCreated | date: 'dd/MM/yyyy'}}</span>
+              </div>
+              <span class="tdsi-radio-circle-fill text-info-400 absolute top-0 right-0 text-xs"></span>
+            </ng-template>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button tds-button color="secondary" rounded="!rounded-full" class="w-full flex justify-center bg-light-50 border-0"
+        (click)="onNext()" *ngIf="hasNextPage && !isLoading">
+        <span class="flex items-center text-primary-1">Xem thêm</span>
+      </button>
+    </div>
+  </div>
+</tds-spin>

@@ -83,6 +83,7 @@ export class LayoutComponent implements OnInit {
   onLogout() {
     this.auth.logout(environment.urlLogin)
   }
+
   onOpenChange(e: boolean) {
     this.inlineCollapsed = e;
   }

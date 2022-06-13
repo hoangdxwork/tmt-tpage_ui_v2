@@ -14,8 +14,7 @@ import { CRMGenerateMessageByPhoneDTO, RestSMSDTO, SendMessageSMSDTO } from 'src
 
 @Component({
   selector: 'app-modal-send-message',
-  templateUrl: './modal-send-message.component.html',
-  styleUrls: ['./modal-send-message.component.scss']
+  templateUrl: './modal-send-message.component.html'
 })
 export class ModalSendMessageComponent implements OnInit {
 

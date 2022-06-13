@@ -131,6 +131,7 @@ export class SignalRConnectionService  {
     });
     this._hubConnection.on(`${HubEvents.onFacebookEvent}`, (data:TDSSafeAny) => {
       this._onFacebookEvent$.emit(data);
+      console.log(data);
     });
     this._hubConnection.on(`${HubEvents.onReadConversation}`, (data:TDSSafeAny) => {
       this._onReadConversation$.emit(data);
@@ -166,7 +167,8 @@ export class SignalRConnectionService  {
     let hubConnectionBuilder = new signalR.HubConnectionBuilder() as any;
 
     this._hubConnection = hubConnectionBuilder
-      .withUrl(`${this.BASE_SIGNALR}/hub/` + configs.hubName + environment.signalRAppend , {
+      // .withUrl(`${this.BASE_SIGNALR}/hub/` + configs.hubName + environment.signalRAppend , {
+      .withUrl(`${this.BASE_SIGNALR}/hub/` + configs.hubName , {
           transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling,
           accessTokenFactory: () => {
               return configs.token;
@@ -190,11 +192,10 @@ export class SignalRConnectionService  {
 
   private connectionStart() {
     this._hubConnection
-      .start()
-      .then(() => {
-        console.log('Hub connection started');
-        this.retry = 0;
-        this.statusConnecting();
+      .start().then(() => {
+          console.log('Hub connection started');
+          this.retry = 0;
+          this.statusConnecting();
       })
       .catch(() => {
         console.log('Error while establishing connection, retrying...');

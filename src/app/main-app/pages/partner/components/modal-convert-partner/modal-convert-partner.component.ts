@@ -7,8 +7,7 @@ import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-modal-convert-partner',
-  templateUrl: './modal-convert-partner.component.html',
-  styleUrls: ['./modal-convert-partner.component.scss']
+  templateUrl: './modal-convert-partner.component.html'
 })
 
 export class ModalConvertPartnerComponent implements OnInit {

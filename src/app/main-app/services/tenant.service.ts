@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tmt-tang-ui";
-import { AppTenantConfig_FeatureCacheDTO, TenantInfoDTO, TenantUsedDTO } from "../dto/tenant/tenant.dto";
+import { AppPackageDTO, AppTenantConfig_FeatureCacheDTO, TenantInfoDTO, TenantUsedDTO } from "../dto/tenant/tenant.dto";
 import { BaseSevice } from "./base.service";
 
 @Injectable()
@@ -32,6 +32,15 @@ export class TenantService extends BaseSevice {
     }
 
     return this.apiService.getData<TenantUsedDTO>(api, null);
+  }
+
+  getPackages(): Observable<AppPackageDTO> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/packages`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<AppPackageDTO>(api, null);
   }
 
 }

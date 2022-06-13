@@ -12,11 +12,11 @@
                     </div>
                 </div>
                 <div class="flex gap-x-2">
-                    <button tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" [disabled]="isProcessing" 
+                    <button tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" [disabled]="isProcessing"
                         (click)="onSavePrint('print')">Xác nhận và in (F9)</button>
-                    <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" [disabled]="isProcessing" 
+                    <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" [disabled]="isProcessing"
                         (click)="onSavePrint('printship')">Xác nhận và in ship</button>
-                    <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" [disabled]="isProcessing" 
+                    <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" [disabled]="isProcessing"
                         (click)="onSavePrint('confirm')">Xác nhận và xem (F8)</button>
 
                     <button  tds-button color="primary" *ngIf="dataModel.State == 'open'" type="button" [disabled]="isProcessing"
@@ -25,14 +25,14 @@
                             <i class="tdsi-revenue-fill text-lg leading-none mr-2"></i>Thanh toán
                         </span>
                     </button>
-                    <button tds-button type="button" color="primary" [disabled]="isProcessing" 
+                    <button tds-button type="button" color="primary" [disabled]="isProcessing"
                         *ngIf="dataModel.State !== 'cancel' && dataModel.State !== 'draft' && dataModel.Carrier != null && !dataModel.TrackingRef"
                         (click)="sendToShipper()">
                         <span class="flex items-center">
                             <i class="tdsi-transport-fill text-lg leading-none mr-2"></i>Gửi vận đơn
                         </span>
                     </button>
-                    <button type="button"  tds-button color="primary" [disabled]="isProcessing" 
+                    <button type="button"  tds-button color="primary" [disabled]="isProcessing"
                         (click)="actionRefund()"
                         *ngIf="!(dataModel.Type  =='refund' || ['open', 'paid'].indexOf(dataModel.State) === -1)">
                         <span class="flex items-center">
@@ -45,7 +45,7 @@
                         </span>
                     </button>
 
-                    <button type="button" tds-button color="info" [disabled]="isProcessing" 
+                    <button type="button" tds-button color="info" [disabled]="isProcessing"
                         (click)="onCreate()">
                         <span class="flex items-center">
                             <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
@@ -55,14 +55,14 @@
                         (click)="actionCancel()">
                         <span class="flex items-center"> Hủy hóa đơn </span>
                     </button>
-                    <button type="button"  tds-button color="secondary" [disabled]="isProcessing" 
-                        (click)="onEdit()" 
+                    <button type="button"  tds-button color="secondary" [disabled]="isProcessing"
+                        (click)="onEdit()"
                         *ngIf="dataModel.State !='cancel'">
                         <span class="flex items-center">
                             <i class="tdsi-edit-fill text-lg leading-none mr-2"></i>Chỉnh sửa
                         </span>
                     </button>
-                    <button tds-button color="secondary" class="mr-4" [disabled]="isProcessing" 
+                    <button tds-button color="secondary" class="mr-4" [disabled]="isProcessing"
                         (click)="onBack()">
                         Quay lại
                     </button>
@@ -125,7 +125,7 @@
                         </div>
                         <div class="flex gap-x-6 items-center">
                             <div class="flex w-fit">
-                                <tds-avatar [size]="84" tdsSrc="assets/images/status_bill.png"></tds-avatar>
+                                <tds-avatar [size]="84" tdsSrc="../../../assets/imagesv2/status_bill.png"></tds-avatar>
                             </div>
                             <div class="flex flex-auto flex-col gap-y-2">
                                 <div class="flex items-center">

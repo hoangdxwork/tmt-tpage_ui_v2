@@ -30,7 +30,7 @@
 
                 <tds-form-field>
                     <input aria-colspan="" class="placeholder-neutral-1-400" (keydown.enter)="onSearch($event)"
-                        placeholder="Search..." tdsInput [(ngModel)]="inputValue"/>
+                        placeholder="Tìm kiếm..." tdsInput [(ngModel)]="inputValue"/>
                     <span tdsPrefix ><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
                 </tds-form-field>
 
@@ -42,7 +42,7 @@
 
         <!-- Col Left -->
         <div class="w-3/4 gap-y-4 flex flex-col">
-          <ng-template ngFor let-team [ngForOf]="dataSearch || data" let-i="index">
+          <div *ngFor="let team of (dataSearch || data); let index = index" @eventFadeState>
             <tds-collapse [expandIconPosition]="'right'" class="bg-white rounded-xl w-full">
               <tds-collapse-panel  [header]="header" [active]="getIsIconCollapse(team.Id)" [disabled]=false
               [expandedIcon]="icon" bordered="false" (activeChange)="onChangeCollapse(team.Id, $event)">
@@ -56,14 +56,14 @@
                     </tds-badge>
                     <ng-template #iconTemplate1>
                         <div class="absolute top-5 right-2  transform translate-x-1.5 translate-y-full rounded-full  bg-white flex items-center justify-center">
-                            <span class="p-0.5"><img src="/assets/images/conversation/facebook-circle.svg"></span>
+                            <span class="p-0.5"><img src="../../../assets/imagesv2/conversation/facebook-circle.svg"></span>
                         </div>
                     </ng-template>
                     <div class="flex flex-col gap-1">
                         <div class="flex gap-2 items-center">
                             <div class="text-title-1 font-sans font-semibold"> {{team?.Name}} </div>
                         </div>
-                        <div *ngIf="team.Active" class="text-body-2 font-regular font-sans text-xs flex gap-x-2">
+                        <div *ngIf="team.Active" class="font-regular font-sans text-xs flex gap-x-2">
                           <p *ngIf="!lstData[team.Id]?.data || lstData[team.Id].data.length < 1" class="text-neutral-1-400">Chưa có trang nào được kết nối</p>
                           <p class="text-success-400 font-semibold">Kết nối trang</p>
                         </div>
@@ -105,11 +105,11 @@
                             </tds-badge>
                             <ng-template #iconTemplate2>
                                 <div class="absolute top-4 right-0  transform translate-x-1.5 translate-y-full rounded-full  bg-white flex items-center justify-center">
-                                    <span><img src="/assets/images/conversation/union.svg"></span>
+                                    <span><img src="../../../assets/imagesv2/conversation/union.svg"></span>
                                 </div>
                             </ng-template>
                             <div>
-                                <div class="text-body-2 text-neutral-1-900 font-sans font-semibold text-sm">{{ child.Name }}</div>
+                                <div class="text-neutral-1-900 font-sans font-semibold text-sm">{{ child.Name }}</div>
                                 <div class="flex gap-2 items-center">
                                     <div class="tdsi-success-fill text-primary-1 text-xl"></div>
                                     <div class="text-body-2 text-neutral-1-900 font-regular"> {{child.Active ? 'Đã kết nối' : 'Đóng kết nối'}}</div>
@@ -165,7 +165,7 @@
                             </tds-badge>
                             <ng-template #iconTemplate3>
                                 <div class="absolute top-4 right-0 transform translate-x-1.5 translate-y-full rounded-full bg-white flex items-center justify-center">
-                                    <span><img src="/assets/images/conversation/union.svg"></span>
+                                    <span><img src="../../../assets/imagesv2/conversation/union.svg"></span>
                                 </div>
                             </ng-template>
                             <div>
@@ -188,7 +188,7 @@
                   <div class="flex justify-center w-full">
                     <div class="w-64 flex flex-col gap-y-4 justify-center">
                       <div class="flex justify-center">
-                        <img src="/assets/images/facebook/flag.png" class="w-[90px] h-[69px]">
+                        <img src="../../../assets/imagesv2/facebook/flag.png" class="w-[90px] h-[69px]">
                       </div>
                       <div class="text-body-2 text-center text-neutral-1-300">Tài khoản chưa có trang Facebook nào</div>
                       <div class="flex justify-center">
@@ -204,21 +204,21 @@
 
               </tds-collapse-panel>
             </tds-collapse>
-          </ng-template>
+          </div>
         </div>
 
         <!-- Col Right -->
         <div class="w-1/4 flex flex-col gap-y-4">
           <div class="bg-white rounded-xl w-full p-4 flex flex-col gap-y-4" *ngIf="!userFBLogin || !userFBLogin.id; else userLoggedFacebook">
             <p class="text-lg font-semibold">Kết nối tài khoản</p>
-            <img src="/assets/images/conversation/img-connect-1.svg" />
+            <img src="../../../assets/imagesv2/conversation/img-connect-1.svg" />
             <span class="text-sm font-normal text-center">
               Kết nối tài khoản Facebook của bạn để đồng bộ
               tin nhắn, bình luận, bài viết về TPage
             </span>
-            <button size="xl" class="flex py-[9px] px-[17px] bg-blue-600 rounded-md flex justify-center" (click)="facebookSignIn()">
+            <button size="xl" class="flex py-[9px] px-[17px] bg-blue-600 rounded-md justify-center" (click)="facebookSignIn()">
               <span class="flex items-center text-white text-sm gap-x-2">
-                <img src="/assets/images/facebook/icon-facebook-white.svg"> <span class="font-semibold text-sm">Kết nối với facebook</span>
+                <img src="../../../assets/imagesv2/facebook/icon-facebook-white.svg"> <span class="font-semibold text-sm">Kết nối với facebook</span>
               </span>
             </button>
           </div>
@@ -232,7 +232,7 @@
                 </tds-badge>
                 <ng-template #iconTemplate1>
                     <div class="absolute top-5 right-2  transform translate-x-1.5 translate-y-full rounded-full  bg-white flex items-center justify-center">
-                        <span class="p-0.5"><img src="/assets/images/conversation/facebook-circle.svg"></span>
+                        <span class="p-0.5"><img src="../../../assets/imagesv2/conversation/facebook-circle.svg"></span>
                     </div>
                 </ng-template>
                 <div class="flex flex-col gap-1">
@@ -265,8 +265,8 @@
       </div>
 
       <!-- Data Empty -->
-      <div *ngIf="!data || data.length < 1">
-        <div class="rounded-2xl bg-cover background-content" style="background-image: url(/assets/images/facebook/background-facebook.png);">
+      <div *ngIf="!data || data.length < 1 && !isLoadChannel">
+        <div class="rounded-2xl bg-cover background-content" style="background-image: url(../../../assets/imagesv2/facebook/background-facebook.png);">
           <div class="text-white p-11">
             <p class="title">Kết nối T-Page với tài khoản Facebook của bạn</p>
             <p class="text-sm mt-[17px]" >
@@ -275,7 +275,7 @@
             </p>
             <button tds-button color="secondary" size="xl" class="flex mt-[43px] py-[9px] px-[17px]">
               <span class="flex items-center text-blue-600 text-sm gap-x-2">
-                <img src="/assets/images/conversation/facebook.svg">Kết nối với facebook
+                <img src="../../../assets/imagesv2/conversation/facebook.svg">Kết nối với facebook
               </span>
             </button>
           </div>

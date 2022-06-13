@@ -1,5 +1,5 @@
 <div *ngIf="item" class="text-body-2 text-neutral-1-900">
-  <div class="w-full relative overflow-hidden">
+  <div class="w-full relative overflow-hidden " style="white-space: pre-line; word-break: break-word;">
     <div [ngClass]="activeCvsItem && (activeCvsItem?.id == item.id)?'absolute h-full w-1 left-0 bg-blue-500':''"></div>
     <div [ngClass]="activeCvsItem && (activeCvsItem?.id == item.id)?'bg-secondary-3':'bg-white'"
         class="p-3.5 flex flex-col gap-3 w-full hover:bg-neutral-3-50">
@@ -24,7 +24,7 @@
                     </svg>
                 </span>
                 <!-- icon message -->
-                <span *ngIf="getLastActivity()?.type == 3"  class="absolute" style="top: 31px;left: 31px;">
+                <span *ngIf="getLastActivity()?.type == 2"  class="absolute" style="top: 31px;left: 31px;">
                     <svg width="20" height="21" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1.6665 13.0134C1.6665 16.3847 3.04389 19.327 5.30367 21.3711L5.36031 23.2042C5.36031 23.2042 5.36031 23.2042 5.36031 23.2042C5.4008 24.5156 6.75463 25.3755 7.96053 24.8431C7.96056 24.8431 7.96059 24.843 7.96062 24.843C7.96097 24.8429 7.96132 24.8427 7.96168 24.8426L10.0314 23.9302C11.076 24.2116 12.1824 24.3627 13.3332 24.3627C19.857 24.3627 24.9998 19.5481 24.9998 13.016C24.9998 6.48431 19.8573 1.66669 13.3332 1.66669C6.80934 1.66669 1.6665 6.48131 1.6665 13.0134Z" fill="url(#paint0_radial_11437_25390)" stroke="white" stroke-width="2" />
                         <path d="M6.92785 16.04L10.0612 11.0694C10.5598 10.2774 11.6265 10.0827 12.3758 10.6427L14.8692 12.512C15.0985 12.6827 15.4132 12.6827 15.6398 12.5094L19.0051 9.9547C19.4531 9.61336 20.0398 10.152 19.7411 10.6294L16.6052 15.5974C16.1065 16.3894 15.0398 16.584 14.2905 16.024L11.7972 14.1547C11.5678 13.984 11.2532 13.984 11.0265 14.1574L7.66118 16.712C7.21318 17.0534 6.62651 16.5174 6.92785 16.04Z" fill="white" />
@@ -42,10 +42,10 @@
             </div>
 
         </div>
-        <div class="w-full flex flex-col gap-1">
-            <div class="flex w-full justify-between items-center gap-x-1.5" *ngIf="getLastActivity()">
+        <div class="w-full flex flex-col gap-1" *ngIf="getLastActivity()">
+            <div class="flex w-full justify-between items-center gap-x-1.5">
                 <div class="w-1/2 text-body-2 text-neutral-1-600 font-semibold truncate" [tooltipTitle]="item.name || item.partner_name" [tooltipPlacement]="['topLeft', 'leftTop']"
-                tds-tooltip>{{item.name || item.partner_name}}</div>
+                    tds-tooltip>{{item.name || item.partner_name}}</div>
                 <div class="flex items-center gap-2 truncate" >
                     <span *ngIf="type == 'all' && item.count_unread_activities > 0">
                         <tds-badge class="flex items-center" [standalone]="true" [count]="item.count_unread_activities" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
@@ -64,10 +64,8 @@
                     </div>
                 </div>
             </div>
-            <div class="text-body-2 font-regular font-sans text-neutral-1-900" >
-                <p tds-typography ellipsis expandable [ellipsisRows]="2" [content]="getLastActivity()?.message | formatIconLike"
-                  [contentCollapse]="'Ẩn'">
-                </p>
+            <div *ngIf="getLastActivity()?.message">
+                <div class="text-body-2 font-regular font-sans text-neutral-1-900" [innerHTML]="getLastActivity()?.message | formatIconLike"></div>
             </div>
         </div>
       </div>
@@ -108,26 +106,23 @@
             </div>
         </div>
 
-        <div class=" flex gap-x-2 items-center truncate flex-none" *ngIf="item.assigned_to">
-            <tds-avatar class="bg-accent-4  text-white" size="sm"
+        <div class="flex gap-x-2 items-center truncate flex-none" *ngIf="item.assigned_to">
+            <tds-avatar class="bg-accent-4 text-white" size="sm"
                 [tdsSrc]="item.assigned_to.Avatar">
             </tds-avatar>
             <span class="text-body-2">{{item.assigned_to.Name}}</span>
         </div>
 
         <div class="flex justify-end gap-1 items-center" *ngIf="eventData && eventData[team.Facebook_PageId] && eventData[team.Facebook_PageId][psid]">
-            <div class="tdsi-flash-on-fill text-accent-3 px-1 text-2xl"></div>
+            <div class="tdsi-flash-on-fill text-accent-3"></div>
             <div class="text-accent-3 text-caption-1 font-regular font-sans">
+                <span class="mr-1">{{eventData[team.Facebook_PageId][psid].time | yiDateTimeFormat}}</span>
                 <span>{{eventData[team.Facebook_PageId][psid].message}}</span>
-                <span>{{eventData[team.Facebook_PageId][psid].time}}</span>
             </div>
         </div>
       </div>
     </div>
     <div *ngIf="isConversationOver">
-        <!-- <div class="absolute top-0 right-0 flex">
-            <span class="w-0 h-0 border-t-[41px] border-t-green-400 border-l-[41px] border-l-transparent border-solid"> </span>
-        </div> -->
         <div class="w-14 h-14 bg-green-400 rotate-45 absolute -top-7 -right-7"> </div>
         <div class="absolute top-0 right-0 flex">
             <div class="tdsi-tick-fill text-white text-lg px-1"></div>

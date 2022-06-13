@@ -32,7 +32,7 @@ export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
   isLoading_productInventory = false;
   count_productInventory: number = 1;
 
-  fallback = 'assets/images/config/no-image-default.svg'
+  fallback = '../../../assets/imagesv2/config/no-image-default.svg'
 
   constructor(private fb:FormBuilder,
     private message: TDSMessageService,
@@ -51,7 +51,7 @@ export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
     this.isLoading_stockMove = true;
 
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
-    
+
     this.stokeMoveService.getStockMoveProduct(this.productTemplate.Id,params).pipe(takeUntil(this.destroy$)).subscribe(
       (res:ODataStokeMoveDTO)=>{
         this.count_stockMove = res['@odata.count'] as number;

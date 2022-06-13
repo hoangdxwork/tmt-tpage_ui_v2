@@ -16,6 +16,33 @@ export interface TenantUsedDTO {
   saleOnlineOrder: number;
 }
 
+export interface AppPackageDTO {
+  id: number;
+  code: string;
+  name: string;
+  suffix: string;
+  packages: PackageDTO[];
+}
+
+export interface PackageDTO {
+  id: string;
+  code: string;
+  name: string;
+  description: string;
+  group: string;
+  price: string;
+  features: string[];
+  limitations: AppTenantConfig_LimitationCacheDTO;
+}
+
+export interface PackagePaymentDTO {
+  Package?: PackageDTO;
+  Month: number;
+  DateStarted?: Date;
+  DateExpired?: Date;
+  TotalAmount: number;
+}
+
 export enum AppTenantProductEnum {
   TPOS = 0,
   TDENTAL = 1,

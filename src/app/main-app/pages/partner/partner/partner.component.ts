@@ -24,8 +24,7 @@ import { PartnerBirthdayDTO } from 'src/app/main-app/dto/partner/partner-birthda
 
 @Component({
   selector: 'app-partner',
-  templateUrl: './partner.component.html',
-  styleUrls: ['./partner.component.scss']
+  templateUrl: './partner.component.html'
 })
 
 export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -168,14 +167,14 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   loadTags() {
     let type = "partner";
     this.tagService.getByType(type).pipe(takeUntil(this.destroy$)).subscribe((res: ODataTagsPartnerDTO) => {
-      this.lstDataTag = res.value;
+      this.lstDataTag = [...res.value];
     })
   }
 
   loadPartnerStatusReport() {
     this.commonService.getPartnerStatusReport().pipe(takeUntil(this.destroy$)).subscribe((res: PartnerStatusReport) => {
       if (res && TDSHelperArray.isArray(res.item)) {
-        this.partnerStatusReport = res.item;
+        this.partnerStatusReport = [...res.item];
       }
     }, error => {
       this.message.error('Tải dữ liệu trạng thái khách hàng thất bại!');
@@ -303,7 +302,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
       }))
       .subscribe((res: any) => {
         this.count = res['@odata.count'] as number;
-        this.lstOfData = res.value;
+        this.lstOfData = [...res.value];
     }, error => {
         this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
     });

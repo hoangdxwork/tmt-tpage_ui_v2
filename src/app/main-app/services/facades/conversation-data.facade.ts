@@ -51,16 +51,16 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
 
       this.currentTeam = this.crmTeamService.getCurrentTeam();
       this.currentUrl = this.router.routerState.snapshot.url;
+
       this.initialize();
   }
 
   initialize() {
     //TODO: message from facebook
-    this.sgRConnectionService._onFacebookEvent$.pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-        this.notificationMessage(res);
+    this.sgRConnectionService._onFacebookEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.messageWebhook(res);
-    }, error => {});
+        this.notificationMessage(res);
+    });
 
     //TODO: load message from messageJob
     this.sgRConnectionService._onSendMessageCompleteEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
@@ -68,39 +68,39 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     });
 
     // Message Sending
-    this.sgRConnectionService._onSendMessageSendingEvent$.subscribe((res: any) => {
+    this.sgRConnectionService._onSendMessageSendingEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.messageJob(res);
     });
 
      // Message Fail
-     this.sgRConnectionService._onSendMessageFailEvent$.subscribe((res: any) => {
+     this.sgRConnectionService._onSendMessageFailEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.messageJob(res);
     });
 
     // Data From Scan
-    this.sgRConnectionService._onFacebookScanData$.subscribe((res: any) => {
+    this.sgRConnectionService._onFacebookScanData$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if(res.type == "update_scan_conversation") {
-        this.messageScanConversation(res);
+          this.messageScanConversation(res);
       }
       if(res.type == "update_scan_feed") {
-        this.messageScanFeed(res);
+          this.messageScanFeed(res);
       }
     });
 
     // Message From Add Template
-    this.sgRConnectionService._onAddTemplateMessage$.subscribe((res: any) => {
+    this.sgRConnectionService._onAddTemplateMessage$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if(res.type == "add_template_message") {
         this.messageAddTemplate(res);
       }
     });
 
     // Update tag
-    this.sgRConnectionService._onAppendTagSucceedEvent$.subscribe((res: any) => {
+    this.sgRConnectionService._onAppendTagSucceedEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.updateAddTags(res, res.type);
     });
 
     // Update assign user
-    this.sgRConnectionService._onAppendAssignUserEvent$.subscribe((res: any) => {
+    this.sgRConnectionService._onAppendAssignUserEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.updateAssignUser(res);
     });
   }
@@ -119,7 +119,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   }
 
   notificationMessage(value: any): any {
-    let data = Object.assign({}, {...value.data});
+    let data = Object.assign({}, value.data);
     let pageId = data.page_id;
     let psid = data.psid;
 
@@ -137,12 +137,13 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
         let url = `/conversation/all?teamId=${team.Id}&type=all&psid=${psid}`;
         let template = `<a href="${url}">${message}</a>`;
 
-        this.notification.info('Tin nhắn mới', template, { placement: 'bottomLeft' });
+        this.notification.success('Tin nhắn mới', template, { placement: 'bottomLeft' });
       } else {
         let messageError = 'Không tìm thấy trang';
-        this.notification.info('Tin nhắn mới', messageError, { placement: 'bottomLeft' });
+        this.notification.error('Tin nhắn mới', messageError, { placement: 'bottomLeft' });
       }
     }
+    console.log(value);
   }
 
   messageServer(value: any) {
@@ -232,7 +233,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
         if(create) {
           return this.cvsFbState.setConversation(pageId, type, create);
         }
-      }), shareReplay());
+      }), shareReplay(1));
     }
     return this.dataSource$;
   }
@@ -279,8 +280,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     if (existAll) {
       this.checkInfoUpdate(existAll, data);
       this.updateConversation(pageId, type, psid, message, dateCreated, is_admin);
-    }
-    else {
+    } else {
       this.cvsFbState.addConversation(pageId, "all", psid, data);
     }
 

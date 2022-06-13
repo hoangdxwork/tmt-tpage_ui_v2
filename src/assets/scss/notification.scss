@@ -1,0 +1,18 @@
+.notification-custom {
+  pre {
+    img {
+      margin: 20px auto;
+    }
+  }
+
+  p {
+    font-family: 'Segoe UI';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+    color: #5A6271;
+  }
+}

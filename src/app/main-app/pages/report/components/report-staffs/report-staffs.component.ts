@@ -25,7 +25,7 @@ export class ReportStaffsComponent implements OnInit {
   rangeDate = null;
   emptyData = false;
   //#endregion
-  
+
   constructor() { }
 
   ngOnInit(): void {
@@ -35,19 +35,19 @@ export class ReportStaffsComponent implements OnInit {
   loadData(){
     this.tableData = [
       {
-        id:1, name:'Nguyễn Bính', imageURL:'assets/images/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
+        id:1, name:'Nguyễn Bính', imageURL:'../../../assets/imagesv2/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
       },
       {
-        id:2, name:'Hoàng Minh', imageURL:'assets/images/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
+        id:2, name:'Hoàng Minh', imageURL:'../../../assets/imagesv2/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
       },
       {
-        id:3, name:'Lê Hương', imageURL:'assets/images/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
+        id:3, name:'Lê Hương', imageURL:'../../../assets/imagesv2/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
       },
       {
-        id:4, name:'Lý Phát', imageURL:'assets/images/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
+        id:4, name:'Lý Phát', imageURL:'../../../assets/imagesv2/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
       },
       {
-        id:5, name:'Hồ Ca', imageURL:'assets/images/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
+        id:5, name:'Hồ Ca', imageURL:'../../../assets/imagesv2/Avatar-user.png', conversations:30, messages:20, comments:50, customers:50, oldCustomers:30, orders:40, completeOrders:20, responseTime:10, revenue:5000000
       },
     ];
 
@@ -155,7 +155,7 @@ export class ReportStaffsComponent implements OnInit {
                 width:48,
                 height:48,
                 backgroundColor:{
-                  image:'assets/images/Avatar-user.png'
+                  image:'../../../assets/imagesv2/Avatar-user.png'
                 }
               }
             }

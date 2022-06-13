@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from "@angular/core";
 import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ActivityStatus } from "src/app/lib/enum/message/coversation-message";
@@ -12,12 +12,15 @@ import { ConversationOrderFacade } from "../../services/facades/conversation-ord
 import { PhoneHelper } from "../helper/phone.helper";
 import { ReplaceHelper } from "../helper/replace.helper";
 import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
+import { eventReplyCommentTrigger } from "../helper/event-animations.helper";
 
 @Component({
   selector: "tds-conversation-item",
   templateUrl:'./tds-conversation-item.component.html',
   styleUrls: ['./tds-conversations.component.sass'],
-  encapsulation: ViewEncapsulation.None
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+  animations: [eventReplyCommentTrigger]
 })
 
 export class TDSConversationItemComponent implements OnInit, OnDestroy {
@@ -30,6 +33,8 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   @Input() children: any;
   @Input() type: any;
   @Input() name!: string;
+
+  @HostBinding("@eventReplyComment") eventAnimation = true;
 
   messages: any = [];
   message: string = '';
@@ -61,29 +66,11 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     //TODO: mapping data from request to Webhook
     if(this.data) {
-      this.data = { ...this.data };
-      if(TDSHelperString.hasValueString(this.data.page_id)) {
-        this.data.page_id = this.team.Facebook_PageId;
-      }
-      if(TDSHelperString.hasValueString(this.data.psid)) {
-        this.data.psid = this.psid;
-      }
-      if(TDSHelperString.hasValueString(this.data.psid)) {
-        this.data.page_id = this.psid;
-      }
-      if(TDSHelperString.hasValueString(this.data.object_id)) {
-        this.data.page_id = this.data.comment?.object?.id || null;
-      }
-
       this.activityDataFacade.makeActivity(this.team.Facebook_PageId, this.data.from_id, this.type);
       if (!this.data.message_formatted && this.data.id) {
         this.data['attachments'] = this.activityDataFacade.getMessageAttachments(this.team.Facebook_PageId, this.data.from_id, this.data.id);
       }
     }
-  }
-
-  public getElement(): ElementRef {
-    return this.element;
   }
 
   selectOrder(type: string): any {
@@ -126,7 +113,11 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   }
 
   loadEmojiMart(event: any) {
-    // this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
+    if(TDSHelperString.hasValueString(this.messageModel)) {
+      this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
+    } else {
+      this.messageModel = `${event?.emoji?.native}`;
+    }
   }
 
   clickReply(event: any) {
@@ -326,15 +317,21 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
         .pipe(finalize(()=> {this.isReplyingComment = false;} )).subscribe((res: any) => {
           this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });
           this.conversationDataFacade.messageServer(res);
+
           this.messageModel = null;
           this.tdsMessage.success("Trả lời bình luận thành công");
+
           this.isReply = false;
-          this.cdRef.markForCheck();
           event.preventDefault();
+          event.stopImmediatePropagation();
+          this.cdRef.markForCheck();
+
         }, error => {
           this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
-          this.cdRef.markForCheck();
           event.preventDefault();
+          event.stopImmediatePropagation();
+          this.cdRef.markForCheck();
+
         });
     }
   }
@@ -362,6 +359,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
         this.tdsMessage.success('Gửi tin thành công');
 
         event.preventDefault();
+        event.stopImmediatePropagation();
         this.cdRef.markForCheck();
 
     }, error => {
@@ -369,6 +367,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
       this.isReplyingComment = false;
 
       event.preventDefault();
+      event.stopImmediatePropagation();
       this.cdRef.markForCheck();
     });
   }

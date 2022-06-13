@@ -2,8 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-drawer-message',
-  templateUrl: './drawer-message.component.html',
-  styleUrls: ['./drawer-message.component.scss']
+  templateUrl: './drawer-message.component.html'
 })
 export class DrawerMessageComponent implements OnInit {
 

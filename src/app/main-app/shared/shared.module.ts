@@ -38,6 +38,7 @@ import { QuickReplyButtonComponent } from './quick-reply-button/quick-reply-butt
 import { ModalEditOrderComponent } from './modal-edit-order/modal-edit-order.component';
 import { OrderFilterOptionsComponent } from './order-filter-options/order-filter-options.component';
 import { BillFilterOptionsComponent } from './bill-filter-options/bill-filter-options.component';
+import { TpageNotificationDropdownComponent } from './tpage-notification-dropdown/tpage-notification-dropdown.component';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -61,7 +62,9 @@ const cmp =[
   QuickReplyButtonComponent,
   OverviewLiveCampaignComponent,
   OrderFilterOptionsComponent,
-  BillFilterOptionsComponent
+  BillFilterOptionsComponent,
+  ModalEditOrderComponent,
+  TpageNotificationDropdownComponent
 ]
 
 const SERVICES = [
@@ -76,8 +79,7 @@ const SERVICES = [
 
 @NgModule({
   declarations: [
-    ...cmp,
-    ModalEditOrderComponent
+    ...cmp
   ],
   imports: [
     CommonModule,

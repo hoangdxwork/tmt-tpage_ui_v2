@@ -6,7 +6,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef,
    Component, HostBinding, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
-import { finalize, takeUntil, map } from 'rxjs/operators';
+import { finalize, takeUntil, map, shareReplay } from 'rxjs/operators';
 import { ConversationMatchingItem, CRMMatchingMappingDTO } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -20,8 +20,6 @@ import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-anim
 @Component({
   selector: 'app-conversation-all',
   templateUrl: './conversation-all.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
   animations: [eventFadeStateTrigger]
 })
 
@@ -31,7 +29,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   @HostBinding("@eventFadeState") eventAnimation = true;
 
   isLoading: boolean = false;
-  dataSource$!: Observable<any> | undefined;
+  dataSource$!: Observable<any>;
   lstMatchingItem!: ConversationMatchingItem[];
   destroy$ = new Subject();
   psid!: string;
@@ -101,15 +99,16 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     // loading moused khi change, đợi phản hồi từ loadMessages trong shared-tds-conversations
     this.conversationDataFacade.changeCurrentCvs$.subscribe((data: boolean) => {
-        this.isChanged = data;
+      this.isChanged = data;
+      this.cdRef.detectChanges();
     })
   }
 
   onChangeConversation(team: any) {
     this.validateData();
     this.ngZone.run(() => {
-      this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
-      this.loadConversations((this.dataSource$));
+        this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
+        this.loadConversations((this.dataSource$));
     })
   }
 
@@ -164,8 +163,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         let uri = this.router.url.split("?")[0];
         let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${item?.psid}`;
         this.router.navigateByUrl(uriParams);
-
-        this.cdRef.detectChanges();
       }
     }
   }
@@ -184,6 +181,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.isChanged = true;
     (this.activeCvsItem as any) = null;
     this.getActiveCvsItem(item);
+    this.cdRef.detectChanges();
   }
 
   trackByIndex(_: number, data: any): number {
@@ -257,8 +255,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
           // console.log("Yêu cầu cập nhật thất bại.");
         });
       }
-    }
-    else {
+    } else {
       this.onSubmitFilter({});
     }
 
@@ -267,11 +264,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }, 3 * 1000);
   }
 
-  onLoadMiniChat(event: any): void {}
+  onLoadMiniChat(event: any): void {
+
+  }
 
   fetchLiveConversations(team: CRMTeamDTO): void {
     this.fbGraphService.api(`me/conversations?fields=id,link,participants,senders&access_token=${team.Facebook_PageToken}`)
-      .subscribe((res :any) => {});
+      .subscribe();
   }
 
   changeOrderId(orderCode: string | undefined) {

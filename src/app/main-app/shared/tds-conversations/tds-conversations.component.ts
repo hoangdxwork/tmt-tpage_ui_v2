@@ -38,8 +38,6 @@ import { eventFadeStateTrigger } from '../helper/event-animations.helper';
   selector: 'shared-tds-conversations',
   templateUrl: './tds-conversations.component.html',
   styleUrls: ['./tds-conversations.component.sass'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
   animations: [eventFadeStateTrigger]
 })
 
@@ -105,12 +103,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   ngOnInit() {
     this.validateData();
     if (this.data && this.team && TDSHelperString.hasValueString(this.type)) {
-      let data  = {...this.data};
-      this.loadData(data);
-
-      if(this.yiAutoScroll) {
-        this.yiAutoScroll.forceScrollDown();
-      }
+      this.loadData(this.data);
     }
 
     this.activityDataFacade.hasNextData$.subscribe(data => {
@@ -145,15 +138,19 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     this.isLoadMessage = true;
-      this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
-        .pipe(takeUntil(this.destroy$))
-        .pipe(finalize(() => {
-            setTimeout(() => {
-              this.isLoadMessage = false;
-              this.conversationDataFacade.changeCurrentCvs$.emit(false);
-              this.cdRef.detectChanges();
-            }, 350)
-        }))
+    this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
+      .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => {
+          setTimeout(() => {
+            this.isLoadMessage = false;
+            this.conversationDataFacade.changeCurrentCvs$.emit(false);
+            this.cdRef.detectChanges();
+          }, 350)
+      }))
+
+    if(this.yiAutoScroll) {
+      this.yiAutoScroll.forceScrollDown();
+    }
   }
 
   loadUser() {
@@ -262,7 +259,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   loadEmojiMart(event: any) {
-    this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
+    if(TDSHelperString.hasValueString(this.messageModel)) {
+      this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
+    } else {
+      this.messageModel = `${event?.emoji?.native}`;
+    }
   }
 
   validateData() {
@@ -292,7 +293,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       (this.data as any) = {};
       this.validateData();
 
-      this.data = {...changes["data"].currentValue};
+      this.data = changes["data"].currentValue;
       let object = {
         psid: this.data.psid,
         messages: this.messageModel,
@@ -399,6 +400,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.eventHandler = event;
     if(this.isLoadingSendMess) {
       this.eventHandler.preventDefault();
+      this.eventHandler.stopImmediatePropagation();
       return;
     }
     if(this.isEnterSend){
@@ -412,10 +414,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     let message = this.messageModel as string;
     if (!TDSHelperArray.hasListValue(this.uploadedImages) && !TDSHelperString.hasValueString(message)) {
       this.eventHandler.preventDefault();
+      this.eventHandler.stopImmediatePropagation();
       return this.message.error('Hãy nhập nội dung cần gửi');
     }
     if(this.isLoadingSendMess){
       this.eventHandler.preventDefault();
+      this.eventHandler.stopImmediatePropagation();
       return;
     }
 
@@ -459,6 +463,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       }, error => {
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại' );
           this.eventHandler.preventDefault();
+          this.eventHandler.stopImmediatePropagation();
       });
   }
 
@@ -475,7 +480,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .pipe(finalize(() => { this.isLoadingSendMess = false }))
       .subscribe((res: any) => {
 
-        this.message.success('Gửi tin thành công');
         let countImageAdd = 0;
         if (TDSHelperArray.hasListValue(res)) {
           res.forEach((x: any) => {
@@ -485,7 +489,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
               x["message"] = this.activityDataFacade.createDataAttachments(this.uploadedImages[countImageAdd]);
               countImageAdd += 1;
             }
-            this.activityDataFacade.messageServer({ ...x });
+            this.activityDataFacade.messageServer(x);
           });
         }
         let items = res.pop();
@@ -496,11 +500,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         delete this.messageModel;
 
         this.eventHandler.preventDefault();
+        this.eventHandler.stopImmediatePropagation();
         this.cdRef.detectChanges();
 
       }, error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Gửi tin nhắn thất bại');
         this.eventHandler.preventDefault();
+        this.eventHandler.stopImmediatePropagation();
         this.cdRef.detectChanges();
       })
   }
@@ -518,20 +524,22 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .pipe(finalize(() => { this.isLoadingSendMess = false; }))
       .subscribe((res: any) => {
 
-        this.message.success("Trả lời bình luận thành công");
         this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });
-        this.conversationDataFacade.messageServer({ ...res });
+        this.conversationDataFacade.messageServer(res);
 
         this.currentImage = null;
         this.uploadedImages = [];
         delete this.messageModel;
 
-        this.cdRef.detectChanges();
         this.eventHandler.preventDefault();
+        this.eventHandler.stopImmediatePropagation();
+        this.cdRef.detectChanges();
+
       }, error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
-        this.cdRef.detectChanges();
         this.eventHandler.preventDefault();
+        this.eventHandler.stopImmediatePropagation();
+        this.cdRef.detectChanges();
       });
   }
 
@@ -540,7 +548,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       res.map((x: any, i: number) => {
 
         x["status"] = ActivityStatus.sending;
-        this.activityDataFacade.messageServer({ ...x });
+        this.activityDataFacade.messageServer(x);
 
         if (TDSHelperArray.hasListValue(this.uploadedImages)) {
           x["message"] = this.activityDataFacade.createDataAttachments(this.uploadedImages[i]);
@@ -563,7 +571,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.uploadedImages = [];
 
     this.eventHandler.preventDefault();
+    this.eventHandler.stopImmediatePropagation();
     this.cdRef.detectChanges();
+
+    this.yiAutoScroll.forceScrollDown();
   }
 
   prepareModel(message: string): any {
@@ -603,12 +614,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
         this.data.assigned_to = res;
-        this.message.success("Thao tác thành công");
-        this.cdRef.detectChanges();
       },
       err=>{
         this.message.error("Thao tác thất bại");
-        this.cdRef.detectChanges();
       });
   }
 
@@ -695,12 +703,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     if (type === 'post' && item.object_id) {
       this.router.navigateByUrl(`/conversation/post?teamId=${this.team.Id}&type=post&post_id=${item.object_id}`);
     }
-    if (type === 'all' && item.object_id) {
-      //TODO xử lý tiếp
-    }
   }
 
   refreshRead() {
+    this.validateData();
     if (this.isNextData || this.isLoadMessage) {
       this.isNextData = false;
       this.isLoadMessage = false;
@@ -784,6 +790,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   @HostListener('window:dragover', ['$event']) onDragOver(evt: TDSSafeAny) {
     this.displayDropZone = true;
     evt.preventDefault();
+    evt.stopImmediatePropagation();
   }
 
   @HostListener("window:dragleave", ["$event"])
@@ -794,12 +801,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       this.displayDropZone = false;
     }
     evt.preventDefault();
+    evt.stopImmediatePropagation();
   }
 
   @HostListener('window:drop', ['$event'])
   ondrop(evt:any) {
     this.displayDropZone = false;
     evt.preventDefault();
+    evt.stopImmediatePropagation();
   }
 
   trackByIndex(_: number, data: any): number {

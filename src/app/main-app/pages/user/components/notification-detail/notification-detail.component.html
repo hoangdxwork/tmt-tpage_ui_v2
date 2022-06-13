@@ -1,0 +1,29 @@
+<div class="p-4 flex flex-col items-center w-full justify-center text-body-2 h-full notification-custom">
+  <div class="w-3/4 flex flex-col rounded-xl bg-white h-full">
+    <div class="h-full w-full">
+      <tds-spin [spinning]="isLoading" class="h-full w-full flex flex-col items-center">
+        <div class="flex flex-col w-full h-full">
+          <div class="w-full border-b border-neutral-200 p-4">
+            <div class="flex gap-x-4 w-full items-center">
+              <div class="px-2">
+                <button class="bg-neutral-3-50 justify-center flex !rounded-full h-[38px] w-[38px] items-center text-xl" (click)="onBack()">
+                  <i class="tdsi-sort-arrow-down-fill rotate-90"></i>
+                </button>
+              </div>
+              <div class="flex flex-col gap-y-2">
+                <span class="font-semibold text-xl">{{data?.Title}}</span>
+                <span class="text-neutral-1-700">{{data?.DateCreated | yiDiffDateTime}} - {{data?.DateCreated | date: 'dd/MM/yyyy'}}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 flex flex-col gap-y-6 flex-auto ">
+            <div class="h-full w-full relative overflow-x-hidden tds-custom-scroll">
+              <pre class="pre content-message_format absolute inset-0" *ngIf="data?.Content" [innerHTML]="data?.Content"></pre>
+            </div>
+          </div>
+        </div>
+      </tds-spin>
+    </div>
+  </div>
+</div>
