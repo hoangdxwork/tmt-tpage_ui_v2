@@ -31,7 +31,7 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
   public dataSource$!: Observable<any>;
 
   public hasNextData$: EventEmitter<boolean> = new EventEmitter<boolean>();
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
   lstTeam!: any[];
   isProcessing: boolean = false;
 

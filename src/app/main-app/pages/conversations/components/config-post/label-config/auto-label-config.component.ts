@@ -22,7 +22,7 @@ export class AutoLabelConfigComponent implements OnInit, OnChanges, OnDestroy {
   isLoading: boolean = false;
 
   lstTags$!: Observable<CRMTagDTO[]>;
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,

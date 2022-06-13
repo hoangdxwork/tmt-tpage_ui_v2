@@ -57,7 +57,7 @@ export class ConfigAddPromotionComponent implements OnInit, OnDestroy {
   lstProductCategory: ProductCategoryDTO[] = [];
   lstProduct: DataPouchDBDTO[] = [];
 
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
   isLoading: boolean = false;
 
   constructor(

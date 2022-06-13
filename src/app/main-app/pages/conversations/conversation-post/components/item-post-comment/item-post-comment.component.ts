@@ -36,7 +36,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   commentOrders: any = [];
   subSetCommentOrders$!: Subscription;
 
-  destroy$ = new Subject();
+  destroy$ = new Subject<void>();
   messageModel!: string;
   isLoading: boolean = false;
 

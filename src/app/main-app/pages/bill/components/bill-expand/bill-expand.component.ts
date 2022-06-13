@@ -17,7 +17,7 @@ import { Component, Input, OnInit, OnDestroy, ViewContainerRef } from '@angular/
 export class BillExpandComponent implements OnInit, OnDestroy {
   @Input() billData!:FastSaleOrderDTO;
   lstOfData:FSOrderLinesV2[] = [];
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
   isProcessing: boolean = false;
 
   constructor(

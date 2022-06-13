@@ -24,7 +24,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   table: string = "";
   baseRestApi: string = "";
   private dataSource$!: Observable<any>;
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
   private currentTeam: any;
   private currentUrl!: string;
   public lstTeam!: any[];
@@ -541,6 +541,10 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
         });
       }
     });
+  }
+
+  createQuery(pageId: string, type: any) {
+    return this.service.createQuery(pageId, type);
   }
 
   nextDataWithQuery(pageId: string, type: string, queryObj: any): Observable<any> {

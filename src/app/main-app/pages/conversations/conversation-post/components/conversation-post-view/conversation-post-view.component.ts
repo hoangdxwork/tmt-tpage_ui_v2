@@ -23,7 +23,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
   @Input() team!: CRMTeamDTO;
 
   showComment = true;
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
   sortOptions: any[] = [
     { value: "DateCreated desc", text: "Mới nhất" },
     { value: "DateCreated asc", text: "Cũ nhất" },

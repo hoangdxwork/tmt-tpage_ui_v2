@@ -43,7 +43,7 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
   public suggestions$!: Observable<any[]>;
 
   @Output() onLoadSuggestion: EventEmitter<ResultCheckAddressDTO> = new EventEmitter<ResultCheckAddressDTO>();
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder,
       private message: TDSMessageService,

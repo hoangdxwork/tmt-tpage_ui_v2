@@ -35,7 +35,7 @@ export class HistoryDeliveryStatusDetailComponent implements OnInit {
   isLoading = false;
   id: any;
 
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(private route: ActivatedRoute,
     private router: Router,

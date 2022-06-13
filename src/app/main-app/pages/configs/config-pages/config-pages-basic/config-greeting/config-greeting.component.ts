@@ -18,7 +18,7 @@ export class ConfigGreetingComponent implements OnInit, OnChanges, OnDestroy  {
   @Input() eventOnSave: boolean = false;
   @Output() onSaveSuccess = new EventEmitter();
 
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   currentTeam!: CRMTeamDTO | null;
   isSelect: boolean = false;

@@ -96,7 +96,7 @@ export class AddBillComponent implements OnInit, AfterViewInit, AfterViewChecked
   listServiceTemp: any = [];
   lstCalcFee!: CalculatorListFeeDTO[];
 
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder,
     private route: ActivatedRoute,

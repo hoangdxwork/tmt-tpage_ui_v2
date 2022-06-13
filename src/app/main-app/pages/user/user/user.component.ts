@@ -15,7 +15,7 @@ export class UserComponent implements OnInit, OnDestroy {
   menuData = UserMenu;
   currentPage = UserMenu[0];
 
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,

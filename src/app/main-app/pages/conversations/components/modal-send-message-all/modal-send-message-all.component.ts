@@ -36,7 +36,7 @@ export class ModalSendMessageAllComponent implements OnInit {
   enumActivityStatus = ActivityStatus;
   sendMessageType!: SendMessageType;
 
-  destroy$ = new Subject();
+  destroy$ = new Subject<void>();
 
   constructor(
     private modalService: TDSModalService,
@@ -49,8 +49,7 @@ export class ModalSendMessageAllComponent implements OnInit {
     private modal: TDSModalRef,
     private conversationDataFacade: ConversationDataFacade,
     private activityMatchingService: ActivityMatchingService,
-    private activityDataFacade: ActivityDataFacade,
-  ) { }
+    private activityDataFacade: ActivityDataFacade) { }
 
   ngOnInit(): void {
     this.sendMessageType = SendMessageType.Message;

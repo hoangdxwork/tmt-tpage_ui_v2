@@ -51,7 +51,7 @@ export class ConfigDecentralizePageComponent implements OnInit, OnDestroy {
   data: CRMTeamDTO[] | undefined;
   lstUsers: ApplicationUserDTO[] = [];
   isLoading: boolean = false;
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(
     private router: Router,

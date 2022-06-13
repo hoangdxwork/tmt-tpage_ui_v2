@@ -19,7 +19,7 @@ new Promise((resolve, reject) => {
 
 export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy {
 
-    destroy$ = new Subject();
+    destroy$ = new Subject<void>();
     @Input() data!: string[];
     @Input() isArray!: boolean;
     @Input() size: number = 112;
@@ -71,7 +71,7 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
 
       let dataModel = this.fileList as any[];
       return this.sharedService.saveImageV2(formData).subscribe((res: any) => {
-        
+
         if(res){
           let x = {
             uid: res[0].eTag,

@@ -36,7 +36,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   imageUrl = "https://randomuser.me/api/portraits/women/68.jpg";
   public readonly lstProductType = ProductType;
   fileList: TDSUploadFile[] = [];
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(private sharedService: SharedService,
     private fb: FormBuilder,

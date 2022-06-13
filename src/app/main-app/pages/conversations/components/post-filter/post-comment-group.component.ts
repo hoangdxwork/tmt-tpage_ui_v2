@@ -21,7 +21,7 @@ export class PostCommentGroupComponent implements OnInit, OnDestroy {
   otherSelecteds: any = [];
   partners$!: Observable<any>;
 
-  destroy$ = new Subject();
+  destroy$ = new Subject<void>();
   messageModel!: string;
 
   constructor(private conversationPostFacade: ConversationPostFacade,

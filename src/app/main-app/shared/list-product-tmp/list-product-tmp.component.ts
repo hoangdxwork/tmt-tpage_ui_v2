@@ -28,7 +28,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
   @Output() onLoadProductToOrderLines: EventEmitter<any> = new EventEmitter<any>();
   @Input() isLoadingProduct: boolean = false;
 
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
   lstOfData!: DataPouchDBDTO[];
 
   indexDbVersion: number = 0;

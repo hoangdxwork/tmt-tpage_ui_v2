@@ -22,7 +22,6 @@ export class TpageBaseComponent  {
 
   type!: string;
   subscription!: Observable<any>;
-  destroy$ = new Subject();
 
   constructor(public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,

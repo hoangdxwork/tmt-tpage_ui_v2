@@ -44,7 +44,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   dataMatching!: ConversationMatchingItem;
   objRevenue!: ResRevenueCustomerDTO;
   noteData: any = { items: [] };
-  destroy$ = new Subject();
+  destroy$ = new Subject<void>();
 
   partner!: ActiveMatchingPartner;
   lstPartnerStatus!: Array<PartnerStatusDTO>;

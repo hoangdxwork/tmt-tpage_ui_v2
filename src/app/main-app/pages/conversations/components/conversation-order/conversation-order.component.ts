@@ -52,7 +52,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   @Output() currentOrderCode = new EventEmitter<string | undefined>();
 
   orderForm!: FormGroup;
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   editNoteProduct: string | null = null;
 

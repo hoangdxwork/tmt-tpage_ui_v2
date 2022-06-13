@@ -15,7 +15,7 @@ import { TagOnPatternDTO } from 'src/app/main-app/dto/configs/page-config.dto';
   templateUrl: './config-pages-divide-task.component.html'
 })
 export class ConfigPagesDivideTaskComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   formAutoLabelConfig!: FormGroup;
   isLoading: boolean = false;

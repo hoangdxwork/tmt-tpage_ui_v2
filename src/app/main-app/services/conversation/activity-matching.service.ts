@@ -70,7 +70,7 @@ export class ActivityMatchingService extends BaseSevice  {
 
   refreshAttachment(id: string, message_id: string, image_id: string): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/${id}/refreshattachment?message_id=${message_id}&image_id=${image_id}`,
+      url: `${this._BASE_URL}/rest/v1.0/crmactivity/${id}/refreshattachment?message_id=${message_id}&image_id=${image_id}`,
       method: TApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
@@ -78,7 +78,7 @@ export class ActivityMatchingService extends BaseSevice  {
 
   retryMessage(id: string, page_id: string): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/${id}/queueretrymessage?page_id=${page_id}`,
+      url: `${this._BASE_URL}/rest/v1.0/crmactivity/${id}/queueretrymessage?page_id=${page_id}`,
       method: TApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, null);

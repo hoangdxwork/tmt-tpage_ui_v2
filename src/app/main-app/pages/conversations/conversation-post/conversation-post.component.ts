@@ -55,7 +55,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   hasNextPage: boolean = true;
   data$!: Observable<FacebookPostItem[]>;
   currentPost!: FacebookPostItem | undefined;
-  destroy$ = new Subject();
+  destroy$ = new Subject<void>();
   isLoading: boolean = false;
 
   @ViewChild('innerText') innerText!: ElementRef;

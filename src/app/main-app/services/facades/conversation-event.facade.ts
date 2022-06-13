@@ -17,7 +17,7 @@ export class ConversationEventFacade extends BaseSevice implements OnDestroy {
   table: string = "";
   baseRestApi: string = "";
   public hasEventDetectChanges = new EventEmitter<boolean>();
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(private apiService: TCommonService,
       private cvsFbState: ConversationFacebookState,

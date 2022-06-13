@@ -57,7 +57,7 @@ export class ConversationOrderListComponent implements OnInit,OnDestroy {
   lstLine: any[] = [];
 
   count: number = 0;
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(
     private conversationPostFacade: ConversationPostFacade,

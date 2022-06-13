@@ -33,13 +33,12 @@ export class TpageConversationAddressComponent implements OnInit {
   isSuggest: boolean = false;
 
   lstResultCheck: ResultCheckAddressDTO[] = [];
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     private addressService: AddressService,
-    private message: TDSMessageService
-  ) { }
+    private message: TDSMessageService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.createForm();

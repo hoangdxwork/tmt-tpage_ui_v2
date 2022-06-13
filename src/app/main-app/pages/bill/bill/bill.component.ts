@@ -98,7 +98,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   checked = false;
   indeterminate = false;
   setOfCheckedId = new Set<number>();
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor( private  odataFastSaleOrderService: OdataFastSaleOrderService,
       private tagService: TagService,
@@ -236,7 +236,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   exportExcel(type:string){
     switch(type){
       case 'excel':
-        
+
         let model = {
           ids: [],
           data: {

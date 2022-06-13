@@ -22,7 +22,7 @@ export class ConfigAutoHideCommentComponent implements OnInit, OnDestroy, OnChan
   isLoading: boolean = false;
   currentTeam!: CRMTeamDTO | null;
 
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(
     private formBuilder: FormBuilder,

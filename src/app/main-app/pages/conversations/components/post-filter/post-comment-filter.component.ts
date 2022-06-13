@@ -23,7 +23,7 @@ export class PostCommentFilterComponent implements OnInit, OnDestroy, AfterViewI
   otherSelecteds: any = [];
   partners$!: Observable<any>;
 
-  destroy$ = new Subject();
+  destroy$ = new Subject<void>();
   messageModel!: string;
 
   filterOptions: any[] = [

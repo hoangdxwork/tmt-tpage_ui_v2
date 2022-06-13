@@ -53,7 +53,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   @Input() team!: CRMTeamDTO;
   @Output() onLoadMiniChat = new EventEmitter();
 
-  destroy$ = new Subject();
+  destroy$ = new Subject<void>();
   isLoadMessage: boolean = false;
   dataSource$!: Observable<MakeActivityMessagesDTO>;
   partner: TDSSafeAny;
@@ -201,6 +201,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
         // Cập nhật count_unread
         this.conversationEventFacade.updateMarkSeenBadge(this.data.page_id, this.type, this.data.psid);
+        this.cdRef.markForCheck();
       }, error => {
         this.message.error(`markseen: ${error?.error?.message}`);
       });
@@ -216,7 +217,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     });
   }
 
-  showModalListProduct() {
+  onProductLastV2() {
     const modal = this.modalService.create({
       title: 'Danh sách sản phẩm',
       content: ModalListProductComponent,
@@ -462,8 +463,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           this.messageResponse(res, model);
       }, error => {
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại' );
-          this.eventHandler.preventDefault();
-          this.eventHandler.stopImmediatePropagation();
       });
   }
 

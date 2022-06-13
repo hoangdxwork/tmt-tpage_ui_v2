@@ -39,7 +39,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   messages: any = [];
   message: string = '';
   enumActivityStatus = ActivityStatus;
-  destroy$ = new Subject();
+  destroy$ = new Subject<void>();
   isReply: boolean = false;
   isPrivateReply: boolean = false;
   messageModel: any
@@ -108,6 +108,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     if (this.contentMessage && this.contentMessage.nativeElement && this.contentMessage.nativeElement.outerText) {
       return this.contentMessage.nativeElement.outerText;
     }
+
     this.tdsMessage.info("Không thể lấy thông tin");
     return null;
   }

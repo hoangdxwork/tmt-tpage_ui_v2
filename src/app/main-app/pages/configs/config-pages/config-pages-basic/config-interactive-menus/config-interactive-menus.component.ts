@@ -24,7 +24,7 @@ export class ConfigInteractiveMenusComponent implements OnInit, OnChanges, OnDes
   currentTeam!: CRMTeamDTO | null;
   isLoading: boolean = false;
 
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   isSelect: boolean = false;
 

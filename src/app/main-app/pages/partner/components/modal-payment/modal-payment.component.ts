@@ -19,7 +19,7 @@ export class ModalPaymentComponent implements OnInit, OnDestroy {
   @Input() dataModel!:RegisterPayment;
 
   lstAcJournal:AccountRegisterPayment[] = [];
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
   isSubmit = false;
 
   _form!: FormGroup;

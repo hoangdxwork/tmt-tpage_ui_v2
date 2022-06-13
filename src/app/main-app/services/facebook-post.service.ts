@@ -20,7 +20,7 @@ export class FacebookPostService extends BaseSevice implements OnInit, OnDestroy
 
   public currentTeam: any;
   public currentPost: any;
-  destroy$ = new Subject();
+  destroy$ = new Subject<void>();
   responseData!: FacebookPostDTO;
   queryObj: any;
 

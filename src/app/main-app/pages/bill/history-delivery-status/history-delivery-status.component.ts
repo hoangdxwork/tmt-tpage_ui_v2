@@ -28,7 +28,7 @@ export class HistoryDeliveryStatusComponent implements OnInit, AfterViewInit, On
   paddingCollapse:number = 36;
   marginLeftCollapse: number = 0;
 
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(private fastSaleOrderService: FastSaleOrderService,
     private router: Router,
@@ -53,7 +53,7 @@ export class HistoryDeliveryStatusComponent implements OnInit, AfterViewInit, On
           let scrollleft = wrapScroll.scrollLeft;
           that.marginLeftCollapse = scrollleft;
         });
-      }, 500);  
+      }, 500);
   }
 
   loadData(pageSize:number,pageIndex:number){

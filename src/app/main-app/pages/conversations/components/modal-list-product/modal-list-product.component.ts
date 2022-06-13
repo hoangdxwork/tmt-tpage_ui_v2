@@ -27,7 +27,7 @@ export class ModalListProductComponent implements OnInit, OnDestroy, AfterViewIn
   @ViewChild('basicTable', { static: false }) tableComponent?: TDSTableComponent<any>;
   @ViewChild('innerText') innerText!: ElementRef;
 
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
   isLoading: boolean = false;
   keyFilter: string = '';
 

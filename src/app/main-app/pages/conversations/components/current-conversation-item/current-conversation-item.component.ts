@@ -35,7 +35,6 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges {
   constructor(private message: TDSMessageService,
     private draftMessageService: DraftMessageService,
     private conversationEventFacade: ConversationEventFacade,
-    private cdRef: ChangeDetectorRef,
     public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
     public router: Router) {

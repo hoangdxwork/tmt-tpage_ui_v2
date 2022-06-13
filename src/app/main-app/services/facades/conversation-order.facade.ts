@@ -34,7 +34,7 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
   prefix: string = "";
   table: string = "";
   baseRestApi: string = "";
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   private userInit!: UserInitDTO;
   private order!: ConversationOrderForm;

@@ -24,7 +24,7 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges, OnDestroy {
   currentTeam!: CRMTeamDTO | null;
   isLoading: boolean = false;
 
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(
     private formBuilder: FormBuilder,
