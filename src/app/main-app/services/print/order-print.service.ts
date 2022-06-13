@@ -1,7 +1,8 @@
-import { TDSSafeAny, TDSMessageService } from 'tmt-tang-ui';
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { TDSMessageService } from "tds-ui/message";
+import { TDSSafeAny } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
 import { GeneralConfigsFacade } from "../facades/general-config.facade";
 

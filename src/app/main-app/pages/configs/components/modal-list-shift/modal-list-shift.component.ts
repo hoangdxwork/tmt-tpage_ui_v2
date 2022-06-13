@@ -1,11 +1,12 @@
 import { finalize } from 'rxjs/operators';
 import { ModalUpdateShiftComponent } from './../modal-update-shift/modal-update-shift.component';
 import { ModalAddShiftComponent } from './../modal-add-shift/modal-add-shift.component';
-import { TDSModalService, TDSModalRef, TDSHelperObject, TDSMessageService } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { ApplicationUserShiftDTO, ShiftDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-modal-list-shift',

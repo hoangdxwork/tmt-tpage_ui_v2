@@ -1,8 +1,9 @@
 import { Color } from 'echarts';
 import { formatPercent } from '@angular/common';
-import { vi_VN, TDSSafeAny } from 'tmt-tang-ui';
 import { TDSChartOptions, TDSPieChartComponent, TruncateString } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { vi_VN } from 'tds-ui/i18n';
 
 @Component({
   selector: 'app-staff-report',

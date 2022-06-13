@@ -2,8 +2,8 @@ import { FormControl, Validators } from '@angular/forms';
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { PackOfDataEnum } from 'src/app/main-app/dto/account/account.dto';
 import { PackageDTO, PackagePaymentDTO, TenantInfoDTO, TenantUsedDTO } from 'src/app/main-app/dto/tenant/tenant.dto';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { addMonths, endOfMonth } from 'date-fns';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'extend-pack-of-data',

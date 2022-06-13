@@ -5,12 +5,14 @@ import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-po
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
-import { TDSHelperString, TDSMessageService, TDSModalService } from 'tmt-tang-ui';
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { formatDate } from '@angular/common';
-import { ConfigPostOutletComponent } from '../../../components/config-post/config-post-outlet.component';
-import { ModalReportOrderPostComponent } from '../../../components/post-filter/modal-report-order-post.component';
+import { ModalReportOrderPostComponent } from '../components/post-filter/modal-report-order-post.component';
+import { ConfigPostOutletComponent } from '../components/config-post/config-post-outlet.component';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'conversation-post-view',

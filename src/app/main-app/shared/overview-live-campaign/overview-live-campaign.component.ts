@@ -1,9 +1,9 @@
-import { TDSModalRef } from 'tmt-tang-ui';
 import { finalize } from 'rxjs/operators';
 import { OnChanges, SimpleChanges } from '@angular/core';
 import { Component, Input, OnInit } from '@angular/core';
 import { SaleOnline_LiveCampaignDTO } from '../../dto/live-campaign/live-campaign.dto';
 import { LiveCampaignService } from '../../services/live-campaign.service';
+import { TDSModalRef } from 'tds-ui/modal';
 
 @Component({
   selector: 'overview-live-campaign',

@@ -1,19 +1,16 @@
 import { OnDestroy } from '@angular/core';
 import { SaleSettingsDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
-import { User } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
 import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, Output, SimpleChanges, SkipSelf, EventEmitter, ViewContainerRef } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, pipe, Observable } from 'rxjs';
 import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
-import { CheckConversationData } from 'src/app/main-app/dto/partner/check-conversation.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationEventFacade } from 'src/app/main-app/services/facades/conversation-event.facade';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TDSMessageService, TDSSafeAny, TDSHelperString, TDSHelperObject, TDSModalService } from 'tmt-tang-ui';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { ConversationOrderForm, ConversationOrderProductDefaultDTO } from 'src/app/main-app/dto/coversation-order/conversation-order.dto';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -38,6 +35,9 @@ import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-prod
 import { TpageConfigProductComponent } from 'src/app/main-app/shared/tpage-config-product/tpage-config-product.component';
 import { CheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { ModalTaxComponent } from '../modal-tax/modal-tax.component';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
     selector: 'conversation-order',

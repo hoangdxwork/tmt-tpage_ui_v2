@@ -36,7 +36,9 @@ import { SaleOnline_FacebookCommentService } from 'src/app/main-app/services/sal
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-product/tpage-add-product.component';
 import { TpageConfigProductComponent } from 'src/app/main-app/shared/tpage-config-product/tpage-config-product.component';
-import { TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSSafeAny, TDSHelperArray } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ModalListProductComponent } from '../modal-list-product/modal-list-product.component';
 import { ModalTaxComponent } from '../modal-tax/modal-tax.component';
 

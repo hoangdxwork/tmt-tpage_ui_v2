@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { TDSHelperString, TDSSafeAny } from "tmt-tang-ui";
+import { TDSHelperString } from "tds-ui/shared/utility";
 import { ReplaceHelper } from "../helper/replace.helper";
 
 @Pipe({

@@ -1,12 +1,14 @@
 import { finalize } from 'rxjs/operators';
 import { OnChanges, SimpleChanges } from '@angular/core';
-import { TDSModalRef, TDSHelperString, TDSMessageService } from 'tmt-tang-ui';
 import { Component, Input, OnInit } from '@angular/core';
 import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
 import { AutoOrderConfigDTO } from 'src/app/main-app/dto/configs/post/order-config.dto';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'post-order-interaction-config',

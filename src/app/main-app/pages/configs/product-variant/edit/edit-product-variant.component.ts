@@ -7,11 +7,13 @@ import { ProductService } from '../../../../services/product.service';
 import { Subject } from 'rxjs';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { TDSModalRef, TDSSafeAny, TDSMessageService, TDSHelperString, TDSHelperArray } from 'tmt-tang-ui';
 import { finalize } from 'rxjs/operators';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
 import { THelperCacheService } from 'src/app/lib';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'edit-product-variant',
@@ -166,7 +168,7 @@ export class EditProductVariantComponent implements OnInit {
 
     if(event.isArray == true){
       this.imageListUpLoad = [];
-      datas.forEach(x => { 
+      datas.forEach(x => {
         this.addImages(x);
         this.imageListUpLoad.push(x.Url);
       });

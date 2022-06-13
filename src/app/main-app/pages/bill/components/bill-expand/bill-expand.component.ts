@@ -6,9 +6,11 @@ import { FastSaleOrderDTO } from './../../../../dto/fastsaleorder/fastsaleorder.
 import { OdataFSOrderLinesV2, FSOrderLinesV2 } from './../../../../dto/fastsaleorder/fastsale-orderline.dto';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
-import { TDSSafeAny, TDSMessageService, TDSHelperObject, TDSModalService } from 'tmt-tang-ui';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { Component, Input, OnInit, OnDestroy, ViewContainerRef } from '@angular/core';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-bill-expand',

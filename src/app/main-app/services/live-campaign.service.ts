@@ -1,7 +1,7 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { TDSSafeAny } from "tds-ui/shared/utility";
 import { FacebookMappingPostDTO } from "../dto/conversation/post/post.dto";
 import { ApproveLiveCampaignDTO, CartHistoryEventDTO, DetailReportLiveCampaignDTO, FSOrderHistoryEventDTO, LiveCampaign_SimpleDataDTO, ReportLiveCampaignOverviewDTO, SaleOnlineLiveCampaignDetailDTO, SaleOnline_LiveCampaignDTO, SearchReportLiveCampaignOverviewDTO, UpdateFacebookLiveCampaignDTO } from "../dto/live-campaign/live-campaign.dto";
 import { ODataModelDTO, ODataResponsesDTO } from "../dto/odata/odata.dto";

@@ -2,7 +2,9 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TDSMessageService, TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-create-bill-default-error',

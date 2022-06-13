@@ -7,7 +7,8 @@ import { QuickQuestionDTO } from 'src/app/main-app/dto/configs/page-config.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { FacebookService } from 'src/app/main-app/services/facebook.service';
-import { TDSHelperArray, TDSMessageService, TDSHelperString } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'config-quick-question',

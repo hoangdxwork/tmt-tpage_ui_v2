@@ -3,7 +3,6 @@ import { ProductService } from 'src/app/main-app/services/product.service';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { takeUntil } from 'rxjs/operators';
-import { TDSSafeAny, TDSMessageService, TDSUploadFile } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ProductCategoryDTO } from 'src/app/main-app/dto/product/product-category.dto';
@@ -11,6 +10,8 @@ import { ProductDTO, ProductUOMDTO } from 'src/app/main-app/dto/product/product.
 import { POS_CategoryDTO } from 'src/app/main-app/dto/category/category.dto';
 import { ProductUOMService } from 'src/app/main-app/services/product-uom.service';
 import { ProductCategoryService } from 'src/app/main-app/services/product-category.service';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSUploadFile } from 'tds-ui/upload';
 
 @Component({
   selector: 'create-product-variant',

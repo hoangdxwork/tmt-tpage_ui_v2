@@ -1,10 +1,9 @@
 import { FacebookRESTService } from './../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from './../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { fromEvent, Observable, Subject } from 'rxjs';
+import { AsyncSubject, fromEvent, Observable, Subject } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ConversationMatchingItem, CRMMatchingMappingDTO } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -12,9 +11,11 @@ import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
-import { TDSHelperObject, TDSMessageService, TDSHelperArray, TDSHelperString } from 'tmt-tang-ui';
 import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
 import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalService } from 'tds-ui/modal';
 
 @Component({
   selector: 'app-conversation-all',
@@ -46,7 +47,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   total: number = 0;
   isRefresh: boolean = false;
   isProcessing:boolean = false;
-  isNextData: boolean = false;
   isChanged: boolean = false;
   clickReload: number = 0;
 

@@ -2,13 +2,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { THelperCacheService } from './../../../../lib/utility/helper-cache';
 import { ColumnTableDTO } from './../../partner/components/config-column/config-column-partner.component';
 import { HistoryDeliveryStatusDetailDTO } from './../../../dto/fastsaleorder/fastsaleorder.dto';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-import { TDSMessageService } from 'tmt-tang-ui';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { HistoryDeliveryDTO } from './../../../dto/bill/bill.dto';
 import { Component, OnInit, Input } from '@angular/core';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'history-delivery-status-detail',

@@ -5,7 +5,7 @@ import { BaseSevice } from "../base.service";
 import { ConversationFacebookState } from "../facebook-state/conversation-facebook.state";
 import { SignalRConnectionService } from "../signalR/signalR-connection.service";
 import { CRMTeamService } from '../crm-team.service';
-import { TDSMessageService } from 'tmt-tang-ui';
+import { TDSMessageService } from "tds-ui/message";
 
 @Injectable({
   providedIn: 'root'

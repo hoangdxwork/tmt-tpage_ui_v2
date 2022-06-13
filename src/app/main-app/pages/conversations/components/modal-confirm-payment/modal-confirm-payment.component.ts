@@ -1,6 +1,5 @@
-import { FormControl, Validators } from '@angular/forms';
-import { TDSModalRef } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
+import { TDSModalRef } from 'tds-ui/modal';
 
 @Component({
   selector: 'app-modal-confirm-payment',

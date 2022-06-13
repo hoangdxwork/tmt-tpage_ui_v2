@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { Observable } from 'rxjs';
-import { TDSSafeAny } from 'tmt-tang-ui';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+
 @Injectable({
     providedIn: 'root'
 })
@@ -45,7 +46,7 @@ export class THelperCacheService {
             this.localStorage.setItem(this.keyAPICache, this.lstKeyAPI).subscribe(() => { });
         }
     }
-    //Lưu trữ giá trị 01 key trên cache 
+    //Lưu trữ giá trị 01 key trên cache
     public setItem(key:TDSSafeAny, value:TDSSafeAny) {
         let that = this;
         var saveItem = {

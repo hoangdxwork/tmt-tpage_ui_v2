@@ -1,10 +1,12 @@
-import { TDSModalRef, TDSHelperObject, TDSMessageService } from 'tmt-tang-ui';
 import { Component, Input, OnInit } from '@angular/core';
 import { AttachmentDataFacade } from 'src/app/main-app/services/facades/attachment-data.facade';
 import { MDBCollectionDTO } from 'src/app/main-app/dto/attachment/attachment.dto';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSHelperObject } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'modal-add-attachment-collection',

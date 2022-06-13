@@ -1,6 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, ElementRef, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { BehaviorSubject, fromEvent, Subject } from 'rxjs';
-import { TDSModalRef, TDSTableComponent, TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateV2DTO } from 'src/app/main-app/dto/producttemplate/product-tempalte.dto';
@@ -10,7 +9,9 @@ import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB
 import { orderBy as _orderBy } from 'lodash';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { CompanyCurrentDTO } from 'src/app/main-app/dto/configs/company-current.dto';
-import { formatDate } from '@angular/common';
+import { TDSTableComponent } from 'tds-ui/table';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalRef } from 'tds-ui/modal';
 
 @Component({
   selector: 'app-modal-list-product',

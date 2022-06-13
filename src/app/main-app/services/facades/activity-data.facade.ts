@@ -9,11 +9,12 @@ import { ActivityStatus, ConversationType } from "src/app/lib/enum/message/cover
 import { ActivityFacebookState } from "../facebook-state/activity-facebook.state";
 import { CRMTeamService } from "../crm-team.service";
 import { FacebookPostService } from "../facebook-post.service";
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService } from "tmt-tang-ui";
 import { ActivityMatchingService } from "../conversation/activity-matching.service";
 import { finalize, map, shareReplay, takeUntil } from "rxjs/operators";
 import { CRMMessagesRequest, MakeActivityItemWebHook, MakeActivityMessagesDTO } from "../../dto/conversation/make-activity.dto";
 import { tr } from "date-fns/locale";
+import { TDSMessageService } from "tds-ui/message";
+import { TDSHelperArray, TDSHelperString } from "tds-ui/shared/utility";
 
 @Injectable({
   providedIn: 'root'

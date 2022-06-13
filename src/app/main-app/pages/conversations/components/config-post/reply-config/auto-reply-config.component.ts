@@ -1,12 +1,13 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
-import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
 import { AutoReplyConfigDTO } from "src/app/main-app/dto/configs/page-config.dto";
 import { FacebookPostItem } from "src/app/main-app/dto/facebook-post/facebook-post.dto";
 import { FacebookPostService } from "src/app/main-app/services/facebook-post.service";
-import { TDSHelperString, TDSMessageService, TDSModalRef, TDSModalService } from "tmt-tang-ui";
+import { TDSMessageService } from "tds-ui/message";
+import { TDSModalRef } from "tds-ui/modal";
+import { TDSHelperString } from "tds-ui/shared/utility";
 
 @Component({
   selector: 'auto-reply-config',

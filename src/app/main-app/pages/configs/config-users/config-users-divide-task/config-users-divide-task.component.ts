@@ -1,8 +1,8 @@
 import { ConfigDataFacade } from './../../../../services/facades/config-data.facade';
-import { TDSMessageService } from 'tmt-tang-ui';
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-config-users-divide-task',

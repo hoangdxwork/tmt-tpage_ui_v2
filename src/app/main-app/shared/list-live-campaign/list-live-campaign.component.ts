@@ -1,6 +1,4 @@
-import { TDSModalService, TDSHelperObject, TDSHelperString } from 'tmt-tang-ui';
 import { Observable } from 'rxjs';
-import { TDSModalRef, TDSSafeAny, TDSMessageService } from 'tmt-tang-ui';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { LiveCampaignService } from '../../services/live-campaign.service';
 import { SaleOnline_LiveCampaignDTO, UpdateFacebookLiveCampaignDTO } from '../../dto/live-campaign/live-campaign.dto';
@@ -16,6 +14,9 @@ import { finalize } from 'rxjs/operators';
 import { AddLiveCampaignComponent } from '../add-live-campaign/add-live-campaign.component';
 import { OverviewLiveCampaignComponent } from '../overview-live-campaign/overview-live-campaign.component';
 import { FilterLiveCampaignDTO } from '../../dto/odata/odata.dto';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'list-live-campaign',

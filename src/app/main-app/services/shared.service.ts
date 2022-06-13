@@ -1,7 +1,7 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TAuthService, TCommonService } from 'src/app/lib';
-import { TDSSafeAny } from 'tmt-tang-ui';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { CompanyCurrentDTO } from '../dto/configs/company-current.dto';
 import { InitSaleDTO } from '../dto/setting/setting-sale-online.dto';
 import { ODataStockWarehouseDTO } from '../dto/setting/stock-warehouse.dto';

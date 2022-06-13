@@ -1,6 +1,4 @@
-import { TDSMessageService, TDSHelperArray } from 'tmt-tang-ui';
-import { TDSModalRef } from 'tmt-tang-ui';
-import { TDSHelperString } from 'tmt-tang-ui';
+
 import { finalize } from 'rxjs/operators';
 import { OnChanges, SimpleChanges } from '@angular/core';
 import { Component, Input, OnInit } from '@angular/core';
@@ -9,6 +7,9 @@ import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-po
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
 import { AutoHiddenConfigDTO } from 'src/app/main-app/dto/configs/post/order-config.dto';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'post-hidden-comment-config',

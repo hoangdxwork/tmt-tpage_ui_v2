@@ -2,7 +2,7 @@ import { EventEmitter, Injectable, OnDestroy, OnInit } from '@angular/core';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
-import { TDSHelperArray } from 'tmt-tang-ui';
+import { TDSHelperArray } from 'tds-ui/shared/utility';
 import { AutoReplyConfigDTO } from '../dto/configs/page-config.dto';
 import { AutoHiddenConfigDTO, AutoLabelConfigDTO, AutoOrderConfigDTO, MDBFacebookMappingPostAutoConfigDTO, TBotRequestCallbackFailedDTO } from '../dto/configs/post/order-config.dto';
 import { FacebookPostDTO, FacebookPostItem } from '../dto/facebook-post/facebook-post.dto';

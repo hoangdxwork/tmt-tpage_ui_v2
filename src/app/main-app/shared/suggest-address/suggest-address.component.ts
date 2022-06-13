@@ -1,4 +1,3 @@
-import { TDSHelperArray, TDSHelperString, TDSMessageService } from 'tmt-tang-ui';
 import { Component, Input, OnInit, EventEmitter, Output, SimpleChanges, OnChanges, AfterViewInit, HostListener, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { BehaviorSubject, fromEvent, Observable, of, Subject } from 'rxjs';
@@ -6,6 +5,8 @@ import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from '../../dt
 import { SuggestAddressService } from '../../services/suggest-address.service';
 import { ResultCheckAddressDTO } from '../../dto/address/address.dto';
 import { catchError, debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
 
 const ESCAPE_KEYUP = 'ArrowUp';
 const ESCAPE_KEYDOWN = 'ArrowDown';

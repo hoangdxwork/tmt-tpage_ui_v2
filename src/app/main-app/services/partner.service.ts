@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
-import { TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { CheckConversationDTO } from '../dto/partner/check-conversation.dto';
 import { ODataCustomerDTO } from '../dto/partner/customer.dto';
 import { PartnerBirthdayDTO } from '../dto/partner/partner-birthday.dto';

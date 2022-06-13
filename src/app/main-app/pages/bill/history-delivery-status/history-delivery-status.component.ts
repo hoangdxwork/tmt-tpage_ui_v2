@@ -1,12 +1,14 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Router } from '@angular/router';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { TDSMessageService, TDSTableQueryParams, TDSResizeObserver } from 'tmt-tang-ui';
 import { FastSaleOrderService } from './../../../services/fast-sale-order.service';
 import { HistoryDeliveryDTO } from './../../../dto/bill/bill.dto';
 import { Component, OnInit } from '@angular/core';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
+import { TDSTableQueryParams } from 'tds-ui/table';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-history-delivery-status',

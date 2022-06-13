@@ -1,10 +1,9 @@
-import { TDSModalService } from 'tmt-tang-ui';
-import { TDSMessageService, TDSTableQueryParams } from 'tmt-tang-ui';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 import { MessageDeliveryHistoryLiveCampaignParamsDTO, MessageHistorySaleOnlineDTO } from 'src/app/main-app/dto/common/table.dto';
-import { ODataParamsDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
   selector: 'table-order-message',

@@ -1,5 +1,3 @@
-import { SaleOnline_OrderService } from './../../../../services/sale-online-order.service';
-import { SharedService } from './../../../../services/shared.service';
 import { ActivityByGroup } from './../../../../dto/conversation/post/comment-group.dto';
 import { ReplaceHelper } from './../../../../shared/helper/replace.helper';
 import { Component, OnChanges, OnDestroy, OnInit, Optional, Host, SkipSelf, Self } from '@angular/core';
@@ -10,15 +8,15 @@ import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService } from 'tmt-tang-ui';
 import { SendMessageModelDTO } from 'src/app/main-app/dto/conversation/send-message.dto';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { ActivityDataFacade } from 'src/app/main-app/services/facades/activity-data.facade';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import { CommentByPost } from 'src/app/main-app/dto/conversation/post/comment-post.dto';
-import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { ItemPostCommentComponent } from '../../conversation-post/components/item-post-comment/item-post-comment.component';
+import { ItemPostCommentComponent } from '../../conversation-post/item-post-comment.component';
+import { TDSMessageService } from 'tds-ui/message';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'post-comment-all',
@@ -142,7 +140,7 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
     (this.messageModel as any) = null;
   }
 
-  replyComment(item: CommentByPost, msg:string){debugger
+  replyComment(item: CommentByPost, msg:string){
     if(TDSHelperString.hasValueString(msg)) {
       const model = this.prepareModel(item, msg);
 

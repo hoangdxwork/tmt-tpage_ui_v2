@@ -108,11 +108,6 @@
                                               <p class="story font-semibold" *ngIf="(dataSource$ | async)?.extras!.posts[item?.object_id]?.story">
                                                   {{(dataSource$ | async)?.extras!.posts[item?.object_id].story}}
                                               </p>
-                                              <!-- <p class="message font-regular" *ngIf="(dataSource$ | async)?.extras!.posts[item?.object_id]?.message"
-                                                  tds-typography ellipsis expandable [ellipsisRows]="2"
-                                                  [content]="(dataSource$ | async)?.extras!.posts[item?.object_id]?.message"
-                                                  [contentCollapse]="'Ẩn'">
-                                              </p> -->
                                               <div class="message font-regular" *ngIf="(dataSource$ | async)?.extras!.posts[item?.object_id]?.message">
                                                   <div [innerHTML]="(dataSource$ | async)?.extras!.posts[item?.object_id].message | safeHtml"></div>
                                               </div>

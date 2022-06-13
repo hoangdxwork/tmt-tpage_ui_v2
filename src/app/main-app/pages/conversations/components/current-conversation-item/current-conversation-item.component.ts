@@ -1,4 +1,3 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, EventEmitter, ChangeDetectionStrategy, AfterViewChecked, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
@@ -6,7 +5,8 @@ import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { DraftMessageService } from 'src/app/main-app/services/conversation/draft-message.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationEventFacade } from 'src/app/main-app/services/facades/conversation-event.facade';
-import { TDSMessageService } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
     selector: 'current-conversation-item',

@@ -81,6 +81,10 @@
                       </a>
                     </div>
                   </div>
+
+                  <div class="absolute w-full flex justify-center z-10 bottom-10" *ngIf="isProcessing">
+                    <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
+                </div>
               </div>
 
               <div class="flex-auto bg-white"></div>

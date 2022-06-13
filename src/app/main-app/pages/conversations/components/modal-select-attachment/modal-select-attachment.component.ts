@@ -1,4 +1,3 @@
-import { TDSModalRef, TDSHelperArray, TDSMessageService } from 'tmt-tang-ui';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Observable } from 'rxjs';
 import { MDBAttachmentDTO } from 'src/app/main-app/dto/attachment/attachment.dto';
@@ -6,6 +5,9 @@ import { PagedList2 } from 'src/app/main-app/dto/pagedlist2.dto';
 import { AttachmentDataFacade } from 'src/app/main-app/services/facades/attachment-data.facade';
 import { map } from 'rxjs/operators';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'modal-select-attachment',

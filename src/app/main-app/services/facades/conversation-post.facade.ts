@@ -3,10 +3,7 @@ import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { TCommonService, THelperCacheService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { SharedService } from "../shared.service";
-import { TDSHelperString, TDSMessageService } from "tmt-tang-ui";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
-import { map, takeUntil } from "rxjs/operators";
-import { PartnerService } from "../partner.service";
 
 @Injectable({
   providedIn: 'root'

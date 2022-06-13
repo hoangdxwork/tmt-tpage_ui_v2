@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TDSEchartsModule } from 'tds-report';
-import { TDSAvatarModule, TDSCardModule, TDSFlexModule, TDSSelectModule, TDSTabsModule, TDSFormFieldModule, TDSEmptyModule, TDSTableModule, TDSSpinnerModule } from 'tmt-tang-ui';
 import { OverviewComponent } from './components/overview/overview.component';
 import { FacebookReportComponent } from './components/facebook-report/facebook-report.component';
 import { LabelReportComponent } from './components/label-report/label-report.component';
@@ -27,6 +26,15 @@ import { DashboardEmptyDataComponent } from './components/dashboard-empty-data/d
 import { ReportFacebookService } from '../../services/report-facebook.service';
 import { SummaryFacade } from '../../services/facades/summary.facede';
 import { CRMMatchingService } from '../../services/crm-matching.service';
+import { TDSAvatarModule } from 'tds-ui/avatar';
+import { TDSTabsModule } from 'tds-ui/tabs';
+import { TDSSelectModule } from 'tds-ui/select';
+import { TDSFlexModule } from 'tds-ui/flex';
+import { TDSFormFieldModule } from 'tds-ui/form-field';
+import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
+import { TDSCardModule } from 'tds-ui/card';
+import { TDSTableModule } from 'tds-ui/table';
+import { TDSEmptyModule } from 'tds-ui/empty';
 
 const SERVICES = [
   ReportFacebookService,

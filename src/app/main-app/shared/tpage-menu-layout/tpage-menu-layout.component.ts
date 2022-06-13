@@ -1,5 +1,5 @@
-import { TDSMenuDTO } from 'tmt-tang-ui';
-import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { TDSMenuDTO } from 'tds-ui/menu';
 
 @Component({
   selector: 'tpage-menu-layout',

@@ -7,7 +7,9 @@ import { ProfileMessageDTO } from 'src/app/main-app/dto/configs/page-config.dto'
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { FacebookService } from 'src/app/main-app/services/facebook.service';
-import { TDSMessageService, TDSSafeAny, TDSHelperArray, TDSTabChangeEvent } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray } from 'tds-ui/shared/utility';
+import { TDSTabChangeEvent } from 'tds-ui/tabs';
 
 @Component({
   selector: 'config-interactive-menus',

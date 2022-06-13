@@ -2,7 +2,8 @@ import { finalize } from 'rxjs/operators';
 import { Component, Input, OnInit } from '@angular/core';
 import { SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TDSMessageService, TDSModalRef } from 'tmt-tang-ui';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'modal-info-order',

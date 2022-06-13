@@ -14,12 +14,14 @@ import { ApplicationUserService } from "src/app/main-app/services/application-us
 import { CRMTagService } from "src/app/main-app/services/crm-tag.service";
 import { FacebookPostService } from "src/app/main-app/services/facebook-post.service";
 import { ProductService } from "src/app/main-app/services/product.service";
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalRef, TDSModalService, TDSSafeAny } from "tmt-tang-ui";
 import * as XLSX from 'xlsx';
 import { ModalListProductComponent } from "../../modal-list-product/modal-list-product.component";
 import { MDBInnerCreatedByDTO } from 'src/app/main-app/dto/conversation/inner.dto';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { LiveCampaignDetailDataDTO, SaleOnline_LiveCampaignDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'post-order-config',

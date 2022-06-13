@@ -1,4 +1,3 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
 import { addDays, endOfMonth, endOfWeek, startOfMonth, startOfWeek } from 'date-fns';

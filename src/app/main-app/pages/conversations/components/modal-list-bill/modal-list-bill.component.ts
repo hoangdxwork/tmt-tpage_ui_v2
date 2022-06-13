@@ -1,11 +1,12 @@
 import { ModalDetailBillComponent } from './../modal-detail-bill/modal-detail-bill.component';
-import { TDSModalRef, TDSTagStatusType, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSTagStatusType } from 'tds-ui/tag';
+import { TDSHelperObject } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-modal-list-bill',
-  templateUrl: './modal-list-bill.component.html',
-  styleUrls: ['./modal-list-bill.component.scss']
+  templateUrl: './modal-list-bill.component.html'
 })
 export class ModalListBillComponent implements OnInit {
 
@@ -13,8 +14,7 @@ export class ModalListBillComponent implements OnInit {
   constructor(
     private modal: TDSModalRef,
     private modalService: TDSModalService,
-    private viewContainerRef: ViewContainerRef
-  ) { }
+    private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
   }

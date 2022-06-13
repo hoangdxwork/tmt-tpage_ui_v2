@@ -1,9 +1,9 @@
-import { finalize } from 'rxjs/operators';
-import { TDSModalService } from 'tmt-tang-ui';
-import { TDSHelperArray, TDSModalRef } from 'tmt-tang-ui';
+
 import { Component, EventEmitter, Input, OnInit, Output, ViewContainerRef } from '@angular/core';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSHelperArray } from 'tds-ui/shared/utility';
 import { ConnectChatbotComponent } from '../connect-chatbot/connect-chatbot.component';
 
 @Component({

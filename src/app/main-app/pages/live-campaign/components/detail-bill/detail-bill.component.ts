@@ -1,18 +1,19 @@
-import { TDSMessageService, TDSTableQueryParams, TDSTagStatusType } from 'tmt-tang-ui';
 import { Component, Input, OnInit } from '@angular/core';
 import { addDays } from 'date-fns';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { ODataLiveCampaignBillService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-bill.service';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { FastSaleOrderDTO, FastSaleOrderModelDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { SortEnum } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
-import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { FilterLiveCampaignBillDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { Router } from '@angular/router';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSTagStatusType } from 'tds-ui/tag';
+import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
   selector: 'detail-bill',

@@ -1,10 +1,10 @@
 import { takeUntil } from 'rxjs/operators';
-import { TDSMenuDTO } from 'tmt-tang-ui';
 import { UserMenu } from './../user.menu';
 import { InfoUserComponent } from './../components/info-user/info-user.component';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { TDSMenuDTO } from 'tds-ui/menu';
 
 @Component({
   selector: 'app-user',

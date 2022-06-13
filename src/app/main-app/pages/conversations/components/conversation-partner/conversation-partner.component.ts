@@ -5,15 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ConversationMatchingItem, ActiveMatchingPartner } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { DraftMessageService } from 'src/app/main-app/services/conversation/draft-message.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
-import { ConversationEventFacade } from 'src/app/main-app/services/facades/conversation-event.facade';
-import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
-import { TDSMessageService, TDSModalService, TDSHelperString, TDSHelperArray, TDSTagStatusType, TDSHelperObject } from 'tmt-tang-ui';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
-import { ConversationAllComponent } from '../../conversation-all/conversation-all.component';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { MDBFacebookMappingNoteDTO, PartnerDTO, PartnerStatusDTO, PartnerTempDTO, ResRevenueCustomerDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
@@ -27,6 +23,10 @@ import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-o
 import { ODataModelTeamDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { ModalListBlockComponent } from '../modal-list-block/modal-list-block.component';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSTagStatusType } from 'tds-ui/tag';
 
 @Component({
     selector: 'conversation-partner',

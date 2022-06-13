@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { THelperCacheService } from 'src/app/lib';
-import { TDSHelperArray, TDSHelperString, TDSSafeAny, TDSHelperObject } from 'tmt-tang-ui';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
 import { ProductIndexDBService } from '../product-indexDB.service';

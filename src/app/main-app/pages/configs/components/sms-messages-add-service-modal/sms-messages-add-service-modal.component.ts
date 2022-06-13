@@ -1,12 +1,13 @@
 import { takeUntil } from 'rxjs/operators';
 import { Subject, pipe } from 'rxjs';
 import { CategorySMSDTO, customPropertiesSMSDTO } from './../../../../dto/sms/sms.dto';
-import { TDSMessageService } from 'tmt-tang-ui';
 import { RestSMSService } from './../../../../services/sms.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
 import { ListSMSDTO, RestSMSDTO } from 'src/app/main-app/dto/sms/sms.dto';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalRef } from 'tds-ui/modal';
 
 @Component({
   selector: 'app-sms-messages-add-service-modal',

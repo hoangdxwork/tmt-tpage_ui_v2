@@ -1,4 +1,3 @@
-import { TDSModalService } from 'tmt-tang-ui';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, fromEvent, Observable, Subject } from 'rxjs';
@@ -14,8 +13,10 @@ import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.s
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService } from 'tmt-tang-ui';
 import { ListLiveCampaignComponent } from 'src/app/main-app/shared/list-live-campaign/list-live-campaign.component';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-conversation-post',

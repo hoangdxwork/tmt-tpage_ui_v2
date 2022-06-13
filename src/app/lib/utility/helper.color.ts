@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { inputToRGB, rgbToHex, rgbToHsv, toNumber} from 'tmt-tang-ui';
+import { toNumber } from 'tds-ui/shared/utility';
+import { inputToRGB, rgbToHex, rgbToHsv } from 'tds-ui/tinycolor';
+
 interface HsvObject {
   h: number;
   s: number;
@@ -109,7 +111,7 @@ export class HelperColorService {
   }
  private getHue(hsv: HsvObject, i: number, light?: boolean): number {
     let hue: number;
-   
+
     if (Math.round(hsv.h) >= 60 && Math.round(hsv.h) <= 240) {
       hue = light ? Math.round(hsv.h) - this.hueStep * i : Math.round(hsv.h) + this.hueStep * i;
     } else {
@@ -135,7 +137,7 @@ export class HelperColorService {
     } else {
       saturation = hsv.s + this.saturationStep2 * i;
     }
- 
+
     if (saturation > 1) {
       saturation = 1;
     }
@@ -185,7 +187,7 @@ export class HelperColorService {
       );
       patterns.push(colorString);
     }
-  
+
     // dark theme patterns
     if (opts.theme === 'dark') {
       return this.darkColorMap.map(({ index, opacity }) => {

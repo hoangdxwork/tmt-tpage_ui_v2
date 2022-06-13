@@ -1,16 +1,17 @@
 import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
 import { ActivityDataFacade } from 'src/app/main-app/services/facades/activity-data.facade';
 import { FormControl, Validators } from '@angular/forms';
-import { TDSSafeAny, TDSTableFilterFn, TDSTableFilterList, TDSTableSortFn, TDSTableSortOrder } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
 import { addDays, endOfWeek, endOfYear, endOfYesterday, getISOWeek, startOfYear, startOfYesterday } from 'date-fns';
-import { en_US, TDSI18nService, vi_VN } from 'tmt-tang-ui';
 import { endOfMonth, startOfMonth } from 'date-fns';
 import { startOfWeek } from 'date-fns/esm';
 import { util } from 'echarts';
 import { TposLoggingFilterObjDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { OdataTPosLoggingService } from 'src/app/main-app/services/mock-odata/odata-tpos-logging.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
+import { TDSTableSortFn, TDSTableSortOrder } from 'tds-ui/table';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSI18nService, vi_VN } from 'tds-ui/i18n';
 
 interface ConfigDateFilter {
   type:string,

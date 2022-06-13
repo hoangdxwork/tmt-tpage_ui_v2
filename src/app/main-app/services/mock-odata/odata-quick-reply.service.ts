@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
-import { TDSHelperString,  TDSSafeAny } from 'tmt-tang-ui';
-import { ODataCRMTagDTO } from '../../dto/crm-tag/odata-crmtag.dto';
-import { ODataPartnerDTO } from '../../dto/partner/partner.dto';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ODataQuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { BaseSevice } from '../base.service';
 

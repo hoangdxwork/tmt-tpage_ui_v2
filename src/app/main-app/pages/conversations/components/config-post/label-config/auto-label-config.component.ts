@@ -8,7 +8,9 @@ import { CRMTagDTO } from "src/app/main-app/dto/crm-tag/odata-crmtag.dto";
 import { FacebookPostItem } from "src/app/main-app/dto/facebook-post/facebook-post.dto";
 import { CRMTagService } from "src/app/main-app/services/crm-tag.service";
 import { FacebookPostService } from "src/app/main-app/services/facebook-post.service";
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalRef } from "tmt-tang-ui";
+import { TDSMessageService } from "tds-ui/message";
+import { TDSModalRef } from "tds-ui/modal";
+import { TDSHelperArray, TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
 
 @Component({
   selector: 'auto-label-config',

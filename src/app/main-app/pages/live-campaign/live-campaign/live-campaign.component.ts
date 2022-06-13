@@ -2,7 +2,6 @@ import { finalize } from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { addDays } from 'date-fns';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { ReportLiveCampaignOverviewDTO, SearchReportLiveCampaignOverviewDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { ODataModelDTO } from 'src/app/main-app/dto/odata/odata.dto';

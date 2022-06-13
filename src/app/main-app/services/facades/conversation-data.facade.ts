@@ -10,9 +10,11 @@ import { CRMMatchingDTO } from '../../dto/conversation-all/crm-matching.dto';
 import { CRMMatchingMappingDTO } from "../../dto/conversation-all/conversation-all.dto";
 import { DataUpdate } from "../../dto/conversation/conversation.dto";
 import { CRMTeamService } from "../crm-team.service";
-import { TDSHelperArray, TDSHelperObject, TDSMessageService, TDSNotificationService, TDSSafeAny } from "tmt-tang-ui";
 import { StringHelperV2 } from "../../shared/helper/string.helper";
 import { Router } from "@angular/router";
+import { TDSMessageService } from "tds-ui/message";
+import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSNotificationService } from "tds-ui/notification";
 
 @Injectable({
   providedIn: 'root'

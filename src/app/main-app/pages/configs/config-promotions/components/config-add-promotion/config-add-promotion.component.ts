@@ -5,13 +5,7 @@ import {
   Validators,
   FormControl,
 } from '@angular/forms';
-import {
-  TDSHelperArray,
-  TDSHelperString,
-  TDSSafeAny,
-  TDSMessageService,
-  TDSHelperObject,
-} from 'tmt-tang-ui';
+
 import {
   Component,
   OnInit,
@@ -34,6 +28,8 @@ import { SaleCouponProgramDetailDTO, SaleCouponProgramDTO } from 'src/app/main-a
 import { SaleCouponProgramService } from 'src/app/main-app/services/sale-coupon-program.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ProductDTO } from 'src/app/main-app/dto/product/product.dto';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-config-add-promotion',

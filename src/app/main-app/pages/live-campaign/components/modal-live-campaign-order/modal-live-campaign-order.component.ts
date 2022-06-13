@@ -1,7 +1,6 @@
-import { TDSModalService } from 'tmt-tang-ui';
-import { TDSModalRef } from 'tmt-tang-ui';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { ViewReportSaleOnlineOrderLiveCampaignDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { ModalInfoOrderComponent } from '../modal-info-order/modal-info-order.component';
 
 @Component({

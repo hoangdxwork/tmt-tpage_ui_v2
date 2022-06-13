@@ -1,4 +1,4 @@
-import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from "tmt-tang-ui";
+import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from "tds-ui/shared/utility";
 import { CRMTeamDTO } from "../dto/team/team.dto";
 import { CRMTeamService } from "./crm-team.service";
 

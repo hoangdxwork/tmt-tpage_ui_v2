@@ -1,6 +1,9 @@
 import { Component, Input, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { FastSaleOrderService } from "src/app/main-app/services/fast-sale-order.service";
-import { TDSHelperArray, TDSMessageService, TDSModalRef, TDSNotificationService } from "tmt-tang-ui";
+import { TDSMessageService } from "tds-ui/message";
+import { TDSModalRef } from "tds-ui/modal";
+import { TDSNotificationService } from "tds-ui/notification";
+import { TDSHelperArray } from "tds-ui/shared/utility";
 
 @Component({
   selector: 'send-delivery',

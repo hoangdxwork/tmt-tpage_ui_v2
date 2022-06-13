@@ -10,10 +10,11 @@ import { FacebookCommentService } from 'src/app/main-app/services/facebook-comme
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { SignalRConnectionService } from 'src/app/main-app/services/signalR/signalR-connection.service';
-import { TDSHelperArray, TDSHelperObject, TDSMessageService } from 'tmt-tang-ui';
 import { RequestCommentByPost } from 'src/app/main-app/dto/conversation/post/comment-post.dto';
 import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from 'src/app/main-app/dto/conversation/post/comment-order-post.dto';
 import { RequestCommentByGroup } from 'src/app/main-app/dto/conversation/post/comment-group.dto';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray, TDSHelperObject } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'item-post-comment',

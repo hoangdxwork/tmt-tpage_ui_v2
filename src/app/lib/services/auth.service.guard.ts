@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanActivate, CanActivateChild } from '@angular/router';
 import { environment } from 'src/environments/environment';
-import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TAuthService } from './auth.service';
 
 @Injectable({

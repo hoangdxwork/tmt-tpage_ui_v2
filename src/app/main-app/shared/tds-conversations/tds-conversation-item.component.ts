@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Host
 import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ActivityStatus } from "src/app/lib/enum/message/coversation-message";
-import { TDSHelperArray, TDSHelperString, TDSMessageService, TDSSafeAny } from "tmt-tang-ui";
 import { MakeActivityItemWebHook } from "../../dto/conversation/make-activity.dto";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
 import { ActivityMatchingService } from "../../services/conversation/activity-matching.service";
@@ -13,6 +12,8 @@ import { PhoneHelper } from "../helper/phone.helper";
 import { ReplaceHelper } from "../helper/replace.helper";
 import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
 import { eventReplyCommentTrigger } from "../helper/event-animations.helper";
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSMessageService } from "tds-ui/message";
 
 @Component({
   selector: "tds-conversation-item",

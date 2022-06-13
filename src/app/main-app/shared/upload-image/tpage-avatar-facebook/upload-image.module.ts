@@ -2,9 +2,24 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TDSAvatarModule, TDSBadgeModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDropDownModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSOutletModule, TDSScrollIntoViewModule, TDSSelectModule, TDSSpinnerModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTypographyModule, TDSUploadModule } from 'tmt-tang-ui';
 import { TpageAvatarFacebookComponent } from './tpage-avatar-facebook.component';
 import { PipeModule } from '../../pipe/pipe.module';
+import { TDSAvatarModule } from 'tds-ui/avatar';
+import { TDSCollapseModule } from 'tds-ui/collapse';
+import { TDSDropDownModule } from 'tds-ui/dropdown';
+import { TDSFormFieldModule } from 'tds-ui/form-field';
+import { TDSInputModule } from 'tds-ui/tds-input';
+import { TDSButtonModule } from 'tds-ui/button';
+import { TDSModalModule } from 'tds-ui/modal';
+import { TDSSelectModule } from 'tds-ui/select';
+import { TDSInputNumberModule } from 'tds-ui/input-number';
+import { TDSCheckBoxModule } from 'tds-ui/tds-checkbox';
+import { TDSTableModule } from 'tds-ui/table';
+import { TDSBadgeModule } from 'tds-ui/badges';
+import { TDSTagModule } from 'tds-ui/tag';
+import { TDSTypographyModule } from 'tds-ui/typography';
+import { TDSUploadModule } from 'tds-ui/upload';
+import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
 
 const cmp =[
   TpageAvatarFacebookComponent,
@@ -36,7 +51,7 @@ const cmp =[
     TDSUploadModule,
     TDSTypographyModule,
     TDSSpinnerModule,
-    TDSTabsModule,
+    TDSTableModule,
     PipeModule,
   ],
   exports:[

@@ -1,9 +1,7 @@
-import { TDSModalService, TDSTagStatusType } from 'tmt-tang-ui';
-import { TDSHelperObject, TDSMessageService, TDSTableQueryParams } from 'tmt-tang-ui';
+
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { addDays } from 'date-fns';
 import { ODataLiveCampaignOrderService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-order.service';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { finalize } from 'rxjs/operators';
@@ -12,6 +10,11 @@ import { SortEnum } from 'src/app/lib';
 import { FilterLiveCampaignOrderDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { ModalEditOrderComponent } from 'src/app/main-app/shared/modal-edit-order/modal-edit-order.component';
+import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSTagStatusType } from 'tds-ui/tag';
+import { TDSTableQueryParams } from 'tds-ui/table';
+import { TDSModalService } from 'tds-ui/modal';
 
 @Component({
   selector: 'detail-order',

@@ -111,10 +111,8 @@
                 <div class="text-neutral-1-400 text-body-2 font-regular font-sans">{{item.DateCreated | date:'HH:mm dd/MM/yyyy'}}</div>
                 <div class="flex gap-2 pt-1">
                   <div class="text-body-2 font-semibold font-sans text-neutral-1-900">{{item.CreatedBy.Name}} ({{item.CreatedBy.UserName}})</div>
-                  <div class="text-body-2 font-regular font-sans text-neutral-1-900" tds-typography ellipsis expandable
-                    [ellipsisRows]="2" [content]="item.message" [contentCollapse]="'Ẩn'">
-                  </div>
 
+                  <div [innerHTML]="item.message | safeHtml"></div>
                 </div>
               </div>
               <button type="button" tds-button color="error" (click)="removeNote(item.id, i)"  size="sm">

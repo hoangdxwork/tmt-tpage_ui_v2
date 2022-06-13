@@ -1,12 +1,12 @@
-import { TDSModalService } from 'tmt-tang-ui';
 import { finalize } from 'rxjs/operators';
-import { TDSMessageService, TDSHelperString, TDSHelperArray } from 'tmt-tang-ui';
-import { TDSSafeAny, TDSUploadChangeParam } from 'tmt-tang-ui';
-import { TDSModalRef, TDSUploadFile } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { Message } from 'src/app/lib/consts/message.const';
 import { AttachmentDataFacade } from 'src/app/main-app/services/facades/attachment-data.facade';
 import { ModalSelectAttachmentComponent } from '../modal-select-attachment/modal-select-attachment.component';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSUploadChangeParam, TDSUploadFile } from 'tds-ui/upload';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'modal-add-collection',

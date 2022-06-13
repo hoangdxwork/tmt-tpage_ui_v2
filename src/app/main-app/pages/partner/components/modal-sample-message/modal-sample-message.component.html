@@ -13,7 +13,7 @@
                 <td>{{ idx }}</td>
                 <td>{{ data.Name }}</td>
                 <td>
-                    <p tds-typography ellipsis expandable [ellipsisRows]="2" [content]=" data.BodyPlain" [contentCollapse]="'Ẩn'"></p>
+                    <div [innerHTML]="data.BodyPlain | safeHtml"></div>
                 </td>
                 <td>
                     <button tds-button color="primary" (click)="chooseQuickReply(data)">Chọn</button>

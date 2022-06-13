@@ -2,7 +2,6 @@ import { addDays } from 'date-fns/esm';
 import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef } from '@angular/core';
 import { SaleOnlineOrderSummaryStatusDTO, SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSSafeAny, TDSTableQueryParams, TDSTagStatusType, TDSResizeObserver } from 'tmt-tang-ui';
 import { ColumnTableDTO } from 'src/app/main-app/dto/common/table.dto';
 import { SortEnum, THelperCacheService } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
@@ -17,6 +16,12 @@ import { CreateBillDefaultComponent } from '../components/create-bill-default/cr
 import { Router } from '@angular/router';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSTagStatusType } from 'tds-ui/tag';
+import { TDSTableQueryParams } from 'tds-ui/table';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 
 @Component({
   selector: 'app-order',

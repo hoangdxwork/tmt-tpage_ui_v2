@@ -1,7 +1,6 @@
 import { mergeMap } from 'rxjs/operators';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { TCommonService, THelperCacheService } from 'src/app/lib';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSSafeAny, TDSTableComponent } from 'tmt-tang-ui';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { CompanyCurrentDTO } from '../../dto/configs/company-current.dto';
@@ -13,6 +12,10 @@ import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte
 import { SharedService } from '../../services/shared.service';
 import { TpageAddProductComponent } from '../tpage-add-product/tpage-add-product.component';
 import { InitSaleDTO, SaleSettingsDTO } from '../../dto/setting/setting-sale-online.dto';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSTableComponent } from 'tds-ui/table';
 
 @Component({
   selector: 'list-product-tmp',

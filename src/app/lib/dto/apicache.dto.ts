@@ -1,4 +1,4 @@
-import { TDSSafeAny } from "tmt-tang-ui";
+import { TDSSafeAny } from "tds-ui/shared/utility";
 import { TGlobalConfig } from "../services";
 
 export class TAPICacheDTO {
@@ -20,5 +20,5 @@ export class TAPICacheDTO {
     public checkExpire(): boolean {
         return this.Expire < (new Date()).getTime();
     }
-    
+
 }

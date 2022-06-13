@@ -1,7 +1,6 @@
 import { ReplaceHelper } from './../helper/replace.helper';
 import { QuickReplyDTO } from './../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { ConfigConversationTagsCreateDataModalComponent } from './../../pages/configs/components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
 import { ModalListBillComponent } from './../../pages/conversations/components/modal-list-bill/modal-list-bill.component';
 import { ModalListProductComponent } from './../../pages/conversations/components/modal-list-product/modal-list-product.component';
@@ -11,7 +10,6 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output,
   SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, ViewRef, AfterViewChecked, NgZone, HostBinding, ViewEncapsulation
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSUploadChangeParam } from 'tmt-tang-ui';
 import { ConversationMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
@@ -33,6 +31,10 @@ import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
 import { YiAutoScrollDirective } from '../directives/yi-auto-scroll.directive';
 import { eventFadeStateTrigger } from '../helper/event-animations.helper';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSUploadChangeParam } from 'tds-ui/upload';
 
 @Component({
   selector: 'shared-tds-conversations',

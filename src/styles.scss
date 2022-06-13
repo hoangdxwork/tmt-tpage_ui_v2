@@ -3,14 +3,16 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
-@import "./assets/scss/cdk";
-@import "./assets/scss/scroll";
-@import "./assets/scss/table.scss";
+@import "../node_modules/tds-ui/assets/scss/cdk";
+@import "../node_modules/tds-ui/assets/scss/scroll";
+@import "../node_modules/tds-ui/assets/scss/table.scss";
+
+@import "../node_modules/tds-ui/assets/scss/carousel.scss";
 @import "./assets/font-icon/style.css";
 @import "./assets/scss/table-custom.scss";
 @import "./assets/scss/collapse-custom.scss";
 @import "./assets/scss/notification.scss";
-// @import "./assets/scss/carousel.scss";
+
 body{
     overflow: hidden;
     height: 100vh;

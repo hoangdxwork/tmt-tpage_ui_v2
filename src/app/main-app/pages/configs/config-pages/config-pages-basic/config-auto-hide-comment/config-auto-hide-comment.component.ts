@@ -1,4 +1,3 @@
-import { TDSMessageService } from 'tmt-tang-ui';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit, OnDestroy, OnChanges, SimpleChanges, Input, Output, EventEmitter } from '@angular/core';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -7,6 +6,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Message } from 'src/app/lib/consts/message.const';
 import { AutoHideCommentDTO } from 'src/app/main-app/dto/configs/page-config.dto';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'config-auto-hide-comment',

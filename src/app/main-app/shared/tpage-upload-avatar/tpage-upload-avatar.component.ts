@@ -1,8 +1,9 @@
 import { Subject } from 'rxjs';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { takeUntil } from 'rxjs/operators';
-import { TDSSafeAny, TDSMessageService } from 'tmt-tang-ui';
 import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, AfterViewInit } from '@angular/core';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'tpage-upload-avatar',

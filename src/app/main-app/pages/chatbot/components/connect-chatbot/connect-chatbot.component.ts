@@ -1,7 +1,5 @@
 import { finalize } from 'rxjs/operators';
-import { TDSMessageService } from 'tmt-tang-ui';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { TDSHelperString, TDSModalRef } from 'tmt-tang-ui';
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { CRMTeamDTO, InputCreateChatbotDTO } from 'src/app/main-app/dto/team/team.dto';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
@@ -10,6 +8,9 @@ import { CompanyService } from 'src/app/main-app/services/company.service';
 import { CompanyDTO } from 'src/app/main-app/dto/company/company.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'connect-chatbot',

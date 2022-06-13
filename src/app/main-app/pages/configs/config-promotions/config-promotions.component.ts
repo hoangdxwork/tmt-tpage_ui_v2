@@ -1,6 +1,5 @@
 import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
 import { Router } from '@angular/router';
-import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSMessageService } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { OdataSaleCouponProgramService } from 'src/app/main-app/services/mock-odata/odata-sale-coupon-program.service';
 import { SaleCouponProgramDTO } from 'src/app/main-app/dto/configs/sale-coupon-program.dto';
@@ -10,6 +9,9 @@ import { SortEnum } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SaleCouponProgramService } from 'src/app/main-app/services/sale-coupon-program.service';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-config-promotions',
