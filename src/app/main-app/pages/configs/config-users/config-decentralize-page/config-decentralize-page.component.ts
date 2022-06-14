@@ -1,6 +1,5 @@
 import { ConfigDataFacade } from './../../../../services/facades/config-data.facade';
 import { Router } from '@angular/router';
-import { TDSSafeAny, TDSMessageService, TDSHelperArray } from 'tmt-tang-ui';
 import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { PagedList2 } from 'src/app/main-app/dto/pagedlist2.dto';
 import { CRMTeamDTO, UpdateGrantPermissionDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -10,6 +9,8 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-config-decentralize-page',
@@ -51,7 +52,7 @@ export class ConfigDecentralizePageComponent implements OnInit, OnDestroy {
   data: CRMTeamDTO[] | undefined;
   lstUsers: ApplicationUserDTO[] = [];
   isLoading: boolean = false;
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(
     private router: Router,

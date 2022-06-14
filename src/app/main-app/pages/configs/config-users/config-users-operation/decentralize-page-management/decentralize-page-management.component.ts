@@ -1,5 +1,5 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-decentralize-page-management',

@@ -3,9 +3,11 @@ import { takeUntil } from 'rxjs/operators';
 import { RestSMSDTO } from './../../../dto/sms/sms.dto';
 import { RestSMSService } from './../../../services/sms.service';
 import { SMSMessagesAddServiceModalComponent } from '../components/sms-messages-add-service-modal/sms-messages-add-service-modal.component';
-import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSMessageService } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { Subject } from 'rxjs';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-config-sms-messages',

@@ -1,6 +1,5 @@
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
-import { TDSSafeAny, TDSMessageService, TDSHelperString } from 'tmt-tang-ui';
 import { CompanyService } from 'src/app/main-app/services/company.service';
 import { CompanyDTO } from 'src/app/main-app/dto/company/company.dto';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
@@ -10,6 +9,8 @@ import { ProductTemplateV2DTO } from 'src/app/main-app/dto/producttemplate/produ
 import { finalize, takeUntil } from 'rxjs/operators';
 import { PromotionAllDTO } from 'src/app/main-app/dto/configs/promotion/promotion-add.dto';
 import { showDiscountFixedAmount, showDiscountPercentageOnOrder, showDiscountPercentageSpecificProduct, showProduct } from 'src/app/main-app/services/facades/config-promotion.facede';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-config-promotion-all',

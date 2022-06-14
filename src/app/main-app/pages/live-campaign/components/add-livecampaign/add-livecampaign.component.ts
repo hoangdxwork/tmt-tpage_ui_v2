@@ -1,4 +1,3 @@
-import { TDSMessageService } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -6,7 +5,6 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { FastSaleOrderLineService } from 'src/app/main-app/services/fast-sale-orderline.service';
 import { StringHelperV2 } from 'src/app/main-app/shared/helper/string.helper';
-import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 import { finalize } from 'rxjs/operators';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { QuickReplyService } from 'src/app/main-app/services/quick-reply.service';
@@ -15,6 +13,8 @@ import { QuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-rep
 import { Observable } from 'rxjs';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { SaleOnlineLiveCampaignDetailDTO, SaleOnline_LiveCampaignDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'add-livecampaign',

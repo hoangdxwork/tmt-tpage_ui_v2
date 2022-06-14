@@ -1,7 +1,7 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { TDSSafeAny } from "tds-ui/shared/utility";
 import { GeneralConfigUpdateDTO, ShippingStatuesDTO } from "../dto/configs/general-config.dto";
 import { BaseSevice } from "./base.service";
 

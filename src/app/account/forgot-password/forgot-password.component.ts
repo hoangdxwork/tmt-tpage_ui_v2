@@ -3,8 +3,9 @@ import { TAuthService } from 'src/app/lib';
 import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { TDSSafeAny, TDSHelperString, TDSMessageService, TDSHelperObject } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-forgot-password',
@@ -24,7 +25,6 @@ export class ForgotPasswordComponent implements OnInit {
     private route: ActivatedRoute,
     private loader: PageLoadingService,
     private message: TDSMessageService) {
-
   }
 
   ngOnInit(): void {
@@ -40,7 +40,7 @@ export class ForgotPasswordComponent implements OnInit {
       this.returnUrl = returnUrl;
     } else {
       this.returnUrl = '/dashboard';
-    }   
+    }
     this.loader.show()
     this.authen.getCacheToken().subscribe(
       data => {
@@ -48,8 +48,8 @@ export class ForgotPasswordComponent implements OnInit {
           TDSHelperString.hasValueString(data.access_token)) {
           that.router.navigate([that.returnUrl]);
           this.isSubmit = false;
-          
-        } 
+
+        }
         this.loader.hidden();
       },
       error => {
@@ -61,7 +61,7 @@ export class ForgotPasswordComponent implements OnInit {
   }
 
   onSubmit() {
-    
+
   }
 
 }

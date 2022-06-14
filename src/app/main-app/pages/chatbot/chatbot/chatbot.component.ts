@@ -1,12 +1,13 @@
-import { TDSModalService } from 'tmt-tang-ui';
-import { TDSMessageService } from 'tmt-tang-ui';
+
 import { finalize } from 'rxjs/operators';
-import { TDSHelperArray } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { CRMTeamDTO, TPosAppMongoDBFacebookDTO } from 'src/app/main-app/dto/team/team.dto';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ListChannelConnectComponent } from '../components/list-channel-connect/list-channel-connect.component';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSHelperArray } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-chatbot',

@@ -1,15 +1,16 @@
 import { Journal } from './../../../../dto/fastsaleorder/register-payment';
 import { PrinterService } from '../../../../services/printer.service';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { OdataAccountRegisterPayment, AccountRegisterPayment } from '../../../../dto/fastsaleorder/account-register-payment';
 import { AccountRegisterPaymentService } from '../../../../services/account-register-payment.service';
 import { RegisterPayment } from '../../../../dto/fastsaleorder/register-payment';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { Subject } from 'rxjs';
-import { TDSMessageService } from 'tmt-tang-ui';
-import { TDSModalRef } from 'tmt-tang-ui';
+
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-modal-payment',
@@ -19,7 +20,7 @@ export class ModalPaymentComponent implements OnInit, OnDestroy {
   @Input() dataModel!:RegisterPayment;
 
   lstAcJournal:AccountRegisterPayment[] = [];
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
   isSubmit = false;
 
   _form!: FormGroup;

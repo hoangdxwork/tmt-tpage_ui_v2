@@ -75,10 +75,7 @@
                   <p class="story font-semibold" *ngIf="data.story">
                       {{data.story}}
                   </p>
-                  <p class="message font-regular" *ngIf="data.message"
-                      tds-typography ellipsis expandable [ellipsisRows]="2"
-                      [content]="data.message">
-                  </p>
+                  <div [innerHTML]="data.message | safeHtml"></div>
                   <p *ngIf="!data.message && !data.story" class="italic text-neutral-1-900 text-caption-1">(Chưa có nội dung tiêu đề)</p>
                   <p class="description" *ngIf="data.description">{{data.description}}</p>
               </div>

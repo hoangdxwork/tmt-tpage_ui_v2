@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 import { MessageDeliveryHistoryLiveCampaignParamsDTO, MessageHistoryFSOrderDTO } from 'src/app/main-app/dto/common/table.dto';
-import { ODataParamsDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
-import { TDSMessageService, TDSTableQueryParams } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
   selector: 'table-bill-message',

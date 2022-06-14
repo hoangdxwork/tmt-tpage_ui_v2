@@ -1,12 +1,8 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
-import { TDSMessageService } from 'tmt-tang-ui';
-import { finalize } from 'rxjs/operators';
 import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
-import { TenantService } from 'src/app/main-app/services/tenant.service';
 import { TDSChartOptions, TDSBarChartComponent } from 'tds-report';
 import { TenantInfoDTO, TenantUsedDTO } from 'src/app/main-app/dto/tenant/tenant.dto';
-import { DateHelperV2 } from 'src/app/main-app/shared/helper/date.helper';
 import { PackOfDataEnum } from 'src/app/main-app/dto/account/account.dto';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'info-pack-of-data',

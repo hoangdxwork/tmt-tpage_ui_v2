@@ -1,4 +1,4 @@
-import { TDSMenuDTO } from "tmt-tang-ui";
+import { TDSMenuDTO } from "tds-ui/menu";
 
 export const UserMenu: Array<TDSMenuDTO> = [
     {

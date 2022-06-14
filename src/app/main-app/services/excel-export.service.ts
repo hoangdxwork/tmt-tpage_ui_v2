@@ -2,7 +2,8 @@ import { EventEmitter, Injectable, Output, Renderer2, RendererFactory2 } from '@
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TAuthService, TCommonService } from 'src/app/lib';
-import { TDSHelperObject, TDSHelperString, TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { BaseSevice } from './base.service';
 
 @Injectable()

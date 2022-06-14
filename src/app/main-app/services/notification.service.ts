@@ -1,4 +1,3 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";

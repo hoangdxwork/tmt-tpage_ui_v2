@@ -108,9 +108,7 @@
             <div class="w-full">
               <div class="text-error-400 font-semibold">{{post.story}}</div>
               <div class="mt-1">
-                <p tds-typography ellipsis [ellipsisRows]="2" class="w-full">
-                  {{post.message}}
-                </p>
+                <div [innerHTML]="post.message | safeHtml"></div>
               </div>
               <div class="mt-2 text-neutral-1-400 cursor-pointer w-fit" tds-tooltip tooltipTitle="Cập nhật lần cuối lúc: {{post.updated_time | date:'HH:mm dd/MM'}}">
                 {{post.created_time | yiDiffDateTime}}

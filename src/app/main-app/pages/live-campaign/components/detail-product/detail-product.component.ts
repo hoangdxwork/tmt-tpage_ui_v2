@@ -1,14 +1,13 @@
-import { TDSMessageService, TDSTableQueryParams } from 'tmt-tang-ui';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, Input, OnInit } from '@angular/core';
 import { FilterLiveCampaignProductDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { finalize } from 'rxjs/operators';
-import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
-import { SortEnum } from 'src/app/lib';
-import { ODataLiveCampaignService } from 'src/app/main-app/services/mock-odata/odata-live-campaign.service';
 import { ReportLiveCampaignProductDataDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
+import { TDSMessageService } from 'tds-ui/message';
+import { ODataLiveCampaignService } from 'src/app/main-app/services/mock-odata/odata-live-campaign.service';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
   selector: 'detail-product',

@@ -1,8 +1,7 @@
 import { Color } from 'echarts';
-import { formatDate } from '@angular/common';
 import { TDSChartOptions, TDSBarChartDataSeries, TDSBarChartComponent } from 'tds-report';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-report-sales',

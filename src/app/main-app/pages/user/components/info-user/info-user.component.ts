@@ -1,15 +1,16 @@
-import { TDSMessageService } from 'tmt-tang-ui';
 import { UserInitDTO, TAuthService } from 'src/app/lib';
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { NgForm, FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { UserRestHandler } from 'src/app/main-app/services/handlers/user-rest.handler';
-import { TDSSafeAny, TDSUploadFile } from 'tmt-tang-ui';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ApplicationUserDTO, UpdateApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSUploadFile } from 'tds-ui/upload';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-info-user',

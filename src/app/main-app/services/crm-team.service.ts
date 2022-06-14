@@ -1,9 +1,8 @@
-import { TDSHelperArray } from 'tmt-tang-ui';
 import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
-import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { AutoHideCommentDTO, AutoReplyConfigDTO, ChannelAutoLabelConfigDTO, ChannelFacebookConfigDTO } from '../dto/configs/page-config.dto';
 import { PagedList2 } from '../dto/pagedlist2.dto';
 import { ODataAllFacebookChildTO } from '../dto/team/all-facebook-child.dto';

@@ -4,9 +4,8 @@ import { TAuthService } from "src/app/lib";
 
 import { SignalRHttpClient } from "./client-signalR";
 import * as signalR from "@microsoft/signalr";
-import { TDSSafeAny } from "tmt-tang-ui";
 import { HubEvents } from "./app-constant/hub-event";
-import { environment } from "src/environments/environment";
+import { TDSSafeAny } from "tds-ui/shared/utility";
 
 @Injectable({
   providedIn: 'root'

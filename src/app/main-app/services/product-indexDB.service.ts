@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import { map, mergeMap } from "rxjs/operators";
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from "src/app/lib";
-import { TDSHelperString, TDSSafeAny } from "tmt-tang-ui";
+import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from "../dto/product-pouchDB/product-pouchDB.dto";
 import { BaseSevice } from "./base.service";
 
@@ -22,7 +22,7 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
     cacheVersion: 0,
     cacheDbStorage: []
   }
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(private apiService: TCommonService,
     private cacheApi: THelperCacheService) {

@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { FastSaleOrderService } from "src/app/main-app/services/fast-sale-order.service";
-import { TDSMessageService, TDSModalRef } from "tmt-tang-ui";
+import { TDSMessageService } from "tds-ui/message";
+import { TDSModalRef } from "tds-ui/modal";
 
 @Component({
   selector: 'payment-request',

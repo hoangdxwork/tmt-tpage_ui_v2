@@ -4,7 +4,8 @@ import { PackOfDataEnum } from 'src/app/main-app/dto/account/account.dto';
 import { AppPackageDTO, PackageDTO, PackagePaymentDTO, TenantInfoDTO, TenantUsedDTO } from 'src/app/main-app/dto/tenant/tenant.dto';
 import { TenantService } from 'src/app/main-app/services/tenant.service';
 import { DateHelperV2 } from 'src/app/main-app/shared/helper/date.helper';
-import { TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'pack-of-data',

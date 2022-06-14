@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TTokenDTO, UserInitDTO } from '../dto';
 import { TApiMethodType } from '../enum';
 import { THelperCacheService } from '../utility';

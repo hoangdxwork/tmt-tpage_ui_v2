@@ -1,8 +1,10 @@
 
 import { Component, Input, OnDestroy, OnInit, OnChanges, SimpleChanges, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { TDSHelperArray, TDSMessageService, TDSUploadFile } from 'tmt-tang-ui';
 import { SharedService } from '../../services/shared.service';
 import { Observable, Subject } from 'rxjs';
+import { TDSUploadFile } from 'tds-ui/upload';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray } from 'tds-ui/shared/utility';
 
 const getBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
 new Promise((resolve, reject) => {
@@ -19,7 +21,7 @@ new Promise((resolve, reject) => {
 
 export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy {
 
-    destroy$ = new Subject();
+    destroy$ = new Subject<void>();
     @Input() data!: string[];
     @Input() isArray!: boolean;
     @Input() size: number = 112;
@@ -71,7 +73,7 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
 
       let dataModel = this.fileList as any[];
       return this.sharedService.saveImageV2(formData).subscribe((res: any) => {
-        
+
         if(res){
           let x = {
             uid: res[0].eTag,

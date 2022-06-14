@@ -11,11 +11,14 @@ import { takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operato
 import { THelperDataRequest } from '../../../../lib/services/helper-data.service';
 import { Subject, Observable, fromEvent } from 'rxjs';
 import { Router } from '@angular/router';
-import { TDSSafeAny, TDSHelperString, TDSMessageService, TDSModalService, TDSHelperObject, TDSTableQueryParams, TDSHelperArray } from 'tmt-tang-ui';
 import { Component, OnInit, ViewEncapsulation, ViewContainerRef, ElementRef, ViewChild } from '@angular/core';
 import { ODataProductDTO } from 'src/app/main-app/dto/configs/product/config-odata-product.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { EditProductVariantComponent } from './edit/edit-product-variant.component';
+import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
   selector: 'list-product-variant',

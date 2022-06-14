@@ -107,9 +107,8 @@
         </div>
 
         <div class="flex gap-x-2 items-center truncate flex-none" *ngIf="item.assigned_to">
-            <tds-avatar class="bg-accent-4 text-white" size="sm"
-                [tdsSrc]="item.assigned_to.Avatar">
-            </tds-avatar>
+            <img class="w-[20px] h-[20px] rounded-full" yuriAvatar
+                [src]="item.assigned_to.Avatar" [avatar]="item.assigned_to.Name" [width]="20">
             <span class="text-body-2">{{item.assigned_to.Name}}</span>
         </div>
 

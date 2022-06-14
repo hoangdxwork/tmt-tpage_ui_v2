@@ -1,12 +1,12 @@
 import { formatNumber } from '@angular/common';
 import { Color } from 'echarts';
 import { TDSChartOptions, TDSBarChartComponent, TDSBarChartDataSeries } from 'tds-report';
-import { TDSSafeAny, vi_VN, TDSHelperArray } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
 import { InputSummaryPostDTO, InputSummaryTimelineDTO, MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO, SummaryFilterDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
 import { SummaryFacade } from 'src/app/main-app/services/facades/summary.facede';
 import { format } from 'date-fns';
+import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-dashboard-facebook-report',

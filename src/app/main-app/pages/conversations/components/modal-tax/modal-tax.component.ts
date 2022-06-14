@@ -1,11 +1,12 @@
-import { TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
-import { TDSHelperArray, TDSModalRef } from 'tmt-tang-ui';
-import { Observable } from 'rxjs';
+
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { AccountTaxService } from 'src/app/main-app/services/account-tax.service';
 import { map, finalize } from 'rxjs/operators';
 import { AccountTaxDTO } from 'src/app/main-app/dto/account/account.dto';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'modal-tax',

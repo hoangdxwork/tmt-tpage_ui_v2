@@ -44,7 +44,6 @@ import { ModalListShiftComponent } from './components/modal-list-shift/modal-lis
 import { ModalAddShiftComponent } from './components/modal-add-shift/modal-add-shift.component';
 import { ModalUpdateShiftComponent } from './components/modal-update-shift/modal-update-shift.component';
 import { ConfigDecentralizePageComponent } from './config-users/config-decentralize-page/config-decentralize-page.component';
-import { TDSAvatarModule, TDSBadgeModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSDatePickerModule, TDSDropDownModule, TDSFormFieldModule, TDSImageModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSModalService, TDSPopoverModule, TDSRadioModule, TDSSelectModule, TDSSpinnerModule, TDSSwitchModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTimePickerModule, TDSToolTipModule, TDSUploadModule, TDSFilterStatusModule } from 'tmt-tang-ui';
 import { ConfigAddVariantProductModalComponent } from './components/config-add-variant-product-modal/config-add-variant-product-modal.component';
 import { ConfigAddUOMModalComponent } from './components/config-add-UOM-modal/config-add-UOM-modal.component';
 import { ConfigAddOriginCountryModalComponent } from './components/config-add-origin-country-modal/config-add-origin-country-modal.component';
@@ -77,9 +76,33 @@ import { EditProductVariantComponent } from './product-variant/edit/edit-product
 import { CreateProductVariantComponent } from './product-variant/create/create-product-variant.component';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { THelperCacheService } from 'src/app/lib';
+import { TDSModalModule, TDSModalService } from 'tds-ui/modal';
+import { TDSAvatarModule } from 'tds-ui/avatar';
+import { TDSBreadCrumbModule } from 'tds-ui/breadcrumb';
+import { TDSButtonModule } from 'tds-ui/button';
+import { TDSButtonMenuModule } from 'tds-ui/button-menu';
+import { TDSTableModule } from 'tds-ui/table';
+import { TDSTabsModule } from 'tds-ui/tabs';
+import { TDSTagModule } from 'tds-ui/tag';
+import { TDSDropDownModule } from 'tds-ui/dropdown';
+import { TDSSwitchModule } from 'tds-ui/switch';
+import { TDSInputModule } from 'tds-ui/tds-input';
+import { TDSBadgeModule } from 'tds-ui/badges';
+import { TDSSelectModule } from 'tds-ui/select';
+import { TDSFormFieldModule } from 'tds-ui/form-field';
+import { TDSInputNumberModule } from 'tds-ui/input-number';
+import { TDSToolTipModule } from 'tds-ui/tooltip';
+import { TDSRadioModule } from 'tds-ui/radio';
+import { TDSImageModule } from 'tds-ui/image';
+import { TDSUploadModule } from 'tds-ui/upload';
+import { TDSCheckBoxModule } from 'tds-ui/tds-checkbox';
+import { TDSPopoverModule } from 'tds-ui/popover';
+import { TDSDatePickerModule } from 'tds-ui/date-picker';
+import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
+import { TDSTimePickerModule } from 'tds-ui/time-picker';
+import { TDSFilterStatusModule } from 'tds-ui/filter-status';
 
 const SERVICES = [
-    TDSModalService,
     OdataCRMTagService,
     OdataQuickReplyService,
     QuickReplyService,
@@ -179,7 +202,6 @@ const SERVICES = [
     TDSImageModule,
     TDSUploadModule,
     TDSDropDownModule,
-    MainSharedModule,
     TDSCheckBoxModule,
     TDSPopoverModule,
     TDSTagModule,

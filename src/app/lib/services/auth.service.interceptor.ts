@@ -4,9 +4,9 @@ import { Observable, throwError } from 'rxjs';
 import { TAuthService } from './auth.service';
 import { TCommonService } from './common.service';
 import { environment } from 'src/environments/environment';
-import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
 import { catchError, filter, switchMap, take } from "rxjs/operators";
 import { TGlobalConfig } from './global-config';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Injectable()
 export class TAuthInterceptorService implements HttpInterceptor {

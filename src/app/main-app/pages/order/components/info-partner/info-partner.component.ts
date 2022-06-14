@@ -1,5 +1,4 @@
 import { finalize } from 'rxjs/operators';
-import { TDSSafeAny, TDSModalRef, TDSTableQueryParams, TDSHelperString } from 'tmt-tang-ui';
 import { Component, Input, OnInit } from '@angular/core';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { FormControl } from '@angular/forms';
@@ -8,6 +7,9 @@ import { OdataSaleOnline_OrderService } from 'src/app/main-app/services/mock-oda
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
   selector: 'info-partner',

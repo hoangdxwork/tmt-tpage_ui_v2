@@ -1,7 +1,8 @@
-import { TDSModalRef, TDSHelperObject, TDSMessageService } from 'tmt-tang-ui';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalRef } from 'tds-ui/modal';
 
 @Component({
   selector: 'app-modal-change-password-user',

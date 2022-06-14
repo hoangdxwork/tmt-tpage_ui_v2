@@ -1,11 +1,10 @@
 import { ConfigDataFacade } from './../../../../services/facades/config-data.facade';
-import { TDSMessageService } from 'tmt-tang-ui';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { Message } from 'src/app/lib/consts/message.const';
-import { AutoReplyConfigDTO } from 'src/app/main-app/dto/configs/page-config.dto';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-config-pages-basic',

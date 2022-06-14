@@ -7,10 +7,12 @@ import { QuickReplyDTO } from './../../../../dto/quick-reply.dto.ts/quick-reply.
 import { Observable, Subject } from 'rxjs';
 import { ModalSampleMessageComponent } from '../modal-sample-message/modal-sample-message.component';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { TDSModalRef, TDSModalService, TDSHelperObject, TDSTabsCanDeactivateFn, TDSSafeAny, TDSMessageService, TDSHelperString } from 'tmt-tang-ui';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { CRMgenerateMessagePartnersDTO, SendMessageFacebookDTO } from 'src/app/main-app/dto/crm-activity-campaign/generate-message-partners.dto';
 import { CRMGenerateMessageByPhoneDTO, RestSMSDTO, SendMessageSMSDTO } from 'src/app/main-app/dto/sms/sms.dto';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-modal-send-message',

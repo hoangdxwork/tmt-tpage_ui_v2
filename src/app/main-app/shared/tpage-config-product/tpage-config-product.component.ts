@@ -1,4 +1,3 @@
-import { TDSSafeAny, TDSModalRef, TDSMessageService, TDSHelperObject } from 'tmt-tang-ui';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonService } from '../../services/common.service';
@@ -6,6 +5,8 @@ import { ProductPriceListService } from '../../services/product-price-list.servi
 import { SharedService } from '../../services/shared.service';
 import { formatDate } from '@angular/common';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalRef } from 'tds-ui/modal';
 
 
 @Component({

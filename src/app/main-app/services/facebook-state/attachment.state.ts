@@ -1,5 +1,5 @@
-import { TDSHelperString, TDSHelperArray } from 'tmt-tang-ui';
 import { Injectable } from "@angular/core";
+import { TDSHelperString } from "tds-ui/shared/utility";
 import { InnerAttachmentDTO, MDBAttachmentDTO, MDBCollectionDTO } from '../../dto/attachment/attachment.dto';
 import { PagedList2 } from '../../dto/pagedlist2.dto';
 

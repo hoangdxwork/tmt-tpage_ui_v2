@@ -2,7 +2,6 @@ import { ConfigDataFacade } from './../../../../services/facades/config-data.fac
 import { finalize, shareReplay, take, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ModalAddUserComponent } from './../../components/modal-add-user/modal-add-user.component';
-import { TDSModalService, TDSHelperObject, TDSSafeAny, TDSMessageService, TDSHelperArray } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ModalUpdateUserComponent } from '../../components/modal-update-user/modal-update-user.component';
 import { ApplicationRoleService } from 'src/app/main-app/services/application-role.service';
@@ -13,6 +12,9 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { Observable } from 'rxjs';
+import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
 
 export interface DataUser {
   id: number;

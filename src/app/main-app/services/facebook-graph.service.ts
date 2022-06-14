@@ -3,7 +3,6 @@ import { HttpClient } from "@microsoft/signalr";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { FacebookApiMethod, FacebookApiParams } from "src/app/lib/dto/facebook.dto";
-import { TDSSafeAny } from "tmt-tang-ui";
 import { FBUserPageRequestDTO } from "../dto/team/user-page.dto";
 import { BaseSevice } from "./base.service";
 import { FacebookLoginService } from "./facebook-login.service";

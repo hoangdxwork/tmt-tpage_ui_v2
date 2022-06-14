@@ -10,9 +10,12 @@ import { takeUntil, finalize, map, debounceTime, distinctUntilChanged } from 'rx
 import { THelperDataRequest } from './../../../../lib/services/helper-data.service';
 import { OdataCRMTagService } from './../../../services/mock-odata/odata-crmtag.service';
 import { ConfigConversationTagsEditDataModalComponent } from '../components/config-conversation-tags-edit-data-modal/config-conversation-tags-edit-data-modal.component';
-import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSTableQueryParams, TDSMessageService, TDSHelperString, TDSConfigService } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CTMTagFilterObjDTO } from 'src/app/main-app/dto/odata/odata.dto';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSTableQueryParams } from 'tds-ui/table';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-config-conversation-tags',
@@ -77,7 +80,7 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
     if(TDSHelperString.hasValueString(this.filterObj.searchText)){
       filters = this.odataTagService.buildFilter(this.filterObj);
     }
-    
+
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, sort);
 
     this.getViewData(params).subscribe((res: ODataCRMTagDTO) => {
@@ -172,8 +175,8 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
     this.isLoading = true;
     return this.tagService.updateStatus(data.Id).pipe(takeUntil(this.destroy$))
       .pipe(finalize(
-        () => { 
-          this.isLoading = false; 
+        () => {
+          this.isLoading = false;
         }
       ));
   }

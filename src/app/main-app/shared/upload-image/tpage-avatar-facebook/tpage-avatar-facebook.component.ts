@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, SimpleChanges } from '@angular/core';
-import { TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ImageFacade } from '../../../services/facades/image.facade';
 
 @Component({

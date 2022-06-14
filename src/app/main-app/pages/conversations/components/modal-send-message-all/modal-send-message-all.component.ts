@@ -1,9 +1,7 @@
-import { ReplaceHelper } from './../../../../shared/helper/replace.helper';
 import { QuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-reply.dto';
 import { ActivityDataFacade } from 'src/app/main-app/services/facades/activity-data.facade';
 import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { takeUntil, finalize } from 'rxjs/operators';
@@ -11,12 +9,13 @@ import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.servi
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { ModalListProductComponent } from './../modal-list-product/modal-list-product.component';
-import { ModalAddQuickReplyComponent } from './../modal-add-quick-reply/modal-add-quick-reply.component';
-import { TDSModalService, TDSHelperObject, TDSMessageService, TDSModalRef } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef, ChangeDetectorRef, Input } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ActivityStatus, SendMessageType } from 'src/app/lib/enum/message/coversation-message';
+import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-modal-send-message-all',
@@ -36,7 +35,7 @@ export class ModalSendMessageAllComponent implements OnInit {
   enumActivityStatus = ActivityStatus;
   sendMessageType!: SendMessageType;
 
-  destroy$ = new Subject();
+  destroy$ = new Subject<void>();
 
   constructor(
     private modalService: TDSModalService,
@@ -49,8 +48,7 @@ export class ModalSendMessageAllComponent implements OnInit {
     private modal: TDSModalRef,
     private conversationDataFacade: ConversationDataFacade,
     private activityMatchingService: ActivityMatchingService,
-    private activityDataFacade: ActivityDataFacade,
-  ) { }
+    private activityDataFacade: ActivityDataFacade) { }
 
   ngOnInit(): void {
     this.sendMessageType = SendMessageType.Message;

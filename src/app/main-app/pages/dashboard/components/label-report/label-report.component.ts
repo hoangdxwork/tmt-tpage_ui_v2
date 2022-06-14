@@ -1,5 +1,3 @@
-import { vi_VN } from 'tmt-tang-ui';
-import { formatPercent } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -10,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 export class LabelReportComponent implements OnInit {
   //#region  variable
   showData = true;
-  
+
   filterList= [
     {id:1, name:'Tuần này'},
     {id:2, name:'Tháng này'}

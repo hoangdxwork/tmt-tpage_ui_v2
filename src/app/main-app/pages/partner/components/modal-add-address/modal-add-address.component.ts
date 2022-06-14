@@ -1,9 +1,8 @@
 import { CheckAddressDTO, ResultCheckAddressDTO } from './../../../../dto/address/address.dto';
-import { CityDTO, DistrictDTO, WardDTO } from './../../../../dto/partner/partner-register-payment.dto';
-import { TDSModalRef } from 'tmt-tang-ui';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, Input, OnInit } from '@angular/core';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
+import { TDSModalRef } from 'tds-ui/modal';
 
 @Component({
   selector: 'app-modal-add-address',

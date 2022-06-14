@@ -1,7 +1,6 @@
 import { MainSharedModule } from './../../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TDSEchartsModule } from 'tds-report';
-import { TDSAvatarModule, TDSDatePickerModule, TDSMenuModule, TDSSelectModule, TDSTableModule, TDSButtonModule, TDSCollapseModule, TDSDropDownModule, TDSModalModule, TDSBadgeModule, TDSFormFieldModule, TDSEmptyModule } from 'tmt-tang-ui';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -14,6 +13,18 @@ import { ReportFacebookComponent } from './components/report-facebook/report-fac
 import { ReportStaffsComponent } from './components/report-staffs/report-staffs.component';
 import { ReportTagsComponent } from './components/report-tags/report-tags.component';
 import { ReportEmptyDataComponent } from './components/report-empty-data/report-empty-data.component';
+import { TDSMenuModule } from 'tds-ui/menu';
+import { TDSAvatarModule } from 'tds-ui/avatar';
+import { TDSSelectModule } from 'tds-ui/select';
+import { TDSTableModule } from 'tds-ui/table';
+import { TDSDatePickerModule } from 'tds-ui/date-picker';
+import { TDSButtonModule } from 'tds-ui/button';
+import { TDSCollapseModule } from 'tds-ui/collapse';
+import { TDSDropDownModule } from 'tds-ui/dropdown';
+import { TDSModalModule } from 'tds-ui/modal';
+import { TDSBadgeModule } from 'tds-ui/badges';
+import { TDSFormFieldModule } from 'tds-ui/form-field';
+import { TDSEmptyModule } from 'tds-ui/empty';
 
 
 @NgModule({

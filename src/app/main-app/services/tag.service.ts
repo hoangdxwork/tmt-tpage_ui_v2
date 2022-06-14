@@ -5,11 +5,11 @@ import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { DataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
-import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
 import { PagedList2 } from '../dto/pagedlist2.dto';
 import { ODataTagsPartnerDTO } from '../dto/partner/partner-tags.dto';
 import { CRMTeamDTO } from '../dto/team/team.dto';
 import { BaseSevice } from './base.service';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Injectable()
 

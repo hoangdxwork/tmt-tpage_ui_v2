@@ -3,13 +3,11 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable} from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
-import { TDSSafeAny } from 'tmt-tang-ui';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { MessageDeliveryHistoryLiveCampaignParamsDTO, MessageDeliveryHistoryResultDTO, MessageHistoryFSOrderResultDTO, MessageHistorySaleOnlineResultDTO } from '../dto/common/table.dto';
-import { ODataParamsDTO } from '../dto/odata/odata.dto';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
 import { PartnerStatusReport } from '../dto/partner/partner-status-report.dto';
 import { ListItemStatusDTO, StatusDTO } from '../dto/partner/partner.dto';
-import { InitSaleDTO } from '../dto/setting/setting-sale-online.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable()

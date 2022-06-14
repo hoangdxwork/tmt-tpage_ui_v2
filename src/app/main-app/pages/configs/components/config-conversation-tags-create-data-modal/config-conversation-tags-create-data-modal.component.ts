@@ -2,7 +2,9 @@ import { CRMTagDTO } from '../../../../dto/crm-tag/odata-crmtag.dto';
 import { CRMTagService } from '../../../../services/crm-tag.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { TDSModalRef, TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-config-conversation-tags-create-data-modal',
@@ -30,7 +32,7 @@ export class ConfigConversationTagsCreateDataModalComponent implements OnInit {
       this.loadData();
   }
 
-  public hasError = (controlName: string, errorName: string) => {     
+  public hasError = (controlName: string, errorName: string) => {
       return this.createForm.controls[controlName].hasError(errorName);
   }
 
@@ -67,7 +69,7 @@ export class ConfigConversationTagsCreateDataModalComponent implements OnInit {
   }
 
   addNewColor(){
-    
+
   }
 
   onSubmit() {
@@ -77,7 +79,7 @@ export class ConfigConversationTagsCreateDataModalComponent implements OnInit {
               ColorClassName:this.createForm.value.color,
               IsDeleted: !this.createForm.value.status,
           }
-          
+
           this.crmService.insert(this.result).subscribe(
             (res)=>{
               this.message.success('Thêm thành công');

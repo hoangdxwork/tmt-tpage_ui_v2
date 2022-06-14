@@ -1,8 +1,6 @@
-import { TDSModalService } from 'tmt-tang-ui';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { addDays } from 'date-fns';
-import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { SortEnum } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
@@ -12,10 +10,14 @@ import { TagsPartnerDTO } from 'src/app/main-app/dto/partner/partner-tags.dto';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { ODataLiveCampaignBillService } from 'src/app/main-app/services/mock-odata/odata-live-campaign-bill.service';
 import { TagService } from 'src/app/main-app/services/tag.service';
-import { TDSMessageService, TDSSafeAny, TDSTableQueryParams, TDSTagStatusType } from 'tmt-tang-ui';
 import { ModalConfirmedDepositComponent } from '../modal-confirmed-deposit/modal-confirmed-deposit.component';
 import { ModalPaymentComponent } from '../modal-payment/modal-payment.component';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSTableQueryParams } from 'tds-ui/table';
+import { TDSTagStatusType } from 'tds-ui/tag';
 
 @Component({
   selector: 'detail-bill-payment',

@@ -1,7 +1,8 @@
 import { ModalConfirmPaymentComponent } from './../modal-confirm-payment/modal-confirm-payment.component';
 import { ModalConfirmShippingAddressComponent } from './../modal-confirm-shipping-address/modal-confirm-shipping-address.component';
-import { TDSModalRef, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSHelperObject } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-modal-detail-bill',

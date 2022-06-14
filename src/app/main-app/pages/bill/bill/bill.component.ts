@@ -4,7 +4,6 @@ import { SortEnum } from 'src/app/lib/enum/sort.enum';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { OdataFastSaleOrderService } from 'src/app/main-app/services/mock-odata/odata-fastsaleorder.service';
-import { TDSModalService, TDSSafeAny, TDSHelperString, TDSTableQueryParams, TDSMessageService, TDSResizeObserver } from 'tmt-tang-ui';
 import { addDays } from 'date-fns/esm';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { THelperCacheService } from 'src/app/lib';
@@ -13,6 +12,11 @@ import { Router } from '@angular/router';
 import { fromEvent, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, finalize, map, switchMap, takeUntil } from 'rxjs/operators';
 import { FastSaleOrderDTO, FastSaleOrderSummaryStatusDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
   selector: 'app-bill',
@@ -98,7 +102,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   checked = false;
   indeterminate = false;
   setOfCheckedId = new Set<number>();
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor( private  odataFastSaleOrderService: OdataFastSaleOrderService,
       private tagService: TagService,
@@ -236,7 +240,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   exportExcel(type:string){
     switch(type){
       case 'excel':
-        
+
         let model = {
           ids: [],
           data: {

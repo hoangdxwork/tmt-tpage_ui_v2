@@ -1,5 +1,3 @@
-import { TDSMessageService } from 'tmt-tang-ui';
-import { TDSModalService } from 'tmt-tang-ui';
 import { finalize } from 'rxjs/operators';
 import { LiveCampaignService } from './../../../../services/live-campaign.service';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
@@ -7,6 +5,8 @@ import { DetailReportLiveCampaignDTO, SaleOnlineLiveCampaignDetailReportDTO, Sal
 import { ModalLiveCampaignOrderComponent } from '../modal-live-campaign-order/modal-live-campaign-order.component';
 import { ModalLiveCampaignBillComponent } from '../modal-live-campaign-bill/modal-live-campaign-bill.component';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'detail-report',

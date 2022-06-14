@@ -1,6 +1,6 @@
-import { TDSSafeAny } from "tmt-tang-ui";
+import { TDSSafeAny } from "tds-ui/shared/utility";
 
-export interface UserInitDTO{   
+export interface UserInitDTO{
     Avatar?:string;
     Company?:{
         Id?:TDSSafeAny;

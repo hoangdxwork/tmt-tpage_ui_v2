@@ -1,8 +1,7 @@
 import { Color, number } from 'echarts';
-import { formatDate } from '@angular/common';
 import { TDSChartOptions, TDSBarChartDataSeries, TDSBarChartComponent, TDSPieChartComponent, TDSMultiChartComponent, TDSLineChartComponent, TDSLineChartDataSeries } from 'tds-report';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-report-articles',
