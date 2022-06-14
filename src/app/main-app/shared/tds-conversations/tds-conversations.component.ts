@@ -31,14 +31,11 @@ import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
 import { YiAutoScrollDirective } from '../directives/yi-auto-scroll.directive';
 import { eventFadeStateTrigger } from '../helper/event-animations.helper';
-<<<<<<< HEAD
-import { ProductPagefbComponent } from '../../pages/conversations/components/product-pagefb/product-pagefb.component';
-=======
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSUploadChangeParam } from 'tds-ui/upload';
->>>>>>> dev
+import { ProductPagefbComponent } from '../../pages/conversations/components/product-pagefb/product-pagefb.component';
 
 @Component({
   selector: 'shared-tds-conversations',
@@ -236,7 +233,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   }
 
-  showModalListProduct() {
+  onProductLastV2() {
     const modal = this.modalService.create({
       title: 'Danh sách sản phẩm',
       content: ModalListProductComponent,
