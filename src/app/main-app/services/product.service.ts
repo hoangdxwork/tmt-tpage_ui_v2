@@ -140,4 +140,12 @@ export class ProductService extends BaseSevice {
 
     return this.apiService.getData<ProductDTO>(api, null);
   }
+
+  getProductsByPageFacebook(key: any, data: any): Observable<any>{
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/rest/v1.0/product/${key}/getproductsbypagefacebook`,
+      method: TApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
 }

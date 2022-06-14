@@ -77,6 +77,7 @@ import { ModalListCollectionComponent } from './components/modal-list-collection
 import { ModalTaxComponent } from './components/modal-tax/modal-tax.component';
 import { AccountTaxService } from '../../services/account-tax.service';
 import { DirectivesModule } from '../../shared/directives/directives.module';
+import { ProductPagefbComponent } from './components/product-pagefb/product-pagefb.component';
 import { ConversationPostViewComponent } from './conversation-post/conversation-post-view.component';
 import { ItemPostCommentComponent } from './conversation-post/item-post-comment.component';
 import { ModalBlockPhoneComponent } from './components/modal-block-phone/modal-block-phone.component';
@@ -187,7 +188,8 @@ const SERVICES = [
     AutoReplyConfigComponent,
     ModalReportOrderPostComponent,
     ModalListCollectionComponent,
-    ModalTaxComponent
+    ModalTaxComponent,
+    ProductPagefbComponent
   ],
 
   imports: [
