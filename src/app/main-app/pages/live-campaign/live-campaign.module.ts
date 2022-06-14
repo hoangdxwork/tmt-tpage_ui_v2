@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TDSAutocompleteModule, TDSAvatarModule, TDSBreadCrumbModule, TDSButtonMenuModule, TDSButtonModule, TDSCheckBoxModule, TDSCollapseModule, TDSDatePickerModule, TDSDrawerModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalModule, TDSModalService, TDSPageHeaderModule, TDSPopoverModule, TDSSelectModule, TDSSpinnerModule, TDSSwitchModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSTimelineModule, TDSToolTipModule, TDSTypographyModule } from 'tmt-tang-ui';
 import { LiveCampaignRoutingModule } from './live-campaign-routing.module';
 import { MainSharedModule } from '../../shared/shared.module';
 import { PipeModule } from '../../shared/pipe/pipe.module';
@@ -48,6 +47,32 @@ import { ModalPaymentComponent } from './components/modal-payment/modal-payment.
 import { AccountJournalService } from '../../services/account-journal.service';
 import { AccountRegisterPaymentService } from '../../services/account-register-payment.service';
 import { DrawerOrderMessageComponent } from './components/drawer-order-message/drawer-order-message.component';
+import { TDSAutocompleteModule } from 'tds-ui/auto-complete';
+import { TDSCollapseModule } from 'tds-ui/collapse';
+import { TDSButtonModule } from 'tds-ui/button';
+import { TDSPageHeaderModule } from 'tds-ui/page-header';
+import { TDSButtonMenuModule } from 'tds-ui/button-menu';
+import { TDSBreadCrumbModule } from 'tds-ui/breadcrumb';
+import { TDSDropDownModule } from 'tds-ui/dropdown';
+import { TDSInputModule } from 'tds-ui/tds-input';
+import { TDSFormFieldModule } from 'tds-ui/form-field';
+import { TDSTableModule } from 'tds-ui/table';
+import { TDSTabsModule } from 'tds-ui/tabs';
+import { TDSTypographyModule } from 'tds-ui/typography';
+import { TDSFilterStatusModule } from 'tds-ui/filter-status';
+import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
+import { TDSDatePickerModule } from 'tds-ui/date-picker';
+import { TDSDrawerModule } from 'tds-ui/drawer';
+import { TDSTimelineModule } from 'tds-ui/timeline';
+import { TDSModalModule } from 'tds-ui/modal';
+import { TDSToolTipModule } from 'tds-ui/tooltip';
+import { TDSTagModule } from 'tds-ui/tag';
+import { TDSAvatarModule } from 'tds-ui/avatar';
+import { TDSInputNumberModule } from 'tds-ui/input-number';
+import { TDSSelectModule } from 'tds-ui/select';
+import { TDSCheckBoxModule } from 'tds-ui/tds-checkbox';
+import { TDSPopoverModule } from 'tds-ui/popover';
+import { TDSSwitchModule } from 'tds-ui/switch';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -76,7 +101,6 @@ const cmp =[
 ]
 
 const SERVICES = [
-  TDSModalService,
   CommonService,
   QuickReplyService,
   LiveCampaignService,

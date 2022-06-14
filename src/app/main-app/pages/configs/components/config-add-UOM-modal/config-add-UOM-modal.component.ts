@@ -4,7 +4,9 @@ import { ProductTemplateService } from './../../../../services/product-template.
 import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { TDSMessageService, TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-config-add-uom-modal',
@@ -17,11 +19,11 @@ export class ConfigAddUOMModalComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private modal: TDSModalRef, 
+    private modal: TDSModalRef,
     private message: TDSMessageService,
     private productTemplate:ProductTemplateService,
     private formBuilder: FormBuilder
-  ) { 
+  ) {
     this.initForm();
   }
 

@@ -1,7 +1,7 @@
 import { Color } from 'echarts';
 import { TDSChartOptions, TDSBarChartComponent, TDSBarChartDataSeries } from 'tds-report';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-dashboard-revenue-report',
@@ -30,7 +30,7 @@ export class DashboardRevenueReportComponent implements OnInit {
     this.loadData();
   }
 
-  
+
   loadData(){
     this.labelData = [
       {

@@ -4,7 +4,9 @@ import { filter, takeUntil } from 'rxjs/operators';
 import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { TDSSafeAny, TDSUploadFile, TDSMessageService, TDSUploadChangeParam, TDSModalRef } from 'tmt-tang-ui';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-config-add-origin-country-modal',
@@ -15,11 +17,11 @@ export class ConfigAddOriginCountryModalComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private modal: TDSModalRef, 
-    private message: TDSMessageService, 
+    private modal: TDSModalRef,
+    private message: TDSMessageService,
     private productTemplateService: ProductTemplateService,
     private formBuilder: FormBuilder
-  ) { 
+  ) {
     this.initForm();
   }
 
@@ -59,11 +61,11 @@ export class ConfigAddOriginCountryModalComponent implements OnInit, OnDestroy {
           this.modal.destroy(this.originCountyForm);
           this.originCountyForm.reset();
         },
-        err=>{ 
+        err=>{
           this.message.error(err.error.message??'Thêm thất bại');
         }
       )
-      
+
     }
   }
 

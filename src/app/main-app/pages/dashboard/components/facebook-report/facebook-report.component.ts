@@ -1,8 +1,9 @@
 import { Color } from 'echarts';
-import { TDSSafeAny, vi_VN } from 'tmt-tang-ui';
 import { TDSBarChartComponent, TDSChartOptions, TDSBarChartDataSeries } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
 import { formatNumber } from '@angular/common';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { vi_VN } from 'tds-ui/i18n';
 
 @Component({
   selector: 'app-facebook-report',

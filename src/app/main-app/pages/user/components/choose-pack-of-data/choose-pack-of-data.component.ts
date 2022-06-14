@@ -1,9 +1,8 @@
-import { finalize } from 'rxjs/operators';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { AppPackageDTO, TenantInfoDTO, TenantUsedDTO } from 'src/app/main-app/dto/tenant/tenant.dto';
 import { PackOfDataEnum } from 'src/app/main-app/dto/account/account.dto';
 import { TenantService } from 'src/app/main-app/services/tenant.service';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'choose-pack-of-data',

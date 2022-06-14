@@ -3,10 +3,10 @@ import { Injectable } from '@angular/core';
 import { Observable} from 'rxjs';
 import { shareReplay, map } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { BaseSevice } from './base.service';
 import { CityDTO, DistrictDTO, WardDTO } from '../dto/address/address.dto';
 import { City, Ward } from '../dto/partner/partner-detail.dto';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Injectable({
   providedIn: 'root'

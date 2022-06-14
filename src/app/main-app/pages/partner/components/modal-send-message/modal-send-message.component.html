@@ -44,8 +44,7 @@
                             <td>{{ data.PartnerName }}</td>
                             <td>{{ data.Name}}</td>
                             <td>
-                                <p tds-typography ellipsis expandable [ellipsisRows]="2" [content]=" data.Message"
-                                    [contentCollapse]="'Ẩn'"></p>
+                               <div [innerHTML]="data.Message | safeHtml"></div>
                             </td>
                             <td>
                                 <div class="flex">
@@ -124,8 +123,7 @@
                                 <td>{{ data.Name }}</td>
                                 <td>{{ data.Phone }}</td>
                                 <td>
-                                    <p tds-typography ellipsis expandable [ellipsisRows]="2" [content]=" data.Message"
-                                        [contentCollapse]="'Ẩn'"></p>
+                                  <div [innerHTML]="data.Message | safeHtml"></div>
                                 </td>
                             </tr>
                             <td colspan="3">

@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Host
 import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ActivityStatus } from "src/app/lib/enum/message/coversation-message";
-import { TDSHelperArray, TDSHelperString, TDSMessageService, TDSSafeAny } from "tmt-tang-ui";
 import { MakeActivityItemWebHook } from "../../dto/conversation/make-activity.dto";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
 import { ActivityMatchingService } from "../../services/conversation/activity-matching.service";
@@ -13,6 +12,8 @@ import { PhoneHelper } from "../helper/phone.helper";
 import { ReplaceHelper } from "../helper/replace.helper";
 import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
 import { eventReplyCommentTrigger } from "../helper/event-animations.helper";
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSMessageService } from "tds-ui/message";
 
 @Component({
   selector: "tds-conversation-item",
@@ -39,7 +40,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   messages: any = [];
   message: string = '';
   enumActivityStatus = ActivityStatus;
-  destroy$ = new Subject();
+  destroy$ = new Subject<void>();
   isReply: boolean = false;
   isPrivateReply: boolean = false;
   messageModel: any
@@ -108,6 +109,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     if (this.contentMessage && this.contentMessage.nativeElement && this.contentMessage.nativeElement.outerText) {
       return this.contentMessage.nativeElement.outerText;
     }
+
     this.tdsMessage.info("Không thể lấy thông tin");
     return null;
   }

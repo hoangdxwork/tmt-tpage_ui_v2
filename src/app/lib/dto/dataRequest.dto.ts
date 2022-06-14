@@ -1,5 +1,5 @@
 
-import { TDSSafeAny } from "tmt-tang-ui";
+import { TDSSafeAny } from "tds-ui/shared/utility";
 import { OperatorEnum } from "../enum/operator.enum";
 import { SortEnum } from "../enum/sort.enum";
 

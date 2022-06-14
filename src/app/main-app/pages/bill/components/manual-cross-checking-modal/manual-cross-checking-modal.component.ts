@@ -1,12 +1,14 @@
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { CrossCheckingDTO, CrossCheckingOrder, ExistedCrossChecking } from './../../../../dto/fastsaleorder/cross-checking.dto';
-import { TDSSafeAny, TDSModalRef, TDSMessageService, TDSHelperString } from 'tmt-tang-ui';
 import { DeliveryCarrierDTOV2 } from './../../../../dto/delivery-carrier.dto';
 import { fromEvent, Observable } from 'rxjs';
 import { map, debounceTime, switchMap } from 'rxjs/operators';
 import { DeliveryCarrierService } from './../../../../services/delivery-carrier.service';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-manual-cross-checking-modal',
@@ -32,7 +34,7 @@ export class ManualCrossCheckingModalComponent implements OnInit {
     private deliveryCarrierService: DeliveryCarrierService,
     private fashSaleOrder: FastSaleOrderService,
     private message: TDSMessageService
-    ) { 
+    ) {
     this.createForm();
   }
 
@@ -72,7 +74,7 @@ export class ManualCrossCheckingModalComponent implements OnInit {
     }
 
     let duplicateTrackingRef = this.listOfData.find(f=>f.TrackingRef == event.value);
-          
+
     if(duplicateTrackingRef){
       this.message.warning('Trùng mã vận đơn');
     }
@@ -84,7 +86,7 @@ export class ManualCrossCheckingModalComponent implements OnInit {
       (res:any)=>{
         delete res['@odata.context'];
         let model = res as ExistedCrossChecking;
-        
+
         if(this.listOfData[index]){
           // TODO: trường hợp chỉnh sửa trackingRef
           this.listOfData[index].TrackingRef = model.TrackingRef || event.value;
@@ -107,14 +109,14 @@ export class ManualCrossCheckingModalComponent implements OnInit {
           // TODO: show lỗi
           this.listTempOfData[index].hasError = model.Message;
         }
-        
-        
+
+
       },
       (err)=>{
         this.message.error(err.error.message || 'Có lỗi xảy ra');
       }
     )
-    
+
   }
 
   removeCrossChecking(index:number){
@@ -129,8 +131,8 @@ export class ManualCrossCheckingModalComponent implements OnInit {
   }
 
   onOrderFilter(event:TDSSafeAny){
-    this.listTempOfData = this.listTempOfData.filter(f=>f.TrackingRef?.includes(event.value) || 
-      f.ShipStatus?.includes(event.value) || 
+    this.listTempOfData = this.listTempOfData.filter(f=>f.TrackingRef?.includes(event.value) ||
+      f.ShipStatus?.includes(event.value) ||
       f.CoDAmount?.toString().includes(event.value));
   }
 

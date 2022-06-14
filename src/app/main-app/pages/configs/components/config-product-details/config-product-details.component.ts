@@ -5,11 +5,11 @@ import { ODataStokeMoveDTO, ODataProductInventoryDTO } from './../../../../dto/c
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { StockMoveService } from '../../../../services/stock-move.service';
-import { TDSMessageService, TDSTableQueryParams } from 'tmt-tang-ui';
 import { FormBuilder } from '@angular/forms';
 import { ConfigProductInventoryDTO } from '../../../../dto/configs/product/config-inventory.dto';
 import { ConfigStockMoveDTO } from './../../../../dto/configs/product/config-warehouse.dto';
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'config-product-details',

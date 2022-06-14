@@ -7,12 +7,14 @@ import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { UserPageDTO } from 'src/app/main-app/dto/team/user-page.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
-import { TDSHelperObject, TDSModalService, TDSSafeAny, TDSMessageService, TDSHelperString, TDSHelperArray } from 'tmt-tang-ui';
 import { AddPageComponent } from '../components/add-page/add-page.component';
 import { ViewportScroller } from '@angular/common';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { FacebookLoginService } from 'src/app/main-app/services/facebook-login.service';
 import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
 
 export interface PageNotConnectDTO {
   // /rest/v1.0/product/getinventory

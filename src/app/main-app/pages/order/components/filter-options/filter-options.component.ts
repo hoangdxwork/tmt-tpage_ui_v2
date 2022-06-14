@@ -2,7 +2,8 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { addDays } from 'date-fns/esm';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { TagService } from 'src/app/main-app/services/tag.service';
-import { TDSContextMenuService, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSContextMenuService } from 'tds-ui/dropdown';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'filter-options',

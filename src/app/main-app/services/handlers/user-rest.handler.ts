@@ -14,7 +14,6 @@ export class UserRestHandler {
   constructor(
     private applicationUserService: ApplicationUserService
   ) {
-
   }
 
   validateExitUsername(userId: string) {

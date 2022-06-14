@@ -3,7 +3,8 @@ import { TCommonService } from './../../lib/services/common.service';
 import { TAPIDTO } from './../../lib/dto/api.dto';
 import { Injectable } from '@angular/core';
 import { BaseSevice } from './base.service';
-import { TDSSafeAny } from 'tmt-tang-ui';
+import {
+  TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Injectable({
   providedIn: 'root'

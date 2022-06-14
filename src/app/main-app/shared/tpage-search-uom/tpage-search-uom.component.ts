@@ -1,8 +1,9 @@
 import { ProductUOMDTO } from './../../dto/product/product-uom.dto';
-import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSHelperString, TDSModalRef } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ProductUOMService } from '../../services/product-uom.service';
 import { TpageAddUOMComponent } from '../tpage-add-uom/tpage-add-uom.component';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'tpage-search-uom',

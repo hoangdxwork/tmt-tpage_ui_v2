@@ -1,7 +1,6 @@
 import { ReplaceHelper } from './../helper/replace.helper';
 import { QuickReplyDTO } from './../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { ConfigConversationTagsCreateDataModalComponent } from './../../pages/configs/components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
 import { ModalListBillComponent } from './../../pages/conversations/components/modal-list-bill/modal-list-bill.component';
 import { ModalListProductComponent } from './../../pages/conversations/components/modal-list-product/modal-list-product.component';
@@ -11,7 +10,6 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output,
   SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, ViewRef, AfterViewChecked, NgZone, HostBinding, ViewEncapsulation
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalService, TDSUploadChangeParam } from 'tmt-tang-ui';
 import { ConversationMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
@@ -33,6 +31,10 @@ import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
 import { YiAutoScrollDirective } from '../directives/yi-auto-scroll.directive';
 import { eventFadeStateTrigger } from '../helper/event-animations.helper';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSUploadChangeParam } from 'tds-ui/upload';
 
 @Component({
   selector: 'shared-tds-conversations',
@@ -53,7 +55,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   @Input() team!: CRMTeamDTO;
   @Output() onLoadMiniChat = new EventEmitter();
 
-  destroy$ = new Subject();
+  destroy$ = new Subject<void>();
   isLoadMessage: boolean = false;
   dataSource$!: Observable<MakeActivityMessagesDTO>;
   partner: TDSSafeAny;
@@ -201,6 +203,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
         // Cập nhật count_unread
         this.conversationEventFacade.updateMarkSeenBadge(this.data.page_id, this.type, this.data.psid);
+        this.cdRef.markForCheck();
       }, error => {
         this.message.error(`markseen: ${error?.error?.message}`);
       });
@@ -216,7 +219,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     });
   }
 
-  showModalListProduct() {
+  onProductLastV2() {
     const modal = this.modalService.create({
       title: 'Danh sách sản phẩm',
       content: ModalListProductComponent,
@@ -462,8 +465,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           this.messageResponse(res, model);
       }, error => {
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại' );
-          this.eventHandler.preventDefault();
-          this.eventHandler.stopImmediatePropagation();
       });
   }
 

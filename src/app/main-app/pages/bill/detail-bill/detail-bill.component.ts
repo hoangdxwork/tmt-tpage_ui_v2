@@ -1,5 +1,4 @@
 import { ModalPaymentComponent } from './../../partner/components/modal-payment/modal-payment.component';
-import { TDSModalService, TDSHelperObject, TDSStatusType, TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
@@ -9,6 +8,10 @@ import { Subject } from 'rxjs';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { BillDetailDTO } from 'src/app/main-app/dto/bill/bill-detail.dto';
 import { PaymentJsonDTO } from 'src/app/main-app/dto/bill/payment-json.dto';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSStatusType } from 'tds-ui/step';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-detail-bill',

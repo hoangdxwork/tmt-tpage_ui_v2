@@ -1,7 +1,7 @@
 import { MakeActivityItemWebHook } from './../../dto/conversation/make-activity.dto';
 import { CRMTeamDTO } from './../../dto/team/team.dto';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'show-item-image',

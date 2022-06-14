@@ -1,6 +1,5 @@
 import { filter, takeUntil } from 'rxjs/operators';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { TDSModalService, TDSSafeAny, TDSModalRef, TDSHelperString, TDSMessageService, TDSHelperObject } from 'tmt-tang-ui';
 import { Component, Input, OnInit, ViewContainerRef, OnDestroy } from '@angular/core';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -11,6 +10,9 @@ import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { Subject } from 'rxjs';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 
 @Component({
   selector: 'create-bill-fast',

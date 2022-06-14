@@ -13,8 +13,10 @@ import { ConfigAddUOMModalComponent } from '../components/config-add-UOM-modal/c
 import { ConfigAddVariantProductModalComponent } from './../components/config-add-variant-product-modal/config-add-variant-product-modal.component';
 import { takeUntil } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder, FormArray } from '@angular/forms';
-import { TDSSafeAny, TDSMessageService, TDSModalService, TDSHelperObject } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-config-edit-product',

@@ -2,9 +2,11 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { ProductTemplateService } from './../../../../services/product-template.service';
 import { ProductService } from './../../../../services/product.service';
-import { TDSMessageService, TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-config-add-category-modal',
@@ -18,8 +20,8 @@ export class ConfigAddCategoryModalComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private modal: TDSModalRef, 
-    private message: TDSMessageService, 
+    private modal: TDSModalRef,
+    private message: TDSMessageService,
     private formBuilder: FormBuilder,
     private productService: ProductService,
     private productTemplateService: ProductTemplateService

@@ -1,7 +1,7 @@
 import { filter } from 'rxjs/operators';
 import { Event, RouterEvent, Router } from '@angular/router';
-import { TDSMenuDTO } from 'tmt-tang-ui';
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { TDSMenuDTO } from 'tds-ui/menu';
 
 @Component({
   selector: 'tpage-menu-item',
@@ -16,7 +16,7 @@ export class TpageMenuItemComponent implements OnInit {
   active:boolean = false;
   //#endregion
 
-  constructor(private router: Router) { 
+  constructor(private router: Router) {
     router.events.pipe(
       filter((e: Event): e is RouterEvent => e instanceof RouterEvent)
     ).subscribe((e: RouterEvent) => {

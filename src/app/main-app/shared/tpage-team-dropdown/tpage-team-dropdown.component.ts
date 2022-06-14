@@ -2,16 +2,17 @@ import { Component, EventEmitter, Host, OnInit, Optional, Output } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { TDSHeaderComponent, TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHeaderComponent } from 'tds-ui/header';
+import { TDSHelperObject } from 'tds-ui/shared/utility';
 import { PagedList2 } from '../../dto/pagedlist2.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { CRMTeamService } from '../../services/crm-team.service';
 
 @Component({
   selector: 'tpage-team-dropdown',
-  templateUrl: './tpage-team-dropdown.component.html',
-  styleUrls: ['./tpage-team-dropdown.component.scss']
+  templateUrl: './tpage-team-dropdown.component.html'
 })
+
 export class TpageTeamDropdownComponent implements OnInit {
   data$!: Observable<PagedList2<CRMTeamDTO> | null>;
   currentTeam!: CRMTeamDTO | null;

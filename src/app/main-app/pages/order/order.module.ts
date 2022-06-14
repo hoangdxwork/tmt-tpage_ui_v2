@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 
 import { OrderRoutingModule } from './order-routing.module';
 import { OrderComponent } from './order/order.component';
-import { TDSBadgeModule, TDSButtonModule, TDSCheckBoxModule, TDSContextMenuService, TDSDatePickerModule, TDSDropDownModule, TDSFilterStatusModule, TDSFormField, TDSFormFieldModule, TDSInputModule, TDSInputNumberModule, TDSModalService, TDSPopoverModule, TDSSelectModule, TDSSpinnerModule, TDSTableModule, TDSTabsModule, TDSTagModule, TDSModalModule, TDSAvatarComponent, TDSAvatarModule, TDSCollapseModule, TDSToolTipModule } from 'tmt-tang-ui';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SaleOnline_OrderService } from '../../services/sale-online-order.service';
 import { OdataSaleOnline_OrderService } from '../../services/mock-odata/odata-saleonlineorder.service';
@@ -33,11 +32,29 @@ import { OdataProductService } from '../../services/mock-odata/odata-product.ser
 import { CheckFormHandler } from '../../services/handlers/check-form.handler';
 import { CarrierHandler } from '../../services/handlers/carier.handler';
 import { SaleHandler } from '../../services/handlers/sale.handler';
+import { TDSAvatarModule } from 'tds-ui/avatar';
+import { TDSTabsModule } from 'tds-ui/tabs';
+import { TDSInputModule } from 'tds-ui/tds-input';
+import { TDSTagModule } from 'tds-ui/tag';
+import { TDSFormFieldModule } from 'tds-ui/form-field';
+import { TDSButtonModule } from 'tds-ui/button';
+import { TDSDropDownModule } from 'tds-ui/dropdown';
+import { TDSTableModule } from 'tds-ui/table';
+import { TDSBadgeModule } from 'tds-ui/badges';
+import { TDSSelectModule } from 'tds-ui/select';
+import { TDSPopoverModule } from 'tds-ui/popover';
+import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
+import { TDSDatePickerModule } from 'tds-ui/date-picker';
+import { TDSCheckBoxModule } from 'tds-ui/tds-checkbox';
+import { TDSInputNumberModule } from 'tds-ui/input-number';
+import { TDSToolTipModule } from 'tds-ui/tooltip';
+import { TDSFilterStatusModule } from 'tds-ui/filter-status';
+import { TDSModalModule } from 'tds-ui/modal';
+import { TDSCollapseModule } from 'tds-ui/collapse';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
   SaleOnline_OrderService,
-  TDSModalService,
   TagService,
   DeliveryCarrierService,
   CommonService,

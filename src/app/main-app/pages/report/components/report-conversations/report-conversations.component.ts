@@ -1,8 +1,8 @@
 import { Color } from 'echarts';
-import { TDSSafeAny, vi_VN } from 'tmt-tang-ui';
 import { TDSBarChartComponent, TDSChartOptions, TDSBarChartDataSeries } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
 import { formatDate } from '@angular/common';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-report-conversations',

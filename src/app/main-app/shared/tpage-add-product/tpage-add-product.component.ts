@@ -1,5 +1,4 @@
 import { Observable, Subject, Subscriber, Subscription } from 'rxjs';
-import { TDSSafeAny, TDSModalRef, TDSMessageService, TDSModalService, TDSUploadChangeParam, TDSUploadXHRArgs, TDSHelperObject, TDSUploadFile, TDSHelperString, TDSHelperArray } from 'tmt-tang-ui';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone, OnDestroy, Input } from '@angular/core';
 import { ProductTemplateDTO, ProductType, ProductUOMDTO } from '../../dto/product/product.dto';
@@ -16,6 +15,10 @@ import { map, takeUntil, mergeMap, finalize, tap } from 'rxjs/operators';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { ProductDataFacade } from '../../services/facades/product.data.facade';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
+import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSUploadChangeParam, TDSUploadFile } from 'tds-ui/upload';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'tpage-add-product',
@@ -36,7 +39,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   imageUrl = "https://randomuser.me/api/portraits/women/68.jpg";
   public readonly lstProductType = ProductType;
   fileList: TDSUploadFile[] = [];
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(private sharedService: SharedService,
     private fb: FormBuilder,

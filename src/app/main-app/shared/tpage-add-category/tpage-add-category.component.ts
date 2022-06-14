@@ -1,7 +1,9 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Message } from 'src/app/lib/consts/message.const';
-import { TDSSafeAny, TDSModalRef, TDSMessageService } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { ProductCategoryDTO } from '../../dto/product/product-category.dto';
 import { ProductCategoryService } from '../../services/product-category.service';
 
@@ -10,6 +12,7 @@ import { ProductCategoryService } from '../../services/product-category.service'
   templateUrl: './tpage-add-category.component.html',
   styleUrls: ['./tpage-add-category.component.scss']
 })
+
 export class TpageAddCategoryComponent implements OnInit {
 
   formAddCategory!: FormGroup;

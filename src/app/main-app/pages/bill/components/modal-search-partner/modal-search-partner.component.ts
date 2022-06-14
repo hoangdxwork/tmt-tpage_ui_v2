@@ -1,10 +1,12 @@
 import { FormBuilder } from '@angular/forms';
-import { TDSHelperArray, TDSHelperString, TDSMessageService, TDSModalRef } from 'tmt-tang-ui';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { CustomerDTO } from 'src/app/main-app/dto/partner/customer.dto';
 import { fromEvent} from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSModalRef } from 'tds-ui/modal';
 
 @Component({
   selector: 'app-modal-search-partner',

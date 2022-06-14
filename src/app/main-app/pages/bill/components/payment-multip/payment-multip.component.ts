@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { AccountRegisterPaymentService } from "src/app/main-app/services/account-register-payment.service";
 import { FastSaleOrderService } from "src/app/main-app/services/fast-sale-order.service";
-import { TDSMessageService, TDSModalRef } from "tmt-tang-ui";
+import { TDSMessageService } from "tds-ui/message";
+import { TDSModalRef } from "tds-ui/modal";
 
 @Component({
   selector: 'payment-multip',
@@ -18,7 +19,7 @@ export class PaymentMultipComponent implements OnInit{
   constructor( private fastSaleOrderService: FastSaleOrderService,
     private modal: TDSModalRef,
     private registerPaymentService: AccountRegisterPaymentService,
-    private message: TDSMessageService,) {
+    private message: TDSMessageService) {
   }
 
   ngOnInit(): void {

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
-import { TDSHelperString,  TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ODataFastSaleOrderDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
 import { BaseSevice } from '../base.service';
 

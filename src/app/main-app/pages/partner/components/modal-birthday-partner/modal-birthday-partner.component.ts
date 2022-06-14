@@ -1,8 +1,8 @@
 import { ModalSendMessageComponent } from './../modal-send-message/modal-send-message.component';
-import { TDSModalRef, TDSModalService } from 'tmt-tang-ui';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 
 @Component({
   selector: 'app-modal-birthday-partner',

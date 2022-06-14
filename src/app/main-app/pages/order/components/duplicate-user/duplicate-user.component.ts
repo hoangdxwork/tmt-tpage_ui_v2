@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TDSModalRef } from 'tmt-tang-ui';
+import { TDSModalRef } from 'tds-ui/modal';
 
 @Component({
   selector: 'duplicate-user',

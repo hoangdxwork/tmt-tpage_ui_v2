@@ -1,10 +1,10 @@
-import { AfterContentInit, AfterViewInit, Directive, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output } from "@angular/core";
+import { AfterViewInit, Directive, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output } from "@angular/core";
 
 @Directive({
     selector: "[yiAutoScroll]",
 })
 
-export class YiAutoScrollDirective implements  OnDestroy, AfterViewInit {
+export class YiAutoScrollDirective implements  OnDestroy, AfterViewInit  {
 
     @Input("lock-y-offset") public lockYOffset!: string;
     @Input("observe-attributes") public observeAttributes: string = "false";
@@ -171,24 +171,26 @@ export class YiAutoScrollDirective implements  OnDestroy, AfterViewInit {
 
     @HostListener("scroll", ['$event'])
     public scrollHandler(event: any): void {
-      const yBottom = this.nativeElement.scrollHeight - this.nativeElement.scrollTop - this.nativeElement.clientHeight;
-      this._isLocked = yBottom > Number(this.lockYOffset);
+      if(event) {
+        const yBottom = this.nativeElement.scrollHeight - this.nativeElement.scrollTop - this.nativeElement.clientHeight;
+        this._isLocked = yBottom > Number(this.lockYOffset);
 
-      if (this.nativeElement.scrollTop == 0) {
-          this.onScrollToTop.emit();
+        if (this.nativeElement.scrollTop == 0) {
+            this.onScrollToTop.emit();
+        }
+
+        // if (this.nativeElement.scrollTop == this.nativeElement.scrollHeight) {
+        //     this.onScrollToBottom.emit();
+        // }
+
+        if (yBottom <= Number(this.lockYOffset) && this.scrollEnd) {
+            this.onchangeBottom.emit(yBottom);
+            this._isLocked = true;
+        }
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
       }
-
-      if (this.nativeElement.scrollTop == this.nativeElement.scrollHeight) {
-          this.onScrollToBottom.emit();
-      }
-
-      if (yBottom <= Number(this.lockYOffset) && this.scrollEnd) {
-          this.onchangeBottom.emit(yBottom);
-          this._isLocked = true;
-      }
-
-      event.preventDefault();
-      event.stopImmediatePropagation();
     }
 
 }

@@ -1,5 +1,4 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { TDSSafeAny } from "tmt-tang-ui";
 import { TagDTO } from "../../dto/tag/tag.dto";
 
 @Pipe({

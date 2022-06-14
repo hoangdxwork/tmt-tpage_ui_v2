@@ -1,8 +1,8 @@
-import { TDSMessageService } from 'tmt-tang-ui';
 import { finalize } from 'rxjs/operators';
 import { Component, Input, OnInit, EventEmitter, Output } from '@angular/core';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { MessageDeliveryHistoryDTO } from 'src/app/main-app/dto/common/table.dto';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'drawer-order-message',

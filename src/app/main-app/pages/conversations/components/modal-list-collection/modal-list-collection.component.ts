@@ -1,16 +1,18 @@
-import { TDSModalRef } from 'tmt-tang-ui';
-import { TDSModalService } from 'tmt-tang-ui';
+
 import { OnDestroy, ViewContainerRef } from '@angular/core';
-import { TDSHelperArray, TDSUploadFile, TDSMessageService } from 'tmt-tang-ui';
+
 import { Component, Input, OnInit } from '@angular/core';
 import { map, finalize, takeUntil } from 'rxjs/operators';
 import { AttachmentDataFacade } from 'src/app/main-app/services/facades/attachment-data.facade';
 import { Observable, Subject } from 'rxjs';
-import { PagedList2 } from 'src/app/main-app/dto/pagedlist2.dto';
-import { MDBAttachmentDTO, MDBCollectionDTO } from 'src/app/main-app/dto/attachment/attachment.dto';
+import { MDBCollectionDTO } from 'src/app/main-app/dto/attachment/attachment.dto';
 import { AttachmentService } from 'src/app/main-app/services/attachment.server';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ModalAddAttachmentCollectionComponent } from '../modal-add-attachment-collection/modal-add-attachment-collection.component';
+import { TDSUploadFile } from 'tds-ui/upload';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSHelperArray } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'modal-list-collection',

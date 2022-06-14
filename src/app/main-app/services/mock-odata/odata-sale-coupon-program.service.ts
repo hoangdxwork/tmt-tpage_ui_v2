@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
-import { TDSHelperString,  TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperString } from 'tds-ui/shared/utility';
 import { SaleCouponProgramDTO } from '../../dto/configs/sale-coupon-program.dto';
 import { ODataCRMTagDTO } from '../../dto/crm-tag/odata-crmtag.dto';
 import { CTMTagFilterObjDTO, ODataResponsesDTO, SaleCouponProgramFilterObjDTO, TposLoggingFilterObjDTO } from '../../dto/odata/odata.dto';

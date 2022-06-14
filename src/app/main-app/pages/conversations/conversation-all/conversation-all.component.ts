@@ -1,21 +1,21 @@
 import { FacebookRESTService } from './../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from './../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
-import { ChangeDetectionStrategy, ChangeDetectorRef,
-   Component, HostBinding, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subject } from 'rxjs';
-import { finalize, takeUntil, map, shareReplay } from 'rxjs/operators';
+import { AsyncSubject, fromEvent, Observable, Subject } from 'rxjs';
+import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ConversationMatchingItem, CRMMatchingMappingDTO } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
-import { TDSHelperObject, TDSMessageService, TDSHelperArray, TDSHelperString } from 'tmt-tang-ui';
 import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
-import { eventCollapTrigger, eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
+import { eventFadeStateTrigger, eventCollapTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalService } from 'tds-ui/modal';
 
 @Component({
   selector: 'app-conversation-all',
@@ -23,15 +23,16 @@ import { eventCollapTrigger, eventFadeStateTrigger } from 'src/app/main-app/shar
   animations: [eventFadeStateTrigger, eventCollapTrigger]
 })
 
-export class ConversationAllComponent extends TpageBaseComponent implements OnInit, OnDestroy {
+export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @HostBinding("@eventFadeState") eventAnimation = true;
+  @ViewChild('conversationSearchInput') innerText!: ElementRef;
 
   isLoading: boolean = false;
   dataSource$!: Observable<any>;
   lstMatchingItem!: ConversationMatchingItem[];
-  destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
   psid!: string;
   activeCvsItem!: ConversationMatchingItem;
   isFastSend: boolean = false;
@@ -44,10 +45,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   filterValue: TDSSafeAny;
   queryFilter: TDSSafeAny;
   total: number = 0;
-  isSearching: boolean = false;
   isRefresh: boolean = false;
   isProcessing:boolean = false;
-  isNextData: boolean = false;
   isChanged: boolean = false;
   clickReload: number = 0;
 
@@ -386,9 +385,44 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       })));
     }
     if(this.dataSource$){
-        this.isSearching = false;
         !TDSHelperString.hasValueString(this.queryFilter) ? (this.isRefresh = true) : (this.isRefresh = false);
         this.loadConversations(this.dataSource$);
+    }
+  }
+
+  ngAfterViewInit() {
+    if(this.innerText?.nativeElement) {
+      fromEvent(this.innerText?.nativeElement, 'keyup').pipe(
+        // get value
+        map((event: any) => {
+          return event.target.value;
+        })
+        , debounceTime(750) , distinctUntilChanged()
+      ).subscribe((text: string) => {
+        this.loadFilterText(text);
+      })
+    }
+  }
+
+  onSearch(event: any) {
+    if(event) {
+       let text = event.target.value;
+       this.loadFilterText(text);
+    }
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }
+
+  loadFilterText(text: string) {
+    if(TDSHelperString.hasValueString(text)) {
+      let query = this.conversationDataFacade.createQuery(this.currentTeam.Facebook_PageId, this.type) as any;
+      query['keyword'] = text;
+      this.queryFilter = query;
+
+      this.makeDataSource(query);
+    } else {
+      (this.innerText.nativeElement.value as any) = null;
+      this.makeDataSource({});
     }
   }
 

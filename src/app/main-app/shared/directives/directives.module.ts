@@ -1,9 +1,11 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { YiAutoScrollDirective } from "./yi-auto-scroll.directive";
+import { YuriAvatarDirective } from "./yuri-avatar.directive";
 
 const DIRECTIVES = [
-  YiAutoScrollDirective
+  YiAutoScrollDirective,
+  YuriAvatarDirective
 ]
 
 @NgModule({

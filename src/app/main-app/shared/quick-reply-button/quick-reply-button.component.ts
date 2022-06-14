@@ -1,12 +1,13 @@
-import { TDSSafeAny, TDSMessageService, TDSHelperString } from 'tmt-tang-ui';
 import { PartnerService } from './../../services/partner.service';
 import { QuickReplyDTO } from './../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { QuickReplyService } from './../../services/quick-reply.service';
 import { ModalAddQuickReplyComponent } from './../../pages/conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
-import { TDSModalService } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef, Output, EventEmitter } from '@angular/core';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'quick-reply-button',
@@ -39,7 +40,7 @@ export class QuickReplyButtonComponent implements OnInit {
     this.partnerService.onLoadOrderFromTabPartner.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.partner = res;
     });
-    
+
     this.quickReplyService.dataActive$
       .pipe(takeUntil(this.destroy$)).pipe(finalize(() => { }))
       .subscribe(res => {

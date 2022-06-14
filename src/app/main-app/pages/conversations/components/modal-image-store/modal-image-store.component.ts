@@ -1,11 +1,7 @@
 import { OnDestroy } from '@angular/core';
-import { TDSSafeAny, TDSHelperArray } from 'tmt-tang-ui';
-import { TDSModalService } from 'tmt-tang-ui';
-import { TDSMessageService, TDSTabChangeEvent, TDSHelperString, TDSUploadFile } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, finalize } from 'rxjs/operators';
-import { TACheckboxChange, TDSModalRef } from 'tmt-tang-ui';
 import { Message } from 'src/app/lib/consts/message.const';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { MDBAttachmentDTO, MDBCollectionDTO } from 'src/app/main-app/dto/attachment/attachment.dto';
@@ -15,6 +11,11 @@ import { AttachmentService } from 'src/app/main-app/services/attachment.server';
 import { ModalAddCollectionComponent } from '../modal-add-collection/modal-add-collection.component';
 import { ModalAddAttachmentCollectionComponent } from '../modal-add-attachment-collection/modal-add-attachment-collection.component';
 import { ModalListCollectionComponent } from '../modal-list-collection/modal-list-collection.component';
+import { TDSUploadFile } from 'tds-ui/upload';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSTabChangeEvent } from 'tds-ui/tabs';
+import { TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-modal-image-store',

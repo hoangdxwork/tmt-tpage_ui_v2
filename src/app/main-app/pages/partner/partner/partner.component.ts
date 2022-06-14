@@ -6,7 +6,6 @@ import { ModalConvertPartnerComponent } from './../components/modal-convert-part
 import { ModalEditPartnerComponent } from './../components/modal-edit-partner/modal-edit-partner.component';
 
 import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef, ElementRef, AfterViewInit, HostListener } from '@angular/core';
-import { TDSModalService, TDSSafeAny, TDSHelperObject, TDSHelperArray, TDSMessageService, TDSTableQueryParams, TDSHelperString, TDSResizeObserver, TDSConfigService } from 'tmt-tang-ui';
 import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
 import { OperatorEnum, SortEnum, THelperCacheService } from 'src/app/lib';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -21,6 +20,12 @@ import { ODataPartnerDTO, PartnerDTO, } from 'src/app/main-app/dto/partner/partn
 import { ODataTagsPartnerDTO, TagsPartnerDTO } from 'src/app/main-app/dto/partner/partner-tags.dto';
 import { PartnerStatusReport, PartnerStatusReportDTO } from 'src/app/main-app/dto/partner/partner-status-report.dto';
 import { PartnerBirthdayDTO } from 'src/app/main-app/dto/partner/partner-birthday.dto';
+import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
+import { TDSConfigService } from 'tds-ui/core/config';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
   selector: 'app-partner',

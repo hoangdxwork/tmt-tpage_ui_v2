@@ -4,7 +4,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { TAuthService } from 'src/app/lib';
 import { PageLoadingService } from 'src/app/shared/services/page-loading.service';
 import { environment } from 'src/environments/environment';
-import { TDSHelperObject, TDSHelperString, TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-login',

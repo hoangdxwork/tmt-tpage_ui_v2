@@ -1,4 +1,3 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';

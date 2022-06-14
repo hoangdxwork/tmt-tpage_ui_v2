@@ -1,9 +1,11 @@
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { TDSMessageService, TDSModalRef, TDSModalService, TDSSafeAny } from 'tmt-tang-ui';
 import { Component, Input, OnInit } from '@angular/core';
 import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { takeUntil } from 'rxjs/operators';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-modal-convert-partner',

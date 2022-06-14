@@ -1,4 +1,5 @@
-import { TDSSafeAny } from "tmt-tang-ui";
+import { TDSSafeAny } from "tds-ui/shared/utility";
+
 
 export interface PagedList2<T> {
     Items: Array<T>;

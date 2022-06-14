@@ -1,14 +1,14 @@
 import { finalize } from 'rxjs/operators';
-import { TDSMessageService } from 'tmt-tang-ui';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { TDSModalRef } from 'tmt-tang-ui';
 import { AccountRegisterPaymentDTO } from 'src/app/main-app/dto/fastsaleorder/payment.dto';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { AccountJournalService } from 'src/app/main-app/services/account-journal.service';
 import { AccountJournalDTO } from 'src/app/main-app/dto/account/account.dto';
 import { AccountRegisterPaymentService } from 'src/app/main-app/services/account-register-payment.service';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalRef } from 'tds-ui/modal';
 
 @Component({
   selector: 'modal-payment',

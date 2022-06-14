@@ -1,9 +1,9 @@
-import { TDSMessageService } from 'tmt-tang-ui';
 import { finalize } from 'rxjs/operators';
-import { TDSModalRef } from 'tmt-tang-ui';
 import { Component, Input, OnInit } from '@angular/core';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { FastSaleOrder_DefaultDTOV2 } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalRef } from 'tds-ui/modal';
 
 @Component({
   selector: 'modal-info-bill',

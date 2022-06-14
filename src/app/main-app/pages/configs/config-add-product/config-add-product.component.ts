@@ -14,10 +14,12 @@ import { ConfigAddUOMModalComponent } from '../components/config-add-UOM-modal/c
 import { ConfigAddVariantProductModalComponent } from './../components/config-add-variant-product-modal/config-add-variant-product-modal.component';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder, FormArray } from '@angular/forms';
-import { TDSSafeAny, TDSMessageService, TDSModalService, TDSHelperObject, TDSHelperArray } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ConfigProductDefaultDTO } from 'src/app/main-app/dto/configs/product/config-product-default.dto';
 import { ActivatedRoute } from '@angular/router';
+import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-config-add-product',
@@ -44,7 +46,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   dataModel!: ConfigProductDefaultDTO;
-  
+
   isLoading = false;
   isLoadingVariant = false;
   isLoadingAttribute = false;
@@ -59,7 +61,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     private productService: ProductService,
     private productTemplateService: ProductTemplateService,
     private productTemplateOUMLine: ProductTemplateOUMLineService,
-    private configDataService: ConfigDataFacade) { 
+    private configDataService: ConfigDataFacade) {
     this.createForm();
   }
 
@@ -268,7 +270,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         size: "lg",
         viewContainerRef: this.viewContainerRef
       });
-      
+
       modal.afterClose.subscribe((result:Array<ConfigAttributeLine>) => {
         if (TDSHelperObject.hasValue(result)) {
           this.lstAttributes = result;
@@ -297,7 +299,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       size: "lg",
       viewContainerRef: this.viewContainerRef
     });
-    
+
     modal.afterClose.subscribe(result => {
       this.loadProductCategory();
     });
@@ -313,7 +315,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         type: 'producer'
       }
     });
-    
+
     modal.afterClose.subscribe(result => {
       this.loadUOMAddType();
     });
@@ -329,7 +331,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         type: 'importer'
       }
     });
-    
+
     modal.afterClose.subscribe(result => {
       this.loadUOMAddType();
     });
@@ -345,7 +347,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         type: 'distributor'
       }
     });
-    
+
     modal.afterClose.subscribe(result => {
       this.loadUOMAddType();
     });
@@ -358,7 +360,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       size: "lg",
       viewContainerRef: this.viewContainerRef
     });
-    
+
     modal.afterClose.subscribe(result => {
       this.loadOriginCountry();
     });
@@ -432,7 +434,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
 
   editProduct(){
     let model = this.prepareModel();
-    
+
     if(model.Name){
       this.productTemplateService.updateProductTemplate(model).subscribe(
         (res:TDSSafeAny)=>{
@@ -452,7 +454,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       this.addImages(x);
     });
     let formModel = this._form.value;
-    
+
     this.dataModel.Name = formModel.Name ? formModel.Name : this.dataModel.Name;
     this.dataModel.Image = formModel.Image ? formModel.Image: this.dataModel.Image;
     this.dataModel.Images = formModel.Images ? formModel.Images : this.dataModel.Images;
@@ -563,7 +565,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         this.dataModel.OriginCountryName = this.dataModel.OriginCountry.Name;
       }
     }
-    
+
     return this.dataModel;
   }
 

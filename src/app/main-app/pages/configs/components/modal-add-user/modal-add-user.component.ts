@@ -1,4 +1,3 @@
-import { TDSModalRef, TDSModalService, TDSHelperObject, TDSSafeAny, TDSMessageService, TDSUploadFile } from 'tmt-tang-ui';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef, OnDestroy } from '@angular/core';
 import { UserRestHandler } from 'src/app/main-app/services/handlers/user-rest.handler';
@@ -10,6 +9,10 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import { Message } from 'src/app/lib/consts/message.const';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { Subject } from 'rxjs';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSUploadFile } from 'tds-ui/upload';
 
 @Component({
   selector: 'app-modal-add-user',

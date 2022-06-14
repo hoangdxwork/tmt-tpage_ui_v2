@@ -7,9 +7,12 @@ import { CreateQuickReplyDTO, QuickReplyDTO, AdvancedTemplateDTO, ButtonsDTO, Pa
 import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Component, Input, OnInit, ViewEncapsulation, OnDestroy, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators, FormArray } from '@angular/forms';
-import { TDSMessageService, TDSSafeAny, TDSUploadChangeParam, TDSModalRef, TDSUploadFile, TDSHelperString, TDSHelperObject } from 'tmt-tang-ui';
 import { filter, map, takeUntil } from 'rxjs/operators';
 import { Model, number } from 'echarts';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSUploadFile } from 'tds-ui/upload';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
 
 
 @Component({
@@ -157,7 +160,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
       Pages: [],
       Text: ''
     }
-    
+
   }
 
   getById(){
@@ -202,7 +205,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
         this.isLoading = false
         this.message.error('Lấy dữ liệu page Facebook thất bại !')
       })
-    
+
   }
 
   updateForm(data: QuickReplyDTO) {

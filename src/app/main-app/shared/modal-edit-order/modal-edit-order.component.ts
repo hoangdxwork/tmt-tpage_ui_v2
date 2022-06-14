@@ -5,7 +5,10 @@ import { finalize } from 'rxjs/operators';
 import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { Message } from 'src/app/lib/consts/message.const';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
-import { TACheckboxChange, TDSHelperObject, TDSHelperString, TDSMessageService, TDSModalRef, TDSModalService, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TACheckboxChange } from 'tds-ui/tds-checkbox';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
 import { DataSuggestionDTO, ResultCheckAddressDTO } from '../../dto/address/address.dto';
 import { CalculateFeeResponse_Data_ServiceDTO, DeliveryCarrierDTO } from '../../dto/carrier/delivery-carrier.dto';
@@ -233,7 +236,7 @@ export class ModalEditOrderComponent implements OnInit {
       }
     });
 
-    modal.componentInstance?.onLoadedProductSelect.subscribe(result => {
+    modal.componentInstance?.onLoadedProductSelect.subscribe((result: any) => {
       if(TDSHelperObject.hasValue(result)) {
         let details = this._form.controls['Details'];
 

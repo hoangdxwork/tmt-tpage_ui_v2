@@ -1,8 +1,8 @@
 import { ChangeDetectorRef } from '@angular/core';
 import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
 import { ConfigsMenu } from './../configs.menu';
-import { TDSMenuDTO } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
+import { TDSMenuDTO } from 'tds-ui/menu';
 
 @Component({
   selector: 'app-config',

@@ -1,8 +1,6 @@
-import { Color } from 'echarts';
-import { TDSSafeAny, vi_VN } from 'tmt-tang-ui';
 import { TDSBarChartComponent, TDSChartOptions, TDSBarChartDataSeries } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
-import { formatDate } from '@angular/common';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-report-tags',
@@ -34,8 +32,8 @@ export class ReportTagsComponent implements OnInit {
   loadData(){
     this.tableData = [
       {
-        id:1, 
-        labelName:'Bom hàng', 
+        id:1,
+        labelName:'Bom hàng',
         value:100,
         percent:'20%',
         color:'#EB3B5B',
@@ -76,12 +74,12 @@ export class ReportTagsComponent implements OnInit {
             name:'12/06/2021',
             value:4
           },
-        ], 
+        ],
         usedTime:24
       },
       {
-        id:2, 
-        labelName:'Khách mới', 
+        id:2,
+        labelName:'Khách mới',
         value:100,
         percent:'20%',
         color:'#2395FF',
@@ -126,8 +124,8 @@ export class ReportTagsComponent implements OnInit {
         usedTime:24
       },
       {
-        id:3, 
-        labelName:'Khách thân thiết', 
+        id:3,
+        labelName:'Khách thân thiết',
         value:100,
         percent:'20%',
         color:'#28A745',
@@ -172,7 +170,7 @@ export class ReportTagsComponent implements OnInit {
         usedTime:24
       },
       {
-        id:4, 
+        id:4,
         labelName:'Thẻ khác',
         value:100,
         percent:'20%',
@@ -229,6 +227,6 @@ export class ReportTagsComponent implements OnInit {
   }
 
   onChangeDate(result: Date[]): void {
-    
+
   }
 }

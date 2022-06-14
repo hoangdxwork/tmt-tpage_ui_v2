@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
-import { TDSSafeAny } from 'tmt-tang-ui';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { FastSaleOrderLineDTO } from '../dto/fastsaleorder/fastsaleorder.dto';
 import { ODataResponsesDTO } from '../dto/odata/odata.dto';
 import { ODataRegisterPartnerDTO } from '../dto/partner/partner-register-payment.dto';

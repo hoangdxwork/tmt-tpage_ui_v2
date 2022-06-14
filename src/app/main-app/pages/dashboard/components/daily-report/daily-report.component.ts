@@ -1,8 +1,7 @@
 import { Color } from 'echarts';
-import { formatPercent } from '@angular/common';
 import { TDSChartOptions, TDSLineChartComponent } from 'tds-report';
-import { TDSSafeAny, vi_VN } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-daily-report',

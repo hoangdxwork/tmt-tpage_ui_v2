@@ -4,11 +4,11 @@ import { Observable } from 'rxjs';
 import { FastSaleOrderService } from '../fast-sale-order.service';
 import { map } from 'rxjs/operators';
 import { GeneralConfigsFacade } from '../facades/general-config.facade';
-import { TDSSafeAny, TDSHelperString, TDSHelperObject } from 'tmt-tang-ui';
 import { TAuthService } from 'src/app/lib';
 import { SaleSettingsDTO } from '../../dto/setting/setting-sale-online.dto';
 import { FastSaleOrderRestDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
 import { DataCheckInfoPartnerDTO } from '../../dto/partner/partner.dto';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Injectable()
 export class OrderFormHandler {

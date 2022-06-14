@@ -1,9 +1,8 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { ApplicationUserDTO } from '../account/application-user.dto';
 import { MailTemplateDTO } from '../mailtemplate/mail-template.dto';
 import {
   SaleOnlineFacebookPostDTO,
-  SaleOnline_Order_DetailDTO,
 } from '../saleonlineorder/sale-online-order.dto';
 
 export interface LiveCampaign_SimpleDataDTO {

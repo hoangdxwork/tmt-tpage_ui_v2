@@ -2,7 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
-import { TDSHelperString, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { ConversationSummaryByTagDTO } from '../dto/conversation/conversation.dto';
 import { InputReasonCannelOrderDTO, MDBFacebookMappingNoteDTO, MDBPhoneReportDTO } from '../dto/partner/partner.dto';
 import { ArrayHelper } from '../shared/helper/array.helper';

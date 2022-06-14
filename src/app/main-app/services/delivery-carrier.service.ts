@@ -1,10 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
-import { TDSSafeAny } from 'tmt-tang-ui';
-import { PartnerBirthdayDTO } from '../dto/partner/partner-birthday.dto';
-import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
-import { PartnerDetailDTO } from '../dto/partner/partner-detail.dto';
 import { BaseSevice } from './base.service';
 import { groupBy as _groupBy } from 'lodash';
 import { ODataDeliveryCarrierDTOV2 } from '../dto/delivery-carrier.dto';

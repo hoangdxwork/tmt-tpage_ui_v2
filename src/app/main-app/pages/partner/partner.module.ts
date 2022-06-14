@@ -15,10 +15,8 @@ import { CommonModule } from '@angular/common';
 
 import { PartnerRoutingModule } from './partner-routing.module';
 import { PartnerComponent } from './partner/partner.component';
-import { TDSButtonModule, TDSTabsModule, TDSModalService, TDSFormFieldModule, TDSInputModule, TDSDropDownModule, TDSTableModule, TDSTagModule, TDSAvatarModule, TDSBadgeModule, TDSPopoverModule, TDSSkeletonModule, TDSSelectModule, TDSToolTipModule, TDSModalModule, TDSRadioModule, TDSDatePickerModule, TDSCheckBoxModule, TDSInputNumberModule, TDSButtonSpitModule, TDSDrawerModule, TDSFilterStatusModule, TDSSpinnerModule, TDSAlertModule, TDSNotificationModule, TDSUploadModule, TDSTypographyModule, TDSEmptyModule } from 'tmt-tang-ui';
 import { OdataPartnerService } from '../../services/mock-odata/odata-partner.service';
 import { CommonService } from '../../services/common.service';
-import { TDSMessageModule } from 'tmt-tang-ui';
 import { PipeModule } from '../../shared/pipe/pipe.module';
 import { PartnerService } from '../../services/partner.service';
 import { TagService } from '../../services/tag.service';
@@ -28,6 +26,33 @@ import { PrinterService } from '../../services/printer.service';
 import { ExcelExportService } from '../../services/excel-export.service';
 import { FilterOptionPartnerComponent } from './components/filter-option-partner/filter-option-partner.component';
 import { AccountRegisterPaymentService } from '../../services/account-register-payment.service';
+import { TDSButtonModule } from 'tds-ui/button';
+import { TDSTagModule } from 'tds-ui/tag';
+import { TDSFormFieldModule } from 'tds-ui/form-field';
+import { TDSTabsModule } from 'tds-ui/tabs';
+import { TDSInputModule } from 'tds-ui/tds-input';
+import { TDSDropDownModule } from 'tds-ui/dropdown';
+import { TDSTableModule } from 'tds-ui/table';
+import { TDSAvatarModule } from 'tds-ui/avatar';
+import { TDSUploadModule } from 'tds-ui/upload';
+import { TDSBadgeModule } from 'tds-ui/badges';
+import { TDSPopoverModule } from 'tds-ui/popover';
+import { TDSSelectModule } from 'tds-ui/select';
+import { TDSToolTipModule } from 'tds-ui/tooltip';
+import { TDSModalModule } from 'tds-ui/modal';
+import { TDSRadioModule } from 'tds-ui/radio';
+import { TDSDatePickerModule } from 'tds-ui/date-picker';
+import { TDSCheckBoxModule } from 'tds-ui/tds-checkbox';
+import { TDSInputNumberModule } from 'tds-ui/input-number';
+import { TDSButtonSpitModule } from 'tds-ui/buttton-split';
+import { TDSDrawerModule } from 'tds-ui/drawer';
+import { TDSFilterStatusModule } from 'tds-ui/filter-status';
+import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
+import { TDSMessageModule } from 'tds-ui/message';
+import { TDSNotificationModule } from 'tds-ui/notification';
+import { TDSAlertModule } from 'tds-ui/alert';
+import { TDSTypographyModule } from 'tds-ui/typography';
+import { TDSEmptyModule } from 'tds-ui/empty';
 
 const SERVICES = [
   OdataPartnerService,

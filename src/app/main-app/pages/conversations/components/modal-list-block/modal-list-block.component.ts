@@ -1,12 +1,13 @@
-import { TDSHelperObject, TDSMessageService, TDSModalRef, TDSModalService } from 'tmt-tang-ui';
 import { finalize } from 'rxjs/operators';
-import { TDSHelperArray } from 'tmt-tang-ui';
 import { Component, Input, OnInit, ViewContainerRef, Output, EventEmitter } from '@angular/core';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { MDBPhoneReportDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { Message } from 'src/app/lib/consts/message.const';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ModalBlockPhoneComponent } from '../modal-block-phone/modal-block-phone.component';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSHelperArray, TDSHelperObject } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'modal-list-block',

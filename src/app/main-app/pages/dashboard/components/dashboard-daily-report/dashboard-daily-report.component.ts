@@ -1,6 +1,5 @@
 import { Color } from 'echarts';
 import { TDSChartOptions, TDSLineChartComponent, TDSLineChartDataSeries } from 'tds-report';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -8,6 +7,7 @@ import { MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO } from 'src/app/main-a
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
 import { takeUntil, finalize } from 'rxjs/operators';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-dashboard-daily-report',

@@ -10,9 +10,12 @@ import { THelperDataRequest } from './../../../../lib/services/helper-data.servi
 import { Subject, Observable, fromEvent } from 'rxjs';
 import { OdataQuickReplyService } from './../../../services/mock-odata/odata-quick-reply.service';
 import { AutoChatAddDataModalComponent } from '../components/auto-chat-add-data-modal/auto-chat-add-data-modal.component';
-import { TDSSafeAny, TDSModalService, TDSHelperObject, TDSMessageService, TDSTableQueryParams, TDSHelperString } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { ODataQuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-reply.dto';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
   selector: 'app-config-auto-chat',

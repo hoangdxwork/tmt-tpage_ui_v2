@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { format } from 'date-fns';
 import { Message } from 'src/app/lib/consts/message.const';
-import { TDSMessageService, TDSModalRef, TDSSafeAny, TDSHelperString } from 'tmt-tang-ui';
 import { GenerateMessageDTO, GenerateMessageFromDTO } from '../../dto/conversation/inner.dto';
 import { GenerateMessageTypeEnum, SendCRMActivityCampaignDTO } from '../../dto/conversation/message.dto';
 import { MailTemplateDTO, MailTemplateUpdateDTO } from '../../dto/mailtemplate/mail-template.dto';
@@ -12,6 +11,9 @@ import { CRMActivityCampaignService } from '../../services/crm-activity-campaign
 import { CRMTeamService } from '../../services/crm-team.service';
 import { MailTemplateService } from '../../services/mail-template.service';
 import { SaleOnline_OrderService } from '../../services/sale-online-order.service';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
 
 export enum Tabs {
   List = 0,

@@ -2,9 +2,9 @@ import { ODataProductInventoryDTO } from './../dto/configs/product/config-odata-
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
-import { TDSSafeAny } from "tmt-tang-ui";
 import { ProductTemplateV2DTO } from "../dto/producttemplate/product-tempalte.dto";
 import { BaseSevice } from "./base.service";
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 
 @Injectable({
@@ -54,7 +54,7 @@ export class ProductTemplateService extends BaseSevice {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
       method: TApiMethodType.delete,
     }
-  
+
     return this.apiService.getData<ODataProductInventoryDTO>(api, null);
   }
 
@@ -66,7 +66,7 @@ export class ProductTemplateService extends BaseSevice {
 
     return this.apiService.getData<ODataProductInventoryDTO>(api, null);
   }
-  
+
   setActive(data: TDSSafeAny):Observable<TDSSafeAny>{
     const api: TAPIDTO = {
     url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.SetActive`,
@@ -90,7 +90,7 @@ export class ProductTemplateService extends BaseSevice {
       url: `${this._BASE_URL}/odata/ProductAttributeValue?$format=json&$count=true`,
       method: TApiMethodType.get,
     }
-  
+
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
@@ -108,7 +108,7 @@ export class ProductTemplateService extends BaseSevice {
       url: `${this._BASE_URL}/${this.prefix}/ProductCategory/ODataService.DefaultGet`,
       method: TApiMethodType.get,
       }
-  
+
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
@@ -117,7 +117,7 @@ export class ProductTemplateService extends BaseSevice {
       url: `${this._BASE_URL}/${this.prefix}/ProductCategory`,
       method: TApiMethodType.post,
       }
-  
+
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
@@ -126,7 +126,7 @@ export class ProductTemplateService extends BaseSevice {
       url: `${this._BASE_URL}/${this.prefix}/OriginCountry?%24format=json&%24filter=(contains(NameNoSign%2C%27%27)+or+contains(Code%2C%27%27))&%24count=true`,
       method: TApiMethodType.get,
       }
-  
+
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
@@ -135,7 +135,7 @@ export class ProductTemplateService extends BaseSevice {
       url: `${this._BASE_URL}/${this.prefix}/PartnerExt?%24format=json&%24filter=(contains(NameNoSign%2C%27%27)+or+contains(Code%2C%27%27)+or+contains(Phone%2C%27%27))&%24count=true`,
       method: TApiMethodType.get,
       }
-  
+
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
@@ -147,13 +147,13 @@ export class ProductTemplateService extends BaseSevice {
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
-  
+
   insertProductTemplate(data:TDSSafeAny):Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertV2`,
       method: TApiMethodType.post,
       }
-  
+
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
@@ -162,7 +162,7 @@ export class ProductTemplateService extends BaseSevice {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.UpdateV2`,
       method: TApiMethodType.post,
       }
-  
+
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
@@ -171,7 +171,7 @@ export class ProductTemplateService extends BaseSevice {
       url: `${this._BASE_URL}/${this.prefix}/PartnerExt`,
       method: TApiMethodType.post,
       }
-  
+
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
@@ -180,7 +180,7 @@ export class ProductTemplateService extends BaseSevice {
       url: `${this._BASE_URL}/${this.prefix}/OriginCountry `,
       method: TApiMethodType.post,
       }
-  
+
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
@@ -189,7 +189,7 @@ export class ProductTemplateService extends BaseSevice {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.SuggestionsVariant?$expand=AttributeValues`,
       method: TApiMethodType.post,
       }
-  
+
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 }

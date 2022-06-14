@@ -1,4 +1,3 @@
-import { TDSHelperString, TDSMessageService, TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
 import { Component, Input, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
@@ -7,6 +6,9 @@ import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { InputReasonCannelOrderDTO, MDBPhoneReportDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-modal-block-phone',
