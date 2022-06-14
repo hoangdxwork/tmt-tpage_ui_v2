@@ -72,12 +72,15 @@
 
           <!-- Tin nhắn lỗi -->
           <div *ngIf="data.error_message || data.status == enumActivityStatus.fail" class="select-message flex items-center">
-              <a *ngIf="!checkErrorMessage(data.error_message)" tds-tooltip tooltipTitle="{{data.error_message}}">
-                  <span class="tdsi-info-line text-body-2 leading-none" ></span>
+              <a *ngIf="!checkErrorMessage(data.error_message)" tds-popover [popoverContent]="popoverBug">
+                  <span class="tdsi-info-line text-error-400 text-body-2 leading-none" ></span>
               </a>
-              <a *ngIf="checkErrorMessage(data.error_message)" tds-tooltip tooltipTitle="{{data.error_message}}" (click)="retryMessage()">
-                  <span class="tdsi-reload-fill text-body-2 leading-none"></span>
+              <a *ngIf="checkErrorMessage(data.error_message)" tds-tooltip tooltipTitle="Gửi lại" (click)="retryMessage()">
+                  <span class="tdsi-reload-fill text-primary-1 text-body-2 leading-none"></span>
               </a>
+			  <ng-template #popoverBug>
+				<div class="max-w-[336px]">{{data.error_message}}</div>
+			  </ng-template>
           </div>
 
           <!-- Chọn số điện thoại, địa chỉ, ghi chú -->
@@ -86,17 +89,17 @@
 				<span tds-tooltip tooltipTitle="Chọn làm số điện thoại"
 					class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 					(click)="selectOrder('phone')">
-					<i class="tdsi-call-fill text-xs text-white"></i>
+					<i class="tdsi-call-fill text-md text-white"></i>
 				</span>
 				<span tds-tooltip tooltipTitle="Chọn làm địa chỉ"
 					class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 					(click)="selectOrder('address')">
-					<i class="tdsi-pin-fill text-xs text-white"></i>
+					<i class="tdsi-pin-fill text-md text-white"></i>
 				</span>
-				<span tds-tooltip tooltipTitle="Chọn làm ghi chú"
+				<span tds-tooltip tooltipTitle="Thêm vào ghi chú"
 					class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
 					(click)="selectOrder('note')">
-					<i class="tdsi-note-2-fill text-xs text-white"></i>
+					<i class="tdsi-note-2-fill text-md text-white"></i>
 				</span>
 			</div>
           </div>
@@ -107,9 +110,14 @@
           <span class="tdsi-send-fill"></span> Đang gửi...
       </span>
       <!-- Người gửi -->
-      <span *ngIf="data.CreatedBy && data.status != enumActivityStatus.sending" class="chat-by">
-          Được gửi bởi <span class="text-info-500"> {{data.CreatedBy.Name}}</span>
+      <span *ngIf="data.error_message || data.status == enumActivityStatus.fail ; else seenBy">
+		<span *ngIf="checkErrorMessage(data.error_message)" class="text-caption-2 text-neutral-1-400 gap-x-1 flex justify-end"><i class="tdsi-info-line flex items-center"></i>Tin nhắn chưa được gửi</span>
       </span>
+	  <ng-template #seenBy>
+		<span *ngIf="data.CreatedBy && data.status != enumActivityStatus.sending" class="chat-by">
+			Được gửi bởi <span class="text-info-500"> {{data.CreatedBy.Name}}</span>
+		</span>
+	  </ng-template>
   </div>
 
 	<!--Lọc theo comments-->
@@ -159,17 +167,17 @@
 							<span tds-tooltip tooltipTitle="Chọn làm số điện thoại"
 								class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 								(click)="selectOrder('phone')">
-								<i class="tdsi-call-fill text-xs text-white"></i>
+								<i class="tdsi-call-fill text-md text-white"></i>
 							</span>
 							<span tds-tooltip tooltipTitle="Chọn làm địa chỉ"
 								class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 								(click)="selectOrder('address')">
-								<i class="tdsi-pin-fill text-xs text-white"></i>
+								<i class="tdsi-pin-fill text-md text-white"></i>
 							</span>
-							<span tds-tooltip tooltipTitle="Chọn làm ghi chú"
+							<span tds-tooltip tooltipTitle="Thêm vào ghi chú"
 								class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
 								(click)="selectOrder('note')">
-								<i class="tdsi-note-2-fill text-xs text-white"></i>
+								<i class="tdsi-note-2-fill text-md text-white"></i>
 							</span>
 						</div>
 					</div>
@@ -284,17 +292,17 @@
 										<span tds-tooltip tooltipTitle="Chọn làm số điện thoại"
 											class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 											(click)="selectOrder('phone')">
-											<i class="tdsi-call-fill text-xs text-white"></i>
+											<i class="tdsi-call-fill text-md text-white"></i>
 										</span>
 										<span tds-tooltip tooltipTitle="Chọn làm địa chỉ"
 											class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 											(click)="selectOrder('address')">
-											<i class="tdsi-pin-fill text-xs text-white"></i>
+											<i class="tdsi-pin-fill text-md text-white"></i>
 										</span>
-										<span tds-tooltip tooltipTitle="Chọn làm ghi chú"
+										<span tds-tooltip tooltipTitle="Thêm vào ghi chú"
 											class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
 											(click)="selectOrder('note')">
-											<i class="tdsi-note-2-fill text-xs text-white"></i>
+											<i class="tdsi-note-2-fill text-md text-white"></i>
 										</span>
 									</div>
 								</div>
@@ -357,17 +365,17 @@
 							<span tds-tooltip tooltipTitle="Chọn làm số điện thoại"
 								class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 								(click)="selectOrder('phone')">
-								<i class="tdsi-call-fill text-xs text-white"></i>
+								<i class="tdsi-call-fill text-md text-white"></i>
 							</span>
 							<span tds-tooltip tooltipTitle="Chọn làm địa chỉ"
 								class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 								(click)="selectOrder('address')">
-								<i class="tdsi-pin-fill text-xs text-white"></i>
+								<i class="tdsi-pin-fill text-md text-white"></i>
 							</span>
-							<span tds-tooltip tooltipTitle="Chọn làm ghi chú"
+							<span tds-tooltip tooltipTitle="Thêm vào ghi chú"
 								class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
 								(click)="selectOrder('note')">
-								<i class="tdsi-note-2-fill text-xs text-white"></i>
+								<i class="tdsi-note-2-fill text-md text-white"></i>
 							</span>
 						</div>
 					</div>
@@ -461,17 +469,17 @@
 										<span tds-tooltip tooltipTitle="Chọn làm số điện thoại"
 											class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 											(click)="selectOrder('phone')">
-											<i class="tdsi-call-fill text-xs text-white"></i>
+											<i class="tdsi-call-fill text-md text-white"></i>
 										</span>
 										<span tds-tooltip tooltipTitle="Chọn làm địa chỉ"
 											class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 											(click)="selectOrder('address')">
-											<i class="tdsi-pin-fill text-xs text-white"></i>
+											<i class="tdsi-pin-fill text-md text-white"></i>
 										</span>
-										<span tds-tooltip tooltipTitle="Chọn làm ghi chú"
+										<span tds-tooltip tooltipTitle="Thêm vào ghi chú"
 											class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
 											(click)="selectOrder('note')">
-											<i class="tdsi-note-2-fill text-xs text-white"></i>
+											<i class="tdsi-note-2-fill text-md text-white"></i>
 										</span>
 									</div>
 								</div>

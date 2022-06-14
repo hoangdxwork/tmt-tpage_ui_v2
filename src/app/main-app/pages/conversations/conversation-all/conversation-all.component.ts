@@ -27,6 +27,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @HostBinding("@eventFadeState") eventAnimation = true;
+  @HostBinding("@eventFadeState") eventAnimationCollap = false;
   @ViewChild('conversationSearchInput') innerText!: ElementRef;
 
   isLoading: boolean = false;
