@@ -15,12 +15,12 @@ import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.s
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { TDSHelperObject, TDSMessageService, TDSHelperArray, TDSHelperString } from 'tmt-tang-ui';
 import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
-import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
+import { eventCollapTrigger, eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
 
 @Component({
   selector: 'app-conversation-all',
   templateUrl: './conversation-all.component.html',
-  animations: [eventFadeStateTrigger]
+  animations: [eventFadeStateTrigger, eventCollapTrigger]
 })
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, OnDestroy {
