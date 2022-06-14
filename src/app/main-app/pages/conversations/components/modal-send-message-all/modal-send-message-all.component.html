@@ -30,21 +30,20 @@
                 <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
             </ng-template>
         </a>
-        <tds-upload listType="picture" [customRequest]="handleUpload" [showUploadList]="false">
-            <a type="button" class="tdsi-image-line text-neutral-1-400 text-xl cursor-pointer">
-            </a>
-        </tds-upload>
-
         <div class="p-2" (click)="showModalListProduct()">
             <div class="tdsi-product-line text-neutral-1-400 text-xl cursor-pointer"></div>
         </div>
-        <quick-reply-button (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
+        <quick-reply-button class="p-2" (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
+        <tds-upload class="p-2" listType="picture" [customRequest]="handleUpload" [showUploadList]="false">
+            <a type="button" class="tdsi-image-line text-neutral-1-400 text-xl cursor-pointer">
+            </a>
+        </tds-upload>
     </div>
 </div>
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
     <button tds-button class="mr-2" color="secondary" (click)="onCancel()">
         <span class="flex items-center">
-            Hủy
+            Hủy bỏ
         </span>
     </button>
     <tds-spin [spinning]="isSending" [indicator]="indicatorTemplate">

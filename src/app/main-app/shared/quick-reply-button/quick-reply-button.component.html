@@ -29,5 +29,6 @@ popoverTrigger="click"
                 <div [innerHTML]="item.BodyPlain | replacePartner: partner | safeHtml"></div>
             </div>
         </div>
+        <div *ngIf="quickReplies.length == 0">Không có tên mẫu cần tìm</div>
     </div>
 </ng-template>

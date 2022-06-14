@@ -546,14 +546,18 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         this.uploadedImages = [];
         delete this.messageModel;
 
-        this.eventHandler.preventDefault();
-        this.eventHandler.stopImmediatePropagation();
+        if(this.eventHandler){
+          this.eventHandler.preventDefault();
+          this.eventHandler.stopImmediatePropagation();
+        }
         this.cdRef.detectChanges();
 
       }, error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
-        this.eventHandler.preventDefault();
-        this.eventHandler.stopImmediatePropagation();
+        if(this.eventHandler){
+          this.eventHandler.preventDefault();
+          this.eventHandler.stopImmediatePropagation();
+        }
         this.cdRef.detectChanges();
       });
   }
@@ -561,7 +565,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   messageResponse(res: any, model: SendMessageModelDTO) {
     if (TDSHelperArray.hasListValue(res)) {
       res.map((x: any, i: number) => {
-
         x["status"] = ActivityStatus.sending;
         this.activityDataFacade.messageServer(x);
 
@@ -585,8 +588,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     delete this.messageModel;
     this.uploadedImages = [];
 
-    this.eventHandler.preventDefault();
-    this.eventHandler.stopImmediatePropagation();
+    if(this.eventHandler){
+      this.eventHandler.preventDefault();
+      this.eventHandler.stopImmediatePropagation();
+    }
     this.cdRef.detectChanges();
 
     this.yiAutoScroll.forceScrollDown();
@@ -824,6 +829,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.displayDropZone = false;
     evt.preventDefault();
     evt.stopImmediatePropagation();
+  }
+
+  getLastActivity() {
+    if(this.type && this.type == "message" && this.data && this.data.last_message) return this.data.last_message;
+    else if(this.type && this.type == "comment" && this.data && this.data.last_comment) return this.data.last_comment;
+    else if(this.data && this.data.last_activity) return this.data.last_activity || {};
+
+    return null;
   }
 
   trackByIndex(_: number, data: any): number {
