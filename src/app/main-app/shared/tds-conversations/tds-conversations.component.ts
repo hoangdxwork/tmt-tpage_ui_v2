@@ -33,6 +33,7 @@ import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
 import { YiAutoScrollDirective } from '../directives/yi-auto-scroll.directive';
 import { eventFadeStateTrigger } from '../helper/event-animations.helper';
+import { ProductPagefbComponent } from '../../pages/conversations/components/product-pagefb/product-pagefb.component';
 
 @Component({
   selector: 'shared-tds-conversations',
@@ -214,6 +215,19 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         size: "xl",
         viewContainerRef: this.viewContainerRef
     });
+  }
+
+  onProductsbypageFb() {
+    const modal = this.modalService.create({
+      title: 'Danh sách sản phẩm',
+      content: ProductPagefbComponent,
+      viewContainerRef: this.viewContainerRef,
+      size: 'xl',
+      componentParams: {
+        pageId: this.team.Facebook_PageId,
+      }
+    });
+
   }
 
   showModalListProduct() {

@@ -82,6 +82,7 @@ import { ModalListCollectionComponent } from './components/modal-list-collection
 import { ModalTaxComponent } from './components/modal-tax/modal-tax.component';
 import { AccountTaxService } from '../../services/account-tax.service';
 import { DirectivesModule } from '../../shared/directives/directives.module';
+import { ProductPagefbComponent } from './components/product-pagefb/product-pagefb.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -160,7 +161,8 @@ const SERVICES = [
     AutoReplyConfigComponent,
     ModalReportOrderPostComponent,
     ModalListCollectionComponent,
-    ModalTaxComponent
+    ModalTaxComponent,
+    ProductPagefbComponent
   ],
 
   imports: [
