@@ -37,25 +37,27 @@
             </div>
           </div>
           <!-- Xử lý click button checkbox -->
-          <div [ngClass]="isOpenCollapCheck?'translate-y-0 py-3 ':'-translate-y-full h-0 overflow-hidden'" class="ease-in-out duration-300 w-full px-3.5 flex justify-between items-center bg-white">
-            <div class="flex gap-x-2">
-              <button tds-button color="primary" (click)="showModalSendMessage()">
+          <div [@openCollapse]="!isOpenCollapCheck" class="w-ful flex bg-white">
+            <div class="w-full flex justify-between items-center py-2 px-3.5">
+              <div class="flex gap-x-2">
+                <button tds-button color="primary" (click)="showModalSendMessage()">
                   <span class="flex items-center">
                     <i class="tdsi-messenger-fill text-lg leading-none mr-2"></i>Gửi tin nhắn
                   </span>
-              </button>
-              <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
+                </button>
+                <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
                   <button tds-button color="info" (click)="printData()">
                     <span class="flex items-center">
                       <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In thông tin
                     </span>
                   </button>
-              </tds-spin>
-              <ng-template #indicatorTemplate>
+                </tds-spin>
+                <ng-template #indicatorTemplate>
                   <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
-              </ng-template>
+                </ng-template>
+              </div>
+              <tds-checkbox (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
             </div>
-            <tds-checkbox (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
           </div>
 
           <!-- List danh sách chat -->

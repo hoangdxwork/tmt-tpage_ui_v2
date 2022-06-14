@@ -12,7 +12,7 @@ import { ConversationDataFacade } from 'src/app/main-app/services/facades/conver
 import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
 import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
 import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
-import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
+import { eventFadeStateTrigger, eventCollapTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
@@ -20,7 +20,7 @@ import { TDSModalService } from 'tds-ui/modal';
 @Component({
   selector: 'app-conversation-all',
   templateUrl: './conversation-all.component.html',
-  animations: [eventFadeStateTrigger]
+  animations: [eventFadeStateTrigger, eventCollapTrigger]
 })
 
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {

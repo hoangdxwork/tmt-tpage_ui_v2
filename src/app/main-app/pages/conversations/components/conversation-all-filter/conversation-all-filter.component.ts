@@ -73,8 +73,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
           }
         });
       }
-
-      this.users = res;
+      this.users = res.sort((one:any, two:any) => (one.Name.length < two.Name.length ? -1 : 1));
     });
 
     this.crmTagService.dataSource$.subscribe((res) => {
@@ -90,7 +89,10 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
           }
         });
       }
-      this.tags = res;
+      if(TDSHelperArray.hasListValue(res)){
+        this.tags = res.sort((one:any, two:any) => (one.Name.length < two.Name.length ? -1 : 1));
+        console.log(this.tags)
+      }
     });
   }
 
