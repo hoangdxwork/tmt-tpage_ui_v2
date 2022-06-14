@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
-import { TDSSafeAny } from "tmt-tang-ui";
 import { AppPackageDTO, AppTenantConfig_FeatureCacheDTO, TenantInfoDTO, TenantUsedDTO } from "../dto/tenant/tenant.dto";
 import { BaseSevice } from "./base.service";
 

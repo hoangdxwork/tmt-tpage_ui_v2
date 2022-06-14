@@ -1,7 +1,7 @@
 import { Color } from 'echarts';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { TDSLineChartComponent, TDSChartOptions, TDSLineChartDataSeries } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-revenue-report',
@@ -14,7 +14,7 @@ export class RevenueReportComponent implements OnInit {
   chartOption = TDSChartOptions();
 
   showData = true;
-  
+
   filterList= [
     {id:1, name:'Tuần này'},
     {id:2, name:'Tháng này'}
@@ -28,7 +28,7 @@ export class RevenueReportComponent implements OnInit {
   ngOnInit(): void {
     this.loadData();
   }
-  
+
   loadData(){
     let axisData:TDSSafeAny[] = ['1','2','3','4','5','6','7'];
     let seriesData:TDSSafeAny[] = [
@@ -150,7 +150,7 @@ export class RevenueReportComponent implements OnInit {
       },
       series: this.getSeries(seriesData)
     }
-    
+
     this.buildChartDemo(chart);
   }
 

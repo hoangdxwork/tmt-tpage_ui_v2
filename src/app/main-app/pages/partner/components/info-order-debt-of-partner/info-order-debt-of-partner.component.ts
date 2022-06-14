@@ -1,12 +1,15 @@
 import { ModalPaymentComponent } from './../modal-payment/modal-payment.component';
-import { TDSModalService, TDSHelperObject, TDSSafeAny, TDSTableQueryParams, TDSMessageService } from 'tmt-tang-ui';
-import { Component, OnInit, Input, ViewContainerRef, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit, HostListener } from '@angular/core';
+import { Component, OnInit, Input, ViewContainerRef, ChangeDetectorRef, AfterViewInit, HostListener } from '@angular/core';
 import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { PartnerInvoiceDTO } from 'src/app/main-app/dto/partner/partner-invocie.dto';
 import { CreditDebitDTO } from 'src/app/main-app/dto/partner/partner-creditdebit.dto';
 import { ODataRegisterPartnerDTO } from 'src/app/main-app/dto/partner/partner-register-payment.dto';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSTableQueryParams } from 'tds-ui/table';
 
 interface orderDTO{
   code: string;

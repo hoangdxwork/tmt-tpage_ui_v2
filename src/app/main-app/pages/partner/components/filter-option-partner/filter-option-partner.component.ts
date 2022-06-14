@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { CommonService } from "src/app/main-app/services/common.service";
-import { TDSContextMenuService, TDSHelperArray, TDSMessageService, TDSSafeAny } from "tmt-tang-ui";
+import { TDSContextMenuService } from "tds-ui/dropdown";
+import { TDSMessageService } from "tds-ui/message";
+import { TDSSafeAny } from "tds-ui/shared/utility";
 
 @Component({
   selector: 'filter-option-partner',

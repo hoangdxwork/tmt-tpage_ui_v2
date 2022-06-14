@@ -1,4 +1,4 @@
-import { TDSHelperString } from "tmt-tang-ui";
+import { TDSHelperString } from "tds-ui/shared/utility";
 
 export class StringHelperV2 {
 

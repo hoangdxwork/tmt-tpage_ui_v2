@@ -3,10 +3,7 @@ import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { TCommonService, THelperCacheService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { SharedService } from "../shared.service";
-import { TDSHelperString, TDSMessageService } from "tmt-tang-ui";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
-import { map, takeUntil } from "rxjs/operators";
-import { PartnerService } from "../partner.service";
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +14,7 @@ export class ConversationPostFacade extends BaseSevice implements OnDestroy {
   prefix: string = "";
   table: string = "";
   baseRestApi: string = "";
-  destroy$ = new Subject();
+  destroy$ = new Subject<void>();
 
   public from: any;
   public comment: any;
@@ -48,7 +45,7 @@ export class ConversationPostFacade extends BaseSevice implements OnDestroy {
         this.from = Object.assign({}, res.from);
         this.partner = null;
         // TODO: Tải khách hàng theo id người dùng bình luận
-        
+
       } else {
         // Thông tin cũ, không làm gì cả
       }

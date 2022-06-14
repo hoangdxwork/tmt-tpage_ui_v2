@@ -1,7 +1,7 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { TDSChartOptions, TDSBarChartComponent } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
 import { Color } from 'echarts';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-product-report',
@@ -14,7 +14,7 @@ export class ProductReportComponent implements OnInit {
   chartOption = TDSChartOptions();
 
   showData= true;
-   
+
   filterList= [
     {id:1, name:'Tuần này'},
     {id:2, name:'Tháng này'}

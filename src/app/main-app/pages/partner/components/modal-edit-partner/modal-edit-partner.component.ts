@@ -1,8 +1,6 @@
-import { TDSHelperArray, TDSHelperString, TDSUploadFile } from 'tmt-tang-ui';
 import { ModalAddAddressComponent } from '../modal-add-address/modal-add-address.component';
 import { FormGroup, FormBuilder, FormControl, FormArray, Validators } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { TDSModalRef, TDSModalService, TDSHelperObject, TDSMessageService } from 'tmt-tang-ui';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { formatDate } from '@angular/common';
@@ -11,6 +9,10 @@ import { AddressesV2, PartnerDetailDTO } from 'src/app/main-app/dto/partner/part
 import { PartnerCategoryDTO, StatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
+import { TDSUploadFile } from 'tds-ui/upload';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-modal-edit-partner',

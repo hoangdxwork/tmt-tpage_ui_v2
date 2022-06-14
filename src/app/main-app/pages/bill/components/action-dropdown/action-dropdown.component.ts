@@ -9,10 +9,12 @@ import { OperatorEnum } from "src/app/lib";
 import { ExcelExportService } from "src/app/main-app/services/excel-export.service";
 import { FastSaleOrderService } from "src/app/main-app/services/fast-sale-order.service";
 import { PrinterService } from "src/app/main-app/services/printer.service";
-import { TDSHelperArray, TDSHelperObject, TDSMessageService, TDSModalService, TDSSafeAny } from "tmt-tang-ui";
 import { PaymentMultipComponent } from "../payment-multip/payment-multip.component";
 import { PaymentRequestComponent } from "../payment-request/payment-request.component";
 import { SendDeliveryComponent } from "../send-delivery/send-delivery.component";
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'action-dropdown',
@@ -52,7 +54,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     if (this.isProcessing) {
       return
     }
-    
+
     let dateStart = this.filterObj.dateRange.startDate;
     let dateEnd = this.filterObj.dateRange.endDate;
 
@@ -70,11 +72,11 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     };
 
     let that = this;
-    
+
     switch (type) {
       case "excels":
         this.isProcessing = true;
-        this.excelExportService.exportPost(`/fastsaleorder/ExportFile?TagIds=${this.tagIds}`, 
+        this.excelExportService.exportPost(`/fastsaleorder/ExportFile?TagIds=${this.tagIds}`,
           { data: JSON.stringify(data), ids: this.idsModel }, `ban-hang`)
           .pipe(finalize(()=>this.isProcessing = false), takeUntil(this._destroy))
           .subscribe();

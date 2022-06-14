@@ -2,9 +2,9 @@ import { ODataProductInventoryDTO } from './../dto/configs/product/config-odata-
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
-import { TDSSafeAny } from "tmt-tang-ui";
 import { ProductTemplateV2DTO } from "../dto/producttemplate/product-tempalte.dto";
 import { BaseSevice } from "./base.service";
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 
 @Injectable({

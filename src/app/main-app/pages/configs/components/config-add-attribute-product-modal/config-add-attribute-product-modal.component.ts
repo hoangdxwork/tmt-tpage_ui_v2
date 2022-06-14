@@ -2,9 +2,11 @@ import { ConfigAttributeLine, ConfigAttributeValue, ConfigAttribute } from './..
 import { takeUntil } from 'rxjs/operators';
 import { ProductTemplateService } from './../../../../services/product-template.service';
 import { Subject } from 'rxjs';
-import { TDSSafeAny, TDSModalRef, TDSMessageService } from 'tmt-tang-ui';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalRef } from 'tds-ui/modal';
 
 @Component({
   selector: 'app-config-add-attribute-product-modal',
@@ -21,8 +23,8 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
   isLoading = false;
 
   constructor(
-    private modal: TDSModalRef, 
-    private message: TDSMessageService, 
+    private modal: TDSModalRef,
+    private message: TDSMessageService,
     private productTemplateService: ProductTemplateService,
     private formBuilder: FormBuilder
   ) {
@@ -51,7 +53,7 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
         this.attributeList = [];
         this.ValuesList.forEach(item=>{
           let existedIndex = this.attributeList.findIndex(f=>f.Id === item.AttributeId);
-          
+
           if(existedIndex == -1){
             this.attributeList.push({
               Id: item.AttributeId,
@@ -75,7 +77,7 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
     this.ModelDefault = [];
 
     let lstSelectAttr = this.createAttributeForm.controls.Attributes.value as Array<ConfigAttribute>;
-    
+
     lstSelectAttr.forEach(attr => {
       let lstValues = this.ValuesList.filter(f=>f.AttributeId == attr.Id);
       this.ModelDefault.push({
@@ -101,7 +103,7 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
     this.ModelDefault = this.ModelDefault.filter(f=>f.AttributeId != AttributeId);
     // remove trên table data
     this.lstOfData = this.lstOfData.filter(f=>f.AttributeId != AttributeId);
-    
+
     this.isLoading = false;
   }
 

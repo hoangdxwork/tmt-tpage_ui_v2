@@ -6,7 +6,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { AutoReplyConfigDTO } from 'src/app/main-app/dto/configs/page-config.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
-import { TDSMessageService } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'config-auto-reply',
@@ -24,7 +24,7 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges, OnDestroy {
   currentTeam!: CRMTeamDTO | null;
   isLoading: boolean = false;
 
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(
     private formBuilder: FormBuilder,

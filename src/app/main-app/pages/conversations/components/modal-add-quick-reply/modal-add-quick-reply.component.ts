@@ -1,13 +1,13 @@
 import { CreateQuickReplyDTO } from './../../../../dto/quick-reply.dto.ts/quick-reply.dto';
-import { TDSMessageService } from 'tmt-tang-ui';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { QuickReplyService } from 'src/app/main-app/services/quick-reply.service';
 import { Validators } from '@angular/forms';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
-import { TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-modal-add-quick-reply',

@@ -1,5 +1,4 @@
 import { FilterObjDTO, OdataProductService } from './../../../../services/mock-odata/odata-product.service';
-import { TDSHelperObject } from 'tmt-tang-ui';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { CalculateFeeResponse_Data_ServiceDTO, DeliveryCarrierDTO } from './../../../../dto/carrier/delivery-carrier.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
@@ -10,7 +9,6 @@ import { CheckAddressDTO, DataSuggestionDTO, ResultCheckAddressDTO } from 'src/a
 import { SaleOnlineFacebookCommentFilterResultDTO, SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_FacebookCommentService } from 'src/app/main-app/services/sale-online-facebook-comment.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TDSModalRef, TDSModalService, TDSSafeAny, TDSMessageService, TACheckboxChange, TDSHelperString } from 'tmt-tang-ui';
 import { ProductService } from 'src/app/main-app/services/product.service';
 import { GetInventoryDTO, ValueGetInventoryDTO } from 'src/app/main-app/dto/product/product.dto';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -28,6 +26,10 @@ import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carri
 import { finalize } from 'rxjs/operators';
 import { CheckFormHandler } from 'src/app/main-app/services/handlers/check-form.handler';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TACheckboxChange } from 'tds-ui/tds-checkbox';
 
 @Component({
   selector: 'edit-order',

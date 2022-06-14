@@ -1,4 +1,4 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { AccountDTO, AccountJournalDTO, AccountTaxDTO } from '../account/account.dto';
 import { ApplicationUserDTO } from '../account/application-user.dto';
 import { DeliveryCarrierDTO, DeliveryCarrier_ExtraDTO, ServiceCustomDTO } from '../carrier/delivery-carrier.dto';

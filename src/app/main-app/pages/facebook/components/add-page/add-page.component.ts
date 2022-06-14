@@ -3,8 +3,10 @@ import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/cor
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { UserPageDTO } from 'src/app/main-app/dto/team/user-page.dto';
-import { TDSModalRef, TDSSafeAny, TDSHelperObject, TDSMessageService } from 'tmt-tang-ui';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-add-page',

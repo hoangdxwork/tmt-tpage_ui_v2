@@ -2,7 +2,6 @@ import { EventEmitter, Injectable, OnDestroy, OnInit, Output } from '@angular/co
 import {  Observable, ReplaySubject, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
-import { TDSHelperArray } from 'tmt-tang-ui';
 import { RequestCommentByGroup } from '../dto/conversation/post/comment-group.dto';
 import { OdataCommentOrderPostDTO } from '../dto/conversation/post/comment-order-post.dto';
 import { RequestCommentByPost } from '../dto/conversation/post/comment-post.dto';

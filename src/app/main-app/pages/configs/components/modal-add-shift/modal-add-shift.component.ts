@@ -1,10 +1,11 @@
 import { finalize } from 'rxjs/operators';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
-import { TDSModalRef, TDSMessageService } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
 import { AddShiftDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-modal-add-shift',

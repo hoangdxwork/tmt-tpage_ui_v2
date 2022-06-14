@@ -1,4 +1,3 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Inject, Injectable, NgZone, PLATFORM_ID } from '@angular/core';
 import { isPlatformServer } from '@angular/common';
 import { Observable, ReplaySubject } from 'rxjs';
@@ -6,6 +5,7 @@ import { tap, map } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
 import { Facebook, FacebookApiMethod, FacebookApiParams, FacebookAuth, FacebookAuthResponse, FacebookInitParams, FacebookLoginOptions, FacebookUser } from '../../lib/dto/facebook.dto';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 export const FACEBOOK_DEFAULTS: FacebookInitParams = {
   xfbml: false,

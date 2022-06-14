@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { TDSHelperArray, TDSHelperObject } from "tmt-tang-ui";
+import { TDSHelperArray, TDSHelperObject } from "tds-ui/shared/utility";
 import { DataRequestDTO, FilterDataRequestDTO, FilterItemDataRequestDTO, SortDataRequestDTO } from "../dto/dataRequest.dto";
 import { OperatorEnum } from "../enum";
 

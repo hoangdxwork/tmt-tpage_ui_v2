@@ -314,7 +314,7 @@ module.exports = {
     // enabled: process.env.NODE_ENV && process.env.NODE_ENV.trim() === "production",
     content: [
         './src/**/*.{html,ts}',
-        './node_modules/tmt-tang-ui/__ivy_ngcc__/fesm2015/tmt-tang-ui.js'
+        './node_modules/tds-ui/fesm2015/*.{html,ts,js,mjs}'
     ],
     safelist: SAFELISTING,
     darkMode: 'class',

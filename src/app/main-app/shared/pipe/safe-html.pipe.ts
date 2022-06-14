@@ -1,6 +1,6 @@
 ﻿import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser'
-import { TDSHelperString } from 'tmt-tang-ui';
+import { TDSHelperString } from 'tds-ui/shared/utility';
 
 @Pipe({ name: 'safeHtml' })
 

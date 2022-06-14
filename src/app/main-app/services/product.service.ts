@@ -2,8 +2,8 @@ import { ProductDTO } from './../dto/product/product.dto';
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
-import { TDSSafeAny } from "tmt-tang-ui";
 import { BaseSevice } from "./base.service";
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Injectable({
   providedIn: 'root'

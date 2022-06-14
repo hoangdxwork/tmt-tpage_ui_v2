@@ -10,7 +10,11 @@ import { SaleOnline_LiveCampaignDTO } from 'src/app/main-app/dto/live-campaign/l
 import { FilterLiveCampaignDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { ODataLiveCampaignService } from 'src/app/main-app/services/mock-odata/odata-live-campaign.service';
-import { TDSMessageService, TDSSafeAny, TdsSwitchChange, TDSTableQueryParams, TDSModalService } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TdsSwitchChange } from 'tds-ui/switch';
+import { TDSTableQueryParams } from 'tds-ui/table';
 import { ColumnTableDTO } from '../../../order/components/config-column/config-column.component';
 
 @Component({

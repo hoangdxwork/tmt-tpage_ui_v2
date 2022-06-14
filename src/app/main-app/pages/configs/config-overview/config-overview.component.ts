@@ -1,10 +1,11 @@
 import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
-import { TDSSafeAny, TDSMessageService } from 'tmt-tang-ui';
 import { FormControl, Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { GeneralConfigService } from 'src/app/main-app/services/general-config.service';
 import { AutoInteractionDTO, GeneralConfigUpdateDTO, ShippingStatuesDTO } from 'src/app/main-app/dto/configs/general-config.dto';
 import { Message } from 'src/app/lib/consts/message.const';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-config-overview',

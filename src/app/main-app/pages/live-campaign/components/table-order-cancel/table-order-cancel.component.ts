@@ -1,11 +1,13 @@
-import { TDSModalService } from 'tmt-tang-ui';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 import { Message } from 'src/app/lib/consts/message.const';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { LiveCampaignSOOrderDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
 import { ODataLiveCampaignService } from 'src/app/main-app/services/mock-odata/odata-live-campaign.service';
-import { TDSMessageService, TDSTableQueryParams, TDSTagStatusType } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSTableQueryParams } from 'tds-ui/table';
+import { TDSTagStatusType } from 'tds-ui/tag';
 import { ModalHistoryCartComponent } from '../modal-history-cart/modal-history-cart.component';
 
 @Component({

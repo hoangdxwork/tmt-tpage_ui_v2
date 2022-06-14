@@ -9,7 +9,7 @@
             <label class="font-semibold">{{item.from?.name}} </label>
             <span class="text-neutral-1-400 text-right text-caption-1">{{item.created_time | date:'dd/MM/yyyy HH:mm aa'}}</span>
           </div>
-          <div *ngIf="(partners$ | async)?.data[item.from.id] || commentOrders[item.from.id]?.length > 0 || currentId === item.id" 
+          <div *ngIf="(partners$ | async)?.data[item.from.id] || commentOrders[item.from.id]?.length > 0 || currentId === item.id"
             class="w-full flex flex-row items-center justify-between pb-2">
             <!-- trạng thái khách hàng & mã đơn hàng -->
             <div class="flex items-center gap-1.5">
@@ -29,13 +29,13 @@
               </div>
               <!-- mã đơn hàng -->
               <div *ngIf="commentOrders" class="flex flex-row items-center">
-                <div *ngFor="let order of commentOrders[item.from.id]" 
+                <div *ngFor="let order of commentOrders[item.from.id]"
                   class="text-info-500 font-semibold flex flex-row items-center gap-2">
                   <div class="flex flex-row cursor-pointer hover:underline" (click)="editOrder(order.id, item)">
                     <span *ngIf="!order.code.includes('#')">#</span>{{order.code}}
                   </div>
                 </div>
-                <button *ngIf="currentId === item.id" tds-button-outline-icon color="primary" rounded="!rounded-full" class="ml-2" 
+                <button *ngIf="currentId === item.id" tds-button-outline-icon color="primary" rounded="!rounded-full" class="ml-2"
                   tooltipTitle="Thêm vào ghi chú" tooltipPlacement="top" tds-tooltip>
                   <i class="tdsi-plus-circle-line"></i>
                 </button>
@@ -43,9 +43,9 @@
             </div>
             <div *ngIf="(partners$ | async)?.data[item.from.id] as partner" class="tag-status w-1/2">
               <div *ngIf="partner.t" class="w-full flex flex-wrap items-center justify-end">
-                <a class="tdsi-radio-circle-fill" 
-                    *ngFor="let tag of partner.t" 
-                    [ngStyle]="{ 'color' : [tag.color_class] }" 
+                <a class="tdsi-radio-circle-fill"
+                    *ngFor="let tag of partner.t"
+                    [ngStyle]="{ 'color' : [tag.color_class] }"
                     [title]="tag.name">
                 </a>
               </div>
@@ -53,7 +53,7 @@
           </div>
           <!-- nội dung bình luận -->
           <div class="flex flex-row">
-            <p tds-typography ellipsis expandable [ellipsisRows]="3" [innerHTML]="item.message | safeHtml"></p>
+            <div [innerHTML]="item.message | safeHtml"></div>
           </div>
           <!-- hình ảnh đính kèm -->
           <div *ngIf="item.attachment">
@@ -116,7 +116,7 @@
                   <i class="tdsi-product-line text-xl"></i>
                 </span>
 
-                <span class="cursor-pointer mr-2" container="body" placement="auto" 
+                <span class="cursor-pointer mr-2" container="body" placement="auto"
                   tds-popover popoverTrigger="click" [popoverContent]="infoEmojiMart" [popoverAutoClose]="true"
                   [popoverBackdrop]="true" popoverPlacement="top">
                   <i class="tdsi-emotion-line text-xl"></i>
@@ -124,7 +124,7 @@
                     <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
                   </ng-template>
                 </span>
-  
+
                 <span class="cursor-pointer" (onQuickReplySelected)="onQuickReplySelected($event)"
                   title="Tin nhắn nhanh" placement="left" quick-reply-button>
                   <i class="tdsi-message-template-line text-xl"></i>
@@ -154,14 +154,14 @@
                   <span class="text-neutral-1-400 text-right text-caption-1">{{child.created_time | date:'dd/MM/yyyy HH:mm aa'}}</span>
                 </div>
                 <!-- nội dung tin nhắn -->
-                <div tds-typography ellipsis expandable [ellipsisRows]="3">{{child.message}}</div>
+                <div [innerHTML]="child.message | safeHtml"></div>
                 <div *ngIf="child.attachment">
                   <img tds-image *ngIf="child.attachment?.type != 'sticker'"
                     [tdsSrc]="child.attachment?.media?.image?.src" style="max-width: 200px;"/>
                   <img tds-image *ngIf="child.attachment?.type == 'sticker'"
                     [tdsSrc]="child.attachment?.media?.image?.src" style="max-width: 100px;"/>
                 </div>
-                <button *ngIf="currentId === child.id" tds-button-outline-icon color="primary" rounded="!rounded-full" class="ml-2" 
+                <button *ngIf="currentId === child.id" tds-button-outline-icon color="primary" rounded="!rounded-full" class="ml-2"
                   tooltipTitle="Thêm vào ghi chú" tooltipPlacement="top" tds-tooltip>
                   <i class="tdsi-plus-circle-line"></i>
                 </button>

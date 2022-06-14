@@ -10,9 +10,11 @@ import { CRMMatchingDTO } from '../../dto/conversation-all/crm-matching.dto';
 import { CRMMatchingMappingDTO } from "../../dto/conversation-all/conversation-all.dto";
 import { DataUpdate } from "../../dto/conversation/conversation.dto";
 import { CRMTeamService } from "../crm-team.service";
-import { TDSHelperArray, TDSHelperObject, TDSMessageService, TDSNotificationService, TDSSafeAny } from "tmt-tang-ui";
 import { StringHelperV2 } from "../../shared/helper/string.helper";
 import { Router } from "@angular/router";
+import { TDSMessageService } from "tds-ui/message";
+import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSNotificationService } from "tds-ui/notification";
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +26,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   table: string = "";
   baseRestApi: string = "";
   private dataSource$!: Observable<any>;
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
   private currentTeam: any;
   private currentUrl!: string;
   public lstTeam!: any[];
@@ -541,6 +543,10 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
         });
       }
     });
+  }
+
+  createQuery(pageId: string, type: any) {
+    return this.service.createQuery(pageId, type);
   }
 
   nextDataWithQuery(pageId: string, type: string, queryObj: any): Observable<any> {

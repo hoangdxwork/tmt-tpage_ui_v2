@@ -1,6 +1,5 @@
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
-import { TDSHelperString, TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
 import { ProductCategoryService } from 'src/app/main-app/services/product-category.service';
 import { ProductCategoryDTO } from 'src/app/main-app/dto/product/product-category.dto';
 import { CompanyDTO } from 'src/app/main-app/dto/company/company.dto';
@@ -11,6 +10,8 @@ import { THelperCacheService } from 'src/app/lib';
 import { DataPouchDBDTO, ProductPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { ProductTemplateV2DTO } from 'src/app/main-app/dto/producttemplate/product-tempalte.dto';
 import { finalize } from 'rxjs/operators';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-config-promotion-group',

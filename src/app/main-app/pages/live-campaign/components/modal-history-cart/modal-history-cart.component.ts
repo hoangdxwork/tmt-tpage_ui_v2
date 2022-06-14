@@ -1,8 +1,9 @@
 import { finalize } from 'rxjs/operators';
-import { TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
 import { Component, Input, OnInit } from '@angular/core';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { CartHistoryEventDTO, FSOrderHistoryEventDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'modal-history-cart',

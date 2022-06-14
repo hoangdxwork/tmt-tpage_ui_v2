@@ -1,4 +1,4 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { ApplicationUserDTO } from '../account/application-user.dto';
 import { ShipProviderCreateChatbotDTO } from '../carrier/delivery-carrier.dto';
 import { CompanyDTO } from '../company/company.dto';

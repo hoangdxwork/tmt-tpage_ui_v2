@@ -1,7 +1,6 @@
 import { ConfigDataFacade } from './../../../../services/facades/config-data.facade';
 import { addDays, getISODay, getISOWeek } from 'date-fns';
 import { ModalListShiftComponent } from './../../components/modal-list-shift/modal-list-shift.component';
-import { TDSModalService, TDSHelperObject, TDSSafeAny, TDSMessageService, TDSHelperArray } from 'tmt-tang-ui';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { startOfWeek, endOfWeek } from 'date-fns';
 import { formatDate } from '@angular/common';
@@ -9,6 +8,9 @@ import { ApplicationUserService } from 'src/app/main-app/services/application-us
 import { ApplicationUserDTO, ApplicationUserShiftDTO, ShiftDTO, UserUpdateShiftDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { Message } from 'src/app/lib/consts/message.const';
 import { finalize } from 'rxjs/operators';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-config-users-shift',

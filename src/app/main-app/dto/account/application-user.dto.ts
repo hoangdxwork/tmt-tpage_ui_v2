@@ -1,4 +1,4 @@
-import { TDSSafeAny } from 'tmt-tang-ui';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { CompanyDTO } from '../company/company.dto';
 import { CRMTeam_UserDTO } from '../team/team.dto';
 

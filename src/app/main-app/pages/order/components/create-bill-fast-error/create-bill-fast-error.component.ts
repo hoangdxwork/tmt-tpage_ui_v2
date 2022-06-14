@@ -1,7 +1,9 @@
-import { TDSSafeAny, TDSModalRef, TDSMessageService } from 'tmt-tang-ui';
 import { Component, Input, OnInit } from '@angular/core';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-create-bill-fast-error',

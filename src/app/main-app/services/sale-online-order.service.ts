@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
-import { TDSSafeAny } from "tmt-tang-ui";
+import { TDSSafeAny } from "tds-ui/shared/utility";
 import { ODataModelDTO, ODataModelTeamDTO } from "../dto/odata/odata.dto";
 import { PagedList2 } from "../dto/pagedlist2.dto";
 import { PartnerTempDTO } from "../dto/partner/partner.dto";

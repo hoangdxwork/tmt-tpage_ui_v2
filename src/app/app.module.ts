@@ -4,7 +4,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { TDS_I18N, vi_VN } from 'tmt-tang-ui';
 // Đa ngôn ngữ
 import localeVi from '@angular/common/locales/vi';
 import { HashLocationStrategy, LocationStrategy, registerLocaleData } from '@angular/common';
@@ -12,6 +11,8 @@ import { TAuthGuardService, TAuthInterceptorService } from './lib';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { SharedModule } from './shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TDS_I18N, vi_VN } from 'tds-ui/i18n';
+
 // Thiết lập tiếng Việt
 registerLocaleData(localeVi);
 
@@ -39,4 +40,5 @@ registerLocaleData(localeVi);
 
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+
+export class AppModule {}

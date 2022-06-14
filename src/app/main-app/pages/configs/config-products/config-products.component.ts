@@ -16,9 +16,13 @@ import { takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operato
 import { THelperDataRequest } from './../../../../lib/services/helper-data.service';
 import { CTMTagFilterObjDTO } from './../../../dto/odata/odata.dto';
 import { Router } from '@angular/router';
-import { TDSSafeAny, TDSModalService, TDSHelperString, TDSMessageService, TDSResizeObserver, TDSTableQueryParams, TDSConfigService } from 'tmt-tang-ui';
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { SortEnum } from 'src/app/lib';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSTableQueryParams } from 'tds-ui/table';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-config-products',

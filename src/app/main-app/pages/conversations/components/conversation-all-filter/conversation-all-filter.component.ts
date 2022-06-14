@@ -1,11 +1,12 @@
 import { startOfMonth, endOfMonth, startOfYesterday, endOfYesterday, subDays } from 'date-fns';
 import { ApplicationUserService } from './../../../../services/application-user.service';
-import { TDSHelperArray, TDSSafeAny, TDSI18nService, vi_VN, TDSHelperObject } from 'tmt-tang-ui';
 import { CRMMatchingService } from './../../../../services/crm-matching.service';
 import { CRMTagService } from './../../../../services/crm-tag.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
+import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSI18nService, vi_VN } from 'tds-ui/i18n';
 
 @Component({
   selector: 'conversation-all-filter',
@@ -72,8 +73,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
           }
         });
       }
-
-      this.users = res;
+      this.users = res.sort((one:any, two:any) => (one.Name.length < two.Name.length ? -1 : 1));
     });
 
     this.crmTagService.dataSource$.subscribe((res) => {
@@ -89,7 +89,10 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
           }
         });
       }
-      this.tags = res;
+      if(TDSHelperArray.hasListValue(res)){
+        this.tags = res.sort((one:any, two:any) => (one.Name.length < two.Name.length ? -1 : 1));
+        console.log(this.tags)
+      }
     });
   }
 

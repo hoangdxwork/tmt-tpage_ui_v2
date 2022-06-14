@@ -2,7 +2,7 @@
   <div>
     <form [formGroup]="_form" novalidate>
       <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-y-auto tds-custom-scroll flex-col flex">
-        <div class="bg-white px-6 py-4">
+        <div class="bg-white px-4 py-4">
           <div class="flex gap-6">
             <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="formData?.Facebook_ASUserId" [token]="team?.Facebook_PageToken">
             </tpage-avatar-facebook>
@@ -12,7 +12,7 @@
                     {{ formData?.Facebook_UserName || formData?.Name}}
                 </div>
                 <button type="button" tds-button color="secondary" (click)="onEditPartner()" *ngIf="!isEditPartner">
-                  <span class="flex items-center ">
+                  <span class="flex items-center">
                     <i class="tdsi-edit-fill text-xl leading-none text-neutral-1-400"></i>
                   </span>
                 </button>
@@ -68,7 +68,7 @@
               </div>
             </div>
           </div>
-          <div class="pt-4 flex gap-2 pb-4" *ngIf="!isEditPartner">
+          <div class="pt-3 flex gap-2" *ngIf="!isEditPartner">
             <tds-button-group>
               <button type="button" tds-dropdown color="secondary" trigger="click" [tdsDropdownMenu]="menuRevenue"
                 class="rounded-full border border-neutral-2-100 border-solid bg-white py-1.5 px-4">
@@ -111,10 +111,8 @@
                 <div class="text-neutral-1-400 text-body-2 font-regular font-sans">{{item.DateCreated | date:'HH:mm dd/MM/yyyy'}}</div>
                 <div class="flex gap-2 pt-1">
                   <div class="text-body-2 font-semibold font-sans text-neutral-1-900">{{item.CreatedBy.Name}} ({{item.CreatedBy.UserName}})</div>
-                  <div class="text-body-2 font-regular font-sans text-neutral-1-900" tds-typography ellipsis expandable
-                    [ellipsisRows]="2" [content]="item.message" [contentCollapse]="'Ẩn'">
-                  </div>
 
+                  <div [innerHTML]="item.message | safeHtml"></div>
                 </div>
               </div>
               <button type="button" tds-button color="error" (click)="removeNote(item.id, i)"  size="sm">
@@ -151,7 +149,7 @@
                 </div>
               </ng-template>
 
-              <div class="w-full h-full flex flex-col gap-1.5" *ngIf="lastBill">
+              <div class="w-full h-full flex flex-col gap-3" *ngIf="lastBill">
                 <div class="flex gap-3 items-center">
                   <div><img src="../../../assets/imagesv2/conversation/avatar-ghn.svg"></div>
                   <div class="text-body-2 font-semibold font-sans text-neutral-1-900">
@@ -162,10 +160,10 @@
                   </div>
                 </div>
                 <div class="text-body-2 font-regular font-sans text-neutral-1-400">
-                  Tổng tiền: <span class="text-neutral-1-900 pl-0.5">{{ lastBill.AmountTotal | number:'1.0-3' }} đ ({{ lastBill.PaymentJournalName }})</span>
+                  Tổng tiền: <span class="text-primary-1 font-semibold pl-0.5">{{ lastBill.AmountTotal | number:'1.0-3' }} đ ({{ lastBill.PaymentJournalName }})</span>
                 </div>
                 <div class="text-body-2 font-regular font-sans text-neutral-1-400">
-                  Thời gian giao hàng: <span class="text-neutral-1-900 pl-0.5">{{ lastBill.DateCreated | date: "HH:mm, dd/MM/yyyy" }}</span>
+                  Thời gian giao hàng: <span class="text-neutral-1-900 font-semibold pl-0.5">{{ lastBill.DateCreated | date: "dd/MM/yyyy HH:mm" }}</span>
                 </div>
                 <div class="text-body-2 font-regular font-sans text-neutral-1-400">
                   {{ lastBill.Phone }} - {{ lastBill.Address }} </div>
@@ -208,8 +206,8 @@
                   <tds-collapse *ngFor="let bill of lstBill[tabBillCurrent]?.data; let index = index">
                     <tds-collapse-panel [header]="headerBill" [active]="false" [disabled]=false>
                       <ng-template #headerBill>
-                        <div class="flex gap-4 w-full content-center items-center">
-                          <div class="flex flex-col gap-0.5 pr-10">
+                        <div class="flex flex-row items-center justify-between min-w-[380px]">
+                          <div class="flex flex-col gap-0.5 w-1/3">
                             <div class="text-info-500 font-semibold text-body-2 font-sans">
                               #{{bill.Number || 'N/A'}}
                             </div>
@@ -217,30 +215,52 @@
                               {{bill.DateCreated | date: "HH:mm, dd/MM/yyyy"}}
                             </div>
                           </div>
-                          <div class="text-neutral-1-900 text-body-2 font-semibold pr-10">
-                            {{bill.AmountTotal | number}}đ
+                          <div class="text-neutral-1-900 text-body-2 font-semibold text-center w-1/3">
+                            {{bill.AmountTotal | number}} đ
                           </div>
-                          <div>
+                          <div class="w-1/3">
                             <tds-tag status='primary' type="outline" [status]="getColorStatusText(bill.ShowState)">
                               {{ bill.ShowState }}
                             </tds-tag>
                           </div>
                         </div>
                       </ng-template>
-                      <div class="w-full flex flex-col gap-4">
-                        <div class="flex items-center">
-                          <div class="w-1/4">
-                            <div class="text-body-2 font-regular text-neutral-1-900 font-sans">
-                              Đối tác GH:
-                            </div>
+                      <div class="grid grid-cols-4 gap-x-6 gap-y-4">
+                        <label>Đối tác GH:</label>
+                        <div class="w-full col-span-3 flex gap-1">
+                          <div><img src="/assets/images/conversation/avatar-ghn.svg">
                           </div>
-                          <div class="w-3/4 flex gap-1">
-                            <div><img src="../../../assets/imagesv2/conversation/avatar-ghn.svg">
-                            </div>
-                            <div class="font-semibold text-body-2 font-sans text-neutral-1-900">
-                              {{ bill.CarrierName }} - <span class="text-info-500">{{ lastBill?.TrackingRef || '#N/A' }}</span>
-                            </div>
+                          <div class="font-semibold">
+                            {{ bill.CarrierName }} - <span class="text-info-500">{{ lastBill?.TrackingRef || '#N/A' }}</span>
                           </div>
+                        </div>
+
+                        <label>Phương thức TT:</label>
+                        <div class="w-full col-span-3 flex gap-1">
+                          <div class="font-semibold">
+                            {{ bill.PaymentJournalName}}
+                          </div>
+                        </div>
+
+                        <label>Điện thoại:</label>
+                        <div class="w-full col-span-3 flex gap-1">
+                          <div class="font-semibold">
+                            {{ bill.Phone}}
+                          </div>
+                        </div>
+
+                        <label>Địa chỉ:</label>
+                        <div class="w-full col-span-3 flex gap-1">
+                          <div class="font-semibold">
+                            {{ bill.Address}}
+                          </div>
+                        </div>
+
+                        <label>Trạng thái GH:</label>
+                        <div class="w-full col-span-3 flex gap-1">
+                          <tds-tag status='primary' type="outline" [status]="getColorStatusText(bill.ShowState)">
+                            {{ bill.ShowState }}
+                          </tds-tag>
                         </div>
                       </div>
                     </tds-collapse-panel>

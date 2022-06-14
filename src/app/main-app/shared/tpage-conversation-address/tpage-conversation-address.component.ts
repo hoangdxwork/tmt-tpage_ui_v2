@@ -2,7 +2,8 @@ import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Subject, Observable } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
-import { TDSHelperArray, TDSHelperString, TDSMessageService, TDSSafeAny, TDSHelperObject } from 'tmt-tang-ui';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { CheckAddressDTO, CityDTO, DistrictDTO, ResultCheckAddressDTO, WardDTO } from '../../dto/address/address.dto';
 import { AddressService } from '../../services/address.service';
 
@@ -33,13 +34,12 @@ export class TpageConversationAddressComponent implements OnInit {
   isSuggest: boolean = false;
 
   lstResultCheck: ResultCheckAddressDTO[] = [];
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     private addressService: AddressService,
-    private message: TDSMessageService
-  ) { }
+    private message: TDSMessageService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.createForm();

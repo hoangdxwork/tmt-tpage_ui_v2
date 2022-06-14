@@ -1,4 +1,3 @@
-import { TDSSafeAny, TDSMessageService, TDSHelperArray } from 'tmt-tang-ui';
 import { Injectable } from "@angular/core";
 import { GeneralConfigsFacade } from '../facades/general-config.facade';
 import { Observable } from 'rxjs';
@@ -7,6 +6,8 @@ import { DeliveryCarrierService } from '../delivery-carrier.service';
 import { groupBy as _groupBy } from 'lodash';
 import { CalculateFeeResponse_DataDTO, ShippingCalculateFeeInputDTO } from '../../dto/carrier/delivery-carrier.dto';
 import { FastSaleOrder_ReceiverDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
+import { TDSMessageService } from "tds-ui/message";
+import { TDSHelperArray, TDSSafeAny } from "tds-ui/shared/utility";
 
 export interface ModelCalculateFeeV2{
   PartnerId: any,

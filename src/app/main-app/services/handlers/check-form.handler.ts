@@ -1,4 +1,3 @@
-import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
 import { Injectable } from "@angular/core";
 import { FastSaleOrderService } from '../fast-sale-order.service';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -13,6 +12,8 @@ import { CRMTeamService } from '../crm-team.service';
 import { FastSaleOrderLineDTO, FastSaleOrderRestDTO, FastSaleOrder_ReceiverDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
 import { SaleOnline_OrderDTO, SaleOnline_Order_FacebookCommentDTO } from '../../dto/saleonlineorder/sale-online-order.dto';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
+import { TDSModalService } from "tds-ui/modal";
+import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 
 
 @Injectable({

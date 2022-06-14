@@ -8,23 +8,8 @@
             </div>
             <!-- <div class="tdsi-reload-fill text-3xl text-neutral-1-200"></div> -->
             <div class="flex items-center gap-x-1">
-              <!-- <tds-button-group>
-                <button tds-button color="secondary" [trigger]="'click'" tds-dropdown [tdsDropdownMenu]="menu1">
-                    <span class="flex items-center">
-                        A-Z
-                    </span>
-                </button>
-                <tds-dropdown-menu #menu1="tdsDropdownMenu">
-                    <div class="w-full h-[400px] overflow-hidden overflow-y-auto tds-custom-scroll" >
-                        <div *ngFor="let item of letters" tds-dropdown-item>
-                            <a> {{item}} </a>
-                        </div>
-                    </div>
-                </tds-dropdown-menu>
-              </tds-button-group> -->
               <tds-form-field class="w-full mr-1 bg-neutral-3-50">
-                <input aria-colspan="" class="placeholder-neutral-1-400 truncate"
-                  placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput/>
+                <input aria-colspan="" class="placeholder-neutral-1-400 truncate" #innerText  placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput (keyup.enter)="onSearch($event)"/>
                 <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
               </tds-form-field>
               <div class="flex gap-0.5">
@@ -52,25 +37,27 @@
             </div>
           </div>
           <!-- Xử lý click button checkbox -->
-          <div [ngClass]="isOpenCollapCheck?'translate-y-0 py-3 ':'-translate-y-full h-0 overflow-hidden'" class="ease-in-out duration-300 w-full px-3.5 flex justify-between items-center bg-white">
-            <div class="flex gap-x-2">
-              <button tds-button color="primary" (click)="showModalSendMessage()">
-                <span class="flex items-center">
-                  <i class="tdsi-messenger-fill text-lg leading-none mr-2"></i>Gửi tin nhắn
-                </span>
-              </button>
-              <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
-                <button tds-button color="info" (click)="printData()">
+          <div [@openCollapse]="!isOpenCollapCheck" class="w-ful flex bg-white">
+            <div class="w-full flex justify-between items-center py-2 px-3.5">
+              <div class="flex gap-x-2">
+                <button tds-button color="primary" (click)="showModalSendMessage()">
                   <span class="flex items-center">
-                    <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In thông tin
+                    <i class="tdsi-messenger-fill text-lg leading-none mr-2"></i>Gửi tin nhắn
                   </span>
                 </button>
-              </tds-spin>
-              <ng-template #indicatorTemplate>
-                <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
-              </ng-template>
+                <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
+                  <button tds-button color="info" (click)="printData()">
+                    <span class="flex items-center">
+                      <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In thông tin
+                    </span>
+                  </button>
+                </tds-spin>
+                <ng-template #indicatorTemplate>
+                  <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
+                </ng-template>
+              </div>
+              <tds-checkbox (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
             </div>
-            <tds-checkbox (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
           </div>
 
           <!-- List danh sách chat -->
@@ -84,18 +71,22 @@
                     <div *ngIf="item && item.psid && activeCvsItem && currentTeam" @eventFadeState>
 
                       <a (click)="changeCurrentCvsItem(item)" type="button"
-                        class="w-full gap-0.5 {{isChanged ? 'cursor-wait' : 'cursor-pointer'}}">
-                        <current-conversation-item
-                            [item]="item" [psid]="item.psid" [type]="type"
-                            [activeCvsItem]="activeCvsItem"
-                            [team]="currentTeam" [isFastSend]="isFastSend"
-                            [isOpenCollapCheck]="isOpenCollapCheck"
-                            [checked]="setOfCheckedId.has(item.psid)"
-                            (checkedChange)="onItemChecked(item.psid, $event)">
-                        </current-conversation-item>
+                          class="w-full gap-0.5 {{isChanged ? 'cursor-wait' : 'cursor-pointer'}}">
+                          <current-conversation-item
+                              [item]="item" [psid]="item.psid" [type]="type"
+                              [activeCvsItem]="activeCvsItem"
+                              [team]="currentTeam" [isFastSend]="isFastSend"
+                              [isOpenCollapCheck]="isOpenCollapCheck"
+                              [checked]="setOfCheckedId.has(item.psid)"
+                              (checkedChange)="onItemChecked(item.psid, $event)">
+                          </current-conversation-item>
                       </a>
                     </div>
                   </div>
+
+                  <div class="absolute w-full flex justify-center z-10 bottom-10" *ngIf="isProcessing">
+                    <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
+                </div>
               </div>
 
               <div class="flex-auto bg-white"></div>
@@ -118,7 +109,7 @@
   <!--Xử lí thông tin khách hàng & Đơn hàng-->
   <!-- Dữ liệu load vào form partner trước từ funtion checkConversation(),sau đó lấy dữ liệu gán lại form order -->
   <tds-spin class="flex w-[30%] h-full" [spinning]="isLoading">
-    <div class="w-full h-full flex flex-col">
+    <div class="w-full h-full flex flex-col pb-1">
       <tds-tabset class="bg-white border border-neutral-2-200 h-full" [clsTab]="'flex-1'" [(selectedIndex)]="currentOrderTab"
         [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
         <!-- tab Khách hàng -->

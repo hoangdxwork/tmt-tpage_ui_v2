@@ -1,5 +1,4 @@
 import { OnDestroy } from '@angular/core';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -9,6 +8,7 @@ import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { SummaryFacade } from 'src/app/main-app/services/facades/summary.facede';
 import { SummaryFilterDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
 import { ConversationSummaryByTagDTO } from 'src/app/main-app/dto/conversation/conversation.dto';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-dashboard-tag-report',

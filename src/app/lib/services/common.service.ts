@@ -4,7 +4,7 @@ import { Observable, Subject } from 'rxjs';
 import { TAPICacheDTO, TAPIDTO, TIDictionary } from '../dto';
 import { THelperCacheService } from '../utility';
 import { TApiMethodType } from '../enum';
-import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Injectable({
     providedIn: 'root'

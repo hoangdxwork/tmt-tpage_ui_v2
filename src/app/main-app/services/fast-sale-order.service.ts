@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
-import { da } from 'date-fns/locale';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
-import { DataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
-import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { ODataPaymentJsonDTO } from '../dto/bill/payment-json.dto';
 import { CalculateFeeResponse_DataDTO, ShippingCalculateFeeInputDTO } from '../dto/carrier/delivery-carrier.dto';
 import { ConversationOrderBillByPartnerDTO } from '../dto/conversation/conversation.dto';
@@ -14,9 +11,6 @@ import { FastSaleOrder_DefaultDTOV2 } from '../dto/fastsaleorder/fastsaleorder-d
 import { FastSaleOrderDTO, FastSaleOrderRestDTO, FastSaleOrderSummaryStatusDTO, ListUpdateDepositDTO } from '../dto/fastsaleorder/fastsaleorder.dto';
 import { AccountRegisterPaymentDTO } from '../dto/fastsaleorder/payment.dto';
 import { ODataIdsDTO, ODataModelDTO } from '../dto/odata/odata.dto';
-import { PagedList2 } from '../dto/pagedlist2.dto';
-import { ODataTaxDTO } from '../dto/tax/tax.dto';
-import { CRMTeamDTO } from '../dto/team/team.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable()
@@ -412,7 +406,7 @@ export class FastSaleOrderService extends BaseSevice {
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
-  
+
   listUpdateDeposit(data: ListUpdateDepositDTO): Observable<undefined> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/fastsaleorder/listupdatedeposit`,

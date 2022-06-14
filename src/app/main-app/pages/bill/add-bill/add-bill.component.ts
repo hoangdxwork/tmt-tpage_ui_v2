@@ -1,6 +1,5 @@
 import { ShipExtras, ShipServiceExtra } from './../../../dto/fastsaleorder/fastsaleorder-default.dto';
 import { DecimalPipe, formatNumber } from '@angular/common';
-import { TDSModalService, TDSHelperObject, TDSMessageService, TDSHelperArray, TDSSafeAny, TDSHelperString, vi_VN } from 'tmt-tang-ui';
 import { Component, OnDestroy, OnInit, ViewContainerRef, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
 import { ModalSearchPartnerComponent } from '../components/modal-search-partner/modal-search-partner.component';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
@@ -36,6 +35,9 @@ import { CompanyCurrentDTO } from 'src/app/main-app/dto/configs/company-current.
 import { CalculateFeeResponse_DataDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
 import { InitSaleDTO, SaleSettingsDTO } from 'src/app/main-app/dto/setting/setting-sale-online.dto';
 import { AccountTaxService } from 'src/app/main-app/services/account-tax.service';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-add-bill',
@@ -96,7 +98,7 @@ export class AddBillComponent implements OnInit, AfterViewInit, AfterViewChecked
   listServiceTemp: any = [];
   lstCalcFee!: CalculatorListFeeDTO[];
 
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder,
     private route: ActivatedRoute,

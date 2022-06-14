@@ -1,8 +1,9 @@
 import { Color } from 'echarts';
 import { formatNumber } from '@angular/common';
-import { TDSSafeAny, vi_VN } from 'tmt-tang-ui';
 import { TDSChartOptions, TDSBarChartComponent, TDSBarChartDataSeries } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { vi_VN } from 'tds-ui/i18n';
 
 @Component({
   selector: 'app-changing-rate-report',
@@ -15,7 +16,7 @@ export class ChangingRateReportComponent implements OnInit {
   chartOption = TDSChartOptions();
 
   showData = true;
-  
+
   filterList= [
     {id:1, name:'Tuần này'},
     {id:2, name:'Tháng này'}
@@ -39,8 +40,8 @@ export class ChangingRateReportComponent implements OnInit {
         name:'Khách hàng mới',
         data:[250,190,145,250,150,150,285]
       },
-      { 
-        name:'Khách mua hàng', 
+      {
+        name:'Khách mua hàng',
         data:[140,285,190,290,180,180,145]
       },
     ]

@@ -1,9 +1,11 @@
-import { TDSModalRef, TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { ProductUOMService } from '../../services/product-uom.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ProductUOMDTO } from '../../dto/product/product-uom.dto';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'tpage-add-uom',

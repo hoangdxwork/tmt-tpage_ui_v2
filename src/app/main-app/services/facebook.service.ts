@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
 import {  Observable, ReplaySubject } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
-import { TDSHelperObject, TDSSafeAny } from 'tmt-tang-ui';
-import { AutoHideCommentDTO, AutoReplyConfigDTO, ChannelFacebookConfigDTO, GreetingDTO, ProfileMessageDTO, QuickQuestionDTO } from '../dto/configs/page-config.dto';
-import { PagedList2 } from '../dto/pagedlist2.dto';
-import { ODataAllFacebookChildTO } from '../dto/team/all-facebook-child.dto';
+import { ChannelFacebookConfigDTO, GreetingDTO, ProfileMessageDTO, QuickQuestionDTO } from '../dto/configs/page-config.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable({

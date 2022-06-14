@@ -1,6 +1,6 @@
 import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-config-print-bills',
@@ -37,14 +37,14 @@ export class ConfigPrintBillsComponent implements OnInit {
   }
 
   onConnectPrinter(data:TDSSafeAny){
-    
+
   }
 
   onSaveConfig(data:TDSSafeAny){
-    
+
   }
 
   onRemovePrinter(data:TDSSafeAny,index:number){
-    
+
   }
 }

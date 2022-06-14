@@ -1,11 +1,11 @@
 import { finalize } from 'rxjs/operators';
 import { Color } from 'echarts';
 import { TDSPieChartComponent, TDSChartOptions } from 'tds-report';
-import { TDSSafeAny } from 'tmt-tang-ui';
 import { Component, OnInit } from '@angular/core';
 import { SummaryFacade } from 'src/app/main-app/services/facades/summary.facede';
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
 import { SummaryActivityByStaffDTO, SummaryFilterDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-dashboard-staff-report',

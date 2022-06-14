@@ -2,7 +2,9 @@ import { CRMTagDTO } from '../../../../dto/crm-tag/odata-crmtag.dto';
 import { CRMTagService } from '../../../../services/crm-tag.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { TDSModalRef, TDSMessageService, TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
     selector: 'app-config-conversation-tags-edit-data-modal',
@@ -35,7 +37,7 @@ export class ConfigConversationTagsEditDataModalComponent implements OnInit {
         });
     }
 
-    public hasError = (controlName: string, errorName: string) => {     
+    public hasError = (controlName: string, errorName: string) => {
         return this.editForm.controls[controlName].hasError(errorName);
     }
 
@@ -68,7 +70,7 @@ export class ConfigConversationTagsEditDataModalComponent implements OnInit {
     }
 
     addNewColor(){
-      
+
     }
 
     confirmForceUpdate(){
@@ -105,7 +107,7 @@ export class ConfigConversationTagsEditDataModalComponent implements OnInit {
                 Name:this.editForm.value.name,
                 ColorClassName:this.editForm.value.color
             }
-            
+
             this.crmService.update(this.data.Id,this.result,this.isForce).subscribe(
                 (res)=>{
                     this.message.success('Cập nhật thành công');

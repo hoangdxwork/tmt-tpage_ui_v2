@@ -3,7 +3,9 @@ import { SharedService } from './../../../../services/shared.service';
 import { takeUntil } from 'rxjs/operators';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { TDSSafeAny, TDSMessageService, TDSModalRef } from 'tmt-tang-ui';
+import { TDSModalRef } from 'tds-ui/modal';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'app-config-add-variant-product-modal',

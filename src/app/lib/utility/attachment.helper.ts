@@ -1,4 +1,4 @@
-import { TDSHelperString } from "tmt-tang-ui";
+import { TDSHelperString } from "tds-ui/shared/utility";
 import { AttachmentType } from "../consts/show-attachment";
 
 export class AttachmentHelper {

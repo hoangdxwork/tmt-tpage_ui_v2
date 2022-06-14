@@ -5,7 +5,6 @@ import { ChangeDetectorRef, EventEmitter, Injectable, OnDestroy, OnInit } from "
 import { Observable, Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { TAuthService, TCommonService, UserInitDTO } from "src/app/lib";
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSMessageService, TDSSafeAny } from "tmt-tang-ui";
 import { CheckConversationData, CheckConversationDTO, ConversationLastOrderDetailDTO } from "../../dto/partner/check-conversation.dto";
 import { BaseSevice } from "../base.service";
 import { ConversationService } from "../conversation/conversation.service";
@@ -24,6 +23,8 @@ import { FormGroup } from '@angular/forms';
 import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
 import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ChangeTabConversationEnum } from '../../dto/conversation/conversation.dto';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +35,7 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
   prefix: string = "";
   table: string = "";
   baseRestApi: string = "";
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   private userInit!: UserInitDTO;
   private order!: ConversationOrderForm;

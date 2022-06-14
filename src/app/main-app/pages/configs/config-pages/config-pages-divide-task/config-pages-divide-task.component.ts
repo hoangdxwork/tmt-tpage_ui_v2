@@ -1,7 +1,6 @@
 import { ConfigDataFacade } from './../../../../services/facades/config-data.facade';
 import { CRMTagDTO } from './../../../../dto/crm-tag/odata-crmtag.dto';
 import { CRMTagService } from './../../../../services/crm-tag.service';
-import { TDSMessageService, TDSSafeAny } from 'tmt-tang-ui';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
@@ -9,13 +8,15 @@ import { Subject, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TagOnPatternDTO } from 'src/app/main-app/dto/configs/page-config.dto';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-config-pages-divide-task',
   templateUrl: './config-pages-divide-task.component.html'
 })
 export class ConfigPagesDivideTaskComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   formAutoLabelConfig!: FormGroup;
   isLoading: boolean = false;

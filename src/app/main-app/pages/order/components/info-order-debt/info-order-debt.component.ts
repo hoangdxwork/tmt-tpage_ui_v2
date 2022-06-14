@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { TDSSafeAny, TDSModalService } from 'tmt-tang-ui';
+import { TDSModalService } from 'tds-ui/modal';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { InfoPartnerComponent } from '../info-partner/info-partner.component';
 
 @Component({

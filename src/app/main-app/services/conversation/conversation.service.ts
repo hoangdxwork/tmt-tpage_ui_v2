@@ -1,12 +1,10 @@
 import { Injectable, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
-import { TDSSafeAny } from "tmt-tang-ui";
 import { CRMMatchingDTO } from "../../dto/conversation-all/crm-matching.dto";
 import { PagedList2 } from "../../dto/pagedlist2.dto";
 import { MDBFacebookMappingNoteDTO } from "../../dto/partner/partner.dto";
 import { BaseSevice } from "../base.service";
-import { SignalRConnectionService } from "../signalR/signalR-connection.service";
 
 export interface QueryStateConversationDTO {
   pageId: any;

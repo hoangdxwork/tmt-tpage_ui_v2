@@ -1,4 +1,3 @@
-import { TDSMenuDTO } from 'tmt-tang-ui';
 import { ReportMenu } from './../report.menu';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 

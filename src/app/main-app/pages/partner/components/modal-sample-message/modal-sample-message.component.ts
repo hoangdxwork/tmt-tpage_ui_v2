@@ -3,7 +3,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { QuickReplyService } from './../../../../services/quick-reply.service';
 import { Component, OnInit, Input } from '@angular/core';
-import { TDSModalRef, TDSSafeAny } from 'tmt-tang-ui';
+import { TDSModalRef } from 'tds-ui/modal';
 
 @Component({
   selector: 'app-modal-sample-message',
@@ -30,7 +30,7 @@ export class ModalSampleMessageComponent implements OnInit {
         this.listSampleMessage = [...res.value]
         this.count = res['@odata.count'] as number;
       }
-      
+
     })
   }
 
