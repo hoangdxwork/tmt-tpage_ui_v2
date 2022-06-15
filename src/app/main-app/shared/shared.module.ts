@@ -59,6 +59,8 @@ import { TDSImageModule } from 'tds-ui/image';
 import { TDSToolTipModule } from 'tds-ui/tooltip';
 import { TDSDatePickerModule } from 'tds-ui/date-picker';
 import { TDSPopoverModule } from 'tds-ui/popover';
+import { TDSMessageModule, TDSMessageService } from 'tds-ui/message';
+import { ProductPagefbComponent } from './product-pagefb/product-pagefb.component';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -84,6 +86,7 @@ const cmp =[
   OrderFilterOptionsComponent,
   BillFilterOptionsComponent,
   ModalEditOrderComponent,
+  ProductPagefbComponent,
   TpageNotificationDropdownComponent
 ]
 
@@ -94,7 +97,8 @@ const SERVICES = [
   ImageFacade,
   ProductPriceListService,
   ODataLiveCampaignService,
-  FastSaleOrderLineService
+  FastSaleOrderLineService,
+  TDSMessageService
 ]
 
 @NgModule({
@@ -129,7 +133,8 @@ const SERVICES = [
     TDSImageModule,
     TDSToolTipModule,
     TDSDatePickerModule,
-    TDSPopoverModule
+    TDSPopoverModule,
+    TDSMessageModule
   ],
   exports:[
    ...cmp

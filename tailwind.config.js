@@ -58,8 +58,8 @@ const COLORS = {
         3: '#F2FCF5',
     },
     secondary: {
-        1: '#3E89FC',
-        2: '#70B5FF',
+        1: '#2C80F8',
+        2: '#0B5FD7',
         3: '#F6FBFF',
     },
     tertiary: {
