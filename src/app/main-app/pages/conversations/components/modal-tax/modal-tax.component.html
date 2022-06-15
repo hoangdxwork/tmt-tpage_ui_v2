@@ -1,7 +1,7 @@
 <tds-spin [spinning]="isLoading">
   <div class="w-full h-full flex flex-col gap-y-2">
     <div class="px-1.5 py-4 flex justify-between border-b border-neutral-3-300 border-solid">
-      <span> Không thuế 0% </span>
+      <span> Không thuế </span>
       <tds-checkbox [checked]="taxSelect == null" (change)="changeTax($event)"></tds-checkbox>
     </div>
     <div class="px-1.5 py-4 flex justify-between border-b border-neutral-3-300 border-solid" *ngFor="let tax of lstTax">

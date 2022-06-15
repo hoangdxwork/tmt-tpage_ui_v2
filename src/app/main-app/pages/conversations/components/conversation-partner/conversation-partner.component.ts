@@ -1,3 +1,4 @@
+import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
 import { CheckConversationData, CheckConversationDTO } from './../../../../dto/partner/check-conversation.dto';
 import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, SimpleChanges, SkipSelf, ViewContainerRef, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -25,7 +26,7 @@ import { ModalListBlockComponent } from '../modal-list-block/modal-list-block.co
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSTagStatusType } from 'tds-ui/tag';
 
 @Component({
@@ -449,6 +450,33 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   createOrder() {
     this.onTabOrder.emit(true);
+  }
+
+  editBill(data:TDSSafeAny){
+    this.router.navigateByUrl(`bill/detail/${data.Id}`);
+  }
+
+  showPaymentModal(data:TDSSafeAny){
+    this.fastSaleOrderService.getRegisterPayment({ids: [data.Id]}).pipe(takeUntil(this.destroy$)).subscribe(
+      (res)=>{
+        delete res['@odata.context'];
+        const modal = this.modalService.create({
+          title: 'Đăng ký thanh toán',
+          size:'lg',
+          content: ModalPaymentComponent,
+          viewContainerRef: this.viewContainerRef,
+          componentParams: {
+            dataModel : res
+          }
+        });
+        modal.afterClose.subscribe(result => {
+          this.loadBill(data.PartnerId);
+        });
+      },
+      err=>{
+        this.message.error(err.error.message ?? 'Không tải được dữ liệu');
+      }
+    )
   }
 
   ngOnChanges(changes: SimpleChanges) {

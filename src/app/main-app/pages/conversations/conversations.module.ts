@@ -1,3 +1,4 @@
+import { AccountRegisterPaymentService } from './../../services/account-register-payment.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -147,7 +148,8 @@ const SERVICES = [
   AttachmentState,
   ProductIndexDBService,
   LiveCampaignService,
-  AccountTaxService
+  AccountTaxService,
+  AccountRegisterPaymentService
 ]
 
 @NgModule({

@@ -36,6 +36,7 @@ export class ModalTaxComponent implements OnInit {
     this.isLoading = true;
     this.accountTaxService.getTax().pipe(finalize(() => this.isLoading = false)).subscribe(res => {
       this.lstTax = res.value;
+      this.lstTax.sort((preTax, nextTax) => { return preTax.Amount - nextTax.Amount });//TODO: sắp xếp % thuế theo thứ tự tăng dần
     });
   }
 
