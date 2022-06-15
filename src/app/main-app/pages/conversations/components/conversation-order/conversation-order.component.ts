@@ -51,14 +51,14 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
 
   @Output() currentOrderCode = new EventEmitter<string | undefined>();
 
-  orderForm!: FormGroup;
+  _form!: FormGroup;
   private destroy$ = new Subject<void>();
 
   editNoteProduct: string | null = null;
 
   isLoading: boolean = false;
   isLoadingCarrier: boolean = false;
-
+  isEditPartner: boolean = false;
   isEnableOrder: boolean = false;
   isEnableInsuranceFee: boolean = false;
 
@@ -95,19 +95,19 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
     private fastSaleOrderService: FastSaleOrderService,
     private orderPrintService: OrderPrintService,
     private printerService: PrinterService,
-    private orderFormHandler: OrderFormHandler,
+    private _formHandler: OrderFormHandler,
     private carrierHandler: CarrierHandler,
     private viewContainerRef: ViewContainerRef,
     private saleHandler: SaleHandler,
     private router: Router) {
+      this.createForm();
   }
 
   get detailsFormGroups() {
-    return (this.orderForm?.get("Details") as FormArray);
+    return (this._form?.get("Details") as FormArray);
   }
 
   ngOnInit(): void {
-    this.createForm();
     this.createSaleModel();
     this.loadConfig();
     this.loadOrder();
@@ -125,11 +125,11 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   createForm(): void {
-    this.orderForm = this.orderFormHandler.createOrderFormGroup();
+    this._form = this._formHandler.createOrderFormGroup();
   }
 
   resetForm(): void {
-    this.orderForm.reset({
+    this._form.reset({
       Id: [null],
       Code: [null],
       LiveCampaignId: [null],
@@ -161,18 +161,18 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   createSaleModel() {
-    this.orderFormHandler.createBillDefault().subscribe(res => {
+    this._formHandler.createBillDefault().subscribe(res => {
       this.saleModel = res;
 
       this.updateShipExtraServices(res.Carrier);
-      this.updateOrderFormByBill(res);
+      this.update_formByBill(res);
     });
   }
 
-  updateOrderFormByBill(bill: FastSaleOrderRestDTO) {
-    this.orderForm.controls.Carrier?.setValue(bill.Carrier);
-    this.orderForm.controls.Tax?.setValue(bill.Tax);
-    this.saleModel.CashOnDelivery = this.orderForm.value.TotalAmountBill || 0;
+  update_formByBill(bill: FastSaleOrderRestDTO) {
+    this._form.controls.Carrier?.setValue(bill.Carrier);
+    this._form.controls.Tax?.setValue(bill.Tax);
+    this.saleModel.CashOnDelivery = this._form.value.TotalAmountBill || 0;
   }
 
   loadUsers() {
@@ -184,7 +184,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   loadOrder() {
     this.conversationOrderFacade.onLastOrderCheckCvs$.pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.updateFormOrder(res);
-      this.updateBillByForm(this.orderForm);
+      this.updateBillByForm(this._form);
       this.currentOrderCode.emit(res?.Code);
     });
   }
@@ -220,8 +220,8 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
       });
     }
 
-    this.orderForm.patchValue(order);
-    this.orderForm.setControl("Details", details);
+    this._form.patchValue(order);
+    this._form.setControl("Details", details);
 
     this.updateTotalAmount();
   }
@@ -232,7 +232,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
     this.lstShipServices.length = 0;
     this.isEnableInsuranceFee = false;
 
-    this.carrierHandler.changeCarrierV2(this.saleModel, this.orderForm, carrier, this.shipExtraServices)
+    this.carrierHandler.changeCarrierV2(this.saleModel, this._form, carrier, this.shipExtraServices)
       .pipe(finalize(() => this.isLoadingCarrier = false))
       .subscribe(res => {
         this.lstShipServices = res?.Services || [];
@@ -245,27 +245,35 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
 
   updateShipExtraServices(carrier: DeliveryCarrierDTO | undefined) {
     if(carrier) {
-      let insuranceFee = this.orderForm.value.Ship_Extras?.InsuranceFee || 0;
+      let insuranceFee = this._form.value.Ship_Extras?.InsuranceFee || 0;
 
       this.isEnableInsuranceFee = this.carrierHandler.getShipExtraServices(carrier, this.shipExtraServices);
-      this.isEnableInsuranceFee && (this.orderForm.controls.Ship_InsuranceFee.setValue(insuranceFee));
+      this.isEnableInsuranceFee && (this._form.controls.Ship_InsuranceFee.setValue(insuranceFee));
     }
   }
 
+  onEditPartner() {
+    this.isEditPartner = !this.isEditPartner;
+  }
+
+  changeUser(user:ApplicationUserDTO){
+    this._form.controls['User'].setValue(user);
+  }
+
   removeDetail(index: number) {
-    const control = this.orderForm.controls["Details"] as FormArray;
+    const control = this._form.controls["Details"] as FormArray;
     control.removeAt(index);
 
     this.updateTotalAmount();
   }
 
   updateTotalAmount() {
-    this.saleHandler.updateTotalAmount(this.orderForm);
-    this.updateTotalAmountByOrderForm();
+    this.saleHandler.updateTotalAmount(this._form);
+    this.updateTotalAmountBy_form();
   }
 
-  updateTotalAmountByOrderForm() {
-    let formValue = this.orderForm.value;
+  updateTotalAmountBy_form() {
+    let formValue = this._form.value;
 
     if(this.saleModel) {
       this.saleModel.AmountTotal = formValue.TotalAmountBill;
@@ -280,8 +288,8 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
     console.log(orderModel)
     this.saleOnline_OrderService.insertFromMessage({model: orderModel}).subscribe(
       (res) => {
-        this.orderForm.controls["Id"].setValue(res.Id);
-        this.orderForm.controls["PartnerId"].setValue(res.PartnerId);
+        this._form.controls["Id"].setValue(res.Id);
+        this._form.controls["PartnerId"].setValue(res.PartnerId);
         this.message.success((orderModel.Id && orderModel.Code) ? Message.Order.UpdateSuccess : Message.Order.InsertSuccess);
         this.isLoading = false;
         // this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
@@ -374,7 +382,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
 
   calculateFee(carrier: TDSSafeAny) {
     this.isLoadingCarrier = true;
-    this.carrierHandler.calculateFee(this.saleModel, this.orderForm, carrier, this.shipExtraServices)
+    this.carrierHandler.calculateFee(this.saleModel, this._form, carrier, this.shipExtraServices)
       .pipe(finalize(() => this.isLoadingCarrier = false))
       .subscribe(res => {
         this.lstShipServices = res?.Services || [];
@@ -398,7 +406,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   prepareOrderModel(): SaleOnline_OrderDTO {
-    let model = this.checkFormHandler.prepareOrder(this.orderForm);
+    let model = this.checkFormHandler.prepareOrder(this._form);
     
     if(!TDSHelperString.hasValueString(model.Facebook_ASUserId)) {
       model.Facebook_ASUserId = this.data?.psid;
@@ -408,7 +416,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   prepareBillModel(): FastSaleOrderRestDTO {
-    let model = this.checkFormHandler.prepareBill(this.orderForm, this.saleModel, this.shipExtraServices);
+    let model = this.checkFormHandler.prepareBill(this._form, this.saleModel, this.shipExtraServices);
     return model;
   }
 
@@ -461,12 +469,12 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   onUpdateInsuranceFee(serviceId: any): Observable<any> {
-    return this.carrierHandler.onUpdateInsuranceFee(serviceId, this.saleModel, this.orderForm, this.shipExtraServices);
+    return this.carrierHandler.onUpdateInsuranceFee(serviceId, this.saleModel, this._form, this.shipExtraServices);
   }
 
   onChangeExtraService(extra: TDSSafeAny) {
     this.isLoadingCarrier = true;
-    this.carrierHandler.onCheckExtraService(extra, this.lstShipServices, this.saleModel, this.orderForm, this.shipExtraServices)
+    this.carrierHandler.onCheckExtraService(extra, this.lstShipServices, this.saleModel, this._form, this.shipExtraServices)
       .pipe(finalize(() => this.isLoadingCarrier = false))
       .subscribe(res => {
         if(res != null)  this.isEnableInsuranceFee = res;
@@ -533,18 +541,18 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
       componentParams: {
-        currentTax: this.orderForm.value.Tax
+        currentTax: this._form.value.Tax
       }
     });
 
     modal.componentInstance?.onSuccess.subscribe(res => {
-      this.orderForm.controls.Tax.setValue(res);
+      this._form.controls.Tax.setValue(res);
       this.updateTotalAmount();
     });
   }
 
   selectProduct(product: ConversationOrderProductDefaultDTO) {
-    let formDetail = this.orderForm.value.Details;
+    let formDetail = this._form.value.Details;
     let quantity = 1;
 
     let findProduct = formDetail.find((x: any) =>
@@ -556,10 +564,10 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
     if(TDSHelperObject.hasValue(findProduct)) {
       findProduct.Quantity++;
       quantity = findProduct.Quantity;
-      (this.orderForm?.get("Details") as FormArray).patchValue(formDetail);
+      (this._form?.get("Details") as FormArray).patchValue(formDetail);
     }
     else {
-      (this.orderForm?.get("Details") as FormArray).push(this.fb.group(product));
+      (this._form?.get("Details") as FormArray).push(this.fb.group(product));
     }
 
     this.updateTotalAmount();
@@ -599,7 +607,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   onChangeAddress(event: CheckAddressDTO) {
-    let formControls = this.orderForm.controls;
+    let formControls = this._form.controls;
 
     formControls["Street"].setValue(event.Street);
 
@@ -634,7 +642,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   editPriceDetail() {
-    let formDetail = this.orderForm.value.Details;
+    let formDetail = this._form.value.Details;
 
     let findProduct = formDetail.find((x: any, index: number) =>
       x.ProductId == this.detailEdit.ProductId &&
@@ -646,13 +654,13 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
       findProduct.Price = this.detailEdit.Price;
     }
 
-    (this.orderForm?.get("Details") as FormArray).patchValue(formDetail);
+    (this._form?.get("Details") as FormArray).patchValue(formDetail);
     this.updateTotalAmount();
     this.visibleIndex = -1;
   }
 
   changeQuantityDetail(detail: TDSSafeAny, isMinus: boolean) {
-    let formDetail = this.orderForm.value.Details;
+    let formDetail = this._form.value.Details;
 
     let findProduct = formDetail.find((x: any) =>
         x.ProductId == detail.ProductId &&
@@ -665,7 +673,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
       else (findProduct.Quantity++)
     }
 
-    (this.orderForm?.get("Details") as FormArray).patchValue(formDetail);
+    (this._form?.get("Details") as FormArray).patchValue(formDetail);
     this.updateTotalAmount();
   }
 
