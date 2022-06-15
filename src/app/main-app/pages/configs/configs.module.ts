@@ -14,8 +14,8 @@ import { CommonModule } from '@angular/common';
 
 import { ConfigsRoutingModule } from './configs-routing.module';
 import { ConfigComponent } from './config/config.component';
-import { ConfigOverviewComponent } from './config-overview/config-overview.component';
-import { ConfigAutoChatComponent } from './config-auto-chat/config-auto-chat.component';
+import { AutoInteractionComponent } from './auto-interraction/auto-interaction.component';
+import { AutoQuickReplyComponent } from './auto-quick-reply/auto-quick-reply.component';
 import { ConfigConversationTagsComponent } from './config-conversation-tags/config-conversation-tags.component';
 import { ConfigSmsMessagesComponent } from './config-sms-messages/config-sms-messages.component';
 
@@ -101,6 +101,7 @@ import { TDSDatePickerModule } from 'tds-ui/date-picker';
 import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
 import { TDSTimePickerModule } from 'tds-ui/time-picker';
 import { TDSFilterStatusModule } from 'tds-ui/filter-status';
+import { TDSEditorModule } from 'tds-editor';
 
 const SERVICES = [
     OdataCRMTagService,
@@ -131,8 +132,8 @@ const SERVICES = [
 @NgModule({
   declarations: [
     ConfigComponent,
-    ConfigOverviewComponent,
-    ConfigAutoChatComponent,
+    AutoInteractionComponent,
+    AutoQuickReplyComponent,
     ConfigConversationTagsComponent,
     ConfigSmsMessagesComponent,
     ListProductVariantComponent,
@@ -210,7 +211,8 @@ const SERVICES = [
     TDSTimePickerModule,
     PipeModule,
     TDSFilterStatusModule,
-    UploadImageModule
+    UploadImageModule,
+    TDSEditorModule
   ],
   providers:[
     ...SERVICES

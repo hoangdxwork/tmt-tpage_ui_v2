@@ -11,8 +11,8 @@ import { ConfigPromotionsComponent } from './config-promotions/config-promotions
 import { ConfigActivitiesComponent } from './config-activities/config-activities.component';
 import { ConfigProductsComponent } from './config-products/config-products.component';
 import { ConfigSmsMessagesComponent } from './config-sms-messages/config-sms-messages.component';
-import { ConfigAutoChatComponent } from './config-auto-chat/config-auto-chat.component';
-import { ConfigOverviewComponent } from './config-overview/config-overview.component';
+import { AutoQuickReplyComponent } from './auto-quick-reply/auto-quick-reply.component';
+import { AutoInteractionComponent } from './auto-interraction/auto-interaction.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ConfigComponent } from './config/config.component';
@@ -34,7 +34,7 @@ const routes: Routes = [
     children:[
       {
         path:'overview',
-        component: ConfigOverviewComponent
+        component: AutoInteractionComponent
       },
       {
         path:'print-bills',
@@ -45,8 +45,8 @@ const routes: Routes = [
         component: ConfigConversationTagsComponent
       },
       {
-        path:'auto-chat',
-        component: ConfigAutoChatComponent
+        path:'auto-reply',
+        component: AutoQuickReplyComponent
       },
       {
         path:'sms-messages',

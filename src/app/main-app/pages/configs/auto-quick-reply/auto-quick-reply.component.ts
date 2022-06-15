@@ -1,14 +1,12 @@
-import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
+import { ConfigDataFacade } from '../../../services/facades/config-data.facade';
 import { switchMap, distinctUntilChanged, debounceTime, map, finalize } from 'rxjs/operators';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { SortEnum } from './../../../../lib/enum/sort.enum';
-import { SortDataRequestDTO } from './../../../../lib/dto/dataRequest.dto';
-import { QuickReplyService } from './../../../services/quick-reply.service';
-import { QuickReplyDTO } from './../../../dto/quick-reply.dto.ts/quick-reply.dto';
+import { QuickReplyService } from '../../../services/quick-reply.service';
+import { QuickReplyDTO } from '../../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { takeUntil } from 'rxjs/operators';
-import { THelperDataRequest } from './../../../../lib/services/helper-data.service';
+import { THelperDataRequest } from '../../../../lib/services/helper-data.service';
 import { Subject, Observable, fromEvent } from 'rxjs';
-import { OdataQuickReplyService } from './../../../services/mock-odata/odata-quick-reply.service';
+import { OdataQuickReplyService } from '../../../services/mock-odata/odata-quick-reply.service';
 import { AutoChatAddDataModalComponent } from '../components/auto-chat-add-data-modal/auto-chat-add-data-modal.component';
 import { Component, OnInit, ViewContainerRef, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { ODataQuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-reply.dto';
@@ -18,11 +16,14 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
-  selector: 'app-config-auto-chat',
-  templateUrl: './config-auto-chat.component.html'
+  selector: 'auto-quick-reply',
+  templateUrl: './auto-quick-reply.component.html'
 })
-export class ConfigAutoChatComponent implements OnInit, AfterViewInit {
+
+export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
+
   @ViewChild('innerText') innerText!: ElementRef;
+
   AutoChatList: Array<QuickReplyDTO> = [];
   expandBtnList: Array<boolean> = [];
   isLoading = false;
@@ -66,12 +67,13 @@ export class ConfigAutoChatComponent implements OnInit, AfterViewInit {
         let params = TDSHelperString.hasValueString(this.filterObj.searchText) ?
         THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters):
         THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex);
+
         return this.get(params);
-    })
-  ).subscribe((res: any) => {
-      this.count = res['@odata.count'] as number;
-      this.AutoChatList = res.value;
-  });
+
+    })).subscribe((res: any) => {
+        this.count = res['@odata.count'] as number;
+        this.AutoChatList = res.value;
+    });
   }
 
   private get(params: string): Observable<ODataQuickReplyDTO> {
@@ -85,9 +87,11 @@ export class ConfigAutoChatComponent implements OnInit, AfterViewInit {
     this.isLoading = true;
     this.configDataService.onLoading$.emit(this.isLoading);
     let filters = this.odataQuickReplyService.buildFilter(this.filterObj);
+
     let params = TDSHelperString.hasValueString(this.filterObj.searchText)?
         THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters):
         THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
+
     this.odataQuickReplyService.get(params).pipe(takeUntil(this.destroy$)).subscribe((res: ODataQuickReplyDTO) => {
       this.AutoChatList = res.value
       this.count = res['@odata.count'] as number
