@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { ConversationsRoutingModule } from './conversations-routing.module';
 import { ConversationAllComponent } from './conversation-all/conversation-all.component';
 import { ConversationPostComponent } from './conversation-post/conversation-post.component';

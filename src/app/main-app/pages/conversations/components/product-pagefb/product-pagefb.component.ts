@@ -17,9 +17,9 @@ export class ProductPagefbComponent implements OnInit, OnDestroy {
   lstOfData!: ProductPageFbDTO[];
 
   state: any = {
-    Skip: 0,
-    Limmit: 10,
-    KeyWord: "",
+    skip: 0,
+    limmit: 10,
+    keyWord: "",
   };
 
   constructor(private productService: ProductService,

@@ -14,14 +14,6 @@ export class TAuthInterceptorService implements HttpInterceptor {
     constructor(public auth: TAuthService, public libcommon: TCommonService) {}
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<TDSSafeAny>> {
-
-        let showt = req.url.indexOf("/print/html") > -1;
-        if(showt) {
-          req = req.clone({
-              headers: new HttpHeaders({})
-          });
-        }
-
         let that = this;
         let lstUrlLogin = [
             environment.apiAccount.signInPassword,
@@ -96,6 +88,27 @@ export class TAuthInterceptorService implements HttpInterceptor {
     }
 
     addAuthenticationToken = (req: HttpRequest<any>): HttpRequest<any> => {
+
+        let showt = req.url.indexOf("/print/html") > -1;
+
+        if (!showt) {
+          if (!req.headers.has('Content-Type')) {
+            req = req.clone({
+              setHeaders:
+              {
+                  'Cache-Control': 'no-cache',
+                  Pragma: 'no-cache',
+                  Expires: 'Sat, 01 Jan 2000 00:00:00 GMT',
+                  TPOSAppVersion: '1.06.1.7'
+              }
+            });
+          }
+        } else {
+          req = req.clone({
+              headers: new HttpHeaders({})
+          });
+        }
+
         let accessToken =this.auth.getAccessToken();
         if (TDSHelperObject.hasValue(this.auth.isLogin())
             && TDSHelperObject.hasValue(accessToken)
