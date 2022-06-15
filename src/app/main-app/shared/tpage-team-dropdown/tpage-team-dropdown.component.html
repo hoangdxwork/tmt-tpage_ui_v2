@@ -32,14 +32,12 @@
                 <div class="text-neutral-1-400">
                     <i class="text-base leading-4 tdsi-arrow-down-line"></i>
                 </div>
-                
+
             </div>
            </div>
         </div>
-        <button class="p-1" (click)="onRefresh()">
-            <span class="flex justify-center items-center text-neutral-1-200">
-                <i class="tdsi-reload-fill text-xl leading-5"></i>
-            </span>
+        <button tds-button-flat-icon color="info" rounded="!rounded-full" class="p-1 hover:bg-info-100" (click)="onRefresh()">
+            <i class="tdsi-reload-fill"></i>
         </button>
     </div>
 </ng-template>

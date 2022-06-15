@@ -91,7 +91,6 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
       }
       if(TDSHelperArray.hasListValue(res)){
         this.tags = res.sort((one:any, two:any) => (one.Name.length < two.Name.length ? -1 : 1));
-        console.log(this.tags)
       }
     });
   }

@@ -23,7 +23,7 @@ import { TDSTableQueryParams } from 'tds-ui/table';
 @Component({
   selector: 'list-product-variant',
   templateUrl: './list-product-variant.component.html',
-  encapsulation: ViewEncapsulation.None,
+  encapsulation: ViewEncapsulation.None
 })
 
 export class ListProductVariantComponent  implements OnDestroy  {

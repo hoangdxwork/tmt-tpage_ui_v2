@@ -8,12 +8,17 @@
 @import "../node_modules/tds-ui/assets/scss/table.scss";
 
 @import "../node_modules/tds-ui/assets/scss/carousel.scss";
+
+// @import "../node_modules/tds-editor/assets/tinymce/tdsskin";
+// @import "../node_modules/tds-editor/assets/tinymce/tdscontent";
+// @import "../node_modules/tds-editor/assets/tinymce/tdscontent";
+
 @import "./assets/font-icon/style.css";
 @import "./assets/scss/table-custom.scss";
 @import "./assets/scss/collapse-custom.scss";
 @import "./assets/scss/notification.scss";
 
-body{
+body {
     overflow: hidden;
     height: 100vh;
     width: 100vw;

@@ -60,7 +60,6 @@ import { TDSToolTipModule } from 'tds-ui/tooltip';
 import { TDSDatePickerModule } from 'tds-ui/date-picker';
 import { TDSPopoverModule } from 'tds-ui/popover';
 import { TDSMessageModule, TDSMessageService } from 'tds-ui/message';
-import { ProductPagefbComponent } from './product-pagefb/product-pagefb.component';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -86,7 +85,6 @@ const cmp =[
   OrderFilterOptionsComponent,
   BillFilterOptionsComponent,
   ModalEditOrderComponent,
-  ProductPagefbComponent,
   TpageNotificationDropdownComponent
 ]
 

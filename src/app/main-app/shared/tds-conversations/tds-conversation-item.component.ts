@@ -47,6 +47,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   isLiking: boolean = false;
   isHiding: boolean = false;
   isReplyingComment: boolean = false;
+  reloadingImage: boolean = false;
   gallery: TDSSafeAny[] = [];
   listAtts: TDSSafeAny[] = [];
   isShowItemImage: boolean = false;
@@ -179,18 +180,23 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     });
   }
 
-  isErrorAttachment(att: any, data: any): Boolean{
-    if(data && (data.status != this.enumActivityStatus.fail || data.error_message)) {
-      return true;
+  isErrorAttachment(att: any, data: any){
+    if(data && (data.status  != this.enumActivityStatus.fail || data.error_message)) {
+      this.data["errorShowAttachment"] = true;
     }
-    return false;
   }
 
   refreshAttachment(item: any) {
+    if(this.reloadingImage){
+      return
+    }
+    this.reloadingImage = true;
     this.activityMatchingService.refreshAttachment(this.team.Facebook_PageId, this.data.fbid || this.data.id , item.id)
-      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(()=>{ this.reloadingImage = false})).subscribe((res: any) => {
         this.tdsMessage.success('Thao tác thành công');
         this.activityDataFacade.refreshAttachment(res);
+        this.data["errorShowAttachment"] = false;
         this.cdRef.markForCheck();
     }, error => {
       this.tdsMessage.error('Không thành công');
@@ -393,20 +399,24 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('click', ['$event']) onClick(e: TDSSafeAny) {
-    if (e.target.className.indexOf('text-copyable') >= 0) {
-      let selBox = document.createElement('textarea');
-      selBox.style.position = 'fixed';
-      selBox.style.left = '0';
-      selBox.style.top = '0';
-      selBox.style.opacity = '0';
-      selBox.value = e.target.getAttribute('data-value') || e.target.innerHTML;
-      document.body.appendChild(selBox);
-      selBox.focus();
-      selBox.select();
-      document.execCommand('copy');
-      document.body.removeChild(selBox);
-      this.tdsMessage.info('Đã copy số điện thoại');
+    let className = JSON.stringify(e.target.className);
+    if(className.includes('text-copyable')){
+      if (e.target.className.indexOf('text-copyable') >= 0) {
+        let selBox = document.createElement('textarea');
+        selBox.style.position = 'fixed';
+        selBox.style.left = '0';
+        selBox.style.top = '0';
+        selBox.style.opacity = '0';
+        selBox.value = e.target.getAttribute('data-value') || e.target.innerHTML;
+        document.body.appendChild(selBox);
+        selBox.focus();
+        selBox.select();
+        document.execCommand('copy');
+        document.body.removeChild(selBox);
+        this.tdsMessage.info('Đã copy số điện thoại');
+      }
     }
+
   }
 
   ngOnDestroy(): void {

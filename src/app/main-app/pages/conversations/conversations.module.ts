@@ -1,6 +1,6 @@
+import { AccountRegisterPaymentService } from './../../services/account-register-payment.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { ConversationsRoutingModule } from './conversations-routing.module';
 import { ConversationAllComponent } from './conversation-all/conversation-all.component';
 import { ConversationPostComponent } from './conversation-post/conversation-post.component';
@@ -109,6 +109,7 @@ import { TDSSwitchModule } from 'tds-ui/switch';
 import { TDSImageModule } from 'tds-ui/image';
 import { TDSInputNumberModule } from 'tds-ui/input-number';
 import { TDSMessageModule, TDSMessageService } from 'tds-ui/message';
+import { ProductPagefbComponent } from './components/product-pagefb/product-pagefb.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -147,6 +148,7 @@ const SERVICES = [
   ProductIndexDBService,
   LiveCampaignService,
   AccountTaxService,
+  AccountRegisterPaymentService
 ]
 
 @NgModule({
@@ -188,6 +190,7 @@ const SERVICES = [
     ModalReportOrderPostComponent,
     ModalListCollectionComponent,
     ModalTaxComponent,
+    ProductPagefbComponent
   ],
 
   imports: [

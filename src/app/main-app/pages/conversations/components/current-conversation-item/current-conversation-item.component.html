@@ -6,7 +6,8 @@
       <div class="flex gap-3">
         <div>
             <div class="relative">
-                <tpage-avatar-facebook
+                <tpage-avatar-facebook 
+                [noSeenMessage]="(type == 'all' && item.count_unread_activities > 0) || (type == 'message' && item.count_unread_messages > 0) || (type == 'comment' && item.count_unread_comments > 0)"
                 [shape]="'circle'" [size]="'lg'"
                 [psid]="item.psid" [token]="team?.Facebook_PageToken">
                 </tpage-avatar-facebook>
@@ -24,7 +25,7 @@
                     </svg>
                 </span>
                 <!-- icon message -->
-                <span *ngIf="getLastActivity()?.type == 2"  class="absolute" style="top: 31px;left: 31px;">
+                <span *ngIf="getLastActivity()?.type == 3"  class="absolute" style="top: 31px;left: 31px;">
                     <svg width="20" height="21" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1.6665 13.0134C1.6665 16.3847 3.04389 19.327 5.30367 21.3711L5.36031 23.2042C5.36031 23.2042 5.36031 23.2042 5.36031 23.2042C5.4008 24.5156 6.75463 25.3755 7.96053 24.8431C7.96056 24.8431 7.96059 24.843 7.96062 24.843C7.96097 24.8429 7.96132 24.8427 7.96168 24.8426L10.0314 23.9302C11.076 24.2116 12.1824 24.3627 13.3332 24.3627C19.857 24.3627 24.9998 19.5481 24.9998 13.016C24.9998 6.48431 19.8573 1.66669 13.3332 1.66669C6.80934 1.66669 1.6665 6.48131 1.6665 13.0134Z" fill="url(#paint0_radial_11437_25390)" stroke="white" stroke-width="2" />
                         <path d="M6.92785 16.04L10.0612 11.0694C10.5598 10.2774 11.6265 10.0827 12.3758 10.6427L14.8692 12.512C15.0985 12.6827 15.4132 12.6827 15.6398 12.5094L19.0051 9.9547C19.4531 9.61336 20.0398 10.152 19.7411 10.6294L16.6052 15.5974C16.1065 16.3894 15.0398 16.584 14.2905 16.024L11.7972 14.1547C11.5678 13.984 11.2532 13.984 11.0265 14.1574L7.66118 16.712C7.21318 17.0534 6.62651 16.5174 6.92785 16.04Z" fill="white" />
@@ -38,13 +39,13 @@
                         </radialGradient>
                         </defs>
                   </svg>
-            </span>
+                </span>
             </div>
 
         </div>
         <div class="w-full flex flex-col gap-1" *ngIf="getLastActivity()">
             <div class="flex w-full justify-between items-center gap-x-1.5">
-                <div class="w-1/2 text-body-2 text-neutral-1-600 font-semibold truncate" [tooltipTitle]="item.name || item.partner_name" [tooltipPlacement]="['topLeft', 'leftTop']"
+                <div class="w-1/2 text-body-2 text-neutral-1-900 font-semibold truncate" [tooltipTitle]="item.name || item.partner_name" [tooltipPlacement]="['topLeft', 'leftTop']"
                     tds-tooltip>{{item.name || item.partner_name}}</div>
                 <div class="flex items-center gap-2 truncate" >
                     <span *ngIf="type == 'all' && item.count_unread_activities > 0">
@@ -78,13 +79,17 @@
                         <div [ngStyle]="{'background-color': [tag.color_class], 'color': [tag.color_class] }" class=" rounded-md py-0.5 px-3.5 opacity-30">
                             {{tag.name}}
                         </div>
-                        <span class="absolute inset-0 py-0.5 flex items-center justify-center gap-x-1"><span [ngStyle]="{'background-color': [tag.color_class] }" class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>{{tag.name}}</span>
+                        <span class="absolute inset-0 py-0.5 flex items-center justify-center gap-x-1" tds-tooltip [tooltipTitle]="tag.name">
+                            <span [ngStyle]="{'background-color': [tag.color_class] }"
+                             class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>
+                             {{tag.name}}
+                        </span>
                     </div>
                 </div>
             </div>
 
             <div class="flex gap-1.5 items-center">
-                <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded" *ngIf="item.tags && item.tags.length - 2 > 0" tds-popover
+                <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate" *ngIf="item.tags && item.tags.length - 2 > 0" tds-popover
                     [popoverContent]="popoverContentTag"
                     popoverPlacement="topRight">
                     +{{item.tags.length - 2}}
@@ -100,16 +105,10 @@
                     </div>
                 </ng-template>
                 <div class="draft-message text-danger font-z10 tmr-t13" *ngIf="isDraftMessage">Chưa gửi</div>
-                <div *ngIf="item.has_order" class="tdsi-cart-fill text-md text-white bg-blue-500 p-0.5 rounded-md"></div>
-                <div *ngIf="item.has_phone" class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
-                <div *ngIf="item.has_address" class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
+                <div *ngIf="item.has_order" class="tdsi-cart-fill text-body-2 leading-none text-white bg-base-blue-500 p-0.5 rounded-md"></div>
+                <div *ngIf="item.has_phone" class="tdsi-call-fill text-body-2 leading-none text-white bg-base-green-400 p-0.5 rounded-md"></div>
+                <div *ngIf="item.has_address" class="tdsi-pin-fill text-body-2 leading-none text-white bg-base-orange-500 p-0.5 rounded-md"></div>
             </div>
-        </div>
-
-        <div class="flex gap-x-2 items-center truncate flex-none" *ngIf="item.assigned_to">
-            <img class="w-[20px] h-[20px] rounded-full" yuriAvatar
-                [src]="item.assigned_to.Avatar" [avatar]="item.assigned_to.Name" [width]="20">
-            <span class="text-body-2">{{item.assigned_to.Name}}</span>
         </div>
 
         <div class="flex justify-end gap-1 items-center" *ngIf="eventData && eventData[team.Facebook_PageId] && eventData[team.Facebook_PageId][psid]">

@@ -36,7 +36,6 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'td
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSUploadChangeParam } from 'tds-ui/upload';
-import { ProductPagefbComponent } from '../product-pagefb/product-pagefb.component';
 
 @Component({
   selector: 'shared-tds-conversations',
@@ -222,19 +221,19 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   onProductsbypageFb() {
-    const modal = this.modalService.create({
-      title: 'Danh sách sản phẩm',
-      content: ProductPagefbComponent,
-      viewContainerRef: this.viewContainerRef,
-      size: 'xl',
-      componentParams: {
-        pageId: this.team.Facebook_PageId,
-      }
-    });
+    // const modal = this.modalService.create({
+    //   title: 'Danh sách sản phẩm',
+    //   content: ProductPagefbComponent,
+    //   viewContainerRef: this.viewContainerRef,
+    //   size: 'xl',
+    //   componentParams: {
+    //     pageId: this.team.Facebook_PageId,
+    //   }
+    // });
 
-    modal.afterClose.subscribe((res: any) => {
-      this.onProductSelected(res);
-    })
+    // modal.afterClose.subscribe((res: any) => {
+    //   this.onProductSelected(res);
+    // })
   }
 
   onProductSelected(event: any) {
@@ -576,14 +575,18 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         this.uploadedImages = [];
         delete this.messageModel;
 
-        this.eventHandler.preventDefault();
-        this.eventHandler.stopImmediatePropagation();
+        if(this.eventHandler){
+          this.eventHandler.preventDefault();
+          this.eventHandler.stopImmediatePropagation();
+        }
         this.cdRef.detectChanges();
 
       }, error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
-        this.eventHandler.preventDefault();
-        this.eventHandler.stopImmediatePropagation();
+        if(this.eventHandler){
+          this.eventHandler.preventDefault();
+          this.eventHandler.stopImmediatePropagation();
+        }
         this.cdRef.detectChanges();
       });
   }
@@ -591,7 +594,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   messageResponse(res: any, model: SendMessageModelDTO) {
     if (TDSHelperArray.hasListValue(res)) {
       res.map((x: any, i: number) => {
-
         x["status"] = ActivityStatus.sending;
         this.activityDataFacade.messageServer(x);
 
@@ -615,8 +617,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     delete this.messageModel;
     this.uploadedImages = [];
 
-    this.eventHandler.preventDefault();
-    this.eventHandler.stopImmediatePropagation();
+    if(this.eventHandler){
+      this.eventHandler.preventDefault();
+      this.eventHandler.stopImmediatePropagation();
+    }
     this.cdRef.detectChanges();
 
     this.yiAutoScroll.forceScrollDown();
@@ -800,8 +804,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           this.cdRef.markForCheck();
         }
       }, error => {
-        let message = JSON.parse(error.Message);
-        this.message.error(`${message.message}`);
+        this.message.error(error.Message ? error.Message:'Upload xảy ra lỗi');
         this.cdRef.markForCheck();
       });
   }
@@ -854,6 +857,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.displayDropZone = false;
     evt.preventDefault();
     evt.stopImmediatePropagation();
+  }
+
+  getLastActivity() {
+    if(this.type && this.type == "message" && this.data && this.data.last_message) return this.data.last_message;
+    else if(this.type && this.type == "comment" && this.data && this.data.last_comment) return this.data.last_comment;
+    else if(this.data && this.data.last_activity) return this.data.last_activity || {};
+
+    return null;
   }
 
   trackByIndex(_: number, data: any): number {

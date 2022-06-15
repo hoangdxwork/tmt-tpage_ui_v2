@@ -80,7 +80,7 @@
               <tds-dropdown-menu #menuRevenue="tdsDropdownMenu">
                 <div class="w-full">
                     <div tds-dropdown-item>Doanh số đầu kỳ: {{objRevenue?.RevenueBegan || 0 | number: '1.0-3'}} đ</div>
-                    <div tds-dropdown-item>Doanh số: {{objRevenue?.Revenue || 0 | number: '1.0-3'}}đ</div>
+                    <div tds-dropdown-item>Doanh số: {{objRevenue?.Revenue || 0 | number: '1.0-3'}} đ</div>
                     <div tds-dropdown-item>Tổng doanh số: {{objRevenue?.RevenueTotal || 0 | number: '1.0-3'}} đ</div>
                 </div>
               </tds-dropdown-menu>
@@ -106,7 +106,7 @@
             </button>
           </div>
           <div class="pl-2 flex flex-col gap-3 overflow-auto overflow-y-auto tds-custom-scroll max-h-[200px]" *ngIf="noteData.items.length > 0">
-            <div class="border-l border-primary-1 border-solid pl-2 flex items-center justify-between" *ngFor="let item of noteData.items; let i=index">
+            <div class="border-l-3 border-primary-1 border-solid pl-2 flex items-center justify-between" *ngFor="let item of noteData.items; let i=index">
               <div>
                 <div class="text-neutral-1-400 text-body-2 font-regular font-sans">{{item.DateCreated | date:'HH:mm dd/MM/yyyy'}}</div>
                 <div class="flex gap-2 pt-1">
@@ -160,10 +160,10 @@
                   </div>
                 </div>
                 <div class="text-body-2 font-regular font-sans text-neutral-1-400">
-                  Tổng tiền: <span class="text-primary-1 font-semibold pl-0.5">{{ lastBill.AmountTotal | number:'1.0-3' }} đ ({{ lastBill.PaymentJournalName }})</span>
+                  Tổng tiền: <span class="text-neutral-1-900 font-semibold pl-0.5">{{ lastBill.AmountTotal | number:'1.0-3' }} đ ({{ lastBill.PaymentJournalName }})</span>
                 </div>
                 <div class="text-body-2 font-regular font-sans text-neutral-1-400">
-                  Thời gian giao hàng: <span class="text-neutral-1-900 font-semibold pl-0.5">{{ lastBill.DateCreated | date: "dd/MM/yyyy HH:mm" }}</span>
+                  Ngày tạo: <span class="text-neutral-1-900 font-semibold pl-0.5">{{ lastBill.DateCreated | date: "HH:mm, dd/MM/yyyy" }}</span>
                 </div>
                 <div class="text-body-2 font-regular font-sans text-neutral-1-400">
                   {{ lastBill.Phone }} - {{ lastBill.Address }} </div>
@@ -183,10 +183,8 @@
                   </div>
                 </div>
               </ng-template>
-
               <div class="w-full h-full">
                 <div class="w-full">
-
                   <tds-filter-status (selectChange)="onChangeBill($event)" [ngModel]='tabBillCurrent' [ngModelOptions]="{standalone: true}">
                     <tds-filter-status-item *ngFor="let bills of lstBill; let index = index"
                       [name]='bills.data[0].ShowState' [value]='index' [count]='bills.total'>
@@ -200,7 +198,6 @@
                       </ng-template>
                     </tds-filter-status-item>
                   </tds-filter-status>
-
                 </div>
                 <div class="pt-4 flex flex-col gap-2 w-full" *ngIf="lstBill">
                   <tds-collapse *ngFor="let bill of lstBill[tabBillCurrent]?.data; let index = index">
@@ -261,6 +258,11 @@
                           <tds-tag status='primary' type="outline" [status]="getColorStatusText(bill.ShowState)">
                             {{ bill.ShowState }}
                           </tds-tag>
+                        </div>
+
+                        <div class="flex flex-row items-center justify-end w-full col-span-4">
+                          <button tds-button color="primary" class="mr-2" (click)="editBill(bill)">Sửa</button>
+                          <button *ngIf="bill.State === 'open'" tds-button color="primary" (click)="showPaymentModal(bill)">Thanh toán</button>
                         </div>
                       </div>
                     </tds-collapse-panel>

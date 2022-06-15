@@ -1,4 +1,4 @@
-<div class="tdsi-message-template-line text-neutral-1-400 text-xl cursor-pointer"
+<div class="tdsi-message-template-line text-neutral-1-400 text-xl leading-none cursor-pointer"
 tds-popover [(popoverVisible)]="isVisibleReply"
 popoverTrigger="click"
 [popoverContent]="contentTemplate"></div>
@@ -29,5 +29,6 @@ popoverTrigger="click"
                 <div [innerHTML]="item.BodyPlain | replacePartner: partner | safeHtml"></div>
             </div>
         </div>
+        <div *ngIf="quickReplies.length == 0">Không có tên mẫu cần tìm</div>
     </div>
 </ng-template>
