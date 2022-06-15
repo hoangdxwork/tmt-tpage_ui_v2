@@ -59,7 +59,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   isLoading: boolean = false;
   isLoadingCarrier: boolean = false;
 
-  isEnableCreateOrder: boolean = false;
+  isEnableOrder: boolean = false;
   isEnableInsuranceFee: boolean = false;
 
   currentTeam!: CRMTeamDTO | null;
@@ -274,70 +274,69 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
     }
   }
 
-  onSave(print?: string) {
+  onSaveOrder(print: string) {
     this.isLoading = true;
     let orderModel = this.prepareOrderModel();
-
-    this.saleOnline_OrderService.insertFromMessage({model: orderModel})
-      .subscribe(res => {
+    console.log(orderModel)
+    this.saleOnline_OrderService.insertFromMessage({model: orderModel}).subscribe(
+      (res) => {
         this.orderForm.controls["Id"].setValue(res.Id);
         this.orderForm.controls["PartnerId"].setValue(res.PartnerId);
-
-        if (!this.isEnableCreateOrder) {
-          if(print == "print") {
-            this.orderPrintService.printOrder(res, null);
-          }
-
-          if(orderModel.Id && orderModel.Code) {
-            this.message.success(Message.Order.UpdateSuccess);
-          }
-          else {
-            this.message.success(Message.Order.InsertSuccess);
-          }
-
-          this.isLoading = false;
-          // this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
-          this.partnerService.onLoadPartnerFromTabOrder.emit(this.data);
-        }
-        else {
-          let billModel = this.prepareBillModel(); // Bản chất đã change this.saleModel
-          billModel.FormAction = print;
-
-          this.isLoading = false;
-
-          if(this.isCheckBillValue(billModel) === 1) {
-            if(this.checkShipServiceId(billModel) === 1) {
-              let isDraft = print == "draft" ?  true : false;
-
-              this.isLoading = true;
-              this.fastSaleOrderService.saveV2(billModel, isDraft)
-                .pipe(finalize(() => this.isLoading = false))
-                .subscribe(bill => {
-                  this.message.success(Message.Bill.InsertSuccess);
-                  // TODO: Cập nhật doanh thu, danh sách phiếu bán hàng gần nhất
-
-                  if (print == "print") {
-                    this.printerService.printUrl(`/fastsaleorder/print?ids=${bill.Data.Id}`);
-                  }
-
-                  if (print == "printShip") {
-                    let params = "";
-                    bill.Data.CarrierId && (params = `&carrierId=${bill.Data.CarrierId}`);
-                    this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${bill.Data.Id}${params}`);
-                  }
-
-                  this.partnerService.onLoadPartnerFromTabOrder.emit(this.data);
-                  // this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
-                }, error => {
-                  this.message.error(`${error?.error?.message}` || JSON.stringify(error));
-                });
-            }
-          }
+        this.message.success((orderModel.Id && orderModel.Code) ? Message.Order.UpdateSuccess : Message.Order.InsertSuccess);
+        this.isLoading = false;
+        // this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
+        this.partnerService.onLoadPartnerFromTabOrder.emit(this.data);
+        if(print === "print") {
+          this.orderPrintService.printOrder(res, null);
         }
       }, error => {
         this.isLoading = false;
         this.message.error(`${error?.error?.message}` || JSON.stringify(error));
       });
+  }
+
+  onSaveInvoice(print:string){
+    let billModel = this.prepareBillModel(); // Bản chất đã change this.saleModel
+    billModel.FormAction = print;
+
+    this.isLoading = false;
+    
+    if(this.isCheckBillValue(billModel) === 1) {
+      if(this.checkShipServiceId(billModel) === 1) {
+        this.isLoading = true;
+        let that = this;
+        this.fastSaleOrderService.saveV2(billModel, print === "draft").subscribe(
+          (bill) => {
+            bill.Success ? this.message.success(bill.Message || 'Lưu thành công') : this.message.error(bill.Message || 'Lưu thất bại');
+            // TODO: Cập nhật doanh thu, danh sách phiếu bán hàng gần nhất
+            this.partnerService.onLoadPartnerFromTabOrder.emit(this.data);
+            // this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
+            let obs: TDSSafeAny;
+            
+            switch(print){
+              case 'draft':
+              case 'open':
+                this.isLoading = false;
+                break;
+              case 'printOrder':
+                obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${bill.Data.Id}`);
+                break;
+              case 'printShip': 
+                let params = `&carrierId=${bill.Data.CarrierId ?? ''}`;
+                obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${bill.Data.Id}${params}`);
+            }
+            //TODO: in hóa đơn & in phiếu ship
+            if (TDSHelperObject.hasValue(obs)) {
+              obs.pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: TDSSafeAny) => {
+                that.printerService.printHtml(res);
+              })
+            }
+          }, 
+          error => {
+            this.message.error(`${error?.error?.message}` || JSON.stringify(error));
+          });
+      }
+    }
   }
 
   isCheckBillValue(model: TDSSafeAny): number {
@@ -400,7 +399,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
 
   prepareOrderModel(): SaleOnline_OrderDTO {
     let model = this.checkFormHandler.prepareOrder(this.orderForm);
-
+    
     if(!TDSHelperString.hasValueString(model.Facebook_ASUserId)) {
       model.Facebook_ASUserId = this.data?.psid;
     }

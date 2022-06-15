@@ -15,7 +15,7 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
   templateUrl: './history-delivery-status-detail.component.html'
 })
 export class HistoryDeliveryStatusDetailComponent implements OnInit {
-  @Input() HDSData!:HistoryDeliveryDTO;
+  @Input() historyDeliveryData!:HistoryDeliveryDTO;
 
   lstOfData:HistoryDeliveryStatusDetailDTO[] = [];
   public hiddenColumns = new Array<ColumnTableDTO>();
@@ -52,19 +52,23 @@ export class HistoryDeliveryStatusDetailComponent implements OnInit {
 
   loadData(){
     this.isLoading = true;
-    this.fastSaleOrderService.getHistoryDeliveryStatusById(this.HDSData?.Id || this.id).pipe(takeUntil(this.destroy$),finalize(()=>this.isLoading = false)).subscribe(
-      (res:TDSSafeAny)=>{
-        delete res["@odata.context"];
-        if(res.Date){
-          res.Date = new Date(res.Date);
+    if(this.historyDeliveryData?.Id || this.id){
+      this.fastSaleOrderService.getHistoryDeliveryStatusById(this.historyDeliveryData?.Id || this.id).pipe(takeUntil(this.destroy$),finalize(()=>this.isLoading = false)).subscribe(
+        (res:TDSSafeAny)=>{
+          delete res["@odata.context"];
+          if(res.Date){
+            res.Date = new Date(res.Date);
+          }
+          this.historyDeliveryData = res;
+          this.lstOfData = [...res.Details];
+        },
+        (err)=>{
+          this.message.error(err.error.message || 'Tải chi tiết đối soát thất bại');
         }
-        this.HDSData = res;
-        this.lstOfData = [...res.Details];
-      },
-      (err)=>{
-        this.message.error(err.error.message || 'Tải chi tiết đối soát thất bại');
-      }
-    )
+      )
+    }else{
+      this.message.error('Không tìm thấy Id đối soát');
+    }
   }
 
   loadGridConfig() {
