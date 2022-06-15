@@ -45,7 +45,7 @@
         </div>
         <div class="w-full flex flex-col gap-1" *ngIf="getLastActivity()">
             <div class="flex w-full justify-between items-center gap-x-1.5">
-                <div class="w-1/2 text-body-2 text-neutral-1-600 font-semibold truncate" [tooltipTitle]="item.name || item.partner_name" [tooltipPlacement]="['topLeft', 'leftTop']"
+                <div class="w-1/2 text-body-2 text-neutral-1-900 font-semibold truncate" [tooltipTitle]="item.name || item.partner_name" [tooltipPlacement]="['topLeft', 'leftTop']"
                     tds-tooltip>{{item.name || item.partner_name}}</div>
                 <div class="flex items-center gap-2 truncate" >
                     <span *ngIf="type == 'all' && item.count_unread_activities > 0">
@@ -79,7 +79,7 @@
                         <div [ngStyle]="{'background-color': [tag.color_class], 'color': [tag.color_class] }" class=" rounded-md py-0.5 px-3.5 opacity-30">
                             {{tag.name}}
                         </div>
-                        <span class="absolute inset-0 py-0.5 flex items-center justify-center gap-x-1">
+                        <span class="absolute inset-0 py-0.5 flex items-center justify-center gap-x-1" tds-tooltip [tooltipTitle]="tag.name">
                             <span [ngStyle]="{'background-color': [tag.color_class] }"
                              class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>
                              {{tag.name}}
@@ -105,16 +105,10 @@
                     </div>
                 </ng-template>
                 <div class="draft-message text-danger font-z10 tmr-t13" *ngIf="isDraftMessage">Chưa gửi</div>
-                <div *ngIf="item.has_order" class="tdsi-cart-fill text-md text-white bg-blue-500 p-0.5 rounded-md"></div>
-                <div *ngIf="item.has_phone" class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></div>
-                <div *ngIf="item.has_address" class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></div>
+                <div *ngIf="item.has_order" class="tdsi-cart-fill text-body-2 leading-none text-white bg-base-blue-500 p-0.5 rounded-md"></div>
+                <div *ngIf="item.has_phone" class="tdsi-call-fill text-body-2 leading-none text-white bg-base-green-400 p-0.5 rounded-md"></div>
+                <div *ngIf="item.has_address" class="tdsi-pin-fill text-body-2 leading-none text-white bg-base-orange-500 p-0.5 rounded-md"></div>
             </div>
-        </div>
-
-        <div class="flex gap-x-2 items-center truncate flex-none" *ngIf="item.assigned_to">
-            <img class="w-[20px] h-[20px] rounded-full" yuriAvatar
-                [src]="item.assigned_to.Avatar" [avatar]="item.assigned_to.Name" [width]="20">
-            <span class="text-body-2">{{item.assigned_to.Name}}</span>
         </div>
 
         <div class="flex justify-end gap-1 items-center" *ngIf="eventData && eventData[team.Facebook_PageId] && eventData[team.Facebook_PageId][psid]">

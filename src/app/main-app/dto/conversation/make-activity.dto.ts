@@ -200,6 +200,7 @@ export interface MakeActivityItemWebHook {
   has_phone: number;
   has_address: number;
   is_show_break: boolean;
+  errorShowAttachment: boolean;
 }
 
 export interface MakeActivityQueryObj {

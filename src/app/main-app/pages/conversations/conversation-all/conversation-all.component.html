@@ -8,8 +8,8 @@
             </div>
             <!-- <div class="tdsi-reload-fill text-3xl text-neutral-1-200"></div> -->
             <div class="flex items-center gap-x-1">
-              <tds-form-field class="w-full mr-1 bg-neutral-3-50">
-                <input aria-colspan="" class="placeholder-neutral-1-400 truncate" #innerText  placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput (keyup.enter)="onSearch($event)"/>
+              <tds-form-field class="w-full mr-1 !bg-neutral-3-50">
+                <input class="placeholder-neutral-1-400 truncate" #innerText  placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput (keyup.enter)="onSearch($event)"/>
                 <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
               </tds-form-field>
               <div class="flex gap-0.5">
@@ -20,10 +20,9 @@
                   [team]="currentTeam">
                 </conversation-all-filter>
 
-                <button (click)="setSort()" class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center"
-                [ngClass]="isSort?'bg-primary-3 text-primary-1':'bg-white text-neutral-1-500'">
-                  <span class="flex items-center text-neutral-1-500">
-                      <i class="tdsi-sort-up-down-fill text-xl leading-5"></i>
+                <button (click)="setSort()" class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center bg-primary-3">
+                  <span class="flex items-center text-primary-1">
+                      <i [ngClass]="isSort?'tdsi-sort-arrow-up-fill':'tdsi-sort-arrow-down-fill'" class="text-xl leading-5"></i>
                   </span>
                 </button>
                 <button class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center"
@@ -37,7 +36,7 @@
             </div>
           </div>
           <!-- Xử lý click button checkbox -->
-          <div [@openCollapse]="!isOpenCollapCheck" class="w-ful flex bg-white">
+          <div [@openCollapse]="!isOpenCollapCheck" [ngClass]="isOpenCollapCheck?'border-y-2 border-neutral-3-200':''" class="w-ful flex bg-white ">
             <div class="w-full flex justify-between items-center py-2 px-3.5">
               <div class="flex gap-x-2">
                 <button tds-button color="primary" (click)="showModalSendMessage()">
@@ -64,14 +63,14 @@
           <div class="overflow-hidden flex flex-auto" >
             <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstMatchingItem && lstMatchingItem.length > 0" >
 
-              <div class="overflow-y-auto tds-custom-scroll flex flex-col" id="myScroll" is-lock="true" observe-attributes
+              <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="myScroll" is-lock="true" observe-attributes
                   yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
 
                   <div *ngFor="let item of lstMatchingItem; let i= index; trackBy: trackByIndex">
                     <div *ngIf="item && item.psid && activeCvsItem && currentTeam" @eventFadeState>
 
-                      <a (click)="changeCurrentCvsItem(item)" type="button"
-                          class="w-full gap-0.5 {{isChanged ? 'cursor-wait' : 'cursor-pointer'}}">
+                      <a (click)="changeCurrentCvsItem(item)"
+                          class="w-full {{isChanged ? 'cursor-wait' : 'cursor-pointer'}}">
                           <current-conversation-item
                               [item]="item" [psid]="item.psid" [type]="type"
                               [activeCvsItem]="activeCvsItem"
