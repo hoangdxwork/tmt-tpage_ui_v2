@@ -775,8 +775,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           this.cdRef.markForCheck();
         }
       }, error => {
-        let message = JSON.parse(error.Message);
-        this.message.error(`${message.message}`);
+        this.message.error(error.Message ? error.Message:'Upload xảy ra lỗi');
         this.cdRef.markForCheck();
       });
   }

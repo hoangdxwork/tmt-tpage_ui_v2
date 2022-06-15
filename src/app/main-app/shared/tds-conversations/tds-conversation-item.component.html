@@ -16,8 +16,11 @@
 
           <!-- Tin nhắn hình ảnh -->
 		   <!-- 1 hình -->
-		  <div *ngIf="data.message?.attachments && data.message.attachments.data.length==1" class="flex flex-wrap w-[225px]">
-            <div *ngFor="let att of data.message.attachments.data" class="p-0.5">
+		  <div *ngIf="data.message?.attachments && data.message.attachments.data.length==1" class="flex flex-wrap max-w-[225px]">
+            <div *ngFor="let att of data.message.attachments.data" class="p-0.5 flex gap-x-2 justify-center items-center">
+				<a class="flex items-center" [ngClass]="reloadingImage?'cursor-wait':''" *ngIf="data.errorShowAttachment" tds-tooltip tooltipTitle="Ảnh đã hết hạn" (click)="refreshAttachment(att)">
+					<span class="tdsi-reload-fill text-primary-1 text-body-1 leading-none"></span>
+				</a>
 				<a *ngIf="att.image_data" (click)="open_gallery(att)">
 					<show-attachment class="w-full h-full" [type]="att.mime_type" [height]="'225px'" [url]="att.image_data?.url" (onError)="isErrorAttachment(att, data)">
 					</show-attachment>
@@ -29,9 +32,6 @@
 				<a *ngIf="att.file_url" container="body" (click)="open_gallery(att)">
 					<show-attachment [type]="att.mime_type" [url]="att.file_url" (onError)="isErrorAttachment(att, data)">
 					</show-attachment>
-				</a>
-				<a *ngIf="isErrorAttachment(att, data)" tds-tooltip tooltipTitle="Ảnh đã hết hạn"
-					(click)="refreshAttachment(att)">
 				</a>
             </div>
           </div>
@@ -52,9 +52,6 @@
 						<show-attachment [type]="att.mime_type" [url]="att.file_url" (onError)="isErrorAttachment(att, data)">
 						</show-attachment>
 					</a>
-					<!-- <a *ngIf="isErrorAttachment(att, data)" tds-tooltip tooltipTitle="Ảnh đã hết hạn" class="absolute inset-0 w-full h-full flex"
-						(click)="refreshAttachment(att)">
-					</a> -->
 				</div>
             </div>
           </div>
@@ -72,11 +69,11 @@
 
           <!-- Tin nhắn lỗi -->
           <div *ngIf="data.error_message || data.status == enumActivityStatus.fail" class="select-message flex items-center">
-              <a *ngIf="!checkErrorMessage(data.error_message)" tds-popover [popoverContent]="popoverBug">
-                  <span class="tdsi-info-line text-error-400 text-body-2 leading-none" ></span>
+              <a class="flex items-center cursor-pointer" *ngIf="!checkErrorMessage(data.error_message)" tds-popover [popoverContent]="popoverBug">
+                  <span class="tdsi-info-line text-error-400 text-body-1 leading-none" ></span>
               </a>
-              <a *ngIf="checkErrorMessage(data.error_message)" tds-tooltip tooltipTitle="Gửi lại" (click)="retryMessage()">
-                  <span class="tdsi-reload-fill text-primary-1 text-body-2 leading-none"></span>
+              <a class="flex items-center cursor-pointer" *ngIf="checkErrorMessage(data.error_message)" tds-tooltip tooltipTitle="Gửi lại" (click)="retryMessage()">
+                  <span class="tdsi-reload-fill text-primary-1 text-body-1 leading-none"></span>
               </a>
 			  <ng-template #popoverBug>
 				<div class="max-w-[336px]">{{data.error_message}}</div>
@@ -87,17 +84,17 @@
           <div *ngIf="!data.message?.attachments" class="select-icon">
             <div class="select-order flex flex-row items-center w-fit h-full px-3">
 				<span tds-tooltip tooltipTitle="Chọn làm số điện thoại"
-					class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+					class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 					(click)="selectOrder('phone')">
 					<i class="tdsi-call-fill text-md text-white"></i>
 				</span>
 				<span tds-tooltip tooltipTitle="Chọn làm địa chỉ"
-					class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+					class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 					(click)="selectOrder('address')">
 					<i class="tdsi-pin-fill text-md text-white"></i>
 				</span>
 				<span tds-tooltip tooltipTitle="Thêm vào ghi chú"
-					class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
+					class="h-5 w-5 bg-base-blue-500 flex items-center justify-center rounded-md cursor-pointer"
 					(click)="selectOrder('note')">
 					<i class="tdsi-note-2-fill text-md text-white"></i>
 				</span>
@@ -165,17 +162,17 @@
 					<div *ngIf="!data.message?.attachments" class="chat-option invisible group-hover:visible">
 						<div class="select-order flex flex-row items-center w-fit h-full pl-3">
 							<span tds-tooltip tooltipTitle="Chọn làm số điện thoại"
-								class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+								class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 								(click)="selectOrder('phone')">
 								<i class="tdsi-call-fill text-md text-white"></i>
 							</span>
 							<span tds-tooltip tooltipTitle="Chọn làm địa chỉ"
-								class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+								class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 								(click)="selectOrder('address')">
 								<i class="tdsi-pin-fill text-md text-white"></i>
 							</span>
 							<span tds-tooltip tooltipTitle="Thêm vào ghi chú"
-								class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
+								class="h-5 w-5 bg-base-blue-500 flex items-center justify-center rounded-md cursor-pointer"
 								(click)="selectOrder('note')">
 								<i class="tdsi-note-2-fill text-md text-white"></i>
 							</span>
@@ -189,9 +186,9 @@
 						<button class="link-act hover:underline" [disabled]="isReplyingComment"
 					  		(click)="clickReply(data.comment ? data.comment.can_remove : null)"> Phản hồi
 						</button>
-            <span *ngIf="isReplyingComment" class="ml-1">
-                <tds-spinner [color]="'primary'" class="w-2 h-2"></tds-spinner>
-            </span>
+						<span *ngIf="isReplyingComment" class="ml-1">
+							<tds-spinner [color]="'primary'" class="w-2 h-2"></tds-spinner>
+						</span>
 						<div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 
 						<button class="link-act hover:underline" [disabled]="isLiking" [ngClass]="data.comment.user_likes ? 'text-secondary-1' : ''"
@@ -227,9 +224,9 @@
 					</div>
 					<div class="flex flex-row w-full">
 						<textarea id="inputReply" #contentReply tdsInput placeholder="Nhập nội dung trả lời"
-                [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
-                class="w-full resize-none !p-0 !m-0 no-scrollbar">
-            </textarea>
+						[(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
+						class="w-full resize-none !p-0 !m-0 no-scrollbar">
+					</textarea>
 						<button tds-button type="button" color="primary" class="!rounded-full" [size]="'lg'" (click)="onEnter($event)">
 						<span class="flex items-center px-5">
 							<i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
@@ -239,26 +236,26 @@
 					<!-- Check Private Reply -->
 					<div class="quick-message gap-5">
 						<div class="check gap-5 flex justify-between">
-							<tds-checkbox [checked]="isPrivateReply" (change)="changeIsPrivateReply()">
-								Gửi về tin nhắn
-							</tds-checkbox>
-							<div class="icon-send flex flex-row mr-2">
-								<span class="sub text-neutral-1-400 cursor-pointer mr-2" container="body" placement="auto" tds-popover
-									popoverTrigger="click" [popoverContent]="infoEmojiMart" [popoverAutoClose]="true"
-									[popoverBackdrop]="true" popoverPlacement="top">
-									<i class="tdsi-emotion-line text-xl"></i>
+							<div class="icon-send flex flex-row mr-2 gap-x-2 items-center">
+								<a class="tdsi-emotion-line text-neutral-1-400 text-xl leading-none cursor-pointer p-2 hover:bg-neutral-3-50 rounded-md" 
+									type="button" tds-tooltip tooltipTitle="Cảm xúc"
+									tds-popover popoverTrigger="click"
+									[popoverContent]="infoEmojiMart"
+									[popoverAutoClose]="true"
+									[popoverBackdrop]="true"
+									popoverPlacement="top">
 									<ng-template #infoEmojiMart>
 										<div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
 									</ng-template>
-								</span>
-
-								<span class="sub text-neutral-1-400 cursor-pointer mr-2" *ngIf="isPrivateReply"
-									(onProductSelected)="onProductSelected($event)" title="Sản phẩm"
-									product-show-button>
-									<i class="tdsi-product-line text-xl"></i>
-								</span>
-								<quick-reply-button  (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
+								</a>
+								<div class="text-neutral-1-400 cursor-pointer p-2 rounded-md tdsi-product-line text-xl leading-none hover:bg-neutral-3-50" *ngIf="isPrivateReply"
+									(onProductSelected)="onProductSelected($event)" tds-tooltip tooltipTitle="Sản phẩm">
+								</div>
+								<quick-reply-button class="p-2 rounded-md hover:bg-neutral-3-50" tds-tooltip tooltipTitle="Tin nhắn nhanh" (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
 							</div>
+							<tds-checkbox [checked]="isPrivateReply" (change)="changeIsPrivateReply()">
+								Gửi về tin nhắn
+							</tds-checkbox>
 						</div>
 					</div>
 				</div>
@@ -290,17 +287,17 @@
 									class="chat-option invisible group-hover:visible">
 									<div class="select-order flex flex-row items-center w-fit h-full pl-3">
 										<span tds-tooltip tooltipTitle="Chọn làm số điện thoại"
-											class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+											class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 											(click)="selectOrder('phone')">
 											<i class="tdsi-call-fill text-md text-white"></i>
 										</span>
 										<span tds-tooltip tooltipTitle="Chọn làm địa chỉ"
-											class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+											class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 											(click)="selectOrder('address')">
 											<i class="tdsi-pin-fill text-md text-white"></i>
 										</span>
 										<span tds-tooltip tooltipTitle="Thêm vào ghi chú"
-											class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
+											class="h-5 w-5 bg-base-blue-500 flex items-center justify-center rounded-md cursor-pointer"
 											(click)="selectOrder('note')">
 											<i class="tdsi-note-2-fill text-md text-white"></i>
 										</span>
@@ -328,7 +325,7 @@
 		<div class="w-full flex flex-row">
 			<!-- Avatar Facebook_PageId -->
 			<div class="mr-2">
-				<tpage-avatar-facebook [shape]="'circle'" [size]="'lg'"
+				<tpage-avatar-facebook [shape]="'circle'" [size]="36"
 					[psid]="!data.is_admin ? data.from_id : team.Facebook_PageId" [token]="team?.Facebook_PageToken">
 				</tpage-avatar-facebook>
 			</div>
@@ -363,17 +360,17 @@
 					<div *ngIf="!data.message?.attachments" class="chat-option invisible group-hover:visible">
 						<div class="select-order flex flex-row items-center w-fit h-full pl-3">
 							<span tds-tooltip tooltipTitle="Chọn làm số điện thoại"
-								class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+								class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 								(click)="selectOrder('phone')">
 								<i class="tdsi-call-fill text-md text-white"></i>
 							</span>
 							<span tds-tooltip tooltipTitle="Chọn làm địa chỉ"
-								class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+								class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 								(click)="selectOrder('address')">
 								<i class="tdsi-pin-fill text-md text-white"></i>
 							</span>
 							<span tds-tooltip tooltipTitle="Thêm vào ghi chú"
-								class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
+								class="h-5 w-5 bg-base-blue-500 flex items-center justify-center rounded-md cursor-pointer"
 								(click)="selectOrder('note')">
 								<i class="tdsi-note-2-fill text-md text-white"></i>
 							</span>
@@ -410,32 +407,28 @@
 						</div>
 					</div>
 					<!-- Check Private Reply -->
-					<div class="quick-message  gap-5">
+					<div class="quick-message gap-5">
 						<div class="check gap-5 flex justify-between">
-							<tds-checkbox [checked]="isPrivateReply" (change)="changeIsPrivateReply()">
-								Gửi về tin nhắn
-							</tds-checkbox>
-							<div class="icon-send flex flex-row mr-2">
-								<span class="sub cursor-pointer mr-2" container="body" placement="auto" tds-popover
-									popoverTrigger="click" [popoverContent]="infoEmojiMart" [popoverAutoClose]="true"
-									[popoverBackdrop]="true" popoverPlacement="top">
-									<i class="tdsi-emotion-line text-xl"></i>
+							<div class="icon-send flex flex-row mr-2 gap-x-2 items-center">
+								<a class="tdsi-emotion-line text-neutral-1-400 text-xl leading-none cursor-pointer p-2 hover:bg-neutral-3-50 rounded-md" 
+									type="button" tds-tooltip tooltipTitle="Cảm xúc"
+									tds-popover popoverTrigger="click"
+									[popoverContent]="infoEmojiMart"
+									[popoverAutoClose]="true"
+									[popoverBackdrop]="true"
+									popoverPlacement="top">
 									<ng-template #infoEmojiMart>
 										<div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
 									</ng-template>
-								</span>
-
-								<span class="sub cursor-pointer mr-2" *ngIf="isPrivateReply"
-									(onProductSelected)="onProductSelected($event)" title="Sản phẩm"
-									product-show-button>
-									<i class="tdsi-product-line text-xl"></i>
-								</span>
-
-								<span class="sub cursor-pointer" (onQuickReplySelected)="onQuickReplySelected($event)"
-									title="Tin nhắn nhanh" placement="left" quick-reply-button>
-									<i class="tdsi-message-template-line text-xl"></i>
-								</span>
+								</a>
+								<div class="text-neutral-1-400 cursor-pointer p-2 rounded-md tdsi-product-line text-xl leading-none hover:bg-neutral-3-50" *ngIf="isPrivateReply"
+									(onProductSelected)="onProductSelected($event)" tds-tooltip tooltipTitle="Sản phẩm">
+								</div>
+								<quick-reply-button class="p-2 rounded-md hover:bg-neutral-3-50" tds-tooltip tooltipTitle="Tin nhắn nhanh" (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
 							</div>
+							<tds-checkbox [checked]="isPrivateReply" (change)="changeIsPrivateReply()">
+								Gửi về tin nhắn
+							</tds-checkbox>
 						</div>
 					</div>
 				</div>
@@ -467,17 +460,17 @@
 									class="chat-option invisible group-hover:visible">
 									<div class="select-order flex flex-row items-center w-fit h-full pl-3">
 										<span tds-tooltip tooltipTitle="Chọn làm số điện thoại"
-											class="h-5 w-5 bg-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+											class="h-5 w-5 bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 											(click)="selectOrder('phone')">
 											<i class="tdsi-call-fill text-md text-white"></i>
 										</span>
 										<span tds-tooltip tooltipTitle="Chọn làm địa chỉ"
-											class="h-5 w-5 bg-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
+											class="h-5 w-5 bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer mr-1.5"
 											(click)="selectOrder('address')">
 											<i class="tdsi-pin-fill text-md text-white"></i>
 										</span>
 										<span tds-tooltip tooltipTitle="Thêm vào ghi chú"
-											class="h-5 w-5 bg-blue-500 flex items-center justify-center rounded-md cursor-pointer"
+											class="h-5 w-5 bg-base-blue-500 flex items-center justify-center rounded-md cursor-pointer"
 											(click)="selectOrder('note')">
 											<i class="tdsi-note-2-fill text-md text-white"></i>
 										</span>
