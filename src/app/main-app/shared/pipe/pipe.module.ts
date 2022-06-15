@@ -1,3 +1,4 @@
+import { ButtonStatusColorPipe } from './button-status-color.pipe';
 import { ReplacePartnerPipe } from './replace-partner.pipe';
 
 import { NgModule } from '@angular/core';
@@ -29,7 +30,8 @@ const cmp =[
   YiDateTimeFormatPipe,
   ScrollConversationPipe,
   ReplacePartnerPipe,
-  OrderByPipe
+  OrderByPipe,
+  ButtonStatusColorPipe
 ]
 
 @NgModule({

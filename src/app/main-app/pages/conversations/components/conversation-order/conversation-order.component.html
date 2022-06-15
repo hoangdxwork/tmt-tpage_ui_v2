@@ -1,7 +1,7 @@
 <tds-spin [spinning]="isLoading">
-  <form [formGroup]="orderForm">
+  <form [formGroup]="_form">
     <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-y-auto tds-custom-scroll">
-      <div class="pt-1">
+      <!-- <div class="pt-1">
         <tds-collapse [expandIconPosition]="'right'" class="bg-neutral-3-50 collapse-content-bg-white">
           <tds-collapse-panel [header]="hearerInfoPartner" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
             <ng-template #hearerInfoPartner>
@@ -20,7 +20,7 @@
                     <span class="flex items-center text-neutral-1-900">
                       <tds-avatar [shape]="'square'" [size]="'sm'"
                         tdsSrc="../../../assets/imagesv2/conversation/fb.svg">
-                      </tds-avatar> Facebook: {{orderForm?.value?.Facebook_UserName}}
+                      </tds-avatar> Facebook: {{_form?.value?.Facebook_UserName}}
                     </span>
                   </tds-tag>
                 </span>
@@ -42,10 +42,10 @@
 
               <div class="flex items-center gap-2">
                 <tpage-conversation-address class="w-full"
-                  [streetText]="orderForm.value['Street']"
-                  [cityCode]="orderForm.value['City']?.Code"
-                  [districtCode]="orderForm.value['District']?.Code"
-                  [wardCode]="orderForm.value['Ward']?.Code"
+                  [streetText]="_form.value['Street']"
+                  [cityCode]="_form.value['City']?.Code"
+                  [districtCode]="_form.value['District']?.Code"
+                  [wardCode]="_form.value['Ward']?.Code"
                   (onChangeAddress)="onChangeAddress($event)">
                 </tpage-conversation-address>
               </div>
@@ -63,6 +63,94 @@
             </div>
           </tds-collapse-panel>
         </tds-collapse>
+      </div> -->
+
+      <!-- Thông tin khách hàng -->
+      <div class="pt-1">
+        <tds-collapse [expandIconPosition]="'right'" class="bg-neutral-3-50 collapse-content-bg-white">
+          <tds-collapse-panel [header]="hearerInfoPartner" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
+            <ng-template #hearerInfoPartner>
+              <div class="flex items-center">
+                <!-- <tds-avatar class="bg-primary-1 text-white" icon="tdsi-user-fill"></tds-avatar> -->
+                <div class="ml-2 text-title-1 font-semibold text-neutral-1-900 font-sans">Thông tin khách hàng</div>
+              </div>
+            </ng-template>
+            <div class="flex flex-col gap-3">
+              <div class="flex gap-2 items-center">
+                <div
+                  class="tdsi-user-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]">
+                </div>
+                <div class="flex flex-auto items-center justify-between">
+                    <div class="flex gap-4">
+                      <span class="text-neutral-1-900 text-body-2 font-regular font-sans">
+                        {{_form.controls['PartnerName'].value || ''}}
+                      </span>
+                      <span class="text-neutral-1-400">
+                        FB: {{_form?.value?.Facebook_UserName}}
+                      </span>
+                    </div>
+
+                    <button type="button" tds-button color="secondary" (click)="onEditPartner()">
+                      <span class="flex items-center">
+                        <i class="tdsi-edit-fill text-xl leading-none text-neutral-1-400"></i>
+                      </span>
+                    </button>
+                </div>
+              </div>
+              <div class="flex gap-2 items-center">
+                <div
+                  class="tdsi-call-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]">
+                </div>
+                <span class="text-neutral-1-900 text-body-2 font-regular font-sans">
+                  {{_form.controls['Telephone'].value || 'Không có số điện thoại'}}
+                </span>
+              </div>
+              <div class="flex gap-2 items-center">
+                <div
+                  class="tdsi-email-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]">
+                </div>
+                <span class="text-neutral-1-900 text-body-2 font-regular font-sans">
+                  {{_form.controls['Email'].value || 'Chưa có Email'}}
+                </span>
+              </div>
+              <div class="flex gap-2 items-center">
+                <div
+                  class="tdsi-pin-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]">
+                </div>
+                <span class="text-neutral-1-900 text-body-2 font-regular font-sans">
+                  {{_form.controls['Street'].value || 'Chưa có địa chỉ'}}
+                </span>
+              </div>
+            </div>
+            <div class="w-full pt-6 flex items-center">
+              <textarea tdsInput placeholder="Nhập ghi chú" formControlName="Note" 
+                class="resize-none no-scrollbar w-3/4 mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400"></textarea>
+
+              <button tds-button-flat-icon color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'" [tdsDropdownMenu]="menuUser" 
+                class="w-1/4 !h-full flex items-center mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50">
+                <div class="flex flex-col flex-auto items-start">
+                  <label class="text-neutral-1-400 font-regular text-body-2">Nhân viên</label>
+                  <span class="text-info-500 font-semibold text-body-2 max-w-[80px] truncate">
+                    {{_form.controls['User'].value?.Name}}
+                  </span>
+                </div>
+                <i class="tdsi-arrow-down-line w-1/5"></i>
+                
+                <!-- <tds-select valueField="Id" textField="Name" placeholder='Nhân viên'
+                  disabledField="isActive" formControlName="User" [required]='true'
+                  [data]="lstUser" [allowClear]="true">
+                </tds-select> -->
+              </button>
+              <tds-dropdown-menu #menuUser="tdsDropdownMenu">
+                <div class="w-72 max-h-80 overflow-hidden overflow-y-auto tds-custom-scroll py-2 gap-y-2 flex flex-col">
+                  <div *ngFor="let user of lstUser" class="py-2 px-3 rounded-full cursor-pointer hover:bg-neutral-3-50 flex justify-between items-center">
+                    <div (click)="changeUser(user)" tds-dropdown-item>{{user.Name}}</div>
+                  </div>
+                </div>
+              </tds-dropdown-menu>
+            </div>
+          </tds-collapse-panel>
+        </tds-collapse>
       </div>
 
       <!-- Detail Product -->
@@ -71,11 +159,11 @@
           <tds-collapse-panel [header]="headerProduct" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
             <ng-template #headerProduct>
               <div class="flex items-center gap-2">
-                <tds-avatar class="bg-primary-1 text-white" icon="tdsi-product-fill"></tds-avatar>
-                <div class="text-title-1 font-semibold text-neutral-1-900 font-sans">Sản phẩm</div>
+                <!-- <tds-avatar class="bg-primary-1 text-white" icon="tdsi-product-fill"></tds-avatar> -->
+                <div class="text-header-2 font-semibold text-neutral-1-900 font-sans">Sản phẩm</div>
                 <div>
                   <tds-badge [standalone]="true" [count]="detailsFormGroups ? detailsFormGroups.length : 0"
-                  [tdsClass]="'bg-neutral-1-400 text-white'"></tds-badge>
+                  [tdsClass]="'bg-success-400 text-white'"></tds-badge>
                 </div>
               </div>
             </ng-template>
@@ -83,20 +171,26 @@
             <div class="flex flex-col gap-4 w-full h-full">
               <div class="flex gap-1.5">
                 <tds-form-field class="w-full">
-                  <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Nhập tên sản phẩm" tdsInput/>
+                  <input class="placeholder-neutral-1-400" placeholder="Nhập tên sản phẩm" tdsInput/>
                   <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
-                  <span tdsSuffix class="cursor-pointer" title="Chọn sản phẩm" (click)="showModalListProduct()"><i class="tdsi-product-fill"></i></span>
+                  <span tdsSuffix class="cursor-pointer" title="Chọn sản phẩm" (click)="showModalListProduct()"><i class="tdsi-product-line"></i></span>
                 </tds-form-field>
 
-                <button tds-button-icon type="button" color="secondary" class="cursor-pointer" title="Thêm sản phẩm" (click)="showModalAddProduct()">
+                <button tds-button-flat-icon type="button" color="secondary" class="cursor-pointer" title="Thêm sản phẩm" (click)="showModalAddProduct()">
                   <span class="flex items-center">
                     <i class="tdsi-add-fill text-primary-1"></i>
                   </span>
                 </button>
 
-                <button tds-button-icon type="button" color="secondary" class="cursor-pointer" title="Cấu hình sản phẩm" (click)="showModalConfigProduct()">
+                <button tds-button-flat-icon type="button" color="secondary" class="cursor-pointer" title="Thêm Khuyến mãi" (click)="showModalAddProduct()">
                   <span class="flex items-center">
-                    <i class="tdsi-gear-2-fill text-neutral-1-400"></i>
+                    <i class="tdsi-gift-fill text-primary-1"></i>
+                  </span>
+                </button>
+
+                <button tds-button-flat-icon type="button" color="secondary" class="cursor-pointer" title="Cấu hình sản phẩm" (click)="showModalConfigProduct()">
+                  <span class="flex items-center">
+                    <i class="tdsi-adjustments-fill text-neutral-1-400"></i>
                   </span>
                 </button>
               </div>
@@ -221,19 +315,19 @@
                 <div class="grid grid-cols-2 gap-x-6 gap-y-4 w-full">
                   <div class="grid grid-cols-3 items-end">
                     <label>Tổng</label>
-                    <span class="w-full col-span-2">{{ orderForm?.value?.TotalAmount | number:'1.0-3' }}</span>
+                    <span class="w-full col-span-2">{{ _form?.value?.TotalAmount | number:'1.0-3' }}</span>
                   </div>
 
                   <div *ngIf="isEnableOrder" class="grid grid-cols-3 items-end">
                     <label class="font-semibold">Tổng tiền</label>
-                    <span class="w-full col-span-2 text-header-1 font-semibold">{{ orderForm?.value?.TotalAmountBill | number:'1.0-3' }}</span>
+                    <span class="w-full col-span-2 text-header-1 font-semibold">{{ _form?.value?.TotalAmountBill | number:'1.0-3' }}</span>
                   </div>
 
                   <div *ngIf="isEnableOrder" class="grid grid-cols-3 items-center">
                     <label>Giảm giá</label>
                     <tds-form-field class="w-full col-span-2">
                       <tds-input-number autocomplete="off" placeholder="0" [ngModelOptions]="{standalone: true}"
-                      [ngModel]="orderForm.value?.DecreaseAmount + orderForm.value?.DiscountAmount | number" ></tds-input-number>
+                      [ngModel]="_form.value?.DecreaseAmount + _form.value?.DiscountAmount | number" ></tds-input-number>
                       <span tdsSuffix>
                         <span class="tdsi-discount-fill text-primary-1 text-xl" tds-popover popoverTrigger="click"
                           [popoverContent]="tmpDiscount" [popoverAutoClose]="true" [popoverBackdrop]="true">
@@ -253,7 +347,7 @@
                                 </span>
                               </tds-form-field>
                               <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
-                                <span> -{{ orderForm.value?.DiscountAmount || 0 | number: '1.0-3' }} </span>
+                                <span> -{{ _form.value?.DiscountAmount || 0 | number: '1.0-3' }} </span>
                               </div>
                             </div>
 
@@ -265,7 +359,7 @@
                                 (ngModelChange)="updateTotalAmount()"></tds-input-number>
                               </tds-form-field>
                               <div class="w-[30%] flex justify-end text-primary-1 font-semibold">
-                                <span> -{{ orderForm.value?.DecreaseAmount || 0 | number: '1.0-3' }} </span>
+                                <span> -{{ _form.value?.DecreaseAmount || 0 | number: '1.0-3' }} </span>
                               </div>
                             </div>
 
@@ -328,8 +422,8 @@
                 <tds-collapse-panel [header]="headerCarrier" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
                   <ng-template #headerCarrier>
                     <div class="flex items-center gap-2">
-                      <tds-avatar class="bg-primary-1 text-white" icon="tdsi-truck-fill"></tds-avatar>
-                      <div class="text-title-1 font-semibold text-neutral-1-900 font-sans">Giao hàng</div>
+                      <!-- <tds-avatar class="bg-primary-1 text-white" icon="tdsi-truck-fill"></tds-avatar> -->
+                      <div class="text-header-2 font-semibold text-neutral-1-900 font-sans">Giao hàng</div>
                     </div>
                   </ng-template>
 
