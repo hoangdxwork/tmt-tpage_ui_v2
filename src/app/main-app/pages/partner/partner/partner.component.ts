@@ -26,6 +26,11 @@ import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { TDSConfigService } from 'tds-ui/core/config';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
+import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
+import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
+import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
+import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
+import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 
 @Component({
   selector: 'app-partner',
@@ -56,6 +61,13 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   public modelTags: Array<TagsPartnerDTO> = [];
   public lstDataTag: Array<TagsPartnerDTO> = [];
   public lstBirtdays: Array<PartnerBirthdayDTO> = [];
+
+  currentConversation!: ConversationMatchingItem;
+  psid: any;
+  team!: CRMTeamDTO;
+  public mappingTeams: any[] = [];
+  public currentMappingTeam: any;
+  isOpenDrawer: boolean = false;
 
   selected = 0;
   isLoadingTable = false
@@ -97,13 +109,13 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     private message: TDSMessageService,
     private tagService: TagService,
     private modal: TDSModalService,
+    private crmTeamService: CRMTeamService,
+    private crmMatchingService: CRMMatchingService,
     private excelExportService: ExcelExportService,
     private partnerService: PartnerService,
     private viewContainerRef: ViewContainerRef,
     private resizeObserver: TDSResizeObserver,
-    private configService: TDSConfigService,
-  ) {
-
+    private configService: TDSConfigService) {
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -135,7 +147,9 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loadGridConfig();
     this.loadPartnerStatusReport();
     this.loadBirtdays();
-    this.configService.set('message',{pauseOnHover: true})
+    this.configService.set('message',{pauseOnHover: true});
+
+    this.team = this.crmTeamService.getCurrentTeam() as any;
   }
 
   loadGridConfig() {
@@ -545,13 +559,86 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // Drawer tin nhắn facebook
-  openDrawerMessage() {
+  openDrawerMessage(data: any) {
     this.isOpenMessageFacebook = true;
   }
 
   closeDrawerMessage(ev: boolean) {
     this.isOpenMessageFacebook = false;
   }
+
+  openMiniChat(data: PartnerDTO) {
+    let partnerId = data.Id;
+    this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe((res: any): any => {
+
+      let pageIds: any = [];
+      res.map((x: any) => {
+          pageIds.push(x.page_id);
+      });
+
+      if(pageIds.length == 0) {
+        return this.message.error('Không có kênh kết nối với khách hàng này.');
+      }
+
+      this.crmTeamService.getActiveByPageIds$(pageIds)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((teams: any): any => {
+
+          if (teams.length == 0) {
+            return this.message.error('Không có kênh kết nối với khách hàng này.');
+          }
+
+          this.mappingTeams.length = 0;
+          var pageDic = {} as any;
+
+          teams.map((x: any) => {
+            var exist = res.filter((r: any) => r.page_id == x.Facebook_PageId)[0];
+            if (exist && !pageDic[exist.Facebook_PageId]) {
+              pageDic[exist.Facebook_PageId] = true; // Cờ này để không thêm trùng page vào
+              this.mappingTeams.push({
+                psid: exist.psid,
+                team: x
+              });
+            }
+          });
+
+          if (this.mappingTeams.length > 0) {
+            this.currentMappingTeam = this.mappingTeams[0];
+            this.loadMDBByPSId(this.currentMappingTeam.team.Facebook_PageId, this.currentMappingTeam.psid);
+          }
+      });
+    }, error => {
+      this.message.error('Đã xả ra lỗi!');
+    })
+  }
+
+  loadMDBByPSId(pageId: string, psid: string) {
+    // Xoá hội thoại hiện tại
+    (this.currentConversation as any) = null;
+
+    // get data currentConversation
+    this.crmMatchingService.getMDBByPSId(pageId, psid)
+      .subscribe((res: MDBByPSIdDTO) => {
+        if (res) {
+          //tags
+          res["keyTags"] = {};
+
+          if(res.tags && res.tags.length > 0) {
+            res.tags.map((x: any) => {
+              res["keyTags"][x.id] = true;
+            });
+          }
+          else {
+            res.tags = [];
+          }
+
+          this.currentConversation = { ...res, ...this.currentConversation};
+          this.psid = res.psid;
+          this.isOpenDrawer = true;
+        }
+      });
+  }
+
 
   ngOnDestroy(): void {
     this.destroy$.next();

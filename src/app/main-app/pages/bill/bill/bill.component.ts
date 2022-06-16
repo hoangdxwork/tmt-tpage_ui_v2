@@ -189,7 +189,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isLoading = true;
     return this.odataFastSaleOrderService
         .getView(params, this.filterObj).pipe(takeUntil(this.destroy$))
-        .pipe(finalize(() => {this.isLoading = false }));
+        .pipe(finalize(() => { this.isLoading = false }));
   }
 
   loadSummaryStatus(){
@@ -331,15 +331,14 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       this.fastSaleOrderService.updateShipStatus(model).pipe(takeUntil(this.destroy$)).subscribe(
         (res)=>{
           this.message.success('Cập nhật thành công');
-          this.loadData(this.pageSize,this.pageIndex);
           this.indClickStatus = -1;
         },
         err=>{
-          this.message.error('Cập nhật thất bại');
+          this.message.error( err.error.message ?? 'Cập nhật thất bại');
           this.indClickStatus = -1;
         }
       )
-    }else{
+    } else{
       this.message.error('Vui lòng chọn đối soát giao hàng');
     }
   }

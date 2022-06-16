@@ -105,7 +105,6 @@ export class THelperDataRequest {
         else if(value instanceof Date) {
           let date =format(value, "yyyy-MM-dd'T'HH:mm:ss'Z'");
           str=`${filter.field}%20${filter.operator}%20${date}`
-
         }
         else {
             //field~gte~10

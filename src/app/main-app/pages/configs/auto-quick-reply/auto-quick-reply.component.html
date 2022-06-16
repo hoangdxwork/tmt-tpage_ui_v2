@@ -31,17 +31,20 @@
                 [total]="count"
                 (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
                 <thead>
-                      <tr class="text-neutral-1-900 text-body-2 font-semibold">
-                            <th width="30%">Tên mẫu</th>
-                            <th width="30%">Nội dung</th>
-                            <th width="13%">Phím tắt</th>
-                            <th width="12%">Trạng thái</th>
-                            <th class="text-center" width="15%">Thao tác</th>
-                      </tr>
+                    <tr class="text-neutral-1-900 text-body-2 font-semibold">
+                        <th width="4%">STT</th>
+                        <th width="22%">Tên mẫu</th>
+                        <th width="22%">Nội dung</th>
+                        <th width="13%">Phím tắt</th>
+                        <th width="12%">Trạng thái</th>
+                        <th width="12%">Ngày tạo</th>
+                        <th class="text-center" width="15%">Thao tác</th>
+                    </tr>
                 </thead>
                 <tbody>
                     <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
                         <tr class="text-neutral-1-900 text-body-2 font-regular group">
+                          <td>{{i + 1}}</td>
                             <td>
                                 <div class="flex flex-col gap-y-2">
                                     {{ data.Subject }}
@@ -65,6 +68,9 @@
                             <td></td>
                             <td>
                                 <tds-switch [(ngModel)]="data.Active" (ngModelChange)="onChangeStatus(data.Id)"></tds-switch>
+                            </td>
+                            <td >
+                                {{ data.DateCreated | date:'dd/MM/yyyy HH:mm' }}
                             </td>
                             <td class="text-center">
                                 <button tds-button-icon color="secondary" size="sm" class="mr-2"

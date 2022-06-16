@@ -149,4 +149,12 @@ export class CRMMatchingService extends BaseSevice {
     this.allItems = ArrayHelper.makeUniqueArray(this.allItems, res.Items, "Id");
   }
 
+  getMDBByPSId(pageId: TDSSafeAny, psid: string) {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/rest/v1.0/crmmatching/${pageId}_${psid}`,
+      method: TApiMethodType.get,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
 }

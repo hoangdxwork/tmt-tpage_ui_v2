@@ -466,7 +466,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .subscribe((res: any) => {
         this.messageResponse(res, model);
       }, error => {
-        this.message.error("Like thất bại");
+        this.message.error(`${error.error.message}`? `${error.error.message}` : "Like thất bại");
       });
   }
 

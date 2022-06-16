@@ -378,7 +378,6 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
       return
     }
 
-
     if (this.valueEditId) {
       this.isLoading = true;
       this.quickReplyService.update(this.valueEditId, model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
@@ -387,7 +386,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
         this.modal.destroy(true);
       }, error => {
         this.isLoading = false;
-        this.message.error('Cập nhật trả lời nhanh thất bại!');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` :'Cập nhật trả lời nhanh thất bại!');
         this.modal.destroy(null);
       })
     } else {
@@ -398,8 +397,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
         this.modal.destroy(true);
       }, error => {
         this.isLoading = false;
-        this.message.error('Thêm mới trả lời nhanh thất bại!');
-        // this.modal.destroy(null);
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` :'Thêm mới trả lời nhanh thất bại!');
       })
     }
   }

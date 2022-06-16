@@ -1,6 +1,5 @@
 import { ConfigDataFacade } from '../../../services/facades/config-data.facade';
 import { switchMap, distinctUntilChanged, debounceTime, map, finalize } from 'rxjs/operators';
-import { FormGroup, FormBuilder } from '@angular/forms';
 import { QuickReplyService } from '../../../services/quick-reply.service';
 import { QuickReplyDTO } from '../../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { takeUntil } from 'rxjs/operators';
@@ -14,6 +13,8 @@ import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/util
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
+import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { SortEnum } from 'src/app/lib';
 
 @Component({
   selector: 'auto-quick-reply',
@@ -37,19 +38,20 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
   }
   tabIndex = null;
 
+  sort: Array<SortDataRequestDTO>= [{
+    field: "DateCreated",
+    dir: SortEnum.desc,
+  }];
 
   constructor(private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private message: TDSMessageService,
-    private fb: FormBuilder,
     private odataQuickReplyService: OdataQuickReplyService,
     private quickReplyService: QuickReplyService,
-    private configDataService: ConfigDataFacade
-  ) { }
+    private configDataService: ConfigDataFacade) {
+  }
 
   ngOnInit(): void {
-    // this.loadData(this.pageSize, this.pageIndex);
-
   }
 
   ngAfterViewInit(): void {
@@ -64,9 +66,7 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
         this.filterObj.searchText = text;
         let filters = this.odataQuickReplyService.buildFilter(this.filterObj);
 
-        let params = TDSHelperString.hasValueString(this.filterObj.searchText) ?
-        THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters):
-        THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex);
+        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters ?? null, this.sort);
 
         return this.get(params);
 
@@ -88,9 +88,7 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
     this.configDataService.onLoading$.emit(this.isLoading);
     let filters = this.odataQuickReplyService.buildFilter(this.filterObj);
 
-    let params = TDSHelperString.hasValueString(this.filterObj.searchText)?
-        THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters):
-        THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters ?? null, this.sort);
 
     this.odataQuickReplyService.get(params).pipe(takeUntil(this.destroy$)).subscribe((res: ODataQuickReplyDTO) => {
       this.AutoChatList = res.value
@@ -153,12 +151,9 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
       viewContainerRef: this.viewContainerRef,
       size: 'lg',
       componentParams: {
-
       }
     });
-    modal.afterOpen.subscribe(() => {
 
-    });
     // Return a result when closed
     modal.afterClose.subscribe(result => {
       if (TDSHelperObject.hasValue(result)) {
@@ -168,19 +163,11 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
   }
 
   onChangeStatus(key: number) {
-    this.isLoading = true
     this.quickReplyService.updateStatus(key).pipe(takeUntil(this.destroy$)).subscribe((res) => {
-      this.message.success('Thay đổi trạng thái thành công!');
-      this.isLoading = false;
-      return res;
+        this.message.success('Thay đổi trạng thái thành công!');
     },err=>{
-      this.message.error(err.error.message || 'Có lỗi xảy ra!');
-      this.isLoading = false;
+        this.message.error(`${err.error.message}` ? `${err.error.message}` : 'Thao tác thất bại');
     });
-  }
-
-  onChangeSetting(data: TDSSafeAny, index: number) {
-
   }
 
   onEditRow(ev: TDSSafeAny, id: number) {
@@ -193,9 +180,7 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
         valueEditId: id
       }
     });
-    modal.afterOpen.subscribe(() => {
 
-    });
     // Return a result when closed
     modal.afterClose.subscribe(result => {
       if (TDSHelperObject.hasValue(result)) {
