@@ -5,29 +5,28 @@ import { ConversationDataFacade } from 'src/app/main-app/services/facades/conver
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { takeUntil, finalize } from 'rxjs/operators';
-import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
-import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
-import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
-import { ModalListProductComponent } from './../modal-list-product/modal-list-product.component';
-import { Component, OnInit, ViewContainerRef, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, ChangeDetectorRef, Input, EventEmitter, Output } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ActivityStatus, SendMessageType } from 'src/app/lib/enum/message/coversation-message';
-import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
+import { ProductPagefbComponent } from '../product-pagefb/product-pagefb.component';
 
 @Component({
   selector: 'app-modal-send-message-all',
   templateUrl: './modal-send-message-all.component.html',
 })
+
 export class ModalSendMessageAllComponent implements OnInit {
+
   @Input() setOfCheckedId = new Set<string>();
   @Input() team!: CRMTeamDTO;
   @Input() type!: string;
 
   messageModel!: string;
-  uploadedImages: string[] = [];
+  uploadedImages: any[] = [];
   isVisibleReply: boolean = false;
   currentImage: any;
   isSending: boolean = false;
@@ -36,12 +35,10 @@ export class ModalSendMessageAllComponent implements OnInit {
   sendMessageType!: SendMessageType;
 
   destroy$ = new Subject<void>();
+  @Output() onSentSucceed = new EventEmitter<any>();
 
-  constructor(
-    private modalService: TDSModalService,
+  constructor(private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
-    private conversationOrderFacade: ConversationOrderFacade,
-    private crmMatchingService: CRMMatchingService,
     private sharedService: SharedService,
     private cdr: ChangeDetectorRef,
     private message: TDSMessageService,
@@ -77,16 +74,21 @@ export class ModalSendMessageAllComponent implements OnInit {
   }
 
   onLoadImage(event: any) {
-
   }
 
   closeImages() {
-
   }
+
   sendIconLike() {
     this.sendMessageType = SendMessageType.Like;
-    const message = "(y)";
-    let model = this.prepareModel(message);
+    const message = '👍';
+    if (TDSHelperString.hasValueString(this.messageModel)) {
+      this.messageModel = `${this.messageModel}${message}`;
+    } else {
+      this.messageModel = `${message}`;
+    }
+
+    let model = this.prepareModel(this.messageModel);
     model.attachment = {
       data: []
     }
@@ -94,7 +96,11 @@ export class ModalSendMessageAllComponent implements OnInit {
 
   loadEmojiMart(event: any) {
     this.sendMessageType = SendMessageType.Icon;
-    this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
+    if (TDSHelperString.hasValueString(this.messageModel)) {
+      this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
+    } else {
+      this.messageModel = `${event?.emoji?.native}`;
+    }
   }
 
   onQuickReplySelected(event:QuickReplyDTO){
@@ -129,25 +135,71 @@ export class ModalSendMessageAllComponent implements OnInit {
     }
   }
 
-
-  showModalListProduct() {
-    this.sendMessageType = SendMessageType.Product;
+  onProductsbypageFb() {
     const modal = this.modalService.create({
       title: 'Danh sách sản phẩm',
-      content: ModalListProductComponent,
+      content: ProductPagefbComponent,
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
       componentParams: {
-        useListPrice: true,
-        isSelectProduct: true
+        pageId: this.team.Facebook_PageId,
       }
     });
 
-    modal.componentInstance?.selectProduct.subscribe((res: DataPouchDBDTO) => {
-      if (TDSHelperObject.hasValue(res)) {
-        this.conversationOrderFacade.onAddProductOrder.emit(res);
+    modal.afterClose.subscribe((res: any) => {debugger
+      this.onProductSelected(res);
+    })
+  }
+
+  onProductSelected(res: any) {
+    if (this.setOfCheckedId.size < 1) {
+      this.message.error("Hãy chọn người bạn muốn gửi.");
+      return;
+    }
+
+    this.sendMessageType = SendMessageType.Product;
+    let lstCheck = [...this.setOfCheckedId]
+
+    if (lstCheck.length > 0) {
+      this.lstUserCheck = this.lstUserCheck ? this.lstUserCheck : this.conversationDataFacade.getChecked(this.team.Facebook_PageId, this.type, lstCheck);
+    }
+
+    let listToId = this.lstUserCheck.map((x: TDSSafeAny) => x.to_id);
+    let model = {
+      page_id: this.team.Facebook_PageId ,
+      list_to_id: listToId,
+      product: {
+          Id: res.Id,
+          Name: res.Name,
+          Picture: res.Picture,
+          Price: res.Price
       }
-    });
+    };
+
+    this.isSending = true;
+    this.activityMatchingService.addTemplateManyMessage(model)
+      .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => { this.isSending = false }))
+      .subscribe((res: any) => {
+
+        res.map((x: any, i: number) => {
+          x["status"] = this.enumActivityStatus.sending;
+          x["message"] = this.activityDataFacade.createDataAttachments(this.uploadedImages[i]);
+
+          this.activityDataFacade.messageServer(x);
+          this.conversationDataFacade.messageServer(x);
+        });
+
+        this.messageModel = '';
+        this.currentImage = null;
+        this.uploadedImages = [];
+
+        this.message.success('Gửi sản phẩm thành công');
+        this.modal.destroy('success');
+
+    }, error => {
+      this.message.error(error.error ? error.error.message : 'không gửi được tin nhắn');
+    })
   }
 
   onClickSender() {
@@ -160,51 +212,62 @@ export class ModalSendMessageAllComponent implements OnInit {
       this.message.error("Hãy chọn người bạn muốn gửi.");
       return;
     }
+
     this.isSending = true;
     let model = this.prepareModel(this.messageModel);
     if (this.sendMessageType == SendMessageType.QuickMessage) {
       this.activityMatchingService.addManyMailTemplateMessage(model)
         .pipe(takeUntil(this.destroy$))
-        .pipe(finalize(() => { this.isSending = false; }))
+        .pipe(finalize(() => { this.isSending = false }))
         .subscribe(res => {
+
+          res.forEach((x: TDSSafeAny) => {
+              x["status"] = this.enumActivityStatus.sending;
+              this.activityDataFacade.messageServer(x);
+              this.conversationDataFacade.messageServer(x);
+          });
+
           this.messageModel = '';
           this.currentImage = null;
           this.uploadedImages = [];
-          res.forEach((x: TDSSafeAny) => {
-            x["status"] = this.enumActivityStatus.sending;
-            this.activityDataFacade.messageServer(x);
-            this.conversationDataFacade.messageServer(x);
-          });
+
           this.message.success('Gửi tin nhắn thành công');
           this.modal.destroy('success');
+
         }, error => {
           this.message.error(error.error ? error.error.message : 'không gửi được tin nhắn');
         })
-    }
-    else {
+
+    } else {
       this.activityMatchingService.addManyMessage(model, this.team.Facebook_PageId)
         .pipe(takeUntil(this.destroy$))
         .pipe(finalize(() => { this.isSending = false; }))
         .subscribe((data) => {
-          this.messageModel = '';
-          this.currentImage = null;
-          this.uploadedImages = [];
-          data.forEach((x: TDSSafeAny) => {
-            x["status"] = this.enumActivityStatus.sending;
-            this.activityDataFacade.messageServer(x);
-            this.conversationDataFacade.messageServer(x);
-          });
-          this.message.success('Gửi tin nhắn thành công');
-          this.modal.destroy('success');
-        }, (error) => {
-          this.message.error(error.error ? error.error.message : 'không gửi được tin nhắn')
-        }
+
+            data.forEach((x: TDSSafeAny) => {
+              x["status"] = this.enumActivityStatus.sending;
+              this.activityDataFacade.messageServer(x);
+              this.conversationDataFacade.messageServer(x);
+            });
+
+            this.messageModel = '';
+            this.currentImage = null;
+            this.uploadedImages = [];
+
+            this.message.success('Gửi tin nhắn thành công');
+            this.modal.destroy('success');
+
+          }, (error) => {
+            this.message.error(error.error ? error.error.message : 'không gửi được tin nhắn')
+          }
         );
     }
   }
+
   onCancel() {
     this.modal.destroy(null);
   }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

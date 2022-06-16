@@ -37,11 +37,11 @@
           *ngFor="let data of lstOfData">
           <td>{{ data.NameGet }}</td>
           <td>{{ data.UOMName }}</td>
-          <td>{{ data.Price }}</td>
+          <td>{{ data.Price | number:'1.0-3' }}</td>
           <td>
-            <button tds-button-outline color="primary" size="sm">
+            <button tds-button-outline color="primary" size="sm" (click)="onPushItem(data)">
               <span class="flex items-center">
-                <i class="tdsi-reply-fill text-lg leading-none mr-2"></i>Gủi sản phẩm
+                <i class="tdsi-reply-fill text-lg leading-none mr-2"></i>Gửi sản phẩm
               </span>
             </button>
           </td>

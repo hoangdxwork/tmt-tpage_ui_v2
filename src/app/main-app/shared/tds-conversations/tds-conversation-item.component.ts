@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef, ViewEncapsulation } from "@angular/core";
 import { Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { ActivityStatus } from "src/app/lib/enum/message/coversation-message";
@@ -14,6 +14,8 @@ import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
 import { eventReplyCommentTrigger } from "../helper/event-animations.helper";
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { TDSMessageService } from "tds-ui/message";
+import { TDSModalService } from "tds-ui/modal";
+import { ProductPagefbComponent } from "../../pages/conversations/components/product-pagefb/product-pagefb.component";
 
 @Component({
   selector: "tds-conversation-item",
@@ -57,8 +59,10 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   @ViewChild('contentMessage') contentMessage: any;
 
   constructor(private element: ElementRef,
+    private modalService: TDSModalService,
     private tdsMessage: TDSMessageService,
     private cdRef : ChangeDetectorRef,
+    private viewContainerRef: ViewContainerRef,
     private activityDataFacade: ActivityDataFacade,
     private conversationDataFacade: ConversationDataFacade,
     private conversationOrderFacade: ConversationOrderFacade,
@@ -223,6 +227,22 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     this.isPrivateReply = !this.isPrivateReply;
   }
 
+  onProductsbypageFb() {
+    const modal = this.modalService.create({
+      title: 'Danh sách sản phẩm',
+      content: ProductPagefbComponent,
+      viewContainerRef: this.viewContainerRef,
+      size: 'xl',
+      componentParams: {
+        pageId: this.team.Facebook_PageId,
+      }
+    });
+
+    modal.afterClose.subscribe((res: any) => {
+      this.onProductSelected(res);
+    })
+  }
+
   onProductSelected(event :any) {
     let model = {
       page_id: this.team.Facebook_PageId,
@@ -234,7 +254,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
         Id: event.Id,
         Name: event.Name,
         Picture: event.Picture,
-        Price: event.Price,
+        Price: event.Price
       }
     };
 
@@ -247,7 +267,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
         this.tdsMessage.success('Gửi thành công sản phẩm');
         this.cdRef.markForCheck();
     }, error => {
-      this.tdsMessage.error('Gửi sản phẩm thất bại');
+      this.tdsMessage.error(`${error.error.message}` ? `${error.error.message}`  : 'Gửi sản phẩm thất bại');
       this.cdRef.markForCheck();
     });
 

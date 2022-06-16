@@ -637,6 +637,16 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     return this.service.setExtrasQuery(pageId, type, data);
   }
 
+  checkAllSendMessage(pageId: any, type: any, status: boolean) {
+    var exist = this.cvsFbState.get(pageId, type);
+
+    if(exist && exist.items) {
+      exist.items.forEach((item: any) => {
+        item.checkSendMessage = status;
+      });
+    }
+  }
+
   getChecked(pageId: any, type: any, lstPsid: string[]) {
     let result: TDSSafeAny[] = [];
     var exist = this.cvsFbState.get(pageId, type);
