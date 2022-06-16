@@ -71,20 +71,26 @@
           <tds-collapse-panel [header]="hearerInfoPartner" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
             <ng-template #hearerInfoPartner>
               <div class="flex items-center">
-                <!-- <tds-avatar class="bg-primary-1 text-white" icon="tdsi-user-fill"></tds-avatar> -->
                 <div class="ml-2 text-title-1 font-semibold text-neutral-1-900 font-sans">Thông tin khách hàng</div>
               </div>
             </ng-template>
             <div class="flex flex-col gap-3">
+              <!-- partner name -->
               <div class="flex gap-2 items-center">
                 <div
                   class="tdsi-user-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]">
                 </div>
                 <div class="flex flex-auto items-center justify-between">
-                    <div class="flex gap-4">
-                      <span class="text-neutral-1-900 text-body-2 font-regular font-sans">
+                    <div class="flex gap-4 items-center">
+                      <span *ngIf="!isEditPartner" class="text-neutral-1-900 text-body-2 font-regular font-sans">
                         {{_form.controls['PartnerName'].value || ''}}
                       </span>
+
+                      <tds-form-field *ngIf="isEditPartner">
+                        <input tdsInput autocomplete="off" placeholder="Tên khách hàng"
+                          formControlName="PartnerName" [required]='true'/>
+                      </tds-form-field>
+
                       <span class="text-neutral-1-400">
                         FB: {{_form?.value?.Facebook_UserName}}
                       </span>
@@ -97,29 +103,54 @@
                     </button>
                 </div>
               </div>
+              <!-- telephone -->
               <div class="flex gap-2 items-center">
                 <div
                   class="tdsi-call-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]">
                 </div>
-                <span class="text-neutral-1-900 text-body-2 font-regular font-sans">
+
+                <span *ngIf="!isEditPartner" class="text-neutral-1-900 text-body-2 font-regular font-sans">
                   {{_form.controls['Telephone'].value || 'Không có số điện thoại'}}
                 </span>
+
+                <tds-form-field *ngIf="isEditPartner" class="flex flex-auto">
+                  <input tdsInput placeholder="Số điện thoại"
+                    [required]='true' formControlName="Telephone"/>
+                </tds-form-field>
               </div>
+              <!-- email -->
               <div class="flex gap-2 items-center">
                 <div
                   class="tdsi-email-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]">
                 </div>
-                <span class="text-neutral-1-900 text-body-2 font-regular font-sans">
+
+                <span *ngIf="!isEditPartner" class="text-neutral-1-900 text-body-2 font-regular font-sans">
                   {{_form.controls['Email'].value || 'Chưa có Email'}}
                 </span>
+
+                <tds-form-field *ngIf="isEditPartner" class="flex flex-auto">
+                  <input tdsInput autocomplete="off"  placeholder="Email"
+                  formControlName="Email" />
+                </tds-form-field>
               </div>
               <div class="flex gap-2 items-center">
                 <div
                   class="tdsi-pin-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]">
                 </div>
-                <span class="text-neutral-1-900 text-body-2 font-regular font-sans">
+
+                <span *ngIf="!isEditPartner" class="text-neutral-1-900 text-body-2 font-regular font-sans">
                   {{_form.controls['Street'].value || 'Chưa có địa chỉ'}}
                 </span>
+
+                <div *ngIf="isEditPartner" class="flex flex-auto items-center gap-2">
+                  <tpage-conversation-address class="w-full"
+                    [streetText]="_form.value['Street']"
+                    [cityCode]="_form.value['City']?.Code"
+                    [districtCode]="_form.value['District']?.Code"
+                    [wardCode]="_form.value['Ward']?.Code"
+                    (onChangeAddress)="onChangeAddress($event)">
+                  </tpage-conversation-address>
+                </div>
               </div>
             </div>
             <div class="w-full pt-6 flex items-center">
@@ -182,7 +213,7 @@
                   </span>
                 </button>
 
-                <button tds-button-flat-icon type="button" color="secondary" class="cursor-pointer" title="Thêm Khuyến mãi" (click)="showModalAddProduct()">
+                <button tds-button-flat-icon type="button" color="secondary" class="cursor-pointer" title="Khuyến mãi" (click)="showModalAddPromotion()">
                   <span class="flex items-center">
                     <i class="tdsi-gift-fill text-primary-1"></i>
                   </span>
