@@ -36,10 +36,10 @@ const routes: Routes = [
         path:'overview',
         component: AutoInteractionComponent
       },
-      {
-        path:'print-bills',
-        component: ConfigPrintBillsComponent
-      },
+      // {
+      //   path:'print-bills',
+      //   component: ConfigPrintBillsComponent
+      // },
       {
         path:'conversation-tags',
         component: ConfigConversationTagsComponent

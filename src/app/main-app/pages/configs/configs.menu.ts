@@ -6,11 +6,11 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
         icon: "tdsi-gear-2-fill",
         link: '/configs/overview',
     },
-    {
-        name: "Cấu hình in đơn hàng",
-        icon: "tdsi-setting-print-fill",
-        link: '/configs/print-bills',
-    },
+    // {
+    //     name: "Cấu hình in đơn hàng",
+    //     icon: "tdsi-setting-print-fill",
+    //     link: '/configs/print-bills',
+    // },
     {
         name: "Thẻ hội thoại",
         icon: "tdsi-tag-fill",

@@ -18,6 +18,7 @@ export class GeneralConfigsFacade extends BaseSevice {
   baseRestApi: string = "";
 
   public saleConfigs$!: Observable<InitSaleDTO>;
+  public saleOnineSettingConfig$!: Observable<any>;
   public currentCompany$!: Observable<any>;
 
   constructor(private apiService: TCommonService,
@@ -31,6 +32,14 @@ export class GeneralConfigsFacade extends BaseSevice {
     }
 
     return this.saleConfigs$;
+  }
+
+  getSaleOnineSettingConfig(): Observable<any> {
+    if (!this.saleOnineSettingConfig$) {
+      this.saleOnineSettingConfig$ = this.sharedService.getSaleOnineSettingConfig().pipe(shareReplay(1));
+    }
+
+    return this.saleOnineSettingConfig$;
   }
 
   public getCurrentCompany() {
