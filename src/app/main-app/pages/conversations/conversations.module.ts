@@ -77,7 +77,6 @@ import { ModalListCollectionComponent } from './components/modal-list-collection
 import { ModalTaxComponent } from './components/modal-tax/modal-tax.component';
 import { AccountTaxService } from '../../services/account-tax.service';
 import { DirectivesModule } from '../../shared/directives/directives.module';
-import { ProductPagefbComponent } from './components/product-pagefb/product-pagefb.component';
 import { ConversationPostViewComponent } from './conversation-post/conversation-post-view.component';
 import { ItemPostCommentComponent } from './conversation-post/item-post-comment.component';
 import { ModalBlockPhoneComponent } from './components/modal-block-phone/modal-block-phone.component';
@@ -97,7 +96,6 @@ import { TDSTabsModule } from 'tds-ui/tabs';
 import { TDSTypographyModule } from 'tds-ui/typography';
 import { TDSEmptyModule } from 'tds-ui/empty';
 import { TDSModalModule } from 'tds-ui/modal';
-import { TDSMessageModule } from 'tds-ui/message';
 import { TDSDatePickerModule } from 'tds-ui/date-picker';
 import { TDSUploadModule } from 'tds-ui/upload';
 import { TDSToolTipModule } from 'tds-ui/tooltip';
@@ -110,6 +108,8 @@ import { TDSRadioModule } from 'tds-ui/radio';
 import { TDSSwitchModule } from 'tds-ui/switch';
 import { TDSImageModule } from 'tds-ui/image';
 import { TDSInputNumberModule } from 'tds-ui/input-number';
+import { TDSMessageModule, TDSMessageService } from 'tds-ui/message';
+import { ProductPagefbComponent } from './components/product-pagefb/product-pagefb.component';
 
 const SERVICES = [
   ConversationDataFacade,

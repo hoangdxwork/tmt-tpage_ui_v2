@@ -135,7 +135,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loadGridConfig();
     this.loadPartnerStatusReport();
     this.loadBirtdays();
-    this.configService.set('message',{pauseOnHover: true})
+    this.configService.set('message', { pauseOnHover: true })
   }
 
   loadGridConfig() {
@@ -155,18 +155,18 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
 
     this.getViewData(params).subscribe((res: ODataPartnerDTO) => {
-        this.count = res['@odata.count'] as number;
-        this.lstOfData = [...res.value];
+      this.count = res['@odata.count'] as number;
+      this.lstOfData = [...res.value];
     }, error => {
-        this.message.error('Tải dữ liệu khách hàng thất bại!');
+      this.message.error('Tải dữ liệu khách hàng thất bại!');
     });
   }
 
   private getViewData(params: string): Observable<ODataPartnerDTO> {
     this.isLoading = true;
     return this.odataPartnerService
-        .getView(params).pipe(takeUntil(this.destroy$))
-        .pipe(finalize(() => {this.isLoading = false }));
+      .getView(params).pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => { this.isLoading = false }));
   }
 
   loadTags() {
@@ -267,8 +267,8 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
         this.message.success('Gán nhãn thành công!');
       }
     }, error => {
-        this.indClickTag = -1;
-        this.message.error('Gán nhãn thất bại!');
+      this.indClickTag = -1;
+      this.message.error('Gán nhãn thất bại!');
     });
   }
   ngAfterViewInit(): void {
@@ -280,37 +280,37 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
         this.widthTable = this.viewChildWidthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
         this.viewChildWidthTable?.nativeElement.click()
       });
-      setTimeout(() => {
-        let that = this;
-        let wrapScroll = this.viewChildDetailPartner?.nativeElement?.closest('.tds-table-body');
-        wrapScroll?.addEventListener('scroll', function() {
-          let scrollleft = wrapScroll.scrollLeft;
-          that.marginLeftCollapse = scrollleft;
-        });
-      }, 500);
+    setTimeout(() => {
+      let that = this;
+      let wrapScroll = this.viewChildDetailPartner?.nativeElement?.closest('.tds-table-body');
+      wrapScroll?.addEventListener('scroll', function () {
+        let scrollleft = wrapScroll.scrollLeft;
+        that.marginLeftCollapse = scrollleft;
+      });
+    }, 500);
 
     fromEvent(this.innerText.nativeElement, 'keyup').pipe(
-        map((event: any) => { return event.target.value }),
-        debounceTime(750),
-        distinctUntilChanged(),
-        // TODO: switchMap xử lý trường hợp sub in sub
-        switchMap((text: TDSSafeAny) => {
-          this.tabIndex = null;
-          this.pageIndex = 1;
-          this.indClickTag = -1;
+      map((event: any) => { return event.target.value }),
+      debounceTime(750),
+      distinctUntilChanged(),
+      // TODO: switchMap xử lý trường hợp sub in sub
+      switchMap((text: TDSSafeAny) => {
+        this.tabIndex = null;
+        this.pageIndex = 1;
+        this.indClickTag = -1;
 
-          this.filterObj.searchText = text;
-          let filters = this.odataPartnerService.buildFilter(this.filterObj);
+        this.filterObj.searchText = text;
+        let filters = this.odataPartnerService.buildFilter(this.filterObj);
 
-          let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
-          return this.getViewData(params);
+        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
+        return this.getViewData(params);
       }))
       .subscribe((res: any) => {
         this.count = res['@odata.count'] as number;
         this.lstOfData = [...res.value];
-    }, error => {
+      }, error => {
         this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
-    });
+      });
   }
 
   isHidden(columnName: string) {
@@ -365,8 +365,8 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.excelExportService.exportPost('/Partner/ExportFile', { data: JSON.stringify(data) }, 'danh-sach-kh')
-    .pipe(finalize(()=>this.isProcessing = false), takeUntil(this._destroy))
-    .subscribe();
+      .pipe(finalize(() => this.isProcessing = false), takeUntil(this._destroy))
+      .subscribe();
   }
 
   setActive(type: string) {
@@ -376,8 +376,8 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
           let active = { Active: true, Ids: this.idsModel };
 
           this.partnerService.setActive({ model: active }).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-              this.message.success('Đã mở hiệu lực thành công!');
-              this.loadData(this.pageSize, this.pageIndex);
+            this.message.success('Đã mở hiệu lực thành công!');
+            this.loadData(this.pageSize, this.pageIndex);
           }, error => {
             this.message.error('Mở hiệu lực thất bại!');
           })
@@ -387,8 +387,8 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
           let unactive = { Active: false, Ids: this.idsModel };
 
           this.partnerService.setActive({ model: unactive }).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-              this.message.success('Đóng hiệu lực thành công!');
-              this.loadData(this.pageSize, this.pageIndex);
+            this.message.success('Đóng hiệu lực thành công!');
+            this.loadData(this.pageSize, this.pageIndex);
           }, error => {
             this.message.error('Đóng hiệu lực thất bại!');
           })
@@ -447,7 +447,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     });
     modal.afterClose.subscribe(result => {
       if (TDSHelperObject.hasValue(result)) {
-        this.loadData(this.pageSize,this.pageIndex);
+        this.loadData(this.pageSize, this.pageIndex);
       }
     });
   }
@@ -465,7 +465,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     });
     modal.afterClose.subscribe(result => {
       if (TDSHelperObject.hasValue(result)) {
-        this.loadData(this.pageSize,this.pageIndex);
+        this.loadData(this.pageSize, this.pageIndex);
       }
     });
   }

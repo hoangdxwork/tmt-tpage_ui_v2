@@ -55,10 +55,10 @@
                       <img tds-image [tdsSrc]="item.picture" alt="{{item.story}}" style="max-width: 120px;max-height: 88px">
                       <div>
                         <!-- phân loại -->
-                        <span class="{{getIconTypePost(item.status_type)}}"></span>
+                        <span class="{{getIconTypePost(item.status_type)}} text-neutral-1-500"></span>
                         <!-- lượt comment -->
                         <span class="ml-2">
-                          <span class="tdsi-comment-on-fill"></span> {{item.count_comments || 0}}
+                          <span class="tdsi-comment-on-fill text-neutral-1-500"></span> {{item.count_comments || 0}}
                         </span>
                         <span *ngIf="compareToday(item.created_time) && item.fbid" class="cursor">
                           <span *ngIf="listBadge[item.fbid] && listBadge[item.fbid].count > 0"> {{listBadge[item.fbid].count}}</span>

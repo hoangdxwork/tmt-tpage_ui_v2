@@ -38,6 +38,7 @@ import { TDSCheckBoxModule } from 'tds-ui/tds-checkbox';
 import { TDSModalModule } from 'tds-ui/modal';
 import { TDSTypographyModule } from 'tds-ui/typography';
 import { TDSImageModule } from 'tds-ui/image';
+import { TDSMessageModule } from 'tds-ui/message';
 
 const CMP =[
   TDSConversationsComponent,
@@ -84,6 +85,7 @@ const CMP =[
     MainSharedModule,
     DirectivesModule,
     TDSEmptyModule,
+    TDSMessageModule
   ],
   exports:[
     ...CMP
@@ -91,7 +93,7 @@ const CMP =[
   providers:[
     QuickReplyService,
     CRMTagService,
-    ActivityFacebookState
+    ActivityFacebookState,
   ]
 })
 
