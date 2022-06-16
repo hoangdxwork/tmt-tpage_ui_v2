@@ -1,3 +1,4 @@
+import { ModalApplyPromotionComponent } from './../modal-apply-promotion/modal-apply-promotion.component';
 import { OnDestroy } from '@angular/core';
 import { SaleSettingsDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
@@ -503,6 +504,15 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
         let product = this.convertDetailSelect(res);
         this.selectProduct(product);
       });
+  }
+
+  showModalAddPromotion(){
+    const modal = this.modalService.create({
+      title: 'Chọn khuyến mãi',
+      content: ModalApplyPromotionComponent,
+      size: "md",
+      viewContainerRef: this.viewContainerRef
+    });
   }
 
   showModalConfigProduct() {
