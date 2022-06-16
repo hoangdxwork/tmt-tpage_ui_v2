@@ -36,6 +36,7 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'td
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSUploadChangeParam } from 'tds-ui/upload';
+import { ProductPagefbComponent } from '../../pages/conversations/components/product-pagefb/product-pagefb.component';
 
 @Component({
   selector: 'shared-tds-conversations',
@@ -221,19 +222,19 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   onProductsbypageFb() {
-    // const modal = this.modalService.create({
-    //   title: 'Danh sách sản phẩm',
-    //   content: ProductPagefbComponent,
-    //   viewContainerRef: this.viewContainerRef,
-    //   size: 'xl',
-    //   componentParams: {
-    //     pageId: this.team.Facebook_PageId,
-    //   }
-    // });
+    const modal = this.modalService.create({
+      title: 'Danh sách sản phẩm',
+      content: ProductPagefbComponent,
+      viewContainerRef: this.viewContainerRef,
+      size: 'xl',
+      componentParams: {
+        pageId: this.team.Facebook_PageId,
+      }
+    });
 
-    // modal.afterClose.subscribe((res: any) => {
-    //   this.onProductSelected(res);
-    // })
+    modal.afterClose.subscribe((res: any) => {
+      this.onProductSelected(res);
+    })
   }
 
   onProductSelected(event: any) {

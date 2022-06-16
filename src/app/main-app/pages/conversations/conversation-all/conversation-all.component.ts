@@ -3,7 +3,7 @@ import { ModalSendMessageAllComponent } from './../components/modal-send-message
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AsyncSubject, fromEvent, Observable, Subject } from 'rxjs';
+import { fromEvent, Observable, Subject } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ConversationMatchingItem, CRMMatchingMappingDTO } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -50,6 +50,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   isProcessing:boolean = false;
   isChanged: boolean = false;
   clickReload: number = 0;
+  isCheckedAll: boolean = false;
 
   currentOrderTab: number = 0;
   letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -301,6 +302,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   onAllChecked(value: TDSSafeAny): void {
     this.lstMatchingItem.forEach(item => this.updateCheckedSet(item.id, value.checked));
     this.refreshCheckedStatus();
+    this.isCheckedAll = !this.isCheckedAll;
   }
 
   refreshCheckedStatus(): void {
@@ -340,17 +342,27 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
       return;
     }
-    this.modalService.create({
+    let modal =  this.modalService.create({
       title: 'Gửi tin nhắn nhanh',
       content: ModalSendMessageAllComponent,
       size: "md",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        setOfCheckedId: this.setOfCheckedId,
-        team: this.currentTeam,
-        type: this.type
+          setOfCheckedId: this.setOfCheckedId,
+          team: this.currentTeam,
+          type: this.type
       }
     });
+
+    modal.afterClose.subscribe((res: any) => {
+      if(res) {
+          this.onSentSucceed();
+      }
+    })
+  }
+
+  onSentSucceed() {
+    this.conversationDataFacade.checkAllSendMessage(this.currentTeam.Facebook_PageId, this.type, this.isCheckedAll);
   }
 
   onTabOrder(event: boolean) {
