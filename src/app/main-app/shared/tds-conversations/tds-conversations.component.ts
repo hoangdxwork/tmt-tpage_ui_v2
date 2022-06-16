@@ -6,7 +6,8 @@ import { ModalListBillComponent } from './../../pages/conversations/components/m
 import { ModalListProductComponent } from './../../pages/conversations/components/modal-list-product/modal-list-product.component';
 import { ModalImageStoreComponent } from './../../pages/conversations/components/modal-image-store/modal-image-store.component';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output,
+import {
+  Component, EventEmitter, Input, OnChanges, OnInit, Output,
   SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, ViewRef, AfterViewChecked, NgZone, HostBinding, ViewEncapsulation
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
@@ -35,7 +36,6 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'td
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSUploadChangeParam } from 'tds-ui/upload';
-import { ProductPagefbComponent } from '../../pages/conversations/components/product-pagefb/product-pagefb.component';
 
 @Component({
   selector: 'shared-tds-conversations',
@@ -96,7 +96,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private conversationEventFacade: ConversationEventFacade,
     private sgRConnectionService: SignalRConnectionService,
     private router: Router,
-    private cdRef : ChangeDetectorRef,
+    private cdRef: ChangeDetectorRef,
     private ngZone: NgZone,
     private conversationOrderFacade: ConversationOrderFacade,
     private viewContainerRef: ViewContainerRef,
@@ -110,8 +110,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     this.activityDataFacade.hasNextData$.subscribe(data => {
-        this.isNextData = data;
-        this.cdRef.detectChanges();
+      this.isNextData = data;
+      this.cdRef.detectChanges();
     })
 
     this.partnerService.onLoadOrderFromTabPartner.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
@@ -119,8 +119,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     });
   }
 
-  ngAfterViewInit(){
-    if(this.yiAutoScroll) {
+  ngAfterViewInit() {
+    if (this.yiAutoScroll) {
       this.yiAutoScroll.forceScrollDown();
     }
   }
@@ -136,7 +136,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   //TODO: data.id = data.psid
   loadMessages(data: ConversationMatchingItem): any {
-    if(this.isLoadMessage || this.isNextData) {
+    if (this.isLoadMessage || this.isNextData) {
       return;
     }
 
@@ -144,14 +144,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
       .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => {
-          setTimeout(() => {
-            this.isLoadMessage = false;
-            this.conversationDataFacade.changeCurrentCvs$.emit(false);
-            this.cdRef.detectChanges();
-          }, 350)
+        setTimeout(() => {
+          this.isLoadMessage = false;
+          this.conversationDataFacade.changeCurrentCvs$.emit(false);
+          this.cdRef.detectChanges();
+        }, 350)
       }))
 
-    if(this.yiAutoScroll) {
+    if (this.yiAutoScroll) {
       this.yiAutoScroll.forceScrollDown();
     }
   }
@@ -212,25 +212,54 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   showImageStore(): void {
     this.modalService.create({
-        title: 'Kho hình ảnh',
-        content: ModalImageStoreComponent,
-        centered: true,
-        size: "xl",
-        viewContainerRef: this.viewContainerRef
+      title: 'Kho hình ảnh',
+      content: ModalImageStoreComponent,
+      centered: true,
+      size: "xl",
+      viewContainerRef: this.viewContainerRef
     });
   }
 
   onProductsbypageFb() {
-    const modal = this.modalService.create({
-      title: 'Danh sách sản phẩm',
-      content: ProductPagefbComponent,
-      viewContainerRef: this.viewContainerRef,
-      size: 'xl',
-      componentParams: {
-        pageId: this.team.Facebook_PageId,
-      }
-    });
+    // const modal = this.modalService.create({
+    //   title: 'Danh sách sản phẩm',
+    //   content: ProductPagefbComponent,
+    //   viewContainerRef: this.viewContainerRef,
+    //   size: 'xl',
+    //   componentParams: {
+    //     pageId: this.team.Facebook_PageId,
+    //   }
+    // });
 
+    // modal.afterClose.subscribe((res: any) => {
+    //   this.onProductSelected(res);
+    // })
+  }
+
+  onProductSelected(event: any) {
+    let that= this;
+    let model = {
+      page_id: this.team.Facebook_PageId,
+      to_id: this.data.psid,
+
+      product: {
+        Id: event.Id,
+        Name: event.Name,
+        Picture: event.Picture,
+        Price: event.Price,
+      }
+    };
+
+    this.activityMatchingService.addTemplateMessage(this.data.psid, model)
+      .subscribe((res: any) => {
+        that.activityDataFacade.messageServer(res);
+        that.conversationDataFacade.messageServer(res);
+
+        that.message.success('Gửi thành công sản phẩm');
+       }, error=> {
+          this.message.error('Gửi sản phẩm thất bại');
+          this.cdRef.markForCheck();
+      })
   }
 
   onProductLastV2() {
@@ -245,8 +274,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       }
     });
 
-    modal.componentInstance?.selectProduct.subscribe((res: DataPouchDBDTO) =>{
-      if(TDSHelperObject.hasValue(res)) {
+    modal.componentInstance?.selectProduct.subscribe((res: DataPouchDBDTO) => {
+      if (TDSHelperObject.hasValue(res)) {
         this.conversationOrderFacade.onAddProductOrder.emit(res);
       }
     });
@@ -276,7 +305,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   loadEmojiMart(event: any) {
-    if(TDSHelperString.hasValueString(this.messageModel)) {
+    if (TDSHelperString.hasValueString(this.messageModel)) {
       this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
     } else {
       this.messageModel = `${event?.emoji?.native}`;
@@ -415,12 +444,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   onEnter(event: any) {
     this.eventHandler = event;
-    if(this.isLoadingSendMess) {
+    if (this.isLoadingSendMess) {
       this.eventHandler.preventDefault();
       this.eventHandler.stopImmediatePropagation();
       return;
     }
-    if(this.isEnterSend){
+    if (this.isEnterSend) {
       this.messageSendingToServer();
     } else {
       return
@@ -434,7 +463,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       this.eventHandler.stopImmediatePropagation();
       return this.message.error('Hãy nhập nội dung cần gửi');
     }
-    if(this.isLoadingSendMess){
+    if (this.isLoadingSendMess) {
       this.eventHandler.preventDefault();
       this.eventHandler.stopImmediatePropagation();
       return;
@@ -476,9 +505,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => { this.isLoadingSendMess = false }))
       .subscribe((res: any) => {
-          this.messageResponse(res, model);
+        this.messageResponse(res, model);
       }, error => {
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại' );
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại');
       });
   }
 
@@ -635,9 +664,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .subscribe(res => {
         this.data.assigned_to = res;
       },
-      err=>{
-        this.message.error("Thao tác thất bại");
-      });
+        err => {
+          this.message.error("Thao tác thất bại");
+        });
   }
 
   searchUser() {
@@ -681,7 +710,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.removeTagOnView(item);
-        });
+      });
   }
 
   assignTagOnView(tag: any) {
@@ -761,7 +790,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
     return this.sharedService.saveImageV2(formData)
       .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(()=>{
+      .pipe(finalize(() => {
         this.displayDropZone = false;
         this.isLoadingImage = false;
       }))
@@ -775,14 +804,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           this.cdRef.markForCheck();
         }
       }, error => {
-        let message = JSON.parse(error.Message);
-        this.message.error(`${message.message}`);
+        this.message.error(error.Message ? error.Message:'Upload xảy ra lỗi');
         this.cdRef.markForCheck();
       });
   }
 
   onLoadImage(ev: TDSSafeAny) {
-    let data:string[] = [];
+    let data: string[] = [];
     if (TDSHelperObject.hasValue(ev) && TDSHelperArray.hasListValue(ev.files)) {
       ev.files.forEach((e: TDSSafeAny) => {
         data.push(e.url)
@@ -791,17 +819,17 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.uploadedImages = [...data]
   }
 
-  closeImages(){
+  closeImages() {
     this.uploadedImages = [];
   }
 
-  changeEnterSend(ev: any){
-    if(ev){
+  changeEnterSend(ev: any) {
+    if (ev) {
       this.isEnterSend = ev.checked;
     }
   }
 
-  onQuickReplySelected(event:QuickReplyDTO){
+  onQuickReplySelected(event: QuickReplyDTO) {
     let text = event.BodyPlain || event.BodyHtml;
     text = ReplaceHelper.quickReply(text, this.partner);
     this.messageModel = text;
@@ -825,7 +853,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   @HostListener('window:drop', ['$event'])
-  ondrop(evt:any) {
+  ondrop(evt: any) {
     this.displayDropZone = false;
     evt.preventDefault();
     evt.stopImmediatePropagation();

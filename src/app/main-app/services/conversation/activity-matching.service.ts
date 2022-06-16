@@ -137,7 +137,7 @@ export class ActivityMatchingService extends BaseSevice  {
       psid = data.to_id;
     }
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${psid}/addtemplatemessage`,
+      url: `${this._BASE_URL}/rest/v1.0/crmactivity/${psid}/addtemplatemessage`,
       method: TApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);

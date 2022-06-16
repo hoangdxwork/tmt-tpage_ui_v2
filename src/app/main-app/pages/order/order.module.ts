@@ -51,6 +51,7 @@ import { TDSToolTipModule } from 'tds-ui/tooltip';
 import { TDSFilterStatusModule } from 'tds-ui/filter-status';
 import { TDSModalModule } from 'tds-ui/modal';
 import { TDSCollapseModule } from 'tds-ui/collapse';
+import { OdataPartnerService } from '../../services/mock-odata/odata-partner.service';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -65,7 +66,7 @@ const SERVICES = [
   SaleHandler,
   CheckFormHandler,
   OdataProductService,
-  CarrierHandler
+  CarrierHandler,
 ]
 
 @NgModule({

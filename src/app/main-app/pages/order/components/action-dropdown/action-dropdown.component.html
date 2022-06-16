@@ -2,7 +2,7 @@
 
 <tds-button-group>
   <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate" >
-    <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
+    <button tds-button color="secondary" tds-dropdown placement="bottomRight" trigger="click" [tdsDropdownMenu]="menu">
       <span class="flex items-center">
         Thao tác <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
       </span>
@@ -11,11 +11,11 @@
 
   <tds-dropdown-menu #menu="tdsDropdownMenu">
     <div class="w-full">
-      <div tds-dropdown-item (click)="removeIds()"> Xóa nhiều </div>
-      <div tds-dropdown-item (click)="openUpdateStatusText()"> Cập nhật trạng thái đơn hàng </div>
       <div tds-dropdown-item (click)="checkDuplicateASIdPhoneUId()"> Check trùng khách hàng </div>
-      <div tds-dropdown-item (click)="sendMessage()"> Gửi tin nhắn Facebook </div>
+      <div tds-dropdown-item (click)="openUpdateStatusText()"> Cập nhật trạng thái đơn hàng </div>
       <div tds-dropdown-item (click)="getUpdateUIds()"> Cập nhật Facebook </div>
+      <div tds-dropdown-item (click)="removeIds()" class="text-error-400"> Xóa phiếu </div>
+      <!-- <div tds-dropdown-item (click)="sendMessage()"> Gửi tin nhắn Facebook </div> -->
     </div>
   </tds-dropdown-menu>
 </tds-button-group>
