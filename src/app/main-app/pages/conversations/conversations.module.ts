@@ -1,3 +1,4 @@
+import { OdataSaleCouponProgramService } from 'src/app/main-app/services/mock-odata/odata-sale-coupon-program.service';
 import { AccountRegisterPaymentService } from './../../services/account-register-payment.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -110,6 +111,7 @@ import { TDSImageModule } from 'tds-ui/image';
 import { TDSInputNumberModule } from 'tds-ui/input-number';
 import { TDSMessageModule, TDSMessageService } from 'tds-ui/message';
 import { ProductPagefbComponent } from './components/product-pagefb/product-pagefb.component';
+import { ModalApplyPromotionComponent } from './components/modal-apply-promotion/modal-apply-promotion.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -148,7 +150,8 @@ const SERVICES = [
   ProductIndexDBService,
   LiveCampaignService,
   AccountTaxService,
-  AccountRegisterPaymentService
+  AccountRegisterPaymentService,
+  OdataSaleCouponProgramService
 ]
 
 @NgModule({
@@ -190,7 +193,8 @@ const SERVICES = [
     ModalReportOrderPostComponent,
     ModalListCollectionComponent,
     ModalTaxComponent,
-    ProductPagefbComponent
+    ProductPagefbComponent,
+    ModalApplyPromotionComponent
   ],
 
   imports: [

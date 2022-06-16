@@ -116,6 +116,14 @@ export class ActivityMatchingService extends BaseSevice  {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
+  addTemplateManyMessage(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/rest/v1.0/crmactivity/addtemplatemanymessage`,
+      method: TApiMethodType.post,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
   addManyMailTemplateMessage(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/crmactivity/addmailtemplatemessage`,
@@ -124,9 +132,9 @@ export class ActivityMatchingService extends BaseSevice  {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  addManyMessage(data: TDSSafeAny, psid: TDSSafeAny): Observable<any> {
+  addManyMessage(data: TDSSafeAny, page_id: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/rest/v1.0/crmactivity/${psid}/addmanymessage`,
+      url: `${this._BASE_URL}/rest/v1.0/crmactivity/${page_id}/addmanymessage`,
       method: TApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);

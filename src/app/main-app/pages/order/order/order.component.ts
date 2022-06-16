@@ -25,6 +25,7 @@ import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { GenerateMessageTypeEnum } from 'src/app/main-app/dto/conversation/message.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
+import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 
 @Component({
   selector: 'app-order',
@@ -45,7 +46,7 @@ export class OrderComponent implements OnInit {
   lstStatusTypeExt!: Array<any>;
   private destroy$ = new Subject<void>();
 
-  private _destroy = new Subject<void>();
+  private destroy$ = new Subject<void>();
 
   public filterObj: TDSSafeAny = {
     tags: [],
@@ -105,6 +106,7 @@ export class OrderComponent implements OnInit {
   constructor(
     private tagService: TagService,
     private router: Router,
+    private orderPrintService: OrderPrintService,
     private modal: TDSModalService,
     private message: TDSMessageService,
     private viewContainerRef: ViewContainerRef,
@@ -553,8 +555,8 @@ export class OrderComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this._destroy.next();
-    this._destroy.complete();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   // Gủi tin nhắn FB
@@ -617,5 +619,20 @@ export class OrderComponent implements OnInit {
   // }
 
 
+
+  printMultiOrder() {
+    if (this.checkValueEmpty() == 1) {
+      let ids = [...this.setOfCheckedId];
+      ids.map((x: string) => {
+        this.saleOnline_OrderService.getById(x).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+          if(res) {debugger
+              this.orderPrintService.printIpFromOrder(res);
+          }
+        }, error => {
+          this.message.error('Load thông tin đơn hàng đã xảy ra lỗi');
+        })
+      })
+    }
+  }
 
 }
