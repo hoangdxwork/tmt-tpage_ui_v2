@@ -25,8 +25,8 @@ export class SaleOnline_OrderService extends BaseSevice {
 
   getById(id: string): Observable<SaleOnline_OrderDTO> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})?$expand=Details,User,Partner`,
-        method: TApiMethodType.get,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})?$expand=Details,User,Partner`,
+      method: TApiMethodType.get,
     }
 
     return this.apiService.getData<SaleOnline_OrderDTO>(api, null);
@@ -43,8 +43,8 @@ export class SaleOnline_OrderService extends BaseSevice {
 
   getSummaryStatus(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/getsummarystatussaleonline`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/${this.baseRestApi}/getsummarystatussaleonline`,
+      method: TApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -61,8 +61,8 @@ export class SaleOnline_OrderService extends BaseSevice {
 
   getDefaultOrderIds(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetDefaultOrderIds?$expand=Lines($expand=Partner),Carrier`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetDefaultOrderIds?$expand=Lines($expand=Partner),Carrier`,
+      method: TApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -70,8 +70,8 @@ export class SaleOnline_OrderService extends BaseSevice {
 
   assignSaleOnlineOrder(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/TagSaleOnlineOrder/ODataService.AssignTag`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/${this.prefix}/TagSaleOnlineOrder/ODataService.AssignTag`,
+      method: TApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -144,4 +144,14 @@ export class SaleOnline_OrderService extends BaseSevice {
   setCommentOrder(data: any, fbid: string) {
     this.onSetCommentOrders.emit({ data: data, fbid: fbid });
   }
+
+  updateStatusSaleOnline(idOrder: any, value: any): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdateStatusSaleOnline?Id=${idOrder}&Status=${value}`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
 }
