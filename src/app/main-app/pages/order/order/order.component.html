@@ -101,7 +101,7 @@
                 </td>
 
                 <!-- STT -->
-                <td class="text-center border-r"  [tdsLeft]="true">
+                <td class="text-center border-r" [tdsLeft]="true">
                   <span> {{ data.SessionIndex }}</span>
                 </td>
 
@@ -126,7 +126,8 @@
                       [popoverContent]="contentAddtag" [popoverBackdrop]="true" popoverPlacement="left"
                       color="secondary" size="sm" class=" border-0">
                       <div class="w-5 h-5 relative">
-                        <i class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
+                        <i
+                          class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
                         <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12"
                           height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path
@@ -163,13 +164,21 @@
                     </ng-template>
                   </div>
 
-                  <div class="flex mt-1">
-                    <div class="flex text-xs text-error-500" *ngIf="!data.PrintCount || data.PrintCount == 0">
-                      Chưa in
-                    </div>
+                  <div class="flex mt-1 justify-between">
+                    <div>
+                      <div class="flex text-xs text-error-500" *ngIf="!data.PrintCount || data.PrintCount == 0">
+                        Chưa in
+                      </div>
 
-                    <div class="flex text-xs text-success-500" *ngIf="data.PrintCount && data.PrintCount > 0">
-                      Đã in: {{data.PrintCount}}
+                      <div class="flex text-xs text-success-500" *ngIf="data.PrintCount && data.PrintCount > 0">
+                        Đã in: {{data.PrintCount}}
+                      </div>
+                    </div>
+                    <div class="font-z14" *ngIf="data.MessageCount > 0">
+                      <div title="Tin nhắn đã gửi" class="hover:text-info-400 text-neutral-1-400 gap-x-1 flex items-center">
+                        <i class="tdsi-messenger-fill text-base"></i>
+                      <span>{{data.MessageCount}}</span>
+                      </div>
                     </div>
                   </div>
 
@@ -225,12 +234,23 @@
                 </td>
 
                 <!-- Trạng thái -->
+                <!--   [popoverFooter]="footerShipStatus" [popoverContent]="contentShipStatus" -->
                 <td *ngIf="isHidden('StatusText')" class="border-r">
-                  <tds-tag [status]="getColorStatusText(data.StatusText)" type="outline" class="cursor-pointer">
+                  <tds-tag [status]="getColorStatusText(data.StatusText)" type="outline" class="cursor-pointer"
+                    tds-dropdown trigger="click" [tdsDropdownMenu]="menu" placement="bottomRight" popoverTrigger="click"
+                    (click)="openShipStatus(data,data.Id)">
                     <span class="flex items-center">
                       {{ data.StatusText }}<i class="tdsi-arrow-down-fill text-base leading-none ml-1"></i>
                     </span>
                   </tds-tag>
+                  <tds-dropdown-menu #menu="tdsDropdownMenu">
+                    <div class="w-full">
+                      <div tds-dropdown-item *ngFor="let status of lstStatusTypeExt"
+                        (click)="updateStatusSaleOnline(data.Id, status)">
+                        <a> {{ status.Text }} </a>
+                      </div>
+                    </div>
+                  </tds-dropdown-menu>
                 </td>
 
                 <!-- Nhân viên -->

@@ -24,6 +24,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { GenerateMessageTypeEnum } from 'src/app/main-app/dto/conversation/message.dto';
+import { CommonService } from 'src/app/main-app/services/common.service';
 
 @Component({
   selector: 'app-order',
@@ -39,6 +40,10 @@ export class OrderComponent implements OnInit {
   isLoading: boolean = false;
   count: number = 1;
   idsModel: any = [];
+  indClickStatus = -1;
+  currentStatus:TDSSafeAny;
+  lstStatusTypeExt!: Array<any>;
+  private destroy$ = new Subject<void>();
 
   private _destroy = new Subject<void>();
 
@@ -108,11 +113,13 @@ export class OrderComponent implements OnInit {
     private cacheApi: THelperCacheService,
     private excelExportService: ExcelExportService,
     private resizeObserver: TDSResizeObserver,
+    private commonService: CommonService,
   ) { }
 
   ngOnInit(): void {
     this.loadTags();
     this.loadGridConfig();
+    this.loadStatusTypeExt()
   }
 
   ngAfterViewInit(): void {
@@ -569,5 +576,46 @@ export class OrderComponent implements OnInit {
       });
     }
   }
+
+  // Nhãn
+  loadStatusTypeExt() {
+    this.commonService.getStatusTypeExt().subscribe(res => {
+      this.lstStatusTypeExt = res;
+      console.log("data",this.lstStatusTypeExt);
+
+    });
+  }
+
+  updateStatusSaleOnline(idOrder: any, status: any){
+    let value = status.Value
+    this.saleOnline_OrderService.updateStatusSaleOnline(idOrder, value).pipe(takeUntil(this.destroy$)).subscribe((res) => {
+      this.message.success('Cập nhật thành công');
+
+    },err => {
+      this.message.error( err.error.message ?? 'Cập nhật thất bại');
+    });
+  }
+
+  openShipStatus(data:TDSSafeAny, dataId:number){
+    this.indClickStatus = dataId;
+    this.currentStatus = {
+      value: data.ShipStatus,
+      text: data.ShowShipStatus
+    }
+  }
+
+  // lịch sử tin nhắn
+  // public openHistoryMessageSent(orderId: any) {
+  //   const modalRef = this.modalService.open(HistoryChatModalComponent, { size: 'xl' });
+  //   modalRef.componentInstance.orderId = orderId;
+  //   modalRef.componentInstance.type = "order";
+  //   modalRef.result.then(res => {
+
+  //   }, (reason) => {
+
+  //   });
+  // }
+
+
 
 }
