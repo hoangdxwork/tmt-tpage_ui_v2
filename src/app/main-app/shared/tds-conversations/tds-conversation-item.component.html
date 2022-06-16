@@ -11,7 +11,7 @@
           <!-- Tin nhắn văn bản -->
           <div *ngIf="data.message_formatted" class="message-inner {{data.error_message ? 'error' : ''}}"
               tds-tooltip tooltipTitle="{{data.DateCreated | yiDateTimeFormat}}">
-              <div [innerHTML]="data.message_formatted | formatIconLike | safeHtml" #contentMessage></div>
+              <div class="text-left" [innerHTML]="data.message_formatted | formatIconLike | safeHtml" #contentMessage></div>
           </div>
 
           <!-- Tin nhắn hình ảnh -->
@@ -62,7 +62,7 @@
 		  </div>
 
           <!-- Tin nhắn không tải được -->
-          <div *ngIf="!data.message_formatted && !data.message?.attachments" class="message-inner !text-accent-3 !bg-accent-3 !bg-opacity-20"
+          <div *ngIf="!data.message_formatted && !data.message?.attachments" class="message-inner text-left !text-accent-3 !bg-accent-3 !bg-opacity-20"
             tds-tooltip tooltipTitle="{{data.DateCreated | yiDateTimeFormat}}">
               Không tải được tin nhắn!
           </div>

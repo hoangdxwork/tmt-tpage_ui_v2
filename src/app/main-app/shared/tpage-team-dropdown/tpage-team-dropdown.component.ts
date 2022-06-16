@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Host, OnInit, Optional, Output } from '@angular/core';
+import { Component, EventEmitter, Host, Input, OnInit, Optional, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -19,6 +19,7 @@ export class TpageTeamDropdownComponent implements OnInit {
   visible = false;
   @Output() readonly tdsClickItem = new EventEmitter<CRMTeamDTO>();
   @Output() isRefresh = new EventEmitter<boolean>();
+  @Input() isRefreshing!: boolean 
 
   constructor(
     private crmTeamService: CRMTeamService,
