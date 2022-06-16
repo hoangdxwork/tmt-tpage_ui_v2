@@ -1,5 +1,5 @@
 import { addDays } from 'date-fns/esm';
-import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { SaleOnlineOrderSummaryStatusDTO, SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { ColumnTableDTO } from 'src/app/main-app/dto/common/table.dto';
@@ -101,7 +101,7 @@ export class OrderComponent implements OnInit {
   @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
   @ViewChild('viewChildDetailPartner') viewChildDetailPartner!: ElementRef;
 
-  constructor(
+  constructor(private cdRef: ChangeDetectorRef,
     private tagService: TagService,
     private router: Router,
     private orderPrintService: OrderPrintService,
@@ -113,8 +113,7 @@ export class OrderComponent implements OnInit {
     private cacheApi: THelperCacheService,
     private excelExportService: ExcelExportService,
     private resizeObserver: TDSResizeObserver,
-    private commonService: CommonService,
-  ) { }
+    private commonService: CommonService) { }
 
   ngOnInit(): void {
     this.loadTags();
@@ -382,15 +381,22 @@ export class OrderComponent implements OnInit {
   }
 
   getColorStatusText(status: string): TDSTagStatusType {
-    switch (status) {
+    let value = this.lstStatusTypeExt.filter(x => x.Text === status)[0]?.Text;
+    switch (value) {
+      case "Đơn hàng":
+        return "primary";
       case "Nháp":
         return "info";
-      case "Đơn hàng":
-        return "success";
       case "Hủy":
-        return "error";
-      default:
         return "warning";
+      case "Hủy bỏ":
+        return "secondary";
+      case "Bom hàng":
+        return "error";
+      case "Đã thanh toán":
+        return "success";
+      default:
+        return "secondary";
     }
   }
 
@@ -580,28 +586,19 @@ export class OrderComponent implements OnInit {
   // Nhãn
   loadStatusTypeExt() {
     this.commonService.getStatusTypeExt().subscribe(res => {
-      this.lstStatusTypeExt = res;
-      console.log("data",this.lstStatusTypeExt);
-
+        this.lstStatusTypeExt = [...res];
     });
   }
 
-  updateStatusSaleOnline(idOrder: any, status: any){
-    let value = status.Value
-    this.saleOnline_OrderService.updateStatusSaleOnline(idOrder, value).pipe(takeUntil(this.destroy$)).subscribe((res) => {
-      this.message.success('Cập nhật thành công');
-
+  updateStatusSaleOnline(data: any, status: any){
+    let value = status.Text;
+    this.saleOnline_OrderService.updateStatusSaleOnline(data.Id, value).pipe(takeUntil(this.destroy$)).subscribe((res) => {
+        this.message.success('Cập nhật thành công');
+        data.StatusText = status.Text;
+        this.cdRef.detectChanges();
     },err => {
       this.message.error( err.error.message ?? 'Cập nhật thất bại');
     });
-  }
-
-  openShipStatus(data:TDSSafeAny, dataId:number){
-    this.indClickStatus = dataId;
-    this.currentStatus = {
-      value: data.ShipStatus,
-      text: data.ShowShipStatus
-    }
   }
 
   // lịch sử tin nhắn

@@ -237,16 +237,16 @@
                 <!--   [popoverFooter]="footerShipStatus" [popoverContent]="contentShipStatus" -->
                 <td *ngIf="isHidden('StatusText')" class="border-r">
                   <tds-tag [status]="getColorStatusText(data.StatusText)" type="outline" class="cursor-pointer"
-                    tds-dropdown trigger="click" [tdsDropdownMenu]="menu" placement="bottomRight" popoverTrigger="click"
-                    (click)="openShipStatus(data,data.Id)">
+                    tds-dropdown trigger="click" [tdsDropdownMenu]="menu1" placement="bottomRight" popoverTrigger="click">
                     <span class="flex items-center">
                       {{ data.StatusText }}<i class="tdsi-arrow-down-fill text-base leading-none ml-1"></i>
                     </span>
                   </tds-tag>
-                  <tds-dropdown-menu #menu="tdsDropdownMenu">
+
+                  <tds-dropdown-menu #menu1="tdsDropdownMenu">
                     <div class="w-full">
                       <div tds-dropdown-item *ngFor="let status of lstStatusTypeExt"
-                        (click)="updateStatusSaleOnline(data.Id, status)">
+                        (click)="updateStatusSaleOnline(data, status)">
                         <a> {{ status.Text }} </a>
                       </div>
                     </div>
