@@ -1,13 +1,14 @@
-import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Injectable, OnDestroy } from "@angular/core";
+import { Observable, Subject } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSSafeAny } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
 import { GeneralConfigsFacade } from "../facades/general-config.facade";
+import { takeUntil } from 'rxjs/operators';
 
 @Injectable()
-export class OrderPrintService extends BaseSevice {
+export class OrderPrintService extends BaseSevice implements OnDestroy {
 
   prefix: string = "";
   table: string = "";
@@ -15,12 +16,12 @@ export class OrderPrintService extends BaseSevice {
 
   private saleConfig: any;
   private configModel: any;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private apiService: TCommonService,
     private message: TDSMessageService,
-    private generalConfigsFacade: GeneralConfigsFacade
-  ) {
+    private generalConfigsFacade: GeneralConfigsFacade) {
     super(apiService);
     this.initialize();
   }
@@ -30,8 +31,12 @@ export class OrderPrintService extends BaseSevice {
   }
 
   loadSaleConfig() {
-    this.generalConfigsFacade.getSaleConfigs().subscribe(res => {
+    this.generalConfigsFacade.getSaleConfigs().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.saleConfig = res;
+    });
+
+    this.generalConfigsFacade.getSaleOnineSettingConfig().pipe(takeUntil(this.destroy$)).subscribe(res => {
+      this.configModel = res;
     });
   }
 
@@ -56,7 +61,7 @@ export class OrderPrintService extends BaseSevice {
 
     if(this.saleConfig.configs && this.saleConfig.configs.PrinterConfigs != null && this.saleConfig.configs.DefaultPrinterTemplate != null) {
 
-      var printer = this.saleConfig.configs.PrinterConfigs.filter(function (x: any) {
+      let printer = this.saleConfig.configs.PrinterConfigs.filter(function (x: any) {
         return x.Code === "03";
       })[0];
 
@@ -64,7 +69,7 @@ export class OrderPrintService extends BaseSevice {
         printer.Template = this.saleConfig.configs.DefaultPrinterTemplate;
       }
 
-      var note = printer.Note;
+      let note = printer.Note;
       if (this.configModel && this.configModel.enablePrintComment) {
 
         if (model.Note) {
@@ -97,7 +102,7 @@ export class OrderPrintService extends BaseSevice {
         }
       });
 
-      this.print(printer.Ip, printer.Port, body).subscribe(res => {
+      this.printRequest(printer.Ip, printer.Port, body).pipe(takeUntil(this.destroy$)).subscribe(res => {
         if (typeof res === "string") {
           res = JSON.parse(res);
         }
@@ -115,13 +120,102 @@ export class OrderPrintService extends BaseSevice {
     }
   }
 
-  print(printerIp: string, printerPort: string, body: TDSSafeAny): Observable<TDSSafeAny> {
+  printIpFromOrder(model: any): any {debugger
+    let exist = this.saleConfig.configs && this.saleConfig.configs.PrinterConfigs != null && this.saleConfig.configs.DefaultPrinterTemplate != null;
+    if(!exist) {
+      return this.message.error('"Không thể tải cấu hình.", "Không thể in."')
+    }
+
+    let lsProduct: any = [];
+    let product = "";
+    let printer = this.saleConfig.configs.PrinterConfigs.filter((x: any) => x.Code === "03")[0];
+
+
+    let checkQuanlityProduct = printer?.Others?.find((x: any) => x.Key == "config.hide_quantity_product") && printer?.Others?.find((x: any) => x.Key == "config.hide_quantity_product").Value;
+    let checkQuanlityPrice = printer?.Others?.find((x: any) => x.Key == "config.hide_price_product") && printer?.Others?.find((x: any) => x.Key == "config.hide_price_product").Value;
+    let showPageName = printer?.Others?.find((x: any) => x.Key == "config.show_page_name") && printer?.Others?.find((x: any) => x.Key == "config.show_page_name").Value;
+    let showPartnerStatus = printer?.Others?.find((x: any) => x.Key == "config.show_partner_status") && printer?.Others?.find((x: any) => x.Key == "config.show_partner_status").Value;
+
+    if (model.Details) {
+        model.Details.forEach((x: any) => {
+            lsProduct.push((`${x.ProductName}\n ${(!checkQuanlityProduct) ? `SL: ${x.Quantity}` : ""} ${(!checkQuanlityPrice) ? `Giá: ${x.Price.toLocaleString()}` : ""} `).trim());
+        });
+    }
+
+    if (lsProduct) {
+        product = lsProduct.join('\n');
+    }
+
+    if (!printer.Template) {
+        printer.Template = this.saleConfig.configs.DefaultPrinterTemplate;
+    }
+
+    let note = printer.Note;
+    if (this.configModel && this.configModel.enablePrintComment) {
+        if (model.Note) {
+            if (note) {
+                note = model.Note + '\n-------------\n' + note;
+            } else {
+                note = model.Note;
+            }
+        }
+    }
+    if (this.configModel.enablePrintAddress) {
+        if (model.Address) {
+            note = `Đc: ${model.Address}` + '\n-------------\n' + note;
+        }
+    }
+
+    let noteHeader = printer.NoteHeader ? printer.NoteHeader : "";
+    let header = showPageName ? noteHeader + "\n" + model.CRMTeamName : noteHeader;
+    let partnerStatus = showPartnerStatus ? (model.Partner ? model.Partner.StatusText : "") : "";
+
+    let body = {
+      size: printer.Template,
+      note: note,
+      html: '',
+      json: {
+          index: (this.configModel && this.configModel.sessionEnable) ? model.SessionIndex : '',
+          code: model.Code,
+          header: header,
+          name: model.Facebook_UserName,
+          partnerCode: model.PartnerCode,
+          phone: model.Telephone,
+          uid: model.Facebook_UserId,
+          product: product,
+          address: model.Address,
+          dateInvoice: model.DateCreated,
+          userName: model.User ? model.User.Name : "",
+          details: model.Details,
+          partnerStatus: partnerStatus
+      }
+    } as any;
+
+    this.printRequest(printer.Ip, printer.Port, body).pipe(takeUntil(this.destroy$)).subscribe((data) => {
+      if (typeof data === "string") {
+        data = JSON.parse(data);
+      }
+
+      if (!data.Success) {
+        this.message.error(`Không thể in: ${data.Message}`);
+      }
+    });
+  }
+
+
+  printRequest(printerIp: string, printerPort: string, body: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `http://${printerIp}:${printerPort}/print/html`,
       method: TApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, body);
+  }
+
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

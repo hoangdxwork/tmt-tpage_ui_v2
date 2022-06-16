@@ -131,7 +131,7 @@
 
                         <!-- Tags -->
                         <div *ngIf="detail.Tags" class="flex w-full flex-wrap gap-2">
-                          <tds-tag *ngFor="let item of detail.Tags | splitComma" status='primary' tds-tooltip [tooltipTitle]="item" >
+                          <tds-tag *ngFor="let item of detail.Tags | prettyjson" status='primary' tds-tooltip [tooltipTitle]="item" >
                             <div class="truncate max-w-[100px]">
                               {{item}}
                             </div>

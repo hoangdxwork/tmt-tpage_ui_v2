@@ -51,6 +51,15 @@ export class SharedService extends BaseSevice {
     return this.apiService.getCacheData<InitSaleDTO>(api, null);
   }
 
+  getSaleOnineSettingConfig(): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/odata/SaleOnlineSetting`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getCacheData<InitSaleDTO>(api, null);
+  }
+
   getCurrentCompany(): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/api/common/getcompanycurrent`,
