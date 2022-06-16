@@ -221,4 +221,13 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
+  getAllByMDBPartnerId(partnerId: any): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}//rest/v1.0/partner/${partnerId}/pages`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
 }

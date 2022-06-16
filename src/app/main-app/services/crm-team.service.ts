@@ -80,6 +80,21 @@ export class CRMTeamService extends BaseSevice {
     return this._currentTeam;
   }
 
+  getActiveByPageIds$(pageIds: string[]) {
+    return this.onChangeListFaceBook().pipe(map((res: any) => {
+      let data: any[] = [];
+      res?.Items.map((t: any) => {
+          t.Childs.map((c: any) => {
+              if (pageIds.indexOf(c.Facebook_PageId) >= 0) {
+                  data.push(c);
+              }
+          })
+      });
+
+      return data;
+    }))
+  }
+
   // xử lý teasm
   getCacheTeamId(): Observable<string | null> {
     return this.caheApi.getItem(this.__keyCacheTeamId).pipe(

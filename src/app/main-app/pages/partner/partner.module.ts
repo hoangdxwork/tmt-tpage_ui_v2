@@ -53,6 +53,8 @@ import { TDSNotificationModule } from 'tds-ui/notification';
 import { TDSAlertModule } from 'tds-ui/alert';
 import { TDSTypographyModule } from 'tds-ui/typography';
 import { TDSEmptyModule } from 'tds-ui/empty';
+import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conversations.module';
+import { CRMMatchingService } from '../../services/crm-matching.service';
 
 const SERVICES = [
   OdataPartnerService,
@@ -63,7 +65,8 @@ const SERVICES = [
   ExcelExportService,
   AccountRegisterPaymentService,
   QuickReplyService,
-  RestSMSService
+  RestSMSService,
+  CRMMatchingService
 ]
 
 @NgModule({
@@ -117,7 +120,8 @@ const SERVICES = [
     CommonModule,
     MainSharedModule,
     TDSTypographyModule,
-    TDSEmptyModule
+    TDSEmptyModule,
+    TDSConversationsModule
   ],
   providers: [
     ...SERVICES,

@@ -78,12 +78,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     // TODO: change team in component
     this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe(([team, params]: any) => {
       if (!TDSHelperObject.hasValue(team)) {
-        return this.onRedirect();
+          return this.onRedirect();
       }
       // TODO: change Team
       if(team.Id != this.currentTeam?.Id) {
-        this.fetchLiveConversations(team);
-        this.setCurrentTeam(team);
+          this.fetchLiveConversations(team);
+          this.setCurrentTeam(team);
       }
 
       this.type = params?.params?.type;
@@ -93,14 +93,14 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         || (!TDSHelperString.isString(this.activeCvsItem?.psid) && !TDSHelperString.isString(this.paramsUrl?.psid));
 
       if(exist){
-        this.onChangeConversation(team);
+          this.onChangeConversation(team);
       }
     });
 
     // loading moused khi change, đợi phản hồi từ loadMessages trong shared-tds-conversations
     this.conversationDataFacade.changeCurrentCvs$.subscribe((data: boolean) => {
-      this.isChanged = data;
-      this.cdRef.detectChanges();
+        this.isChanged = data;
+        this.cdRef.detectChanges();
     })
   }
 

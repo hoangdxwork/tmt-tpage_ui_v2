@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
@@ -6,7 +6,6 @@ import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
 import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
-import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { formatDate } from '@angular/common';
 import { ModalReportOrderPostComponent } from '../components/post-filter/modal-report-order-post.component';
 import { ConfigPostOutletComponent } from '../components/config-post/config-post-outlet.component';
@@ -49,7 +48,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private facebookCommentService: FacebookCommentService,
-    private conversationPostFacade: ConversationPostFacade,
     private message: TDSMessageService){
   }
 

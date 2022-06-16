@@ -197,7 +197,7 @@
                     {{ data.DateCreated | date:"dd-MM-yyyy HH:mm"}}</td>
                   <td [tdsRight]="true">
                     <div class="flex gap-x-2">
-                      <button tds-button-icon color="secondary" size="sm" (click)="openDrawerMessage()">
+                      <button tds-button-icon color="secondary" size="sm" (click)="openMiniChat(data)">
                         <span class="flex items-center">
                           <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                         </span>
@@ -230,6 +230,17 @@
       </div>
     </div>
   </div>
-  <app-drawer-message [isOpenDrawer]="isOpenMessageFacebook" (isCloseDrawer)="closeDrawerMessage($event)">
-  </app-drawer-message>
+
+  <tds-drawer [visible]="isOpenDrawer" [size]="'lg'" [placement]="'right'" >
+      <div *ngIf="currentConversation">
+          <ng-container *tdsDrawerContent>
+              <shared-tds-conversations
+                  class="flex w-full h-full"
+                  [data]="currentConversation"
+                  [type]="'all'" [team]="team">
+              </shared-tds-conversations>
+          </ng-container>
+      </div>
+  </tds-drawer>
+
 </div>

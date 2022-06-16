@@ -18,7 +18,7 @@
             </div>
             <!-- truy cập bài viết -->
             <a href="{{data.permalink_url}}" target="_blank" class="text-neutral-1-400 text-xs pr-1.5">
-              <i class="tdsi-expand-line"></i>
+                <i class="tdsi-expand-line"></i>
             </a>
           </span>
         </tds-tag>
@@ -27,26 +27,25 @@
         <!-- filter -->
         <tds-form-field>
           <tds-select valueField="value" textField="text" placeholder='Lọc theo' tooltipTitle="Lọc bài viết" tooltipPlacement="bottom" tds-tooltip
-            [(ngModel)]="currentFilter" [valuePrimitive]="false"
-            [data]="filterOptions" (ngModelChange)="onChangeFilter($event)">
+              [(ngModel)]="currentFilter" [valuePrimitive]="false"
+              [data]="filterOptions" (ngModelChange)="onChangeFilter($event)">
           </tds-select>
         </tds-form-field>
         <!-- sort -->
         <tds-form-field>
           <tds-select valueField="value" textField="text" placeholder='Sắp xếp theo' tooltipTitle="Sắp xếp bài viết" tooltipPlacement="bottom" tds-tooltip
-            [(ngModel)]="currentSort" [valuePrimitive]="false"
-            [data]="sortOptions" (ngModelChange)="onChangeSort($event)">
+              [(ngModel)]="currentSort" [valuePrimitive]="false"
+              [data]="sortOptions" (ngModelChange)="onChangeSort($event)">
           </tds-select>
         </tds-form-field>
         <!-- cài đặt-->
-        <button tds-button-icon color="secondary" size="md" tooltipTitle="Cài đặt" tooltipPlacement="bottom" tds-tooltip>
-          <span class="flex items-center justify-center">
-            <i class="tdsi-gear-2-fill text-neutral-1-500"></i>
-          </span>
+        <button (click)="openConfigPost()" tds-button-icon color="secondary" size="md" tooltipTitle="Cấu hình bài viết" tooltipPlacement="bottom" tds-tooltip>
+            <span class="flex items-center justify-center">
+              <i class="tdsi-gear-2-fill"></i>
+            </span>
         </button>
         <!-- cấu hình bài viết -->
-        <button tds-button-icon color="secondary" size="md" tooltipTitle="Cấu hình bài viết" tooltipPlacement="bottom" tds-tooltip
-          (click)="openConfigPost()">
+        <button tds-button-icon color="secondary" size="md" tooltipTitle="Cấu hình in" tooltipPlacement="bottom" tds-tooltip>
           <span class="flex items-center justify-center">
             <i class="tdsi-setting-print-fill text-neutral-1-500"></i>
           </span>
@@ -101,28 +100,28 @@
               <span class="share-count  mr-3">
                 {{data.count_shares || 0}} lượt chia sẻ
               </span>
-              <div class="h-[30px] w-[30px] rounded-md cursor-pointer"
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer" title="Tất cả bình luận"
                 [ngClass]="showComment?'bg-primary-3 text-primary-1 border border-primary-1':'border border-transparent'"
                 (click)="openChat()">
                 <div class="flex items-center justify-center">
                   <i class="tdsi-livechat-line text-xl"></i>
                 </div>
               </div>
-              <div class="h-[30px] w-[30px] rounded-md cursor-pointer">
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer" title="Người dùng">
                 <i class="tdsi-user-line text-xl"></i>
               </div>
-              <div class="h-[30px] w-[30px] rounded-md cursor-pointer">
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer" title="Quản lý bình luận">
                 <a href="{{data.permalink_url}}" target="_blank">
                     <i class="tdsi-eye-line text-xl"></i>
                 </a>
               </div>
-              <div class="h-[30px] w-[30px] rounded-md cursor-pointer">
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer" title="Lọc bình luận">
                 <i class="tdsi-search-fill text-xl"></i>
               </div>
-              <div class="h-[30px] w-[30px] rounded-md cursor-pointer">
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer"  title="Thống kê chốt đơn">
                 <i class="tdsi-chart-pie-fill text-xl"></i>
               </div>
-              <div class="h-[30px] w-[30px] rounded-md cursor-pointer">
+              <div class="h-[30px] w-[30px] rounded-md cursor-pointer" title="Mới nhất">
                 <i class="tdsi-sort-arrow-down-fill text-xl"></i>
               </div>
           </div>
