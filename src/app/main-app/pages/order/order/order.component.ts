@@ -46,8 +46,6 @@ export class OrderComponent implements OnInit {
   lstStatusTypeExt!: Array<any>;
   private destroy$ = new Subject<void>();
 
-  private destroy$ = new Subject<void>();
-
   public filterObj: TDSSafeAny = {
     tags: [],
     status: '',
