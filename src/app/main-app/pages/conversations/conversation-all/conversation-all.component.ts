@@ -47,6 +47,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   queryFilter: TDSSafeAny;
   total: number = 0;
   isRefresh: boolean = false;
+  isRefreshing: boolean = false;
   isProcessing:boolean = false;
   isChanged: boolean = false;
   clickReload: number = 0;
@@ -169,6 +170,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   changeCurrentCvsItem(item: any) {
     if(this.isOpenCollapCheck){
+      this.updateCheckedSet(item.id,!this.setOfCheckedId.has(item.id))
+      this.refreshCheckedStatus();
       return
     }
     if(item.psid == this.activeCvsItem.psid && item.page_id == this.activeCvsItem.page_id) {
@@ -376,7 +379,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     (this.dataSource$ as any) = null;
 
     if (Object.keys(queryObj || {}).length <= 4) {
-      this.dataSource$ = this.conversationDataFacade.makeDataSource(this.currentTeam.Facebook_PageId, this.type);
+      this.isRefreshing = true;
+      this.dataSource$ = this.conversationDataFacade.makeDataSource(this.currentTeam.Facebook_PageId, this.type).pipe(finalize(()=>{ setTimeout(() => {
+        this.isRefreshing = false;
+      }, 500);}));
     } else {
       this.dataSource$ = this.conversationDataFacade.makeDataSourceWithQuery(this.currentTeam.Facebook_PageId, this.type, queryObj).pipe(map((res => {
         if (res && res.items) {

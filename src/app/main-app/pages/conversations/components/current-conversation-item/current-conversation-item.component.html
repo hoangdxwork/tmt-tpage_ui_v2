@@ -7,7 +7,7 @@
         <div>
             <div class="relative">
                 <tpage-avatar-facebook 
-                [noSeenMessage]="(type == 'all' && item.count_unread_activities > 0) || (type == 'message' && item.count_unread_messages > 0) || (type == 'comment' && item.count_unread_comments > 0)"
+                [noSeenMessage]="seenedMessage()"
                 [shape]="'circle'" [size]="'lg'"
                 [psid]="item.psid" [token]="team?.Facebook_PageToken">
                 </tpage-avatar-facebook>
@@ -45,7 +45,7 @@
         </div>
         <div class="w-full flex flex-col gap-1" *ngIf="getLastActivity()">
             <div class="flex w-full justify-between items-center gap-x-1.5">
-                <div class="w-1/2 text-body-2 text-neutral-1-900 font-semibold truncate" [tooltipTitle]="item.name || item.partner_name" [tooltipPlacement]="['topLeft', 'leftTop']"
+                <div [ngClass]="seenedMessage()?'font-semibold':''" class="w-1/2 text-body-1 text-neutral-1-900 truncate" [tooltipTitle]="item.name || item.partner_name" [tooltipPlacement]="['topLeft', 'leftTop']"
                     tds-tooltip>{{item.name || item.partner_name}}</div>
                 <div class="flex items-center gap-2 truncate" >
                     <span *ngIf="type == 'all' && item.count_unread_activities > 0">
@@ -66,7 +66,7 @@
                 </div>
             </div>
             <div *ngIf="getLastActivity()?.message">
-                <div class="text-body-2 font-regular font-sans text-neutral-1-900" [innerHTML]="getLastActivity()?.message | formatIconLike"></div>
+                <div [ngClass]="seenedMessage()?'text-neutral-1-900':'text-neutral-1-600'" class="text-body-2 font-regular font-sans " [innerHTML]="getLastActivity()?.message | formatIconLike"></div>
             </div>
         </div>
       </div>

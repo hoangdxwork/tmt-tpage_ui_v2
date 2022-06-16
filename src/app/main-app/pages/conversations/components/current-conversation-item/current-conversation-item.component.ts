@@ -78,4 +78,8 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges {
     ev.stopImmediatePropagation();
   }
 
+  seenedMessage(){
+    return (this.type == 'all' && this.item.count_unread_activities > 0) || (this.type == 'message' && this.item.count_unread_messages > 0) || (this.type == 'comment' && this.item.count_unread_comments > 0)
+  }
+
 }

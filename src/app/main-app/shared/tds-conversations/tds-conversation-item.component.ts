@@ -125,6 +125,10 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
 
   clickReply(event: any) {
     this.isReply = !this.isReply;
+    setTimeout(() => {
+      if(this.contentReply)
+        this.contentReply.nativeElement.focus();``
+    }, 350);
   }
 
   addLike(event: any) {
