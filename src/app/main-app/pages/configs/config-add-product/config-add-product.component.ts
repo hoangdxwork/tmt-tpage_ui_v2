@@ -11,7 +11,6 @@ import { Subject } from 'rxjs';
 import { ProductService } from 'src/app/main-app/services/product.service';
 import { ConfigAddOriginCountryModalComponent } from '../components/config-add-origin-country-modal/config-add-origin-country-modal.component';
 import { ConfigAddUOMModalComponent } from '../components/config-add-UOM-modal/config-add-UOM-modal.component';
-import { ConfigAddVariantProductModalComponent } from './../components/config-add-variant-product-modal/config-add-variant-product-modal.component';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder, FormArray } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';

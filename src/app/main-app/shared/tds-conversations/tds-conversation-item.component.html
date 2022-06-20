@@ -17,7 +17,7 @@
           <!-- Tin nhắn hình ảnh -->
 		   <!-- 1 hình -->
 		  <div *ngIf="data.message?.attachments && data.message.attachments.data.length==1" class="flex flex-wrap max-w-[225px]">
-            <div *ngFor="let att of data.message.attachments.data" class="p-0.5 flex gap-x-2 justify-center items-center">
+            <div *ngFor="let att of data.message.attachments.data" [ngClass]="data.is_admin?'flex-row':'flex-row-reverse'" class="p-0.5 flex gap-x-2 justify-center items-center">
 				<a class="flex items-center" [ngClass]="reloadingImage?'cursor-wait':''" *ngIf="data.errorShowAttachment" tds-tooltip tooltipTitle="Ảnh đã hết hạn" (click)="refreshAttachment(att)">
 					<span class="tdsi-reload-fill text-primary-1 text-body-1 leading-none"></span>
 				</a>

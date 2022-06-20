@@ -44,7 +44,6 @@ import { ModalListShiftComponent } from './components/modal-list-shift/modal-lis
 import { ModalAddShiftComponent } from './components/modal-add-shift/modal-add-shift.component';
 import { ModalUpdateShiftComponent } from './components/modal-update-shift/modal-update-shift.component';
 import { ConfigDecentralizePageComponent } from './config-users/config-decentralize-page/config-decentralize-page.component';
-import { ConfigAddVariantProductModalComponent } from './components/config-add-variant-product-modal/config-add-variant-product-modal.component';
 import { ConfigAddUOMModalComponent } from './components/config-add-UOM-modal/config-add-UOM-modal.component';
 import { ConfigAddOriginCountryModalComponent } from './components/config-add-origin-country-modal/config-add-origin-country-modal.component';
 import { ConfigAddProductComponent } from './config-add-product/config-add-product.component';
@@ -61,7 +60,6 @@ import { FacebookService } from '../../services/facebook.service';
 import { ConfigProductDetailsComponent } from './components/config-product-details/config-product-details.component';
 import { ConfigAddCategoryModalComponent } from './components/config-add-category-modal/config-add-category-modal.component';
 import { ApplicationRoleService } from '../../services/application-role.service';
-import { ConfigEditProductComponent } from './config-edit-product/config-edit-product.component';
 import { UserRestHandler } from '../../services/handlers/user-rest.handler';
 import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
 import { ConfigAddAttributeProductModalComponent } from './components/config-add-attribute-product-modal/config-add-attribute-product-modal.component';
@@ -156,7 +154,6 @@ const SERVICES = [
     ModalListShiftComponent,
     ModalAddShiftComponent,
     ModalUpdateShiftComponent,
-    ConfigAddVariantProductModalComponent,
     ConfigAddUOMModalComponent,
     ConfigAddOriginCountryModalComponent,
     CreateProductVariantComponent,
@@ -170,7 +167,6 @@ const SERVICES = [
     ConfigConversationTagsCreateDataModalComponent,
     ConfigProductDetailsComponent,
     ConfigAddCategoryModalComponent,
-    ConfigEditProductComponent,
     ConfigAddAttributeProductModalComponent,
     ConfigAddPromotionComponent,
     ConfigEditPromotionComponent,

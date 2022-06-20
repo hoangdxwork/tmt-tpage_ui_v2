@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable} from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
-import { CRMTagDTO } from '../dto/crm-tag/odata-crmtag.dto';
+import { CRMTagDTO, CRMTagModelDTO } from '../dto/crm-tag/odata-crmtag.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable()
@@ -104,7 +104,7 @@ export class CRMTagService extends BaseSevice {
     return this.apiService.getData<CRMTagDTO>(api, null);
   }
 
-  insert(data: CRMTagDTO): Observable<any> {
+  insert(data: CRMTagModelDTO): Observable<any> {
     let api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
       method: TApiMethodType.post
@@ -113,7 +113,7 @@ export class CRMTagService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
-  update(key: string, data: CRMTagDTO, isForce: boolean = false): Observable<any> {
+  update(key: string, data: CRMTagModelDTO, isForce: boolean = false): Observable<any> {
     let api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})?isForce=${isForce}`,
       method: TApiMethodType.put
