@@ -156,8 +156,7 @@
                                     </tds-form-field>
                                 </div>
                                 <div class="w-2/3" *ngIf="dataModel.State != 'draft'">
-                                    <span class="font-semibold">{{_form.controls['PaymentJournal'].value ? _form.controls['PaymentJournal'].value.NameGet : 'N/A' }}</span>
-                                    <span *ngIf="_form.controls['PaymentJournal'].value">({{_form.controls["PaymentJournal"].value.Type}}) </span>
+                                    <span class="font-semibold" *ngIf="_form.controls['PaymentJournal'].value">{{_form.controls['PaymentJournal'].value.Name }} ({{_form.controls["PaymentJournal"].value.Type}})</span>
                                 </div>
                             </div>
                             <div class=" col-span-1 flex gap-x-6 items-center">
@@ -593,7 +592,7 @@
                                     </tds-select>
                                 </tds-form-field>
                                 </div>
-                                <div class="w-2/3" *ngIf="dataModel.State == ('paid' || 'open') ">
+                                <div class="w-2/3" *ngIf="dataModel.State !== 'draft'">
                                     <span class="font-semibold">{{_form.controls['User'].value ? _form.controls['User'].value.Name : '' }} </span>
                                 </div>
                             </div>
@@ -634,7 +633,7 @@
                                     <tds-date-picker formControlName="DateInvoice"></tds-date-picker>
                                 </div>
                                 <div class="w-2/3" *ngIf="dataModel.State != 'draft'">
-                                    <span class="font-semibold">{{_form.controls['DateInvoice'].value ? _form.controls['DateInvoice'].value : '' | date:"dd-MM-yyyy HH:mm"}} </span>
+                                    <span class="font-semibold" *ngIf="_form.controls['DateInvoice']?.value">{{_form.controls['DateInvoice'].value | date: 'dd/MM/yyyy HH:mm'}} </span>
                                 </div>
                             </div>
                             <div class=" col-span-1 flex gap-x-6 items-center">

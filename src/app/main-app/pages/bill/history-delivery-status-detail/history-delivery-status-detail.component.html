@@ -2,7 +2,6 @@
 <div *ngIf="!id" class="bg-white rounded-lg flex flex-col h-full w-full">
     <div class="flex justify-end w-full">
         <div class="flex flex-row items-center gap-2 w-1/3 px-4 py-2">
-            <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
             <button tds-button color="primary">
                 <span class="flex items-center">
                   <i class="tdsi-excel-fill text-lg leading-none mr-2"></i>Xuất file excel
@@ -12,11 +11,12 @@
                 <input tdsInput class="text-neutral-1-900" placeholder="Tìm kiếm" autocomplete="off" #filterText/>
                 <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
             </tds-form-field>
+            <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
         </div>
     </div>
     <!-- table -->
     <div class="h-full w-full">
-        <tds-table #headerTable 
+        <tds-table #headerTable
         [listData]="lstOfData"
         [showPagination]="false"
         [scroll]="{x:'auto'}">
@@ -92,7 +92,6 @@
             <div class="rounded-lg border flex flex-col h-fit w-full">
                 <div class="flex justify-end w-full">
                     <div class="flex flex-row items-center gap-2 w-1/3 px-4 py-2">
-                        <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
                         <button tds-button color="primary">
                             <span class="flex items-center">
                             <i class="tdsi-excel-fill text-lg leading-none mr-2"></i>Xuất file excel
@@ -102,11 +101,12 @@
                             <input tdsInput class="text-neutral-1-900" placeholder="Tìm kiếm" autocomplete="off" #filterText/>
                             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
                         </tds-form-field>
+                        <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
                     </div>
                 </div>
                 <!-- table -->
                 <div class="h-full w-full">
-                    <tds-table #headerTable 
+                    <tds-table #headerTable
                     [listData]="lstOfData"
                     [showPagination]="false"
                     [scroll]="{x:'auto'}">

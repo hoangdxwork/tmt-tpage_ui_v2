@@ -270,6 +270,11 @@ export class AddBillComponent implements OnInit, AfterViewInit, AfterViewChecked
       }
 
       this.mappingAddress(this.dataModel);
+      //TODO: nếu Team thiếu thông tin thì map dữ liệu
+      if(data.TeamId) {
+        this.loadTeamById(data.TeamId);
+      }
+
       this.updateForm(this.dataModel);
       this.cdRef.detectChanges();
     }, error => {
@@ -303,6 +308,12 @@ export class AddBillComponent implements OnInit, AfterViewInit, AfterViewChecked
     }, error => {
       this.message.error('Load thông tin mặc định đã xảy ra lỗi!');
     });
+  }
+
+  loadTeamById(id: any) {
+    this.cRMTeamService.getTeamById(id).subscribe((team: any) => {
+      this.dataModel.Team = {...this.dataModel.Team, ...team};
+    })
   }
 
   updateForm(data: FastSaleOrder_DefaultDTOV2) {

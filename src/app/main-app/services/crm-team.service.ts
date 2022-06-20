@@ -80,7 +80,7 @@ export class CRMTeamService extends BaseSevice {
     return this._currentTeam;
   }
 
-  getActiveByPageIds$(pageIds: string[]) {
+  getActiveByPageIds$(pageIds: string[]): Observable<any> {
     return this.onChangeListFaceBook().pipe(map((res: any) => {
       let data: any[] = [];
       res?.Items.map((t: any) => {
@@ -92,6 +92,22 @@ export class CRMTeamService extends BaseSevice {
       });
 
       return data;
+    }))
+  }
+
+  getTeamById(id: string): Observable<any> {
+    return this.onChangeListFaceBook().pipe(map((res: any) => {
+      let data: any[] = [];
+      res?.Items.map((t: any) => {
+          t.Childs.map((c: any) => {
+            if (c.Id === id) {
+                data.push(c);
+                return;
+            }
+          })
+      });
+
+      return data[0];
     }))
   }
 
