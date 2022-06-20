@@ -197,7 +197,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   loadPartnerStatus() {
     this.commonService.getPartnerStatus().subscribe(res => {
-      this.lstPartnerStatus = res;
+      this.lstPartnerStatus = [...res];
     });
   }
 
@@ -300,7 +300,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       this.partnerService.updateStatus(this.formData.Id, data).subscribe(res => {
         this.message.success(Message.Partner.UpdateStatus);
         this.formData.StatusText = status.text;
-        // this.formEditOrder.controls["Partner"].setValue(partner);
       });
     }
     else {

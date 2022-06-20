@@ -276,6 +276,9 @@ export interface OrderLine {
   PriceRecent?: any;
   Name?: any;
   IsName: boolean;
+  LiveCampaign_DetailId: any;
+  LiveCampaignQtyChange: number;
+  OrderId: number;
   ProductName: string;
   ProductUOMName: string;
   SaleLineIds: any[];
