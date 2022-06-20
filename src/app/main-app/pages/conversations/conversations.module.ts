@@ -112,6 +112,7 @@ import { TDSInputNumberModule } from 'tds-ui/input-number';
 import { TDSMessageModule, TDSMessageService } from 'tds-ui/message';
 import { ProductPagefbComponent } from './components/product-pagefb/product-pagefb.component';
 import { ModalApplyPromotionComponent } from './components/modal-apply-promotion/modal-apply-promotion.component';
+import { OdataProductService } from '../../services/mock-odata/odata-product.service';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -151,7 +152,8 @@ const SERVICES = [
   LiveCampaignService,
   AccountTaxService,
   AccountRegisterPaymentService,
-  OdataSaleCouponProgramService
+  OdataSaleCouponProgramService,
+  OdataProductService
 ]
 
 @NgModule({
