@@ -12,6 +12,7 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSStatusType } from 'tds-ui/step';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 
 @Component({
   selector: 'app-detail-bill',
@@ -41,6 +42,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   constructor(private route: ActivatedRoute,
       private router: Router,
+      private crmTeamService: CRMTeamService,
       private commonService: CommonService,
       private fastSaleOrderService: FastSaleOrderService,
       private modalService: TDSModalService,
@@ -100,9 +102,20 @@ export class DetailBillComponent implements OnInit, OnDestroy{
                this.indexStep = 3;
               break;
         }
+
+        //TODO: nếu Team thiếu thông tin thì map dữ liệu
+        if(res.TeamId) {
+          this.loadTeamById(res.TeamId);
+        }
     }, error => {
       this.isLoading = false;
       this.message.error('Load dữ liệu PBH đã xảy ra lỗi!')
+    })
+  }
+
+  loadTeamById(id: any) {
+    this.crmTeamService.getTeamById(id).subscribe((team: any) => {
+      this.dataModel.Team = {...this.dataModel.Team, ...team};
     })
   }
 
