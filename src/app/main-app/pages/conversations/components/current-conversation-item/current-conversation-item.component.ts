@@ -12,7 +12,7 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
     selector: 'current-conversation-item',
     templateUrl: './current-conversation-item.component.html',
     styleUrls: ['./current-conversation-item.component.scss'],
-    changeDetection: ChangeDetectionStrategy.Default
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class CurrentConversationItemComponent  implements OnInit, OnChanges {
@@ -33,11 +33,11 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges {
   isChoose!: TDSSafeAny;
 
   constructor(private message: TDSMessageService,
-    private draftMessageService: DraftMessageService,
-    private conversationEventFacade: ConversationEventFacade,
-    public crmService: CRMTeamService,
-    public activatedRoute: ActivatedRoute,
-    public router: Router) {
+      private draftMessageService: DraftMessageService,
+      private conversationEventFacade: ConversationEventFacade,
+      public crmService: CRMTeamService,
+      public activatedRoute: ActivatedRoute,
+      public router: Router) {
   }
 
   ngOnInit(): void {
@@ -64,13 +64,13 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges {
     }
   }
 
-  getLastActivity() {
-    if(this.type && this.type == "message" && this.item && this.item.last_message) return this.item.last_message;
-    else if(this.type && this.type == "comment" && this.item && this.item.last_comment) return this.item.last_comment;
-    else if(this.item && this.item.last_activity) return this.item.last_activity || {};
+  // getLastActivity() {
+  //   if(this.type && this.type == "message" && this.item && this.item.last_message) return this.item.last_message;
+  //   else if(this.type && this.type == "comment" && this.item && this.item.last_comment) return this.item.last_comment;
+  //   else if(this.item && this.item.last_activity) return this.item.last_activity || {};
 
-    return null;
-  }
+  //   return null;
+  // }
 
   changeCheck(ev: TDSSafeAny){
     this.checkedChange.emit(!this.checked);

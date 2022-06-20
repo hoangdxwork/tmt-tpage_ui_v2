@@ -1,7 +1,8 @@
 <div class="w-full flex flex-col gap-y-4">
   <div class="flex gap-x-2">
     <tds-form-field class="w-full">
-      <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm" tdsInput />
+      <input [(ngModel)]="filterObj.searchText" #innerText
+        placeholder="Tìm kiếm sản phẩm" autocomplete="off" [ngModelOptions]="{standalone: true}" tdsInput />
       <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
     </tds-form-field>
 
@@ -22,30 +23,45 @@
       </div>
     </tds-dropdown-menu>
   </div>
-  <div class="h-[300px] max-h-[300px]">
-    <tds-table #headerTable [listData]="lstOfData" [pageSize]="10" [scroll]="{y:'auto'}">
+  <div class="h-[600px] max-h-[600px]">
+    <tds-table #rowSelectionTable
+      [listData]="lstOfData"
+      [showSizeChanger]="true"
+      [frontPagination]="false"
+      [loading]="isLoading"
+      [scroll]="{y:'auto'}"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [total]="count"
+      (clickRefresh)="refreshData()"
+      (queryParams)="onQueryParamsChange($event)">
       <thead>
         <tr>
-          <th>Sản phẩm</th>
-          <th>Đơn vị tính</th>
-          <th>Giá</th>
-          <th>Thao tác</th>
+          <th style="width: 10%;">Ảnh</th>
+          <th style="width: 40%">Sản phẩm</th>
+          <th style="width: 15%; text-align: center">Đơn vị tính</th>
+          <th style="width: 15%; text-align: right">Giá</th>
+          <th style="width: 20%; text-align: center">Thao tác</th>
         </tr>
       </thead>
       <tbody>
-        <tr class="border-b border-neutral-2-100 hover:bg-neutral-3-50 text-neutral-1-900"
-          *ngFor="let data of lstOfData">
-          <td>{{ data.NameGet }}</td>
-          <td>{{ data.UOMName }}</td>
-          <td>{{ data.Price | number:'1.0-3' }}</td>
-          <td>
-            <button tds-button-outline color="primary" size="sm" (click)="onPushItem(data)">
-              <span class="flex items-center">
-                <i class="tdsi-reply-fill text-lg leading-none mr-2"></i>Gửi sản phẩm
-              </span>
-            </button>
-          </td>
-        </tr>
+        <ng-template  ngFor let-data let-i="index" [ngForOf]="rowSelectionTable.data" let-odd='odd'>
+            <tr>
+              <td style="width: 10%;">
+                  <tds-avatar class="rounded-lg" [shape]="'square'" [size]="44" [tdsSrc]="data.ImageUrl?data.ImageUrl:(data.Images?data.Images[0].Url:'')" [isAvatar]="false"></tds-avatar>
+              </td>
+              <td style="width: 40%">{{ data.NameGet }}</td>
+              <td style="width: 15%; text-align: center">{{ data.UOMName }}</td>
+              <td style="width: 15%; text-align: right">{{ data.Price | number:'1.0-3' }}</td>
+              <td style="width: 20%; text-align: center">
+                <button tds-button-outline color="primary" size="sm" (click)="onPushItem(data)">
+                  <span class="flex items-center">
+                    <i class="tdsi-reply-fill text-lg leading-none mr-2"></i>Gửi sản phẩm
+                  </span>
+                </button>
+              </td>
+            </tr>
+        </ng-template>
       </tbody>
     </tds-table>
   </div>
@@ -58,3 +74,9 @@
     </button>
   </div>
 </div>
+
+<!-- <button tds-button-outline color="primary" size="sm" (click)="onPushItem(data)">
+  <span class="flex items-center">
+    <i class="tdsi-reply-fill text-lg leading-none mr-2"></i>Gửi sản phẩm
+  </span>
+</button> -->

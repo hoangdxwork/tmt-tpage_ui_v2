@@ -691,7 +691,7 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
           let value = this.createType(res, query);
           this.activityFbState.setExtras(pageId, psid, value.extras);
           return this.activityFbState.setActivity(pageId, psid, type, value);
-      }), shareReplay());
+      }), shareReplay(1));
     }
   }
 

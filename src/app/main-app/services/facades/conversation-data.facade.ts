@@ -13,8 +13,9 @@ import { CRMTeamService } from "../crm-team.service";
 import { StringHelperV2 } from "../../shared/helper/string.helper";
 import { Router } from "@angular/router";
 import { TDSMessageService } from "tds-ui/message";
-import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { TDSNotificationService } from "tds-ui/notification";
+import { BaseHelper } from "../../shared/helper/base.helper";
 
 @Injectable({
   providedIn: 'root'
@@ -131,13 +132,20 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
 
     let exist = this.currentUrl?.startsWith('/conversation') && (this.currentTeam?.Facebook_PageId == pageId);
     if (!exist) {
+
       let splitMessage = StringHelperV2.getSliceAfterSpaceByLength(value.message, 60, "...");
       let team = this.getTeamByPageId(pageId) as any;
 
       if (TDSHelperObject.hasValue(team)) {
+
         let message = `${splitMessage} tới Page: ${team.Facebook_PageName}`;
-        let url = `/conversation/all?teamId=${team.Id}&type=all&psid=${psid}`;
-        let template = `<a href="${url}">${message}</a>`;
+        let url = `conversation/all?teamId=${team.Id}&type=all&psid=${psid}`;
+
+        let baseUrl = BaseHelper.getBaseUrl();
+        if(TDSHelperString.hasValueString(baseUrl)) {
+          url = `${baseUrl}#/${url}`;
+        }
+        let template = ` <a value="${url}" href="${url}">${message}</a>`;
 
         this.notification.success('Tin nhắn mới', template, { placement: 'bottomLeft' });
       } else {
@@ -145,7 +153,8 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
         this.notification.error('Tin nhắn mới', messageError, { placement: 'bottomLeft' });
       }
     }
-    console.log(value);
+
+   console.log(value);
   }
 
   messageServer(value: any) {
