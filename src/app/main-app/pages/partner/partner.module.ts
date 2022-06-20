@@ -55,6 +55,16 @@ import { TDSTypographyModule } from 'tds-ui/typography';
 import { TDSEmptyModule } from 'tds-ui/empty';
 import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conversations.module';
 import { CRMMatchingService } from '../../services/crm-matching.service';
+import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
+import { ConversationDataFacade } from '../../services/facades/conversation-data.facade';
+import { DraftMessageService } from '../../services/conversation/draft-message.service';
+import { ConversationEventFacade } from '../../services/facades/conversation-event.facade';
+import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
+import { OrderFormHandler } from '../../services/handlers/order-form.handler';
+import { FastSaleOrderService } from '../../services/fast-sale-order.service';
+import { CheckFormHandler } from '../../services/handlers/check-form.handler';
+import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
+import { DirectivesModule } from '../../shared/directives/directives.module';
 
 const SERVICES = [
   OdataPartnerService,
@@ -66,7 +76,16 @@ const SERVICES = [
   AccountRegisterPaymentService,
   QuickReplyService,
   RestSMSService,
-  CRMMatchingService
+  CRMMatchingService,
+  ActivityDataFacade,
+  ConversationDataFacade,
+  DraftMessageService,
+  ConversationEventFacade,
+  ConversationOrderFacade,
+  OrderFormHandler,
+  CheckFormHandler,
+  FastSaleOrderService,
+  DeliveryCarrierService
 ]
 
 @NgModule({
@@ -121,7 +140,8 @@ const SERVICES = [
     MainSharedModule,
     TDSTypographyModule,
     TDSEmptyModule,
-    TDSConversationsModule
+    TDSConversationsModule,
+    DirectivesModule
   ],
   providers: [
     ...SERVICES,
