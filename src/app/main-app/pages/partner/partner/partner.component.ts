@@ -639,6 +639,14 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
+  selectMappingTeam(item: any) {
+    this.currentMappingTeam = item;
+    this.loadMDBByPSId(item.psid, item.team.Facebook_PageId); // Tải lại hội thoại
+  }
+
+  closeDrawer() {
+    this.isOpenDrawer = false;
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();

@@ -231,16 +231,37 @@
     </div>
   </div>
 
-  <tds-drawer [visible]="isOpenDrawer" [size]="'lg'" [placement]="'right'" >
-      <div *ngIf="currentConversation">
-          <ng-container *tdsDrawerContent>
-              <shared-tds-conversations
-                  class="flex w-full h-full"
-                  [data]="currentConversation"
-                  [type]="'all'" [team]="team">
-              </shared-tds-conversations>
-          </ng-container>
-      </div>
+  <tds-drawer [visible]="isOpenDrawer" [placement]="'right'" (onClose)="closeDrawer()" [width]="'890px'">
+    <ng-container *tdsDrawerContent>
+        <div *ngIf="mappingTeams.length > 0">
+          <tds-button-group>
+            <button tds-dropdown trigger="click" type="button" [tdsDropdownMenu]="menu1">
+                <span class="flex items-center font-semibold">
+                    {{currentMappingTeam?.team?.Facebook_PageName || 'Hãy chọn kênh'}}
+                    <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                </span>
+            </button>
+            <tds-dropdown-menu #menu1="tdsDropdownMenu">
+              <div class="w-full">
+                  <div tds-dropdown-item *ngFor="let item of mappingTeams"  (click)="selectMappingTeam(item)">
+                    <a> {{ item.team.Facebook_PageName }} </a>
+                  </div>
+              </div>
+            </tds-dropdown-menu>
+          </tds-button-group>
+        </div>
+        <div class="w-full overflow-auto bg-neutral-3-200 tds-custom-scroll" cdkScrollable>
+          <div *ngIf="currentConversation && currentMappingTeam?.team" class="w-full">
+            <shared-tds-conversations
+                class="flex w-full h-full"
+                [team]="currentMappingTeam?.team"
+                [data]="currentConversation"
+                [type]="'all'">
+            </shared-tds-conversations>
+          </div>
+        </div>
+
+    </ng-container>
   </tds-drawer>
 
 </div>
