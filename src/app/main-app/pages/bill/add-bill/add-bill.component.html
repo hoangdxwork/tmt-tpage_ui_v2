@@ -43,15 +43,15 @@
                                     <div class="flex justify-between">
                                         <tds-button-group>
                                         <button tds-dropdown trigger="click" type="button" [tdsDropdownMenu]="menu1">
-                                            <span class="flex items-center font-semibold text-primary-1">
+                                            <span class="flex items-center font-semibold" [ngStyle]="{'color': onCurrentStatus(_form.controls['Partner'].value.StatusText, lstPartnerStatus) }">
                                                 {{_form.controls["Partner"].value ? _form.controls["Partner"].value.StatusText : "N/A" }}
                                                 <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
                                             </span>
                                         </button>
                                         <tds-dropdown-menu #menu1="tdsDropdownMenu">
                                             <div class="w-full">
-                                                <div tds-dropdown-item *ngFor="let item of lstStatusPartner" (click)="selectStatus(item)">
-                                                    {{item}}
+                                                <div tds-dropdown-item *ngFor="let item of lstPartnerStatus" (click)="selectStatus(item)">
+                                                  <a [ngStyle]="{'color': item.value }"> {{ item.text }} </a>
                                                 </div>
                                             </div>
                                         </tds-dropdown-menu>
@@ -173,7 +173,7 @@
                                 </div>
                                 <div class="w-2/3" *ngIf="dataModel.State != 'draft'">
                                     <span class="font-semibold" *ngIf="_form.controls['Team'].value">
-                                        {{_form.controls['Team'].value.NameGet || 'N/A'}} - {{_form.controls["Team"].value.Facebook_PageName || 'N/A'}}
+                                        {{_form.controls['Team'].value.Name }} - {{_form.controls["Team"].value.Facebook_PageName || 'N/A'}}
                                     </span>
                                 </div>
                             </div>
@@ -662,7 +662,7 @@
                                     <tds-date-picker formControlName="DateOrderRed"></tds-date-picker>
                                 </div>
                                 <div class="w-2/3" *ngIf="dataModel.State != 'draft'">
-                                    <span class="font-semibold">{{_form.controls['DateOrderRed'].value ? _form.controls['DateOrderRed'].value : '' | date:"dd-MM-yyyy HH:mm"}} </span>
+                                    <span class="font-semibold">{{_form.controls['DateOrderRed'].value ? _form.controls['DateOrderRed'].value : 'N/A' | date:"dd-MM-yyyy HH:mm"}} </span>
                                 </div>
                             </div>
                             <div class=" col-span-1 flex gap-x-6 items-center">

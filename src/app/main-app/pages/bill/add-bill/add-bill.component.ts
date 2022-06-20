@@ -1,4 +1,3 @@
-import { ShipExtras, ShipServiceExtra } from './../../../dto/fastsaleorder/fastsaleorder-default.dto';
 import { DecimalPipe, formatNumber } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewContainerRef, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
 import { ModalSearchPartnerComponent } from '../components/modal-search-partner/modal-search-partner.component';
@@ -16,8 +15,8 @@ import { AccountJournalPaymentDTO, ODataAccountJournalPaymentDTO } from 'src/app
 import { CustomerDTO, ODataCustomerDTO } from 'src/app/main-app/dto/partner/customer.dto';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { ActivatedRoute } from '@angular/router';
-import { finalize, map, takeUntil, debounceTime, switchMap } from 'rxjs/operators';
-import { fromEvent, Observable, Subject } from 'rxjs';
+import { finalize, map, takeUntil } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
 import { StockWarehouseDTO } from 'src/app/main-app/dto/product/warehouse.dto';
 import { AllFacebookChildTO } from 'src/app/main-app/dto/team/all-facebook-child.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -38,6 +37,7 @@ import { AccountTaxService } from 'src/app/main-app/services/account-tax.service
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 
 @Component({
   selector: 'app-add-bill',
@@ -62,7 +62,7 @@ export class AddBillComponent implements OnInit, AfterViewInit, AfterViewChecked
   lstWareHouses!: Observable<StockWarehouseDTO[]>;
   lstTeams!: Observable<AllFacebookChildTO[]>;
   lstUser!: Observable<ApplicationUserDTO[]>;
-  lstStatusPartner!: any[];
+  lstPartnerStatus!: Array<PartnerStatusDTO>;
   lstTax!: TaxDTO[];
 
   _cities!: SuggestCitiesDTO;
@@ -137,25 +137,39 @@ export class AddBillComponent implements OnInit, AfterViewInit, AfterViewChecked
     this.lstWareHouses = this.loadWareHouse();
     this.lstTeams = this.loadAllFacebookChilds();
     this.lstUser = this.loadUser();
-    this.loadStatusPartner();
+    this.loadPartnerStatus();
   }
 
-  loadStatusPartner() {
-    this.commonService.getPartnerStatus().subscribe((res: any) => {
-      this.lstStatusPartner = res.map((x: any) => x.text);
-    })
+  loadPartnerStatus() {
+    this.commonService.getPartnerStatus().subscribe(res => {
+      this.lstPartnerStatus = [...res];
+    });
   }
 
   selectStatus(item: any): void {
     let partnerId = this._form.controls['Partner'].value.Id;
-    this.partnerService.getById(partnerId).subscribe((res: any) => {
-      res.StatusText = item;
-      this.partnerService.update(partnerId, res).subscribe(() => {
-        this.message.success('Cập nhật trạng thái khách hàng thành công!');
-      }, error => {
-        this.message.error('Cập nhật trạng thái khách hàng thất bại!');
-      })
-    })
+      if(partnerId) {
+        let data = {
+          status: `${item.value}_${item.text}`
+        }
+
+        this.partnerService.updateStatus(partnerId, data).subscribe(res => {
+            this.message.success('Cập nhật trạng thái khách hàng thành công');
+            this._form.controls['Partner'].value.StatusText = item.text;
+            this.cdRef.markForCheck();
+        }, error => {
+          this.message.error(`${error?.error?.message}`? `${error?.error?.message}` : 'Cập nhật trạng thái khách hàng thất bại')
+        });
+      }
+  }
+
+  onCurrentStatus(text: string, data: any): void {
+    let exits = data.filter((x: any) => x.text === text)[0];
+    if(exits) {
+      return exits.value;
+    } else {
+      return;
+    }
   }
 
   createForm() {
@@ -270,6 +284,7 @@ export class AddBillComponent implements OnInit, AfterViewInit, AfterViewChecked
       }
 
       this.mappingAddress(this.dataModel);
+
       //TODO: nếu Team thiếu thông tin thì map dữ liệu
       if(data.TeamId) {
         this.loadTeamById(data.TeamId);
