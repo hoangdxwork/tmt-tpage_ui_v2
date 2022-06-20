@@ -1,6 +1,8 @@
-import { CRMTagDTO } from '../../../../dto/crm-tag/odata-crmtag.dto';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs';
+import { TDSModalService } from 'tds-ui/modal';
 import { CRMTagService } from '../../../../services/crm-tag.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
@@ -11,32 +13,45 @@ import { TDSMessageService } from 'tds-ui/message';
   templateUrl: './config-conversation-tags-create-data-modal.component.html'
 })
 export class ConfigConversationTagsCreateDataModalComponent implements OnInit {
-  public createForm!: FormGroup;
-  palette:Array<string> = [];
-  result:TDSSafeAny;
+  @Input() isEdit!: string;
+  public _form!: FormGroup;
+  palette: Array<string> = [];
+  isForce!: boolean;
+  private destroy$ = new Subject<void>();
 
   constructor(
-      private modal: TDSModalRef,
-      private formBuilder: FormBuilder,
-      private message: TDSMessageService,
-      private crmService: CRMTagService
-      ) {
-        this.createForm = this.formBuilder.group({
-          name: new FormControl('', [Validators.required]),
-          color: new FormControl('', [Validators.required]),
-          status: new FormControl(true),
-      });
-      }
+    private modal: TDSModalRef,
+    private formBuilder: FormBuilder,
+    private message: TDSMessageService,
+    private crmService: CRMTagService,
+    private modalService:TDSModalService,
+  ) {
+    this._form = this.formBuilder.group({
+      name: new FormControl('', [Validators.required, Validators.maxLength(50)]),
+      color: new FormControl('', [Validators.required]),
+      status: new FormControl(true),
+    });
+  }
 
   ngOnInit(): void {
-      this.loadData();
+    this.loadData();
   }
-
+  change(){
+    console.log(this._form)
+  }
   public hasError = (controlName: string, errorName: string) => {
-      return this.createForm.controls[controlName].hasError(errorName);
+    return this._form.controls[controlName].hasError(errorName);
   }
 
-  loadData(){
+  updateForm(data : TDSSafeAny) {
+    if (data) {
+      this._form.controls.name.setValue(data.Name);
+      this._form.controls.color.setValue(data.ColorClassName);
+      this._form.controls.status.setValue(!data.IsDeleted);
+    }
+  }
+
+  loadData() {
     this.palette = [
       '#B5076B',
       '#A70000',
@@ -58,45 +73,91 @@ export class ConfigConversationTagsCreateDataModalComponent implements OnInit {
       '#D2D8E0',
       '#DDE2E9',
     ];
+    this.crmService.getById(this.isEdit).pipe(takeUntil(this.destroy$))
+    .subscribe(res=>{
+      delete res['@odata.context'];
+      this.updateForm(res)
+    })
   }
 
-  onChangeColor(value:string){
-    this.createForm.controls.color.setValue(value);
+  onChangeColor(value: string) {
+    this._form.controls.color.setValue(value);
   }
 
-  onChangeStatus(){
-    this.createForm.controls.status.setValue(!this.createForm.value.status);
+  onChangeStatus() {
+    this._form.controls.status.setValue(!this._form.value.status);
   }
 
-  addNewColor(){
+  addNewColor() {
 
   }
 
   onSubmit() {
-      if (!this.createForm.invalid) {
-          this.result = {
-              Name:this.createForm.value.name,
-              ColorClassName:this.createForm.value.color,
-              IsDeleted: !this.createForm.value.status,
-          }
-
-          this.crmService.insert(this.result).subscribe(
-            (res)=>{
-              this.message.success('Thêm thành công');
-              this.modal.destroy(this.result);
-            },
-            (err)=>{
-                this.message.error(err.error.message);
-            }
-          );
-      }
+    let model = this.prepareModel();
+    if (this._form.invalid) {
+      return
+    }
+    if (this.isEdit) {
+      this.crmService.update(this.isEdit,model,this.isForce).subscribe(
+        (res)=>{
+            this.message.success('Cập nhật thành công');
+            this.modal.destroy(model);
+        },
+        (err)=>{
+            this.confirmForceUpdate(model, err.error.message);
+        }
+    );
+    } else {
+      this.crmService.insert(model).subscribe(
+        (res) => {
+          this.message.success('Thêm thành công');
+          this.modal.destroy(model);
+        },
+        (err) => {
+          this.message.error(err.error?err.error.message:'Thêm thất bại');
+        }
+      );
+    }
   }
 
+  prepareModel() {
+    let formModel = this._form.value;
+    let modelDefault = {
+      Name: formModel.name? formModel.name:'' as string,
+      ColorClassName: formModel.color? formModel.color: '' as string,
+      IsDeleted: !formModel.status as boolean,
+    }
+    return modelDefault
+  }
+
+  confirmForceUpdate(model:TDSSafeAny, message: string){
+    this.modalService.warning({
+        title: 'Warning',
+        content: message,
+        size:'sm',
+        onOk: () => {
+          this.isForce = true;
+          this.crmService.update(this.isEdit,model,this.isForce).subscribe(
+              (res)=>{
+                  this.message.success('Cập nhật thành công');
+                  this.modal.destroy(model);
+              },
+              (err)=>{
+                  this.message.error(err.error ? err.error.message :'Cập nhật thất bại');
+                  this.modal.destroy(null);
+              }
+          );
+        },
+        onCancel:()=>{},
+        okText:"Tiếp tục",
+        cancelText:"Hủy",
+    });
+}
   cancel() {
-      this.modal.destroy(null);
+    this.modal.destroy(null);
   }
 
   save() {
-      this.onSubmit();
+    this.onSubmit();
   }
 }

@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'TDSIcons';
   src:
-    url('fonts/TDSIcons.ttf?31e2fm') format('truetype'),
-    url('fonts/TDSIcons.woff?31e2fm') format('woff'),
-    url('fonts/TDSIcons.svg?31e2fm#TDSIcons') format('svg');
+    url('fonts/TDSIcons.ttf?po0a6e') format('truetype'),
+    url('fonts/TDSIcons.woff?po0a6e') format('woff'),
+    url('fonts/TDSIcons.svg?po0a6e#TDSIcons') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -24,11 +24,146 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.tdsi-facebook-f-fill:before {
+  content: "\eaff";
+}
+.tdsi-profile-fill:before {
+  content: "\eaea";
+}
+.tdsi-swap-fill:before {
+  content: "\eafe";
+}
+.tdsi-dental-service-fill:before {
+  content: "\eae8";
+}
+.tdsi-treatment-slip-fill:before {
+  content: "\eae1";
+}
+.tdsi-receive-fill:before {
+  content: "\eae2";
+}
+.tdsi-add-appointment-fill:before {
+  content: "\eae3";
+}
+.tdsi-add-to-cart-fill:before {
+  content: "\eae4";
+}
+.tdsi-branch-fill:before {
+  content: "\eae5";
+}
+.tdsi-cash-book-fill:before {
+  content: "\eae6";
+}
+.tdsi-customer-fill:before {
+  content: "\eae7";
+}
+.tdsi-doctor-fill:before {
+  content: "\eae9";
+}
+.tdsi-drug-bill-fill:before {
+  content: "\eaeb";
+}
+.tdsi-drug-fill:before {
+  content: "\eaec";
+}
+.tdsi-drug-supplier-fill:before {
+  content: "\eaed";
+}
+.tdsi-earpiece-fill:before {
+  content: "\eaee";
+}
+.tdsi-female-fill:before {
+  content: "\eaef";
+}
+.tdsi-first-aid-kit-fill:before {
+  content: "\eaf0";
+}
+.tdsi-group-fill:before {
+  content: "\eaf1";
+}
+.tdsi-id-card-fill:before {
+  content: "\eaf2";
+}
+.tdsi-insurance-fill:before {
+  content: "\eaf3";
+}
+.tdsi-link-off-fill:before {
+  content: "\eaf4";
+}
+.tdsi-male-fill:before {
+  content: "\eaf5";
+}
+.tdsi-money-2-fill:before {
+  content: "\eaf6";
+}
+.tdsi-procedure-fill:before {
+  content: "\eaf7";
+}
+.tdsi-receive-1-fill:before {
+  content: "\eaf8";
+}
+.tdsi-signature-fill:before {
+  content: "\eaf9";
+}
+.tdsi-speaker-fill:before {
+  content: "\eafa";
+}
+.tdsi-syringe-fill:before {
+  content: "\eafb";
+}
+.tdsi-tooth-fill:before {
+  content: "\eafc";
+}
+.tdsi-VND-fill:before {
+  content: "\eafd";
+}
+.tdsi-group-2-line:before {
+  content: "\ea1d";
+}
+.tdsi-bag-1-line:before {
+  content: "\ead4";
+}
+.tdsi-chart-pie-line:before {
+  content: "\ead6";
+}
+.tdsi-error-2-line:before {
+  content: "\ead7";
+}
+.tdsi-expand-2-line:before {
+  content: "\ead8";
+}
+.tdsi-file-line:before {
+  content: "\ead9";
+}
+.tdsi-images-2-line:before {
+  content: "\eada";
+}
+.tdsi-message-line:before {
+  content: "\eadb";
+}
+.tdsi-share-line:before {
+  content: "\eadc";
+}
+.tdsi-paste-2-fill:before {
+  content: "\eadd";
+}
+.tdsi-birthday-fill:before {
+  content: "\eade";
+}
+.tdsi-bot-fill:before {
+  content: "\eadf";
+}
+.tdsi-scale-fill:before {
+  content: "\eae0";
+}
+.tdsi-folder-open-fill:before {
+  content: "\eacf";
+}
+.tdsi-folder-close-fill:before {
+  content: "\ead5";
+}
 .tdsi-password-reset-fill:before {
   content: "\ead3";
-}
-.tdsi-color-fill:before {
-  content: "\eacf";
 }
 .tdsi-content-fill:before {
   content: "\ead0";
@@ -590,7 +725,6 @@
 }
 .tdsi-page-fill:before {
   content: "\ea01";
-  color: #424752;
 }
 .tdsi-screen-fill:before {
   content: "\ea02";
@@ -654,9 +788,6 @@
 }
 .tdsi-interface-fill:before {
   content: "\ea1c";
-}
-.tdsi-library-fill:before {
-  content: "\ea1d";
 }
 .tdsi-livechat-fill:before {
   content: "\ea1e";

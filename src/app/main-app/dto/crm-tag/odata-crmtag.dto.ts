@@ -7,6 +7,12 @@ export interface CRMTagDTO {
   DateCreated: Date;
 }
 
+export interface CRMTagModelDTO {
+  ColorClassName: string;
+  Name: string;
+  IsDeleted: boolean;
+}
+
 export interface ODataCRMTagDTO {
   "@odata.context"?: string;
   "@odata.count"?: number;

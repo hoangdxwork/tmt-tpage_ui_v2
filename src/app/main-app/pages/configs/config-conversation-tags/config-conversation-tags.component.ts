@@ -9,7 +9,6 @@ import { Subject, Observable, fromEvent } from 'rxjs';
 import { takeUntil, finalize, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { THelperDataRequest } from './../../../../lib/services/helper-data.service';
 import { OdataCRMTagService } from './../../../services/mock-odata/odata-crmtag.service';
-import { ConfigConversationTagsEditDataModalComponent } from '../components/config-conversation-tags-edit-data-modal/config-conversation-tags-edit-data-modal.component';
 import { Component, OnInit, ViewContainerRef, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CTMTagFilterObjDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { TDSModalService } from 'tds-ui/modal';
@@ -114,10 +113,10 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
   showEditModal(data:CRMTagDTO): void {
     const modal = this.modalService.create({
         title: 'Chỉnh sửa thẻ hội thoại',
-        content: ConfigConversationTagsEditDataModalComponent,
+        content: ConfigConversationTagsCreateDataModalComponent,
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-            data: data
+          isEdit: data.Id
         }
     });
 
