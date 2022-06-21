@@ -231,12 +231,17 @@
     </div>
   </div>
 
-  <tds-drawer [visible]="isOpenDrawer" [placement]="'right'" (onClose)="closeDrawer()" [width]="'890px'">
-    <ng-container *tdsDrawerContent>
-        <div *ngIf="mappingTeams.length > 0">
+  <tds-drawer [visible]="isOpenDrawer" [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
+    [placement]="'right'"  [title]="titleMessage" (onClose)="closeDrawer()" [width]="'890px'">
+    <ng-template #titleMessage>
+      <div class="flex gap-x-2 w-full items-center text-body-2 text-neutral-900">
+        <div *ngIf="mappingTeams.length > 0" class="flex gap-3 items-center">
+          <tpage-avatar-facebook [fbid]="currentMappingTeam?.team?.Facebook_PageId || currentMappingTeam?.team?.Facebook_ASUserId"
+            [token]="currentMappingTeam?.team?.Facebook_PageToken || currentMappingTeam?.team?.Facebook_UserToken">
+          </tpage-avatar-facebook>
           <tds-button-group>
             <button tds-dropdown trigger="click" type="button" [tdsDropdownMenu]="menu1">
-                <span class="flex items-center font-semibold">
+                <span class="flex items-center">
                     {{currentMappingTeam?.team?.Facebook_PageName || 'Hãy chọn kênh'}}
                     <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
                 </span>
@@ -250,7 +255,10 @@
             </tds-dropdown-menu>
           </tds-button-group>
         </div>
-        <div class="w-full overflow-auto bg-neutral-3-200 tds-custom-scroll" cdkScrollable>
+      </div>
+  </ng-template>
+    <ng-container *tdsDrawerContent>
+        <div class="w-full h-full flex overflow-hidden bg-neutral-3-200 tds-custom-scroll" cdkScrollable>
           <div *ngIf="currentConversation && currentMappingTeam?.team" class="w-full">
             <shared-tds-conversations
                 class="flex w-full h-full"

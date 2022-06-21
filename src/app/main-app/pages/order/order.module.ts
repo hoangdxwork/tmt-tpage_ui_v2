@@ -1,3 +1,17 @@
+import { AttachmentState } from './../../services/facebook-state/attachment.state';
+import { AttachmentService } from './../../services/attachment.server';
+import { AttachmentDataFacade } from './../../services/facades/attachment-data.facade';
+import { OrderFormHandler } from './../../services/handlers/order-form.handler';
+import { ConversationOrderFacade } from './../../services/facades/conversation-order.facade';
+import { ConversationEventFacade } from './../../services/facades/conversation-event.facade';
+import { DraftMessageService } from './../../services/conversation/draft-message.service';
+import { ConversationDataFacade } from './../../services/facades/conversation-data.facade';
+import { ActivityDataFacade } from './../../services/facades/activity-data.facade';
+import { TDSMessageService } from 'tds-ui/message';
+import { TDSConversationsModule } from './../../shared/tds-conversations/tds-conversations.module';
+import { UploadImageModule } from './../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
+import { TDSDrawerModule } from 'tds-ui/drawer';
+import { CRMMatchingService } from './../../services/crm-matching.service';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -67,7 +81,18 @@ const SERVICES = [
   CheckFormHandler,
   OdataProductService,
   CarrierHandler,
-  OrderPrintService
+  OrderPrintService,
+  CRMMatchingService,
+  TDSMessageService,
+  ActivityDataFacade,
+  ConversationDataFacade,
+  DraftMessageService,
+  ConversationEventFacade,
+  ConversationOrderFacade,
+  OrderFormHandler,
+  AttachmentDataFacade,
+  AttachmentService,
+  AttachmentState,
 ]
 
 @NgModule({
@@ -112,7 +137,10 @@ const SERVICES = [
     TDSModalModule,
     TDSAvatarModule,
     TDSCollapseModule,
-    TDSToolTipModule
+    TDSToolTipModule,
+    TDSDrawerModule,
+    UploadImageModule,
+    TDSConversationsModule
   ],
   providers: [
     ...SERVICES,
