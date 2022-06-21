@@ -5,8 +5,22 @@
       </tpage-avatar-facebook>
       <div class="ml-2 w-full h-full">
         <div class="bg-white rounded-2xl px-4 py-3">
-          <div class="flex items-center justify-between pb-2">
-            <label class="font-semibold">{{item.from?.name}} </label>
+          <div class="flex items-center justify-between">
+            <div class="flex gap-x-2">
+              <label class="font-semibold">{{item.from?.name}} </label>
+              <div *ngIf="commentOrders" class="flex flex-row items-center">
+                <div *ngFor="let order of commentOrders[item.from.id]"
+                  class="text-info-500 font-semibold flex flex-row items-center gap-2">
+                  <div class="flex flex-row cursor-pointer hover:underline" (click)="editOrder(order.id, item)">
+                    <span *ngIf="!order.code.includes('#')">#</span>{{order.code}}
+                  </div>
+                </div>
+                <div *ngIf="currentId === item.id" tds-button-outline-icon color="primary" rounded="!rounded-full" class="w-5 h-5 rounded-full border border-primary-1 flex items-center justify-center ml-2"
+                  tooltipTitle="Thêm vào ghi chú" tooltipPlacement="top" tds-tooltip>
+                  <i class="tdsi-plus-fill text-primary-1"></i>
+                </div>
+              </div>
+            </div>
             <span class="text-neutral-1-400 text-right text-caption-1">{{item.created_time | date:'dd/MM/yyyy HH:mm aa'}}</span>
           </div>
           <div *ngIf="(partners$ | async)?.data[item.from.id] || commentOrders[item.from.id]?.length > 0 || currentId === item.id"
@@ -26,19 +40,6 @@
                 <tds-tag *ngIf="partner.st" [ngStyle]="{ 'color' : partner.ss }" type="outline">
                   {{partner.st || 'Bình thường'}}
                 </tds-tag>
-              </div>
-              <!-- mã đơn hàng -->
-              <div *ngIf="commentOrders" class="flex flex-row items-center">
-                <div *ngFor="let order of commentOrders[item.from.id]"
-                  class="text-info-500 font-semibold flex flex-row items-center gap-2">
-                  <div class="flex flex-row cursor-pointer hover:underline" (click)="editOrder(order.id, item)">
-                    <span *ngIf="!order.code.includes('#')">#</span>{{order.code}}
-                  </div>
-                </div>
-                <button *ngIf="currentId === item.id" tds-button-outline-icon color="primary" rounded="!rounded-full" class="ml-2"
-                  tooltipTitle="Thêm vào ghi chú" tooltipPlacement="top" tds-tooltip>
-                  <i class="tdsi-plus-circle-line"></i>
-                </button>
               </div>
             </div>
             <div *ngIf="(partners$ | async)?.data[item.from.id] as partner" class="tag-status w-1/2">
@@ -64,32 +65,41 @@
           </div>
           <!-- thao tác -->
           <div class="flex items-center pt-3">
-            <button tds-button color="primary" class="mr-2"
+            <button tds-button color="primary" class="mr-2" size="sm"
               (click)="onCreateOrder(item)">
               Tạo đơn hàng
             </button>
-            <button tds-button-icon color="secondary" class="mr-2" tooltipTitle="Thông tin khách hàng" tooltipPlacement="top" tds-tooltip
+            <button tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Thông tin khách hàng" tooltipPlacement="top" tds-tooltip
               (click)="onInformation(item)">
               <span class="flex items-center justify-center">
                 <i class="tdsi-information-fill text-neutral-1-500"></i>
               </span>
             </button>
-            <button tds-button-icon color="secondary" class="mr-2" tooltipTitle="Phản hồi bình luận" tooltipPlacement="top" tds-tooltip
+            <button tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Phản hồi bình luận" tooltipPlacement="top" tds-tooltip
               (click)="isReply(item)">
               <span class="flex items-center justify-center">
                 <i class="tdsi-reply-fill text-neutral-1-500"></i>
               </span>
             </button>
-            <button tds-button-icon color="secondary" class="mr-2" tooltipTitle="Gửi tin nhắn" tooltipPlacement="top" tds-tooltip>
+            <button tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Gửi tin nhắn" tooltipPlacement="top" tds-tooltip>
               <span class="flex items-center justify-center">
                 <i class="tdsi-messenger-fill text-neutral-1-500"></i>
               </span>
             </button>
-            <button tds-button-icon color="secondary" class="mr-2" tooltipTitle="Hiển thị bài viết" tooltipPlacement="top" tds-tooltip>
+            <button tds-button-icon color="secondary" class="mr-2" size="sm" tooltipTitle="Hiển thị bài viết" tooltipPlacement="top" tds-tooltip>
               <span class="flex items-center justify-center">
                 <i class="tdsi-eye-close-fill text-neutral-1-500"></i>
               </span>
             </button>
+            <div class="flex items-center ml-6 gap-x-2">
+              <div class="flex h-5 w-5 items-center justify-center bg-base-green-400 rounded-md">
+                <i class="tdsi-call-fill leading-none text-white"></i>
+              </div>
+              <div class="flex h-5 w-5 items-center justify-center bg-base-orange-500 rounded-md">
+                <i class="tdsi-pin-fill leading-none text-white"></i>
+              </div>
+              <tds-tag status='primary' type="outline">Bình thường</tds-tag>
+            </div>
           </div>
         </div>
         <!-- Input trả lời bình luận -->
