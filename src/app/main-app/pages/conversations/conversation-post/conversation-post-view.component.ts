@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, finalize } from 'rxjs/operators';
 import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
@@ -41,7 +41,9 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
     { value: "excel_phone", text: "Tải file excel có SĐT" },
     { value: "excel_phone_distinct", text: "Tải file excel lọc trùng SĐT" },
   ];
+
   currentFilter: any = this.filterOptions[0];
+  isProcessing: boolean = false;
 
   constructor(private facebookPostService: FacebookPostService,
     private excelExportService: ExcelExportService,
@@ -52,9 +54,6 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
   }
 
   ngOnInit() {
-    if(this.data){
-      this.data = {...this.data};
-    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -71,6 +70,8 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
   }
 
   onChangeFilter(event: any): any {
+    if (this.isProcessing) { return }
+
     if(!TDSHelperString.hasValueString(this.data.fbid)) {
       return this.message.error('Không tìm thấy bài post');
     }
@@ -81,17 +82,20 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
         this.reportCommentByPost();
         break;
       case "excel":
-        this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.fbid}`,
-            null,`comments-${this.data.fbid}`);
+        this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.fbid}`, null,`comments-${this.data.fbid}`)
+            .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
+            .subscribe();
         break;
       case "excel_phone":
-        this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.fbid}&isPhone=true&isFilterPhone=true`,
-            null, `comments-${this.data.fbid}-with-distinct-phone`);
+        this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.fbid}&isPhone=true&isFilterPhone=true`, null, `comments-${this.data.fbid}-with-distinct-phone`)
+          .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
+          .subscribe();
         break;
       case "excel_phone_distinct":
         this.excelExportService.exportPost(
-          `/facebook/exportcommentstoexcelv2?postid=${this.data.fbid}&isPhone=true`,
-            null,`comments-${this.data.fbid}-with-phone`);
+          `/facebook/exportcommentstoexcelv2?postid=${this.data.fbid}&isPhone=true`, null,`comments-${this.data.fbid}-with-phone`)
+          .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
+          .subscribe();
         break;
       default:
           this.facebookCommentService.onFilterSortCommentPost$.emit({type: 'filter', data: event});

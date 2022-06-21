@@ -5,7 +5,7 @@
         <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Phiếu bán hàng</span>
       </h1>
       <div class="flex gap-x-2">
-        <action-dropdown [_type]="'all'" [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]></action-dropdown>
+        <action-dropdown [type]="'all'" [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]></action-dropdown>
       </div>
     </div>
   </div>
@@ -23,8 +23,8 @@
         <div class="flex items-center gap-x-2 pr-4">
           <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]></action-dropdown>
           <tds-form-field class="w-full">
-            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText/>
-            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText/>
+              <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
           </tds-form-field>
           <filter-options [lstTags]="lstTags" (onLoadOption)="onLoadOption($event)"></filter-options>
           <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
@@ -270,7 +270,7 @@
               </tr>
               <tr [expand]="expandSet.has(data.Id)"  class="border-b border-neutral-2-100 text-neutral-1-900 bg-gray-200 w-full">
                 <div #BillOrderLines [ngStyle]="{'max-width.px': widthCollapse, 'margin-left.px': marginLeftCollapse}">
-                  <app-bill-expand [billData]="data" *ngIf="expandSet.has(data.Id)"></app-bill-expand>
+                  <app-bill-expand [dataItem]="data" *ngIf="expandSet.has(data.Id)"></app-bill-expand>
                 </div>
               </tr>
             </ng-template>

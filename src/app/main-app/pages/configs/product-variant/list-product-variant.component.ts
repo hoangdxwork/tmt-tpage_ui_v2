@@ -198,15 +198,11 @@ export class ListProductVariantComponent  implements OnDestroy  {
         logic: "and",
       }
     };
-
     let data = { data: JSON.stringify(state) }
-    let that = this;
-    let callBackFn = () => {
-      that.isProcessing = false;
-    }
+
     this.excelExportService.exportPost('/Product/ExportProduct', { data: JSON.stringify(data) }, 'bien_the_san_pham_kiem_kho_theo_id')
-    .pipe(finalize(()=>this.isProcessing = false), takeUntil(this.destroy$))
-    .subscribe();;
+      .pipe(finalize(()=>this.isProcessing = false), takeUntil(this.destroy$))
+      .subscribe();
   }
 
   addNewData(data: TDSSafeAny) {

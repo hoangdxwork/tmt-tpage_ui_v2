@@ -1,17 +1,21 @@
 import { ModalSendMessageComponent } from './../modal-send-message/modal-send-message.component';
-import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { takeUntil, finalize, map, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-modal-birthday-partner',
   templateUrl: './modal-birthday-partner.component.html'
 })
 
-export class ModalBirthdayPartnerComponent implements OnInit {
+export class ModalBirthdayPartnerComponent implements OnInit, OnDestroy {
 
     @Input() data: any = [];
+    isProcessing: boolean = false;
+    private destroy$ = new Subject<void>();
 
     checked = false;
     indeterminate = false;
@@ -71,21 +75,30 @@ export class ModalBirthdayPartnerComponent implements OnInit {
     }
 
     exportExcel() {
-        let type = this.currentTime.value;
-        this.excelExportService.exportGet(`/Partner/ExcelPartnerBirthDay?type=${type}`, `sinh-nhat-khach-hang`);
+      if (this.isProcessing) { return }
+
+      let type = this.currentTime.value;
+      this.excelExportService.exportGet(`/Partner/ExcelPartnerBirthDay?type=${type}`, `sinh-nhat-khach-hang`)
+        .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
+        .subscribe();
     }
 
     showModalSendMessage() {
-        let ids: any = [...this.setOfCheckedId];
-        this.modalService.create({
-          title: 'Gửi tin nhắn tới khách hàng',
-          content: ModalSendMessageComponent,
-          size: "lg",
-          viewContainerRef: this.viewContainerRef,
-          componentParams: {
-            partnerIds: ids
-          }
-        });
-      }
+      let ids: any = [...this.setOfCheckedId];
+      this.modalService.create({
+        title: 'Gửi tin nhắn tới khách hàng',
+        content: ModalSendMessageComponent,
+        size: "lg",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          partnerIds: ids
+        }
+      });
+    }
+
+    ngOnDestroy(): void {
+      this.destroy$.next();
+      this.destroy$.complete();
+    }
 
 }
