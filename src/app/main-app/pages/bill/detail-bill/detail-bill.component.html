@@ -39,7 +39,7 @@
                             <i class="tdsi-reply-fill text-lg leading-none mr-2"></i>Tạo trả hàng
                         </span>
                     </button>
-                    <button tds-button color="info" [disabled]="isProcessing">
+                    <button tds-button color="info" [disabled]="isProcessing" type="button" (click)="copyInvoice()">
                         <span class="flex items-center">
                             <i class="tdsi-copy-fill text-lg leading-none mr-2"></i>Sao chép
                         </span>
@@ -554,7 +554,7 @@
                                 <span>Ngày giao</span>
                             </div>
                             <div class="w-2/3">
-                                <span class="font-semibold">{{dataModel.ReceiverDate | date:"dd-MM-yyyy"}}</span>
+                                <span class="font-semibold">{{dataModel.ReceiverDate | date:"dd-MM-yyyy HH:mm"}}</span>
                             </div>
                         </div>
                         <div class="flex gap-x-6 items-center">

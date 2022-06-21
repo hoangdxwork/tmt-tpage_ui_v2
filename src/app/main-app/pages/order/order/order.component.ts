@@ -1,5 +1,5 @@
 import { addDays } from 'date-fns/esm';
-import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { SaleOnlineOrderSummaryStatusDTO, SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { ColumnTableDTO } from 'src/app/main-app/dto/common/table.dto';
@@ -31,7 +31,7 @@ import { OrderPrintService } from 'src/app/main-app/services/print/order-print.s
   selector: 'app-order',
   templateUrl: './order.component.html'
 })
-export class OrderComponent implements OnInit {
+export class OrderComponent implements OnInit, OnDestroy {
 
   @ViewChild('innerText') innerText!: ElementRef;
 
@@ -100,6 +100,8 @@ export class OrderComponent implements OnInit {
   isLoadingCollapse: boolean = false
   @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
   @ViewChild('viewChildDetailPartner') viewChildDetailPartner!: ElementRef;
+
+  isProcessing: boolean = false;
 
   constructor(private cdRef: ChangeDetectorRef,
     private tagService: TagService,
@@ -534,6 +536,7 @@ export class OrderComponent implements OnInit {
   }
 
   onExportExcel() {
+    if (this.isProcessing) { return }
     let filter = {
       logic: 'and',
       filters: [
@@ -555,7 +558,9 @@ export class OrderComponent implements OnInit {
       ids: [...this.setOfCheckedId]
     }
 
-    this.excelExportService.exportPost(`/SaleOnline_Order/ExportFile`, model, `don_hang_online`);
+    this.excelExportService.exportPost(`/SaleOnline_Order/ExportFile`, model, `don_hang_online`)
+      .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
+      .subscribe();
   }
 
   ngOnDestroy(): void {

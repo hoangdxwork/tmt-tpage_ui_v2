@@ -237,19 +237,6 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     })
   }
 
-  exportExcel(type:string){
-    switch(type){
-      case 'excel':
-
-        let model = {
-          ids: [],
-          data: {
-
-          }
-        }
-    }
-  }
-
   onSelectChange(Index: TDSSafeAny) {
     const dataItem =  this.tabNavs.find(f =>{ return f.Index == Index })
     this.pageIndex = 1;

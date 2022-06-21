@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
-import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { ODataPaymentJsonDTO } from '../dto/bill/payment-json.dto';
 import { CalculateFeeResponse_DataDTO, ShippingCalculateFeeInputDTO } from '../dto/carrier/delivery-carrier.dto';
@@ -23,6 +23,7 @@ export class FastSaleOrderService extends BaseSevice {
   public _keyCacheGrid: string = 'orderbill-page:grid_orderbill:settings';
   public _keyCacheDefaultGetV2: string = '_keycache_default_getV2';
   public _keyCacheDHSDetails: string = '_keycache_dhs_details';
+  public _keyCacheCopyInvoice: string = '_keycache_copy_invoice';
 
   constructor(private apiService: TCommonService) {
     super(apiService)

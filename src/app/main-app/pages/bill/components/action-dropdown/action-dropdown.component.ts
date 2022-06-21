@@ -27,7 +27,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   @Input() filterObj: any;
   @Input() setOfCheckedId: any = [];
   @Input() lstOfData: any = [];
-  @Input() _type!:string;
+  @Input() type!:string;
 
   isProcessing: boolean = false;
   tagIds: any = [];
@@ -70,8 +70,6 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         logic: "and",
       },
     };
-
-    let that = this;
 
     switch (type) {
       case "excels":
@@ -154,7 +152,6 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   }
 
   updateDelivery(){
-
   }
 
   updateDeliveryStatus(type:string){
@@ -258,7 +255,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         title: 'Hủy vận đơn',
         content: 'Bạn có muốn hủy vận đơn',
         onOk: () => {
-          that.fastSaleOrderService.cancelShipIds({ ids: that.idsModel }).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+            that.fastSaleOrderService.cancelShipIds({ ids: that.idsModel }).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
             that.message.success('Hủy vận đơn thành công!');
             that.isProcessing = false;
           }, error => {
@@ -312,7 +309,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         title: 'Xóa hóa đơn',
         content: 'Bạn có muốn xóa hóa đơn',
         onOk: () => {
-          that.fastSaleOrderService.unLink({ ids: that.idsModel }).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+            that.fastSaleOrderService.unLink({ ids: that.idsModel }).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
             that.message.success('Xóa hóa đơn thành công!');
             that.isProcessing = false;
           }, error => {
@@ -323,7 +320,6 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         onCancel: () => { that.isProcessing = false; },
         okText: "Xác nhận",
         cancelText: "Đóng",
-        // confirmViewType:"compact"
       });
     }
   }

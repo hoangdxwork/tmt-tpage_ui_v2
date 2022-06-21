@@ -552,7 +552,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     TaxId?: any;
     UserId: string;
     UserName: string;
-    DateInvoice: Date;
+    DateInvoice: Date | any;
     DateCreated: Date;
     State: string;
     ShowState: string;

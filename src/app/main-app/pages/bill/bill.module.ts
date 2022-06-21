@@ -31,7 +31,6 @@ import { HistoryDeliveryStatusComponent } from './history-delivery-status/histor
 import { HistoryDeliveryStatusDetailComponent } from './history-delivery-status-detail/history-delivery-status-detail.component';
 import { AccountTaxService } from '../../services/account-tax.service';
 import { ManualCrossCheckingModalComponent } from './components/manual-cross-checking-modal/manual-cross-checking-modal.component';
-import { UpdateShipOrderInfoModalComponent } from './components/update-ship-order-info-modal/update-ship-order-info-modal.component';
 import { FormFileCrossCheckingModalComponent } from './components/form-file-cross-checking-modal/form-file-cross-checking-modal.component';
 import { TDSAlertModule } from 'tds-ui/alert';
 import { TDSBadgeModule } from 'tds-ui/badges';
@@ -93,7 +92,6 @@ const SERVICES = [
     HistoryDeliveryStatusComponent,
     HistoryDeliveryStatusDetailComponent,
     ManualCrossCheckingModalComponent,
-    UpdateShipOrderInfoModalComponent,
     FormFileCrossCheckingModalComponent
   ],
 

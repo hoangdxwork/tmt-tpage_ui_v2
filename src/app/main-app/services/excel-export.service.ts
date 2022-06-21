@@ -1,7 +1,7 @@
-import { EventEmitter, Injectable, Output, Renderer2, RendererFactory2 } from '@angular/core';
+import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { TAPIDTO, TApiMethodType, TAuthService, TCommonService } from 'src/app/lib';
+import { TAuthService, TCommonService } from 'src/app/lib';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { BaseSevice } from './base.service';
@@ -24,13 +24,15 @@ export class ExcelExportService extends BaseSevice {
 
   exportPost(url: string, data: any, name: string): Observable<TDSSafeAny> {
     let xhttp = new XMLHttpRequest();
+
     // Post data to URL which handles post request
     let urlStr = this._BASE_URL + url;
     xhttp.open("POST", urlStr, true);
     xhttp.setRequestHeader("Content-Type", "application/json");
     xhttp.setRequestHeader('Access-Control-Allow-Origin', '*');
 
-    return  this.authen.getCacheToken()
+    let messageTds = this.message;
+    return this.authen.getCacheToken()
       .pipe(map((response: TDSSafeAny) => {
         if (TDSHelperObject.hasValue(response) && TDSHelperString.hasValueString(response.access_token)) {
 
@@ -42,19 +44,24 @@ export class ExcelExportService extends BaseSevice {
           xhttp.send(JSON.stringify(data));
 
           xhttp.addEventListener("load", this.transferCompletePost);
-          xhttp.addEventListener("error", this.transferFailedPost);
+          // xhttp.addEventListener("error", this.transferFailedPost);
 
           xhttp.onreadystatechange = function () {
             let a;
-            if (xhttp.readyState === 4 && xhttp.status === 200) {
-              // Trick for making downloadable link
-              a = document.createElement("a");
-              a.href = window.URL.createObjectURL(xhttp.response);
-              // Give filename you wish to download
-              a.download = name + ".xlsx";
-              a.style.display = "none";
-              document.body.appendChild(a);
-              a.click();
+            if (xhttp.readyState === 4 ) {
+              if(xhttp.status === 200) {
+                  // Trick for making downloadable link
+                  a = document.createElement("a");
+                  a.href = window.URL.createObjectURL(xhttp.response);
+                  // Give filename you wish to download
+                  a.download = name + ".xlsx";
+                  a.style.display = "none";
+                  document.body.appendChild(a);
+                  a.click();
+              } else {
+                console.log("Error", xhttp.statusText)
+                messageTds.error("Không xuất được file!")
+              }
             }
           };
         }
@@ -70,15 +77,18 @@ export class ExcelExportService extends BaseSevice {
     this.message.error("Không xuất được file!");
   }
 
-  exportGet(url: string, name: string) {
+  exportGet(url: string, name: string): Observable<TDSSafeAny> {
     let xhttp = new XMLHttpRequest();
+
     // Post data to URL which handles post request
     let urlStr = this._BASE_URL + url;
     xhttp.open("GET", urlStr);
     xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.setRequestHeader('Access-Control-Allow-Origin', '*');
 
-    this.authen.getCacheToken().subscribe(
-      response => {
+    let messageTds = this.message;
+    return this.authen.getCacheToken()
+      .pipe(map((response: TDSSafeAny) => {
         if (TDSHelperObject.hasValue(response) && TDSHelperString.hasValueString(response.access_token)) {
 
           let auth = "Bearer " + response.access_token;
@@ -88,23 +98,28 @@ export class ExcelExportService extends BaseSevice {
           xhttp.responseType = "blob";
           xhttp.send(null);
           xhttp.addEventListener("load", this.transferCompleteGet);
-          xhttp.addEventListener("error", this.transferFailedGet);
+          // xhttp.addEventListener("error", this.transferFailedGet);
 
           xhttp.onreadystatechange = function () {
             let a;
-            if (xhttp.readyState === 4 && xhttp.status === 200) {
-              // Trick for making downloadable link
-              a = document.createElement("a");
-              a.href = window.URL.createObjectURL(xhttp.response);
-              // Give filename you wish to download
-              a.download = name + ".xlsx";
-              a.style.display = "none";
-              document.body.appendChild(a);
-              a.click();
+            if (xhttp.readyState === 4) {
+              if(xhttp.status === 200) {
+                  // Trick for making downloadable link
+                  a = document.createElement("a");
+                  a.href = window.URL.createObjectURL(xhttp.response);
+                  // Give filename you wish to download
+                  a.download = name + ".xlsx";
+                  a.style.display = "none";
+                  document.body.appendChild(a);
+                  a.click();
+              } else {
+                console.log("Error", xhttp.statusText)
+                messageTds.error("Không xuất được file!")
+              }
             }
           };
         }
-      })
+    }))
   }
 
   transferCompleteGet = (evt: any) => {

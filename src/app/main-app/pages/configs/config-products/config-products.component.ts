@@ -51,6 +51,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     {isChecked:false, value: 'DateCreated', name: 'Ngày tạo'},
     {isChecked:true, value: 'Active', name: 'Hiệu lực'}
   ]
+
   count: number = 1;
   tableWidth:number = 0;
   paddingCollapse: number = 32;
@@ -67,6 +68,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     searchText: ''
   }
   indClickTag = -1;
+  isProcessing: boolean = false;
 
   constructor(
     private router:Router,
@@ -192,6 +194,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   exportExcel(){
+    if (this.isProcessing) { return }
     let state = {
       skip: 0,
       take: 20,
@@ -215,11 +218,9 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
       data: JSON.stringify(state)
     };
 
-    this.excelExportService.exportPost(
-      `/ProductTemplate/ExportProduct`,
-      excelModel,
-      `san_pham_import_kiem_kho_theo_id`
-    );
+    this.excelExportService.exportPost(`/ProductTemplate/ExportProduct`, excelModel, `san_pham_import_kiem_kho_theo_id`)
+      .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
+      .subscribe();
   }
 
   sortByIds(columnValue:string){

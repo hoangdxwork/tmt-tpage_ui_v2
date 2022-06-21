@@ -356,7 +356,7 @@ export interface OrderLine {
   PriceSubTotal: number;
   Weight: number;
   WeightTotal: number;
-  AccountId: number;
+  AccountId: number | any;
   PriceRecent?: any;
   Name?: any;
   IsName: boolean;
@@ -375,7 +375,7 @@ export interface OrderLine {
   PromotionProgramComboId?: any;
   Product: Product;
   ProductUOM: ProductUOM;
-  Account: Account;
+  Account: Account | any;
   SaleLine?: any;
   User: User;
 }
@@ -416,7 +416,7 @@ export interface Team {
 
 export interface BillDetailDTO {
   "@odata.context"?: string;
-  Id: number;
+  Id: number | any;
   Name?: any;
   PrintShipCount: number;
   PrintDeliveryCount: number;
@@ -438,24 +438,24 @@ export interface BillDetailDTO {
   AmountTax: number;
   AmountUntaxed: number;
   TaxId?: any;
-  UserId: string;
-  UserName: string;
+  UserId: string | any;
+  UserName: string | any;
   DateInvoice: Date;
   DateCreated: Date;
   State: string;
   ShowState: string;
-  CompanyId: number;
+  CompanyId: number | any;
   Comment: string;
-  WarehouseId: number;
+  WarehouseId: number | any;
   SaleOnlineIds: string[];
   SaleOnlineNames: any[];
   Residual: number;
   Type: string;
   RefundOrderId?: any;
   ReferenceNumber?: any;
-  AccountId: number;
-  JournalId: number;
-  Number: string;
+  AccountId: number | any;
+  JournalId: number | any;
+  Number: string | any;
   PartnerNameNoSign: string;
   DeliveryPrice: number;
   CustomerDeliveryPrice: number;
@@ -477,7 +477,7 @@ export interface BillDetailDTO {
   ShowShipStatus: string;
   SaleOnlineName: string;
   PartnerShippingId?: any;
-  PaymentJournalId: number;
+  PaymentJournalId: number | any;
   PaymentAmount: number;
   SaleOrderId?: any;
   SaleOrderIds: any[];
@@ -520,17 +520,17 @@ export interface BillDetailDTO {
   PageName: string;
   Ship_Receiver: ShipReceiver;
   Ship_Extras?: any;
-  PaymentInfo: any[];
+  PaymentInfo: any[] | any;
   Search?: any;
   Partner: Partner;
-  User: User;
-  Warehouse: Warehouse;
-  Company: Company;
+  User: User | any;
+  Warehouse: Warehouse | any;
+  Company: Company | any;
   PriceList: PriceList;
   RefundOrder?: any;
-  Account: Account;
-  Journal: Journal;
-  PaymentJournal: PaymentJournal;
+  Account: Account | any;
+  Journal: Journal | any;
+  PaymentJournal: PaymentJournal | any;
   Carrier?: any;
   Tax?: any;
   SaleOrder?: any;
