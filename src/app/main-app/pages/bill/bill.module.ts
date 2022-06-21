@@ -1,3 +1,18 @@
+import { OdataProductService } from './../../services/mock-odata/odata-product.service';
+import { AttachmentState } from './../../services/facebook-state/attachment.state';
+import { AttachmentService } from './../../services/attachment.server';
+import { AttachmentDataFacade } from './../../services/facades/attachment-data.facade';
+import { UploadImageModule } from './../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
+import { CheckFormHandler } from './../../services/handlers/check-form.handler';
+import { OrderFormHandler } from './../../services/handlers/order-form.handler';
+import { CRMMatchingService } from './../../services/crm-matching.service';
+import { TDSConversationsModule } from './../../shared/tds-conversations/tds-conversations.module';
+import { ConversationOrderFacade } from './../../services/facades/conversation-order.facade';
+import { ConversationEventFacade } from './../../services/facades/conversation-event.facade';
+import { DraftMessageService } from './../../services/conversation/draft-message.service';
+import { ConversationDataFacade } from './../../services/facades/conversation-data.facade';
+import { ActivityDataFacade } from './../../services/facades/activity-data.facade';
+import { TDSMessageService } from 'tds-ui/message';
 import { RestSMSService } from './../../services/sms.service';
 import { QuickReplyService } from './../../services/quick-reply.service';
 import { DetailBillComponent } from './detail-bill/detail-bill.component';
@@ -74,7 +89,20 @@ const SERVICES = [
   FastSaleOrderLineService,
   QuickReplyService,
   RestSMSService,
-  AccountTaxService
+  AccountTaxService,
+  TDSMessageService,
+  ActivityDataFacade,
+  ConversationDataFacade,
+  DraftMessageService,
+  ConversationEventFacade,
+  ConversationOrderFacade,
+  CRMMatchingService,
+  OrderFormHandler,
+  CheckFormHandler,
+  AttachmentDataFacade,
+  AttachmentService,
+  AttachmentState,
+  OdataProductService
 ]
 
 @NgModule({
@@ -134,7 +162,9 @@ const SERVICES = [
     TDSTabsModule,
     TDSCollapseModule,
     TDSStepsModule,
-    TDSButtonSpitModule
+    TDSButtonSpitModule,
+    TDSConversationsModule,
+    UploadImageModule
   ],
   providers: [
    ...SERVICES,

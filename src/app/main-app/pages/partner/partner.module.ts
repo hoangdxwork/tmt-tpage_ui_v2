@@ -1,6 +1,10 @@
+import { OdataProductService } from './../../services/mock-odata/odata-product.service';
+import { AttachmentState } from './../../services/facebook-state/attachment.state';
+import { AttachmentService } from './../../services/attachment.server';
+import { AttachmentDataFacade } from './../../services/facades/attachment-data.facade';
+import { UploadImageModule } from './../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
 import { RestSMSService } from './../../services/sms.service';
 import { QuickReplyService } from './../../services/quick-reply.service';
-import { DrawerMessageComponent } from './components/drawer-message/drawer-message.component';
 import { ModalPaymentComponent } from './components/modal-payment/modal-payment.component';
 import { ModalBirthdayPartnerComponent } from './components/modal-birthday-partner/modal-birthday-partner.component';
 import { ModalSampleMessageComponent } from './components/modal-sample-message/modal-sample-message.component';
@@ -48,7 +52,7 @@ import { TDSButtonSpitModule } from 'tds-ui/buttton-split';
 import { TDSDrawerModule } from 'tds-ui/drawer';
 import { TDSFilterStatusModule } from 'tds-ui/filter-status';
 import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
-import { TDSMessageModule } from 'tds-ui/message';
+import { TDSMessageModule, TDSMessageService } from 'tds-ui/message';
 import { TDSNotificationModule } from 'tds-ui/notification';
 import { TDSAlertModule } from 'tds-ui/alert';
 import { TDSTypographyModule } from 'tds-ui/typography';
@@ -85,7 +89,11 @@ const SERVICES = [
   OrderFormHandler,
   CheckFormHandler,
   FastSaleOrderService,
-  DeliveryCarrierService
+  DeliveryCarrierService,
+  AttachmentDataFacade,
+  AttachmentService,
+  AttachmentState,
+  OdataProductService
 ]
 
 @NgModule({
@@ -99,7 +107,6 @@ const SERVICES = [
     ModalSampleMessageComponent,
     ModalBirthdayPartnerComponent,
     ModalPaymentComponent,
-    DrawerMessageComponent,
     ConfigColumPartnerComponent,
     FilterOptionPartnerComponent
   ],
@@ -141,7 +148,8 @@ const SERVICES = [
     TDSTypographyModule,
     TDSEmptyModule,
     TDSConversationsModule,
-    DirectivesModule
+    DirectivesModule,
+    UploadImageModule,
   ],
   providers: [
     ...SERVICES,
