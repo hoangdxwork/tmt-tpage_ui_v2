@@ -104,25 +104,39 @@
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <div *ngIf="item.description" tds-typography ellipsis [ellipsisRows]="2">
+                        <div class="w-full">
+                            <div class="w-full" *ngIf="item.description" tds-typography ellipsis [ellipsisRows]="2">
                                 {{item.description}}</div>
                             <p *ngIf="!item.description">
                                 (Chưa có tiêu đề)
                             </p>
                             <div *ngIf="item.message" class="mt-2 text-neutral-1-400">{{item.message}}</div>
-                            <div *ngIf="item.live_campaign" class="mt-2">
-                                <tds-tag size="sm" status='bg-base-orange-50 text-base-orange-500'
-                                    (click)="showModalLiveCampaign(item)">
-                                    <span class="flex items-center py-0.5 cursor-pointer" tds-tooltip
-                                        [tooltipTitle]="item.live_campaign?.name">
-                                        <span class="truncate max-w-[150px] flex">{{item.live_campaign?.name}}</span>
-                                        <span *ngIf="!item.live_campaign?.name">
-                                            Chọn chiến dịch
+                            <div class="flex justify-between items-center mt-2">
+                                <div *ngIf="item.live_campaign">
+                                    <tds-tag size="sm"
+                                        status="{{ currentPost?.fbid == item.fbid ? 'bg-base-orange-50 text-base-orange-500' : 'bg-neutral-3-100 text-neutral-1-600'}}"
+                                        (click)="showModalLiveCampaign(item)">
+                                        <span class="flex items-center py-0.5 cursor-pointer" tds-tooltip
+                                            [tooltipTitle]="item.live_campaign?.name">
+                                            <span
+                                                class="truncate max-w-[150px] flex">{{item.live_campaign?.name}}</span>
+                                            <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
                                         </span>
-                                        <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
-                                    </span>
-                                </tds-tag>
+                                    </tds-tag>
+                                </div>
+                                <div *ngIf="!item.live_campaign">
+                                    <tds-tag size="sm" status='bg-neutral-3-100 text-neutral-1-600'>
+                                        <span class="flex items-center py-0.5 cursor-pointer">
+                                            <span class="truncate max-w-[150px] flex">Chọn chiến dịch</span>
+                                            <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
+                                        </span>
+                                    </tds-tag>
+                                </div>
+                                <div class="flex items-center justify-center">
+                                  <div class="w-5 h-5 rounded-full bg-accent-9 flex items-center justify-center">
+                                    <i class="tdsi-flash-on-fill text-white leading-5"></i>
+                                  </div>
+                                </div>
                             </div>
                         </div>
                     </div>
