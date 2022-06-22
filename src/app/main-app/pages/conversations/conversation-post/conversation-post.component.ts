@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, fromEvent, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, fromEvent, Observable, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, finalize, map, mergeMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { ChangeTabConversationEnum } from 'src/app/main-app/dto/conversation/conversation.dto';
 import { FacebookPostDTO, FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
@@ -25,6 +25,8 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/
 })
 
 export class ConversationPostComponent extends TpageBaseComponent implements OnInit, OnDestroy, AfterViewInit {
+
+  @ViewChild('innerText') innerText!: ElementRef;
 
   public lstType: any[] = [
     { type: '', text: 'Tất cả bài viết' },
@@ -58,8 +60,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   currentPost!: FacebookPostItem | undefined;
   destroy$ = new Subject<void>();
   isLoading: boolean = false;
-
-  @ViewChild('innerText') innerText!: ElementRef;
 
   currentOrderTab: number = 0;
   isDisableTab: boolean = true;
@@ -300,8 +300,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         post: item
       }
     });
-
-    // modal.containerInstance
   }
 
   ngAfterViewInit() {

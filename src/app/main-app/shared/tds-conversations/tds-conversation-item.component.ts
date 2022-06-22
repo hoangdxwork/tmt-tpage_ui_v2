@@ -29,7 +29,6 @@ import { ProductPagefbComponent } from "../../pages/conversations/components/pro
 export class TDSConversationItemComponent implements OnInit, OnDestroy {
 
   @Input() data!: MakeActivityItemWebHook;
-  @Input() index!: number;
   @Input() psid!: string;
   @Input() partner: any;
   @Input() team!: CRMTeamDTO;

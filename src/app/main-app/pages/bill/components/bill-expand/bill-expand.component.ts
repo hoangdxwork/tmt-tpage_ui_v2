@@ -91,7 +91,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
     }
 
     this.isProcessing = true;
-    let name = this.type = "invoice" ? "ban-hang" : "tra-hang-ban-hang";
+    let name = this.type == "invoice" ? "ban-hang" : "tra-hang-ban-hang";
 
     this.excelExportService.exportGet(`/fastsaleorder/ExcelPrint?id=${this.dataItem.Id}`,`${name}`)
       .pipe(takeUntil(this.destroy$))
@@ -106,7 +106,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
       content: ModalSendMessageComponent,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        partnerIds: [this.dataItem.PartnerId]
+          partnerIds: [this.dataItem.PartnerId]
       }
     });
   }
@@ -124,8 +124,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
             dataModel : res
           }
         });
-      },
-      err=>{
+      }, err => {
         this.message.error(err.error.message ?? 'Không tải được dữ liệu');
       }
     )

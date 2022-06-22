@@ -46,7 +46,7 @@ export class AttachmentDataFacade {
     } else {
       return this.attachmentService.getAll().pipe(map((res: any) => {
         return this.attachmentState.setAttachment(res);
-      }), shareReplay());
+      }), shareReplay({ bufferSize: 1, refCount: true }));
     }
   }
 
@@ -89,7 +89,7 @@ export class AttachmentDataFacade {
     } else {
       return this.attachmentService.getListCollection().pipe(map((res: any) => {
         return this.attachmentState.setCollection(res);
-      }), shareReplay());
+      }), shareReplay({ bufferSize: 1, refCount: true }));
     }
   }
 
@@ -111,7 +111,7 @@ export class AttachmentDataFacade {
               });
           }
           return this.attachmentState.setInner(id, x.Attachments);
-        }), shareReplay());
+        }), shareReplay({ bufferSize: 1, refCount: true }));
     }
   }
 

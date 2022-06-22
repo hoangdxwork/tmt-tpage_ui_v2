@@ -6,7 +6,7 @@ import { MakeActivityItemWebHook } from "../../dto/conversation/make-activity.dt
 })
 export class ShowAvatarPipe implements PipeTransform {
 
-  transform(items: Array<MakeActivityItemWebHook> | undefined): any[] {
+  transform(items: Array<MakeActivityItemWebHook>): any[] {
     if(items && items.length == 1) {
       items[0].is_show_avatar = true;
     } else if (items && items.length > 0) {
