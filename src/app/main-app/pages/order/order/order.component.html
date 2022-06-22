@@ -111,8 +111,8 @@
                     <span [ngClass]="data.Code ? '' : 'text-error-500'">{{data.Code || 'N/A'}}</span>
                   </div>
                   <!-- Nhãn -->
-                  <div class="flex w-full gap-x-2 items-center">
-                    <div *ngIf='data.Tags && data.Tags !== "[]"' class="flex w-full flex-wrap gap-2">
+                  <div class="flex w-full gap-x-1 items-center">
+                    <div *ngIf='data.Tags && data.Tags !== "[]"' class="flex w-full flex-wrap gap-1">
                       <tds-tag *ngFor="let item of data.Tags | prettyjson" status='primary' tds-tooltip
                         [tooltipTitle]="item.Name">
                         <div class="truncate max-w-[100px]">

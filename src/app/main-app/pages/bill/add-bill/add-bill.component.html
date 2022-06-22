@@ -43,7 +43,7 @@
                                     <div class="flex justify-between">
                                         <tds-button-group>
                                         <button tds-dropdown trigger="click" type="button" [tdsDropdownMenu]="menu1">
-                                            <span class="flex items-center font-semibold" [ngStyle]="{'color': onCurrentStatus(_form.controls['Partner'].value.StatusText, lstPartnerStatus) }">
+                                            <span class="flex items-center font-semibold" [ngStyle]="{'color': onCurrentStatus(_form.controls['Partner'].value?.StatusText, lstPartnerStatus) }">
                                                 {{_form.controls["Partner"].value ? _form.controls["Partner"].value.StatusText : "N/A" }}
                                                 <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
                                             </span>

@@ -7,7 +7,7 @@
 
         <tds-label>Phương thức</tds-label>
         <tds-form-field class="col-span-4 w-full mb-3">
-            <tds-select valueField="Id" textField="Name" placeholder='Chọn phương thức thanh toán' 
+            <tds-select valueField="Id" textField="Name" placeholder='Chọn phương thức thanh toán'
                 formControlName="Journal" [data]="lstAcJournal" [allowClear]="true" [valuePrimitive]="false"
                 (selectChange)="onchangeJournal($event)">
             </tds-select>
@@ -35,15 +35,15 @@
 </form>
 
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button class="mr-4" color="secondary" [disabled]="isSubmit" (click)="cancel()">
+    <button tds-button class="mr-4 min-w-[100px]" color="secondary" [disabled]="isSubmit" (click)="cancel()">
         Đóng
     </button>
 
-    <button tds-button class="mr-4" type="submit" [disabled]="checkValidate() || isSubmit" 
+    <button tds-button class="mr-4" type="submit" [disabled]="checkValidate() || isSubmit"
         color="info" (click)="save('saveAndPrint')">Thanh toán và in
     </button>
 
-    <button tds-button type="submit" [disabled]="checkValidate() || isSubmit" 
+    <button tds-button type="submit" [disabled]="checkValidate() || isSubmit"
         color="primary" (click)="save('save')">Thanh toán
     </button>
 </div>
