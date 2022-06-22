@@ -73,8 +73,8 @@
               <button type="button" tds-dropdown color="secondary" trigger="click" [tdsDropdownMenu]="menuRevenue"
                 class="rounded-full border border-neutral-2-100 border-solid bg-white py-1.5 px-4">
                 <span class="flex items-center text-body-2 font-semibold text-neutral-1-500 cursor-pointer">
-                  Tổng doanh số: <span class="pl-2 text-primary-1">{{objRevenue?.RevenueTotal || 0 | number: '1.0-3'}} đ</span><i
-                    class="tdsi-arrow-down-line text-lg leading-none ml-2"></i>
+                  Tổng doanh số: <span class="pl-2 text-primary-1">{{objRevenue?.RevenueTotal || 0 | number: '1.0-3'}} đ</span>
+                  <i class="tdsi-arrow-down-line text-lg leading-none ml-2"></i>
                 </span>
               </button>
               <tds-dropdown-menu #menuRevenue="tdsDropdownMenu">
@@ -115,12 +115,9 @@
                   <div [innerHTML]="item.message | safeHtml"></div>
                 </div>
               </div>
-              <button type="button" tds-button color="error" (click)="removeNote(item.id, i)"  size="sm">
-                <span class="flex items-center">
-                    <i class="tdsi-trash-line text-lg leading-none"></i>
-                </span>
-              </button>
-
+              <div class="flex">
+                <i class="tdsi-trash-line text-error-500 text-xl cursor-pointer" (click)="removeNote(item.id, i)"></i>
+              </div>
             </div>
           </div>
         </div>

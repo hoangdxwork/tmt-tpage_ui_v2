@@ -87,7 +87,7 @@
                 <div class="w-full">
                     <tds-form-field>
                         <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm sản phẩm' formControlName="Categ"
-                            disabledField="isActive" [required]='true' [data]="lstCategory" [allowClear]="true">
+                            disabledField="isActive" [required]='true' [data]="lstCategory" [allowClear]="true" [valuePrimitive]="false">
                         </tds-select>
                     </tds-form-field>
                 </div>
@@ -104,7 +104,7 @@
                 <div class="w-full">
                     <tds-form-field>
                         <tds-select valueField="Id" textField="Name" placeholder='Chọn đơn vị mặc định' formControlName="UOM"
-                            disabledField="isActive" [required]='true' [data]="lstUOMCategory" [allowClear]="true">
+                            disabledField="isActive" [required]='true' [data]="lstUOMCategory" [allowClear]="true" [valuePrimitive]="false">
                         </tds-select>
                     </tds-form-field>
                 </div>
@@ -128,7 +128,7 @@
                 <div class="w-full">
                     <tds-form-field>
                         <tds-select valueField="Id" textField="Name" placeholder='Chọn đơn vị mua' formControlName="UOMPO"
-                            disabledField="isActive" [required]='true' [data]="lstUOMCategory" [allowClear]="true">
+                            disabledField="isActive" [required]='true' [data]="lstUOMCategory" [allowClear]="true" [valuePrimitive]="false">
                         </tds-select>
                     </tds-form-field>
                 </div>

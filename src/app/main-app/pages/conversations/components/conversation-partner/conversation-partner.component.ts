@@ -470,7 +470,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           }
         });
         modal.afterClose.subscribe(result => {
-          this.loadBill(data.PartnerId);
+          if(TDSHelperObject.hasValue(result)){
+            this.loadBill(data.PartnerId);
+          }
         });
       },
       err=>{
