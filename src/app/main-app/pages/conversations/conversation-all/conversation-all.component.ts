@@ -3,7 +3,7 @@ import { ModalSendMessageAllComponent } from './../components/modal-send-message
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { fromEvent, Observable, Subject } from 'rxjs';
+import { fromEvent, Observable, Subject, Subscription } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ConversationMatchingItem, CRMMatchingMappingDTO } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -27,13 +27,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @HostBinding("@eventFadeState") eventAnimation = true;
-  @HostBinding("@eventFadeState") eventAnimationCollap = false;
+  @HostBinding("@openCollapse") eventAnimationCollap = false;
   @ViewChild('conversationSearchInput') innerText!: ElementRef;
 
   isLoading: boolean = false;
   dataSource$!: Observable<any>;
   lstMatchingItem!: ConversationMatchingItem[];
-  private destroy$ = new Subject<void>();
   psid!: string;
   activeCvsItem!: ConversationMatchingItem;
   isFastSend: boolean = false;
@@ -55,6 +54,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   currentOrderTab: number = 0;
   letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+  private destroy$ = new Subject<void>();
 
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
@@ -99,10 +99,16 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       }
     });
 
+    this.spinLoading();
+  }
+
+  spinLoading() {
     // loading moused khi change, đợi phản hồi từ loadMessages trong shared-tds-conversations
-    this.conversationDataFacade.changeCurrentCvs$.subscribe((data: boolean) => {
-        this.isChanged = data;
+    this.conversationDataFacade.onLoadTdsConversation$.subscribe((obs: boolean) => {
+      if(obs == false) {
+        this.isChanged = obs;
         this.cdRef.detectChanges();
+      }
     })
   }
 
@@ -185,7 +191,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.isChanged = true;
     (this.activeCvsItem as any) = null;
     this.getActiveCvsItem(item);
-    this.cdRef.detectChanges();
   }
 
   trackByIndex(_: number, data: any): number {
@@ -202,7 +207,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       if (this.queryFilter) {
         this.conversationDataFacade.nextDataWithQuery(this.currentTeam?.Facebook_PageId, this.type, this.queryFilter)
           .pipe(takeUntil(this.destroy$))
-          .pipe(finalize(() => { this.isProcessing = false }))
+          .pipe(finalize(() => { this.isProcessing = false; this.cdRef.detectChanges() }))
           .subscribe(data => {
             if(data == false) {
               this.isProcessing = true;
@@ -211,14 +216,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             if(TDSHelperArray.hasListValue(data?.items)) {
               this.lstMatchingItem = [...data.items];
             }
-            this.cdRef.detectChanges();
-          }, error => {
-            this.cdRef.detectChanges();
           })
       } else {
         this.conversationDataFacade.nextData(this.currentTeam?.Facebook_PageId, this.type)
           .pipe(takeUntil(this.destroy$))
-          .pipe(finalize(() => this.isProcessing = false))
+          .pipe(finalize(() => { this.isProcessing = false; this.cdRef.detectChanges() }))
           .subscribe(data => {
             if(data == false) {
               this.isProcessing = true;
@@ -227,9 +229,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             if(TDSHelperArray.hasListValue(data?.items)) {
               this.lstMatchingItem = [...data.items];
             }
-            this.cdRef.detectChanges();
-          }, error => {
-            this.cdRef.detectChanges();
+            ;
           })
       }
     }

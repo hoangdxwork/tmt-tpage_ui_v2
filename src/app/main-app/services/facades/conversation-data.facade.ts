@@ -34,7 +34,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   private nextPageUrlCurrent!: string;
   isProcessing: boolean = false;
   public onUpdateInfoByConversation$ = new EventEmitter<any>();
-  public changeCurrentCvs$ = new EventEmitter<any>();
+  public onLoadTdsConversation$ = new EventEmitter<any>();
 
   constructor(private message: TDSMessageService,
     private cvsFbState: ConversationFacebookState,
@@ -244,7 +244,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
         if(create) {
           return this.cvsFbState.setConversation(pageId, type, create);
         }
-      }), shareReplay(1));
+      }), shareReplay({ bufferSize: 1, refCount: true }));
     }
     return this.dataSource$;
   }
@@ -638,7 +638,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
         let create = this.createConversation(res, queryObj, type);
         let result = this.cvsFbState.setConversationQuery(query, create);
         return result;
-      }), shareReplay());
+      }), shareReplay({ bufferSize: 1, refCount: true }), takeUntil(this.destroy$));
     }
   }
 
