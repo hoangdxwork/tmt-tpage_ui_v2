@@ -1,3 +1,4 @@
+import { ConversationOrderProductDefaultDTO } from './../../dto/coversation-order/conversation-order.dto';
 import { Observable, Subject, Subscriber, Subscription } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone, OnDestroy, Input } from '@angular/core';
@@ -22,8 +23,7 @@ import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'tpage-add-product',
-  templateUrl: './tpage-add-product.component.html',
-  styleUrls: ['./tpage-add-product.component.scss']
+  templateUrl: './tpage-add-product.component.html'
 })
 export class TpageAddProductComponent implements OnInit, OnDestroy {
 
@@ -36,7 +36,6 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   lstUOMCategory!: Array<ProductUOMDTO>;
 
   isLoading: boolean = false;
-  imageUrl = "https://randomuser.me/api/portraits/women/68.jpg";
   public readonly lstProductType = ProductType;
   fileList: TDSUploadFile[] = [];
   private destroy$ = new Subject<void>();
@@ -65,7 +64,6 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   loadDefault() {
     this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
       delete res["@odata.context"];
-
       this.defaultGet = res;
       this.updateForm(res);
     });
