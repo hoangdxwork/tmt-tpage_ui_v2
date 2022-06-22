@@ -1,5 +1,10 @@
+import { ConversationMatchingItem } from './../../../dto/conversation-all/conversation-all.dto';
+import { MDBByPSIdDTO } from './../../../dto/crm-matching/mdb-by-psid.dto';
+import { CRMMatchingService } from './../../../services/crm-matching.service';
+import { CRMTeamService } from './../../../services/crm-team.service';
+import { PartnerService } from './../../../services/partner.service';
 import { addDays } from 'date-fns/esm';
-import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { SaleOnlineOrderSummaryStatusDTO, SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { ColumnTableDTO } from 'src/app/main-app/dto/common/table.dto';
@@ -31,7 +36,7 @@ import { OrderPrintService } from 'src/app/main-app/services/print/order-print.s
   selector: 'app-order',
   templateUrl: './order.component.html'
 })
-export class OrderComponent implements OnInit {
+export class OrderComponent implements OnInit, OnDestroy {
 
   @ViewChild('innerText') innerText!: ElementRef;
 
@@ -44,6 +49,12 @@ export class OrderComponent implements OnInit {
   indClickStatus = -1;
   currentStatus:TDSSafeAny;
   lstStatusTypeExt!: Array<any>;
+  public mappingTeams: any[] = [];
+  public currentMappingTeam: any;
+  currentConversation!: ConversationMatchingItem;
+  psid: any;
+  isOpenDrawer: boolean = false;
+  orderMessage: TDSSafeAny;
   private destroy$ = new Subject<void>();
 
   public filterObj: TDSSafeAny = {
@@ -101,6 +112,8 @@ export class OrderComponent implements OnInit {
   @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
   @ViewChild('viewChildDetailPartner') viewChildDetailPartner!: ElementRef;
 
+  isProcessing: boolean = false;
+
   constructor(private cdRef: ChangeDetectorRef,
     private tagService: TagService,
     private router: Router,
@@ -113,7 +126,10 @@ export class OrderComponent implements OnInit {
     private cacheApi: THelperCacheService,
     private excelExportService: ExcelExportService,
     private resizeObserver: TDSResizeObserver,
-    private commonService: CommonService) { }
+    private commonService: CommonService,
+    private partnerService: PartnerService,
+    private crmTeamService: CRMTeamService,
+    private crmMatchingService: CRMMatchingService) { }
 
   ngOnInit(): void {
     this.loadTags();
@@ -534,6 +550,7 @@ export class OrderComponent implements OnInit {
   }
 
   onExportExcel() {
+    if (this.isProcessing) { return }
     let filter = {
       logic: 'and',
       filters: [
@@ -555,7 +572,9 @@ export class OrderComponent implements OnInit {
       ids: [...this.setOfCheckedId]
     }
 
-    this.excelExportService.exportPost(`/SaleOnline_Order/ExportFile`, model, `don_hang_online`);
+    this.excelExportService.exportPost(`/SaleOnline_Order/ExportFile`, model, `don_hang_online`)
+      .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
+      .subscribe();
   }
 
   ngOnDestroy(): void {
@@ -620,7 +639,7 @@ export class OrderComponent implements OnInit {
       let ids = [...this.setOfCheckedId];
       ids.map((x: string) => {
         this.saleOnline_OrderService.getById(x).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-          if(res) {debugger
+          if(res) {
               this.orderPrintService.printIpFromOrder(res);
           }
         }, error => {
@@ -628,6 +647,88 @@ export class OrderComponent implements OnInit {
         })
       })
     }
+  }
+  openMiniChat(data: TDSSafeAny) {
+    let partnerId = data.PartnerId;
+    this.orderMessage = data;
+    if(this.orderMessage.DateCreated){
+      this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
+    }
+    this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe((res: any): any => {
+
+      let pageIds: any = [];
+      res.map((x: any) => {
+          pageIds.push(x.page_id);
+      });
+
+      if(pageIds.length == 0) {
+        return this.message.error('Không có kênh kết nối với khách hàng này.');
+      }
+
+      this.crmTeamService.getActiveByPageIds$(pageIds)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((teams: any): any => {
+
+          if (teams.length == 0) {
+            return this.message.error('Không có kênh kết nối với khách hàng này.');
+          }
+
+          this.mappingTeams.length = 0;
+          var pageDic = {} as any;
+
+          teams.map((x: any) => {
+            var exist = res.filter((r: any) => r.page_id == x.Facebook_PageId)[0];
+            if (exist && !pageDic[exist.Facebook_PageId]) {
+              pageDic[exist.Facebook_PageId] = true; // Cờ này để không thêm trùng page vào
+              this.mappingTeams.push({
+                psid: exist.psid,
+                team: x
+              });
+            }
+          });
+
+          if (this.mappingTeams.length > 0) {
+            this.currentMappingTeam = this.mappingTeams[0];
+            this.loadMDBByPSId(this.currentMappingTeam.team.Facebook_PageId, this.currentMappingTeam.psid);
+          }
+      });
+    }, error => {
+      this.message.error('Đã xả ra lỗi!');
+    })
+  }
+  loadMDBByPSId(pageId: string, psid: string) {
+    // Xoá hội thoại hiện tại
+    (this.currentConversation as any) = null;
+
+    // get data currentConversation
+    this.crmMatchingService.getMDBByPSId(pageId, psid)
+      .subscribe((res: MDBByPSIdDTO) => {
+        if (res) {
+          //tags
+          res["keyTags"] = {};
+
+          if(res.tags && res.tags.length > 0) {
+            res.tags.map((x: any) => {
+              res["keyTags"][x.id] = true;
+            });
+          }
+          else {
+            res.tags = [];
+          }
+
+          this.currentConversation = { ...res, ...this.currentConversation};
+          this.psid = res.psid;
+          this.isOpenDrawer = true;
+        }
+      });
+  }
+  selectMappingTeam(item: any) {
+    this.currentMappingTeam = item;
+    this.loadMDBByPSId(item.psid, item.team.Facebook_PageId); // Tải lại hội thoại
+  }
+
+  closeDrawer() {
+    this.isOpenDrawer = false;
   }
 
 }

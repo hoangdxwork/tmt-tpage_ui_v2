@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, finalize } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { BillDetailDTO } from 'src/app/main-app/dto/bill/bill-detail.dto';
@@ -13,11 +13,13 @@ import { TDSStatusType } from 'tds-ui/step';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
+import { THelperCacheService } from 'src/app/lib';
 
 @Component({
   selector: 'app-detail-bill',
   templateUrl: './detail-bill.component.html'
 })
+
 export class DetailBillComponent implements OnInit, OnDestroy{
 
   id: any;
@@ -41,14 +43,15 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   isButtonComfirm: boolean = false;
 
   constructor(private route: ActivatedRoute,
-      private router: Router,
-      private crmTeamService: CRMTeamService,
-      private commonService: CommonService,
-      private fastSaleOrderService: FastSaleOrderService,
-      private modalService: TDSModalService,
-      private printerService: PrinterService,
-      private message: TDSMessageService,
-      private viewContainerRef: ViewContainerRef) {
+    private router: Router,
+    private cacheApi: THelperCacheService,
+    private crmTeamService: CRMTeamService,
+    private commonService: CommonService,
+    private fastSaleOrderService: FastSaleOrderService,
+    private modalService: TDSModalService,
+    private printerService: PrinterService,
+    private message: TDSMessageService,
+    private viewContainerRef: ViewContainerRef) {
   }
 
   ngOnInit(): void {
@@ -63,7 +66,9 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   loadBill() {
     this.isLoading = true;
-    this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe((res: any) => {
         delete res['@odata.context'];
 
         if (res.DateCreated) {
@@ -74,8 +79,8 @@ export class DetailBillComponent implements OnInit, OnDestroy{
         }
         if (res.DateOrderRed) {
           res.DateOrderRed = new Date(res.DateOrderRed);
-        }
-        if (res.ReceiverDate) {
+        }debugger
+        if (res.ReceiverDate) {debugger
           res.ReceiverDate = new Date(res.ReceiverDate);
         }
 
@@ -84,8 +89,8 @@ export class DetailBillComponent implements OnInit, OnDestroy{
         // console.log(this.dataModel)
 
         for (var item of this.dataModel.OrderLines) {
-            this.productUOMQtyTotal = this.productUOMQtyTotal + item.ProductUOMQty;
-            this.productPriceTotal = this.productPriceTotal + item.PriceTotal;
+          this.productUOMQtyTotal = this.productUOMQtyTotal + item.ProductUOMQty;
+          this.productPriceTotal = this.productPriceTotal + item.PriceTotal;
         }
 
         switch(res.State) {
@@ -115,7 +120,8 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   loadTeamById(id: any) {
     this.crmTeamService.getTeamById(id).subscribe((team: any) => {
-      this.dataModel.Team = {...this.dataModel.Team, ...team};
+        this.dataModel.Team.Name = team.Name;
+        this.dataModel.Team.Facebook_PageName = team.Facebook_PageName;
     })
   }
 
@@ -164,7 +170,11 @@ export class DetailBillComponent implements OnInit, OnDestroy{
         obs = this.printerService.printUrl(`/fastsaleorder/PrintDelivery?ids=${this.dataModel.Id}`);
         break;
       case "ship":
-        obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${this.dataModel.Id}${this.dataModel.Carrier.Id}`);
+        let carrierId = "";
+        if (this.dataModel.CarrierId) {
+          carrierId = `&CarrierId=${this.dataModel.CarrierId}`;
+        }
+        obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${this.dataModel.Id}${carrierId}`);
         break;
       default:
         break;
@@ -378,6 +388,45 @@ export class DetailBillComponent implements OnInit, OnDestroy{
     }, error => {
       this.message.error(`${error.error.message || 'Cập nhật tồn kho thất bại'}`);
     })
+  }
+
+  copyInvoice() {
+    let model = this.dataModel;
+
+    model.TrackingRef = "";
+    model.TrackingRefSort = "";
+    model.State = 'draft';
+    model.ShipStatus = 'none';
+    model.ShipPaymentStatus = '';
+    model.DateInvoice = new Date();
+    model.Comment = "";
+
+    //Truong hop nhieu cong ty copy tu cong ty khac
+    delete model["Id"];
+    delete model["Number"];
+    delete model["Warehouse"];
+    delete model["WarehouseId"];
+    delete model["PaymentJournal"];
+    delete model["PaymentJournalId"];
+    delete model["Account"];
+    delete model["AccountId"];
+    delete model["Company"];
+    delete model["CompanyId"];
+    delete model["Journal"];
+    delete model["JournalId"];
+    delete model["PaymentInfo"];
+    delete model["User"];
+    delete model["UserId"];
+    delete model["UserName"];
+
+    model.OrderLines.map((item) => {
+      delete item["Account"];
+      delete item["AccountId"];
+    });
+
+    let keyCache = this.fastSaleOrderService._keyCacheCopyInvoice as string;
+    this.cacheApi.setItem(keyCache, JSON.stringify(model));
+    this.onCreate();
   }
 
   onCreate(){

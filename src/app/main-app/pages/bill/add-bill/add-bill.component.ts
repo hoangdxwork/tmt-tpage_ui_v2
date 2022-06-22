@@ -38,6 +38,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
+import { THelperCacheService } from 'src/app/lib';
 
 @Component({
   selector: 'app-add-bill',
@@ -101,6 +102,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder,
+    private cacheApi: THelperCacheService,
     private route: ActivatedRoute,
     private partnerService: PartnerService,
     private message: TDSMessageService,
@@ -117,15 +119,15 @@ export class AddBillComponent implements OnInit, OnDestroy {
     private registerPaymentService: AccountRegisterPaymentService,
     private accountTaxService: AccountTaxService,
     private viewContainerRef: ViewContainerRef) {
-    this.createForm();
+      this.createForm();
   }
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get("id");
-
     if (this.id) {
       this.loadBill(this.id);
     } else {
+      // TODO: xử lý tạo mới + copy nếu có
       this.loadDefault();
     }
 
@@ -245,7 +247,8 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   loadBill(id: number) {
-    this.fastSaleOrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
+    this.isLoading = true;
+    this.fastSaleOrderService.getById(id).pipe(takeUntil(this.destroy$)).pipe(finalize(() => { this.isLoading = false})).subscribe((data: any) => {
       delete data['@odata.context'];
       if (data.DateInvoice) {
         data.DateInvoice = new Date(data.DateInvoice);
@@ -296,9 +299,11 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   loadDefault() {
+    this.isLoading = true;
     let model = { Type: 'invoice' };
-    this.fastSaleOrderService.defaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
+    this.fastSaleOrderService.defaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isLoading = false)).subscribe((data: any) => {
       delete data['@odata.context'];
+
       if (data.DateInvoice) {
         data.DateInvoice = new Date(data.DateInvoice);
       }
@@ -308,25 +313,34 @@ export class AddBillComponent implements OnInit, OnDestroy {
       if (data.ReceiverDate) {
         data.ReceiverDate = new Date(data.ReceiverDate);
       }
-      // TODO: chọn đối tác mặc định
-      this.lstCarriers.subscribe((res) => {
-        let item = res.filter(f => f.Name === 'viettel post')[0] || res[0];
-        if (item) {
-          this.onChangeCarrier(item);
-        }
-      });
 
       this.dataModel = data;
-      this.updateForm(this.dataModel);
+      this.loadCacheCopy(this.dataModel);
     }, error => {
       this.message.error('Load thông tin mặc định đã xảy ra lỗi!');
     });
   }
 
+  loadCacheCopy(data: FastSaleOrder_DefaultDTOV2 ) {
+    let keyCache = this.fastSaleOrderService._keyCacheCopyInvoice as string;
+    this.cacheApi.getItem(keyCache).subscribe((obs) => {
+
+      if(TDSHelperString.hasValueString(obs)) {
+        let cache = JSON.parse(obs['value']) as TDSSafeAny;
+        let cacheDB = JSON.parse(cache['value']) as TDSSafeAny;
+        data = { ... data, ...cacheDB };
+        // Copy xong xóa dữ liệu cache
+        this.cacheApi.removeItem(keyCache);
+      }
+
+      this.updateForm(data);
+    })
+  }
+
   loadTeamById(id: any) {
     this.cRMTeamService.getTeamById(id).subscribe((team: any) => {
-      this.dataModel.Team.Name = team.Name;
-      this.dataModel.Team.Facebook_PageName = team.Facebook_PageName;
+        this.dataModel.Team.Name = team.Name;
+        this.dataModel.Team.Facebook_PageName = team.Facebook_PageName;
     })
   }
 
@@ -334,16 +348,18 @@ export class AddBillComponent implements OnInit, OnDestroy {
     //TODO: cập nhật price of product theo bảng giá
     if (data.PriceListId) {
       this.commonService.getPriceListItems(data.PriceListId).subscribe((res: any) => {
-        this.priceListItems = res;
+          this.priceListItems = res;
       }, error => {
-        this.message.error('Load bảng giá đã xảy ra lỗi!')
+          this.message.error('Load bảng giá đã xảy ra lỗi!')
       })
     }
+
     if (TDSHelperArray.hasListValue(data.OrderLines)) {
       data.OrderLines.forEach((x: OrderLine) => {
-        this.addOrderLines(x);
+          this.addOrderLines(x);
       });
     }
+
     this._form.patchValue(data);
   }
 
@@ -436,6 +452,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       this.changePartner(event.Id);
     }
   }
+
   // TODO: bug gọi api nhiều lần, fix khi tdsInputDebounce sửa xong
   onSearchPartner(event: any) {
     if (TDSHelperString.hasValueString(event)) {
@@ -1196,6 +1213,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     if (!this._form.controls['Carrier'].value) {
       return this.message.error('Vui lòng chọn đối tác giao hàng!');
     }
+
     let model = this._form.controls['Carrier'].value;
     this.calculateFee(model).then((res: any) => {
       if (res?.Costs) {
@@ -1968,15 +1986,16 @@ export class AddBillComponent implements OnInit, OnDestroy {
     model.Address = formModel.Address ? formModel.Address : model.Address;
     model.ReceiverName = formModel.ReceiverName ? formModel.ReceiverName : model.ReceiverName;
     model.ReceiverPhone = formModel.ReceiverPhone ? formModel.ReceiverPhone : model.ReceiverPhone;
-    model.ReceiverDate = formModel.ReceiverDate ? formModel.ReceiverDate : model.ReceiverDate;
+
+    model.ReceiverDate = formModel.ReceiverDate ? formModel.ReceiverDate.toISOString() : model.ReceiverDate.toISOString();
     model.ReceiverAddress = formModel.ReceiverAddress ? formModel.ReceiverAddress : model.ReceiverAddress;
     model.ReceiverNote = formModel.ReceiverNote ? formModel.ReceiverNote : model.ReceiverNote;
 
     model.User = formModel.User ? formModel.User : model.User;
     model.UserId = formModel.User ? formModel.User.Id : model.UserId;
-    model.DateOrderRed = formModel.DateOrderRed ? formModel.DateOrderRed : model.DateOrderRed;
+    model.DateOrderRed = formModel.DateOrderRed ? formModel.DateOrderRed.toISOString() : model.DateOrderRed.toISOString();
     model.State = formModel.State ? formModel.State : model.State;
-    model.DateInvoice = formModel.DateInvoice ? formModel.DateInvoice : model.DateInvoice;
+    model.DateInvoice = formModel.DateInvoice ? formModel.DateInvoice.toISOString() : model.DateInvoice.toISOString();
     model.NumberOrder = formModel.NumberOrder ? formModel.NumberOrder : model.NumberOrder;
     model.Comment = formModel.Comment ? formModel.Comment : model.Comment;
     model.Seri = formModel.Seri ? formModel.Seri : model.Seri;

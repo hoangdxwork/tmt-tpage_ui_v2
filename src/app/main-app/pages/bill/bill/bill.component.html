@@ -5,13 +5,12 @@
         <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Phiếu bán hàng</span>
       </h1>
       <div class="flex gap-x-2">
-        <action-dropdown [_type]="'all'" [filterObj]="filterObj" [lstOfData]="lstOfData"
-          [setOfCheckedId]=[setOfCheckedId]></action-dropdown>
         <button tds-button color="secondary">
           <span class="flex items-center">
             <i class="tdsi-upload-fill text-lg leading-none text-neutral-1-500 mr-2"></i>Mã vận đơn từ file
           </span>
         </button>
+        <action-dropdown [type]="'all'" [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]></action-dropdown>
       </div>
     </div>
   </div>
@@ -266,7 +265,7 @@
                 </td>
                 <td [tdsRight]="true" [align]="'center'" class="border-r">
                   <div class="flex items-center justify-center gap-x-2">
-                    <button tds-button-icon color="secondary" size="sm">
+                    <button tds-button-icon color="secondary" size="sm" (click)="openMiniChat(data)">
                       <span class="flex items-center">
                         <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                       </span>
@@ -287,7 +286,7 @@
               <tr [expand]="expandSet.has(data.Id)"
                 class="border-b border-neutral-2-100 text-neutral-1-900 bg-gray-200 w-full">
                 <div #BillOrderLines [ngStyle]="{'max-width.px': widthCollapse, 'margin-left.px': marginLeftCollapse}">
-                  <app-bill-expand [billData]="data" *ngIf="expandSet.has(data.Id)"></app-bill-expand>
+                  <app-bill-expand [dataItem]="data" *ngIf="expandSet.has(data.Id)"></app-bill-expand>
                 </div>
               </tr>
             </ng-template>
@@ -296,4 +295,83 @@
       </div>
     </div>
   </div>
+  <tds-drawer [visible]="isOpenDrawer" [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
+    [placement]="'right'"  [title]="titleMessage" (onClose)="closeDrawer()" [width]="'890px'">
+    <ng-template #titleMessage>
+      <span class="flex w-full items-center text-title-1 font-semibold text-neutral-900">
+        Gửi tin nhắn Facebook
+      </span>
+    </ng-template>
+    <ng-container *tdsDrawerContent>
+      <div class="w-full h-full flex flex-col overflow-hidden text-body-2">
+        <div *ngIf="orderMessage" class="flex flex-col gap-y-4 p-4 bg-white">
+          <div class="flex justify-between items-center">
+            <div *ngIf="mappingTeams.length > 0" class="flex gap-3 items-center">
+              <tpage-avatar-facebook [fbid]="currentMappingTeam?.team?.Facebook_PageId || currentMappingTeam?.team?.Facebook_ASUserId"
+                [token]="currentMappingTeam?.team?.Facebook_PageToken || currentMappingTeam?.team?.Facebook_UserToken">
+              </tpage-avatar-facebook>
+              <tds-button-group>
+                <button tds-dropdown trigger="click" type="button" [tdsDropdownMenu]="menu1">
+                    <span class="flex items-center">
+                        {{currentMappingTeam?.team?.Facebook_PageName || 'Hãy chọn kênh'}}
+                        <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                    </span>
+                </button>
+                <tds-dropdown-menu #menu1="tdsDropdownMenu">
+                  <div class="w-full">
+                      <div tds-dropdown-item *ngFor="let item of mappingTeams"  (click)="selectMappingTeam(item)">
+                        <a> {{ item.team.Facebook_PageName }} </a>
+                      </div>
+                  </div>
+                </tds-dropdown-menu>
+              </tds-button-group>
+            </div>
+            <div class="flex gap-x-2">
+              <button tds-button color="info">
+                <span class="flex items-center">
+                  <i class="tdsi-message-fill text-lg leading-none mr-2"></i>Gửi tin nhắn nhanh
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-x-9 gap-y-3">
+            <div class="flex gap-x-1">
+              <span class="w-1/3">Số HĐ</span>
+              <span class="w-2/3 font-semibold">{{orderMessage.Number?orderMessage.Number:'...' || 'N/A'}}</span>
+            </div>
+            <div class="flex gap-x-1">
+              <span class="w-1/3">Tổng tiền</span>
+              <span class="w-2/3 font-semibold">{{orderMessage.AmountTotal?orderMessage.AmountTotal:0 | number}}</span>
+            </div>
+            <div class="flex gap-x-1">
+              <span class="w-1/3">Ngày bán</span>
+              <span class="w-2/3 font-semibold">{{orderMessage.DateInvoice | date:'dd/MM/yyyy'}}</span>
+            </div>
+            <div class="flex gap-x-1">
+              <span class="w-1/3">Kênh bán hàng</span>
+              <span class="w-2/3 font-semibold">{{orderMessage.CRMTeamName?orderMessage.CRMTeamName:'...' || 'N/A'}}</span>
+            </div>
+            <div class="flex gap-x-1">
+              <span class="w-1/3">Đối tác GH</span>
+              <span class="w-2/3 font-semibold">{{orderMessage.CarrierName?orderMessage.CarrierName:'...' }}</span>
+            </div>
+            <div class="flex gap-x-1">
+              <span class="w-1/3">Trạng thái</span>
+              <span class="w-2/3 font-semibold">{{orderMessage.ShowState?orderMessage.ShowState:'...'}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="w-full h-full flex overflow-hidden bg-neutral-3-200" cdkScrollable>
+          <div *ngIf="currentConversation && currentMappingTeam?.team" class="w-full">
+            <shared-tds-conversations
+                class="flex w-full h-full"
+                [team]="currentMappingTeam?.team"
+                [data]="currentConversation"
+                [type]="'all'">
+            </shared-tds-conversations>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </tds-drawer>
 </div>
