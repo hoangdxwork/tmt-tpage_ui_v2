@@ -33,7 +33,7 @@
         <tds-form-field>
             <tds-select
                 valueField="Id" textField="Name"
-                placeholder='select item' [(ngModel)]="selectTags"
+                placeholder='Chọn thẻ' [(ngModel)]="selectTags"
                 (ngModelChange)="onChangeTags($event)"
                 [data]="lstTags" mode="multiple" >
             </tds-select>

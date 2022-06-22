@@ -23,6 +23,7 @@ import { TDSDropDownModule } from 'tds-ui/dropdown';
 import { TDSMessageModule } from 'tds-ui/message';
 import { TDSModalModule } from 'tds-ui/modal';
 import { TDSNotificationModule } from 'tds-ui/notification';
+import { TDSTagModule } from 'tds-ui/tag';
 
 const SERVICES = [
   ProductDataFacade,
@@ -54,7 +55,8 @@ const SERVICES = [
     UploadImageModule,
     TDSToolTipModule,
     TDSUploadModule,
-    DirectivesModule
+    DirectivesModule,
+    TDSTagModule,
   ],
   providers:[
     ...SERVICES,

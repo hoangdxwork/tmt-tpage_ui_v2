@@ -1916,7 +1916,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   editPartner(data: any) {
     let modal = this.modalService.create({
-      title: 'Thêm khách hàng',
+      title: 'Sửa khách hàng',
       content: ModalEditPartnerComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,

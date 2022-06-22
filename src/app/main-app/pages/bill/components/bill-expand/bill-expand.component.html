@@ -59,7 +59,7 @@
                             <th>số lượng</th>
                             <th>Đơn giá</th>
                             <th>Khối lượng(kg)</th>
-                            <th>Thành tiền</th>
+                            <th class="text-right">Thành tiền</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -71,7 +71,7 @@
                                 <td>{{ (data.ProductUOMQty | number) || 0}}</td>
                                 <td>{{ (data.PriceUnit | number) || 0 }}</td>
                                 <td>{{ (data.Weight | number) || 0 }}</td>
-                                <td>{{ (data.PriceTotal |number) || 0 }}</td>
+                                <td class="text-right">{{ (data.PriceTotal |number) || 0 }}</td>
                             </tr>
                         </ng-template>
                     </tbody>
