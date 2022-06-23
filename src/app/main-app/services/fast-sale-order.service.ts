@@ -11,6 +11,7 @@ import { FastSaleOrder_DefaultDTOV2 } from '../dto/fastsaleorder/fastsaleorder-d
 import { FastSaleOrderDTO, FastSaleOrderRestDTO, FastSaleOrderSummaryStatusDTO, ListUpdateDepositDTO } from '../dto/fastsaleorder/fastsaleorder.dto';
 import { AccountRegisterPaymentDTO } from '../dto/fastsaleorder/payment.dto';
 import { ODataIdsDTO, ODataModelDTO } from '../dto/odata/odata.dto';
+import { ChangePartnerPriceListDTO } from '../dto/partner/change-partner-pricelist.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable()
@@ -310,12 +311,12 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  onChangePartnerPriceList(data: TDSSafeAny) : Observable<TDSSafeAny> {
+  onChangePartnerPriceList(data: TDSSafeAny) : Observable<ChangePartnerPriceListDTO> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.onChangePartner_PriceList?$expand=PartnerShipping,PriceList,Account`,
       method: TApiMethodType.post,
     }
-    return this.apiService.getData<TDSSafeAny>(api, data);
+    return this.apiService.getData<ChangePartnerPriceListDTO>(api, data);
   }
 
   getConversationOrderBillByPartner(id: number): Observable<ConversationOrderBillByPartnerDTO> {
@@ -408,12 +409,39 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
-  listUpdateDeposit(data: ListUpdateDepositDTO): Observable<undefined> {
+  listUpdateDeposit(data: ListUpdateDepositDTO): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/fastsaleorder/listupdatedeposit`,
       method: TApiMethodType.post
     }
 
-    return this.apiService.getData<undefined>(api, data);
+    return this.apiService.getData<any>(api, data);
   }
+
+  urlSampleShipCodeExcel(): any {
+    let url = `${this._BASE_URL}/Content/files/template_excels/vi/template_update_trackingcode_delivery.xlsx?v2`;
+    return url;
+  }
+
+  urlSampleShipStatusDelivery () {
+    let url = `${this._BASE_URL}/Content/files/template_excels/vi/template_update_delivery_status.xlsx?v2`;
+    return url;
+  }
+
+  updateShipCodeExcel(data: any): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdateShipCodeExcel`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<any>(api, data);
+  }
+
+  updateExistShipCode(data: any): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdateExistShipCode`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<any>(api, data);
+  }
+
 }

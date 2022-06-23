@@ -8,7 +8,6 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FormsModule } from '@angular/forms';
 import { TDSConversationsComponent } from './tds-conversations.component';
 import { TDSConversationItemComponent } from './tds-conversation-item.component';
-import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { IconEmojiMartComponent } from '../emoji-mart/icon-emoji-mart.component';
 import { UploadImageModule } from '../upload-image/tpage-avatar-facebook/upload-image.module';
 import { ShowAttachmentComponent } from '../show-attachment/show-attachment.component';
@@ -39,13 +38,15 @@ import { TDSModalModule } from 'tds-ui/modal';
 import { TDSTypographyModule } from 'tds-ui/typography';
 import { TDSImageModule } from 'tds-ui/image';
 import { TDSMessageModule } from 'tds-ui/message';
+import { PickerModule } from '@ctrl/ngx-emoji-mart';
+import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 
 const CMP =[
   TDSConversationsComponent,
   TDSConversationItemComponent,
   IconEmojiMartComponent,
   ShowAttachmentComponent,
-  ShowItemImageComponent,
+  ShowItemImageComponent
 ]
 
 @NgModule({
@@ -68,7 +69,6 @@ const CMP =[
     TDSBadgeModule,
     TDSModalModule,
     TDSSpinnerModule,
-    PickerModule,
     TDSPopoverModule,
     UploadImageModule,
     TDSCardModule,
@@ -85,7 +85,9 @@ const CMP =[
     MainSharedModule,
     DirectivesModule,
     TDSEmptyModule,
-    TDSMessageModule
+    TDSMessageModule,
+    PickerModule,
+    EmojiModule
   ],
   exports:[
     ...CMP

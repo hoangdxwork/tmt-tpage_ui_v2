@@ -142,7 +142,7 @@
                                     <span class="font-semibold">Doanh số</span>
                                 </div>
                                 <div class="w-2/3">
-                                    <div class="font-semibold">{{_form.controls['Revenue'].value || 0 | number: '1.0-3'}}đ</div>
+                                    <div class="font-semibold">{{_form.controls['Revenue'].value || 0 | number: '1.0-3'}}</div>
                                 </div>
                             </div>
                             <div class=" col-span-1 flex gap-x-6 items-center">
@@ -190,7 +190,7 @@
                                 </div>
                                 <div class="w-2/3" *ngIf="dataModel.State != 'open'">
                                     <tds-form-field >
-                                        <tds-select valueField="Id" textField="Name" (selectChange)="onChangeCarrier($event,true)"
+                                        <tds-select valueField="Id" textField="Name" (selectChange)="onChangeCarrier($event, true)"
                                             placeholder='Chọn đối tác giao hàng' formControlName="Carrier" [valuePrimitive]="false"
                                             disabledField="isActive" [data]="(lstCarriers | async) || []" [allowClear]="true">
                                         </tds-select>
@@ -244,7 +244,7 @@
                                         Gửi trước 10h30 sáng, giao sớm hơn 1 ngày!
                                     </span>
                                 </div>
-                                <div class="w-2/3" *ngIf="dataModel.State == ('open' || 'cancel') ">
+                                <div class="w-2/3" *ngIf="dataModel.State == ('open' || 'cancel')">
                                     <span class="font-semibold">{{_form.controls['CashOnDelivery'].value ? _form.controls['CashOnDelivery'].value : 0 | number : '1.0-3'}} </span>
                                     <span class="text-body-3 text-[12px]" *ngIf="_form.controls['Carrier'].value && _form.controls['Carrier'].value.DeliveryType == 'GHN'"
                                     style="font-style: italic;background: #d7eddc;">

@@ -76,10 +76,10 @@
     </button>
     <tds-dropdown-menu #deliveryStatusMenu="tdsDropdownMenu">
       <div class="w-full">
-          <div (click)="updateDeliveryStatus('manual')" tds-dropdown-item>
+          <div (click)="manualCrossChecking()" tds-dropdown-item>
               <a> Đối soát giao hàng thủ công </a>
           </div>
-          <div (click)="updateDeliveryStatus('fromFile')" tds-dropdown-item>
+          <div (click)="updateShipStatusDelivery()" tds-dropdown-item>
               <a> Đối soát giao hàng từ file </a>
           </div>
       </div>
