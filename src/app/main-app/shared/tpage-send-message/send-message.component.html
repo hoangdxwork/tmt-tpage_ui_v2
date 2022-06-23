@@ -1,23 +1,37 @@
-<div class="w-full flex flex-col h-[calc(100vh-182px)]">
-  <div class="flex gap-4" *ngIf="currentTab == getTabs().List">
-    <tds-form-field class="w-full w-5/6">
+<div class="w-full flex flex-col h-[calc(100vh-182px)] text-body-2 text-neutral-1-900">
+  <div class="flex gap-2" *ngIf="currentTab == getTabs().List">
+    <tds-form-field class="w-full">
       <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keydown.enter)="onSearch($event)" />
       <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
     </tds-form-field>
-
-    <button class="w-1/6" tds-button color="primary" size="md" (click)="onAddTemplate()">
+    <button tds-button color="primary" (click)="onAddTemplate()">
       <span class="flex items-center">
-        <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i> Thêm mẫu mới
+        <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mẫu mới
       </span>
     </button>
   </div>
 
   <div class="flex flex-col pt-4 flex-auto">
-    <div class="w-full h-full border rounded relative" *ngIf="currentTab == getTabs().List">
-        <div class="absolute inset-0 overflow-y-auto tds-custom-scroll">
-          <div class="h-10 px-3 hover:bg-neutral-3-50 cursor-pointer" *ngFor="let item of lstMessage">
-            <div class="border-neutral-2-200 border-b h-full py-3" (click)="onMessage(item)">
-              <div class="text-sm"> {{item.Name}} </div>
+    <div class="w-full h-full relative" *ngIf="currentTab == getTabs().List">
+        <div class="absolute inset-0 flex">
+          <div class="w-full max-h-full overflow-hidden flex gap-x-4">
+            <div class="w-2/5 overflow-y-auto tds-custom-scroll rounded-lg border border-neutral-2-100">
+              <div *ngFor="let item of lstMessage; let idx = index" 
+                class="h-10 px-3 group hover:bg-neutral-3-50 cursor-pointer flex justify-between items-center border-neutral-2-200 border-b overflow-hidden" >
+                <div [ngClass]="indexClick == idx?'w-3/4':''" class="group-hover:w-3/4 h-full py-3" (click)="onPreview(item.BodyPlain,idx)">
+                  <div class="text-sm truncate"> {{item.Name}} </div>
+                </div>
+                <button [ngClass]="indexClick == idx?'block':'hidden'" class="group-hover:block bg-primary-1 text-white rounded-md text-caption-1 px-2.5 py-0.5 truncate" (click)="onMessage(item)">Gửi tin</button>
+              </div>
+            </div>
+            <div class="w-3/5 bg-light-100 rounded-lg flex flex-row-reverse justify-center items-end">
+              <div class="w-4/5 bg-white min-h-[400px] rounded-t-20 border-x-8 border-t-8 border-light-200 flex p-4 justify-end">
+                <div class="w-5/6">
+                  <div class="rounded-l-xl rounded-t-xl bg-light-100 p-4">
+                    <span class=""> {{messagePreview}} </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -31,10 +45,17 @@
               {{messageSelect.BodyPlain}}
           </div>
         </div>
-        <div class="mt-4" *ngFor="let item of messageContent; let index = index">
-          <p class="font-semibold">{{index + 1}}. {{item.PartnerName}}</p>
-          <span >{{item.OrderCode}}</span>
-        </div>
+        <tds-spin [spinning]="isLoading">
+          <div class="mt-2 hover:bg-neutral-3-50 p-2 cursor-pointer" *ngFor="let item of messageContent; let index = index" tds-tooltip [tooltipTitle]="tooltipTitleMessage">
+            <p class="font-semibold">{{index + 1}}. {{item.PartnerName}}</p>
+            <span >{{item.OrderCode || item.SaleCode}}</span>
+            <ng-template #tooltipTitleMessage>
+              <div class="max-w-[320px]">
+                {{item.Content}}
+              </div>
+            </ng-template>
+          </div>
+        </tds-spin>
       </div>
     </div>
 
@@ -100,7 +121,7 @@
     </div>
     <div>
       <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-      <button tds-button type="submit" color="primary" (click)="onSendMessage()">Gửi</button>
+      <button tds-button type="submit" color="primary" [disabled]="isLoading" (click)="onSendMessage()">Gửi</button>
     </div>
   </div>
 
@@ -114,8 +135,8 @@
     </div>
     <div>
       <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-      <button tds-button [disabled]="!formAddTemplate.valid" class="mr-2" type="submit" color="primary" (click)="onSave()">Lưu mẫu mới</button>
-      <button tds-button [disabled]="!formAddTemplate.valid" type="button" color="primary" (click)="onSave('use')">Lưu mẫu và chọn</button>
+      <button tds-button [disabled]="!formAddTemplate.valid" class="mr-2" type="submit" color="info" (click)="onSave()">Lưu mẫu mới</button>
+      <button tds-button [disabled]="!formAddTemplate.valid" type="button" color="primary" (click)="onSave('use')">Lưu mẫu và gửi</button>
     </div>
   </div>
 </div>

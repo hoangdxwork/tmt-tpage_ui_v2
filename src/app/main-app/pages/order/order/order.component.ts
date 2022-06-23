@@ -184,7 +184,6 @@ export class OrderComponent implements OnInit {
     } else {
       this.setOfCheckedId.delete(id);
     }
-    console.log(this.setOfCheckedId);
   }
 
   onItemChecked(id: string, checked: boolean): void {
@@ -506,9 +505,7 @@ export class OrderComponent implements OnInit {
       }
     });
 
-    // modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
     modal.afterClose.subscribe((result: TDSSafeAny) => {
-      console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
         this.loadData(this.pageSize, this.pageIndex);
       }
@@ -520,7 +517,7 @@ export class OrderComponent implements OnInit {
       title: 'Xóa đơn hàng',
       content: 'Bạn có chắc muốn xóa đơn hàng',
       onOk: () => this.remove(id, code),
-      onCancel: () => { console.log('cancel') },
+      onCancel: () => {  },
       okText: "Xóa",
       cancelText: "Hủy"
     });
@@ -540,7 +537,6 @@ export class OrderComponent implements OnInit {
     let ids = [...this.setOfCheckedId];
 
     if (ids.length == 0) {
-      this.message.error(Message.SelectOneLine);
       return 0;
     }
 
@@ -579,8 +575,8 @@ export class OrderComponent implements OnInit {
 
   // Gủi tin nhắn FB
 
-  sendMessage() {
-    if (this.checkValueEmpty() == 1) {
+  sendMessage(orderMessage?: TDSSafeAny) {
+    if (this.checkValueEmpty() == 1 || orderMessage) {
       let orderIds = this.lstOfData.filter((a: any) => this.idsModel.includes(a.Id)).map((x: any) => x.Id);
       this.modal.create({
         title: 'Gửi tin nhắn nhanh',
@@ -590,10 +586,12 @@ export class OrderComponent implements OnInit {
         viewContainerRef: this.viewContainerRef,
         componentParams: {
           // listData: listData
-          orderIds: orderIds,
+          orderIds: orderMessage? [orderMessage.Id] : [...this.setOfCheckedId],
           messageType: GenerateMessageTypeEnum.Order
         }
       });
+    }else{
+      this.message.error(Message.SelectOneLine);
     }
   }
 

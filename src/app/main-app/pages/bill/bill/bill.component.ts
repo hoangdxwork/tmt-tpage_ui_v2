@@ -1,9 +1,11 @@
+import { GenerateMessageTypeEnum } from './../../../dto/conversation/message.dto';
+import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
 import { CRMMatchingService } from './../../../services/crm-matching.service';
 import { CRMTeamService } from './../../../services/crm-team.service';
 import { PartnerService } from './../../../services/partner.service';
 import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib/enum/sort.enum';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -125,7 +127,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       private resizeObserver: TDSResizeObserver,
       private partnerService: PartnerService,
       private crmTeamService: CRMTeamService,
-      private crmMatchingService: CRMMatchingService) {
+      private crmMatchingService: CRMMatchingService,
+      private viewContainerRef: ViewContainerRef) {
   }
 
   ngOnInit(): void {
@@ -560,6 +563,20 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
   closeDrawer() {
     this.isOpenDrawer = false;
+  }
+
+  showMessageModal(orderMessage: TDSSafeAny){
+      this.modal.create({
+        title: 'Gửi tin nhắn Facebook',
+        size:'lg',
+        content: SendMessageComponent,
+        centered: true,
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          selectedUsers: [orderMessage.Id],
+          messageType: GenerateMessageTypeEnum.Bill
+        }
+      });
   }
 
   ngOnDestroy(): void {

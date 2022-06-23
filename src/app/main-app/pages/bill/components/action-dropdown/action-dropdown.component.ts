@@ -1,6 +1,7 @@
+import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
+import { GenerateMessageTypeEnum } from './../../../../dto/conversation/message.dto';
 import { FormFileCrossCheckingModalComponent } from './../form-file-cross-checking-modal/form-file-cross-checking-modal.component';
 import { ManualCrossCheckingModalComponent } from './../manual-cross-checking-modal/manual-cross-checking-modal.component';
-import { ModalSendMessageComponent } from './../../../partner/components/modal-send-message/modal-send-message.component';
 import { Component, Input, OnDestroy, OnInit, ViewContainerRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subject } from "rxjs";
@@ -140,10 +141,12 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
       this.modal.create({
         title: 'Gửi tin nhắn Facebook',
         size:'lg',
-        content: ModalSendMessageComponent,
+        content: SendMessageComponent,
+        centered: true,
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          partnerIds: this.idsModel
+          selectedUsers: this.idsModel,
+          messageType: GenerateMessageTypeEnum.Bill
         }
       });
     }

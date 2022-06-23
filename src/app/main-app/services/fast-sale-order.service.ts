@@ -1,3 +1,4 @@
+import { GenerateMessageDTO } from './../dto/conversation/inner.dto';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
@@ -410,6 +411,15 @@ export class FastSaleOrderService extends BaseSevice {
   listUpdateDeposit(data: ListUpdateDepositDTO): Observable<undefined> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/fastsaleorder/listupdatedeposit`,
+      method: TApiMethodType.post
+    }
+
+    return this.apiService.getData<undefined>(api, data);
+  }
+
+  generateMessages(data: GenerateMessageDTO): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GenerateMessages?$expand=CRMTeam`,
       method: TApiMethodType.post
     }
 
