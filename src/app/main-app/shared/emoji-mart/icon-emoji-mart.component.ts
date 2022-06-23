@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, Inject, ViewChild, ElementRef } from '@angular/core';
 import { EmojiSearch } from '@ctrl/ngx-emoji-mart';
+import { EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 
 @Component({
   selector: '[icon-emoji-mart]',
@@ -21,48 +22,53 @@ import { EmojiSearch } from '@ctrl/ngx-emoji-mart';
 export class IconEmojiMartComponent implements OnInit {
 
   @Output() loadEmojiMart = new EventEmitter<any>();
-  customEmojis = [
-    {
-      id: 'octocat',
-      name: 'Octocat',
-      colons: ':octocat:',
-      keywords: ['github'],
-      emoticons: [] as any,
-      imageUrl: 'https://assets-cdn.github.com/images/icons/emoji/octocat.png?v7'
-    }
-  ]
 
-  obj = {
-    id: 'octocat',
-    name: 'Octocat',
-    colons: ':octocat',
-    text: '',
-    emoticons: [] as any,
-    custom: true,
-    imageUrl: 'https://github.githubassets.com/images/icons/emoji/octocat.png'
-  }
-
-  excludeIcon=["flags"];
-
-  searchText: string = '';
-  currentSort: string = 'count';
-  objQuickReply: Object = {};
-
-  sortOptions: any[] = [
-      { value: 'count', text: 'Sử dụng nhiều nhất' },
-      { value: 'recent', text: 'Sử dụng gần nhất' }
+  i18n={
+    search: 'Tìm kiếm',
+    notfound: 'Không tìm thấy icon',
+    categories: {
+      search: 'Kết quả tìm kiếm',
+      recent: 'Đã dùng gần đây',
+      people: 'Mặt cười & hình người',
+      nature: 'Động vật & thiên nhiên',
+      foods: 'Ẩm thực',
+      activity: 'Hoạt động',
+      places: 'Du lịch & địa điểm',
+      objects: 'Đồ vật',
+      symbols: 'Biểu tượng'
+  }}
+  themes = [
+    'native',
+    'apple',
+    'google',
+    'twitter',
+    'facebook',
   ];
 
-  constructor(private emojiSearch: EmojiSearch) {
+  set:any = '';
+  native = true;
+  excludeIcon=["flags"];
+
+  ngOnInit(): void {
   }
 
-  ngOnInit() {
+  setTheme(set: string) {
+    this.native = set === 'native';
+    this.set = set;
   }
 
-  addEmoji(event: any){
-     this.loadEmojiMart.emit(event);
+  handleClick($event: EmojiEvent) {
+    if($event) {
+      this.loadEmojiMart.emit($event);
+    }
   }
-  emojiFallback = (emoji: any, props: any) =>
-  emoji ? `:${emoji.shortNames[0]}:` : props.emoji;
+
+  emojiFilter(e: string): boolean {
+    // Can use this to test [emojisToShowFilter]
+    if (e && e.indexOf && e.indexOf('1F4') >= 0) {
+      return true;
+    }
+    return false;
+  }
 }
 

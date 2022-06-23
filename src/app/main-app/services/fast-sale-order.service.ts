@@ -1,7 +1,7 @@
 import { GenerateMessageDTO } from './../dto/conversation/inner.dto';
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
-import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { ODataPaymentJsonDTO } from '../dto/bill/payment-json.dto';
 import { CalculateFeeResponse_DataDTO, ShippingCalculateFeeInputDTO } from '../dto/carrier/delivery-carrier.dto';
@@ -12,6 +12,7 @@ import { FastSaleOrder_DefaultDTOV2 } from '../dto/fastsaleorder/fastsaleorder-d
 import { FastSaleOrderDTO, FastSaleOrderRestDTO, FastSaleOrderSummaryStatusDTO, ListUpdateDepositDTO } from '../dto/fastsaleorder/fastsaleorder.dto';
 import { AccountRegisterPaymentDTO } from '../dto/fastsaleorder/payment.dto';
 import { ODataIdsDTO, ODataModelDTO } from '../dto/odata/odata.dto';
+import { ChangePartnerPriceListDTO } from '../dto/partner/change-partner-pricelist.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable()
@@ -24,6 +25,7 @@ export class FastSaleOrderService extends BaseSevice {
   public _keyCacheGrid: string = 'orderbill-page:grid_orderbill:settings';
   public _keyCacheDefaultGetV2: string = '_keycache_default_getV2';
   public _keyCacheDHSDetails: string = '_keycache_dhs_details';
+  public _keyCacheCopyInvoice: string = '_keycache_copy_invoice';
 
   constructor(private apiService: TCommonService) {
     super(apiService)
@@ -310,12 +312,12 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  onChangePartnerPriceList(data: TDSSafeAny) : Observable<TDSSafeAny> {
+  onChangePartnerPriceList(data: TDSSafeAny) : Observable<ChangePartnerPriceListDTO> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.onChangePartner_PriceList?$expand=PartnerShipping,PriceList,Account`,
       method: TApiMethodType.post,
     }
-    return this.apiService.getData<TDSSafeAny>(api, data);
+    return this.apiService.getData<ChangePartnerPriceListDTO>(api, data);
   }
 
   getConversationOrderBillByPartner(id: number): Observable<ConversationOrderBillByPartnerDTO> {
@@ -408,13 +410,13 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
-  listUpdateDeposit(data: ListUpdateDepositDTO): Observable<undefined> {
+  listUpdateDeposit(data: ListUpdateDepositDTO): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/fastsaleorder/listupdatedeposit`,
       method: TApiMethodType.post
     }
 
-    return this.apiService.getData<undefined>(api, data);
+    return this.apiService.getData<any>(api, data);
   }
 
   generateMessages(data: GenerateMessageDTO): Observable<any> {
@@ -425,4 +427,30 @@ export class FastSaleOrderService extends BaseSevice {
 
     return this.apiService.getData<undefined>(api, data);
   }
+  urlSampleShipCodeExcel(): any {
+    let url = `${this._BASE_URL}/Content/files/template_excels/vi/template_update_trackingcode_delivery.xlsx?v2`;
+    return url;
+  }
+
+  urlSampleShipStatusDelivery () {
+    let url = `${this._BASE_URL}/Content/files/template_excels/vi/template_update_delivery_status.xlsx?v2`;
+    return url;
+  }
+
+  updateShipCodeExcel(data: any): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdateShipCodeExcel`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<any>(api, data);
+  }
+
+  updateExistShipCode(data: any): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdateExistShipCode`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<any>(api, data);
+  }
+
 }

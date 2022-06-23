@@ -1,15 +1,13 @@
 <tds-spin [spinning]="isLoading">
   <form [formGroup]="_form">
-    <div class="w-full text-body-2 text-neutral-1-900">
-      <div class="flex items-baseline gap-x-8 gap-y-4">
-          <p class="mb-2 font-semibold text-[#5A6271] size-[14px] w-1/4">Chọn bảng giá</p>
-          <div class="w-3/4">
-            <tds-form-field>
-              <tds-select valueField="Id" textField="Name" (selectChange)="onChangePriceList($event)"
-                  placeholder='Chọn bảng giá' formControlName="PriceList" [valuePrimitive]="false"
-                  disabledField="isActive" [data]="lstPrices" [allowClear]="true">
-              </tds-select>
-          </tds-form-field>
+    <div class="w-full max-h-[450px] overflow-y-auto tds-custom-scroll divide-y">
+      <div *ngFor="let item of lstPrices">
+          <div class="flex flex-row items-center justify-between w-full p-4 cursor-pointer"
+            (click)="onChangePriceList(item)">
+              <span>{{item.Name}}</span>
+              <div *ngIf="_form.controls['PriceList'].value.Id == item.Id" class="flex items-center justify-between">
+                <i class="tdsi-success-fill text-success-400 leading-none"></i>
+              </div>
           </div>
       </div>
     </div>

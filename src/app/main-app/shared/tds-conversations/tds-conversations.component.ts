@@ -10,11 +10,11 @@ import {
   Component, EventEmitter, Input, OnChanges, OnInit, Output,
   SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, ViewRef, AfterViewChecked, NgZone, HostBinding, ViewEncapsulation
 } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { async, Observable, Subject } from 'rxjs';
 import { ConversationMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { endWith, finalize, mergeAll, takeUntil } from 'rxjs/operators';
 import { MakeActivityItemWebHook, MakeActivityMessagesDTO } from '../../dto/conversation/make-activity.dto';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ActivityMatchingService } from '../../services/conversation/activity-matching.service';
@@ -81,7 +81,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   keyFilterTag: string = '';
   isVisbleTag: boolean = false;
   isNextData: boolean = false;
-  lockYOffset: number = 40;
   eventHandler!: Event;
 
   constructor(private modalService: TDSModalService,
@@ -98,7 +97,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private sgRConnectionService: SignalRConnectionService,
     private router: Router,
     private cdRef: ChangeDetectorRef,
-    private ngZone: NgZone,
     private conversationOrderFacade: ConversationOrderFacade,
     private viewContainerRef: ViewContainerRef,
     private partnerService: PartnerService) {
@@ -110,20 +108,29 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       this.loadData(this.data);
     }
 
-    this.activityDataFacade.hasNextData$.subscribe(data => {
-      this.isNextData = data;
-      this.cdRef.detectChanges();
-    })
-
     this.partnerService.onLoadOrderFromTabPartner.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.partner = res;
     });
+
+    this.spinLoading();
   }
 
-  ngAfterViewInit() {
-    if (this.yiAutoScroll) {
-      this.yiAutoScroll.forceScrollDown();
-    }
+  spinLoading() {
+    this.activityDataFacade.hasNextData$.pipe(takeUntil(this.destroy$)).subscribe((obs: any) => {
+      if(obs == false) {
+        this.isNextData = obs;
+        this.cdRef.detectChanges();
+      }
+    })
+
+    this.conversationDataFacade.onLoadTdsConversation$.pipe(takeUntil(this.destroy$)).subscribe((obs: any) => {
+      if(obs == false) {
+        setTimeout(() => {
+          this.isLoadMessage = obs;
+          this.cdRef.detectChanges();
+        }, 250)
+      }
+    })
   }
 
   loadData(data: ConversationMatchingItem) {
@@ -136,35 +143,19 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   //TODO: data.id = data.psid
-  loadMessages(data: ConversationMatchingItem): any {
-    if (this.isLoadMessage || this.isNextData) {
-      return;
-    }
-
+  loadMessages(data: ConversationMatchingItem) {
     this.isLoadMessage = true;
-    this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => {
-        setTimeout(() => {
-          this.isLoadMessage = false;
-          this.conversationDataFacade.changeCurrentCvs$.emit(false);
-          this.cdRef.detectChanges();
-        }, 350)
-      }))
-
-    if (this.yiAutoScroll) {
-      this.yiAutoScroll.forceScrollDown();
-    }
+    this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type);
+    this.yiAutoScroll?.forceScrollDown();
   }
 
   loadUser() {
-    this.applicationUserService.dataActive$.pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-        this.users = res;
-        this.lstUser = res;
-      }, error => {
-        this.message.error('Load user đã xảy ra lỗi');
-      });
+    this.applicationUserService.dataActive$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.users = res;
+      this.lstUser = res;
+    }, error => {
+      this.message.error('Load user đã xảy ra lỗi');
+    });
   }
 
   initiateTimer() {
@@ -183,26 +174,24 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   private markSeen() {
     let userLoggedId = this.sharedService.userLogged?.Id || null;
     this.crmMatchingService.markSeen(this.team.Facebook_PageId, this.data.psid, this.type, userLoggedId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((x: any) => {
-        switch (this.type) {
-          case "message":
-            this.sharedService.updateMinusConversationMessage(this.data.count_unread_messages);
-            this.sharedService.updateMinusConversationAll(this.data.count_unread_messages);
-            break;
-          case "comment":
-            this.sharedService.updateMinusConversationComment(this.data.count_unread_comments);
-            this.sharedService.updateMinusConversationPost(this.data.count_unread_comments);
-            this.sharedService.updateMinusConversationAll(this.data.count_unread_comments);
-            break;
-          default:
-            this.sharedService.updateMinusConversationMessage(this.data.count_unread_messages);
-            this.sharedService.updateMinusConversationComment(this.data.count_unread_comments);
-            this.sharedService.updateMinusConversationPost(this.data.count_unread_comments);
-            this.sharedService.updateMinusConversationAll(this.data.count_unread_activities);
-            break;
-        }
-
+      .pipe(takeUntil(this.destroy$)).subscribe((x: any) => {
+        // switch (this.type) {
+        //   case "message":
+        //     this.sharedService.updateMinusConversationMessage(this.data.count_unread_messages);
+        //     this.sharedService.updateMinusConversationAll(this.data.count_unread_messages);
+        //     break;
+        //   case "comment":
+        //     this.sharedService.updateMinusConversationComment(this.data.count_unread_comments);
+        //     this.sharedService.updateMinusConversationPost(this.data.count_unread_comments);
+        //     this.sharedService.updateMinusConversationAll(this.data.count_unread_comments);
+        //     break;
+        //   default:
+        //     this.sharedService.updateMinusConversationMessage(this.data.count_unread_messages);
+        //     this.sharedService.updateMinusConversationComment(this.data.count_unread_comments);
+        //     this.sharedService.updateMinusConversationPost(this.data.count_unread_comments);
+        //     this.sharedService.updateMinusConversationAll(this.data.count_unread_activities);
+        //     break;
+        // }
         // Cập nhật count_unread
         this.conversationEventFacade.updateMarkSeenBadge(this.data.page_id, this.type, this.data.psid);
         this.cdRef.markForCheck();
@@ -252,7 +241,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     };
 
     this.activityMatchingService.addTemplateMessage(this.data.psid, model)
-      .subscribe((res: any) => {
+      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         that.activityDataFacade.messageServer(res);
         that.conversationDataFacade.messageServer(res);
 
@@ -315,9 +304,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   validateData() {
     delete this.messageModel;
-    this.tags = [];
     (this.dataSource$ as any) = null;
     this.isNextData = false;
+    this.isLoadMessage = false;
+    this.uploadedImages = [];
+    this.tags = [];
   }
 
   loadPrevMessages(): any {
@@ -422,14 +413,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         this.message.error(`${error?.Error?.Message}` ? `${error?.Error?.Message}` : 'Refetch đã xảy ra lỗi');
       });
   }
-
-  // getExtrasChildren(data: any, item: any): any {
-  //   return (data?.extras?.children[item?.id] as any) || [];
-  // }
-
-  // getExtrasPosts(data: any, item: MakeActivityItemWebHook): any {
-  //   return (data?.extras?.posts[item?.object_id] as any) || [];
-  // }
 
   errorPostPicture(item: MakeActivityItemWebHook) {
     this.postPictureError.push(item?.object_id);
@@ -622,9 +605,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       this.eventHandler.preventDefault();
       this.eventHandler.stopImmediatePropagation();
     }
-    this.cdRef.detectChanges();
 
-    this.yiAutoScroll.forceScrollDown();
+    this.yiAutoScroll?.forceScrollDown();
+    this.cdRef.detectChanges();
   }
 
   prepareModel(message: string): any {
@@ -698,9 +681,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   assignIndexDbTag(item: any) {
     this.assignTagOnView(item);
     this.activityMatchingService.assignTagToConversation(this.data.id, item.Id, this.team.Facebook_PageId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.crmTagService.addTagLocalStorage(item.Id);
+      .pipe(takeUntil(this.destroy$)).subscribe(() => {
+          this.crmTagService.addTagLocalStorage(item.Id);
       }, error => {
         this.removeTagOnView(item);
       });
@@ -757,13 +739,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   refreshRead() {
     this.validateData();
-    if (this.isNextData || this.isLoadMessage) {
-      this.isNextData = false;
-      this.isLoadMessage = false;
-    }
-    delete this.messageModel;
-    this.uploadedImages = [];
     this.loadMessages(this.data);
+  }
+
+  ngAfterViewInit() {
+    this.yiAutoScroll?.forceScrollDown();
   }
 
   ngOnDestroy(): void {
@@ -858,14 +838,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.displayDropZone = false;
     evt.preventDefault();
     evt.stopImmediatePropagation();
-  }
-
-  getLastActivity() {
-    if(this.type && this.type == "message" && this.data && this.data.last_message) return this.data.last_message;
-    else if(this.type && this.type == "comment" && this.data && this.data.last_comment) return this.data.last_comment;
-    else if(this.data && this.data.last_activity) return this.data.last_activity || {};
-
-    return null;
   }
 
   trackByIndex(_: number, data: any): number {

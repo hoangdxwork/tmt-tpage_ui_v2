@@ -3,7 +3,7 @@ import { Observable } from "rxjs";
 import { map, shareReplay } from "rxjs/operators";
 import { MDBAttachmentDTO, MDBCollectionDTO } from "../../dto/attachment/attachment.dto";
 import { PagedList2 } from "../../dto/pagedlist2.dto";
-import { AttachmentService } from "../attachment.server";
+import { AttachmentService } from "../attachment.service";
 import { AttachmentState } from "../facebook-state/attachment.state";
 
 
@@ -46,7 +46,7 @@ export class AttachmentDataFacade {
     } else {
       return this.attachmentService.getAll().pipe(map((res: any) => {
         return this.attachmentState.setAttachment(res);
-      }), shareReplay());
+      }), shareReplay({ bufferSize: 1, refCount: true }));
     }
   }
 
@@ -89,7 +89,7 @@ export class AttachmentDataFacade {
     } else {
       return this.attachmentService.getListCollection().pipe(map((res: any) => {
         return this.attachmentState.setCollection(res);
-      }), shareReplay());
+      }), shareReplay({ bufferSize: 1, refCount: true }));
     }
   }
 
@@ -111,7 +111,7 @@ export class AttachmentDataFacade {
               });
           }
           return this.attachmentState.setInner(id, x.Attachments);
-        }), shareReplay());
+        }), shareReplay({ bufferSize: 1, refCount: true }));
     }
   }
 

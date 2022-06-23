@@ -1,4 +1,4 @@
-<div *ngIf="item" class="text-body-2 text-neutral-1-900">
+<div *ngIf="item" class="text-body-2 text-neutral-1-900 w-full">
   <div class="w-full relative overflow-hidden " style="white-space: pre-line; word-break: break-word;">
     <div [ngClass]="activeCvsItem && (activeCvsItem?.id == item.id)?'absolute h-full w-1 left-0 bg-blue-500':''"></div>
     <div [ngClass]="activeCvsItem && (activeCvsItem?.id == item.id)?'bg-secondary-3':'bg-white'"
@@ -73,34 +73,38 @@
       <!--keyTags thêm trong mục binh luận-->
       <div class="flex justify-end flex-col gap-2">
         <div class="flex gap-2 items-center">
-            <div class="flex-auto flex flex-nowrap gap-1 items-center overflow-hidden">
+            <div class="flex-auto flex flex-nowrap gap-1 items-center overflow-hidden" #currentWidthTag>
                 <div *ngIf="item.tags" class="flex gap-x-1">
-                    <div *ngFor="let tag of item.tags | slice:0:2" class="relative flex items-center text-caption-2 text-[11px] font-regular text-neutral-1-900 rounded truncate flex-none">
-                        <div [ngStyle]="{'background-color': [tag.color_class], 'color': [tag.color_class] }" class=" rounded-md py-0.5 px-3.5 opacity-30">
-                            {{tag.name}}
+                    <div *ngFor="let tag of item.tags" #widthTag
+                        class="relative flex items-center text-caption-2 text-[11px] max-w-[110px] font-regular text-neutral-1-900 rounded truncate flex-none">
+                        <div [ngStyle]="{'background-color': [tag.color_class+'30'] }" tds-tooltip [tooltipTitle]="tag.name"
+                            class="w-full rounded-md py-0.5 px-1.5 flex justify-center items-center gap-x-1">
+                            <div class="flex items-center">
+                                <span [ngStyle]="{'background-color': [tag.color_class] }"
+                                class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>
+                            </div>
+                            <span class="flex-auto truncate">{{tag.name}}</span>
                         </div>
-                        <span class="absolute inset-0 py-0.5 flex items-center justify-center gap-x-1" tds-tooltip [tooltipTitle]="tag.name">
-                            <span [ngStyle]="{'background-color': [tag.color_class] }"
-                             class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>
-                             {{tag.name}}
-                        </span>
                     </div>
                 </div>
             </div>
-
+            
             <div class="flex gap-1.5 items-center">
-                <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate" *ngIf="item.tags && item.tags.length - 2 > 0" tds-popover
+                <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded truncate" *ngIf="countHiddenTag > 0" tds-popover
                     [popoverContent]="popoverContentTag"
                     popoverPlacement="topRight">
-                    +{{item.tags.length - 2}}
+                    +{{countHiddenTag}}
                 </div>
                 <ng-template #popoverContentTag>
                     <div class="flex gap-1 flex-wrap items-center max-w-[336px]">
-                        <div *ngFor="let tag of item.tags |  slice:2:item.tags.length" class="relative flex items-center text-caption-2 font-regular text-neutral-1-900 rounded truncate flex-none">
-                            <div [ngStyle]="{'background-color': [tag.color_class], 'color': [tag.color_class] }" class=" rounded-md py-0.5 px-3.5 opacity-30">
-                                {{tag.name}}
+                        <div *ngFor="let tag of item.tags |  slice:displayTag:item.tags.length" class="relative flex items-center text-caption-2 text-[11px] font-regular text-neutral-1-900 rounded truncate flex-none">
+                            <div [ngStyle]="{'background-color': [tag.color_class+'30'] }" class=" rounded-md py-0.5 px-1.5 flex justify-center items-center gap-x-1">
+                                <div class="flex items-center">
+                                    <span [ngStyle]="{'background-color': [tag.color_class] }"
+                                    class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>
+                                </div>
+                                <span class="flex-auto truncate">{{tag.name}}</span>
                             </div>
-                            <span class="absolute inset-0 py-0.5 flex items-center justify-center gap-x-1"><span [ngStyle]="{'background-color': [tag.color_class] }" class="-top-px inline-block align-middle rounded-full w-2 h-2"></span>{{tag.name}}</span>
                         </div>
                     </div>
                 </ng-template>

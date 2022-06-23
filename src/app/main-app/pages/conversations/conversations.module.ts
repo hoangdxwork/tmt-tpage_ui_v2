@@ -60,7 +60,7 @@ import { PostCommentFilterComponent } from './components/post-filter/post-commen
 import { ConversationOrderListComponent } from './components/conversation-order-list/conversation-order-list.component';
 import { OdataSaleOnline_OrderService } from '../../services/mock-odata/odata-saleonlineorder.service';
 import { AttachmentDataFacade } from '../../services/facades/attachment-data.facade';
-import { AttachmentService } from '../../services/attachment.server';
+import { AttachmentService } from '../../services/attachment.service';
 import { AttachmentState } from '../../services/facebook-state/attachment.state';
 import { ModalAddCollectionComponent } from './components/modal-add-collection/modal-add-collection.component';
 import { PostOrderConfigComponent } from './components/config-post/order-config/post-order-config.component';

@@ -18,7 +18,7 @@
                   <td class="text-body-2">{{ item.DateCreated | date:"dd-MM-yyyy HH:mm"}}</td>
                   <td>
                     <tds-form-field>
-                        <tds-select valueField="value" textField="text" placeholder='select item'
+                        <tds-select valueField="value" textField="text" placeholder='PT thanh toán'
                             [(ngModel)]="item.PaymentMethod" [allowClear]="true" [valuePrimitive]="false"
                             [data]="lstPaymentRequest" (ngModelChange)="onChangePayment($event, item)" >
                         </tds-select>

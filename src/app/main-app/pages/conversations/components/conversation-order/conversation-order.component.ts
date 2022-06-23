@@ -73,7 +73,8 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   saleSettings!: SaleSettingsDTO;
 
   visibleIndex: number = -1;
-  detailEdit?: TDSSafeAny;
+  detailEdit?: ConversationOrderProductDefaultDTO;
+  detailDiscount:number = 0;
 
   constructor(
     private message: TDSMessageService,
@@ -129,42 +130,9 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
     this._form = this._formHandler.createOrderFormGroup();
   }
 
-  resetForm(): void {
-    this._form.reset({
-      Id: [null],
-      Code: [null],
-      LiveCampaignId: [null],
-      Facebook_UserId: [null],
-      Facebook_ASUserId: [null],
-      Facebook_UserName: [null],
-      Facebook_CommentId: [null],
-      Facebook_PostId: [null],
-      PartnerId: [null],
-      PartnerName: [null],
-      Name: [null],
-      Email: [null],
-      TotalAmount: [0],
-      TotalQuantity: [0],
-      Street: [null],
-      City: [null],
-      District: [null],
-      Ward: [null],
-      User: [null],
-      Telephone: [null],
-      Note: [null],
-      CRMTeamId: [null],
-      PrintCount: [null],
-      Session: [null],
-      SessionIndex: [null],
-      StatusText: [null],
-      Details: this.fb.array([]),
-    });
-  }
-
   createSaleModel() {
     this._formHandler.createBillDefault().subscribe(res => {
       this.saleModel = res;
-
       this.updateShipExtraServices(res.Carrier);
       this.update_formByBill(res);
     });
@@ -209,12 +177,41 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   updateFormOrder(order: ConversationOrderForm) {
-    this.resetForm();
+    this._form.reset({
+      Id: [null],
+      Code: [null],
+      LiveCampaignId: [null],
+      Facebook_UserId: [null],
+      Facebook_ASUserId: [null],
+      Facebook_UserName: [null],
+      Facebook_CommentId: [null],
+      Facebook_PostId: [null],
+      PartnerId: [null],
+      PartnerName: [null],
+      Name: [null],
+      Email: [null],
+      TotalAmount: [0],
+      TotalQuantity: [0],
+      Street: [null],
+      City: [null],
+      District: [null],
+      Ward: [null],
+      User: [null],
+      Telephone: [null],
+      Note: [null],
+      CRMTeamId: [null],
+      PrintCount: [null],
+      Session: [null],
+      SessionIndex: [null],
+      StatusText: [null],
+      Details: this.fb.array([]),
+    });
 
     order.Facebook_UserName = this.data?.name;
+    this.visibleIndex = -1;
 
     let details = new FormArray([]);
-
+    //TODO: thêm danh sách sản phẩm vào form
     if (order["Details"] && order["Details"].length > 0) {
       order["Details"].forEach(detail => {
         details.push(this.fb.group(detail));
@@ -286,7 +283,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   onSaveOrder(print: string) {
     this.isLoading = true;
     let orderModel = this.prepareOrderModel();
-    console.log(orderModel)
+    
     this.saleOnline_OrderService.insertFromMessage({model: orderModel}).subscribe(
       (res) => {
         this._form.controls["Id"].setValue(res.Id);
@@ -314,6 +311,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
       if(this.checkShipServiceId(billModel) === 1) {
         this.isLoading = true;
         let that = this;
+
         this.fastSaleOrderService.saveV2(billModel, print === "draft").subscribe(
           (bill) => {
             bill.Success ? this.message.success(bill.Message || 'Lưu thành công') : this.message.error(bill.Message || 'Lưu thất bại');
@@ -342,7 +340,8 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
             }
           }, 
           error => {
-            this.message.error(`${error?.error?.message}` || JSON.stringify(error));
+            this.message.error(`${error?.Message}` || JSON.stringify(error));
+            this.isLoading = false;
           });
       }
     }
@@ -367,8 +366,8 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
         title: 'Xác nhận đối tác',
         content: 'Đối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại.',
         iconType: 'tdsi-trash-fill',
-        okText: "Xác nhận",
-        cancelText: "Hủy bỏ",
+        okText: "Ok",
+        cancelText: "Cancel",
         onOk: () => {
           this.calculateFee(model.Carrier);
         },
@@ -417,7 +416,9 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   prepareBillModel(): FastSaleOrderRestDTO {
-    let model = this.checkFormHandler.prepareBill(this._form, this.saleModel, this.shipExtraServices);
+    let billModel:any = this.saleModel;
+    delete billModel["@odata.context"];
+    let model = this.checkFormHandler.prepareBill(this._form, billModel, this.shipExtraServices);
     return model;
   }
 
@@ -510,14 +511,14 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
     const modal = this.modalService.create({
       title: 'Chọn khuyến mãi',
       content: ModalApplyPromotionComponent,
-      size: "md",
+      size: "lg",
       viewContainerRef: this.viewContainerRef
     });
   }
 
   showModalConfigProduct() {
     const modal = this.modalService.create({
-        title: 'Cấu hình sản phẩm',
+        title: 'Chọn bảng giá',
         content: TpageConfigProductComponent,
         size: "lg",
         viewContainerRef: this.viewContainerRef
@@ -549,7 +550,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
       title: 'Danh sách thuế',
       content: ModalTaxComponent,
       viewContainerRef: this.viewContainerRef,
-      size: 'xl',
+      size: 'lg',
       componentParams: {
         currentTax: this._form.value.Tax
       }
@@ -586,8 +587,9 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
 
   convertDetail(product: DataPouchDBDTO): ConversationOrderProductDefaultDTO {
     let result = {} as ConversationOrderProductDefaultDTO;
-
+    
     result.Note = "";
+    result.Discount = product.DiscountSale;
     result.Price = product.Price;
     result.ProductCode = product.Barcode;
     result.ProductId = product.Id;
@@ -602,8 +604,9 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
 
   convertDetailSelect(product: TDSSafeAny): ConversationOrderProductDefaultDTO {
     let result = {} as ConversationOrderProductDefaultDTO;
-
+    
     result.Note = "";
+    result.Discount = product.Discount;
     result.Price = product.ListPrice;
     result.ProductCode = product.Barcode;
     result.ProductId = product.Id;
@@ -652,39 +655,40 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   editPriceDetail() {
-    let formDetail = this._form.value.Details;
+    const formModel = this._form.controls['Details'].value as ConversationOrderProductDefaultDTO[];
 
-    let findProduct = formDetail.find((x: any, index: number) =>
-      x.ProductId == this.detailEdit.ProductId &&
+    let indexProduct = formModel.findIndex((x: any, index: number) =>
+      x.ProductId == this.detailEdit?.ProductId &&
       index == this.visibleIndex &&
-      x.UOMId == this.detailEdit.UOMId
+      x.UOMId == this.detailEdit?.UOMId
     );
-
-    if(findProduct) {
-      findProduct.Price = this.detailEdit.Price;
+    
+    if(indexProduct > -1) {
+      formModel[indexProduct].Price = this.detailEdit?.Price || 0;
+      formModel[indexProduct].Discount = this.detailEdit?.Discount || 0;
     }
-
-    (this._form?.get("Details") as FormArray).patchValue(formDetail);
     this.updateTotalAmount();
-    this.visibleIndex = -1;
+    this.closePriceDetail();
   }
 
   changeQuantityDetail(detail: TDSSafeAny, isMinus: boolean) {
-    let formDetail = this._form.value.Details;
+    const formModel = this._form.controls['Details'].value as ConversationOrderProductDefaultDTO[];
 
-    let findProduct = formDetail.find((x: any) =>
-        x.ProductId == detail.ProductId &&
-        x.Price == detail.Price &&
-        x.UOMId == detail.UOMId
+    let indexProduct = formModel.findIndex((x: any) =>
+      x.ProductId == detail?.ProductId &&
+      x.UOMId == detail?.UOMId
     );
-
-    if(findProduct) {
-      if(isMinus) (findProduct?.Quantity > 1) && (findProduct.Quantity--)
-      else (findProduct.Quantity++)
+    
+    if(indexProduct > -1) {
+      if(isMinus && formModel[indexProduct]?.Quantity > 1){
+        formModel[indexProduct].Quantity--;
+        this.updateTotalAmount();
+      }
+      if(!isMinus){
+        formModel[indexProduct].Quantity++;
+        this.updateTotalAmount();
+      }
     }
-
-    (this._form?.get("Details") as FormArray).patchValue(formDetail);
-    this.updateTotalAmount();
   }
 
   ngOnChanges(changes: SimpleChanges): void {

@@ -41,21 +41,23 @@
                                         </tds-select>
                                     </tds-form-field>
                                     <div class="flex justify-between">
-                                        <tds-button-group>
-                                        <button tds-dropdown trigger="click" type="button" [tdsDropdownMenu]="menu1">
-                                            <span class="flex items-center font-semibold" [ngStyle]="{'color': onCurrentStatus(_form.controls['Partner'].value.StatusText, lstPartnerStatus) }">
-                                                {{_form.controls["Partner"].value ? _form.controls["Partner"].value.StatusText : "N/A" }}
-                                                <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
-                                            </span>
-                                        </button>
-                                        <tds-dropdown-menu #menu1="tdsDropdownMenu">
-                                            <div class="w-full">
-                                                <div tds-dropdown-item *ngFor="let item of lstPartnerStatus" (click)="selectStatus(item)">
-                                                  <a [ngStyle]="{'color': item.value }"> {{ item.text }} </a>
-                                                </div>
-                                            </div>
-                                        </tds-dropdown-menu>
-                                    </tds-button-group>
+                                        <div>
+                                            <tds-button-group *ngIf="_form.controls['Partner']?.value">
+                                                <button tds-dropdown trigger="click" type="button" [tdsDropdownMenu]="menu1">
+                                                    <span class="flex items-center font-semibold" [ngStyle]="{'color': onCurrentStatus(_form.controls['Partner']?.value?.StatusText, lstPartnerStatus) }">
+                                                        {{_form.controls["Partner"].value ? _form.controls["Partner"].value.StatusText : "N/A" }}
+                                                        <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                                                    </span>
+                                                </button>
+                                                <tds-dropdown-menu #menu1="tdsDropdownMenu">
+                                                    <div class="w-full">
+                                                        <div tds-dropdown-item *ngFor="let item of lstPartnerStatus" (click)="selectStatus(item)">
+                                                          <a [ngStyle]="{'color': item.value }"> {{ item.text }} </a>
+                                                        </div>
+                                                    </div>
+                                                </tds-dropdown-menu>
+                                            </tds-button-group>
+                                        </div>
                                         <div class="flex gap-x-2">
                                             <button tds-button-icon color="secondary" type="button" *ngIf="_form.controls['Partner'].value" (click)="editPartner(_form.controls['Partner'].value)">
                                                 <span class="flex items-center">
@@ -140,7 +142,7 @@
                                     <span class="font-semibold">Doanh số</span>
                                 </div>
                                 <div class="w-2/3">
-                                    <div class="font-semibold">{{_form.controls['Revenue'].value || 0 | number: '1.0-3'}}đ</div>
+                                    <div class="font-semibold">{{_form.controls['Revenue'].value || 0 | number: '1.0-3'}}</div>
                                 </div>
                             </div>
                             <div class=" col-span-1 flex gap-x-6 items-center">
@@ -188,7 +190,7 @@
                                 </div>
                                 <div class="w-2/3" *ngIf="dataModel.State != 'open'">
                                     <tds-form-field >
-                                        <tds-select valueField="Id" textField="Name" (selectChange)="onChangeCarrier($event,true)"
+                                        <tds-select valueField="Id" textField="Name" (selectChange)="onChangeCarrier($event, true)"
                                             placeholder='Chọn đối tác giao hàng' formControlName="Carrier" [valuePrimitive]="false"
                                             disabledField="isActive" [data]="(lstCarriers | async) || []" [allowClear]="true">
                                         </tds-select>
@@ -242,7 +244,7 @@
                                         Gửi trước 10h30 sáng, giao sớm hơn 1 ngày!
                                     </span>
                                 </div>
-                                <div class="w-2/3" *ngIf="dataModel.State == ('open' || 'cancel') ">
+                                <div class="w-2/3" *ngIf="dataModel.State == ('open' || 'cancel')">
                                     <span class="font-semibold">{{_form.controls['CashOnDelivery'].value ? _form.controls['CashOnDelivery'].value : 0 | number : '1.0-3'}} </span>
                                     <span class="text-body-3 text-[12px]" *ngIf="_form.controls['Carrier'].value && _form.controls['Carrier'].value.DeliveryType == 'GHN'"
                                     style="font-style: italic;background: #d7eddc;">
@@ -254,7 +256,7 @@
                                 <div class="w-1/3">
                                     <span class="font-semibold">Khối lượng ship (g)</span>
                                 </div>
-                                <div class="w-2/3"  *ngIf="dataModel.State != 'open'">
+                                <div class="w-2/3" *ngIf="dataModel.State != 'open' && _form.controls['Carrier'].value">
                                     <tds-form-field>
                                         <tds-input-number [min]='0' [step]="1" placeholder="Nhập khối lượng"
                                             (ngModelChange)="changeShipWeight($event)" formControlName="ShipWeight">

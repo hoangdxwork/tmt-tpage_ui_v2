@@ -30,7 +30,6 @@
     "tds-editor": "https://tang-ui.tpos.dev/lib/tds-editor-1.0.0.tgz",
     "tds-report": "https://tang-ui.tpos.dev/lib/tds-report-1.1.0.tgz",
     "tds-ui": "https://tang-ui.tpos.dev/lib/tds-ui-2.0.0.tgz",
-    "tinymce": "^5.10.3",
     "tslib": "^2.3.0",
     "xlsx": "^0.18.5",
     "zone.js": "~0.11.4"

@@ -244,7 +244,7 @@ export class ConversationOrderListComponent implements OnInit,OnDestroy {
   }
 
   exportExcel() {
-    this.isLoadingActive = true;
+    if (this.isLoadingActive) { return }
     let ids = [...this.setOfCheckedId];
 
     this.excelExportService.exportPost(`/SaleOnline_Order/ExportFile`,
@@ -253,10 +253,9 @@ export class ConversationOrderListComponent implements OnInit,OnDestroy {
         campaignId: null,
         postId: this.currentPost.fbid,
         ids: ids,
-      },
-      `don_hang_online`);
-
-    this.isLoadingActive = false;
+      }, `don_hang_online`)
+      .pipe(finalize(() => this.isLoadingActive = false), takeUntil(this.destroy$))
+      .subscribe();
   }
 
   deleteMulti() {

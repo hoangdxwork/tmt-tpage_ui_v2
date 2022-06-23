@@ -50,6 +50,7 @@ export interface ConversationOrderProductDefaultDTO {
   Quantity: number,
   UOMId: number,
   UOMName: string,
+  Discount?:number;
 }
 
 export interface SaleOnline_Facebook_CommentFilterResultDTO {

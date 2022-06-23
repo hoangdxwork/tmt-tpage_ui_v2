@@ -1,38 +1,32 @@
-<div class="bg-white rounded-lg h-full w-full relative">
+<div class="bg-white rounded-lg h-full w-full relative" *ngIf="dataItem">
     <div class="inline-flex items-center absolute z-10 top-2 right-4">
-        <tds-button-group>
+        <tds-button-group *ngIf="dataItem.State != 'cancel'">
             <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate" >
-                <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="expandDropdown" class="mr-2">
+                <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="expandDropdown" class="mr-2" type="button">
                     <span class="flex items-center">
                         Thao tác
                         <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
                     </span>
                 </button>
             </tds-spin>
-            
+
             <tds-dropdown-menu #expandDropdown="tdsDropdownMenu">
                 <div class="w-full">
-                    <div (click)="print('bill80')" tds-dropdown-item>
-                        <a> Bill 80 </a>
-                    </div>
-                    <div (click)="print('bill58')" tds-dropdown-item>
-                        <a> Bill 58 </a>
-                    </div>
-                    <div (click)="print('A4')" tds-dropdown-item>
+                    <a (click)="print('A4')" tds-dropdown-item type="button">
                         <a> In A4 </a>
-                    </div>
-                    <div (click)="print('A5')" tds-dropdown-item>
+                    </a>
+                    <a (click)="print('A5')" tds-dropdown-item  type="button">
                         <a> In A5 </a>
-                    </div>
-                    <div (click)="print('delivery')" tds-dropdown-item>
+                    </a>
+                    <a (click)="print('delivery')" tds-dropdown-item *ngIf="type === 'invoice'" type="button">
                         <a> In giao hàng </a>
-                    </div>
-                    <div (click)="print('ship')" tds-dropdown-item>
+                    </a>
+                    <a (click)="print('ship')" tds-dropdown-item *ngIf="type === 'invoice'" type="button">
                         <a> In phiếu ship </a>
-                    </div>
-                    <div (click)="print('excel')" tds-dropdown-item>
+                    </a>
+                    <a (click)="excelDetail()" tds-dropdown-item *ngIf="type === 'invoice'" type="button">
                         <a> Excel </a>
-                    </div>
+                    </a>
                 </div>
             </tds-dropdown-menu>
         </tds-button-group>
@@ -41,20 +35,21 @@
             <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
         </ng-template>
 
-        <button tds-button color="info" class="mr-2"
-            (click)="showMessageModal()">
-            <span class="flex items-center">
-                <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>
-                Gửi tin nhắn facebook
-            </span>
-        </button>
+        <div *ngIf="dataItem.State !='cancel' && type == 'invoice'">
+          <button type="button" tds-button color="info" class="mr-2" (click)="showMessageModal()">
+              <span class="flex items-center">
+                  <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>
+                  Gửi tin nhắn facebook
+              </span>
+          </button>
+        </div>
     </div>
     <tds-tabset>
         <tds-tab title="Chi tiết">
             <div class="flex flex-col items-end w-full h-full">
-                <tds-table #basicTable 
+                <tds-table #basicTable
                     [listData]="lstOfData"
-                    [loading]="lstOfData.length == 0"
+                    [loading]="isLoading"
                     [showPagination]="false">
                     <thead>
                         <tr>
@@ -64,7 +59,7 @@
                             <th>số lượng</th>
                             <th>Đơn giá</th>
                             <th>Khối lượng(kg)</th>
-                            <th>Thành tiền</th>
+                            <th class="text-right">Thành tiền</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -76,7 +71,7 @@
                                 <td>{{ (data.ProductUOMQty | number) || 0}}</td>
                                 <td>{{ (data.PriceUnit | number) || 0 }}</td>
                                 <td>{{ (data.Weight | number) || 0 }}</td>
-                                <td>{{ (data.PriceTotal |number) || 0 }}</td>
+                                <td class="text-right">{{ (data.PriceTotal |number) || 0 }}</td>
                             </tr>
                         </ng-template>
                     </tbody>
@@ -84,18 +79,18 @@
                 <div class="w-1/5 text-right">
                     <div class="grid grid-cols-3 gap-x-6 gap-y-4 pb-4">
                         <span class="text-right">Tổng</span>
-                        <span class="font-semibold w-full col-span-2 text-right">{{ (billData.AmountUntaxed| number) || 0 }}</span>
+                        <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountUntaxed| number) || 0 }}</span>
 
                         <span class="text-right">Thuế</span>
-                        <span class="font-semibold w-full col-span-2 text-right">{{ (billData.AmountTax | number) || 0 }}</span>
+                        <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountTax | number) || 0 }}</span>
 
                         <span class="text-right font-semibold">Tổng tiền</span>
-                        <span class="text-header-1 font-semibold w-full col-span-2 text-right">{{ (billData.AmountTotal | number) || 0 }}</span>
+                        <span class="text-header-1 font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountTotal | number) || 0 }}</span>
 
                         <span class="text-right">Nợ</span>
-                        <span class="font-semibold w-full col-span-2 text-right">{{ (billData.Residual | number) || 0 }}</span>
+                        <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.Residual | number) || 0 }}</span>
                     </div>
-                    <button tds-button color="primary" (click)="showPayInvoiceModal(billData.Id)">Thanh toán</button>
+                    <button tds-button color="primary" (click)="showPayInvoiceModal(dataItem.Id)" type="button">Thanh toán</button>
                 </div>
             </div>
         </tds-tab>

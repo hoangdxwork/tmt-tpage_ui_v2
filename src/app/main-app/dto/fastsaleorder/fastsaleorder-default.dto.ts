@@ -552,8 +552,8 @@ export interface FastSaleOrder_DefaultDTOV2 {
     TaxId?: any;
     UserId: string;
     UserName: string;
-    DateInvoice: Date;
-    DateCreated: Date;
+    DateInvoice: Date | any;
+    DateCreated: Date | any;
     State: string;
     ShowState: string;
     CompanyId: number;
@@ -626,7 +626,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     SaleOrderDeposit: number;
     Seri?: any;
     NumberOrder?: any;
-    DateOrderRed?: any;
+    DateOrderRed?: Date | any;
     ApplyPromotion?: any;
     TimeLock?: any;
     PageName: string;

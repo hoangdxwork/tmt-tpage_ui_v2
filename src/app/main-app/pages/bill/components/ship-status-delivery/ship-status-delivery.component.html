@@ -1,0 +1,18 @@
+<label class="upload-button ml-0">
+    <input type="file" class="form-control" (change)="handleFileInput($event)" />
+    <span class="cursor">Chọn file</span>
+</label>
+
+<!-- footer -->
+<div class="w-full flex justify-end gap-2 p-4" *tdsModalFooter>
+  <button tds-button color="secondary" type="button" (click)="onSave()">
+      Import
+  </button>
+
+  <a tds-button  type="submit" color="primary" type="button" (click)="openUrlSample()">
+      Tải file mẫu
+  </a>
+  <button tds-button  type="submit" color="primary" type="button" (click)="onClose()">
+      Đóng
+  </button>
+</div>

@@ -2,10 +2,15 @@
     <div class="w-full dark">
 
         <tds-header urlLogoText='../../../assets/imagesv2/tpos-text.svg'>
+            <div class="inline-flex tds-header-toolbar-left items-center ml-2">
+                <div class="flex items-center text-body-2 font-semibold text-neutral-1-400">
+                    <tds-tag status='primary' rounded="rounded-full">T-PAGE</tds-tag>
+                </div>
+            </div>
             <div class="inline-flex tds-header-toolbar-right items-center">
                 <!-- Không có kết nối singalr -->
                 <button class="mr-2" tds-button-icon color="primary" (click)="onSave()" tooltipPlacement="bottom"
-                   *ngIf="!_connectionEstablished || !isNetwork" tds-tooltip  tooltipTitle="Kết nối realtime thất bại.">
+                    *ngIf="!_connectionEstablished || !isNetwork" tds-tooltip tooltipTitle="Kết nối realtime thất bại.">
                     <span class="flex items-center justify-center">
                         <i class="tdsi-wifi-warning-fill text-xl leading-5"></i>
                     </span>
@@ -14,7 +19,7 @@
                     <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)"></tpage-team-dropdown>
                 </div>
                 <div class="ml-4">
-                  <tpage-notification-dropdown></tpage-notification-dropdown>
+                    <tpage-notification-dropdown></tpage-notification-dropdown>
                 </div>
                 <div class="inline-flex pl-4">
                     <tds-avatar class="cursor-pointer" tds-dropdown [tdsDropdownMenu]="dropdownAvatar" trigger="click"

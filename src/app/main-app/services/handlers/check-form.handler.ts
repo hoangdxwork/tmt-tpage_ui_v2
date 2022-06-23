@@ -70,7 +70,6 @@ export class CheckFormHandler {
   // Handling prepare form
   prepareOrder(formOrder: FormGroup): SaleOnline_OrderDTO {
     let formValue = formOrder.value;
-
     let model = {} as SaleOnline_OrderDTO;
     let user = {Id: formValue.User?.Id, Name: formValue.User?.Name} as ApplicationUserDTO;
 
@@ -88,7 +87,7 @@ export class CheckFormHandler {
     model.Email = formValue.Email,
     model.TotalAmount = formValue.TotalAmount || 0,
     model.TotalQuantity = formValue.TotalQuantity || 0,
-    model.Address = formValue.Street,
+    model.Address = formValue.Street[0],
     model.CityCode = formValue.City ? formValue.City.Code : null,
     model.CityName = formValue.City ? formValue.City.Name : null,
     model.DistrictCode = formValue.District ? formValue.District.Code : null,
@@ -112,7 +111,6 @@ export class CheckFormHandler {
 
   prepareBill(orderForm: FormGroup, billModel: FastSaleOrderRestDTO, shipExtraServices: TDSSafeAny[]): FastSaleOrderRestDTO {
     let model = billModel;
-
     let formValue = orderForm.value;
 
     model.SaleOnlineIds = [formValue.Id];
@@ -162,8 +160,8 @@ export class CheckFormHandler {
         orderLine.ProductUOMId = detail.UOMId,
         orderLine.ProductUOMQty = detail.Quantity,
         orderLine.PriceUnit = detail.Price,
-        orderLine.Discount = 0,
-        orderLine.Discount_Fixed = 0,
+        orderLine.Discount = detail.Discount || 0,
+        orderLine.Discount_Fixed = detail.Discount || 0,
         orderLine.Type = "fixed",
         orderLine.PriceSubTotal = detail.Price * detail.Quantity,
         orderLine.Note = detail.Note

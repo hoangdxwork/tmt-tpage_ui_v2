@@ -4,8 +4,7 @@ import { ExcelExportService } from './../../../../services/excel-export.service'
 import { PrinterService } from './../../../../services/printer.service';
 import { FastSaleOrderDTO } from './../../../../dto/fastsaleorder/fastsaleorder.dto';
 import { OdataFSOrderLinesV2, FSOrderLinesV2 } from './../../../../dto/fastsaleorder/fastsale-orderline.dto';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+import { Subject, finalize, takeUntil, pipe } from 'rxjs';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { Component, Input, OnInit, OnDestroy, ViewContainerRef } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
@@ -17,10 +16,15 @@ import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
   templateUrl: './bill-expand.component.html'
 })
 export class BillExpandComponent implements OnInit, OnDestroy {
-  @Input() billData!:FastSaleOrderDTO;
+
+  @Input() dataItem!:FastSaleOrderDTO;
+
+  type!: string;
   lstOfData:FSOrderLinesV2[] = [];
-  private destroy$ = new Subject<void>();
   isProcessing: boolean = false;
+  isLoading: boolean = false;
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fSOService:FastSaleOrderService,
@@ -31,16 +35,20 @@ export class BillExpandComponent implements OnInit, OnDestroy {
     private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
-    this.loadData();
+    if(this.dataItem) {
+      this.type = this.dataItem.Type;
+      this.loadData();
+    }
   }
 
   loadData(){
-    this.fSOService.getOrderLineData(this.billData.Id).pipe(takeUntil(this.destroy$)).subscribe(
-      (res:OdataFSOrderLinesV2)=>{
-        this.lstOfData = res.value;
-      },
-      err=>{
-        this.message.error('Tải dữ liệu thất bại');
+    this.isLoading = true;
+    this.fSOService.getOrderLineData(this.dataItem.Id)
+      .pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isLoading = false))
+      .subscribe((res: OdataFSOrderLinesV2) => {
+          this.lstOfData = res.value;
+      }, error => {
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Tải dữ liệu thất bại');
       }
     )
   }
@@ -52,34 +60,43 @@ export class BillExpandComponent implements OnInit, OnDestroy {
 
     let that = this;
     let printer:TDSSafeAny;
+    this.isProcessing = true;
 
     switch(type){
-      case 'bill80':
-      case 'bill58':
       case 'A4':
+        printer = this.printerService.printUrl(`/fastsaleorder/print?ids=${this.dataItem.Id}&Template=${type}`)
+        break;
       case 'A5':
-        printer = this.printerService.printUrl(`/fastsaleorder/print?ids=${this.billData.Id}&Template=${type}`);
+        printer = this.printerService.printUrl(`/fastsaleorder/print?ids=${this.dataItem.Id}&Template=${type}`)
         break;
       case 'delivery':
-        printer = this.printerService.printUrl(`/fastsaleorder/PrintDelivery?ids=${this.billData.Id}`);
+        printer = this.printerService.printUrl(`/fastsaleorder/PrintDelivery?ids=${this.dataItem.Id}`)
         break;
       case 'ship':
-        printer = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${this.billData.Id}`);
+        printer = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${this.dataItem.Id}`)
         break;
-      case 'excel':
-        this.excelExportService.exportGet(
-          `/Fastsaleorder/ExcelPrint?id=${this.billData.Id}`,
-          `Phieu_ban_hang_${this.billData.Id}`
-        );
+      default: break;
     }
 
     if (TDSHelperObject.hasValue(printer)) {
-      this.isProcessing = true;
-      printer.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-        that.printerService.printHtml(res);
-        that.isProcessing = false;
+      printer.pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
+          that.printerService.printHtml(res);
       })
     }
+  }
+
+  excelDetail() {
+    if (this.isProcessing) {
+      return
+    }
+
+    this.isProcessing = true;
+    let name = this.type == "invoice" ? "ban-hang" : "tra-hang-ban-hang";
+
+    this.excelExportService.exportGet(`/fastsaleorder/ExcelPrint?id=${this.dataItem.Id}`,`${name}`)
+      .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => this.isProcessing = false))
+      .subscribe()
   }
 
   showMessageModal(){
@@ -89,7 +106,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
       content: ModalSendMessageComponent,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        partnerIds: [this.billData.PartnerId]
+          partnerIds: [this.dataItem.PartnerId]
       }
     });
   }
@@ -107,8 +124,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
             dataModel : res
           }
         });
-      },
-      err=>{
+      }, err => {
         this.message.error(err.error.message ?? 'Không tải được dữ liệu');
       }
     )

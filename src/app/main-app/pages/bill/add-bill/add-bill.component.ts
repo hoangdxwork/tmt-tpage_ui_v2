@@ -1,21 +1,21 @@
-import { DecimalPipe, formatNumber } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewContainerRef, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
+import { formatNumber } from '@angular/common';
+import { Component, OnDestroy, OnInit, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
 import { ModalSearchPartnerComponent } from '../components/modal-search-partner/modal-search-partner.component';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { SharedService } from 'src/app/main-app/services/shared.service';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { AccountRegisterPaymentService } from 'src/app/main-app/services/account-register-payment.service';
 import { formatDate } from '@angular/common';
 import { PartnerCategoryDTO } from 'src/app/main-app/dto/partner/partner-category.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { FastSaleOrder_DefaultDTOV2, OrderLine, User } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
-import { DeliveryCarrierDTOV2, ODataDeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto';
-import { AccountJournalPaymentDTO, ODataAccountJournalPaymentDTO } from 'src/app/main-app/dto/register-payment/register-payment.dto';
-import { CustomerDTO, ODataCustomerDTO } from 'src/app/main-app/dto/partner/customer.dto';
+import { FastSaleOrder_DefaultDTOV2, OrderLine } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
+import { DeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto';
+import { AccountJournalPaymentDTO } from 'src/app/main-app/dto/register-payment/register-payment.dto';
+import { CustomerDTO } from 'src/app/main-app/dto/partner/customer.dto';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { ActivatedRoute } from '@angular/router';
-import { finalize, map, takeUntil } from 'rxjs/operators';
+import { finalize, map, takeUntil, mergeMap } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
 import { StockWarehouseDTO } from 'src/app/main-app/dto/product/warehouse.dto';
 import { AllFacebookChildTO } from 'src/app/main-app/dto/team/all-facebook-child.dto';
@@ -38,6 +38,9 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
+import { THelperCacheService } from 'src/app/lib';
+import { PartnerDetailDTO } from 'src/app/main-app/dto/partner/partner-detail.dto';
+import { ChangePartnerPriceListDTO } from 'src/app/main-app/dto/partner/change-partner-pricelist.dto';
 
 @Component({
   selector: 'app-add-bill',
@@ -75,7 +78,6 @@ export class AddBillComponent implements OnInit, OnDestroy {
   limit: number = 20;
 
   idPush: number = 0;
-
   totalAmountLines: number = 0;
   totalQtyLines: number = 0;
   priceListItems: any;
@@ -101,6 +103,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder,
+    private cacheApi: THelperCacheService,
     private route: ActivatedRoute,
     private partnerService: PartnerService,
     private message: TDSMessageService,
@@ -117,15 +120,15 @@ export class AddBillComponent implements OnInit, OnDestroy {
     private registerPaymentService: AccountRegisterPaymentService,
     private accountTaxService: AccountTaxService,
     private viewContainerRef: ViewContainerRef) {
-    this.createForm();
+      this.createForm();
   }
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get("id");
-
     if (this.id) {
       this.loadBill(this.id);
     } else {
+      // TODO: xử lý tạo mới + copy nếu có
       this.loadDefault();
     }
 
@@ -168,8 +171,6 @@ export class AddBillComponent implements OnInit, OnDestroy {
     let exits = data.filter((x: any) => x.text === text)[0];
     if(exits) {
       return exits.value;
-    } else {
-      return;
     }
   }
 
@@ -245,7 +246,8 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   loadBill(id: number) {
-    this.fastSaleOrderService.getById(id).pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
+    this.isLoading = true;
+    this.fastSaleOrderService.getById(id).pipe(takeUntil(this.destroy$)).pipe(finalize(() => { this.isLoading = false})).subscribe((data: any) => {
       delete data['@odata.context'];
       if (data.DateInvoice) {
         data.DateInvoice = new Date(data.DateInvoice);
@@ -267,12 +269,14 @@ export class AddBillComponent implements OnInit, OnDestroy {
       }
 
       if (data.Ship_ServiceExtras && data.Ship_ServiceExtras.length > 0) {
-        for (var item of data.Ship_ServiceExtras) {
-          var exits = ((item.Id == '16' || item.Id == "GBH" || item.Id == "GHN" || item.Id == "OrderAmountEvaluation" &&
+        for (let item of data.Ship_ServiceExtras) {
+
+          let exits = ((item.Id == '16' || item.Id == "GBH" || item.Id == "GHN" || item.Id == "OrderAmountEvaluation" &&
             data.Carrier?.DeliveryType === "MyVNPost" || item.Id === "NinjaVan"))
           if (exits) {
             this.enableInsuranceFee = true;
           }
+
           this.shipExtraServices.push({
             ServiceId: item.Id,
             ServiceName: item.Name,
@@ -296,9 +300,11 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   loadDefault() {
+    this.isLoading = true;
     let model = { Type: 'invoice' };
-    this.fastSaleOrderService.defaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
+    this.fastSaleOrderService.defaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isLoading = false)).subscribe((data: any) => {
       delete data['@odata.context'];
+
       if (data.DateInvoice) {
         data.DateInvoice = new Date(data.DateInvoice);
       }
@@ -308,25 +314,35 @@ export class AddBillComponent implements OnInit, OnDestroy {
       if (data.ReceiverDate) {
         data.ReceiverDate = new Date(data.ReceiverDate);
       }
-      // TODO: chọn đối tác mặc định
-      this.lstCarriers.subscribe((res) => {
-        let item = res.filter(f => f.Name === 'viettel post')[0] || res[0];
-        if (item) {
-          this.onChangeCarrier(item);
-        }
-      });
 
       this.dataModel = data;
-      this.updateForm(this.dataModel);
+      this.loadCacheCopy(this.dataModel);
     }, error => {
       this.message.error('Load thông tin mặc định đã xảy ra lỗi!');
     });
   }
 
+  loadCacheCopy(data: FastSaleOrder_DefaultDTOV2 ) {
+    let keyCache = this.fastSaleOrderService._keyCacheCopyInvoice as string;
+    this.cacheApi.getItem(keyCache).subscribe((obs) => {
+
+      if(TDSHelperString.hasValueString(obs)) {
+        let cache = JSON.parse(obs['value']) as TDSSafeAny;
+        let cacheDB = JSON.parse(cache['value']) as TDSSafeAny;
+        data = { ... data, ...cacheDB };
+        // Copy xong xóa dữ liệu cache
+        this.cacheApi.removeItem(keyCache);
+      }
+
+      this.mappingAddress(data);
+      this.updateForm(data);
+    })
+  }
+
   loadTeamById(id: any) {
     this.cRMTeamService.getTeamById(id).subscribe((team: any) => {
-      this.dataModel.Team.Name = team.Name;
-      this.dataModel.Team.Facebook_PageName = team.Facebook_PageName;
+        this.dataModel.Team.Name = team.Name;
+        this.dataModel.Team.Facebook_PageName = team.Facebook_PageName;
     })
   }
 
@@ -334,16 +350,23 @@ export class AddBillComponent implements OnInit, OnDestroy {
     //TODO: cập nhật price of product theo bảng giá
     if (data.PriceListId) {
       this.commonService.getPriceListItems(data.PriceListId).subscribe((res: any) => {
-        this.priceListItems = res;
+          this.priceListItems = res;
       }, error => {
-        this.message.error('Load bảng giá đã xảy ra lỗi!')
+          this.message.error('Load bảng giá đã xảy ra lỗi!')
       })
     }
+
     if (TDSHelperArray.hasListValue(data.OrderLines)) {
       data.OrderLines.forEach((x: OrderLine) => {
-        this.addOrderLines(x);
+          this.addOrderLines(x);
       });
     }
+
+    if(!data.CashOnDelivery) {
+      let cod = data.AmountTotal + data.DeliveryPrice - data.AmountDeposit;
+      data.CashOnDelivery = cod;
+    }
+
     this._form.patchValue(data);
   }
 
@@ -436,6 +459,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       this.changePartner(event.Id);
     }
   }
+
   // TODO: bug gọi api nhiều lần, fix khi tdsInputDebounce sửa xong
   onSearchPartner(event: any) {
     if (TDSHelperString.hasValueString(event)) {
@@ -446,59 +470,96 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.lstCustomers = this.loadCustomers();
   }
 
+  loadChangePartner(partnerId: any): Observable<any>{
+    return this.partnerService.getById(partnerId).pipe(mergeMap((partner: TDSSafeAny) => {
+      delete partner['@odata.context'];
+
+      this._form.controls["Ship_Receiver"].reset();
+      this._form.controls['Partner'].setValue(partner);
+      this._form.controls['PartnerId'].setValue(partner.Id);
+      let model = this.prepareModel();
+
+      return this.fastSaleOrderService.onChangePartnerPriceList({ model: model })
+        .pipe(map((data: TDSSafeAny) => {
+            delete data['@odata.context'];
+            return [data, partner];
+        })
+      )}));
+  }
+
   changePartner(partnerId: any) {
-    this.partnerService.getById(partnerId).pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
-      if (data) {
-        delete data['@odata.context'];
+    this.isLoading = true;
+    this.loadChangePartner(partnerId).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+      .subscribe(([data, partner]) => {
+          if(data && partner) {
 
-        this._form.controls['Partner'].setValue(data);
-        this._form.controls['PartnerId'].setValue(data.Id);
-        this._form.controls["Ship_Receiver"].reset();
+            const dataModel = data as ChangePartnerPriceListDTO;
+            const partnerModel = partner as PartnerDetailDTO;
 
-        let model = this.prepareModel();
+            dataModel.ReceiverName = partnerModel.Name;
+            dataModel.ReceiverPhone = partnerModel.Phone;
+            dataModel.ReceiverAddress = partnerModel.Street;
 
-        this.fastSaleOrderService.onChangePartnerPriceList({ model: model }).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-          delete res["@odata.context"];
+            dataModel.Ship_Receiver.Name =  partnerModel.Name;
+            dataModel.Ship_Receiver.Phone =  partnerModel.Phone;
+            dataModel.Ship_Receiver.Street =  partnerModel.Street;
 
-          this._form.controls['PriceList'].setValue(res.PriceList);
-          this._form.controls['PriceListId'].setValue(res.PriceList?.Id);
-          this._form.controls['Revenue'].setValue(res.Revenue);
-          this._form.controls['DeliveryNote'].setValue(res.DeliveryNote);
+            dataModel.Ship_Receiver.City = {
+              code: partnerModel.CityCode,
+              name: partnerModel.CityName
+            }
+            dataModel.Ship_Receiver.District = {
+              code: partnerModel.DistrictCode,
+              name: partnerModel.DistrictName
+            }
+            dataModel.Ship_Receiver.Ward = {
+              code: partnerModel.WardCode,
+              name: partnerModel.WardName
+            }
 
-          //TODO: Cập nhật lại nợ cũ
-          this._form.controls['PreviousBalance'].setValue(res.PreviousBalance);
-          //TODO: Cập nhật lại dataSuggestion
-          if (res && res.Ship_Receiver) {
-            this._form.controls['Ship_Receiver'].patchValue({
-              Street: res.Ship_Receiver.Street,
-              City: res.Ship_Receiver.City ? {
-                code: res.Ship_Receiver.City.code,
-                name: res.Ship_Receiver.City.name
-              } : null,
-              District: res.Ship_Receiver.District ? {
-                code: res.Ship_Receiver.District.code,
-                name: res.Ship_Receiver.District.name
-              } : null,
-              Ward: res.Ship_Receiver.Ward ? {
-                code: res.Ship_Receiver.Ward.code,
-                name: res.Ship_Receiver.Ward.name
-              } : null
-            })
+            this._form.controls['PriceList'].setValue(dataModel.PriceList);
+            this._form.controls['PriceListId'].setValue(dataModel.PriceList?.Id);
+            this._form.controls['Revenue'].setValue(dataModel.Revenue);
+            this._form.controls['DeliveryNote'].setValue(dataModel.DeliveryNote);
+            this._form.controls['ReceiverName'].setValue(dataModel.ReceiverName);
+            this._form.controls['ReceiverPhone'].setValue(dataModel.ReceiverPhone);
+            this._form.controls['ReceiverNote'].setValue(dataModel.ReceiverNote);
+            this._form.controls['ReceiverAddress'].setValue(dataModel.ReceiverAddress);
+
+            //TODO: Cập nhật lại nợ cũ
+            this._form.controls['PreviousBalance'].setValue(dataModel.PreviousBalance);
+
+            //TODO: Cập nhật lại dataSuggestion
+            if (dataModel && dataModel.Ship_Receiver) {
+              this._form.controls['Ship_Receiver'].patchValue({
+                  Name: dataModel.Ship_Receiver?.Name,
+                  Phone: dataModel.Ship_Receiver?.Phone,
+                  Street: dataModel.Ship_Receiver?.Street,
+                  City: {
+                      code: dataModel.Ship_Receiver?.City?.code,
+                      name: dataModel.Ship_Receiver?.City?.name
+                  },
+                  District: {
+                      code: dataModel.Ship_Receiver.District.code,
+                      name: dataModel.Ship_Receiver.District.name
+                  },
+                  Ward: {
+                      code: dataModel.Ship_Receiver.Ward.code,
+                      name: dataModel.Ship_Receiver.Ward.name
+                  }
+              })
+            }
+
+            this.mappingAddress(dataModel);
           }
-        }, error => {
-          this.message.error('Thay đổi khách hàng đã xảy ra lỗi!');
-        });
-      }
-      this.cdRef.detectChanges();
-    }, error => {
-      this.message.error('Không tìm thấy khách hàng!');
-      this.cdRef.detectChanges();
+      }, error => {
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thay đổi khách hàng đã xảy ra lỗi!');
     })
   }
 
   onChangePriceList(event: any) {
     if (TDSHelperObject.hasValue(event)) {
-      this.commonService.getPriceListItems(event.Id).subscribe((res: any) => {
+      this.commonService.getPriceListItems(event.Id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.priceListItems = res;
       }, error => {
         this.message.error('Load bảng giá đã xảy ra lỗi!');
@@ -536,6 +597,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   onChangeCarrier(event: DeliveryCarrierDTOV2, showMessage?: boolean) {
     if (TDSHelperObject.hasValue(event)) {
+
       this.shipServices = [];
       this.shipExtraServices = [];
       this.enableInsuranceFee = false;
@@ -570,6 +632,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       if (this.apiDeliveries.indexOf(event.DeliveryType) >= 0) {
         //Check giá trị mặc định trước khi gửi
         this.calcServiceDefault();
+
         if (this.validateInsuranceFee()) {
           this.enableInsuranceFee = true;
           if (!model.Ship_InsuranceFee) {
@@ -586,7 +649,6 @@ export class AddBillComponent implements OnInit, OnDestroy {
         });
       }
     }
-    this.cdRef.detectChanges();
   }
 
   validateInsuranceFee(): any {
@@ -638,7 +700,8 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
     if (model.Carrier && model.Carrier.DeliveryType == 'BEST' && model.Ship_Extras) {
       this.shipExtraServices = [];
-      var insuranceFee = this.getInsuranceFee();
+      let insuranceFee = this.getInsuranceFee();
+
       this.shipExtraServices.push({
         ServiceId: "BEST_Insurance",
         ServiceName: "Bảo hiểm hàng hóa",
@@ -652,6 +715,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     if (model.Carrier && model.Carrier.DeliveryType == 'HolaShip' && model.Ship_Extras) {
       this.shipExtraServices = [];
       let insuranceFee = this.getInsuranceFee();
+
       this.shipExtraServices.push({
         ServiceId: "HolaShip_Insurance",
         ServiceName: "Bảo hiểm hàng hóa",
@@ -858,18 +922,16 @@ export class AddBillComponent implements OnInit, OnDestroy {
   calcFeeList() {
     let model = this.prepareModel();
     this.isCalcFee = true;
-    this.fastSaleOrderService.calculateListFee({ model: model }).subscribe((res: any) => {
+    this.fastSaleOrderService.calculateListFee({ model: model }).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.lstCalcFee = res.value;
-      var exits = this.lstCalcFee.filter((x: CalculatorListFeeDTO) => x.CarrierId === model.Carrier?.Id)[0];
+      let exits = this.lstCalcFee.filter((x: CalculatorListFeeDTO) => x.CarrierId === model.Carrier?.Id)[0];
       if (exits) {
         this.setCarrier(exits);
       }
       this.isCalcFee = false;
-      this.cdRef.detectChanges();
     }, error => {
       this.isCalcFee = false;
       this.message.error(`${error.error_description}` ? `${error.error_description}` : 'Gợi ý tính phí đã xảy ra lỗi!');
-      this.cdRef.detectChanges();
     });
   }
 
@@ -878,9 +940,6 @@ export class AddBillComponent implements OnInit, OnDestroy {
       if (this.apiDeliveries.includes(event.DeliveryType)) {
         let model = this.prepareModelFeeV2();
 
-        if (!this._form.controls['Partner'].value && showMessage) {
-          return this.message.error('Vui lòng chọn khách hàng');
-        }
         if (!this._form.controls['Carrier'].value && showMessage) {
           return this.message.error('Vui lòng chọn  đối tác giao hàng');
         }
@@ -888,7 +947,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
           return this.message.error('Vui lòng chọn nhập khối lượng');
         }
         this.isCalcFee = true;
-        this.fastSaleOrderService.calculateFeeV2(model).subscribe((res: CalculateFeeResponse_DataDTO) => {
+        this.fastSaleOrderService.calculateFeeV2(model).pipe(takeUntil(this.destroy$)).subscribe((res: CalculateFeeResponse_DataDTO) => {
           if (res) {
             //TODO: Cập nhật lại phí ship
             this._form.controls['CustomerDeliveryPrice'].setValue(res.TotalFee);
@@ -903,13 +962,11 @@ export class AddBillComponent implements OnInit, OnDestroy {
           }
 
           this.isCalcFee = false;
-          this.cdRef.detectChanges();
         }, error => {
           this.isCalcFee = false;
           if (showMessage) {
             this.message.error(`${error.error_description}` || 'Tính phí đã xảy ra lỗi!');
           }
-          this.cdRef.detectChanges();
           reject(error);
         })
       }
@@ -1031,7 +1088,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
         model.Ship_Extras.ServiceCustoms.forEach((x: any) => {
           let check = this.shipExtraServices.find((a: any) => a.ServiceId == x.ServiceId);
           if (!check) {
-            var service = {
+            let service = {
               ServiceId: x.ServiceId,
               ServiceName: x.Name,
               Fee: 0,
@@ -1052,7 +1109,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       this.listServiceTemp = [];
 
       temps.map((x: TDSSafeAny) => {
-        var exist = this.shipExtraServices.filter((s: any) => s.ServiceId === x.ServiceId)[0];
+        let exist = this.shipExtraServices.filter((s: any) => s.ServiceId === x.ServiceId)[0];
         if (exist) {
           exist.IsSelected = x.IsSelected;
           //check cấu hình thu tiền xem hàng mặc định
@@ -1196,11 +1253,12 @@ export class AddBillComponent implements OnInit, OnDestroy {
     if (!this._form.controls['Carrier'].value) {
       return this.message.error('Vui lòng chọn đối tác giao hàng!');
     }
+
     let model = this._form.controls['Carrier'].value;
     this.calculateFee(model).then((res: any) => {
       if (res?.Costs) {
         res.Costs.map((x: any) => {
-          var exist = this.shipExtraServices.filter((x: any) => x.ServiceId === x.ServiceId)[0];
+          let exist = this.shipExtraServices.filter((x: any) => x.ServiceId === x.ServiceId)[0];
           if (exist) {
             exist.Fee = x.TotalFee;
           }
@@ -1215,7 +1273,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   openTrackingOrderGHN() {
     let key = this.dataModel.TrackingRef;
-    this.fastSaleOrderService.getTokenTrackingOrderGHN({ key: key }).subscribe((res: any) => {
+    this.fastSaleOrderService.getTokenTrackingOrderGHN({ key: key }).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if (res.Success && res.data) {
         this.message.success('Thao tác thành công!');
         let urlTrackingOrder = res.data.UrlTrackingOrder;
@@ -1230,11 +1288,13 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   public openTrackingOrderAhaMove() {
     let key = this.dataModel.TrackingRef;
-    this.fastSaleOrderService.getTrackingOrderAhaMove({ key: key }).subscribe((res: any) => {
+    this.fastSaleOrderService.getTrackingOrderAhaMove({ key: key }).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if (res.Success && res.data) {
+
         this.message.success('Thao tác thành công!');
         let urlTrackingOrder = res.data.UrlTrackingOrder;
         window.open(urlTrackingOrder, '_blank');
+
       } else {
         this.message.error(res.Message || 'Thao tác thất bại');
       }
@@ -1821,11 +1881,6 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.visibleShipExtraMoney = false;
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   onSave(): any {
     this.updateShipExtras();
     this.updateShipServiceExtras();
@@ -1898,7 +1953,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   editPartner(data: any) {
     let modal = this.modalService.create({
-      title: 'Thêm khách hàng',
+      title: 'Sửa khách hàng',
       content: ModalEditPartnerComponent,
       size: "xl",
       viewContainerRef: this.viewContainerRef,
@@ -1912,6 +1967,11 @@ export class AddBillComponent implements OnInit, OnDestroy {
         this.changePartner(event);
       }
     })
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   prepareModel(): any {
@@ -1968,15 +2028,16 @@ export class AddBillComponent implements OnInit, OnDestroy {
     model.Address = formModel.Address ? formModel.Address : model.Address;
     model.ReceiverName = formModel.ReceiverName ? formModel.ReceiverName : model.ReceiverName;
     model.ReceiverPhone = formModel.ReceiverPhone ? formModel.ReceiverPhone : model.ReceiverPhone;
-    model.ReceiverDate = formModel.ReceiverDate ? formModel.ReceiverDate : model.ReceiverDate;
+
+    model.ReceiverDate = formModel.ReceiverDate ? formModel.ReceiverDate.toISOString() : model.ReceiverDate.toISOString();
     model.ReceiverAddress = formModel.ReceiverAddress ? formModel.ReceiverAddress : model.ReceiverAddress;
     model.ReceiverNote = formModel.ReceiverNote ? formModel.ReceiverNote : model.ReceiverNote;
 
     model.User = formModel.User ? formModel.User : model.User;
     model.UserId = formModel.User ? formModel.User.Id : model.UserId;
-    model.DateOrderRed = formModel.DateOrderRed ? formModel.DateOrderRed : model.DateOrderRed;
+    model.DateOrderRed = formModel.DateOrderRed ? formModel.DateOrderRed?.toISOString() : model.DateOrderRed?.toISOString();
     model.State = formModel.State ? formModel.State : model.State;
-    model.DateInvoice = formModel.DateInvoice ? formModel.DateInvoice : model.DateInvoice;
+    model.DateInvoice = formModel.DateInvoice ? formModel.DateInvoice.toISOString() : model.DateInvoice.toISOString();
     model.NumberOrder = formModel.NumberOrder ? formModel.NumberOrder : model.NumberOrder;
     model.Comment = formModel.Comment ? formModel.Comment : model.Comment;
     model.Seri = formModel.Seri ? formModel.Seri : model.Seri;

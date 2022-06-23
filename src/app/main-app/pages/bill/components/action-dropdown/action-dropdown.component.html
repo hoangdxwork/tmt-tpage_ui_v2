@@ -1,6 +1,6 @@
 
 
-<tds-button-group *ngIf="!_type">
+<tds-button-group *ngIf="!type">
   <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate" >
     <button tds-button color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'" [tdsDropdownMenu]="menu">
       <span class="flex items-center">
@@ -33,14 +33,14 @@
 
 <div class="flex flex-row items-center gap-x-2">
   <!-- create bill -->
-  <button *ngIf="_type === 'new' || _type === 'all'" tds-button color="primary" size="md" [disabled]="isProcessing" (click)="onCreate()">
+  <button *ngIf="type === 'new' || type === 'all'" tds-button color="primary" size="md" [disabled]="isProcessing" (click)="onCreate()">
     <span class="flex items-center">
       <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
     </span>
   </button>
 
   <!-- excel -->
-  <tds-button-group *ngIf="_type === 'excel' || _type === 'all'">
+  <tds-button-group *ngIf="type === 'excel' || type === 'all'">
     <button tds-button color="primary" size="md" [disabled]="isProcessing" [placement]="'bottomRight'" tds-dropdown trigger="click" [tdsDropdownMenu]="exportExcelMenu">
       <span class="flex items-center">
         <i class="tdsi-excel-fill text-lg leading-none mr-2"></i>
@@ -58,7 +58,7 @@
   </tds-button-group>
 
   <!-- update delivery -->
-  <button *ngIf="_type === 'delivery' || _type === 'all'" tds-button color="info" size="md" [disabled]="isProcessing" (click)="updateDelivery()">
+  <button *ngIf="type === 'delivery' || type === 'all'" tds-button color="info" size="md" [disabled]="isProcessing" (click)="updateDelivery()">
     <span class="flex items-center">
       <i class="tdsi-transport-fill text-lg leading-none mr-2"></i>
       <span>Cập nhật GH</span>
@@ -66,7 +66,7 @@
   </button>
 
   <!-- delivery status -->
-  <tds-button-group *ngIf="_type === 'DS' || _type === 'all'">
+  <tds-button-group *ngIf="type === 'DS' || type === 'all'">
     <button tds-button color="info" size="md" [disabled]="isProcessing" [placement]="'bottomRight'" tds-dropdown trigger="click" [tdsDropdownMenu]="deliveryStatusMenu">
       <span class="flex items-center">
         <i class="tdsi-inventory-check-fill text-lg leading-none mr-2"></i>
@@ -76,10 +76,10 @@
     </button>
     <tds-dropdown-menu #deliveryStatusMenu="tdsDropdownMenu">
       <div class="w-full">
-          <div (click)="updateDeliveryStatus('manual')" tds-dropdown-item>
+          <div (click)="manualCrossChecking()" tds-dropdown-item>
               <a> Đối soát giao hàng thủ công </a>
           </div>
-          <div (click)="updateDeliveryStatus('fromFile')" tds-dropdown-item>
+          <div (click)="updateShipStatusDelivery()" tds-dropdown-item>
               <a> Đối soát giao hàng từ file </a>
           </div>
       </div>
@@ -87,10 +87,10 @@
   </tds-button-group>
 
   <!-- HDS -->
-  <button *ngIf="_type === 'HDS' || _type === 'all'" tds-button color="secondary" size="md" [disabled]="isProcessing"
+  <button *ngIf="type === 'HDS' || type === 'all'" tds-button color="secondary" size="md" [disabled]="isProcessing"
     (click)="showHistoryDS()">
     <span class="flex items-center">
-      <i class="tdsi-order-fill text-lg leading-none mr-2"></i>Lịch sử đối soát
+      <i class="tdsi-order-fill text-neutral-1-500 text-lg leading-none mr-2"></i>Lịch sử đối soát
     </span>
   </button>
 </div>

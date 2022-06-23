@@ -1,7 +1,6 @@
 import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { GenerateMessageTypeEnum } from './../../../../dto/conversation/message.dto';
-import { FormFileCrossCheckingModalComponent } from './../form-file-cross-checking-modal/form-file-cross-checking-modal.component';
-import { ManualCrossCheckingModalComponent } from './../manual-cross-checking-modal/manual-cross-checking-modal.component';
+import { CrossCheckingStatusComponent } from '../cross-checking-status/cross-checking-status.component';
 import { Component, Input, OnDestroy, OnInit, ViewContainerRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subject } from "rxjs";
@@ -16,6 +15,7 @@ import { SendDeliveryComponent } from "../send-delivery/send-delivery.component"
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
+import { ShipStatusDeliveryComponent } from '../ship-status-delivery/ship-status-delivery.component';
 
 @Component({
   selector: 'action-dropdown',
@@ -28,7 +28,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   @Input() filterObj: any;
   @Input() setOfCheckedId: any = [];
   @Input() lstOfData: any = [];
-  @Input() _type!:string;
+  @Input() type!:string;
 
   isProcessing: boolean = false;
   tagIds: any = [];
@@ -71,8 +71,6 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         logic: "and",
       },
     };
-
-    let that = this;
 
     switch (type) {
       case "excels":
@@ -156,38 +154,25 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('bill/create');
   }
 
-  updateDelivery(){
-
-  }
-
-  updateDeliveryStatus(type:string){
-    switch(type){
-      case 'manual':
-        this.createManualCrossChecking();
-        break;
-      case 'fromFile':
-        this.createCrossCheckingFromFile();
-        break;
-    }
-  }
-
-  createManualCrossChecking(){
+  manualCrossChecking(){
     this.modal.create({
       title: 'Đối soát giao hàng thủ công',
       size:'xl',
-      content: ManualCrossCheckingModalComponent,
+      content: CrossCheckingStatusComponent,
       viewContainerRef: this.viewContainerRef
     });
   }
 
-  createCrossCheckingFromFile(){
+  updateShipStatusDelivery(){
     this.modal.create({
       title: 'Đối soát giao hàng từ file',
       size:'xl',
-      content: FormFileCrossCheckingModalComponent,
+      content: ShipStatusDeliveryComponent,
       viewContainerRef: this.viewContainerRef
     });
   }
+
+  updateDelivery() {}
 
   showHistoryDS(){
     this.router.navigateByUrl('bill/historyds/list');
@@ -261,7 +246,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         title: 'Hủy vận đơn',
         content: 'Bạn có muốn hủy vận đơn',
         onOk: () => {
-          that.fastSaleOrderService.cancelShipIds({ ids: that.idsModel }).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+            that.fastSaleOrderService.cancelShipIds({ ids: that.idsModel }).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
             that.message.success('Hủy vận đơn thành công!');
             that.isProcessing = false;
           }, error => {
@@ -315,7 +300,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         title: 'Xóa hóa đơn',
         content: 'Bạn có muốn xóa hóa đơn',
         onOk: () => {
-          that.fastSaleOrderService.unLink({ ids: that.idsModel }).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+            that.fastSaleOrderService.unLink({ ids: that.idsModel }).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
             that.message.success('Xóa hóa đơn thành công!');
             that.isProcessing = false;
           }, error => {
@@ -326,7 +311,6 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         onCancel: () => { that.isProcessing = false; },
         okText: "Xác nhận",
         cancelText: "Đóng",
-        // confirmViewType:"compact"
       });
     }
   }

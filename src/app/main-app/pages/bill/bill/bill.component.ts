@@ -17,13 +17,14 @@ import { THelperCacheService } from 'src/app/lib';
 import { ColumnTableDTO } from '../components/config-column/config-column.component';
 import { Router } from '@angular/router';
 import { fromEvent, Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, finalize, map, switchMap, takeUntil } from 'rxjs/operators';
+import { debounceTime, finalize, map, switchMap, takeUntil } from 'rxjs/operators';
 import { FastSaleOrderDTO, FastSaleOrderSummaryStatusDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSTableQueryParams } from 'tds-ui/table';
+import { ShipCodeDeliveryComponent } from '../components/ship-code-delivery/ship-code-delivery.component';
 
 @Component({
   selector: 'app-bill',
@@ -121,14 +122,14 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       private tagService: TagService,
       private router: Router,
       private modal: TDSModalService,
+      private viewContainerRef: ViewContainerRef,
       private cacheApi: THelperCacheService,
       private message: TDSMessageService,
       private fastSaleOrderService :FastSaleOrderService,
       private resizeObserver: TDSResizeObserver,
       private partnerService: PartnerService,
       private crmTeamService: CRMTeamService,
-      private crmMatchingService: CRMMatchingService,
-      private viewContainerRef: ViewContainerRef) {
+      private crmMatchingService: CRMMatchingService) {
   }
 
   ngOnInit(): void {
@@ -252,19 +253,6 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.tagService.getByType(type).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
         this.lstTags = res.value;
     })
-  }
-
-  exportExcel(type:string){
-    switch(type){
-      case 'excel':
-
-        let model = {
-          ids: [],
-          data: {
-
-          }
-        }
-    }
   }
 
   onSelectChange(Index: TDSSafeAny) {
@@ -577,6 +565,14 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
           messageType: GenerateMessageTypeEnum.Bill
         }
       });
+    }
+  updateShipCodeDelivery() {
+    this.modal.create({
+      title: 'Cập nhật mã vận đơn từ file',
+      size:'xl',
+      content: ShipCodeDeliveryComponent,
+      viewContainerRef: this.viewContainerRef
+    });
   }
 
   ngOnDestroy(): void {
