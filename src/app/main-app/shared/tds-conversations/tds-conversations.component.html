@@ -252,7 +252,7 @@
                 </ng-template>
             </div>
             <div class="flex-auto flex gap-2.5 ">
-                <div *ngFor="let item of data.tags | slice:0:6" (click)="onRemoveTag(item)" class="relative group text-caption-2 flex items-center max-w-[96px] truncate">
+                <div *ngFor="let item of data.tags | slice:0:4" (click)="onRemoveTag(item)" class="relative group text-caption-2 flex items-center max-w-[156px] truncate">
                     <div class="cursor-pointer w-full px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
                         [ngStyle]="{'background-color': [item.color_class]}">
                         {{item.name}}
@@ -262,14 +262,14 @@
                         Gỡ nhãn
                     </button>
                 </div>
-                <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded cursor-pointer" *ngIf="data.tags && data.tags.length - 6 > 0" tds-popover
+                <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded cursor-pointer" *ngIf="data.tags && data.tags.length - 4 > 0" tds-popover
                     [popoverContent]="popoverContentTag"
                     popoverPlacement="topRight">
-                    +{{data.tags.length - 6}}
+                    +{{data.tags.length - 4}}
                 </div>
                 <ng-template #popoverContentTag>
                     <div class="flex gap-1 flex-wrap items-center max-w-[336px]">
-                        <div *ngFor="let tag of data.tags |  slice:6:data.tags.length" (click)="onRemoveTag(tag)" class="relative group flex items-center text-caption-2 font-regular text-neutral-1-900 rounded truncate">
+                        <div *ngFor="let tag of data.tags |  slice:4:data.tags.length" (click)="onRemoveTag(tag)" class="relative group flex items-center text-caption-2 font-regular text-neutral-1-900 rounded truncate">
                             <div class="cursor-pointer w-full px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
                             [ngStyle]="{'background-color': [tag.color_class]}">
                             {{tag.name}}
