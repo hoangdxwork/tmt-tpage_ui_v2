@@ -26,6 +26,7 @@ import { TDSModalService } from 'tds-ui/modal';
 export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
+
   @HostBinding("@eventFadeState") eventAnimation = true;
   @HostBinding("@openCollapse") eventAnimationCollap = false;
   @ViewChild('conversationSearchInput') innerText!: ElementRef;
@@ -74,18 +75,18 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   ngOnInit(): void {
     // TODO: change team tds header
     this.crmService.changeTeamFromLayout.pipe(takeUntil(this.destroy$)).subscribe((team) => {
-        this.onClickTeam(team);
+      this.onClickTeam(team);
     })
 
     // TODO: change team in component
     this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe(([team, params]: any) => {
       if (!TDSHelperObject.hasValue(team)) {
-          return this.onRedirect();
+        return this.onRedirect();
       }
       // TODO: change Team
       if(team.Id != this.currentTeam?.Id) {
-          this.fetchLiveConversations(team);
-          this.setCurrentTeam(team);
+        this.fetchLiveConversations(team);
+        this.setCurrentTeam(team);
       }
 
       this.type = params?.params?.type;
@@ -95,7 +96,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         || (!TDSHelperString.isString(this.activeCvsItem?.psid) && !TDSHelperString.isString(this.paramsUrl?.psid));
 
       if(exist){
-          this.onChangeConversation(team);
+        this.onChangeConversation(team);
       }
     });
 
@@ -206,30 +207,27 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       this.isProcessing = true;
       if (this.queryFilter) {
         this.conversationDataFacade.nextDataWithQuery(this.currentTeam?.Facebook_PageId, this.type, this.queryFilter)
-          .pipe(takeUntil(this.destroy$))
-          .pipe(finalize(() => { this.isProcessing = false; this.cdRef.detectChanges() }))
+          .pipe(takeUntil(this.destroy$)).pipe(finalize(() => { this.isProcessing = false; this.cdRef.detectChanges() }))
           .subscribe(data => {
-            if(data == false) {
-              this.isProcessing = true;
-              return;
-            }
-            if(TDSHelperArray.hasListValue(data?.items)) {
-              this.lstMatchingItem = [...data.items];
-            }
+              if(data == false) {
+                this.isProcessing = true;
+                return;
+              }
+              if(TDSHelperArray.hasListValue(data?.items)) {
+                this.lstMatchingItem = [...data.items];
+              }
           })
       } else {
         this.conversationDataFacade.nextData(this.currentTeam?.Facebook_PageId, this.type)
-          .pipe(takeUntil(this.destroy$))
-          .pipe(finalize(() => { this.isProcessing = false; this.cdRef.detectChanges() }))
+          .pipe(takeUntil(this.destroy$)).pipe(finalize(() => { this.isProcessing = false; this.cdRef.detectChanges() }))
           .subscribe(data => {
-            if(data == false) {
-              this.isProcessing = true;
-              return;
-            }
-            if(TDSHelperArray.hasListValue(data?.items)) {
-              this.lstMatchingItem = [...data.items];
-            }
-            ;
+              if(data == false) {
+                this.isProcessing = true;
+                return;
+              }
+              if(TDSHelperArray.hasListValue(data?.items)) {
+                this.lstMatchingItem = [...data.items];
+              }
           })
       }
     }
@@ -254,9 +252,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       if (this.currentTeam) {
         this.facebookRESTService.rescan(this.currentTeam.Facebook_PageId, 2)
           .pipe(takeUntil(this.destroy$)).subscribe(res => {
-          // console.log("Yêu cầu cập nhật thành công.");
+          console.log("Yêu cầu cập nhật thành công.");
         }, error => {
-          // console.log("Yêu cầu cập nhật thất bại.");
+          console.log("Yêu cầu cập nhật thất bại.");
         });
       }
     } else {
@@ -266,10 +264,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     setTimeout(() => {
       this.clickReload = 0;
     }, 3 * 1000);
-  }
-
-  onLoadMiniChat(event: any): void {
-
   }
 
   fetchLiveConversations(team: CRMTeamDTO): void {
@@ -324,19 +318,19 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       return;
     }
     this.isProcessing = true
-    let user_ids = "";
+    let userIds = "";
     lstCheck.forEach((x,i)=>{
       if(i == lstCheck.length - 1) {
-        user_ids += x.toString();
+        userIds += x.toString();
       }
       else {
-        user_ids += x.toString() + ",";
+        userIds += x.toString() + ",";
       }
     })
     if(lstCheck.length > 0) {
-      this.printerService.printUrl(`/fastsaleorder/PrintCRMMatching?pageId=${this.currentTeam.Facebook_PageId}&psids=${user_ids.toString()}`)
-      .pipe(takeUntil(this.destroy$), finalize(()=>this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
-        that.printerService.printHtml(res);
+      this.printerService.printUrl(`/fastsaleorder/PrintCRMMatching?pageId=${this.currentTeam.Facebook_PageId}&psids=${userIds.toString()}`)
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
+          that.printerService.printHtml(res);
     })}
   }
 
@@ -394,7 +388,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       this.isRefreshing = true;
       this.dataSource$ = this.conversationDataFacade.makeDataSource(this.currentTeam.Facebook_PageId, this.type).pipe(finalize(()=>{ setTimeout(() => {
         this.isRefreshing = false;
-      }, 500);}));
+      }, 500)}));
     } else {
       this.dataSource$ = this.conversationDataFacade.makeDataSourceWithQuery(this.currentTeam.Facebook_PageId, this.type, queryObj).pipe(map((res => {
         if (res && res.items) {

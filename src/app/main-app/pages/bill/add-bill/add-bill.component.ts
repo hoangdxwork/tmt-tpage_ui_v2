@@ -270,12 +270,14 @@ export class AddBillComponent implements OnInit, OnDestroy {
       }
 
       if (data.Ship_ServiceExtras && data.Ship_ServiceExtras.length > 0) {
-        for (var item of data.Ship_ServiceExtras) {
-          var exits = ((item.Id == '16' || item.Id == "GBH" || item.Id == "GHN" || item.Id == "OrderAmountEvaluation" &&
+        for (let item of data.Ship_ServiceExtras) {
+
+          let exits = ((item.Id == '16' || item.Id == "GBH" || item.Id == "GHN" || item.Id == "OrderAmountEvaluation" &&
             data.Carrier?.DeliveryType === "MyVNPost" || item.Id === "NinjaVan"))
           if (exits) {
             this.enableInsuranceFee = true;
           }
+
           this.shipExtraServices.push({
             ServiceId: item.Id,
             ServiceName: item.Name,
@@ -655,7 +657,8 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
     if (model.Carrier && model.Carrier.DeliveryType == 'BEST' && model.Ship_Extras) {
       this.shipExtraServices = [];
-      var insuranceFee = this.getInsuranceFee();
+      let insuranceFee = this.getInsuranceFee();
+
       this.shipExtraServices.push({
         ServiceId: "BEST_Insurance",
         ServiceName: "Bảo hiểm hàng hóa",
@@ -669,6 +672,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     if (model.Carrier && model.Carrier.DeliveryType == 'HolaShip' && model.Ship_Extras) {
       this.shipExtraServices = [];
       let insuranceFee = this.getInsuranceFee();
+
       this.shipExtraServices.push({
         ServiceId: "HolaShip_Insurance",
         ServiceName: "Bảo hiểm hàng hóa",
@@ -877,7 +881,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.isCalcFee = true;
     this.fastSaleOrderService.calculateListFee({ model: model }).subscribe((res: any) => {
       this.lstCalcFee = res.value;
-      var exits = this.lstCalcFee.filter((x: CalculatorListFeeDTO) => x.CarrierId === model.Carrier?.Id)[0];
+      let exits = this.lstCalcFee.filter((x: CalculatorListFeeDTO) => x.CarrierId === model.Carrier?.Id)[0];
       if (exits) {
         this.setCarrier(exits);
       }
@@ -1048,7 +1052,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
         model.Ship_Extras.ServiceCustoms.forEach((x: any) => {
           let check = this.shipExtraServices.find((a: any) => a.ServiceId == x.ServiceId);
           if (!check) {
-            var service = {
+            let service = {
               ServiceId: x.ServiceId,
               ServiceName: x.Name,
               Fee: 0,
@@ -1069,7 +1073,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       this.listServiceTemp = [];
 
       temps.map((x: TDSSafeAny) => {
-        var exist = this.shipExtraServices.filter((s: any) => s.ServiceId === x.ServiceId)[0];
+        let exist = this.shipExtraServices.filter((s: any) => s.ServiceId === x.ServiceId)[0];
         if (exist) {
           exist.IsSelected = x.IsSelected;
           //check cấu hình thu tiền xem hàng mặc định
@@ -1218,7 +1222,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.calculateFee(model).then((res: any) => {
       if (res?.Costs) {
         res.Costs.map((x: any) => {
-          var exist = this.shipExtraServices.filter((x: any) => x.ServiceId === x.ServiceId)[0];
+          let exist = this.shipExtraServices.filter((x: any) => x.ServiceId === x.ServiceId)[0];
           if (exist) {
             exist.Fee = x.TotalFee;
           }

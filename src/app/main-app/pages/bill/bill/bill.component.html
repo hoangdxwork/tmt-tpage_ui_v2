@@ -5,10 +5,10 @@
         <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Phiếu bán hàng</span>
       </h1>
       <div class="flex gap-x-2">
-        <button tds-button color="secondary">
-          <span class="flex items-center">
-            <i class="tdsi-upload-fill text-lg leading-none text-neutral-1-500 mr-2"></i>Mã vận đơn từ file
-          </span>
+        <button tds-button color="secondary" (click)="updateShipCodeDelivery()">
+            <span class="flex items-center">
+              <i class="tdsi-upload-fill text-lg leading-none text-neutral-1-500 mr-2"></i>Mã vận đơn từ file
+            </span>
         </button>
         <action-dropdown [type]="'all'" [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]></action-dropdown>
       </div>

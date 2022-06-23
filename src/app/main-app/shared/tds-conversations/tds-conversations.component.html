@@ -285,90 +285,90 @@
         </div>
         <!-- editer+toolbars -->
         <tds-spin [spinning]="isLoadingImage">
-        <div class="flex flex-col w-full px-4 bg-white rounded-xl relative">
-            <div [ngClass]="isLoadingSendMess?'!cursor-wait':'hidden'" class="absolute top-0 left-0 z-10 w-full h-full opacity-100">
-            </div>
-            <!-- upload-wall -->
-            <div [ngClass]="uploadedImages.length>0?'translate-y-0 py-4 border-b':'translate-y-full h-0 '"
-                class=" border-neutral-2-300 ease-in-out duration-300 max-h-40 overflow-hidden flex">
-                <div class="overflow-hidden overflow-y-auto tds-custom-scroll flex justify-between w-full h-full">
-                    <upload-pictures-wall
-                    [isArray]="true"
-                    [data]="uploadedImages"
-                    (onLoadImage)="onLoadImage($event)">
-                    </upload-pictures-wall>
-                    <div class="p-1">
-                        <button tds-button-icon color="secondary" size="sm" class="!rounded-full" (click)="closeImages()">
-                            <span class="flex items-center">
-                                <i class="tdsi-close-fill"></i>
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="w-full pt-4 flex flex-row">
-                <textarea tdsInput [placeholder]="isEnterSend?'Nhập nội dung tin nhắn, nhấn [Enter] để gửi':'Nhập nội dung tin nhắn'"
-                    [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
-                    (keydown.enter)="onEnter($event)" class="h-16 resize-none !p-0 !m-0 no-scrollbar">
-                </textarea>
-                <div>
-                    <button tds-button type="button" color="primary" class="!rounded-full ml-2" [size]="'lg'"(click)="onClickSender()">
-                        <span class="flex items-center px-6">
-                            <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
-                        </span>
-                    </button>
-                </div>
-            </div>
-            <!-- toolbar -->
-            <div class="w-full flex items-center gap-x-1 pb-2">
-                <a class="p-2 hover:bg-neutral-3-50 rounded-md" type="button" (click)="sendIconLike()" tds-tooltip tooltipTitle="Like">
-                    <div class="tdsi-like-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
-                </a>
-                <a class="tdsi-emotion-line text-neutral-1-400 text-xl leading-none cursor-pointer p-2 hover:bg-neutral-3-50 rounded-md"
-                    type="button" tds-tooltip tooltipTitle="Cảm xúc"
-                    tds-popover popoverTrigger="click"
-                    [popoverContent]="infoEmojiMart"
-                    [popoverAutoClose]="true"
-                    [popoverBackdrop]="true"
-                    popoverPlacement="top">
-                    <ng-template #infoEmojiMart>
-                        <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
-                    </ng-template>
-                </a>
-                <tds-upload
-                    (uploadChange)="handleChange($event)"
-                    listType="picture"
-                    [customRequest]="handleUpload"
-                    [showUploadList]="false">
-                    <a type="button" tds-tooltip tooltipTitle="Gửi ảnh"
-                    [ngClass]="displayDropZone?'absolute w-full h-full inset-0 bg-white border-dashed border-2 border-primary-1 rounded-xl z-50 flex justify-center items-center':''"
-                    class="p-2 hover:bg-neutral-3-50 rounded-md" title="Hình ảnh">
-                        <div *ngIf="!displayDropZone; else dropZone"
-                        class="tdsi-image-line text-neutral-1-400 text-xl leading-none cursor-pointer">
-                        </div>
-                        <ng-template #dropZone>
-                            <div class="flex flex-col gap-y-2.5 items-center">
-                                <span class="text-header-1 text-primary-1 font-semibold">Xem trước khi gửi</span>
-                                <span class="text-body-1 text-neutral-1-500">Thả ảnh vào đây để xem trước khi gửi</span>
-                            </div>
-                        </ng-template>
+          <div class="flex flex-col w-full px-4 bg-white rounded-xl relative">
+              <div [ngClass]="isLoadingSendMess?'!cursor-wait':'hidden'" class="absolute top-0 left-0 z-10 w-full h-full opacity-100">
+              </div>
+              <!-- upload-wall -->
+              <div [ngClass]="uploadedImages.length>0?'translate-y-0 py-4 border-b':'translate-y-full h-0 '"
+                  class=" border-neutral-2-300 ease-in-out duration-300 max-h-40 overflow-hidden flex">
+                  <div class="overflow-hidden overflow-y-auto tds-custom-scroll flex justify-between w-full h-full">
+                      <upload-pictures-wall
+                      [isArray]="true"
+                      [data]="uploadedImages"
+                      (onLoadImage)="onLoadImage($event)">
+                      </upload-pictures-wall>
+                      <div class="p-1">
+                          <button tds-button-icon color="secondary" size="sm" class="!rounded-full" (click)="closeImages()">
+                              <span class="flex items-center">
+                                  <i class="tdsi-close-fill"></i>
+                              </span>
+                          </button>
+                      </div>
+                  </div>
+              </div>
+              <div class="w-full pt-4 flex flex-row">
+                  <textarea tdsInput [placeholder]="isEnterSend?'Nhập nội dung tin nhắn, nhấn [Enter] để gửi':'Nhập nội dung tin nhắn'"
+                      [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
+                      (keydown.enter)="onEnter($event)" class="h-16 resize-none !p-0 !m-0 no-scrollbar">
+                  </textarea>
+                  <div>
+                      <button tds-button type="button" color="primary" class="!rounded-full ml-2" [size]="'lg'"(click)="onClickSender()">
+                          <span class="flex items-center px-6">
+                              <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
+                          </span>
+                      </button>
+                  </div>
+              </div>
+              <!-- toolbar -->
+              <div class="w-full flex items-center gap-x-1 pb-2">
+                  <a class="p-2 hover:bg-neutral-3-50 rounded-md" type="button" (click)="sendIconLike()" tds-tooltip tooltipTitle="Like">
+                      <div class="tdsi-like-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
                   </a>
-                </tds-upload>
+                  <a class="tdsi-emotion-line text-neutral-1-400 text-xl leading-none cursor-pointer p-2 hover:bg-neutral-3-50 rounded-md"
+                      type="button" tds-tooltip tooltipTitle="Cảm xúc"
+                      tds-popover popoverTrigger="click"
+                      [popoverContent]="infoEmojiMart"
+                      [popoverAutoClose]="true"
+                      [popoverBackdrop]="true"
+                      popoverPlacement="top">
+                      <ng-template #infoEmojiMart>
+                          <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
+                      </ng-template>
+                  </a>
+                  <tds-upload
+                      (uploadChange)="handleChange($event)"
+                      listType="picture"
+                      [customRequest]="handleUpload"
+                      [showUploadList]="false">
+                      <a type="button" tds-tooltip tooltipTitle="Gửi ảnh"
+                      [ngClass]="displayDropZone?'absolute w-full h-full inset-0 bg-white border-dashed border-2 border-primary-1 rounded-xl z-50 flex justify-center items-center':''"
+                      class="p-2 hover:bg-neutral-3-50 rounded-md" title="Hình ảnh">
+                          <div *ngIf="!displayDropZone; else dropZone"
+                          class="tdsi-image-line text-neutral-1-400 text-xl leading-none cursor-pointer">
+                          </div>
+                          <ng-template #dropZone>
+                              <div class="flex flex-col gap-y-2.5 items-center">
+                                  <span class="text-header-1 text-primary-1 font-semibold">Xem trước khi gửi</span>
+                                  <span class="text-body-1 text-neutral-1-500">Thả ảnh vào đây để xem trước khi gửi</span>
+                              </div>
+                          </ng-template>
+                    </a>
+                  </tds-upload>
 
-                <div class="p-2 hover:bg-neutral-3-50 rounded-md" (click)="onProductsbypageFb()"  tds-tooltip tooltipTitle="Sản phẩm">
-                    <div class="tdsi-product-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
-                </div>
-                <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Tin nhắn nhanh">
-                    <quick-reply-button (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
-                </div>
-                <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Đơn hàng" (click)="showModalListBill()">
-                    <div class="tdsi-file-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
-                </div>
-                <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Thư viện ảnh" (click)="showImageStore()">
-                    <div class="tdsi-images-2-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
-                </div>
-            </div>
-        </div>
+                  <div class="p-2 hover:bg-neutral-3-50 rounded-md" (click)="onProductsbypageFb()"  tds-tooltip tooltipTitle="Sản phẩm">
+                      <div class="tdsi-product-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
+                  </div>
+                  <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Tin nhắn nhanh">
+                      <quick-reply-button (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
+                  </div>
+                  <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Đơn hàng" (click)="showModalListBill()">
+                      <div class="tdsi-file-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
+                  </div>
+                  <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Thư viện ảnh" (click)="showImageStore()">
+                      <div class="tdsi-images-2-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
+                  </div>
+              </div>
+          </div>
         </tds-spin>
     </div>
 </section>

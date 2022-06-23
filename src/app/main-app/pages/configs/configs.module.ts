@@ -99,7 +99,7 @@ import { TDSDatePickerModule } from 'tds-ui/date-picker';
 import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
 import { TDSTimePickerModule } from 'tds-ui/time-picker';
 import { TDSFilterStatusModule } from 'tds-ui/filter-status';
-// import { TDSEditorModule } from 'tds-editor';
+import { TDSEditorModule } from 'tds-editor';
 
 const SERVICES = [
     OdataCRMTagService,
@@ -208,7 +208,7 @@ const SERVICES = [
     PipeModule,
     TDSFilterStatusModule,
     UploadImageModule,
-    // TDSEditorModule
+    TDSEditorModule
   ],
   providers:[
     ...SERVICES

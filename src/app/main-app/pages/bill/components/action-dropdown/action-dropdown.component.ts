@@ -1,5 +1,5 @@
-import { FormFileCrossCheckingModalComponent } from './../form-file-cross-checking-modal/form-file-cross-checking-modal.component';
-import { ManualCrossCheckingModalComponent } from './../manual-cross-checking-modal/manual-cross-checking-modal.component';
+
+import { CrossCheckingStatusComponent } from '../cross-checking-status/cross-checking-status.component';
 import { ModalSendMessageComponent } from './../../../partner/components/modal-send-message/modal-send-message.component';
 import { Component, Input, OnDestroy, OnInit, ViewContainerRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -15,6 +15,7 @@ import { SendDeliveryComponent } from "../send-delivery/send-delivery.component"
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
+import { ShipStatusDeliveryComponent } from '../ship-status-delivery/ship-status-delivery.component';
 
 @Component({
   selector: 'action-dropdown',
@@ -151,37 +152,25 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('bill/create');
   }
 
-  updateDelivery(){
-  }
-
-  updateDeliveryStatus(type:string){
-    switch(type){
-      case 'manual':
-        this.createManualCrossChecking();
-        break;
-      case 'fromFile':
-        this.createCrossCheckingFromFile();
-        break;
-    }
-  }
-
-  createManualCrossChecking(){
+  manualCrossChecking(){
     this.modal.create({
       title: 'Đối soát giao hàng thủ công',
       size:'xl',
-      content: ManualCrossCheckingModalComponent,
+      content: CrossCheckingStatusComponent,
       viewContainerRef: this.viewContainerRef
     });
   }
 
-  createCrossCheckingFromFile(){
+  updateShipStatusDelivery(){
     this.modal.create({
       title: 'Đối soát giao hàng từ file',
       size:'xl',
-      content: FormFileCrossCheckingModalComponent,
+      content: ShipStatusDeliveryComponent,
       viewContainerRef: this.viewContainerRef
     });
   }
+
+  updateDelivery() {}
 
   showHistoryDS(){
     this.router.navigateByUrl('bill/historyds/list');

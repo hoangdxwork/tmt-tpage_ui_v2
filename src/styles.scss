@@ -3,20 +3,21 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
 @import "../node_modules/tds-ui/assets/scss/cdk";
 @import "../node_modules/tds-ui/assets/scss/scroll";
 @import "../node_modules/tds-ui/assets/scss/table.scss";
 
 @import "../node_modules/tds-ui/assets/scss/carousel.scss";
 
-// @import "../node_modules/tds-editor/assets/tinymce/tdsskin";
-// @import "../node_modules/tds-editor/assets/tinymce/tdscontent";
-// @import "../node_modules/tds-editor/assets/tinymce/tdscontent";
+@import "../node_modules/tds-editor/assets/tdsskin.scss";
+@import "../node_modules/tds-editor/assets/tdscontent.scss";
 
 @import "./assets/font-icon/style.css";
 @import "./assets/scss/table-custom.scss";
 @import "./assets/scss/collapse-custom.scss";
 @import "./assets/scss/notification.scss";
+@import "./assets/scss/emojiMart.scss";
 
 body {
     overflow: hidden;

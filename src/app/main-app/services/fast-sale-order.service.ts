@@ -408,12 +408,39 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
-  listUpdateDeposit(data: ListUpdateDepositDTO): Observable<undefined> {
+  listUpdateDeposit(data: ListUpdateDepositDTO): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/fastsaleorder/listupdatedeposit`,
       method: TApiMethodType.post
     }
 
-    return this.apiService.getData<undefined>(api, data);
+    return this.apiService.getData<any>(api, data);
   }
+
+  urlSampleShipCodeExcel(): any {
+    let url = `${this._BASE_URL}/Content/files/template_excels/vi/template_update_trackingcode_delivery.xlsx?v2`;
+    return url;
+  }
+
+  urlSampleShipStatusDelivery () {
+    let url = `${this._BASE_URL}/Content/files/template_excels/vi/template_update_delivery_status.xlsx?v2`;
+    return url;
+  }
+
+  updateShipCodeExcel(data: any): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdateShipCodeExcel`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<any>(api, data);
+  }
+
+  updateExistShipCode(data: any): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdateExistShipCode`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<any>(api, data);
+  }
+
 }

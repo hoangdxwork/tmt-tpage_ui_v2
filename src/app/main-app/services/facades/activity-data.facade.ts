@@ -686,6 +686,7 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
           if(res && TDSHelperArray.isArray(res.Items)) {
             res.Items = res.Items.sort((a: any, b: any) => Date.parse(a.DateCreated) - Date.parse(b.DateCreated));
           }
+
           let value = this.createType(res, query);
           this.activityFbState.setExtras(pageId, psid, value.extras);
 

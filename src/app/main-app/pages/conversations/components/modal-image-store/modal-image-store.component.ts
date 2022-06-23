@@ -7,7 +7,7 @@ import { SharedService } from 'src/app/main-app/services/shared.service';
 import { MDBAttachmentDTO, MDBCollectionDTO } from 'src/app/main-app/dto/attachment/attachment.dto';
 import { PagedList2 } from 'src/app/main-app/dto/pagedlist2.dto';
 import { AttachmentDataFacade } from 'src/app/main-app/services/facades/attachment-data.facade';
-import { AttachmentService } from 'src/app/main-app/services/attachment.server';
+import { AttachmentService } from 'src/app/main-app/services/attachment.service';
 import { ModalAddCollectionComponent } from '../modal-add-collection/modal-add-collection.component';
 import { ModalAddAttachmentCollectionComponent } from '../modal-add-attachment-collection/modal-add-attachment-collection.component';
 import { ModalListCollectionComponent } from '../modal-list-collection/modal-list-collection.component';

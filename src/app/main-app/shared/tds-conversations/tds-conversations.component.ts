@@ -139,14 +139,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.loadUser();
 
     // TODO: Nội dung tin nhắn
-    this.dataSource$ = this.loadMessages(data);
-    this.yiAutoScroll?.forceScrollDown();
+    this.loadMessages(data);
   }
 
   //TODO: data.id = data.psid
-  loadMessages(data: ConversationMatchingItem): any {
+  loadMessages(data: ConversationMatchingItem) {
     this.isLoadMessage = true;
-    return this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type);
+    this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type);
+    this.yiAutoScroll?.forceScrollDown();
   }
 
   loadUser() {
@@ -174,26 +174,24 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   private markSeen() {
     let userLoggedId = this.sharedService.userLogged?.Id || null;
     this.crmMatchingService.markSeen(this.team.Facebook_PageId, this.data.psid, this.type, userLoggedId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((x: any) => {
-        switch (this.type) {
-          case "message":
-            this.sharedService.updateMinusConversationMessage(this.data.count_unread_messages);
-            this.sharedService.updateMinusConversationAll(this.data.count_unread_messages);
-            break;
-          case "comment":
-            this.sharedService.updateMinusConversationComment(this.data.count_unread_comments);
-            this.sharedService.updateMinusConversationPost(this.data.count_unread_comments);
-            this.sharedService.updateMinusConversationAll(this.data.count_unread_comments);
-            break;
-          default:
-            this.sharedService.updateMinusConversationMessage(this.data.count_unread_messages);
-            this.sharedService.updateMinusConversationComment(this.data.count_unread_comments);
-            this.sharedService.updateMinusConversationPost(this.data.count_unread_comments);
-            this.sharedService.updateMinusConversationAll(this.data.count_unread_activities);
-            break;
-        }
-
+      .pipe(takeUntil(this.destroy$)).subscribe((x: any) => {
+        // switch (this.type) {
+        //   case "message":
+        //     this.sharedService.updateMinusConversationMessage(this.data.count_unread_messages);
+        //     this.sharedService.updateMinusConversationAll(this.data.count_unread_messages);
+        //     break;
+        //   case "comment":
+        //     this.sharedService.updateMinusConversationComment(this.data.count_unread_comments);
+        //     this.sharedService.updateMinusConversationPost(this.data.count_unread_comments);
+        //     this.sharedService.updateMinusConversationAll(this.data.count_unread_comments);
+        //     break;
+        //   default:
+        //     this.sharedService.updateMinusConversationMessage(this.data.count_unread_messages);
+        //     this.sharedService.updateMinusConversationComment(this.data.count_unread_comments);
+        //     this.sharedService.updateMinusConversationPost(this.data.count_unread_comments);
+        //     this.sharedService.updateMinusConversationAll(this.data.count_unread_activities);
+        //     break;
+        // }
         // Cập nhật count_unread
         this.conversationEventFacade.updateMarkSeenBadge(this.data.page_id, this.type, this.data.psid);
         this.cdRef.markForCheck();
@@ -306,10 +304,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   validateData() {
     delete this.messageModel;
-    this.tags = [];
     (this.dataSource$ as any) = null;
     this.isNextData = false;
     this.isLoadMessage = false;
+    this.uploadedImages = [];
+    this.tags = [];
   }
 
   loadPrevMessages(): any {
@@ -740,16 +739,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   refreshRead() {
     this.validateData();
-    this.isNextData = false;
-    this.isLoadMessage = false;
-    this.uploadedImages = [];
-
-    this.dataSource$ = this.loadMessages(this.data);
-    this.yiAutoScroll?.forceScrollDown();
+    this.loadMessages(this.data);
   }
 
   ngAfterViewInit() {
-      this.yiAutoScroll?.forceScrollDown();
+    this.yiAutoScroll?.forceScrollDown();
   }
 
   ngOnDestroy(): void {
