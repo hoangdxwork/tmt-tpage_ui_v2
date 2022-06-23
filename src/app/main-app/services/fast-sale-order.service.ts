@@ -1,3 +1,4 @@
+import { GenerateMessageDTO } from './../dto/conversation/inner.dto';
 import { EventEmitter, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
@@ -418,6 +419,14 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
+  generateMessages(data: GenerateMessageDTO): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GenerateMessages?$expand=CRMTeam`,
+      method: TApiMethodType.post
+    }
+
+    return this.apiService.getData<undefined>(api, data);
+  }
   urlSampleShipCodeExcel(): any {
     let url = `${this._BASE_URL}/Content/files/template_excels/vi/template_update_trackingcode_delivery.xlsx?v2`;
     return url;

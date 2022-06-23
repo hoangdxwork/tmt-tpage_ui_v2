@@ -87,10 +87,11 @@ export interface ObjectDataDTO {
 }
 
 export interface GenerateMessageDTO {
-  orderIds?: Array<string>;
-  saleIds?: Array<number>;
-  fromList?: Array<GenerateMessageFromDTO>;
-  template?: MailTemplateDTO;
+  OrderIds?: Array<string>;
+  SaleIds?: Array<number>;
+  FromList?: Array<GenerateMessageFromDTO>;
+  Template?: MailTemplateDTO;
+  model?: GenerateMessageDTO;
 }
 
 export interface GenerateMessageFromDTO {

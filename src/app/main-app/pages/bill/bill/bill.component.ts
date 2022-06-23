@@ -1,3 +1,5 @@
+import { GenerateMessageTypeEnum } from './../../../dto/conversation/message.dto';
+import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
 import { CRMMatchingService } from './../../../services/crm-matching.service';
 import { CRMTeamService } from './../../../services/crm-team.service';
@@ -551,6 +553,19 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isOpenDrawer = false;
   }
 
+  showMessageModal(orderMessage: TDSSafeAny){
+      this.modal.create({
+        title: 'Gửi tin nhắn Facebook',
+        size:'lg',
+        content: SendMessageComponent,
+        centered: true,
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          selectedUsers: [orderMessage.Id],
+          messageType: GenerateMessageTypeEnum.Bill
+        }
+      });
+    }
   updateShipCodeDelivery() {
     this.modal.create({
       title: 'Cập nhật mã vận đơn từ file',
