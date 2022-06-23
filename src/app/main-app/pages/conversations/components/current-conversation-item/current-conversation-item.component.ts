@@ -32,10 +32,13 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges, Aft
   @Input() isOpenCollapCheck!: boolean;
   @Input() checked!: boolean;
   @Output() checkedChange = new EventEmitter<boolean>();
+
   // @ViewChild
   @ViewChild('currentWidthTag') currentWidthTag!:  ElementRef<TDSSafeAny>;
   @ViewChildren('widthTag') widthTag!: QueryList<ElementRef>;
+
   private destroy$ = new Subject<void>();
+
   eventData: any;
   isDraftMessage: boolean = false;
   isConversationOver: boolean = false;
@@ -46,6 +49,7 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges, Aft
   displayTag: number = 0;
   countHiddenTag = 0;
   countNgafterview = 0;
+
   constructor(private message: TDSMessageService,
       private draftMessageService: DraftMessageService,
       private conversationEventFacade: ConversationEventFacade,
@@ -56,6 +60,7 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges, Aft
       public element : ElementRef,
       private resizeObserver: TDSResizeObserver) {
   }
+
   ngOnDestroy(): void {
    this.destroy$.next();
    this.destroy$.complete();
@@ -89,7 +94,7 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges, Aft
   ngAfterViewInit(): void {
     this.resizeObserver
     .observe(this.element)
-    .pipe(takeUntil(this.destroy$))    
+    .pipe(takeUntil(this.destroy$))
     .subscribe(() => {
       this.totalWidthTag = this.currentWidthTag.nativeElement.clientWidth;
       this.onSetWidthTag();
