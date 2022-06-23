@@ -1,4 +1,6 @@
-import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, EventEmitter, ChangeDetectionStrategy, AfterViewChecked, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { distinctUntilChanged } from 'rxjs/operators';
+import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
+import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, EventEmitter, ChangeDetectionStrategy, AfterViewInit, ViewChildren, QueryList, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -7,15 +9,19 @@ import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationEventFacade } from 'src/app/main-app/services/facades/conversation-event.facade';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'current-conversation-item',
     templateUrl: './current-conversation-item.component.html',
     styleUrls: ['./current-conversation-item.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    host:{
+      'class':'block w-full'
+    }
 })
 
-export class CurrentConversationItemComponent  implements OnInit, OnChanges {
+export class CurrentConversationItemComponent  implements OnInit, OnChanges, AfterViewInit,OnDestroy {
 
   @Input() isFastSend: boolean | undefined;
   @Input() item!: ConversationMatchingItem;
@@ -26,18 +32,33 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges {
   @Input() isOpenCollapCheck!: boolean;
   @Input() checked!: boolean;
   @Output() checkedChange = new EventEmitter<boolean>();
-
+  // @ViewChild
+  @ViewChild('currentWidthTag') currentWidthTag!:  ElementRef<TDSSafeAny>;
+  @ViewChildren('widthTag') widthTag!: QueryList<ElementRef>;
+  private destroy$ = new Subject<void>();
   eventData: any;
   isDraftMessage: boolean = false;
   isConversationOver: boolean = false;
   isChoose!: TDSSafeAny;
-
+  totalWidthTag :number =0;
+  plusWidthTag: number = 0;
+  gapTag: number = 4;
+  displayTag: number = 0;
+  countHiddenTag = 0;
+  countNgafterview = 0;
   constructor(private message: TDSMessageService,
       private draftMessageService: DraftMessageService,
       private conversationEventFacade: ConversationEventFacade,
       public crmService: CRMTeamService,
       public activatedRoute: ActivatedRoute,
-      public router: Router) {
+      public router: Router,
+      public cdr:ChangeDetectorRef,
+      public element : ElementRef,
+      private resizeObserver: TDSResizeObserver) {
+  }
+  ngOnDestroy(): void {
+   this.destroy$.next();
+   this.destroy$.complete();
   }
 
   ngOnInit(): void {
@@ -55,12 +76,44 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges {
           this.isDraftMessage = res.isDraftMessage;
         }
       });
+      this.displayTag = this.item.tags.length;
     }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes["activeCvsItem"] && !changes["activeCvsItem"].firstChange) {
         this.activeCvsItem = changes["activeCvsItem"].currentValue;
+    }
+  }
+
+  ngAfterViewInit(): void {
+    this.resizeObserver
+    .observe(this.element)
+    .pipe(takeUntil(this.destroy$))    
+    .subscribe(() => {
+      this.totalWidthTag = this.currentWidthTag.nativeElement.clientWidth;
+      this.onSetWidthTag();
+    });
+  }
+
+  onSetWidthTag(){
+    this.countNgafterview += 1;
+    let widthItemPlush = 26;
+    if(this.plusWidthTag >= this.totalWidthTag - widthItemPlush){
+      widthItemPlush = 0
+    }
+    this.displayTag = 0;
+    this.plusWidthTag = 0;
+    this.widthTag.forEach(x=> {
+      if(this.plusWidthTag >= this.totalWidthTag - widthItemPlush){
+        return
+      }
+      this.displayTag += 1;
+      this.plusWidthTag = this.plusWidthTag + x.nativeElement?.offsetWidth + this.gapTag;
+    });
+    this.countHiddenTag = this.item.tags.length - this.displayTag;
+    if(this.countNgafterview > 1){
+      this.cdr.detectChanges();
     }
   }
 
