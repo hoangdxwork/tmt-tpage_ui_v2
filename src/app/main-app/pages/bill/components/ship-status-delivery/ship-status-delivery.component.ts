@@ -56,7 +56,7 @@ export class ShipStatusDeliveryComponent implements OnInit, OnDestroy {
   onSave(): any {
     let that = this;
     if(!TDSHelperString.hasValueString(that.base64textString)) {
-      return  that.message.error('Vui lòng chọn file');
+      return that.message.error('Vui lòng chọn file');
     }
 
     this.isLoading = true;
@@ -71,8 +71,7 @@ export class ShipStatusDeliveryComponent implements OnInit, OnDestroy {
     that.fastSaleOrderService.updateExistShipCode(model).pipe(takeUntil(this.destroy$))
       .pipe(finalize(() =>  this.isLoading = false ))
       .subscribe((res: any) => {
-    }, error => {
-    })
+    }, error => {})
   }
 
   onClose() {

@@ -15,7 +15,7 @@ import { THelperCacheService } from 'src/app/lib';
 import { ColumnTableDTO } from '../components/config-column/config-column.component';
 import { Router } from '@angular/router';
 import { fromEvent, Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, finalize, map, switchMap, takeUntil } from 'rxjs/operators';
+import { debounceTime, finalize, map, switchMap, takeUntil } from 'rxjs/operators';
 import { FastSaleOrderDTO, FastSaleOrderSummaryStatusDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';

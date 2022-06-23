@@ -164,7 +164,8 @@ const SERVICES = [
     TDSStepsModule,
     TDSButtonSpitModule,
     TDSConversationsModule,
-    UploadImageModule
+    UploadImageModule,
+    TDSInputNumberModule
   ],
   providers: [
    ...SERVICES,
