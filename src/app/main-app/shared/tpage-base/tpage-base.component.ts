@@ -31,9 +31,10 @@ export class TpageBaseComponent  {
   loadQueryParamMap(): Observable<any> {
     let that = this;
     return that.activatedRoute.queryParamMap.pipe(
+      tap((queryParamMap: TDSSafeAny) => { that._params = { ...queryParamMap?.params } }),
       mergeMap((params: TDSSafeAny) => {
         return that.crmService.onChangeListFaceBook()
-          .pipe(
+          .pipe(tap((listFb: TDSSafeAny) => {  that._listFaceBook = listFb?.Items || [] }),
           map((listTeam) => {
               const team = TPageHelperService.findTeamById(listTeam?.Items || [], that.paramsUrl?.teamId, false);
               return [team, params];
