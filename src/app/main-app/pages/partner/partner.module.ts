@@ -12,7 +12,7 @@ import { ModalSendMessageComponent } from './components/modal-send-message/modal
 import { ModalConvertPartnerComponent } from './components/modal-convert-partner/modal-convert-partner.component';
 import { ModalEditPartnerComponent } from './components/modal-edit-partner/modal-edit-partner.component';
 import { ModalAddAddressComponent } from './components/modal-add-address/modal-add-address.component';
-import { InfoOrderDebtOfPartnerComponent } from './components/info-order-debt-of-partner/info-order-debt-of-partner.component';
+import { ExpandPartnerDetailComponent } from './components/expand-partner-detail/expand-partner-detail.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -52,7 +52,7 @@ import { TDSButtonSpitModule } from 'tds-ui/buttton-split';
 import { TDSDrawerModule } from 'tds-ui/drawer';
 import { TDSFilterStatusModule } from 'tds-ui/filter-status';
 import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
-import { TDSMessageModule, TDSMessageService } from 'tds-ui/message';
+import { TDSMessageModule } from 'tds-ui/message';
 import { TDSNotificationModule } from 'tds-ui/notification';
 import { TDSAlertModule } from 'tds-ui/alert';
 import { TDSTypographyModule } from 'tds-ui/typography';
@@ -99,7 +99,7 @@ const SERVICES = [
 @NgModule({
   declarations: [
     PartnerComponent,
-    InfoOrderDebtOfPartnerComponent,
+    ExpandPartnerDetailComponent,
     ModalAddAddressComponent,
     ModalEditPartnerComponent,
     ModalConvertPartnerComponent,

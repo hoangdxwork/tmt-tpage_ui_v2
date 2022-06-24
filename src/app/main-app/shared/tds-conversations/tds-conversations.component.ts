@@ -137,12 +137,15 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   loadMessages(data: ConversationMatchingItem): any {
     this.isLoadMessage = true;
 
+    // Sử dụng ngZone chạy bất đồng bộ
     this.ngZone.run(() => {
       this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type);
+
       this.dataSource$.pipe(takeUntil(this.destroy$), finalize(() => {
           setTimeout(() => {
             this.isLoadMessage = false;
-          }, 250)
+          }, 250);
+
           this.conversationDataFacade.onLoadTdsConversation$.emit(false);
         })).subscribe(() => {}, error => {
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');

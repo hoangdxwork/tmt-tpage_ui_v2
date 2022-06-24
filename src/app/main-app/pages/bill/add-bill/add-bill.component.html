@@ -664,7 +664,7 @@
                                     <tds-date-picker formControlName="DateOrderRed"></tds-date-picker>
                                 </div>
                                 <div class="w-2/3" *ngIf="dataModel.State != 'draft'">
-                                    <span class="font-semibold">{{_form.controls['DateOrderRed'].value ? _form.controls['DateOrderRed'].value : 'N/A' | date:"dd-MM-yyyy HH:mm"}} </span>
+                                    <span class="font-semibold" *ngIf="_form.controls['DateOrderRed'].value">{{ _form.controls['DateOrderRed'].value | date:"dd-MM-yyyy HH:mm" }} </span>
                                 </div>
                             </div>
                             <div class=" col-span-1 flex gap-x-6 items-center">
@@ -679,6 +679,7 @@
                     </tds-tab>
                 </tds-tabset>
             </div>
+
             <!-- Danh sách sản phẩm -->
             <div class="flex gap-x-4 h-full"  *ngIf="dataModel && dataModel.State != 'draft'">
                 <div class="w-full h-full">

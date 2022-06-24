@@ -30,10 +30,10 @@ export class ModalAddAddressComponent implements OnInit {
   }
 
   onCancel() {
-      this.modal.destroy(null);
+    this.modal.destroy(null);
   }
 
-  onSave() {debugger
+  onSave() {
     this.modal.destroy(this.items);
   }
 

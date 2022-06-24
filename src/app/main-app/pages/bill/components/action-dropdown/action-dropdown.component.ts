@@ -408,15 +408,12 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
               dataModel: res
             }
           });
-        },
-        err => {
+        }, err => {
           this.message.error(err.error.message ?? 'Không tải được dữ liệu');
         }
       )
     }
   }
-
-  public selectedUsers: any[] = [];
 
   actionBatchRefund(): any {
     if (this.isProcessing) {
@@ -439,9 +436,9 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         return this.message.error('Chỉ gửi yêu cầu thanh toán với PBH có trạng thái đã xác nhận hoặc đã thanh toán');
       }
 
-      if(hasRefund){
-        return this.message.error('Danh sách đã chọn có hóa đơn đã được trả hàng');
-      }
+      // if(hasRefund){
+      //   return this.message.error('Danh sách đã chọn có hóa đơn đã được trả hàng');
+      // }
 
       this.modal.create({
         title: 'Trả hàng hàng loạt',
