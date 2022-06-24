@@ -71,8 +71,14 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
         Website: [null],
         TaxCode: [null],
         City: [null],
+        CityCode: [null],
+        CityName: [null],
         District: [null],
+        DistrictCode: [null],
+        DistrictName: [null],
         Ward: [null],
+        WardCode: [null],
+        WardName: [null],
         Customer: [null],
         PropertyProductPricelist: [0],
         Discount: [0],
@@ -252,25 +258,22 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     if(!TDSHelperString.hasValueString(model.Name)) {
         this.message.error('Vui lòng nhập tên khách hàng');
     }
+
     if(this.partnerId) {
       this.isLoading = true;
-      this.partnerService.update(this.partnerId, model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-          this.isLoading = false;
+      this.partnerService.update(this.partnerId, model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
           this.message.success('Cập nhật khách hàng thành công!');
           this.modal.destroy(this.partnerId);
       }, error => {
-          this.isLoading = false;
           this.message.error('Cập nhật khách hàng thất bại!');
           this.modal.destroy(null);
       })
     } else {
       this.isLoading = false;
-      this.partnerService.insert(model).subscribe((res: any) => {
-          this.isLoading = false;
+      this.partnerService.insert(model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
           this.message.success('Thêm mới khách hàng thành công!');
           this.modal.destroy(res.Id);
       }, error => {
-          this.isLoading = false;
           this.message.error('Thêm mới khách hàng thất bại!');
           this.modal.destroy(null);
       })
@@ -409,7 +412,46 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
   }
 
   selectItem(item: AddressesV2) {
-
+    if (item && item.CityCode) {
+      this._cities = {
+        code: item.CityCode,
+        name:item.CityName
+      }
+      this._form.controls['City'].patchValue({
+          code: item.CityCode,
+          name: item.CityName
+      });
+    }
+    if (item && item.DistrictCode) {
+      this._districts = {
+        cityCode: item.CityCode,
+        cityName: item.CityName,
+        code: item.DistrictCode,
+        name: item.DistrictName
+      }
+      this._form.controls['District'].patchValue({
+          code: item.DistrictCode,
+          name: item.DistrictName
+      });
+    }
+    if (item && item.WardCode) {
+      this._wards = {
+        cityCode: item.CityCode,
+        cityName: item.CityName,
+        districtCode: item.DistrictCode,
+        districtName: item.DistrictName,
+        code: item.WardCode,
+        name: item.WardName
+      }
+      this._form.controls['Ward'].patchValue({
+          code: item.WardCode,
+          name: item.WardName
+      });
+    }
+    if (item && (item.Street)) {
+      this._street = item.Street;
+      this._form.controls['Street'].setValue(item.Street);
+    }
   }
 
   ngOnDestroy(): void {

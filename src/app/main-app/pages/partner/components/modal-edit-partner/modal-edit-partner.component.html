@@ -244,17 +244,20 @@
                                           <td class="text-body-2">{{ data.Street }}</td>
                                           <td>
                                               <div class="flex gap-x-2">
-                                                  <button tds-button-icon type="button" color="secondary" size="sm" (click)="openItemAddresses(data, i)">
+                                                  <button tds-button-icon type="button" color="secondary" size="sm" (click)="openItemAddresses(data, i)"
+                                                  tds-tooltip tooltipTitle="Chỉnh sửa địa chỉ">
                                                       <span class="flex items-center">
                                                           <i class="tdsi-edit-fill"></i>
                                                       </span>
                                                   </button>
-                                                  <button tds-button-icon type="button" color="secondary" size="sm" (click)="selectItem(data)">
+                                                  <button tds-button-icon type="button" color="secondary" size="sm" (click)="selectItem(data)"
+                                                  tds-tooltip tooltipTitle="Chọn làm địa chỉ">
                                                       <span class="flex items-center">
                                                           <i class="tdsi-information-fill"></i>
                                                       </span>
                                                   </button>
-                                                  <button tds-button-icon type="button" color="secondary" size="sm" (click)="removeAddresses(i)">
+                                                  <button tds-button-icon type="button" color="secondary" size="sm" (click)="removeAddresses(i)"
+                                                  tds-tooltip tooltipTitle="Xóa địa chỉ">
                                                       <span class="flex items-center">
                                                           <i class="tdsi-trash-fill"></i>
                                                       </span>
