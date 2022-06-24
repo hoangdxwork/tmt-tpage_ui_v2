@@ -10,7 +10,7 @@ import { ActivityFacebookState } from "../facebook-state/activity-facebook.state
 import { CRMTeamService } from "../crm-team.service";
 import { FacebookPostService } from "../facebook-post.service";
 import { ActivityMatchingService } from "../conversation/activity-matching.service";
-import { finalize, map, shareReplay, takeUntil } from "rxjs/operators";
+import { catchError, finalize, map, shareReplay, takeUntil } from "rxjs/operators";
 import { CRMMessagesRequest, MakeActivityItemWebHook, MakeActivityMessagesDTO } from "../../dto/conversation/make-activity.dto";
 import { tr } from "date-fns/locale";
 import { TDSMessageService } from "tds-ui/message";
@@ -637,7 +637,7 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
   getTeamByPageId(pageId: any) {
     let team = {};
     this.lstTeam.forEach((x: any) => {
-      var items = x.Childs.filter((a: any) => {
+      let items = x.Childs.filter((a: any) => {
           if (a.Facebook_PageId == pageId) { return a }
       });
       if (items.length > 0) {
@@ -692,7 +692,7 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
 
           return this.activityFbState.setActivity(pageId, psid, type, value);
 
-      }), shareReplay({ bufferSize: 1, refCount: true }), takeUntil(this.destroy$));
+      }), shareReplay({ bufferSize: 1, refCount: true }));
     }
   }
 
