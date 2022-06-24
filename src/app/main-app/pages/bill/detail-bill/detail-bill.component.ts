@@ -79,13 +79,12 @@ export class DetailBillComponent implements OnInit, OnDestroy{
         }
         if (res.DateOrderRed) {
           res.DateOrderRed = new Date(res.DateOrderRed);
-        }debugger
-        if (res.ReceiverDate) {debugger
+        }
+        if (res.ReceiverDate) {
           res.ReceiverDate = new Date(res.ReceiverDate);
         }
 
         this.dataModel = res;
-        this.isLoading = false;
         // console.log(this.dataModel)
 
         for (var item of this.dataModel.OrderLines) {
@@ -100,12 +99,12 @@ export class DetailBillComponent implements OnInit, OnDestroy{
           case 'open':
              this.indexStep = 2;
              break;
-          case 'cancel':
-             this.indexStep = 2;
-            break;
           case 'paid':
                this.indexStep = 3;
               break;
+          case 'cancel':
+            this.indexStep = 4;
+            break;
         }
 
         //TODO: nếu Team thiếu thông tin thì map dữ liệu
@@ -113,7 +112,6 @@ export class DetailBillComponent implements OnInit, OnDestroy{
           this.loadTeamById(res.TeamId);
         }
     }, error => {
-      this.isLoading = false;
       this.message.error('Load dữ liệu PBH đã xảy ra lỗi!')
     })
   }
@@ -127,7 +125,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   loadPaymentInfoJson() {
     this.fastSaleOrderService.getPaymentInfoJson(this.id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        this.payments = res.value;
+        this.payments = [...res.value];
     }, error => {
       this.message.error('Load thông tin thanh toán đã lỗi!');
     })
@@ -202,14 +200,12 @@ export class DetailBillComponent implements OnInit, OnDestroy{
       onOk: () => {
           let model = { id: parseInt(that.id) }
 
-          that.fastSaleOrderService.getSendToShipper(model).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+          that.fastSaleOrderService.getSendToShipper(model).pipe(takeUntil(this.destroy$), finalize(() => that.isProcessing = false)).subscribe((res: TDSSafeAny) => {
               that.message.success('Xác nhận gửi vận đơn thành công!');
-              that.isProcessing = false;
               that.loadData();
           }, error => {
             let err = error.error.message.split('Error:')?.[1];
-              that.message.error(err ?? 'Gửi vận đơn thất bại');
-              that.isProcessing = false;
+            that.message.error(err ?? 'Gửi vận đơn thất bại');
           })
       },
       onCancel: () => { that.isProcessing = false; },
@@ -235,13 +231,11 @@ export class DetailBillComponent implements OnInit, OnDestroy{
               ids: [parseInt(that.id)]
           }
 
-          that.fastSaleOrderService.getActionCancel(model).pipe(takeUntil(this.destroy$)).subscribe(() => {
+          that.fastSaleOrderService.getActionCancel(model).pipe(takeUntil(this.destroy$), finalize(() => that.isProcessing = false)).subscribe(() => {
               that.message.success('Xác nhận hủy hóa đơn thành công!');
-              that.isProcessing = false;
               this.loadData();
           }, error => {
               that.message.error(error.error.message ?? 'Xác nhận hủy hóa đơn thất bại');
-              that.isProcessing = false;
           })
       },
       onCancel: () => { that.isProcessing = false; },
@@ -296,13 +290,11 @@ export class DetailBillComponent implements OnInit, OnDestroy{
       onOk: () => {
           let model = { id: parseInt(that.id) };
 
-          that.fastSaleOrderService.getActionRefund(model).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+          that.fastSaleOrderService.getActionRefund(model).pipe(takeUntil(this.destroy$), finalize(() => that.isProcessing = false)).subscribe((res: TDSSafeAny) => {
               that.message.success('Tạo trả hàng thành công!');
-              that.isProcessing = false;
               this.loadData();
           }, error => {
               that.message.error(error.error.message ?? 'Tạo trả hàng thất bại');
-              that.isProcessing = false;
           })
       },
       onCancel: () => { that.isProcessing = false; },
