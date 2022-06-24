@@ -1,7 +1,7 @@
 import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { GenerateMessageTypeEnum } from './../../../../dto/conversation/message.dto';
 import { CrossCheckingStatusComponent } from '../cross-checking-status/cross-checking-status.component';
-import { Component, Input, OnDestroy, OnInit, ViewContainerRef } from "@angular/core";
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewContainerRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subject } from "rxjs";
 import { finalize, map, takeUntil } from "rxjs/operators";
@@ -179,6 +179,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   updateDelivery() {}
 
   showHistoryDS(){
+    localStorage.setItem('currentTeamId',this.params?.teamId);
     this.router.navigateByUrl('bill/historyds/list');
   }
 
