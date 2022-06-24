@@ -587,7 +587,6 @@ export class OrderComponent implements OnInit, OnDestroy {
         title: 'Gửi tin nhắn nhanh',
         content: SendMessageComponent,
         size: 'lg',
-        centered: true,
         viewContainerRef: this.viewContainerRef,
         componentParams: {
           // listData: listData

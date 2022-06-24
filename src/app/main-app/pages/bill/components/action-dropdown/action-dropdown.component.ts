@@ -144,7 +144,6 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         title: 'Gửi tin nhắn Facebook',
         size:'lg',
         content: SendMessageComponent,
-        centered: true,
         viewContainerRef: this.viewContainerRef,
         componentParams: {
           selectedUsers: this.idsModel,

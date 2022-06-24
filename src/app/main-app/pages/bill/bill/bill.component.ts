@@ -559,7 +559,6 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         title: 'Gửi tin nhắn Facebook',
         size:'lg',
         content: SendMessageComponent,
-        centered: true,
         viewContainerRef: this.viewContainerRef,
         componentParams: {
           selectedUsers: [orderMessage.Id],
