@@ -24,7 +24,7 @@
                 <tr>
                     <th width="80px" [align]="'center'" [tdsLeft]="true">STT</th>
                     <th *ngIf="isHidden('OrderCode')" width="240px" [tdsLeft]="true">Mã hóa đơn</th>
-                    <th *ngIf="isHidden('ShipCode')" width="240px">Mã vận đơn</th>
+                    <th *ngIf="isHidden('ShipCode')" width="240px" [tdsLeft]="true">Mã vận đơn</th>
                     <th *ngIf="isHidden('CarrierName')" width="280px">Đối tác giao hàng</th>
                     <th *ngIf="isHidden('OrderAmount')" width="240px" [align]="'right'">COD hóa đơn</th>
                     <th *ngIf="isHidden('TotalCOD')" width="240px" [align]="'right'">Tổng COD</th>
@@ -41,7 +41,9 @@
                     <tr>
                         <td [tdsLeft]="true" class="text-center">{{ i + 1 }}</td>
                         <td *ngIf="isHidden('OrderCode')" [tdsLeft]="true">{{ data.OrderCode }}</td>
-                        <td *ngIf="isHidden('ShipCode')">{{ data.ShipCode }}</td>
+                        <td *ngIf="isHidden('ShipCode')" [tdsLeft]="true">
+                            <span class="text-info-500 font-semibold">{{ data.ShipCode }}</span>
+                        </td>
                         <td *ngIf="isHidden('CarrierName')">{{ data.CarrierName }}</td>
                         <td *ngIf="isHidden('OrderAmount')" class="text-right">{{ data.OrderAmount || 0 | number }} đ</td>
                         <td *ngIf="isHidden('TotalCOD')" class="text-right">{{ historyDeliveryData.TotalCOD || 0 |number }} đ</td>
@@ -49,7 +51,7 @@
                         <td *ngIf="isHidden('ShipAmount')" class="text-right">{{ data.ShipAmount || 0 | number }} đ</td>
                         <td *ngIf="isHidden('DeliveryPrice')" class="text-right">{{ data.DeliveryPrice || 0 | number }} đ</td>
                         <td *ngIf="isHidden('CustomerDeliveryPrice')" class="text-right">{{ data.CustomerDeliveryPrice || 0 | number }} đ</td>
-                        <td *ngIf="isHidden('Note')">{{ data.Note }}</td>
+                        <td *ngIf="isHidden('Note')">{{ data.Note || '---' }}</td>
                         <td *ngIf="isHidden('Status')" class="text-center w-full" [tdsRight]="true">
                             <tds-tag [status]="checkStatus(data.Status)" type="outline">{{data.Status}}</tds-tag>
                         </td>
@@ -59,21 +61,20 @@
         </tds-table>
     </div>
 </div>
+
 <!-- chi tiết (trang mới) -->
 <div *ngIf="id" class="w-full h-full flex flex-col">
     <div class="bg-white flex justify-between items-center">
         <div class="flex flex-col gap-y-1">
             <tds-breadcrumb tds-page-header-breadcrumb>
-                <tds-breadcrumb-item>Phiếu bán hàng</tds-breadcrumb-item>
-                <tds-breadcrumb-item>Lịch sử đối soát</tds-breadcrumb-item>
+                <tds-breadcrumb-item (click)="directPage('bill?teamId=' + teamId)">Phiếu bán hàng</tds-breadcrumb-item>
+                <tds-breadcrumb-item (click)="directPage('bill/historyds/list')">Lịch sử đối soát</tds-breadcrumb-item>
                 <tds-breadcrumb-item>Chi tiết</tds-breadcrumb-item>
             </tds-breadcrumb>
             <div class="pl-4 pb-2.5">
                 <span class="text-header-1 text-neutral-1-900 font-semibold">Chi tiết lịch sử đối soát</span>
             </div>
         </div>
-
-        <button tds-button color="secondary" class="mr-4" (click)="onBack()">Quay lại</button>
     </div>
     <div class="flex w-full h-fit p-4">
         <div class="bg-white w-full h-fit rounded-lg p-4">

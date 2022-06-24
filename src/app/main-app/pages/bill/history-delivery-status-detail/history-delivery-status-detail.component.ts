@@ -34,6 +34,8 @@ export class HistoryDeliveryStatusDetailComponent implements OnInit {
   ];
   isLoading = false;
   id: any;
+  teamId!:TDSSafeAny;
+
 
   private destroy$ = new Subject<void>();
 
@@ -46,6 +48,7 @@ export class HistoryDeliveryStatusDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get("id");
+    this.teamId = localStorage.getItem('currentTeamId');
     this.loadData();
     this.loadGridConfig();
   }
@@ -101,6 +104,10 @@ export class HistoryDeliveryStatusDetailComponent implements OnInit {
     }
   }
 
+  directPage(route:string){
+    this.router.navigateByUrl(route);
+  }
+
   checkStatus(status:string){
     switch(status){
       case 'Đã thu tiền':
@@ -112,10 +119,6 @@ export class HistoryDeliveryStatusDetailComponent implements OnInit {
       default:
         return 'secondary'
     }
-  }
-
-  onBack(){
-    history.back();
   }
 
   ngOnDestroy(): void {
