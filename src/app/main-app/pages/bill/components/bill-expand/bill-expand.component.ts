@@ -23,6 +23,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
   lstOfData:FSOrderLinesV2[] = [];
   isProcessing: boolean = false;
   isLoading: boolean = false;
+  logOrder: any
 
   private destroy$ = new Subject<void>();
 
@@ -38,7 +39,9 @@ export class BillExpandComponent implements OnInit, OnDestroy {
     if(this.dataItem) {
       this.type = this.dataItem.Type;
       this.loadData();
+      console.log("test",this.dataItem);
     }
+    this.getHistories();
   }
 
   loadData(){
@@ -133,5 +136,15 @@ export class BillExpandComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  getHistories() {
+    this.logOrder = [];
+    this.fSOService.getHistoryEditOrder(this.dataItem.Id).subscribe((res: any) => {
+      res.value.forEach((obj: any) => {
+        obj.JSONData = JSON.parse(obj.JSONData);
+      });
+      this.logOrder = res.value;
+    })
   }
 }
