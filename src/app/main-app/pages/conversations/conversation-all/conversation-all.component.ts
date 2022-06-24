@@ -108,7 +108,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.conversationDataFacade.onLoadTdsConversation$.subscribe((obs: boolean) => {
       if(obs == false) {
         this.isChanged = obs;
-        this.cdRef.detectChanges();
       }
     })
   }
