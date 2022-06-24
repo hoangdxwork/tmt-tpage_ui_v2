@@ -1,0 +1,53 @@
+<div class="flex flex-col gap-y-4">
+  <div class="flex gap-x-8 items-center">
+    <div class="w-1/2">
+      <tds-form-field>
+        <tds-select valueField="Id" textField="Name" [data]="listAcJournal" [(ngModel)]="AcJournalCurrent"
+          disabledField="isActive" [required]='true'>
+        </tds-select>
+      </tds-form-field>
+    </div>
+    <div>
+      <tds-checkbox [(ngModel)]="payment">Thanh toán</tds-checkbox>
+    </div>
+  </div>
+
+  <div class="w-full max-h-[350px] h-[350px] text-body-2 text-neutral-1-900 border rounded-md pb-2.5">
+    <tds-table #rowSelectionTable [listData]="listUser" class="h-full" [scroll]="{y:'auto'}" [loading]="isLoading" (clickRefresh)="onRefresh()">
+      <thead>
+        <tr>
+          <th>Khách hàng</th>
+          <th>Hóa đơn</th>
+          <th>Tổng tiền</th>
+          <th>Trạng thái</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of listUser; let i = index">
+          <td>{{ item.Partner?.DisplayName }}</td>
+          <td>{{ item.Number || 'N/A' }}</td>
+          <td>{{ (item.AmountTotal | number) || 0 }}</td>
+          <td>
+            <div class="w-full">
+              <tds-badge *ngIf="item.State ==='paid'" status='primary' text="{{ item.ShowState }}"></tds-badge>
+              <tds-badge *ngIf="item.State ==='open'" status='info' text="{{ item.ShowState }}"></tds-badge>
+              <p *ngIf="item.PaymentMessageCount" class="text-neutral-1-400 text-xs pt-2">Đã gửi yêu cầu thanh
+                toán</p>
+            </div>
+          </td>
+          <td>
+            <button tds-button-icon color="secondary" (click)="removeUser(i)">
+              <i class="tdsi-trash-fill text-neutral-1-500"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </tds-table>
+  </div>
+
+  <div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button type="button" class="mr-2 min-w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
+    <button tds-button type="button" class="min-w-[100px]" color="primary" (click)="onSave()">Xác nhận</button>
+  </div>
+</div>
