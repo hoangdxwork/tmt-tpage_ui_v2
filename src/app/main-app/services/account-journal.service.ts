@@ -19,7 +19,7 @@ export class AccountJournalService extends BaseSevice {
   getWithCompanyPayment(): Observable<ODataResponsesDTO<AccountJournalDTO>> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetWithCompany?format=json&$filter=(Type eq 'bank') or (Type eq 'cash')`,
-      method: TApiMethodType.post,
+      method: TApiMethodType.get,
     }
 
     return this.apiService.getData<ODataResponsesDTO<AccountJournalDTO>>(api, null);

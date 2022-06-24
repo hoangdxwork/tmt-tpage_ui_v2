@@ -27,6 +27,8 @@ export class FastSaleOrderService extends BaseSevice {
   public _keyCacheDHSDetails: string = '_keycache_dhs_details';
   public _keyCacheCopyInvoice: string = '_keycache_copy_invoice';
 
+  public refundSucess$:EventEmitter<boolean> = new EventEmitter<boolean>();
+
   constructor(private apiService: TCommonService) {
     super(apiService)
   }
@@ -54,8 +56,8 @@ export class FastSaleOrderService extends BaseSevice {
 
   defaultGetV2(data: any): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.DefaultGet?$expand=Warehouse,User,PriceList,Company,Journal,PaymentJournal,Partner,Carrier,Tax,SaleOrder`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.DefaultGet?$expand=Warehouse,User,PriceList,Company,Journal,PaymentJournal,Partner,Carrier,Tax,SaleOrder`,
+      method: TApiMethodType.post,
     }
 
     return this.apiService.getData<FastSaleOrder_DefaultDTOV2>(api, data);
@@ -63,8 +65,8 @@ export class FastSaleOrderService extends BaseSevice {
 
   insert(data: FastSaleOrder_DefaultDTOV2): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
+      method: TApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -72,8 +74,8 @@ export class FastSaleOrderService extends BaseSevice {
 
   update(key: TDSSafeAny, data: FastSaleOrder_DefaultDTOV2): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
-        method: TApiMethodType.put,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
+      method: TApiMethodType.put,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -81,35 +83,35 @@ export class FastSaleOrderService extends BaseSevice {
 
   delete(key: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
-        method: TApiMethodType.delete,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
+      method: TApiMethodType.delete,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api,null);
+    return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   getById(key: TDSSafeAny): Observable<FastSaleOrder_DefaultDTOV2> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})?$expand=Partner,User,Warehouse,Company,PriceList,RefundOrder,Account,Journal,PaymentJournal,Carrier,Tax,SaleOrder,OrderLines($expand=Product,ProductUOM,Account,SaleLine,User),Ship_ServiceExtras,Team`,
-        method: TApiMethodType.get,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})?$expand=Partner,User,Warehouse,Company,PriceList,RefundOrder,Account,Journal,PaymentJournal,Carrier,Tax,SaleOrder,OrderLines($expand=Product,ProductUOM,Account,SaleLine,User),Ship_ServiceExtras,Team`,
+      method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<FastSaleOrder_DefaultDTOV2>(api,null);
+    return this.apiService.getData<FastSaleOrder_DefaultDTOV2>(api, null);
   }
 
   getSummaryStatus(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/getsummarystatusfastsaleonline`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/${this.baseRestApi}/getsummarystatusfastsaleonline`,
+      method: TApiMethodType.post,
     }
 
-    return this.apiService.getData<Array<FastSaleOrderSummaryStatusDTO>>(api,data);
+    return this.apiService.getData<Array<FastSaleOrderSummaryStatusDTO>>(api, data);
   }
 
   getListOrderIds(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetListOrderIds?$expand=OrderLines,Partner,Carrier`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetListOrderIds?$expand=OrderLines,Partner,Carrier`,
+      method: TApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -117,8 +119,8 @@ export class FastSaleOrderService extends BaseSevice {
 
   create(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/create`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/${this.baseRestApi}/create`,
+      method: TApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -135,8 +137,8 @@ export class FastSaleOrderService extends BaseSevice {
 
   insertOrderProductDefault(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertOrderProductDefault?$expand=DataErrorDefault($expand=Partner)`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertOrderProductDefault?$expand=DataErrorDefault($expand=Partner)`,
+      method: TApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -144,8 +146,8 @@ export class FastSaleOrderService extends BaseSevice {
 
   insertOrderProductDefaultWithForce(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/InsertOrderProductDefault?isForce=true`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/InsertOrderProductDefault?isForce=true`,
+      method: TApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -153,17 +155,17 @@ export class FastSaleOrderService extends BaseSevice {
 
   assignTagFastSaleOrder(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/TagFastSaleOrder/ODataService.AssignTagFastSaleOrder`,
-        method: TApiMethodType.post,
+      url: `${this._BASE_URL}/${this.prefix}/TagFastSaleOrder/ODataService.AssignTagFastSaleOrder`,
+      method: TApiMethodType.post,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api,data);
+    return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   cancelShipIds(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.CancelShipIds`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.CancelShipIds`,
+      method: TApiMethodType.post
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -171,8 +173,8 @@ export class FastSaleOrderService extends BaseSevice {
 
   cancelInvoice(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.ActionCancel`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.ActionCancel`,
+      method: TApiMethodType.post
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -180,8 +182,8 @@ export class FastSaleOrderService extends BaseSevice {
 
   unLink(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.Unlink`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.Unlink`,
+      method: TApiMethodType.post
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -189,8 +191,8 @@ export class FastSaleOrderService extends BaseSevice {
 
   sendPaymentRequest(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/sendpaymentrequest`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.baseRestApi}/sendpaymentrequest`,
+      method: TApiMethodType.post
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -198,8 +200,8 @@ export class FastSaleOrderService extends BaseSevice {
 
   getOrderSendShipIds(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrderSendShipIds?$expand=Partner`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrderSendShipIds?$expand=Partner`,
+      method: TApiMethodType.post
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -207,8 +209,8 @@ export class FastSaleOrderService extends BaseSevice {
 
   actionSendDelivery(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/actionSendDelivery`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/actionSendDelivery`,
+      method: TApiMethodType.post
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -216,8 +218,8 @@ export class FastSaleOrderService extends BaseSevice {
 
   actionInvoiceOpen(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.ActionInvoiceOpen`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.ActionInvoiceOpen`,
+      method: TApiMethodType.post
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -225,8 +227,8 @@ export class FastSaleOrderService extends BaseSevice {
 
   getRegisterPaymentMulti(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetRegisterPaymentMulti?$expand=Partner`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetRegisterPaymentMulti?$expand=Partner`,
+      method: TApiMethodType.post
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -234,80 +236,80 @@ export class FastSaleOrderService extends BaseSevice {
 
   calculateListFee(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.CalculateListFee`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.CalculateListFee`,
+      method: TApiMethodType.post
     }
     return this.apiService.getData<ODataCalculatorListFeeDTO>(api, data);
   }
 
   calculateFeeV2(data: ShippingCalculateFeeInputDTO): Observable<CalculateFeeResponse_DataDTO> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/calculatefee`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.baseRestApi}/calculatefee`,
+      method: TApiMethodType.post
     }
     return this.apiService.getData<CalculateFeeResponse_DataDTO>(api, data);
   }
 
   getPaymentInfoJson(key: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})/OdataService.GetPaymentInfoJson`,
-        method: TApiMethodType.get
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})/OdataService.GetPaymentInfoJson`,
+      method: TApiMethodType.get
     }
     return this.apiService.getData<ODataPaymentJsonDTO>(api, null);
   }
 
   getActionCancel(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.ActionCancel`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.ActionCancel`,
+      method: TApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   getActionRefund(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.ActionRefund`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.ActionRefund`,
+      method: TApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   getSendToShipper(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.SendToShipper`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.SendToShipper`,
+      method: TApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   getRegisterPayment(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.getRegisterPayment?$expand=Partner`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.getRegisterPayment?$expand=Partner`,
+      method: TApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   getRegisterPaymentV2(data: ODataIdsDTO<number[]>): Observable<AccountRegisterPaymentDTO> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetRegisterPayment?$expand=Partner`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetRegisterPayment?$expand=Partner`,
+      method: TApiMethodType.post
     }
     return this.apiService.getData<AccountRegisterPaymentDTO>(api, data);
   }
 
   getTokenTrackingOrderGHN(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetTokenTrackingOrderGHN`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetTokenTrackingOrderGHN`,
+      method: TApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   getTrackingOrderAhaMove(data: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetTrackingOrderAhaMove`,
-        method: TApiMethodType.post
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetTrackingOrderAhaMove`,
+      method: TApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
@@ -352,8 +354,8 @@ export class FastSaleOrderService extends BaseSevice {
 
   getOrderLineData(key: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})/OrderLines?$expand=Product,ProductUOM,Account,SaleLine,User`,
-        method: TApiMethodType.get
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})/OrderLines?$expand=Product,ProductUOM,Account,SaleLine,User`,
+      method: TApiMethodType.get
     }
     return this.apiService.getData<ODataPaymentJsonDTO>(api, null);
   }
@@ -367,23 +369,23 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  getHistoryDeliveryStatus(params:string): Observable<TDSSafeAny> {
+  getHistoryDeliveryStatus(params: string): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/HistoryDeliveryStatus?&%24${params}&%24orderby=Date+desc&%24count=true`,
-        method: TApiMethodType.get
+      url: `${this._BASE_URL}/${this.prefix}/HistoryDeliveryStatus?&%24${params}&%24orderby=Date+desc&%24count=true`,
+      method: TApiMethodType.get
     }
     return this.apiService.getData<ODataPaymentJsonDTO>(api, null);
   }
 
-  getHistoryDeliveryStatusById(key:TDSSafeAny): Observable<TDSSafeAny> {
+  getHistoryDeliveryStatusById(key: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/HistoryDeliveryStatus(${key})?$expand=Details`,
-        method: TApiMethodType.get
+      url: `${this._BASE_URL}/${this.prefix}/HistoryDeliveryStatus(${key})?$expand=Details`,
+      method: TApiMethodType.get
     }
     return this.apiService.getData<ODataPaymentJsonDTO>(api, null);
   }
 
-  postManualCrossChecking(model:TDSSafeAny): Observable<TDSSafeAny>{
+  postManualCrossChecking(model: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.ManualCrossChecking`,
       method: TApiMethodType.post,
@@ -392,16 +394,16 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, model);
   }
 
-  checkTrackingRefIsExist(trackingRef:string,status:string,carrierId?:number): Observable<TDSSafeAny>{
+  checkTrackingRefIsExist(trackingRef: string, status: string, carrierId?: number): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.CheckTrackingRefIsExisted?tracking_ref=${trackingRef}&status=${status}&carrier_id=${carrierId??''}`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.CheckTrackingRefIsExisted?tracking_ref=${trackingRef}&status=${status}&carrier_id=${carrierId ?? ''}`,
       method: TApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
-  deleteCrossChecking(key:TDSSafeAny): Observable<TDSSafeAny>{
+  deleteCrossChecking(key: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/HistoryDeliveryStatus(${key})`,
       method: TApiMethodType.delete,
@@ -427,6 +429,23 @@ export class FastSaleOrderService extends BaseSevice {
 
     return this.apiService.getData<undefined>(api, data);
   }
+
+  getFastSaleOrderIds(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetFastSaleOrderIds?$expand=Partner`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
+  actionBatchRefund(data: TDSSafeAny): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.ActionBatchRefund`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
   urlSampleShipCodeExcel(): any {
     let url = `${this._BASE_URL}/Content/files/template_excels/vi/template_update_trackingcode_delivery.xlsx?v2`;
     return url;
