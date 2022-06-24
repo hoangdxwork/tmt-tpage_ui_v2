@@ -2,7 +2,7 @@
   <form [formGroup]="_form">
     <div class="w-full max-h-[450px] overflow-y-auto tds-custom-scroll divide-y">
       <div *ngFor="let item of lstPrices">
-          <div class="flex flex-row items-center justify-between w-full p-4 cursor-pointer"
+          <div class="flex flex-row items-center justify-between w-full py-4 pr-2 cursor-pointer hover:bg-neutral-3-50"
             (click)="onChangePriceList(item)">
               <span>{{item.Name}}</span>
               <div *ngIf="_form.controls['PriceList'].value.Id == item.Id" class="flex items-center justify-between">

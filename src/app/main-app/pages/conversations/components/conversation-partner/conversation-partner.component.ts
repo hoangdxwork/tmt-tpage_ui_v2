@@ -331,7 +331,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   showModalBlockPhone() {
     let phone = this.formData?.Phone;
-
     const modal = this.modalService.create({
       title: '',
       content: ModalBlockPhoneComponent,

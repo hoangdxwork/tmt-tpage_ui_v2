@@ -578,7 +578,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     ReceiverName: string;
     ReceiverPhone: string;
     ReceiverAddress: string;
-    ReceiverDate?: any;
+    ReceiverDate?: Date | any;
     ReceiverNote?: any;
     CashOnDelivery: number;
     TrackingRef?: any;

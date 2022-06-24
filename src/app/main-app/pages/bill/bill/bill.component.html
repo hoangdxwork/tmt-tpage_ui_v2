@@ -61,8 +61,7 @@
               <th *ngIf="isHidden('CarrierName')" width="160px" class="border-r">Đối tác GH</th>
               <th *ngIf="isHidden('TrackingRef')" width="120px" class="border-r">Mã vận đơn</th>
               <th *ngIf="isHidden('CashOnDelivery')" [align]="'right'" width="240px" class="border-r">Tiền thu hộ</th>
-              <th *ngIf="isHidden('CustomerDeliveryPrice')" [align]="'right'" width="140px" class="border-r">Phí ship GH
-              </th>
+              <th *ngIf="isHidden('CustomerDeliveryPrice')" [align]="'right'" width="140px" class="border-r">Phí ship GH</th>
               <th *ngIf="isHidden('AmountTotal')" [align]="'right'" width="240px" class="border-r">Tổng tiền</th>
               <th *ngIf="isHidden('Residual')" [align]="'right'" width="240px" class="border-r">Còn nợ</th>
               <th *ngIf="isHidden('ShowState')" width="120px" class="border-r">Trạng thái</th>
@@ -143,7 +142,7 @@
                     <div class="absolute bottom-0 right-[4px] text-primary-1">
                       <span *ngIf="data.PrintDeliveryCount > 0" class="tdsi-print-fill text-[15px]"
                         title="Đã in phiếu giao hàng"></span>
-                      <span *ngIf="data.PrintShipCount > 0" class="tdsi-shipper-line text-[16px]"
+                      <span *ngIf="data.PrintShipCount > 0" class="tdsi-order-fill text-[16px]"
                         title="Đã in phiếu ship"></span>
                     </div>
                   </div>

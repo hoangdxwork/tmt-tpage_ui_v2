@@ -114,12 +114,10 @@ export class ModalListBillComponent implements OnInit {
     this.fastSaleOrderService.getMappings(model).subscribe((res: fastSaleOrderBillofPartnerDTO) => {
       res.Items.forEach((item: BillofPartnerDTO) => {
         item.PaymentMethod = this.paymentMethodOptions[0] ? this.paymentMethodOptions[0].Text : null;
-        console.log(item.PaymentMethod)
         this.datas.push(item);
       });
 
       this.lstBillofPartner = [...this.datas];
-      console.log(this.lstBillofPartner)
       if(res.TotalCount != 0) {
         this.pageCurrent++;
       }

@@ -1,104 +1,163 @@
 <div class="bg-white rounded-lg h-full w-full relative" *ngIf="dataItem">
-    <div class="inline-flex items-center absolute z-10 top-2 right-4">
-        <tds-button-group *ngIf="dataItem.State != 'cancel'">
-            <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate" >
-                <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="expandDropdown" class="mr-2" type="button">
-                    <span class="flex items-center">
-                        Thao tác
-                        <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
-                    </span>
-                </button>
-            </tds-spin>
+  <div class="inline-flex items-center absolute z-10 top-2 right-4">
+    <tds-button-group *ngIf="dataItem.State != 'cancel'">
+      <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
+        <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="expandDropdown"
+          class="mr-2" type="button">
+          <span class="flex items-center">
+            Thao tác
+            <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+          </span>
+        </button>
+      </tds-spin>
 
-            <tds-dropdown-menu #expandDropdown="tdsDropdownMenu">
-                <div class="w-full">
-                    <a (click)="print('A4')" tds-dropdown-item type="button">
-                        <a> In A4 </a>
-                    </a>
-                    <a (click)="print('A5')" tds-dropdown-item  type="button">
-                        <a> In A5 </a>
-                    </a>
-                    <a (click)="print('delivery')" tds-dropdown-item *ngIf="type === 'invoice'" type="button">
-                        <a> In giao hàng </a>
-                    </a>
-                    <a (click)="print('ship')" tds-dropdown-item *ngIf="type === 'invoice'" type="button">
-                        <a> In phiếu ship </a>
-                    </a>
-                    <a (click)="excelDetail()" tds-dropdown-item *ngIf="type === 'invoice'" type="button">
-                        <a> Excel </a>
-                    </a>
-                </div>
-            </tds-dropdown-menu>
-        </tds-button-group>
-
-        <ng-template #indicatorTemplate>
-            <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
-        </ng-template>
-
-        <div *ngIf="dataItem.State !='cancel' && type == 'invoice'">
-          <button type="button" tds-button color="info" class="mr-2" (click)="showMessageModal()">
-              <span class="flex items-center">
-                  <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>
-                  Gửi tin nhắn facebook
-              </span>
-          </button>
+      <tds-dropdown-menu #expandDropdown="tdsDropdownMenu">
+        <div class="w-full">
+          <a (click)="print('A4')" tds-dropdown-item type="button">
+            <a> In A4 </a>
+          </a>
+          <a (click)="print('A5')" tds-dropdown-item type="button">
+            <a> In A5 </a>
+          </a>
+          <a (click)="print('delivery')" tds-dropdown-item *ngIf="type === 'invoice'" type="button">
+            <a> In giao hàng </a>
+          </a>
+          <a (click)="print('ship')" tds-dropdown-item *ngIf="type === 'invoice'" type="button">
+            <a> In phiếu ship </a>
+          </a>
+          <a (click)="excelDetail()" tds-dropdown-item *ngIf="type === 'invoice'" type="button">
+            <a> Excel </a>
+          </a>
         </div>
+      </tds-dropdown-menu>
+    </tds-button-group>
+
+    <ng-template #indicatorTemplate>
+      <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
+    </ng-template>
+
+    <div *ngIf="dataItem.State !='cancel' && type == 'invoice'">
+      <button type="button" tds-button color="info" class="mr-2" (click)="showMessageModal()">
+        <span class="flex items-center">
+          <i class="tdsi-facebook-2-fill text-lg leading-none mr-2"></i>
+          Gửi tin nhắn facebook
+        </span>
+      </button>
     </div>
-    <tds-tabset>
-        <tds-tab title="Chi tiết">
-            <div class="flex flex-col items-end w-full h-full">
-                <tds-table #basicTable
-                    [listData]="lstOfData"
-                    [loading]="isLoading"
-                    [showPagination]="false">
-                    <thead>
-                        <tr>
-                            <th>STT</th>
-                            <th>Sản phẩm</th>
-                            <th>Đơn vị tính</th>
-                            <th>số lượng</th>
-                            <th>Đơn giá</th>
-                            <th>Khối lượng(kg)</th>
-                            <th class="text-right">Thành tiền</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data" >
-                            <tr>
-                                <td>{{ i + 1 }}</td>
-                                <td>{{ data.ProductNameGet }}</td>
-                                <td>{{ data.ProductUOMName }}</td>
-                                <td>{{ (data.ProductUOMQty | number) || 0}}</td>
-                                <td>{{ (data.PriceUnit | number) || 0 }}</td>
-                                <td>{{ (data.Weight | number) || 0 }}</td>
-                                <td class="text-right">{{ (data.PriceTotal |number) || 0 }}</td>
-                            </tr>
-                        </ng-template>
-                    </tbody>
-                </tds-table>
-                <div class="w-1/5 text-right">
-                    <div class="grid grid-cols-3 gap-x-6 gap-y-4 pb-4">
-                        <span class="text-right">Tổng</span>
-                        <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountUntaxed| number) || 0 }}</span>
+  </div>
+  <tds-tabset>
+    <tds-tab title="Chi tiết">
+      <div class="flex flex-col items-end w-full h-full">
+        <tds-table #basicTable [listData]="lstOfData" [loading]="isLoading" [showPagination]="false">
+          <thead>
+            <tr>
+              <th>STT</th>
+              <th>Sản phẩm</th>
+              <th>Đơn vị tính</th>
+              <th>Số lượng</th>
+              <th>Đơn giá</th>
+              <th>Khối lượng(kg)</th>
+              <th class="text-right">Thành tiền</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
+              <tr>
+                <td>{{ i + 1 }}</td>
+                <td>{{ data.ProductNameGet }}</td>
+                <td>{{ data.ProductUOMName }}</td>
+                <td>{{ (data.ProductUOMQty | number) || 0}}</td>
+                <td>{{ (data.PriceUnit | number) || 0 }}</td>
+                <td>{{ (data.Weight | number) || 0 }}</td>
+                <td class="text-right">{{ (data.PriceTotal |number) || 0 }}</td>
+              </tr>
+            </ng-template>
+          </tbody>
+        </tds-table>
+        <div class="w-1/5 text-right">
+          <div class="grid grid-cols-3 gap-x-6 gap-y-4 pb-4">
+            <span class="text-right">Tổng</span>
+            <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountUntaxed| number) || 0 }}</span>
 
-                        <span class="text-right">Thuế</span>
-                        <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountTax | number) || 0 }}</span>
+            <span class="text-right">Thuế</span>
+            <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountTax | number) || 0 }}</span>
 
-                        <span class="text-right font-semibold">Tổng tiền</span>
-                        <span class="text-header-1 font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountTotal | number) || 0 }}</span>
+            <span class="text-right font-semibold">Tổng tiền</span>
+            <span class="text-header-1 font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountTotal | number) ||
+              0 }}</span>
 
-                        <span class="text-right">Nợ</span>
-                        <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.Residual | number) || 0 }}</span>
-                    </div>
-                    <button tds-button color="primary" (click)="showPayInvoiceModal(dataItem.Id)" type="button">Thanh toán</button>
+            <span class="text-right">Nợ</span>
+            <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.Residual | number) || 0 }}</span>
+          </div>
+          <button tds-button color="primary" (click)="showPayInvoiceModal(dataItem.Id)" type="button">Thanh
+            toán</button>
+        </div>
+      </div>
+    </tds-tab>
+    <tds-tab title="Thông tin">
+      <div class="grid grid-cols-3 gap-8 text-body-2">
+        <div class="grid grid-cols-3 gap-4">
+          <div class="font-semibold">Số HĐ</div>
+          <div class="col-span-2">{{ dataItem.Number || 'N/A' }}</div>
+          <div class="font-semibold">Ngày đơn hàng</div>
+          <div class="col-span-2">{{ dataItem.DateInvoice | date: 'dd/MM/yyyy HH:mm' }}</div>
+          <div class="font-semibold">Khách hàng</div>
+          <div class="col-span-2">{{ dataItem.PartnerDisplayName || 'N/A' }}</div>
+          <div class="font-semibold">Người bán</div>
+          <div class="col-span-2">{{ dataItem.UserName }}</div>
+          <div class="font-semibold">Ghi chú</div>
+          <div class="col-span-2">{{ dataItem.Comment }}</div>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+          <div class="font-semibold">Người giao hàng</div>
+          <div class="col-span-2">{{ dataItem.Deliver || 'N/A' }}</div>
+          <div class="font-semibold">Tổng tiền</div>
+          <div class="col-span-2">{{ dataItem.AmountTotal || 0 | number :'1.0-3' }} đ</div>
+          <div class="font-semibold">Tổng khối lượng</div>
+          <div class="col-span-2">{{ dataItem.WeightTotal }}</div>
+          <div class="font-semibold">Trạng thái</div>
+          <div class="col-span-2">{{ dataItem.ShowState }}</div>
+          <div class="font-semibold">Ghi chú giao hàng</div>
+          <div class="col-span-2">{{ dataItem.DeliveryNote || 'N/A' }}</div>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+          <div class="font-semibold">Đối tác GH</div>
+          <div class="col-span-2">{{ dataItem.CarrierName }}</div>
+          <div class="font-semibold">Kho hàng</div>
+          <div class="col-span-2">{{ dataItem.WarehouseName || 'N/A' }}</div>
+          <div class="font-semibold">Tiền thu hộ</div>
+          <div class="col-span-2">{{ dataItem.CashOnDelivery || 0 | number: '1.0-3' }} đ</div>
+          <div class="font-semibold">Phí giao hàng</div>
+          <div class="col-span-2">{{ dataItem.DeliveryPrice || 0 | number: '1.0-3' }} đ</div>
+          <div class="font-semibold">Trạng thái ship</div>
+          <div class="col-span-2">{{ dataItem.ShowShipStatus }}</div>
+        </div>
+      </div>
+    </tds-tab>
+    <tds-tab title="Lịch sử">
+      <div class="px-4">
+        <!-- *ngFor="let item of logOrder" -->
+        <tds-timeline>
+          <tds-timeline-item *ngFor="let item of logOrder" [tdsDot]="dotTemplate">
+            <div class="flex flex-col gap-y-2 mb-4">
+              <div class="flex gap-x-4 items-center text-neutral-1-500 text-body-2">
+                <div>{{ item.JSONData.DateCreated | date: 'dd-MM-yyyy' }}</div>
+                <div *ngIf="item.Name">
+                  <tds-badge size="sm" status="secondary"><span class="ml-1">{{ item.Name }}</span></tds-badge>
                 </div>
+              </div>
+              <div class="">
+                <span class="" [innerHTML]="item.Content"></span>
+              </div>
+              <ng-template #dotTemplate>
+                <div class="w-6 h-6 rounded-full bg-slate-400">
+                  <img src="{{ item.Avatar }}" alt="">
+                </div>
+              </ng-template>
             </div>
-        </tds-tab>
-        <tds-tab title="Thông tin">
-            <span class="text-primary-1">Chưa có dữ liệu</span>
-        </tds-tab>
-        <tds-tab title="Lịch sử">
-            <span class="text-primary-1">Chưa có dữ liệu</span>
-        </tds-tab>
-    </tds-tabset>
+          </tds-timeline-item>
+        </tds-timeline>
+      </div>
+    </tds-tab>
+  </tds-tabset>
 </div>

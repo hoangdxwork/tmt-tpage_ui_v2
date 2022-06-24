@@ -41,7 +41,7 @@ export class ModalPaymentComponent implements OnInit {
   }
 
   loadData(id: number[]) {
-    this.fastSaleOrderService.getRegisterPaymentV2({ids: id}).subscribe(res => {
+    this.fastSaleOrderService.getRegisterPaymentV2({ids: id}).subscribe((res: any) => {
       this.data = res;
       this.updateForm(res);
     }, error => {

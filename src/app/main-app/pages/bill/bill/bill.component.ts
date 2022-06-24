@@ -45,8 +45,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   widthCollapse: number = 0;
   paddingCollapse: number = 36;
   marginLeftCollapse: number = 0;
-  public mappingTeams: any[] = [];
-  public currentMappingTeam: any;
+  mappingTeams: any[] = [];
+  currentMappingTeam: any;
   currentConversation!: ConversationMatchingItem;
   psid: any;
   isOpenDrawer: boolean = false;
@@ -488,8 +488,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       }
 
       this.crmTeamService.getActiveByPageIds$(pageIds)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((teams: any): any => {
+        .pipe(takeUntil(this.destroy$)).subscribe((teams: any): any => {
 
           if (teams.length == 0) {
             return this.message.error('Không có kênh kết nối với khách hàng này.');
@@ -518,13 +517,14 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       this.message.error('Đã xả ra lỗi!');
     })
   }
+
   loadMDBByPSId(pageId: string, psid: string) {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
 
     // get data currentConversation
     this.crmMatchingService.getMDBByPSId(pageId, psid)
-      .subscribe((res: MDBByPSIdDTO) => {
+      .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
         if (res) {
           //tags
           res["keyTags"] = {};
@@ -544,6 +544,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
   }
+
   selectMappingTeam(item: any) {
     this.currentMappingTeam = item;
     this.loadMDBByPSId(item.psid, item.team.Facebook_PageId); // Tải lại hội thoại

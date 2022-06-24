@@ -29,10 +29,8 @@ export class ModalDetailBillComponent implements OnInit {
   }
 
   getData() {
-    console.log(this.itemId)
     this.fastSaleOrderService.getById(this.itemId).subscribe((res: FastSaleOrder_DefaultDTOV2) => {
       this.data = res;
-      console.log(this.data)
     })
   }
 

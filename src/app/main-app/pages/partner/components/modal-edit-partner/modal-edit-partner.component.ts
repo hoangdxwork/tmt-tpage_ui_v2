@@ -1,35 +1,37 @@
 import { ModalAddAddressComponent } from '../modal-add-address/modal-add-address.component';
-import { FormGroup, FormBuilder, FormControl, FormArray, Validators } from '@angular/forms';
-import { Component, OnInit, ViewContainerRef, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
+import { Component, OnInit, ViewContainerRef, Input, OnDestroy } from '@angular/core';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { formatDate } from '@angular/common';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { AddressesV2, PartnerDetailDTO } from 'src/app/main-app/dto/partner/partner-detail.dto';
 import { PartnerCategoryDTO, StatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
-import { SharedService } from 'src/app/main-app/services/shared.service';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 import { TDSUploadFile } from 'tds-ui/upload';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
+import { Subject, takeUntil, finalize } from 'rxjs';
 
 @Component({
   selector: 'app-modal-edit-partner',
   templateUrl: './modal-edit-partner.component.html'
 })
 
-export class ModalEditPartnerComponent implements OnInit {
+export class ModalEditPartnerComponent implements OnInit, OnDestroy {
 
   @Input() partnerId: any;
+
+  _form!: FormGroup;
   data!: PartnerDetailDTO;
   isLoading: boolean = false;
 
-  _form!: FormGroup;
   lstCategory: Array<PartnerCategoryDTO> = [];
   lstStatus: Array<StatusDTO> = [];
   lstPrice: Array<PartnerCategoryDTO> = [];
   fileList: TDSUploadFile[] = [];
+
   formatterPercent = (value: number) => `${value} %`;
   parserPercent = (value: string) => value.replace(' %', '');
   formatterVND = (value: number) => `${value} VNĐ`;
@@ -39,6 +41,7 @@ export class ModalEditPartnerComponent implements OnInit {
   _districts!: SuggestDistrictsDTO;
   _wards!: SuggestWardsDTO;
   _street!: string;
+  private destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder,
     private modal: TDSModalRef,
@@ -46,7 +49,6 @@ export class ModalEditPartnerComponent implements OnInit {
     private partnerService: PartnerService,
     private commonService: CommonService,
     private modalService: TDSModalService,
-    private sharedService: SharedService,
     private viewContainerRef: ViewContainerRef) {
       this.createForm();
   }
@@ -69,8 +71,14 @@ export class ModalEditPartnerComponent implements OnInit {
         Website: [null],
         TaxCode: [null],
         City: [null],
+        CityCode: [null],
+        CityName: [null],
         District: [null],
+        DistrictCode: [null],
+        DistrictName: [null],
         Ward: [null],
+        WardCode: [null],
+        WardName: [null],
         Customer: [null],
         PropertyProductPricelist: [0],
         Discount: [0],
@@ -97,36 +105,33 @@ export class ModalEditPartnerComponent implements OnInit {
         Supplier: false
     }
 
-    this.partnerService.getDefault(model).subscribe((res: any) => {
-      delete res['@odata.context'];
+    this.partnerService.getDefault(model)
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+      .subscribe((res: any) => {
+        delete res['@odata.context'];
 
-      this.isLoading = false;
-      this.data = res;
-      this.updateForm(this.data);
-
-    }, error => {
-      this.isLoading = false;
-      this.message.error('Tải dữ liệu mặc định khách hàng thất bại');
+        this.data = res;
+        this.updateForm(this.data);
+      }, error => {
+        this.message.error('Tải dữ liệu mặc định khách hàng thất bại');
     })
   }
 
   loadPartner() {
     this.isLoading = true;
-    this.partnerService.getById(this.partnerId).subscribe((res: any) => {
+    this.partnerService.getById(this.partnerId)
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+      .subscribe((res: any) => {
         delete res['@odata.context'];
-        this.data = res;
 
-        if(this.data.BirthDay) {
-          this.data.BirthDay = new Date(this.data.BirthDay);
+        if(res.BirthDay != null) {
+          res.BirthDay = new Date(res.BirthDay);
         }
 
+        this.data = res;
         this.updateForm(this.data);
-        this.isLoading = false;
-
         this.mappingAddress(res);
-
-    }, error => {
-        this.isLoading = false;
+      }, error => {
         this.message.error('Tải dữ liệu khách hàng thất bại');
     })
   }
@@ -202,26 +207,46 @@ export class ModalEditPartnerComponent implements OnInit {
   }
 
   openCategory(event: any) {
-    this.partnerService.getPartnerCategory().subscribe((res: any) =>  {
+    this.partnerService.getPartnerCategory().pipe(takeUntil(this.destroy$)).subscribe((res: any) =>  {
       if(TDSHelperString.hasValueString(res.value)) {
         this.lstCategory = [...res.value];
       }
+    }, error => {
+      this.message.error(`${error?.error?.message}`)
     })
   }
 
   openStatus(event: any) {
-    this.commonService.getPartnerStatus().subscribe((res: any) => {
+    this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.lstStatus = res.map((x: any) => x.text);
+    }, error => {
+      this.message.error(`${error?.error?.message}`)
     })
   }
 
   openlstPrice(event: any) {
     let date = formatDate(new Date(), 'yyyy-MM-ddTHH:mm:ss', 'en-US');
-    this.commonService.getPriceListAvailable(date).subscribe((res: any) => {
+    this.commonService.getPriceListAvailable(date).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if(TDSHelperString.hasValueString(res.value)) {
           this.lstPrice = [...res.value];
       }
+    }, error => {
+      this.message.error(`${error?.error?.message}`)
     })
+  }
+
+  checkAddressByPhone() {
+    let phone = this._form.controls['Phone'].value;
+    if(TDSHelperString.hasValueString(phone)) {
+      this.isLoading = true;
+
+      this.commonService.checkAddressByPhone(phone)
+        .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
+            this.message.info('Chưa có dữ liệu');
+      }, error => {
+        this.message.error(`${error?.error?.message}`)
+      })
+    }
   }
 
   onCancel() {
@@ -233,25 +258,22 @@ export class ModalEditPartnerComponent implements OnInit {
     if(!TDSHelperString.hasValueString(model.Name)) {
         this.message.error('Vui lòng nhập tên khách hàng');
     }
+
     if(this.partnerId) {
       this.isLoading = true;
-      this.partnerService.update(this.partnerId, model).subscribe((res: any) => {
-          this.isLoading = false;
+      this.partnerService.update(this.partnerId, model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
           this.message.success('Cập nhật khách hàng thành công!');
           this.modal.destroy(this.partnerId);
       }, error => {
-          this.isLoading = false;
           this.message.error('Cập nhật khách hàng thất bại!');
           this.modal.destroy(null);
       })
     } else {
       this.isLoading = false;
-      this.partnerService.insert(model).subscribe((res: any) => {
-          this.isLoading = false;
+      this.partnerService.insert(model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
           this.message.success('Thêm mới khách hàng thành công!');
           this.modal.destroy(res.Id);
       }, error => {
-          this.isLoading = false;
           this.message.error('Thêm mới khách hàng thất bại!');
           this.modal.destroy(null);
       })
@@ -365,21 +387,20 @@ export class ModalEditPartnerComponent implements OnInit {
 
     modal.afterClose.subscribe((res: ResultCheckAddressDTO) => {
       if (TDSHelperObject.hasValue(res)) {
-            let item: AddressesV2 = {
-              Id: 0,
-              PartnerId: this.partnerId,
-              CityCode: res.CityCode,
-              CityName: res.CityName,
-              DistrictCode: res.DistrictCode,
-              DistrictName: res.DistrictName,
-              WardCode: res.WardCode,
-              WardName: res.WardName,
-              IsDefault: null,
-              Street: res.Address,
-              Address: res.Address
-          };
-
-          this.addAddresses(item);
+          let item: AddressesV2 = {
+            Id: 0,
+            PartnerId: this.partnerId,
+            CityCode: res.CityCode,
+            CityName: res.CityName,
+            DistrictCode: res.DistrictCode,
+            DistrictName: res.DistrictName,
+            WardCode: res.WardCode,
+            WardName: res.WardName,
+            IsDefault: null,
+            Street: res.Address,
+            Address: res.Address
+        };
+        this.addAddresses(item);
       }
     });
   }
@@ -388,6 +409,54 @@ export class ModalEditPartnerComponent implements OnInit {
     if(urlImage){
       this._form.controls["ImageUrl"].setValue(urlImage);
     }
+  }
+
+  selectItem(item: AddressesV2) {
+    if (item && item.CityCode) {
+      this._cities = {
+        code: item.CityCode,
+        name:item.CityName
+      }
+      this._form.controls['City'].patchValue({
+          code: item.CityCode,
+          name: item.CityName
+      });
+    }
+    if (item && item.DistrictCode) {
+      this._districts = {
+        cityCode: item.CityCode,
+        cityName: item.CityName,
+        code: item.DistrictCode,
+        name: item.DistrictName
+      }
+      this._form.controls['District'].patchValue({
+          code: item.DistrictCode,
+          name: item.DistrictName
+      });
+    }
+    if (item && item.WardCode) {
+      this._wards = {
+        cityCode: item.CityCode,
+        cityName: item.CityName,
+        districtCode: item.DistrictCode,
+        districtName: item.DistrictName,
+        code: item.WardCode,
+        name: item.WardName
+      }
+      this._form.controls['Ward'].patchValue({
+          code: item.WardCode,
+          name: item.WardName
+      });
+    }
+    if (item && (item.Street)) {
+      this._street = item.Street;
+      this._form.controls['Street'].setValue(item.Street);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   prepareModel() {
@@ -434,9 +503,11 @@ export class ModalEditPartnerComponent implements OnInit {
     if(formModel.TaxCode != null) {
         this.data['TaxCode'] = formModel.TaxCode ;
     }
+
     this.data['City'] = formModel.City ;
     this.data['District'] = formModel.District;
     this.data['Ward'] = formModel.Ward;
+
     if(formModel.Customer != null) {
         this.data['Customer'] = formModel.Customer;
     }

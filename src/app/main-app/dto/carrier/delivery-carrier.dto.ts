@@ -1,101 +1,76 @@
 import { FastSaleOrder_ReceiverDTO, FastSaleOrder_ServiceExtraDTO } from '../fastsaleorder/fastsaleorder.dto';
-import { ProductDTO } from '../product/product.dto';
 
 export interface DeliveryCarrierDTO {
   IsPrintCustom: boolean;
   Id: number;
-
   Name: string;
-  SenderName: string;
-
-  Sequence?: number;
+  SenderName?: any;
+  Sequence: number;
   Active: boolean;
   DeliveryType: string;
-
   DeliveryTypeGet: string;
-
-  ProductId?: number;
-  Product: ProductDTO;
-
-  FixedPrice?: number;
-  CompanyId?: number;
-  Amount?: number;
-
-  FreeOver?: boolean;
-
-  //This percentage will be added to the shipping price.
-  Margin?: number;
-  hcmPTConfigId?: number;
-
-  GHN_ApiKey: string;
-  GHN_ClientId: string;
+  ProductId?: any;
+  FixedPrice?: any;
+  CompanyId?: any;
+  Amount?: any;
+  FreeOver: boolean;
+  Margin?: any;
+  HCMPTConfigId?: any;
+  GHN_ApiKey?: any;
+  GHN_ClientId?: any;
   GHN_NoteCode: string;
-  GHN_PaymentTypeId?: number;
-  GHN_PackageWidth?: number;
-  GHN_PackageLength?: number;
-  GHN_PackageHeight?: number;
-  GHN_ServiceId: string;
-
-  ViettelPost_UserName: string;
-  ViettelPost_Password: string;
-  ViettelPost_Token: string;
+  GHN_PaymentTypeId: number;
+  GHN_PackageWidth: number;
+  GHN_PackageLength: number;
+  GHN_PackageHeight: number;
+  GHN_ServiceId?: any;
+  ViettelPost_UserName?: any;
+  ViettelPost_Password?: any;
+  ViettelPost_Token?: any;
   ViettelPost_ServiceId: string;
-  ViettelPost_ProductType: string;
-  ViettelPost_OrderPayment?: number;
-
-  ShipChung_ServiceId: string;
-  ShipChung_PaymentTypeID?: number;
-  ShipChung_ApiKey: string;
-
-  HCMPost_sI: string;
-  HCMPost_sK: string;
-  HCMPost_ShopID: string;
-  HCMPost_ShopName: string;
-  HCMPost_ServiceId: string;
-
-  tokenShip: string;
-
-  VNPost_ClientId: string;
-  VNPost_ServiceId: string;
+  ViettelPost_ProductType?: any;
+  ViettelPost_OrderPayment?: any;
+  ShipChung_ServiceId?: any;
+  ShipChung_PaymentTypeID?: any;
+  ShipChung_ApiKey?: any;
+  HCMPost_sI?: any;
+  HCMPost_sK?: any;
+  HCMPost_ShopID?: any;
+  HCMPost_ShopName?: any;
+  HCMPost_ServiceId?: any;
+  TokenShip?: any;
+  VNPost_ClientId?: any;
+  VNPost_ServiceId?: any;
   VNPost_IsContracted: boolean;
-  VNPost_PickupType: string;
-
-  GHTK_Token: string;
-  GHTK_ClientId: string;
-  GHTK_IsFreeShip?: number;
-
-  SuperShip_Token: string;
-  SuperShip_ClientId: string;
+  VNPost_PickupType?: any;
+  GHTK_Token?: any;
+  GHTK_ClientId?: any;
+  GHTK_IsFreeShip: number;
+  SuperShip_Token?: any;
+  SuperShip_ClientId?: any;
   SuperShip_Config: string;
-
-  Config_TransportId: string;
-  Config_TransportName: string;
-
-  EMS_Service: string;
-  EMS_Inventory: string;
-  EMS_Token: string;
-
-  TinToc_Service: string;
-  TinToc_ServiceCode: string;
-
-  NinjaVan_ClientId: string;
-  NinjaVan_ClientSecret: string;
+  Config_TransportId?: any;
+  Config_TransportName?: any;
+  EMS_Service?: any;
+  EMS_Inventory?: any;
+  EMS_Token?: any;
+  TinToc_Service?: any;
+  TinToc_ServiceCode?: any;
+  NinjaVan_ClientId?: any;
+  NinjaVan_ClientSecret?: any;
   NinjaVan_ServiceType: string;
   NinjaVan_ServiceLevel: string;
-  NinjaVan_Token: string;
+  NinjaVan_Token?: any;
   NinjaVan_BranchId: string;
-
-  ZTO_PickupType: string;
-  ZTO_ProductType: string;
-  ZTO_SendWayType: string;
-  ZTO_AppCode: string;
-  ZTO_SecretKey: string;
-
+  ZTO_PickupType?: any;
+  ZTO_ProductType?: any;
+  ZTO_SendWayType?: any;
+  ZTO_AppCode?: any;
+  ZTO_SecretKey?: any;
   Config_DefaultFee?: number;
   Config_DefaultWeight?: number;
-
   ExtrasText: string;
-  Extras: DeliveryCarrier_ExtraDTO;
+  Extras?: any;
 }
 
 export interface DeliveryCarrier_ExtraDTO {

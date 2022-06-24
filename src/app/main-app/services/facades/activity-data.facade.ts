@@ -1,8 +1,7 @@
-import { ChangeDetectorRef, EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
-import { Observable, of, Subject } from "rxjs";
+import { EventEmitter, Injectable, OnDestroy } from "@angular/core";
+import { Observable, Subject } from "rxjs";
 import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
-import { SharedService } from "../shared.service";
 import { SignalRConnectionService } from "../signalR/signalR-connection.service";
 import { get as _get, maxBy as _maxBy } from 'lodash';
 import { ActivityStatus, ConversationType } from "src/app/lib/enum/message/coversation-message";
@@ -10,9 +9,8 @@ import { ActivityFacebookState } from "../facebook-state/activity-facebook.state
 import { CRMTeamService } from "../crm-team.service";
 import { FacebookPostService } from "../facebook-post.service";
 import { ActivityMatchingService } from "../conversation/activity-matching.service";
-import { finalize, map, shareReplay, takeUntil } from "rxjs/operators";
-import { CRMMessagesRequest, MakeActivityItemWebHook, MakeActivityMessagesDTO } from "../../dto/conversation/make-activity.dto";
-import { tr } from "date-fns/locale";
+import { map, shareReplay, takeUntil } from "rxjs/operators";
+import { CRMMessagesRequest } from "../../dto/conversation/make-activity.dto";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSHelperArray, TDSHelperString } from "tds-ui/shared/utility";
 import { ConversationDataFacade } from "./conversation-data.facade";
@@ -42,7 +40,6 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
     private crmTeamService: CRMTeamService,
     private message: TDSMessageService,
     private service: ActivityMatchingService,
-    private conversationDataFacade: ConversationDataFacade,
     private sgRConnectionService: SignalRConnectionService) {
       super(apiService);
 
@@ -637,7 +634,7 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
   getTeamByPageId(pageId: any) {
     let team = {};
     this.lstTeam.forEach((x: any) => {
-      var items = x.Childs.filter((a: any) => {
+      let items = x.Childs.filter((a: any) => {
           if (a.Facebook_PageId == pageId) { return a }
       });
       if (items.length > 0) {
@@ -692,7 +689,7 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
 
           return this.activityFbState.setActivity(pageId, psid, type, value);
 
-      }), shareReplay({ bufferSize: 1, refCount: true }), takeUntil(this.destroy$));
+      }), shareReplay({ bufferSize: 1, refCount: true }));
     }
   }
 

@@ -74,7 +74,10 @@ import { TDSFilterStatusModule } from 'tds-ui/filter-status';
 import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
 import { TDSStepsModule } from 'tds-ui/step';
 import { TDSPageHeaderModule } from 'tds-ui/page-header';
+import { ModalBatchRefundComponent } from './components/modal-batch-refund/modal-batch-refund.component';
+import { AccountJournalService } from '../../services/account-journal.service';
 import { ShipStatusDeliveryComponent } from './components/ship-status-delivery/ship-status-delivery.component';
+import { TDSTimelineModule } from 'tds-ui/timeline';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -102,7 +105,8 @@ const SERVICES = [
   AttachmentDataFacade,
   AttachmentService,
   AttachmentState,
-  OdataProductService
+  OdataProductService,
+  AccountJournalService
 ]
 
 @NgModule({
@@ -120,6 +124,7 @@ const SERVICES = [
     BillExpandComponent,
     HistoryDeliveryStatusComponent,
     HistoryDeliveryStatusDetailComponent,
+    ModalBatchRefundComponent,
     CrossCheckingStatusComponent,
     ShipCodeDeliveryComponent,
     ShipStatusDeliveryComponent
@@ -139,8 +144,7 @@ const SERVICES = [
     TDSAvatarModule,
     TDSBadgeModule,
     TDSPopoverModule,
-    TDSSelectModule ,
-    FormsModule,
+    TDSSelectModule,
     TDSToolTipModule,
     TDSModalModule,
     FormsModule,
@@ -165,7 +169,8 @@ const SERVICES = [
     TDSButtonSpitModule,
     TDSConversationsModule,
     UploadImageModule,
-    TDSInputNumberModule
+    TDSInputNumberModule,
+    TDSTimelineModule
   ],
   providers: [
    ...SERVICES,
