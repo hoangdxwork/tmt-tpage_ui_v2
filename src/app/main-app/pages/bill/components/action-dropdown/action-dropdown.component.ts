@@ -16,9 +16,9 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { ModalPaymentComponent } from '../../../partner/components/modal-payment/modal-payment.component';
-import { ModalBatchRefundComponent } from '../modal-batch-refund/modal-batch-refund.component';
 import { FastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { ShipStatusDeliveryComponent } from '../ship-status-delivery/ship-status-delivery.component';
+import { ModalBatchRefundComponent } from '../modal-batch-refund/modal-batch-refund.component';
 
 @Component({
   selector: 'action-dropdown',
@@ -425,22 +425,16 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
 
     if (this.checkValueEmpty() == 1) {
       let idsSelect: any = [];
-      let hasRefund:any;
 
       this.idsModel.map((x: any) => {
         let exits = this.lstOfData.filter((a: any) => a.Id == x)[0];
         if (exits && exits.State == 'open' || exits.State == 'paid') {
-          if(exits.IsRefund) hasRefund = true;
           idsSelect.push(x);
         }
       });
 
       if (!TDSHelperArray.hasListValue(idsSelect)) {
         return this.message.error('Chỉ gửi yêu cầu thanh toán với PBH có trạng thái đã xác nhận hoặc đã thanh toán');
-      }
-
-      if(hasRefund){
-        return this.message.error('Danh sách đã chọn có hóa đơn đã được trả hàng');
       }
 
       this.modal.create({

@@ -136,14 +136,6 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loadSummaryStatus();
     this.loadTags();
     this.loadGridConfig();
-    this.fastSaleOrderService.refundSucess$.subscribe(
-      (res:boolean)=>{
-        this.pageIndex = 1;
-        this.pageSize = 20;
-        this.loadSummaryStatus();
-        this.loadData(this.pageSize, this.pageIndex);
-      }
-    )
   }
 
   loadGridConfig() {
