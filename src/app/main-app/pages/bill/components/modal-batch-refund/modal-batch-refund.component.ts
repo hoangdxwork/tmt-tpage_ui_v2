@@ -32,13 +32,10 @@ export class ModalBatchRefundComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
+    this.loadPaymentMethod();
   }
 
   loadData() {
-    this.accJournalService.getWithCompanyPayment().pipe(takeUntil(this._destroy)).subscribe(res => {
-      this.listAcJournal = [...res.value];
-      this.AcJournalCurrent = this.listAcJournal.filter((x) => x.Type == 'cash')[0]
-    });
     let model = {
       ids: this.ids,
     }
@@ -48,6 +45,13 @@ export class ModalBatchRefundComponent implements OnInit {
     }, err => {
       return this.message.error(err.error.message ?? 'Không tải được dữ liệu');
     })
+  }
+
+  loadPaymentMethod() {
+    this.accJournalService.getWithCompanyPayment().pipe(takeUntil(this._destroy)).subscribe(res => {
+      this.listAcJournal = [...res.value];
+      this.AcJournalCurrent = this.listAcJournal.filter((x) => x.Type == 'cash')[0]
+    });
   }
 
   onCancel() {
@@ -67,7 +71,7 @@ export class ModalBatchRefundComponent implements OnInit {
       payment_check: this.payment,
       payment_status: Number(this.AcJournalCurrent.Id),
     }
-    this.fastSaleOrderService.actionBatchRefund(model).subscribe(res => {
+    this.fastSaleOrderService.actionBatchRefund(model).pipe(takeUntil(this._destroy)).subscribe(res => {
       this.message.success("Tạo trả hàng thành công");
       this.modal.destroy(null);
     },err=>{

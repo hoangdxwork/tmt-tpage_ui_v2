@@ -77,6 +77,7 @@ import { TDSPageHeaderModule } from 'tds-ui/page-header';
 import { ModalBatchRefundComponent } from './components/modal-batch-refund/modal-batch-refund.component';
 import { AccountJournalService } from '../../services/account-journal.service';
 import { ShipStatusDeliveryComponent } from './components/ship-status-delivery/ship-status-delivery.component';
+import { TDSTimelineModule } from 'tds-ui/timeline';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -168,7 +169,8 @@ const SERVICES = [
     TDSButtonSpitModule,
     TDSConversationsModule,
     UploadImageModule,
-    TDSInputNumberModule
+    TDSInputNumberModule,
+    TDSTimelineModule
   ],
   providers: [
    ...SERVICES,
