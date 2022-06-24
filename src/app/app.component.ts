@@ -8,21 +8,19 @@ import { PageLoadingService } from './shared/services/page-loading.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
 })
 
 export class AppComponent {
   title = 'T-Page';
   public isLoaded: boolean = false;
-  constructor(
-    public libCommon: TCommonService,
+
+  constructor(public libCommon: TCommonService,
     public auth: TAuthService,
     public cache: THelperCacheService,
     public zone: NgZone,
     public router: Router,
     private loader: PageLoadingService) {
-
-    this.loader.show();
+      this.loader.show();
   }
 
   ngOnInit() {

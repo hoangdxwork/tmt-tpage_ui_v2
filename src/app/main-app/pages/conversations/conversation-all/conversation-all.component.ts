@@ -114,6 +114,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   onChangeConversation(team: any) {
     this.validateData();
+
+    // Sử dụng ngZone chạy bất đồng bộ dữ liệu
     this.ngZone.run(() => {
         this.dataSource$ = this.conversationDataFacade.makeDataSource(team.Facebook_PageId, this.type);
         this.loadConversations((this.dataSource$));

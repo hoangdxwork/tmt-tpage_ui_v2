@@ -85,8 +85,9 @@
                       <div class="col-span-2 flex">
                           <tds-form-field class="w-full rounded-br-none rounded-tr-none">
                               <input tdsInput placeholder="Nhập số điện thoại" formControlName="Phone" />
-                              <button tds-button-icon type="button" tdsAddOnRight size="md" color="secondary" size="md" class="">
-                                  <span class="flex items-center text-neutral-1-900">
+                              <button tds-button-icon type="button" tdsAddOnRight size="md" color="success" size="md"
+                                  tds-tooltip tooltipTitle="Gợi ý địa chỉ từ TPos" (click)="checkAddressByPhone()" style="border-radius: 0">
+                                  <span class="flex items-center text-neutral-1-900" style="color: #fff;">
                                       <i class="tdsi-search-fill"></i>
                                   </span>
                               </button>
@@ -239,16 +240,21 @@
                               <tbody>
                                   <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
                                       <tr>
-                                          <td>{{ i + 1 }}</td>
-                                          <td>{{ data.Street }}</td>
+                                          <td class="text-body-2">{{ i + 1 }}</td>
+                                          <td class="text-body-2">{{ data.Street }}</td>
                                           <td>
                                               <div class="flex gap-x-2">
-                                                  <button tds-button-icon  type="button" color="secondary" size="sm" class="" (click)="openItemAddresses(data, i)">
+                                                  <button tds-button-icon type="button" color="secondary" size="sm" (click)="openItemAddresses(data, i)">
                                                       <span class="flex items-center">
                                                           <i class="tdsi-edit-fill"></i>
                                                       </span>
                                                   </button>
-                                                  <button tds-button-icon  type="button" color="secondary" size="sm" class="" (click)="removeAddresses(i)">
+                                                  <button tds-button-icon type="button" color="secondary" size="sm" (click)="selectItem(data)">
+                                                      <span class="flex items-center">
+                                                          <i class="tdsi-information-fill"></i>
+                                                      </span>
+                                                  </button>
+                                                  <button tds-button-icon type="button" color="secondary" size="sm" (click)="removeAddresses(i)">
                                                       <span class="flex items-center">
                                                           <i class="tdsi-trash-fill"></i>
                                                       </span>

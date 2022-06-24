@@ -147,8 +147,8 @@ export interface PartnerDetailDTO {
   PropertyPaymentTermId?: any;
   PropertySupplierPaymentTermId?: any;
   CategoryId: number;
-  DateCreated: Date;
-  BirthDay: Date;
+  DateCreated: Date | any;
+  BirthDay: Date | any;
   DepositAmount?: any;
   Status: string;
   StatusText: string;

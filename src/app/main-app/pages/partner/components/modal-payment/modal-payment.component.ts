@@ -17,9 +17,10 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
   templateUrl: './modal-payment.component.html'
 })
 export class ModalPaymentComponent implements OnInit, OnDestroy {
+
   @Input() dataModel!:RegisterPayment;
 
-  lstAcJournal:AccountRegisterPayment[] = [];
+  lstAcJournal: AccountRegisterPayment[] = [];
   private destroy$ = new Subject<void>();
   isSubmit = false;
 

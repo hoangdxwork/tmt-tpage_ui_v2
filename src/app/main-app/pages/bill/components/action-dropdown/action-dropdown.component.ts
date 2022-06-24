@@ -408,15 +408,12 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
               dataModel: res
             }
           });
-        },
-        err => {
+        }, err => {
           this.message.error(err.error.message ?? 'Không tải được dữ liệu');
         }
       )
     }
   }
-
-  public selectedUsers: any[] = [];
 
   actionBatchRefund(): any {
     if (this.isProcessing) {

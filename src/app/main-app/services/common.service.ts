@@ -88,7 +88,7 @@ export class CommonService extends BaseSevice {
 
   getPriceListItems(id: number): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/api/common/getpricelistitems?id=${id}`,
+      url: `${this._BASE_URL}/${this.baseRestApi}/getpricelistitems?id=${id}`,
       method: TApiMethodType.get,
     }
 
@@ -134,6 +134,15 @@ export class CommonService extends BaseSevice {
   getStatusTypeExt(): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/common/statusTypeExt`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  checkAddressByPhone(phone: string): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/checkAddressByPhone?phone=${phone}`,
       method: TApiMethodType.get,
     }
 

@@ -340,7 +340,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   loadTeamById(id: any) {
-    this.cRMTeamService.getTeamById(id).subscribe((team: any) => {
+    this.cRMTeamService.getTeamById(id).pipe(takeUntil(this.destroy$)).subscribe((team: any) => {
         this.dataModel.Team.Name = team.Name;
         this.dataModel.Team.Facebook_PageName = team.Facebook_PageName;
     })
@@ -349,7 +349,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   updateForm(data: FastSaleOrder_DefaultDTOV2) {
     //TODO: cập nhật price of product theo bảng giá
     if (data.PriceListId) {
-      this.commonService.getPriceListItems(data.PriceListId).subscribe((res: any) => {
+      this.commonService.getPriceListItems(data.PriceListId).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
           this.priceListItems = res;
       }, error => {
           this.message.error('Load bảng giá đã xảy ra lỗi!')
@@ -477,6 +477,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       this._form.controls["Ship_Receiver"].reset();
       this._form.controls['Partner'].setValue(partner);
       this._form.controls['PartnerId'].setValue(partner.Id);
+
       let model = this.prepareModel();
 
       return this.fastSaleOrderService.onChangePartnerPriceList({ model: model })
@@ -500,21 +501,18 @@ export class AddBillComponent implements OnInit, OnDestroy {
             dataModel.ReceiverPhone = partnerModel.Phone;
             dataModel.ReceiverAddress = partnerModel.Street;
 
-            dataModel.Ship_Receiver.Name =  partnerModel.Name;
-            dataModel.Ship_Receiver.Phone =  partnerModel.Phone;
-            dataModel.Ship_Receiver.Street =  partnerModel.Street;
+            dataModel.Ship_Receiver.Name = partnerModel.Name;
+            dataModel.Ship_Receiver.Phone = partnerModel.Phone;
+            dataModel.Ship_Receiver.Street = partnerModel.Street;
 
             dataModel.Ship_Receiver.City = {
-              code: partnerModel.CityCode,
-              name: partnerModel.CityName
+              code: partnerModel.CityCode, name: partnerModel.CityName
             }
             dataModel.Ship_Receiver.District = {
-              code: partnerModel.DistrictCode,
-              name: partnerModel.DistrictName
+              code: partnerModel.DistrictCode, name: partnerModel.DistrictName
             }
             dataModel.Ship_Receiver.Ward = {
-              code: partnerModel.WardCode,
-              name: partnerModel.WardName
+              code: partnerModel.WardCode, name: partnerModel.WardName
             }
 
             this._form.controls['PriceList'].setValue(dataModel.PriceList);
@@ -1794,9 +1792,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     // add
     let event = this._form.controls['Carrier'].value;
     if (event) {
-      this.calculateFee(event).then((res: any) => {
-
-      })
+      this.calculateFee(event).then((res: any) => {})
       .catch((e: any) => {
           let error = e.error.message || e.error.error_description;
           if (error)
@@ -1820,12 +1816,12 @@ export class AddBillComponent implements OnInit, OnDestroy {
     let idx = this.shipExtraServices.findIndex((f: any) => f.ServiceId === 'XMG');
     this.shipExtraServices[idx].ExtraMoney = this.extraMoney;
     let event = this._form.controls['Carrier'].value;
-    this.calculateFee(event, true).then((res: any) => {
 
-    }).catch((e: any) => {
-      let error = e.error.message || e.error.error_description;
-      if(error)
-      this.message.error(error);
+    this.calculateFee(event, true).then((res: any) => {})
+     .catch((e: any) => {
+        let error = e.error.message || e.error.error_description;
+        if(error)
+          this.message.error(error);
     });
 
     this.visibleShipExtraMoney = false;
@@ -1916,19 +1912,15 @@ export class AddBillComponent implements OnInit, OnDestroy {
     if (this.id) {
       this.isLoading = true;
       this.fastSaleOrderService.update(this.id, model).pipe(takeUntil(this.destroy$), finalize(()=>{this.isLoading = false})).subscribe((res: any) => {
-        this.isLoading = false;
         this.message.success('Cập nhật phiếu bán hàng thành công!');
       }, error => {
-        this.isLoading = false;
         this.message.error(`${error.error.message}` || 'Cập nhật phiếu bán hàng thất bại!');
       })
     } else {
       this.isLoading = true;
       this.fastSaleOrderService.insert(model).pipe(takeUntil(this.destroy$), finalize(()=>{this.isLoading = false})).subscribe((res: any) => {
-        this.isLoading = false;
         this.message.success('Tạo mới phiếu bán hàng  thành công!');
       }, error => {
-        this.isLoading = false;
         this.message.error(`${error.error.message}` || 'Tạo mới phiếu bán hàng thất bại!');
       });
     }
@@ -2029,15 +2021,24 @@ export class AddBillComponent implements OnInit, OnDestroy {
     model.ReceiverName = formModel.ReceiverName ? formModel.ReceiverName : model.ReceiverName;
     model.ReceiverPhone = formModel.ReceiverPhone ? formModel.ReceiverPhone : model.ReceiverPhone;
 
-    model.ReceiverDate = formModel.ReceiverDate ? formModel.ReceiverDate.toISOString() : model.ReceiverDate.toISOString();
+    if(formModel.ReceiverDate) {
+      model.ReceiverDate = formModel.ReceiverDate.toISOString();
+    }
+
     model.ReceiverAddress = formModel.ReceiverAddress ? formModel.ReceiverAddress : model.ReceiverAddress;
     model.ReceiverNote = formModel.ReceiverNote ? formModel.ReceiverNote : model.ReceiverNote;
 
     model.User = formModel.User ? formModel.User : model.User;
     model.UserId = formModel.User ? formModel.User.Id : model.UserId;
-    model.DateOrderRed = formModel.DateOrderRed ? formModel.DateOrderRed?.toISOString() : model.DateOrderRed?.toISOString();
+
+    if(formModel.DateOrderRed) {
+      model.DateOrderRed = formModel.DateOrderRed.toISOString();
+    }
+    if(formModel.DateInvoice) {
+      model.DateInvoice = formModel.DateInvoice.toISOString();
+    }
+
     model.State = formModel.State ? formModel.State : model.State;
-    model.DateInvoice = formModel.DateInvoice ? formModel.DateInvoice.toISOString() : model.DateInvoice.toISOString();
     model.NumberOrder = formModel.NumberOrder ? formModel.NumberOrder : model.NumberOrder;
     model.Comment = formModel.Comment ? formModel.Comment : model.Comment;
     model.Seri = formModel.Seri ? formModel.Seri : model.Seri;

@@ -1,4 +1,4 @@
-import { ModalPaymentComponent } from './../modal-payment/modal-payment.component';
+import { ModalPaymentComponent } from '../modal-payment/modal-payment.component';
 import { Component, OnInit, Input, ViewContainerRef, ChangeDetectorRef, AfterViewInit, HostListener } from '@angular/core';
 import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -43,11 +43,11 @@ interface infoPartnerDto {
 }
 
 @Component({
-  selector: 'app-info-order-debt-of-partner',
-  templateUrl: './info-order-debt-of-partner.component.html'
+  selector: 'expand-partner-detail',
+  templateUrl: './expand-partner-detail.component.html'
 })
 
-export class InfoOrderDebtOfPartnerComponent implements OnInit, AfterViewInit {
+export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
 
   lstCreditDebit: Array<CreditDebitDTO> = [];
   pageSize1 = 20;
@@ -129,6 +129,8 @@ export class InfoOrderDebtOfPartnerComponent implements OnInit, AfterViewInit {
   showModalPayment(){
     this.partnerService.getRegisterPaymentPartner({id: this.dataPartner.Id}).subscribe((res) => {
         if(res) {
+          delete res['@odata.context'];
+
           this.modalService.create({
               title: 'Đăng ký thanh toán',
               content: ModalPaymentComponent,
