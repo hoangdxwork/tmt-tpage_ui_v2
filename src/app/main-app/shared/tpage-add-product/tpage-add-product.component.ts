@@ -91,7 +91,8 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
           return this.productIndexDBService.loadProductIndexDBV2()
             .pipe(map((x: KeyCacheIndexDBDTO) => { return [res, x] }
           ))}
-      )).subscribe(([res, x]) => {
+      ))
+      .subscribe(([res, x]) => {
 
         delete res['@odata.context'];
         this.message.success(Message.Product.InsertSuccess);

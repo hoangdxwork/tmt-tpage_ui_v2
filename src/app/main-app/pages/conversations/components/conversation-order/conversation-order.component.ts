@@ -1,23 +1,21 @@
+import { vi_VN } from 'tds-ui/i18n';
+import { formatNumber } from '@angular/common';
 import { ModalApplyPromotionComponent } from './../modal-apply-promotion/modal-apply-promotion.component';
 import { OnDestroy } from '@angular/core';
 import { SaleSettingsDTO } from './../../../../dto/setting/setting-sale-online.dto';
-import { CommonService } from 'src/app/main-app/services/common.service';
-import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, Output, SimpleChanges, SkipSelf, EventEmitter, ViewContainerRef } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, pipe, Observable } from 'rxjs';
+import { Component, Input, OnInit, Output, EventEmitter, ViewContainerRef } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { Subject, Observable, takeUntil, finalize } from 'rxjs';
 import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
-import { ConversationEventFacade } from 'src/app/main-app/services/facades/conversation-event.facade';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { takeUntil, finalize } from 'rxjs/operators';
 import { ConversationOrderForm, ConversationOrderProductDefaultDTO } from 'src/app/main-app/dto/coversation-order/conversation-order.dto';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { CheckFormHandler } from 'src/app/main-app/services/handlers/check-form.handler';
-import { FastSaleOrderRestDTO, FastSaleOrder_ServiceExtraDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
+import { FastSaleOrderRestDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { GeneralConfigsFacade } from 'src/app/main-app/services/facades/general-config.facade';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { CalculateFeeResponse_Data_ServiceDTO, CalculateFeeResponse_Data_Service_ExtraDTO, DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
@@ -45,7 +43,7 @@ import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/util
     templateUrl: './conversation-order.component.html'
 })
 
-export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy {
+export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
   @Input() data!: ConversationMatchingItem;
   @Input() team!: CRMTeamDTO;
@@ -53,8 +51,6 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   @Output() currentOrderCode = new EventEmitter<string | undefined>();
 
   _form!: FormGroup;
-  private destroy$ = new Subject<void>();
-
   editNoteProduct: string | null = null;
 
   isLoading: boolean = false;
@@ -76,21 +72,24 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   detailEdit?: ConversationOrderProductDefaultDTO;
   detailDiscount:number = 0;
 
+  carriers:DeliveryCarrierDTO[] = [];
+  keyFilterUser: string = '';
+  isOpenCarrier = false;
+
+  public numberWithCommas = (value: number) => `${formatNumber(value || 0, vi_VN.locale)}`;
+  public parserComas = (value: string) => value.replace(',', '');
+
+  private destroy$ = new Subject<void>();
+
   constructor(
     private message: TDSMessageService,
-    private conversationEventFacade: ConversationEventFacade,
     private conversationOrderFacade: ConversationOrderFacade,
     private saleOnline_OrderService: SaleOnline_OrderService,
-    private modal: TDSModalService,
     private applicationUserService: ApplicationUserService,
-    private crmService: CRMTeamService,
     private fb: FormBuilder,
-    private cdr: ChangeDetectorRef,
-    private activatedRoute: ActivatedRoute,
     private checkFormHandler: CheckFormHandler,
     private modalService: TDSModalService,
     private generalConfigsFacade: GeneralConfigsFacade,
-    private commonService: CommonService,
     private deliveryCarrierService: DeliveryCarrierService,
     private crmTeamService: CRMTeamService,
     private partnerService: PartnerService,
@@ -100,8 +99,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
     private _formHandler: OrderFormHandler,
     private carrierHandler: CarrierHandler,
     private viewContainerRef: ViewContainerRef,
-    private saleHandler: SaleHandler,
-    private router: Router) {
+    private saleHandler: SaleHandler) {
       this.createForm();
   }
 
@@ -131,8 +129,9 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   createSaleModel() {
-    this._formHandler.createBillDefault().subscribe(res => {
+    this._formHandler.createBillDefault().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.saleModel = res;
+
       this.updateShipExtraServices(res.Carrier);
       this.update_formByBill(res);
     });
@@ -145,7 +144,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   loadUsers() {
-    this.applicationUserService.getActive().subscribe(res => {
+    this.applicationUserService.getActive().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.lstUser = res.value;
     });
   }
@@ -159,7 +158,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   loadConfig() {
-    this.generalConfigsFacade.getSaleConfigs().subscribe(res => {
+    this.generalConfigsFacade.getSaleConfigs().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.saleSettings = res?.SaleSetting;
     });
   }
@@ -167,6 +166,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   loadCarrier() {
     this.deliveryCarrierService.dataCarrierActive$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.lstCarriers = res;
+      this.carriers = res;
     });
   }
 
@@ -206,22 +206,36 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
       StatusText: [null],
       Details: this.fb.array([]),
     });
-
     order.Facebook_UserName = this.data?.name;
     this.visibleIndex = -1;
 
     let details = new FormArray([]);
+
     //TODO: thêm danh sách sản phẩm vào form
     if (order["Details"] && order["Details"].length > 0) {
       order["Details"].forEach(detail => {
         details.push(this.fb.group(detail));
       });
     }
-
     this._form.patchValue(order);
     this._form.setControl("Details", details);
-
     this.updateTotalAmount();
+  }
+
+  searchCarrier() {
+    let data = this.carriers;
+    let key = this.keyFilterUser;
+    
+    if (TDSHelperString.hasValueString(key)) {
+      key = TDSHelperString.stripSpecialChars(key.trim());
+    }
+    data = data.filter((x) =>
+      (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
+    this.lstCarriers = data
+  }
+
+  onVisibleChange(){
+    this.isOpenCarrier = true;
   }
 
   onChangeCarrier(carrier: DeliveryCarrierDTO) {
@@ -231,11 +245,10 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
     this.isEnableInsuranceFee = false;
 
     this.carrierHandler.changeCarrierV2(this.saleModel, this._form, carrier, this.shipExtraServices)
-      .pipe(finalize(() => this.isLoadingCarrier = false))
+      .pipe(finalize(() => {this.isLoadingCarrier = false; this.isOpenCarrier = false;}))
       .subscribe(res => {
         this.lstShipServices = res?.Services || [];
         this.updateShipExtraServices(carrier);
-
       }, error => {
           this.message.error(error?.error_description ? error.error_description : JSON.stringify(error));
       });
@@ -261,12 +274,13 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   removeDetail(index: number) {
     const control = this._form.controls["Details"] as FormArray;
     control.removeAt(index);
-
     this.updateTotalAmount();
   }
 
   updateTotalAmount() {
-    this.saleHandler.updateTotalAmount(this._form);
+    let that = this;
+
+    this.saleHandler.updateTotalAmount(that._form);
     this.updateTotalAmountBy_form();
   }
 
@@ -284,19 +298,18 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
     this.isLoading = true;
     let orderModel = this.prepareOrderModel();
     
-    this.saleOnline_OrderService.insertFromMessage({model: orderModel}).subscribe(
-      (res) => {
+    this.saleOnline_OrderService.insertFromMessage({model: orderModel})
+      .pipe(finalize(()=>this.isLoading = false),takeUntil(this.destroy$))
+      .subscribe((res) => {
         this._form.controls["Id"].setValue(res.Id);
         this._form.controls["PartnerId"].setValue(res.PartnerId);
         this.message.success((orderModel.Id && orderModel.Code) ? Message.Order.UpdateSuccess : Message.Order.InsertSuccess);
-        this.isLoading = false;
         // this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
         this.partnerService.onLoadPartnerFromTabOrder.emit(this.data);
         if(print === "print") {
           this.orderPrintService.printOrder(res, null);
         }
       }, error => {
-        this.isLoading = false;
         this.message.error(`${error?.error?.message}` || JSON.stringify(error));
       });
   }
@@ -304,7 +317,6 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   onSaveInvoice(print:string){
     let billModel = this.prepareBillModel(); // Bản chất đã change this.saleModel
     billModel.FormAction = print;
-
     this.isLoading = false;
     
     if(this.isCheckBillValue(billModel) === 1) {
@@ -312,7 +324,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
         this.isLoading = true;
         let that = this;
 
-        this.fastSaleOrderService.saveV2(billModel, print === "draft").subscribe(
+        this.fastSaleOrderService.saveV2(billModel, print === "draft").pipe(takeUntil(this.destroy$)).subscribe(
           (bill) => {
             bill.Success ? this.message.success(bill.Message || 'Lưu thành công') : this.message.error(bill.Message || 'Lưu thất bại');
             // TODO: Cập nhật doanh thu, danh sách phiếu bán hàng gần nhất
@@ -382,6 +394,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
 
   calculateFee(carrier: TDSSafeAny) {
     this.isLoadingCarrier = true;
+
     this.carrierHandler.calculateFee(this.saleModel, this._form, carrier, this.shipExtraServices)
       .pipe(finalize(() => this.isLoadingCarrier = false))
       .subscribe(res => {
@@ -394,6 +407,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   updatePartner(pageId: string | undefined, psid: string) {
     if(pageId && TDSHelperString.hasValueString(psid)) {
       this.isLoading = true;
+
       this.partnerService.checkConversation(pageId, psid)
         .pipe(finalize(() => this.isLoading = false))
         .subscribe(res => {
@@ -411,7 +425,6 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
     if(!TDSHelperString.hasValueString(model.Facebook_ASUserId)) {
       model.Facebook_ASUserId = this.data?.psid;
     }
-
     return model;
   }
 
@@ -427,7 +440,6 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
 
     if(this.saleModel) {
       this.saleModel.Address = formValue.Address || formValue.Street;
-
       if (this.saleModel?.Address) {
         this.saleModel.Ship_Receiver = {
           Name: formValue["Name"],
@@ -508,7 +520,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   showModalAddPromotion(){
-    const modal = this.modalService.create({
+    this.modalService.create({
       title: 'Chọn khuyến mãi',
       content: ModalApplyPromotionComponent,
       size: "lg",
@@ -517,7 +529,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
   }
 
   showModalConfigProduct() {
-    const modal = this.modalService.create({
+    this.modalService.create({
         title: 'Chọn bảng giá',
         content: TpageConfigProductComponent,
         size: "lg",
@@ -537,7 +549,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
       }
     });
 
-    modal.componentInstance?.selectProduct.subscribe((res: DataPouchDBDTO) =>{
+    modal.componentInstance?.selectProduct.pipe(takeUntil(this.destroy$)).subscribe((res: DataPouchDBDTO) =>{
       if(TDSHelperObject.hasValue(res)) {
         let product = this.convertDetail(res);
         this.selectProduct(product);
@@ -556,7 +568,7 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
       }
     });
 
-    modal.componentInstance?.onSuccess.subscribe(res => {
+    modal.componentInstance?.onSuccess.pipe(takeUntil(this.destroy$)).subscribe(res => {
       this._form.controls.Tax.setValue(res);
       this.updateTotalAmount();
     });
@@ -689,10 +701,6 @@ export class ConversationOrderComponent  implements OnInit, OnChanges, OnDestroy
         this.updateTotalAmount();
       }
     }
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    // console.log(changes.data);
   }
 
   ngOnDestroy(): void {

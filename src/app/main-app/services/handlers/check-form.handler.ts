@@ -126,6 +126,7 @@ export class CheckFormHandler {
     // model.Telephone = formValue.Telephone;
 
     model.Tax = formValue.Tax;
+    model.AmountDeposit = formValue.AmountDeposit;
     model.Discount = formValue.Discount;
     model.AmountTax = formValue.AmountTax;
     model.AmountUntaxed = formValue.AmountUntaxed;

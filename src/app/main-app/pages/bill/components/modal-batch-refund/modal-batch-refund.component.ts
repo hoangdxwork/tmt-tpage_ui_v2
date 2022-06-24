@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
+import { AccountJournalDTO } from 'src/app/main-app/dto/account/account.dto';
 import { AccountJournalService } from 'src/app/main-app/services/account-journal.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { TDSMessageService } from 'tds-ui/message';
@@ -14,10 +15,11 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 export class ModalBatchRefundComponent implements OnInit {
 
   @Input() ids!: any[];
+
   private _destroy = new Subject<void>();
   listUser: TDSSafeAny[] = [];
-  listAcJournal: any[] = [];
-  AcJournalCurrent: any;
+  listAcJournal: AccountJournalDTO[] = [];
+  AcJournalCurrent!: AccountJournalDTO;
   payment: boolean = false;
   isLoading: boolean = false;
 
@@ -33,19 +35,17 @@ export class ModalBatchRefundComponent implements OnInit {
   }
 
   loadData() {
-    this.accJournalService.getWithCompanyPayment().subscribe(res => {
+    this.accJournalService.getWithCompanyPayment().pipe(takeUntil(this._destroy)).subscribe(res => {
       this.listAcJournal = [...res.value];
-      this.AcJournalCurrent = res.value[res.value.length - 1];
+      this.AcJournalCurrent = this.listAcJournal.filter((x) => x.Type == 'cash')[0]
     });
     let model = {
       ids: this.ids,
     }
     this.isLoading = true;
-    this.fastSaleOrderService.getFastSaleOrderIds(model).pipe(takeUntil(this._destroy)).subscribe(res => {
+    this.fastSaleOrderService.getFastSaleOrderIds(model).pipe(finalize(() => this.isLoading = false), takeUntil(this._destroy)).subscribe(res => {
       this.listUser = [...res.value];
-      this.isLoading = false;
     }, err => {
-      this.isLoading = false;
       return this.message.error(err.error.message ?? 'Không tải được dữ liệu');
     })
   }
@@ -65,11 +65,10 @@ export class ModalBatchRefundComponent implements OnInit {
     let model = {
       ids: ids,
       payment_check: this.payment,
-      payment_status: this.AcJournalCurrent.Id,
+      payment_status: Number(this.AcJournalCurrent.Id),
     }
     this.fastSaleOrderService.actionBatchRefund(model).subscribe(res => {
       this.message.success("Tạo trả hàng thành công");
-      this.fastSaleOrderService.refundSucess$.emit(true);
       this.modal.destroy(null);
     },err=>{
       this.message.error(err?.error?err.error.message:'đã có lỗi xảy ra');
