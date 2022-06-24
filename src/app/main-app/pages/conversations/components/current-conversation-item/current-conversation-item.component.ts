@@ -103,7 +103,7 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges, Aft
 
   onSetWidthTag(){
     this.countNgafterview += 1;
-    let widthItemPlush = 26;
+    let widthItemPlush = 30;
     if(this.plusWidthTag >= this.totalWidthTag - widthItemPlush){
       widthItemPlush = 0
     }

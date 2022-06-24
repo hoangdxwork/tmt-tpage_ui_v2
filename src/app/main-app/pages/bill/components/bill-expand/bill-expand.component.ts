@@ -1,5 +1,5 @@
+import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
-import { ModalSendMessageComponent } from './../../../partner/components/modal-send-message/modal-send-message.component';
 import { ExcelExportService } from './../../../../services/excel-export.service';
 import { PrinterService } from './../../../../services/printer.service';
 import { FastSaleOrderDTO } from './../../../../dto/fastsaleorder/fastsaleorder.dto';
@@ -10,6 +10,7 @@ import { Component, Input, OnInit, OnDestroy, ViewContainerRef } from '@angular/
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { GenerateMessageTypeEnum } from 'src/app/main-app/dto/conversation/message.dto';
 
 @Component({
   selector: 'app-bill-expand',
@@ -103,10 +104,11 @@ export class BillExpandComponent implements OnInit, OnDestroy {
     this.modalService.create({
       title: 'Gửi tin nhắn Facebook',
       size:'lg',
-      content: ModalSendMessageComponent,
+      content: SendMessageComponent,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-          partnerIds: [this.dataItem.PartnerId]
+          selectedUsers: [this.dataItem.Id],
+          messageType: GenerateMessageTypeEnum.Bill
       }
     });
   }

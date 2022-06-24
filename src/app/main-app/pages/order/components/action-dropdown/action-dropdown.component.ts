@@ -111,7 +111,6 @@ export class ActionDropdownComponent implements OnInit {
         title: 'Gửi tin nhắn nhanh',
         content: SendMessageComponent,
         size: 'lg',
-        centered: true,
         viewContainerRef: this.viewContainerRef,
         componentParams: {
           // listData: listData

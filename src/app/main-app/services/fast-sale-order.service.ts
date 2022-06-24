@@ -453,4 +453,11 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
+  getMappings(data: any): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/getmappings`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<any>(api, data);
+  }
 }

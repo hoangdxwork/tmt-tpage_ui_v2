@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-y-4 text-body-2">
+<div class="flex flex-col gap-y-4 text-body-2 max-h-[calc(65vh)] overflow-hidden p-1">
     <div class="flex gap-x-2.5">
         <tds-form-field class="w-full">
             <input tdsInput class="text-neutral-1-600" placeholder="Nhập tên sản phẩm" autocomplete="off" />
@@ -12,14 +12,14 @@
         </button>
         <tds-dropdown-menu #menu="tdsDropdownMenu">
             <div class="w-full">
-                <div tds-dropdown-item>
-                    <a> Item 1 </a>
+                <div *ngFor="let item of sortOptions" tds-dropdown-item>
+                    <a> {{item.text}} </a>
                 </div>
             </div>
         </tds-dropdown-menu>
     </div>
-    <div class="w-full">
-        <tds-table #basicTable [listData]="listOfData" [showPagination]="false" [pageSize]="listOfData.length">
+    <div class="w-full max-h-full  overflow-y-auto tds-custom-scroll">
+        <tds-table #basicTable [listData]="lstBillofPartner" [showPagination]="false" [pageSize]="lstBillofPartner.length">
             <thead>
                 <tr>
                     <th>Mã phiếu</th>
@@ -32,19 +32,19 @@
                 </tr>
             </thead>
             <tbody>
-                <ng-template ngFor let-data [ngForOf]="basicTable.data">
+                <ng-template ngFor let-data [ngForOf]="basicTable.data" let-i="index">
                     <tr>
                         <td>
-                            <span class="text-accent-9 "> DJDE/2022/0129</span>
+                            <span class="text-accent-9 ">{{data.Number}}</span>
                         </td>
-                        <td>10/02/2022</td>
-                        <td>150.00.000</td>
+                        <td>{{data.DateCreated | date:'dd/MM/yyyy'}}</td>
+                        <td>{{data.AmountTotal || 0 | number :'1.0-3'}} đ</td>
                         <td>
-                            <tds-tag [status]='getColorStatusText(data)'>...</tds-tag>
+                            <tds-tag [status]='getColorStatusText(data.ShowState)'>{{data.ShowState}}</tds-tag>
                         </td>
                         <td>
                             <div>
-                                <button tds-flat-button color="secondary" rounded="!rounded-full" (click)="showModalDetailBill(data)">
+                                <button tds-flat-button color="secondary" rounded="!rounded-full" (click)="showModalDetailBill(data.Id)">
                                     <span class="flex items-center text-info-500">
                                         <i class="tdsi-edit-fill text-xl leading-5 mr-2"></i>Chi tiết
                                     </span>
@@ -53,16 +53,16 @@
                         </td>
 
                         <td>
-                            <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
+                            <button tds-button color="secondary" tds-dropdown [backdrop]="true" trigger="click" [tdsDropdownMenu]="menu">
                                 <span class="flex items-center">
-                                    Chưa có PTTT
+                                    {{data.PaymentMethod || "Chưa có PTTT"}}
                                     <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
                                 </span>
                             </button>
                             <tds-dropdown-menu #menu="tdsDropdownMenu">
                                 <div class="w-full">
-                                    <div tds-dropdown-item>
-                                        <a> Item 1 </a>
+                                    <div *ngFor="let item of paymentMethodOptions" tds-dropdown-item (click)="selectPayment(i, item.Text)">
+                                        {{item.Text}}
                                     </div>
                                 </div>
                             </tds-dropdown-menu>
@@ -70,17 +70,17 @@
                         <td>
                             <div class="flex gap-x-2">
                                 <button tds-button-icon color="secondary">
-                                    <span class="flex items-center">
+                                    <span class="flex items-center text-neutral-1-500">
                                         <i class="tdsi-facebook-2-fill"></i>
                                     </span>
                                 </button>
                                 <button tds-button-icon color="secondary">
-                                    <span class="flex items-center">
+                                    <span class="flex items-center text-neutral-1-500">
                                         <i class="tdsi-send-fill"></i>
                                     </span>
                                 </button>
                                 <button tds-button-icon color="secondary">
-                                    <span class="flex items-center">
+                                    <span class="flex items-center text-neutral-1-500">
                                         <i class="tdsi-images-fill"></i>
                                     </span>
                                 </button>

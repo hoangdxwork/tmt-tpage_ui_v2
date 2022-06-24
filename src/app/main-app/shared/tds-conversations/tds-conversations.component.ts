@@ -271,13 +271,16 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     });
   }
 
-  showModalListBill() {
+  showModalListBill(data:ConversationMatchingItem) {
     this.modalService.create({
       title: 'Phiếu bán hàng',
       content: ModalListBillComponent,
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
-      componentParams: {}
+      componentParams: {
+        page_id: data.page_id,
+        psid: data.psid,
+      }
     });
   }
 
