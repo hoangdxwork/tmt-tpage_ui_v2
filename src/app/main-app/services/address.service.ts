@@ -37,7 +37,7 @@ export class AddressService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null)
-      .pipe(shareReplay(1), map((res: Array<City>) => {
+      .pipe(shareReplay({ bufferSize: 1, refCount: true }), map((res: Array<City>) => {
         let result = res.map((x: City) => {
           let item: CityDTO = {
             Code: x.code,
@@ -57,7 +57,7 @@ export class AddressService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null)
-      .pipe(shareReplay(1), map((res: Array<District>) => {
+      .pipe(shareReplay({ bufferSize: 1, refCount: true }), map((res: Array<District>) => {
         let result = res.map((x: District) => {
           let item: DistrictDTO = {
             CityCode: x.cityCode,
@@ -79,7 +79,7 @@ export class AddressService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null)
-      .pipe(shareReplay(1), map((res: Array<Ward>) => {
+      .pipe(shareReplay({ bufferSize: 1, refCount: true }), map((res: Array<Ward>) => {
         let result = res.map((x: Ward) => {
           let item: WardDTO = {
             Code: x.code,

@@ -553,7 +553,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     UserId: string;
     UserName: string;
     DateInvoice: Date | any;
-    DateCreated: Date;
+    DateCreated: Date | any;
     State: string;
     ShowState: string;
     CompanyId: number;
@@ -626,7 +626,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     SaleOrderDeposit: number;
     Seri?: any;
     NumberOrder?: any;
-    DateOrderRed?: any;
+    DateOrderRed?: Date | any;
     ApplyPromotion?: any;
     TimeLock?: any;
     PageName: string;

@@ -15,6 +15,7 @@ import { CRMMessagesRequest, MakeActivityItemWebHook, MakeActivityMessagesDTO } 
 import { tr } from "date-fns/locale";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSHelperArray, TDSHelperString } from "tds-ui/shared/utility";
+import { ConversationDataFacade } from "./conversation-data.facade";
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +30,6 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
   private nextPageUrlCurrent!: string;
   private postExist: Array<any> = [];
   private postIdExist: Array<any> = [];
-  public dataSource$!: Observable<any>;
 
   public hasNextData$: EventEmitter<boolean> = new EventEmitter<boolean>();
   private destroy$ = new Subject<void>();
@@ -42,8 +42,8 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
     private crmTeamService: CRMTeamService,
     private message: TDSMessageService,
     private service: ActivityMatchingService,
-    private sgRConnectionService: SignalRConnectionService,
-    private sharedService: SharedService) {
+    private conversationDataFacade: ConversationDataFacade,
+    private sgRConnectionService: SignalRConnectionService) {
       super(apiService);
 
       this.crmTeamService.onChangeListFaceBook().subscribe((res :any) => {
@@ -670,9 +670,7 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
 
   makeActivity(pageId: any, psid: any, type: any): Observable<any> {
     this.activityFbState.initExtrasByPsid(pageId, psid);
-
-    this.dataSource$ = this.getActivity(pageId, psid, type);
-    return this.dataSource$;
+    return this.getActivity(pageId, psid, type);
   }
 
   getActivity(pageId: any, psid: any, type: any): Observable<any> {
@@ -681,17 +679,20 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
       return Observable.create((observer :any) => {
           observer.next(exist);
           observer.complete();
-      });
+      })
     } else {
       let query = this.service.createQuery(pageId, type);
       return this.service.get(query, psid).pipe(map((res: any) => {
           if(res && TDSHelperArray.isArray(res.Items)) {
             res.Items = res.Items.sort((a: any, b: any) => Date.parse(a.DateCreated) - Date.parse(b.DateCreated));
           }
+
           let value = this.createType(res, query);
           this.activityFbState.setExtras(pageId, psid, value.extras);
+
           return this.activityFbState.setActivity(pageId, psid, type, value);
-      }), shareReplay(1));
+
+      }), shareReplay({ bufferSize: 1, refCount: true }), takeUntil(this.destroy$));
     }
   }
 
@@ -756,7 +757,7 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
       this.activityFbState.setExtras(pageId, psid, value.extras);
 
       return this.activityFbState.setActivity(pageId, psid, type, value);
-    }), shareReplay());
+    }), shareReplay({ bufferSize: 1, refCount: true }), takeUntil(this.destroy$));
   }
 
   refreshAttachment(data: any) {

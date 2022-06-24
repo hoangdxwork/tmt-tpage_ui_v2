@@ -1,3 +1,4 @@
+import { ConversationOrderProductDefaultDTO } from 'src/app/main-app/dto/coversation-order/conversation-order.dto';
 import { formatNumber } from "@angular/common";
 import { EventEmitter, Injectable } from "@angular/core";
 import { FormGroup } from "@angular/forms";
@@ -45,17 +46,16 @@ export class SaleHandler extends BaseSevice {
 
   updateTotalAmount(orderForm: FormGroup) {
     let formValue = orderForm.value;
-
+    
     let formDetail = formValue.Details;
     let discount = formValue.Discount;
-
     let total = 0;
     let totalQty = 0;
     let amountTax = 0;
     let decreaseAmount = formValue.DecreaseAmount;
 
-    formDetail.forEach((product: TDSSafeAny) => {
-      total += product.Quantity * product.Price;
+    formDetail.forEach((product: ConversationOrderProductDefaultDTO) => {
+      total += product.Quantity * (product.Price - product.Price*(product.Discount || 0)/100);
       totalQty += product.Quantity;
     });
 

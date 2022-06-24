@@ -1,0 +1,15 @@
+
+@import '~@ctrl/ngx-emoji-mart/picker';
+.emoji-mart-emoji.emoji-mart-emoji-native.ng-star-inserted {
+    span {
+        top: -2.5px;
+        left: -4px;
+    }
+}
+ngx-emoji {
+    button {
+        span {
+            cursor: pointer !important;
+        }
+    }
+}

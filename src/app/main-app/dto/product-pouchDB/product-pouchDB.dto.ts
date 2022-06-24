@@ -39,9 +39,9 @@ export interface ProductPouchDBDTO {
 }
 
 export interface KeyCacheIndexDBDTO {
-    cacheCount: number;
-    cacheVersion: number;
-    cacheDbStorage:  DataPouchDBDTO[];
+  cacheCount: number;
+  cacheVersion: number;
+  cacheDbStorage:  DataPouchDBDTO[];
 }
 
 

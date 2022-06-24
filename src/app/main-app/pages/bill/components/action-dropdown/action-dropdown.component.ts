@@ -1,6 +1,6 @@
-import { FormFileCrossCheckingModalComponent } from './../form-file-cross-checking-modal/form-file-cross-checking-modal.component';
-import { ManualCrossCheckingModalComponent } from './../manual-cross-checking-modal/manual-cross-checking-modal.component';
-import { ModalSendMessageComponent } from './../../../partner/components/modal-send-message/modal-send-message.component';
+import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
+import { GenerateMessageTypeEnum } from './../../../../dto/conversation/message.dto';
+import { CrossCheckingStatusComponent } from '../cross-checking-status/cross-checking-status.component';
 import { Component, Input, OnDestroy, OnInit, ViewContainerRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subject } from "rxjs";
@@ -18,6 +18,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { ModalPaymentComponent } from '../../../partner/components/modal-payment/modal-payment.component';
 import { ModalBatchRefundComponent } from '../modal-batch-refund/modal-batch-refund.component';
 import { FastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
+import { ShipStatusDeliveryComponent } from '../ship-status-delivery/ship-status-delivery.component';
 
 @Component({
   selector: 'action-dropdown',
@@ -141,11 +142,13 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     if (this.checkValueEmpty()) {
       this.modal.create({
         title: 'Gửi tin nhắn Facebook',
-        size: 'lg',
-        content: ModalSendMessageComponent,
+        size:'lg',
+        content: SendMessageComponent,
+        centered: true,
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          partnerIds: this.idsModel
+          selectedUsers: this.idsModel,
+          messageType: GenerateMessageTypeEnum.Bill
         }
       });
     }
@@ -155,39 +158,27 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('bill/create');
   }
 
-  updateDelivery() {
-  }
-
-  updateDeliveryStatus(type: string) {
-    switch (type) {
-      case 'manual':
-        this.createManualCrossChecking();
-        break;
-      case 'fromFile':
-        this.createCrossCheckingFromFile();
-        break;
-    }
-  }
-
-  createManualCrossChecking() {
+  manualCrossChecking(){
     this.modal.create({
       title: 'Đối soát giao hàng thủ công',
-      size: 'xl',
-      content: ManualCrossCheckingModalComponent,
+      size:'xl',
+      content: CrossCheckingStatusComponent,
       viewContainerRef: this.viewContainerRef
     });
   }
 
-  createCrossCheckingFromFile() {
+  updateShipStatusDelivery(){
     this.modal.create({
       title: 'Đối soát giao hàng từ file',
-      size: 'xl',
-      content: FormFileCrossCheckingModalComponent,
+      size:'xl',
+      content: ShipStatusDeliveryComponent,
       viewContainerRef: this.viewContainerRef
     });
   }
 
-  showHistoryDS() {
+  updateDelivery() {}
+
+  showHistoryDS(){
     this.router.navigateByUrl('bill/historyds/list');
   }
 

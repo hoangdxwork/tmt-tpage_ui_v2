@@ -28,7 +28,7 @@ export class GeneralConfigsFacade extends BaseSevice {
 
   getSaleConfigs(): Observable<InitSaleDTO> {
     if (!this.saleConfigs$) {
-      this.saleConfigs$ = this.sharedService.getConfigs().pipe(shareReplay(1));
+      this.saleConfigs$ = this.sharedService.getConfigs().pipe(shareReplay({ bufferSize: 1, refCount: true }));
     }
 
     return this.saleConfigs$;
@@ -36,20 +36,18 @@ export class GeneralConfigsFacade extends BaseSevice {
 
   getSaleOnineSettingConfig(): Observable<any> {
     if (!this.saleOnineSettingConfig$) {
-      this.saleOnineSettingConfig$ = this.sharedService.getSaleOnineSettingConfig().pipe(shareReplay(1));
+      this.saleOnineSettingConfig$ = this.sharedService.getSaleOnineSettingConfig().pipe(shareReplay({ bufferSize: 1, refCount: true }));
     }
-
     return this.saleOnineSettingConfig$;
   }
 
   public getCurrentCompany() {
     if (!this.currentCompany$) {
         this.currentCompany$ = this.sharedService.getCurrentCompany()
-            .pipe(shareReplay(1));
+            .pipe(shareReplay({ bufferSize: 1, refCount: true }));
     }
 
     return this.currentCompany$;
-}
-
+  }
 
 }

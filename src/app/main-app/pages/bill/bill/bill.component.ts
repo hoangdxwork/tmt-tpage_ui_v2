@@ -1,9 +1,11 @@
+import { GenerateMessageTypeEnum } from './../../../dto/conversation/message.dto';
+import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
 import { CRMMatchingService } from './../../../services/crm-matching.service';
 import { CRMTeamService } from './../../../services/crm-team.service';
 import { PartnerService } from './../../../services/partner.service';
 import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib/enum/sort.enum';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -15,13 +17,14 @@ import { THelperCacheService } from 'src/app/lib';
 import { ColumnTableDTO } from '../components/config-column/config-column.component';
 import { Router } from '@angular/router';
 import { fromEvent, Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, finalize, map, switchMap, takeUntil } from 'rxjs/operators';
+import { debounceTime, finalize, map, switchMap, takeUntil } from 'rxjs/operators';
 import { FastSaleOrderDTO, FastSaleOrderSummaryStatusDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSTableQueryParams } from 'tds-ui/table';
+import { ShipCodeDeliveryComponent } from '../components/ship-code-delivery/ship-code-delivery.component';
 
 @Component({
   selector: 'app-bill',
@@ -119,6 +122,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       private tagService: TagService,
       private router: Router,
       private modal: TDSModalService,
+      private viewContainerRef: ViewContainerRef,
       private cacheApi: THelperCacheService,
       private message: TDSMessageService,
       private fastSaleOrderService :FastSaleOrderService,
@@ -555,6 +559,28 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
   closeDrawer() {
     this.isOpenDrawer = false;
+  }
+
+  showMessageModal(orderMessage: TDSSafeAny){
+      this.modal.create({
+        title: 'Gửi tin nhắn Facebook',
+        size:'lg',
+        content: SendMessageComponent,
+        centered: true,
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          selectedUsers: [orderMessage.Id],
+          messageType: GenerateMessageTypeEnum.Bill
+        }
+      });
+    }
+  updateShipCodeDelivery() {
+    this.modal.create({
+      title: 'Cập nhật mã vận đơn từ file',
+      size:'xl',
+      content: ShipCodeDeliveryComponent,
+      viewContainerRef: this.viewContainerRef
+    });
   }
 
   ngOnDestroy(): void {

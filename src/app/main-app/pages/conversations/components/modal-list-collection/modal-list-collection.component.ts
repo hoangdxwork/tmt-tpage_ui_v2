@@ -6,7 +6,7 @@ import { map, finalize, takeUntil } from 'rxjs/operators';
 import { AttachmentDataFacade } from 'src/app/main-app/services/facades/attachment-data.facade';
 import { Observable, Subject } from 'rxjs';
 import { MDBCollectionDTO } from 'src/app/main-app/dto/attachment/attachment.dto';
-import { AttachmentService } from 'src/app/main-app/services/attachment.server';
+import { AttachmentService } from 'src/app/main-app/services/attachment.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ModalAddAttachmentCollectionComponent } from '../modal-add-attachment-collection/modal-add-attachment-collection.component';
 import { TDSUploadFile } from 'tds-ui/upload';

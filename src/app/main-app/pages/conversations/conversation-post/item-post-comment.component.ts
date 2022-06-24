@@ -58,7 +58,6 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
     this.initialize();
     //TODO xử lý lấy thông tin order tại đây
     if(this.post) {
-      this.post = {...this.post};
       this.onSetCommentOrders();
       this.loadData();
     }

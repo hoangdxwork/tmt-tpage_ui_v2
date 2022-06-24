@@ -1,0 +1,47 @@
+<label class="upload-button ml-0">
+    <input type="file" class="form-control" (change)="handleFileInput($event)" />
+    <span class="cursor">Chọn file</span>
+</label>
+
+<div *ngIf="isUpdate">
+  <p>Log lỗi</p>
+  <ul>
+    <li *ngFor="let error of messageError">{{error}}</li>
+  </ul>
+
+    <tds-table  tdsTable class="table table-bordered table-striped">
+      <thead>
+          <tr>
+              <th>
+                  Mã hóa đơn
+              </th>
+              <th>
+                  Mã vận đơn (excel)
+              </th>
+              <th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr *ngFor="let item of lstOrder">
+              <td>{{item.split(';')[0]}}</td>
+              <td> {{item.split(';')[1]}}</td>
+          </tr>
+      </tbody>
+  </tds-table>
+</div>
+
+<!-- footer -->
+<div class="w-full flex justify-end gap-2 p-4" *tdsModalFooter>
+  <button tds-button color="secondary" type="button" (click)="onSave()" *ngIf="!isUpdate">
+      Import
+  </button>
+  <button tds-button  type="submit" color="primary" type="button" (click)="updateExistShipCode()" *ngIf="isUpdate">
+      Cập nhật phiếu đã có mã vận đơn
+  </button>
+  <a tds-button  type="submit" color="primary" type="button" (click)="openUrlSample()">
+      Tải file mẫu
+  </a>
+  <button tds-button  type="submit" color="primary" type="button" (click)="onClose()">
+      Đóng
+  </button>
+</div>

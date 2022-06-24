@@ -100,31 +100,31 @@ export class SharedService extends BaseSevice {
     return this.apiService.getFileUpload(api, data);
   }
 
-  updateMinusConversationAll(number: number) {
-    this.updateMinusBadgeItem('/conversation/all', number);
-  }
+  // updateMinusConversationAll(number: number) {
+  //   this.updateMinusBadgeItem('/conversation/all', number);
+  // }
 
-  updateMinusConversationMessage(number: number) {
-    this.updateMinusBadgeItem('/conversation/inbox', number);
-  }
+  // updateMinusConversationMessage(number: number) {
+  //   this.updateMinusBadgeItem('/conversation/inbox', number);
+  // }
 
-  updateMinusConversationComment(number: number) {
-    this.updateMinusBadgeItem('/conversation/comment', number);
-  }
+  // updateMinusConversationComment(number: number) {
+  //   this.updateMinusBadgeItem('/conversation/comment', number);
+  // }
 
-  updateMinusConversationPost(number: number) {
-    this.updateMinusBadgeItem('/conversation/post', number);
-  }
+  // updateMinusConversationPost(number: number) {
+  //   this.updateMinusBadgeItem('/conversation/post', number);
+  // }
 
-  updateMinusBadgeItem(url: string, number: number) {
-    // TODO: xử lý tiếp
+  // updateMinusBadgeItem(url: string, number: number) {
+  //   // TODO: xử lý tiếp
 
 
-    // this.navItems.forEach(x => {
-    //     if (x.url == url) {
-    //         x.badge = x.badge || <INavBadge>{};
-    //         x.badge.text = (parseInt(x.badge.text) - number).toString();
-    //     }
-    // });
-  }
+  //   // this.navItems.forEach(x => {
+  //   //     if (x.url == url) {
+  //   //         x.badge = x.badge || <INavBadge>{};
+  //   //         x.badge.text = (parseInt(x.badge.text) - number).toString();
+  //   //     }
+  //   // });
+  // }
 }

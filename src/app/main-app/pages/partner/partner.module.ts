@@ -1,6 +1,6 @@
 import { OdataProductService } from './../../services/mock-odata/odata-product.service';
 import { AttachmentState } from './../../services/facebook-state/attachment.state';
-import { AttachmentService } from './../../services/attachment.server';
+import { AttachmentService } from '../../services/attachment.service';
 import { AttachmentDataFacade } from './../../services/facades/attachment-data.facade';
 import { UploadImageModule } from './../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
 import { RestSMSService } from './../../services/sms.service';

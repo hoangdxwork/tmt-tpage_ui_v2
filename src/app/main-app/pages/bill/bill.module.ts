@@ -1,6 +1,6 @@
 import { OdataProductService } from './../../services/mock-odata/odata-product.service';
 import { AttachmentState } from './../../services/facebook-state/attachment.state';
-import { AttachmentService } from './../../services/attachment.server';
+import { AttachmentService } from '../../services/attachment.service';
 import { AttachmentDataFacade } from './../../services/facades/attachment-data.facade';
 import { UploadImageModule } from './../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
 import { CheckFormHandler } from './../../services/handlers/check-form.handler';
@@ -45,8 +45,8 @@ import { BillExpandComponent } from './components/bill-expand/bill-expand.compon
 import { HistoryDeliveryStatusComponent } from './history-delivery-status/history-delivery-status.component';
 import { HistoryDeliveryStatusDetailComponent } from './history-delivery-status-detail/history-delivery-status-detail.component';
 import { AccountTaxService } from '../../services/account-tax.service';
-import { ManualCrossCheckingModalComponent } from './components/manual-cross-checking-modal/manual-cross-checking-modal.component';
-import { FormFileCrossCheckingModalComponent } from './components/form-file-cross-checking-modal/form-file-cross-checking-modal.component';
+import { CrossCheckingStatusComponent } from './components/cross-checking-status/cross-checking-status.component';
+import { ShipCodeDeliveryComponent } from './components/ship-code-delivery/ship-code-delivery.component';
 import { TDSAlertModule } from 'tds-ui/alert';
 import { TDSBadgeModule } from 'tds-ui/badges';
 import { TDSCollapseModule } from 'tds-ui/collapse';
@@ -76,6 +76,7 @@ import { TDSStepsModule } from 'tds-ui/step';
 import { TDSPageHeaderModule } from 'tds-ui/page-header';
 import { ModalBatchRefundComponent } from './components/modal-batch-refund/modal-batch-refund.component';
 import { AccountJournalService } from '../../services/account-journal.service';
+import { ShipStatusDeliveryComponent } from './components/ship-status-delivery/ship-status-delivery.component';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -122,9 +123,10 @@ const SERVICES = [
     BillExpandComponent,
     HistoryDeliveryStatusComponent,
     HistoryDeliveryStatusDetailComponent,
-    ManualCrossCheckingModalComponent,
-    FormFileCrossCheckingModalComponent,
-    ModalBatchRefundComponent
+    ModalBatchRefundComponent,
+    CrossCheckingStatusComponent,
+    ShipCodeDeliveryComponent,
+    ShipStatusDeliveryComponent
   ],
 
   imports: [
@@ -165,7 +167,8 @@ const SERVICES = [
     TDSStepsModule,
     TDSButtonSpitModule,
     TDSConversationsModule,
-    UploadImageModule
+    UploadImageModule,
+    TDSInputNumberModule
   ],
   providers: [
    ...SERVICES,

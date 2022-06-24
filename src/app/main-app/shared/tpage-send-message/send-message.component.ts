@@ -1,3 +1,5 @@
+import { FastSaleOrderService } from './../../services/fast-sale-order.service';
+import { finalize } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -29,11 +31,15 @@ export class SendMessageComponent implements OnInit {
 
   @Input() messageType: GenerateMessageTypeEnum = GenerateMessageTypeEnum.Default;
   @Input() orderIds: string[] = [];
+  @Input() selectedUsers: any;
 
   lstMessage: Array<TDSSafeAny> = [];
 
   messageContent: TDSSafeAny[] = [];
   messageSelect: TDSSafeAny;
+  messagePreview: string = '...';
+  indexClick: number = -1;
+  isLoading: boolean = false;
 
   currentTeam: TDSSafeAny;
   currentTab: Tabs = Tabs.List;
@@ -47,6 +53,7 @@ export class SendMessageComponent implements OnInit {
     private mailTemplateService: MailTemplateService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private crmActivityCampaignService: CRMActivityCampaignService,
+    private fastSaleOrderService: FastSaleOrderService,
     private modal: TDSModalRef,
     private crmTeamService: CRMTeamService,
     private message: TDSMessageService,
@@ -92,19 +99,34 @@ export class SendMessageComponent implements OnInit {
   }
 
   onMessage(item: any) {
+    this.isLoading = true;
     this.currentTab = Tabs.Send;
     this.messageSelect = item;
-
     let model: GenerateMessageDTO = {
-      template: item,
+      Template: this.messageSelect,
     };
 
     if(this.messageType == GenerateMessageTypeEnum.Order) {
-      model.orderIds = this.orderIds;
+      model.OrderIds = this.orderIds;
 
-      this.saleOnline_OrderService.previewMessages(model).subscribe((res: TDSSafeAny) => {
+      this.saleOnline_OrderService.previewMessages(model).pipe(finalize(()=>{this.isLoading = false}))
+      .subscribe((res: TDSSafeAny) => {
         this.messageContent = res;
       });
+    }
+    if(this.messageType == GenerateMessageTypeEnum.Bill){
+      model.SaleIds = this.selectedUsers
+      model.model = {
+        SaleIds: model.SaleIds,
+        Template: this.messageSelect
+      }
+      delete model.SaleIds
+      delete model.Template
+      this.fastSaleOrderService.generateMessages(model).pipe(finalize(()=>{this.isLoading = false}))
+      .subscribe((res) => {
+      this.messageContent = res.value;
+    }, error => {
+    });
     }
   }
 
@@ -133,11 +155,18 @@ export class SendMessageComponent implements OnInit {
       Note: stringDate,
       MailTemplateId: this.messageSelect.Id,
     };
-
-    this.crmActivityCampaignService.saveOrderCampaign(JSON.stringify(model)).subscribe((res: any) => {
-      this.message.success(Message.Message.SendSuccess);
-      this.onCancel();
-    });
+    if(this.messageType == GenerateMessageTypeEnum.Order){
+      this.crmActivityCampaignService.saveOrderCampaign(JSON.stringify(model)).subscribe((res: any) => {
+        this.message.info('Tin nhắn đã vào hàng đợi để gửi.');
+        this.onCancel();
+      });
+    }
+    if(this.messageType == GenerateMessageTypeEnum.Bill){
+      this.crmActivityCampaignService.saveBillCampaign(JSON.stringify(model)).subscribe((res: any) => {
+        this.message.info('Tin nhắn đã vào hàng đợi để gửi.');
+        this.onCancel();
+      });
+    }
 
   }
 
@@ -169,6 +198,11 @@ export class SendMessageComponent implements OnInit {
       }
 
     });
+  }
+
+  onPreview(message: string, index:number){
+    this.messagePreview = message
+    this.indexClick = index;
   }
 
   onSaveAndUse() {

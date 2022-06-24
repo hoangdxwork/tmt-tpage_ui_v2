@@ -1,5 +1,5 @@
 import { AttachmentState } from './../../services/facebook-state/attachment.state';
-import { AttachmentService } from './../../services/attachment.server';
+import { AttachmentService } from '../../services/attachment.service';
 import { AttachmentDataFacade } from './../../services/facades/attachment-data.facade';
 import { OrderFormHandler } from './../../services/handlers/order-form.handler';
 import { ConversationOrderFacade } from './../../services/facades/conversation-order.facade';
