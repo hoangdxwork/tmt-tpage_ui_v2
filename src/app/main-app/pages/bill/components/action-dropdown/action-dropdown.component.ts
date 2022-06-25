@@ -1,7 +1,7 @@
 import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { GenerateMessageTypeEnum } from './../../../../dto/conversation/message.dto';
 import { CrossCheckingStatusComponent } from '../cross-checking-status/cross-checking-status.component';
-import { Component, Input, OnDestroy, OnInit, ViewContainerRef } from "@angular/core";
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewContainerRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subject } from "rxjs";
 import { finalize, map, takeUntil } from "rxjs/operators";
@@ -40,7 +40,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   public modalReference: any;
 
   constructor(private router: Router,
-    private activatedRoute: ActivatedRoute,
+    
     private modal: TDSModalService,
     private fastSaleOrderService: FastSaleOrderService,
     private message: TDSMessageService,
@@ -50,9 +50,9 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.activatedRoute.queryParams.subscribe(res => {
-      this.params = res;
-    })
+    const key = this.fastSaleOrderService._keyCacheUrlParams;
+    let paramsString = localStorage.getItem(key) || '';
+    this.params = JSON.parse(paramsString);
   }
 
   exportExcel(type: string): any {
@@ -144,7 +144,6 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         title: 'Gửi tin nhắn Facebook',
         size:'lg',
         content: SendMessageComponent,
-        centered: true,
         viewContainerRef: this.viewContainerRef,
         componentParams: {
           selectedUsers: this.idsModel,
@@ -176,7 +175,13 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateDelivery() {}
+  manualUpdateDelivery() {
+    // cập nhật GH thủ công
+  }
+
+  updateDeliveryFromFile(){
+    // cập nhật giao hàng từ file
+  }
 
   showHistoryDS(){
     this.router.navigateByUrl('bill/historyds/list');

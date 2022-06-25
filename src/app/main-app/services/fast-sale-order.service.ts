@@ -22,10 +22,11 @@ export class FastSaleOrderService extends BaseSevice {
   table: string = "FastSaleOrder";
   baseRestApi: string = "rest/v1.0/fastsaleorder";
 
-  public _keyCacheGrid: string = 'orderbill-page:grid_orderbill:settings';
-  public _keyCacheDefaultGetV2: string = '_keycache_default_getV2';
-  public _keyCacheDHSDetails: string = '_keycache_dhs_details';
-  public _keyCacheCopyInvoice: string = '_keycache_copy_invoice';
+  public readonly _keyCacheGrid = 'orderbill-page:grid_orderbill:settings';
+  public readonly _keyCacheDefaultGetV2 = '_keycache_default_getV2';
+  public readonly _keyCacheDHSDetails = '_keycache_dhs_details';
+  public readonly _keyCacheCopyInvoice = '_keycache_copy_invoice';
+  public readonly _keyCacheUrlParams = 'urlParams';
 
   public onLoadPage$: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -470,6 +471,21 @@ export class FastSaleOrderService extends BaseSevice {
       method: TApiMethodType.post
     }
     return this.apiService.getData<any>(api, data);
+  }
+
+  getMappings(data: any): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/getmappings`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<any>(api, data);
+  }
+  getHistoryEditOrder(orderId: any): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}(${orderId})/ODataService.Histories`,
+      method: TApiMethodType.get,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
 }

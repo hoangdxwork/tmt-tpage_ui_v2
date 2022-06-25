@@ -1,6 +1,6 @@
 import { FastSaleOrderService } from './../../services/fast-sale-order.service';
 import { finalize } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -40,13 +40,12 @@ export class SendMessageComponent implements OnInit {
   messagePreview: string = '...';
   indexClick: number = -1;
   isLoading: boolean = false;
-
   currentTeam: TDSSafeAny;
   currentTab: Tabs = Tabs.List;
-
   formAddTemplate!: FormGroup;
-
   readonly typeId: string = "Messenger";
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
@@ -64,7 +63,7 @@ export class SendMessageComponent implements OnInit {
     this.createForm();
     this.loadData();
 
-    this.crmTeamService.onChangeTeam().subscribe(res => {
+    this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.currentTeam = res;
     });
   }
@@ -81,8 +80,9 @@ export class SendMessageComponent implements OnInit {
   }
 
   loadData() {
-    this.mailTemplateService.getFilter('Active').subscribe(res => {
-      this.lstMessage = res.value;
+    this.mailTemplateService.getFilter('Active').pipe(takeUntil(this.destroy$))
+    .subscribe(res => {
+      this.lstMessage = [...res.value];
     });
   }
 
@@ -109,7 +109,8 @@ export class SendMessageComponent implements OnInit {
     if(this.messageType == GenerateMessageTypeEnum.Order) {
       model.OrderIds = this.orderIds;
 
-      this.saleOnline_OrderService.previewMessages(model).pipe(finalize(()=>{this.isLoading = false}))
+      this.saleOnline_OrderService.previewMessages(model).pipe(takeUntil(this.destroy$))
+      .pipe(finalize(()=>{this.isLoading = false}))
       .subscribe((res: TDSSafeAny) => {
         this.messageContent = res;
       });
@@ -122,9 +123,11 @@ export class SendMessageComponent implements OnInit {
       }
       delete model.SaleIds
       delete model.Template
-      this.fastSaleOrderService.generateMessages(model).pipe(finalize(()=>{this.isLoading = false}))
+      this.fastSaleOrderService.generateMessages(model).pipe(takeUntil(this.destroy$))
+      .pipe(finalize(()=>{this.isLoading = false}))
       .subscribe((res) => {
-      this.messageContent = res.value;
+        console.log(res)
+        this.messageContent = res.value;
     }, error => {
     });
     }
@@ -135,7 +138,7 @@ export class SendMessageComponent implements OnInit {
       return {
         CRMTeam: x.CRMTeam,
         CRMTeamId: x.CRMTeamId,
-        Facebook_ASId: x.FacebookASId,
+        Facebook_ASId: x.FacebookId || x.FacebookASId,
         Facebook_CommentId: x.Facebook_CommentId,
         Facebook_PostId: x.Facebook_PostId,
         Facebook_UserId: x.FacebookId,
@@ -156,15 +159,21 @@ export class SendMessageComponent implements OnInit {
       MailTemplateId: this.messageSelect.Id,
     };
     if(this.messageType == GenerateMessageTypeEnum.Order){
-      this.crmActivityCampaignService.saveOrderCampaign(JSON.stringify(model)).subscribe((res: any) => {
+      this.crmActivityCampaignService.saveOrderCampaign(JSON.stringify(model)).pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
         this.message.info('Tin nhắn đã vào hàng đợi để gửi.');
         this.onCancel();
+      },err=>{
+        this.message.error(err.error? err.error.message:'Gửi tin nhắn thất bại')
       });
     }
     if(this.messageType == GenerateMessageTypeEnum.Bill){
-      this.crmActivityCampaignService.saveBillCampaign(JSON.stringify(model)).subscribe((res: any) => {
+      this.crmActivityCampaignService.saveBillCampaign(JSON.stringify(model)).pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
         this.message.info('Tin nhắn đã vào hàng đợi để gửi.');
         this.onCancel();
+      },err=>{
+        this.message.error(err.error? err.error.message:'Gửi tin nhắn thất bại')
       });
     }
 
@@ -211,6 +220,11 @@ export class SendMessageComponent implements OnInit {
 
   onCancel() {
     this.modal.destroy(null);
+  }
+  
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

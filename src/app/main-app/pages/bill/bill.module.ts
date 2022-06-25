@@ -79,6 +79,7 @@ import { AccountJournalService } from '../../services/account-journal.service';
 import { ShipStatusDeliveryComponent } from './components/ship-status-delivery/ship-status-delivery.component';
 import { PaymentJsonBillComponent } from './components/payment-json/payment-json-bill.component';
 import { AccountPaymentJsonService } from '../../services/account-payment-json.service';
+import { TDSTimelineModule } from 'tds-ui/timeline';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -172,7 +173,8 @@ const SERVICES = [
     TDSButtonSpitModule,
     TDSConversationsModule,
     UploadImageModule,
-    TDSInputNumberModule
+    TDSInputNumberModule,
+    TDSTimelineModule
   ],
   providers: [
    ...SERVICES,

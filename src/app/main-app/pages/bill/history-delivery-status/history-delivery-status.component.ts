@@ -1,7 +1,6 @@
-import { Router } from '@angular/router';
-import { finalize, takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
-import { OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Subject, takeUntil, finalize } from 'rxjs';
+import { OnDestroy, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { FastSaleOrderService } from './../../../services/fast-sale-order.service';
 import { HistoryDeliveryDTO } from './../../../dto/bill/bill.dto';
 import { Component, OnInit } from '@angular/core';
@@ -29,6 +28,7 @@ export class HistoryDeliveryStatusComponent implements OnInit, AfterViewInit, On
   tableWidth:number = 0;
   paddingCollapse:number = 36;
   marginLeftCollapse: number = 0;
+  teamId!:TDSSafeAny;
 
   private destroy$ = new Subject<void>();
 
@@ -37,7 +37,10 @@ export class HistoryDeliveryStatusComponent implements OnInit, AfterViewInit, On
     private message: TDSMessageService,
     private resizeObserver: TDSResizeObserver) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const key = this.fastSaleOrderService._keyCacheUrlParams;
+    this.teamId = JSON.parse(localStorage.getItem(key) || '').teamId;
+  }
 
   ngAfterViewInit(): void {
     this.tableWidth = this.viewChildTableWidth?.nativeElement?.offsetWidth - this.paddingCollapse
@@ -71,6 +74,10 @@ export class HistoryDeliveryStatusComponent implements OnInit, AfterViewInit, On
         this.message.error(err.error.message || 'Tải lịch sử đối soát thất bại');
       }
     )
+  }
+
+  directPage(route:string){
+    this.router.navigateByUrl(route);
   }
 
   showDetail(id:TDSSafeAny){

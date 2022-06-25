@@ -1,5 +1,5 @@
+import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
-import { ModalSendMessageComponent } from './../../../partner/components/modal-send-message/modal-send-message.component';
 import { ExcelExportService } from './../../../../services/excel-export.service';
 import { PrinterService } from './../../../../services/printer.service';
 import { FastSaleOrderDTO } from './../../../../dto/fastsaleorder/fastsaleorder.dto';
@@ -10,6 +10,7 @@ import { Component, Input, OnInit, OnDestroy, ViewContainerRef } from '@angular/
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { GenerateMessageTypeEnum } from 'src/app/main-app/dto/conversation/message.dto';
 
 @Component({
   selector: 'app-bill-expand',
@@ -23,6 +24,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
   lstOfData:FSOrderLinesV2[] = [];
   isProcessing: boolean = false;
   isLoading: boolean = false;
+  logOrder: any
 
   private destroy$ = new Subject<void>();
 
@@ -38,7 +40,9 @@ export class BillExpandComponent implements OnInit, OnDestroy {
     if(this.dataItem) {
       this.type = this.dataItem.Type;
       this.loadData();
+      console.log("test",this.dataItem);
     }
+    this.getHistories();
   }
 
   loadData(){
@@ -103,10 +107,11 @@ export class BillExpandComponent implements OnInit, OnDestroy {
     this.modalService.create({
       title: 'Gửi tin nhắn Facebook',
       size:'lg',
-      content: ModalSendMessageComponent,
+      content: SendMessageComponent,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-          partnerIds: [this.dataItem.PartnerId]
+          selectedUsers: [this.dataItem.Id],
+          messageType: GenerateMessageTypeEnum.Bill
       }
     });
   }
@@ -133,5 +138,15 @@ export class BillExpandComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  getHistories() {
+    this.logOrder = [];
+    this.fSOService.getHistoryEditOrder(this.dataItem.Id).subscribe((res: any) => {
+      res.value.forEach((obj: any) => {
+        obj.JSONData = JSON.parse(obj.JSONData);
+      });
+      this.logOrder = res.value;
+    })
   }
 }

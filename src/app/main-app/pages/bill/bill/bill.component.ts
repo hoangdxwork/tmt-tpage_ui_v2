@@ -15,7 +15,7 @@ import { addDays } from 'date-fns/esm';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { THelperCacheService } from 'src/app/lib';
 import { ColumnTableDTO } from '../components/config-column/config-column.component';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { fromEvent, Observable, Subject } from 'rxjs';
 import { debounceTime, finalize, map, switchMap, takeUntil } from 'rxjs/operators';
 import { FastSaleOrderDTO, FastSaleOrderSummaryStatusDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
@@ -123,6 +123,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       private router: Router,
       private modal: TDSModalService,
       private cdRef: ChangeDetectorRef,
+      private activatedRoute: ActivatedRoute,
       private viewContainerRef: ViewContainerRef,
       private cacheApi: THelperCacheService,
       private message: TDSMessageService,
@@ -134,6 +135,11 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
+    const key = this.fastSaleOrderService._keyCacheUrlParams;
+    this.activatedRoute.queryParams.subscribe(res => {
+      localStorage.setItem(key, JSON.stringify(res));
+    })
+    
     this.loadSummaryStatus();
     this.loadTags();
     this.loadGridConfig();
@@ -570,7 +576,6 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         title: 'Gửi tin nhắn Facebook',
         size:'lg',
         content: SendMessageComponent,
-        centered: true,
         viewContainerRef: this.viewContainerRef,
         componentParams: {
           selectedUsers: [orderMessage.Id],
