@@ -45,7 +45,7 @@ import { ProductPagefbComponent } from '../../pages/conversations/components/pro
   animations: [eventFadeStateTrigger]
 })
 
-export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewInit, AfterViewChecked, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @ViewChild('scrollToIndex') scrollToIndex!: ElementRef<any>;
@@ -55,7 +55,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   @Input() data!: ConversationMatchingItem;
   @Input() type!: string;
   @Input() team!: CRMTeamDTO;
-  @Output() onLoadMiniChat = new EventEmitter();
 
   destroy$ = new Subject<void>();
   isLoadMessage: boolean = false;
@@ -144,7 +143,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       this.dataSource$.pipe(takeUntil(this.destroy$), finalize(() => {
           setTimeout(() => {
             this.isLoadMessage = false;
-          }, 250);
+          }, 300);
 
           this.conversationDataFacade.onLoadTdsConversation$.emit(false);
         })).subscribe(() => {}, error => {
@@ -825,6 +824,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   ngAfterViewInit() {
     this.yiAutoScroll?.forceScrollDown();
+  }
+
+  ngAfterViewChecked(){
+    //your code to update the model
+    this.cdRef.detectChanges();
   }
 
   ngOnDestroy(): void {

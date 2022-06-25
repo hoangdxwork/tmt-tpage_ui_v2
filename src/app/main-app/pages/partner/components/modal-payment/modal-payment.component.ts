@@ -4,13 +4,13 @@ import { OdataAccountRegisterPayment, AccountRegisterPayment } from '../../../..
 import { AccountRegisterPaymentService } from '../../../../services/account-register-payment.service';
 import { RegisterPayment } from '../../../../dto/fastsaleorder/register-payment';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
-import { Subject } from 'rxjs';
-
+import { map, Subject, mergeMap, finalize } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 
 @Component({
   selector: 'app-modal-payment',
@@ -18,17 +18,17 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 })
 export class ModalPaymentComponent implements OnInit, OnDestroy {
 
-  @Input() dataModel!:RegisterPayment;
+  @Input() dataModel!: RegisterPayment;
+  _form!: FormGroup;
 
   lstAcJournal: AccountRegisterPayment[] = [];
   private destroy$ = new Subject<void>();
   isSubmit = false;
+  isLoading: boolean = false;
 
-  _form!: FormGroup;
-
-  constructor(
-    private modal: TDSModalRef,
+  constructor( private modal: TDSModalRef,
     private fb: FormBuilder,
+    private fastSaleOrderService: FastSaleOrderService,
     private message: TDSMessageService,
     private accRegisterPayment: AccountRegisterPaymentService,
     private printerService: PrinterService) {
@@ -47,7 +47,7 @@ export class ModalPaymentComponent implements OnInit, OnDestroy {
       Amount: [null,Validators.required],
       Communication: [null,Validators.required],
       Journal: [null,[Validators.required]],
-      Name: [{value:null,disabled:true}],
+      Name: [{value:null, disabled:true }],
       PaymentDate: [null,Validators.required]
     });
   }
@@ -61,27 +61,26 @@ export class ModalPaymentComponent implements OnInit, OnDestroy {
   }
 
   loadAccountPayment(){
-    this.accRegisterPayment.getWithCompanyPayment().pipe(takeUntil(this.destroy$)).subscribe(
-      (res:OdataAccountRegisterPayment)=>{
-        this.lstAcJournal = [...res.value];
-      },
-      (err)=>{
-        this.message.error('Không tải được dữ liệu phương thức thanh toán')
-      }
-    )
+    this.isLoading = true;
+    this.accRegisterPayment.getWithCompanyPayment().pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+      .subscribe((res: OdataAccountRegisterPayment) => {
+          this.lstAcJournal = [...res.value];
+      },(error) => {
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}`: 'Không tải được dữ liệu PT thanh toán')
+      })
   }
 
-  onchangeJournal(data:Journal){
-    this.dataModel.Journal = data;
-    this.accRegisterPayment.onchangeJournal({model: this.dataModel}).pipe(takeUntil(this.destroy$)).subscribe(
-      (res)=>{
-        this.dataModel.PaymentMethodId = res.PaymentMethodId;
-      },
-      (err)=>{
-        this.dataModel.PaymentMethodId = 0;
-        this.message.error(err.error.message ?? 'Lỗi tải phương thức thanh toán');
-      }
-    )
+  onchangeJournal(event: Journal){
+    if(event) {
+      this.isLoading = true;
+      this.dataModel.Journal = event;
+      this.accRegisterPayment.onchangeJournal({model: this.dataModel}).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+        .subscribe((res) => {
+          this.dataModel.PaymentMethodId = res.PaymentMethodId;
+        },(error)=>{
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}`:'Lỗi tải phương thức thanh toán');
+      })
+    }
   }
 
   prepareModel(){
@@ -106,42 +105,35 @@ export class ModalPaymentComponent implements OnInit, OnDestroy {
     return true
   }
 
-  createPayment(data:TDSSafeAny, type:string){
-    this.accRegisterPayment.createPayment({id: data.Id}).pipe(takeUntil(this.destroy$)).subscribe(
-      (res)=>{
-        this.message.success('Xác nhận thanh toán thành công');
-        this.modal.destroy(res);
-        if(type === 'saveAndPrint'){
-          this.printerService.printUrl(`/AccountPayment/PrintThuChiThuan?id=${res.value}`);
+  onSave(type:string){
+    this.isLoading = true;
+    let x = this.prepareModel();
+    this.accRegisterPayment.registerPayment(x).pipe(map((res) => res), mergeMap((res) => {
+        let model =  {
+          id: res.Id
         }
-        this.isSubmit = false;
-      },
-      (err)=>{
-        this.message.error(err.error.message ?? 'Xác nhận thanh toán thất bại');
-        this.isSubmit = false;
-      }
-    );
-  }
-
-  onSubmit(type:string) {
-    let model = this.prepareModel();
-    this.isSubmit = true;
-    this.accRegisterPayment.insert(model).pipe(takeUntil(this.destroy$)).subscribe(
-      (res)=>{
-        this.createPayment(res,type);
-      },
-      (err)=>{
-        this.message.error('Dữ liệu nhập vào bị lỗi');
-        this.isSubmit = false;
-      }
-    )
+        return this.accRegisterPayment.createPayment(model);
+      }))
+      .pipe(finalize(() => this.fastSaleOrderService.onLoadPage$.emit(false)))
+      .subscribe((obs: any) => {
+        if(obs) {
+          this.message.success('Xác nhận thanh toán thành công');
+          if(type == 'print') {
+            let printer = this.printerService.printUrl(`/AccountPayment/PrintThuChiThuan?id=${obs?.value}`);
+            printer.pipe(takeUntil(this.destroy$)).subscribe((a: TDSSafeAny) => {
+                this.printerService.printHtml(a);
+            })
+          }
+        }
+        this.modal.destroy(null);
+      }, error => {
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+        this.modal.destroy(null);
+      })
   }
 
   cancel() {
       this.modal.destroy(null);
   }
 
-  save(type:string) {
-      this.onSubmit(type);
-  }
 }

@@ -74,17 +74,18 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
     }
 
     if (TDSHelperString.hasValueString(filterObj?.searchText)) {
+        let value = filterObj.searchText;
         dataFilter.filters.push( {
             filters: [
-              { field: "Code", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Telephone", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Address", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "PartnerName", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "PartnerNameNosign", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "StatusText", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "CRMTeamName", operator: OperatorEnum.contains, value: filterObj.searchText},
-              { field: "UserName", operator: OperatorEnum.contains, value: filterObj.searchText}
+              { field: "Code", operator: OperatorEnum.contains, value: value },
+              { field: "Name", operator: OperatorEnum.contains, value: value },
+              { field: "Telephone", operator: OperatorEnum.contains, value: value },
+              { field: "Address", operator: OperatorEnum.contains, value: value },
+              { field: "PartnerName", operator: OperatorEnum.contains, value: value },
+              { field: "PartnerNameNosign", operator: OperatorEnum.contains, value: value },
+              { field: "StatusText", operator: OperatorEnum.contains, value: value },
+              { field: "CRMTeamName", operator: OperatorEnum.contains, value: value },
+              { field: "UserName", operator: OperatorEnum.contains, value: value}
             ],
             logic: 'or'
         })

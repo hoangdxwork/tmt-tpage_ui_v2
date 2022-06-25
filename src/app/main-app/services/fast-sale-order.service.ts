@@ -27,7 +27,7 @@ export class FastSaleOrderService extends BaseSevice {
   public _keyCacheDHSDetails: string = '_keycache_dhs_details';
   public _keyCacheCopyInvoice: string = '_keycache_copy_invoice';
 
-  public refundSucess$:EventEmitter<boolean> = new EventEmitter<boolean>();
+  public onLoadPage$: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(private apiService: TCommonService) {
     super(apiService)
