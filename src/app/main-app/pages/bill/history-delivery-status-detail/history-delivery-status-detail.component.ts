@@ -1,3 +1,4 @@
+import { ExcelExportService } from './../../../services/excel-export.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { THelperCacheService } from './../../../../lib/utility/helper-cache';
 import { ColumnTableDTO } from './../../partner/components/config-column/config-column-partner.component';
@@ -22,11 +23,11 @@ export class HistoryDeliveryStatusDetailComponent implements OnInit {
   public columns: any[] = [
     {value: 'OrderCode', name: 'Mã hóa đơn', isChecked: true},
     {value: 'ShipCode', name: 'Mã vận đơn', isChecked: true},
+    {value: 'CarrierName', name: 'Đối tác giao hàng', isChecked: true},
     {value: 'OrderAmount', name: 'COD hóa đơn', isChecked: true},
     {value: 'ShipAmount', name: 'Tiền thu hộ', isChecked: true},
     {value: 'Note', name: 'Ghi chú', isChecked: true},
     {value: 'Status', name: 'Trạng thái', isChecked: true},
-    {value: 'CarrierName', name: 'Đối tác giao hàng', isChecked: false},
     {value: 'TotalCOD', name: 'Tổng COD', isChecked: false},
     {value: 'TotalCODShip', name: 'Tổng COD đối tác', isChecked: false},
     {value: 'DeliveryPrice', name: 'Phí ship giao hàng', isChecked: false},
@@ -35,20 +36,25 @@ export class HistoryDeliveryStatusDetailComponent implements OnInit {
   isLoading = false;
   id: any;
   teamId!:TDSSafeAny;
-
+  keyFilter!:TDSSafeAny;
+  isExportExcel = false;
 
   private destroy$ = new Subject<void>();
 
   constructor(private route: ActivatedRoute,
     private router: Router,
     private fastSaleOrderService: FastSaleOrderService,
+    private excelExportService: ExcelExportService,
     private cacheApi: THelperCacheService,
     private message: TDSMessageService
   ) { }
 
   ngOnInit(): void {
+    // TODO: lấy teamId
+    const key = this.fastSaleOrderService._keyCacheUrlParams;
+    this.teamId = JSON.parse(localStorage.getItem(key) || '').teamId;
+    // TODO: lấy id lịch sử đối soát
     this.id = this.route.snapshot.paramMap.get("id");
-    this.teamId = localStorage.getItem('currentTeamId');
     this.loadData();
     this.loadGridConfig();
   }
@@ -63,6 +69,7 @@ export class HistoryDeliveryStatusDetailComponent implements OnInit {
             res.Date = new Date(res.Date);
           }
           this.historyDeliveryData = res;
+          // TODO: lấy danh sách chi tiết đối soát
           this.lstOfData = [...res.Details];
         },
         (err)=>{
@@ -119,6 +126,27 @@ export class HistoryDeliveryStatusDetailComponent implements OnInit {
       default:
         return 'secondary'
     }
+  }
+
+  filterSearch(event:any){
+    this.keyFilter = event.value;
+    if(!this.keyFilter || this.keyFilter === ''){
+      this.lstOfData = this.historyDeliveryData.Details;
+    }else{
+      this.lstOfData = this.historyDeliveryData.Details
+        .filter(x=> x.ShipCode.includes(this.keyFilter)|| x.OrderCode.includes(this.keyFilter)|| x.ShipAmount.toString().includes(this.keyFilter));
+    }
+  }
+
+  exportDetail(){
+    this.isExportExcel = true;
+
+    this.excelExportService.exportGet(
+      `/HistoryDeliveryStatus/exportdetailhistories?id=${this.historyDeliveryData?.Id || this.id}&filter=${this.keyFilter || ''}`,
+      `Chi tiết đối soát`
+    )
+    .pipe(finalize(()=>this.isExportExcel = false), takeUntil(this.destroy$))
+    .subscribe();
   }
 
   ngOnDestroy(): void {

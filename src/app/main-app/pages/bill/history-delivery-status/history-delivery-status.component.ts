@@ -38,7 +38,8 @@ export class HistoryDeliveryStatusComponent implements OnInit, AfterViewInit, On
     private resizeObserver: TDSResizeObserver) { }
 
   ngOnInit(): void {
-    this.teamId = localStorage.getItem('currentTeamId');
+    const key = this.fastSaleOrderService._keyCacheUrlParams;
+    this.teamId = JSON.parse(localStorage.getItem(key) || '').teamId;
   }
 
   ngAfterViewInit(): void {

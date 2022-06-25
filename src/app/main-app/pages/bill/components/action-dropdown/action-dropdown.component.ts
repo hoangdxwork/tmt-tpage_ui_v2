@@ -40,7 +40,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   public modalReference: any;
 
   constructor(private router: Router,
-    private activatedRoute: ActivatedRoute,
+    
     private modal: TDSModalService,
     private fastSaleOrderService: FastSaleOrderService,
     private message: TDSMessageService,
@@ -50,9 +50,9 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.activatedRoute.queryParams.subscribe(res => {
-      this.params = res;
-    })
+    const key = this.fastSaleOrderService._keyCacheUrlParams;
+    let paramsString = localStorage.getItem(key) || '';
+    this.params = JSON.parse(paramsString);
   }
 
   exportExcel(type: string): any {
@@ -175,10 +175,15 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateDelivery() {}
+  manualUpdateDelivery() {
+    // cập nhật GH thủ công
+  }
+
+  updateDeliveryFromFile(){
+    // cập nhật giao hàng từ file
+  }
 
   showHistoryDS(){
-    localStorage.setItem('currentTeamId',this.params?.teamId);
     this.router.navigateByUrl('bill/historyds/list');
   }
 
