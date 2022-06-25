@@ -42,7 +42,7 @@
                     <input tdsInput class="text-neutral-1-900" placeholder="Tìm kiếm" autocomplete="off" (keyup)="onOrderFilter($event.target)"/>
                     <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
                 </tds-form-field>
-                <button tds-button color="primary" size="md" (click)="createDetails()">
+                <button tds-button color="primary" size="md" (click)="createDetails()" (keypress)="handleKeyboardEvent($event)">
                     <span class="flex items-center">
                       <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới chi tiết (F2)
                     </span>
@@ -77,7 +77,7 @@
                                     [tooltipColor]="'warning'"
                                     [tooltipTitle]="data.hasError ? titleTemplateWarning : '' ">
                                     <input tdsInput autocomplete="off" placeholder="Nhập mã vận đơn" [ngModelOptions]="{standalone: true}"
-                                        [ngModel]="data.TrackingRef" (change)="checkExistTrackingRef($event.target,i)"/>
+                                        [(ngModel)]="data.TrackingRef" (change)="checkExistTrackingRef($event.target,i)"/>
                                 </tds-form-field>
 
                                 <ng-template #titleTemplateWarning>
@@ -88,12 +88,13 @@
                             <td>
                                 <tds-input-number
                                     [ngModelOptions]="{standalone: true}"
-                                    [ngModel]="(data.CoDAmount || 0) | number:'1.0-3'"
+                                    [(ngModel)]="data.CoDAmount"
+                                    [formatter]="numberWithCommas" [parser]="parserComas"
                                     [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                             </td>
                             <td>
                                 <tds-select [ngModelOptions]="{standalone: true}"
-                                    [ngModel]="data.ShipStatus" valueField="text" textField="text" placeholder='Chọn trạng thái'
+                                    [(ngModel)]="data.ShipStatus" valueField="text" textField="text" placeholder='Chọn trạng thái'
                                     disabledField="isActive"
                                     [data]="lstShipStatus" [allowClear]="true">
                                 </tds-select>
@@ -102,7 +103,7 @@
                                 <tds-form-field>
                                     <input tdsInput autocomplete="off" placeholder="Ghi chú"
                                         [ngModelOptions]="{standalone: true}"
-                                        [ngModel]="data.Note"/>
+                                        [(ngModel)]="data.Note"/>
                                 </tds-form-field>
                             </td>
                             <td>

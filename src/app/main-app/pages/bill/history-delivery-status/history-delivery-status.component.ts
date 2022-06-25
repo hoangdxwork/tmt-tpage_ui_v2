@@ -1,4 +1,4 @@
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { OnDestroy, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { FastSaleOrderService } from './../../../services/fast-sale-order.service';
@@ -17,7 +17,6 @@ export class HistoryDeliveryStatusComponent implements OnInit, AfterViewInit, On
 
   @ViewChild('tableWidth') viewChildTableWidth!: ElementRef;
   @ViewChild('detailHDS') viewChildDetail!: ElementRef;
-
 
   lstHistoryDS:HistoryDeliveryDTO[] = [];
   expandSet = new Set<number>();
@@ -117,9 +116,5 @@ export class HistoryDeliveryStatusComponent implements OnInit, AfterViewInit, On
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  onBack(){
-    history.back();
   }
 }

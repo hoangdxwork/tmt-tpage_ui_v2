@@ -80,6 +80,8 @@ import { ShipStatusDeliveryComponent } from './components/ship-status-delivery/s
 import { PaymentJsonBillComponent } from './components/payment-json/payment-json-bill.component';
 import { AccountPaymentJsonService } from '../../services/account-payment-json.service';
 import { TDSTimelineModule } from 'tds-ui/timeline';
+import { ModalUpdateDeliveryFromExcelComponent } from './components/modal-update-delivery-from-excel/modal-update-delivery-from-excel.component';
+import { ModalManualUpdateDeliveryComponent } from './components/modal-manual-update-delivery/modal-manual-update-delivery.component';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -131,6 +133,8 @@ const SERVICES = [
     CrossCheckingStatusComponent,
     ShipCodeDeliveryComponent,
     ShipStatusDeliveryComponent,
+    ModalUpdateDeliveryFromExcelComponent,
+    ModalManualUpdateDeliveryComponent,
     PaymentJsonBillComponent
   ],
 

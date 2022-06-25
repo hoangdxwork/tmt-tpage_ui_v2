@@ -582,14 +582,6 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
           messageType: GenerateMessageTypeEnum.Bill
         }
       });
-    }
-  updateShipCodeDelivery() {
-    this.modal.create({
-      title: 'Cập nhật mã vận đơn từ file',
-      size:'xl',
-      content: ShipCodeDeliveryComponent,
-      viewContainerRef: this.viewContainerRef
-    });
   }
 
   ngOnDestroy(): void {

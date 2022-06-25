@@ -1,11 +1,13 @@
+import { formatNumber } from '@angular/common';
+import { vi_VN } from 'tds-ui/i18n';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { CrossCheckingDTO, CrossCheckingOrder, ExistedCrossChecking } from '../../../../dto/fastsaleorder/cross-checking.dto';
 import { DeliveryCarrierDTOV2 } from '../../../../dto/delivery-carrier.dto';
-import { fromEvent, Observable } from 'rxjs';
-import { map, debounceTime, switchMap } from 'rxjs/operators';
+import { Observable, Subject, takeUntil } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { DeliveryCarrierService } from '../../../../services/delivery-carrier.service';
-import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { FormGroup, FormBuilder } from '@angular/forms';
+import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -14,9 +16,7 @@ import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
   selector: 'cross-checking-status',
   templateUrl: './cross-checking-status.component.html'
 })
-export class CrossCheckingStatusComponent implements OnInit {
-
-  @ViewChild('filterText') filterText!: ElementRef;
+export class CrossCheckingStatusComponent implements OnInit, OnDestroy {
 
   listOfData:CrossCheckingOrder[] = [];
   listTempOfData:CrossCheckingOrder[] = [];
@@ -30,6 +30,11 @@ export class CrossCheckingStatusComponent implements OnInit {
   ]
   _form!: FormGroup;
   hasTrackingRefError:string = '';
+
+  public numberWithCommas = (value: number) => `${formatNumber(value || 0, vi_VN.locale)}`;
+  public parserComas = (value: string) => value.replace(',', '');
+
+  private destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder,
     private modal: TDSModalRef,
@@ -65,7 +70,7 @@ export class CrossCheckingStatusComponent implements OnInit {
   }
 
   loadCarrier() {
-    return this.deliveryCarrierService.get().pipe(map(res => res.value));
+    return this.deliveryCarrierService.get().pipe(map(res => res.value),takeUntil(this.destroy$));
   }
 
   checkExistTrackingRef(event:TDSSafeAny,index:number){
@@ -74,48 +79,49 @@ export class CrossCheckingStatusComponent implements OnInit {
       return;
     }
 
-    let duplicateTrackingRef = this.listOfData.find(f=>f.TrackingRef == event.value);
+    let duplicateTrackingRef = this.listOfData.filter(f=>f.TrackingRef == event.value);
 
-    if(duplicateTrackingRef){
+    if(duplicateTrackingRef.length > 1){
       this.message.warning('Trùng mã vận đơn');
     }
 
     let formModel = this._form.value;
     let status = formModel.shipStatus.text.split(' ').join('+');
     // TODO: Kiểm tra mã vận đơn
-    this.fashSaleOrder.checkTrackingRefIsExist(event.value,status,formModel.carrierId).subscribe(
-      (res:any)=>{
-        delete res['@odata.context'];
-        let model = res as ExistedCrossChecking;
+    this.fashSaleOrder.checkTrackingRefIsExist(event.value,status,formModel.carrierId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (res:any)=>{
+          delete res['@odata.context'];
+          let model = res as ExistedCrossChecking;
 
-        if(this.listOfData[index]){
-          // TODO: trường hợp chỉnh sửa trackingRef
-          this.listOfData[index].TrackingRef = model.TrackingRef || event.value;
-          this.listOfData[index].CoDAmount = model.COD;
-          this.listOfData[index].Note = model.Message;
-          this.listOfData[index].ShipStatus = formModel.shipStatus.text;
-          this.listTempOfData = [...this.listOfData];
-          // TODO: show lỗi
-          this.listTempOfData[index].hasError = model.Message;
-        }else{
-          // TODO: trường hợp thêm mới trackingRef
-          this.listOfData.push({
-            TrackingRef: model.TrackingRef || event.value,
-            CoDAmount: model.COD,
-            Note: model.Message,
-            ShipStatus: formModel.shipStatus.text
-          })
+          if(this.listOfData[index]){
+            // TODO: trường hợp chỉnh sửa trackingRef
+            this.listOfData[index].TrackingRef = model.TrackingRef || event.value;
+            this.listOfData[index].CoDAmount = model.COD;
+            this.listOfData[index].Note = model.Message;
+            this.listOfData[index].ShipStatus = formModel.shipStatus.text;
+            this.listTempOfData = [...this.listOfData];
+            // TODO: show lỗi
+            this.listTempOfData[index].hasError = model.Message;
+          }else{
+            // TODO: trường hợp thêm mới trackingRef
+            this.listOfData.push({
+              TrackingRef: model.TrackingRef || event.value,
+              CoDAmount: model.COD,
+              Note: model.Message,
+              ShipStatus: formModel.shipStatus.text
+            })
 
-          this.listTempOfData = [...this.listOfData];
-          // TODO: show lỗi
-          this.listTempOfData[index].hasError = model.Message;
+            this.listTempOfData = [...this.listOfData];
+            // TODO: show lỗi
+            this.listTempOfData[index].hasError = model.Message;
+          }
+        },
+        (err)=>{
+          this.message.error(err.error.message || 'Có lỗi xảy ra');
         }
-      },
-      (err)=>{
-        this.message.error(err.error.message || 'Có lỗi xảy ra');
-      }
     )
-
   }
 
   removeCrossChecking(index:number){
@@ -130,22 +136,36 @@ export class CrossCheckingStatusComponent implements OnInit {
   }
 
   onOrderFilter(event:TDSSafeAny){
-    this.listTempOfData = this.listTempOfData.filter(f=>f.TrackingRef?.includes(event.value) ||
+    if(event.value == ''){
+      this.listTempOfData = this.listOfData;
+    }else{
+      this.listTempOfData = this.listTempOfData.filter(f=>f.TrackingRef?.includes(event.value) ||
       f.ShipStatus?.includes(event.value) ||
       f.CoDAmount?.toString().includes(event.value));
+    }
   }
 
   createDetails(){
-    let isEmptyTrackingRef = this.listOfData.find(f=>f.TrackingRef == '');
+    let isEmptyTrackingRef = this.listOfData.some(x=>x.TrackingRef == '');
+    
     if(!isEmptyTrackingRef){
-      this.listTempOfData = [...this.listOfData,{
+      this.listOfData = [...this.listOfData,{
         TrackingRef: '',
         CoDAmount: 0,
         Note: '',
         ShipStatus: 'Đã tiếp nhận'
       }];
+
+      this.listTempOfData = this.listOfData;
     }else{
       this.message.error('Vui lòng nhập mã vận đơn');
+    }
+  }
+
+  @HostListener('document:keyup', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) { 
+    if(event.key === 'F2'){
+      this.createDetails();
     }
   }
 
@@ -162,6 +182,7 @@ export class CrossCheckingStatusComponent implements OnInit {
         this.modelData.datas.push(data);
       }
     });
+    console.log(this.modelData.datas)
     return this.modelData;
   }
 
@@ -194,7 +215,7 @@ export class CrossCheckingStatusComponent implements OnInit {
         delete order["hasError"];
       });
 
-      this.fashSaleOrder.postManualCrossChecking(model).subscribe(
+      this.fashSaleOrder.postManualCrossChecking(model).pipe(takeUntil(this.destroy$)).subscribe(
         (res:any)=>{
           this.modal.destroy(null);
         },
@@ -211,5 +232,10 @@ export class CrossCheckingStatusComponent implements OnInit {
 
   cancel(){
     this.modal.destroy(null);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
