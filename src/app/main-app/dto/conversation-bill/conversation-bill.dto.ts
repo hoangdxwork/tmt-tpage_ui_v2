@@ -153,3 +153,8 @@ export interface BillofPartnerDTO {
     HasPreviousPage: boolean;
     HasNextPage: boolean;
   }
+
+  export interface paymentMethodDTO{
+    Text: string,
+    Value: string
+  }

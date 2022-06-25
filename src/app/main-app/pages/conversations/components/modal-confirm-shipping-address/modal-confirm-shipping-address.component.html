@@ -1,43 +1,43 @@
-<div class="grid grid-cols-2 gap-x-8 gap-y-4 text-body-2 text-neutral-1-900">
+<form [formGroup]="_form" class="grid grid-cols-2 gap-x-8 gap-y-4 text-body-2 text-neutral-1-900">
     <tds-form-field>
         <tds-label>Họ và tên người nhận</tds-label>
-        <input tdsInput placeholder="Nhập tên người nhận" />
+        <input tdsInput placeholder="Nhập tên người nhận" formControlName="Name"/>
     </tds-form-field>
     <tds-form-field>
         <tds-label>Số điện thoại</tds-label>
-        <input tdsInput placeholder="Nhập số điện thoại" />
+        <input tdsInput placeholder="Nhập số điện thoại" formControlName="Phone"/>
     </tds-form-field>
     <tds-form-field>
         <tds-label>Số nhà, đường</tds-label>
-        <input tdsInput placeholder="Nhập số nhà" />
+        <input tdsInput placeholder="Nhập số nhà"  formControlName="Street"/>
     </tds-form-field>
     <tds-form-field>
         <tds-label>Tỉnh/ Thành phố</tds-label>
-        <tds-select valueField="id" textField="name" placeholder='chọn Tỉnh/ Thành phố'
+        <tds-select valueField="Code" textField="Name" placeholder='chọn Tỉnh/ Thành phố' formControlName="City"
         disabledField="isActive"
-        [data]="listCity" [allowClear]="true">
+        [data]="listCities" [allowClear]="true">
     </tds-select>
     </tds-form-field>
     <tds-form-field>
         <tds-label>Quận/ Huyện</tds-label>
-        <tds-select valueField="id" textField="name" placeholder='chọn Quận/ Huyện'
+        <tds-select valueField="Code" textField="Name" placeholder='chọn Quận/ Huyện' formControlName="District"
         disabledField="isActive"
-        [data]="listDistrict" [allowClear]="true">
+        [data]="listDistricts" [allowClear]="true">
     </tds-select>
     </tds-form-field>
     <tds-form-field>
         <tds-label>Phường/ Xã thị trấn</tds-label>
-        <tds-select valueField="id" textField="name" placeholder='chọn Phường/ Xã thị trấn'
+        <tds-select valueField="Code" textField="Name" placeholder='chọn Phường/ Xã thị trấn' formControlName="Ward"
         disabledField="isActive"
-        [data]="listWard" [allowClear]="true">
+        [data]="listWards" [allowClear]="true">
     </tds-select>
     </tds-form-field>
     
     <tds-form-field class="col-span-2">
         <tds-label>Ghi chú đơn hàng</tds-label>
-        <textarea class="resize-none" tdsInput placeholder="Placeholder"></textarea>
+        <textarea class="resize-none" tdsInput placeholder="Nhập ghi chú" formControlName="Note"></textarea>
     </tds-form-field>
-</div>
+</form>
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
     <button tds-button class="mr-2" color="secondary" (click)="cancel()">Đóng</button>
     <button tds-button class="mr-2" color="primary" (click)="onSave()">Xác nhận</button>

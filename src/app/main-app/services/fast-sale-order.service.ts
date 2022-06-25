@@ -479,9 +479,18 @@ export class FastSaleOrderService extends BaseSevice {
     }
     return this.apiService.getData<any>(api, data);
   }
+
   getHistoryEditOrder(orderId: any): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${orderId})/ODataService.Histories`,
+      method: TApiMethodType.get,
+    }
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  getOrderHtmlToImage(id: number) {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/getorderhtmltoimage?id=${id}`,
       method: TApiMethodType.get,
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
