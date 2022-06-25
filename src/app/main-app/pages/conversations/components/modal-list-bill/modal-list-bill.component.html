@@ -18,8 +18,9 @@
             </div>
         </tds-dropdown-menu>
     </div>
-    <div class="w-full max-h-full  overflow-y-auto tds-custom-scroll">
-        <tds-table #basicTable [listData]="lstBillofPartner" [showPagination]="false" [pageSize]="lstBillofPartner.length">
+    <div class="w-full max-h-full overflow-y-auto tds-custom-scroll" id="myScroll" is-lock="true" observe-attributes
+    yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
+        <tds-table #basicTable [listData]="lstBillofPartner" [loading]="isLoading" [showPagination]="false" [pageSize]="lstBillofPartner.length">
             <thead>
                 <tr>
                     <th>Mã phiếu</th>
@@ -44,7 +45,7 @@
                         </td>
                         <td>
                             <div>
-                                <button tds-flat-button color="secondary" rounded="!rounded-full" (click)="showModalDetailBill(data.Id)">
+                                <button tds-flat-button color="secondary" rounded="!rounded-full" (click)="showModalDetailBill(data)">
                                     <span class="flex items-center text-info-500">
                                         <i class="tdsi-edit-fill text-xl leading-5 mr-2"></i>Chi tiết
                                     </span>
@@ -69,17 +70,17 @@
                         </td>
                         <td>
                             <div class="flex gap-x-2">
-                                <button tds-button-icon color="secondary">
+                                <button tds-button-icon color="secondary" (click)="showModalSendMessage(data)" tds-tooltip tooltipTitle="Gửi mẫu facebook">
                                     <span class="flex items-center text-neutral-1-500">
                                         <i class="tdsi-facebook-2-fill"></i>
                                     </span>
                                 </button>
-                                <button tds-button-icon color="secondary">
+                                <button tds-button-icon color="secondary" (click)="confirmSubmit(data)" tds-tooltip tooltipTitle="Gửi yêu cầu thanh toán">
                                     <span class="flex items-center text-neutral-1-500">
                                         <i class="tdsi-send-fill"></i>
                                     </span>
                                 </button>
-                                <button tds-button-icon color="secondary">
+                                <button tds-button-icon color="secondary" (click)="onSendImage(data)" tds-tooltip tooltipTitle="Gửi hình ảnh">
                                     <span class="flex items-center text-neutral-1-500">
                                         <i class="tdsi-images-fill"></i>
                                     </span>

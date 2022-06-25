@@ -533,6 +533,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     PrintShipCount: number;
     PrintDeliveryCount: number;
     PaymentMessageCount: number;
+    PaymentMethod?: string;
     PartnerId: number;
     PartnerDisplayName: string;
     PartnerEmail: string;

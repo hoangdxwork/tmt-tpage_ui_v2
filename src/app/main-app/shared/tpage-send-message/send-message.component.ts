@@ -126,7 +126,6 @@ export class SendMessageComponent implements OnInit {
       this.fastSaleOrderService.generateMessages(model).pipe(takeUntil(this.destroy$))
       .pipe(finalize(()=>{this.isLoading = false}))
       .subscribe((res) => {
-        console.log(res)
         this.messageContent = res.value;
     }, error => {
     });
