@@ -78,6 +78,8 @@ import { ModalBatchRefundComponent } from './components/modal-batch-refund/modal
 import { AccountJournalService } from '../../services/account-journal.service';
 import { ShipStatusDeliveryComponent } from './components/ship-status-delivery/ship-status-delivery.component';
 import { TDSTimelineModule } from 'tds-ui/timeline';
+import { ModalUpdateDeliveryFromExcelComponent } from './components/modal-update-delivery-from-excel/modal-update-delivery-from-excel.component';
+import { ModalManualUpdateDeliveryComponent } from './components/modal-manual-update-delivery/modal-manual-update-delivery.component';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -127,7 +129,9 @@ const SERVICES = [
     ModalBatchRefundComponent,
     CrossCheckingStatusComponent,
     ShipCodeDeliveryComponent,
-    ShipStatusDeliveryComponent
+    ShipStatusDeliveryComponent,
+    ModalUpdateDeliveryFromExcelComponent,
+    ModalManualUpdateDeliveryComponent
   ],
 
   imports: [

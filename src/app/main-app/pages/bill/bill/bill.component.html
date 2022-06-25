@@ -5,11 +5,6 @@
         <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Phiếu bán hàng</span>
       </h1>
       <div class="flex gap-x-2">
-        <button tds-button color="secondary" (click)="updateShipCodeDelivery()">
-            <span class="flex items-center">
-              <i class="tdsi-upload-fill text-lg leading-none text-neutral-1-500 mr-2"></i>Mã vận đơn từ file
-            </span>
-        </button>
         <action-dropdown [type]="'all'" [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]></action-dropdown>
       </div>
     </div>
@@ -59,7 +54,7 @@
               <th *ngIf="isHidden('UserName')" width="280px" class="border-r">Nhân viên</th>
               <th *ngIf="isHidden('CreateByName')" width="280px" class="border-r">Người lập</th>
               <th *ngIf="isHidden('CarrierName')" width="160px" class="border-r">Đối tác GH</th>
-              <th *ngIf="isHidden('TrackingRef')" width="120px" class="border-r">Mã vận đơn</th>
+              <th *ngIf="isHidden('TrackingRef')" class="border-r">Mã vận đơn</th>
               <th *ngIf="isHidden('CashOnDelivery')" [align]="'right'" width="240px" class="border-r">Tiền thu hộ</th>
               <th *ngIf="isHidden('CustomerDeliveryPrice')" [align]="'right'" width="140px" class="border-r">Phí ship GH</th>
               <th *ngIf="isHidden('AmountTotal')" [align]="'right'" width="240px" class="border-r">Tổng tiền</th>

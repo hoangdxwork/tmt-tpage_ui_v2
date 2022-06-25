@@ -1,0 +1,47 @@
+<div class="w-full flex flex-col gap-y-4">
+    <div class="w-full inline-flex">
+        <tds-form-field class="w-full mr-2">
+            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText />
+            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+        </tds-form-field>
+        <button tds-button-flat-icon color="secondary">
+            <i class="tdsi-barcode-fill"></i>
+        </button>
+    </div>
+    <div>
+        <tds-table #basicTable [listData]="listOfData">
+            <thead>
+                <tr>
+                    <th>Khách hàng</th>
+                    <th>Hóa đơn</th>
+                    <th>Tổng tiền</th>
+                    <th>Mã vận đơn</th>
+                    <th>Tổng tiền COD</th>
+                    <th>Trạng thái</th>
+                    <th>Đối tác GH</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-template ngFor let-data [ngForOf]="basicTable.data" >
+                    <tr>
+                        <td>{{ data.name }}</td>
+                        <td>{{ data.age }}</td>
+                        <td>{{ data.company }}</td>
+                        <td>{{ data.name }}</td>
+                        <td>{{ data.name }}</td>
+                        <td>{{ data.name }}</td>
+                        <td>{{ data.name }}</td>
+                    </tr>
+                </ng-template>
+            </tbody>
+        </tds-table>
+    </div>
+    <tds-checkbox [checked]="true">Ghi chú đối soát cho hóa đơn giao hàng</tds-checkbox>
+    <tds-checkbox [checked]="true">Cho phép xác nhận thanh toán HĐ giao hàng (áp dụng với HĐ đã thu tiền)</tds-checkbox>
+    <div>
+        <div class="w-full flex justify-end p-4" *tdsModalFooter>
+            <button tds-button type="button" class="mr-2 min-w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
+            <button tds-button type="button" class="min-w-[100px]" color="primary" (click)="onSave()">Lưu</button>
+        </div>
+    </div>
+</div>
