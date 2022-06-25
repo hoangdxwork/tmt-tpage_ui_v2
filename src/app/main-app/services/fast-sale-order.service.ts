@@ -28,7 +28,7 @@ export class FastSaleOrderService extends BaseSevice {
   public readonly _keyCacheCopyInvoice = '_keycache_copy_invoice';
   public readonly _keyCacheUrlParams = 'urlParams';
 
-  public refundSucess$:EventEmitter<boolean> = new EventEmitter<boolean>();
+  public onLoadPage$: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(private apiService: TCommonService) {
     super(apiService)

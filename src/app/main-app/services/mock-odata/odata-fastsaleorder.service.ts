@@ -58,7 +58,7 @@ export class OdataFastSaleOrderService extends BaseSevice {
     }
 
     if (TDSHelperString.hasValueString(filterObj?.searchText)) {
-        let value =  TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim())
+        let value = filterObj.searchText;
         dataFilter.filters.push( {
             filters: [
               { field: "PartnerDisplayName", operator: OperatorEnum.contains, value: value },

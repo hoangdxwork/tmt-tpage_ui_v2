@@ -77,6 +77,8 @@ import { TDSPageHeaderModule } from 'tds-ui/page-header';
 import { ModalBatchRefundComponent } from './components/modal-batch-refund/modal-batch-refund.component';
 import { AccountJournalService } from '../../services/account-journal.service';
 import { ShipStatusDeliveryComponent } from './components/ship-status-delivery/ship-status-delivery.component';
+import { PaymentJsonBillComponent } from './components/payment-json/payment-json-bill.component';
+import { AccountPaymentJsonService } from '../../services/account-payment-json.service';
 import { TDSTimelineModule } from 'tds-ui/timeline';
 import { ModalUpdateDeliveryFromExcelComponent } from './components/modal-update-delivery-from-excel/modal-update-delivery-from-excel.component';
 import { ModalManualUpdateDeliveryComponent } from './components/modal-manual-update-delivery/modal-manual-update-delivery.component';
@@ -108,7 +110,8 @@ const SERVICES = [
   AttachmentService,
   AttachmentState,
   OdataProductService,
-  AccountJournalService
+  AccountJournalService,
+  AccountPaymentJsonService
 ]
 
 @NgModule({
@@ -131,7 +134,8 @@ const SERVICES = [
     ShipCodeDeliveryComponent,
     ShipStatusDeliveryComponent,
     ModalUpdateDeliveryFromExcelComponent,
-    ModalManualUpdateDeliveryComponent
+    ModalManualUpdateDeliveryComponent,
+    PaymentJsonBillComponent
   ],
 
   imports: [

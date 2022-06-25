@@ -5,7 +5,7 @@ import { CRMMatchingService } from './../../../services/crm-matching.service';
 import { CRMTeamService } from './../../../services/crm-team.service';
 import { PartnerService } from './../../../services/partner.service';
 import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib/enum/sort.enum';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -122,6 +122,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       private tagService: TagService,
       private router: Router,
       private modal: TDSModalService,
+      private cdRef: ChangeDetectorRef,
       private activatedRoute: ActivatedRoute,
       private viewContainerRef: ViewContainerRef,
       private cacheApi: THelperCacheService,
@@ -142,6 +143,12 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loadSummaryStatus();
     this.loadTags();
     this.loadGridConfig();
+
+    this.fastSaleOrderService.onLoadPage$.pipe(takeUntil(this.destroy$)).subscribe((obs) => {
+      if(obs === false) {
+        this.loadData(this.pageSize, this.pageIndex);
+      }
+    })
   }
 
   loadGridConfig() {
@@ -249,7 +256,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
             }
         });
 
-        this.tabNavs.push({ Name: "Tất cả",  Type: null, Index: 1,   Total: total });
+        this.tabNavs.push({ Name: "Tất cả",  Type: null, Index: 1, Total: total });
         this.tabNavs.sort((a, b) => a.Index - b.Index);
     })
   }
@@ -261,8 +268,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     })
   }
 
-  onSelectChange(Index: TDSSafeAny) {
-    const dataItem =  this.tabNavs.find(f =>{ return f.Index == Index })
+  onSelectChange(index: TDSSafeAny) {
+    const dataItem =  this.tabNavs.find(f =>{ return f.Index == index })
     this.pageIndex = 1;
     this.indClickTag = -1;
 
@@ -374,6 +381,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
           });
         }
       }, 500);
+
     fromEvent(this.innerText.nativeElement, 'keyup').pipe(
         map((event: any) => { return event.target.value }),
         debounceTime(750),
@@ -388,11 +396,13 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
           this.filterObj.searchText = text;
           let filters = this.odataFastSaleOrderService.buildFilter(this.filterObj);
           let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
+
           return this.getViewData(params);
       })
     ).subscribe((res: any) => {
       this.count = res['@odata.count'] as number;
       this.lstOfData = res.value;
+      this.cdRef.detectChanges();
     }, error => {
         this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
     });
@@ -476,6 +486,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       cancelText: "Đóng",
     });
   }
+
   openMiniChat(data: TDSSafeAny) {
     let partnerId = data.PartnerId;
     this.orderMessage = data;
