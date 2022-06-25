@@ -22,10 +22,11 @@ export class FastSaleOrderService extends BaseSevice {
   table: string = "FastSaleOrder";
   baseRestApi: string = "rest/v1.0/fastsaleorder";
 
-  public _keyCacheGrid: string = 'orderbill-page:grid_orderbill:settings';
-  public _keyCacheDefaultGetV2: string = '_keycache_default_getV2';
-  public _keyCacheDHSDetails: string = '_keycache_dhs_details';
-  public _keyCacheCopyInvoice: string = '_keycache_copy_invoice';
+  public readonly _keyCacheGrid = 'orderbill-page:grid_orderbill:settings';
+  public readonly _keyCacheDefaultGetV2 = '_keycache_default_getV2';
+  public readonly _keyCacheDHSDetails = '_keycache_dhs_details';
+  public readonly _keyCacheCopyInvoice = '_keycache_copy_invoice';
+  public readonly _keyCacheUrlParams = 'urlParams';
 
   public refundSucess$:EventEmitter<boolean> = new EventEmitter<boolean>();
 

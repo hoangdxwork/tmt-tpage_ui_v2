@@ -46,16 +46,22 @@
                             <td class="border-r text-right">{{ data.TotalCODShip || 0 | number }} đ</td>
                             <td class="border-r text-right">{{ data.CountSuccess || 0 | number }}</td>
                             <td class="border-r text-right">{{ data.CountError || 0 | number }}</td>
-                            <td class="border-r">{{ data.Note }}</td>
+                            <td class="border-r">{{ data.Note || '---'}}</td>
                             <td class="border-r flex items-center justify-between" [tdsRight]="true">
-                                <button tds-button-icon color="secondary" size="sm" (click)="showDetail(data.Id)">
+                                <button tds-button-icon color="secondary" size="sm" 
+                                    tds-tooltip
+                                    tooltipTitle="Chi tiết"
+                                    (click)="showDetail(data.Id)">
                                     <span class="flex items-center">
-                                      <i class="tdsi-category-fill"></i>
+                                      <i class="tdsi-category-fill text-neutral-1-500"></i>
                                     </span>
                                 </button>
-                                <button tds-button-icon color="secondary" size="sm" (click)="deleteCrossChecking(data)">
+                                <button tds-button-icon color="secondary" size="sm" 
+                                    tds-tooltip
+                                    tooltipTitle="Xóa"
+                                    (click)="deleteCrossChecking(data)">
                                     <span class="flex items-center">
-                                      <i class="tdsi-trash-fill"></i>
+                                      <i class="tdsi-trash-fill text-neutral-1-500"></i>
                                     </span>
                                 </button>
                             </td>
