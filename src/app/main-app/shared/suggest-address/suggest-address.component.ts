@@ -1,10 +1,10 @@
-import { Component, Input, OnInit, EventEmitter, Output, SimpleChanges, OnChanges, AfterViewInit, HostListener, ElementRef, ViewChild, OnDestroy } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { BehaviorSubject, fromEvent, Observable, of, Subject } from 'rxjs';
+import { Component, Input, EventEmitter, Output, SimpleChanges, OnChanges, AfterViewInit, HostListener, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from '../../dto/suggest-address/suggest-address.dto';
 import { SuggestAddressService } from '../../services/suggest-address.service';
 import { ResultCheckAddressDTO } from '../../dto/address/address.dto';
-import { catchError, debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
 
@@ -88,24 +88,21 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
   }
 
   loadCity(): void {
-    this.suggestService.getCities().pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
+    this.suggestService.getCities().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.lstCities = res;
         this.citySubject.next(res);
     });
   }
 
   loadDistricts(code: string) {
-    this.suggestService.getDistricts(code).pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
+    this.suggestService.getDistricts(code).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.lstDistricts = res;
         this.districtSubject.next(res);
       });
   }
 
   loadWards(code: string) {
-    this.suggestService.getWards(code).pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
+    this.suggestService.getWards(code).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.lstWards = res;
         this.wardSubject.next(res);
       });
@@ -172,7 +169,7 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
         Score: 0
       }
       this.onLoadSuggestion.emit(item);
-    }else{
+    } else {
       this.lstDistricts = [];
       this.lstWards = []
       this._form.controls['City'].setValue(null);
@@ -232,7 +229,6 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
         WardName: '',
         Score: 0
       }
-
       this.onLoadSuggestion.emit(item);
     }
   }
@@ -241,16 +237,16 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
     if(event) {
       this._form.controls['Ward'].setValue(event);
       let item: ResultCheckAddressDTO = {
-          Telephone: null,
-          Address: this._form.controls['Street'].value,
-          ShortAddress: '',
-          CityCode: event.cityCode,
-          CityName: event.cityName,
-          DistrictCode: event.districtCode,
-          DistrictName: event.districtName,
-          WardCode: event.code,
-          WardName: event.name,
-          Score: 0
+        Telephone: null,
+        Address: this._form.controls['Street'].value,
+        ShortAddress: '',
+        CityCode: event.cityCode,
+        CityName: event.cityName,
+        DistrictCode: event.districtCode,
+        DistrictName: event.districtName,
+        WardCode: event.code,
+        WardName: event.name,
+        Score: 0
       }
 
       this.onLoadSuggestion.emit(item);
@@ -273,7 +269,7 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
   }
 
   expanded() {
-     this._isExpanded = !this._isExpanded;
+    this._isExpanded = !this._isExpanded;
   }
 
   ngAfterViewInit(): void {
@@ -318,13 +314,11 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
     text = encodeURIComponent(text);
     this.suggestService.checkAddress(text).pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
-      if (res.success && TDSHelperArray.isArray(res.data)) {
+        if (res.success && TDSHelperArray.isArray(res.data)) {
           this.index = 0;
           this.selectAddress(res.data[0], 0);
-
           this.tempAddresses = res.data;
-      }
-      else {
+      } else {
         this.message.error('Không tìm thấy kết quả phù hợp!');
       }
     })

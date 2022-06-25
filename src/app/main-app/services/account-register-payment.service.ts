@@ -26,7 +26,7 @@ export class AccountRegisterPaymentService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api,data);
   }
 
-  insert(data: TDSSafeAny): Observable<TDSSafeAny> { // AccountRegisterPaymentDTO
+  registerPayment(data: TDSSafeAny): Observable<TDSSafeAny> { // AccountRegisterPaymentDTO
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
         method: TApiMethodType.post,

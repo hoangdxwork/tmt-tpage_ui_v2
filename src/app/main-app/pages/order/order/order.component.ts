@@ -145,6 +145,7 @@ export class OrderComponent implements OnInit, OnDestroy {
         this.widthTable = this.viewChildWidthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
         this.viewChildWidthTable?.nativeElement?.click()
       });
+
     setTimeout(() => {
       let that = this;
       let wrapScroll = this.viewChildDetailPartner?.nativeElement?.closest('.tds-table-body');
@@ -160,6 +161,7 @@ export class OrderComponent implements OnInit, OnDestroy {
       distinctUntilChanged(),
       // TODO: switchMap xử lý trường hợp sub in sub
       switchMap((text: TDSSafeAny) => {
+
         this.tabIndex = 1;
         this.pageIndex = 1;
         this.indClickTag = "";

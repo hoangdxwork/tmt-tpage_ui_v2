@@ -20,7 +20,7 @@
                         (click)="onSavePrint('confirm')">Xác nhận và xem (F8)</button>
 
                     <button  tds-button color="primary" *ngIf="dataModel.State == 'open'" type="button" [disabled]="isProcessing"
-                        (click)="showModalRegisterPayment()">
+                        (click)="paymentInfoJson()">
                         <span class="flex items-center">
                             <i class="tdsi-revenue-fill text-lg leading-none mr-2"></i>Thanh toán
                         </span>

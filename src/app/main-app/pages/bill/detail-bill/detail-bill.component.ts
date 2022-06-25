@@ -14,6 +14,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { THelperCacheService } from 'src/app/lib';
+import { PaymentJsonBillComponent } from '../components/payment-json/payment-json-bill.component';
 
 @Component({
   selector: 'app-detail-bill',
@@ -247,20 +248,16 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   onClickButton(e: MouseEvent) {
   }
 
-  showModalRegisterPayment() {
-    let model = { ids: [parseInt(this.id)] };
-    this.fastSaleOrderService.getRegisterPayment(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        delete res["@odata.context"];
-        this.modalService.create({
-            title: 'Đăng ký thanh toán',
-            content: ModalPaymentComponent,
-            size: "lg",
-            viewContainerRef: this.viewContainerRef,
-            componentParams:{ dataModel : res }
-        });
-    }, error => {
-        this.message.error(error.error.message ?? 'Không tải được dữ liệu');
-    })
+  paymentInfoJson() {
+    this.modalService.create({
+      title: 'Đăng ký thanh toán',
+      content: PaymentJsonBillComponent,
+      size: "lg",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        orderId: this.dataModel.Id
+      }
+    });
   }
 
   cancelBill() {

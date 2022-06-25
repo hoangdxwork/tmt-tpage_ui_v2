@@ -1,4 +1,3 @@
-import { distinctUntilChanged } from 'rxjs/operators';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, EventEmitter, ChangeDetectionStrategy, AfterViewInit, ViewChildren, QueryList, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
