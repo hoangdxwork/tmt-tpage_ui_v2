@@ -3,7 +3,7 @@
         <div class="bg-white flex justify-between items-center mb-4">
             <div class="flex flex-col gap-y-1">
                 <tds-breadcrumb tds-page-header-breadcrumb>
-                    <tds-breadcrumb-item>Phiếu bán hàng</tds-breadcrumb-item>
+                    <tds-breadcrumb-item (click)="directPage('bill?teamId=' + teamId)">Phiếu bán hàng</tds-breadcrumb-item>
                     <tds-breadcrumb-item>{{id ? 'Chỉnh sửa' : 'Thêm mới'}}</tds-breadcrumb-item>
                 </tds-breadcrumb>
                 <div class="pl-4 pb-2.5">

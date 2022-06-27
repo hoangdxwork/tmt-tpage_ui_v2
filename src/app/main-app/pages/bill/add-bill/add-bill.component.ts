@@ -14,7 +14,7 @@ import { DeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto'
 import { AccountJournalPaymentDTO } from 'src/app/main-app/dto/register-payment/register-payment.dto';
 import { CustomerDTO } from 'src/app/main-app/dto/partner/customer.dto';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, map, takeUntil, mergeMap } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
 import { StockWarehouseDTO } from 'src/app/main-app/dto/product/warehouse.dto';
@@ -99,11 +99,13 @@ export class AddBillComponent implements OnInit, OnDestroy {
   shipExtraServices: any = [];
   listServiceTemp: any = [];
   lstCalcFee!: CalculatorListFeeDTO[];
+  teamId!:TDSSafeAny;
 
   private destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder,
     private cacheApi: THelperCacheService,
+    private router: Router,
     private route: ActivatedRoute,
     private partnerService: PartnerService,
     private message: TDSMessageService,
@@ -142,12 +144,18 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.lstTeams = this.loadAllFacebookChilds();
     this.lstUser = this.loadUser();
     this.loadPartnerStatus();
+    const key = this.fastSaleOrderService._keyCacheUrlParams;
+    this.teamId = JSON.parse(localStorage.getItem(key) || '').teamId;
   }
 
   loadPartnerStatus() {
     this.commonService.getPartnerStatus().subscribe(res => {
       this.lstPartnerStatus = [...res];
     });
+  }
+
+  directPage(route:string){
+    this.router.navigateByUrl(route);
   }
 
   selectStatus(item: any): void {

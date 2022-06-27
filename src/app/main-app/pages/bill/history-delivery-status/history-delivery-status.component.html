@@ -12,14 +12,14 @@
     </div>
     <div class="flex w-full h-full p-4">
         <div #tableWidth *ngIf="lstHistoryDS" class="rounded-md bg-white w-full h-full pb-3">
-            <tds-table #table 
+            <tds-table #table
                 [listData]="lstHistoryDS"
                 [showSizeChanger]="true"
                 [frontPagination]="false"
                 [(pageSize)]="pageSize"
                 [(pageIndex)]="pageIndex"
-                [total]="count" 
-                [scroll]="{y:'auto'}" 
+                [total]="count"
+                [scroll]="{y:'auto'}"
                 [loading]="isLoading"
                 (queryParams)="onQueryParamsChange($event)"
                 (clickRefresh)="refreshData()">
@@ -48,7 +48,7 @@
                             <td class="border-r text-right">{{ data.CountError || 0 | number }}</td>
                             <td class="border-r">{{ data.Note || '---'}}</td>
                             <td class="border-r flex items-center justify-between" [tdsRight]="true">
-                                <button tds-button-icon color="secondary" size="sm" 
+                                <button tds-button-icon color="secondary" size="sm"
                                     tds-tooltip
                                     tooltipTitle="Chi tiết"
                                     (click)="showDetail(data.Id)">
@@ -56,7 +56,7 @@
                                       <i class="tdsi-category-fill text-neutral-1-500"></i>
                                     </span>
                                 </button>
-                                <button tds-button-icon color="secondary" size="sm" 
+                                <button tds-button-icon color="secondary" size="sm"
                                     tds-tooltip
                                     tooltipTitle="Xóa"
                                     (click)="deleteCrossChecking(data)">
