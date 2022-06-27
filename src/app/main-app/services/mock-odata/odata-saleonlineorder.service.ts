@@ -74,7 +74,7 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
     }
 
     if (TDSHelperString.hasValueString(filterObj?.searchText)) {
-        let value = filterObj.searchText;
+        let value = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim())
         dataFilter.filters.push( {
             filters: [
               { field: "Code", operator: OperatorEnum.contains, value: value },
@@ -110,7 +110,6 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
         dataFilter.filters.push( {
             filters: [
               { field: "PartnerId", operator: OperatorEnum.eq, value: partnerId}
-
             ],
             logic: 'and'
         })
