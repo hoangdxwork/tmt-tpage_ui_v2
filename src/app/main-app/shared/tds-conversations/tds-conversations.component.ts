@@ -7,8 +7,8 @@ import { ModalListProductComponent } from './../../pages/conversations/component
 import { ModalImageStoreComponent } from './../../pages/conversations/components/modal-image-store/modal-image-store.component';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output,
-  SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, ViewRef, AfterViewChecked, NgZone, HostBinding, ViewEncapsulation
+  Component, Input, OnChanges, OnInit,
+  SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, AfterViewChecked, NgZone, HostBinding
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { ConversationMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
@@ -42,7 +42,8 @@ import { ProductPagefbComponent } from '../../pages/conversations/components/pro
   selector: 'shared-tds-conversations',
   templateUrl: './tds-conversations.component.html',
   styleUrls: ['./tds-conversations.component.sass'],
-  animations: [eventFadeStateTrigger]
+  animations: [eventFadeStateTrigger],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewInit, AfterViewChecked, OnDestroy {

@@ -48,10 +48,12 @@ export class OdataPartnerService extends BaseSevice {
     }
 
     if (TDSHelperString.hasValueString(filterObj?.searchText)) {
-        let value = filterObj.searchText;
+        let value = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim());
         dataFilter.filters.push( {
             filters: [
               { field: "DisplayName", operator: OperatorEnum.contains, value: value },
+              { field: "Name", operator: OperatorEnum.contains, value: value },
+              { field: "NameNoSign", operator: OperatorEnum.contains, value: value },
               { field: "Phone", operator: OperatorEnum.contains, value: value },
               { field: "Email", operator: OperatorEnum.contains, value: value },
               { field: "Street", operator: OperatorEnum.contains, value: value },
