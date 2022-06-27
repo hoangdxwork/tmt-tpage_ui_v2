@@ -14,22 +14,22 @@
     <tds-form-field>
         <tds-label>Tỉnh/ Thành phố</tds-label>
         <tds-select valueField="Code" textField="Name" placeholder='chọn Tỉnh/ Thành phố' formControlName="City"
-        disabledField="isActive"
-        [data]="listCities" [allowClear]="true">
+        disabledField="isActive" (selectChange)="changeCity($event)"
+        [data]="lstCities" [allowClear]="true">
     </tds-select>
     </tds-form-field>
     <tds-form-field>
         <tds-label>Quận/ Huyện</tds-label>
         <tds-select valueField="Code" textField="Name" placeholder='chọn Quận/ Huyện' formControlName="District"
-        disabledField="isActive"
-        [data]="listDistricts" [allowClear]="true">
+        disabledField="isActive" (selectChange)="changeDistrict($event)"
+        [data]="lstDistricts" [allowClear]="true">
     </tds-select>
     </tds-form-field>
     <tds-form-field>
         <tds-label>Phường/ Xã thị trấn</tds-label>
         <tds-select valueField="Code" textField="Name" placeholder='chọn Phường/ Xã thị trấn' formControlName="Ward"
-        disabledField="isActive"
-        [data]="listWards" [allowClear]="true">
+        disabledField="isActive" (selectChange)="changeWard($event)"
+        [data]="lstWards" [allowClear]="true">
     </tds-select>
     </tds-form-field>
     

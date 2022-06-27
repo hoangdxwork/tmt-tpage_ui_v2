@@ -66,7 +66,7 @@
               <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="myScroll" is-lock="true" observe-attributes
                   yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
 
-                  <div *ngFor="let item of lstMatchingItem; let i= index; trackBy: trackByIndex">
+                  <div *ngFor="let item of lstMatchingItem | orderBy:'LastActivityTimeConverted':(isSort?'asc':'desc'); let i= index ; trackBy: trackByIndex">
                     <div *ngIf="item && item.psid && activeCvsItem && currentTeam" @eventFadeState>
 
                       <a (click)="changeCurrentCvsItem(item)"

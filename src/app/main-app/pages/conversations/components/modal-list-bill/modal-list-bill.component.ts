@@ -1,3 +1,4 @@
+import { TDSHelperString } from 'tds-ui/shared/utility';
 import { CRMTeamService } from './../../../../services/crm-team.service';
 import { GenerateMessageTypeEnum } from './../../../../dto/conversation/message.dto';
 import { SendMessageComponent } from './../../../../shared/tpage-send-message/send-message.component';
@@ -29,10 +30,13 @@ export class ModalListBillComponent implements OnInit {
 
   paymentMethodOptions!: paymentMethodDTO[];
   lstBillofPartner!: BillofPartnerDTO[];
+  lstBillDeafault!: BillofPartnerDTO[];
   pageCurrent = 1;
   pageCurrentOld = 0; 
   partnerId!: number;
   datas: BillofPartnerDTO[] = [];
+  searchSelect: string = "";
+  searchText: string = "";
   isLoading: boolean = false;
   public sortOptions: any[] = [
     { value: "", text: "Tất cả" },
@@ -131,10 +135,42 @@ export class ModalListBillComponent implements OnInit {
         this.datas.push(item);
       });
       this.lstBillofPartner = [...this.datas];
+      this.lstBillDeafault = [...this.datas];
+      if(TDSHelperString.hasValueString(this.searchSelect)){
+        this.switchSort(this.searchSelect);
+      }
+      if(TDSHelperString.hasValueString(this.searchText)){
+        this.searchBill();
+      }
       if(res.TotalCount != 0) {
         this.pageCurrent++;
       }
     })
+  }
+
+  switchSort(value: string) {
+    this.searchSelect = value;
+    let data = this.lstBillDeafault;
+    let key = this.searchSelect;
+    if (TDSHelperString.hasValueString(key)) {
+      key = TDSHelperString.stripSpecialChars(key.trim());
+    }
+    data = data.filter((x) =>
+      (x.ShowState && TDSHelperString.stripSpecialChars(x.ShowState.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
+    this.lstBillofPartner = data
+    return data
+  }
+
+  searchBill(){
+    let data = TDSHelperString.hasValueString(this.searchSelect)? this.switchSort(this.searchSelect): this.lstBillDeafault;
+    let key = this.searchText;
+    if (TDSHelperString.hasValueString(key)) {
+      key = TDSHelperString.stripSpecialChars(key.trim());
+    }
+    data = data.filter((x) =>
+      (x.Number && TDSHelperString.stripSpecialChars(x.Number.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
+    this.lstBillofPartner = data
+    return data
   }
 
   selectPayment(index: number, value: string){
