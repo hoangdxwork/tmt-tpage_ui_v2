@@ -1,12 +1,9 @@
-import { DeliveryCarrierService } from './../../../../services/delivery-carrier.service';
-import { Validators } from '@angular/forms';
-import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSModalRef } from 'tds-ui/modal';
-import { TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'ship-status-delivery',
@@ -14,43 +11,22 @@ import { TDSHelperString } from 'tds-ui/shared/utility';
 })
 
 export class ShipStatusDeliveryComponent implements OnInit, OnDestroy {
+
   base64textString!: string;
   urlSampleUrl!: string;
   isUpdate: boolean = false;
   messageError: any[] = [];
-  listDeliveryCarrier: any[] = [];
+  lstOrder: any = [];
 
   isLoading: boolean = false;
-  _form!:FormGroup;
-
   private destroy$ = new Subject<void>();
 
   constructor(private fastSaleOrderService: FastSaleOrderService,
     private modal: TDSModalRef,
-    private message: TDSMessageService,
-    private deliveryCarrierService: DeliveryCarrierService,
-    private fb: FormBuilder) { 
-      this.createForm();
-    }
+    private message: TDSMessageService) { }
 
   ngOnInit(): void {
     this.urlSampleUrl = this.fastSaleOrderService.urlSampleShipStatusDelivery();
-    this.loadCarrier();
-  }
-
-  createForm(){
-    this._form = this.fb.group({
-      CarrierId:[null,Validators.required],
-      Payment:[true],
-      FileName:[null,Validators.required],
-      Note:[""]
-    })
-  }
-
-  loadCarrier(){
-    this.deliveryCarrierService.dataCarrierActive$.subscribe((res) => {
-      this.listDeliveryCarrier = res;
-    });
   }
 
   handleFileInput(event: any) {
@@ -59,7 +35,6 @@ export class ShipStatusDeliveryComponent implements OnInit, OnDestroy {
 
     if (files && file) {
       let reader = new FileReader();
-      this._form.controls["FileName"].setValue(file.name);
 
       reader.onload = this.handleReaderBtoa.bind(this);
       reader.readAsBinaryString(file);
@@ -86,20 +61,17 @@ export class ShipStatusDeliveryComponent implements OnInit, OnDestroy {
 
     this.isLoading = true;
     let model = {
-      carrierId: this._form.controls["CarrierId"].value,
-      file: that.base64textString,
-      note: this._form.controls["Note"].value,
-      payment: this._form.controls["Payment"].value
+      // carrierId: 4,
+      // file: that.base64textString,
+      // isNoteOrder: true,
+      // note: '',
+      // payment: true
     };
-    console.log(model)
-    that.fastSaleOrderService.updateExistShipCode(model).pipe(takeUntil(this.destroy$), finalize(() =>  this.isLoading = false ))
-      .pipe()
+
+    that.fastSaleOrderService.updateExistShipCode(model).pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() =>  this.isLoading = false ))
       .subscribe((res: any) => {
-        this.message.success('Cập nhật đối soát thành công. Vui lòng kiểm tra lại những dòng bị lỗi');
-        this.messageError = res.value;
-      }, error => {
-        this.message.error(error.error.message || 'Lỗi dữ liệu');
-      });
+    }, error => {})
   }
 
   onClose() {

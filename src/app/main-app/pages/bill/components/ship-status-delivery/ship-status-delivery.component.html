@@ -1,54 +1,18 @@
-<form [formGroup]="_form" autocomplete="off" class="w-full h-full flex">
-    <div class="grid grid-cols-4 w-full gap-y-4 gap-x-3">
-        <label class="font-semibold">Đối tác giao hàng</label>
-        <div class="w-full col-span-3 flex items-start gap-8">
-            <tds-form-field class="flex flex-auto">
-                <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng'
-                    disabledField="isActive" formControlName="CarrierId" [required]='true'
-                    [data]="listDeliveryCarrier" [allowClear]="true">
-                </tds-select>
-                <tds-error>Vui lòng chọn đối tác giao hàng</tds-error>
-            </tds-form-field>
-            <tds-checkbox formControlName="Payment">Thanh toán</tds-checkbox>
-        </div>
-
-        <label class="font-semibold">Chọn file</label>
-        <label class="w-full col-span-3">
-            <input type="file" class="hidden" (change)="handleFileInput($event)" />
-        
-            <div class="cursor-pointer inline-flex w-full">
-                <div class="bg-white rounded-l rounded-bl border border-neutral-2-200 h-[34px] flex items-center px-3 hover:bg-neutral-3-50 active:neutral-3-50">
-                    <span class="flex items-center font-semibold">
-                    <i class="tdsi-upload-fill text-lg text-neutral-1-500 leading-none mr-2"></i>Upload File
-                    </span>
-                </div>
-                <div class="bg-white col-span-2 flex flex-auto items-center rounded-r rounded-br border border-l-0 border-neutral-2-200 h-[34px]">
-                    <input tdsInput formControlName="FileName" placeholder="Chưa có file được chọn">
-                </div>
-            </div>
-        
-            <div *ngFor="let err  of messageError">
-                <span class="text-error-400">{{err}}</span>
-            </div>
-        </label>
-
-        <label class="font-semibold">Ghi chú</label>
-        <tds-form-field class="w-full col-span-3">
-            <textarea tdsInput formControlName="Note" placeholder="Nhập ghi chú" class="resize-none"></textarea>
-        </tds-form-field>
-    </div>
-</form>
+<label class="upload-button ml-0">
+    <input type="file" class="form-control" (change)="handleFileInput($event)" />
+    <span class="cursor">Chọn file</span>
+</label>
 
 <!-- footer -->
 <div class="w-full flex justify-end gap-2 p-4" *tdsModalFooter>
-  <button tds-button color="secondary" type="submit" [disabled]="!this._form.valid" (click)="onSave()">
+  <button tds-button color="secondary" type="button" (click)="onSave()">
       Import
   </button>
 
-  <a tds-button color="primary" type="button" (click)="openUrlSample()">
+  <a tds-button  type="submit" color="primary" type="button" (click)="openUrlSample()">
       Tải file mẫu
   </a>
-  <button tds-button color="primary" type="button" (click)="onClose()">
+  <button tds-button  type="submit" color="primary" type="button" (click)="onClose()">
       Đóng
   </button>
 </div>
