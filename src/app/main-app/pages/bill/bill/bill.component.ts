@@ -24,7 +24,7 @@ import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSTableQueryParams } from 'tds-ui/table';
-import { ShipCodeDeliveryComponent } from '../components/ship-code-delivery/ship-code-delivery.component';
+import { ConfigDataFacade } from 'src/app/main-app/services/facades/config-data.facade';
 
 @Component({
   selector: 'app-bill',
@@ -131,6 +131,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       private resizeObserver: TDSResizeObserver,
       private partnerService: PartnerService,
       private crmTeamService: CRMTeamService,
+      private cd: ChangeDetectorRef,
       private crmMatchingService: CRMMatchingService) {
   }
 
@@ -139,7 +140,6 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.activatedRoute.queryParams.subscribe(res => {
       localStorage.setItem(key, JSON.stringify(res));
     })
-    
     this.loadSummaryStatus();
     this.loadTags();
     this.loadGridConfig();

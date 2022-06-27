@@ -35,6 +35,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   @Input() type!: string;
 
   isProcessing: boolean = false;
+  isLoading: boolean = false;
   tagIds: any = [];
   idsModel: any = [];
   params!: TDSSafeAny;
@@ -43,7 +44,6 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(private router: Router,
-    
     private modal: TDSModalService,
     private fastSaleOrderService: FastSaleOrderService,
     private message: TDSMessageService,
@@ -304,6 +304,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         onOk: () => {
           that.fastSaleOrderService.cancelInvoice({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
             that.message.success('Hủy hóa đơn thành công!');
+            that.fastSaleOrderService.onLoadPage$.emit(true);
             that.isProcessing = false;
           }, error => {
             that.message.error(`${error?.error?.message}`);
@@ -332,6 +333,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         onOk: () => {
           that.fastSaleOrderService.unLink({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
             that.message.success('Xóa hóa đơn thành công!');
+            that.fastSaleOrderService.onLoadPage$.emit(true);
             that.isProcessing = false;
           }, error => {
             that.message.error(`${error?.error?.message}`);
@@ -343,6 +345,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         cancelText: "Đóng",
       });
     }
+
   }
 
   sendDelivery() {
