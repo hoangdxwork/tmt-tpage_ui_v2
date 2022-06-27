@@ -180,7 +180,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   updateShipStatusDelivery(){
     this.modal.create({
       title: 'Đối soát giao hàng từ file',
-      size:'xl',
+      size:'lg',
       content: ShipStatusDeliveryComponent,
       viewContainerRef: this.viewContainerRef
     });

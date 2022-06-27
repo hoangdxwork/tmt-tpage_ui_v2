@@ -1,7 +1,23 @@
-<label class="upload-button ml-0">
-    <input type="file" class="form-control" (change)="handleFileInput($event)" />
-    <span class="cursor">Chọn file</span>
-</label>
+
+<div class="w-full h-full flex">
+    <label class="upload-button ml-0">
+        <input type="file" class="form-control hidden" (change)="handleFileInput($event)"/>
+        
+        <div class="cursor-pointer inline-flex w-full">
+            <div class="bg-white rounded-l rounded-bl border border-neutral-2-200 h-[34px] flex items-center px-3 hover:bg-neutral-3-50 active:neutral-3-50">
+                <span class="flex items-center font-semibold">
+                <i class="tdsi-upload-fill text-lg text-neutral-1-500 leading-none mr-2"></i>Upload File
+                </span>
+            </div>
+            <div class="bg-white col-span-2 flex flex-auto items-center rounded-r rounded-br border border-l-0 border-neutral-2-200 h-[34px]">
+                <input tdsInput [(ngModel)]="fileName" placeholder="chưa có file được chọn" disabled="true">
+            </div>
+        </div>
+    </label>
+    <div *ngFor="let err  of messageError">
+        <span class="text-error-400">{{err}}</span>
+    </div>
+</div>
 
 <!-- footer -->
 <div class="w-full flex justify-end gap-2 p-4" *tdsModalFooter>

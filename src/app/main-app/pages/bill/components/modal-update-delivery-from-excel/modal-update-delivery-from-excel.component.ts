@@ -1,13 +1,10 @@
 import { TDSModalRef } from 'tds-ui/modal';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
-import { Router } from '@angular/router';
 import { Subject, takeUntil, finalize } from 'rxjs';
-import { OnDestroy, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
-import { TDSTableQueryParams } from 'tds-ui/table';
-import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperString } from 'tds-ui/shared/utility';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-modal-update-delivery-from-excel',
@@ -17,6 +14,7 @@ export class ModalUpdateDeliveryFromExcelComponent implements OnInit {
 // updateDeliveryExcel
   base64textString!: string;
   urlSampleUrl!: string;
+  fileName!:string;
   isUpdate: boolean = false;
   messageError: any[] = [];
   lstOrder: any = [];
@@ -29,7 +27,7 @@ export class ModalUpdateDeliveryFromExcelComponent implements OnInit {
     private message: TDSMessageService) { }
 
   ngOnInit(): void {
-    this.urlSampleUrl = this.fastSaleOrderService.urlSampleShipStatusDelivery();
+    this.urlSampleUrl = this.fastSaleOrderService.urlSampleDeliveryStatusUpdateExcel();
   }
 
   handleFileInput(event: any) {
@@ -38,7 +36,8 @@ export class ModalUpdateDeliveryFromExcelComponent implements OnInit {
 
     if (files && file) {
       let reader = new FileReader();
-
+      this.fileName = file.name;
+      
       reader.onload = this.handleReaderBtoa.bind(this);
       reader.readAsBinaryString(file);
 
@@ -67,10 +66,14 @@ export class ModalUpdateDeliveryFromExcelComponent implements OnInit {
       file: that.base64textString
     };
 
-    that.fastSaleOrderService.updateDeliveryExcel(model).pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() =>  this.isLoading = false ))
+    that.fastSaleOrderService.updateDeliveryExcel(model)
+      .pipe(takeUntil(this.destroy$), finalize(() =>  this.isLoading = false ))
       .subscribe((res: any) => {
-    }, error => {})
+        this.message.warning('Xử lý thành công. Vui lòng kiểm tra lại những dòng bị lỗi');
+        this.messageError = res.value;
+      }, error => {
+        this.message.error(error?.error?.message || 'Lỗi xử lý file');
+      });
   }
 
   onClose() {
