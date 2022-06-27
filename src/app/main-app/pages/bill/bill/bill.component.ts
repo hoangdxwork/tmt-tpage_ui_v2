@@ -149,12 +149,6 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         this.loadData(this.pageSize, this.pageIndex);
       }
     })
-    this.fastSaleOrderService.onLoadPage$.subscribe(
-      (res:boolean)=>{
-        this.cd.detectChanges();
-        if(res) this.loadData(this.pageSize,this.pageIndex);
-      }
-    )
   }
 
   loadGridConfig() {
