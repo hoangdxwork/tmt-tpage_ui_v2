@@ -457,6 +457,11 @@ export class FastSaleOrderService extends BaseSevice {
     return url;
   }
 
+  urlSampleDeliveryStatusUpdateExcel() {
+    var url = `${this._BASE_URL}/Content/files/mau_cap_nhat_trang_thai_giao_hang.xlsx`;
+    return url;
+  }
+
   updateShipCodeExcel(data: any): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdateShipCodeExcel`,
