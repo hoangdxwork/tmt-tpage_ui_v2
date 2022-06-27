@@ -1,9 +1,10 @@
 
-<button tds-button-icon color="secondary" 
-    tds-dropdown 
-    trigger="click" 
-    [tdsDropdownMenu]="menu" 
-    size="md" class="relative" 
+<button tds-button-icon color="secondary"
+    tds-dropdown
+    trigger="click"
+    [tdsDropdownMenu]="menu"
+    [autoClose]="false"
+    size="md" class="relative"
     [(visible)]="isVisible"
     tds-tooltip
     tooltipTitle="Lọc dữ liệu">

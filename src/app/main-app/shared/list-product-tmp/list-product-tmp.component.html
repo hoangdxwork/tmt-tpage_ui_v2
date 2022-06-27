@@ -1,7 +1,7 @@
 
 <div class="rounded-xl bg-white pt-2 px-3 flex h-full flex-col gap-y-2">
   <div class="flex gap-x-2">
-      <tds-form-field class="w-full">
+      <tds-form-field>
           <input tdsInput placeholder="Tìm kiếm ..." autocomplete="off" #innerText />
           <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
       </tds-form-field>
@@ -29,12 +29,12 @@
               </div>
           </tds-dropdown-menu>
       </tds-button-group>
-      <button tds-button-icon color="primary" (click)="showModalAddProduct()" type="button">
+      <button tds-button-icon color="primary" tds-tooltip tooltipTitle="Thêm sản phẩm" (click)="showModalAddProduct()" type="button">
           <span class="flex items-center">
               <i class="tdsi-plus-fill"></i>
           </span>
       </button>
-      <button tds-button-icon color="info" type="button" (click)="reloadIndexDB()">
+      <button tds-button-icon color="info" tds-tooltip tooltipTitle="Reload" type="button" (click)="reloadIndexDB()">
           <span class="flex items-center">
               <i class="tdsi-reload-fill"></i>
           </span>
