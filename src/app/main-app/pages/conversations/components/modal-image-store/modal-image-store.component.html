@@ -6,7 +6,7 @@
             <div class="flex flex-col h-full w-full">
                 <div class="flex items-center gap-2.5">
                     <tds-form-field class="w-full">
-                        <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm hình ảnh" tdsInput (keyup.enter)="onSearch($event)" />
+                        <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm hình ảnh" [(ngModel)]="searchText" [tdsInputDebounce]="500" tdsInput (inputKeyup)="onSearch()"/>
                         <span tdsPrefix ><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
                     </tds-form-field>
                     <tds-upload [beforeUpload]="beforeUpload">
@@ -30,7 +30,8 @@
                         </span>
                     </button>
                 </div>
-                <div class="max-h-[calc(100vh-375px)] h-[calc(100vh-375px)] w-full overflow-y-auto tds-custom-scroll">
+                <div class="max-h-[calc(100vh-375px)]  w-full overflow-hidden overflow-y-auto tds-custom-scroll" yiAutoScroll lock-y-offset="10"
+                    scroll-end="true" is-lock="true" (on-change-bottom)="nextData()">
                     <div class="grid grid-cols-4 gap-5 h-full w-full" *ngIf="(lstAll$ | async)?.Items; else lstAllNoData">
                         <ng-template ngFor let-data [ngForOf]="(lstAll || (lstAll$ | async))?.Items">
                             <div *ngIf="!data.Select; else noActive">
@@ -38,7 +39,7 @@
                                     <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100">
                                         <tds-checkbox [(ngModel)]="data.Select" (change)="checkValue(data)"></tds-checkbox>
                                     </div>
-                                    <img [src]="data.Url" class="w-auto h-auto max-w-full max-h-full">
+                                    <img [src]="data.Url" class="w-auto h-auto max-w-full max-h-full" (click)="selectAttachment(data)">
                                     <div class="absolute bottom-0 opacity-0 group-hover:opacity-100 w-full">
                                         <div class="flex p-2.5 gap-2.5 bg-gradient-to-b from-black/0 to-black/100 items-center rounded-b-lg justify-between">
                                             <div class="text-body-2 text-white font-semibold font-sans"> {{ data.Name }} </div>
@@ -65,7 +66,7 @@
                                     <div class="absolute top-1 right-1 opacity-100">
                                         <tds-checkbox [(ngModel)]="data.Select" (change)="checkValue(data)"></tds-checkbox>
                                     </div>
-                                    <img [src]="data.Url" class="w-auto h-auto max-w-full max-h-full">
+                                    <img [src]="data.Url" class="w-auto h-auto max-w-full max-h-full" (click)="selectAttachment(data)">
                                     <div class="absolute bottom-0 opacity-0 group-hover:opacity-100 w-full">
                                         <div class="flex p-2.5 gap-2.5 bg-gradient-to-b from-black/0 to-black/100 items-center rounded-b-lg justify-between">
                                             <div class="text-body-2 text-white font-semibold font-sans"> {{ data.Name }} </div>
@@ -103,7 +104,7 @@
             <div class="flex flex-col h-full w-full">
                 <div class="flex items-center gap-2.5">
                     <tds-form-field class="w-full">
-                        <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm hình ảnh" tdsInput (keyup.enter)="onSearch($event)" />
+                        <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm hình ảnh" [(ngModel)]="searchText" [tdsInputDebounce]="500" tdsInput (inputKeyup)="onSearch()"/>
                         <span tdsPrefix ><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
                     </tds-form-field>
                     <button tds-button color="primary" (click)="showModalAddCollection()">
@@ -224,7 +225,7 @@
     </tds-tabset>
     <div class="w-full flex justify-end p-4" *tdsModalFooter>
         <button tds-button class="mr-2 w-[100px]" color="secondary" (click)="onCancel()">Hủy bỏ</button>
-        <button tds-button class="w-[100px]" type="submit" color="primary">Gửi</button>
+        <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSend()">Gửi</button>
     </div>
   </div>
 </tds-spin>

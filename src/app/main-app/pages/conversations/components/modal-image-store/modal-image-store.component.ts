@@ -15,12 +15,11 @@ import { TDSUploadFile } from 'tds-ui/upload';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTabChangeEvent } from 'tds-ui/tabs';
-import { TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-modal-image-store',
-  templateUrl: './modal-image-store.component.html',
-  styleUrls: ['./modal-image-store.component.scss']
+  templateUrl: './modal-image-store.component.html'
 })
 export class ModalImageStoreComponent implements OnInit, OnDestroy {
   inputValue?: string;
@@ -38,6 +37,7 @@ export class ModalImageStoreComponent implements OnInit, OnDestroy {
   tabIndex: number = 0;
 
   fileList: TDSUploadFile[] = [];
+  searchText: string = '';
 
   constructor(
     private modal: TDSModalService,
@@ -67,7 +67,22 @@ export class ModalImageStoreComponent implements OnInit, OnDestroy {
     }));
   }
 
+  nextData() {
+    if(!this.isLoading) {
+      this.isLoading = true;
+      this.attachmentDataFacade.getNextPage().pipe(finalize(()=>{ this.isLoading = false })).subscribe(res => {
+      }, error => {
+        this.message.error(error.message? error.error.message : 'Load dữ liệu thất bại');
+      });
+    }
+  }
+
   checkValue(item: any) {
+    this.numberSelect = item["Select"] ? this.numberSelect + 1 : this.numberSelect - 1;
+  }
+
+  selectAttachment(item: any) {
+    item["Select"] = item["Select"] ? false : true;
     this.numberSelect = item["Select"] ? this.numberSelect + 1 : this.numberSelect - 1;
   }
 
@@ -141,8 +156,8 @@ export class ModalImageStoreComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSearch(event: any) {
-    let text =  event?.target.value;
+  onSearch() {
+    let text = this.searchText;
     if(this.tabIndex === 0) {
       this.getAttachment(text);
     }
@@ -152,7 +167,6 @@ export class ModalImageStoreComponent implements OnInit, OnDestroy {
   }
 
   selectChange(event: TDSTabChangeEvent) {
-    console.log(event);
   }
 
   getAttachment(text: string) {
@@ -162,6 +176,8 @@ export class ModalImageStoreComponent implements OnInit, OnDestroy {
         .pipe(finalize(() => this.isLoading = false))
         .subscribe(res => {
           this.lstAll = res;
+        },err => {
+          this.message.error(err.error? err.error.message: 'Có lỗi xảy ra')
         });
     }
     else {
@@ -176,6 +192,8 @@ export class ModalImageStoreComponent implements OnInit, OnDestroy {
         .pipe(finalize(() => this.isLoading = false))
         .subscribe(res => {
           this.lstColl = res.Items;
+        },err => {
+          this.message.error(err.error? err.error.message: 'Có lỗi xảy ra')
         });
     }
     else {
@@ -199,8 +217,7 @@ export class ModalImageStoreComponent implements OnInit, OnDestroy {
       this.attachmentDataFacade.addAttachment(res);
       this.message.success(Message.Upload.Success);
     }, error => {
-      let message = JSON.parse(error?.Message);
-      this.message.error(`${message?.message}`);
+      this.message.error(error? error.Message: Message.Upload.Failed);
     });
   }
 
@@ -242,6 +259,41 @@ export class ModalImageStoreComponent implements OnInit, OnDestroy {
         collectionId: id
       }
     });
+    modal.afterClose.subscribe(result=>{
+      if(result)
+      this.modalRef.destroy(result);
+    })
+  }
+
+  onSend(){
+    let urls = [];
+    if(this.lstAll) {
+      urls = this.lstAll.Items.filter((x : TDSSafeAny) =>
+        x["Select"] == true
+      ).map((x : TDSSafeAny)=> x.Url);
+
+      if(!urls || urls.length < 1) {
+        this.message.info("Chưa có ảnh nào được chọn!");
+        return;
+      }
+
+      this.modalRef.destroy(urls);
+
+      delete this.lstAll;
+    }
+    else {
+      this.lstAll$.subscribe(res => {
+        urls = res.Items.filter(x =>
+          x["Select"] == true
+        ).map( x => x.Url);
+
+        if(!urls || urls.length < 1) {
+          this.message.info("Chưa có ảnh nào được chọn!");
+          return;
+        }
+        this.modalRef.destroy(urls);
+      });
+    }
   }
 
   onCancel() {
