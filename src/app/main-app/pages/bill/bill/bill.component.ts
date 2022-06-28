@@ -24,11 +24,11 @@ import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSTableQueryParams } from 'tds-ui/table';
-import { ConfigDataFacade } from 'src/app/main-app/services/facades/config-data.facade';
 
 @Component({
   selector: 'app-bill',
-  templateUrl: './bill.component.html'
+  templateUrl: './bill.component.html',
+  styleUrls: ['./bill.component.scss']
 })
 
 export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
