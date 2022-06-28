@@ -27,8 +27,7 @@ import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
   selector: 'app-bill',
-  templateUrl: './bill.component.html',
-  styleUrls: ['./bill.component.scss']
+  templateUrl: './bill.component.html'
 })
 
 export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
