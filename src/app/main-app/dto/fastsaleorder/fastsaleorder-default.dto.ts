@@ -651,3 +651,14 @@ export interface FastSaleOrder_DefaultDTOV2 {
     Ship_ServiceExtras: ShipServiceExtra[];
     Team: Team;
 }
+
+export interface OrderSendShipDTO {
+  Id: number;
+  Number: string;
+  DateInvoice: Date;
+  CarrierId: number;
+  CarrierName: string;
+  CashOnDelivery: number;
+  TotalAmount: number;
+  Partner: Partner;
+}

@@ -1,10 +1,9 @@
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
 import { CheckConversationData, CheckConversationDTO } from './../../../../dto/partner/check-conversation.dto';
-import { ChangeDetectorRef, Component, Host, Input, OnChanges, OnInit, Optional, SimpleChanges, SkipSelf, ViewContainerRef, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ConversationMatchingItem, ActiveMatchingPartner } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
-import { DraftMessageService } from 'src/app/main-app/services/conversation/draft-message.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { Subject } from 'rxjs';
@@ -12,7 +11,7 @@ import { takeUntil, finalize } from 'rxjs/operators';
 import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { MDBFacebookMappingNoteDTO, PartnerDTO, PartnerStatusDTO, PartnerTempDTO, ResRevenueCustomerDTO } from 'src/app/main-app/dto/partner/partner.dto';
+import { MDBFacebookMappingNoteDTO, PartnerStatusDTO, PartnerTempDTO, ResRevenueCustomerDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ModalBlockPhoneComponent } from '../modal-block-phone/modal-block-phone.component';
@@ -67,7 +66,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private partnerService: PartnerService,
     private crmTeamService: CRMTeamService,
     private fb: FormBuilder,
-    private activatedRoute: ActivatedRoute,
     private commonService: CommonService,
     private viewContainerRef: ViewContainerRef,
     private modalService: TDSModalService,

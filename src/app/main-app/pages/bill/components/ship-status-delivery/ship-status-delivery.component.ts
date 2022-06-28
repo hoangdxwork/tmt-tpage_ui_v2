@@ -60,12 +60,15 @@ export class ShipStatusDeliveryComponent implements OnInit, OnDestroy {
     if (files && file) {
       let reader = new FileReader();
       this._form.controls["FileName"].setValue(file.name);
+      this.messageError = [];
 
       reader.onload = this.handleReaderBtoa.bind(this);
       reader.readAsBinaryString(file);
 
       event.preventDefault();
       event.stopImmediatePropagation();
+    }else{
+      this.message.error('Không đọc được file')
     }
   }
 
@@ -89,14 +92,21 @@ export class ShipStatusDeliveryComponent implements OnInit, OnDestroy {
       carrierId: this._form.controls["CarrierId"].value,
       file: that.base64textString,
       note: this._form.controls["Note"].value,
-      payment: this._form.controls["Payment"].value
+      payment: this._form.controls["Payment"].value,
+      isNoteOrder: true //cập nhật ghi chú hóa đơn
     };
-    console.log(model)
-    that.fastSaleOrderService.updateExistShipCode(model).pipe(takeUntil(this.destroy$), finalize(() =>  this.isLoading = false ))
-      .pipe()
+    
+    that.fastSaleOrderService.updateShipStatusExcel(model)
+      .pipe(takeUntil(this.destroy$), finalize(() =>  this.isLoading = false ))
       .subscribe((res: any) => {
-        this.message.success('Cập nhật đối soát thành công. Vui lòng kiểm tra lại những dòng bị lỗi');
         this.messageError = res.value;
+
+        if(this.messageError.length > 0){
+          this.message.warning('Cập nhật đối soát thành công. Vui lòng kiểm tra lại những dòng bị lỗi.');
+        }else{
+          this.message.success('Cập nhật đối soát thành công');
+          this.modal.destroy(null);
+        }
       }, error => {
         this.message.error(error.error.message || 'Lỗi dữ liệu');
       });

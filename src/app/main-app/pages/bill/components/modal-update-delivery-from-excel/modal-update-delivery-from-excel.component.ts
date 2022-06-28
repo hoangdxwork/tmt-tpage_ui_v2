@@ -4,7 +4,6 @@ import { Subject, takeUntil, finalize } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperString } from 'tds-ui/shared/utility';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-modal-update-delivery-from-excel',
@@ -15,9 +14,7 @@ export class ModalUpdateDeliveryFromExcelComponent implements OnInit {
   base64textString!: string;
   urlSampleUrl!: string;
   fileName!:string;
-  isUpdate: boolean = false;
   messageError: any[] = [];
-  lstOrder: any = [];
 
   isLoading: boolean = false;
   private destroy$ = new Subject<void>();
@@ -69,8 +66,13 @@ export class ModalUpdateDeliveryFromExcelComponent implements OnInit {
     that.fastSaleOrderService.updateDeliveryExcel(model)
       .pipe(takeUntil(this.destroy$), finalize(() =>  this.isLoading = false ))
       .subscribe((res: any) => {
-        this.message.warning('Xử lý thành công. Vui lòng kiểm tra lại những dòng bị lỗi');
         this.messageError = res.value;
+        if(this.messageError.length > 0){
+          this.message.warning('Xử lý thành công. Vui lòng kiểm tra lại những dòng bị lỗi.');
+        }else{
+          this.message.success('Xử lý thành công');
+          this.modal.destroy(null);
+        }
       }, error => {
         this.message.error(error?.error?.message || 'Lỗi xử lý file');
       });

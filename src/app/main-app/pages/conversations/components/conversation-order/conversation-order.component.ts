@@ -1,5 +1,3 @@
-import { vi_VN } from 'tds-ui/i18n';
-import { formatNumber } from '@angular/common';
 import { ModalApplyPromotionComponent } from './../modal-apply-promotion/modal-apply-promotion.component';
 import { OnDestroy } from '@angular/core';
 import { SaleSettingsDTO } from './../../../../dto/setting/setting-sale-online.dto';
@@ -76,8 +74,20 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   keyFilterUser: string = '';
   isOpenCarrier = false;
 
-  public numberWithCommas = (value: number) => `${formatNumber(value || 0, vi_VN.locale)}`;
-  public parserComas = (value: string) => value.replace(',', '');
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    return value
+  };
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,',','');
+    }
+    return value
+  };
 
   private destroy$ = new Subject<void>();
 

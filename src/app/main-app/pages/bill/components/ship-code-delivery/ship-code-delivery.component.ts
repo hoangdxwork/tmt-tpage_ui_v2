@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { TDSModalRef } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
@@ -14,6 +14,7 @@ export class ShipCodeDeliveryComponent implements OnInit, OnDestroy {
 
   base64textString!: string;
   urlSampleUrl!: string;
+  fileName!:string;
   isUpdate: boolean = false;
   messageError: any[] = [];
   lstOrder: any = [];
@@ -35,6 +36,7 @@ export class ShipCodeDeliveryComponent implements OnInit, OnDestroy {
 
     if (files && file) {
       let reader = new FileReader();
+      this.fileName = file.name;
 
       reader.onload = this.handleReaderBtoa.bind(this);
       reader.readAsBinaryString(file);
@@ -73,7 +75,7 @@ export class ShipCodeDeliveryComponent implements OnInit, OnDestroy {
             that.lstOrder = res.datas;
         }
     }, error => {
-      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công')
+      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
     })
   }
 
@@ -83,9 +85,10 @@ export class ShipCodeDeliveryComponent implements OnInit, OnDestroy {
     };
 
     this.fastSaleOrderService.updateExistShipCode(model).pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.message.success('Thao tác thành công')
+      this.message.success('Thao tác thành công');
+      this.modal.destroy(null);
     }, error => {
-      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công')
+      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
     })
   }
 

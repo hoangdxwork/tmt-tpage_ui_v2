@@ -26,16 +26,17 @@
                     <input tdsInput formControlName="FileName" placeholder="Chưa có file được chọn">
                 </div>
             </div>
-        
-            <div *ngFor="let err  of messageError">
-                <span class="text-error-400">{{err}}</span>
-            </div>
         </label>
 
         <label class="font-semibold">Ghi chú</label>
         <tds-form-field class="w-full col-span-3">
             <textarea tdsInput formControlName="Note" placeholder="Nhập ghi chú" class="resize-none"></textarea>
         </tds-form-field>
+
+        <label *ngIf="messageError.length > 0" class="text-error-400 font-semibold">Lỗi</label>
+        <div *ngFor="let err  of messageError" class="w-full flex flex-col col-span-3 max-h-[80px] overflow-auto tds-panel-scroll">
+            <span class="text-error-400 w-full">{{err}}</span>
+        </div>
     </div>
 </form>
 
