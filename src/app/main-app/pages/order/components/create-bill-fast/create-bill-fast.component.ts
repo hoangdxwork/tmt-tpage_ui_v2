@@ -26,6 +26,21 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
   lstData!: TDSSafeAny[];
   lstCarriers: Array<DeliveryCarrierDTO> = [];
 
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    }
+    return value
+  } ;
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,',','');
+    }
+    return value
+  };
+
   private _destroy = new Subject<void>();
 
   isPrint: boolean = false;

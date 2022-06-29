@@ -65,7 +65,7 @@
                   <!-- Tiền hàng -->
                   <td class="align-top">
                     <tds-form-field>
-                      <tds-input-number [min]="0" [step]="1000"
+                      <tds-input-number [min]="0" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
                         [(ngModel)]="data.TotalAmount" [ngModelOptions]="{standalone: true}">
                       </tds-input-number>
                     </tds-form-field>
@@ -73,7 +73,7 @@
                   <!-- Phí ship -->
                   <td class="align-top">
                     <tds-form-field>
-                      <tds-input-number [min]="0" [step]="1000"
+                      <tds-input-number [min]="0" [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
                         [(ngModel)]="data.ShipAmount" [ngModelOptions]="{standalone: true}">
                       </tds-input-number>
                     </tds-form-field>
@@ -95,12 +95,12 @@
                     <div class="flex gap-x-2">
                       <button tds-button-icon color="secondary" size="sm" (click)="onEdit(index)">
                         <span class="flex items-center">
-                          <i class="tdsi-edit-fill"></i>
+                          <i class="tdsi-edit-fill text-neutral-1-600"></i>
                         </span>
                       </button>
                       <button tds-button-icon color="secondary" size="sm" (click)="onRemove(index)">
                         <span class="flex items-center">
-                          <i class="tdsi-trash-fill"></i>
+                          <i class="tdsi-trash-fill text-neutral-1-600"></i>
                         </span>
                       </button>
                     </div>

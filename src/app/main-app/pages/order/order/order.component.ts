@@ -31,6 +31,7 @@ import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message
 import { GenerateMessageTypeEnum } from 'src/app/main-app/dto/conversation/message.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
+import { ModalHistoryChatComponent } from '../components/modal-history-chat/modal-history-chat.component';
 
 @Component({
   selector: 'app-order',
@@ -500,7 +501,6 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   onEdit(id: string) {
     const modal = this.modal.create({
-      title: 'Sửa đơn hàng',
       content: EditOrderComponent,
       size: 'xl',
       viewContainerRef: this.viewContainerRef,
@@ -728,6 +728,15 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   closeDrawer() {
     this.isOpenDrawer = false;
+  }
+
+  openMessagerHistory() {
+    this.modal.create({
+      title: 'Lịch sử gửi tin nhắn',
+      content: ModalHistoryChatComponent,
+      size: 'xl',
+      viewContainerRef: this.viewContainerRef,
+    });
   }
 
 }
