@@ -31,7 +31,7 @@ const cmp =[
   ReplacePartnerPipe,
   OrderByPipe,
   ButtonStatusColorPipe,
-  LastActivityMessagePipe,
+  LastActivityMessagePipe
 ]
 
 @NgModule({
