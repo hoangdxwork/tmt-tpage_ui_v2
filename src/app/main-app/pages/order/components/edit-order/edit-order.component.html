@@ -1,3 +1,7 @@
+<div *tdsModalTitle>
+  <span class="font-semibold text-title-1 pr-2">Sửa đơn hàng</span>
+  <span class="text-primary-1 font-semibold text-title-1">{{idOrder}}</span>
+</div>
 <form class="flex flex-col" [formGroup]="_form" >
   <tds-tabset class="border border-neutral-2-200 rounded-md">
 
@@ -373,24 +377,24 @@
 
       <div class="flex gap-x-2" *ngIf="!isEnableCreateOrder">
           <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
-          <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave(saveType.orderPrint)" [disabled]="!_form?.valid">
+          <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave(saveType.orderPrint)">
               <span class="tdsi-print-fill"></span>
               Lưu và in
           </button>
-          <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave(saveType.orderSave)" [disabled]="!_form?.valid">Lưu</button>
+          <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave(saveType.orderSave)">Lưu</button>
       </div>
 
       <div class="flex gap-x-2" *ngIf="isEnableCreateOrder">
           <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
-          <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave(saveType.billPrint)" [disabled]="!_form?.valid">
+          <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave(saveType.billPrint)">
               <span class="tdsi-print-fill"></span>
               Lưu và in
           </button>
-          <button tds-button class="w-[170px]" type="button" color="info" (click)="onSave(saveType.billPrintShip)" [disabled]="!_form?.valid">
+          <button tds-button class="w-[170px]" type="button" color="info" (click)="onSave(saveType.billPrintShip)">
               <span class="tdsi-print-fill"></span>
               Lưu và in phiếu ship
           </button>
-          <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave(saveType.billSave)" [disabled]="!_form?.valid">Lưu</button>
+          <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave(saveType.billSave)">Lưu</button>
     </div>
   </div>
 </form>

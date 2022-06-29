@@ -1,4 +1,4 @@
-<form  class="flex flex-col" [formGroup]="formCreateBillFast" >
+<form  class="flex flex-col" [formGroup]="_form" >
   <div class="flex items-center gap-x-6">
     <div class="w-1/5">
       <tds-label>Đối tác giao hàng</tds-label>
@@ -9,8 +9,8 @@
             [allowClear]="true" [valuePrimitive]="false" formControlName="carrier"
             [data]="lstCarriers" (selectChange)="changeCarrierAll()">
         </tds-select>
-        <span class="flex text-info-500 text-xs pt-1 absolute" *ngIf="formCreateBillFast.controls['carrier'].value">
-          *Phần mềm sẽ tự chọn đối tác với số tiền ship thấp nhất</span>
+        <span class="flex items-center text-info-500 text-xs pt-1 absolute" *ngIf="_form.controls['carrier'].value">
+          <i class="tdsi-warning-2-fill mr-1.5"></i>Phần mềm sẽ tự chọn đối tác với số tiền ship thấp nhất</span>
       </tds-form-field>
     </div>
     <div class="w-2/5">
@@ -18,19 +18,19 @@
     </div>
   </div>
 
-  <div class="w-full mt-[30px] rounded-md h-[240px]">
+  <div class="w-full mt-[30px] rounded-md max-h-[580px]">
     <div class="w-full h-full ">
-      <tds-table class="tds-table-rounded" #productTable [bordered]="true" [listData]="lstData" [showPagination]="false">
+      <tds-table class="tds-table-rounded" #productTable [loading]="isLoading" [bordered]="true" [listData]="lstData" [showPagination]="false">
         <thead class="rounded">
             <tr>
-                <th width="5%">STT</th>
-                <th width="25%">Khách hàng</th>
-                <th width="17%">Đối tác giao hàng</th>
-                <th width="12%">Tiền hàng</th>
-                <th width="12%">Phí ship</th>
-                <th width="12%">KL ship (g)</th>
-                <!-- <th width="9%">Thanh toán</th> -->
-                <th width="8%">Thao tác</th>
+                <th width="60px">STT</th>
+                <th width="280px">Khách hàng</th>
+                <th width="120px">Đối tác giao hàng</th>
+                <th width="120px">Tiền hàng</th>
+                <th width="120px">Phí ship</th>
+                <th width="120px">KL ship (g)</th>
+                <th width="100px">Thanh toán</th>
+                <th width="80px">Thao tác</th>
             </tr>
         </thead>
         <tbody>
@@ -89,20 +89,20 @@
                     </tds-form-field>
                   </td>
                   <!-- Thanh toán -->
-                  <!-- <td class="align-top">
-                    <tds-checkbox></tds-checkbox>
-                  </td> -->
+                  <td class="align-top text-center">
+                    <tds-checkbox (change)="onCheckPayment(data)"></tds-checkbox>
+                  </td>
                   <!-- Thao tác -->
                   <td class="align-top">
                     <div class="flex gap-x-2">
                       <button tds-button-icon color="secondary" size="sm" (click)="onEdit(index)">
                         <span class="flex items-center">
-                          <i class="tdsi-edit-fill"></i>
+                          <i class="tdsi-edit-fill text-neutral-1-500"></i>
                         </span>
                       </button>
                       <button tds-button-icon color="secondary" size="sm" (click)="onRemoveLine(index)">
                         <span class="flex items-center">
-                          <i class="tdsi-trash-fill"></i>
+                          <i class="tdsi-trash-fill text-neutral-1-500"></i>
                         </span>
                       </button>
                     </div>

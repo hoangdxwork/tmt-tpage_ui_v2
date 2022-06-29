@@ -40,7 +40,6 @@ export class BillExpandComponent implements OnInit, OnDestroy {
     if(this.dataItem) {
       this.type = this.dataItem.Type;
       this.loadData();
-      console.log("test",this.dataItem);
     }
     this.getHistories();
   }
@@ -119,7 +118,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
   showPayInvoiceModal(Id:TDSSafeAny){
     this.fSOService.getRegisterPayment({ids: [Id]}).pipe(takeUntil(this.destroy$)).subscribe(
       (res)=>{
-        delete res['@odata.context'];
+        delete res['@odata.context'];console.log(res)
         this.modalService.create({
           title: 'Đăng ký thanh toán',
           size:'lg',
