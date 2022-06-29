@@ -1,3 +1,4 @@
+import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
@@ -64,10 +65,20 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
     }
 
     if (filterObj?.dateRange && filterObj?.dateRange.startDate && filterObj?.dateRange.endDate) {
+
+        let startDate = new Date(filterObj?.dateRange.startDate.setHours(0, 0, 0, 0)).toISOString();
+        let endDate = new Date(filterObj?.dateRange.endDate).toISOString();
+
+        let date1 = formatDate(new Date(), 'dd-MM-yyyy', 'en-US');
+        let date2 = formatDate(filterObj?.dateRange.endDate, 'dd-MM-yyyy', 'en-US');
+        if(date1 != date2) {
+          endDate = new Date(filterObj?.dateRange.endDate.setHours(23, 59, 59, 0)).toISOString();
+        }
+
         dataFilter.filters.push({
             filters: [
-              { field: "DateCreated", operator: OperatorEnum.gte, value: new Date(filterObj.dateRange.startDate) },
-              { field: "DateCreated", operator: OperatorEnum.lte, value: new Date(filterObj.dateRange.endDate) }
+              { field: "DateCreated", operator: OperatorEnum.gte, value: new Date(startDate) },
+              { field: "DateCreated", operator: OperatorEnum.lte, value: new Date(endDate) }
             ],
             logic: 'and'
         })

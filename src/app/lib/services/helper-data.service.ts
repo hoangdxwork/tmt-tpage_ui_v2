@@ -102,8 +102,8 @@ export class THelperDataRequest {
                 str = `${filter.field}%20${filter.operator}%20'${value}'`
             }
         }
-        else if(value instanceof Date) {
-          let date =format(value, "yyyy-MM-dd'T'HH:mm:ss'Z'");
+        else if(value instanceof Date) {debugger
+          let date =format(value, "yyyy-MM-dd'T'HH:mm:ss'%2B'00:00");
           str=`${filter.field}%20${filter.operator}%20${date}`
         }
         else {
