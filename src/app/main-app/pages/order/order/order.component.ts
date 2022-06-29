@@ -1,3 +1,4 @@
+import { TemplateRef } from '@angular/core';
 import { ConversationMatchingItem } from './../../../dto/conversation-all/conversation-all.dto';
 import { MDBByPSIdDTO } from './../../../dto/crm-matching/mdb-by-psid.dto';
 import { CRMMatchingService } from './../../../services/crm-matching.service';
@@ -34,10 +35,9 @@ import { OrderPrintService } from 'src/app/main-app/services/print/order-print.s
 
 @Component({
   selector: 'app-order',
-  templateUrl: './order.component.html'
+  templateUrl: './order.component.html',
 })
 export class OrderComponent implements OnInit, OnDestroy {
-
   @ViewChild('innerText') innerText!: ElementRef;
 
   lstOfData: Array<TDSSafeAny> = [];
@@ -298,7 +298,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     if (this.checkValueEmpty() == 1) {
       let ids = [...this.setOfCheckedId];
       this.modal.create({
-        title: 'Tạo hóa đơn nhanh',
+        title: 'Thêm hóa đơn nhanh',
         content: CreateBillFastComponent,
         centered: true,
         size: 'xl',
@@ -307,6 +307,8 @@ export class OrderComponent implements OnInit, OnDestroy {
           ids: ids,
         }
       });
+    } else {
+      this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
     }
   }
 
@@ -323,12 +325,16 @@ export class OrderComponent implements OnInit, OnDestroy {
           ids: ids,
         }
       });
+    } else {
+      this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
     }
   }
 
   onUrlCreateInvoiceFast() {
     if (this.checkValueEmpty() == 1) {
       this.router.navigateByUrl(`bill/create`);
+    } else {
+      this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
     }
   }
 
@@ -398,7 +404,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   getColorStatusText(status: string): TDSTagStatusType {
-    let value = this.lstStatusTypeExt.filter(x => x.Text === status)[0]?.Text;
+    let value = this.lstStatusTypeExt?.filter(x => x.Text === status)[0]?.Text;
     switch (value) {
       case "Đơn hàng":
         return "primary";
