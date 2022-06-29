@@ -841,4 +841,26 @@ export class EditOrderComponent implements OnInit {
     this.modalRef.destroy(result);
   }
 
+  onChangeAddress(event: CheckAddressDTO) {
+    let formControls = this._form.controls;
+
+    formControls["Street"].setValue(event.Street);
+
+    formControls["City"].setValue( event.City?.Code ? {
+      Code: event.City?.Code,
+      Name: event.City?.Name
+    } : null);
+
+    formControls["District"].setValue( event.District?.Code ? {
+      Code: event.District?.Code,
+      Name: event.District?.Name,
+    } : null);
+
+    formControls["Ward"].setValue( event.Ward?.Code ? {
+      Code: event.Ward?.Code,
+      Name: event.Ward?.Name,
+    } : null);
+
+  }
+
 }

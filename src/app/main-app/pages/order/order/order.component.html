@@ -72,17 +72,17 @@
               <th [align]="'center'" width="50px" [tdsLeft]="true" class="border-r"></th>
               <th [(checked)]="checked" [indeterminate]="indeterminate" width="50px" class="border-r" [align]="'center'"
                 (checkedChange)="onAllChecked($event)" [tdsLeft]="true"></th>
-              <th width="80px" [tdsLeft]="true" [align]="'center'" class="border-r">STT</th>
+              <th width="64px" [tdsLeft]="true" class="border-r">STT</th>
               <th *ngIf="isHidden('Code')" width="240px" [tdsLeft]="true" class="border-r">Mã</th>
               <th *ngIf="isHidden('CRMTeamName')" width="240px" class="border-r">Kênh kết nối</th>
               <th *ngIf="isHidden('Name')" width="240px" class="border-r">Tên</th>
               <th *ngIf="isHidden('Address')" width="380px" class="border-r">Địa chỉ</th>
-              <th *ngIf="isHidden('TotalAmount')" [align]="'right'" width="240px" class="border-r">Tổng tiền</th>
-              <th *ngIf="isHidden('TotalQuantity')" [align]="'right'" width="240px" class="border-r">Tổng SL</th>
-              <th *ngIf="isHidden('DateCreated')" [align]="'center'" width="240px" class="border-r">Ngày tạo</th>
+              <th *ngIf="isHidden('TotalAmount')" width="140px" class="border-r">Tổng tiền</th>
+              <th *ngIf="isHidden('TotalQuantity')" width="140px" class="border-r">Tổng SL</th>
               <th *ngIf="isHidden('StatusText')" width="150px" class="border-r">Trạng thái</th>
+              <th *ngIf="isHidden('DateCreated')" width="240px" class="border-r">Ngày tạo</th>
               <th *ngIf="isHidden('UserName')" width="240px" class="border-r">Nhân viên</th>
-              <th width="140px" [align]="'center'" [tdsRight]="true" class="border-r">Thao tác</th>
+              <th width="140px" [tdsRight]="true" class="border-r">Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -101,7 +101,7 @@
                 </td>
 
                 <!-- STT -->
-                <td class="text-center border-r" [tdsLeft]="true">
+                <td class="border-r" [tdsLeft]="true">
                   <span> {{ data.SessionIndex }}</span>
                 </td>
 
@@ -175,7 +175,7 @@
                       </div>
                     </div>
                     <div class="font-z14" *ngIf="data.MessageCount > 0">
-                      <div title="Tin nhắn đã gửi" class="hover:text-info-400 text-neutral-1-400 gap-x-1 flex items-center">
+                      <div title="Tin nhắn đã gửi" class="hover:text-info-400 text-neutral-1-400 gap-x-1 flex items-center" (click)="openMessagerHistory()">
                         <i class="tdsi-messenger-fill text-base"></i>
                       <span>{{data.MessageCount}}</span>
                       </div>
@@ -219,21 +219,16 @@
                 </td>
 
                 <!-- Tổng tiền -->
-                <td *ngIf="isHidden('TotalAmount')" class="text-right border-r">
+                <td *ngIf="isHidden('TotalAmount')" class="border-r">
                   <span>{{data.TotalAmount || 0 | number :'1.0-3'}} đ</span>
                 </td>
 
                 <!-- Tổng SL -->
-                <td *ngIf="isHidden('TotalQuantity')" class="text-right border-r">
+                <td *ngIf="isHidden('TotalQuantity')" class="border-r">
                   <span>{{data.TotalQuantity || 0 | number}}</span>
                 </td>
 
-                <!-- Ngày hóa đơn -->
-                <td *ngIf="isHidden('DateCreated')" class="text-center border-r">
-                  <span>{{data.DateCreated | date:"dd-MM-yyyy HH:mm"}}</span>
-                </td>
-
-                <!-- Trạng thái -->
+                    <!-- Trạng thái -->
                 <!--   [popoverFooter]="footerShipStatus" [popoverContent]="contentShipStatus" -->
                 <td *ngIf="isHidden('StatusText')" class="border-r">
                   <tds-tag [status]="getColorStatusText(data.StatusText)" type="outline" class="cursor-pointer"
@@ -251,6 +246,11 @@
                       </div>
                     </div>
                   </tds-dropdown-menu>
+                </td>
+
+                <!-- Ngày hóa đơn -->
+                <td *ngIf="isHidden('DateCreated')" class="border-r">
+                  <span>{{data.DateCreated | date:"dd-MM-yyyy HH:mm"}}</span>
                 </td>
 
                 <!-- Nhân viên -->

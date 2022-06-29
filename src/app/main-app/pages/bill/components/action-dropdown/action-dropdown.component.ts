@@ -272,16 +272,14 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
 
     if (this.checkValueEmpty() == 1) {
       that.isProcessing = true;
-      this.modal.success({
+      this.modal.warning({
         title: 'Hủy vận đơn',
         content: 'Bạn có muốn hủy vận đơn',
         onOk: () => {
-          that.fastSaleOrderService.cancelShipIds({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+          that.fastSaleOrderService.cancelShipIds({ ids: that.idsModel }).pipe(takeUntil(this.destroy$),finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
             that.message.success('Hủy vận đơn thành công!');
-            that.isProcessing = false;
           }, error => {
             that.message.error(`${error?.error?.message}`);
-            that.isProcessing = false;
           })
         },
         onCancel: () => { that.isProcessing = false; },
@@ -302,13 +300,11 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         title: 'Hủy hóa đơn',
         content: 'Bạn có muốn hủy hóa đơn',
         onOk: () => {
-          that.fastSaleOrderService.cancelInvoice({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+          that.fastSaleOrderService.cancelInvoice({ ids: that.idsModel }).pipe(takeUntil(this.destroy$),finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
             that.message.success('Hủy hóa đơn thành công!');
-            that.fastSaleOrderService.onLoadPage$.emit(true);
-            that.isProcessing = false;
+            that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
           }, error => {
             that.message.error(`${error?.error?.message}`);
-            that.isProcessing = false;
           })
         },
         onCancel: () => { that.isProcessing = false; },
@@ -331,13 +327,11 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         title: 'Xóa hóa đơn',
         content: 'Bạn có muốn xóa hóa đơn',
         onOk: () => {
-          that.fastSaleOrderService.unLink({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+          that.fastSaleOrderService.unLink({ ids: that.idsModel }).pipe(takeUntil(this.destroy$),finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
             that.message.success('Xóa hóa đơn thành công!');
-            that.fastSaleOrderService.onLoadPage$.emit(true);
-            that.isProcessing = false;
+            that.fastSaleOrderService.onLoadPage$.emit('onLoadPage');
           }, error => {
             that.message.error(`${error?.error?.message}`);
-            that.isProcessing = false;
           })
         },
         onCancel: () => { that.isProcessing = false; },
@@ -379,12 +373,10 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         title: 'Xác nhận bán hàng',
         content: 'Bạn có muốn xác nhận bán hàng',
         onOk: () => {
-          that.fastSaleOrderService.actionInvoiceOpen({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+          that.fastSaleOrderService.actionInvoiceOpen({ ids: that.idsModel }).pipe(takeUntil(this.destroy$),finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
             that.message.success('Xác nhận bán hàng thành công!');
-            that.isProcessing = false;
           }, error => {
             that.message.error(`${error?.error.message}`);
-            that.isProcessing = false;
           })
         },
         onCancel: () => { that.isProcessing = false; },
