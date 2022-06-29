@@ -77,7 +77,7 @@
               <th *ngIf="isHidden('CRMTeamName')" width="240px" class="border-r">Kênh kết nối</th>
               <th *ngIf="isHidden('Name')" width="240px" class="border-r">Tên</th>
               <th *ngIf="isHidden('Address')" width="380px" class="border-r">Địa chỉ</th>
-              <th *ngIf="isHidden('TotalAmount')" width="140px" class="border-r">Tổng tiền</th>
+              <th *ngIf="isHidden('TotalAmount')" width="240px" class="border-r text-right">Tổng tiền</th>
               <th *ngIf="isHidden('TotalQuantity')" width="140px" class="border-r">Tổng SL</th>
               <th *ngIf="isHidden('StatusText')" width="150px" class="border-r">Trạng thái</th>
               <th *ngIf="isHidden('DateCreated')" width="240px" class="border-r">Ngày tạo</th>
@@ -219,7 +219,7 @@
                 </td>
 
                 <!-- Tổng tiền -->
-                <td *ngIf="isHidden('TotalAmount')" class="border-r">
+                <td *ngIf="isHidden('TotalAmount')" class="border-r text-right">
                   <span>{{data.TotalAmount || 0 | number :'1.0-3'}} đ</span>
                 </td>
 
@@ -285,8 +285,8 @@
                 <div #viewChildDetailPartner
                   [ngStyle]="{'max-width.px': widthTable, 'margin-left.px': marginLeftCollapse}"
                   class="flex items-center justify-center k-grid-table-wrap-detail">
-                  <info-order-debt class="w-full" *ngIf="expandSet.has(data.Id)" [dataOrder]="data">
-                  </info-order-debt>
+                  <expand-order-detail class="w-full" *ngIf="expandSet.has(data.Id)" [dataOrder]="data">
+                  </expand-order-detail>
                 </div>
               </tr>
             </ng-template>

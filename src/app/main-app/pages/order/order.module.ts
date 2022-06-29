@@ -35,7 +35,7 @@ import { CreateBillFastComponent } from './components/create-bill-fast/create-bi
 import { CreateBillFastErrorComponent } from './components/create-bill-fast-error/create-bill-fast-error.component';
 import { CreateBillDefaultComponent } from './components/create-bill-default/create-bill-default.component';
 import { CreateBillDefaultErrorComponent } from './components/create-bill-default-error/create-bill-default-error.component';
-import { InfoOrderDebtComponent } from './components/info-order-debt/info-order-debt.component';
+
 import { InfoPartnerComponent } from './components/info-partner/info-partner.component';
 import { PartnerService } from '../../services/partner.service';
 import { UpdateInfoPartnerComponent } from './components/update-info-partner/update-info-partner.component';
@@ -66,6 +66,7 @@ import { TDSFilterStatusModule } from 'tds-ui/filter-status';
 import { TDSModalModule } from 'tds-ui/modal';
 import { TDSCollapseModule } from 'tds-ui/collapse';
 import { OrderPrintService } from '../../services/print/order-print.service';
+import { ExpandOrderDetailComponent } from './components/expand-order/expand-order-detail.component';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -108,7 +109,7 @@ const SERVICES = [
     CreateBillFastErrorComponent,
     CreateBillDefaultComponent,
     CreateBillDefaultErrorComponent,
-    InfoOrderDebtComponent,
+    ExpandOrderDetailComponent,
     InfoPartnerComponent,
     UpdateInfoPartnerComponent,
   ],
