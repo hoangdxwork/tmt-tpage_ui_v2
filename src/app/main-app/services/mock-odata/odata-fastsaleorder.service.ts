@@ -1,4 +1,6 @@
+import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
+import { format } from 'date-fns';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
@@ -48,10 +50,20 @@ export class OdataFastSaleOrderService extends BaseSevice {
     dataFilter.logic = "and";
 
     if (filterObj?.dateRange && filterObj?.dateRange.startDate && filterObj?.dateRange.endDate) {
+
+        let startDate = new Date(filterObj?.dateRange.startDate.setHours(0, 0, 0, 0)).toISOString();
+        let endDate = new Date(filterObj?.dateRange.endDate).toISOString();
+
+        let date1 = formatDate(new Date(), 'dd-MM-yyyy', 'en-US');
+        let date2 = formatDate(filterObj?.dateRange.endDate, 'dd-MM-yyyy', 'en-US');
+        if(date1 != date2) {
+          endDate = new Date(filterObj?.dateRange.endDate.setHours(23, 59, 59, 0)).toISOString();
+        }
+
         dataFilter.filters.push({
             filters: [
-              { field: "DateInvoice", operator: OperatorEnum.gte, value: new Date(filterObj.dateRange.startDate) },
-              { field: "DateInvoice", operator: OperatorEnum.lte, value: new Date(filterObj.dateRange.endDate) }
+              { field: "DateInvoice", operator: OperatorEnum.gte, value: new Date(startDate) },
+              { field: "DateInvoice", operator: OperatorEnum.lte, value: new Date(endDate) }
             ],
             logic: 'and'
         })

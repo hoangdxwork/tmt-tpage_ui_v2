@@ -114,7 +114,7 @@ export class ModalPaymentComponent implements OnInit, OnDestroy {
         }
         return this.accRegisterPayment.createPayment(model);
       }))
-      .pipe(finalize(() => this.fastSaleOrderService.onLoadPage$.emit(false)))
+      .pipe(finalize(() => this.fastSaleOrderService.onLoadPage$.emit('onLoadPage')))
       .subscribe((obs: any) => {
         if(obs) {
           this.message.success('Xác nhận thanh toán thành công');

@@ -1,6 +1,5 @@
 import { RegisterPayment } from './../../../../dto/fastsaleorder/register-payment';
 import { FastSaleOrder_DefaultDTOV2 } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
-import { FastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { takeUntil } from 'rxjs/operators';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, Input, OnInit, ViewContainerRef, OnDestroy } from '@angular/core';
@@ -29,11 +28,27 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
   lstPayment: { Id:number, Payment:RegisterPayment }[] = [];
   lstCarriers: Array<DeliveryCarrierDTO> = [];
 
-  private destroy$ = new Subject<void>();
+  
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    }
+    return value
+  } ;
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,',','');
+    }
+    return value
+  };
 
   isPrint: boolean = false;
   isPrintShip: boolean = false;
   isLoading = false;
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,

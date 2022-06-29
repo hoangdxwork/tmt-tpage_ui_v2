@@ -6,7 +6,7 @@ import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.
 import { UpdateInfoPartnerComponent } from '../update-info-partner/update-info-partner.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
-import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 
@@ -30,6 +30,21 @@ export class CreateBillDefaultComponent implements OnInit {
     billPrint: 2,
     billPrintShip: 3
   }
+
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    }
+    return value
+  } ;
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,',','');
+    }
+    return value
+  };
 
   constructor(
     private message: TDSMessageService,

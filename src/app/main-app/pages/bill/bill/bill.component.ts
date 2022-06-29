@@ -24,6 +24,8 @@ import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSTableQueryParams } from 'tds-ui/table';
+import { ConfigDataFacade } from 'src/app/main-app/services/facades/config-data.facade';
+import { StringHelperV2 } from 'src/app/main-app/shared/helper/string.helper';
 
 @Component({
   selector: 'app-bill',
@@ -144,7 +146,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loadGridConfig();
 
     this.fastSaleOrderService.onLoadPage$.pipe(takeUntil(this.destroy$)).subscribe((obs) => {
-      if(obs === false) {
+      if(TDSHelperString.hasValueString(obs && obs == "onLoadPage")) {
         this.loadData(this.pageSize, this.pageIndex);
       }
     })
@@ -530,7 +532,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
           }
       });
     }, error => {
-      this.message.error('Đã xả ra lỗi!');
+      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
     })
   }
 

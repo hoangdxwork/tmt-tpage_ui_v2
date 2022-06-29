@@ -11,8 +11,7 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-dashboard-daily-report',
-  templateUrl: './dashboard-daily-report.component.html',
-  styleUrls: ['./dashboard-daily-report.component.scss']
+  templateUrl: './dashboard-daily-report.component.html'
 })
 export class DashboardDailyReportComponent implements OnInit {
   //#region variable

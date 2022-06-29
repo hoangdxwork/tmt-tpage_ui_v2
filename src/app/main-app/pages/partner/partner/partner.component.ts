@@ -608,7 +608,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
           }
       });
     }, error => {
-      this.message.error('Đã xả ra lỗi!');
+      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
     })
   }
 

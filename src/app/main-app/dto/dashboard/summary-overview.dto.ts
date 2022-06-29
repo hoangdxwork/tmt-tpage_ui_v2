@@ -53,6 +53,7 @@ export interface MDBSummaryByPostDTO {
   TotalLike: number;
   TotalConversation: number;
   TotalPost: number;
+  TotalShare: number;
 }
 
 export interface SummaryActivityByStaffDTO {

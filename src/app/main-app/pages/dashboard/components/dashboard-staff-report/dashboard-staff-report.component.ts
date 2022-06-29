@@ -9,22 +9,17 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-dashboard-staff-report',
-  templateUrl: './dashboard-staff-report.component.html',
-  styleUrls: ['./dashboard-staff-report.component.scss']
+  templateUrl: './dashboard-staff-report.component.html'
 })
 export class DashboardStaffReportComponent implements OnInit {
   //#region variable
   staffOption:TDSSafeAny;
   chartOption = TDSChartOptions();
 
-  // filterList= [
-  //   {id:1, name:'Tuần này'},
-  //   {id:2, name:'Tháng này'}
-  // ]
-  // currentFilter = this.filterList[0].name;
   colors:Color[] = [];
   staffsData:TDSSafeAny[] = [];
   emptyData = false;
+  totalCountReport = 0;
   //#endregion
 
   currentFilter!: SummaryFilterDTO;
@@ -44,8 +39,8 @@ export class DashboardStaffReportComponent implements OnInit {
   }
 
   loadFilter() {
-    this.filterList = this.summaryFacade.getFilter();
-    this.currentFilter = this.filterList[0];
+    this.filterList = this.summaryFacade.getMultipleFilter();
+    this.currentFilter = this.filterList[4];
   }
 
   loadOverviewEmploy() {
@@ -58,22 +53,24 @@ export class DashboardStaffReportComponent implements OnInit {
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.lstSummaryActivityByStaff = res;
+        this.lstSummaryActivityByStaff.sort((one: any,two: any)=> (one.TotalCount > two.TotalCount ? -1 : 1))
         this.loadDataChart(this.lstSummaryActivityByStaff);
       }, error => this.emptyData = true);
   }
 
   loadDataChart(data: SummaryActivityByStaffDTO[]){
     this.staffsData = [];
-
+    this.lstSummaryActivityByStaff.forEach(x=> this.totalCountReport += x.TotalCount)
     this.staffsData = data.map(x => {
       return {
         id: x.StaffId,
         name: x.StaffName,
-        value: x.TotalCount
+        value: x.TotalCount,
+        percent: x.TotalCount/this.totalCountReport
       }
     });
 
-    this.colors= ['#28A745','#2684FF','#FF8900'];
+    this.colors= ['#28A745','#FF8900','#2684FF'];
 
     if(this.staffsData.length == 0){
       this.emptyData = true;
@@ -102,7 +99,7 @@ export class DashboardStaffReportComponent implements OnInit {
           label:{
             show:true,
             position:'center',
-            padding:[40,24],
+            padding:[40,35],
             backgroundColor:'#F2FCF5',
             borderRadius:999,
             formatter: '{highlight|{d}%}\n{avatar|}{header|{b}}\n{body| {c} tương tác}',
@@ -164,6 +161,7 @@ export class DashboardStaffReportComponent implements OnInit {
 
   onChangeFilter(data:any){
     this.currentFilter = data;
+    this.totalCountReport = 0;
     this.loadOverviewEmploy();
   }
 }
