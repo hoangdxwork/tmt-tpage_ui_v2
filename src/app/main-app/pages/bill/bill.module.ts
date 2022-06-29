@@ -82,6 +82,7 @@ import { AccountPaymentJsonService } from '../../services/account-payment-json.s
 import { TDSTimelineModule } from 'tds-ui/timeline';
 import { ModalUpdateDeliveryFromExcelComponent } from './components/modal-update-delivery-from-excel/modal-update-delivery-from-excel.component';
 import { ModalManualUpdateDeliveryComponent } from './components/modal-manual-update-delivery/modal-manual-update-delivery.component';
+import { DirectivesModule } from '../../shared/directives/directives.module';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -111,7 +112,7 @@ const SERVICES = [
   AttachmentState,
   OdataProductService,
   AccountJournalService,
-  AccountPaymentJsonService
+  AccountPaymentJsonService,
 ]
 
 @NgModule({
@@ -178,7 +179,8 @@ const SERVICES = [
     TDSConversationsModule,
     UploadImageModule,
     TDSInputNumberModule,
-    TDSTimelineModule
+    TDSTimelineModule,
+    DirectivesModule
   ],
   providers: [
    ...SERVICES,

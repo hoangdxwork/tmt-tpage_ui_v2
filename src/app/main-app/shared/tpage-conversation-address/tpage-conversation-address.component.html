@@ -5,18 +5,14 @@
         <input tdsInput placeholder="Số nhà, đường,..." [tdsInputDebounce]="200" (inputKeyup)="onchangeInputStreet($event)" formControlName="street" />
         <span tdsSuffix>
           <tds-button-group>
-            <div tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" class="p-1 bg-neutral-3-100 rounded" (click)="onChangeExpand()">
-              <span class="flex items-center text-caption-2" *ngIf="!currentExpand">
+            <div tds-button color="secondary" tds-dropdown trigger="click" class="p-1 bg-neutral-3-100 rounded" (click)="onChangeExpand()">
+              <span class="pl-1 flex items-center text-caption-2" *ngIf="!currentExpand">
                 Mở rộng <i class="tdsi-arrow-down-fill text-lg leading-none ml-1"></i>
               </span>
-              <span class="flex items-center text-caption-2" *ngIf="currentExpand">
+              <span class="pl-1 flex items-center text-caption-2" *ngIf="currentExpand">
                 Thu gọn <i class="tdsi-arrow-up-fill text-lg leading-none ml-1"></i>
               </span>
             </div>
-            <tds-dropdown-menu #menu="tdsDropdownMenu">
-              <div class="w-full">
-              </div>
-            </tds-dropdown-menu>
           </tds-button-group>
         </span>
       </tds-form-field>

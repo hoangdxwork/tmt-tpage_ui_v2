@@ -69,9 +69,9 @@
                   formControlName="Email" />
                 </tds-form-field>
               </div>
-              <div class="flex gap-2 items-center">
-                <div
-                  class="tdsi-pin-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]">
+              <div class="flex gap-2">
+                <div>
+                  <div class="tdsi-pin-fill px-1 bg-neutral-3-50 text-neutral-1-400 text-xl rounded-[10px]"></div>
                 </div>
 
                 <span *ngIf="!isEditPartner" class="text-neutral-1-900 text-body-2 font-regular font-sans">
@@ -90,10 +90,10 @@
               </div>
             </div>
             <div class="w-full pt-6 flex items-center">
-              <textarea tdsInput placeholder="Ghi chú" formControlName="Note" 
+              <textarea tdsInput placeholder="Ghi chú" formControlName="Note"
                 class="resize-none no-scrollbar w-3/4 mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400"></textarea>
 
-              <button tds-button-flat-icon color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'" [backdrop]="true" [tdsDropdownMenu]="menuUser" 
+              <button tds-button-flat-icon color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'" [backdrop]="true" [tdsDropdownMenu]="menuUser"
                 class="w-1/4 !h-full flex items-center mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50">
                 <div class="flex flex-col flex-auto items-start">
                   <label class="text-neutral-1-400 font-regular text-body-2">Nhân viên</label>
@@ -175,7 +175,7 @@
                                 {{ detail?.value?.UOMName }} -&nbsp;
                               </span>
                               {{ (detail?.value?.Price - detail?.value?.Price*(detail?.value?.Discount || 0)/100)| number: '1.0-3' }}đ</span>
-                              <i class="tdsi-edit-line flex text-base cursor-pointer" 
+                              <i class="tdsi-edit-line flex text-base cursor-pointer"
                                 (click)="openPriceDetail(index, detail.value)"
                                 tds-popover [popoverVisible]="visibleIndex == index " popoverTrigger="click" [popoverContent]="tmpEditPrice" [popoverAutoClose]="true"
                                 [popoverBackdrop]="true">
@@ -186,7 +186,7 @@
                                 <div class="flex gap-x-4 items-center">
                                   <tds-label class="w-1/3">Đơn giá</tds-label>
                                   <tds-form-field class="w-2/3">
-                                    <tds-input-number autocomplete="off" placeholder="0" [min]="0" [step]="1000" 
+                                    <tds-input-number autocomplete="off" placeholder="0" [min]="0" [step]="1000"
                                       [formatter]="numberWithCommas" [parser]="parserComas"
                                       [(ngModel)]="detailEdit.Price" [ngModelOptions]="{standalone: true}">
                                     </tds-input-number>
@@ -239,7 +239,7 @@
                           </span>
 
                           <tds-form-field class="w-[48px]">
-                            <input tdsInput class="text-center" placeholder="Số lượng" [min]="0" [step]="1" 
+                            <input tdsInput class="text-center" placeholder="Số lượng" [min]="0" [step]="1"
                               [(ngModel)]="detail.value.Quantity" [ngModelOptions]="{standalone: true}"/>
                           </tds-form-field>
 
@@ -396,8 +396,8 @@
                             <div class="w-full max-h-80 overflow-hidden py-2 gap-y-2 flex flex-col">
                                 <div class="px-4">
                                     <tds-form-field class="w-full">
-                                        <input tdsInput placeholder="Tìm kiếm" autocomplete="off" 
-                                          [(ngModel)]="keyFilterUser" [ngModelOptions]="{standalone: true}" 
+                                        <input tdsInput placeholder="Tìm kiếm" autocomplete="off"
+                                          [(ngModel)]="keyFilterUser" [ngModelOptions]="{standalone: true}"
                                           [tdsInputDebounce]="750" (inputKeyup)="searchCarrier()"/>
                                         <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
                                     </tds-form-field>
@@ -457,7 +457,7 @@
                         <tds-form-field class="w-full">
                           <tds-input-number autocomplete="off" placeholder="1" [min]="0" [step]="1" [required]='true'
                           [(ngModel)]="saleModel.ShipWeight"
-                          [formatter]="numberWithCommas" [parser]="parserComas" 
+                          [formatter]="numberWithCommas" [parser]="parserComas"
                           [ngModelOptions]="{standalone: true}"></tds-input-number>
                         </tds-form-field>
                         <button type="button" tds-button-icon color="primary">
@@ -473,7 +473,7 @@
                         <div class="text-body-2 font-semibold font-sans text-neutral-1-900 pb-2">Phí giao hàng</div>
                         <tds-form-field class="w-full">
                           <tds-input-number autocomplete="off"  placeholder="1" [min]="0" [step]="1000" [required]='true'
-                          [(ngModel)]="saleModel.DeliveryPrice" 
+                          [(ngModel)]="saleModel.DeliveryPrice"
                           [formatter]="numberWithCommas" [parser]="parserComas"
                           [ngModelOptions]="{standalone: true}"></tds-input-number>
                         </tds-form-field>
@@ -482,7 +482,7 @@
                         <div class="text-body-2 font-semibold font-sans text-neutral-1-900 pb-2">Tiền thu hộ</div>
                         <tds-form-field class="w-full">
                           <tds-input-number autocomplete="off"  placeholder="1" [min]="0" [step]="1000" [required]='true'
-                          [(ngModel)]="saleModel.CashOnDelivery" 
+                          [(ngModel)]="saleModel.CashOnDelivery"
                           [formatter]="numberWithCommas" [parser]="parserComas"
                           [ngModelOptions]="{standalone: true}"></tds-input-number>
                         </tds-form-field>
