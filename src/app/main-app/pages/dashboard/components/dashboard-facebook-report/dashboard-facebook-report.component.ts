@@ -42,8 +42,8 @@ export class DashboardFacebookReportComponent implements OnInit {
   }
 
   loadFilter() {
-    this.filterList = this.summaryFacade.getFilter();
-    this.currentFilter = this.filterList[0];
+    this.filterList = this.summaryFacade.getMultipleFilter();
+    this.currentFilter = this.filterList[4];
   }
 
   loadSummary() {
@@ -94,12 +94,12 @@ export class DashboardFacebookReportComponent implements OnInit {
     let arrMessage = data.map(x => x.TotalMessage);
     let arrComment = data.map(x => x.TotalComment);
 
-    this.seriesData = [{name: 'Tin nhắn', data: arrMessage}, { name: 'Bình luận', data: arrComment }];
+    this.seriesData = [{name: 'Hội thoại', data: arrMessage}, { name: 'Bài viết', data: arrComment }];
   }
 
   loadDataChart(){
     this.labelData = [60000,60000,60000,60000,60000];
-    this.colors = ['#28A745','#1A6DE3','#F59E0B','#F33240'];
+    this.colors = ['#2C80F8','#28A745','#F59E0B','#F33240'];
 
     let chart:TDSBarChartComponent ={
       color: this.colors,
@@ -108,8 +108,8 @@ export class DashboardFacebookReportComponent implements OnInit {
         itemHeight:16,
         itemWidth:24,
         itemGap:16,
-        top:'bottom',
         left:'right',
+        top:'bottom',
         textStyle:{
           color:'#2C333A',
           fontFamily:'Segoe UI',

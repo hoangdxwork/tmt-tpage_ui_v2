@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { Subject, finalize } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { SummaryFacade } from 'src/app/main-app/services/facades/summary.facede';
 import { SummaryFilterDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
@@ -12,22 +12,15 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-dashboard-tag-report',
-  templateUrl: './dashboard-tag-report.component.html',
-  styleUrls: ['./dashboard-tag-report.component.scss']
+  templateUrl: './dashboard-tag-report.component.html'
 })
 export class DashboardTagReportComponent implements OnInit, OnDestroy {
 //#region variable
-  // filterList= [
-  //   {id:1, name:'Tuần này'},
-  //   {id:2, name:'Tháng này'}
-  // ]
-  // currentFilter = this.filterList[0].name;
+
   tableData:Array<TDSSafeAny> = [];
   emptyData = false;
+  isLoading: boolean = false;
   //#endregion
-
-  currentFilter!: SummaryFilterDTO;
-  filterList: SummaryFilterDTO[] = [];
 
   private destroy$ = new Subject<void>();
   currentTeam!: CRMTeamDTO | null;
@@ -41,13 +34,7 @@ export class DashboardTagReportComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.loadFilter();
     this.loadCurrentTeam();
-  }
-
-  loadFilter() {
-    this.filterList = this.summaryFacade.getFilter();
-    this.currentFilter = this.filterList[0];
   }
 
   loadCurrentTeam() {
@@ -58,10 +45,11 @@ export class DashboardTagReportComponent implements OnInit, OnDestroy {
   }
 
   loadSummaryByTags(pageId: string | undefined) {
-    let startDate = this.currentFilter.startDate.toISOString();
-    let endDate = this.currentFilter.endDate.toISOString();
+    this.isLoading = true
+    let startDate = new Date('2000').toISOString();
+    let endDate =  new Date().toISOString();
 
-    this.crmMatchingService.getSummaryByTags(pageId || '', startDate, endDate).subscribe(res => {
+    this.crmMatchingService.getSummaryByTags(pageId || '', startDate, endDate).pipe(finalize(()=>{this.isLoading = false})).subscribe(res => {
       this.lstDataTagReport = res;
     }, error => this.emptyData = true);
   }
@@ -117,7 +105,6 @@ export class DashboardTagReportComponent implements OnInit, OnDestroy {
   }
 
   onChangeFilter(data:any){
-    this.currentFilter = data;
     this.loadSummaryByTags(this.currentTeam?.Facebook_PageId);
   }
 
