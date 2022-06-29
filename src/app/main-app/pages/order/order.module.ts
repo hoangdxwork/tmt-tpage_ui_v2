@@ -66,7 +66,6 @@ import { TDSFilterStatusModule } from 'tds-ui/filter-status';
 import { TDSModalModule } from 'tds-ui/modal';
 import { TDSCollapseModule } from 'tds-ui/collapse';
 import { OrderPrintService } from '../../services/print/order-print.service';
-import { ModalHistoryChatComponent } from './components/modal-history-chat/modal-history-chat.component';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -112,7 +111,6 @@ const SERVICES = [
     InfoOrderDebtComponent,
     InfoPartnerComponent,
     UpdateInfoPartnerComponent,
-    ModalHistoryChatComponent
   ],
   imports: [
     CommonModule,
