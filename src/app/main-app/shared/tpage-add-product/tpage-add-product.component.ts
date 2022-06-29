@@ -76,7 +76,10 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   }
 
   loadUOMCateg() {
-    this.productUOMService.getUOMCateg().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    // this.productUOMService.getUOMCateg().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    //   this.lstUOMCategory = res.value;
+    // });
+    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.lstUOMCategory = res.value;
     });
   }
