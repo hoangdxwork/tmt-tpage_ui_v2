@@ -1,41 +1,68 @@
-<div>
-    <div class="w-full" *ngIf="orders">
-      <tds-table #rowSelectionTable  [listData]="orders">
-          <thead>
-              <tr class="bg-neutral-3-50" >
-                  <th class="text-body-2" width="5%">STT</th>
-                  <th class="text-body-2" width="15%">Mã hóa đơn</th>
-                  <th class="text-body-2" width="40%">Khách hàng</th>
-                  <th class="text-body-2" width="10%">Đối tác</th>
-                  <th class="text-body-2 text-right"width="15%">Tiền thu hộ</th>
-                  <th class="text-body-2 text-right" width="15%">Tổng tiền</th>
-              </tr>
-          </thead>
-          <tbody>
-              <tr *ngFor="let item of orders; let i = index">
-                  <td class="text-body-2">{{i + 1}}</td>
-                  <td class="text-body-2">{{ item.Number }}</td>
-                  <td>
-                      <p class="text-body-2">{{ item.Partner?.Name }}</p>
-                      <p class="text-body-2">
-                        <span class="tdsi-call-fill"></span>
-                        {{ item.Partner?.Phone ? item.Partner?.Phone : 'Chưa có SĐT' }}</p>
-                      <p class="text-body-2">
-                        <span class="tdsi-pin-fill"></span>
-                        {{ item.Partner?.Street ? item.Partner?.Street: 'Chưa có địa chỉ' }}</p>
-                  </td>
-                  <td class="text-body-2">{{ item.CarrierName }}</td>
-                  <td class="text-body-2 text-right">{{ item.CashOnDelivery || 0 | number : '1.0-3'}} đ</td>
-                  <td class="text-body-2 text-right">{{ item.AmountTotal || 0 | number : '1.0-3'}} đ</td>
-              </tr>
-          </tbody>
-      </tds-table>
-    </div>
-    <div class="w-full flex justify-end p-4" *tdsModalFooter>
-        <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-        <button tds-button type="submit" color="primary" (click)="onSave()">Xác nhận</button>
-    </div>
+<div class="w-full" *ngIf="lstOrders">
+    <tds-table #basicTable 
+        [listData]="lstOrders" 
+        [loading]="isLoading" 
+        [scroll]="{y:'350px'}" 
+        [showPagination]="false">
+        <thead>
+            <tr class="bg-neutral-3-50" >
+                <th width="40px">STT</th>
+                <th width="150px">Mã hóa đơn</th>
+                <th width="320px">Khách hàng</th>
+                <th width="120px">Đối tác</th>
+                <th class="text-right" width="120px">Tiền thu hộ</th>
+                <th class="text-right" width="120px">Tổng tiền</th>
+                <th class="text-center" width="80px">Xóa</th>
+            </tr>
+        </thead>
+        <tbody>
+            <ng-template ngFor let-i="index" let-item [ngForOf]="basicTable.data">
+                <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td class="text-info-500">{{ item.Number }}</td>
+                    <td>
+                        <p class="font-semibold">{{ item.Partner?.Name }}</p>
+                        <div class="flex items-start mb-2">
+                            <span class="bg-base-green-400 flex items-center justify-center rounded-md cursor-pointer p-1 mr-1.5">
+                                <i class="tdsi-call-fill text-md text-white"></i>
+                            </span>
+                            <p class="flex flex-auto">
+                                {{ item.Partner?.Phone ? item.Partner?.Phone : 'Chưa có SĐT' }}
+                            </p>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="bg-base-orange-500 flex items-center justify-center rounded-md cursor-pointer p-1 mr-1.5">
+                                <i class="tdsi-pin-fill text-md text-white"></i>
+                            </span>
+                            <p class="flex flex-auto">
+                                {{ item.Partner?.Street ? item.Partner?.Street: 'Chưa có địa chỉ' }}
+                            </p>
+                        </div>
+                    </td>
+                    <td>{{ item.CarrierName }}</td>
+                    <td class="text-right">{{ item.CashOnDelivery || 0 | number : '1.0-3'}} đ</td>
+                    <td class="text-right">{{ item.TotalAmount || 0 | number : '1.0-3'}} đ</td>
+                    <td class="text-center">
+                        <button tds-button-icon color="secondary" (click)="remoteItem(item)">
+                            <i class="tdsi-trash-fill text-error-400"></i>
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+        </tbody>
+    </tds-table>
+</div>
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+      <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+      <button tds-button type="submit" color="primary" (click)="onSave()">Xác nhận</button>
 </div>
 
-
-
+<tds-modal [(visible)]="isVisible" title="Danh sách lỗi" size="lg" (onCancel)="handleCancel()" [okText]="null" [cancelText]="'Đóng'">
+  <ng-container *tdsModalContent>
+    <div class="flex flex-col border-y divide-y max-h-[350px] overflow-auto tds-custom-scroll">
+        <div *ngFor="let err of lstErrors">
+            <div [innerHTML]="err" class="p-2 bg-neutral-3-50 send-delivery-error-content"></div>
+        </div>
+    </div>
+  </ng-container>
+</tds-modal>

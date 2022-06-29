@@ -190,12 +190,20 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   showImageStore(): void {
-    this.modalService.create({
+    const modal = this.modalService.create({
       title: 'Kho hình ảnh',
       content: ModalImageStoreComponent,
       centered: true,
       size: "xl",
       viewContainerRef: this.viewContainerRef
+    });
+    modal.afterClose.subscribe((result : string[]) => {
+      let data = this.uploadedImages;
+      result.forEach((x: string)=>{
+        data.push(x);
+      })
+      this.uploadedImages = [...data];
+      this.cdRef.markForCheck();
     });
   }
 

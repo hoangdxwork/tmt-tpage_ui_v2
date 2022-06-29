@@ -1,7 +1,7 @@
 
 import { Component, Input, OnDestroy, OnInit, OnChanges, SimpleChanges, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, finalize } from 'rxjs';
 import { TDSUploadFile } from 'tds-ui/upload';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray } from 'tds-ui/shared/utility';
@@ -72,7 +72,7 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
       formData.append('id', '0000000000000051');
 
       let dataModel = this.fileList as any[];
-      return this.sharedService.saveImageV2(formData).subscribe((res: any) => {
+      return this.sharedService.saveImageV2(formData).pipe(finalize(()=>{ this.isUploading = false })).subscribe((res: any) => {
 
         if(res){
           let x = {
@@ -84,15 +84,12 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
           } as any;
           dataModel.push({...x});
           this.fileList = [...dataModel];
-          this.isUploading = false;
           this.emitFile();
           this.getResult.emit(x.url);
         }
       }, error => {
-        let message = JSON.parse(error.Message);
-        this.msg.error(`${message.message}`);
+        this.msg.error(error.Message ? error.Message:'Upload xảy ra lỗi');
         this.fileList = [...dataModel];
-        this.isUploading = false;
       });
     }
 

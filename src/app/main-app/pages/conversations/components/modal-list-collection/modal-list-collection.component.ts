@@ -29,6 +29,7 @@ export class ModalListCollectionComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   fileList: TDSUploadFile[] = [];
+  searchText: string = '';
 
   constructor(
     private attachmentDataFacade: AttachmentDataFacade,
@@ -87,6 +88,11 @@ export class ModalListCollectionComponent implements OnInit, OnDestroy {
     this.numberSelect = item["Select"] ? this.numberSelect + 1 : this.numberSelect - 1;
   }
 
+  selectAttachment(item: any) {
+    item["Select"] = item["Select"] ? false : true;
+    this.numberSelect = item["Select"] ? this.numberSelect + 1 : this.numberSelect - 1;
+  }
+
   checkAll(event: boolean) {
     this.lstData$.subscribe(res => {
       if(res?.Attachments) {
@@ -99,8 +105,8 @@ export class ModalListCollectionComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSearch(event: any) {
-    let text =  event?.target.value;
+  onSearch() {
+    let text = this.searchText;
 
     let textLowerCase = text.toLowerCase();
 
@@ -152,9 +158,25 @@ export class ModalListCollectionComponent implements OnInit, OnDestroy {
         this.attachmentDataFacade.insertInner(this.collectionId, res);
         this.message.success(Message.Upload.Success);
       }, error => {
-        let message = JSON.parse(error?.Message);
-        this.message.error(`${message?.message}`);
+        this.message.error(error? error?.Message : Message.Upload.Failed);
       });
+  }
+
+  onSend(){
+    let urls = [];
+    this.lstData$.subscribe(res => {
+      if(res){
+        urls = res.Attachments.filter(x =>
+          x["Select"] == true
+        ).map( x => x.Url);
+
+        if(!urls || urls.length < 1) {
+          this.message.info("Chưa có ảnh nào được chọn!");
+          return;
+        }
+        this.modalRef.destroy(urls);
+      }
+    });
   }
 
   onCancel() {

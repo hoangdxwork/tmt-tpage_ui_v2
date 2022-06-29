@@ -197,7 +197,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
 
   updateDeliveryFromExcel(){
     this.modal.create({
-      title: 'Cập nhật trạng thái giao hàng',
+      title: 'Cập nhật trạng thái giao hàng từ file',
       size:'xl',
       content: ModalUpdateDeliveryFromExcelComponent,
       viewContainerRef: this.viewContainerRef

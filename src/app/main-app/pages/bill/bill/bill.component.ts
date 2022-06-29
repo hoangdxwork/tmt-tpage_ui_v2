@@ -24,8 +24,11 @@ import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSTableQueryParams } from 'tds-ui/table';
+<<<<<<< HEAD
 import { ConfigDataFacade } from 'src/app/main-app/services/facades/config-data.facade';
 import { StringHelperV2 } from 'src/app/main-app/shared/helper/string.helper';
+=======
+>>>>>>> dev
 
 @Component({
   selector: 'app-bill',

@@ -16,6 +16,6 @@ export class ModalManualUpdateDeliveryComponent implements OnInit {
   }
 
   onSave(){
-
+    
   }
 }

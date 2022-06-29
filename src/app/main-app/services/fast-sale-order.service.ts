@@ -446,22 +446,22 @@ export class FastSaleOrderService extends BaseSevice {
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
-
+  //TODO: mẫu mã vận đơn
   urlSampleShipCodeExcel(): any {
     let url = `${this._BASE_URL}/Content/files/template_excels/vi/template_update_trackingcode_delivery.xlsx?v2`;
     return url;
   }
-
+  // TODO: mẫu đối soát GH
   urlSampleShipStatusDelivery () {
     let url = `${this._BASE_URL}/Content/files/template_excels/vi/template_update_delivery_status.xlsx?v2`;
     return url;
   }
-
+  // TODO: mẫu trạng thái GH
   urlSampleDeliveryStatusUpdateExcel() {
-    var url = `${this._BASE_URL}/Content/files/mau_cap_nhat_trang_thai_giao_hang.xlsx`;
+    var url = `${this._BASE_URL}/Content/files/template_excels/vi/template_update_delivery_info.xlsx?v2`;
     return url;
   }
-
+  // TODO: cập nhật mã vận đơn từ file, data = {file:string}
   updateShipCodeExcel(data: any): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdateShipCodeExcel`,
@@ -469,7 +469,7 @@ export class FastSaleOrderService extends BaseSevice {
     }
     return this.apiService.getData<any>(api, data);
   }
-
+  // TODO: cập nhật phiếu đã có mã vận đơn từ file, data = {datas:[]}
   updateExistShipCode(data: any): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdateExistShipCode`,
@@ -477,10 +477,18 @@ export class FastSaleOrderService extends BaseSevice {
     }
     return this.apiService.getData<any>(api, data);
   }
-
+  // TODO: cập nhật trạng thái giao hàng từ file, data = {file:string}
   updateDeliveryExcel(data: any): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdateDeliveryExcel`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<any>(api, data);
+  }
+  // TODO: cập nhật đối soát giao hàng từ file, data = {carrierId:number, file:string, isNoteOrder:boolean, note:string, payment:boolean}
+  updateShipStatusExcel(data: any): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.UpdateShipStatusExcel`,
       method: TApiMethodType.post
     }
     return this.apiService.getData<any>(api, data);
