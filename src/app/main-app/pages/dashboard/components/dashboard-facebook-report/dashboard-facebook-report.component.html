@@ -1,46 +1,61 @@
-<div class="bg-white flex flex-col rounded-xl px-4 mb-4">
+<div class="bg-white flex flex-col rounded-xl px-4 text-body-2 text-neutral-1-900">
     <div class="flex flex-row items-center justify-between py-4">
         <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Thống kê trang Facebook</span>
         <div class="flex flex-row items-center">
             <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị:</span>
             <tds-select valueField="name" textField="name" [ngModel]="currentFilter" [border]="false"
-                [data]="filterList" size="md" class="tds-dashboard-filter w-[120px] truncate ..." [valuePrimitive]="false"
+                [data]="filterList" size="md" class="tds-dashboard-filter w-32 truncate ..." [valuePrimitive]="false"
                 (ngModelChange)="onChangeFilter($event)" classIcon="tdsi-arrow-down-fill">
             </tds-select>
         </div>
     </div>
-    <div>
-        <div class="flex flex-col items-center">
-            <div class="flex flex-row items-center justify-center w-full divide-x py-4">
-                <div class="flex flex-col items-center justify-center w-full">
-                    <img src="../../../assets/imagesv2/dashboard/like-icon.svg">
-                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng lượt thích</span>
-                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(dataSummaryPost?.TotalLike || 0)}}</span>
+    <div class="flex flex-col items-center gap-y-2">
+        <div class="flex flex-row items-center w-full gap-x-24">
+            <div class="p-4 flex">
+                <div class="pr-6 flex gap-x-4 border-r border-neutral-2-200">
+                    <div>
+                        <img src="../../../assets/imagesv2/dashboard/conversation-icon.svg">
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-heading-3 font-semibold text-secondary-1">{{formatValue(dataSummaryPost?.TotalConversation || 0)|number:'1.0-3'}}</span>
+                        <span class="text-title-1 text-neutral-1-400 font-semibold">Hội thoại</span>
+                    </div>
                 </div>
-                <div class="flex flex-col items-center justify-center w-full">
-                    <img src="../../../assets/imagesv2/dashboard/comment-icon.svg">
-                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng bình luận</span>
-                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(dataSummaryPost?.TotalComment || 0)}}</span>
-                </div>
-                <div class="flex flex-col items-center justify-center w-full">
-                    <img src="../../../assets/imagesv2/dashboard/chat-icon.svg">
-                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng tin nhắn</span>
-                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(dataSummaryPost?.TotalMessage || 0)}}</span>
-                </div>
-                <div class="flex flex-col items-center justify-center w-full">
-                    <img src="../../../assets/imagesv2/dashboard/note-icon.svg">
-                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Tổng bài viết</span>
-                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(dataSummaryPost?.TotalPost || 0)}}</span>
-                </div>
-                <div class="flex flex-col items-center justify-center w-full">
-                    <img src="../../../assets/imagesv2/dashboard/conversation-icon.svg">
-                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans text-center py-2">Hội thoại</span>
-                    <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans text-center">{{formatValue(dataSummaryPost?.TotalConversation || 0)}}</span>
+                <div class="pl-6 flex gap-x-6 items-center">
+                    <div class="flex flex-col">
+                        <span class="font-semibold text-neutral-1-800">{{formatValue(dataSummaryPost?.TotalComment || 0)|number:'1.0-3'}}</span>
+                        <span class="text-neutral-1-400">Bình luận</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-semibold text-neutral-1-800">{{formatValue(dataSummaryPost?.TotalMessage || 0)|number:'1.0-3'}}</span>
+                        <span class="text-neutral-1-400">Tin nhắn</span>
+                    </div>
                 </div>
             </div>
-            <div class="w-full pb-6" *ngIf="!emptyData;else emptyTmp">
-                <div echarts [options]="fbReportOption" [size]="['auto',446]"></div>
+            <div class="p-4 flex">
+                <div class="pr-6 flex gap-x-4 border-r border-neutral-2-200">
+                    <div>
+                        <img src="../../../assets/imagesv2/dashboard/posts-icon.svg">
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-heading-3 font-semibold text-primary-1">{{formatValue(dataSummaryPost?.TotalPost || 0)|number:'1.0-3'}}</span>
+                        <span class="text-title-1 text-neutral-1-400 font-semibold">Bài viết</span>
+                    </div>
+                </div>
+                <div class="pl-6 flex gap-x-6 items-center">
+                    <div class="flex flex-col">
+                        <span class="font-semibold text-neutral-1-800">{{formatValue(dataSummaryPost?.TotalLike || 0)|number:'1.0-3'}}</span>
+                        <span class="text-neutral-1-400">Lượt thích</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-semibold text-neutral-1-800">{{formatValue(dataSummaryPost?.TotalShare || 0)|number:'1.0-3'}}</span>
+                        <span class="text-neutral-1-400">Lượt chia sẻ</span>
+                    </div>
+                </div>
             </div>
+        </div>
+        <div class="w-full pb-6" *ngIf="!emptyData;else emptyTmp">
+            <div echarts [options]="fbReportOption" [size]="['auto',446]"></div>
         </div>
     </div>
 </div>

@@ -1,48 +1,20 @@
-<div class="bg-white flex flex-col rounded-xl mb-4">
+<div class="bg-white flex flex-col rounded-xl text-body-2 text-neutral-1-900">
     <div class="flex flex-row items-center justify-between p-4">
-        <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Thống kê nhãn sử dụng nhiều nhất</span>
-        <div class="flex flex-row items-center">
-            <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị:</span>
-            <tds-select valueField="name" textField="name" [ngModel]="currentFilter" [border]="false"
-                [data]="filterList" size="md" class="tds-dashboard-filter w-[120px] truncate ..." [valuePrimitive]="false"
-                (ngModelChange)="onChangeFilter($event)" classIcon="tdsi-arrow-down-fill">
-            </tds-select>
-        </div>
+        <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Thống kê nhãn hội thoại</span>
     </div>
-    <div *ngIf="!emptyData;else emptyTmp">
-        <div class="flex flex-row items-center justify-between">
-            <tds-table #basicTable [listData]="lstDataTagReport" [showPagination]="false" class="tds-dashboard-table">
-                <thead>
-                      <tr class="text-neutral-1-900 text-body-2 font-semibold font-sans">
-                            <th>STT dùng nhiều nhất </th>
-                            <th>Lượt gán</th>
-                            <th>Loại thẻ</th>
-                            <th>Tỷ lệ sử dụng</th>
-                      </tr>
-                </thead>
-                <tbody>
-                    <ng-template ngFor let-data [ngForOf]="basicTable.data" let-index="index">
-                        <tr class="text-neutral-1-900 text-body-2 font-regular font-sans">
-                            <td>{{ index + 1 }}</td>
-                            <td>{{ data.count }}</td>
-                            <td>
-                                <span class="text-white text-caption-2 font-semibold font-sans rounded px-2 py-1" [style.background-color]="data.color_class">
-                                    {{ data.name }}
-                                </span>
-                            </td>
-                            <td>
-                                <span class="text-caption-2 font-regular text-center py-1 px-2 rounded"
-                                    [class]="true ?  'text-error-400 bg-[#FCE6EA]' : 'text-success-400 bg-[#F2FCF5]' ">
-                                    {{ 10 }}%
-                                    <i [class]="true ? 'tdsi-chart-down-line' : 'tdsi-chart-up-line' "></i>
-                                </span>
-                            </td>
-                        </tr>
-                    </ng-template>
-                </tbody>
-            </tds-table>
+    <tds-spin [spinning]="isLoading">
+        <div *ngIf="!emptyData && lstDataTagReport.length > 0;else emptyTmp" class="flex flex-col w-full items-center justify-between divide-y divide-neutral-2-100 px-4">
+            <div class="flex py-4 w-full items-center" *ngFor="let item of lstDataTagReport | slice:0:5">
+                <div class="w-3/4 flex">
+                    <div class="px-7 py-1.5 rounded-full text-white font-semibold" [ngStyle]="{'background-color':item.color_class}">{{item.name}}</div>
+                </div>
+                <div class="w-1/4 flex flex-col">
+                    <span class="text-caption-1 font-semibold text-neutral-1-700">Lượt sử dụng</span>
+                    <span class="text-header-1 font-semibold">{{item.count | number: '1.0-3'}}</span>
+                </div>
+            </div>
         </div>
-    </div>
+    </tds-spin>
 </div>
 <ng-template #emptyTmp>
     <app-dashboard-empty-data></app-dashboard-empty-data>

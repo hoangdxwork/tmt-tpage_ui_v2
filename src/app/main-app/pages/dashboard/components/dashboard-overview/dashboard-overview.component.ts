@@ -1,18 +1,15 @@
+import { SummaryFacade } from 'src/app/main-app/services/facades/summary.facede';
 import { Component, OnInit } from '@angular/core';
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
-import { addDays, endOfMonth, endOfWeek, startOfMonth, startOfWeek } from 'date-fns';
-import { InputSummaryOverviewDTO, ReportSummaryOverviewResponseDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
+import { endOfMonth, endOfWeek, startOfMonth, startOfWeek, startOfYesterday, endOfYesterday, subDays, subMonths } from 'date-fns';
+import { InputSummaryOverviewDTO, ReportSummaryOverviewResponseDTO, SummaryFilterDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
 
 @Component({
   selector: 'app-dashboard-overview',
-  templateUrl: './dashboard-overview.component.html',
-  styleUrls: ['./dashboard-overview.component.scss']
+  templateUrl: './dashboard-overview.component.html'
 })
 export class DashboardOverviewComponent implements OnInit {
-  filterList= [
-    {id:1, name:'Tuần này', startDate: addDays(new Date(), -7), endDate: new Date()},
-    {id:2, name:'Tháng này', startDate: addDays(new Date(), -30), endDate: new Date()}
-  ];
+  filterList!: SummaryFilterDTO[];
 
   labelData = [
     {
@@ -34,34 +31,24 @@ export class DashboardOverviewComponent implements OnInit {
     }
   ];
 
-  currentFilter = this.filterList[0];
+  currentFilter!: SummaryFilterDTO;
   emptyData = false;
 
   dataSummaryOverview!: ReportSummaryOverviewResponseDTO;
 
   constructor(
-    private reportFacebookService: ReportFacebookService
+    private reportFacebookService: ReportFacebookService,
+    private summaryFacade: SummaryFacade,
   ) { }
 
   ngOnInit(): void {
-    this.updateFilter();
+    this.loadFilter();
     this.loadData();
   }
 
-  updateFilter() {
-    let dateNow = new Date();
-
-    let startOFWeek = startOfWeek(dateNow, { weekStartsOn: 1 });
-    let endOFWeek = endOfWeek(dateNow, { weekStartsOn: 1 });
-
-    this.filterList[0].startDate = startOFWeek;
-    this.filterList[0].endDate = endOFWeek;
-
-    let startOFMonth = startOfMonth(dateNow);
-    let endOFMonth = endOfMonth(dateNow);
-
-    this.filterList[1].startDate = startOFMonth;
-    this.filterList[1].endDate = endOFMonth;
+  loadFilter() {
+    this.filterList = this.summaryFacade.getMultipleFilter();
+    this.currentFilter = this.filterList[4];
   }
 
   loadData(){
