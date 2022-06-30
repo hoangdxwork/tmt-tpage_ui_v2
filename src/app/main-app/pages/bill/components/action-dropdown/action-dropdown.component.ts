@@ -376,13 +376,12 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
           that.fastSaleOrderService.actionInvoiceOpen({ ids: that.idsModel }).pipe(takeUntil(this.destroy$),finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
             that.message.success('Xác nhận bán hàng thành công!');
           }, error => {
-            that.message.error(`${error?.error.message}`);
+            that.message.error(`${error?.error?.message}` || 'Xác nhận bán hàng thất bại');
           })
         },
         onCancel: () => { that.isProcessing = false; },
         okText: "Xác nhận",
         cancelText: "Đóng",
-        // confirmViewType:"compact"
       });
     }
   }

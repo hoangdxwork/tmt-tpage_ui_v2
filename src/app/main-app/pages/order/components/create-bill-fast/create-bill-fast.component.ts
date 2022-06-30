@@ -11,7 +11,7 @@ import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { Subject, finalize } from 'rxjs';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
-import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 
@@ -19,16 +19,19 @@ import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
   selector: 'create-bill-fast',
   templateUrl: './create-bill-fast.component.html'
 })
+
 export class CreateBillFastComponent implements OnInit, OnDestroy {
 
   @Input() ids: string[] = [];
+  @Input() lstData!: TDSSafeAny[];
 
   _form!: FormGroup;
   lstData!: FastSaleOrder_DefaultDTOV2[];
   lstPayment: { Id:number, Payment:RegisterPayment }[] = [];
   lstCarriers: Array<DeliveryCarrierDTO> = [];
+  isLoading: boolean = false;
+  private destroy$ = new Subject<void>();
 
-  
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
     {
@@ -44,6 +47,8 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
     return value
   };
 
+  private _destroy = new Subject<void>();
+
   isPrint: boolean = false;
   isPrintShip: boolean = false;
   isLoading = false;
@@ -58,30 +63,35 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
     private modalRef: TDSModalRef,
     private fastSaleOrderService: FastSaleOrderService,
     private carrierService: DeliveryCarrierService,
-    private printerService: PrinterService
-  ) { 
-    this.createForm();
+    private printerService: PrinterService) {
+      this.createForm();
   }
 
   ngOnInit(): void {
-    this.loadCarrier();
-    this.loadData();
+    if(TDSHelperArray.hasListValue(this.lstData)) {
+      this.loadCarrier();
+      this.updateAmountTotal(this.lstData);
+    }
   }
 
-  loadData() {
-    this.fastSaleOrderService.getListOrderIds({ids:this.ids}).subscribe(res => {
-      this.lstData = res.value;
-      this.updateAmountTotal(this.lstData);
-    }, error => {
-      if(error?.error?.message) {
-        this.message.error(error?.error?.message);
-      }
-    });
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null){
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    }
+    return value;
   }
+
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,',','');
+    }
+    return value
+  };
 
   loadCarrier() {
-    this.carrierService.get().subscribe((res: any) => {
-      this.lstCarriers = res.value;
+    this.carrierService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.lstCarriers = [...res.value];
     });
   }
 
@@ -129,10 +139,6 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
     }else{
       this.lstPayment = this.lstPayment.filter((item)=> item.Id != data.Id);
     }
-  }
-
-  checkEnabledPayment(data:FastSaleOrder_DefaultDTOV2){
-    return this.lstPayment.some((item)=> item.Id == data.Id);
   }
 
   onSave(confirm?: string) {
@@ -218,7 +224,6 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
         item.ShipWeight = carrier.Config_DefaultWeight || 100;
       });
     }
-
   }
 
   onRemoveLine(index: number) {
