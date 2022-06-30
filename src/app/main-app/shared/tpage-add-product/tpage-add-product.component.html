@@ -55,7 +55,7 @@
             <tds-label class="w-1/3">Mã sản phẩm</tds-label>
             <div class="w-2/3">
                 <tds-form-field>
-                    <input tdsInput autocomplete="off" placeholder="Nhập mã sản phẩm" formControlName="DefaultCode"/>
+                    <input tdsInput autocomplete="off" placeholder="Để trống sẽ phát sinh tự động" formControlName="DefaultCode"/>
                 </tds-form-field>
             </div>
         </div>
@@ -141,9 +141,11 @@
         </div>
     </div>
     <div class="w-full flex justify-end p-4" *tdsModalFooter>
-        <button tds-button class="mr-4 w-[100px]" color="secondary" (click)="onCancel(null)">Đóng</button>
-        <button tds-button type="submit" class="w-[100px] mr-4" color="primary" (click)="onSave()" [disabled]="!formAddProduct?.valid">Lưu</button>
-        <button tds-button class="w-[120px]" color="info" (click)="onSave('select')" [disabled]="!formAddProduct?.valid">Lưu và chọn</button>
+        <button tds-button class="mr-4 min-w-[100px]" color="secondary" (click)="onCancel(null)">Đóng</button>
+        <button tds-button color="custom" class="min-w-[120px] mr-4 text-white focus:ring-4 focus:ring-secondary-1/20
+        border-secondary-1 bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1
+        focus:border-secondary-1" (click)="onSave('select')" [disabled]="!formAddProduct?.valid">Lưu và chọn</button>
+        <button tds-button type="submit" class="min-w-[100px]" color="primary" (click)="onSave()" [disabled]="!formAddProduct?.valid">Lưu</button>
     </div>
   </div>
 </form>

@@ -2,7 +2,7 @@
   <span class="font-semibold text-title-1 pr-2">Sửa đơn hàng</span>
   <span class="text-primary-1 font-semibold text-title-1">{{idOrder}}</span>
 </div>
-<form class="flex flex-col" [formGroup]="_form" >
+<form class="flex flex-col" [formGroup]="_form">
   <tds-tabset class="border border-neutral-2-200 rounded-md">
     <tds-tab title="Thông tin liên hệ" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
       <div class="w-full">
@@ -22,7 +22,8 @@
                 </tds-form-field>
                 <tds-button-group>
                   <button tds-button color="custom" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" size="sm"
-                    style="border: none" class="bg-transparent px-0 focus:ring-0 focus:border-0 focus:border-transparenr">
+                    style="border: none"
+                    class="bg-transparent px-0 focus:ring-0 focus:border-0 focus:border-transparenr">
                     <span class="flex items-center" [ngStyle]="{'color': getStatusColor() }">
                       {{_form.controls["Partner"].value?.StatusText}}
                       <i class="tdsi-arrow-down-fill text-lg leading-none"></i>
@@ -44,7 +45,7 @@
               </div>
               <div class="col-span-3">
                 <tds-form-field>
-                  <input tdsInput placeholder="Để trống sẽ phát sinh tự động" formControlName="Telephone" />
+                  <input tdsInput placeholder="Nhập số điện thoại" formControlName="Telephone" />
                 </tds-form-field>
               </div>
             </div>
@@ -54,7 +55,7 @@
               </div>
               <div class="col-span-3">
                 <tds-form-field>
-                  <input tdsInput placeholder="Để trống sẽ phát sinh tự động" formControlName="Email" />
+                  <input tdsInput placeholder="Nhập email" formControlName="Email" />
                 </tds-form-field>
               </div>
             </div>
@@ -63,13 +64,10 @@
                 <tds-label>Địa chỉ</tds-label>
               </div>
               <div class="col-span-3">
-                <tpage-conversation-address class="w-full"
-                    [streetText]="_form.value['Street']"
-                    [cityCode]="_form.value['City']?.Code"
-                    [districtCode]="_form.value['District']?.Code"
-                    [wardCode]="_form.value['Ward']?.Code"
-                    (onChangeAddress)="onChangeAddress($event)">
-                  </tpage-conversation-address>
+                <tpage-conversation-address class="w-full" [streetText]="_form.value['Street']"
+                  [cityCode]="_form.value['City']?.Code" [districtCode]="_form.value['District']?.Code"
+                  [wardCode]="_form.value['Ward']?.Code" (onChangeAddress)="onChangeAddress($event)">
+                </tpage-conversation-address>
               </div>
             </div>
             <div class="grid grid-cols-4 gap-x-4 mt-4">
@@ -95,7 +93,7 @@
               </div>
               <div class="col-span-3">
                 <tds-form-field>
-                  <input tdsInput formControlName="Note" />
+                  <input tdsInput formControlName="Note" placeholder='Nhập ghi chú' />
                 </tds-form-field>
               </div>
             </div>
@@ -110,10 +108,10 @@
                     </div>
                   </ng-template>
 
-                  <div style="margin:0;" class="overflow-auto tds-panel-scroll flex flex-col divide-neutral-2-200 divide-y max-h-[250px] pt-4">
+                  <div style="margin:0;"
+                    class="overflow-auto tds-panel-scroll flex flex-col divide-neutral-2-200 divide-y max-h-[250px] pt-4">
                     <div *ngFor="let comment of lstComment; let index = index" class="mr-2 ml-4">
-                      <div class="py-3 flex justify-between gap-x-4"
-                        [ngStyle]="{'padding-top': !index ? '0px' : ''}">
+                      <div class="py-3 flex justify-between gap-x-4" [ngStyle]="{'padding-top': !index ? '0px' : ''}">
                         <span>
                           {{comment.message}}<span class="text-info-400 ml-2">{{ comment.created_time | date:
                             "dd/MM/yyyy hh:mm:ss" }}</span>
@@ -143,7 +141,7 @@
           </tds-form-field>
           <button tds-button type="button" size="md" color="primary" (click)="onAddProduct()">
             <span class="flex items-center">
-              <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i> Thêm mẫu mới
+              <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i> Thêm sản phẩm
             </span>
           </button>
         </div>
@@ -194,7 +192,8 @@
                   <td>
                     <tds-form-field>
                       <tds-input-number [min]="0" [step]="1000" (change)="onChangeProductPrice()"
-                        [(ngModel)]="data.Price" [ngModelOptions]="{standalone: true}">
+                        [(ngModel)]="data.Price" [ngModelOptions]="{standalone: true}"
+                        [formatter]="numberWithCommas" [parser]="parserComas">
                       </tds-input-number>
                     </tds-form-field>
                   </td>
@@ -208,7 +207,7 @@
                   <td>
                     <button tds-button-icon color="secondary" size="sm" (click)="onRemoveProduct(data, index)">
                       <span class="flex items-center">
-                        <i class="tdsi-trash-fill"></i>
+                        <i class="tdsi-trash-fill text-neutral-1-500"></i>
                       </span>
                     </button>
                   </td>
@@ -227,7 +226,6 @@
           </tds-table>
         </div>
       </div>
-
     </tds-tab>
 
     <tds-tab title="Thông tin giao hàng" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px"
@@ -333,7 +331,7 @@
             <div>
               <div class="grid grid-cols-3 gap-x-4 mt-4">
                 <div class="flex items-center">
-                  <tds-label>Phí giao hàng</tds-label>
+                  <tds-label>Phí giao hàng (đ)</tds-label>
                 </div>
                 <div class="col-span-2">
                   <tds-form-field>
@@ -345,7 +343,7 @@
               </div>
               <div class="grid grid-cols-3 gap-x-4 mt-4">
                 <div class="flex items-center">
-                  <tds-label>Khối lượng ship(g)</tds-label>
+                  <tds-label>Khối lượng ship (g)</tds-label>
                 </div>
                 <div class="col-span-2">
                   <tds-form-field>
@@ -370,7 +368,6 @@
         </div>
       </ng-template>
     </tds-tab>
-
   </tds-tabset>
 
   <div class="w-full flex justify-between p-4 items-center" *tdsModalFooter>
@@ -381,26 +378,37 @@
       </tds-checkbox>
     </div>
 
-      <div class="flex gap-x-2" *ngIf="!isEnableCreateOrder">
-          <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
-          <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave(saveType.orderPrint)">
-              <span class="tdsi-print-fill"></span>
-              Lưu và in
-          </button>
-          <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave(saveType.orderSave)">Lưu</button>
-      </div>
+    <div class="flex gap-x-4" *ngIf="!isEnableCreateOrder">
+      <button tds-button class="min-w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
+      <button tds-button type="button" color="custom" class="min-w-[126px] text-white focus:ring-4 focus:ring-secondary-1/20
+      border-secondary-1 bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1
+      focus:border-secondary-1" (click)="onSave(saveType.orderPrint)">
+        <span class="flex items-center">
+          <i class="tdsi-print-fill text-lg leading-none mr-2"></i>Lưu và in
+        </span>
+      </button>
+      <button tds-button class="w-[100px]" type="button" color="primary"
+        (click)="onSave(saveType.orderSave)">Lưu</button>
+    </div>
 
-      <div class="flex gap-x-2" *ngIf="isEnableCreateOrder">
-          <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
-          <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave(saveType.billPrint)">
-              <span class="tdsi-print-fill"></span>
-              Lưu và in
-          </button>
-          <button tds-button class="w-[170px]" type="button" color="info" (click)="onSave(saveType.billPrintShip)">
-              <span class="tdsi-print-fill"></span>
-              Lưu và in phiếu ship
-          </button>
-          <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave(saveType.billSave)">Lưu</button>
+    <div class="flex gap-x-4" *ngIf="isEnableCreateOrder">
+      <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
+      <button tds-button type="button" color="custom" class="min-w-[126px] text-white focus:ring-4 focus:ring-secondary-1/20
+      border-secondary-1 bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1
+      focus:border-secondary-1" (click)="onSave(saveType.orderPrint)">
+        <span class="flex items-center">
+          <i class="tdsi-print-fill text-lg leading-none mr-2"></i>Lưu và in
+        </span>
+      </button>
+      <button tds-button type="button" color="custom" class="min-w-[170px] text-white focus:ring-4 focus:ring-secondary-1/20
+      border-secondary-1 bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1
+      focus:border-secondary-1" (click)="onSave(saveType.orderPrint)">
+        <span class="flex items-center">
+          <i class="tdsi-print-fill text-lg leading-none mr-2"></i>Lưu và in phiếu ship
+        </span>
+      </button>
+      <button tds-button class="w-[100px]" type="button" color="primary"
+        (click)="onSave(saveType.billSave)">Lưu</button>
     </div>
   </div>
 </form>

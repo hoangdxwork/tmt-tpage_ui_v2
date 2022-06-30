@@ -1,13 +1,13 @@
 <div class="w-full flex flex-col">
     <div class="flex gap-4">
-        <tds-form-field class="w-full w-5/6">
+        <tds-form-field class="w-5/6">
             <input tdsInput placeholder="Tìm kiếm" autocomplete="off" (keydown.enter)="onSearch($event)" />
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
         </tds-form-field>
 
         <button class="w-1/6" tds-button color="primary" size="md" (click)="onAddUOM()">
             <span class="flex items-center">
-                <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i> Thêm mẫu mới
+                <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i> Thêm mới
             </span>
         </button>
     </div>

@@ -33,6 +33,7 @@ import { CommonService } from 'src/app/main-app/services/common.service';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { GetListOrderIdsDTO } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
+import { HostListener } from '@angular/core';
 
 
 @Component({
@@ -73,14 +74,14 @@ export class OrderComponent implements OnInit, OnDestroy {
   public hiddenColumns = new Array<ColumnTableDTO>();
   public columns: any[] = [
     { value: 'Code', name: 'Mã', isChecked: true },
-    { value: 'Name', name: 'Tên', isChecked: true },
     { value: 'CRMTeamName', name: 'Kênh kết nối', isChecked: true },
+    { value: 'Name', name: 'Tên', isChecked: true },
     { value: 'Address', name: 'Địa chỉ', isChecked: false },
     { value: 'TotalAmount', name: 'Tổng tiền', isChecked: true },
     { value: 'TotalQuantity', name: 'Tổng SL', isChecked: true },
+    { value: 'DateCreated', name: 'Ngày tạo', isChecked: false },
     { value: 'StatusText', name: 'Trạng thái', isChecked: true },
     { value: 'UserName', name: 'Nhân viên', isChecked: true },
-    { value: 'DateCreated', name: 'Ngày tạo', isChecked: false }
   ];
 
   public tabNavs: Array<TDSSafeAny> = [];
@@ -302,6 +303,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     if (this.checkValueEmpty() == 1) {
       this.isLoading = true;
       let ids = [...this.setOfCheckedId];
+
 
       this.fastSaleOrderService.getListOrderIds({ids: ids})
         .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
@@ -553,9 +555,9 @@ export class OrderComponent implements OnInit, OnDestroy {
     let ids = [...this.setOfCheckedId];
 
     if (ids.length == 0) {
+      this.message.error('Vui lòng chọn tối thiểu một dòng!');
       return 0;
     }
-
     return 1;
   }
 
@@ -737,6 +739,23 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   closeDrawer() {
     this.isOpenDrawer = false;
+  }
+
+  onClose(e:Event) {
+    console.log("click tag")
+  }
+
+  @HostListener('document:keyup', ['$event'])
+  handleKeyboardEventCreate(event: KeyboardEvent) {
+    if(event.key === 'F9'){
+      this.onUrlCreateInvoiceFast();
+    }
+    else if(event.key === 'F8'){
+      this.onCreateBillDefault();
+    }
+    else if(event.key === 'F10'){
+      this.onCreateBillFast();
+    }
   }
 
 }
