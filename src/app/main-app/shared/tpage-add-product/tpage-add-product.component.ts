@@ -1,7 +1,6 @@
-import { ConversationOrderProductDefaultDTO } from './../../dto/coversation-order/conversation-order.dto';
-import { Observable, Subject, Subscriber, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { ProductTemplateDTO, ProductType, ProductUOMDTO } from '../../dto/product/product.dto';
 import { ProductTemplateService } from '../../services/product-template.service';
 import { ProductCategoryService } from '../../services/product-category.service';
@@ -10,12 +9,10 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { ProductCategoryDTO } from '../../dto/product/product-category.dto';
 import { TpageAddCategoryComponent } from '../tpage-add-category/tpage-add-category.component';
 import { TpageSearchUOMComponent } from '../tpage-search-uom/tpage-search-uom.component';
-import { THelperCacheService } from 'src/app/lib';
 import { SharedService } from '../../services/shared.service';
-import { map, takeUntil, mergeMap, finalize, tap } from 'rxjs/operators';
+import { map, takeUntil, mergeMap } from 'rxjs/operators';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
-import { ProductDataFacade } from '../../services/facades/product.data.facade';
-import { DataPouchDBDTO, KeyCacheIndexDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
+import { KeyCacheIndexDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSUploadChangeParam, TDSUploadFile } from 'tds-ui/upload';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
@@ -25,11 +22,12 @@ import { TDSMessageService } from 'tds-ui/message';
   selector: 'tpage-add-product',
   templateUrl: './tpage-add-product.component.html'
 })
+
 export class TpageAddProductComponent implements OnInit, OnDestroy {
 
   @Output() onLoadedProductSelect = new EventEmitter<TDSSafeAny>();
 
-  formAddProduct!: FormGroup;
+  _form!: FormGroup;
   defaultGet!: ProductTemplateDTO;
 
   lstCategory!: Array<ProductCategoryDTO>;
@@ -45,17 +43,17 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     private modal: TDSModalService,
     private modalRef: TDSModalRef,
     private message: TDSMessageService,
+    private cdRef: ChangeDetectorRef,
     private viewContainerRef: ViewContainerRef,
     private productIndexDBService: ProductIndexDBService,
     private productTemplateService: ProductTemplateService,
     private productCategoryService: ProductCategoryService,
     private productUOMService: ProductUOMService,
     public zone: NgZone) {
+    this.createForm();
   }
 
   ngOnInit(): void {
-    this.createForm();
-
     this.loadCategory();
     this.loadUOMCateg();
     this.loadDefault();
@@ -76,9 +74,6 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   }
 
   loadUOMCateg() {
-    // this.productUOMService.getUOMCateg().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-    //   this.lstUOMCategory = res.value;
-    // });
     this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.lstUOMCategory = res.value;
     });
@@ -171,15 +166,15 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
 
     return this.sharedService.saveImageV2(formData).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.message.success(Message.Upload.Success);
-        this.formAddProduct.controls["ImageUrl"].setValue(res[0].urlImageProxy);
+        this._form.controls["ImageUrl"].setValue(res[0].urlImageProxy);
+        this.cdRef.markForCheck();
     }, error => {
-        let message = JSON.parse(error.Message);
-        this.message.error(`${message.message}`);
+      this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
     });
   }
 
   prepareModel() {
-    const formModel = this.formAddProduct.value;
+    const formModel = this._form.value;
 
     this.defaultGet["Name"] = formModel.Name;
     this.defaultGet["Type"] = formModel.Type;
@@ -210,7 +205,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   }
 
   updateForm(data: ProductTemplateDTO) {
-    let formControls = this.formAddProduct.controls;
+    let formControls = this._form.controls;
 
     formControls["Type"].setValue(data.ShowType);
     formControls["Categ"].setValue(data.Categ);
@@ -238,7 +233,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   }
 
   createForm() {
-    this.formAddProduct = this.fb.group({
+    this._form = this.fb.group({
       Name: [null, Validators.required],
       Type: [null],
       DefaultCode: [null],
