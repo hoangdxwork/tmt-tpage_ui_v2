@@ -1,4 +1,6 @@
-import { filter, takeUntil } from 'rxjs/operators';
+import { RegisterPayment } from './../../../../dto/fastsaleorder/register-payment';
+import { FastSaleOrder_DefaultDTOV2 } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
+import { takeUntil } from 'rxjs/operators';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, Input, OnInit, ViewContainerRef, OnDestroy } from '@angular/core';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
@@ -23,15 +25,38 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
   @Input() ids: string[] = [];
   @Input() lstData!: TDSSafeAny[];
 
-  formCreateBillFast!: FormGroup;
+  _form!: FormGroup;
+  lstData!: FastSaleOrder_DefaultDTOV2[];
+  lstPayment: { Id:number, Payment:RegisterPayment }[] = [];
   lstCarriers: Array<DeliveryCarrierDTO> = [];
   isLoading: boolean = false;
   private destroy$ = new Subject<void>();
 
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    }
+    return value
+  } ;
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,',','');
+    }
+    return value
+  };
+
+  private _destroy = new Subject<void>();
+
   isPrint: boolean = false;
   isPrintShip: boolean = false;
+  isLoading = false;
 
-  constructor(private fb: FormBuilder,
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private fb: FormBuilder,
     private message: TDSMessageService,
     private viewContainerRef: ViewContainerRef,
     private modal: TDSModalService,
@@ -84,11 +109,36 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
   }
 
   createForm() {
-    this.formCreateBillFast = this.fb.group({
+    this._form = this.fb.group({
       carrier: [null],
       amountTotal: [null],
       isPromotion: [false]
     });
+  }
+
+  onCheckPayment(data:FastSaleOrder_DefaultDTOV2){
+    if(!this.checkEnabledPayment(data)){
+      this.isLoading = true;
+      let model = {
+        ids: [data.Id]//Id:0 -> bug
+      }
+  
+      this.fastSaleOrderService.getRegisterPayment(model)
+        .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+        .subscribe(
+          (res)=>{
+            delete res['@odata.context'];
+            this.lstPayment.push({
+              Id: data.Id,
+              Payment: res
+            })
+          }, err => {
+            this.message.error(err.error.message ?? 'Có lỗi xảy ra. Không thể thanh toán cho hóa đơn này.');
+          }
+      )
+    }else{
+      this.lstPayment = this.lstPayment.filter((item)=> item.Id != data.Id);
+    }
   }
 
   onSave(confirm?: string) {
@@ -164,7 +214,7 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
   }
 
   changeCarrierAll() {
-    let carrier = this.formCreateBillFast.controls["carrier"].value;
+    let carrier = this._form.controls["carrier"].value;
     if(carrier) {
       this.lstData.forEach(item => {
         item.Carrier = carrier;
@@ -177,7 +227,8 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
   }
 
   onRemoveLine(index: number) {
-    this.lstData = this.lstData.filter((item, i) => i !== index);
+    this.lstData = this.lstData.filter((item, i) => i != index);
+    this.lstPayment = this.lstPayment.filter((item)=> item.Id != this.lstData[index].Id);//xóa thông tin thanh toán trong danh sách thanh toán
   }
 
   onRemoveProduct(index: number, indexProduct: number) {
@@ -199,27 +250,24 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
       }
     });
 
-    // modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
     modal.afterClose.subscribe((result: TDSSafeAny) => {
-      console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
+        let partner = {
+          Name: result?.Name || this.lstData[index].Partner?.Name,
+          Phone: result?.Phone || this.lstData[index].Partner?.Phone,
+          Street: result?.Street || this.lstData[index].Partner?.Street,
+          Ward: result?.Ward || this.lstData[index].Partner?.Ward,
+          WardCode: result?.Ward?.code || this.lstData[index].Partner?.Ward?.code,
+          WardName: result?.Ward?.name || this.lstData[index].Partner?.Ward?.name,
+          District: result.District || this.lstData[index].Partner?.District,
+          DistrictCode: result?.District?.code || this.lstData[index].Partner?.District?.code,
+          DistrictName: result?.District?.name || this.lstData[index].Partner?.District?.name,
+          City: result.City || this.lstData[index].Partner?.City,
+          CityCode: result?.City?.code || this.lstData[index].Partner?.City?.code,
+          CityName: result?.City?.name || this.lstData[index].Partner?.City?.name
+        };
 
-        if(!this.lstData[index]?.Partner) {
-          this.lstData[index]["Partner"] = {};
-        }
-
-        this.lstData[index].Partner["Name"] = result.Name;
-        this.lstData[index].Partner["Phone"] = result.Phone;
-        this.lstData[index].Partner["Street"] = result.Street;
-        this.lstData[index].Partner["Ward"] = result.Ward;
-        this.lstData[index].Partner["WardCode"] = result?.Ward?.code ? result.Ward.code : null;
-        this.lstData[index].Partner["WardName"] = result?.Ward?.name ? result.Ward.name : null;
-        this.lstData[index].Partner["District"] = result.District;
-        this.lstData[index].Partner["DistrictCode"] = result?.District?.code ? result.District.code : null;
-        this.lstData[index].Partner["DistrictName"] = result?.District?.name ? result.District.name : null;
-        this.lstData[index].Partner["City"] = result.City;
-        this.lstData[index].Partner["CityCode"] = result?.City?.code ? result.City.code : null;
-        this.lstData[index].Partner["CityName"] = result?.City?.name ? result.City.name : null;
+        this.lstData[index].Partner = Object.assign(this.lstData[index].Partner, partner);
       }
     });
   }
@@ -276,5 +324,4 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
 }

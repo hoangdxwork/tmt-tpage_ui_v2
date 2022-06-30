@@ -102,7 +102,6 @@ export class EditOrderComponent implements OnInit {
     this.loadDeliveryCarrier();
     this.loadUser();
     this.loadPartnerStatus();
-
     this.loadData();
   }
 
@@ -122,53 +121,9 @@ export class EditOrderComponent implements OnInit {
     });
   }
 
-  onSave(type: TDSSafeAny) {debugger
-    let model = this.prepareOrderModel();
-
-    this.saleOnline_OrderService.update(this.idOrder, model).subscribe((res: any) => {
-      if(type == this.saveType.orderSave) {
-        this.message.success(Message.Order.UpdateSuccess);
-        this.onCancel(true);
-      }
-      else if(type == this.saveType.orderPrint) {
-        // TODO: in
-        this.onCancel(true);
-      }
-      else if(this.isEnableCreateOrder) {
-        let modelSale = this.prepareSaleModel();
-
-        if(modelSale) {
-          this.fastSaleOrderService.create(this.defaultBill).subscribe((data: any) => {
-            if (data.Success) {
-              if (data.Message) {
-                this.message.warning(data.Message);
-              } else {
-                this.message.success(Message.Bill.InsertSuccess);
-              }
-
-              // TODO: thực hiện in
-              if(type == this.saveType.billPrint) {
-
-              }
-              else if(type == this.saveType.billPrintShip) {
-
-              }
-
-              this.onCancel(data);
-
-            } else {
-              this.message.error(data.Message);
-            }
-          });
-        }
-      }
-    }, error => {this.message.error(JSON.stringify(error))});
-  }
-
   loadData() {
     this.saleOnline_OrderService.getById(this.idOrder).subscribe(res => {
       this.model = res;
-
       this.updateForm(res);
       this.getCommentsByUserAndPost(res.Facebook_ASUserId, res.Facebook_PostId);
     });
@@ -214,6 +169,47 @@ export class EditOrderComponent implements OnInit {
       delete res["@odata.context"];
       this.defaultBill = res;
       this.updateBillByForm(this._form);
+    });
+  }
+
+  createForm() {
+    this._form = this.fb.group({
+      isEnableCreateOrder: [false],
+      Facebook_UserName: [null],
+      Facebook_UserId: [null],
+      Partner: [null],
+      Company: [null],
+      Name: [null],
+      Telephone: [null],
+      Email: [null],
+      Address: [null],
+      AddressCheck: [null],
+      City: [null],
+      District: [null],
+      Ward: [null],
+      User: [null],
+      Note: [null],
+      Details: this.fb.array([]),
+      TotalAmount: [0],
+      TotalQuantity: [0],
+
+      Carrier: [null],
+      ShipWeight: [0],
+      DeliveryPrice: [0],
+      CashOnDelivery: [0],
+      DeliveryNote: [null],
+      Ship_ServiceExtras: [[]],
+      Ship_ServiceExtrasText: [""],
+      Ship_ServiceId: [""],
+      Ship_ServiceName: [""],
+      CustomerDeliveryPrice: [0],
+      Ship_InsuranceFee: [0],
+      Ship_Extras: [null],
+      PartnerId: [null],
+      CompanyId: [null],
+      AmountTotal: [0],
+      Ship_Receiver: [null],
+      AmountDeposit: [0]
     });
   }
 
@@ -768,47 +764,6 @@ export class EditOrderComponent implements OnInit {
     }
   }
 
-  createForm() {
-    this._form = this.fb.group({
-      isEnableCreateOrder: [false],
-      Facebook_UserName: [null],
-      Facebook_UserId: [null],
-      Partner: [null],
-      Company: [null],
-      Name: [null],
-      Telephone: [null],
-      Email: [null],
-      Address: [null],
-      AddressCheck: [null],
-      City: [null],
-      District: [null],
-      Ward: [null],
-      User: [null],
-      Note: [null],
-      Details: this.fb.array([]),
-      TotalAmount: [0],
-      TotalQuantity: [0],
-
-      Carrier: [null],
-      ShipWeight: [0],
-      DeliveryPrice: [0],
-      CashOnDelivery: [0],
-      DeliveryNote: [null],
-      Ship_ServiceExtras: [[]],
-      Ship_ServiceExtrasText: [""],
-      Ship_ServiceId: [""],
-      Ship_ServiceName: [""],
-      CustomerDeliveryPrice: [0],
-      Ship_InsuranceFee: [0],
-      Ship_Extras: [null],
-      PartnerId: [null],
-      CompanyId: [null],
-      AmountTotal: [0],
-      Ship_Receiver: [null],
-      AmountDeposit: [0]
-    });
-  }
-
   getStatusColor(): string {
     let partner = this._form.controls["Partner"].value;
 
@@ -834,6 +789,51 @@ export class EditOrderComponent implements OnInit {
         partner.StatusText = status.text;
         this._form.controls["Partner"].setValue(partner);
       });
+    }
+  }
+
+  onSave(type: TDSSafeAny) {
+    if(!this._form.valid){
+      let model = this.prepareOrderModel();
+
+      this.saleOnline_OrderService.update(this.idOrder, model).subscribe((res: any) => {
+        if(type == this.saveType.orderSave) {
+          this.message.success(Message.Order.UpdateSuccess);
+          this.onCancel(true);
+        }
+        else if(type == this.saveType.orderPrint) {
+          // TODO: in
+          this.onCancel(true);
+        }
+        else if(this.isEnableCreateOrder) {
+          let modelSale = this.prepareSaleModel();
+
+          if(modelSale) {
+            this.fastSaleOrderService.create(this.defaultBill).subscribe((data: any) => {
+              if (data.Success) {
+                if (data.Message) {
+                  this.message.warning(data.Message);
+                } else {
+                  this.message.success(Message.Bill.InsertSuccess);
+                }
+
+                // TODO: thực hiện in
+                if(type == this.saveType.billPrint) {
+
+                }
+                else if(type == this.saveType.billPrintShip) {
+
+                }
+
+                this.onCancel(data);
+
+              } else {
+                this.message.error(data.Message);
+              }
+            });
+          }
+        }
+      }, error => {this.message.error(JSON.stringify(error))});
     }
   }
 

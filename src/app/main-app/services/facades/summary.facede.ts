@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { addDays, endOfMonth, endOfWeek, startOfMonth, startOfWeek } from "date-fns";
+import { addDays, endOfMonth, endOfWeek, endOfYesterday, startOfMonth, startOfWeek, startOfYesterday, subDays } from "date-fns";
 import { SummaryFilterDTO } from "../../dto/dashboard/summary-overview.dto";
 
 @Injectable()
@@ -11,15 +11,16 @@ export class SummaryFacade {
   ];
 
   private filterMultipleLists: SummaryFilterDTO[] = [
-    {id: 1, name:'7 ngày qua', startDate: addDays(new Date(), -7), endDate: new Date()},
-    {id: 2, name:'30 ngày qua', startDate: addDays(new Date(), -30), endDate: new Date()},
-    {id: 3, name:'Tuần này', startDate: addDays(new Date(), -7), endDate: new Date()},
-    {id: 4, name:'Tháng này', startDate: addDays(new Date(), -30), endDate: new Date()},
-    {id: 5, name:'Tháng trước', startDate: addDays(new Date(), -60), endDate: addDays(new Date(), -30)}
+    {id:1, name:'Hôm nay', startDate: new Date(), endDate: new Date()},
+    {id:2, name:'Hôm qua', startDate: startOfYesterday(), endDate: endOfYesterday()},
+    {id:3, name:'7 ngày qua', startDate: subDays(new Date(), 7), endDate: new Date()},
+    {id:4, name:'30 ngày qua', startDate: subDays(new Date(), 30), endDate: new Date()},
+    {id:5, name:'Tuần này', startDate: startOfWeek( new Date()), endDate: endOfWeek(new Date())},
+    {id:6, name:'Tháng này', startDate: startOfMonth( new Date()), endDate: endOfMonth(new Date())},
+    {id:7, name:'Tháng trước', startDate: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1), endDate: new Date(new Date().getFullYear(), new Date().getMonth(), 0)}
   ];
 
   constructor() {
-    this.updateFilter();
   }
 
   private updateFilter() {

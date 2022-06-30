@@ -1,3 +1,5 @@
+import { SummaryFilterDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
+import { SummaryFacade } from 'src/app/main-app/services/facades/summary.facede';
 import { Color } from 'echarts';
 import { TDSChartOptions, TDSBarChartComponent, TDSBarChartDataSeries } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
@@ -5,8 +7,7 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-dashboard-revenue-report',
-  templateUrl: './dashboard-revenue-report.component.html',
-  styleUrls: ['./dashboard-revenue-report.component.scss']
+  templateUrl: './dashboard-revenue-report.component.html'
 })
 export class DashboardRevenueReportComponent implements OnInit {
   //#region variable
@@ -17,19 +18,21 @@ export class DashboardRevenueReportComponent implements OnInit {
   seriesData:TDSSafeAny[] = [];
   colors:Color[] = [];
 
-  filterList= [
-    {id:1, name:'Tuần này'},
-    {id:2, name:'Tháng này'}
-  ]
-  currentFilter = this.filterList[0].name;
+  filterList!: SummaryFilterDTO[];
+  currentFilter!: SummaryFilterDTO;
   emptyData = false;
   //#endregion
-  constructor() { }
+  constructor(private summaryFacade: SummaryFacade) { }
 
   ngOnInit(): void {
     this.loadData();
+    this.loadFilter();
   }
 
+  loadFilter() {
+    this.filterList = this.summaryFacade.getMultipleFilter();
+    this.currentFilter = this.filterList[4];
+  }
 
   loadData(){
     this.labelData = [
@@ -154,7 +157,7 @@ export class DashboardRevenueReportComponent implements OnInit {
   }
 
   buildChartDemo(chart : TDSBarChartComponent ){
-    this.revenueOption = this.chartOption.BarChartOption(chart,true);
+    this.revenueOption = this.chartOption.BarChartOption(chart);
     let seriesList = this.revenueOption.series as TDSSafeAny[];
     this.revenueOption.series[seriesList.length-1].itemStyle = {
       borderRadius:[4,4,0,0]

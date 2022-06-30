@@ -1,27 +1,25 @@
 <div class="w-full flex flex-col">
-    <div class="p-4 w-full">
-      <app-dashboard-overview></app-dashboard-overview>
-    </div>
-    <tds-flex flex="row" class="w-full px-4">
-        <tds-flex flex="col" class="w-2/3 pr-4">
+    <tds-flex flex="row" class="w-full p-4">
+        <tds-flex flex="col" class="w-2/3 pr-4 flex flex-col gap-y-4">
+            <app-dashboard-overview></app-dashboard-overview>
             <!-- <app-overview></app-overview>
             <app-facebook-report></app-facebook-report>
             <app-label-report></app-label-report>
             <app-revenue-report></app-revenue-report>
             <app-changing-rate-report></app-changing-rate-report> -->
             <app-dashboard-facebook-report></app-dashboard-facebook-report>
-            <app-dashboard-tag-report></app-dashboard-tag-report>
+            <app-dashboard-connecting-page-report></app-dashboard-connecting-page-report>
             <app-dashboard-revenue-report></app-dashboard-revenue-report>
         </tds-flex>
-        <tds-flex flex="col" class="w-1/3">
+        <tds-flex flex="col" class="w-1/3 flex flex-col gap-y-4">
             <!-- <app-daily-report></app-daily-report>
             <app-staff-report></app-staff-report>
             <app-product-report></app-product-report>
             <app-connect-page-report></app-connect-page-report> -->
             <app-dashboard-daily-report></app-dashboard-daily-report>
             <app-dashboard-staff-report></app-dashboard-staff-report>
-            <app-dashboard-connecting-page-report></app-dashboard-connecting-page-report>
-            <app-dashboard-product-report></app-dashboard-product-report>
+            <app-dashboard-tag-report></app-dashboard-tag-report>
+            <!-- <app-dashboard-product-report></app-dashboard-product-report> -->
         </tds-flex>
     </tds-flex>
 </div>

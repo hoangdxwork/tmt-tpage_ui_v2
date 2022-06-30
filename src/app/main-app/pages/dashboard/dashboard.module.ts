@@ -1,3 +1,4 @@
+import { UploadImageModule } from './../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -80,7 +81,8 @@ const SERVICES = [
     TDSFormFieldModule,
     TDSEmptyModule,
     TDSTableModule,
-    TDSSpinnerModule
+    TDSSpinnerModule,
+    UploadImageModule
   ],
   providers: [ ...SERVICES]
 })

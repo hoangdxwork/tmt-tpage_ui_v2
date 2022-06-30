@@ -1,9 +1,8 @@
-<form class="flex flex-col" [formGroup]="_form">
-  <div class="flex gap-x-2 text-title-1 font-semibold" *tdsModalTitle>
-    <div>Sửa đơn hàng</div>
-    <div class="text-primary-1">220300006</div>
-  </div>
-
+<div *tdsModalTitle>
+  <span class="font-semibold text-title-1 pr-2">Sửa đơn hàng</span>
+  <span class="text-primary-1 font-semibold text-title-1">{{idOrder}}</span>
+</div>
+<form class="flex flex-col" [formGroup]="_form" >
   <tds-tabset class="border border-neutral-2-200 rounded-md">
     <tds-tab title="Thông tin liên hệ" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
       <div class="w-full">
@@ -15,15 +14,15 @@
                 <tds-avatar [size]="84" tdsSrc="error-link"></tds-avatar>
               </div>
               <div class="col-span-3 flex flex-col gap-y-2">
+                <tds-label>Tên Khách hàng</tds-label>
                 <tds-form-field>
-                  <tds-label>Tên Khách hàng</tds-label>
                   <input tdsInput autocomplete="off" placeholder="Nhập tên khách hàng" [required]='true'
                     formControlName="Name" />
                   <tds-error>Vui lòng nhập tên khách hàng</tds-error>
                 </tds-form-field>
                 <tds-button-group>
                   <button tds-button color="custom" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" size="sm"
-                    style="border: none" class="bg-transparent hover:bg-secondary-3 focus:ring-0 focus:border-0 focus:border-transparenr">
+                    style="border: none" class="bg-transparent px-0 focus:ring-0 focus:border-0 focus:border-transparenr">
                     <span class="flex items-center" [ngStyle]="{'color': getStatusColor() }">
                       {{_form.controls["Partner"].value?.StatusText}}
                       <i class="tdsi-arrow-down-fill text-lg leading-none"></i>
@@ -64,9 +63,6 @@
                 <tds-label>Địa chỉ</tds-label>
               </div>
               <div class="col-span-3">
-                <!-- <suggest-address [_isExpanded]="true" [_cities]="_cities" [_districts]="_districts" [_wards]="_wards"
-                  [_street]="_street" (onLoadSuggestion)="onLoadSuggestion($event)">
-                </suggest-address> -->
                 <tpage-conversation-address class="w-full"
                     [streetText]="_form.value['Street']"
                     [cityCode]="_form.value['City']?.Code"
@@ -385,31 +381,26 @@
       </tds-checkbox>
     </div>
 
-    <div class="flex gap-x-2" *ngIf="!isEnableCreateOrder">
-      <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
-      <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave(saveType.orderPrint)"
-        [disabled]="!_form?.valid">
-        <span class="tdsi-print-fill"></span>
-        Lưu và in
-      </button>
-      <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave(saveType.orderSave)"
-        [disabled]="!_form?.valid">Lưu</button>
-    </div>
+      <div class="flex gap-x-2" *ngIf="!isEnableCreateOrder">
+          <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
+          <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave(saveType.orderPrint)">
+              <span class="tdsi-print-fill"></span>
+              Lưu và in
+          </button>
+          <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave(saveType.orderSave)">Lưu</button>
+      </div>
 
-    <div class="flex gap-x-2" *ngIf="isEnableCreateOrder">
-      <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
-      <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave(saveType.billPrint)"
-        [disabled]="!_form?.valid">
-        <span class="tdsi-print-fill"></span>
-        Lưu và in
-      </button>
-      <button tds-button class="w-[170px]" type="button" color="info" (click)="onSave(saveType.billPrintShip)"
-        [disabled]="!_form?.valid">
-        <span class="tdsi-print-fill"></span>
-        Lưu và in phiếu ship
-      </button>
-      <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave(saveType.billSave)"
-        [disabled]="!_form?.valid">Lưu</button>
+      <div class="flex gap-x-2" *ngIf="isEnableCreateOrder">
+          <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
+          <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave(saveType.billPrint)">
+              <span class="tdsi-print-fill"></span>
+              Lưu và in
+          </button>
+          <button tds-button class="w-[170px]" type="button" color="info" (click)="onSave(saveType.billPrintShip)">
+              <span class="tdsi-print-fill"></span>
+              Lưu và in phiếu ship
+          </button>
+          <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave(saveType.billSave)">Lưu</button>
     </div>
   </div>
 </form>

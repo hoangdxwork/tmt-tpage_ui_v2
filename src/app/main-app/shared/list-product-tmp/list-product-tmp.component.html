@@ -1,6 +1,6 @@
 
-<div class="rounded-xl bg-white pt-2 px-3 flex h-full flex-col gap-y-2">
-  <div class="flex gap-x-2">
+<div class="rounded-xl bg-white pt-2 flex h-full flex-col gap-y-2">
+  <div class="flex gap-x-2 px-3">
       <tds-form-field>
           <input tdsInput placeholder="Tìm kiếm ..." autocomplete="off" #innerText />
           <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
@@ -52,14 +52,14 @@
           <thead>
               <tr>
                   <th width="60px">Ảnh</th>
-                  <th width="220px">Tên sản Phẩm</th>
+                  <th width="200px">Tên sản Phẩm</th>
                   <th width="80px">Đơn vị</th>
-                  <th width="96px">Giá</th>
-                  <th width="45px"></th>
+                  <th width="90px">Giá</th>
+                  <th width="40px"></th>
               </tr>
           </thead>
           <tbody>
-              <ng-template tds-virtual-scroll let-data let-index="index" >
+              <ng-template tds-virtual-scroll let-data let-index="index">
                   <tr class="group" *ngIf="data">
                       <td>
                           <div class="">
