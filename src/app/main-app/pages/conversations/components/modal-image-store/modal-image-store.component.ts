@@ -1,4 +1,4 @@
-import { OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, finalize } from 'rxjs/operators';
@@ -39,15 +39,14 @@ export class ModalImageStoreComponent implements OnInit, OnDestroy {
   fileList: TDSUploadFile[] = [];
   searchText: string = '';
 
-  constructor(
+  constructor(private cdRef: ChangeDetectorRef,
     private modal: TDSModalService,
     private modalRef: TDSModalRef,
     private attachmentDataFacade: AttachmentDataFacade,
     private message: TDSMessageService,
     private attachmentService: AttachmentService,
-    private sharedService: SharedService,
-    private viewContainerRef: ViewContainerRef
-  ) { }
+    private viewContainerRef: ViewContainerRef) {
+  }
 
   ngOnInit(): void {
     this.loadData();
@@ -216,8 +215,9 @@ export class ModalImageStoreComponent implements OnInit, OnDestroy {
     return this.attachmentService.add(formData).subscribe((res: any) => {
       this.attachmentDataFacade.addAttachment(res);
       this.message.success(Message.Upload.Success);
+      this.cdRef.markForCheck();
     }, error => {
-      this.message.error(error? error.Message: Message.Upload.Failed);
+      this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
     });
   }
 

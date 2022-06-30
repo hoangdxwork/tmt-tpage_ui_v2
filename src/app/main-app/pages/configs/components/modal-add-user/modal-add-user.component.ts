@@ -1,5 +1,5 @@
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Component, OnInit, ViewContainerRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { UserRestHandler } from 'src/app/main-app/services/handlers/user-rest.handler';
 import { ApplicationRoleService } from 'src/app/main-app/services/application-role.service';
 import { ApplicationRoleDTO } from 'src/app/main-app/dto/account/application-role.dto';
@@ -21,43 +21,30 @@ import { TDSUploadFile } from 'tds-ui/upload';
 export class ModalAddUserComponent implements OnInit, OnDestroy {
 
   isLoading: boolean = false;
-  public listData = [
-    { id: 1, name: 'Nhóm nhân viên' },
-    { id: 2, name: 'Administrators' },
-    { id: 3, name: 'Nhóm test' },
-    { id: 4, name: 'Tester' },
-    { id: 5, name: 'Nhân viên' },
-    { id: 6, name: 'Ca sáng' },
-    { id: 7, name: 'Ca chiều' }
-  ];
-
-  formAddUser!: FormGroup;
+  _form!: FormGroup;
 
   fileList: TDSSafeAny[] = [];
   listSelectedRole: ApplicationRoleDTO[] = [];
   lstUserRole: ApplicationRoleDTO[] = [];
   private destroy$ = new Subject<void>();
 
-  constructor(
+  constructor(private cdRef: ChangeDetectorRef,
     private formBuilder: FormBuilder,
     private modal: TDSModalRef,
-    private modalService: TDSModalService,
-    private viewContainerRef: ViewContainerRef,
     private userRestHandler: UserRestHandler,
     private applicationRoleService: ApplicationRoleService,
     private applicationUserService: ApplicationUserService,
     private sharedService: SharedService,
-    private message: TDSMessageService
-  ) {
+    private message: TDSMessageService) {
+    this.createForm();
   }
 
   ngOnInit(): void {
-    this.createForm();
     this.loadUserRole();
   }
 
   createForm(){
-    this.formAddUser = this.formBuilder.group({
+    this._form = this.formBuilder.group({
       Avatar: [""],
       Name: ["", [Validators.required]],
       UserName: ["", [Validators.required], this.userRestHandler.validateExitUsername("null").bind(this)],
@@ -90,7 +77,7 @@ export class ModalAddUserComponent implements OnInit, OnDestroy {
   }
 
   prepareModel() {
-    let formValue = this.formAddUser.value;
+    let formValue = this._form.value;
 
     let model: AddApplicationUserDTO = {
       Id: null,
@@ -116,7 +103,7 @@ export class ModalAddUserComponent implements OnInit, OnDestroy {
       };
     });
 
-    this.formAddUser.controls["Roles"].setValue(roles);
+    this._form.controls["Roles"].setValue(roles);
   }
 
   beforeUpload = (file: TDSUploadFile): boolean => {
@@ -133,10 +120,10 @@ export class ModalAddUserComponent implements OnInit, OnDestroy {
 
     return this.sharedService.saveImageV2(formData).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.message.success(Message.Upload.Success);
-        this.formAddUser.controls["Avatar"].setValue(res[0].urlImageProxy);
+        this._form.controls["Avatar"].setValue(res[0].urlImageProxy);
+        this.cdRef.markForCheck();
     }, error => {
-        let message = JSON.parse(error.Message);
-        this.message.error(`${message.message}`);
+      this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
     });
   }
 

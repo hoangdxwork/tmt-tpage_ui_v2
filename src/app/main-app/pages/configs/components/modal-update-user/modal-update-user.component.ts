@@ -1,6 +1,6 @@
 import { ModalChangePasswordUserComponent } from './../modal-change-password-user/modal-change-password-user.component';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { Component, OnInit, ViewContainerRef, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, Input, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { UserRestHandler } from 'src/app/main-app/services/handlers/user-rest.handler';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { ApplicationUserDTO, UpdateApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
@@ -25,17 +25,7 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
   @Input() userId!: string;
 
   isLoading: boolean = false;
-  formUpdateUser!: FormGroup;
-
-  public listData = [
-    { id: 1, name: 'Nhóm nhân viên' },
-    { id: 2, name: 'Administrators' },
-    { id: 3, name: 'Nhóm test' },
-    { id: 4, name: 'Tester' },
-    { id: 5, name: 'Nhân viên' },
-    { id: 6, name: 'Ca sáng' },
-    { id: 7, name: 'Ca chiều' }
-  ];
+  _form!: FormGroup;
 
   userInit!: UserInitDTO;
   listSelectedRole: ApplicationRoleDTO[] = [];
@@ -43,8 +33,8 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
   fileList: TDSSafeAny[] = [];
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private formBuilder: FormBuilder,
+  constructor(private cdRef : ChangeDetectorRef,
+    private fb: FormBuilder,
     private modal: TDSModalRef,
     private modalService: TDSModalService,
     private userRestHandler: UserRestHandler,
@@ -53,19 +43,18 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
     private applicationRoleService: ApplicationRoleService,
     private sharedService: SharedService,
     private message: TDSMessageService,
-    private auth: TAuthService,
-  ) {
+    private auth: TAuthService) {
+    this.createForm();
   }
 
   ngOnInit(): void {
-    this.createForm();
     this.loadUserLogged();
     this.loadUserRole();
     this.loadUser(this.userId);
   }
 
   createForm(){
-    this.formUpdateUser = this.formBuilder.group({
+    this._form = this.fb.group({
       Avatar: [""],
       Name: ["", [Validators.required]],
       UserName: ["", [Validators.required]],
@@ -76,9 +65,6 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
       // ConfirmPassword: ["", [Validators.required]],
       Roles: [null, [Validators.required]]
     });
-    // , {
-      // validators: this.userRestHandler.validateMustMatch("Password", "ConfirmPassword"),
-    // });
   }
 
   loadUserLogged() {
@@ -104,7 +90,7 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
   }
 
   updateForm(value: ApplicationUserDTO) {
-    let formControls = this.formUpdateUser.controls;
+    let formControls = this._form.controls;
 
     formControls.Name.setValue(value.Name);
     formControls.UserName.setValue(value.UserName);
@@ -131,7 +117,7 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
   }
 
   prepareModel() {
-    let formValue = this.formUpdateUser.value;
+    let formValue = this._form.value;
 
     let model: UpdateApplicationUserDTO = {
       Id: this.userId,
@@ -161,15 +147,14 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
 
     return this.sharedService.saveImageV2(formData).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.message.success(Message.Upload.Success);
-        this.formUpdateUser.controls["Avatar"].setValue(res[0].urlImageProxy);
+        this._form.controls["Avatar"].setValue(res[0].urlImageProxy);
+        this.cdRef.markForCheck();
     }, error => {
-        let message = JSON.parse(error.Message);
-        this.message.error(`${message.message}`);
+      this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
     });
   }
 
-  onChangeRole(e: Array<TDSSafeAny>)
-  {
+  onChangeRole(e: Array<TDSSafeAny>){
     let roles = e.map(x => {
       return {
         RoleId: x,
@@ -177,7 +162,7 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
       };
     });
 
-    this.formUpdateUser.controls["Roles"].setValue(roles);
+    this._form.controls["Roles"].setValue(roles);
   }
 
   showModalChangePassword(){
@@ -186,13 +171,6 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
       content: ModalChangePasswordUserComponent,
       size: "md",
       viewContainerRef: this.viewContainerRef,
-    });
-    modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
-    modal.afterClose.subscribe(result => {
-      console.log('[afterClose] The result is:', result);
-      if (TDSHelperObject.hasValue(result)) {
-
-      }
     });
   }
 

@@ -1,5 +1,5 @@
 
-import { OnDestroy, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, OnDestroy, ViewContainerRef } from '@angular/core';
 
 import { Component, Input, OnInit } from '@angular/core';
 import { map, finalize, takeUntil } from 'rxjs/operators';
@@ -31,14 +31,13 @@ export class ModalListCollectionComponent implements OnInit, OnDestroy {
   fileList: TDSUploadFile[] = [];
   searchText: string = '';
 
-  constructor(
+  constructor(private cdRef: ChangeDetectorRef,
     private attachmentDataFacade: AttachmentDataFacade,
     private message: TDSMessageService,
     private attachmentService: AttachmentService,
     private viewContainerRef: ViewContainerRef,
     private modal: TDSModalService,
-    private modalRef: TDSModalRef
-  ) { }
+    private modalRef: TDSModalRef) { }
 
   ngOnInit(): void {
     this.loadCollection(this.collectionId);
@@ -157,8 +156,9 @@ export class ModalListCollectionComponent implements OnInit, OnDestroy {
       .subscribe((res: any) => {
         this.attachmentDataFacade.insertInner(this.collectionId, res);
         this.message.success(Message.Upload.Success);
+        this.cdRef.markForCheck();
       }, error => {
-        this.message.error(error? error?.Message : Message.Upload.Failed);
+        this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
       });
   }
 
@@ -166,9 +166,7 @@ export class ModalListCollectionComponent implements OnInit, OnDestroy {
     let urls = [];
     this.lstData$.subscribe(res => {
       if(res){
-        urls = res.Attachments.filter(x =>
-          x["Select"] == true
-        ).map( x => x.Url);
+        urls = res.Attachments.filter(x => x["Select"] == true).map( x => x.Url);
 
         if(!urls || urls.length < 1) {
           this.message.info("Chưa có ảnh nào được chọn!");
