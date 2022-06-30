@@ -1,5 +1,5 @@
 import { UserInitDTO, TAuthService } from 'src/app/lib';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { NgForm, FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { UserRestHandler } from 'src/app/main-app/services/handlers/user-rest.handler';
 import { takeUntil, finalize } from 'rxjs/operators';
@@ -33,18 +33,18 @@ export class InfoUserComponent implements OnInit {
   private destroy$ = new Subject<void>();
   isLoading: boolean = false;
 
-  constructor(
+  constructor(private cdRef: ChangeDetectorRef,
     private formBuilder: FormBuilder,
     private auth: TAuthService,
     private sharedService: SharedService,
     private message: TDSMessageService,
     private userRestHandler: UserRestHandler,
-    private applicationUserService: ApplicationUserService,
-  ) { }
+    private applicationUserService: ApplicationUserService) {
+      this.createFormInfo();
+      this.createFormPassword();
+  }
 
   ngOnInit(): void {
-    this.createFormInfo();
-    this.createFormPassword();
     this.loadUserInfo()
   }
 
@@ -118,7 +118,6 @@ export class InfoUserComponent implements OnInit {
   }
 
   prepareModalChangePassword() {
-
   }
 
   changeInfoUser() {
@@ -162,9 +161,9 @@ export class InfoUserComponent implements OnInit {
       .subscribe((res: any) => {
           this.message.success(Message.Upload.Success);
           this.userInit.Avatar = res[0].urlImageProxy;
+          this.cdRef.markForCheck();
       }, error => {
-          let message = JSON.parse(error.Message);
-          this.message.error(`${message.message}`);
+        this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
       });
   }
 }

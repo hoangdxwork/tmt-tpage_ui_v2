@@ -16,7 +16,6 @@ export class ModalAddCollectionComponent implements OnInit {
 
   fileList: TDSUploadFile[] = [];
   lstData: TDSSafeAny[] = [];
-
   name: string = '';
   isLoading: boolean = false;
 
@@ -25,8 +24,7 @@ export class ModalAddCollectionComponent implements OnInit {
     private message: TDSMessageService,
     private attachmentDataFacade: AttachmentDataFacade,
     private viewContainerRef: ViewContainerRef,
-    private modal: TDSModalService
-  ) { }
+    private modal: TDSModalService ) { }
 
   ngOnInit(): void {
   }
@@ -51,10 +49,6 @@ export class ModalAddCollectionComponent implements OnInit {
     };
   }
 
-  remove(url: string) {
-
-  }
-
   handleChange(info: TDSUploadChangeParam): void {
     if (info.file.status !== 'uploading') {
       console.log(info.file, info.fileList);
@@ -74,7 +68,6 @@ export class ModalAddCollectionComponent implements OnInit {
   onSave() {
     if(this.isCheckValue() === 1) {
       this.isLoading = true;
-
       let files = this.lstData.map(x => x.File);
 
       let attachments = this.lstData.filter(x => {

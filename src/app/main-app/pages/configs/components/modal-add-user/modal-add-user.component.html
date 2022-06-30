@@ -1,10 +1,10 @@
 <tds-spin [spinning]="isLoading">
-    <form [formGroup]="formAddUser" class="flex flex-col gap-y-6">
+    <form [formGroup]="_form" class="flex flex-col gap-y-6">
         <div class="flex gap-x-8 w-full items-center">
             <div>
                 <tds-upload [beforeUpload]="beforeUpload" [showUploadList]="false">
                   <tds-avatar [isAvatar]="false" class="bg-white text-white" [size]="108"
-                    tdsSrc="{{formAddUser?.value?.Avatar}}">
+                    tdsSrc="{{_form?.value?.Avatar}}">
                   </tds-avatar>
                 </tds-upload>
             </div>
@@ -32,7 +32,7 @@
                 <tds-label>Email</tds-label>
                 <input formControlName="Email" tdsInput autocomplete="off" [required]="true" placeholder="Nhập email" />
                 <tds-error>
-                  <span *ngIf="formAddUser.controls['Email'].errors?.emailExist; else emailEmpty">Email đã tồn tại</span>
+                  <span *ngIf="_form.controls['Email'].errors?.emailExist; else emailEmpty">Email đã tồn tại</span>
                   <ng-template #emailEmpty>
                     <span>Vui lòng nhập email</span>
                   </ng-template>
@@ -43,7 +43,7 @@
                 <input formControlName="UserName" [required]="true" tdsInput autocomplete="off"
                     placeholder="Nhập tên tài khoản" />
                 <tds-error>
-                  <span *ngIf="formAddUser.controls['UserName'].errors?.userExist; else userNameExist">Tên tài khoản đã tồn tại</span>
+                  <span *ngIf="_form.controls['UserName'].errors?.userExist; else userNameExist">Tên tài khoản đã tồn tại</span>
                   <ng-template #userNameExist>
                     <span>Vui lòng nhập tên tài khoản</span>
                   </ng-template>
@@ -60,7 +60,7 @@
                 <input formControlName="ConfirmPassword" [required]="true" type="password" tdsInput
                     placeholder="Nhập lại mật khẩu" autocomplete="off" />
                 <tds-error>
-                  <span *ngIf="formAddUser.controls['ConfirmPassword'].errors?.mustMatch; else mustMatch">Mật khẩu không khớp</span>
+                  <span *ngIf="_form.controls['ConfirmPassword'].errors?.mustMatch; else mustMatch">Mật khẩu không khớp</span>
                   <ng-template #mustMatch>
                     <span>Vui lòng nhập lại mật khẩu</span>
                   </ng-template>
@@ -75,7 +75,7 @@
         </div>
         <div class="w-full flex justify-end p-4" *tdsModalFooter>
             <button tds-button class="mr-2" color="secondary" (click)="cancel()">Hủy bỏ</button>
-            <button tds-button type="submit" color="primary" [disabled]="!formAddUser?.valid" (click)="onSave()">Lưu</button>
+            <button tds-button type="submit" color="primary" [disabled]="!_form?.valid" (click)="onSave()">Lưu</button>
         </div>
     </form>
 </tds-spin>

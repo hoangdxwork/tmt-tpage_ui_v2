@@ -68,8 +68,7 @@ export class ModalSendMessageAllComponent implements OnInit {
           this.cdr.markForCheck();
         }
       }, error => {
-        let message = JSON.parse(error.Message);
-        this.message.error(`${message.message}`);
+        this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
       });
   }
 

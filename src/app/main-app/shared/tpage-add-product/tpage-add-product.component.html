@@ -1,14 +1,11 @@
-<form class="flex flex-col"[formGroup]="formAddProduct" >
+<form class="flex flex-col" [formGroup]="_form" >
   <div class="w-full text-body-2 text-neutral-1-900">
     <div class="grid grid-cols-2 gap-x-8 gap-y-4">
         <div class="col-span-1 row-span-2 flex gap-x-6 items-center">
             <div class="px-4">
-                <!-- <tds-avatar class="rounded-lg" [shape]="'square'" [size]="84"
-                    tdsSrc="{{imageUrl}}">
-                </tds-avatar> -->
                 <tds-upload [beforeUpload]="beforeUpload" [showUploadList]="false">
                   <tds-avatar [isAvatar]="false" class="rounded-lg" [shape]="'square'" [size]="84"
-                    tdsSrc="{{ formAddProduct.controls['ImageUrl'].value }}">
+                    tdsSrc="{{ _form.controls['ImageUrl'].value }}">
                   </tds-avatar>
                 </tds-upload>
             </div>
@@ -142,8 +139,8 @@
     </div>
     <div class="w-full flex justify-end p-4" *tdsModalFooter>
         <button tds-button class="mr-4 w-[100px]" color="secondary" (click)="onCancel(null)">Đóng</button>
-        <button tds-button type="submit" class="w-[100px] mr-4" color="primary" (click)="onSave()" [disabled]="!formAddProduct?.valid">Lưu</button>
-        <button tds-button class="w-[120px]" color="info" (click)="onSave('select')" [disabled]="!formAddProduct?.valid">Lưu và chọn</button>
+        <button tds-button type="submit" class="w-[100px] mr-4" color="primary" (click)="onSave()" [disabled]="!_form?.valid">Lưu</button>
+        <button tds-button class="w-[120px]" color="info" (click)="onSave('select')" [disabled]="!_form?.valid">Lưu và chọn</button>
     </div>
   </div>
 </form>
