@@ -1,5 +1,4 @@
 import { RegisterPayment } from './../../../../dto/fastsaleorder/register-payment';
-import { FastSaleOrder_DefaultDTOV2 } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
 import { takeUntil } from 'rxjs/operators';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, Input, OnInit, ViewContainerRef, OnDestroy } from '@angular/core';
@@ -14,6 +13,7 @@ import { DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrie
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
+import { GetListOrderIdsDTO } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
 
 @Component({
   selector: 'create-bill-fast',
@@ -22,41 +22,20 @@ import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 
 export class CreateBillFastComponent implements OnInit, OnDestroy {
 
-  @Input() ids: string[] = [];
-  @Input() lstData!: TDSSafeAny[];
-
   _form!: FormGroup;
-  lstData!: FastSaleOrder_DefaultDTOV2[];
+  @Input() ids: string[] = [];
+  @Input() lstData!: GetListOrderIdsDTO[];
+
   lstPayment: { Id:number, Payment:RegisterPayment }[] = [];
+
   lstCarriers: Array<DeliveryCarrierDTO> = [];
   isLoading: boolean = false;
   private destroy$ = new Subject<void>();
 
-  numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null)
-    {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-    }
-    return value
-  } ;
-  parserComas = (value: TDSSafeAny) =>{
-    if(value != null)
-    {
-      return TDSHelperString.replaceAll(value,',','');
-    }
-    return value
-  };
-
-  private _destroy = new Subject<void>();
-
   isPrint: boolean = false;
   isPrintShip: boolean = false;
-  isLoading = false;
 
-  private destroy$ = new Subject<void>();
-
-  constructor(
-    private fb: FormBuilder,
+  constructor(private fb: FormBuilder,
     private message: TDSMessageService,
     private viewContainerRef: ViewContainerRef,
     private modal: TDSModalService,
@@ -82,8 +61,7 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
   }
 
   parserComas = (value: TDSSafeAny) =>{
-    if(value != null)
-    {
+    if(value != null){
       return TDSHelperString.replaceAll(value,',','');
     }
     return value
@@ -116,13 +94,18 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
     });
   }
 
-  onCheckPayment(data:FastSaleOrder_DefaultDTOV2){
+  checkEnabledPayment(data: GetListOrderIdsDTO){
+    return this.lstPayment.some((item)=> item.Id == data.Id);
+  }
+
+  onCheckPayment(data: GetListOrderIdsDTO){
     if(!this.checkEnabledPayment(data)){
+
       this.isLoading = true;
       let model = {
         ids: [data.Id]//Id:0 -> bug
       }
-  
+
       this.fastSaleOrderService.getRegisterPayment(model)
         .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
         .subscribe(
@@ -136,7 +119,7 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
             this.message.error(err.error.message ?? 'Có lỗi xảy ra. Không thể thanh toán cho hóa đơn này.');
           }
       )
-    }else{
+    } else {
       this.lstPayment = this.lstPayment.filter((item)=> item.Id != data.Id);
     }
   }
