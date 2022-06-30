@@ -69,8 +69,22 @@ export class EditOrderComponent implements OnInit {
   _wards!: SuggestWardsDTO;
   _street!: string;
 
-  numberWithCommas = (value: number) => `${value} đ`;
-  parserComas = (value: string) => value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  // numberWithCommas = (value: number) => `${value} đ`;
+  // parserComas = (value: string) => value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    }
+    return value
+  } ;
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,',','');
+    }
+    return value
+  };
 
   lstDeliveryCarrier!: Array<DeliveryCarrierDTO>;
   lstInventory!: GetInventoryDTO;
