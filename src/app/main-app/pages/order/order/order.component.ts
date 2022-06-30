@@ -31,6 +31,7 @@ import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message
 import { GenerateMessageTypeEnum } from 'src/app/main-app/dto/conversation/message.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
+import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 
 @Component({
   selector: 'app-order',
@@ -115,6 +116,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   isProcessing: boolean = false;
 
   constructor(private cdRef: ChangeDetectorRef,
+    private fastSaleOrderService: FastSaleOrderService,
     private tagService: TagService,
     private router: Router,
     private orderPrintService: OrderPrintService,
@@ -296,16 +298,24 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   onCreateBillFast() {
     if (this.checkValueEmpty() == 1) {
+      this.isLoading = true;
       let ids = [...this.setOfCheckedId];
-      this.modal.create({
-        title: 'Tạo hóa đơn nhanh',
-        content: CreateBillFastComponent,
-        centered: true,
-        size: 'xl',
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          ids: ids,
-        }
+      this.fastSaleOrderService.getListOrderIds({ids: ids})
+        .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
+          if(res) {
+              this.modal.create({
+                  title: 'Tạo hóa đơn nhanh',
+                  content: CreateBillFastComponent,
+                  centered: true,
+                  size: 'xl',
+                  viewContainerRef: this.viewContainerRef,
+                  componentParams: {
+                    lstData: [...res.value]
+                  }
+              });
+          }
+      }, error => {
+          this.message.error(error?.error?.message ? error?.error?.message : 'Đã xảy ra lỗi');
       });
     }
   }
@@ -580,21 +590,18 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   // Gủi tin nhắn FB
-
   sendMessage(orderMessage?: TDSSafeAny) {
     if (this.checkValueEmpty() == 1 || orderMessage) {
-      let orderIds = this.lstOfData.filter((a: any) => this.idsModel.includes(a.Id)).map((x: any) => x.Id);
       this.modal.create({
         title: 'Gửi tin nhắn nhanh',
         content: SendMessageComponent,
         size: 'lg',
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          // listData: listData
           orderIds: orderMessage? [orderMessage.Id] : [...this.setOfCheckedId],
           messageType: GenerateMessageTypeEnum.Order
         }
-      });
+      })
     }else{
       this.message.error(Message.SelectOneLine);
     }

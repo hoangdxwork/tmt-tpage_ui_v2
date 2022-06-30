@@ -4,13 +4,12 @@ import { Component, Input, OnInit, ViewContainerRef, OnDestroy } from '@angular/
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { CreateBillFastErrorComponent } from '../create-bill-fast-error/create-bill-fast-error.component';
-import { EditOrderComponent } from '../edit-order/edit-order.component';
 import { UpdateInfoPartnerComponent } from '../update-info-partner/update-info-partner.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { Subject } from 'rxjs';
+import { Subject, finalize } from 'rxjs';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
-import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 
@@ -18,21 +17,45 @@ import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
   selector: 'create-bill-fast',
   templateUrl: './create-bill-fast.component.html'
 })
+
 export class CreateBillFastComponent implements OnInit, OnDestroy {
 
   @Input() ids: string[] = [];
+  @Input() lstData!: TDSSafeAny[];
 
   formCreateBillFast!: FormGroup;
-  lstData!: TDSSafeAny[];
   lstCarriers: Array<DeliveryCarrierDTO> = [];
+  isLoading: boolean = false;
+  private destroy$ = new Subject<void>();
+
+  isPrint: boolean = false;
+  isPrintShip: boolean = false;
+
+  constructor(private fb: FormBuilder,
+    private message: TDSMessageService,
+    private viewContainerRef: ViewContainerRef,
+    private modal: TDSModalService,
+    private modalRef: TDSModalRef,
+    private fastSaleOrderService: FastSaleOrderService,
+    private carrierService: DeliveryCarrierService,
+    private printerService: PrinterService) {
+      this.createForm();
+  }
+
+  ngOnInit(): void {
+    if(TDSHelperArray.hasListValue(this.lstData)) {
+      this.loadCarrier();
+      this.updateAmountTotal(this.lstData);
+    }
+  }
 
   numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null)
-    {
+    if(value != null){
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     }
-    return value
-  } ;
+    return value;
+  }
+
   parserComas = (value: TDSSafeAny) =>{
     if(value != null)
     {
@@ -41,45 +64,9 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
     return value
   };
 
-  private _destroy = new Subject<void>();
-
-  isPrint: boolean = false;
-  isPrintShip: boolean = false;
-
-  constructor(
-    private fb: FormBuilder,
-    private message: TDSMessageService,
-    private viewContainerRef: ViewContainerRef,
-    private modal: TDSModalService,
-    private modalRef: TDSModalRef,
-    private fastSaleOrderService: FastSaleOrderService,
-    private carrierService: DeliveryCarrierService,
-    private printerService: PrinterService
-  ) { }
-
-  ngOnInit(): void {
-    this.createForm();
-
-    this.loadCarrier();
-
-    this.loadData();
-  }
-
-  loadData() {
-    this.fastSaleOrderService.getListOrderIds({ids:this.ids}).subscribe(res => {
-      this.lstData = res.value;
-      this.updateAmountTotal(this.lstData);
-      console.log(this.lstData);
-    }, error => {
-      if(error?.error?.message) {
-        this.message.error(error?.error?.message);
-      }
-    });
-  }
-
   loadCarrier() {
-    this.carrierService.get().subscribe((res: any) => {
-      this.lstCarriers = res.value;
+    this.carrierService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.lstCarriers = [...res.value];
     });
   }
 
@@ -105,7 +92,6 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
   }
 
   onSave(confirm?: string) {
-
     if(!this.lstData || this.lstData.length === 0) {
       this.message.error(Message.EmptyData);
       return;
@@ -165,7 +151,7 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
       }
 
       if (TDSHelperObject.hasValue(obs)) {
-        obs.pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+        obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
             this.printerService.printHtml(res);
             this.onCancel();
         }, (error: TDSSafeAny) => {
@@ -188,7 +174,6 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
         item.ShipWeight = carrier.Config_DefaultWeight || 100;
       });
     }
-
   }
 
   onRemoveLine(index: number) {
@@ -235,7 +220,6 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
         this.lstData[index].Partner["City"] = result.City;
         this.lstData[index].Partner["CityCode"] = result?.City?.code ? result.City.code : null;
         this.lstData[index].Partner["CityName"] = result?.City?.name ? result.City.name : null;
-
       }
     });
   }
@@ -289,8 +273,8 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._destroy.next();
-    this._destroy.complete();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

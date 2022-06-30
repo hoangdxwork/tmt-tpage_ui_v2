@@ -19,9 +19,9 @@ export class MailTemplateService extends BaseSevice {
     super(apiService)
   }
 
-  getFilter(filter: string): Observable<TDSSafeAny> {
+  get(): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}?filter=${filter}${OperatorEnum.eq}true`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}?filter=Active%20eq%20true`,
       method: TApiMethodType.get
     }
 
@@ -29,8 +29,8 @@ export class MailTemplateService extends BaseSevice {
   }
 
   insert(data: MailTemplateUpdateDTO, filter?: string): Observable<any> {
-
     let paramFilter = ""
+
     if(TDSHelperString.hasValueString(filter)) {
       paramFilter = `?filter=${filter}${OperatorEnum.eq}true`;
     }

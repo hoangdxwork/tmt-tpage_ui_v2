@@ -1,14 +1,13 @@
 import { FastSaleOrderService } from './../../services/fast-sale-order.service';
-import { finalize } from 'rxjs/operators';
-import { Observable, Subject, takeUntil } from 'rxjs';
-import { Component, Input, OnInit } from '@angular/core';
+import { finalize, map, switchMap } from 'rxjs/operators';
+import { fromEvent, Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { format } from 'date-fns';
 import { Message } from 'src/app/lib/consts/message.const';
-import { GenerateMessageDTO, GenerateMessageFromDTO } from '../../dto/conversation/inner.dto';
+import { GenerateMessageDTO } from '../../dto/conversation/inner.dto';
 import { GenerateMessageTypeEnum, SendCRMActivityCampaignDTO } from '../../dto/conversation/message.dto';
-import { MailTemplateDTO, MailTemplateUpdateDTO } from '../../dto/mailtemplate/mail-template.dto';
+import { MailTemplateUpdateDTO } from '../../dto/mailtemplate/mail-template.dto';
 import { CRMActivityCampaignService } from '../../services/crm-activity-campaign.service';
 import { CRMTeamService } from '../../services/crm-team.service';
 import { MailTemplateService } from '../../services/mail-template.service';
@@ -25,16 +24,17 @@ export enum Tabs {
 
 @Component({
   selector: 'app-send-message',
-  templateUrl: './send-message.component.html'
+  templateUrl: './send-message.component.html',
 })
-export class SendMessageComponent implements OnInit {
+
+export class SendMessageComponent implements OnInit, AfterViewInit {
 
   @Input() messageType: GenerateMessageTypeEnum = GenerateMessageTypeEnum.Default;
   @Input() orderIds: string[] = [];
   @Input() selectedUsers: any;
 
   lstMessage: Array<TDSSafeAny> = [];
-
+  messages: Array<TDSSafeAny> = [];
   messageContent: TDSSafeAny[] = [];
   messageSelect: TDSSafeAny;
   messagePreview: string = '...';
@@ -45,22 +45,21 @@ export class SendMessageComponent implements OnInit {
   formAddTemplate!: FormGroup;
   readonly typeId: string = "Messenger";
 
+  @ViewChild('innerText') innerText!: ElementRef;
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private fb: FormBuilder,
+  constructor( private fb: FormBuilder,
     private mailTemplateService: MailTemplateService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private crmActivityCampaignService: CRMActivityCampaignService,
     private fastSaleOrderService: FastSaleOrderService,
     private modal: TDSModalRef,
     private crmTeamService: CRMTeamService,
-    private message: TDSMessageService,
-  ) {
+    private message: TDSMessageService) {
+      this.createForm();
   }
 
   ngOnInit(): void {
-    this.createForm();
     this.loadData();
 
     this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
@@ -75,19 +74,38 @@ export class SendMessageComponent implements OnInit {
   createForm() {
     this.formAddTemplate = this.fb.group({
       Name: ["", Validators.required],
-      BodyPlain: [""],
+      BodyPlain: ["", Validators.required]
     });
   }
 
   loadData() {
-    this.mailTemplateService.getFilter('Active').pipe(takeUntil(this.destroy$))
-    .subscribe(res => {
-      this.lstMessage = [...res.value];
+    this.isLoading = true;
+    this.mailTemplateService.get().pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+      .subscribe(res => {
+          this.lstMessage = [...res.value];
+          this.messages = [...res.value];
+    }, error => {
+      this.message.error(`${error?.error?.message}`);
     });
   }
 
-  onSearch(event: TDSSafeAny) {
+  ngAfterViewInit(): void {
+      fromEvent(this.innerText.nativeElement, 'keyup').pipe(
+        map((event: any) => { return event.target.value }),
+        debounceTime(750), distinctUntilChanged())
+        .subscribe((text: any) => {
+          if(!TDSHelperString.hasValueString(text)) {
+              this.lstMessage = this.messages;
+          } else {
+            text = TDSHelperString.stripSpecialChars(text.trim());
 
+            let data = this.messages.filter((x: any) =>
+            (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(text.toLowerCase())) !== -1) ||
+            (x.BodyPlain && TDSHelperString.stripSpecialChars(x.BodyPlain.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(text.toLowerCase())) !== -1));
+
+            this.lstMessage =  [...data];
+          }
+      });
   }
 
   onAddTemplate() {
@@ -102,33 +120,35 @@ export class SendMessageComponent implements OnInit {
     this.isLoading = true;
     this.currentTab = Tabs.Send;
     this.messageSelect = item;
+
     let model: GenerateMessageDTO = {
       Template: this.messageSelect,
     };
 
     if(this.messageType == GenerateMessageTypeEnum.Order) {
       model.OrderIds = this.orderIds;
-
       this.saleOnline_OrderService.previewMessages(model).pipe(takeUntil(this.destroy$))
-      .pipe(finalize(()=>{this.isLoading = false}))
-      .subscribe((res: TDSSafeAny) => {
-        this.messageContent = res;
-      });
+        .pipe(finalize(()=>{this.isLoading = false}))
+        .subscribe((res: TDSSafeAny) => {
+          this.messageContent = res;
+        });
     }
+
     if(this.messageType == GenerateMessageTypeEnum.Bill){
-      model.SaleIds = this.selectedUsers
+      model.SaleIds = this.selectedUsers;
       model.model = {
         SaleIds: model.SaleIds,
         Template: this.messageSelect
       }
-      delete model.SaleIds
-      delete model.Template
+
+      delete model.SaleIds;
+      delete model.Template;
+
       this.fastSaleOrderService.generateMessages(model).pipe(takeUntil(this.destroy$))
-      .pipe(finalize(()=>{this.isLoading = false}))
-      .subscribe((res) => {
-        this.messageContent = res.value;
-    }, error => {
-    });
+        .pipe(finalize(()=>{this.isLoading = false})) .subscribe((res) => {
+          this.messageContent = res.value;
+        }, error => {
+      });
     }
   }
 
@@ -157,25 +177,26 @@ export class SendMessageComponent implements OnInit {
       Note: stringDate,
       MailTemplateId: this.messageSelect.Id,
     };
+
     if(this.messageType == GenerateMessageTypeEnum.Order){
       this.crmActivityCampaignService.saveOrderCampaign(JSON.stringify(model)).pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
-        this.message.info('Tin nhắn đã vào hàng đợi để gửi.');
-        this.onCancel();
-      },err=>{
-        this.message.error(err.error? err.error.message:'Gửi tin nhắn thất bại')
-      });
-    }
-    if(this.messageType == GenerateMessageTypeEnum.Bill){
-      this.crmActivityCampaignService.saveBillCampaign(JSON.stringify(model)).pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-        this.message.info('Tin nhắn đã vào hàng đợi để gửi.');
-        this.onCancel();
-      },err=>{
-        this.message.error(err.error? err.error.message:'Gửi tin nhắn thất bại')
+          this.message.info('Tin nhắn đã vào hàng đợi để gửi');
+          this.onCancel();
+      },err => {
+          this.message.error(err.error? err.error.message : 'Gửi tin nhắn thất bại')
       });
     }
 
+    if(this.messageType == GenerateMessageTypeEnum.Bill){
+      this.crmActivityCampaignService.saveBillCampaign(JSON.stringify(model)).pipe(takeUntil(this.destroy$))
+        .subscribe((res: any) => {
+          this.message.info('Tin nhắn đã vào hàng đợi để gửi');
+          this.onCancel();
+        },err=>{
+          this.message.error(err.error? err.error.message:'Gửi tin nhắn thất bại')
+      });
+    }
   }
 
   onSave(type?: string) {
@@ -204,7 +225,6 @@ export class SendMessageComponent implements OnInit {
       else {
         this.onMessage(res);
       }
-
     });
   }
 
@@ -220,7 +240,7 @@ export class SendMessageComponent implements OnInit {
   onCancel() {
     this.modal.destroy(null);
   }
-  
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
