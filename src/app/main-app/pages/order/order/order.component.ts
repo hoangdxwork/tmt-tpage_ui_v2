@@ -1,4 +1,3 @@
-import { TemplateRef } from '@angular/core';
 import { ConversationMatchingItem } from './../../../dto/conversation-all/conversation-all.dto';
 import { MDBByPSIdDTO } from './../../../dto/crm-matching/mdb-by-psid.dto';
 import { CRMMatchingService } from './../../../services/crm-matching.service';
@@ -33,12 +32,15 @@ import { GenerateMessageTypeEnum } from 'src/app/main-app/dto/conversation/messa
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
+import { GetListOrderIdsDTO } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
+
 
 @Component({
   selector: 'app-order',
-  templateUrl: './order.component.html',
+  templateUrl: './order.component.html'
 })
 export class OrderComponent implements OnInit, OnDestroy {
+
   @ViewChild('innerText') innerText!: ElementRef;
 
   lstOfData: Array<TDSSafeAny> = [];
@@ -300,6 +302,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     if (this.checkValueEmpty() == 1) {
       this.isLoading = true;
       let ids = [...this.setOfCheckedId];
+
       this.fastSaleOrderService.getListOrderIds({ids: ids})
         .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
           if(res) {
@@ -310,15 +313,13 @@ export class OrderComponent implements OnInit, OnDestroy {
                   size: 'xl',
                   viewContainerRef: this.viewContainerRef,
                   componentParams: {
-                    lstData: [...res.value]
+                    lstData: [...res.value] as GetListOrderIdsDTO[]
                   }
               });
           }
       }, error => {
           this.message.error(error?.error?.message ? error?.error?.message : 'Đã xảy ra lỗi');
       });
-    } else {
-      this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
     }
   }
 
@@ -335,16 +336,12 @@ export class OrderComponent implements OnInit, OnDestroy {
           ids: ids,
         }
       });
-    } else {
-      this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
     }
   }
 
   onUrlCreateInvoiceFast() {
     if (this.checkValueEmpty() == 1) {
       this.router.navigateByUrl(`bill/create`);
-    } else {
-      this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
     }
   }
 
@@ -414,7 +411,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   getColorStatusText(status: string): TDSTagStatusType {
-    let value = this.lstStatusTypeExt?.filter(x => x.Text === status)[0]?.Text;
+    let value = this.lstStatusTypeExt.filter(x => x.Text === status)[0]?.Text;
     switch (value) {
       case "Đơn hàng":
         return "primary";
