@@ -149,4 +149,13 @@ export class CommonService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
+  getHistoryMessageSent(params?: any): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/gethistorymessagesentsaleonlinedetail`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, params);
+}
+
 }

@@ -1,3 +1,4 @@
+import { DirectivesModule } from './../../shared/directives/directives.module';
 import { AttachmentState } from './../../services/facebook-state/attachment.state';
 import { AttachmentService } from '../../services/attachment.service';
 import { AttachmentDataFacade } from './../../services/facades/attachment-data.facade';
@@ -67,6 +68,7 @@ import { TDSModalModule } from 'tds-ui/modal';
 import { TDSCollapseModule } from 'tds-ui/collapse';
 import { OrderPrintService } from '../../services/print/order-print.service';
 import { ExpandOrderDetailComponent } from './components/expand-order/expand-order-detail.component';
+import { ModalHistoryChatComponent } from './components/modal-history-chat/modal-history-chat.component';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -112,6 +114,7 @@ const SERVICES = [
     ExpandOrderDetailComponent,
     InfoPartnerComponent,
     UpdateInfoPartnerComponent,
+    ModalHistoryChatComponent,
   ],
   imports: [
     CommonModule,
@@ -141,7 +144,8 @@ const SERVICES = [
     TDSToolTipModule,
     TDSDrawerModule,
     UploadImageModule,
-    TDSConversationsModule
+    TDSConversationsModule,
+    DirectivesModule
   ],
   providers: [
     ...SERVICES,

@@ -5,8 +5,8 @@ import { Input, Component, Output, EventEmitter, ViewChild, ElementRef, OnInit }
   selector: '[showMore]',
   template: `<div class="whitespace-normal">
                 <span class="mr-1" [innerHTML]="this.isShowmore ? text : text | slice:0:length"></span>
-                <a class="text-accent-9" *ngIf="!isShowmore && text && text.length > length" (click)="showContent($event)">Xem thêm</a>
-                <a *ngIf="isShowmore" class="text-accent-9" (click)="showContent($event)">Thu gọn</a>
+                <a class="text-accent-9 cursor-pointer" *ngIf="!isShowmore && text && text.length > length" (click)="showContent($event)">Xem thêm</a>
+                <a *ngIf="isShowmore" class="text-accent-9 cursor-pointer" (click)="showContent($event)">Thu gọn</a>
             </div>`,
 })
 export class ShowMoreDirective implements OnInit {
