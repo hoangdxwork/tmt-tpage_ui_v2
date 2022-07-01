@@ -20,7 +20,7 @@ export class InfoPackOfDataComponent implements OnInit, OnChanges {
   chartComponent: TDSBarChartComponent = {
     legend: {
       show: true,
-      right: -150,
+      right: 0,
       top: 'middle',
       orient: 'vertical',
       icon: 'circle',
@@ -86,7 +86,7 @@ export class InfoPackOfDataComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.options = this.chartOptions.BarChartOption(this.chartComponent); //khởi tạo option bar chart cơ bản
+    this.options = this.chartOptions.BarChartOption(this.chartComponent, true); //khởi tạo option bar chart cơ bản
   }
 
   uploadChart(used: TenantUsedDTO) {
