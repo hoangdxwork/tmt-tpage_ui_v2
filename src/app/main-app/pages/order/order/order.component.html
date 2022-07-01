@@ -195,8 +195,8 @@
                       </div>
                     </div>
                     <div class="font-z14" *ngIf="data.MessageCount > 0">
-                      <div title="Tin nhắn đã gửi"
-                        class="hover:text-info-400 text-neutral-1-400 gap-x-1 flex items-center">
+                      <div title="Tin nhắn đã gửi" (click)="showModalHistoryChat(data.Id)"
+                        class="hover:text-info-400 text-neutral-1-400 cursor-pointer gap-x-1 flex items-center">
                         <i class="tdsi-messenger-fill text-base"></i>
                         <span>{{data.MessageCount}}</span>
                       </div>

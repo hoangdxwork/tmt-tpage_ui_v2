@@ -1,3 +1,4 @@
+import { ModalHistoryChatComponent } from './../components/modal-history-chat/modal-history-chat.component';
 import { ConversationMatchingItem } from './../../../dto/conversation-all/conversation-all.dto';
 import { MDBByPSIdDTO } from './../../../dto/crm-matching/mdb-by-psid.dto';
 import { CRMMatchingService } from './../../../services/crm-matching.service';
@@ -5,7 +6,7 @@ import { CRMTeamService } from './../../../services/crm-team.service';
 import { PartnerService } from './../../../services/partner.service';
 import { addDays } from 'date-fns/esm';
 import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { SaleOnlineOrderSummaryStatusDTO, SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
+import { SaleOnlineOrderSummaryStatusDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { ColumnTableDTO } from 'src/app/main-app/dto/common/table.dto';
 import { SortEnum, THelperCacheService } from 'src/app/lib';
@@ -134,7 +135,8 @@ export class OrderComponent implements OnInit, OnDestroy {
     private commonService: CommonService,
     private partnerService: PartnerService,
     private crmTeamService: CRMTeamService,
-    private crmMatchingService: CRMMatchingService) { }
+    private crmMatchingService: CRMMatchingService,
+    private modalService: TDSModalService) { }
 
   ngOnInit(): void {
     this.loadTags();
@@ -410,6 +412,23 @@ export class OrderComponent implements OnInit, OnDestroy {
         this.indClickTag = "";
         this.message.error(`${error?.error?.message}` || Message.Tag.InsertFail);
       });
+  }
+
+  showModalHistoryChat(orderId:string){
+    const modal = this.modalService.create({
+      title: 'Lịch sử gửi tin nhắn',
+      content: ModalHistoryChatComponent,
+      size: "xl",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        orderId: orderId,
+        type: "order"
+    }
+    });
+    modal.afterClose.subscribe(result => {
+      if (TDSHelperObject.hasValue(result)) {
+      }
+    });
   }
 
   getColorStatusText(status: string): TDSTagStatusType {
