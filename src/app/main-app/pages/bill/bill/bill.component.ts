@@ -26,6 +26,8 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { ConfigDataFacade } from 'src/app/main-app/services/facades/config-data.facade';
 import { StringHelperV2 } from 'src/app/main-app/shared/helper/string.helper';
+import { DeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto';
+import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 
 @Component({
   selector: 'app-bill',
@@ -52,6 +54,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   psid: any;
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;
+  lstCarriers!: Observable<DeliveryCarrierDTOV2[]>;
 
   public filterObj: TDSSafeAny = {
     tags: [],
@@ -133,6 +136,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       private partnerService: PartnerService,
       private crmTeamService: CRMTeamService,
       private cd: ChangeDetectorRef,
+      private deliveryCarrierService: DeliveryCarrierService,
       private crmMatchingService: CRMMatchingService) {
   }
 
@@ -150,6 +154,11 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         this.loadData(this.pageSize, this.pageIndex);
       }
     })
+    this.lstCarriers = this.loadCarrier();
+  }
+
+  loadCarrier() {
+    return this.deliveryCarrierService.get().pipe(map(res => res.value));
   }
 
   loadGridConfig() {
