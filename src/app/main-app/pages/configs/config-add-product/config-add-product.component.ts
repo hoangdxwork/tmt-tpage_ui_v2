@@ -1,7 +1,8 @@
+import { CreateVariantsModalComponent } from '../components/create-variants-modal/create-variants-modal.component';
 import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
 import { ConfigImage, ConfigCateg, ConfigUOMPO, ConfigUOM, ConfigAttributeLine, ConfigSuggestVariants } from './../../../dto/configs/product/config-product-default.dto';
 import { ConfigUOMTypeDTO, ConfigOriginCountryDTO } from './../../../dto/configs/product/config-UOM-type.dto';
-import { ConfigProductVariant, ConfigAttributeValue } from '../../../dto/configs/product/config-product-default.dto';
+import { ConfigProductVariant } from '../../../dto/configs/product/config-product-default.dto';
 import { ConfigAddAttributeProductModalComponent } from './../components/config-add-attribute-product-modal/config-add-attribute-product-modal.component';
 import { ConfigAddCategoryModalComponent } from './../components/config-add-category-modal/config-add-category-modal.component';
 import { ProductTemplateOUMLineService } from './../../../services/product-template-uom-line.service';
@@ -16,7 +17,7 @@ import { FormGroup, Validators, FormBuilder, FormArray } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ConfigProductDefaultDTO } from 'src/app/main-app/dto/configs/product/config-product-default.dto';
 import { ActivatedRoute } from '@angular/router';
-import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperObject, TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 
@@ -26,7 +27,6 @@ import { TDSMessageService } from 'tds-ui/message';
 })
 export class ConfigAddProductComponent implements OnInit, OnDestroy {
   _form!: FormGroup;
-
   productTypeList:Array<TDSSafeAny>  = [];
   categoryList:Array<ConfigCateg>  = [];
   UOMPOList:Array<ConfigUOMPO>  = [];
@@ -37,19 +37,30 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   importerList:Array<ConfigUOMTypeDTO> = [];
   distributorList:Array<ConfigUOMTypeDTO> = [];
   originCountryList:Array<ConfigOriginCountryDTO> = [];
-  attributeValuesList:Array<ConfigAttributeValue> = [];
   lstAttributes:Array<ConfigAttributeLine> = [];
   lstVariants:Array<ConfigProductVariant> = [];
   lsImages:Array<ConfigImage> = [];
-
-  private destroy$ = new Subject<void>();
-
   dataModel!: ConfigProductDefaultDTO;
-
   isLoading = false;
   isLoadingVariant = false;
   isLoadingAttribute = false;
   id: TDSSafeAny;
+
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null){
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    return value
+  };
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,',','');
+    }
+    return value
+  };
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private modalService: TDSModalService,
@@ -88,7 +99,6 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       POSCateg: [null],//TODO: nhóm pos
       Producer: [null],
       ProductVariants: this.fb.array([]),
-      PurchaseMethod: ['receive'], //TODO: trên số lượng nhận hàng,  purchase-trên số lượng đặt hàng
       PurchaseOK: [true],
       SaleOK: [true],
       Specifications: [null],
@@ -118,20 +128,20 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     this.loadTrackingList();
     this.loadUOMAddType();
     this.loadOriginCountry();
-    this.loadAttributeValues();
   }
 
   loadData(id :TDSSafeAny) {
     this.isLoading = true;
     this.configDataService.onLoading$.emit(this.isLoading);
+
     this.productTemplateService.getProductTemplateById(id).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
       .subscribe((res :TDSSafeAny) => {
           delete res['@odata.context'];
           if (res.ImageUrl) {
             this._form.controls['ImageUrl'].setValue(res.ImageUrl);
           }
-          this.dataModel = res;
-          this.formatProperty(res);
+          this.dataModel = {...res};
+          this.formatProperty(this.dataModel);
           this.configDataService.onLoading$.emit(false);
     }, error => {
       this.message.error('Không thể tải dữ liệu');
@@ -143,7 +153,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     this.productTemplateService.getDefault().pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
       .subscribe((res:TDSSafeAny) => {
         delete res['@odata.context'];
-        this.dataModel = res;
+        this.dataModel = {...res};
         this.formatProperty(res);
         this.configDataService.onLoading$.emit(false);
       }, error => {
@@ -181,7 +191,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   loadProductCategory(){
     this.productService.getProductCategory().pipe(takeUntil(this.destroy$)).subscribe(
       (res:TDSSafeAny)=>{
-        this.categoryList = res.value;
+        this.categoryList = [...res.value];
       }, error=>{
         this.message.error('không thể tải dữ liệu nhóm sản phẩm');
       }
@@ -191,7 +201,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   loadProductUOM(){
     this.productTemplateService.getProductUOM().pipe(takeUntil(this.destroy$)).subscribe(
       (res:TDSSafeAny)=>{
-        this.UOMPOList = res.value;
+        this.UOMPOList = [...res.value];
       },
       error=>{
         this.message.error('Không thể tải dữ liệu UOMPO');
@@ -202,7 +212,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   loadUOMs(){
     this.productTemplateOUMLine.getOUMs().pipe(takeUntil(this.destroy$)).subscribe(
       (res:TDSSafeAny)=>{
-        this.UOMList = res.value;
+        this.UOMList = [...res.value];
       },
       err=>{
         this.message.error('Không thể tải dữ liệu UOM');
@@ -213,7 +223,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   loadPOSCategory(){
     this.productTemplateService.getPOSCategory().pipe(takeUntil(this.destroy$)).subscribe(
       (res:TDSSafeAny)=>{
-        this.POSCategoryList = res.value;
+        this.POSCategoryList = [...res.value];
       },
       err=>{
         this.message.error('Không thể tải dữ liệu nhóm POS');
@@ -231,7 +241,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   loadOriginCountry(){
     this.productTemplateService.getOriginCountry().pipe(takeUntil(this.destroy$)).subscribe(
       (res:TDSSafeAny)=>{
-        this.originCountryList = res.value;
+        this.originCountryList = [...res.value];
       },
       err=>{
         this.message.error('Không thể tải dữ liệu origin country');
@@ -249,17 +259,6 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     );
   }
 
-  loadAttributeValues(){
-    this.productTemplateService.getProductAttributeValue().pipe(takeUntil(this.destroy$)).subscribe(
-      (res:TDSSafeAny)=>{
-        this.attributeValuesList = res.value;
-      },
-      err=>{
-        this.message.error(err.error.message??'Tải dữ liệu biến thể thất bại');
-      }
-    )
-  }
-
   showCreateAttributeModal(){
     let productName = this._form.controls.Name.value;
     if(productName){
@@ -275,7 +274,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
           this.lstAttributes = result;
           let model = <ConfigSuggestVariants> <unknown> this.prepareModel();
           model.AttributeLines = result;
-          this.productTemplateService.suggestVariants({"model":model}).pipe(takeUntil(this.destroy$)).subscribe(
+          this.productTemplateService.suggestVariants({model: model}).pipe(takeUntil(this.destroy$)).subscribe(
             (res)=>{
               this.lstVariants = res.value;
               this.dataModel.ProductVariants = this.lstVariants;
@@ -288,6 +287,78 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       });
     }else{
       this.message.error('Vui lòng nhập tên sản phẩm');
+    }
+  }
+
+  showCreateVariantsModal(){
+    if(this.lstAttributes?.length > 0){
+      let formModel = this._form.value;
+      let suggestModel = <ConfigSuggestVariants> <unknown> this.prepareModel();
+      
+      if(formModel.Name){
+        const modal = this.modalService.create({
+          title: 'Thêm biến thể sản phẩm',
+          content: CreateVariantsModalComponent,
+          size: "lg",
+          viewContainerRef: this.viewContainerRef,
+          componentParams:{
+            attributeLines: this.lstAttributes,
+            productTypeList: this.productTypeList,
+            suggestModel: suggestModel,
+            defaultModel: {
+              Name: formModel.Name,
+              Type: formModel.Type,
+              DefaultCode: formModel.DefaultCode,
+              Barcode: formModel.Barcode
+            }
+          }
+        });
+
+        modal.afterClose.subscribe((result:ConfigProductVariant) => {
+          if (TDSHelperObject.hasValue(result)) {
+            this.lstVariants.push(result);
+            this.lstVariants = [...this.lstVariants];
+          }
+        });
+      }else{
+        this.message.error('Vui lòng nhập tên sản phẩm');
+      }
+    }
+  }
+
+  showEditVariantsModal(data:ConfigProductVariant){
+    if(this.lstAttributes?.length > 0){
+      let formModel = this._form.value;
+      let suggestModel = <ConfigSuggestVariants> <unknown> this.prepareModel();
+
+      if(formModel.Name){
+        const modal = this.modalService.create({
+          title: 'Sửa biến thể sản phẩm',
+          content: CreateVariantsModalComponent,
+          size: "lg",
+          viewContainerRef: this.viewContainerRef,
+          componentParams:{
+            attributeLines: this.lstAttributes,
+            productTypeList: this.productTypeList,
+            suggestModel: suggestModel,
+            editModel: data
+          }
+        });
+
+        modal.afterClose.subscribe((result:ConfigProductVariant) => {
+          if (TDSHelperObject.hasValue(result)) {
+            this.lstVariants.forEach((item,i)=>{
+              //TODO: do Id luôn = 0 nên không thể xét theo Id
+              if(item.NameGet == result.NameGet && item.PriceVariant == result.PriceVariant){
+                this.lstVariants[i] = result;
+              }
+            })
+            this.lstVariants = [...this.lstVariants];
+          }
+        });
+      }else{
+        this.message.error('Vui lòng nhập tên sản phẩm');
+      }
     }
   }
 
@@ -415,14 +486,13 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
 
   addProduct(){
     let model = this.prepareModel();
-    console.log(model)
+   
     if(model.Name){
       this.productTemplateService.insertProductTemplate(model).subscribe(
         (res:TDSSafeAny)=>{
           this.message.success('Thêm mới thành công');
           this.createForm();
           history.back();
-          console.log(res)
         },
         err=>{
           this.message.error(err.error.errors.model[0]??'Thao tác thất bại');
@@ -435,14 +505,14 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     let model = this.prepareModel();
 
     if(model.Name){
-      this.productTemplateService.updateProductTemplate(model).subscribe(
+      this.productTemplateService.updateProductTemplate(model).pipe(takeUntil(this.destroy$)).subscribe(
         (res:TDSSafeAny)=>{
           this.message.success('Cập nhật thành công');
           this.createForm();
           history.back();
         },
         err=>{
-          this.message.error(err.error.message??'Thao tác thất bại');
+          this.message.error(err.error.message || 'Thao tác thất bại');
         }
       );
     }
@@ -472,7 +542,6 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     this.dataModel.DiscountSale = formModel.DiscountSale ? formModel.DiscountSale : this.dataModel.DiscountSale;
     this.dataModel.PurchasePrice = formModel.PurchasePrice ? formModel.PurchasePrice : this.dataModel.PurchasePrice;
     this.dataModel.DiscountPurchase = formModel.DiscountPurchase ? formModel.DiscountPurchase : this.dataModel.DiscountPurchase;
-    this.dataModel.PurchaseMethod = formModel.PurchaseMethod ? formModel.PurchaseMethod : this.dataModel.PurchaseMethod;
     this.dataModel.Tracking = formModel.Tracking ? formModel.Tracking : this.dataModel.Tracking;
     this.dataModel.Weight = formModel.Weight ? formModel.Weight : this.dataModel.Weight;
     this.dataModel.Volume = formModel.Volume ? formModel.Volume : this.dataModel.Volume;
@@ -483,6 +552,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     this.dataModel.Specifications = formModel.Specifications ? formModel.Specifications : this.dataModel.Specifications;
     this.dataModel.InfoWarning = formModel.InfoWarning ? formModel.InfoWarning : this.dataModel.InfoWarning;
     this.dataModel.Description = formModel.Description ? formModel.Description : this.dataModel.Description;
+
     if(formModel.Categ) {
         this.dataModel.Categ = formModel.Categ;
         this.dataModel.CategId = formModel.Categ.Id;
@@ -579,9 +649,9 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       if(this.dataModel) {
         this.addProduct();
       } else {
-        this.productTemplateService.getDefault().subscribe((res: TDSSafeAny) => {
+        this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
           delete res['@odata.context'];
-          this.dataModel = res;
+          this.dataModel = {...res};
           this.addProduct();
         });
       }
@@ -592,5 +662,4 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
 }
