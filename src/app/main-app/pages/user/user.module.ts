@@ -1,3 +1,4 @@
+import { TDSModalModule } from 'tds-ui/modal';
 import { InfoUserComponent } from './components/info-user/info-user.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
@@ -26,6 +27,8 @@ import { TDSCardModule } from 'tds-ui/card';
 import { TDSPopoverModule } from 'tds-ui/popover';
 import { TDSTabsModule } from 'tds-ui/tabs';
 import { TDSSelectModule } from 'tds-ui/select';
+import { ModalEditInfoUserComponent } from './components/modal-edit-info-user/modal-edit-info-user.component';
+import { ModalChangePasswordComponent } from './components/modal-change-password/modal-change-password.component';
 
 const SERVICES = [
   TenantService
@@ -42,7 +45,9 @@ const SERVICES = [
     ExtendPackOfDataComponent,
     InfoPaymentPackOfDataComponent,
     NotificationListComponent,
-    NotificationDetailComponent
+    NotificationDetailComponent,
+    ModalEditInfoUserComponent,
+    ModalChangePasswordComponent
   ],
   imports: [
     CommonModule,
@@ -62,7 +67,8 @@ const SERVICES = [
     TDSSelectModule,
     TDSPopoverModule,
     TDSTabsModule,
-    PipeModule
+    PipeModule,
+    TDSModalModule
   ],
   providers: [
     ...SERVICES
