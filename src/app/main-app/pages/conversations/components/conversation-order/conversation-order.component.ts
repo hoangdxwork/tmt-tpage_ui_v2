@@ -13,7 +13,6 @@ import { ConversationOrderForm, ConversationOrderProductDefaultDTO } from 'src/a
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { CheckFormHandler } from 'src/app/main-app/services/handlers/check-form.handler';
-import { FastSaleOrderRestDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { GeneralConfigsFacade } from 'src/app/main-app/services/facades/general-config.facade';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { CalculateFeeResponse_Data_ServiceDTO, CalculateFeeResponse_Data_Service_ExtraDTO, DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
@@ -35,6 +34,7 @@ import { ModalTaxComponent } from '../modal-tax/modal-tax.component';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { FastSaleOrder_DefaultDTOV2 } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
 
 @Component({
     selector: 'conversation-order',
@@ -62,7 +62,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   lstCarriers: DeliveryCarrierDTO[] = [];
   lstShipServices: CalculateFeeResponse_Data_ServiceDTO[] = []; //  Dịch vụ bổ xung
 
-  saleModel!: FastSaleOrderRestDTO;
+  saleModel!: FastSaleOrder_DefaultDTOV2;
   shipExtraServices: CalculateFeeResponse_Data_Service_ExtraDTO[] = [];
   saleSettings!: SaleSettingsDTO;
 
@@ -142,12 +142,14 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     this._formHandler.createBillDefault().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.saleModel = res;
 
-      this.updateShipExtraServices(res.Carrier);
+      if(res.Carrier) {
+        this.updateShipExtraServices(res.Carrier);
+      }
       this.update_formByBill(res);
     });
   }
 
-  update_formByBill(bill: FastSaleOrderRestDTO) {
+  update_formByBill(bill: FastSaleOrder_DefaultDTOV2) {
     this._form.controls.Carrier?.setValue(bill.Carrier);
     this._form.controls.Tax?.setValue(bill.Tax);
     this.saleModel.CashOnDelivery = this._form.value.TotalAmountBill || 0;
@@ -235,7 +237,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   searchCarrier() {
     let data = this.carriers;
     let key = this.keyFilterUser;
-    
+
     if (TDSHelperString.hasValueString(key)) {
       key = TDSHelperString.stripSpecialChars(key.trim());
     }
@@ -264,7 +266,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
       });
   }
 
-  updateShipExtraServices(carrier: DeliveryCarrierDTO | undefined) {
+  updateShipExtraServices(carrier: any) {
     if(carrier) {
       let insuranceFee = this._form.value.Ship_Extras?.InsuranceFee || 0;
 
@@ -307,7 +309,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   onSaveOrder(print: string) {
     this.isLoading = true;
     let orderModel = this.prepareOrderModel();
-    
+
     this.saleOnline_OrderService.insertFromMessage({model: orderModel})
       .pipe(finalize(()=>this.isLoading = false),takeUntil(this.destroy$))
       .subscribe((res) => {
@@ -326,9 +328,9 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
   onSaveInvoice(print:string){
     let billModel = this.prepareBillModel(); // Bản chất đã change this.saleModel
-    billModel.FormAction = print;
+    // billModel.FormAction = print;
     this.isLoading = false;
-    
+
     if(this.isCheckBillValue(billModel) === 1) {
       if(this.checkShipServiceId(billModel) === 1) {
         this.isLoading = true;
@@ -341,7 +343,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
             this.partnerService.onLoadPartnerFromTabOrder.emit(this.data);
             // this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
             let obs: TDSSafeAny;
-            
+
             switch(print){
               case 'draft':
               case 'open':
@@ -350,7 +352,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
               case 'printOrder':
                 obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${bill.Data.Id}`);
                 break;
-              case 'printShip': 
+              case 'printShip':
                 let params = `&carrierId=${bill.Data.CarrierId ?? ''}`;
                 obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${bill.Data.Id}${params}`);
             }
@@ -360,7 +362,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
                 that.printerService.printHtml(res);
               })
             }
-          }, 
+          },
           error => {
             this.message.error(`${error?.Message}` || JSON.stringify(error));
             this.isLoading = false;
@@ -431,14 +433,14 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
   prepareOrderModel(): SaleOnline_OrderDTO {
     let model = this.checkFormHandler.prepareOrder(this._form);
-    
+
     if(!TDSHelperString.hasValueString(model.Facebook_ASUserId)) {
       model.Facebook_ASUserId = this.data?.psid;
     }
     return model;
   }
 
-  prepareBillModel(): FastSaleOrderRestDTO {
+  prepareBillModel(): FastSaleOrder_DefaultDTOV2 {
     let billModel:any = this.saleModel;
     delete billModel["@odata.context"];
     let model = this.checkFormHandler.prepareBill(this._form, billModel, this.shipExtraServices);
@@ -453,16 +455,12 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
       if (this.saleModel?.Address) {
         this.saleModel.Ship_Receiver = {
           Name: formValue["Name"],
-          FullAddress: formValue["Address"],
           Street: formValue["Address"],
           Phone: formValue["Telephone"],
           City: formValue["City"],
           District: formValue["District"],
           Ward: formValue["Ward"],
         };
-      }
-      else {
-        this.saleModel.Ship_Receiver = null;
       }
     }
   }
@@ -609,7 +607,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
   convertDetail(product: DataPouchDBDTO): ConversationOrderProductDefaultDTO {
     let result = {} as ConversationOrderProductDefaultDTO;
-    
+
     result.Note = "";
     result.Discount = product.DiscountSale;
     result.Price = product.Price;
@@ -626,7 +624,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
   convertDetailSelect(product: TDSSafeAny): ConversationOrderProductDefaultDTO {
     let result = {} as ConversationOrderProductDefaultDTO;
-    
+
     result.Note = "";
     result.Discount = product.Discount;
     result.Price = product.ListPrice;
@@ -684,7 +682,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
       index == this.visibleIndex &&
       x.UOMId == this.detailEdit?.UOMId
     );
-    
+
     if(indexProduct > -1) {
       formModel[indexProduct].Price = this.detailEdit?.Price || 0;
       formModel[indexProduct].Discount = this.detailEdit?.Discount || 0;
@@ -700,7 +698,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
       x.ProductId == detail?.ProductId &&
       x.UOMId == detail?.UOMId
     );
-    
+
     if(indexProduct > -1) {
       if(isMinus && formModel[indexProduct]?.Quantity > 1){
         formModel[indexProduct].Quantity--;

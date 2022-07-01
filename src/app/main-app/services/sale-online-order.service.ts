@@ -1,21 +1,22 @@
 import { EventEmitter, Injectable } from "@angular/core";
-import { BehaviorSubject, Observable } from "rxjs";
+import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tds-ui/shared/utility";
 import { ODataModelDTO, ODataModelTeamDTO } from "../dto/odata/odata.dto";
-import { PagedList2 } from "../dto/pagedlist2.dto";
 import { PartnerTempDTO } from "../dto/partner/partner.dto";
 import { SaleOnline_OrderDTO } from "../dto/saleonlineorder/sale-online-order.dto";
 import { BaseSevice } from "./base.service";
 
-
 @Injectable({
   providedIn: 'root'
 })
+
 export class SaleOnline_OrderService extends BaseSevice {
+
   prefix: string = "odata";
   table: string = "SaleOnline_Order";
   baseRestApi: string = "rest/v1.0/saleonline_order";
+
   public _keyCacheGrid: string = 'saleonline_order-page:grid_saleonline_order:settings';
   public onSetCommentOrders: EventEmitter<any> = new EventEmitter();
 
@@ -23,13 +24,13 @@ export class SaleOnline_OrderService extends BaseSevice {
     super(apiService)
   }
 
-  getById(id: string): Observable<SaleOnline_OrderDTO> {
+  getById(id: string): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})?$expand=Details,User,Partner`,
       method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<SaleOnline_OrderDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
   getLines(id: string): Observable<TDSSafeAny> {
@@ -151,6 +152,14 @@ export class SaleOnline_OrderService extends BaseSevice {
       method: TApiMethodType.post,
     }
 
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  getStatusPartner(partnerId: number, carrierId: number): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/api/common/getstatusreportdeliverybypartner?partnerId=${partnerId}&carrierId=${carrierId}`,
+      method: TApiMethodType.get,
+    }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 

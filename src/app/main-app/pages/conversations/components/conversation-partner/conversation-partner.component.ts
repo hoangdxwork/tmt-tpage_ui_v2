@@ -11,7 +11,7 @@ import { takeUntil, finalize } from 'rxjs/operators';
 import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { MDBFacebookMappingNoteDTO, PartnerStatusDTO, PartnerTempDTO, ResRevenueCustomerDTO } from 'src/app/main-app/dto/partner/partner.dto';
+import { MDBFacebookMappingNoteDTO,PartnerStatusDTO,PartnerTempDTO, ResRevenueCustomerDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ModalBlockPhoneComponent } from '../modal-block-phone/modal-block-phone.component';

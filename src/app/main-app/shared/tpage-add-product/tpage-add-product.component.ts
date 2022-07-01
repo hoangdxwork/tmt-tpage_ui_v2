@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs';
+import { Subject, finalize } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { ProductTemplateDTO, ProductType, ProductUOMDTO } from '../../dto/product/product.dto';
@@ -60,22 +60,25 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   }
 
   loadDefault() {
-    this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+    this.isLoading = true;
+    this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: TDSSafeAny) => {
       delete res["@odata.context"];
       this.defaultGet = res;
       this.updateForm(res);
+    }, error => {
+      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
     });
   }
 
   loadCategory() {
     this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.lstCategory = res.value;
+      this.lstCategory = [...res.value];
     });
   }
 
   loadUOMCateg() {
     this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.lstUOMCategory = res.value;
+      this.lstUOMCategory = [...res.value];
     });
   }
 
@@ -90,6 +93,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
             .pipe(map((x: KeyCacheIndexDBDTO) => { return [res, x] }
           ))}
       ))
+      .pipe(finalize(() => this.isLoading = false))
       .subscribe(([res, x]) => {
 
         delete res['@odata.context'];

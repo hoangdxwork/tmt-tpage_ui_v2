@@ -599,7 +599,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     FacebookId: string;
     DisplayFacebookName: string;
     Deliver: string;
-    ShipWeight: number;
+    ShipWeight: number ;
     ShipPaymentStatus?: any;
     OldCredit: number;
     NewCredit: number;
@@ -644,8 +644,8 @@ export interface FastSaleOrder_DefaultDTOV2 {
     Account: Account;
     Journal: Journal;
     PaymentJournal: PaymentJournal;
-    Carrier?: Carrier;
-    Tax?: any;
+    Carrier: Carrier | null;
+    Tax: any;
     SaleOrder?: any;
     OrderLines: OrderLine[];
     Ship_ServiceExtras: ShipServiceExtra[];
