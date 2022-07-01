@@ -16,6 +16,7 @@ import { YiDateTimeFormatPipe } from './yi-datetimeV2.pipe';
 import { ScrollConversationPipe } from './scroll-conversation.pipe';
 import { OrderByPipe } from './order-by.pipe';
 import { LastActivityMessagePipe } from './last-activity-message.pipe';
+import { ShowAttributeValuePipe } from './show-attribute-value.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -31,7 +32,8 @@ const cmp =[
   ReplacePartnerPipe,
   OrderByPipe,
   ButtonStatusColorPipe,
-  LastActivityMessagePipe
+  LastActivityMessagePipe,
+  ShowAttributeValuePipe
 ]
 
 @NgModule({

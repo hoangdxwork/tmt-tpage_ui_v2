@@ -4,7 +4,7 @@ import { ProductTemplateService } from './../../../../services/product-template.
 import { Subject } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
 
@@ -18,9 +18,9 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
   lstOfData:Array<ConfigAttributeLine> = [];
   createAttributeForm!:FormGroup;
   ModelDefault:Array<ConfigAttributeLine> = [];
-  private destroy$ = new Subject<void>();
-
   isLoading = false;
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private modal: TDSModalRef,
@@ -28,21 +28,16 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
     private productTemplateService: ProductTemplateService,
     private formBuilder: FormBuilder
   ) {
-    this.loadProductAttributeValue();
     this.createForm();
    }
 
   ngOnInit(): void {
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.loadProductAttributeValue();
   }
 
   createForm(){
     this.createAttributeForm = this.formBuilder.group({
-      Attributes: [[],Validators.required]
+      Attributes: [[]]
     });
   }
 
@@ -72,11 +67,16 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
   }
 
   onSelectAttribute(){
+    let lstSelectAttr = this.createAttributeForm.controls.Attributes.value as Array<ConfigAttribute> || [];
+
+    if(lstSelectAttr.length == 0){
+      this.message.error('Vui lòng chọn thuộc tính');
+      return
+    }
+
     this.isLoading = true;
     this.lstOfData = [];
     this.ModelDefault = [];
-
-    let lstSelectAttr = this.createAttributeForm.controls.Attributes.value as Array<ConfigAttribute>;
 
     lstSelectAttr.forEach(attr => {
       let lstValues = this.ValuesList.filter(f=>f.AttributeId == attr.Id);
@@ -120,14 +120,14 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
   }
 
   checkValidate(){
-    let result= false;
+    let result= '';
 
     if(this.ModelDefault.length == 0){
-      result= true;
+      result= 'Vui lòng chọn thêm thuộc tính';
     }else{
       this.ModelDefault.forEach(model => {
         if(model.Values.length == 0){
-          result = true
+          result = 'Vui lòng chọn đầy đủ giá trị thuộc tính';
         }
       });
     }
@@ -145,6 +145,15 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
   }
 
   save() {
+    if(this.checkValidate() === ''){
       this.onSubmit();
+    }else{
+      this.message.error(this.checkValidate());
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
