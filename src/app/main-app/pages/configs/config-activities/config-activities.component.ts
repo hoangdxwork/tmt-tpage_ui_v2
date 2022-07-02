@@ -1,11 +1,8 @@
-import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
-import { ActivityDataFacade } from 'src/app/main-app/services/facades/activity-data.facade';
 import { FormControl, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
-import { addDays, endOfWeek, endOfYear, endOfYesterday, getISOWeek, startOfYear, startOfYesterday } from 'date-fns';
+import { addDays, endOfWeek, endOfYear, endOfYesterday, startOfYear, startOfYesterday } from 'date-fns';
 import { endOfMonth, startOfMonth } from 'date-fns';
 import { startOfWeek } from 'date-fns/esm';
-import { util } from 'echarts';
 import { TposLoggingFilterObjDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { OdataTPosLoggingService } from 'src/app/main-app/services/mock-odata/odata-tpos-logging.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -56,8 +53,7 @@ export class ConfigActivitiesComponent implements OnInit {
 
   constructor(
     private i18n: TDSI18nService,
-    private odataTPosLoggingService: OdataTPosLoggingService,
-    private configDataService: ConfigDataFacade
+    private odataTPosLoggingService: OdataTPosLoggingService
   ) {
     this.i18n.setLocale(vi_VN);
     this.fromDate = new FormControl(null,[Validators.required]);
@@ -71,7 +67,6 @@ export class ConfigActivitiesComponent implements OnInit {
 
   loadData(pageSize: number, pageIndex: number) {
     this.isLoading = true;
-    this.configDataService.onLoading$.emit(this.isLoading);
     let filters = this.odataTPosLoggingService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
 
@@ -79,62 +74,8 @@ export class ConfigActivitiesComponent implements OnInit {
         this.count = res['@odata.count'] as number;
         this.lstData = res.value;
         this.isLoading = false;
-        this.configDataService.onLoading$.emit(this.isLoading);
     });
   }
-
-  // loadData(){
-  //   this.TableData = [
-  //     {
-  //       id:1,
-  //       image:'../../../assets/imagesv2/config/SP1120.png',
-  //       user:'Tpos.vn',
-  //       content:'Xác nhận bán hàng có mã: INV/2022/0005 .Tổng tiền là: 48.000đ',
-  //       createdDate: new Date('Thu Mar 17 2022 17:00:24'),
-  //       status:true
-  //     },
-  //     {
-  //       id:2,
-  //       image:'../../../assets/imagesv2/config/SP1120.png',
-  //       user:'Tpos.vn',
-  //       content:'Hủy bán hàng với KH: 1010Ádsad.Mã hóa đơn: DJDE/2022/0176 Tổng tiền là: 85.000đ',
-  //       createdDate: new Date('Thu Mar 17 2022 17:08:24'),
-  //       status:true
-  //     },
-  //     {
-  //       id:3,
-  //       image:'../../../assets/imagesv2/config/SP1120.png',
-  //       user:'Tpos.vn',
-  //       content:'Thêm mới mua hàng với NCC: Công Ty Cổ Phần Công Nghệ Trường Minh Thịnh.Tổng tiền là: 180.000đ',
-  //       createdDate: new Date('Thu Mar 17 2022 17:11:24'),
-  //       status:true
-  //     },
-  //     {
-  //       id:4,
-  //       image:'../../../assets/imagesv2/config/SP1120.png',
-  //       user:'Tpos.vn',
-  //       content:'Thêm mới bán hàng với KH: Oanh Le. Tổng tiền là: 0',
-  //       createdDate: new Date('Thu Mar 17 2022 17:10:24'),
-  //       status:false
-  //     },
-  //     {
-  //       id:5,
-  //       image:'../../../assets/imagesv2/config/SP1120.png',
-  //       user:'Tpos.vn',
-  //       content:'Cập nhật trả hàng với KH: Hoàng. Tổng tiền là: 480.000đ',
-  //       createdDate: new Date('Web Mar 16 2022 17:20:24'),
-  //       status:false
-  //     },
-  //     {
-  //       id:6,
-  //       image:'../../../assets/imagesv2/config/SP1120.png',
-  //       user:'Tpos.vn',
-  //       content:'Xác nhận bán hàng có mã: INV/2022/0005 .Tổng tiền: 48.000đ',
-  //       createdDate: new Date('Thu Mar 17 2022 17:22:24'),
-  //       status:false
-  //     },
-  //   ];
-  // }
 
   initSortColumn(){
     this.listOfColumns = [

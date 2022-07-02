@@ -2,12 +2,12 @@ import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
-import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { MessageDeliveryHistoryLiveCampaignParamsDTO, MessageDeliveryHistoryResultDTO, MessageHistoryFSOrderResultDTO, MessageHistorySaleOnlineResultDTO } from '../dto/common/table.dto';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
 import { PartnerStatusReport } from '../dto/partner/partner-status-report.dto';
-import { ListItemStatusDTO, StatusDTO } from '../dto/partner/partner.dto';
+import { ListItemStatusDTO } from '../dto/partner/partner.dto';
 import { BaseSevice } from './base.service';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class CommonService extends BaseSevice {
   prefix: string = "odata";
   table: string = "";
   baseRestApi: string = "api/common";
-
+  
   // Dữ liệu bảng giá
   public shopPaymentProviders$ = new BehaviorSubject<any>({});
   public priceListItems$ = new BehaviorSubject<any>([]);

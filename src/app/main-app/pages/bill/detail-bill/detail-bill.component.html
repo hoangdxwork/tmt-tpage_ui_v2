@@ -1,4 +1,4 @@
-<tds-spin [spinning]="isLoading">
+<tds-spin [spinning]="isLoading" class="w-full h-full">
     <div class="flex flex-col w-full h-full text-body-2 text-neutral-1-900 " *ngIf="dataModel">
         <div class="bg-white flex flex-col">
             <div class=" flex justify-between items-center">
@@ -12,27 +12,26 @@
                     </div>
                 </div>
                 <div class="flex gap-x-2">
-                    <button tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" [disabled]="isProcessing"
+                    <button tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button"
                         (click)="onSavePrint('print')">Xác nhận và in (F9)</button>
-                    <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" [disabled]="isProcessing"
+                    <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button"
                         (click)="onSavePrint('printship')">Xác nhận và in ship</button>
-                    <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button" [disabled]="isProcessing"
+                    <button  tds-button color="primary" *ngIf="dataModel.State == 'draft'" type="button"
                         (click)="onSavePrint('confirm')">Xác nhận và xem (F8)</button>
-
-                    <button  tds-button color="primary" *ngIf="dataModel.State == 'open'" type="button" [disabled]="isProcessing"
+                    <button  tds-button color="primary" *ngIf="dataModel.State == 'open'" type="button"
                         (click)="paymentInfoJson()">
                         <span class="flex items-center">
                             <i class="tdsi-revenue-fill text-lg leading-none mr-2"></i>Thanh toán
                         </span>
                     </button>
-                    <button tds-button type="button" color="primary" [disabled]="isProcessing"
+                    <button tds-button type="button" color="primary"
                         *ngIf="dataModel.State !== 'cancel' && dataModel.State !== 'draft' && dataModel.Carrier != null && !dataModel.TrackingRef"
                         (click)="sendToShipper()">
                         <span class="flex items-center">
                             <i class="tdsi-transport-fill text-lg leading-none mr-2"></i>Gửi vận đơn
                         </span>
                     </button>
-                    <button type="button"  tds-button color="primary" [disabled]="isProcessing"
+                    <button type="button"  tds-button color="primary"
                         (click)="actionRefund()"
                         *ngIf="!(dataModel.Type  =='refund' || ['open', 'paid'].indexOf(dataModel.State) === -1)">
                         <span class="flex items-center">

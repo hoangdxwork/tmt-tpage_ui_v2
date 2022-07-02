@@ -18,7 +18,7 @@
             <div class="flex flex-col p-4">
                 <div class="flex flex-row items-center justify-start w-1/2 pb-6">
                     <div class="flex mr-12">
-                      <upload-pictures-wall (getResult)="getUrl($event)"></upload-pictures-wall>
+                      <upload-pictures-wall (getResult)="getUrl($event)" (getBase64)="getBase64($event)"></upload-pictures-wall>
                     </div>
 
                     <div class="flex flex-col w-full">
@@ -74,7 +74,7 @@
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm sản phẩm'
                                   disabledField="isActive" formControlName="Categ"
-                                  [data]="lstAttributeValues" [allowClear]="true">
+                                  [data]="lstProductCateg" [allowClear]="true" [valuePrimitive]="false">
                                   </tds-select>
                                   <tds-error>
                                       Vui lòng chọn nhóm sản phẩm
@@ -111,7 +111,7 @@
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị'
                                   disabledField="isActive" formControlName="UOM"
-                                  [data]="lstUOM" [allowClear]="true">
+                                  [data]="lstUOM" [allowClear]="true" [valuePrimitive]="false">
                                   </tds-select>
                                   <tds-error>
                                       Vui lòng chọn đơn vị mặc định
@@ -122,7 +122,7 @@
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị'
                                   disabledField="isActive" formControlName="UOMPO"
-                                  [data]="lstUOMPO" [allowClear]="true">
+                                  [data]="lstUOMPO" [allowClear]="true" [valuePrimitive]="false">
                                   </tds-select>
                                   <tds-error>
                                       Vui lòng chọn đơn vị mua
@@ -172,7 +172,7 @@
                               <tds-form-field class="w-full col-span-2">
                                 <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm Pos'
                                   disabledField="isActive" formControlName="POSCateg"
-                                  [data]="lstPOSCateg" [allowClear]="true">
+                                  [data]="lstPOSCateg" [allowClear]="true" [valuePrimitive]="false">
                                 </tds-select>
                                 <tds-error>
                                   Vui lòng chọn nhóm Pos

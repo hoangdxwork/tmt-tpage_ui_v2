@@ -5,6 +5,7 @@ import { Observable, Subject, finalize } from 'rxjs';
 import { TDSUploadFile } from 'tds-ui/upload';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray } from 'tds-ui/shared/utility';
+import { WallPicturesDTO } from '../../dto/attachment/wall-pictures.dto';
 
 const getBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
 new Promise((resolve, reject) => {
@@ -28,6 +29,7 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
     @Input() isAvatar!:boolean
     @Output() onLoadImage = new EventEmitter();
     @Output() getResult = new EventEmitter<string>();
+    @Output() getBase64 = new EventEmitter<any>();
 
     fileList: TDSUploadFile[] = [];
     previewImage: string | undefined = '';
@@ -41,7 +43,7 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
 
     ngOnInit(): void {
       this.fileList = [];
-      if(TDSHelperArray.hasListValue(this.data)) {
+      if(TDSHelperArray.isArray(this.data)) {
         let dataModel: any = [];
         this.data.map((x: any, i: number) => {
           dataModel.push({
@@ -70,10 +72,10 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
       const formData = new FormData();
       formData.append('files', item.file as any, item.file.name);
       formData.append('id', '0000000000000051');
-
+      
       let dataModel = this.fileList as any[];
       return this.sharedService.saveImageV2(formData).pipe(finalize(()=>{ this.isUploading = false })).subscribe((res: any) => {
-
+        
         if(res){
           let x = {
             uid: res[0].eTag,
@@ -81,11 +83,12 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
             status: 'done',
             url: res[0].urlImageProxy,
             size: res[0].size
-          } as any;
+          } as WallPicturesDTO;
           dataModel.push({...x});
           this.fileList = [...dataModel];
           this.emitFile();
           this.getResult.emit(x.url);
+          this.getBase64.emit(this.handleGetBase64(item.file));
         }
       }, error => {
         this.msg.error(error.Message ? error.Message:'Upload xảy ra lỗi');
@@ -107,6 +110,10 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
       let items = this.fileList.filter(x => !(x.url === file.url));
       this.fileList = items;
       this.emitFile();
+    }
+
+    handleGetBase64 = async (file: any) =>{
+      return await getBase64(file);
     }
 
     emitFile(){

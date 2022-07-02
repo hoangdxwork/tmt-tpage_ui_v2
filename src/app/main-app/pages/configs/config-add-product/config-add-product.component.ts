@@ -1,6 +1,7 @@
+import { WallPicturesDTO } from './../../../dto/attachment/wall-pictures.dto';
+import { Message } from './../../../../lib/consts/message.const';
 import { CreateVariantsModalComponent } from '../components/create-variants-modal/create-variants-modal.component';
-import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
-import { ConfigImage, ConfigCateg, ConfigUOMPO, ConfigUOM, ConfigAttributeLine, ConfigSuggestVariants } from './../../../dto/configs/product/config-product-default.dto';
+import { ConfigCateg, ConfigUOMPO, ConfigUOM, ConfigAttributeLine, ConfigSuggestVariants } from './../../../dto/configs/product/config-product-default.dto';
 import { ConfigUOMTypeDTO, ConfigOriginCountryDTO } from './../../../dto/configs/product/config-UOM-type.dto';
 import { ConfigProductVariant } from '../../../dto/configs/product/config-product-default.dto';
 import { ConfigAddAttributeProductModalComponent } from './../components/config-add-attribute-product-modal/config-add-attribute-product-modal.component';
@@ -16,10 +17,11 @@ import { takeUntil, finalize } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder, FormArray } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ConfigProductDefaultDTO } from 'src/app/main-app/dto/configs/product/config-product-default.dto';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TDSHelperArray, TDSHelperObject, TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
+import { AddProductHandler } from './add-product.handler';
 
 @Component({
   selector: 'app-config-add-product',
@@ -39,7 +41,6 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   originCountryList:Array<ConfigOriginCountryDTO> = [];
   lstAttributes:Array<ConfigAttributeLine> = [];
   lstVariants:Array<ConfigProductVariant> = [];
-  lsImages:Array<ConfigImage> = [];
   dataModel!: ConfigProductDefaultDTO;
   isLoading = false;
   isLoadingVariant = false;
@@ -67,11 +68,11 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     private viewContainerRef: ViewContainerRef,
     private message: TDSMessageService,
     private fb: FormBuilder,
+    private router: Router,
     private route: ActivatedRoute,
     private productService: ProductService,
     private productTemplateService: ProductTemplateService,
-    private productTemplateOUMLine: ProductTemplateOUMLineService,
-    private configDataService: ConfigDataFacade) {
+    private productTemplateOUMLine: ProductTemplateOUMLineService) {
     this.createForm();
   }
 
@@ -91,7 +92,6 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       ImageUrl: [null],
       Importer: [null],
       InfoWarning: [null],
-      InvoicePolicy: ['order'],//TODO: trên số lượng đặt hàng ,  delivery- trên số lượng đã giao
       IsCombo: [false],
       ListPrice: [null],
       Name: [null, Validators.required],
@@ -132,7 +132,6 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
 
   loadData(id :TDSSafeAny) {
     this.isLoading = true;
-    this.configDataService.onLoading$.emit(this.isLoading);
 
     this.productTemplateService.getProductTemplateById(id).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
       .subscribe((res :TDSSafeAny) => {
@@ -142,9 +141,8 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
           }
           this.dataModel = {...res};
           this.formatProperty(this.dataModel);
-          this.configDataService.onLoading$.emit(false);
     }, error => {
-      this.message.error('Không thể tải dữ liệu');
+      this.message.error(Message.CanNotLoadData);
     })
   }
 
@@ -155,16 +153,15 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         delete res['@odata.context'];
         this.dataModel = {...res};
         this.formatProperty(res);
-        this.configDataService.onLoading$.emit(false);
       }, error => {
-        this.message.error('Không thể tải dữ liệu mặc định');
+        this.message.error(Message.CanNotLoadData);
       })
   }
 
   formatProperty(data: ConfigProductDefaultDTO) {
     //TODO: xử lý array form
     if (TDSHelperArray.hasListValue(data.Images)) {
-      data.Images.forEach((x: ConfigImage) => {
+      data.Images.forEach((x: WallPicturesDTO) => {
           this.addImages(x);
       });
     }
@@ -193,7 +190,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       (res:TDSSafeAny)=>{
         this.categoryList = [...res.value];
       }, error=>{
-        this.message.error('không thể tải dữ liệu nhóm sản phẩm');
+        this.message.error(Message.CanNotLoadData);
       }
     );
   }
@@ -204,7 +201,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         this.UOMPOList = [...res.value];
       },
       error=>{
-        this.message.error('Không thể tải dữ liệu UOMPO');
+        this.message.error(Message.CanNotLoadData);
       }
     );
   }
@@ -215,7 +212,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         this.UOMList = [...res.value];
       },
       err=>{
-        this.message.error('Không thể tải dữ liệu UOM');
+        this.message.error(Message.CanNotLoadData);
       }
     );
   }
@@ -226,7 +223,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         this.POSCategoryList = [...res.value];
       },
       err=>{
-        this.message.error('Không thể tải dữ liệu nhóm POS');
+        this.message.error(Message.CanNotLoadData);
       }
     );
   }
@@ -244,7 +241,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         this.originCountryList = [...res.value];
       },
       err=>{
-        this.message.error('Không thể tải dữ liệu origin country');
+        this.message.error(err?.error?.message || Message.CanNotLoadData);
       }
     )
   }
@@ -280,7 +277,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
               this.dataModel.ProductVariants = this.lstVariants;
             },
             (err)=>{
-              this.message.error('Không thể tải dữ liệu biến thể');
+              this.message.error(err?.error?.message || Message.CanNotLoadData);
             }
           )
         }
@@ -362,6 +359,11 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     }
   }
 
+  removeVariants(data:ConfigProductVariant){
+    let variants = this.lstVariants.filter(f=>f.NameGet != data.NameGet && f.PriceVariant != data.PriceVariant);
+    this.lstVariants = [...variants];
+  }
+
   addCategory(){
     const modal = this.modalService.create({
       title: 'Thêm nhóm sản phẩm',
@@ -440,20 +442,27 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     this._form.controls.ImageUrl.setValue(url);
   }
 
-  getImageList(images:Array<ConfigImage>){
-    if (TDSHelperArray.hasListValue(images)) {
-      this.lsImages = images;
+  getImageList(images:any){
+    if (TDSHelperArray.isArray(images.files)) {
+      let lstImages = images.files as WallPicturesDTO[];
+      this._form.controls["Images"] = this.fb.array([]);
+      
+      if(TDSHelperArray.hasListValue(lstImages)){
+        lstImages.forEach((x: WallPicturesDTO) => {
+          this.addImages(x);
+        });
+      }
     }
   }
 
-  initImages(data: ConfigImage | null) {
+  initImages(data: WallPicturesDTO | null) {
     if (data != null) {
       return this.fb.group({
-          MineType: [data.MineType],
-          Name: [data.Name],
+          MineType: [null],
+          Name: [data.name],
           ResModel: ['product.template'],
           Type: ['url'],
-          Url: [data.Url]
+          Url: [data.url]
       })
     } else {
       return this.fb.group({
@@ -474,7 +483,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     }
   }
 
-  addImages(data: ConfigImage) {
+  addImages(data: WallPicturesDTO) {
     let control = <FormArray>this._form.controls['Images'];
     control.push(this.initImages(data));
   }
@@ -486,16 +495,15 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
 
   addProduct(){
     let model = this.prepareModel();
-   
+    // console.log(model)
     if(model.Name){
-      this.productTemplateService.insertProductTemplate(model).subscribe(
+      this.productTemplateService.insertProductTemplate(model).pipe(takeUntil(this.destroy$)).subscribe(
         (res:TDSSafeAny)=>{
           this.message.success('Thêm mới thành công');
-          this.createForm();
-          history.back();
+          this.router.navigateByUrl('/configs/products');
         },
         err=>{
-          this.message.error(err.error.errors.model[0]??'Thao tác thất bại');
+          this.message.error(err?.error?.errors?.model[0] || Message.InsertFail);
         }
       );
     }
@@ -503,146 +511,49 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
 
   editProduct(){
     let model = this.prepareModel();
-
+    console.log(model)
     if(model.Name){
       this.productTemplateService.updateProductTemplate(model).pipe(takeUntil(this.destroy$)).subscribe(
         (res:TDSSafeAny)=>{
-          this.message.success('Cập nhật thành công');
-          this.createForm();
-          history.back();
+          this.message.success(Message.UpdatedSuccess);
+          this.router.navigateByUrl('/configs/products');
         },
         err=>{
-          this.message.error(err.error.message || 'Thao tác thất bại');
+          this.message.error(err?.error?.message || Message.CanNotLoadData);
         }
       );
     }
   }
 
   prepareModel(){
-    this.lsImages.forEach((x: ConfigImage) => {
-      this.addImages(x);
-    });
-    let formModel = this._form.value;
+    let images = this._form.controls["Images"].value as WallPicturesDTO[];
 
-    this.dataModel.Name = formModel.Name ? formModel.Name : this.dataModel.Name;
-    this.dataModel.Image = formModel.Image ? formModel.Image: this.dataModel.Image;
-    this.dataModel.Images = formModel.Images ? formModel.Images : this.dataModel.Images;
-    this.dataModel.ImageUrl = formModel.ImageUrl ? formModel.ImageUrl: this.dataModel.ImageUrl;
-    this.dataModel.SaleOK = formModel.SaleOK ? formModel.SaleOK : this.dataModel.SaleOK;
-    this.dataModel.PurchaseOK = formModel.PurchaseOK ? formModel.PurchaseOK : this.dataModel.PurchaseOK;
-    this.dataModel.IsCombo = formModel.IsCombo ? formModel.IsCombo : this.dataModel.IsCombo;
-    this.dataModel.Active = formModel.Active ? formModel.Active : this.dataModel.Active;
-    this.dataModel.AvailableInPOS = formModel.AvailableInPOS ? formModel.AvailableInPOS : this.dataModel.AvailableInPOS;
-    this.dataModel.EnableAll = formModel.EnableAll ? formModel.EnableAll : this.dataModel.EnableAll;
-    this.dataModel.Type = formModel.Type ? formModel.Type : this.dataModel.Type;
-    this.dataModel.DefaultCode = formModel.DefaultCode ? formModel.DefaultCode : this.dataModel.DefaultCode;
-    this.dataModel.Barcode = formModel.Barcode ? formModel.Barcode : this.dataModel.Barcode;
-    this.dataModel.StandardPrice = formModel.StandardPrice ? formModel.StandardPrice : this.dataModel.StandardPrice;
-    this.dataModel.ListPrice = formModel.ListPrice ? formModel.ListPrice : this.dataModel.ListPrice;
-    this.dataModel.DiscountSale = formModel.DiscountSale ? formModel.DiscountSale : this.dataModel.DiscountSale;
-    this.dataModel.PurchasePrice = formModel.PurchasePrice ? formModel.PurchasePrice : this.dataModel.PurchasePrice;
-    this.dataModel.DiscountPurchase = formModel.DiscountPurchase ? formModel.DiscountPurchase : this.dataModel.DiscountPurchase;
-    this.dataModel.Tracking = formModel.Tracking ? formModel.Tracking : this.dataModel.Tracking;
-    this.dataModel.Weight = formModel.Weight ? formModel.Weight : this.dataModel.Weight;
-    this.dataModel.Volume = formModel.Volume ? formModel.Volume : this.dataModel.Volume;
-    this.dataModel.DescriptionSale = formModel.DescriptionSale ? formModel.DescriptionSale : this.dataModel.DescriptionSale;
-    this.dataModel.Description = formModel.Description ? formModel.Description : this.dataModel.Description;
-    this.dataModel.YearOfManufacture = formModel.YearOfManufacture ? formModel.YearOfManufacture : this.dataModel.YearOfManufacture;
-    this.dataModel.Element = formModel.Element ? formModel.Element : this.dataModel.Element;
-    this.dataModel.Specifications = formModel.Specifications ? formModel.Specifications : this.dataModel.Specifications;
-    this.dataModel.InfoWarning = formModel.InfoWarning ? formModel.InfoWarning : this.dataModel.InfoWarning;
-    this.dataModel.Description = formModel.Description ? formModel.Description : this.dataModel.Description;
-
-    if(formModel.Categ) {
-        this.dataModel.Categ = formModel.Categ;
-        this.dataModel.CategId = formModel.Categ.Id;
-        this.dataModel.CategName = formModel.Categ.Name;
-        this.dataModel.CategNameNoSign = formModel.Categ.NameNoSign;
-        this.dataModel.CategCompleteName = formModel.Categ.CompleteName;
-    } else {
-        this.dataModel.CategId = this.dataModel.Categ.Id;
-        this.dataModel.CategName = this.dataModel.Categ.Name;
-        this.dataModel.CategNameNoSign = this.dataModel.Categ.NameNoSign;
-        this.dataModel.CategCompleteName = this.dataModel.Categ.CompleteName;
-    }
-    if(formModel.UOM) {
-        this.dataModel.UOM = formModel.UOM;
-        this.dataModel.UOMId = formModel.UOM.Id;
-        this.dataModel.UOMName = formModel.UOM.Name;
-        this.dataModel.UOMNameNoSign = formModel.UOM.NameNoSign;
-    } else {
-      this.dataModel.UOMId = this.dataModel.UOM.Id;
-      this.dataModel.UOMName = this.dataModel.UOM.Name;
-      this.dataModel.UOMId = this.dataModel.UOM.NameNoSign;
-    }
-    if(formModel.UOMPO) {
-        this.dataModel.UOMPO = formModel.UOMPO;
-        this.dataModel.UOMPOId = formModel.UOMPO.Id;
-        this.dataModel.UOMPOName = formModel.UOMPO.Name;
-        this.dataModel.UOMPONameNoSign = formModel.UOMPO.NameNoSign;
-    } else {
-        this.dataModel.UOMPOId = this.dataModel.UOMPO.Id;
-        this.dataModel.UOMPOName = this.dataModel.UOMPO.Name;
-        this.dataModel.UOMPONameNoSign = this.dataModel.UOMPO.NameNoSign;
-    }
-    if(formModel.POSCateg) {
-        this.dataModel.POSCategId = formModel.POSCateg.Id;
-    }
-    if(formModel.Producer) {
-        this.dataModel.Producer = formModel.Producer;
-        this.dataModel.ProducerId = formModel.Producer.Id;
-        this.dataModel.ProducerName = formModel.Producer.Name;
-        this.dataModel.ProducerAddress = formModel.Producer.Address;
-    }else{
-      if(this.dataModel.Producer){
-        this.dataModel.ProducerId = this.dataModel.Producer.Id;
-        this.dataModel.ProducerName = this.dataModel.Producer.Name;
-        this.dataModel.ProducerAddress = this.dataModel.Producer.Address;
-      }
-    }
-    if(formModel.Importer) {
-        this.dataModel.Importer = formModel.Importer;
-        this.dataModel.ImporterId = formModel.Importer.Id;
-        this.dataModel.ImporterName = formModel.Importer.Name;
-        this.dataModel.ImporterAddress = formModel.Importer.Address;
-    }else{
-      if(this.dataModel.Importer){
-        this.dataModel.ImporterId = this.dataModel.Importer.Id;
-        this.dataModel.ImporterName = this.dataModel.Importer.Name;
-        this.dataModel.ImporterAddress = this.dataModel.Importer.Address;
-      }
-    }
-    if(formModel.Distributor) {
-        this.dataModel.Distributor = formModel.Distributor;
-        this.dataModel.DistributorId = formModel.Distributor.Id;
-        this.dataModel.DistributorName = formModel.Distributor.Name;
-        this.dataModel.DistributorAddress = formModel.Distributor.Address;
-    }else{
-      if(this.dataModel.Distributor){
-        this.dataModel.DistributorId = this.dataModel.Distributor.Id;
-        this.dataModel.DistributorName = this.dataModel.Distributor.Name;
-        this.dataModel.DistributorAddress = this.dataModel.Distributor.Address;
-      }
-    }
-    if(formModel.OriginCountry) {
-      this.dataModel.OriginCountry = formModel.OriginCountry;
-      this.dataModel.OriginCountryId = formModel.OriginCountry.Id;
-      this.dataModel.OriginCountryName = formModel.OriginCountry.Name;
-    }else{
-      if(this.dataModel.OriginCountry){
-        this.dataModel.OriginCountryId = this.dataModel.OriginCountry.Id;
-        this.dataModel.OriginCountryName = this.dataModel.OriginCountry.Name;
-      }
-    }
-
+    AddProductHandler.prepareModel(this.dataModel, this._form.value, images);
     return this.dataModel;
   }
 
   backToMain(){
-    history.back();
+    this.router.navigateByUrl('/configs/products');
   }
 
   onSubmit(){
+    let model = this.prepareModel();
+    
+    if(!TDSHelperString.hasValueString(model.Name)) {
+      this.message.error('Vui lòng nhập tên');
+      return
+    }
+    
+    if(!TDSHelperObject.hasValue(model.UOM)){
+      this.message.error('Vui lòng nhập đơn vị mặc định');
+      return
+    }
+
+    if(!TDSHelperObject.hasValue(model.UOMPO)){
+      this.message.error('Vui lòng nhập đơn vị mua');
+      return
+    }
+
     if(this.id){
       this.editProduct();
     }else{
@@ -653,6 +564,8 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
           delete res['@odata.context'];
           this.dataModel = {...res};
           this.addProduct();
+        },err=>{
+          this.message.error(err?.error?.message || Message.CanNotLoadData);
         });
       }
     }

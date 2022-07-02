@@ -2,7 +2,7 @@
     <tds-tab title="Thông tin">
       <div class="grid grid-cols-12 gap-x-8">
         <div class="w-full col-span-1">
-          <img [src]="productTemplate.ImageUrl" class="w-full rounded-lg">
+          <tds-avatar [tdsSrc]="productTemplate.ImageUrl" [size]="80" [isAvatar]="false" class="rounded-lg"></tds-avatar>
         </div>
         <div class="w-full col-span-11">
           <div class="grid grid-cols-3 gap-x-8 gap-y-4 items-center">

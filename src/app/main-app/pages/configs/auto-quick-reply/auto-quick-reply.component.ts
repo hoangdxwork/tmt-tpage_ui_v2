@@ -1,4 +1,3 @@
-import { ConfigDataFacade } from '../../../services/facades/config-data.facade';
 import { switchMap, distinctUntilChanged, debounceTime, map, finalize } from 'rxjs/operators';
 import { QuickReplyService } from '../../../services/quick-reply.service';
 import { QuickReplyDTO } from '../../../dto/quick-reply.dto.ts/quick-reply.dto';
@@ -47,8 +46,7 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
     private viewContainerRef: ViewContainerRef,
     private message: TDSMessageService,
     private odataQuickReplyService: OdataQuickReplyService,
-    private quickReplyService: QuickReplyService,
-    private configDataService: ConfigDataFacade) {
+    private quickReplyService: QuickReplyService) {
   }
 
   ngOnInit(): void {
@@ -85,7 +83,6 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
 
   loadData(pageSize: number, pageIndex: number) {
     this.isLoading = true;
-    this.configDataService.onLoading$.emit(this.isLoading);
     let filters = this.odataQuickReplyService.buildFilter(this.filterObj);
 
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters ?? null, this.sort);
@@ -94,7 +91,6 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
       this.AutoChatList = res.value
       this.count = res['@odata.count'] as number
       this.isLoading = false;
-      this.configDataService.onLoading$.emit(this.isLoading);
     }, error => {
       this.message.error(error.error.message || 'Tải dữ liệu thất bại!');
     });

@@ -1,6 +1,5 @@
 import { IRAttachmentDTO } from './../../../../dto/attachment/attachment.dto';
 import { TDSHelperArray } from 'tds-ui/shared/utility';
-
 import { ProductService } from 'src/app/main-app/services/product.service';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
@@ -14,6 +13,8 @@ import { ProductUOMService } from 'src/app/main-app/services/product-uom.service
 import { ProductCategoryService } from 'src/app/main-app/services/product-category.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSUploadFile } from 'tds-ui/upload';
+import { AddVariantHandler } from './add-variant.handler';
+import { Message } from 'src/app/lib/consts/message.const';
 
 @Component({
   selector: 'create-product-variant',
@@ -22,7 +23,7 @@ import { TDSUploadFile } from 'tds-ui/upload';
 
 export class CreateProductVariantComponent implements OnInit {
   _form!: FormGroup;
-  lstAttributeValues: Array<ProductCategoryDTO> = [];
+  lstProductCateg: Array<ProductCategoryDTO> = [];
   lstUOM: Array<ProductUOMDTO> = [];
   lstUOMPO: Array<ProductUOMDTO> = [];
   lstPOSCateg: Array<POS_CategoryDTO> = [];
@@ -55,82 +56,11 @@ export class CreateProductVariantComponent implements OnInit {
     this.loadUOMPO();
   }
 
-  loadDefault(){
-    this.productService.getDefault().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      delete res['@odata.context'];
-      this.modelDefault = res;
-      this.formatProperty(res);
-    });
-  }
-
-  loadAttributeValues() {
-    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.lstAttributeValues = res.value;
-    }, err => {
-      this.message.error(err?.error?.message || 'Load dữ liệu nhóm sản phẩm thất bại!')
-    });
-  }
-
-  loadUOM() {
-    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.lstUOM = res.value;
-    }, err => {
-      this.message.error(err?.error?.message || 'Load dữ liệu đơn vị mặc định thất bại!')
-    });
-  }
-
-  loadUOMPO() {
-    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.lstUOMPO = res.value;
-    }, err => {
-      this.message.error(err?.error?.message || 'Load dữ liệu đơn vị mua thất bại!')
-    });
-  }
-
-  formatProperty(data: ProductDTO) {
-    //TODO: xử lý array form
-    if (TDSHelperArray.hasListValue(data.Images)) {
-      data.Images.forEach((x: IRAttachmentDTO) => {
-          this.addImages(x);
-      });
-    }
-    
-    if (data.DateCreated) {
-      data.DateCreated = new Date(data.DateCreated);
-    }
-    this._form.patchValue(data);
-  }
-
-  addImages(data: IRAttachmentDTO) {
-    let control = <FormArray>this._form.controls['Images'];
-    control.push(this.initImages(data));
-  }
-
-  initImages(data: IRAttachmentDTO | null) {
-    if (data != null) {
-      return this.fb.group({
-          MineType: [data.MineType],
-          Name: [data.Name],
-          ResModel: ['product'],
-          Type: ['url'],
-          Url: [data.Url]
-      })
-    } else {
-      return this.fb.group({
-          MineType: [null],
-          Name: [null],
-          ResModel: ['product.template'],
-          Type: ['url'],
-          Url: [null]
-      })
-    }
-  }
-
   createForm() {
     this._form = this.fb.group({
       Active: [true], //hiệu lực
       AmountTotal: [null],
-      AttributeValues: [null], //nhóm
+      AttributeValues: [null], //danh sách thuộc tính-giá trị của biến thể
       AvailableInPOS: [true],//hiện trên điểm bán hàng
       Barcode: [null],
       Categ: [null],
@@ -198,117 +128,109 @@ export class CreateProductVariantComponent implements OnInit {
     });
   }
 
-  onBack() {
-    this.router.navigateByUrl('/configs/product-variant');
+  loadDefault(){
+    this.productService.getDefault().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      delete res['@odata.context'];
+      this.modelDefault = res;
+      this.formatProperty(res);
+    });
+  }
+
+  loadAttributeValues() {
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.lstProductCateg = res.value;
+    }, err => {
+      this.message.error(err?.error?.message || Message.CanNotLoadData);
+    });
+  }
+
+  loadUOM() {
+    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.lstUOM = res.value;
+    }, err => {
+      this.message.error(err?.error?.message || Message.CanNotLoadData);
+    });
+  }
+
+  loadUOMPO() {
+    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.lstUOMPO = res.value;
+    }, err => {
+      this.message.error(err?.error?.message || Message.CanNotLoadData);
+    });
+  }
+
+  formatProperty(data: ProductDTO) {
+    //TODO: xử lý array form
+    if (TDSHelperArray.hasListValue(data.Images)) {
+      data.Images.forEach((x: IRAttachmentDTO) => {
+          this.addImages(x);
+      });
+    }
+    
+    if (data.DateCreated) {
+      data.DateCreated = new Date(data.DateCreated);
+    }
+    this._form.patchValue(data);
+  }
+
+  addImages(data: IRAttachmentDTO) {
+    let control = <FormArray>this._form.controls['Images'];
+    control.push(this.initImages(data));
+  }
+
+  initImages(data: IRAttachmentDTO | null) {
+    if (data != null) {
+      return this.fb.group({
+          MineType: [data.MineType],
+          Name: [data.Name],
+          ResModel: ['product'],
+          Type: ['url'],
+          Url: [data.Url]
+      })
+    } else {
+      return this.fb.group({
+          MineType: [null],
+          Name: [null],
+          ResModel: ['product.template'],
+          Type: ['url'],
+          Url: [null]
+      })
+    }
+  }
+
+  getUrl(ev: string){
+    this._form.controls["ImageUrl"].setValue(ev);
+  }
+
+  getBase64(ev:any){
+    ev.then((res:any)=>{
+      let base64 = res?.split(',')[1];
+      if(base64)
+        this._form.controls["Image"].setValue(base64);
+    })
+  }
+
+  prepareModel() {
+    AddVariantHandler.prepareModel(this.modelDefault,this._form.value);
+    return this.modelDefault;
   }
 
   onSave() {
     let model = this.prepareModel();
+    console.log(model);
     if (!model.Name) {
       this.message.error('Vui lòng nhập tên sản phẩm');
     }
     this.productService.insertProduct(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.message.success('Thêm mới thành công!');
-      this.createForm();
+      this.message.success(Message.InsertSuccess);
       this.router.navigateByUrl('/configs/product-variant');
     }, error => {
-      this.message.error('Thao tác thất bại!');
+      this.message.error(error?.error?.message || Message.InsertFail);
     });
   }
 
-  getUrl(ev: string){
-    this.modelDefault.ImageUrl = ev
-  }
-
-  prepareModel() {
-    let formModel = this._form.value;
-    if (formModel.Name) {
-      this.modelDefault.Name = formModel.Name;
-    }
-    if (formModel.Image) {
-      this.modelDefault.ImageUrl
-    }
-    if (formModel.SaleOK) {
-      this.modelDefault.SaleOK = formModel.SaleOK;
-    }
-    if (formModel.PurchaseOK) {
-      this.modelDefault.PurchaseOK = formModel.PurchaseOK;
-    }
-    if (formModel.PurchaseOK) {
-      this.modelDefault.PurchaseOK = formModel.PurchaseOK;
-    }
-    if (formModel.Type) {
-      this.modelDefault.Type = formModel.Type;
-    }
-    if (formModel.DefaultCode) {
-      this.modelDefault.DefaultCode = formModel.DefaultCode;
-    }
-    if (formModel.Barcode) {
-      this.modelDefault.Barcode = formModel.Barcode;
-    }
-    if (formModel.Categ) {
-      let modelCateg = this.lstAttributeValues.find(x => x.Id == formModel.Categ)
-      if (modelCateg) {
-        this.modelDefault.Categ = modelCateg;
-        this.modelDefault.CategId = modelCateg.Id;
-      }
-    } else {
-      this.modelDefault.CategId = this.modelDefault.Categ.Id;
-    }
-    if (formModel.AttributeValues) {
-      this.modelDefault.AttributeValues = formModel.AttributeValues;
-    }
-    if (formModel.Active) {
-      this.modelDefault.Active = formModel.Active;
-    }
-    if (formModel.PriceVariant) {
-      this.modelDefault.PriceVariant = formModel.PriceVariant;
-    }
-    if (formModel.StandardPrice) {
-      this.modelDefault.StandardPrice = formModel.StandardPrice;
-    }
-    if (formModel.UOM) {
-      let modelUOM = this.lstUOM.find(x => x.Id == formModel.UOM)
-      if (modelUOM) {
-        this.modelDefault.UOM = modelUOM;
-        this.modelDefault.UOMId = modelUOM.Id;
-      }
-    } else {
-      this.modelDefault.UOMId = this.modelDefault.UOM.Id;
-    }
-    if (formModel.UOMPO) {
-      let modelUOMPO = this.lstUOMPO.find(x => x.Id == formModel.UOMPO)
-      if (modelUOMPO) {
-        this.modelDefault.UOMPO = modelUOMPO;
-        this.modelDefault.UOMPOId = modelUOMPO.Id;
-      }
-    } else {
-      this.modelDefault.UOMPOId = this.modelDefault.UOMPO.Id;
-    }
-    if (formModel.PurchaseMethod) {
-      this.modelDefault.PurchaseMethod = formModel.PurchaseMethod;
-    }
-    if (formModel.Weight) {
-      this.modelDefault.Weight = formModel.Weight;
-    }
-    if (formModel.SaleDelay) {
-      this.modelDefault.SaleDelay = formModel.SaleDelay;
-    }
-    if (formModel.POSCateg) {
-      let modelPOSCateg = this.lstPOSCateg.find(x => x.Id == formModel.UOMPO)
-      if (modelPOSCateg) {
-        this.modelDefault.POSCateg = modelPOSCateg;
-        this.modelDefault.POSCategId = modelPOSCateg.Id;
-      }else{
-        this.modelDefault.POSCategId = this.modelDefault.POSCateg.Id;
-      }
-    }
-    if (formModel.AvailableInPOS) {
-      this.modelDefault.AvailableInPOS = formModel.AvailableInPOS;
-    }
-    if (formModel.InvoicePolicy) {
-      this.modelDefault.InvoicePolicy = formModel.InvoicePolicy;
-    }
-    return this.modelDefault;
+  onBack() {
+    this.router.navigateByUrl('/configs/product-variant');
   }
 }

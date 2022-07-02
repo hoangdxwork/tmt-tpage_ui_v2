@@ -1,3 +1,5 @@
+import { WallPicturesDTO } from "../../attachment/wall-pictures.dto";
+
 export interface ConfigUOM {
     Id: number;
     Name: string;
@@ -54,26 +56,6 @@ export interface ConfigUOMPO {
     ShowUOMType: string;
     NameGet: string;
     ShowFactor: number;
-}
-
-export interface ConfigImage {
-    Id: number;
-    ResModel: string;
-    ResName: string;
-    DbDatas: string;
-    FileSize?: any;
-    CompanyId?: any;
-    ResId: number;
-    Type: string;
-    Public?: any;
-    StoreFname?: any;
-    Description?: any;
-    ResField?: any;
-    MineType: string;
-    Name: string;
-    Url: string;
-    Checksum?: any;
-    DatasFname?: any;
 }
 
 export interface ConfigAttributeLine {
@@ -269,7 +251,7 @@ export interface ConfigProductDefaultDTO {
     Taxes: any[];
     SupplierTaxes: any[];
     Product_Teams: any[];
-    Images: ConfigImage[];
+    Images: WallPicturesDTO[];
     UOMView?: any;
     Distributor?: any;
     Importer?: any;

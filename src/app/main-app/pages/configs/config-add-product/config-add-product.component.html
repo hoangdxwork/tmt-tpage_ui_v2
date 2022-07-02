@@ -1,6 +1,6 @@
 
 <tds-spin [spinning]="isLoading" class="w-full h-full">
-  <form [formGroup]="_form" autocomplete="off">
+  <form [formGroup]="_form" autocomplete="off" *ngIf="dataModel">
       <div class="w-full pb-4 px-4">
           <div class="flex flex-col w-full bg-white rounded-xl">
               <div class="flex flex-row items-center justify-between px-4 py-3">
@@ -14,7 +14,6 @@
                       <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">{{id ? "CHỈNH SỬA SẢN PHẨM" : "THÊM MỚI SẢN PHẨM"}}</span>
                   </div>
                   <button tds-button color="primary" type="submit" class="w-[100px]"
-                    [disabled]="!_form.valid"
                     (click)="onSubmit()">
                       <span class="text-body-2 font-semibold">Lưu</span>
                   </button>
@@ -23,7 +22,7 @@
                   <div class="flex flex-row items-center justify-start w-2/3 pb-6">
                       <upload-pictures-wall class="mr-12"
                         [size]="112"
-                        [data]="_form.controls.ImageUrl.value"
+                        [data]="[_form.controls.ImageUrl.value]"
                         (getResult)="getAvatar($event)">
                       </upload-pictures-wall>
                       <div class="flex flex-col w-full">
@@ -54,7 +53,7 @@
                                   <tds-form-field class="w-full col-span-2">
                                     <tds-select valueField="value" textField="text" placeholder='Chọn loại sản phẩm'
                                         disabledField="isActive" formControlName="Type"
-                                        [data]="productTypeList" [allowClear]="true" [optionOverflowSize]="5">
+                                        [data]="productTypeList" [allowClear]="false" [optionOverflowSize]="5">
                                     </tds-select>
                                     <tds-error>
                                         Vui lòng chọn loại sản phẩm
@@ -83,7 +82,7 @@
                                       <tds-form-field class="w-full mr-2">
                                         <tds-select valueField="Id" textField="CompleteName" placeholder='Chọn nhóm sản phẩm'
                                         disabledField="isActive" formControlName="Categ" [valuePrimitive]="false"
-                                        [data]="categoryList" [allowClear]="true" [optionOverflowSize]="5">
+                                        [data]="categoryList" [allowClear]="false" [optionOverflowSize]="5">
                                         </tds-select>
                                         <tds-error>
                                             Vui lòng chọn nhóm sản phẩm
@@ -126,7 +125,7 @@
                                   <tds-form-field class="w-full col-span-2">
                                     <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị'
                                     disabledField="isActive" formControlName="UOMPO" [valuePrimitive]="false"
-                                    [data]="UOMPOList" [allowClear]="true" [optionOverflowSize]="5">
+                                    [data]="UOMPOList" [allowClear]="false" [optionOverflowSize]="5">
                                     </tds-select>
                                     <tds-error>
                                         Vui lòng chọn đơn vị mặc định
@@ -137,7 +136,7 @@
                                   <tds-form-field class="w-full col-span-2">
                                     <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị'
                                     disabledField="isActive" formControlName="UOM" [valuePrimitive]="false"
-                                    [data]="UOMList" [allowClear]="true" [optionOverflowSize]="5">
+                                    [data]="UOMList" [allowClear]="false" [optionOverflowSize]="5">
                                     </tds-select>
                                     <tds-error>
                                         Vui lòng chọn đơn vị mua
@@ -147,12 +146,12 @@
                               </div>
                           </tds-tab>
                           <tds-tab title="Hình ảnh">
-                            <!-- <tpage-upload-images
+                            <upload-pictures-wall class="mr-12"
                               [size]="112"
-                              [inputImages]="_form.controls.Images.value"
-                              [useProductModel]="true"
-                              (getResult)="getImageList($event)">
-                            </tpage-upload-images> -->
+                              [isArray]="true"
+                              [data]="_form.controls.Images.value|convertListUrl"
+                              (onLoadImage)="getImageList($event)">
+                            </upload-pictures-wall>
                           </tds-tab>
                           <tds-tab title="Tồn kho">
                             <div class="grid grid-cols-2 gap-y-4 gap-x-8">
@@ -161,7 +160,7 @@
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-select valueField="value" textField="text" placeholder='Không theo dõi'
                                     disabledField="isActive" formControlName="Tracking"
-                                    [data]="trackingList" [allowClear]="true">
+                                    [data]="trackingList" [allowClear]="false">
                                   </tds-select>
                                   <tds-error>
                                     Vui lòng chọn theo dõi
@@ -214,7 +213,7 @@
                           </tds-tab>
                           <tds-tab title="Biến thể">
                               <div class="flex flex-col items-center h-full">
-                                <div *ngIf="!id" class="flex flex-row items-center justify-end w-full py-4">
+                                <div class="flex flex-row items-center justify-end w-full py-4">
                                   <div class="flex flex-row items-center justify-end">
                                     <button tds-button color="secondary" type="button" class="mr-3" (click)="showCreateAttributeModal()">
                                       <span class="flex items-center">
@@ -269,7 +268,7 @@
                                                   </td>
                                                   <td>
                                                     <tds-input-number
-                                                      [(ngModel)]="data.PriceVariant"
+                                                      [ngModel]="data.PriceVariant||0"
                                                       [ngModelOptions]="{standalone: true}"
                                                       [min]="0"
                                                       [step]="100"
@@ -287,7 +286,8 @@
                                                         <i class="tdsi-edit-fill text-xl text-neutral-1-500 leading-none"></i>
                                                       </span>
                                                     </button>
-                                                    <button tds-button-icon color="secondary" type="button" size="sm">
+                                                    <button tds-button-icon color="secondary" type="button" size="sm"
+                                                      (click)="removeVariants(data)">
                                                         <span class="flex items-center">
                                                           <i class="tdsi-trash-fill text-xl text-neutral-1-500 leading-none"></i>
                                                         </span>
@@ -329,7 +329,7 @@
                                   <div class="flex space-x-2 items-center col-span-3">
                                     <tds-form-field class="w-full">
                                       <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà sản xuất'
-                                        disabledField="isActive" [data]="producerList" [optionOverflowSize]="5" [valuePrimitive]="false"
+                                        disabledField="isActive" [data]="producerList" [allowClear]="true" [optionOverflowSize]="5" [valuePrimitive]="false"
                                         formControlName="Producer">
                                       </tds-select>
                                     </tds-form-field>
@@ -344,7 +344,7 @@
                                   <div class="flex space-x-2 items-center col-span-3">
                                     <tds-form-field class="w-full">
                                       <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà nhập khẩu'
-                                        disabledField="isActive" [data]="importerList" [optionOverflowSize]="5" [valuePrimitive]="false"
+                                        disabledField="isActive" [data]="importerList" [allowClear]="true" [optionOverflowSize]="5" [valuePrimitive]="false"
                                         formControlName="Importer">
                                       </tds-select>
                                     </tds-form-field>
@@ -359,7 +359,7 @@
                                   <div class="flex space-x-2 items-center col-span-3">
                                     <tds-form-field class="w-full">
                                       <tds-select valueField="Id" textField="Name" placeholder='Chọn nhà phân phối'
-                                        disabledField="isActive" [data]="distributorList" [optionOverflowSize]="5" [valuePrimitive]="false"
+                                        disabledField="isActive" [data]="distributorList" [allowClear]="true" [optionOverflowSize]="5" [valuePrimitive]="false"
                                         formControlName="Distributor">
                                       </tds-select>
                                     </tds-form-field>
@@ -374,7 +374,7 @@
                                   <div class="flex space-x-2 items-center col-span-3">
                                     <tds-form-field class="w-full">
                                       <tds-select valueField="Id" textField="Name" placeholder='Chọn xuất xứ'
-                                        disabledField="isActive" [data]="originCountryList" [optionOverflowSize]="5" [valuePrimitive]="false"
+                                        disabledField="isActive" [data]="originCountryList" [allowClear]="true" [optionOverflowSize]="5" [valuePrimitive]="false"
                                         formControlName="OriginCountry">
                                       </tds-select>
                                     </tds-form-field>
