@@ -1,0 +1,24 @@
+<div class="w-full">
+  <tds-tabset>
+    <tds-tab title="Tổng quan" clsContent="py-4 w-full h-full border-t">
+      <div class="flex flex-col gap-6">
+        <div class="h-20 w-full flex gap-x-6">
+          <div class="w-4/5 bg-zinc-600"></div>
+          <div class="w-1/5 bg-zinc-600"></div>
+        </div>
+        <div class="h-20 w-full bg-slate-600 py-2 px-4 grid grid-cols-4 gap-4">
+          <div class="bg-red-400">jflkdfg</div>
+          <div class="bg-red-400">jflkdfg</div>
+          <div class="bg-red-400">jflkdfg</div>
+          <div class="bg-red-400">jflkdfg</div>
+        </div>
+      </div>
+    </tds-tab>
+    <tds-tab title="Bình luận">Content of Tab Pane 2</tds-tab>
+  </tds-tabset>
+</div>
+<div class="w-full flex justify-end gap-2 p-4" *tdsModalFooter>
+  <button tds-button class="min-w-[100px]" color="secondary" (click)="cancel()">
+    Đóng
+  </button>
+</div>

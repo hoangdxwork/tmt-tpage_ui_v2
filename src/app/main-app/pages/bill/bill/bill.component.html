@@ -27,7 +27,7 @@
           <div>
             <tds-form-field class="w-[240px]">
               <tds-select valueField="Id" textField="Name"
-                placeholder='Chọn đối tác giao hàng' [valuePrimitive]="false"
+                placeholder='Chọn đối tác giao hàng' [valuePrimitive]="false" (selectChange)="onChangeCarrier($event)"
                 disabledField="isActive" [data]="(lstCarriers | async) || []" [allowClear]="true">
               </tds-select>
             </tds-form-field>
