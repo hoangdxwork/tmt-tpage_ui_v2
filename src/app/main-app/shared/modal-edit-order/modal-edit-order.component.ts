@@ -12,9 +12,9 @@ import { TACheckboxChange } from 'tds-ui/tds-checkbox';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
 import { DataSuggestionDTO, ResultCheckAddressDTO } from '../../dto/address/address.dto';
 import { CalculateFeeResponse_Data_ServiceDTO, DeliveryCarrierDTO } from '../../dto/carrier/delivery-carrier.dto';
-import { FastSaleOrderRestDTO, FastSaleOrder_ServiceExtraDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
-import { PartnerStatusDTO } from '../../dto/partner/partner.dto';
+import { FastSaleOrder_DefaultDTOV2 } from '../../dto/fastsaleorder/fastsaleorder-default.dto';
 import { GetInventoryDTO } from '../../dto/product/product.dto';
+import { PartnerStatusDTO } from '../../dto/saleonlineorder/get-partner-status.dto';
 import { SaleOnlineFacebookCommentFilterResultDTO, SaleOnline_OrderDTO } from '../../dto/saleonlineorder/sale-online-order.dto';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from '../../dto/suggest-address/suggest-address.dto';
 import { ApplicationUserService } from '../../services/application-user.service';
@@ -48,7 +48,7 @@ export class ModalEditOrderComponent implements OnInit {
   isLoadCarrier: boolean = false;
 
   model!: SaleOnline_OrderDTO;
-  defaultBill!: FastSaleOrderRestDTO;
+  defaultBill!: FastSaleOrder_DefaultDTOV2;
 
   // Giá trị này phải khởi tạo = []
   shipExtraServices: TDSSafeAny[] = [];
@@ -120,7 +120,7 @@ export class ModalEditOrderComponent implements OnInit {
     });
   }
 
-  onSave(type: TDSSafeAny) {debugger
+  onSave(type: TDSSafeAny) {
     let model = this.prepareOrderModel();
 
     this.saleOnline_OrderService.update(this.idOrder, model).subscribe((res: any) => {
@@ -136,7 +136,7 @@ export class ModalEditOrderComponent implements OnInit {
         let modelSale = this.prepareSaleModel();
 
         if(modelSale) {
-          this.fastSaleOrderService.create(this.defaultBill).subscribe((data: any) => {
+          this.fastSaleOrderService.createFastSaleOrder(this.defaultBill).subscribe((data: any) => {
             if (data.Success) {
               if (data.Message) {
                 this.message.warning(data.Message);
@@ -201,14 +201,15 @@ export class ModalEditOrderComponent implements OnInit {
   }
 
   loadPartnerStatus() {
-    this.commonService.getPartnerStatus().subscribe(res => {
-      this.lstPartnerStatus = res;
-    });
+    // this.commonService.getPartnerStatus().subscribe(res => {
+    //   this.lstPartnerStatus = res;
+    // });
   }
 
   loadDefaultBill() {
     // TODO: dữ liệu bill default nên lưu lại
-    this.fastSaleOrderService.defaultGet().subscribe(res => {
+    let model = { Type: 'invoice' };
+    this.fastSaleOrderService.defaultGetV2({ model: model}).subscribe(res => {
       delete res["@odata.context"];
       this.defaultBill = res;
       this.updateBillByForm(this._form);
@@ -334,7 +335,7 @@ export class ModalEditOrderComponent implements OnInit {
       if (formValue["Address"]) {
         this.defaultBill.Ship_Receiver = {
           Name: formValue["Name"],
-          FullAddress: formValue["Address"] || formValue["Street"],
+          // FullAddress: formValue["Address"] || formValue["Street"],
           Street: formValue["Address"],
           Phone: formValue["Telephone"],
           City: formValue["City"],
@@ -576,7 +577,7 @@ export class ModalEditOrderComponent implements OnInit {
   }
 }
 
-  updateFormByBillDefault(billDefault: FastSaleOrderRestDTO) {
+  updateFormByBillDefault(billDefault: FastSaleOrder_DefaultDTOV2) {
     billDefault.Ship_ServiceExtras = JSON.parse(billDefault.Ship_ServiceExtrasText) || [];
 
     let formControl = this._form.controls;
@@ -630,23 +631,23 @@ export class ModalEditOrderComponent implements OnInit {
     let formValue = form.value;
 
     if (this.defaultBill.Ship_ServiceExtras && this.defaultBill.Ship_ServiceExtras.length > 0) {
-      this.defaultBill.Ship_ServiceExtras.forEach((element: FastSaleOrder_ServiceExtraDTO) => {
+      // this.defaultBill.Ship_ServiceExtras.forEach((element: any) => {
 
-        if (element.Id === "NinjaVan" || element.Id === "16" || element.Id === "GBH" ||
-          (element.Id === "OrderAmountEvaluation" && this.defaultBill.Carrier?.DeliveryType === "MyVNPost") ) {
-          this.enableInsuranceFee = true;
-        }
+      //   if (element.Id === "NinjaVan" || element.Id === "16" || element.Id === "GBH" ||
+      //     (element.Id === "OrderAmountEvaluation" && this.defaultBill.Carrier?.DeliveryType === "MyVNPost") ) {
+      //     this.enableInsuranceFee = true;
+      //   }
 
-        this.shipExtraServices.push({
-          ServiceId: element.Id,
-          ServiceName: element.Name,
-          Fee: element.Fee,
-          IsSelected: true,
-          Type: element.Type,
-          ExtraMoney: element.ExtraMoney
-        });
+      //   this.shipExtraServices.push({
+      //     ServiceId: element.Id,
+      //     ServiceName: element.Name,
+      //     Fee: element.Fee,
+      //     IsSelected: true,
+      //     Type: element.Type,
+      //     ExtraMoney: element.ExtraMoney
+      //   });
 
-      });
+      // });
     }
 
     this.initOkieLa();
@@ -654,20 +655,20 @@ export class ModalEditOrderComponent implements OnInit {
 
     this.defaultBill.Address = formValue.Address || formValue.Street;
 
-    if (formValue["Address"]) {
-      this.defaultBill.Ship_Receiver = {
-        Name: formValue["Name"],
-        FullAddress: formValue["Address"],
-        Street: formValue["Address"],
-        Phone: formValue["Telephone"],
-        City: formValue["City"],
-        District: formValue["District"],
-        Ward: formValue["Ward"],
-      };
-    }
-    else {
-      this.defaultBill.Ship_Receiver = null;
-    }
+    // if (formValue["Address"]) {
+    //   this.defaultBill.Ship_Receiver = {
+    //     Name: formValue["Name"],
+    //     FullAddress: formValue["Address"],
+    //     Street: formValue["Address"],
+    //     Phone: formValue["Telephone"],
+    //     City: formValue["City"],
+    //     District: formValue["District"],
+    //     Ward: formValue["Ward"],
+    //   };
+    // }
+    // else {
+    //   this.defaultBill.Ship_Receiver = null;
+    // }
   }
 
   initOkieLa() {
@@ -706,13 +707,13 @@ export class ModalEditOrderComponent implements OnInit {
   }
 
   getCommentsByUserAndPost(asId: string, postId: string) {
-    this.saleOnline_FacebookCommentService.getCommentsByUserAndPost(asId, postId).subscribe(res => {
-      this.lstComment = res.value.map((x: any) => {
-        x.selected = false;
-        return x;
-      });
+    // this.saleOnline_FacebookCommentService.getCommentsByUserAndPost(asId, postId).subscribe(res => {
+    //   this.lstComment = res.value.map((x: any) => {
+    //     x.selected = false;
+    //     return x;
+    //   });
 
-    });
+    // });
   }
 
   onChangeProductPrice() {
@@ -807,32 +808,32 @@ export class ModalEditOrderComponent implements OnInit {
     });
   }
 
-  getStatusColor(): string {
-    let partner = this._form.controls["Partner"].value;
+  getStatusColor() {
+    // let partner = this._form.controls["Partner"].value;
 
-    if(partner) {
-      let value = this.lstPartnerStatus.find(x => x.text == partner.StatusText);
-      if(value) return value.value;
-      else return '#e5e7eb';
-    }
+    // if(partner) {
+    //   let value = this.lstPartnerStatus.find(x => x.text == partner.StatusText);
+    //   if(value) return value.value;
+    //   else return '#e5e7eb';
+    // }
 
-    else return '#e5e7eb';
+    // else return '#e5e7eb';
   }
 
   selectStatus(status: PartnerStatusDTO) {
-    let partner = this._form.controls["Partner"].value;
+    // let partner = this._form.controls["Partner"].value;
 
-    if(partner) {
-      let data = {
-        status: `${status.value}_${status.text}`
-      }
+    // if(partner) {
+    //   let data = {
+    //     status: `${status.value}_${status.text}`
+    //   }
 
-      this.partnerService.updateStatus(partner.Id, data).subscribe(res => {
-        this.message.success(Message.Partner.UpdateStatus);
-        partner.StatusText = status.text;
-        this._form.controls["Partner"].setValue(partner);
-      });
-    }
+    //   this.partnerService.updateStatus(partner.Id, data).subscribe(res => {
+    //     this.message.success(Message.Partner.UpdateStatus);
+    //     partner.StatusText = status.text;
+    //     this._form.controls["Partner"].setValue(partner);
+    //   });
+    // }
   }
 
   onCancel(result: TDSSafeAny) {

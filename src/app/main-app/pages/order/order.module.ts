@@ -68,6 +68,7 @@ import { TDSModalModule } from 'tds-ui/modal';
 import { TDSCollapseModule } from 'tds-ui/collapse';
 import { OrderPrintService } from '../../services/print/order-print.service';
 import { ExpandOrderDetailComponent } from './components/expand-order/expand-order-detail.component';
+import { TDSNotificationModule } from "tds-ui/notification";
 import { ModalHistoryChatComponent } from './components/modal-history-chat/modal-history-chat.component';
 
 const SERVICES = [
@@ -145,6 +146,7 @@ const SERVICES = [
     TDSDrawerModule,
     UploadImageModule,
     TDSConversationsModule,
+    TDSNotificationModule,
     DirectivesModule
   ],
   providers: [

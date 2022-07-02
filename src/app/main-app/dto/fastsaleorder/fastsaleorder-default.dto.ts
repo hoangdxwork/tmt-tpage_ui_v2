@@ -259,7 +259,7 @@ export interface Account {
   Reconcile: boolean;
 }
 
-export interface OrderLine {
+export interface OrderLineV2 {
   Id: number;
   ProductId: number;
   ProductUOMId: number;
@@ -599,7 +599,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     FacebookId: string;
     DisplayFacebookName: string;
     Deliver: string;
-    ShipWeight: number;
+    ShipWeight: number ;
     ShipPaymentStatus?: any;
     OldCredit: number;
     NewCredit: number;
@@ -644,10 +644,10 @@ export interface FastSaleOrder_DefaultDTOV2 {
     Account: Account;
     Journal: Journal;
     PaymentJournal: PaymentJournal;
-    Carrier?: Carrier;
-    Tax?: any;
+    Carrier: Carrier | null;
+    Tax: any;
     SaleOrder?: any;
-    OrderLines: OrderLine[];
+    OrderLines: OrderLineV2[];
     Ship_ServiceExtras: ShipServiceExtra[];
     Team: Team;
 }

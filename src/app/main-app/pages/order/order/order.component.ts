@@ -5,8 +5,8 @@ import { CRMMatchingService } from './../../../services/crm-matching.service';
 import { CRMTeamService } from './../../../services/crm-team.service';
 import { PartnerService } from './../../../services/partner.service';
 import { addDays } from 'date-fns/esm';
-import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { SaleOnlineOrderSummaryStatusDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
+import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy, AfterViewChecked } from '@angular/core';
+import { SaleOnlineOrderSummaryStatusDTO, SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { ColumnTableDTO } from 'src/app/main-app/dto/common/table.dto';
 import { SortEnum, THelperCacheService } from 'src/app/lib';
@@ -34,18 +34,19 @@ import { CommonService } from 'src/app/main-app/services/common.service';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { GetListOrderIdsDTO } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
+import { SaleOnline_Order_V2DTO } from 'src/app/main-app/dto/saleonlineorder/saleonline-order-v2.dto';
 import { HostListener } from '@angular/core';
-
 
 @Component({
   selector: 'app-order',
   templateUrl: './order.component.html'
 })
-export class OrderComponent implements OnInit, OnDestroy {
+
+export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   @ViewChild('innerText') innerText!: ElementRef;
 
-  lstOfData: Array<TDSSafeAny> = [];
+  lstOfData!: SaleOnline_Order_V2DTO[];
   pageSize = 20;
   pageIndex = 1;
   isLoading: boolean = false;
@@ -94,11 +95,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   }];
 
   tabIndex: number = 1;
-
   public lstDataTag: Array<TDSSafeAny> = [];
-
-  // '097', '098', '038', '039', '037', '035', '034',
-  // 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel', 'Viettel',
   firstPhone = ['036', '090', '093', '077', '082']
   namePhone = ['Viettel', 'Mobifone', 'Mobifone', 'Mobifone', 'Vinaphone']
 
@@ -113,7 +110,8 @@ export class OrderComponent implements OnInit, OnDestroy {
   widthTable: number = 0;
   paddingCollapse: number = 36;
   marginLeftCollapse: number = 0;
-  isLoadingCollapse: boolean = false
+  isLoadingCollapse: boolean = false;
+
   @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
   @ViewChild('viewChildDetailPartner') viewChildDetailPartner!: ElementRef;
 
@@ -218,9 +216,10 @@ export class OrderComponent implements OnInit, OnDestroy {
 
     this.getViewData(params).subscribe((res: TDSSafeAny) => {
       this.count = res['@odata.count'] as number;
-      this.lstOfData = res.value;
-
-    }, error => this.message.error(`${error?.error?.message}` || Message.CanNotLoadData));
+      this.lstOfData = [...res.value];
+    }, error => {
+      this.message.error(`${error?.error?.message}` || Message.CanNotLoadData)
+    });
 
     this.loadSummaryStatus();
   }
@@ -395,7 +394,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     this.indClickTag = "";
   }
 
-  assignTags(id: number, tags: TDSSafeAny) {
+  assignTags(id: string, tags: TDSSafeAny) {
     let model = { OrderId: id, Tags: tags };
     this.saleOnline_OrderService.assignSaleOnlineOrder(model)
       .subscribe((res: TDSSafeAny) => {
@@ -534,19 +533,19 @@ export class OrderComponent implements OnInit, OnDestroy {
     }
   }
 
-  onEdit(id: string) {
+  onEdit(item: SaleOnline_Order_V2DTO) {
     const modal = this.modal.create({
       content: EditOrderComponent,
       size: 'xl',
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        idOrder: id
+        dataItem: item
       }
     });
 
-    modal.afterClose.subscribe((result: TDSSafeAny) => {
-      if (TDSHelperObject.hasValue(result)) {
-        this.loadData(this.pageSize, this.pageIndex);
+    modal.afterClose.subscribe((obs: string) => {
+      if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
+          this.loadData(this.pageSize, this.pageIndex);
       }
     });
   }
@@ -564,17 +563,17 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   remove(id: string, code: string) {
     this.isLoading = true;
-    this.saleOnline_OrderService.remove(id)
-      .pipe(finalize(() => this.isLoading = false))
+    this.saleOnline_OrderService.remove(id).pipe(finalize(() => this.isLoading = false))
       .subscribe((res: TDSSafeAny) => {
-        this.message.info(`${Message.Order.DeleteSuccess} ${code}`);
-        this.refreshDataCurrent();
-      }, error => this.message.error(`${error?.error?.message}` || Message.ErrorOccurred));
+          this.message.info(`${Message.Order.DeleteSuccess} ${code}`);
+          this.refreshDataCurrent();
+      }, error => {
+          this.message.error(`${error?.error?.message}` || Message.ErrorOccurred);
+      });
   }
 
   checkValueEmpty() {
     let ids = [...this.setOfCheckedId];
-
     if (ids.length == 0) {
       this.message.error('Vui lòng chọn tối thiểu một dòng!');
       return 0;
@@ -662,8 +661,6 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   //   });
   // }
-
-
 
   printMultiOrder() {
     if (this.checkValueEmpty() == 1) {
@@ -760,6 +757,10 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   closeDrawer() {
     this.isOpenDrawer = false;
+  }
+
+  ngAfterViewChecked(): void {
+    this.cdRef.detectChanges();
   }
 
   onClose(e:Event) {

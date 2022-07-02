@@ -132,7 +132,7 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
 
     let model = {
       is_approve: TDSHelperString.hasValueString(confirm) ? true : false,
-      model: this.lstData,
+      model: this.lstData
     };
 
     this.fastSaleOrderService.insertListOrderModel(model).subscribe(res => {
@@ -140,7 +140,6 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
         this.message.success(Message.Bill.InsertSuccess);
 
         this.printSave(res);
-        // this.onCancel();
       }
       else {
         this.onModalError(res.DataErrorFast);
@@ -162,7 +161,6 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
 
     modal.afterClose.subscribe((result) => {
       this.printSave(result);
-      // this.onCancel();
     });
   }
 

@@ -9,11 +9,12 @@ import { GeneralConfigsFacade } from '../facades/general-config.facade';
 import { FormGroup } from '@angular/forms';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { CRMTeamService } from '../crm-team.service';
-import { FastSaleOrderLineDTO, FastSaleOrderRestDTO, FastSaleOrder_ReceiverDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
+import { FastSaleOrderLineDTO, FastSaleOrder_ReceiverDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
 import { SaleOnline_OrderDTO, SaleOnline_Order_FacebookCommentDTO } from '../../dto/saleonlineorder/sale-online-order.dto';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
 import { TDSModalService } from "tds-ui/modal";
 import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
+import { FastSaleOrder_DefaultDTOV2 } from "../../dto/fastsaleorder/fastsaleorder-default.dto";
 
 
 @Injectable({
@@ -23,18 +24,14 @@ export class CheckFormHandler {
 
   lstCarriers!: DeliveryCarrierDTO[];
   saleConfig: TDSSafeAny;
-  billDefault$!: Observable<FastSaleOrderRestDTO>;
+  billDefault$!: Observable<FastSaleOrder_DefaultDTOV2>;
 
   currentTeam!: CRMTeamDTO | null;
 
-  constructor(
-    private fastSaleOrderService: FastSaleOrderService,
-    private deliveryCarrierService: DeliveryCarrierService,
+  constructor( private deliveryCarrierService: DeliveryCarrierService,
     private generalConfigsFacade: GeneralConfigsFacade,
-    private crmTeamService: CRMTeamService,
-    private modalService: TDSModalService
-  ) {
-    this.loadData();
+    private crmTeamService: CRMTeamService) {
+      this.loadData();
   }
 
   loadData() {
@@ -109,7 +106,7 @@ export class CheckFormHandler {
     return model;
   }
 
-  prepareBill(orderForm: FormGroup, billModel: FastSaleOrderRestDTO, shipExtraServices: TDSSafeAny[]): FastSaleOrderRestDTO {
+  prepareBill(orderForm: FormGroup, billModel: FastSaleOrder_DefaultDTOV2, shipExtraServices: TDSSafeAny[]) {
     let model = billModel;
     let formValue = orderForm.value;
 
@@ -122,7 +119,7 @@ export class CheckFormHandler {
     model.Address = formValue.Address || formValue.Street;
     model.FacebookId = formValue.Facebook_UserId;
     model.FacebookName = formValue.Facebook_UserName || formValue.Name || formValue.PartnerName;
-    model.Facebook_ASUserId = formValue.Facebook_ASUserId;
+    // model.Facebook_ASUserId = formValue.Facebook_ASUserId;
     // model.Telephone = formValue.Telephone;
 
     model.Tax = formValue.Tax;
@@ -144,11 +141,14 @@ export class CheckFormHandler {
     model.PriceListId = model.PriceList ? model.PriceList.Id : 0;
     model.WarehouseId = model.Warehouse ? model.Warehouse.Id : 0;
 
-    model.Carrier = model.Carrier != null && model.Carrier.Id ? model.Carrier : undefined;
-    model.CarrierId = model.Carrier != null && model.Carrier.Id ? model.Carrier.Id : undefined;
+    if(model.Carrier) {
+      model.Carrier = model.Carrier;
+      model.CarrierId = model.Carrier.Id;
+    }
 
-    model.PaymentJournalId = model.PaymentJournal != null ? model.PaymentJournal.Id : undefined;
-
+    if(model.PaymentJournal) {
+      model.PaymentJournalId = model.PaymentJournal.Id;
+    }
     // Xóa detail gán lại
     model.OrderLines = [];
 
@@ -167,18 +167,19 @@ export class CheckFormHandler {
         orderLine.PriceSubTotal = detail.Price * detail.Quantity,
         orderLine.Note = detail.Note
 
-        model.OrderLines.push(orderLine);
+        model.OrderLines.push(orderLine as any);
     });
 
-    let ship_Receiver = {} as FastSaleOrder_ReceiverDTO;
-    ship_Receiver.Name = formValue.PartnerName || formValue.Name,
-    ship_Receiver.Phone = formValue.Telephone,
-    ship_Receiver.Street = formValue.Street,
-    ship_Receiver.City = formValue.City,
-    ship_Receiver.District = formValue.District,
-    ship_Receiver.Ward = formValue.Ward
+    // let ship_Receiver = {} as FastSaleOrder_ReceiverDTO;
 
-    model.Ship_Receiver = ship_Receiver;
+    // ship_Receiver.Name = formValue.PartnerName || formValue.Name,
+    // ship_Receiver.Phone = formValue.Telephone,
+    // ship_Receiver.Street = formValue.Street,
+    // ship_Receiver.City = formValue.City,
+    // ship_Receiver.District = formValue.District,
+    // ship_Receiver.Ward = formValue.Ward
+
+    // model.Ship_Receiver = ship_Receiver;
 
     if (shipExtraServices) {
       model.Ship_ServiceExtras = [];
@@ -196,8 +197,8 @@ export class CheckFormHandler {
       });
     }
 
-    model.PageId = this.currentTeam ? this.currentTeam.Facebook_PageId : undefined;
-    model.PageName = this.currentTeam ? this.currentTeam.Facebook_PageName : undefined;
+    // model.PageId = this.currentTeam ? this.currentTeam.Facebook_PageId : undefined;
+    // model.PageName = this.currentTeam ? this.currentTeam.Facebook_PageName : undefined;
 
     return model;
   }

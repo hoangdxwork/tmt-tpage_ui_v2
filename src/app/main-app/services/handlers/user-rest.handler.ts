@@ -4,17 +4,12 @@ import { Observable, timer } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
 import { ApplicationUserService } from "../application-user.service";
 
-
-
 @Injectable({
   providedIn: 'root'
 })
 export class UserRestHandler {
 
-  constructor(
-    private applicationUserService: ApplicationUserService
-  ) {
-  }
+  constructor(private applicationUserService: ApplicationUserService) {}
 
   validateExitUsername(userId: string) {
     return (control: AbstractControl): Observable<ValidationErrors | null> => {

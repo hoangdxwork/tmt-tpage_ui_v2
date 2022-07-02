@@ -1,22 +1,16 @@
 import { ConversationOrderProductDefaultDTO } from 'src/app/main-app/dto/coversation-order/conversation-order.dto';
-import { formatNumber } from "@angular/common";
-import { EventEmitter, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { FormGroup } from "@angular/forms";
-import { Observable } from "rxjs";
-import { TAPIDTO, TApiMethodType, TAuthService, TCommonService, UserInitDTO } from "src/app/lib";
-import { TDSMessageService } from "tds-ui/message";
+import { TCommonService, UserInitDTO } from "src/app/lib";
 import { TDSSafeAny } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
-import { CommonService } from "../common.service";
 import { GeneralConfigsFacade } from "../facades/general-config.facade";
-import { FastSaleOrderService } from "../fast-sale-order.service";
-import { CarrierHandler } from "./carier.handler";
-import { CheckFormHandler } from "./check-form.handler";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SaleHandler extends BaseSevice {
+
   protected prefix: string = "";
   protected table: string = "";
   protected baseRestApi: string = "";
@@ -25,17 +19,10 @@ export class SaleHandler extends BaseSevice {
   companyId: TDSSafeAny;
   saleConfig: TDSSafeAny;
 
-  constructor(
-    private apiService: TCommonService,
-    private auth: TAuthService,
-    private message: TDSMessageService,
-    private carrierHandler: CarrierHandler,
-    private checkFormHandler: CheckFormHandler,
-    private fastSaleOrderService: FastSaleOrderService,
-    private generalConfigsFacade: GeneralConfigsFacade
-  ) {
-    super(apiService);
-    this.initialize();
+  constructor(private apiService: TCommonService,
+    private generalConfigsFacade: GeneralConfigsFacade) {
+      super(apiService);
+      this.initialize();
   }
 
   initialize() {
@@ -46,7 +33,7 @@ export class SaleHandler extends BaseSevice {
 
   updateTotalAmount(orderForm: FormGroup) {
     let formValue = orderForm.value;
-    
+
     let formDetail = formValue.Details;
     let discount = formValue.Discount;
     let total = 0;

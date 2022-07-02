@@ -1,6 +1,6 @@
 import { GenerateMessageDTO } from './../dto/conversation/inner.dto';
 import { EventEmitter, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { ODataPaymentJsonDTO } from '../dto/bill/payment-json.dto';
@@ -9,7 +9,7 @@ import { ConversationOrderBillByPartnerDTO } from '../dto/conversation/conversat
 import { ODataCalculatorListFeeDTO } from '../dto/fastsaleorder/calculate-listFee.dto';
 
 import { FastSaleOrder_DefaultDTOV2 } from '../dto/fastsaleorder/fastsaleorder-default.dto';
-import { FastSaleOrderDTO, FastSaleOrderRestDTO, FastSaleOrderSummaryStatusDTO, ListUpdateDepositDTO } from '../dto/fastsaleorder/fastsaleorder.dto';
+import { FastSaleOrderSummaryStatusDTO, ListUpdateDepositDTO } from '../dto/fastsaleorder/fastsaleorder.dto';
 import { AccountRegisterPaymentDTO } from '../dto/fastsaleorder/payment.dto';
 import { ODataIdsDTO, ODataModelDTO } from '../dto/odata/odata.dto';
 import { ChangePartnerPriceListDTO } from '../dto/partner/change-partner-pricelist.dto';
@@ -41,18 +41,6 @@ export class FastSaleOrderService extends BaseSevice {
     }
 
     return this.apiService.getData<FastSaleOrder_DefaultDTOV2>(api, null);
-  }
-
-  defaultGet(): Observable<any> {
-    let typeInvoice = { "model": { "Type": "invoice" } };
-    let expand = `Warehouse,User,PriceList,Company,Journal,PaymentJournal,Partner,Carrier,Tax,SaleOrder`;
-
-    const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.DefaultGet?$expand=${expand}`,
-      method: TApiMethodType.post,
-    }
-
-    return this.apiService.getData<any>(api, typeInvoice);
   }
 
   defaultGetV2(data: any): Observable<any> {
@@ -118,7 +106,7 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  create(data: TDSSafeAny): Observable<TDSSafeAny> {
+  createFastSaleOrder(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/create`,
       method: TApiMethodType.post,
@@ -333,7 +321,7 @@ export class FastSaleOrderService extends BaseSevice {
   }
 
   // NOTE: BE trả về FastSaleOrderDTO nhưng FE sử dụng FastSaleOrderRestDTO tránh convert dữ liệu
-  getDefault(data: ODataModelDTO<TDSSafeAny>): Observable<FastSaleOrderRestDTO> {
+  getDefault(data: ODataModelDTO<TDSSafeAny>): Observable<any> {
     let expand = "Warehouse,User,PriceList,Company,Journal,PaymentJournal,Partner,Carrier,Tax,SaleOrder";
 
     const api: TAPIDTO = {
@@ -341,10 +329,10 @@ export class FastSaleOrderService extends BaseSevice {
       method: TApiMethodType.post,
     }
 
-    return this.apiService.getData<FastSaleOrderRestDTO>(api, data);
+    return this.apiService.getData<any>(api, data);
   }
 
-  saveV2(data: FastSaleOrderRestDTO, isDraft: boolean): Observable<TDSSafeAny> {
+  saveV2(data: any, isDraft: boolean): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/create?IsDraft=${isDraft}`,
       method: TApiMethodType.post,

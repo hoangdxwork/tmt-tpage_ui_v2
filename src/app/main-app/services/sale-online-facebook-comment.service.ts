@@ -1,19 +1,19 @@
-import { EventEmitter, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { SaleOnline_Facebook_CommentFilterResultDTO } from "../dto/coversation-order/conversation-order.dto";
 import { ODataResponsesDTO } from "../dto/odata/odata.dto";
-import { PagedList2 } from "../dto/pagedlist2.dto";
 import { BaseSevice } from "./base.service";
-
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class SaleOnline_FacebookCommentService extends BaseSevice {
+
   prefix: string = "odata";
   table: string = "SaleOnline_Facebook_Comment";
-  baseRestApi: string = "";
+  baseRestApi: string = "/rest/v1.0/facebookpost";
 
   constructor(private apiService: TCommonService) {
     super(apiService)
@@ -26,6 +26,15 @@ export class SaleOnline_FacebookCommentService extends BaseSevice {
     }
 
     return this.apiService.getData<ODataResponsesDTO<SaleOnline_Facebook_CommentFilterResultDTO>>(api, null);
+  }
+
+  getCommentsOfOrder(fb_PostId: string, teamId: any, fb_ASUserId: string): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${fb_PostId}/comments_by_user?teamId=${teamId}&userId=${fb_ASUserId}`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
   }
 
 }

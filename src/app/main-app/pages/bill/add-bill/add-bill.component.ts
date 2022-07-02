@@ -9,7 +9,7 @@ import { formatDate } from '@angular/common';
 import { PartnerCategoryDTO } from 'src/app/main-app/dto/partner/partner-category.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { FastSaleOrder_DefaultDTOV2, OrderLine } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
+import { FastSaleOrder_DefaultDTOV2, OrderLineV2 } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
 import { DeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto';
 import { AccountJournalPaymentDTO } from 'src/app/main-app/dto/register-payment/register-payment.dto';
 import { CustomerDTO } from 'src/app/main-app/dto/partner/customer.dto';
@@ -365,7 +365,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     }
 
     if (TDSHelperArray.hasListValue(data.OrderLines)) {
-      data.OrderLines.forEach((x: OrderLine) => {
+      data.OrderLines.forEach((x: OrderLineV2) => {
           this.addOrderLines(x);
       });
     }
@@ -1334,10 +1334,10 @@ export class AddBillComponent implements OnInit, OnDestroy {
     }
   }
 
-  onAddUserOrderLines(event: any, item: OrderLine, index: number): void {
+  onAddUserOrderLines(event: any, item: OrderLineV2, index: number): void {
     let datas = this._form.controls['OrderLines'].value;
     if (TDSHelperArray.hasListValue(datas)) {
-      datas.map((x: OrderLine, i: number) => {
+      datas.map((x: OrderLineV2, i: number) => {
         if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
           x.User = event;
           x.UserId = event.Id;
@@ -1428,7 +1428,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     });
   }
 
-  initOrderLines(data: OrderLine | null) {
+  initOrderLines(data: OrderLineV2 | null) {
     if (data != null) {
       return this.fb.group({
         Id: [data.Id],
@@ -1512,15 +1512,15 @@ export class AddBillComponent implements OnInit, OnDestroy {
     }
   }
 
-  addOrderLines(data: OrderLine) {
+  addOrderLines(data: OrderLineV2) {
     let control = <FormArray>this._form.controls['OrderLines'];
     control.push(this.initOrderLines(data));
 
     this.computeAmountTotal();
   }
 
-  copyOrderLine(item: OrderLine, index: number) {
-    var item: OrderLine = {
+  copyOrderLine(item: OrderLineV2, index: number) {
+    var item: OrderLineV2 = {
       Id: 0,
       ProductId: item.ProductId,
       ProductUOMId: item.ProductUOMId,
@@ -1583,7 +1583,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.computeAmountTotal();
   }
 
-  removeOrderLines(item: OrderLine, index: number) {
+  removeOrderLines(item: OrderLineV2, index: number) {
     (<FormArray>this._form.controls['OrderLines']).removeAt(index);
 
     this.totalQtyLines = Number(this.totalQtyLines - item.ProductUOMQty);
@@ -1597,7 +1597,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   onLoadProductToOrderLines(event: DataPouchDBDTO) {
-    let datas = this._form.controls['OrderLines'].value as Array<OrderLine>;
+    let datas = this._form.controls['OrderLines'].value as Array<OrderLineV2>;
     let exist = datas.filter((x: any) => x.ProductId == event.Id && x.ProductUOMId == event.UOMId && (x.Id != null || x.Id != 0))[0];
 
     if (exist) {
@@ -1641,7 +1641,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       .pipe(finalize(() => { this.isLoadingProduct = false }))
       .subscribe((res: FSOrderLines) => {
         delete res['@odata.context'];
-        var item: OrderLine = {
+        var item: OrderLineV2 = {
           Id: 0,
           ProductId: res.ProductId,
           ProductUOMId: res.ProductUOMId,
@@ -1697,8 +1697,8 @@ export class AddBillComponent implements OnInit, OnDestroy {
     let totalQty = 0;
     let totalPrice = 0;
 
-    let datas = this._form.controls['OrderLines'].value as Array<OrderLine>;
-    datas.forEach((x: OrderLine) => {
+    let datas = this._form.controls['OrderLines'].value as Array<OrderLineV2>;
+    datas.forEach((x: OrderLineV2) => {
       x.Discount = x.Discount ? x.Discount : 0;
       x.PriceTotal = (x.PriceUnit * (1 - (x.Discount || 0) / 100) - (x.Discount_Fixed || 0)) * x.ProductUOMQty;
       x.WeightTotal = Math.round(x.ProductUOMQty * x.Weight * 1000) / 1000;
@@ -1719,13 +1719,13 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.updateCoDAmount();
   }
 
-  updateTotalSummary(datas: OrderLine[]) {
+  updateTotalSummary(datas: OrderLineV2[]) {
 
     let total = 0;
     let weightTotal = 0;
 
     if (TDSHelperArray.hasListValue(datas)) {
-      datas.forEach((x: OrderLine) => {
+      datas.forEach((x: OrderLineV2) => {
         total += x.PriceTotal;
         weightTotal += x.WeightTotal;
       });
@@ -1769,9 +1769,9 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this._form.controls['AmountTotal'].setValue(amountTotal);
   }
 
-  updateQuantitySummary(datas: OrderLine[]) {
+  updateQuantitySummary(datas: OrderLineV2[]) {
     let total = 0;
-    datas.forEach((x: OrderLine) => {
+    datas.forEach((x: OrderLineV2) => {
       if (!x.PromotionProgramId) {
         total += x.ProductUOMQty;
       }
