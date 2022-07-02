@@ -1,4 +1,3 @@
-import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
 import { Component, OnInit } from '@angular/core';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 
@@ -10,7 +9,7 @@ export class ConfigPrintBillsComponent implements OnInit {
   printerList:TDSSafeAny[] = [];
   enablePrintSwitch!:boolean;
 
-  constructor(private configDataService: ConfigDataFacade) { }
+  constructor() { }
 
   ngOnInit(): void {
     this.loadData();

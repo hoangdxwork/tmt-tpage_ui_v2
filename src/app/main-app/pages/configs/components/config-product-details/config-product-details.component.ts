@@ -49,7 +49,6 @@ export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
 
   getStockMoveProduct(pageSize:number, pageIndex:number){
     this.isLoading_stockMove = true;
-
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
 
     this.stokeMoveService.getStockMoveProduct(this.productTemplate.Id,params).pipe(takeUntil(this.destroy$)).subscribe(

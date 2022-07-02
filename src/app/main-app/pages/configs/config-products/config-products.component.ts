@@ -1,4 +1,3 @@
-import { ConfigDataFacade } from './../../../services/facades/config-data.facade';
 import { ProductTemplateDTO } from './../../../dto/product/product.dto';
 import { ColumnTableDTO } from './../../partner/components/config-column/config-column-partner.component';
 import { THelperCacheService } from './../../../../lib/utility/helper-cache';
@@ -80,8 +79,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     private productTemplateService: ProductTemplateService,
     private odataService: OdataProductTemplateService,
     private resizeObserver: TDSResizeObserver,
-    private excelExportService: ExcelExportService,
-    private configDataService: ConfigDataFacade
+    private excelExportService: ExcelExportService
   ){}
 
   ngOnInit(): void {
@@ -131,7 +129,6 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     this.getViewData(params).subscribe((res: ODataProductTemplateDTO) => {
       this.count = res['@odata.count'] as number;
       this.lstOfData = res.value;
-      this.configDataService.onLoading$.emit(false);
     }, err => {
       this.message.error('Tải dữ liệu sản phẩm thất bại!');
     });
@@ -139,7 +136,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
 
   private getViewData(params: string): Observable<ODataProductTemplateDTO> {
     this.isLoading = true;
-    this.configDataService.onLoading$.emit(this.isLoading);
+    
     return this.odataService
         .getView(params, this.filterObj).pipe(takeUntil(this.destroy$))
         .pipe(finalize(() => {this.isLoading = false}));

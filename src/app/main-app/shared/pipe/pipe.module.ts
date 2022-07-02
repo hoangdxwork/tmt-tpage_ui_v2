@@ -1,3 +1,4 @@
+import { ConvertListUrlPipe } from './convert-list-url.pipe';
 import { ButtonStatusColorPipe } from './button-status-color.pipe';
 import { ReplacePartnerPipe } from './replace-partner.pipe';
 
@@ -33,7 +34,8 @@ const cmp =[
   OrderByPipe,
   ButtonStatusColorPipe,
   LastActivityMessagePipe,
-  ShowAttributeValuePipe
+  ShowAttributeValuePipe,
+  ConvertListUrlPipe
 ]
 
 @NgModule({

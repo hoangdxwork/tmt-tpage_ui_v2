@@ -1,7 +1,5 @@
-import { ConfigDataFacade } from './../../../../services/facades/config-data.facade';
-import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSMessageService } from 'tds-ui/message';
@@ -25,8 +23,7 @@ export class ConfigPagesBasicComponent implements OnInit {
   onSaveGreeting: boolean = false;
 
   constructor(
-    private message: TDSMessageService,
-    private configDataService: ConfigDataFacade
+    private message: TDSMessageService
   ) { }
 
   ngOnInit(): void {

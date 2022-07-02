@@ -1,11 +1,9 @@
-import { ConfigDataFacade } from './../../../../services/facades/config-data.facade';
 import { Router } from '@angular/router';
 import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
-import { PagedList2 } from 'src/app/main-app/dto/pagedlist2.dto';
 import { CRMTeamDTO, UpdateGrantPermissionDTO } from 'src/app/main-app/dto/team/team.dto';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { finalize } from 'rxjs/operators';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -58,8 +56,7 @@ export class ConfigDecentralizePageComponent implements OnInit, OnDestroy {
     private router: Router,
     private crmTeamService: CRMTeamService,
     private message: TDSMessageService,
-    private applicationUserService: ApplicationUserService,
-    private configDataService: ConfigDataFacade
+    private applicationUserService: ApplicationUserService
   ) { }
 
   ngOnInit(): void {
@@ -75,12 +72,11 @@ export class ConfigDecentralizePageComponent implements OnInit, OnDestroy {
 
   loadUser() {
     this.isLoading = true;
-    this.configDataService.onLoading$.emit(this.isLoading);
+    
     this.applicationUserService.get()
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.lstUsers = res.value;
-        this.configDataService.onLoading$.emit(false);
       });
   }
 
