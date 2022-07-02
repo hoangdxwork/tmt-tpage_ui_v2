@@ -37,6 +37,7 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSUploadChangeParam } from 'tds-ui/upload';
 import { ProductPagefbComponent } from '../../pages/conversations/components/product-pagefb/product-pagefb.component';
+import { ModalPostComponent } from '../../pages/conversations/components/modal-post/modal-post.component';
 
 @Component({
   selector: 'shared-tds-conversations',
@@ -736,6 +737,16 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       this.router.navigateByUrl(`/conversation/post?teamId=${this.team.Id}&type=post&post_id=${item.object_id}`);
     }
   }
+
+  openModalPost() {
+    this.modalService.create({
+      title: 'Bài viết tổng quan',
+      content: ModalPostComponent,
+      size: "xl",
+      viewContainerRef: this.viewContainerRef,
+    });
+  }
+
 
   refreshRead() {
     this.validateData();

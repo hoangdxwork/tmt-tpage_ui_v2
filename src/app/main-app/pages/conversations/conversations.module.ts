@@ -113,6 +113,7 @@ import { TDSMessageModule, TDSMessageService } from 'tds-ui/message';
 import { ProductPagefbComponent } from './components/product-pagefb/product-pagefb.component';
 import { ModalApplyPromotionComponent } from './components/modal-apply-promotion/modal-apply-promotion.component';
 import { OdataProductService } from '../../services/mock-odata/odata-product.service';
+import { ModalPostComponent } from './components/modal-post/modal-post.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -196,7 +197,8 @@ const SERVICES = [
     ModalListCollectionComponent,
     ModalTaxComponent,
     ProductPagefbComponent,
-    ModalApplyPromotionComponent
+    ModalApplyPromotionComponent,
+    ModalPostComponent
   ],
 
   imports: [

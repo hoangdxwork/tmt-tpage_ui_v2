@@ -5,7 +5,7 @@ import { CRMMatchingService } from './../../../services/crm-matching.service';
 import { CRMTeamService } from './../../../services/crm-team.service';
 import { PartnerService } from './../../../services/partner.service';
 import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib/enum/sort.enum';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
@@ -590,6 +590,13 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
           messageType: GenerateMessageTypeEnum.Bill
         }
       });
+  }
+
+  onChangeCarrier(event: any){
+    this.filterObj = {
+      deliveryType: event.Name,
+    }
+    this.getViewData(this.filterObj)
   }
 
   ngOnDestroy(): void {
