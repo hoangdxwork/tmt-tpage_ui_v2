@@ -14,7 +14,7 @@ import { SaleOnline_OrderDTO, SaleOnline_Order_FacebookCommentDTO } from '../../
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
 import { TDSModalService } from "tds-ui/modal";
 import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
-import { FastSaleOrder_DefaultDTOV2 } from "../../dto/fastsaleorder/fastsaleorder-default.dto";
+import { FastSaleOrderRestDTO } from "../../dto/saleonlineorder/saleonline-order-red.dto";
 
 
 @Injectable({
@@ -24,14 +24,18 @@ export class CheckFormHandler {
 
   lstCarriers!: DeliveryCarrierDTO[];
   saleConfig: TDSSafeAny;
-  billDefault$!: Observable<FastSaleOrder_DefaultDTOV2>;
+  billDefault$!: Observable<FastSaleOrderRestDTO>;
 
   currentTeam!: CRMTeamDTO | null;
 
-  constructor( private deliveryCarrierService: DeliveryCarrierService,
+  constructor(
+    private fastSaleOrderService: FastSaleOrderService,
+    private deliveryCarrierService: DeliveryCarrierService,
     private generalConfigsFacade: GeneralConfigsFacade,
-    private crmTeamService: CRMTeamService) {
-      this.loadData();
+    private crmTeamService: CRMTeamService,
+    private modalService: TDSModalService
+  ) {
+    this.loadData();
   }
 
   loadData() {
@@ -106,7 +110,7 @@ export class CheckFormHandler {
     return model;
   }
 
-  prepareBill(orderForm: FormGroup, billModel: FastSaleOrder_DefaultDTOV2, shipExtraServices: TDSSafeAny[]) {
+  prepareBill(orderForm: FormGroup, billModel: FastSaleOrderRestDTO, shipExtraServices: TDSSafeAny[]): FastSaleOrderRestDTO {
     let model = billModel;
     let formValue = orderForm.value;
 
@@ -119,7 +123,7 @@ export class CheckFormHandler {
     model.Address = formValue.Address || formValue.Street;
     model.FacebookId = formValue.Facebook_UserId;
     model.FacebookName = formValue.Facebook_UserName || formValue.Name || formValue.PartnerName;
-    // model.Facebook_ASUserId = formValue.Facebook_ASUserId;
+    model.Facebook_ASUserId = formValue.Facebook_ASUserId;
     // model.Telephone = formValue.Telephone;
 
     model.Tax = formValue.Tax;
@@ -141,14 +145,11 @@ export class CheckFormHandler {
     model.PriceListId = model.PriceList ? model.PriceList.Id : 0;
     model.WarehouseId = model.Warehouse ? model.Warehouse.Id : 0;
 
-    if(model.Carrier) {
-      model.Carrier = model.Carrier;
-      model.CarrierId = model.Carrier.Id;
-    }
+    model.Carrier = model.Carrier != null && model.Carrier.Id ? model.Carrier : undefined;
+    model.CarrierId = model.Carrier != null && model.Carrier.Id ? model.Carrier.Id : undefined;
 
-    if(model.PaymentJournal) {
-      model.PaymentJournalId = model.PaymentJournal.Id;
-    }
+    model.PaymentJournalId = model.PaymentJournal != null ? model.PaymentJournal.Id : undefined;
+
     // Xóa detail gán lại
     model.OrderLines = [];
 
@@ -167,19 +168,18 @@ export class CheckFormHandler {
         orderLine.PriceSubTotal = detail.Price * detail.Quantity,
         orderLine.Note = detail.Note
 
-        model.OrderLines.push(orderLine as any);
+        model.OrderLines.push(orderLine);
     });
 
-    // let ship_Receiver = {} as FastSaleOrder_ReceiverDTO;
+    let ship_Receiver = {} as FastSaleOrder_ReceiverDTO;
+    ship_Receiver.Name = formValue.PartnerName || formValue.Name,
+    ship_Receiver.Phone = formValue.Telephone,
+    ship_Receiver.Street = formValue.Street,
+    ship_Receiver.City = formValue.City,
+    ship_Receiver.District = formValue.District,
+    ship_Receiver.Ward = formValue.Ward
 
-    // ship_Receiver.Name = formValue.PartnerName || formValue.Name,
-    // ship_Receiver.Phone = formValue.Telephone,
-    // ship_Receiver.Street = formValue.Street,
-    // ship_Receiver.City = formValue.City,
-    // ship_Receiver.District = formValue.District,
-    // ship_Receiver.Ward = formValue.Ward
-
-    // model.Ship_Receiver = ship_Receiver;
+    model.Ship_Receiver = ship_Receiver;
 
     if (shipExtraServices) {
       model.Ship_ServiceExtras = [];
@@ -197,8 +197,8 @@ export class CheckFormHandler {
       });
     }
 
-    // model.PageId = this.currentTeam ? this.currentTeam.Facebook_PageId : undefined;
-    // model.PageName = this.currentTeam ? this.currentTeam.Facebook_PageName : undefined;
+    model.PageId = this.currentTeam ? this.currentTeam.Facebook_PageId : undefined;
+    model.PageName = this.currentTeam ? this.currentTeam.Facebook_PageName : undefined;
 
     return model;
   }
