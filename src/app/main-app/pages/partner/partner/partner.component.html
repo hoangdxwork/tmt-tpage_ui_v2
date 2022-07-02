@@ -34,7 +34,7 @@
         <div class="flex justify-between pt-3 pb-3">
           <div [tooltipTrigger]="'hover'" tooltipTitle="Chọn khách hàng để gửi tin nhắn" class="ml-3"
             tooltipPlacement="top" tds-tooltip>
-            <button tds-button color="primary" [disabled]="setOfCheckedId.size==0" (click)="showModalSendMessage()">
+            <button tds-button color="primary" (click)="showModalSendMessage()">
               <span class="flex items-center">
                 <i class="tdsi-send-fill mr-2"></i>Gửi tin nhắn
               </span>
@@ -56,7 +56,7 @@
               </tds-dropdown-menu>
             </tds-button-group>
 
-            <tds-form-field class="w-full">
+            <tds-form-field class="w-80">
               <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText/>
               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
             </tds-form-field>
@@ -84,20 +84,20 @@
             <thead>
               <tr>
                 <th width="50px" [tdsLeft]="true"></th>
-                <th width="50px" [tdsLeft]="true" [(checked)]="checked" [indeterminate]="indeterminate"
+                <th width="50px" [tdsLeft]="true" [(checked)]="checked" [indeterminate]="indeterminate" class="border-x text-center"
                   (checkedChange)="onAllChecked($event)">
                 </th>
-                <th *ngIf="isHidden('DisplayName')" width="280px" [tdsLeft]="true">Tên</th>
-                <th *ngIf="isHidden('Phone')" width="240px">Điện thoại</th>
-                <th *ngIf="isHidden('Email')" width="240px">Email</th>
-                <th *ngIf="isHidden('Street')" width="360px">Địa chỉ</th>
-                <th *ngIf="isHidden('StatusText')" width="240px">Trạng thái</th>
-                <th width="280px">Nhãn</th>
-                <th *ngIf="isHidden('Credit')" width="240px" class="text-right">Nợ hiện tại</th>
-                <th *ngIf="isHidden('FacebookId')" width="240px">Facebook</th>
-                <th *ngIf="isHidden('Zalo')" width="240px">Zalo</th>
-                <th *ngIf="isHidden('Active')" width="140px" class="text-center">Hiệu lực</th>
-                <th *ngIf="isHidden('DateCreated')" width="240px" class="text-center">Ngày tạo</th>
+                <th *ngIf="isHidden('DisplayName')" width="280px" [tdsLeft]="true" class="border-r">Tên</th>
+                <th *ngIf="isHidden('Phone')" width="120px" class="border-r">Điện thoại</th>
+                <th *ngIf="isHidden('Email')" width="210px" class="border-r">Email</th>
+                <th *ngIf="isHidden('Street')" width="410px" class="border-r">Địa chỉ</th>
+                <th *ngIf="isHidden('StatusText')" width="150px" class="border-r">Trạng thái</th>
+                <th *ngIf="isHidden('Tag')" width="200px" class="border-r">Nhãn</th>
+                <th *ngIf="isHidden('Credit')" width="120px" class="text-right border-r">Nợ hiện tại</th>
+                <th *ngIf="isHidden('FacebookId')" width="200px" class="border-r">Facebook</th>
+                <th *ngIf="isHidden('Zalo')" width="200px" class="border-r">Zalo</th>
+                <th *ngIf="isHidden('Active')" width="120px" class="text-center border-r">Hiệu lực</th>
+                <th *ngIf="isHidden('DateCreated')" width="150px" class="text-center border-r">Ngày tạo</th>
                 <th width="140px" class="text-center" [tdsRight]="true">Thao tác</th>
               </tr>
             </thead>
@@ -135,9 +135,9 @@
                       <span class="ml-1">{{data.StatusText}}</span>
                     </div>
                   </td>
-                  <td class="border-r border-neutral-200">
+                  <td *ngIf="isHidden('Tag')" class="border-r border-neutral-200">
                     <div class="flex w-full gap-x-2 items-center">
-                      <div class="flex w-full flex-wrap gap-2">
+                      <div *ngIf="data.Tags" class="flex flex-wrap gap-2">
                         <tds-tag class="truncate" *ngFor="let item of data.Tags | prettyjson" status='primary'>
                           {{item.Name}}</tds-tag>
                       </div>
@@ -181,7 +181,7 @@
                   </td>
 
                   <td *ngIf="isHidden('Credit')" class="border-r border-neutral-200 text-right">
-                    {{ data.Credit || 0 | number :'1.0-3'}} đ</td>
+                    {{ data.Credit || 0 | number :'1.0-3'}}</td>
                   <td *ngIf="isHidden('FacebookId')" class="border-r border-neutral-200 text-right">{{ data.FacebookId}}
                   </td>
                   <td *ngIf="isHidden('Zalo')" class="border-r border-neutral-200 text-right">{{ data.Zalo}}</td>
@@ -194,7 +194,7 @@
                     </div>
                   </td>
                   <td *ngIf="isHidden('DateCreated')" class="border-r border-neutral-200 text-center">
-                    {{ data.DateCreated | date:"dd-MM-yyyy HH:mm"}}</td>
+                    {{ data.DateCreated | date:"dd/MM/yyyy"}}</td>
                   <td [tdsRight]="true">
                     <div class="flex gap-x-2">
                       <button tds-button-icon color="secondary" size="sm" (click)="openMiniChat(data)">

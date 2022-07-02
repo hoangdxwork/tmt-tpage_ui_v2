@@ -305,26 +305,28 @@ export class OrderComponent implements OnInit, OnDestroy {
     if (this.checkValueEmpty() == 1) {
       this.isLoading = true;
       let ids = [...this.setOfCheckedId];
-
-
-      this.fastSaleOrderService.getListOrderIds({ids: ids})
-        .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
-          if(res) {
-              this.modal.create({
-                  title: 'Tạo hóa đơn nhanh',
-                  content: CreateBillFastComponent,
-                  centered: true,
-                  size: 'xl',
-                  viewContainerRef: this.viewContainerRef,
-                  componentParams: {
-                    lstData: [...res.value] as GetListOrderIdsDTO[]
-                  }
-              });
-          }
-      }, error => {
-          this.message.error(error?.error?.message ? error?.error?.message : 'Đã xảy ra lỗi');
-      });
+      this.showModalCreateBillFast(ids)
     }
+  }
+
+  showModalCreateBillFast(ids: string[]){
+    this.fastSaleOrderService.getListOrderIds({ids: ids})
+    .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
+      if(res) {
+          this.modal.create({
+              title: 'Tạo hóa đơn nhanh',
+              content: CreateBillFastComponent,
+              centered: true,
+              size: 'xl',
+              viewContainerRef: this.viewContainerRef,
+              componentParams: {
+                lstData: [...res.value] as GetListOrderIdsDTO[]
+              }
+          });
+      }
+  }, error => {
+      this.message.error(error?.error?.message ? error?.error?.message : 'Đã xảy ra lỗi');
+  });
   }
 
   onCreateBillDefault() {
@@ -615,7 +617,7 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   // Gủi tin nhắn FB
   sendMessage(orderMessage?: TDSSafeAny) {
-    if (this.checkValueEmpty() == 1 || orderMessage) {
+    if (this.setOfCheckedId.size == 0 || orderMessage) {
       this.modal.create({
         title: 'Gửi tin nhắn nhanh',
         content: SendMessageComponent,
@@ -761,7 +763,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   onClose(e:Event) {
-    console.log("click tag")
+    
   }
 
   @HostListener('document:keyup', ['$event'])

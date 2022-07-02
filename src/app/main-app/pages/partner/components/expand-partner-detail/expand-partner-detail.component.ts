@@ -1,3 +1,7 @@
+import { CommonService } from 'src/app/main-app/services/common.service';
+import { PartnerStatusDTO } from './../../../../dto/partner/partner.dto';
+import { finalize } from 'rxjs';
+import { Message } from './../../../../../lib/consts/message.const';
 import { ModalPaymentComponent } from '../modal-payment/modal-payment.component';
 import { Component, OnInit, Input, ViewContainerRef, ChangeDetectorRef, AfterViewInit, HostListener } from '@angular/core';
 import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
@@ -10,37 +14,6 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSTableQueryParams } from 'tds-ui/table';
-
-interface orderDTO{
-  code: string;
-  createdDate: string;
-  type: string;
-  creator: string;
-  source: string;
-  status: number;
-  totalPrice: number;
-}
-interface debtDetailDTO{
-  date: string,
-  invoiceVoucher: string;
-  debt: number
-}
-interface infoPartnerDto {
-  code: string;
-  name: string;
-  phone: string;
-  email: string;
-  address: string;
-  birthday: string;
-  facebook: string;
-  zalo:string;
-  groupPartner: string;
-  codeTax: string;
-  status: number;
-  saleFirst: number;
-  sale: number;
-  totalSale: number
-}
 
 @Component({
   selector: 'expand-partner-detail',
@@ -56,7 +29,7 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
   pageIndex2 = 1;
   isLoading: boolean = false;
   countDebit: number = 1;
-
+  lstPartnerStatus!: Array<PartnerStatusDTO>;
   lstInvocie: Array<PartnerInvoiceDTO> = [];
   countInvocie: number = 1;
   revenues: any = {};
@@ -68,7 +41,8 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
     private partnerService: PartnerService,
     private cdr: ChangeDetectorRef,
     private message: TDSMessageService,
-    private viewContainerRef: ViewContainerRef) {
+    private viewContainerRef: ViewContainerRef,
+    private commonService: CommonService) {
   }
 
   ngOnInit(): void {
@@ -77,18 +51,28 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
     }, error => {
        this.message.error('Load doanh số đã xảy ra lỗi!')
     })
+    this.loadPartnerStatus();
   }
 
   loadInvoice(partnerId: number, pageSize: number, pageIndex: number) {
     this.isLoading = true;
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
-    this.odataPartnerService.getInvoicePartner(partnerId, params).subscribe((res: any) => {
-
+    this.odataPartnerService.getInvoicePartner(partnerId, params).pipe(finalize(()=>{ this.isLoading = false }))
+    .subscribe((res: any) => {
         this.countInvocie = res['@odata.count'];
         this.lstInvocie = [...res.value];
-        this.isLoading = false;
         this.cdr.markForCheck();
+    },err=>{
+      this.message.error(err.error? err.error.message: Message.CanNotLoadData);
     })
+  }
+
+  loadPartnerStatus() {
+    this.commonService.getPartnerStatus().subscribe(res => {
+      this.lstPartnerStatus = [...res];
+    },err=>{
+      this.message.error(err.error? err.error.message: 'Tải trạng thái khách hàng lỗi');
+    });
   }
 
   loadCreditDebit(partnerId: number, pageSize: number, pageIndex: number) {
@@ -144,6 +128,36 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
     }, error => {
       this.message.error(`${error?.error.message}`)
     })
+  }
+
+  checkStatus(data: string){
+    switch(data){
+      case 'Đã thanh toán':
+        return 'success'
+      case 'Đã xác nhận':
+        return 'info'
+      case 'Nháp':
+        return 'secondary'
+      default:
+        return 'error'
+    }
+  }
+
+  selectStatus(status: PartnerStatusDTO) {
+    if(this.dataPartner.Id) {
+      let data = {
+        status: `${status.value}_${status.text}`
+      }
+      this.partnerService.updateStatus(this.dataPartner.Id, data).subscribe(res => {
+        this.message.success(Message.Partner.UpdateStatus);
+        this.dataPartner.StatusText = status.text;
+      },err=>{
+        this.message.error(err.error? err.error.message: 'Cập nhật trạng thái thất bại');
+      });
+    }
+    else {
+      this.message.error(Message.PartnerNotInfo);
+    }
   }
 
   ngAfterViewInit() {
