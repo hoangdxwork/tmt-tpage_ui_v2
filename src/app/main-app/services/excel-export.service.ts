@@ -24,7 +24,7 @@ export class ExcelExportService extends BaseSevice {
 
   exportPost(url: string, data: any, name: string): Observable<TDSSafeAny> {
     let xhttp = new XMLHttpRequest();
-
+    console.log(data)
     // Post data to URL which handles post request
     let urlStr = this._BASE_URL + url;
     xhttp.open("POST", urlStr, true);

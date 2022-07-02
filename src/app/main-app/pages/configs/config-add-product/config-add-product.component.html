@@ -97,23 +97,15 @@
                                       </button>
                                     </div>
                                   </div>
-
-                                  <tds-label>Thuộc tính:</tds-label>
-                                  <tds-form-field class="w-full col-span-2">
-                                    <tds-select valueField="Id" textField="NameGet" placeholder="Nhập thuộc tính"
-                                      disabledField="isActive" formControlName="AttributeValues" [valuePrimitive]="true"
-                                      [data]="attributeValuesList" [allowClear]="true" [mode]="'multiple'" [autoClose]="true" [optionOverflowSize]="5">
-                                    </tds-select>
-                                    <tds-error>
-                                      Vui lòng nhập thuộc tính
-                                  </tds-error>
-                                  </tds-form-field>
                                 </div>
 
                                 <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
                                   <tds-label>Giá sản phẩm:</tds-label>
                                   <tds-form-field class="w-full col-span-2">
-                                    <tds-input-number formControlName="ListPrice" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                                    <tds-input-number formControlName="ListPrice" 
+                                      [min]="0"
+                                      [formatter]="numberWithCommas" [parser]="parserComas" 
+                                      class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                                     <tds-error>
                                       Vui lòng nhập giá sản phẩm
                                     </tds-error>
@@ -121,7 +113,10 @@
 
                                   <tds-label>Giá vốn:</tds-label>
                                   <tds-form-field class="w-full col-span-2">
-                                    <tds-input-number formControlName="StandardPrice" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                                    <tds-input-number formControlName="StandardPrice" 
+                                      [min]="0"
+                                      [formatter]="numberWithCommas" [parser]="parserComas" 
+                                      class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                                     <tds-error>
                                         Vui lòng nhập giá vốn
                                     </tds-error>
@@ -148,12 +143,6 @@
                                         Vui lòng chọn đơn vị mua
                                     </tds-error>
                                   </tds-form-field>
-
-                                  <tds-label>Kiểm soát hóa đơn mua hàng:</tds-label>
-                                  <tds-radio-group class="grid grid-cols-1 w-full col-span-2" formControlName="PurchaseMethod">
-                                    <label tds-radio value="purchase" class="mb-2">Trên số lượng đặt hàng</label>
-                                    <label tds-radio value="receive">Trên số lượng nhận hàng</label>
-                                  </tds-radio-group>
                                 </div>
                               </div>
                           </tds-tab>
@@ -181,7 +170,10 @@
 
                                 <tds-label>Khối lượng</tds-label>
                                 <tds-form-field class="w-full col-span-2">
-                                  <tds-input-number formControlName="Weight" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                                  <tds-input-number formControlName="Weight" 
+                                    [min]="0" 
+                                    [formatter]="numberWithCommas" [parser]="parserComas"
+                                    class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                                   <tds-error>
                                     Vui lòng nhập khối lượng
                                   </tds-error>
@@ -189,7 +181,10 @@
 
                                 <tds-label>Thể tích</tds-label>
                                 <tds-form-field class="w-full col-span-2">
-                                  <tds-input-number formControlName="Volume" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                                  <tds-input-number formControlName="Volume" 
+                                    [min]="0" 
+                                    [formatter]="numberWithCommas" [parser]="parserComas"
+                                    class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                                   <tds-error>
                                     Vui lòng nhập thể tích
                                   </tds-error>
@@ -227,101 +222,74 @@
                                         <span class="text-body-2 font-semibold">Quản lý thuộc tính</span>
                                       </span>
                                     </button>
+                                    <button 
+                                      tds-button 
+                                      color="primary" 
+                                      type="button" 
+                                      (click)="showCreateVariantsModal()"
+                                      tds-tooltip
+                                      tooltipTitle="Thêm trước thuộc tính để tạo biến thể">
+                                      <span class="flex items-center">
+                                        <i class="tdsi-add-fill text-white text-lg leading-none mr-2"></i>
+                                        <span class="text-body-2 font-semibold">Thêm biến thể</span>
+                                      </span>
+                                    </button>
                                   </div>
                                 </div>
                                 <div class="flex flex-row justify-between w-full h-full pb-3">
-                                  <div *ngIf="!id" class="h-60 mr-3">
-                                    <tds-table #attributesTable
-                                      [listData]="lstAttributes"
-                                      [loading]="isLoadingVariant"
-                                      [noResult]="NoResultTable"
-                                      [showPagination]="false"
-                                      [scroll]="{y:'auto'}"
-                                      class="h-full w-full"
-                                      >
-                                      <thead>
-                                        <tr>
-                                          <th [width]="'192px'">Thuộc tính</th>
-                                          <th [width]="'192px'">Giá trị</th>
-                                          <th [width]="'120px'" [align]="'center'">Thao tác</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                          <ng-template ngFor let-data let-i="index" [ngForOf]="attributesTable.data">
-                                              <tr>
-                                                <td [width]="'192px'">
-                                                  {{ data.Attribute.Name }}
-                                                </td>
-                                                <td [width]="'192px'">
-                                                  <div class="flex flex-wrap items-center">
-                                                    <div *ngFor="let value of data.Values">
-                                                      <tds-tag status='secondary' rounded="rounded-full mr-2 mb-2">{{ value.NameGet }}</tds-tag>
-                                                    </div>
-                                                  </div>
-                                                </td>
-                                                <td [width]="'120px'" [align]="'center'">
-                                                  <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2">
-                                                    <span class="flex items-center">
-                                                      <i class="tdsi-edit-fill text-xl leading-none"></i>
-                                                    </span>
-                                                  </button>
-                                                  <button tds-button-icon color="secondary" type="button" size="sm">
-                                                      <span class="flex items-center">
-                                                        <i class="tdsi-trash-fill text-xl leading-none"></i>
-                                                      </span>
-                                                  </button>
-                                                </td>
-                                              </tr>
-                                          </ng-template>
-                                      </tbody>
-                                    </tds-table>
-                                  </div>
-                                  <div class="flex-auto h-60">
+                                  <div class="w-full h-[350px]">
                                     <tds-table #variantsTable
                                       [listData]="lstVariants"
                                       [loading]="isLoadingVariant"
                                       [noResult]="NoResultTable"
                                       [showPagination]="false"
-                                      [scroll]="{y:'auto'}"
-                                      class="h-full w-full">
+                                      [scroll]="{y:'auto'}">
                                       <thead>
                                             <tr>
-                                                  <th [width]="'40px'">STT</th>
-                                                  <th [width]="'192px'">Tên</th>
-                                                  <th [width]="'192px'">Giá</th>
-                                                  <th [width]="'120px'">Hoạt động</th>
-                                                  <th [width]="'120px'">Thao tác</th>
+                                                  <th [width]="'80px'">STT</th>
+                                                  <th>Tên</th>
+                                                  <th>Giá</th>
+                                                  <th>Hoạt động</th>
+                                                  <th>Thao tác</th>
                                             </tr>
                                       </thead>
                                       <tbody>
                                           <ng-template ngFor let-data let-i="index" [ngForOf]="variantsTable.data">
                                               <tr>
-                                                  <td [width]="'40px'">{{ 1 + i }}</td>
-                                                  <td [width]="'192px'">
+                                                  <td [width]="'80px'">{{ 1 + i }}</td>
+                                                  <td>
                                                     <div class="flex flex-col">
-                                                      <span class="mb-2">{{ data.NameGet }}</span>
+                                                      <span class="mb-2">{{ data.NameTemplate }}</span>
+                                                      <div class="flex flex-wrap items-center gap-1">
+                                                        <tds-tag *ngFor="let item of data.AttributeValues" status='secondary' rounded="rounded-full">
+                                                          {{item.NameGet}}
+                                                        </tds-tag> 
+                                                      </div>
                                                     </div>
                                                   </td>
-                                                  <td [width]="'192px'">
+                                                  <td>
                                                     <tds-input-number
                                                       [(ngModel)]="data.PriceVariant"
                                                       [ngModelOptions]="{standalone: true}"
                                                       [min]="0"
+                                                      [step]="100"
+                                                      [formatter]="numberWithCommas" [parser]="parserComas"
                                                       class="text-neutral-1-900 text-body-2 font-regular">
                                                     </tds-input-number>
                                                   </td>
-                                                  <td [width]="'120px'">
+                                                  <td>
                                                     <tds-switch [checked]="data.Active"></tds-switch>
                                                   </td>
-                                                  <td [width]="'120px'">
-                                                    <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2">
+                                                  <td>
+                                                    <button tds-button-icon color="secondary" type="button" size="sm" class=" mr-2"
+                                                      (click)="showEditVariantsModal(data)">
                                                       <span class="flex items-center">
-                                                        <i class="tdsi-edit-fill text-xl leading-none"></i>
+                                                        <i class="tdsi-edit-fill text-xl text-neutral-1-500 leading-none"></i>
                                                       </span>
                                                     </button>
                                                     <button tds-button-icon color="secondary" type="button" size="sm">
                                                         <span class="flex items-center">
-                                                          <i class="tdsi-trash-fill text-xl leading-none"></i>
+                                                          <i class="tdsi-trash-fill text-xl text-neutral-1-500 leading-none"></i>
                                                         </span>
                                                     </button>
                                                   </td>
@@ -331,7 +299,7 @@
                                     </tds-table>
                                   </div>
                                   <ng-template #NoResultTable>
-                                    <div class="flex flex-col items-center justify-center w-full h-[150px]">
+                                    <div class="flex flex-col items-center justify-center w-full h-[280px]">
                                       <tds-avatar [tdsSrc]="'../../../assets/imagesv2/config/Empty_Table.svg'" [isAvatar]="false" [size]="90" [shape]="'square'"></tds-avatar>
                                       <span class="text-neutral-1-400 text-body-2 text-center font-regular mt-3">Không có dữ liệu</span>
                                     </div>
@@ -419,7 +387,10 @@
 
                                   <tds-label>Năm sản xuất</tds-label>
                                   <tds-form-field class="w-full col-span-3">
-                                    <tds-input-number formControlName="YearOfManufacture" [min]="0" class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                                    <tds-input-number formControlName="YearOfManufacture" 
+                                      [min]="0" 
+                                      [formatter]="numberWithCommas" [parser]="parserComas"
+                                      class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
                                     <tds-error>
                                       Vui lòng nhập năm sản xuất
                                     </tds-error>

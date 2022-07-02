@@ -1,3 +1,4 @@
+import { ModalHistoryChatComponent } from './../components/modal-history-chat/modal-history-chat.component';
 import { ConversationMatchingItem } from './../../../dto/conversation-all/conversation-all.dto';
 import { MDBByPSIdDTO } from './../../../dto/crm-matching/mdb-by-psid.dto';
 import { CRMMatchingService } from './../../../services/crm-matching.service';
@@ -34,6 +35,7 @@ import { OrderPrintService } from 'src/app/main-app/services/print/order-print.s
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { GetListOrderIdsDTO } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
 import { SaleOnline_Order_V2DTO } from 'src/app/main-app/dto/saleonlineorder/saleonline-order-v2.dto';
+import { HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-order',
@@ -74,14 +76,14 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
   public hiddenColumns = new Array<ColumnTableDTO>();
   public columns: any[] = [
     { value: 'Code', name: 'Mã', isChecked: true },
-    { value: 'Name', name: 'Tên', isChecked: true },
     { value: 'CRMTeamName', name: 'Kênh kết nối', isChecked: true },
+    { value: 'Name', name: 'Tên', isChecked: true },
     { value: 'Address', name: 'Địa chỉ', isChecked: false },
     { value: 'TotalAmount', name: 'Tổng tiền', isChecked: true },
     { value: 'TotalQuantity', name: 'Tổng SL', isChecked: true },
+    { value: 'DateCreated', name: 'Ngày tạo', isChecked: false },
     { value: 'StatusText', name: 'Trạng thái', isChecked: true },
     { value: 'UserName', name: 'Nhân viên', isChecked: true },
-    { value: 'DateCreated', name: 'Ngày tạo', isChecked: false }
   ];
 
   public tabNavs: Array<TDSSafeAny> = [];
@@ -131,7 +133,8 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
     private commonService: CommonService,
     private partnerService: PartnerService,
     private crmTeamService: CRMTeamService,
-    private crmMatchingService: CRMMatchingService) { }
+    private crmMatchingService: CRMMatchingService,
+    private modalService: TDSModalService) { }
 
   ngOnInit(): void {
     this.loadTags();
@@ -301,25 +304,28 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (this.checkValueEmpty() == 1) {
       this.isLoading = true;
       let ids = [...this.setOfCheckedId];
-
-      this.fastSaleOrderService.getListOrderIds({ids: ids})
-        .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
-          if(res) {
-              this.modal.create({
-                  title: 'Tạo hóa đơn nhanh',
-                  content: CreateBillFastComponent,
-                  centered: true,
-                  size: 'xl',
-                  viewContainerRef: this.viewContainerRef,
-                  componentParams: {
-                    lstData: [...res.value] as GetListOrderIdsDTO[]
-                  }
-              });
-          }
-      }, error => {
-          this.message.error(error?.error?.message ? error?.error?.message : 'Đã xảy ra lỗi');
-      });
+      this.showModalCreateBillFast(ids)
     }
+  }
+
+  showModalCreateBillFast(ids: string[]){
+    this.fastSaleOrderService.getListOrderIds({ids: ids})
+    .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
+      if(res) {
+          this.modal.create({
+              title: 'Tạo hóa đơn nhanh',
+              content: CreateBillFastComponent,
+              centered: true,
+              size: 'xl',
+              viewContainerRef: this.viewContainerRef,
+              componentParams: {
+                lstData: [...res.value] as GetListOrderIdsDTO[]
+              }
+          });
+      }
+  }, error => {
+      this.message.error(error?.error?.message ? error?.error?.message : 'Đã xảy ra lỗi');
+  });
   }
 
   onCreateBillDefault() {
@@ -407,6 +413,23 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.indClickTag = "";
         this.message.error(`${error?.error?.message}` || Message.Tag.InsertFail);
       });
+  }
+
+  showModalHistoryChat(orderId:string){
+    const modal = this.modalService.create({
+      title: 'Lịch sử gửi tin nhắn',
+      content: ModalHistoryChatComponent,
+      size: "xl",
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        orderId: orderId,
+        type: "order"
+    }
+    });
+    modal.afterClose.subscribe(result => {
+      if (TDSHelperObject.hasValue(result)) {
+      }
+    });
   }
 
   getColorStatusText(status: string): TDSTagStatusType {
@@ -593,7 +616,7 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   // Gủi tin nhắn FB
   sendMessage(orderMessage?: TDSSafeAny) {
-    if (this.checkValueEmpty() == 1 || orderMessage) {
+    if (this.setOfCheckedId.size == 0 || orderMessage) {
       this.modal.create({
         title: 'Gửi tin nhắn nhanh',
         content: SendMessageComponent,
@@ -738,6 +761,23 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   ngAfterViewChecked(): void {
     this.cdRef.detectChanges();
+  }
+
+  onClose(e:Event) {
+    
+  }
+
+  @HostListener('document:keyup', ['$event'])
+  handleKeyboardEventCreate(event: KeyboardEvent) {
+    if(event.key === 'F9'){
+      this.onUrlCreateInvoiceFast();
+    }
+    else if(event.key === 'F8'){
+      this.onCreateBillDefault();
+    }
+    else if(event.key === 'F10'){
+      this.onCreateBillFast();
+    }
   }
 
 }

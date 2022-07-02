@@ -74,8 +74,22 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
   _wards!: SuggestWardsDTO;
   _street!: string;
 
-  numberWithCommas = (value: number) => `${value} đ`;
-  parserComas = (value: string) => value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  // numberWithCommas = (value: number) => `${value} đ`;
+  // parserComas = (value: string) => value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  numberWithCommas =(value:TDSSafeAny) =>{
+    if(value != null)
+    {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    }
+    return value
+  } ;
+  parserComas = (value: TDSSafeAny) =>{
+    if(value != null)
+    {
+      return TDSHelperString.replaceAll(value,',','');
+    }
+    return value
+  };
 
   delivery_types = ["fixed", "base_on_rule", "VNPost"];
   carrierTypeInsurance = ["MyVNPost", "GHN", "GHTK", "ViettelPost", "NinjaVan", "HolaShip"];

@@ -8,7 +8,7 @@
         <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng' [allowClear]="true"
           [valuePrimitive]="false" formControlName="carrier" [data]="lstCarriers" (selectChange)="changeCarrierAll()">
         </tds-select>
-        <span class="flex items-center text-info-500 text-xs pt-1 absolute" *ngIf="_form.controls['carrier'].value">
+        <span class="flex items-center text-info-500 text-xs pt-1 absolute">
           <i class="tdsi-warning-2-fill mr-1.5"></i>Phần mềm sẽ tự chọn đối tác với số tiền ship thấp nhất</span>
       </tds-form-field>
     </div>
@@ -44,16 +44,25 @@
                     {{ data.Partner.Name }}
                   </div>
                   <div class="flex items-baseline gap-x-2">
+                    <div class="text-neutral-1-600">Mã ĐH:</div>
+                    <div class="font-semibold text-info-500">{{ data.SaleOnlineName }}</div>
+                  </div>
+                  <div class="flex items-baseline gap-x-2">
                     <span class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></span>
                     <span *ngIf="data?.Partner?.Phone">{{data.Partner.Phone}}</span>
-                    <span *ngIf="!data?.Partner?.Phone" class="text-neutral-1-400 italic text-xs">(Chưa có số điện
-                      thoại)</span>
+                    <span *ngIf="!data?.Partner?.Phone">---</span>
                   </div>
                   <div class="flex items-baseline gap-x-2">
                     <span class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></span>
                     <span *ngIf="data?.Partner?.Street">{{data.Partner.Street}}</span>
-                    <span *ngIf="!data?.Partner?.Street" class="text-neutral-1-400 italic text-xs">(Chưa có địa
-                      chỉ)</span>
+                    <span *ngIf="!data?.Partner?.Street">---</span>
+                  </div>
+                  <div class="flex items-baseline gap-x-2">
+                    <span *ngIf="data?.Carrier?.GHN_NoteCode"
+                      class="text-neutral-1-600 italic text-xs">{{data.Carrier?.GHN_NoteCode}}</span>
+                    <span *ngIf="!data?.Carrier?.GHN_NoteCode" class="text-neutral-1-600 italic text-xs">(Chưa
+                      có
+                      ghi chú)</span>
                   </div>
                 </div>
               </td>
@@ -91,7 +100,7 @@
                 </tds-form-field>
               </td>
               <!-- Thanh toán -->
-              <td class="align-top text-center">
+              <td class="text-center">
                 <tds-checkbox (change)="onCheckPayment(data)"></tds-checkbox>
               </td>
               <!-- Thao tác -->
@@ -112,211 +121,92 @@
             </tr>
             <tr>
               <td colspan="8">
-                <tds-label>Danh sách sản phẩm</tds-label>
-                <tds-table class="tds-table-rounded" #orderLinesTable [bordered]="true" [listData]="data.OrderLines"
-                  [showPagination]="false">
-                  <thead class="rounded">
-                    <tr>
-                      <div class="w-full mt-[30px] rounded-md h-[673px]">
-                        <div class="w-full h-full ">
-                          <tds-table class="tds-table-rounded" #productTable [loading]="isLoading" [bordered]="true"
-                            [listData]="lstData" [showPagination]="false">
-                            <thead class="rounded">
-                              <tr>
-                                <th width="5%">STT</th>
-                                <th width="25%">Khách hàng</th>
-                                <th width="17%">Đối tác giao hàng</th>
-                                <th width="12%">Tiền hàng</th>
-                                <th width="12%">Phí ship</th>
-                                <th width="12%">KL ship (g)</th>
-                                <!-- <th width="9%">Thanh toán</th> -->
-                                <th width="8%">Thao tác</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <ng-template ngFor let-data [ngForOf]="productTable.data" let-index="index">
-                              <tr>
-                                <td class="align-top"> {{ index + 1 }} </td>
-                                <!-- Khách hàng -->
-                                <td class="align-top">
-                                  <div class="flex flex-col gap-y-2 text-sm">
-                                    <div class="flex">
-                                      {{ data.Partner.Name }}
-                                    </div>
-                                    <div class="flex items-baseline gap-x-2">
-                                      <div class="text-neutral-1-600">Mã ĐH:</div>
-                                      <div class="font-semibold text-info-500">{{ data.SaleOnlineName }}</div>
-                                    </div>
-                                    <div class="flex items-baseline gap-x-2">
-                                      <span class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></span>
-                                      <span *ngIf="data?.Partner?.Phone">{{data.Partner.Phone}}</span>
-                                      <span *ngIf="!data?.Partner?.Phone" class="text-neutral-1-400 italic text-xs">(Chưa có số
-                                        điện
-                                        thoại)</span>
-                                    </div>
-                                    <div class="flex items-baseline gap-x-2">
-                                      <span class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></span>
-                                      <span *ngIf="data?.Partner?.Street">{{data.Partner.Street}}</span>
-                                      <span *ngIf="!data?.Partner?.Street" class="text-neutral-1-400 italic text-xs">(Chưa có
-                                        địa
-                                        chỉ)</span>
-                                    </div>
-                                    <div class="flex items-baseline gap-x-2">
-                                      <span *ngIf="data?.Carrier?.GHN_NoteCode"
-                                        class="text-neutral-1-600 italic text-xs">{{data.Carrier?.GHN_NoteCode}}</span>
-                                      <span *ngIf="!data?.Carrier?.GHN_NoteCode" class="text-neutral-1-600 italic text-xs">(Chưa
-                                        có
-                                        ghi chú)</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <!-- Đối tác -->
-                                <td class="align-top">
-                                  <tds-form-field>
-                                    <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác' [allowClear]="true"
-                                      [valuePrimitive]="false" [(ngModel)]="data.Carrier" [ngModelOptions]="{standalone: true}"
-                                      [data]="lstCarriers" (onChange)="onChangeCarrier($event, data)">
-                                    </tds-select>
-                                  </tds-form-field>
-                                </td>
-                                <!-- Tiền hàng -->
-                                <td class="align-top">
-                                  <tds-form-field>
-                                    <tds-input-number [min]="0" [step]="1000" [(ngModel)]="data.AmountTotal"
-                                      [formatter]="numberWithCommas" [parser]="parserComas"
-                                      [ngModelOptions]="{standalone: true}">
-                                    </tds-input-number>
-                                  </tds-form-field>
-                                </td>
-                                <!-- Phí ship -->
-                                <td class="align-top">
-                                  <tds-form-field>
-                                    <tds-input-number [min]="0" [step]="1000" [(ngModel)]="data.DeliveryPrice"
-                                      [formatter]="numberWithCommas" [parser]="parserComas"
-                                      [ngModelOptions]="{standalone: true}">
-                                    </tds-input-number>
-                                  </tds-form-field>
-                                </td>
-                                <!-- Khối lượng -->
-                                <td class="align-top">
-                                  <tds-form-field>
-                                    <tds-input-number [min]="0" [step]="1" [(ngModel)]="data.ShipWeight"
-                                      [ngModelOptions]="{standalone: true}">
-                                    </tds-input-number>
-                                  </tds-form-field>
-                                </td>
-                                <!-- Thanh toán -->
-                                <!-- <td class="align-top">
-                            <tds-checkbox></tds-checkbox>
-                          </td> -->
-                                <!-- Thao tác -->
-                                <td class="align-top">
-                                  <div class="flex gap-x-2">
-                                    <button tds-button-icon color="secondary" size="sm" (click)="onEdit(index)">
-                                      <span class="flex items-center">
-                                        <i class="tdsi-edit-fill text-neutral-1-500"></i>
-                                      </span>
-                                    </button>
-                                    <button tds-button-icon color="secondary" size="sm" (click)="onRemoveLine(index)">
-                                      <span class="flex items-center">
-                                        <i class="tdsi-trash-fill text-neutral-1-500"></i>
-                                      </span>
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td colspan="8">
-                                  <tds-collapse [expandIconPosition]="'right'">
-                                    <tds-collapse-panel [header]="headerTpl" header="Danh sách sản phẩm" tdsClass="p-0"
-                                      [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-right-line'">
-                                      <ng-template #headerTpl>
-                                        <div class="flex items-center">
-                                          <span class="tdsi-chart-pie-fill text-neutral-1-500 text-xl leading-none mr-3"></span>
-                                          <div class="font-semibold">Danh sách sản phẩm</div>
-                                        </div>
-                                      </ng-template>
-                                      <div style="margin: 0;">
-                                        <tds-table class="tds-table-rounded" #orderLinesTable [listData]="data.OrderLines"
-                                          [showPagination]="false">
-                                          <thead class="rounded">
-                                            <tr>
-                                              <th width="5%">STT</th>
-                                              <th width="19%">Sản phẩm</th>
-                                              <th width="14%">Số lượng</th>
-                                              <th width="14%">Số tiền</th>
-                                              <th width="14%">Tổng tiền</th>
-                                              <th width="22%">Ghi chú</th>
-                                              <th width="10%">Thao tác</th>
-                                            </tr>
-                                          </thead>
-                          <tbody>
-                            <ng-template ngFor let-orderLines [ngForOf]="orderLinesTable.data" let-i="index">
-                              <tr>
-                                <td> {{ i + 1 }} </td>
-                                <!-- Sản phẩm -->
-                                <td>
-                                  <p class="text-sm">
-                                    {{ orderLines.ProductName }}
-                                  </p>
-                                </td>
-                                <!-- Số lượng -->
-                                <td>
-                                  <tds-form-field>
-                                    <tds-input-number [min]="0" [step]="1000"
-                                      (ngModelChange)="changeQuantityProduct($event, index, i)"
-                                      [(ngModel)]="orderLines.ProductUOMQty" [ngModelOptions]="{standalone: true}">
-                                    </tds-input-number>
-                                  </tds-form-field>
-                                </td>
-                                <!-- Số tiền -->
-                                <td>
-                                  <tds-form-field>
-                                    <tds-input-number [min]="0" [step]="1000"
-                                      (ngModelChange)="changePriceProduct($event, index, i)" [formatter]="numberWithCommas"
-                                      [parser]="parserComas" [(ngModel)]="orderLines.PriceUnit"
-                                      [ngModelOptions]="{standalone: true}">
-                                    </tds-input-number>
-                                  </tds-form-field>
-                                </td>
-                                <!-- Tổng tiền -->
-                                <td>
-                                  {{ orderLines.PriceSubTotal | number }}
-                                </td>
-                                <!-- Ghi chú -->
-                                <td>
-                                  <tds-form-field>
-                                    <input tdsInput autocomplete="off" placeholder="Nhập ghi chú" [(ngModel)]="orderLines.Note"
-                                      [ngModelOptions]="{standalone: true}" />
-                                  </tds-form-field>
-                                </td>
-                                <!-- Thao tác -->
-                                <td>
-                                  <div class="flex gap-x-2">
-                                    <button tds-button-icon color="secondary" size="sm" (click)="onRemoveProduct(index, i)">
-                                      <span class="flex items-center">
-                                        <i class="tdsi-trash-fill text-neutral-1-500"></i>
-                                      </span>
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
-                            </ng-template>
-                          </tbody>
-                                        </tds-table>
-                                      </div>
-                                    </tds-collapse-panel>
-                                  </tds-collapse>
-                                </td>
-                              </tr>
-                              </ng-template>
-                            </tbody>
-                          </tds-table>
-                        </div>
+                <tds-collapse [expandIconPosition]="'right'">
+                  <tds-collapse-panel [header]="headerTpl" header="Danh sách sản phẩm" tdsClass="p-0"
+                    [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-right-line'">
+                    <ng-template #headerTpl>
+                      <div class="flex items-center">
+                        <span class="tdsi-chart-pie-fill text-neutral-1-500 text-xl leading-none mr-3"></span>
+                        <div class="font-semibold">Danh sách sản phẩm</div>
                       </div>
-                    </tr>
-                  </thead>
-                </tds-table>
+                    </ng-template>
+                    <div style="margin: 0;">
+                      <tds-table class="tds-table-rounded" #orderLinesTable [listData]="data.OrderLines"
+                        [showPagination]="false">
+                        <thead class="rounded">
+                          <tr>
+                            <th width="5%">STT</th>
+                            <th width="19%">Sản phẩm</th>
+                            <th width="14%">Số lượng</th>
+                            <th width="14%">Số tiền</th>
+                            <th width="14%">Tổng tiền</th>
+                            <th width="22%">Ghi chú</th>
+                            <th width="10%">Thao tác</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <ng-template ngFor let-orderLines [ngForOf]="orderLinesTable.data" let-i="index">
+                            <tr>
+                              <td> {{ i + 1 }} </td>
+                              <!-- Sản phẩm -->
+                              <td>
+                                <p class="text-sm">
+                                  {{ orderLines.ProductName }}
+                                </p>
+                              </td>
+                              <!-- Số lượng -->
+                              <td>
+                                <tds-form-field>
+                                  <tds-input-number [min]="0" [step]="1"
+                                    (ngModelChange)="changeQuantityProduct($event, index, i)"
+                                    [(ngModel)]="orderLines.ProductUOMQty" [ngModelOptions]="{standalone: true}">
+                                  </tds-input-number>
+                                </tds-form-field>
+                              </td>
+                              <!-- Số tiền -->
+                              <td>
+                                <tds-form-field>
+                                  <tds-input-number [min]="0" [step]="1000"
+                                    (ngModelChange)="changePriceProduct($event, index, i)" [formatter]="numberWithCommas"
+                                    [parser]="parserComas" [(ngModel)]="orderLines.PriceUnit"
+                                    [ngModelOptions]="{standalone: true}">
+                                  </tds-input-number>
+                                </tds-form-field>
+                              </td>
+                              <!-- Tổng tiền -->
+                              <td>
+                                <tds-form-field>
+                                  <tds-input-number [min]="0" [step]="1000"
+                                    (ngModelChange)="changePriceProduct($event, index, i)" [formatter]="numberWithCommas"
+                                    [parser]="parserComas" [(ngModel)]="orderLines.PriceSubTotal"
+                                    [ngModelOptions]="{standalone: true}">
+                                  </tds-input-number>
+                                </tds-form-field>
+                              </td>
+                              <!-- Ghi chú -->
+                              <td>
+                                <tds-form-field>
+                                  <input tdsInput autocomplete="off" placeholder="Nhập ghi chú" [(ngModel)]="orderLines.Note"
+                                    [ngModelOptions]="{standalone: true}" />
+                                </tds-form-field>
+                              </td>
+                              <!-- Thao tác -->
+                              <td>
+                                <div class="flex gap-x-2">
+                                  <button tds-button-icon color="secondary" size="sm" (click)="onRemoveProduct(index, i)">
+                                    <span class="flex items-center">
+                                      <i class="tdsi-trash-fill text-neutral-1-500"></i>
+                                    </span>
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          </ng-template>
+                        </tbody>
+                      </tds-table>
+                    </div>
+                  </tds-collapse-panel>
+                </tds-collapse>
               </td>
             </tr>
           </ng-template>

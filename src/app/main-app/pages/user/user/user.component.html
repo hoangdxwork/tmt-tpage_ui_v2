@@ -1,20 +1,20 @@
 <div class="h-full w-full flex flex-col">
     <div class="w-full flex flex-col bg-white">
-        <div class="p-4 w-full border-b border-neutral-200">
+        <div class="p-4 w-full">
             <div class="w-full flex justify-between">
                 <h1 class="flex items-center">
                     <span class="text-neutral-1-900 text-header-1 font-semibold">Thông báo</span>
                 </h1>
             </div>
         </div>
-        <div class="p-4">
+        <div class="px-4 py-2.5">
             <div class="w-full flex items-center justify-between">
                 <div class="flex">
                     <button *ngFor="let item of menuData" [routerLink]="item.link"
                         [ngClass]="currentPage.name==item.name?'bg-primary-1 text-white hover:bg-primary-2':'bg-white text-neutral-1-700'" (click)="onChangePageUser(item)"
-                        class="mr-2 text-body-2 rounded-full hover:bg-neutral-3-50 border border-neutral-2-200 font-semibold focus:outline-none py-1.5 px-4">
+                        class="mr-2 text-body-2 rounded-full hover:bg-neutral-3-50 font-semibold focus:outline-none py-1.5 px-4">
                         <span class="flex items-center">
-                            <i [class]="item.icon + ' mr-2'"></i>{{item.name}}
+                            <i [class]="item.icon + ' mr-2 text-xl leading-none'"></i>{{item.name}}
                         </span>
                     </button>
                 </div>

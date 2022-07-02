@@ -59,6 +59,7 @@ import { TDSToolTipModule } from 'tds-ui/tooltip';
 import { TDSDatePickerModule } from 'tds-ui/date-picker';
 import { TDSPopoverModule } from 'tds-ui/popover';
 import { TDSMessageModule, TDSMessageService } from 'tds-ui/message';
+import { DirectivesModule } from './directives/directives.module';
 
 const cmp =[
   TpageTeamDropdownComponent,
@@ -130,7 +131,8 @@ const SERVICES = [
     TDSToolTipModule,
     TDSDatePickerModule,
     TDSPopoverModule,
-    TDSMessageModule
+    TDSMessageModule,
+    DirectivesModule,
   ],
   exports:[
    ...cmp

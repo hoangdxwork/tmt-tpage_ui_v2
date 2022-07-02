@@ -52,7 +52,7 @@ const cmp =[
     TDSTypographyModule,
     TDSSpinnerModule,
     TDSTableModule,
-    PipeModule,
+    PipeModule
   ],
   exports:[
    ...cmp

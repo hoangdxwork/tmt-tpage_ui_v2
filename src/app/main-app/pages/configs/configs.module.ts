@@ -100,6 +100,7 @@ import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
 import { TDSTimePickerModule } from 'tds-ui/time-picker';
 import { TDSFilterStatusModule } from 'tds-ui/filter-status';
 import { TDSEditorModule } from 'tds-editor';
+import { CreateVariantsModalComponent } from './components/create-variants-modal/create-variants-modal.component';
 
 const SERVICES = [
     OdataCRMTagService,
@@ -172,7 +173,8 @@ const SERVICES = [
     ConfigEditPromotionComponent,
     ConfigPromotionGroupComponent,
     ConfigPromotionComboComponent,
-    ConfigPromotionAllComponent
+    ConfigPromotionAllComponent,
+    CreateVariantsModalComponent
   ],
   imports: [
     CommonModule,

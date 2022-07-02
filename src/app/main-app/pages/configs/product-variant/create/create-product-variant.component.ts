@@ -1,7 +1,9 @@
+import { IRAttachmentDTO } from './../../../../dto/attachment/attachment.dto';
+import { TDSHelperArray } from 'tds-ui/shared/utility';
 
 import { ProductService } from 'src/app/main-app/services/product.service';
 import { Router } from '@angular/router';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { takeUntil } from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
@@ -19,26 +21,23 @@ import { TDSUploadFile } from 'tds-ui/upload';
 })
 
 export class CreateProductVariantComponent implements OnInit {
-
   _form!: FormGroup;
-
   lstAttributeValues: Array<ProductCategoryDTO> = [];
   lstUOM: Array<ProductUOMDTO> = [];
   lstUOMPO: Array<ProductUOMDTO> = [];
   lstPOSCateg: Array<POS_CategoryDTO> = [];
-
-  fileList: TDSUploadFile[] = [];
-  previewImage: string | undefined = '';
-  previewVisible = false;
-  uploadUrl = '';
-
-  modelDefault!: ProductDTO;
-  private destroy$ = new Subject<void>();
   listCateg = [
     { value: "product", text: "Có thể lưu trữ" },
     { value: "consu", text: "Có thể tiêu thụ" },
     { value: "service", text: "Dịch vụ" }
   ];
+  fileList: TDSUploadFile[] = [];
+  previewImage: string | undefined = '';
+  previewVisible = false;
+  uploadUrl = '';
+  modelDefault!: ProductDTO;
+
+  private destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder,
     private router: Router,
@@ -50,20 +49,25 @@ export class CreateProductVariantComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.productService.getDefault().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      delete res['@odata.context'];
-      this.modelDefault = res;
-    });
+    this.loadDefault();
     this.loadAttributeValues();
     this.loadUOM();
     this.loadUOMPO();
+  }
+
+  loadDefault(){
+    this.productService.getDefault().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      delete res['@odata.context'];
+      this.modelDefault = res;
+      this.formatProperty(res);
+    });
   }
 
   loadAttributeValues() {
     this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.lstAttributeValues = res.value;
     }, err => {
-      this.message.error('Load dữ liệu nhóm sản phẩm thất bại!')
+      this.message.error(err?.error?.message || 'Load dữ liệu nhóm sản phẩm thất bại!')
     });
   }
 
@@ -71,7 +75,7 @@ export class CreateProductVariantComponent implements OnInit {
     this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.lstUOM = res.value;
     }, err => {
-      this.message.error('Load dữ liệu đơn vị mặc định thất bại!')
+      this.message.error(err?.error?.message || 'Load dữ liệu đơn vị mặc định thất bại!')
     });
   }
 
@@ -79,8 +83,47 @@ export class CreateProductVariantComponent implements OnInit {
     this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.lstUOMPO = res.value;
     }, err => {
-      this.message.error('Load dữ liệu đơn vị mua thất bại!')
+      this.message.error(err?.error?.message || 'Load dữ liệu đơn vị mua thất bại!')
     });
+  }
+
+  formatProperty(data: ProductDTO) {
+    //TODO: xử lý array form
+    if (TDSHelperArray.hasListValue(data.Images)) {
+      data.Images.forEach((x: IRAttachmentDTO) => {
+          this.addImages(x);
+      });
+    }
+    
+    if (data.DateCreated) {
+      data.DateCreated = new Date(data.DateCreated);
+    }
+    this._form.patchValue(data);
+  }
+
+  addImages(data: IRAttachmentDTO) {
+    let control = <FormArray>this._form.controls['Images'];
+    control.push(this.initImages(data));
+  }
+
+  initImages(data: IRAttachmentDTO | null) {
+    if (data != null) {
+      return this.fb.group({
+          MineType: [data.MineType],
+          Name: [data.Name],
+          ResModel: ['product'],
+          Type: ['url'],
+          Url: [data.Url]
+      })
+    } else {
+      return this.fb.group({
+          MineType: [null],
+          Name: [null],
+          ResModel: ['product.template'],
+          Type: ['url'],
+          Url: [null]
+      })
+    }
   }
 
   createForm() {
@@ -118,13 +161,13 @@ export class CreateProductVariantComponent implements OnInit {
       NameNoSign: [null],
       NameTemplate: [null],
       NameTemplateNoSign: [null],
-      OldPrice: [null],
-      OutgoingQty: [null],
+      OldPrice: [0],
+      OutgoingQty: [0],
       POSCateg: [null],//nhóm pos
       POSCategId: [null],
       PosSalesCount: [null],
-      Price: [null],
-      PriceVariant: [null],//giá biến thể
+      Price: [0],
+      PriceVariant: [0],//giá biến thể
       Product_UOMId: [null],
       ProductTmplEnableAll: [false],
       ProductTmplId: [null],
@@ -132,7 +175,7 @@ export class CreateProductVariantComponent implements OnInit {
       PropertyValuation: [null],
       PurchaseMethod: ['receive'], //trên số lượng nhận hàng,  purchase-trên số lượng đặt hàng
       PurchaseOK: [true], //có thể mua
-      PurchasePrice: [null],
+      PurchasePrice: [0],
       QtyAvailable: [0],
       RewardName: [null],
       SaleDelay: [null],//thời gian chờ

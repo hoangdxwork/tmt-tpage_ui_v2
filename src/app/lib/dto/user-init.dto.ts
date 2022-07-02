@@ -11,4 +11,5 @@ export interface UserInitDTO{
     Name?:string;
     PhoneNumber?:string;
     UserName?:string;
+    Website?:string;
 }
