@@ -1,3 +1,4 @@
+import { Message } from 'src/app/lib/consts/message.const';
 import { finalize, switchMap } from 'rxjs/operators';
 import { da } from 'date-fns/locale';
 import { ModalBirthdayPartnerComponent } from './../components/modal-birthday-partner/modal-birthday-partner.component';
@@ -85,9 +86,10 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     { value: 'Email', name: 'Email', isChecked: false },
     { value: 'Street', name: 'Địa chỉ', isChecked: true },
     { value: 'StatusText', name: 'Trạng thái', isChecked: true },
-    { value: 'Credit', name: 'Nợ hiện tại', isChecked: true },
+    { value: 'Tag', name: 'Nhãn', isChecked: true },
     { value: 'FacebookId', name: 'Facebook', isChecked: false },
     { value: 'Zalo', name: 'Zalo', isChecked: false },
+    { value: 'Credit', name: 'Nợ hiện tại', isChecked: true },
     { value: 'Active', name: 'Hiệu lực', isChecked: true },
     { value: 'DateCreated', name: 'Ngày tạo', isChecked: true }
   ];
@@ -526,6 +528,10 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   //Modal gửi tin nhắn đến khách hàng
   showModalSendMessage() {
+    if(this.setOfCheckedId.size == 0){
+      this.message.error(Message.SelectOneLine)
+      return 
+    }
     let ids: any = [...this.setOfCheckedId];
     this.modalService.create({
       title: 'Gửi tin nhắn tới khách hàng',
