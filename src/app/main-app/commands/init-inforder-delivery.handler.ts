@@ -23,9 +23,6 @@ export abstract class InitInfoOrderDeliveryHandler{
               IsSelected: null,
               Type: null,
               ExtraMoney: null,
-              OrderTime: null,
-              Pickup_Time: null,
-              Pickup_Time_Range_Id: null,
           })
 
           enableInsuranceFee = saleModel.Ship_Extras.IsInsurance ? saleModel.Ship_Extras.IsInsurance : false;
@@ -44,9 +41,6 @@ export abstract class InitInfoOrderDeliveryHandler{
             IsSelected: saleModel.Ship_Extras.IsInsurance ? saleModel.Ship_Extras.IsInsurance : false,
             Type: null,
             ExtraMoney: null,
-            OrderTime: null,
-            Pickup_Time: null,
-            Pickup_Time_Range_Id: null,
         })
         enableInsuranceFee = saleModel.Ship_Extras.IsInsurance ? saleModel.Ship_Extras.IsInsurance : false;
         saleModel.Ship_InsuranceFee = insuranceFee;
@@ -63,9 +57,6 @@ export abstract class InitInfoOrderDeliveryHandler{
               IsSelected: saleModel.Ship_Extras.IsInsurance ? saleModel.Ship_Extras.IsInsurance : false,
               Type: null,
               ExtraMoney: null,
-              OrderTime: null,
-              Pickup_Time: null,
-              Pickup_Time_Range_Id: null,
           })
           enableInsuranceFee = saleModel.Ship_Extras.IsInsurance ? saleModel.Ship_Extras.IsInsurance : false;
           saleModel.Ship_InsuranceFee = insuranceFee;
@@ -85,9 +76,6 @@ export abstract class InitInfoOrderDeliveryHandler{
               IsSelected: saleModel.Ship_Extras.IsInsurance ? saleModel.Ship_Extras.IsInsurance : false,
               Type: null,
               ExtraMoney: null,
-              OrderTime: null,
-              Pickup_Time: null,
-              Pickup_Time_Range_Id: null,
           })
 
           enableInsuranceFee = saleModel.Ship_Extras.IsInsurance ? saleModel.Ship_Extras.IsInsurance : false;
@@ -105,9 +93,6 @@ export abstract class InitInfoOrderDeliveryHandler{
               IsSelected: saleModel.Ship_Extras.IsInsurance ? saleModel.Ship_Extras.IsInsurance : false,
               Type: null,
               ExtraMoney: null,
-              OrderTime: null,
-              Pickup_Time: null,
-              Pickup_Time_Range_Id: null,
           })
 
           enableInsuranceFee = saleModel.Ship_Extras.IsInsurance ? saleModel.Ship_Extras.IsInsurance : false;
@@ -126,9 +111,6 @@ export abstract class InitInfoOrderDeliveryHandler{
               IsSelected: saleModel.Ship_Extras.IsInsurance ? saleModel.Ship_Extras.IsInsurance : false,
               Type: null,
               ExtraMoney: null,
-              OrderTime: null,
-              Pickup_Time: null,
-              Pickup_Time_Range_Id: null,
           })
 
           enableInsuranceFee = saleModel.Ship_Extras.IsInsurance ? saleModel.Ship_Extras.IsInsurance : false;
@@ -146,9 +128,6 @@ export abstract class InitInfoOrderDeliveryHandler{
               IsSelected: saleModel.Ship_Extras.IsInsurance ? saleModel.Ship_Extras.IsInsurance : false,
               Type: null,
               ExtraMoney: null,
-              OrderTime: null,
-              Pickup_Time: null,
-              Pickup_Time_Range_Id: null,
           })
 
           enableInsuranceFee = saleModel.Ship_Extras.IsInsurance ? saleModel.Ship_Extras.IsInsurance : false;

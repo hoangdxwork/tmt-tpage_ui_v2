@@ -8,13 +8,13 @@ import { Ship_ExtrasServiceModel } from "./dto-handler/ship-extra-service.dto";
 
 export abstract class CalcServiceDefaultHandler {
 
-    static calcServiceDefault(saleModel: FastSaleOrder_DefaultDTOV2, shipExtraServices: Array<Ship_ExtrasServiceModel>){
+  public static calcServiceDefault(saleModel: FastSaleOrder_DefaultDTOV2, shipExtraServices: Array<Ship_ExtrasServiceModel>){debugger
       if (saleModel.Carrier) {
         switch (saleModel.Carrier?.DeliveryType) {
           case 'ViettelPost':
             saleModel.Ship_ServiceId = saleModel.Carrier?.ViettelPost_ServiceId;
 
-            if (saleModel.Ship_Extras && saleModel.Ship_Extras.IsDropoff) {
+            if (saleModel.Ship_Extras && saleModel.Ship_Extras.IsDropoff) {debugger
               shipExtraServices.push({
                 ServiceId: "GNG",
                 ServiceName: "Gửi tại bưu cục(Giảm 10% cước)",
@@ -23,12 +23,9 @@ export abstract class CalcServiceDefaultHandler {
                 TotalFee: null,
                 Type: null,
                 ExtraMoney: null,
-                OrderTime: null,
-                Pickup_Time: null,
-                Pickup_Time_Range_Id: null,
               });
             }
-            if (saleModel.Ship_Extras && saleModel.Ship_Extras.ServiceCustoms) {
+            if (saleModel.Ship_Extras && saleModel.Ship_Extras.ServiceCustoms) {debugger
               saleModel.Ship_Extras.ServiceCustoms.forEach(x => {
                 shipExtraServices.push({
                   ServiceId: x.ServiceId,
@@ -38,9 +35,6 @@ export abstract class CalcServiceDefaultHandler {
                   TotalFee: null,
                   Type: null,
                   ExtraMoney: null,
-                  OrderTime: null,
-                  Pickup_Time: null,
-                  Pickup_Time_Range_Id: null,
                 });
               })
             }
@@ -53,14 +47,11 @@ export abstract class CalcServiceDefaultHandler {
                 TotalFee: null,
                 Type: null,
                 ExtraMoney: null,
-                OrderTime: null,
-                Pickup_Time: null,
-                Pickup_Time_Range_Id: null,
               });
             }
             break;
           case 'GHN':
-            saleModel.Ship_ServiceId = saleModel.Carrier?.GHN_ServiceId;
+            saleModel.Ship_ServiceId = saleModel.Carrier?.GHN_ServiceId;debugger
             if (saleModel.Ship_Extras && saleModel.Ship_Extras.IsDropoff) {
               shipExtraServices.push(
                 {
@@ -71,9 +62,6 @@ export abstract class CalcServiceDefaultHandler {
                   TotalFee: null,
                   Type: null,
                   ExtraMoney: null,
-                  OrderTime: null,
-                  Pickup_Time: null,
-                  Pickup_Time_Range_Id: null,
                   });
             }
             break;
@@ -89,9 +77,6 @@ export abstract class CalcServiceDefaultHandler {
                   TotalFee: null,
                   Type: null,
                   ExtraMoney: null,
-                  OrderTime: null,
-                  Pickup_Time: null,
-                  Pickup_Time_Range_Id: null,
                 });
             }
             break;
@@ -106,9 +91,6 @@ export abstract class CalcServiceDefaultHandler {
                   TotalFee: null,
                   Type: null,
                   ExtraMoney: null,
-                  OrderTime: null,
-                  Pickup_Time: null,
-                  Pickup_Time_Range_Id: null,
                 });
             }
             if (saleModel.Ship_Extras && saleModel.Ship_Extras.Is_Fragile) {
@@ -121,9 +103,6 @@ export abstract class CalcServiceDefaultHandler {
                   TotalFee: null,
                   Type: null,
                   ExtraMoney: null,
-                  OrderTime: null,
-                  Pickup_Time: null,
-                  Pickup_Time_Range_Id: null,
                 });
             }
             break;
@@ -138,9 +117,6 @@ export abstract class CalcServiceDefaultHandler {
                   TotalFee: null,
                   Type: null,
                   ExtraMoney: null,
-                  OrderTime: null,
-                  Pickup_Time: null,
-                  Pickup_Time_Range_Id: null,
                 });
             }
             break;
@@ -164,9 +140,6 @@ export abstract class CalcServiceDefaultHandler {
                 IsSelected: true, TotalFee: null,
                 Type: null,
                 ExtraMoney: null,
-                OrderTime: null,
-                Pickup_Time: null,
-                Pickup_Time_Range_Id: null,
               });
             break;
           case "GHTK":
@@ -179,9 +152,6 @@ export abstract class CalcServiceDefaultHandler {
                 TotalFee: null,
                 Type: null,
                 ExtraMoney: null,
-                OrderTime: null,
-                Pickup_Time: null,
-                Pickup_Time_Range_Id: null,
               });
             break;
           case "ViettelPost":
@@ -194,9 +164,6 @@ export abstract class CalcServiceDefaultHandler {
                 TotalFee: null,
                 Type: null,
                 ExtraMoney: null,
-                OrderTime: null,
-                Pickup_Time: null,
-                Pickup_Time_Range_Id: null,
               });
             break;
         }

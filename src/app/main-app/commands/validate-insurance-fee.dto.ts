@@ -8,16 +8,16 @@ import { Ship_ExtrasServiceModel } from "./dto-handler/ship-extra-service.dto";
 
 export abstract class ValidateInsuranceFeeHandler {
 
-  static validateInsuranceFee(saleModel: FastSaleOrder_DefaultDTOV2, shipExtraServices: Array<Ship_ExtrasServiceModel>) {
+  static validateInsuranceFee(saleModel: FastSaleOrder_DefaultDTOV2, shipExtraServices: Array<Ship_ExtrasServiceModel>) {debugger
     if (!shipExtraServices) {
       shipExtraServices = [];
     }
 
-    let exist: any = {};
+    let exist: any = null;debugger
     if (saleModel.Carrier?.DeliveryType === "MyVNPost") {
         exist = shipExtraServices.filter(x => x.ServiceId === "OrderAmountEvaluation")[0];
         return (exist || { IsSelected: false }).IsSelected;
-    } else if (saleModel.Carrier?.DeliveryType === "GHN" || saleModel.Carrier?.DeliveryType === "GHTK") {
+    } else if (saleModel.Carrier?.DeliveryType === "GHN" || saleModel.Carrier?.DeliveryType === "GHTK") {debugger
         exist = shipExtraServices.filter(x => x.ServiceId === "16")[0];
         return (exist || { IsSelected: false }).IsSelected;
     } else if (saleModel.Carrier?.DeliveryType === "ViettelPost") {

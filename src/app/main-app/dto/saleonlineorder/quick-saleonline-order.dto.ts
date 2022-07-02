@@ -1,5 +1,5 @@
 export interface Detail_QuickSaleOnlineOrder {
-  Id: string;
+  Id: string | null;
   Quantity: number;
   Price: number;
   ProductId: number;

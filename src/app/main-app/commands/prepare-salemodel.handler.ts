@@ -1,6 +1,8 @@
 import { Injectable } from "@angular/core";
 import { UserInitDTO } from "src/app/lib";
-import { FastSaleOrder_DefaultDTOV2 } from "../dto/fastsaleorder/fastsaleorder-default.dto";
+import { TDSMessageService } from "tds-ui/message";
+import { TDSHelperArray } from "tds-ui/shared/utility";
+import { FastSaleOrder_DefaultDTOV2, OrderLineV2 } from "../dto/fastsaleorder/fastsaleorder-default.dto";
 import { QuickSaleOnlineOrderModel } from "../dto/saleonlineorder/quick-saleonline-order.dto";
 import { Ship_ExtrasServiceModel } from "./dto-handler/ship-extra-service.dto";
 
@@ -10,77 +12,58 @@ import { Ship_ExtrasServiceModel } from "./dto-handler/ship-extra-service.dto";
 
 export abstract class PrepareSaleModelHandler {
 
-  static prepareSaleModel(saleModel: FastSaleOrder_DefaultDTOV2, quickOrderModel: QuickSaleOnlineOrderModel, shipExtraServices: Array<Ship_ExtrasServiceModel>,
-    userInit: UserInitDTO, isEnableCreateOrder: boolean, enableInsuranceFee: boolean): any {
+  static prepareSaleModel(saleModel: FastSaleOrder_DefaultDTOV2, quickOrderModel: QuickSaleOnlineOrderModel,
+    shipExtraServices: Array<Ship_ExtrasServiceModel>): any {
 
-    if(isEnableCreateOrder) {
+      if (saleModel.Carrier && (saleModel.Carrier.DeliveryType === "ViettelPost" || saleModel.Carrier.DeliveryType === "GHN" || saleModel.Carrier.DeliveryType === "TinToc" || saleModel.Carrier.DeliveryType === "FlashShip")) {
+        if (saleModel.Carrier.DeliveryType === "GHN") {
+            saleModel.Ship_ServiceId = saleModel.Ship_ServiceId ||saleModel.Carrier.GHN_ServiceId;
+        } else if (saleModel.Carrier.DeliveryType === "ViettelPost" || saleModel.Carrier.DeliveryType === "TinToc" || saleModel.Carrier.DeliveryType === "FlashShip") {
+            saleModel.Ship_ServiceId = saleModel.Ship_ServiceId || saleModel.Carrier.ViettelPost_ServiceId;
+        }
+      }
+
       saleModel.PartnerId = quickOrderModel.PartnerId;
+      if (shipExtraServices) {
+          saleModel.Ship_ServiceExtras = [];
 
-      let model = {
-          PartnerId: quickOrderModel.PartnerId,
-          CompanyId: saleModel.CompanyId || userInit?.Company?.Id,
-          CarrierId: saleModel.Carrier?.Id,
-          ServiceId: saleModel.Ship_ServiceId || null,
-          InsuranceFee: saleModel.Ship_InsuranceFee || 0,
-          ShipWeight: saleModel.ShipWeight,
-          CashOnDelivery: saleModel.CashOnDelivery,
-          ServiceExtras: [] as any[],
-          Ship_InsuranceFee: saleModel.Ship_InsuranceFee,
-          Ship_Receiver: {} as any
-      } as any;
-
-      shipExtraServices || (shipExtraServices = []);
-      shipExtraServices.map(x => {
-          if (x.IsSelected) {
-              model.ServiceExtras.push({
-                  Id: x.ServiceId,
-                  Name: x.ServiceName,
-                  Fee: x.Fee,
-                  Type: x.Type,
-                  ExtraMoney: x.ExtraMoney,
-                  Pickup_Time: x.Pickup_Time,
-                  Pickup_Time_Range_Id: x.Pickup_Time_Range_Id,
-              });
-          }
-      });
-
-      if (!saleModel.Ship_Extras && saleModel.Carrier && saleModel.Carrier.Extras) {
-        saleModel.Ship_Extras = saleModel.Carrier.Extras;
-      }
-      if (!enableInsuranceFee) {
-          model.Ship_InsuranceFee = 0;
-      } else {
-          if (!model.Ship_InsuranceFee) {
-              if (saleModel.Ship_Extras) {
-                  model.Ship_InsuranceFee = saleModel.Ship_Extras.IsInsurance ? saleModel.Ship_Extras.InsuranceFee ? saleModel.Ship_Extras.InsuranceFee : quickOrderModel.TotalAmount : 0;
-              } else {
-                  model.Ship_InsuranceFee = saleModel.AmountTotal;
+          shipExtraServices.map(x => {
+              if (x.IsSelected) {
+                  saleModel.Ship_ServiceExtras.push({
+                      Id: x.ServiceId,
+                      Name: x.ServiceName,
+                      Fee: (x.Fee || 0),
+                      Type: x.Type,
+                      ExtraMoney: x.ExtraMoney
+                  });
               }
-          }
-      }
-      if (quickOrderModel.Address) {
-          model.Ship_Receiver = {
-              Name: quickOrderModel.Name,
-              Street: quickOrderModel.Address,
-              Phone: quickOrderModel.Telephone,
-              City: quickOrderModel.CityCode ? {
-                  code: quickOrderModel.CityCode,
-                  name: quickOrderModel.CityName
-              } : null,
-              District: quickOrderModel.DistrictCode ? {
-                  code: quickOrderModel.DistrictCode,
-                  name: quickOrderModel.DistrictName
-              } : null,
-              Ward: quickOrderModel.WardCode ? {
-                  code: quickOrderModel.WardCode,
-                  name: quickOrderModel.WardName
-              } : null
-          };
+          });
       }
 
-      return model;
-    }
+      // Gán id của đơn hàng
+      saleModel.SaleOnlineIds = [quickOrderModel.Id];
+      saleModel.OrderLines = [];
 
+      quickOrderModel.Details.map(x => {
+        let item = {
+            ProductId: x.ProductId,
+            ProductUOMId: x.UOMId,
+            ProductUOMQty: x.Quantity,
+            PriceUnit: x.Price,
+            Discount: 0,
+            Discount_Fixed: 0,
+            Type: "fixed",
+            PriceSubTotal: x.Price * x.Quantity,
+            Note: x.Note
+        } as OrderLineV2;
+
+        saleModel.OrderLines.push(item);
+      })
+
+      if (saleModel.Carrier && saleModel.Carrier.DeliveryType == 'NinjaVan') {
+          saleModel.Ship_ServiceId = 'Standard';
+          saleModel.Ship_ServiceName = 'Tiêu chuẩn';
+      }
   }
 
 }

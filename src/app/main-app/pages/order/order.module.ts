@@ -67,6 +67,7 @@ import { TDSModalModule } from 'tds-ui/modal';
 import { TDSCollapseModule } from 'tds-ui/collapse';
 import { OrderPrintService } from '../../services/print/order-print.service';
 import { ExpandOrderDetailComponent } from './components/expand-order/expand-order-detail.component';
+import { TDSNotificationModule } from "tds-ui/notification";
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -141,7 +142,8 @@ const SERVICES = [
     TDSToolTipModule,
     TDSDrawerModule,
     UploadImageModule,
-    TDSConversationsModule
+    TDSConversationsModule,
+    TDSNotificationModule
   ],
   providers: [
     ...SERVICES,

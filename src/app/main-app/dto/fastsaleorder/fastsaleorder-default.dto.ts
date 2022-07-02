@@ -259,7 +259,7 @@ export interface Account {
   Reconcile: boolean;
 }
 
-export interface OrderLine {
+export interface OrderLineV2 {
   Id: number;
   ProductId: number;
   ProductUOMId: number;
@@ -647,7 +647,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     Carrier: Carrier | null;
     Tax: any;
     SaleOrder?: any;
-    OrderLines: OrderLine[];
+    OrderLines: OrderLineV2[];
     Ship_ServiceExtras: ShipServiceExtra[];
     Team: Team;
 }

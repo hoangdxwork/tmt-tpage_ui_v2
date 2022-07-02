@@ -520,9 +520,9 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
       }
     });
 
-    modal.afterClose.subscribe((obs: boolean) => {
-      if (obs == true) {
-        this.loadData(this.pageSize, this.pageIndex);
+    modal.afterClose.subscribe((obs: string) => {
+      if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
+          this.loadData(this.pageSize, this.pageIndex);
       }
     });
   }
@@ -638,8 +638,6 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   //   });
   // }
-
-
 
   printMultiOrder() {
     if (this.checkValueEmpty() == 1) {

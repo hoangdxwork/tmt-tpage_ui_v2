@@ -21,9 +21,6 @@ export abstract class InitOkieLaHandler {
             IsSelected: null,
             Type: null,
             ExtraMoney: null,
-            OrderTime: null,
-            Pickup_Time: null,
-            Pickup_Time_Range_Id: null,
           },
           {
             ServiceId: "check_before_accept",
@@ -33,9 +30,6 @@ export abstract class InitOkieLaHandler {
             IsSelected: null,
             Type: null,
             ExtraMoney: null,
-            OrderTime: null,
-            Pickup_Time: null,
-            Pickup_Time_Range_Id: null,
           }
       ];
     }
