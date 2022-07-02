@@ -8,14 +8,14 @@ import { TAuthService } from 'src/app/lib';
 import { SaleSettingsDTO } from '../../dto/setting/setting-sale-online.dto';
 import { DataCheckInfoPartnerDTO } from '../../dto/partner/partner.dto';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { FastSaleOrder_DefaultDTOV2 } from '../../dto/fastsaleorder/fastsaleorder-default.dto';
+import { FastSaleOrderRestDTO } from '../../dto/saleonlineorder/saleonline-order-red.dto';
 
 @Injectable()
 export class OrderFormHandler {
 
   saleSetting!: SaleSettingsDTO;
   companyId: TDSSafeAny;
-  billDefault$!: Observable<FastSaleOrder_DefaultDTOV2>;
+  billDefault$!: Observable<FastSaleOrderRestDTO>;
 
   readonly patternPhone = /(?:\b|[^0-9])((0|o|84|\+84)(\s?)([2-9]|1[0-9])(\d|o(\s|\.)?){8})(?:\b|[^0-9])/;
 
@@ -23,7 +23,8 @@ export class OrderFormHandler {
     private formBuilder: FormBuilder,
     private auth: TAuthService,
     private generalConfigsFacade: GeneralConfigsFacade,
-    private fastSaleOrderService: FastSaleOrderService) {
+    private fastSaleOrderService: FastSaleOrderService,
+  ) {
     this.initialize();
   }
 
@@ -89,7 +90,7 @@ export class OrderFormHandler {
     });
   }
 
-  createBillDefault(): Observable<FastSaleOrder_DefaultDTOV2> {
+  createBillDefault(): Observable<FastSaleOrderRestDTO> {
     if(this.billDefault$) return this.billDefault$;
 
     this.billDefault$ = new Observable(observer => {
@@ -102,16 +103,16 @@ export class OrderFormHandler {
     return this.billDefault$;
   }
 
-  private getBillInvoiceDefault(): Observable<FastSaleOrder_DefaultDTOV2> {
-    let model ={ Type: "invoice" } ;
-    return this.fastSaleOrderService.getDefault({ model: model})
-      .pipe(map((res) => {
-        this.updateBillDefault(res);
-        return res;
-      }));
+  private getBillInvoiceDefault(): Observable<FastSaleOrderRestDTO> {
+    let typeInvoice = { "model": { "Type": "invoice" } };
+    return this.fastSaleOrderService.getDefault(typeInvoice)
+          .pipe(map((res) => {
+            this.updateBillDefault(res);
+            return res;
+          }));
   }
 
-  private updateBillDefault(billDefault: FastSaleOrder_DefaultDTOV2) {
+  private updateBillDefault(billDefault: FastSaleOrderRestDTO) {
     let carrier = billDefault.Carrier;
 
     billDefault.CompanyId = this.companyId;
@@ -123,7 +124,7 @@ export class OrderFormHandler {
     }
     else if(this.saleSetting) {
       billDefault.DeliveryPrice = this.saleSetting.ShipAmount || 0;
-      billDefault.ShipWeight = this.saleSetting.Weight || 0;
+      billDefault.ShipWeight = this.saleSetting.Weight;
     }
 
     // Gán lại giá trị nếu empty

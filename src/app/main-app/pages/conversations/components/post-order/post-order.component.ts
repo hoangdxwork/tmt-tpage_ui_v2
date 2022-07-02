@@ -9,9 +9,9 @@ import { CheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { CalculateFeeResponse_Data_ServiceDTO, CalculateFeeResponse_Data_Service_ExtraDTO, DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
 import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { ConversationOrderForm, ConversationOrderProductDefaultDTO, SaleOnline_Facebook_CommentFilterResultDTO } from 'src/app/main-app/dto/coversation-order/conversation-order.dto';
-import { FastSaleOrder_DefaultDTOV2 } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
+import { FastSaleOrderRestDTO } from 'src/app/main-app/dto/saleonlineorder/saleonline-order-red.dto';
 import { SaleSettingsDTO } from 'src/app/main-app/dto/setting/setting-sale-online.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/user/application-user.dto';
@@ -70,7 +70,7 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
   lstShipServices: CalculateFeeResponse_Data_ServiceDTO[] = []; //  Dịch vụ bổ xung
   lstComment: SaleOnline_Facebook_CommentFilterResultDTO[] = [];
 
-  saleModel!: FastSaleOrder_DefaultDTOV2;
+  saleModel!: FastSaleOrderRestDTO;
   shipExtraServices: CalculateFeeResponse_Data_Service_ExtraDTO[] = [];
   saleSettings!: SaleSettingsDTO;
 
@@ -167,7 +167,7 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  updateOrderFormByBill(bill: FastSaleOrder_DefaultDTOV2) {
+  updateOrderFormByBill(bill: FastSaleOrderRestDTO) {
     this.orderForm.controls.Carrier?.setValue(bill.Carrier);
     this.orderForm.controls.Tax?.setValue(bill.Tax);
     this.saleModel.CashOnDelivery = this.orderForm.value.TotalAmountBill || 0;
@@ -263,7 +263,7 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
       });
   }
 
-  updateShipExtraServices(carrier: any) {
+  updateShipExtraServices(carrier: DeliveryCarrierDTO | undefined) {
     if(carrier) {
       let insuranceFee = this.orderForm.value.Ship_Extras?.InsuranceFee || 0;
 
@@ -321,7 +321,7 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
         }
         else {
           let billModel = this.prepareBillModel(); // Bản chất đã change this.saleModel
-          // billModel.FormAction = print;
+          billModel.FormAction = print;
 
           this.isLoading = false;
 
@@ -428,7 +428,7 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
     return model;
   }
 
-  prepareBillModel(): FastSaleOrder_DefaultDTOV2 {
+  prepareBillModel(): FastSaleOrderRestDTO {
     let model = this.checkFormHandler.prepareBill(this.orderForm, this.saleModel, this.shipExtraServices);
     return model;
   }
@@ -442,12 +442,16 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
       if (this.saleModel?.Address) {
         this.saleModel.Ship_Receiver = {
           Name: formValue["Name"],
+          FullAddress: formValue["Address"],
           Street: formValue["Address"],
           Phone: formValue["Telephone"],
           City: formValue["City"],
           District: formValue["District"],
           Ward: formValue["Ward"],
         };
+      }
+      else {
+        this.saleModel.Ship_Receiver = null;
       }
     }
   }
