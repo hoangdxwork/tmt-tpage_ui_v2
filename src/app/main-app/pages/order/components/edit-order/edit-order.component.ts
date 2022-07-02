@@ -20,7 +20,7 @@ import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { finalize, map } from 'rxjs/operators';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
-import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TACheckboxChange } from 'tds-ui/tds-checkbox';
