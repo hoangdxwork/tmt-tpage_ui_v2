@@ -17,7 +17,8 @@ export interface FilterObjDTO  {
     dateRange: {
         startDate: Date,
         endDate: Date
-    }
+    },
+    // carrierId: null
 }
 
 @Injectable()
@@ -102,6 +103,11 @@ export class OdataFastSaleOrderService extends BaseSevice {
       dataFilter.filters.push({ field: "State", operator: OperatorEnum.eq, value: filterObj.status })
       dataFilter.logic = "and";
     }
+
+    // if(filterObj.carrierId != null) {
+    //   dataFilter.filters.push({ field: "CarrierId", operator: OperatorEnum.eq, value: filterObj.carrierId })
+    //   dataFilter.logic = "and";
+    // }
 
     return dataFilter;
   }

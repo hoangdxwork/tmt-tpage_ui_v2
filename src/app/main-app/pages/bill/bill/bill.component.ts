@@ -63,7 +63,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     dateRange: {
         startDate: addDays(new Date(), -30),
         endDate: new Date(),
-    }
+    },
+    carrierId: null
   }
 
   public lstShipStatus: any[] = [
@@ -156,6 +157,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   loadCarrier() {
+    
     return this.deliveryCarrierService.get().pipe(map(res => res.value));
   }
 
@@ -593,10 +595,9 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onChangeCarrier(event: any){
-    this.filterObj = {
-      deliveryType: event.Name,
-    }
-    this.getViewData(this.filterObj)
+    this.filterObj.deliveryType = event.DeliveryType;
+    // this.filterObj.carrierId = event.Id;
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   ngOnDestroy(): void {
