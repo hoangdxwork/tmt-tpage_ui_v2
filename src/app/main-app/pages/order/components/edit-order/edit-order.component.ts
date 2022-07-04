@@ -146,7 +146,7 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
           this.commentsOfOrder(res.Facebook_PostId, res.CRMTeamId, res.Facebook_ASUserId);
       }
     }, error => {
-      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Load đơn hàng đã xảy ra lỗi')
+      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Load đơn hàng đã xảy ra lỗi');
     });
   }
 

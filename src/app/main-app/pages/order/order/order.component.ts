@@ -615,20 +615,19 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   // Gủi tin nhắn FB
-  sendMessage(orderMessage?: TDSSafeAny) {
-    if (this.setOfCheckedId.size == 0 || orderMessage) {
+  sendMessage() {
+    if (this.checkValueEmpty() == 1) {
+      let ids = [...this.setOfCheckedId];
       this.modal.create({
         title: 'Gửi tin nhắn nhanh',
         content: SendMessageComponent,
         size: 'lg',
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          orderIds: orderMessage? [orderMessage.Id] : [...this.setOfCheckedId],
+          orderIds: ids,
           messageType: GenerateMessageTypeEnum.Order
         }
       })
-    }else{
-      this.message.error(Message.SelectOneLine);
     }
   }
 
@@ -768,7 +767,7 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   onClose(e:Event) {
-    
+
   }
 
   @HostListener('document:keyup', ['$event'])
