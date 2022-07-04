@@ -29,34 +29,33 @@ import { AddProductHandler } from './add-product.handler';
 })
 export class ConfigAddProductComponent implements OnInit, OnDestroy {
   _form!: FormGroup;
-  productTypeList:Array<TDSSafeAny>  = [];
-  categoryList:Array<ConfigCateg>  = [];
-  UOMPOList:Array<ConfigUOMPO>  = [];
-  UOMList:Array<ConfigUOM>  = [];
-  POSCategoryList:Array<TDSSafeAny> = [];
-  trackingList:Array<TDSSafeAny> = [];
-  producerList:Array<ConfigUOMTypeDTO> = [];
-  importerList:Array<ConfigUOMTypeDTO> = [];
-  distributorList:Array<ConfigUOMTypeDTO> = [];
-  originCountryList:Array<ConfigOriginCountryDTO> = [];
-  lstAttributes:Array<ConfigAttributeLine> = [];
-  lstVariants:Array<ConfigProductVariant> = [];
+  productTypeList: Array<TDSSafeAny> = [];
+  categoryList: Array<ConfigCateg> = [];
+  UOMPOList: Array<ConfigUOMPO> = [];
+  UOMList: Array<ConfigUOM> = [];
+  POSCategoryList: Array<TDSSafeAny> = [];
+  trackingList: Array<TDSSafeAny> = [];
+  producerList: Array<ConfigUOMTypeDTO> = [];
+  importerList: Array<ConfigUOMTypeDTO> = [];
+  distributorList: Array<ConfigUOMTypeDTO> = [];
+  originCountryList: Array<ConfigOriginCountryDTO> = [];
+  lstAttributes: Array<ConfigAttributeLine> = [];
+  lstVariants: Array<ConfigProductVariant> = [];
   dataModel!: ConfigProductDefaultDTO;
   isLoading = false;
   isLoadingVariant = false;
   isLoadingAttribute = false;
   id: TDSSafeAny;
 
-  numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null){
+  numberWithCommas = (value: TDSSafeAny) => {
+    if (value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
     return value
   };
-  parserComas = (value: TDSSafeAny) =>{
-    if(value != null)
-    {
-      return TDSHelperString.replaceAll(value,',','');
+  parserComas = (value: TDSSafeAny) => {
+    if (value != null) {
+      return TDSHelperString.replaceAll(value, ',', '');
     }
     return value
   };
@@ -76,7 +75,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     this.createForm();
   }
 
-  createForm(){
+  createForm() {
     this._form = this.fb.group({
       Active: [true],
       AvailableInPOS: [true],
@@ -105,8 +104,8 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       StandardPrice: [null],
       Tracking: ['none'],
       Type: ['product'],
-      UOM: [null,Validators.required],
-      UOMPO: [null,Validators.required],
+      UOM: [null, Validators.required],
+      UOMPO: [null, Validators.required],
       Volume: [0],
       Weight: [0],
       YearOfManufacture: [null]
@@ -130,31 +129,29 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     this.loadOriginCountry();
   }
 
-  loadData(id :TDSSafeAny) {
+  loadData(id: TDSSafeAny) {
     this.isLoading = true;
 
     this.productTemplateService.getProductTemplateById(id).pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
-      .subscribe((res :TDSSafeAny) => {
-          delete res['@odata.context'];
-          if (res.ImageUrl) {
-            this._form.controls['ImageUrl'].setValue(res.ImageUrl);
-          }
-          this.dataModel = {...res};
-          this.formatProperty(this.dataModel);
-    }, error => {
-      this.message.error(Message.CanNotLoadData);
-    })
+      .subscribe((res: TDSSafeAny) => {
+        delete res['@odata.context'];
+        this.dataModel = { ...res };
+        
+        this.formatProperty(this.dataModel);
+      }, error => {
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
+      })
   }
 
-  loadDefault(){
+  loadDefault() {
     this.isLoading = true;
     this.productTemplateService.getDefault().pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
-      .subscribe((res:TDSSafeAny) => {
+      .subscribe((res: TDSSafeAny) => {
         delete res['@odata.context'];
-        this.dataModel = {...res};
+        this.dataModel = { ...res };
         this.formatProperty(res);
       }, error => {
-        this.message.error(Message.CanNotLoadData);
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
       })
   }
 
@@ -162,12 +159,12 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     //TODO: xử lý array form
     if (TDSHelperArray.hasListValue(data.Images)) {
       data.Images.forEach((x: WallPicturesDTO) => {
-          this.addImages(x);
+        this.addImages(x);
       });
     }
     if (TDSHelperArray.hasListValue(data.ProductVariants)) {
       data.ProductVariants.forEach((x: ConfigProductVariant) => {
-          this.addProductVariants(x);
+        this.addProductVariants(x);
       });
       this.lstVariants = data.ProductVariants;
     }
@@ -177,7 +174,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     this._form.patchValue(data);
   }
 
-  loadProductTypeList(){
+  loadProductTypeList() {
     this.productTypeList = [
       { value: 'product', text: 'Có thể lưu trữ' },
       { value: 'consu', text: 'Có thể tiêu thụ' },
@@ -185,62 +182,62 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     ];
   }
 
-  loadProductCategory(){
+  loadProductCategory() {
     this.productService.getProductCategory().pipe(takeUntil(this.destroy$)).subscribe(
-      (res:TDSSafeAny)=>{
+      (res: TDSSafeAny) => {
         this.categoryList = [...res.value];
-      }, error=>{
+      }, error => {
         this.message.error(Message.CanNotLoadData);
       }
     );
   }
 
-  loadProductUOM(){
+  loadProductUOM() {
     this.productTemplateService.getProductUOM().pipe(takeUntil(this.destroy$)).subscribe(
-      (res:TDSSafeAny)=>{
+      (res: TDSSafeAny) => {
         this.UOMPOList = [...res.value];
       },
-      error=>{
+      error => {
         this.message.error(Message.CanNotLoadData);
       }
     );
   }
 
-  loadUOMs(){
+  loadUOMs() {
     this.productTemplateOUMLine.getOUMs().pipe(takeUntil(this.destroy$)).subscribe(
-      (res:TDSSafeAny)=>{
+      (res: TDSSafeAny) => {
         this.UOMList = [...res.value];
       },
-      err=>{
+      err => {
         this.message.error(Message.CanNotLoadData);
       }
     );
   }
 
-  loadPOSCategory(){
+  loadPOSCategory() {
     this.productTemplateService.getPOSCategory().pipe(takeUntil(this.destroy$)).subscribe(
-      (res:TDSSafeAny)=>{
+      (res: TDSSafeAny) => {
         this.POSCategoryList = [...res.value];
       },
-      err=>{
+      err => {
         this.message.error(Message.CanNotLoadData);
       }
     );
   }
 
-  loadTrackingList(){
+  loadTrackingList() {
     this.trackingList = [
       { value: 'lot', text: 'Theo lô' },
       { value: 'none', text: 'Không theo dõi' },
     ];
   }
 
-  loadOriginCountry(){
+  loadOriginCountry() {
     this.productTemplateService.getOriginCountry().pipe(takeUntil(this.destroy$)).subscribe(
-      (res:TDSSafeAny)=>{
+      (res: TDSSafeAny) => {
         this.originCountryList = [...res.value];
       },
-      err=>{
+      err => {
         this.message.error(err?.error?.message || Message.CanNotLoadData);
       }
     )
@@ -256,9 +253,9 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     );
   }
 
-  showCreateAttributeModal(){
+  showCreateAttributeModal() {
     let productName = this._form.controls.Name.value;
-    if(productName){
+    if (productName) {
       const modal = this.modalService.create({
         title: 'Quản lý thuộc tính',
         content: ConfigAddAttributeProductModalComponent,
@@ -266,39 +263,39 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         viewContainerRef: this.viewContainerRef
       });
 
-      modal.afterClose.subscribe((result:Array<ConfigAttributeLine>) => {
+      modal.afterClose.subscribe((result: Array<ConfigAttributeLine>) => {
         if (TDSHelperObject.hasValue(result)) {
           this.lstAttributes = result;
-          let model = <ConfigSuggestVariants> <unknown> this.prepareModel();
+          let model = <ConfigSuggestVariants><unknown>this.prepareModel();
           model.AttributeLines = result;
-          this.productTemplateService.suggestVariants({model: model}).pipe(takeUntil(this.destroy$)).subscribe(
-            (res)=>{
+          this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe(
+            (res) => {
               this.lstVariants = res.value;
               this.dataModel.ProductVariants = this.lstVariants;
             },
-            (err)=>{
+            (err) => {
               this.message.error(err?.error?.message || Message.CanNotLoadData);
             }
           )
         }
       });
-    }else{
+    } else {
       this.message.error('Vui lòng nhập tên sản phẩm');
     }
   }
 
-  showCreateVariantsModal(){
-    if(this.lstAttributes?.length > 0){
+  showCreateVariantsModal() {
+    if (this.lstAttributes?.length > 0) {
       let formModel = this._form.value;
-      let suggestModel = <ConfigSuggestVariants> <unknown> this.prepareModel();
-      
-      if(formModel.Name){
+      let suggestModel = <ConfigSuggestVariants><unknown>this.prepareModel();
+
+      if (formModel.Name) {
         const modal = this.modalService.create({
           title: 'Thêm biến thể sản phẩm',
           content: CreateVariantsModalComponent,
           size: "lg",
           viewContainerRef: this.viewContainerRef,
-          componentParams:{
+          componentParams: {
             attributeLines: this.lstAttributes,
             productTypeList: this.productTypeList,
             suggestModel: suggestModel,
@@ -311,30 +308,30 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
           }
         });
 
-        modal.afterClose.subscribe((result:ConfigProductVariant) => {
+        modal.afterClose.subscribe((result: ConfigProductVariant) => {
           if (TDSHelperObject.hasValue(result)) {
             this.lstVariants.push(result);
             this.lstVariants = [...this.lstVariants];
           }
         });
-      }else{
+      } else {
         this.message.error('Vui lòng nhập tên sản phẩm');
       }
     }
   }
 
-  showEditVariantsModal(data:ConfigProductVariant){
-    if(this.lstAttributes?.length > 0){
+  showEditVariantsModal(data: ConfigProductVariant) {
+    if (this.lstAttributes?.length > 0) {
       let formModel = this._form.value;
-      let suggestModel = <ConfigSuggestVariants> <unknown> this.prepareModel();
+      let suggestModel = <ConfigSuggestVariants><unknown>this.prepareModel();
 
-      if(formModel.Name){
+      if (formModel.Name) {
         const modal = this.modalService.create({
           title: 'Sửa biến thể sản phẩm',
           content: CreateVariantsModalComponent,
           size: "lg",
           viewContainerRef: this.viewContainerRef,
-          componentParams:{
+          componentParams: {
             attributeLines: this.lstAttributes,
             productTypeList: this.productTypeList,
             suggestModel: suggestModel,
@@ -342,29 +339,29 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
           }
         });
 
-        modal.afterClose.subscribe((result:ConfigProductVariant) => {
+        modal.afterClose.subscribe((result: ConfigProductVariant) => {
           if (TDSHelperObject.hasValue(result)) {
-            this.lstVariants.forEach((item,i)=>{
+            this.lstVariants.forEach((item, i) => {
               //TODO: do Id luôn = 0 nên không thể xét theo Id
-              if(item.NameGet == result.NameGet && item.PriceVariant == result.PriceVariant){
+              if (item.NameGet == result.NameGet && item.PriceVariant == result.PriceVariant) {
                 this.lstVariants[i] = result;
               }
             })
             this.lstVariants = [...this.lstVariants];
           }
         });
-      }else{
+      } else {
         this.message.error('Vui lòng nhập tên sản phẩm');
       }
     }
   }
 
-  removeVariants(data:ConfigProductVariant){
-    let variants = this.lstVariants.filter(f=>f.NameGet != data.NameGet && f.PriceVariant != data.PriceVariant);
+  removeVariants(data: ConfigProductVariant) {
+    let variants = this.lstVariants.filter(f => f.NameGet != data.NameGet && f.PriceVariant != data.PriceVariant);
     this.lstVariants = [...variants];
   }
 
-  addCategory(){
+  addCategory() {
     const modal = this.modalService.create({
       title: 'Thêm nhóm sản phẩm',
       content: ConfigAddCategoryModalComponent,
@@ -377,7 +374,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     });
   }
 
-  addProducer(){
+  addProducer() {
     const modal = this.modalService.create({
       title: 'Thêm nhà sản xuất',
       content: ConfigAddUOMModalComponent,
@@ -393,7 +390,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     });
   }
 
-  addImporter(){
+  addImporter() {
     const modal = this.modalService.create({
       title: 'Thêm nhà nhập khẩu',
       content: ConfigAddUOMModalComponent,
@@ -409,7 +406,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     });
   }
 
-  addDistributor(){
+  addDistributor() {
     const modal = this.modalService.create({
       title: 'Thêm nhà phân phối',
       content: ConfigAddUOMModalComponent,
@@ -425,7 +422,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     });
   }
 
-  addOriginCountry(){
+  addOriginCountry() {
     const modal = this.modalService.create({
       title: 'Thêm xuất xứ',
       content: ConfigAddOriginCountryModalComponent,
@@ -438,16 +435,16 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     });
   }
 
-  getAvatar(url:string){
+  getAvatar(url: string) {
     this._form.controls.ImageUrl.setValue(url);
   }
 
-  getImageList(images:any){
+  getImageList(images: any) {
     if (TDSHelperArray.isArray(images.files)) {
       let lstImages = images.files as WallPicturesDTO[];
       this._form.controls["Images"] = this.fb.array([]);
-      
-      if(TDSHelperArray.hasListValue(lstImages)){
+
+      if (TDSHelperArray.hasListValue(lstImages)) {
         lstImages.forEach((x: WallPicturesDTO) => {
           this.addImages(x);
         });
@@ -458,19 +455,19 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   initImages(data: WallPicturesDTO | null) {
     if (data != null) {
       return this.fb.group({
-          MineType: [null],
-          Name: [data.name],
-          ResModel: ['product.template'],
-          Type: ['url'],
-          Url: [data.url]
+        MineType: [null],
+        Name: [data.name],
+        ResModel: ['product.template'],
+        Type: ['url'],
+        Url: [data.url]
       })
     } else {
       return this.fb.group({
-          MineType: [null],
-          Name: [null],
-          ResModel: ['product.template'],
-          Type: ['url'],
-          Url: [null]
+        MineType: [null],
+        Name: [null],
+        ResModel: ['product.template'],
+        Type: ['url'],
+        Url: [null]
       })
     }
   }
@@ -488,83 +485,83 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     control.push(this.initImages(data));
   }
 
-  addProductVariants(data: ConfigProductVariant){
+  addProductVariants(data: ConfigProductVariant) {
     let control = <FormArray>this._form.controls['ProductVariants'];
     control.push(this.initProductVariants(data));
   }
 
-  addProduct(){
+  addProduct() {
     let model = this.prepareModel();
-    // console.log(model)
-    if(model.Name){
+
+    if (model.Name) {
       this.productTemplateService.insertProductTemplate(model).pipe(takeUntil(this.destroy$)).subscribe(
-        (res:TDSSafeAny)=>{
+        (res: TDSSafeAny) => {
           this.message.success('Thêm mới thành công');
           this.router.navigateByUrl('/configs/products');
         },
-        err=>{
+        err => {
           this.message.error(err?.error?.errors?.model[0] || Message.InsertFail);
         }
       );
     }
   }
 
-  editProduct(){
+  editProduct() {
     let model = this.prepareModel();
-    console.log(model)
-    if(model.Name){
+
+    if (model.Name) {
       this.productTemplateService.updateProductTemplate(model).pipe(takeUntil(this.destroy$)).subscribe(
-        (res:TDSSafeAny)=>{
+        (res: TDSSafeAny) => {
           this.message.success(Message.UpdatedSuccess);
           this.router.navigateByUrl('/configs/products');
         },
-        err=>{
+        err => {
           this.message.error(err?.error?.message || Message.CanNotLoadData);
         }
       );
     }
   }
 
-  prepareModel(){
+  prepareModel() {
     let images = this._form.controls["Images"].value as WallPicturesDTO[];
 
     AddProductHandler.prepareModel(this.dataModel, this._form.value, images);
     return this.dataModel;
   }
 
-  backToMain(){
+  backToMain() {
     this.router.navigateByUrl('/configs/products');
   }
 
-  onSubmit(){
+  onSubmit() {
     let model = this.prepareModel();
-    
-    if(!TDSHelperString.hasValueString(model.Name)) {
+
+    if (!TDSHelperString.hasValueString(model.Name)) {
       this.message.error('Vui lòng nhập tên');
       return
     }
-    
-    if(!TDSHelperObject.hasValue(model.UOM)){
+
+    if (!TDSHelperObject.hasValue(model.UOM)) {
       this.message.error('Vui lòng nhập đơn vị mặc định');
       return
     }
 
-    if(!TDSHelperObject.hasValue(model.UOMPO)){
+    if (!TDSHelperObject.hasValue(model.UOMPO)) {
       this.message.error('Vui lòng nhập đơn vị mua');
       return
     }
 
-    if(this.id){
+    if (this.id) {
       this.editProduct();
-    }else{
-      if(this.dataModel) {
+    } else {
+      if (this.dataModel) {
         this.addProduct();
       } else {
         this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
           delete res['@odata.context'];
-          this.dataModel = {...res};
+          this.dataModel = { ...res };
           this.addProduct();
-        },err=>{
+        }, err => {
           this.message.error(err?.error?.message || Message.CanNotLoadData);
         });
       }

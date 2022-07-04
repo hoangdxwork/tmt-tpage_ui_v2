@@ -1,11 +1,6 @@
 import { ConfigAttributeValue } from './../../dto/configs/product/config-product-default.dto';
 import { Pipe, PipeTransform, ChangeDetectorRef } from '@angular/core';
 
-interface LinesPipeModel{ 
-  AttributeLines: ConfigAttributeValue[]| undefined, 
-  AttributeId:number
-}
-
 @Pipe({
   name: 'showAttributeValue'
 })
@@ -13,14 +8,14 @@ export class ShowAttributeValuePipe implements PipeTransform {
 
   constructor(private cdRef: ChangeDetectorRef){}
 
-  transform(data:LinesPipeModel): string {
+  transform(AttributeLines: ConfigAttributeValue[]| undefined, AttributeId:number): string {
     let result!:ConfigAttributeValue
-    let attrValues = data.AttributeLines;
+    let attrValues = AttributeLines;
 
     this.cdRef.detectChanges();
     if(attrValues){
       attrValues.forEach((item)=>{
-        if(item.AttributeId == data.AttributeId){
+        if(item.AttributeId == AttributeId){
           result = item;
         }
       })

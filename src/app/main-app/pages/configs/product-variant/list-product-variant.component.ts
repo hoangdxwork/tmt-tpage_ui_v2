@@ -1,16 +1,14 @@
-import { OnDestroy } from '@angular/core';
 import { THelperCacheService } from '../../../../lib/utility/helper-cache';
 import { ExcelExportService } from '../../../services/excel-export.service';
 import { ProductService } from '../../../services/product.service';
 import { switchMap, finalize } from 'rxjs/operators';
 import { OdataProductService } from '../../../services/mock-odata/odata-product.service';
 import { CRMTeamService } from '../../../services/crm-team.service';
-import { takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-
+import { takeUntil } from 'rxjs/operators';
 import { THelperDataRequest } from '../../../../lib/services/helper-data.service';
-import { Subject, Observable, fromEvent } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { Component, OnInit, ViewEncapsulation, ViewContainerRef, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, OnDestroy } from '@angular/core';
 import { ODataProductDTO } from 'src/app/main-app/dto/configs/product/config-odata-product.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { EditProductVariantComponent } from './edit/edit-product-variant.component';
@@ -21,13 +19,11 @@ import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
   selector: 'list-product-variant',
-  templateUrl: './list-product-variant.component.html',
-  encapsulation: ViewEncapsulation.None
+  templateUrl: './list-product-variant.component.html'
 })
 
-export class ListProductVariantComponent  implements OnDestroy  {
+export class ListProductVariantComponent implements OnInit, OnDestroy {
 
-  @ViewChild('innerText') innerText!: ElementRef;
   setOfCheckedId = new Set<number>();
   lstOfData: any[] = [];
   team!: CRMTeamDTO;
@@ -41,12 +37,12 @@ export class ListProductVariantComponent  implements OnDestroy  {
   pageSize: number = 20;
   pageIndex: number = 1;
   count: number = 0;
-  private destroy$ = new Subject<void>();
-
   public filterObj: TDSSafeAny = {
     searchText: ''
   }
   idsModel: any = [];
+
+  private destroy$ = new Subject<void>();
 
   constructor(private router: Router,
     private modalService: TDSModalService,
@@ -55,16 +51,15 @@ export class ListProductVariantComponent  implements OnDestroy  {
     private message: TDSMessageService,
     private crmTeamService: CRMTeamService,
     private productService: ProductService,
-    private excelExportService: ExcelExportService,
-    private cacheApi: THelperCacheService) {
-
-    this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$))
-      .subscribe((team) => (this.team as any) = team);
+    private excelExportService: ExcelExportService) {
+    this.loadTeamData();
   }
+
+  ngOnInit(): void { }
 
   private getViewData(params: string): Observable<ODataProductDTO> {
     this.isLoading = true;
-    
+
     if (this.selected == 0) {
       return this.odataProductService
         .getView(params).pipe(takeUntil(this.destroy$))
@@ -77,21 +72,32 @@ export class ListProductVariantComponent  implements OnDestroy  {
     }
   }
 
+  loadTeamData() {
+    this.crmTeamService.onChangeTeam()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((team) => {
+        (this.team as any) = team;
+        localStorage.setItem(this.crmTeamService.__keyCacheFacebook_PageId, this.team.Facebook_PageId);
+      });
+  }
+
   loadData(pageSize: number, pageIndex: number) {
     this.lstOfData = [];
+
     let filters = this.odataProductService.buildFilter(this.filterObj || null);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters || null);
 
     this.getViewData(params).subscribe((res: any) => {
-        this.count = res['@odata.count'] as number;
-        this.lstOfData = [...res.value];
+      this.count = res['@odata.count'] as number;
+      this.lstOfData = [...res.value];
     }, error => {
-        this.message.error('Tải dữ liệu khách hàng thất bại!');
+      this.message.error(error?.error?.message || 'Tải dữ liệu khách hàng thất bại!');
     });
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.pageSize = params.pageSize;
+
     this.loadData(params.pageSize, params.pageIndex);
   }
 
@@ -101,6 +107,21 @@ export class ListProductVariantComponent  implements OnDestroy  {
     this.filterObj.searchText = '';
 
     this.loadData(this.pageSize, this.pageIndex);
+  }
+
+  onInputChange(ev: TDSSafeAny) {
+    this.pageIndex = 1;
+    this.filterObj.searchText = ev.value;
+
+    let filters = this.odataProductService.buildFilter(this.filterObj || null);
+    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters || null);
+
+    this.getViewData(params).subscribe((res: any) => {
+      this.count = res['@odata.count'] as number;
+      this.lstOfData = [...res.value];
+    }, error => {
+      this.message.error(error?.error?.message || 'Tìm kiếm không thành công');
+    });
   }
 
   checkValueEmpty() {
@@ -114,26 +135,26 @@ export class ListProductVariantComponent  implements OnDestroy  {
     return 1;
   }
 
-  setActive(type:string) {
+  setActive(type: string) {
     if (this.checkValueEmpty() == 1) {
-      switch(type) {
+      switch (type) {
         case 'active':
-          let active =  {Active: true,  Ids: this.idsModel};
+          let active = { Active: true, Ids: this.idsModel };
           this.productService.setActive({ model: active }).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
             this.message.success("Đã mở hiệu lực thành công!");
             this.loadData(this.pageSize, this.pageIndex);
           }, error => {
-            this.message.error('Mở hiệu lực thất bại!');
+            this.message.error(error?.error?.message || 'Mở hiệu lực thất bại!');
           })
           break;
 
         case 'unactive':
-          let unactive = { Active: false,  Ids: this.idsModel }
+          let unactive = { Active: false, Ids: this.idsModel }
           this.productService.setActive({ model: unactive }).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
             this.message.success("Đã hết hiệu lực!");
             this.loadData(this.pageSize, this.pageIndex);
           }, error => {
-            this.message.error('Đóng hiệu lực thất bại!');
+            this.message.error(error?.error?.message || 'Đóng hiệu lực thất bại!');
           })
           break;
 
@@ -145,48 +166,28 @@ export class ListProductVariantComponent  implements OnDestroy  {
 
   addProductToPageFB() {
     if (this.checkValueEmpty() == 1) {
-      let model = { PageId: this.team.Facebook_PageId, ProductIds: this.idsModel};
+      let model = { PageId: this.team.Facebook_PageId, ProductIds: this.idsModel };
 
-      this.productService.checkExitProductOnPageFB({ model: model}).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        if(!TDSHelperArray.hasListValue(res.value)) {
-           this.message.error("Sản phẩm đã tồn tại trong page");
+      this.productService.checkExitProductOnPageFB({ model: model }).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        if (!TDSHelperArray.hasListValue(res.value)) {
+          this.message.error("Sản phẩm đã tồn tại trong page");
         } else {
           let data = {
-            model: { PageId: this.team.Facebook_PageId,  ProductIds: res.value }
+            model: { PageId: this.team.Facebook_PageId, ProductIds: res.value }
           }
           this.productService.addProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-              this.message.success("Thao tác thành công");
+            this.message.success("Thao tác thành công");
           }, error => {
-            this.message.error("Thêm mới sản phẩm vào page thất bại");
+            this.message.error(error?.error?.message || "Thêm mới sản phẩm vào page thất bại");
           });
         }
       });
     }
   }
 
-  ngAfterViewInit(): void {
-    fromEvent(this.innerText.nativeElement, 'keyup').pipe(
-      map((event: any) => { return event.target.value }),
-      debounceTime(750),
-      distinctUntilChanged(),
-      switchMap((text: TDSSafeAny) => {
-        this.pageIndex = 1;
-        this.filterObj.searchText = text;
-
-        let filters = this.odataProductService.buildFilter(this.filterObj || null);
-        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters || null);
-        return this.getViewData(params);
-      }))
-      .subscribe((res: any) => {
-        this.count = res['@odata.count'] as number;
-        this.lstOfData = [...res.value];
-      }, error => {
-          this.message.error('Tìm kiếm không thành công');
-      });
-  }
-
   exportExcel() {
     if (this.isProcessing) { return }
+
     let state = {
       skip: 0,
       take: 20,
@@ -195,21 +196,21 @@ export class ListProductVariantComponent  implements OnDestroy  {
         logic: "and",
       }
     };
-    let data = { data: JSON.stringify(state) }
+
+    let data = { data: JSON.stringify(state) };
 
     this.excelExportService.exportPost('/Product/ExportProduct', { data: JSON.stringify(data) }, 'bien_the_san_pham_kiem_kho_theo_id')
-      .pipe(finalize(()=>this.isProcessing = false), takeUntil(this.destroy$))
+      .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
       .subscribe();
   }
 
-  addNewData(data: TDSSafeAny) {
+  addNewData() {
     this.router.navigateByUrl('/configs/product-variant/create');
   }
 
   refreshData() {
     this.pageIndex = 1;
     this.filterObj.searchText = '';
-    this.innerText.nativeElement.value = '';
 
     this.checked = false;
     this.indeterminate = false;
@@ -231,10 +232,12 @@ export class ListProductVariantComponent  implements OnDestroy  {
       title: 'Cập nhật biến thể sản phẩm',
       content: EditProductVariantComponent,
       viewContainerRef: this.viewContainerRef,
-      componentParams: { id: id },
+      componentParams: { 
+        id: id 
+      },
     });
     modal.afterClose.subscribe((result: any) => {
-      if(result == true) {
+      if (result == true) {
         this.loadData(this.pageSize, this.pageIndex);
       }
     })
@@ -248,11 +251,11 @@ export class ListProductVariantComponent  implements OnDestroy  {
       okText: "Xác nhận",
       cancelText: "Hủy bỏ",
       onOk: () => {
-        this.productService.deleteProduct(key).pipe(takeUntil(this.destroy$)).subscribe(res=>{
+        this.productService.deleteProduct(key).pipe(takeUntil(this.destroy$)).subscribe(res => {
           this.message.success('Xóa sản phẩm thành công!')
           this.onSelectChange(this.selected);
           return
-        },err=>{
+        }, err => {
           this.message.error(err.error.message || 'Xóa thất bại đã có lỗi xảy ra!')
         })
       },

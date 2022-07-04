@@ -5,7 +5,7 @@ import { ProductDTO, ProductUOMDTO } from '../../../../dto/product/product.dto';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { ProductService } from '../../../../services/product.service';
 import { Subject } from 'rxjs';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
 import { ProductIndexDBService } from 'src/app/main-app/services/product-indexDB.service';
@@ -14,17 +14,19 @@ import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from 'src/app/m
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { EditVariantHandler } from './edit-variant.handler';
 
 @Component({
   selector: 'edit-product-variant',
   templateUrl: './edit-product-variant.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class EditProductVariantComponent implements OnInit {
 
   @Input() id!: number;
-  _form!: FormGroup;
 
+  _form!: FormGroup;
   dataModel!: ProductDTO;
   lstProductCategory!: ProductCategoryDTO[];
   lstProductUOM!: ProductUOMDTO[];
@@ -32,6 +34,19 @@ export class EditProductVariantComponent implements OnInit {
   imageListUpLoad: Array<TDSSafeAny> = [];
   imageModel: Array<TDSSafeAny> = [];
   isLoading: boolean = false;
+  numberWithCommas = (value: TDSSafeAny) => {
+    if (value != null) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    return value
+  };
+  parserComas = (value: TDSSafeAny) => {
+    if (value != null) {
+      return TDSHelperString.replaceAll(value, ',', '');
+    }
+    return value
+  };
+
   private destroy$ = new Subject<void>();
 
   constructor(private modal: TDSModalRef,
@@ -40,71 +55,70 @@ export class EditProductVariantComponent implements OnInit {
     private cacheApi: THelperCacheService,
     private productService: ProductService,
     private message: TDSMessageService,
-    private productUOMService : ProductUOMService,
-    private productCategoryService: ProductCategoryService) {
-      this.createForm();
+    private productUOMService: ProductUOMService,
+    private productCategoryService: ProductCategoryService,
+    private cdRef: ChangeDetectorRef) {
+    this.createForm();
   }
 
   ngOnInit(): void {
-    if(this.id) {
+    if (this.id) {
       this.loadData();
       this.loadUOM();
       this.loadProductCategory();
     }
   }
 
-  createForm(){
+  createForm() {
     this._form = this.fb.group({
       Name: [null, Validators.required],
       PriceVariant: [0],
       IsAvailableOnTPage: [null],
       ImageUrl: [null],
-      CategId: [null],
-      UOMId: [null],
-      UOMPOId: [null],
-      POSCategId: [null],
+      Categ: [null],
+      UOM: [null],
+      UOMPO: [null],
       Images: this.fb.array([])
     })
   }
 
   loadData() {
     this.isLoading = true;
+
     this.productService.getById(this.id).pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => { this.isLoading = false })).subscribe((res: any) => {
-          delete res['@odata.context'];
-          this.dataModel = res;
-          this.updateForm(res);
-    }, error => {
-      this.message.error(error.error.message || 'Load dữ liệu thất bại!');
-    })
+        delete res['@odata.context'];
+        this.dataModel = res;
+        this.cdRef.detectChanges();
+        this.updateForm(res);
+      }, error => {
+        this.message.error(error.error.message || 'Load dữ liệu thất bại');
+      })
   }
 
-  loadProductCategory(){
-    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe((res:any)=>{
+  loadProductCategory() {
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.lstProductCategory = [...res.value];
-    }, error=>{
-      this.message.error(error.error.message || 'load dữ liệu nhóm sản phẩm thất bại!')
-    })
-  }
-
-  loadUOM(){
-    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe((res:any)=>{
-        this.lstProductUOM = [...res.value];
     }, error => {
-        this.message.error(error.error.message || 'Load dữ liệu thất bại!!')
+      this.message.error(error.error.message || 'load dữ liệu nhóm sản phẩm thất bại');
     })
   }
 
-  updateForm(data: any){
-    this._form.controls['Name'].setValue(data.Name);
-    this._form.controls['ImageUrl'].setValue(data.ImageUrl);
-    this._form.controls['PriceVariant'].setValue(data.PriceVariant);
-    this._form.controls['IsAvailableOnTPage'].setValue(data.IsAvailableOnTPage);
-    this._form.controls['CategId'].setValue(data.Categ.Id);
-    this._form.controls['UOMId'].setValue(data.UOM.Id);
-    this._form.controls['UOMPOId'].setValue(data.UOMPO.Id);
-    this._form.controls['POSCategId'].setValue(data.POSCateg ? data.POSCateg.Id : null);
-    if(TDSHelperArray.hasListValue(data.Images)){
+  loadUOM() {
+    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.lstProductUOM = [...res.value];
+    }, error => {
+      this.message.error(error.error.message || 'Load dữ liệu thất bại');
+    })
+  }
+
+  updateForm(data: TDSSafeAny) {
+    this._form.patchValue(data);
+    this._form.controls['Categ'].setValue(data.Categ);
+    this._form.controls['UOM'].setValue(data.UOM);
+    this._form.controls['UOMPO'].setValue(data.UOMPO);
+
+    if (TDSHelperArray.hasListValue(data.Images)) {
       data.Images.map((x: any) => {
         this.addImages(x);
         this.imageListUpLoad.push(x.Url);
@@ -133,21 +147,21 @@ export class EditProductVariantComponent implements OnInit {
   }
 
   initImages(data: any | null) {
-    if(data != null) {
+    if (data != null) {
       return this.fb.group({
-          MineType: [data.MineType],
-          Name: [data.Name],
-          ResModel: ['product.product'],
-          Type: ['url'],
-          Url: [data.Url]
+        MineType: [data.MineType],
+        Name: [data.Name],
+        ResModel: ['product.product'],
+        Type: ['url'],
+        Url: [data.Url]
       });
     } else {
       return this.fb.group({
-          MineType: [null],
-          Name: [null],
-          ResModel: ['product.product'],
-          Type: ['url'],
-          Url: [null]
+        MineType: [null],
+        Name: [null],
+        ResModel: ['product.product'],
+        Type: ['url'],
+        Url: [null]
       });
     }
   }
@@ -155,6 +169,7 @@ export class EditProductVariantComponent implements OnInit {
   onLoadImage(event: any) {
     this._form.controls['Images'] = this.fb.array([]);
     let datas: any[] = [];
+
     event?.files.forEach((x: any) => {
       let item = {
         MineType: null,
@@ -163,11 +178,13 @@ export class EditProductVariantComponent implements OnInit {
         Type: ['url'],
         Url: x.url
       };
+
       datas.push(item);
     });
 
-    if(event.isArray == true){
+    if (event.isArray == true) {
       this.imageListUpLoad = [];
+
       datas.forEach(x => {
         this.addImages(x);
         this.imageListUpLoad.push(x.Url);
@@ -177,30 +194,37 @@ export class EditProductVariantComponent implements OnInit {
     }
   }
 
+  prepareModel() {
+    EditVariantHandler.prepareModel(this.dataModel, this._form.value, this._form.controls['Images'].value); console.log(this.dataModel)
+    return this.dataModel;
+  }
+
   onSave(): any {
     let model = this.prepareModel();
+
     if (!model.Name) {
       return this.message.error('Vui lòng nhập tên sản phẩm');
     }
+
     this.productService.updateProduct(this.id, model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.message.success('Cập nhật thành công!');
       this.mappingCacheDB();
       this.modal.destroy(true);
     }, error => {
-      this.message.error('Thao tác thất bại!');
+      this.message.error(error?.error?.message || 'Thao tác thất bại');
     });
   }
 
   mappingCacheDB() {
     let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
-    this.cacheApi.getItem(keyCache).subscribe((obs: TDSSafeAny) => {
-      if(TDSHelperString.hasValueString(obs)) {
+    this.cacheApi.getItem(keyCache).pipe(takeUntil(this.destroy$)).subscribe((obs: TDSSafeAny) => {
+      if (TDSHelperString.hasValueString(obs)) {
         let cache = JSON.parse(obs['value']) as TDSSafeAny;
         let cacheDB = JSON.parse(cache['value']) as KeyCacheIndexDBDTO;
-
         let indexDbVersion = cacheDB.cacheVersion;
         let indexDbProductCount = cacheDB.cacheCount;
         let indexDbStorage = cacheDB.cacheDbStorage;
+
         this.loadProductIndexDB(indexDbProductCount, indexDbVersion, indexDbStorage);
       }
     });
@@ -209,10 +233,10 @@ export class EditProductVariantComponent implements OnInit {
   loadProductIndexDB(indexDbProductCount: number, indexDbVersion: number, indexDbStorage: DataPouchDBDTO[]) {
     this.productIndexDBService.getLastVersionV2(indexDbProductCount, indexDbVersion)
       .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => {this.isLoading = false }))
+      .pipe(finalize(() => { this.isLoading = false }))
       .subscribe((res: ProductPouchDBDTO) => {
 
-        if(res.IsDelete === true) {
+        if (res.IsDelete === true) {
           (indexDbStorage as any) = [];
           indexDbStorage = res.Datas;
         } else {
@@ -234,23 +258,8 @@ export class EditProductVariantComponent implements OnInit {
 
         let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
         this.cacheApi.setItem(keyCache, JSON.stringify(objCached));
-    }, error => {
+      }, error => {
         this.modal.destroy(true);
-    })
-  }
-
-  prepareModel() {
-    const model = this.dataModel;
-    const formModel = this._form.value;
-
-    model.Name = formModel.Name ? formModel.Name : model.Name;
-    model.Categ = formModel.Categ ? formModel.Categ : model.Categ;
-    model.CategId = formModel.CategId ? formModel.CategId : model.CategId;
-    model.UOMId = formModel.UOMId ? formModel.UOMId : model.UOMId;
-    model.PriceVariant = formModel.PriceVariant ? formModel.PriceVariant : model.PriceVariant
-    model.UOMPOId = formModel.UOMPOId ? formModel.UOMPOId : model.UOMPOId;
-    model.ImageUrl = formModel.ImageUrl ? formModel.ImageUrl : model.ImageUrl;
-    model.Images = this._form.controls['Images'].value ? this._form.controls['Images'].value : model.Images;
-    return model;
+      })
   }
 }

@@ -1,3 +1,4 @@
+import { TDSHelperString } from 'tds-ui/shared/utility';
 
 import { Component, Input, OnDestroy, OnInit, OnChanges, SimpleChanges, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
@@ -88,7 +89,20 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
           this.fileList = [...dataModel];
           this.emitFile();
           this.getResult.emit(x.url);
-          this.getBase64.emit(this.handleGetBase64(item.file));
+          this.handleGetBase64(item.file).then(
+            (res)=>{
+              let base64;
+              if(TDSHelperString.isString(res)){
+                base64 = res?.toString().split(',')[1];
+              }
+              this.getBase64.emit(base64);
+            }
+          ).catch(
+            (e)=>{
+              this.msg.error(e);
+            }
+          )
+          
         }
       }, error => {
         this.msg.error(error.Message ? error.Message:'Upload xảy ra lỗi');

@@ -152,7 +152,7 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
   }
 
   updateStatus(data:CRMTagDTO){
-    this.changeStatus(data).subscribe(
+    this.changeStatus(data).pipe(takeUntil(this.destroy$)).subscribe(
       (res)=>{
         let index = this.lstOfData.findIndex(x=>x.Id === data.Id);
         if(index > -1){
