@@ -31,7 +31,7 @@
   <div class="p-4 h-full">
     <div class="bg-white w-full h-full rounded-md border border-neutral-200 flex flex-col">
       <!-- [ngClass]="{'hidden' : checkValueEmpty() == 1}" -->
-      <div class="flex justify-between">
+      <div class="flex justify-between" *ngIf="getCheckedRow < 1">
         <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
           <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
             <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
@@ -51,9 +51,9 @@
         </div>
       </div>
 
-      <!-- <div class="flex justify-between py-3">
+      <div class="flex justify-between py-3" *ngIf="getCheckedRow > 0">
         <div class="flex items-center gap-x-4 pl-4">
-          <div class="text-neutral-1-500 text-body-2">1 dòng được chọn</div>
+          <div class="text-neutral-1-500 text-body-2">{{getCheckedRow}} dòng được chọn</div>
           <div class="flex gap-1 items-center rounded-md bg-neutral-3-50 pl-1.5 pr-2.5 cursor-pointer">
             <i class="tdsi-close-fill text-base text-neutral-1-500"></i>
             <div class="text-body-2 font-semibold text-neutral-1-700">Bỏ chọn</div>
@@ -82,7 +82,7 @@
           <order-filter-options (onLoadOption)="onLoadOption($event)"></order-filter-options>
           <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
         </div>
-      </div> -->
+      </div>
       <div #viewChildWidthTable class="flex-auto w-full pb-2.5">
         <tds-table #rowSelectionTable [showSizeChanger]="true" [frontPagination]="false" [listData]="lstOfData"
           [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" [scroll]="{y:'auto', x: 'auto'}"

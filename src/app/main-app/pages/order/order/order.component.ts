@@ -375,7 +375,7 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
         endDate: new Date(),
       }
     };
-
+    this.indeterminate = false;
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -757,6 +757,10 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   closeDrawer() {
     this.isOpenDrawer = false;
+  }
+
+  get getCheckedRow() {
+    return [...this.setOfCheckedId].length;
   }
 
   ngAfterViewChecked(): void {

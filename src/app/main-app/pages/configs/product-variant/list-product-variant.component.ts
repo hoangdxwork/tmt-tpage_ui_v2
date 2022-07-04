@@ -100,6 +100,10 @@ export class ListProductVariantComponent  implements OnDestroy  {
     this.selected = value;
     this.filterObj.searchText = '';
 
+    this.checked = false;
+    this.indeterminate = false;
+    this.setOfCheckedId = new Set<number>();
+
     this.loadData(this.pageSize, this.pageIndex);
   }
 
