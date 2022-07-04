@@ -18,10 +18,10 @@ import { GenerateMessageTypeEnum } from 'src/app/main-app/dto/conversation/messa
 })
 export class BillExpandComponent implements OnInit, OnDestroy {
 
-  @Input() dataItem!:FastSaleOrderDTO;
+  @Input() dataItem!: FastSaleOrderDTO;
 
   type!: string;
-  lstOfData:FSOrderLinesV2[] = [];
+  lstOfData: FSOrderLinesV2[] = [];
   isProcessing: boolean = false;
   isLoading: boolean = false;
   logOrder: any
@@ -29,7 +29,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private fSOService:FastSaleOrderService,
+    private fSOService: FastSaleOrderService,
     private printerService: PrinterService,
     private excelExportService: ExcelExportService,
     private message: TDSMessageService,
@@ -37,35 +37,32 @@ export class BillExpandComponent implements OnInit, OnDestroy {
     private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
-    if(this.dataItem) {
-      this.type = this.dataItem.Type;
-      this.loadData();
-    }
-    this.getHistories();
+
   }
 
-  loadData(){
+  loadData() {
     this.isLoading = true;
     this.fSOService.getOrderLineData(this.dataItem.Id)
       .pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isLoading = false))
-      .subscribe((res: OdataFSOrderLinesV2) => {
+      .subscribe({
+        next: (res: OdataFSOrderLinesV2) => {
           this.lstOfData = res.value;
-      }, error => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Tải dữ liệu thất bại');
-      }
-    )
+        }, error: (error) => {
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Tải dữ liệu thất bại');
+        }
+      });
   }
 
-  print(type:string){
+  print(type: string) {
     if (this.isProcessing) {
       return
     }
 
     let that = this;
-    let printer:TDSSafeAny;
+    let printer: TDSSafeAny;
     this.isProcessing = true;
 
-    switch(type){
+    switch (type) {
       case 'A4':
         printer = this.printerService.printUrl(`/fastsaleorder/print?ids=${this.dataItem.Id}&Template=${type}`)
         break;
@@ -83,7 +80,7 @@ export class BillExpandComponent implements OnInit, OnDestroy {
 
     if (TDSHelperObject.hasValue(printer)) {
       printer.pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
-          that.printerService.printHtml(res);
+        that.printerService.printHtml(res);
       })
     }
   }
@@ -96,36 +93,36 @@ export class BillExpandComponent implements OnInit, OnDestroy {
     this.isProcessing = true;
     let name = this.type == "invoice" ? "ban-hang" : "tra-hang-ban-hang";
 
-    this.excelExportService.exportGet(`/fastsaleorder/ExcelPrint?id=${this.dataItem.Id}`,`${name}`)
+    this.excelExportService.exportGet(`/fastsaleorder/ExcelPrint?id=${this.dataItem.Id}`, `${name}`)
       .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => this.isProcessing = false))
       .subscribe()
   }
 
-  showMessageModal(){
+  showMessageModal() {
     this.modalService.create({
       title: 'Gửi tin nhắn Facebook',
-      size:'lg',
+      size: 'lg',
       content: SendMessageComponent,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-          selectedUsers: [this.dataItem.Id],
-          messageType: GenerateMessageTypeEnum.Bill
+        selectedUsers: [this.dataItem.Id],
+        messageType: GenerateMessageTypeEnum.Bill
       }
     });
   }
 
-  showPayInvoiceModal(Id:TDSSafeAny){
-    this.fSOService.getRegisterPayment({ids: [Id]}).pipe(takeUntil(this.destroy$)).subscribe(
-      (res)=>{
-        delete res['@odata.context'];console.log(res)
+  showPayInvoiceModal(Id: TDSSafeAny) {
+    this.fSOService.getRegisterPayment({ ids: [Id] }).pipe(takeUntil(this.destroy$)).subscribe(
+      (res) => {
+        delete res['@odata.context']; console.log(res)
         this.modalService.create({
           title: 'Đăng ký thanh toán',
-          size:'lg',
+          size: 'lg',
           content: ModalPaymentComponent,
           viewContainerRef: this.viewContainerRef,
           componentParams: {
-            dataModel : res
+            dataModel: res
           }
         });
       }, err => {
@@ -148,4 +145,12 @@ export class BillExpandComponent implements OnInit, OnDestroy {
       this.logOrder = res.value;
     })
   }
+  onLoadDetail()
+  {
+    if (this.dataItem) {
+      this.type = this.dataItem.Type;
+      this.loadData();
+    }
+  }
+
 }

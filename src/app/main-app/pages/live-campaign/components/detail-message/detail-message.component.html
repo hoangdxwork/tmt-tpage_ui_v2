@@ -1,13 +1,14 @@
 <div class="w-full h-full">
-  <tds-tabset class="bg-white border border-neutral-2-200 h-full rounded-xl">
-
-      <tds-tab [title]="'Đơn hàng'" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
-        <table-order-message class="h-full" [liveCampaignId]="liveCampaignId"></table-order-message>
-      </tds-tab>
-
-      <tds-tab [title]="'Phiếu bán hàng'" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
-        <table-bill-message  class="h-full" [liveCampaignId]="liveCampaignId"></table-bill-message>
-      </tds-tab>
-
-  </tds-tabset>
+    <tds-tabset class="bg-white border border-neutral-2-200 h-full rounded-xl">
+        <tds-tab [title]="'Đơn hàng'" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
+            <ng-template tds-tab>
+                <table-order-message class="h-full" [liveCampaignId]="liveCampaignId"></table-order-message>
+            </ng-template>
+        </tds-tab>
+        <tds-tab [title]="'Phiếu bán hàng'" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
+            <ng-template tds-tab>
+                <table-bill-message class="h-full" [liveCampaignId]="liveCampaignId"></table-bill-message>
+            </ng-template>
+        </tds-tab>
+    </tds-tabset>
 </div>
