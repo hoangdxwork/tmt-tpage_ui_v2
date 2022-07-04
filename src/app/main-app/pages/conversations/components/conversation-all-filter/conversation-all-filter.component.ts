@@ -1,3 +1,4 @@
+import { CRMTagDTO } from './../../../../dto/crm-tag/odata-crmtag.dto';
 import { startOfMonth, endOfMonth, startOfYesterday, endOfYesterday, subDays } from 'date-fns';
 import { ApplicationUserService } from './../../../../services/application-user.service';
 import { CRMMatchingService } from './../../../../services/crm-matching.service';
@@ -5,7 +6,7 @@ import { CRMTagService } from './../../../../services/crm-tag.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperObject, TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSI18nService, vi_VN } from 'tds-ui/i18n';
 
 @Component({
@@ -23,12 +24,14 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
   visibleDrawerFillter: boolean = false;
   rangeDate!: Date;
   keyTags: any = {};
-  tags: TDSSafeAny[] = [];
+  tags: CRMTagDTO[] = [];
   users: TDSSafeAny[] = [];
   total: number = 0;
   daterange: Date[] = [];
   toggle_Key: boolean = true;
   filtered: boolean = false;
+  keyFilterTag!: string;
+  lstOfTag: CRMTagDTO[] = [];
 
   leftControl = {
     'Hôm nay': [new Date(), new Date()],
@@ -76,7 +79,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
       this.users = res.sort((one:any, two:any) => (one.Name.length < two.Name.length ? -1 : 1));
     });
 
-    this.crmTagService.dataSource$.subscribe((res) => {
+    this.crmTagService.dataSource$.subscribe((res: CRMTagDTO[]) => {
       if (this.crmMatchingService.queryObj.tag_ids && TDSHelperArray.hasListValue(res)) {
         res.forEach((element: TDSSafeAny) => {
 
@@ -91,6 +94,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
       }
       if(TDSHelperArray.hasListValue(res)){
         this.tags = res.sort((one:any, two:any) => (one.Name.length < two.Name.length ? -1 : 1));
+        this.lstOfTag = res.sort((one:any, two:any) => (one.Name.length < two.Name.length ? -1 : 1));
       }
     });
   }
@@ -142,6 +146,18 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
   public clearFilter(): void {
     this.resetFilter();
     this.onFilter.emit({});
+  }
+
+  searchTag() {
+    let data = this.tags;
+    let key = this.keyFilterTag;
+    if (TDSHelperString.hasValueString(key)) {
+      key = TDSHelperString.stripSpecialChars(key.trim());
+    }
+    data = data.filter((x) =>
+      (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
+    this.lstOfTag = data
+    console.log(data)
   }
 
   prepareValues(): any {

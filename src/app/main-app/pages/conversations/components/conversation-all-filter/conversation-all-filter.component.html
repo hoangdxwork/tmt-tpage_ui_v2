@@ -78,8 +78,12 @@
                     <div class="flex items-center">
                         <span class=" text-neutral-1-900 text-title-1 font-semibold leading-none">Lọc theo nhãn</span>
                     </div>
+                    <tds-form-field class="w-full">
+                        <input tdsInput placeholder="Tìm kiếm nhãn" autocomplete="off" [(ngModel)]="keyFilterTag" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="750" (inputKeyup)="searchTag()"/>
+                        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                      </tds-form-field>
                     <div class="flex-auto flex flex-wrap gap-2.5">
-                        <span *ngFor="let item of tags" (click)="onSelectTag(item)"
+                        <span *ngFor="let item of lstOfTag" (click)="onSelectTag(item)"
                             class="cursor-pointer px-2 py-0.5 rounded text-white text-caption-2 font-semibold flex items-center gap-x-2 hover:opacity-100"
                             [ngClass]="keyTags && keyTags[item.Id]?'tdsi-tick-fill opacity-100':'opacity-40'"
                             [ngStyle]="{'background-color': [item.ColorClassName]}" >
