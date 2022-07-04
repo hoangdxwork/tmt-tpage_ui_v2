@@ -1,9 +1,9 @@
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
-import { CheckConversationData, CheckConversationDTO } from './../../../../dto/partner/check-conversation.dto';
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef, Output, EventEmitter } from '@angular/core';
+import { CheckConversationData } from './../../../../dto/partner/check-conversation.dto';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ConversationMatchingItem, ActiveMatchingPartner } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
+import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { Subject } from 'rxjs';
@@ -27,28 +27,30 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSTagStatusType } from 'tds-ui/tag';
+import { TabPartnerCvsRequestDTO, TabPartnerCvsRequestModel } from 'src/app/main-app/dto/conversation-partner/partner-conversation-request.dto';
+import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 
 @Component({
     selector: 'conversation-partner',
     templateUrl: './conversation-partner.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class ConversationPartnerComponent implements OnInit, OnChanges {
 
-  @Input() data!: ConversationMatchingItem;
-  @Input() team!: CRMTeamDTO;
-
-  @Output() onTabOrder = new EventEmitter<boolean>();
-
   _form!: FormGroup;
-  dataMatching!: ConversationMatchingItem;
+
+  @Input() data!: ConversationMatchingItem; // dữ liệu nhận từ conversation-all
+  @Input() team!: CRMTeamDTO;
+  @Input() type!: string;
+  @Output() onTabOrder = new EventEmitter<boolean>(); // sự kiện đổi tab
+
   objRevenue!: ResRevenueCustomerDTO;
   noteData: any = { items: [] };
   destroy$ = new Subject<void>();
 
-  partner!: ActiveMatchingPartner;
+  // partner!: ActiveMatchingPartner;
   lstPartnerStatus!: Array<PartnerStatusDTO>;
-
   innerNote!: string;
   totalBill: number = 0;
   lastBill!: ViewConversation_FastSaleOrdersDTO | undefined;
@@ -56,8 +58,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   tabBillCurrent: number = 0;
   isEditPartner: boolean = false;
-  formData!: CheckConversationData;
-
+  partner!: TabPartnerCvsRequestModel | null;
   isLoading: boolean = false;
 
   constructor(private message: TDSMessageService,
@@ -65,63 +66,135 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private fastSaleOrderService: FastSaleOrderService,
     private partnerService: PartnerService,
     private crmTeamService: CRMTeamService,
-    private fb: FormBuilder,
+    private cdRer: ChangeDetectorRef,
     private commonService: CommonService,
     private viewContainerRef: ViewContainerRef,
     private modalService: TDSModalService,
     private crmMatchingService: CRMMatchingService,
     private saleOnline_OrderService: SaleOnline_OrderService,
+    private conversationDataFacade: ConversationDataFacade,
     private conversationOrderFacade: ConversationOrderFacade,
     private router: Router) {
   }
 
   ngOnInit(): void  {
-    this.createForm();
-    this.loadPartnerStatus();
+    if(this.data) {
+      let psid = this.data?.psid;
+      let pageId = this.data?.page_id || this.team.Facebook_PageId;
+      this.loadData(pageId, psid);
+    }
 
-    this.eventLoading();
-    this.eventLoadPartner();
-  }
+    // TODO: sự kiện load lại form conversation-partner từ conversation-order
+    this.loadPartnerFromTabOrder();
 
-  eventLoadPartner() {
-    this.loadPartnerByOrder();
+    // TODO: sự kiện load lại form conversation-partner từ comment bài post
     this.loadPartnerByPostComment();
+
+    // TODO: update partner từ conversation realtime signalR
+    this.loadUpdateInfoByConversation();
+
+    // TODO: update partner từ conversation item
+    this.onSelectOrderFromMessage();
+
+    this.loadPartnerStatus();
   }
 
-  createForm(){
-    this._form = this.fb.group({
-        Id: [null],
-        StatusText: [null],
-        Name: [null],
-        Phone: [null],
-        PhoneReport: [null],
-        Email: [null],
-        Comment: [null],
-        Street: [null],
-        FacebookASIds: [null],
-        FacebookId: [null],
-        City: [null],
-        District: [null],
-        Ward: [null]
-    });
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes["data"] && !changes["data"].firstChange) {
+        this.data = {...changes["data"].currentValue};
+
+        let psid = this.data?.psid;
+        let pageId = this.data?.page_id || this.team.Facebook_PageId;
+        this.loadData(pageId, psid);
+    }
   }
 
-  loadPartnerByOrder() {
-    this.partnerService.onLoadPartnerFromTabOrder
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-        if(res?.psid && this.data?.psid && res.psid === this.data.psid) {
-          this.loadData(res);
+  loadData(pageId: string, psid: string): any {
+
+    if(!TDSHelperString.hasValueString(pageId)) {
+        return this.message.error('Không tìm thấy Facebook_PageId');
+    }
+    if(!TDSHelperString.hasValueString(psid)) {
+        return this.message.error('Không tìm thấy psid');
+    }
+
+    this.isLoading = true;
+    this.partner = null;
+
+    this.partnerService.checkConversation(pageId, psid).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+        .subscribe((res: TabPartnerCvsRequestDTO) => {
+
+            if(res?.Data && res?.Success) {
+                let x = { ... res.Data} as TabPartnerCvsRequestModel;
+
+                x.Facebook_ASUserId = x.Facebook_ASUserId || this.data.id;
+                x.Name = x.Name || x.Facebook_UserName || this.data.name;
+                x.Phone = x.Phone || this.data.phone;
+                x.Street = x.Street || this.data.address;
+
+                this.partner = {...x};
+                this.cdRer.detectChanges();
+            }
+        }, error => {
+            this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+        })
+  }
+
+  loadPartnerFromTabOrder() {
+    this.isLoading = true;
+    this.partnerService.onLoadPartnerFromTabOrder$.pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
+        if(res?.psid === this.data?.psid) {
+            // this.loadData(res);
         }
-
-        this.isLoading = false;
-      });
+    });
   }
 
   loadPartnerByPostComment() {
-    this.conversationOrderFacade.onLoadConversationPartner$.pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.loadPartner(res);
+    (this.data as any) = null;
+    this.isLoading = true;
+    this.conversationOrderFacade.loadPartnerByPostComment$.pipe(takeUntil(this.destroy$)).subscribe(res => {
+
+        if(res && this.data) {
+          let pageId = this.team.Facebook_PageId;
+          let psid = res.psid;
+          this.loadData(pageId, psid);
+        }
     });
+  }
+
+  loadUpdateInfoByConversation() {
+    this.isLoading = true;
+    this.conversationDataFacade.onUpdateInfoByConversation$.pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
+
+        if(res) {
+            if(!TDSHelperString.hasValueString(this.partner?.Phone) && res.has_phone && TDSHelperString.hasValueString(res.phone) && this.partner){
+                this.partner.Phone = res.phone;
+            }
+            if(!TDSHelperString.hasValueString(this.partner?.Street) && res.has_address && TDSHelperString.hasValueString(res.address) && this.partner){
+                this.partner.Street = res.address;
+            }
+        }
+        this.cdRer.detectChanges();
+    })
+  }
+
+  onSelectOrderFromMessage() {
+    this.isLoading = true;
+    this.conversationOrderFacade.onSelectOrderFromMessage$.pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
+
+        if(res && TDSHelperString.hasValueString(res.phone) && this.partner) {
+            this.partner.Phone = res.phone;
+        }
+        if(res && TDSHelperString.hasValueString(res.address) && this.partner) {
+            this.partner.Street = res.address;
+        }
+        if(res && TDSHelperString.hasValueString(res.note) && this.partner) {
+            let text = (this.partner.Comment || "") + ((this.partner.Comment || "").length > 0 ? '\n' + res.note : res.note);
+            this.partner.Comment = text;
+        }
+
+        this.cdRer.detectChanges();
+    })
   }
 
   loadPartner(data: CheckConversationData) {
@@ -134,9 +207,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       data.Street = data.Street || this.data.address;
     }
 
-    this.formData = data;
-    this.updateForm(data);
-
     let partnerId = data?.Id;
     if(partnerId) {
       this.loadPartnerRevenue(partnerId);
@@ -144,58 +214,54 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     }
 
     this.loadNotes(this.team.Facebook_PageId, data.Facebook_ASUserId);
-    this.partnerService.onLoadOrderFromTabPartner.emit(data);
+    this.partnerService.onLoadOrderFromTabPartner$.emit(data);
   }
 
-  loadDataPartner(pageId: string, psid: string, partnerId?: number) {
-    if(!TDSHelperString.hasValueString(pageId) || !TDSHelperString.hasValueString(psid)) {
-      this.message.error(Message.ErrorOccurred);
-      return;
-    }
+  // loadpartner(pageId: string, psid: string, partnerId?: number) {
+  //   if(!TDSHelperString.hasValueString(pageId) || !TDSHelperString.hasValueString(psid)) {
+  //     this.message.error(Message.ErrorOccurred);
+  //     return;
+  //   }
 
-    this.isLoading = true;
-    this.partnerService.checkConversation(pageId, psid)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe((res: CheckConversationDTO) => {
-        if(res?.Data && res?.Success) {
-          res.Data.Name = res.Data.Name || res.Data.Facebook_UserName;
+  //   this.isLoading = true;
+  //   this.partnerService.checkConversation(pageId, psid).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+  //     .subscribe((res: TabPartnerCvsRequestDTO) => {
 
-          if(this.data) { // Cập nhật theo partner mapping
-            res.Data.Name = res.Data.Name || this.data.name || res.Data.Facebook_UserName;
-            res.Data.Facebook_ASUserId = res.Data.Facebook_ASUserId || this.data.psid;
-            res.Data.Phone = res.Data.Phone || this.data.phone;
-            res.Data.Street = res.Data.Street || this.data.address;
-          }
+  //       if(res?.Data && res?.Success) {
+  //         res.Data.Name = res.Data.Name || res.Data.Facebook_UserName;
 
-          this.formData = res.Data;
-          this.updateForm(res.Data);
+  //         if(this.data) { // Cập nhật theo partner mapping
+  //             res.Data.Name = res.Data.Name || this.data.name || res.Data.Facebook_UserName;
+  //             res.Data.Facebook_ASUserId = res.Data.Facebook_ASUserId || this.data.psid;
+  //             res.Data.Phone = res.Data.Phone || this.data.phone;
+  //             res.Data.Street = res.Data.Street || this.data.address;
+  //         }
 
-          partnerId = partnerId || res.Data?.Id;
-          if(partnerId) {
-            this.loadPartnerRevenue(partnerId);
-            this.loadBill(partnerId);
-          }
+  //         // this.partner = res.Data;
+  //         // this.updateForm(res.Data);
 
-          this.loadNotes(pageId, psid);
-          this.partnerService.onLoadOrderFromTabPartner.emit(res.Data);
-        }
-        else {
-          this.message.error(Message.ErrorOccurred);
-        }
-      }, error => {
-        this.message.error('Check conversation đã xảy ra lỗi!');
-      });
-  }
+  //         partnerId = partnerId || res.Data?.Id;
+  //         if(partnerId) {
+  //           this.loadPartnerRevenue(partnerId);
+  //           this.loadBill(partnerId);
+  //         }
 
-  loadData(data: ConversationMatchingItem) {
-    let psid = data?.psid;
-    let pageId = data?.page_id;
-    this.loadDataPartner(pageId, psid);
-  }
+  //         this.loadNotes(pageId, psid);
+  //         this.partnerService.onLoadOrderFromTabPartner$.emit(res.Data);
+  //       }
+  //       else {
+  //         this.message.error(Message.ErrorOccurred);
+  //       }
+  //     }, error => {
+  //       this.message.error('Check conversation đã xảy ra lỗi!');
+  //     });
+  // }
 
   loadPartnerStatus() {
-    this.commonService.getPartnerStatus().subscribe(res => {
-      this.lstPartnerStatus = [...res];
+    this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe(res => {
+        this.lstPartnerStatus = [...res];
+    }, error => {
+        this.message.error(`${error?.error?.message}`)
     });
   }
 
@@ -250,7 +316,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
     let model = {} as MDBFacebookMappingNoteDTO;
     model.message = this.innerNote;
-    model.psid = this.formData.Facebook_ASUserId;
+    // model.psid = this.partner.Facebook_ASUserId;
     model.page_id = this.team?.Facebook_PageId;
 
     // TODO: Thêm loading
@@ -266,11 +332,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   loadNotes(page_id: string, psid: string) {
     this.noteData = { items: [] };
-    this.conversationService.getNotes(page_id, psid).pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-        this.noteData.items = res.Items;
+    this.conversationService.getNotes(page_id, psid).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        this.noteData.items = [...res.Items];
     }, error => {
-        this.message.error('Load ghi chú khách hàng đã xảy ra lỗi');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Load ghi chú khách hàng đã xảy ra lỗi');
     });
   }
 
@@ -290,14 +355,14 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   selectStatus(status: PartnerStatusDTO) {
-    if(this.formData?.Id) {
+    if(this.partner?.Id) {
       let data = {
         status: `${status.value}_${status.text}`
       }
 
-      this.partnerService.updateStatus(this.formData.Id, data).subscribe(res => {
+      this.partnerService.updateStatus(this.partner.Id, data).subscribe(res => {
         this.message.success(Message.Partner.UpdateStatus);
-        this.formData.StatusText = status.text;
+        // this.partner.StatusText = status.text;
       });
     }
     else {
@@ -328,7 +393,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   showModalBlockPhone() {
-    let phone = this.formData?.Phone;
+    let phone = this.partner?.Phone;
     const modal = this.modalService.create({
       title: '',
       content: ModalBlockPhoneComponent,
@@ -347,7 +412,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   showModalListBlock() {
-    let phone = this.formData?.Phone;
+    let phone = this.partner?.Phone;
     let currentTeam = this.crmTeamService.getCurrentTeam();
     let phoneReport = this._form.value?.PhoneReport;
 
@@ -358,9 +423,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       size: 'lg',
       componentParams: {
         phone: phone,
-        psid: this.formData?.Facebook_ASUserId,
+        psid: this.partner?.Facebook_ASUserId,
         accessToken: currentTeam?.Facebook_PageToken,
-        facebookName: this.formData?.Facebook_UserName,
+        facebookName: this.partner?.Facebook_UserName,
         isReport: phoneReport
       }
     });
@@ -374,7 +439,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         // Cập nhật form PhoneReport.value;
       }
     });
-
   }
 
   onEditPartner() {
@@ -404,7 +468,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   onCancelEdit() {
-    this.updateForm(this.formData);
     this.isEditPartner = false;
   }
 
@@ -417,7 +480,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       .subscribe(res => {
         this.message.success(Message.Partner.UpdateStatus);
         this.isEditPartner = false;
-        this.loadDataPartner(this.team?.Facebook_PageId, this.formData?.Facebook_ASUserId);
+        // this.loadpartner(this.team?.Facebook_PageId, this.partner?.Facebook_ASUserId);
       }, error => {
         this.message.error(`${error?.error?.message}` || JSON.stringify(error));
       });
@@ -434,14 +497,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     model.teamId = currentTeam?.Id;
 
     return model;
-  }
-
-  validateData(isFirstChange: boolean) {
-    (this.data as any) = null;
-    (this.partner as any) = null;
-
-    if(isFirstChange) this.createForm();
-    else this._form.reset();
   }
 
   createOrder() {
@@ -475,14 +530,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         this.message.error(err.error.message ?? 'Không tải được dữ liệu');
       }
     )
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if(changes["data"]) {
-        this.validateData(changes.data.firstChange);
-        this.data = changes["data"].currentValue;
-        this.loadData(this.data);
-    }
   }
 
   ngOnDestroy(): void {

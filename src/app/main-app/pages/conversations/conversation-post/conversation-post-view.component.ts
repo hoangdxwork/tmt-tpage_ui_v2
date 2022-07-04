@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
@@ -15,7 +15,8 @@ import { TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'conversation-post-view',
-  templateUrl: './conversation-post-view.component.html'
+  templateUrl: './conversation-post-view.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestroy {

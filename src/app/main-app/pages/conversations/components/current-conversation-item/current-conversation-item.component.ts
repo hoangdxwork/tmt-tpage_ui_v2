@@ -27,7 +27,7 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges, Aft
   @Input() team!: CRMTeamDTO;
   @Input() type: any;
   @Input() psid: any;
-  @Input() activeCvsItem!: ConversationMatchingItem;
+  @Input() currentConversationItem!: ConversationMatchingItem;
   @Input() isOpenCollapCheck!: boolean;
   @Input() checked!: boolean;
   @Output() checkedChange = new EventEmitter<boolean>();
@@ -85,8 +85,8 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges, Aft
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes["activeCvsItem"] && !changes["activeCvsItem"].firstChange) {
-        this.activeCvsItem = changes["activeCvsItem"].currentValue;
+    if(changes["currentConversationItem"] && !changes["currentConversationItem"].firstChange) {
+        this.currentConversationItem = changes["currentConversationItem"].currentValue;
     }
   }
 

@@ -110,7 +110,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       this.loadData(this.data);
     }
 
-    this.partnerService.onLoadOrderFromTabPartner.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.partnerService.onLoadOrderFromTabPartner$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.partner = res;
     });
 

@@ -1,5 +1,3 @@
-import { SaleOnline_OrderDTO } from "../saleonlineorder/sale-online-order.dto";
-
 export interface City {
   name: string;
   nameNoSign?: any;
@@ -109,18 +107,19 @@ export interface Partner {
   DistrictName?: any;
   WardCode?: any;
   WardName?: any;
-  FullAddress: string;
+  FullAddress?: any;
   Ward_District_City: string;
 }
 
-export interface ConversationLastOrderDetailDTO {
+export interface TabPartnerCvsDetailModel {
   Id: string;
   Quantity: number;
   Price: number;
   ProductId: number;
+  Product?: any;
   ProductName: string;
   ProductNameGet: string;
-  ProductCode?: any;
+  ProductCode: string;
   UOMId: number;
   UOMName: string;
   Note: string;
@@ -163,7 +162,81 @@ export interface User {
   PhoneNumber?: any;
 }
 
-export interface CheckConversationData {
+export interface TabPartnerCvsLastOrderModel {
+  Id: string;
+  Code?: any;
+  Facebook_UserId?: any;
+  Facebook_PostId?: any;
+  Facebook_ASUserId: string;
+  Facebook_CommentId?: any;
+  Facebook_AttachmentId?: any;
+  Facebook_UserName: string;
+  Facebook_UserAvatar?: any;
+  Facebook_Content?: any;
+  Telephone: string;
+  Address: string;
+  PartnerPhone?: any;
+  Name: string;
+  Email?: any;
+  Note?: any;
+  Deposit: number;
+  LiveCampaignId?: any;
+  LiveCampaignName?: any;
+  PartnerId: number;
+  Partner: Partner;
+  PartnerName: string;
+  PartnerStatus: number;
+  PartnerStatusText?: any;
+  PartnerCode: string;
+  CityCode: string;
+  CityName: string;
+  DistrictCode: string;
+  DistrictName: string;
+  WardCode: string;
+  WardName: string;
+  TotalAmount: number;
+  TotalQuantity: number;
+  DateCreated: Date;
+  LastUpdated?: any;
+  Status: number;
+  StatusText: string;
+  Facebook_CommentsText?: any;
+  Facebook_Comments: any[];
+  Details: TabPartnerCvsDetailModel[];
+  StatusStr?: any;
+  CommentIds: any[];
+  CompanyId?: any;
+  PartnerNameNosign?: any;
+  SessionIndex: number;
+  Session: number;
+  Source: string;
+  Source_FacebookUserId?: any;
+  Source_FacebookMessageId?: any;
+  ZaloOrderCode?: any;
+  ZaloOrderId?: any;
+  ZaloOAId?: any;
+  DeliveryInfo?: any;
+  CRMTeamId: number;
+  MatchingId?: any;
+  IsCreated: boolean;
+  IsUpdated: boolean;
+  CRMTeamName: string;
+  PrintCount: number;
+  UserId: string;
+  User: User;
+  Tags?: any;
+  NameNetwork?: any;
+  UserName?: any;
+  WarehouseId?: any;
+  WarehouseName?: any;
+  Warehouse?: any;
+  Company?: any;
+  CompanyName?: any;
+  FormAction?: any;
+  MessageCount: number;
+}
+
+export interface TabPartnerCvsRequestModel {
   Id: number;
   Name: string;
   Ref: string;
@@ -180,11 +253,11 @@ export interface CheckConversationData {
   City: City;
   District: District;
   Ward: Ward;
-  LastOrder: SaleOnline_OrderDTO;
+  LastOrder: TabPartnerCvsLastOrderModel;
   Comment?: any;
 }
 
-export interface CheckConversationDTO {
+export interface TabPartnerCvsRequestDTO {
   Success: boolean;
-  Data: CheckConversationData;
+  Data: TabPartnerCvsRequestModel;
 }

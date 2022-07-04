@@ -37,14 +37,13 @@ export class QuickReplyButtonComponent implements OnInit {
   }
 
   getData() {
-    this.partnerService.onLoadOrderFromTabPartner.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.partnerService.onLoadOrderFromTabPartner$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.partner = res;
     });
 
-    this.quickReplyService.dataActive$
-      .pipe(takeUntil(this.destroy$)).pipe(finalize(() => { }))
-      .subscribe(res => {
+    this.quickReplyService.dataActive$.pipe(takeUntil(this.destroy$)).pipe(finalize(() => { })).subscribe(res => {
         if (res) {
+
           let getArr = JSON.parse(localStorage.getItem('arrOBJQuickReply') || '{}');
           this.quickReplies = res.sort((a: TDSSafeAny, b: TDSSafeAny) => {
             if (getArr != null) {
@@ -52,10 +51,12 @@ export class QuickReplyButtonComponent implements OnInit {
             }else
             return
           });
+
           this.lstquickReplyDefault = this.quickReplies
         }
-      },err=>{
-        this.message.error(err?.error? err?.error.message: 'Load trả lời nhanh thất bại');
+
+      },err => {
+          this.message.error(err?.error? err?.error.message: 'Load trả lời nhanh thất bại');
       });
   }
 

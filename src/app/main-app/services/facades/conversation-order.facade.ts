@@ -51,9 +51,11 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
   // Event Output
   public onLastOrderUpdated$: EventEmitter<any> = new EventEmitter<any>();
   public onLastOrderCheckCvs$: EventEmitter<ConversationOrderForm> = new EventEmitter<ConversationOrderForm>();
-  public onConversationOrder$: EventEmitter<any> = new EventEmitter<any>();
 
-  public onLoadConversationPartner$ = new EventEmitter<CheckConversationData>();
+  // TODO: Chọn làm địa chỉ, số điện thoại, ghi chú  selectOrder(type: string)
+  public onSelectOrderFromMessage$: EventEmitter<any> = new EventEmitter<any>();
+
+  public loadPartnerByPostComment$ = new EventEmitter<any>();
   public onOrderCheckPost$: EventEmitter<ConversationOrderForm> = new EventEmitter<ConversationOrderForm>();
 
   constructor( private apiService: TCommonService,
@@ -130,8 +132,7 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
   }
 
   loadOrderFromSignalR(){
-    this.sgRConnectionService._onSaleOnlineOrder$.pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
+    this.sgRConnectionService._onSaleOnlineOrder$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         if(res && (res.action == "create" || res.action == "updated")) {
 
         }
@@ -142,9 +143,7 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
   }
 
   changePartner() {
-    this.partnerService.onLoadOrderFromTabPartner
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((res: CheckConversationData) => {
+    this.partnerService.onLoadOrderFromTabPartner$.pipe(takeUntil(this.destroy$)).subscribe((res: CheckConversationData) => {
         // Partner có đơn hàng gần nhất LastOrder
         if(res?.LastOrder) {
           this.order = this.loadLastOrder(res.LastOrder, res);
@@ -275,7 +274,7 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
     });
   }
 
-  checkConversation(pageId: string, psid: string, dataComment?: any ) {
+  checkConversation(pageId: string, psid: string, dataComment?: any ) {debugger
     this.isLoadingPartner$.emit(true);
     this.partnerService.checkConversation(pageId, psid)
       .pipe(finalize(() => this.isLoadingPartner$.emit(false)))
@@ -284,7 +283,7 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
           res.Data.Facebook_UserName = res.Data.Facebook_UserName || dataComment?.from?.name || dataComment?.Facebook_UserName;
         }
 
-        this.onLoadConversationPartner$.emit(res?.Data)
+        // this.onLoadConversationPartner$.emit(res?.Data)
       });
   }
 

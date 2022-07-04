@@ -106,7 +106,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     }
 
     //TODO: load sang tab conversation-order paste lại dữ liệu
-    this.conversationOrderFacade.onConversationOrder$.emit(data);
+    this.conversationOrderFacade.onSelectOrderFromMessage$.emit(data);
   }
 
   getTextOfContentMessage() {//TODO: thêm xử lý với tin nhắn phản hồi
@@ -201,10 +201,12 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     this.activityMatchingService.refreshAttachment(this.team.Facebook_PageId, this.data.fbid || this.data.id , item.id)
       .pipe(takeUntil(this.destroy$))
       .pipe(finalize(()=>{ this.reloadingImage = false})).subscribe((res: any) => {
+
         this.tdsMessage.success('Thao tác thành công');
         this.activityDataFacade.refreshAttachment(res);
         this.data["errorShowAttachment"] = false;
         this.cdRef.markForCheck();
+
     }, error => {
       this.tdsMessage.error('Không thành công');
     })
@@ -242,39 +244,43 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     });
 
     modal.afterClose.subscribe((res: any) => {
-      this.onProductSelected(res);
+      if(res){
+        this.onProductSelected(res);
+      }
     })
   }
 
   onProductSelected(event :any) {
-    let model = {
-      page_id: this.team.Facebook_PageId,
-      to_id: this.data.from_id,
-      comment_id: this.data.id,
-      message: this.message,
+    if(event && event.Id){
+      let model = {
+        page_id: this.team.Facebook_PageId,
+        to_id: this.data.from_id,
+        comment_id: this.data.id,
+        message: this.message,
 
-      product: {
-        Id: event.Id,
-        Name: event.Name,
-        Picture: event.Picture,
-        Price: event.Price
-      }
-    };
+        product: {
+          Id: event.Id,
+          Name: event.Name,
+          Picture: event.Picture,
+          Price: event.Price
+        }
+      };
 
-    this.activityMatchingService.addTemplateMessage(this.data.psid, model)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-        this.activityDataFacade.messageServer(res);
-        this.conversationDataFacade.messageServer(res);
+      this.activityMatchingService.addTemplateMessage(this.data.psid, model)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((res: any) => {
+          this.activityDataFacade.messageServer(res);
+          this.conversationDataFacade.messageServer(res);
 
-        this.tdsMessage.success('Gửi thành công sản phẩm');
+          this.tdsMessage.success('Gửi thành công sản phẩm');
+          this.cdRef.markForCheck();
+      }, error => {
+        this.tdsMessage.error(`${error.error.message}` ? `${error.error.message}`  : 'Gửi sản phẩm thất bại');
         this.cdRef.markForCheck();
-    }, error => {
-      this.tdsMessage.error(`${error.error.message}` ? `${error.error.message}`  : 'Gửi sản phẩm thất bại');
-      this.cdRef.markForCheck();
-    });
+      });
 
-    this.message += event.Name, + " - " + event.Price;
+      this.message += event.Name, + " - " + event.Price;
+    }
   }
 
   onIconShowButtonSelected(event: any) {
@@ -286,9 +292,11 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
   }
 
   onQuickReplySelected(event: any) {
-    let text = event.BodyPlain || event.BodyHtml || event.text;
-    text = ReplaceHelper.quickReply(text, this.partner);
-    this.messageModel = text;
+    if(event) {
+      let text = event.BodyPlain || event.BodyHtml || event.text;
+      text = ReplaceHelper.quickReply(text, this.partner);
+      this.messageModel = text;
+    }
   }
 
   open_gallery(att: any) {

@@ -67,13 +67,13 @@
                   yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
 
                   <div *ngFor="let item of lstMatchingItem | orderBy:'LastActivityTimeConverted':(isSort?'asc':'desc'); let i= index ; trackBy: trackByIndex">
-                    <div *ngIf="item && item.psid && activeCvsItem && currentTeam" @eventFadeState>
+                    <div *ngIf="item && item.psid && currentConversationItem && currentTeam" @eventFadeState>
 
                       <a (click)="changeCurrentCvsItem(item)"
                           class="w-full {{isChanged ? 'cursor-wait' : 'cursor-pointer'}}">
                           <current-conversation-item
                               [item]="item" [psid]="item.psid" [type]="type"
-                              [activeCvsItem]="activeCvsItem"
+                              [currentConversationItem]="currentConversationItem"
                               [team]="currentTeam" [isFastSend]="isFastSend"
                               [isOpenCollapCheck]="isOpenCollapCheck"
                               [checked]="setOfCheckedId.has(item.psid)"
@@ -96,10 +96,10 @@
   <!--Nội dung cuộc hội thoại-->
   <div class="flex w-[48%]">
     <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
-        <div class="flex w-full flex-col h-full" *ngIf="activeCvsItem && currentTeam" @eventFadeState>
+        <div class="flex w-full flex-col h-full" *ngIf="currentConversationItem && currentTeam" @eventFadeState>
             <shared-tds-conversations
                 class="flex w-full h-full"
-                [data]="activeCvsItem"
+                [data]="currentConversationItem"
                 [type]="type" [team]="currentTeam">
             </shared-tds-conversations>
         </div>
@@ -122,10 +122,11 @@
                     </div>
                 </div>
             </ng-template>
-            <div *ngIf="activeCvsItem  && currentTeam">
-                <conversation-partner [data]="activeCvsItem" [team]="currentTeam" (onTabOrder)="onTabOrder($event)"></conversation-partner>
+            <div *ngIf="currentConversationItem  && currentTeam">
+                <conversation-partner [data]="currentConversationItem" [team]="currentTeam" [type]="type" (onTabOrder)="onTabOrder($event)">
+                </conversation-partner>
             </div>
-            <div *ngIf="!activeCvsItem">
+            <div *ngIf="!currentConversationItem">
               <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
             </div>
           </tds-tab>
@@ -143,10 +144,10 @@
                 </div>
               </div>
             </ng-template>
-            <div *ngIf="activeCvsItem && currentTeam">
-                <conversation-order [data]="activeCvsItem" [team]="currentTeam" (currentOrderCode)="changeOrderId($event)"></conversation-order>
+            <div *ngIf="currentConversationItem && currentTeam">
+                <conversation-order [data]="currentConversationItem" [team]="currentTeam" (currentOrderCode)="changeOrderId($event)"></conversation-order>
             </div>
-            <div *ngIf="!activeCvsItem">
+            <div *ngIf="!currentConversationItem">
               <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
             </div>
           </tds-tab>
