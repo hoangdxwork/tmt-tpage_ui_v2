@@ -42,6 +42,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   isPaymentDone: boolean = false;
   isStatusStep: TDSStatusType = 'process';
   isButtonComfirm: boolean = false;
+  teamId!:TDSSafeAny;
 
   constructor(private route: ActivatedRoute,
     private router: Router,
@@ -58,6 +59,12 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get("id");
     this.loadData();
+    const key = this.fastSaleOrderService._keyCacheUrlParams;
+    this.teamId = JSON.parse(localStorage.getItem(key) || '').teamId;
+  }
+
+  directPage(route:string){
+    this.router.navigateByUrl(route);
   }
 
   loadData(): void {

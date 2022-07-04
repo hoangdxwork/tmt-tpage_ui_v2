@@ -1,115 +1,128 @@
 <div class="w-full h-full flex flex-col bg-white rounded-xl text-body-2 text-neutral-900">
-  <div class="py-2.5 px-4 flex justify-end items-center">
-    <tds-form-field class="w-1/4">
-      <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm" tdsInput (keyup.enter)="onSearch($event)" />
-      <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
-    </tds-form-field>
-  </div>
-  <div class="h-full pb-2.5">
-    <tds-table #table class="table-vertical-line"
-      [showSizeChanger]="true"
-      [frontPagination]="false"
-      [listData]="lstOfData"
-      [scroll]="{y:'auto'}"
-      [loading]="isLoading"
-      [total]="count"
-      [scroll]="{y:'auto'}"
-      (clickRefresh)="refreshData()"
-      (queryParams)="onQueryParamsChange($event)">
-      <thead>
-        <tr>
-          <th rowSpan="2" width="32px"></th>
-          <th rowSpan="2">Tên sản phẩm</th>
-          <th colSpan="4" class="text-center">Sản phẩm</th>
-          <th colSpan="2" class="text-center">Đơn hàng</th>
-          <th colSpan="2" class="text-center">Hóa đơn</th>
-        </tr>
-        <tr>
-          <th>Tổng SL</th>
-          <th>Chờ chốt</th>
-          <th>Đã chốt</th>
-          <th>Đã hủy</th>
+    <div class="py-2.5 px-4 flex justify-end items-center">
+        <tds-form-field class="w-1/4">
+            <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm" tdsInput
+                (keyup.enter)="onSearch($event)" />
+            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
+        </tds-form-field>
+    </div>
+    <div class="h-full pb-2.5">
+        <tds-table #table class="table-vertical-line" [showSizeChanger]="true" [frontPagination]="false"
+            [listData]="lstOfData" [scroll]="{y:'auto'}" [loading]="isLoading" [total]="count" [scroll]="{y:'auto'}"
+            (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
+            <thead>
+                <tr>
+                    <th rowSpan="2" width="32px"></th>
+                    <th rowSpan="2">Tên sản phẩm</th>
+                    <th colSpan="4" class="text-center">Sản phẩm</th>
+                    <th colSpan="2" class="text-center">Đơn hàng</th>
+                    <th colSpan="2" class="text-center">Hóa đơn</th>
+                </tr>
+                <tr>
+                    <th>Tổng SL</th>
+                    <th>Chờ chốt</th>
+                    <th>Đã chốt</th>
+                    <th>Đã hủy</th>
 
-          <th>Chờ chốt</th>
-          <th>Đã hủy</th>
+                    <th>Chờ chốt</th>
+                    <th>Đã hủy</th>
 
-          <th>Đã chốt</th>
-          <th>Đã hủy</th>
-        </tr>
-      </thead>
-      <tbody>
-        <ng-container *ngFor="let product of table.data">
-          <tr>
-            <td [expand]="expandSet.has(product.ProductId)" (expandChange)="onExpandChange(product.ProductId, $event)"></td>
+                    <th>Đã chốt</th>
+                    <th>Đã hủy</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let product of table.data">
+                    <tr>
+                        <td [expand]="expandSet.has(product.ProductId)"
+                            (expandChange)="onExpandChange(product.ProductId, $event)">
+                        </td>
 
-            <td class="font-semibold">{{ product.ProductName }}</td>
+                        <td class="font-semibold">{{ product.ProductName }}</td>
 
-            <td>{{ product.ProductQtyInCart || 0 |number }}</td>
-            <td>{{ product.ProductQtyWaitCheckOut || 0 |number }}</td>
-            <td>{{ product.ProductQtyCheckOut || 0 |number }}</td>
-            <td>{{ product.ProductQtyCancelCheckOut || 0 |number }}</td>
+                        <td>{{ product.ProductQtyInCart || 0 |number }}</td>
+                        <td>{{ product.ProductQtyWaitCheckOut || 0 |number }}</td>
+                        <td>{{ product.ProductQtyCheckOut || 0 |number }}</td>
+                        <td>{{ product.ProductQtyCancelCheckOut || 0 |number }}</td>
 
-            <td>
-              <div class="flex space-x-2 items-center">
-                <div>{{ product.OrderQtyWaitCheckOut || 0 | number }}</div>
-                <div>
-                  <button tds-button-icon color="secondary" size="sm"
-                    class="cursor-default text-info-400 bg-transparent border-0 border-transparent focus:ring-0 focus:border-transparent focus:bg-info-100 hover:bg-info-100">
-                    <span class="flex items-center">
-                      <i class="tdsi-user-line"></i>
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </td>
+                        <td>
+                            <div class="flex space-x-2 items-center">
+                                <div>{{ product.OrderQtyWaitCheckOut || 0 | number }}</div>
+                                <div>
+                                    <button tds-button-icon color="secondary" size="sm"
+                                        class="cursor-default text-info-400 bg-transparent border-0 border-transparent focus:ring-0 focus:border-transparent focus:bg-info-100 hover:bg-info-100">
+                                        <span class="flex items-center">
+                                            <i class="tdsi-user-line"></i>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
 
-            <td>{{ product.InvoiceQtyCheckOut || 0 | number }}</td>
+                        <td>{{ product.InvoiceQtyCheckOut || 0 | number }}</td>
 
-            <td>
-              <div class="flex space-x-2 items-center">
-                <div>{{ product.InvoiceQtyCancelCheckOut || 0 | number }}</div>
-                <div>
-                  <button tds-button-icon color="secondary" size="sm"
-                    class="cursor-default text-info-400 bg-transparent border-0 border-transparent focus:ring-0 focus:border-transparent focus:bg-info-100 hover:bg-info-100">
-                    <span class="flex items-center">
-                      <i class="tdsi-user-line"></i>
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </td>
+                        <td>
+                            <div class="flex space-x-2 items-center">
+                                <div>{{ product.InvoiceQtyCancelCheckOut || 0 | number }}</div>
+                                <div>
+                                    <button tds-button-icon color="secondary" size="sm"
+                                        class="cursor-default text-info-400 bg-transparent border-0 border-transparent focus:ring-0 focus:border-transparent focus:bg-info-100 hover:bg-info-100">
+                                        <span class="flex items-center">
+                                            <i class="tdsi-user-line"></i>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
 
-            <td>{{ product.OrderQtyWaitCheckOut || 0 | number }}</td>
-          </tr>
+                        <td>{{ product.OrderQtyWaitCheckOut || 0 | number }}</td>
+                    </tr>
 
-          <tr [expand]="expandSet.has(product.ProductId)" *ngIf="expandSet.has(product.ProductId)" class="bg-neutral-3-50">
-            <div class="w-full bg-white rounded-md">
-              <tds-tabset>
-                <tds-tab title="Đơn hàng chờ chốt" clsContent="p-0">
-                  <div class="w-full h-[240px]">
-                    <table-order-wait [liveCampaignId]="liveCampaignId" [productId]="product.ProductId"></table-order-wait>
-                  </div>
-                </tds-tab>
-                <tds-tab title="Đơn hàng bị hủy & bị xóa" clsContent="p-0">
-                  <div class="w-full h-[240px]">
-                    <table-order-cancel [liveCampaignId]="liveCampaignId" [productId]="product.ProductId"></table-order-cancel>
-                  </div>
-                </tds-tab>
-                <tds-tab title="Hóa đơn đã chốt" clsContent="p-0">
-                    <div class="w-full h-[240px]">
-                      <table-bill-confirmed [liveCampaignId]="liveCampaignId" [productId]="product.ProductId"></table-bill-confirmed>
-                    </div>
-                </tds-tab>
-                <tds-tab title="Hóa đơn bị hủy & bị xóa" clsContent="p-0">
-                    <div class="w-full h-[240px]">
-                      <table-bill-cancel [liveCampaignId]="liveCampaignId" [productId]="product.ProductId"></table-bill-cancel>
-                    </div>
-                </tds-tab>
-              </tds-tabset>
-            </div>
-          </tr>
-        </ng-container>
-      </tbody>
-    </tds-table>
-  </div>
+                    <tr [expand]="expandSet.has(product.ProductId)" *ngIf="expandSet.has(product.ProductId)"
+                        class="bg-neutral-3-50">
+                        <div class="w-full bg-white rounded-md">
+                            <tds-tabset>
+                                <tds-tab title="Đơn hàng chờ chốt" clsContent="p-0">
+                                    <ng-template tds-tab>
+                                        <div class="w-full h-[240px]">
+                                            <table-order-wait [liveCampaignId]="liveCampaignId"
+                                                [productId]="product.ProductId">
+                                            </table-order-wait>
+                                        </div>
+                                    </ng-template>
+                                </tds-tab>
+                                <tds-tab title="Đơn hàng bị hủy & bị xóa" clsContent="p-0">
+                                    <ng-template tds-tab>
+                                        <div class="w-full h-[240px]">
+                                            <table-order-cancel [liveCampaignId]="liveCampaignId"
+                                                [productId]="product.ProductId">
+                                            </table-order-cancel>
+                                        </div>
+                                    </ng-template>
+                                </tds-tab>
+                                <tds-tab title="Hóa đơn đã chốt" clsContent="p-0">
+                                    <ng-template tds-tab>
+                                        <div class="w-full h-[240px]">
+                                            <table-bill-confirmed [liveCampaignId]="liveCampaignId"
+                                                [productId]="product.ProductId">
+                                            </table-bill-confirmed>
+                                        </div>
+                                    </ng-template>
+                                </tds-tab>
+                                <tds-tab title="Hóa đơn bị hủy & bị xóa" clsContent="p-0">
+                                    <ng-template tds-tab>
+                                        <div class="w-full h-[240px]">
+                                            <table-bill-cancel [liveCampaignId]="liveCampaignId"
+                                                [productId]="product.ProductId">
+                                            </table-bill-cancel>
+                                        </div>
+                                    </ng-template>
+                                </tds-tab>
+                            </tds-tabset>
+                        </div>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </tds-table>
+    </div>
 </div>
