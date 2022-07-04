@@ -1,0 +1,128 @@
+# Node.js with Angular
+# Build a Node.js project that uses Angular.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+name: '2.$(Month).$(DayOfMonth).dev-$(Rev:r)'
+
+#variables:
+
+trigger:
+- dev
+
+pool:
+  name: 'Yuri-CICD'
+  vmImage: 'ubuntu:latest'
+
+resources:
+  containers:
+  - container: trion-ng-cli
+    image: trion/ng-cli:13.3.7
+    options: --user 0:0
+  - container: trion-ng-cli-karma
+    image: trion/ng-cli-karma:13.3.7
+    options: --user 0:0
+  - container: trion-ng-cli-e2e
+    image: trion/ng-cli-e2e:13.3.7
+    options: --user 0:0
+
+stages:
+- stage: install   
+  displayName: Install NPM Dependencies
+  jobs:
+  - job: install
+    container: trion-ng-cli
+    displayName: NPM-Install
+    steps:
+    - bash: |
+        echo  '$(System.DefaultWorkingDirectory)'
+        npm ci
+      displayName: NPM CI
+- stage: lint
+  dependsOn: install
+  displayName: Quality Checks
+  jobs:
+  - job: ngversion
+    container: trion-ng-cli
+    displayName: Angular Version check
+    steps:
+    - bash: |
+        ng version
+      displayName: Check angular version
+  - job: lint
+    container: trion-ng-cli
+    displayName: Lint
+    dependsOn: ngversion
+    steps:
+    - bash: |
+        ng lint
+      displayName: Run linter
+
+- stage: test
+  dependsOn:
+  - install
+  - lint
+  displayName: Test
+  jobs:
+  - job: test
+    container: trion-ng-cli-karma
+    displayName: Run tests
+    steps:
+    - bash: |
+        ng test --watch false
+      displayName: Component tests
+  - job: e2etest
+    container: trion-ng-cli-e2e
+    displayName: Run end-to-end tests
+    steps:
+    - bash: |
+        ng e2e --watch false
+      displayName: e2e tests
+- stage: build
+  dependsOn:
+  - install
+  - lint
+  displayName: Build artifact
+  jobs:
+  - job: build
+    container: trion-ng-cli-karma
+    displayName: Build artifact
+    steps:
+    - bash: |
+        ng build -c production
+      displayName: Build app
+    - bash: |
+        tar -czf dist.tgz dist
+      displayName: Package
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(Build.SourcesDirectory)/dist'
+        includeRootFolder: true
+        archiveType: 'tar'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/dist.tgz'
+        replaceExistingArchive: true
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish dist'
+      inputs:
+       PathtoPublish: '$(Build.ArtifactStagingDirectory)/dist.tgz'
+       ArtifactName: 'dist'
+
+- stage: publish
+  dependsOn:
+   - build
+   - test
+  displayName: Publish artifact
+  jobs:
+    - job: publish
+      displayName: Publish artifact
+      steps:
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: 'dist'
+          downloadPath: '$(Build.ArtifactStagingDirectory)'
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)/dist/dist.tgz'
+          artifactType: 'pipeline'
+          artifactName: 'web-app'
