@@ -119,7 +119,6 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
     this.loadUsers();
     this.loadCarrier();
     this.loadCurrentTeam();
-    this.eventLoading();
   }
 
   createForm(): void {
@@ -215,19 +214,6 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
     })
   }
 
-  eventLoading() {
-    this.conversationOrderFacade.isLoadingPartner$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-        this.isLoading = res;
-      });
-
-    this.conversationOrderFacade.isLoadingOrder$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-        this.isLoading = res;
-      });
-  }
 
   updateFormOrder(order: ConversationOrderForm) {
     this.resetForm();

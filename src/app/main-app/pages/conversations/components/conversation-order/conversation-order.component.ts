@@ -1,5 +1,5 @@
 import { ModalApplyPromotionComponent } from './../modal-apply-promotion/modal-apply-promotion.component';
-import { ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { SaleSettingsDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, Output, EventEmitter, ViewContainerRef } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
@@ -48,6 +48,8 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   @Input() team!: CRMTeamDTO;
   @Output() currentOrderCode = new EventEmitter<string | undefined>();
 
+  dataModle!: ConversationMatchingItem;
+
   _form!: FormGroup;
   editNoteProduct: string | null = null;
 
@@ -75,15 +77,13 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   isOpenCarrier = false;
 
   numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null)
-    {
+    if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
     return value
   };
   parserComas = (value: TDSSafeAny) =>{
-    if(value != null)
-    {
+    if(value != null) {
       return TDSHelperString.replaceAll(value,',','');
     }
     return value
@@ -91,12 +91,12 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private message: TDSMessageService,
+  constructor(private message: TDSMessageService,
     private conversationOrderFacade: ConversationOrderFacade,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private applicationUserService: ApplicationUserService,
     private fb: FormBuilder,
+    private cdRef: ChangeDetectorRef,
     private checkFormHandler: CheckFormHandler,
     private modalService: TDSModalService,
     private generalConfigsFacade: GeneralConfigsFacade,

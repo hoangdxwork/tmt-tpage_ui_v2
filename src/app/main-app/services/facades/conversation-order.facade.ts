@@ -44,8 +44,6 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
   public onAddProductOrder = new EventEmitter<DataPouchDBDTO>();
 
   // Event loading tab partner, order
-  public isLoadingOrder$ = new EventEmitter<boolean>();
-  public isLoadingPartner$ = new EventEmitter<boolean>();
   public onChangeTab$ = new EventEmitter<ChangeTabConversationEnum>();
 
   // Event Output
@@ -172,10 +170,8 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
   }
 
   editOrderFormPost(order: TDSSafeAny) {
-    this.isLoadingOrder$.emit(true);
     this.onChangeTab$.emit(ChangeTabConversationEnum.order);
     this.saleOnline_OrderService.getById(order.Id)
-      .pipe(finalize(() => this.isLoadingOrder$.emit(false)))
       .subscribe(res => {
         let pageId = res?.Facebook_PostId.split("_")[0];
         let psid = res?.Facebook_ASUserId || res?.Facebook_UserId;
@@ -195,17 +191,15 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
       let currentTeam = this.crmTeamService.getCurrentTeam();
 
       if(isCreateOrder === true) {
-        this.isLoadingOrder$.emit(true);
         this.onChangeTab$.emit(ChangeTabConversationEnum.order);
-        this.createOrderByComment(data, psid, pageId).pipe(finalize(() => this.isLoadingOrder$.emit(false)))
+        this.createOrderByComment(data, psid, pageId)
           .subscribe(res => {
             this.checkConversation(pageId, psid, data);
           }, error => {});
       }
       else {
-        this.isLoadingPartner$.emit(true);
         this.onChangeTab$.emit(ChangeTabConversationEnum.partner);
-        this.loadPartnerByComment(data, psid, postId, currentTeam?.Id).pipe(finalize(() => this.isLoadingPartner$.emit(false)))
+        this.loadPartnerByComment(data, psid, postId, currentTeam?.Id)
           .subscribe(res => {
             this.checkConversation(pageId, psid, data);
           }, error => {});
@@ -274,10 +268,8 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
     });
   }
 
-  checkConversation(pageId: string, psid: string, dataComment?: any ) {debugger
-    this.isLoadingPartner$.emit(true);
+  checkConversation(pageId: string, psid: string, dataComment?: any ) {
     this.partnerService.checkConversation(pageId, psid)
-      .pipe(finalize(() => this.isLoadingPartner$.emit(false)))
       .subscribe(res => {
         if(res?.Data && res.Success === true) {
           res.Data.Facebook_UserName = res.Data.Facebook_UserName || dataComment?.from?.name || dataComment?.Facebook_UserName;

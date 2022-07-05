@@ -100,7 +100,6 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
         this.message.success(Message.Product.InsertSuccess);
 
         if (type == "select") {
-          this.onLoadedProductSelect.emit(x);
           this.onCancel([res, x]);
         } else {
           this.onCancel(null);

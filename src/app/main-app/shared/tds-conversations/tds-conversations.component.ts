@@ -47,7 +47,7 @@ import { ModalPostComponent } from '../../pages/conversations/components/modal-p
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewInit, AfterViewChecked, OnDestroy {
+export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @ViewChild('scrollToIndex') scrollToIndex!: ElementRef<any>;
@@ -148,6 +148,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           }, 300);
 
           this.conversationDataFacade.onLoadTdsConversation$.emit(false);
+          this.cdRef.markForCheck();
         })).subscribe(() => {}, error => {
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
       });
@@ -182,11 +183,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     let userLoggedId = this.sharedService.userLogged?.Id || null;
     this.crmMatchingService.markSeen(this.team.Facebook_PageId, this.data.psid, this.type, userLoggedId)
       .pipe(takeUntil(this.destroy$)).subscribe((x: any) => {
-        // Cập nhật count_unread
-        this.conversationEventFacade.updateMarkSeenBadge(this.data.page_id, this.type, this.data.psid);
-        this.cdRef.markForCheck();
+          // Cập nhật count_unread
+          this.conversationEventFacade.updateMarkSeenBadge(this.data.page_id, this.type, this.data.psid);
+          this.cdRef.markForCheck();
       }, error => {
-        this.message.error(`markseen: ${error?.error?.message}`);
+          this.message.error(`markseen: ${error?.error?.message}`);
       });
   }
 
@@ -848,10 +849,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.yiAutoScroll?.forceScrollDown();
   }
 
-  ngAfterViewChecked(){
-    //your code to update the model
-    this.cdRef.detectChanges();
-  }
+  // ngAfterViewChecked(){
+  //   //your code to update the model
+  //   this.cdRef.detectChanges();
+  // }
 
   ngOnDestroy(): void {
     this.destroyTimer();

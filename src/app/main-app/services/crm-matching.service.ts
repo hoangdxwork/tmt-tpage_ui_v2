@@ -157,4 +157,12 @@ export class CRMMatchingService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
+  checkPhoneReport(phone: string): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/rest/v1.0/crmmatching/${phone}/checkphonereport`,
+        method: TApiMethodType.post
+    }
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
 }
