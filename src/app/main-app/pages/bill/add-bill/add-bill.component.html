@@ -66,7 +66,7 @@
                       <button tds-button-icon color="secondary" type="button" *ngIf="_form.controls['Partner'].value"
                         (click)="editPartner(_form.controls['Partner'].value)">
                         <span class="flex items-center">
-                          <i class="tdsi-edit-fill"></i>
+                          <i class="tdsi-edit-fill text-neutral-1-500"></i>
                         </span>
                       </button>
                       <button tds-button-icon color="primary" type="button" tds-tooltip tooltipTitle="Sửa khách hàng"
@@ -78,7 +78,7 @@
                       <button tds-button-icon color="secondary" type="button" tds-tooltip tooltipTitle="Tìm khách hàng"
                         (click)="showModalSearchPartner()">
                         <span class="flex items-center">
-                          <i class="tdsi-search-fill"></i>
+                          <i class="tdsi-search-fill text-neutral-1-500"></i>
                         </span>
                       </button>
                     </div>
@@ -569,7 +569,7 @@
                   </tds-form-field>
                 </div>
               </div>
-              <div class=" col-span-1 flex gap-x-6 items-center">
+              <div class="col-span-1 flex gap-x-6 items-center">
                 <div class="w-1/3">
                   <span class="font-semibold">Điện thoại</span>
                 </div>
@@ -601,12 +601,14 @@
                   </tds-form-field>
                 </div>
               </div>
-              <div class=" col-span-1 flex gap-x-6 items-center">
+              <div class="col-span-1 flex gap-x-6 items-center">
                 <div class="w-1/3">
                   <span class="font-semibold">Ngày giao hàng</span>
                 </div>
                 <div class="w-2/3">
-                  <tds-date-picker showTime formControlName="ReceiverDate"></tds-date-picker>
+                  <div>
+                    <tds-date-picker showTime formControlName="ReceiverDate"></tds-date-picker>
+                  </div>
                 </div>
               </div>
             </div>

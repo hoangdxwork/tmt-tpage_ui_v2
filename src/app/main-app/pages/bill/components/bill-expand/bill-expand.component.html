@@ -46,7 +46,7 @@
     </div>
   </div>
   <tds-tabset>
-    <tds-tab title="Chi tiết"  (tabSelect)="onLoadDetail()">
+    <tds-tab title="Chi tiết"  (tabSelect)="onLoadTab('detail')">
       <ng-template tds-tab>
         <div class="flex flex-col items-end w-full h-full">
           <tds-table #basicTable [listData]="lstOfData" [loading]="isLoading" [showPagination]="false">
@@ -138,7 +138,7 @@
         </div>
       </ng-template>
     </tds-tab>
-    <tds-tab title="Lịch sử" (tabSelect)="getHistories()">
+    <tds-tab title="Lịch sử" (tabSelect)="onLoadTab('histories')">
       <ng-template tds-tab>
         <div class="px-4">
           <!-- *ngFor="let item of logOrder" -->

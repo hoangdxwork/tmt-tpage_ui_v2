@@ -30,7 +30,6 @@
 
   <div class="p-4 h-full">
     <div class="bg-white w-full h-full rounded-md border border-neutral-200 flex flex-col">
-      <!-- [ngClass]="{'hidden' : checkValueEmpty() == 1}" -->
       <div class="flex justify-between" *ngIf="getCheckedRow < 1">
         <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
           <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
