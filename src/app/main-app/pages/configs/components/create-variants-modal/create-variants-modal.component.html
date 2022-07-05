@@ -67,7 +67,7 @@
                     </tds-error>
                 </tds-form-field>
                 <tds-tag status='secondary' rounded="rounded-full" class="w-fit h-fit" *ngIf="editModel">
-                    {{{ AttributeLines: editModel?.AttributeValues, AttributeId: line.AttributeId }|showAttributeValue}}
+                    {{ editModel?.AttributeValues | showAttributeValue: line.AttributeId }}
                 </tds-tag>
             </div>
         </div>

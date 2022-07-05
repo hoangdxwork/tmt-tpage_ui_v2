@@ -1,5 +1,7 @@
+import { TDSNotificationService } from 'tds-ui/notification';
+import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { IRAttachmentDTO } from './../../../../dto/attachment/attachment.dto';
-import { TDSHelperArray } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ProductService } from 'src/app/main-app/services/product.service';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
@@ -13,12 +15,12 @@ import { ProductUOMService } from 'src/app/main-app/services/product-uom.service
 import { ProductCategoryService } from 'src/app/main-app/services/product-category.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSUploadFile } from 'tds-ui/upload';
-import { AddVariantHandler } from './add-variant.handler';
 import { Message } from 'src/app/lib/consts/message.const';
+import { AddVariantHandler } from './add-variant.handler';
 
 @Component({
   selector: 'create-product-variant',
-  templateUrl: './create-product-variant.component.html',
+  templateUrl: './create-product-variant.component.html'
 })
 
 export class CreateProductVariantComponent implements OnInit {
@@ -37,12 +39,15 @@ export class CreateProductVariantComponent implements OnInit {
   previewVisible = false;
   uploadUrl = '';
   modelDefault!: ProductDTO;
+  addToFBPage = false;
 
   private destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder,
     private router: Router,
     private message: TDSMessageService,
+    private notification: TDSNotificationService,
+    private CRMService: CRMTeamService,
     private productService: ProductService,
     private productUOMService: ProductUOMService,
     private productCategoryService: ProductCategoryService) {
@@ -128,7 +133,7 @@ export class CreateProductVariantComponent implements OnInit {
     });
   }
 
-  loadDefault(){
+  loadDefault() {
     this.productService.getDefault().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       delete res['@odata.context'];
       this.modelDefault = res;
@@ -164,10 +169,10 @@ export class CreateProductVariantComponent implements OnInit {
     //TODO: xử lý array form
     if (TDSHelperArray.hasListValue(data.Images)) {
       data.Images.forEach((x: IRAttachmentDTO) => {
-          this.addImages(x);
+        this.addImages(x);
       });
     }
-    
+
     if (data.DateCreated) {
       data.DateCreated = new Date(data.DateCreated);
     }
@@ -182,47 +187,67 @@ export class CreateProductVariantComponent implements OnInit {
   initImages(data: IRAttachmentDTO | null) {
     if (data != null) {
       return this.fb.group({
-          MineType: [data.MineType],
-          Name: [data.Name],
-          ResModel: ['product'],
-          Type: ['url'],
-          Url: [data.Url]
+        MineType: [data.MineType],
+        Name: [data.Name],
+        ResModel: ['product.product'],
+        Type: ['url'],
+        Url: [data.Url]
       })
     } else {
       return this.fb.group({
-          MineType: [null],
-          Name: [null],
-          ResModel: ['product.template'],
-          Type: ['url'],
-          Url: [null]
+        MineType: [null],
+        Name: [null],
+        ResModel: ['product.product'],
+        Type: ['url'],
+        Url: [null]
       })
     }
   }
 
-  getUrl(ev: string){
-    this._form.controls["ImageUrl"].setValue(ev);
+  getUrl(url: string) {
+    this._form.controls["ImageUrl"].setValue(url);
   }
 
-  getBase64(ev:any){
-    ev.then((res:any)=>{
-      let base64 = res?.split(',')[1];
-      if(base64)
-        this._form.controls["Image"].setValue(base64);
-    })
+  getBase64(base64: TDSSafeAny) {
+    this._form.controls["Image"].setValue(base64);
+  }
+
+  onChangeAddToFBPage(ev: boolean) {
+    this.addToFBPage = !ev;
+  }
+
+  addProductToPageFB(ids: TDSSafeAny, name: string) {
+    let facebook_PageId = localStorage.getItem(this.CRMService.__keyCacheFacebook_PageId);
+
+    let data = {
+      model: { PageId: facebook_PageId, ProductIds: [ids] }
+    }
+    this.productService.addProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.notification.success(
+        'Thêm thành công',
+        'Đã thêm sản phẩm ' + name + ' vào page.'
+      );
+    }, error => {
+      this.message.error(error?.error?.message || "Thêm mới sản phẩm vào page thất bại");
+    });
   }
 
   prepareModel() {
-    AddVariantHandler.prepareModel(this.modelDefault,this._form.value);
+    AddVariantHandler.prepareModel(this.modelDefault, this._form.value);
     return this.modelDefault;
   }
 
   onSave() {
     let model = this.prepareModel();
-    console.log(model);
+
     if (!model.Name) {
       this.message.error('Vui lòng nhập tên sản phẩm');
     }
     this.productService.insertProduct(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      if (this.addToFBPage) {
+        this.addProductToPageFB(res.Id, model.Name);
+      }
+
       this.message.success(Message.InsertSuccess);
       this.router.navigateByUrl('/configs/product-variant');
     }, error => {

@@ -1,94 +1,128 @@
-import { ProductDTO, ProductTemplateDTO } from './../../../../dto/product/product.dto';
+import { TDSTableQueryParams } from 'tds-ui/table';
+import { ProductTemplateDTO } from './../../../../dto/product/product.dto';
 import { ProductTemplateService } from './../../../../services/product-template.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { ODataStokeMoveDTO, ODataProductInventoryDTO } from './../../../../dto/configs/product/config-odata-product.dto';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { StockMoveService } from '../../../../services/stock-move.service';
-import { FormBuilder } from '@angular/forms';
 import { ConfigProductInventoryDTO } from '../../../../dto/configs/product/config-inventory.dto';
 import { ConfigStockMoveDTO } from './../../../../dto/configs/product/config-warehouse.dto';
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'config-product-details',
-  templateUrl: './config-product-details.component.html'
+  templateUrl: './config-product-details.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
   @Input() productTemplate!: ProductTemplateDTO;
 
-  lstStockMove:Array<ConfigStockMoveDTO> = [];
+  lstStockMove: Array<ConfigStockMoveDTO> = [];
   lstProductInventory: Array<ConfigProductInventoryDTO> = [];
-  private destroy$ = new Subject<void>();
 
   pageSize_stockMove = 10;
   pageIndex_stockMove = 1;
   isLoading_stockMove = false;
   count_stockMove: number = 1;
 
-  pageSize_productInventory = 10;
-  pageIndex_productInventory = 1;
-  isLoading_productInventory = false;
-  count_productInventory: number = 1;
+  pageSize_inventory = 10;
+  pageIndex_inventory = 1;
+  isLoading_inventory = false;
+  count_inventory: number = 1;
 
-  fallback = '../../../assets/imagesv2/config/no-image-default.svg'
+  tabSelected = 'info';
+  fallback = '../../../assets/imagesv2/config/no-image-default.svg';
 
-  constructor(private fb:FormBuilder,
+  private destroy$ = new Subject<void>();
+
+  constructor(
     private message: TDSMessageService,
     private productService: ProductTemplateService,
-    private stokeMoveService: StockMoveService
-  ) {}
+    private stokeMoveService: StockMoveService,
+    private cdRef: ChangeDetectorRef
+  ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
+
+  onSelectTab(tabName: string) {
+    this.tabSelected = tabName;
+    switch (tabName) {
+      case 'stockMove':
+        this.getStockMoveProduct(this.pageSize_stockMove, this.pageIndex_stockMove);
+        break;
+      case 'inventory':
+        this.getProductInventory(this.pageSize_inventory, this.pageIndex_inventory);
+        break;
+    }
+  }
+
+  onQueryParamsStockMove(params: TDSTableQueryParams) {
+    if (this.tabSelected == 'stockMove') {
+      this.getStockMoveProduct(params.pageSize, params.pageIndex);
+    }
+  }
+
+  getStockMoveProduct(pageSize: number, pageIndex: number) {
+    this.isLoading_stockMove = true;
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
+
+    this.stokeMoveService.getStockMoveProduct(this.productTemplate.Id, params).pipe(takeUntil(this.destroy$)).subscribe(
+      (res: ODataStokeMoveDTO) => {
+        this.count_stockMove = res['@odata.count'] as number;
+        this.lstStockMove = [...res.value];
+        if(this.lstStockMove){
+          this.cdRef.detectChanges();
+        }
+        this.isLoading_stockMove = false;
+      }, error => {
+        this.isLoading_stockMove = false;
+        this.message.error(error?.error?.message || 'Tải dữ liệu thẻ kho thất bại!');
+      }
+    );
+  }
+
+  refreshStockMoveTable() {
+    this.pageIndex_stockMove = 1;
+
+    this.getStockMoveProduct(this.pageSize_stockMove, this.pageIndex_stockMove);
+  }
+
+  onQueryParamsInventory(params: TDSTableQueryParams) {
+    if (this.tabSelected == 'inventory') {
+      this.getProductInventory(params.pageSize, params.pageIndex);
+    }
+  }
+
+  getProductInventory(pageSize: number, pageIndex: number) {
+    this.isLoading_inventory = true;
+
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
+
+    this.productService.getInventoryProduct(this.productTemplate.Id, params).pipe(takeUntil(this.destroy$)).subscribe(
+      (res: ODataProductInventoryDTO) => {
+        this.count_inventory = res['@odata.count'] as number;
+        this.lstProductInventory = [...res.value];
+        if(this.lstProductInventory){
+          this.cdRef.detectChanges();
+        }
+        this.isLoading_inventory = false;
+      }, error => {
+        this.isLoading_inventory = false;
+        this.message.error(error?.error?.message || 'Tải dữ liệu tồn kho thất bại!');
+      }
+    );
+  }
+
+  refreshProductInventoryTable() {
+    this.pageIndex_inventory = 1;
+    
+    this.getProductInventory(this.pageSize_inventory, this.pageIndex_inventory);
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  getStockMoveProduct(pageSize:number, pageIndex:number){
-    this.isLoading_stockMove = true;
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
-
-    this.stokeMoveService.getStockMoveProduct(this.productTemplate.Id,params).pipe(takeUntil(this.destroy$)).subscribe(
-      (res:ODataStokeMoveDTO)=>{
-        this.count_stockMove = res['@odata.count'] as number;
-        this.lstStockMove = res.value;
-        this.isLoading_stockMove = false;
-      }, error => {
-        this.isLoading_stockMove = false;
-        this.message.error('Tải dữ liệu thẻ kho thất bại!');
-      }
-    );
-  }
-
-  refreshStockMoveTable(){
-    this.pageIndex_stockMove = 1;
-
-    this.getStockMoveProduct(this.pageSize_stockMove,this.pageIndex_stockMove);
-  }
-
-  getProductInventory(pageSize:number, pageIndex:number){
-    this.isLoading_productInventory = true;
-
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
-
-    this.productService.getInventoryProduct(this.productTemplate.Id,params).pipe(takeUntil(this.destroy$)).subscribe(
-      (res:ODataProductInventoryDTO)=>{
-        this.count_stockMove = res['@odata.count'] as number;
-        this.lstProductInventory = res.value;
-        this.isLoading_productInventory = false;
-      }, error => {
-        this.isLoading_productInventory = false;
-        this.message.error('Tải dữ liệu tồn kho thất bại!');
-      }
-    );
-  }
-
-  refreshProductInventoryTable(){
-    this.pageIndex_productInventory = 1;
-
-    this.getProductInventory(this.pageSize_productInventory,this.pageIndex_productInventory);
   }
 }

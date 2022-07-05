@@ -1,3 +1,4 @@
+import { TDSNotificationModule } from 'tds-ui/notification';
 import { ExcelExportService } from './../../services/excel-export.service';
 import { TagProductTemplateService } from './../../services/tag-product-template.service';
 import { TagService } from 'src/app/main-app/services/tag.service';
@@ -208,7 +209,8 @@ const SERVICES = [
     PipeModule,
     TDSFilterStatusModule,
     UploadImageModule,
-    TDSEditorModule
+    TDSEditorModule,
+    TDSNotificationModule
   ],
   providers:[
     ...SERVICES

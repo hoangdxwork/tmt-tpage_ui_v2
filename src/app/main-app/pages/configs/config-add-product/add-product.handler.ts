@@ -7,7 +7,7 @@ import { Injectable } from "@angular/core";
 })
 export abstract class AddProductHandler {
 
-   static prepareModel(dataModel: ConfigProductDefaultDTO, formModel: any, images:WallPicturesDTO[]) {
+   static prepareModel(dataModel: ConfigProductDefaultDTO, formModel: any, images: WallPicturesDTO[]) {
 
       dataModel.Name = formModel.Name ? formModel.Name : dataModel.Name;
       dataModel.Image = formModel.Image ? formModel.Image : dataModel.Image;
