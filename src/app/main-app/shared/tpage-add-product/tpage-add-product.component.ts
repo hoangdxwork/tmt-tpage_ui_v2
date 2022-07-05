@@ -93,6 +93,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
             .pipe(map((x: KeyCacheIndexDBDTO) => { return [res, x] }
           ))}
       ))
+      .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(([res, x]) => {
 

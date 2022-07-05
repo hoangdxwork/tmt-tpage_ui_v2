@@ -1,3 +1,4 @@
+import { TDSEmptyModule } from 'tds-ui/empty';
 import { DirectivesModule } from './../../shared/directives/directives.module';
 import { AttachmentState } from './../../services/facebook-state/attachment.state';
 import { AttachmentService } from '../../services/attachment.service';
@@ -147,7 +148,8 @@ const SERVICES = [
     UploadImageModule,
     TDSConversationsModule,
     TDSNotificationModule,
-    DirectivesModule
+    DirectivesModule,
+    TDSEmptyModule
   ],
   providers: [
     ...SERVICES,

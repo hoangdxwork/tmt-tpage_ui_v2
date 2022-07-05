@@ -8,13 +8,13 @@ import { Ship_ExtrasServiceModel } from "./dto-handler/ship-extra-service.dto";
 
 export abstract class CalcServiceDefaultHandler {
 
-  public static calcServiceDefault(saleModel: FastSaleOrder_DefaultDTOV2, shipExtraServices: Array<Ship_ExtrasServiceModel>){debugger
+  public static calcServiceDefault(saleModel: FastSaleOrder_DefaultDTOV2, shipExtraServices: Array<Ship_ExtrasServiceModel>){
       if (saleModel.Carrier) {
         switch (saleModel.Carrier?.DeliveryType) {
           case 'ViettelPost':
             saleModel.Ship_ServiceId = saleModel.Carrier?.ViettelPost_ServiceId;
 
-            if (saleModel.Ship_Extras && saleModel.Ship_Extras.IsDropoff) {debugger
+            if (saleModel.Ship_Extras && saleModel.Ship_Extras.IsDropoff) {
               shipExtraServices.push({
                 ServiceId: "GNG",
                 ServiceName: "Gửi tại bưu cục(Giảm 10% cước)",
@@ -25,7 +25,7 @@ export abstract class CalcServiceDefaultHandler {
                 ExtraMoney: null,
               });
             }
-            if (saleModel.Ship_Extras && saleModel.Ship_Extras.ServiceCustoms) {debugger
+            if (saleModel.Ship_Extras && saleModel.Ship_Extras.ServiceCustoms) {
               saleModel.Ship_Extras.ServiceCustoms.forEach(x => {
                 shipExtraServices.push({
                   ServiceId: x.ServiceId,
@@ -51,7 +51,7 @@ export abstract class CalcServiceDefaultHandler {
             }
             break;
           case 'GHN':
-            saleModel.Ship_ServiceId = saleModel.Carrier?.GHN_ServiceId;debugger
+            saleModel.Ship_ServiceId = saleModel.Carrier?.GHN_ServiceId;
             if (saleModel.Ship_Extras && saleModel.Ship_Extras.IsDropoff) {
               shipExtraServices.push(
                 {
