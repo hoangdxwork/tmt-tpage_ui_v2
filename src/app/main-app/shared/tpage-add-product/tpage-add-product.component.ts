@@ -93,6 +93,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
             .pipe(map((x: KeyCacheIndexDBDTO) => { return [res, x] }
           ))}
       ))
+      .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(([res, x]) => {
 
@@ -100,7 +101,6 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
         this.message.success(Message.Product.InsertSuccess);
 
         if (type == "select") {
-          this.onLoadedProductSelect.emit(x);
           this.onCancel([res, x]);
         } else {
           this.onCancel(null);
