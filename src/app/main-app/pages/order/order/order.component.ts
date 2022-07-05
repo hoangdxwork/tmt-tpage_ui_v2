@@ -332,7 +332,7 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (this.checkValueEmpty() == 1) {
       let ids = [...this.setOfCheckedId];
       this.modal.create({
-        title: 'Tạo hóa đơn với sản phẩm mặc định',
+        title: 'Thêm hóa đơn với sản phẩm mặc định',
         content: CreateBillDefaultComponent,
         centered: true,
         size: 'xl',
