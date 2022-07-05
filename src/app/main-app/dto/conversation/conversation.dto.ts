@@ -75,7 +75,7 @@ export interface DataUpdate {
 }
 
 export interface ConversationOrderBillByPartnerDTO {
-  LastSaleOrder?: ViewConversation_FastSaleOrdersDTO;
+  LastSaleOrder: ViewConversation_FastSaleOrdersDTO;
   Total: number;
   Result: ConversationOrderBillByPartnerResultDTO[];
 }

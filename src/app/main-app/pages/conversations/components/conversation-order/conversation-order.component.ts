@@ -1,5 +1,5 @@
 import { ModalApplyPromotionComponent } from './../modal-apply-promotion/modal-apply-promotion.component';
-import { OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { SaleSettingsDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, Output, EventEmitter, ViewContainerRef } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
@@ -38,15 +38,17 @@ import { FastSaleOrderRestDTO } from 'src/app/main-app/dto/saleonlineorder/saleo
 
 @Component({
     selector: 'conversation-order',
-    templateUrl: './conversation-order.component.html'
+    templateUrl: './conversation-order.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
   @Input() data!: ConversationMatchingItem;
   @Input() team!: CRMTeamDTO;
-
   @Output() currentOrderCode = new EventEmitter<string | undefined>();
+
+  dataModle!: ConversationMatchingItem;
 
   _form!: FormGroup;
   editNoteProduct: string | null = null;
@@ -75,15 +77,13 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   isOpenCarrier = false;
 
   numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null)
-    {
+    if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
     return value
   };
   parserComas = (value: TDSSafeAny) =>{
-    if(value != null)
-    {
+    if(value != null) {
       return TDSHelperString.replaceAll(value,',','');
     }
     return value
@@ -91,12 +91,12 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private message: TDSMessageService,
+  constructor(private message: TDSMessageService,
     private conversationOrderFacade: ConversationOrderFacade,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private applicationUserService: ApplicationUserService,
     private fb: FormBuilder,
+    private cdRef: ChangeDetectorRef,
     private checkFormHandler: CheckFormHandler,
     private modalService: TDSModalService,
     private generalConfigsFacade: GeneralConfigsFacade,
@@ -315,7 +315,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
         this._form.controls["PartnerId"].setValue(res.PartnerId);
         this.message.success((orderModel.Id && orderModel.Code) ? Message.Order.UpdateSuccess : Message.Order.InsertSuccess);
         // this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
-        this.partnerService.onLoadPartnerFromTabOrder.emit(this.data);
+        this.partnerService.onLoadPartnerFromTabOrder$.emit(this.data);
         if(print === "print") {
           this.orderPrintService.printOrder(res, null);
         }
@@ -338,7 +338,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
           (bill) => {
             bill.Success ? this.message.success(bill.Message || 'Lưu thành công') : this.message.error(bill.Message || 'Lưu thất bại');
             // TODO: Cập nhật doanh thu, danh sách phiếu bán hàng gần nhất
-            this.partnerService.onLoadPartnerFromTabOrder.emit(this.data);
+            this.partnerService.onLoadPartnerFromTabOrder$.emit(this.data);
             // this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
             let obs: TDSSafeAny;
 
@@ -354,12 +354,14 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
                 let params = `&carrierId=${bill.Data.CarrierId ?? ''}`;
                 obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${bill.Data.Id}${params}`);
             }
+
             //TODO: in hóa đơn & in phiếu ship
             if (TDSHelperObject.hasValue(obs)) {
               obs.pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: TDSSafeAny) => {
                 that.printerService.printHtml(res);
               })
             }
+
           },
           error => {
             this.message.error(`${error?.Message}` || JSON.stringify(error));
@@ -421,7 +423,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
       this.partnerService.checkConversation(pageId, psid)
         .pipe(finalize(() => this.isLoading = false))
         .subscribe(res => {
-          this.partnerService.onLoadOrderFromTabPartner.next(res.Data);
+          this.partnerService.onLoadOrderFromTabPartner$.next(res.Data);
         });
     }
     else {

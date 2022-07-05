@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
@@ -18,7 +18,8 @@ import { TDSHelperArray, TDSHelperObject } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'item-post-comment',
-  templateUrl: './item-post-comment.component.html'
+  templateUrl: './item-post-comment.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
@@ -136,9 +137,11 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
       .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         if(res) {
           let data = res.data;
+
           if (!this.commentOrders[res.fbid]) {
             this.commentOrders[res.fbid] = [];
           }
+
           if (this.commentOrders[res.fbid].filter((x: any) => x.id === data.Id).length === 0) {
             this.commentOrders[res.fbid].push({
               session: data.Session,
@@ -222,9 +225,8 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   loadGroupCommentsByPost() {
     this.facebookCommentService.getGroupCommentsByPostId(this.post?.fbid)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => {this.isLoading = false }))
-      .subscribe((res: RequestCommentByGroup) => {
+      .pipe(takeUntil(this.destroy$), finalize(() => {this.isLoading = false })).subscribe((res: RequestCommentByGroup) => {
+
         if(TDSHelperArray.hasListValue(res.Items)) {
           res.Items.map((x: any) => {
             let first = x.activities[0];
@@ -233,6 +235,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
         }
         this.data = res;
         this.cdRef.detectChanges();
+
     }, error => {
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Lọc theo người dùng đã xảy ra lỗi');
       this.cdRef.detectChanges();
@@ -241,9 +244,8 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   loadFilterCommentsByPost(){
     this.facebookCommentService.getFilterCommentsByPostId(this.post?.fbid)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => {this.isLoading = false }))
-      .subscribe((res: RequestCommentByGroup) => {
+      .pipe(takeUntil(this.destroy$), finalize(() => {this.isLoading = false })).subscribe((res: RequestCommentByGroup) => {
+
         if(TDSHelperArray.hasListValue(res.Items)) {
           res.Items.map((x: any) => {
             let first = x.activities[0];
@@ -251,8 +253,10 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
             x.created_time = first.created_time;
           });
         }
+
         this.data = res;
         this.cdRef.detectChanges();
+
     }, error => {
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}`: 'Lọc theo bình luận đã xảy ra lỗi');
       this.cdRef.detectChanges();
@@ -261,17 +265,18 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   loadManageCommentsByPost(){
     this.facebookCommentService.getManageCommentsByLimit(this.post?.fbid)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => {this.isLoading = false }))
-      .subscribe((res: RequestCommentByPost) => {
+      .pipe(takeUntil(this.destroy$), finalize(() => {this.isLoading = false })).subscribe((res: RequestCommentByPost) => {
+
         if(TDSHelperArray.hasListValue(res.Items)) {
           res.Items.forEach((x: any) => {
             x["selected"] = false;
             x["error_message"] = null;
           });
         }
+
         this.data = res;
         this.cdRef.detectChanges();
+
       }, error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
         this.cdRef.detectChanges();
@@ -280,9 +285,8 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   loadAllCommentsByPost() {
     this.facebookCommentService.getCommentsByPostId(this.post?.fbid)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => {this.isLoading = false }))
-      .subscribe((res: RequestCommentByPost) => {
+      .pipe(takeUntil(this.destroy$), finalize(() => {this.isLoading = false })).subscribe((res: RequestCommentByPost) => {
+
         // Xử lý nếu bình luận đó là bình luận của 1 post child
         const childIds = Object.keys(res.Extras['childs']);
         if(TDSHelperObject.hasValue(childIds)) {
@@ -295,6 +299,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
             }
           })
         }
+
         this.data = res;
         this.childs = res.Extras['childs'] || {};
         this.cdRef.detectChanges();
@@ -306,8 +311,8 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   getCommentOrders(posId: string) {
     this.facebookCommentService.getCommentsOrderByPost(posId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((res: OdataCommentOrderPostDTO) => {
+      .pipe(takeUntil(this.destroy$)).subscribe((res: OdataCommentOrderPostDTO) => {
+
         if(TDSHelperArray.hasListValue(res.value)) {
           res.value.map((x: CommentOrderPost) => {
 
@@ -326,6 +331,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
             }
           });
         }
+
         this.cdRef.detectChanges();
     });
   }

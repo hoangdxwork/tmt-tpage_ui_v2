@@ -189,16 +189,18 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
         }));
       }
 
-      this.facebookGraphService.getFeed(this.currentTeam.Facebook_PageToken)
-        .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.facebookGraphService.getFeed(this.currentTeam.Facebook_PageToken).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+
           if (TDSHelperArray.hasListValue(res?.data)) {
             res.data.forEach((x: any) => {
+
               if (x.picture) {
                 let exist = this.data.filter(d => d.fbid == x.id)[0];
                 if (exist) {
-                  exist.picture = x.picture;
-                  exist.message = x.message;
+                    exist.picture = x.picture;
+                    exist.message = x.message;
                 }
+
             }});
           }
       });
@@ -222,11 +224,12 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       //load danh sách bài viết con từ bài viết chính
       if(TDSHelperString.hasValueString(item.parent_id)) {
         this.facebookPostService.getByPostParent(this.currentTeam.Id, item.parent_id)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((res: any) => {
+          .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+
             if(res && TDSHelperArray.hasListValue(res.Items)) {
               this.postChilds = res.Items;
             }
+
         });
       }
 

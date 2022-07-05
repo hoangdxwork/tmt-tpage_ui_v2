@@ -1,315 +1,328 @@
 import { ModalPaymentComponent } from './../../../partner/components/modal-payment/modal-payment.component';
-import { CheckConversationData, CheckConversationDTO } from './../../../../dto/partner/check-conversation.dto';
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ConversationMatchingItem, ActiveMatchingPartner } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
-import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
+import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { ConversationService } from 'src/app/main-app/services/conversation/conversation.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { MDBFacebookMappingNoteDTO,PartnerStatusDTO,PartnerTempDTO, ResRevenueCustomerDTO } from 'src/app/main-app/dto/partner/partner.dto';
+import { MDBFacebookMappingNoteDTO,PartnerStatusDTO, ResRevenueCustomerDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
-import { Message } from 'src/app/lib/consts/message.const';
-import { ModalBlockPhoneComponent } from '../modal-block-phone/modal-block-phone.component';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { ConversationOrderBillByPartnerResultDTO } from 'src/app/main-app/dto/conversation/conversation.dto';
 import { ViewConversation_FastSaleOrdersDTO } from 'src/app/main-app/dto/fastsaleorder/view_fastsaleorder.dto';
-import { CheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { ODataModelTeamDTO } from 'src/app/main-app/dto/odata/odata.dto';
-import { ModalListBlockComponent } from '../modal-list-block/modal-list-block.component';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSTagStatusType } from 'tds-ui/tag';
+import { TabPartnerCvsRequestDTO, TabPartnerCvsRequestModel } from 'src/app/main-app/dto/conversation-partner/partner-conversation-request.dto';
+import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
+import { ModalBlockPhoneComponent } from '../modal-block-phone/modal-block-phone.component';
+import { ModalListBlockComponent } from '../modal-list-block/modal-list-block.component';
 
 @Component({
     selector: 'conversation-partner',
     templateUrl: './conversation-partner.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class ConversationPartnerComponent implements OnInit, OnChanges {
 
-  @Input() data!: ConversationMatchingItem;
+  @Input() data!: ConversationMatchingItem; // dữ liệu nhận từ conversation-all
   @Input() team!: CRMTeamDTO;
+  @Input() type!: string;
+  @Output() onTabOrder = new EventEmitter<boolean>(); // sự kiện đổi tab
 
-  @Output() onTabOrder = new EventEmitter<boolean>();
 
-  _form!: FormGroup;
-  dataMatching!: ConversationMatchingItem;
+  dataModel!: ConversationMatchingItem; // dùng gán lại this.data input
   objRevenue!: ResRevenueCustomerDTO;
   noteData: any = { items: [] };
   destroy$ = new Subject<void>();
 
-  partner!: ActiveMatchingPartner;
+  // partner!: ActiveMatchingPartner;
   lstPartnerStatus!: Array<PartnerStatusDTO>;
-
   innerNote!: string;
   totalBill: number = 0;
-  lastBill!: ViewConversation_FastSaleOrdersDTO | undefined;
+  lastSaleOrder!: ViewConversation_FastSaleOrdersDTO;
   lstBill: ConversationOrderBillByPartnerResultDTO[] = [];
 
   tabBillCurrent: number = 0;
   isEditPartner: boolean = false;
-  formData!: CheckConversationData;
-
+  partner!: TabPartnerCvsRequestModel;
   isLoading: boolean = false;
 
   constructor(private message: TDSMessageService,
     private conversationService: ConversationService,
     private fastSaleOrderService: FastSaleOrderService,
     private partnerService: PartnerService,
-    private crmTeamService: CRMTeamService,
-    private fb: FormBuilder,
     private commonService: CommonService,
     private viewContainerRef: ViewContainerRef,
+    private cdRef: ChangeDetectorRef,
     private modalService: TDSModalService,
     private crmMatchingService: CRMMatchingService,
     private saleOnline_OrderService: SaleOnline_OrderService,
+    private conversationDataFacade: ConversationDataFacade,
     private conversationOrderFacade: ConversationOrderFacade,
     private router: Router) {
   }
 
   ngOnInit(): void  {
-    this.createForm();
-    this.loadPartnerStatus();
+    if(this.data) {
+      this.dataModel = this.data;
 
-    this.eventLoading();
-    this.eventLoadPartner();
-  }
+      let psid = this.dataModel?.psid;
+      let pageId = this.dataModel?.page_id || this.team.Facebook_PageId;
 
-  eventLoadPartner() {
-    this.loadPartnerByOrder();
+      this.loadData(pageId, psid);
+      this.loadNotes(pageId, psid);
+
+      let partnerId = this.dataModel?.partner_id || this.dataModel.partner?.id;
+      if(partnerId) {
+          this.loadPartnerBill(partnerId);
+          this.loadPartnerRevenue(partnerId);
+      }
+    }
+
+    // TODO: load lại form conversation-partner từ conversation-order
+    this.loadPartnerFromTabOrder();
+
+    // TODO: load lại form conversation-partner từ comment bài post
     this.loadPartnerByPostComment();
+
+    // TODO: update partner từ conversation realtime signalR
+    this.loadUpdateInfoByConversation();
+
+    // TODO: update partner từ conversation item
+    this.onSelectOrderFromMessage();
+
+    this.loadPartnerStatus();
   }
 
-  createForm(){
-    this._form = this.fb.group({
-        Id: [null],
-        StatusText: [null],
-        Name: [null],
-        Phone: [null],
-        PhoneReport: [null],
-        Email: [null],
-        Comment: [null],
-        Street: [null],
-        FacebookASIds: [null],
-        FacebookId: [null],
-        City: [null],
-        District: [null],
-        Ward: [null]
-    });
-  }
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes["data"] && !changes["data"].firstChange) {
+        let x = {...changes["data"].currentValue} as ConversationMatchingItem;
 
-  loadPartnerByOrder() {
-    this.partnerService.onLoadPartnerFromTabOrder
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-        if(res?.psid && this.data?.psid && res.psid === this.data.psid) {
-          this.loadData(res);
+        if(TDSHelperObject.hasValue(x)) {
+
+            this.dataModel = x;
+            let psid = this.dataModel?.psid;
+            let pageId = this.dataModel?.page_id || this.team.Facebook_PageId;
+
+            this.loadData(pageId, psid);
+            this.loadNotes(pageId, psid);
+
+            let partnerId = this.dataModel?.partner_id || this.dataModel.partner?.id;
+            if(partnerId) {
+                this.loadPartnerBill(partnerId);
+                this.loadPartnerRevenue(partnerId);
+            }
         }
+    }
+  }
 
-        this.isLoading = false;
-      });
+  loadData(pageId: string, psid: string): any {
+
+    if(!TDSHelperString.hasValueString(pageId)) {
+        return this.message.error('Không tìm thấy Facebook_PageId');
+    }
+    if(!TDSHelperString.hasValueString(psid)) {
+        return this.message.error('Không tìm thấy psid');
+    }
+
+    (this.partner as any) = null;
+    this.isLoading = true;
+
+    this.partnerService.checkConversation(pageId, psid).pipe(takeUntil(this.destroy$),
+        finalize(() => { this.isLoading = false; this.cdRef.markForCheck() })).subscribe((res: TabPartnerCvsRequestDTO) => {
+
+            if(res?.Data && res?.Success) {
+                let x = { ... res.Data} as TabPartnerCvsRequestModel;
+
+                x.Facebook_ASUserId = x.Facebook_ASUserId || this.dataModel?.id;
+                x.Name = x.Name || x.Facebook_UserName ||  this.dataModel?.name;
+                x.Phone = x.Phone || this.dataModel?.phone;
+                x.Street = x.Street || this.dataModel?.address;
+
+                this.partner = {...x};
+            }
+        }, error => {
+            this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+        })
+  }
+
+  loadPartnerFromTabOrder() {
+    this.isLoading = true;
+    this.partnerService.onLoadPartnerFromTabOrder$.pipe(takeUntil(this.destroy$),
+      finalize(() => { this.isLoading = false; this.cdRef.markForCheck() })).subscribe(res => {
+        if(res && TDSHelperString.hasValueString(res.phone)) {
+            this.partner.Phone = res.phone;
+        }
+        if(res && TDSHelperString.hasValueString(res.address)) {
+            this.partner.Street = res.address;
+        }
+    });
   }
 
   loadPartnerByPostComment() {
-    this.conversationOrderFacade.onLoadConversationPartner$.pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.loadPartner(res);
+    this.isLoading = true;
+    this.conversationOrderFacade.loadPartnerByPostComment$.pipe(takeUntil(this.destroy$),
+      finalize(() => { this.isLoading = false; this.cdRef.markForCheck() })).subscribe(res => {
+        if(res) {
+            let pageId = this.team.Facebook_PageId;
+            let psid = res.psid;
+
+            this.loadData(pageId, psid);
+        }
     });
   }
 
-  loadPartner(data: CheckConversationData) {
-    data.Name = data.Name || data.Facebook_UserName;
-
-    if(this.data) { // Cập nhật theo partner mapping
-      data.Name = data.Name || this.data.name || data.Facebook_UserName;
-      data.Facebook_ASUserId = data.Facebook_ASUserId || this.data.psid;
-      data.Phone = data.Phone || this.data.phone;
-      data.Street = data.Street || this.data.address;
-    }
-
-    this.formData = data;
-    this.updateForm(data);
-
-    let partnerId = data?.Id;
-    if(partnerId) {
-      this.loadPartnerRevenue(partnerId);
-      this.loadBill(partnerId);
-    }
-
-    this.loadNotes(this.team.Facebook_PageId, data.Facebook_ASUserId);
-    this.partnerService.onLoadOrderFromTabPartner.emit(data);
-  }
-
-  loadDataPartner(pageId: string, psid: string, partnerId?: number) {
-    if(!TDSHelperString.hasValueString(pageId) || !TDSHelperString.hasValueString(psid)) {
-      this.message.error(Message.ErrorOccurred);
-      return;
-    }
-
+  loadUpdateInfoByConversation() {
     this.isLoading = true;
-    this.partnerService.checkConversation(pageId, psid)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe((res: CheckConversationDTO) => {
-        if(res?.Data && res?.Success) {
-          res.Data.Name = res.Data.Name || res.Data.Facebook_UserName;
-
-          if(this.data) { // Cập nhật theo partner mapping
-            res.Data.Name = res.Data.Name || this.data.name || res.Data.Facebook_UserName;
-            res.Data.Facebook_ASUserId = res.Data.Facebook_ASUserId || this.data.psid;
-            res.Data.Phone = res.Data.Phone || this.data.phone;
-            res.Data.Street = res.Data.Street || this.data.address;
-          }
-
-          this.formData = res.Data;
-          this.updateForm(res.Data);
-
-          partnerId = partnerId || res.Data?.Id;
-          if(partnerId) {
-            this.loadPartnerRevenue(partnerId);
-            this.loadBill(partnerId);
-          }
-
-          this.loadNotes(pageId, psid);
-          this.partnerService.onLoadOrderFromTabPartner.emit(res.Data);
+    this.conversationDataFacade.onUpdateInfoByConversation$.pipe(takeUntil(this.destroy$),
+      finalize(() => { this.isLoading = false; this.cdRef.markForCheck() })).subscribe(res => {
+        if(res) {
+            if(!TDSHelperString.hasValueString(this.partner?.Phone) && res.has_phone && TDSHelperString.hasValueString(res.phone) && this.partner){
+                this.partner.Phone = res.phone;
+            }
+            if(!TDSHelperString.hasValueString(this.partner?.Street) && res.has_address && TDSHelperString.hasValueString(res.address) && this.partner){
+                this.partner.Street = res.address;
+            }
         }
-        else {
-          this.message.error(Message.ErrorOccurred);
-        }
-      }, error => {
-        this.message.error('Check conversation đã xảy ra lỗi!');
-      });
+    })
   }
 
-  loadData(data: ConversationMatchingItem) {
-    let psid = data?.psid;
-    let pageId = data?.page_id;
-    this.loadDataPartner(pageId, psid);
+  onSelectOrderFromMessage() {
+    this.isLoading = true;
+    this.conversationOrderFacade.onSelectOrderFromMessage$.pipe(takeUntil(this.destroy$),
+      finalize(() => { this.isLoading = false; this.cdRef.markForCheck() })).subscribe(res => {
+
+        if(res && TDSHelperString.hasValueString(res.phone) && this.partner) {
+            this.partner.Phone = res.phone;
+        }
+        if(res && TDSHelperString.hasValueString(res.address) && this.partner) {
+            this.partner.Street = res.address;
+        }
+        if(res && TDSHelperString.hasValueString(res.note) && this.partner) {
+            let text = (this.partner.Comment || "") + ((this.partner.Comment || "").length > 0 ? '\n' + res.note : res.note);
+            this.partner.Comment = text;
+        }
+    })
   }
 
   loadPartnerStatus() {
-    this.commonService.getPartnerStatus().subscribe(res => {
-      this.lstPartnerStatus = [...res];
-    });
-  }
-
-  loadPartnerRevenue(id: number){
-    (this.objRevenue as any) = null;
-    this.partnerService.getPartnerRevenueById(id).pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-          this.objRevenue = res;
+    this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe(res => {
+        this.lstPartnerStatus = [...res];
     }, error => {
-      this.message.error('Load doanh thu khách hàng đã xảy ra lỗi');
+        this.message.error(`${error?.error?.message}`)
     });
   }
 
-  eventLoading() {
-    this.conversationOrderFacade.isLoadingPartner$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-        this.isLoading = res;
-      });
+  loadPartnerRevenue(partnerId: number){
+    this.partnerService.getPartnerRevenueById(partnerId).pipe(takeUntil(this.destroy$),
+      finalize(() => this.cdRef.markForCheck())).subscribe(res => {
+        if(res){
+            this.objRevenue = res;
+        }
+    }, error => {
+        this.message.error(`${error?.error?.message}`);
+    });
   }
 
-  loadBill(partnerId: number) {
-    this.lstBill = [];
-    this.totalBill = 0;
-    this.lastBill = undefined;
-    this.fastSaleOrderService.getConversationOrderBillByPartner(partnerId).pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-        this.lstBill = res.Result || [];
-        this.totalBill = this.lstBill.reduce((x, y) => x + y.total, 0);
-        this.lastBill = res.LastSaleOrder || undefined;
+  loadPartnerBill(partnerId: number) {
+    this.fastSaleOrderService.getConversationOrderBillByPartner(partnerId).pipe(takeUntil(this.destroy$),
+      finalize(() => this.cdRef.markForCheck())).subscribe(res => {
+        if(res) {
+            this.lstBill = res.Result;
+            this.totalBill = res.Total;
+            this.lastSaleOrder = res.LastSaleOrder;
+        }
       }, error => {
-        this.message.error('Load hóa đơn khách hàng trong hội thoại đã xảy ra lỗi!');
+          this.message.error(`${error?.error?.message}`);
       });
-  }
-
-  updateForm(data: CheckConversationData){
-    if(data?.Id) {
-      this._form.patchValue(data);
-      this._form.controls['FacebookASIds'].setValue(data.Facebook_ASUserId);
-    }
-    else {
-      this._form.patchValue(data);
-      this._form.controls['FacebookASIds'].setValue(data.Facebook_ASUserId);
-    }
   }
 
   addNote() {
     if(!TDSHelperString.hasValueString(this.innerNote)) {
-      this.message.error(Message.EmptyData);
-      return;
+        this.message.error('Hãy nhập nội dung ghi chú');
+        return;
     }
 
     let model = {} as MDBFacebookMappingNoteDTO;
     model.message = this.innerNote;
-    model.psid = this.formData.Facebook_ASUserId;
-    model.page_id = this.team?.Facebook_PageId;
+    model.page_id = this.dataModel.page_id || this.team?.Facebook_PageId;
+    model.psid = this.dataModel.psid;
 
-    // TODO: Thêm loading
-    this.crmMatchingService.addNote(model.psid, model)
-      .subscribe(res => {
-        this.innerNote = '';
-        this.message.success(Message.Partner.AddNoteSuccess);
-        this.loadNotes(model.page_id, model.psid);
+    this.isLoading = true;
+    this.crmMatchingService.addNote(model.psid, model).pipe(takeUntil(this.destroy$),
+       finalize(() => { this.isLoading = false;  this.cdRef.markForCheck() })).subscribe(res => {
+       if(res) {
+            this.innerNote = '';
+            this.message.success('Thêm ghi chú thành công');
+            this.noteData.items = [...[res], ...this.noteData.items];
+       }
+
       }, error => {
-        this.message.error(`${error?.error?.message}` || JSON.stringify(error));
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
       });
   }
 
   loadNotes(page_id: string, psid: string) {
     this.noteData = { items: [] };
-    this.conversationService.getNotes(page_id, psid).pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-        this.noteData.items = res.Items;
+
+    this.conversationService.getNotes(page_id, psid).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        if(res) {
+            this.noteData.items = [...this.noteData.items, ...res.Items];
+        }
     }, error => {
-        this.message.error('Load ghi chú khách hàng đã xảy ra lỗi');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Load ghi chú khách hàng đã xảy ra lỗi');
     });
   }
 
   removeNote(id: any, index: number) {
-    this.conversationService.deleteNote(id).pipe(takeUntil(this.destroy$)).subscribe(() => {
-      if (this.noteData.items[index].id === id) {
-        this.noteData.items.splice(index, 1);
-      }
-      this.message.success(Message.Partner.RemoveNoteSuccess);
+    this.conversationService.deleteNote(id).pipe(takeUntil(this.destroy$)).pipe(takeUntil(this.destroy$),
+      finalize(() => this.cdRef.markForCheck())).subscribe(() => {
+
+        if (this.noteData.items[index].id === id) {
+            this.noteData.items.splice(index, 1);
+        }
+        this.message.success('Xóa ghi chú thành công');
+
     }, error => {
-      this.message.error('Xóa ghi chú khách hàng đã xảy ra lỗi');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
     });
   }
 
   onChangeBill(event: any) {
-    this.tabBillCurrent = event;
+      this.tabBillCurrent = event;
   }
 
-  selectStatus(status: PartnerStatusDTO) {
-    if(this.formData?.Id) {
+  selectStatus(event: PartnerStatusDTO) {
+    if(this.partner?.Id && event) {
       let data = {
-        status: `${status.value}_${status.text}`
+          status: `${event.value}_${event.text}`
       }
 
-      this.partnerService.updateStatus(this.formData.Id, data).subscribe(res => {
-        this.message.success(Message.Partner.UpdateStatus);
-        this.formData.StatusText = status.text;
+      this.partnerService.updateStatus(this.partner.Id, data).pipe(takeUntil(this.destroy$),
+        finalize(() => this.cdRef.markForCheck())).subscribe(res => {
+          if(res) {
+              this.message.success('Cập nhật trạng thái khách hàng thành công');
+              this.partner.StatusText = event.text;
+          }
+      }, error => {
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác thất bại');
       });
-    }
-    else {
-      this.message.error(Message.PartnerNotInfo);
     }
   }
 
   getStatusColor(statusText: string | undefined) {
     if(TDSHelperArray.hasListValue(this.lstPartnerStatus)) {
-      let value = this.lstPartnerStatus.find(x => x.text == statusText);
-      if(value) return value.value;
-      else return '#e5e7eb';
+        let value = this.lstPartnerStatus.find(x => x.text == statusText);
+        if(value) return value.value;
+        else return '#e5e7eb';
     }
     else return '#e5e7eb';
   }
@@ -327,8 +340,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     }
   }
 
-  showModalBlockPhone() {
-    let phone = this.formData?.Phone;
+  onBlockPhone() {
+    let phone = this.partner?.Phone;
     const modal = this.modalService.create({
       title: '',
       content: ModalBlockPhoneComponent,
@@ -341,15 +354,15 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
     modal.afterClose.subscribe(result => {
       if (TDSHelperObject.hasValue(result)) {
-        this._form.controls.PhoneReport.setValue(true);
+        this.partner.PhoneReport = true;
       }
     });
   }
 
-  showModalListBlock() {
-    let phone = this.formData?.Phone;
-    let currentTeam = this.crmTeamService.getCurrentTeam();
-    let phoneReport = this._form.value?.PhoneReport;
+  onlListPhoneBlock() {
+    let phone = this.partner?.Phone;
+    let currentTeam = this.team;
+    let phoneReport = this.partner.PhoneReport;
 
     const modal = this.modalService.create({
       title: 'Lịch sử chặn',
@@ -358,90 +371,77 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       size: 'lg',
       componentParams: {
         phone: phone,
-        psid: this.formData?.Facebook_ASUserId,
+        psid: this.partner?.Facebook_ASUserId,
         accessToken: currentTeam?.Facebook_PageToken,
-        facebookName: this.formData?.Facebook_UserName,
+        facebookName: this.partner?.Facebook_UserName,
         isReport: phoneReport
       }
     });
 
     modal.componentInstance?.changeReportPartner.subscribe(res => {
-      this._form.controls.PhoneReport.setValue(res);
+      this.partner.PhoneReport = res;
     });
-
-    modal.afterClose.subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
-        // Cập nhật form PhoneReport.value;
-      }
-    });
-
   }
 
   onEditPartner() {
     this.isEditPartner = !this.isEditPartner;
   }
 
-  onChangeAddress(event: CheckAddressDTO) {
-    let formControls = this._form.controls;
-
-    formControls["Street"].setValue(event.Street);
-
-    formControls["City"].setValue( event.City?.Code ? {
-      code: event.City?.Code,
-      name: event.City?.Name
-    } : null);
-
-    formControls["District"].setValue( event.District?.Code ? {
-      code: event.District?.Code,
-      name: event.District?.Name,
-    } : null);
-
-    formControls["Ward"].setValue( event.Ward?.Code ? {
-      code: event.Ward?.Code,
-      name: event.Ward?.Name,
-    } : null);
-
-  }
-
   onCancelEdit() {
-    this.updateForm(this.formData);
     this.isEditPartner = false;
   }
 
   onSaveEdit() {
-    this.isLoading = true;
-    let model = this.prepareModelPartner();
+    let model = this.prepareModel();
+    let teamId = this.team.Id;
 
-    this.saleOnline_OrderService.createUpdatePartner(model)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.message.success(Message.Partner.UpdateStatus);
-        this.isEditPartner = false;
-        this.loadDataPartner(this.team?.Facebook_PageId, this.formData?.Facebook_ASUserId);
+    this.isLoading = true;
+    this.saleOnline_OrderService.createUpdatePartner({ model: model, teamId: teamId })
+      .pipe(takeUntil(this.destroy$), finalize(() => { this.isLoading = false; this.cdRef.markForCheck() })).subscribe(res => {
+
+          this.message.success('Cập nhật khách hàng thành công');
+
+          // TODO: kiểm tra số điện thoại
+          let phone = this.partner?.Phone as string;
+          if(TDSHelperString.hasValueString(phone)) {
+            this.crmMatchingService.checkPhoneReport(phone).pipe(takeUntil(this.destroy$)).subscribe((obs) => {
+                // TODO: gán phoneReport
+                if(obs && obs.is_report == true && this.partner) {
+                    this.partner.PhoneReport = true;
+                } else {
+                    this.partner.PhoneReport = false;
+                }
+            }, error => {
+                this.message.error(`${error?.error?.message}`);
+            })
+          }
+
+          // cập nhật dữ liệu khách hàng sang form conversation-order
+          this.partnerService.onLoadOrderFromTabPartner$.emit(res);
+          this.isEditPartner = false;
+
       }, error => {
-        this.message.error(`${error?.error?.message}` || JSON.stringify(error));
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
       });
   }
 
-  prepareModelPartner() {
-    let data = this._form.value as PartnerTempDTO;
-    let currentTeam = this.crmTeamService.getCurrentTeam();
-    let model = {} as ODataModelTeamDTO<PartnerTempDTO>;
-
-    data.Phone = data.Phone === "" ? undefined : data.Phone;
-    data.Street = data.Street === "" ? undefined : data.Street;
-    model.model = data;
-    model.teamId = currentTeam?.Id;
-
+  prepareModel() {
+    let model = {
+        Id: this.partner?.Id,
+        StatusText: this.partner?.StatusText,
+        Name: this.partner?.Name,
+        Phone: this.partner?.Phone,
+        PhoneReport: this.partner?.PhoneReport,
+        Email: this.partner?.Email,
+        Comment: this.partner?.Comment,
+        Street: this.partner?.Street,
+        FacebookASIds: this.partner?.Facebook_ASUserId || (this.dataModel.partner_id == this.partner?.Id ? this.dataModel.id : null),
+        FacebookId: (this.dataModel.partner_id == this.partner?.Id ? this.dataModel.id : null),
+        City: this.partner?.City,
+        District: this.partner?.District,
+        Ward: this.partner?.Ward
+    }
     return model;
-  }
-
-  validateData(isFirstChange: boolean) {
-    (this.data as any) = null;
-    (this.partner as any) = null;
-
-    if(isFirstChange) this.createForm();
-    else this._form.reset();
   }
 
   createOrder() {
@@ -452,42 +452,36 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.router.navigateByUrl(`bill/detail/${data.Id}`);
   }
 
-  showPaymentModal(data:TDSSafeAny){
-    this.fastSaleOrderService.getRegisterPayment({ids: [data.Id]}).pipe(takeUntil(this.destroy$)).subscribe(
-      (res)=>{
-        delete res['@odata.context'];
-        const modal = this.modalService.create({
-          title: 'Đăng ký thanh toán',
-          size:'lg',
-          content: ModalPaymentComponent,
-          viewContainerRef: this.viewContainerRef,
-          componentParams: {
-            dataModel : res
-          }
-        });
-        modal.afterClose.subscribe(result => {
-          if(TDSHelperObject.hasValue(result)){
-            this.loadBill(data.PartnerId);
-          }
-        });
-      },
-      err=>{
-        this.message.error(err.error.message ?? 'Không tải được dữ liệu');
+  showPaymentModal(data: TDSSafeAny){
+    this.fastSaleOrderService.getRegisterPayment({ids: [data.Id]}).pipe(takeUntil(this.destroy$)).subscribe((res) => {
+        if(res) {
+          delete res['@odata.context'];
+
+          const modal = this.modalService.create({
+              title: 'Đăng ký thanh toán',
+              size:'lg',
+              content: ModalPaymentComponent,
+              viewContainerRef: this.viewContainerRef,
+              componentParams: {
+                dataModel : res
+              }
+          });
+
+          modal.afterClose.subscribe((obs) => {
+              if(obs == 'onLoadPage') {
+                  this.loadPartnerBill(data.PartnerId);
+              }
+          });
+        }
+      }, error =>{
+          this.message.error(error.error.message ?? 'Không tải được dữ liệu');
       }
     )
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if(changes["data"]) {
-        this.validateData(changes.data.firstChange);
-        this.data = changes["data"].currentValue;
-        this.loadData(this.data);
-    }
-  }
-
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+      this.destroy$.next();
+      this.destroy$.complete();
   }
 
 }

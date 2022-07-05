@@ -2,7 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { CheckConversationDTO } from '../dto/partner/check-conversation.dto';
+import { TabPartnerCvsRequestDTO } from '../dto/conversation-partner/partner-conversation-request.dto';
 import { ODataCustomerDTO } from '../dto/partner/customer.dto';
 import { PartnerBirthdayDTO } from '../dto/partner/partner-birthday.dto';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
@@ -19,8 +19,8 @@ export class PartnerService extends BaseSevice {
   baseRestApi: string = "rest/v1.0/partner";
 
   public _keyCacheGrid: string = 'partner-page:grid_partner:settings';
-  public onLoadOrderFromTabPartner: EventEmitter<any> = new EventEmitter();
-  public onLoadPartnerFromTabOrder: EventEmitter<any> = new EventEmitter();
+  public onLoadOrderFromTabPartner$: EventEmitter<any> = new EventEmitter();
+  public onLoadPartnerFromTabOrder$: EventEmitter<any> = new EventEmitter();
 
   public partnerStatus: any;
   public partnerStatus$ = new BehaviorSubject<any>(null);
@@ -195,13 +195,13 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<boolean>(api, data);
   }
 
-  checkConversation(page_id: string, psid: string): Observable<CheckConversationDTO> {
+  checkConversation(page_id: string, psid: string): Observable<TabPartnerCvsRequestDTO> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/checkconversation`,
       method: TApiMethodType.post,
     }
 
-    return this.apiService.getData<CheckConversationDTO>(api, { PageId: page_id, UserId: psid });
+    return this.apiService.getData<TabPartnerCvsRequestDTO>(api, { PageId: page_id, UserId: psid });
   }
 
   checkInfo(data: InputCheckInfoPartnerDTO) : Observable<CheckInfoPartnerDTO> {

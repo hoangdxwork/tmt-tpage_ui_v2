@@ -27,7 +27,7 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges, Aft
   @Input() team!: CRMTeamDTO;
   @Input() type: any;
   @Input() psid: any;
-  @Input() activeCvsItem!: ConversationMatchingItem;
+  @Input() currentConversationItem!: ConversationMatchingItem;
   @Input() isOpenCollapCheck!: boolean;
   @Input() checked!: boolean;
   @Output() checkedChange = new EventEmitter<boolean>();
@@ -50,14 +50,14 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges, Aft
   countNgafterview = 0;
 
   constructor(private message: TDSMessageService,
-      private draftMessageService: DraftMessageService,
-      private conversationEventFacade: ConversationEventFacade,
-      public crmService: CRMTeamService,
-      public activatedRoute: ActivatedRoute,
-      public router: Router,
-      public cdr:ChangeDetectorRef,
-      public element : ElementRef,
-      private resizeObserver: TDSResizeObserver) {
+    private draftMessageService: DraftMessageService,
+    private conversationEventFacade: ConversationEventFacade,
+    public crmService: CRMTeamService,
+    public activatedRoute: ActivatedRoute,
+    public router: Router,
+    public cdr:ChangeDetectorRef,
+    public element : ElementRef,
+    private resizeObserver: TDSResizeObserver) {
   }
 
   ngOnDestroy(): void {
@@ -85,29 +85,29 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges, Aft
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes["activeCvsItem"] && !changes["activeCvsItem"].firstChange) {
-        this.activeCvsItem = changes["activeCvsItem"].currentValue;
+    if(changes["currentConversationItem"] && !changes["currentConversationItem"].firstChange) {
+        this.currentConversationItem = changes["currentConversationItem"].currentValue;
     }
   }
 
   ngAfterViewInit(): void {
-    this.resizeObserver
-    .observe(this.element)
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(() => {
-      this.totalWidthTag = this.currentWidthTag.nativeElement.clientWidth;
-      this.onSetWidthTag();
+    this.resizeObserver.observe(this.element).pipe(takeUntil(this.destroy$)).subscribe(() => {
+        this.totalWidthTag = this.currentWidthTag.nativeElement.clientWidth;
+        this.onSetWidthTag();
     });
   }
 
   onSetWidthTag(){
     this.countNgafterview += 1;
     let widthItemPlush = 30;
+
     if(this.plusWidthTag >= this.totalWidthTag - widthItemPlush){
       widthItemPlush = 0
     }
+
     this.displayTag = 0;
     this.plusWidthTag = 0;
+
     this.widthTag.forEach(x=> {
       if(this.plusWidthTag >= this.totalWidthTag - widthItemPlush){
         return
@@ -115,19 +115,13 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges, Aft
       this.displayTag += 1;
       this.plusWidthTag = this.plusWidthTag + x.nativeElement?.offsetWidth + this.gapTag;
     });
+
     this.countHiddenTag = this.item.tags.length - this.displayTag;
+
     if(this.countNgafterview > 1){
       this.cdr.detectChanges();
     }
   }
-
-  // getLastActivity() {
-  //   if(this.type && this.type == "message" && this.item && this.item.last_message) return this.item.last_message;
-  //   else if(this.type && this.type == "comment" && this.item && this.item.last_comment) return this.item.last_comment;
-  //   else if(this.item && this.item.last_activity) return this.item.last_activity || {};
-
-  //   return null;
-  // }
 
   changeCheck(ev: TDSSafeAny){
     this.checkedChange.emit(!this.checked);

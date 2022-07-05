@@ -35,7 +35,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   dataSource$!: Observable<any>;
   lstMatchingItem!: ConversationMatchingItem[];
   psid!: string;
-  activeCvsItem!: ConversationMatchingItem;
+  currentConversationItem!: ConversationMatchingItem;
   isFastSend: boolean = false;
   currentOrderCode!: string | undefined;
   checked: boolean = false;
@@ -75,28 +75,28 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   ngOnInit(): void {
     // TODO: change team tds header
     this.crmService.changeTeamFromLayout.pipe(takeUntil(this.destroy$)).subscribe((team) => {
-      this.onClickTeam(team);
+        this.onClickTeam(team);
     })
 
     // TODO: change team in component
     this.loadQueryParamMap().pipe(takeUntil(this.destroy$)).subscribe(([team, params]: any) => {
       if (!TDSHelperObject.hasValue(team)) {
-        return this.onRedirect();
+          return this.onRedirect();
       }
       // TODO: change Team
       if(team.Id != this.currentTeam?.Id) {
-        this.fetchLiveConversations(team);
-        this.setCurrentTeam(team);
+          this.fetchLiveConversations(team);
+          this.setCurrentTeam(team);
       }
 
       this.type = params?.params?.type;
       this.setParamsUrl(params.params);
 
-      let exist = (TDSHelperString.isString(this.activeCvsItem?.psid) != TDSHelperString.isString(this.paramsUrl?.psid))
-        || (!TDSHelperString.isString(this.activeCvsItem?.psid) && !TDSHelperString.isString(this.paramsUrl?.psid));
+      let exist = (TDSHelperString.isString(this.currentConversationItem?.psid) != TDSHelperString.isString(this.paramsUrl?.psid))
+        || (!TDSHelperString.isString(this.currentConversationItem?.psid) && !TDSHelperString.isString(this.paramsUrl?.psid));
 
       if(exist){
-        this.onChangeConversation(team);
+          this.onChangeConversation(team);
       }
     });
 
@@ -105,10 +105,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   spinLoading() {
     // loading moused khi change, đợi phản hồi từ loadMessages trong shared-tds-conversations
-    this.conversationDataFacade.onLoadTdsConversation$.subscribe((obs: boolean) => {
-      if(obs == false) {
-        this.isChanged = obs;
-      }
+    this.conversationDataFacade.onLoadTdsConversation$.pipe(takeUntil(this.destroy$)).subscribe((obs: boolean) => {
+        if(obs == false) {
+            this.isChanged = obs;
+        }
     })
   }
 
@@ -123,7 +123,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   validateData(){
-    (this.activeCvsItem as any) = null;
+    (this.currentConversationItem as any) = null;
     (this.dataSource$ as any) = null;
     this.lstMatchingItem = [];
   }
@@ -134,21 +134,20 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
 
     this.isProcessing = true;
-    dataSource$.pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => { this.isProcessing = false }))
+    dataSource$.pipe(takeUntil(this.destroy$), finalize(() => { this.isProcessing = false }))
       .subscribe((res: CRMMatchingMappingDTO) => {
-        if (res && TDSHelperArray.hasListValue(res.items)) {
 
+        if (res && TDSHelperArray.hasListValue(res.items)) {
             this.lstMatchingItem = [...res.items];
             let psid = this.paramsUrl?.psid || null;
 
             //TODO: check psid khi load lần 2,3,4...
             let exits = this.lstMatchingItem.filter(x => x.psid == psid)[0];
             if (exits) {
-              this.getActiveCvsItem(exits);
+              this.setCurrentConversationItem(exits);
             } else {
               //TODO: load lần đầu tiên
-              this.getActiveCvsItem(this.lstMatchingItem[0]);
+              this.setCurrentConversationItem(this.lstMatchingItem[0]);
             }
 
         } else {
@@ -161,13 +160,16 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   //TODO: matching đang chọn active
-  getActiveCvsItem(item: ConversationMatchingItem) {
+  setCurrentConversationItem(item: ConversationMatchingItem) {
     if (TDSHelperObject.hasValue(item)) {
+
       if (this.isFastSend == true) {
           this.conversationDataFacade.checkSendMessage(item.page_id, this.type, item.psid);
-      } else {
+      }
+
+      else {
         //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
-        this.activeCvsItem = {...item};
+        this.currentConversationItem = {...item};
         this.psid = item.psid;
 
         let uri = this.router.url.split("?")[0];
@@ -179,20 +181,21 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   changeCurrentCvsItem(item: any) {
     if(this.isOpenCollapCheck){
-      this.updateCheckedSet(item.id,!this.setOfCheckedId.has(item.id))
-      this.refreshCheckedStatus();
-      return
+        this.updateCheckedSet(item.id,!this.setOfCheckedId.has(item.id))
+        this.refreshCheckedStatus();
+        return;
     }
-    if(item.psid == this.activeCvsItem.psid && item.page_id == this.activeCvsItem.page_id) {
+
+    if(item.psid == this.currentConversationItem.psid && item.page_id == this.currentConversationItem.page_id) {
       return;
     }
     if (this.isChanged || this.isProcessing) {
       return;
     }
-
     this.isChanged = true;
-    (this.activeCvsItem as any) = null;
-    this.getActiveCvsItem(item);
+    (this.currentConversationItem as any) = null;
+
+    this.setCurrentConversationItem(item);
   }
 
   trackByIndex(_: number, data: any): number {
@@ -387,7 +390,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     if (Object.keys(queryObj || {}).length <= 4) {
       this.isRefreshing = true;
-      this.dataSource$ = this.conversationDataFacade.makeDataSource(this.currentTeam.Facebook_PageId, this.type).pipe(finalize(()=>{ setTimeout(() => {
+      this.dataSource$ = this.conversationDataFacade.makeDataSource(this.currentTeam.Facebook_PageId, this.type).pipe(takeUntil(this.destroy$), finalize(()=>{ setTimeout(() => {
         this.isRefreshing = false;
       }, 500)}));
     } else {
