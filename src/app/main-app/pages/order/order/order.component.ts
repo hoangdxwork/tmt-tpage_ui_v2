@@ -433,7 +433,7 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   getColorStatusText(status: string): TDSTagStatusType {
-    let value = this.lstStatusTypeExt.filter(x => x.Text === status)[0]?.Text;
+    let value = this.lstStatusTypeExt?.filter(x => x.Text === status)[0]?.Text;
     switch (value) {
       case "Đơn hàng":
         return "primary";

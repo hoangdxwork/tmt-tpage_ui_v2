@@ -1,5 +1,5 @@
 import { WallPicturesDTO } from './../../../dto/attachment/wall-pictures.dto';
-import { ConfigProductDefaultDTO } from './../../../dto/configs/product/config-product-default.dto';
+import { ConfigProductDefaultDTO, ConfigAttributeLine, ConfigProductVariant } from './../../../dto/configs/product/config-product-default.dto';
 import { Injectable } from "@angular/core";
 
 @Injectable({
@@ -7,7 +7,7 @@ import { Injectable } from "@angular/core";
 })
 export abstract class AddProductHandler {
 
-   static prepareModel(dataModel: ConfigProductDefaultDTO, formModel: any, images: WallPicturesDTO[]) {
+   static prepareModel(dataModel: ConfigProductDefaultDTO, formModel: any, images: WallPicturesDTO[], listAttributeLines: ConfigAttributeLine[], listProductVariants: ConfigProductVariant[]) {
 
       dataModel.Name = formModel.Name ? formModel.Name : dataModel.Name;
       dataModel.Image = formModel.Image ? formModel.Image : dataModel.Image;
@@ -36,6 +36,14 @@ export abstract class AddProductHandler {
       dataModel.Element = formModel.Element ? formModel.Element : dataModel.Element;
       dataModel.Specifications = formModel.Specifications ? formModel.Specifications : dataModel.Specifications;
       dataModel.InfoWarning = formModel.InfoWarning ? formModel.InfoWarning : dataModel.InfoWarning;
+      dataModel.AttributeLines = listAttributeLines ?? dataModel.AttributeLines;
+      dataModel.ProductVariants = listProductVariants ?? dataModel.ProductVariants;
+      dataModel.ProductVariantCount = listProductVariants?.length ?? dataModel.ProductVariants?.length;
+      dataModel.ProductVariants.map(
+         (variant)=>{
+            if(variant.Id < 0) variant.Id = 0;
+         }
+      )
 
       if (formModel.Categ) {
          dataModel.Categ = formModel.Categ;

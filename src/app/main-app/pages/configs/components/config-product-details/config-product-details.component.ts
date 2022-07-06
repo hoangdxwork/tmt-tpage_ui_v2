@@ -3,18 +3,17 @@ import { ProductTemplateDTO } from './../../../../dto/product/product.dto';
 import { ProductTemplateService } from './../../../../services/product-template.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { ODataStokeMoveDTO, ODataProductInventoryDTO } from './../../../../dto/configs/product/config-odata-product.dto';
-import { Subject } from 'rxjs';
+import { Subject, finalize } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { StockMoveService } from '../../../../services/stock-move.service';
 import { ConfigProductInventoryDTO } from '../../../../dto/configs/product/config-inventory.dto';
 import { ConfigStockMoveDTO } from './../../../../dto/configs/product/config-warehouse.dto';
-import { Component, Input, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
   selector: 'config-product-details',
-  templateUrl: './config-product-details.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  templateUrl: './config-product-details.component.html'
 })
 export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
   @Input() productTemplate!: ProductTemplateDTO;
@@ -40,8 +39,7 @@ export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
   constructor(
     private message: TDSMessageService,
     private productService: ProductTemplateService,
-    private stokeMoveService: StockMoveService,
-    private cdRef: ChangeDetectorRef
+    private stokeMoveService: StockMoveService
   ) { }
 
   ngOnInit(): void { }
@@ -68,19 +66,18 @@ export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
     this.isLoading_stockMove = true;
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
 
-    this.stokeMoveService.getStockMoveProduct(this.productTemplate.Id, params).pipe(takeUntil(this.destroy$)).subscribe(
-      (res: ODataStokeMoveDTO) => {
-        this.count_stockMove = res['@odata.count'] as number;
-        this.lstStockMove = [...res.value];
-        if(this.lstStockMove){
-          this.cdRef.detectChanges();
+    this.stokeMoveService.getStockMoveProduct(this.productTemplate.Id, params)
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading_stockMove = false))
+      .subscribe(
+        (res: ODataStokeMoveDTO) => {
+          if (res) {
+            this.count_stockMove = res['@odata.count'] as number;
+            this.lstStockMove = [...res.value];
+          }
+        }, error => {
+          this.message.error(error?.error?.message || 'Tải dữ liệu thẻ kho thất bại!');
         }
-        this.isLoading_stockMove = false;
-      }, error => {
-        this.isLoading_stockMove = false;
-        this.message.error(error?.error?.message || 'Tải dữ liệu thẻ kho thất bại!');
-      }
-    );
+      );
   }
 
   refreshStockMoveTable() {
@@ -100,24 +97,23 @@ export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
 
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
 
-    this.productService.getInventoryProduct(this.productTemplate.Id, params).pipe(takeUntil(this.destroy$)).subscribe(
-      (res: ODataProductInventoryDTO) => {
-        this.count_inventory = res['@odata.count'] as number;
-        this.lstProductInventory = [...res.value];
-        if(this.lstProductInventory){
-          this.cdRef.detectChanges();
+    this.productService.getInventoryProduct(this.productTemplate.Id, params)
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading_inventory = false))
+      .subscribe(
+        (res: ODataProductInventoryDTO) => {
+          if (res) {
+            this.count_inventory = res['@odata.count'] as number;
+            this.lstProductInventory = [...res.value];
+          }
+        }, error => {
+          this.message.error(error?.error?.message || 'Tải dữ liệu tồn kho thất bại!');
         }
-        this.isLoading_inventory = false;
-      }, error => {
-        this.isLoading_inventory = false;
-        this.message.error(error?.error?.message || 'Tải dữ liệu tồn kho thất bại!');
-      }
-    );
+      );
   }
 
   refreshProductInventoryTable() {
     this.pageIndex_inventory = 1;
-    
+
     this.getProductInventory(this.pageSize_inventory, this.pageIndex_inventory);
   }
 

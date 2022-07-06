@@ -46,6 +46,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   isLoadingVariant = false;
   isLoadingAttribute = false;
   id: TDSSafeAny;
+  minIndex = 0;
 
   numberWithCommas = (value: TDSSafeAny) => {
     if (value != null) {
@@ -62,8 +63,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private modalService: TDSModalService,
+  constructor(private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private message: TDSMessageService,
     private fb: FormBuilder,
@@ -116,6 +116,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     this.id = this.route.snapshot.paramMap.get("id");
     if (this.id) {
       this.loadData(this.id);
+      this.loadProductAttributeLine(this.id);
     } else {
       this.loadDefault();
     }
@@ -136,7 +137,8 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       .subscribe((res: TDSSafeAny) => {
         delete res['@odata.context'];
         this.dataModel = { ...res };
-        
+        this.lstVariants = this.dataModel.ProductVariants;
+
         this.formatProperty(this.dataModel);
       }, error => {
         this.message.error(error?.error?.message || Message.CanNotLoadData);
@@ -149,6 +151,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       .subscribe((res: TDSSafeAny) => {
         delete res['@odata.context'];
         this.dataModel = { ...res };
+
         this.formatProperty(res);
       }, error => {
         this.message.error(error?.error?.message || Message.CanNotLoadData);
@@ -166,7 +169,6 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       data.ProductVariants.forEach((x: ConfigProductVariant) => {
         this.addProductVariants(x);
       });
-      this.lstVariants = data.ProductVariants;
     }
     if (data.DateCreated) {
       data.DateCreated = new Date(data.DateCreated);
@@ -187,7 +189,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       (res: TDSSafeAny) => {
         this.categoryList = [...res.value];
       }, error => {
-        this.message.error(Message.CanNotLoadData);
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
       }
     );
   }
@@ -198,7 +200,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         this.UOMPOList = [...res.value];
       },
       error => {
-        this.message.error(Message.CanNotLoadData);
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
       }
     );
   }
@@ -208,8 +210,8 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       (res: TDSSafeAny) => {
         this.UOMList = [...res.value];
       },
-      err => {
-        this.message.error(Message.CanNotLoadData);
+      error => {
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
       }
     );
   }
@@ -219,8 +221,8 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       (res: TDSSafeAny) => {
         this.POSCategoryList = [...res.value];
       },
-      err => {
-        this.message.error(Message.CanNotLoadData);
+      error => {
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
       }
     );
   }
@@ -253,6 +255,17 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     );
   }
 
+  loadProductAttributeLine(id: TDSSafeAny) {
+    this.productTemplateService.getProductAttributeLine(id).pipe(takeUntil(this.destroy$)).subscribe(
+      (res) => {
+        this.lstAttributes = [...res.value];
+      },
+      error => {
+        this.message.error(error?.error?.message || Message.CanNotLoadData);
+      }
+    )
+  }
+
   showCreateAttributeModal() {
     let productName = this._form.controls.Name.value;
     if (productName) {
@@ -260,18 +273,26 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         title: 'Quản lý thuộc tính',
         content: ConfigAddAttributeProductModalComponent,
         size: "lg",
-        viewContainerRef: this.viewContainerRef
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          dataModel: this.lstAttributes
+        }
       });
 
       modal.afterClose.subscribe((result: Array<ConfigAttributeLine>) => {
         if (TDSHelperObject.hasValue(result)) {
           this.lstAttributes = result;
-          let model = <ConfigSuggestVariants><unknown>this.prepareModel();
+          let model = <ConfigSuggestVariants><unknown> this.prepareModel();
           model.AttributeLines = result;
           this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe(
             (res) => {
-              this.lstVariants = res.value;
-              this.dataModel.ProductVariants = this.lstVariants;
+              this.lstVariants = [...res.value];
+              this.lstVariants.map(attr => {
+                if(attr.Id == 0){
+                  this.minIndex -= 1;
+                  attr.Id = this.minIndex;
+                }
+              });
             },
             (err) => {
               this.message.error(err?.error?.message || Message.CanNotLoadData);
@@ -285,9 +306,9 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   }
 
   showCreateVariantsModal() {
-    if (this.lstAttributes?.length > 0) {
+    if (TDSHelperArray.hasListValue(this.lstAttributes)) {
       let formModel = this._form.value;
-      let suggestModel = <ConfigSuggestVariants><unknown>this.prepareModel();
+      let suggestModel = <ConfigSuggestVariants><unknown> this.prepareModel();
 
       if (formModel.Name) {
         const modal = this.modalService.create({
@@ -310,8 +331,8 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
 
         modal.afterClose.subscribe((result: ConfigProductVariant) => {
           if (TDSHelperObject.hasValue(result)) {
+            console.log(result)
             this.lstVariants.push(result);
-            this.lstVariants = [...this.lstVariants];
           }
         });
       } else {
@@ -321,44 +342,45 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   }
 
   showEditVariantsModal(data: ConfigProductVariant) {
-    if (this.lstAttributes?.length > 0) {
-      let formModel = this._form.value;
-      let suggestModel = <ConfigSuggestVariants><unknown>this.prepareModel();
+      let name = this._form.controls["Name"].value;
 
-      if (formModel.Name) {
+      if (name) {
+        let suggestModel = <ConfigSuggestVariants><unknown>this.prepareModel();
+
         const modal = this.modalService.create({
           title: 'Sửa biến thể sản phẩm',
           content: CreateVariantsModalComponent,
           size: "lg",
           viewContainerRef: this.viewContainerRef,
           componentParams: {
-            attributeLines: this.lstAttributes,
+            attributeLines: this.lstAttributes,//TODO: danh sách thuộc tính-giá trị đã được chọn
             productTypeList: this.productTypeList,
-            suggestModel: suggestModel,
-            editModel: data
+            suggestModel: suggestModel, //TODO: model param dùng để gọi API tạo biến thể
+            editModel: data //TODO: model variants được chọn để chỉnh sửa
           }
         });
 
         modal.afterClose.subscribe((result: ConfigProductVariant) => {
           if (TDSHelperObject.hasValue(result)) {
-            this.lstVariants.forEach((item, i) => {
-              //TODO: do Id luôn = 0 nên không thể xét theo Id
-              if (item.NameGet == result.NameGet && item.PriceVariant == result.PriceVariant) {
-                this.lstVariants[i] = result;
+            this.lstVariants.map((item) => {
+              if (item.Id == result.Id) {
+                item = result;
               }
-            })
-            this.lstVariants = [...this.lstVariants];
+            });
           }
         });
       } else {
         this.message.error('Vui lòng nhập tên sản phẩm');
       }
-    }
   }
 
   removeVariants(data: ConfigProductVariant) {
-    let variants = this.lstVariants.filter(f => f.NameGet != data.NameGet && f.PriceVariant != data.PriceVariant);
-    this.lstVariants = [...variants];
+    if(this.lstVariants.length > 1){
+      let variants = this.lstVariants.filter(f => f.NameGet != data.NameGet || f.Id != data.Id);
+      this.lstVariants = [...variants];
+    }else{
+      this.message.error('Sản phẩm phải tồn tại ít nhất một biến thể');
+    }
   }
 
   addCategory() {
@@ -494,38 +516,41 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     let model = this.prepareModel();
 
     if (model.Name) {
-      this.productTemplateService.insertProductTemplate(model).pipe(takeUntil(this.destroy$)).subscribe(
-        (res: TDSSafeAny) => {
-          this.message.success('Thêm mới thành công');
-          this.router.navigateByUrl('/configs/products');
-        },
-        err => {
-          this.message.error(err?.error?.errors?.model[0] || Message.InsertFail);
-        }
-      );
+      this.productTemplateService.insertProductTemplate(model)
+        .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+        .subscribe(
+          (res: TDSSafeAny) => {
+            this.message.success('Thêm mới thành công');
+            this.router.navigateByUrl('/configs/products');
+          },
+          err => {
+            this.message.error(err?.error?.errors?.model[0] || Message.InsertFail);
+          }
+        );
     }
   }
 
   editProduct() {
     let model = this.prepareModel();
-
+    
     if (model.Name) {
-      this.productTemplateService.updateProductTemplate(model).pipe(takeUntil(this.destroy$)).subscribe(
-        (res: TDSSafeAny) => {
-          this.message.success(Message.UpdatedSuccess);
-          this.router.navigateByUrl('/configs/products');
-        },
-        err => {
-          this.message.error(err?.error?.message || Message.CanNotLoadData);
-        }
-      );
+      this.productTemplateService.updateProductTemplate(model)
+        .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+        .subscribe(
+          (res: TDSSafeAny) => {
+            this.message.success(Message.UpdatedSuccess);
+            this.router.navigateByUrl('/configs/products');
+          },
+          err => {
+            this.message.error(err?.error?.message || Message.CanNotLoadData);
+          }
+        );
     }
   }
 
   prepareModel() {
-    let images = this._form.controls["Images"].value as WallPicturesDTO[];
+    AddProductHandler.prepareModel(this.dataModel, this._form.value, this._form.controls["Images"].value, this.lstAttributes, this.lstVariants);
 
-    AddProductHandler.prepareModel(this.dataModel, this._form.value, images);
     return this.dataModel;
   }
 
@@ -550,6 +575,8 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       this.message.error('Vui lòng nhập đơn vị mua');
       return
     }
+
+    this.isLoading = true;
 
     if (this.id) {
       this.editProduct();
