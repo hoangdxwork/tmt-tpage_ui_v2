@@ -46,7 +46,9 @@ export class InfoUserComponent implements OnInit {
   loadUserInfo() {
     this.isLoading = true;
     this.auth.getUserInit().pipe(finalize(()=>{ this.isLoading = false })).subscribe(res => {
-      this.userInit = res || {};
+       if(res) {
+        this.userInit = res || {};
+       }
     });
   }
 

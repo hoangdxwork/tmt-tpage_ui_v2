@@ -26,7 +26,7 @@ export class ModalEditInfoUserComponent implements OnInit {
     private auth: TAuthService,
     private message: TDSMessageService,
     private modal: TDSModalRef
-  ) { 
+  ) {
     this.createFormInfo();
   }
 
@@ -37,8 +37,10 @@ export class ModalEditInfoUserComponent implements OnInit {
   loadUserInfo() {
     this.isLoading = true;
     this.auth.getUserInit().pipe(finalize(()=>{ this.isLoading = false })).subscribe(res => {
-      this.userInit = res || {};
-      this.updateFormInfo(this.userInit);
+      if(res) {
+        this.userInit = res || {};
+        this.updateFormInfo(this.userInit);
+      }
     });
   }
 

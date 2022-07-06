@@ -37,7 +37,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   psid!: string;
   currentConversationItem!: ConversationMatchingItem;
   isFastSend: boolean = false;
-  currentOrderCode!: string | undefined;
   checked: boolean = false;
   isOpenCollapCheck: boolean = false;
   isSort: boolean = false;
@@ -275,10 +274,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       .subscribe();
   }
 
-  changeOrderId(orderCode: string | undefined) {
-    this.currentOrderCode = orderCode;
-  }
-
   setCheck(){
     this.isOpenCollapCheck = !this.isOpenCollapCheck;
   }
@@ -366,10 +361,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.conversationDataFacade.checkAllSendMessage(this.currentTeam.Facebook_PageId, this.type, this.isCheckedAll);
   }
 
-  onTabOrder(event: boolean) {
-    event && (this.currentOrderTab = 1);
-  }
-
   onSubmitFilter(data: any) {
     this.filterValue = data;
 
@@ -427,24 +418,24 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onSearch(event: any) {
-    if(event) {
-       let text = event.target.value;
-       this.loadFilterText(text);
-    }
-    event.preventDefault();
-    event.stopImmediatePropagation();
+      if(event) {
+        let text = event.target.value;
+        this.loadFilterText(text);
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
   }
 
   loadFilterText(text: string) {
     if(TDSHelperString.hasValueString(text)) {
-      let query = this.conversationDataFacade.createQuery(this.currentTeam.Facebook_PageId, this.type) as any;
-      query['keyword'] = text;
-      this.queryFilter = query;
+        let query = this.conversationDataFacade.createQuery(this.currentTeam.Facebook_PageId, this.type) as any;
+        query['keyword'] = text;
+        this.queryFilter = query;
 
-      this.makeDataSource(query);
+        this.makeDataSource(query);
     } else {
-      (this.innerText.nativeElement.value as any) = null;
-      this.makeDataSource({});
+        (this.innerText.nativeElement.value as any) = null;
+        this.makeDataSource({});
     }
   }
 

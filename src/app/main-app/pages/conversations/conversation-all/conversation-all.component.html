@@ -108,50 +108,57 @@
   <!--Xử lí thông tin khách hàng & Đơn hàng-->
   <!-- Dữ liệu load vào form partner trước từ funtion checkConversation(),sau đó lấy dữ liệu gán lại form order -->
   <tds-spin class="flex w-[32%] h-full" [spinning]="isLoading">
-    <div class="w-full h-full flex flex-col pb-1">
-      <tds-tabset class="bg-white border border-neutral-2-200 w-full" [clsTab]="'flex-1'" [(selectedIndex)]="currentOrderTab"
-          [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
-          <!-- tab Khách hàng -->
-          <tds-tab [title]="conversationPartner" clsContent="border-t border-neutral-2-200 -mt-px h-full flex flex-col ">
-            <ng-template #conversationPartner let-active="active">
-                <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 py-4 pr-4 relative  group"
-                    [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
-                    <span class="mr-2">Khách hàng</span>
-                    <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
-                        class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
-                    </div>
-                </div>
-            </ng-template>
-            <div *ngIf="currentConversationItem  && currentTeam">
-                <conversation-partner [data]="currentConversationItem" [team]="currentTeam" [type]="type" (onTabOrder)="onTabOrder($event)">
-                </conversation-partner>
-            </div>
-            <div *ngIf="!currentConversationItem">
-              <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
-            </div>
-          </tds-tab>
-          <!-- tab Đơn hàng -->
-          <tds-tab [title]="conversationOrder" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
-            <ng-template #conversationOrder let-active="active">
-              <div class="flex items-center font-semibold justify-center text-body-2 p-4 relative group cursor-pointer"
-                [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
-                <span class="mr-2 flex items-center">
-                  Đơn hàng
-                  <tds-tag status='primary' class="ml-3" *ngIf="currentOrderCode"> #{{ currentOrderCode }} </tds-tag>
-                </span>
-                <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
-                  class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
-                </div>
-              </div>
-            </ng-template>
-            <div *ngIf="currentConversationItem && currentTeam">
-                <conversation-order [data]="currentConversationItem" [team]="currentTeam" (currentOrderCode)="changeOrderId($event)"></conversation-order>
-            </div>
-            <div *ngIf="!currentConversationItem">
-              <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
-            </div>
-          </tds-tab>
-      </tds-tabset>
-    </div>
+      <div class="w-full h-full flex flex-col pb-1">
+          <tds-tabset class="bg-white border border-neutral-2-200 w-full" [clsTab]="'flex-1'" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
+              <tds-tab [title]="conversationPartner" clsContent="border-t border-neutral-2-200 -mt-px h-full flex flex-col">
+                  <ng-template #conversationPartner let-active="active">
+
+                      <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 py-4 pr-4 relative  group"
+                          [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
+
+                          <span class="mr-2">Khách hàng</span>
+
+                          <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
+                              class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
+                          </div>
+
+                      </div>
+                  </ng-template>
+
+                  <div *ngIf="currentConversationItem  && currentTeam">
+                      <conversation-partner [data]="currentConversationItem" [team]="currentTeam" [type]="type">
+                      </conversation-partner>
+                  </div>
+
+                  <div *ngIf="!currentConversationItem">
+                    <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
+                  </div>
+              </tds-tab>
+
+              <tds-tab [title]="conversationOrder" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
+                  <ng-template #conversationOrder let-active="active">
+                      <div class="flex items-center font-semibold justify-center text-body-2 p-4 relative group cursor-pointer"
+                        [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
+
+                          <span class="mr-2 flex items-center">  Đơn hàng
+                              <tds-tag status='primary' class="ml-3" > # </tds-tag>
+                          </span>
+
+                          <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
+                            class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
+                          </div>
+                      </div>
+                  </ng-template>
+
+                  <div *ngIf="currentConversationItem && currentTeam ">
+                      <conversation-order [data]="currentConversationItem" [team]="currentTeam"></conversation-order>
+                  </div>
+
+                  <div *ngIf="!currentConversationItem">
+                      <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
+                  </div>
+              </tds-tab>
+          </tds-tabset>
+      </div>
   </tds-spin>
 </div>

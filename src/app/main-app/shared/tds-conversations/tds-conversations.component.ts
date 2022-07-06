@@ -265,7 +265,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
     modal.componentInstance?.selectProduct.subscribe((res: DataPouchDBDTO) => {
       if (TDSHelperObject.hasValue(res)) {
-        this.conversationOrderFacade.onAddProductOrder.emit(res);
+        // this.conversationOrderFacade.onAddProductOrder.emit(res);
       }
     });
   }
