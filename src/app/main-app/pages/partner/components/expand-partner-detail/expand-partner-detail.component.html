@@ -48,7 +48,7 @@
             <div class="w-2/3 font-semibold">
               <tds-button-group>
                 <div tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu"
-                  class="rounded-md px-2">
+                  class="rounded-md px-2" [ngStyle]="getStatusColor(dataPartner?.StatusText) | buttonStatusColor">
                   <span class="flex items-center font-semibold font-sans cursor-pointer">
                     {{ dataPartner.StatusText || 'Bình thường' }} <i class="tdsi-arrow-down-fill text-lg leading-none ml-1"></i>
                   </span>
@@ -56,7 +56,7 @@
                 <tds-dropdown-menu #menu="tdsDropdownMenu">
                   <div class="w-full">
                     <div tds-dropdown-item *ngFor="let status of lstPartnerStatus" (click)="selectStatus(status)">
-                      <a> {{ status.text }} </a>
+                      <a [ngStyle]="{'color': status.value }"> {{ status.text }} </a>
                     </div>
                   </div>
                 </tds-dropdown-menu>
@@ -125,12 +125,11 @@
                 <td>{{ data.AmountTotal| number:'1.0-3' }}</td>
                 <td>
                   <div>
-                    <a tds-button-icon color="secondary" size="sm">
+                    <a tds-button-icon color="secondary" tds-tooltip="Chi tiết" size="sm" (click)="onView(data)">
                       <i class="tdsi-information-fill text-neutral-1-500"></i>
                     </a>
                   </div>
                 </td>
-
               </tr>
             </ng-template>
           </tbody>

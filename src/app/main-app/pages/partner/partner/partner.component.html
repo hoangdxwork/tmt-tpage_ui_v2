@@ -93,9 +93,9 @@
                 <th *ngIf="isHidden('Street')" width="410px" class="border-r">Địa chỉ</th>
                 <th *ngIf="isHidden('StatusText')" width="150px" class="border-r">Trạng thái</th>
                 <th *ngIf="isHidden('Tag')" width="200px" class="border-r">Nhãn</th>
-                <th *ngIf="isHidden('Credit')" width="120px" class="text-right border-r">Nợ hiện tại</th>
                 <th *ngIf="isHidden('FacebookId')" width="200px" class="border-r">Facebook</th>
                 <th *ngIf="isHidden('Zalo')" width="200px" class="border-r">Zalo</th>
+                <th *ngIf="isHidden('Credit')" width="120px" class="text-right border-r">Nợ hiện tại</th>
                 <th *ngIf="isHidden('Active')" width="120px" class="text-center border-r">Hiệu lực</th>
                 <th *ngIf="isHidden('DateCreated')" width="150px" class="text-center border-r">Ngày tạo</th>
                 <th width="140px" class="text-center" [tdsRight]="true">Thao tác</th>
@@ -104,7 +104,7 @@
             <tbody>
               <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd'>
                 <tr class="text-body-2 text-neutral-900 font-regular"
-                  [ngClass]="setOfCheckedId.has(data.Id)?'bg-[#F2FCF5]':''" >
+                  [ngClass]="setOfCheckedId.has(data.Id)?'bg-[#F2FCF5]':''">
                   <td [expand]="expandSet.has(data.Id)" (expandChange)="onExpandChange(data.Id, $event)" [tdsLeft]="true">
                   </td>
                   <td [checked]="setOfCheckedId.has(data.Id)" (checkedChange)="onItemChecked(data.Id, $event)"
@@ -179,13 +179,11 @@
                       </ng-template>
                     </div>
                   </td>
-
-                  <td *ngIf="isHidden('Credit')" class="border-r border-neutral-200 text-right">
-                    {{ data.Credit || 0 | number :'1.0-3'}}</td>
                   <td *ngIf="isHidden('FacebookId')" class="border-r border-neutral-200 text-right">{{ data.FacebookId}}
                   </td>
                   <td *ngIf="isHidden('Zalo')" class="border-r border-neutral-200 text-right">{{ data.Zalo}}</td>
-
+                  <td *ngIf="isHidden('Credit')" class="border-r border-neutral-200 text-right">
+                    {{ data.Credit || 0 | number :'1.0-3'}}</td>
                   <td *ngIf="isHidden('Active')" class="text-center border-r border-neutral-200">
                     <div class="w-full">
                       <span
@@ -197,17 +195,17 @@
                     {{ data.DateCreated | date:"dd/MM/yyyy"}}</td>
                   <td [tdsRight]="true">
                     <div class="flex gap-x-2">
-                      <button tds-button-icon color="secondary" size="sm" (click)="openMiniChat(data)">
+                      <button tds-button-icon color="secondary" tds-tooltip="Gửi tin nhắn" size="sm" (click)="openMiniChat(data)">
                         <span class="flex items-center">
                           <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                         </span>
                       </button>
-                      <button tds-button-icon color="secondary" size="sm" (click)="editPartner(data)">
+                      <button tds-button-icon color="secondary" tds-tooltip="Chỉnh sửa" size="sm" (click)="editPartner(data)">
                         <span class="flex items-center">
                           <i class="tdsi-edit-fill text-neutral-1-500"></i>
                         </span>
                       </button>
-                      <button tds-button-icon color="secondary" size="sm" (click)="onDelete(data)">
+                      <button tds-button-icon color="secondary" tds-tooltip="Xóa" size="sm" (click)="onDelete(data)">
                         <span class="flex items-center">
                           <i class="tdsi-trash-fill text-neutral-1-500"></i>
                         </span>

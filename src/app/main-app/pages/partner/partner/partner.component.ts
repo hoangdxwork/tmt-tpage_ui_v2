@@ -495,7 +495,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     let ids: any = [...this.setOfCheckedId];
     that.isProcessing = true;
 
-    this.modal.success({
+    this.modalService.create({
       title: 'Reset điểm tích lũy',
       content: 'Bạn muốn chắc chắn reset điểm khách hàng này?',
       onOk: () => {
@@ -530,7 +530,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   showModalSendMessage() {
     if(this.setOfCheckedId.size == 0){
       this.message.error(Message.SelectOneLine)
-      return 
+      return
     }
     let ids: any = [...this.setOfCheckedId];
     this.modalService.create({
