@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { NotificationGetMappingDTO, TPosAppMongoDBNotificationDTO } from '../../dto/notification/notification.dto';
 import { NotificationService } from '../../services/notification.service';
@@ -19,8 +19,7 @@ export class TpageNotificationDropdownComponent implements OnInit {
   pageIndex = 1;
   hasNextPage: boolean = true;
 
-  constructor(
-    public router: Router,
+  constructor(public router: Router,
     private notificationService: NotificationService
   ) { }
 
@@ -41,7 +40,6 @@ export class TpageNotificationDropdownComponent implements OnInit {
       .subscribe(res => {
         this.hasNextPage = res.HasNextPage;
         this.lstData = [...this.lstData, ...res.Items];
-        console.log(this.lstData);
       });
   }
 

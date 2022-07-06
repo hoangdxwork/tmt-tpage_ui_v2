@@ -4,8 +4,9 @@
             <div class="flex flex-row items-end pb-4">
                 <upload-pictures-wall class="mr-12"
                     [size]="112"
-                    [data]="_form.controls.ImageUrl.value"
-                    (getResult)="getImage($event)">
+                    [data]="[_form.controls.ImageUrl.value]"
+                    (getResult)="getImage($event)"
+                    (getBase64)="getBase64($event)">
                 </upload-pictures-wall>
                 <div class="flex flex-col gap-y-3">
                     <label class="font-semibold text-header-2">Sản phẩm {{defaultModel?.Name}}</label>
@@ -53,22 +54,35 @@
                   </tds-error>
                 </tds-form-field>
 
-                <span class="text-header-2 font-semibold text-neutral-1-600 col-span-4 w-full">Biến thể</span>
+                <span class="text-header-2 font-semibold text-neutral-1-600 col-span-4 w-full" 
+                    *ngIf="attributeLines.length > 0 || editModel.AttributeValues.length > 0">Biến thể</span>
             </div>
-            <div *ngFor="let line of attributeLines; let i = index" class="grid grid-cols-4 gap-x-6 items-end">
-                <tds-label class="mt-4">{{ line?.Attribute?.Name }}</tds-label>
-                <tds-form-field class="w-full col-span-3 mt-4" *ngIf="!editModel">
-                    <tds-select valueField="Id" textField="Name" placeholder='Chọn loại sản phẩm'
-                        disabledField="isActive" [valuePrimitive]="false" (selectChange)="onChangeAttribute($event,line.AttributeId)"
-                        [data]="line?.Values || []" [allowClear]="true" [optionOverflowSize]="5">
-                    </tds-select>
-                    <tds-error>
-                        Vui lòng chọn giá trị {{line?.Attribute?.Name}}
-                    </tds-error>
-                </tds-form-field>
-                <tds-tag status='secondary' rounded="rounded-full" class="w-fit h-fit" *ngIf="editModel">
-                    {{ editModel?.AttributeValues | showAttributeValue: line.AttributeId }}
-                </tds-tag>
+            <!-- variants - add product -->
+            <div *ngIf="editModel?.AttributeValues?.length == 0">
+                <div *ngFor="let line of attributeLines; let i = index" class="grid grid-cols-4 gap-x-6 items-end">
+                    <tds-label class="mt-4">{{ line?.Attribute?.Name }}</tds-label>
+                    <tds-form-field class="w-full col-span-3 mt-4" *ngIf="!editModel">
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn loại sản phẩm'
+                            disabledField="isActive" [valuePrimitive]="false" (selectChange)="onChangeAttribute($event,line.AttributeId)"
+                            [data]="line?.Values || []" [allowClear]="true" [optionOverflowSize]="5">
+                        </tds-select>
+                        <tds-error>
+                            Vui lòng chọn giá trị {{ line?.Attribute?.Name }}
+                        </tds-error>
+                    </tds-form-field>
+                    <tds-tag status='secondary' rounded="rounded-full" class="w-fit h-fit col-span-3" *ngIf="editModel">
+                        {{ editModel.AttributeValues | showAttributeValue: line.AttributeId }}
+                    </tds-tag>
+                </div>
+            </div>
+            
+            <div *ngIf="editModel.AttributeValues.length > 0">
+                <div *ngFor="let value of editModel.AttributeValues; let i = index" class="grid grid-cols-4 gap-x-6 items-end">
+                    <tds-label class="mt-4">{{ value.AttributeName }}</tds-label>
+                    <tds-tag status='secondary' rounded="rounded-full" class="w-fit h-fit col-span-3 mt-4">
+                        {{ value.Name }}
+                    </tds-tag>
+                </div>
             </div>
         </div>
     </form>

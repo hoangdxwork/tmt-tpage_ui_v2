@@ -94,6 +94,15 @@ export class ProductTemplateService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
+  getProductAttributeLine(id:TDSSafeAny): Observable<TDSSafeAny> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/odata/ProductTemplate(${id})/AttributeLines?$expand=Attribute,Values`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
   getProductUOM():Observable<TDSSafeAny> {
     const api: TAPIDTO = {
     url: `${this._BASE_URL}/${this.prefix}/ProductUOM?%24format=json&%24count=true`,

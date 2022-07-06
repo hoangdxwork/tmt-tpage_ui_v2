@@ -23,7 +23,6 @@ new Promise((resolve, reject) => {
 
 export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy {
 
-    destroy$ = new Subject<void>();
     @Input() data!: string[];
     @Input() isArray!: boolean;
     @Input() size: number = 112;
@@ -37,6 +36,8 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
     previewVisible = false;
     isUploading: boolean = false;
 
+    private destroy$ = new Subject<void>();
+
     constructor(private msg: TDSMessageService,
       private sharedService: SharedService,
       private cdr: ChangeDetectorRef
@@ -44,7 +45,7 @@ export class UploadPicturesWallComponent implements OnInit, OnChanges, OnDestroy
 
     ngOnInit(): void {
       this.fileList = [];
-      if(TDSHelperArray.isArray(this.data)) {
+      if(TDSHelperArray.isArray(this.data) && this.data[0]) {
         let dataModel: any = [];
         this.data.map((x: any, i: number) => {
           dataModel.push({
