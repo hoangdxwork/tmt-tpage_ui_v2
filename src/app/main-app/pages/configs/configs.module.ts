@@ -62,7 +62,7 @@ import { ConfigAddCategoryModalComponent } from './components/config-add-categor
 import { ApplicationRoleService } from '../../services/application-role.service';
 import { UserRestHandler } from '../../services/handlers/user-rest.handler';
 import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
-import { ConfigAddAttributeProductModalComponent } from './components/config-add-attribute-product-modal/config-add-attribute-product-modal.component';
+import { ConfigAddAttributeProductModalComponent } from './components/config-attribute-modal/config-attribute-modal.component';
 import { CompanyService } from '../../services/company.service';
 import { ConfigPromotionGroupComponent } from './config-promotions/components/config-promotion-group/config-promotion-group.component';
 import { ConfigPromotionComboComponent } from './config-promotions/components/config-promotion-combo/config-promotion-combo.component';

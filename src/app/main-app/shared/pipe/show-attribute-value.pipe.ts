@@ -20,6 +20,6 @@ export class ShowAttributeValuePipe implements PipeTransform {
         }
       })
     }
-    return result.Name;
+    return result?.Name;
   }
 }
