@@ -24,12 +24,10 @@ export class ModalBlockPhoneComponent implements OnInit {
   currentTeam!: CRMTeamDTO | null;
   isLoading: boolean = false;
 
-  constructor(
-    private crmTeamService: CRMTeamService,
+  constructor(private crmTeamService: CRMTeamService,
     private modelRef: TDSModalRef,
     private message: TDSMessageService,
-    private crmMatchingService: CRMMatchingService
-  ) { }
+    private crmMatchingService: CRMMatchingService) { }
 
   ngOnInit(): void {
     this.loadCurrentTeam();
@@ -43,7 +41,6 @@ export class ModalBlockPhoneComponent implements OnInit {
 
   onSave() {
     if(this.isCheckValue() === 1) {
-
       let model: InputReasonCannelOrderDTO = {
         phone: this.phone,
         reason: this.reasonBlock,

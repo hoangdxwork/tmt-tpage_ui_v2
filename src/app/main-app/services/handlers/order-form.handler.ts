@@ -19,12 +19,10 @@ export class OrderFormHandler {
 
   readonly patternPhone = /(?:\b|[^0-9])((0|o|84|\+84)(\s?)([2-9]|1[0-9])(\d|o(\s|\.)?){8})(?:\b|[^0-9])/;
 
-  constructor(
-    private formBuilder: FormBuilder,
+  constructor(private formBuilder: FormBuilder,
     private auth: TAuthService,
     private generalConfigsFacade: GeneralConfigsFacade,
-    private fastSaleOrderService: FastSaleOrderService,
-  ) {
+    private fastSaleOrderService: FastSaleOrderService) {
     this.initialize();
   }
 

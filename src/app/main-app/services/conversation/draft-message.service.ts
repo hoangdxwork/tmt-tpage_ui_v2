@@ -39,7 +39,7 @@ export class DraftMessageService extends BaseSevice  {
       }
     });
 
-    this.partnerService.onLoadOrderFromTabPartner.subscribe((res: any) => {
+    this.partnerService.onLoadOrderFromTabPartner$.subscribe((res: any) => {
       if(res && (res.FacebookASIds || res.Facebook_ASUserId)) {
         this.facebookASIds = res.FacebookASIds || res.Facebook_ASUserId;
       } else {

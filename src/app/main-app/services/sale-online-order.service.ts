@@ -133,10 +133,10 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<SaleOnline_OrderDTO>(api, data);
   }
 
-  createUpdatePartner(data: ODataModelTeamDTO<PartnerTempDTO>): Observable<PartnerTempDTO> {
+  createUpdatePartner(data: any): Observable<PartnerTempDTO> {
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.CreateUpdatePartner`,
-      method: TApiMethodType.post,
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.CreateUpdatePartner`,
+        method: TApiMethodType.post
     }
 
     return this.apiService.getData<PartnerTempDTO>(api, data);

@@ -34,7 +34,6 @@ export class ConversationPostFacade extends BaseSevice implements OnDestroy {
       private apiService: TCommonService,
       private sharedService: SharedService) {
         super(apiService);
-
         this.initialize();
   }
 

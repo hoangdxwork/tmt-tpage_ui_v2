@@ -119,7 +119,6 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
     this.loadUsers();
     this.loadCarrier();
     this.loadCurrentTeam();
-    this.eventLoading();
   }
 
   createForm(): void {
@@ -215,19 +214,6 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
     })
   }
 
-  eventLoading() {
-    this.conversationOrderFacade.isLoadingPartner$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-        this.isLoading = res;
-      });
-
-    this.conversationOrderFacade.isLoadingOrder$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-        this.isLoading = res;
-      });
-  }
 
   updateFormOrder(order: ConversationOrderForm) {
     this.resetForm();
@@ -317,7 +303,7 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
 
           this.isLoading = false;
           // this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
-          this.partnerService.onLoadPartnerFromTabOrder.emit(this.data);
+          this.partnerService.onLoadPartnerFromTabOrder$.emit(this.data);
         }
         else {
           let billModel = this.prepareBillModel(); // Bản chất đã change this.saleModel
@@ -346,7 +332,7 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
                     this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${bill.Data.Id}${params}`);
                   }
 
-                  this.partnerService.onLoadPartnerFromTabOrder.emit(this.data);
+                  this.partnerService.onLoadPartnerFromTabOrder$.emit(this.data);
                   // this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
                 }, error => {
                   this.message.error(`${error?.error?.message}` || JSON.stringify(error));
@@ -410,7 +396,7 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
       this.partnerService.checkConversation(pageId, psid)
         .pipe(finalize(() => this.isLoading = false))
         .subscribe(res => {
-          this.partnerService.onLoadOrderFromTabPartner.next(res.Data);
+          this.partnerService.onLoadOrderFromTabPartner$.next(res.Data);
         });
     }
     else {

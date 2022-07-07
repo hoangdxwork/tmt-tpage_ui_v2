@@ -21,6 +21,9 @@ export abstract class PrepareSaleModelHandler {
         } else if (saleModel.Carrier.DeliveryType === "ViettelPost" || saleModel.Carrier.DeliveryType === "TinToc" || saleModel.Carrier.DeliveryType === "FlashShip") {
             saleModel.Ship_ServiceId = saleModel.Ship_ServiceId || saleModel.Carrier.ViettelPost_ServiceId;
         }
+        if(!saleModel.Ship_ServiceId){
+          return
+        }
       }
 
       saleModel.PartnerId = quickOrderModel.PartnerId;

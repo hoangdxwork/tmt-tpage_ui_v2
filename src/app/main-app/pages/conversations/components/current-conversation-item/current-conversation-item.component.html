@@ -1,7 +1,7 @@
 <div *ngIf="item" class="text-body-2 text-neutral-1-900 w-full">
   <div class="w-full relative overflow-hidden " style="white-space: pre-line; word-break: break-word;">
-    <div [ngClass]="activeCvsItem && (activeCvsItem?.id == item.id)?'absolute h-full w-1 left-0 bg-blue-500':''"></div>
-    <div [ngClass]="activeCvsItem && (activeCvsItem?.id == item.id)?'bg-secondary-3':'bg-white'"
+    <div [ngClass]="currentConversationItem && (currentConversationItem?.id == item.id)?'absolute h-full w-1 left-0 bg-blue-500':''"></div>
+    <div [ngClass]="currentConversationItem && (currentConversationItem?.id == item.id)?'bg-secondary-3':'bg-white'"
         class="p-3.5 flex flex-col gap-3 w-full hover:bg-neutral-3-50">
       <div class="flex gap-3">
         <div>

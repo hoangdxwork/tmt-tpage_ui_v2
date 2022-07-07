@@ -9,7 +9,7 @@ export class ShowAttributeValuePipe implements PipeTransform {
   constructor(private cdRef: ChangeDetectorRef){}
 
   transform(AttributeLines: ConfigAttributeValue[]| undefined, AttributeId:number): string {
-    let result!:ConfigAttributeValue
+    let result!:ConfigAttributeValue;
     let attrValues = AttributeLines;
 
     this.cdRef.detectChanges();

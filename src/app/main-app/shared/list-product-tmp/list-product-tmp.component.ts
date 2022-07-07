@@ -212,6 +212,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
 
     modal.afterClose.pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
+        console.log(res)
         if(res) {
           let productTmplItems = res[0]
           let cacheObject = res[1];

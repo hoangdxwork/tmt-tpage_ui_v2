@@ -108,24 +108,27 @@ export class ModalPaymentComponent implements OnInit, OnDestroy {
   onSave(type:string){
     this.isLoading = true;
     let x = this.prepareModel();
+
     this.accRegisterPayment.registerPayment(x).pipe(map((res) => res), mergeMap((res) => {
-        let model =  {
-          id: res.Id
-        }
-        return this.accRegisterPayment.createPayment(model);
+          let model =  {
+            id: res.Id
+          }
+          return this.accRegisterPayment.createPayment(model);
       }))
-      .pipe(finalize(() => this.fastSaleOrderService.onLoadPage$.emit('onLoadPage')))
+      .pipe(takeUntil(this.destroy$), finalize(() => this.fastSaleOrderService.onLoadPage$.emit('onLoadPage')))
       .subscribe((obs: any) => {
         if(obs) {
           this.message.success('Xác nhận thanh toán thành công');
+
           if(type == 'print') {
-            let printer = this.printerService.printUrl(`/AccountPayment/PrintThuChiThuan?id=${obs?.value}`);
-            printer.pipe(takeUntil(this.destroy$)).subscribe((a: TDSSafeAny) => {
-                this.printerService.printHtml(a);
-            })
+              let printer = this.printerService.printUrl(`/AccountPayment/PrintThuChiThuan?id=${obs?.value}`);
+              printer.pipe(takeUntil(this.destroy$)).subscribe((a: TDSSafeAny) => {
+                  this.printerService.printHtml(a);
+              })
           }
         }
-        this.modal.destroy(null);
+
+        this.modal.destroy('onLoadPage');
       }, error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
         this.modal.destroy(null);

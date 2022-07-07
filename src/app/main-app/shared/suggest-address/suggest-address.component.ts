@@ -1,4 +1,5 @@
-import { Component, Input, EventEmitter, Output, SimpleChanges, OnChanges, AfterViewInit, HostListener, OnDestroy } from '@angular/core';
+import { eventCollapTrigger } from './../helper/event-animations.helper';
+import { Component, Input, EventEmitter, Output, SimpleChanges, OnChanges, AfterViewInit, HostListener, OnDestroy, HostBinding } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from '../../dto/suggest-address/suggest-address.dto';
@@ -15,12 +16,15 @@ const ESCAPE_ENTER = 'Enter';
 @Component({
   selector: 'suggest-address',
   templateUrl: './suggest-address.component.html',
+  animations: [ eventCollapTrigger ]
 })
 
 export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDestroy {
 
+  @HostBinding("@openCollapse") eventAnimationCollap = false;
   // @ViewChild('streetInput') streetInput!: ElementRef;
   _form!: FormGroup;
+  @Input() _isBtnExtend: boolean = false;
   @Input() _isExpanded!: boolean;
   @Input() _street!: string;
   @Input() _cities!: SuggestCitiesDTO;
@@ -84,6 +88,7 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
 
     if(this._street) {
         this._form.controls['Street'].setValue(this._street || null);
+        this.innerText = this._street;
     }
   }
 

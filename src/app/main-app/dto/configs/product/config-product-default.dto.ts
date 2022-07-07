@@ -58,6 +58,22 @@ export interface ConfigUOMPO {
     ShowFactor: number;
 }
 
+export interface UOMLine {
+    Id: number;
+    ProductTmplId: number;
+    ProductTmplListPrice: number;
+    UOMId: number;
+    TemplateUOMFactor: number;
+    ListPrice: number;
+    Barcode: string;
+    Price?: any;
+    ProductId: number;
+    UOMName: string;
+    NameGet?: any;
+    Factor: number;
+    UOM: ConfigUOM;
+}
+
 export interface ConfigAttributeLine {
     Attribute: ConfigAttribute;
     Values: ConfigAttributeValue[];
@@ -203,14 +219,14 @@ export interface ConfigProductDefaultDTO {
     AvailableInPOS: boolean;
     POSCategId?: any;
     CostMethod?: any;
-    Barcode?: any;
-    Image?: any;
+    Barcode: string;
+    Image: string;
     ImageUrl: string;
     ProductVariantCount: number;
     LastUpdated: Date;
     UOMCategId?: any;
     BOMCount: number;
-    Volume?: any;
+    Volume: number;
     CategNameNoSign: string;
     UOMNameNoSign?: any;
     UOMPONameNoSign?: any;
@@ -218,7 +234,7 @@ export interface ConfigProductDefaultDTO {
     EnableAll: boolean;
     ComboPurchased?: any;
     Version: number;
-    VariantFirstId?: any;
+    VariantFirstId: number;
     VariantFistId?: any;
     ZaloProductId?: any;
     CompanyName: string;
@@ -251,13 +267,18 @@ export interface ConfigProductDefaultDTO {
     Taxes: any[];
     SupplierTaxes: any[];
     Product_Teams: any[];
-    Images: WallPicturesDTO[];
+    Images: any[];
     UOMView?: any;
     Distributor?: any;
     Importer?: any;
     Producer?: any;
     OriginCountry?: any;
     ProductVariants: ConfigProductVariant[];
+    AttributeLines: ConfigAttributeLine[];
+    Items: any[];
+    UOMLines: UOMLine[];
+    ComboProducts: any[];
+    ProductSupplierInfos: any[];
 }
 
 export interface ConfigSuggestVariants {

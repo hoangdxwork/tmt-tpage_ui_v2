@@ -1,23 +1,60 @@
 <div class="grid w-fyll grid-cols-1">
-  <form [formGroup]="_form" class="flex flex-col gap-y-3" novalidate>
-      <div class="w-full flex gap-x-2 justify-between">
-        <tds-form-field class="w-full">
-            <!-- <input tdsInput placeholder="Số nhà, đường,..." formControlName="Street" (change)="changeStreet($event)"/> -->
-            <input tdsInput placeholder="Số nhà, đường,..." [(ngModel)]="innerText" (change)="changeStreet($event)" formControlName="Street"/>
-        </tds-form-field>
-        <button tds-button-icon color="primary" (click)="checkAddress($event)">
-            <span class="flex items-center">
-              <i class="tdsi-location-fill"></i>
-            </span>
-        </button>
-      </div>
-      <div *ngIf="tempAddresses" >
-        <ul class="">
-            <li *ngFor="let item of tempAddresses; index as i" class="{{index == i ? 'bg-primary-1 text-white' : 'bg-white'}}  flex tds-form-field-control w-full max-w-full border border-neutral-2-200 dark:bg-d-neutral-3-50 dark:border-d-neutral-2-200 p-2 cursor-pointer">
-                <a class="text-body-2" (click)="selectAddress(item, i)">{{item.Address}}</a>
-            </li>
-        </ul>
-      </div>
+  <form [formGroup]="_form" class="flex flex-col" novalidate>
+        <div *ngIf="_isBtnExtend; else noBtnExtend">
+            <div *ngIf="!_isExpanded; else noExpanded" class="w-full flex gap-x-2 justify-between">
+                <tds-form-field class="w-full">
+                    <input tdsInput placeholder="Tìm kiếm địa chỉ ..." [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}"/>
+                    <span tdsSuffix>
+                        <tds-button-group>
+                            <div tds-button color="secondary" tds-dropdown trigger="click" class="p-1 bg-neutral-3-100 rounded" (click)="expanded()">
+                              <span class="pl-1 flex items-center text-caption-2" *ngIf="!_isExpanded">
+                                Mở rộng <i class="tdsi-arrow-down-fill text-lg leading-none ml-1"></i>
+                              </span>
+                              <span class="pl-1 flex items-center text-caption-2" *ngIf="_isExpanded">
+                                Thu gọn <i class="tdsi-arrow-up-fill text-lg leading-none ml-1"></i>
+                              </span>
+                            </div>
+                          </tds-button-group>
+                    </span>
+                </tds-form-field>
+                <button tds-button-icon color="primary" type="button" (click)="checkAddress($event)">
+                    <span class="flex items-center">
+                      <i class="tdsi-location-fill"></i>
+                    </span>
+                </button>
+            </div>
+            <ng-template #noExpanded>
+                <div class="w-full flex gap-x-2 justify-between">
+                    <tds-form-field class="w-full">
+                        <input  tdsInput placeholder="Số nhà, đường,..." formControlName="Street" (change)="changeStreet($event)"/>
+                        <span tdsSuffix>
+                            <tds-button-group>
+                                <div tds-button color="secondary" tds-dropdown trigger="click" class="p-1 bg-neutral-3-100 rounded" (click)="expanded()">
+                                  <span class="pl-1 flex items-center text-caption-2" *ngIf="!_isExpanded">
+                                    Mở rộng <i class="tdsi-arrow-down-fill text-lg leading-none ml-1"></i>
+                                  </span>
+                                  <span class="pl-1 flex items-center text-caption-2" *ngIf="_isExpanded">
+                                    Thu gọn <i class="tdsi-arrow-up-fill text-lg leading-none ml-1"></i>
+                                  </span>
+                                </div>
+                              </tds-button-group>
+                        </span>
+                    </tds-form-field>
+                  </div>
+            </ng-template>
+        </div>
+        <ng-template #noBtnExtend>
+            <div class="w-full flex gap-x-2 justify-between">
+                <tds-form-field class="w-full">
+                    <input  tdsInput placeholder="Số nhà, đường,..." formControlName="Street" (change)="changeStreet($event)"/>
+                </tds-form-field>
+                <button tds-button-icon color="primary" (click)="expanded()">
+                    <span class="flex items-center">
+                      <i class="tdsi-move-line"></i>
+                    </span>
+                </button>
+            </div>
+        </ng-template>
       <!-- <div *ngIf="(suggestions$ | async) as suggestions">
           <ul class="list-group list-group-sm">
               <a class="list-group-item" type="button" *ngFor="let item of suggestions; let i = index"
@@ -26,8 +63,8 @@
               </a>
           </ul>
       </div> -->
-      <div *ngIf="_isExpanded">
-          <div class="w-full flex mb-2">
+      <div [@openCollapse]="!_isExpanded">
+          <div class="w-full flex mb-2 pt-3">
               <tds-form-field class="w-full">
                   <tds-select valueField="code" textField="name" placeholder='Tỉnh/Thành'
                       [valuePrimitive]="false" [allowClear]="true" (onSearch)="handleCityFilter($event)"
@@ -54,23 +91,23 @@
                   </tds-select>
               </tds-form-field>
           </div>
-          <!-- <div class="w-full flex gap-x-2 justify-between mb-2">
-              <tds-form-field class="w-full">
-                  <input tdsInput placeholder="Tìm kiếm địa chỉ ..." [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}"/>
-              </tds-form-field>
-              <button tds-button-icon color="primary" type="button" (click)="checkAddress($event)">
-                  <span class="flex items-center">
-                    <i class="tdsi-location-fill"></i>
-                  </span>
-              </button>
-          </div> -->
-          <!-- <div *ngIf="tempAddresses" >
-              <ul class="">
-                  <li *ngFor="let item of tempAddresses; index as i" class="{{index == i ? 'bg-primary-1 text-white' : 'bg-white'}}  flex tds-form-field-control w-full max-w-full border border-neutral-2-200 dark:bg-d-neutral-3-50 dark:border-d-neutral-2-200 p-2 cursor-pointer">
-                      <a class="text-body-2" (click)="selectAddress(item, i)">{{item.Address}}</a>
-                  </li>
-              </ul>
-          </div> -->
+            <div  class="w-full flex gap-x-2 justify-between mb-2">
+                <tds-form-field class="w-full">
+                    <input tdsInput placeholder="Tìm kiếm địa chỉ ..." [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}"/>
+                </tds-form-field>
+                <button tds-button-icon color="primary" type="button" (click)="checkAddress($event)">
+                    <span class="flex items-center">
+                      <i class="tdsi-location-fill"></i>
+                    </span>
+                </button>
+            </div>
+            <div *ngIf="tempAddresses.length > 0" >
+                <ul class="">
+                    <li *ngFor="let item of tempAddresses; index as i" class="{{index == i ? 'bg-primary-1 text-white' : 'bg-white'}}  flex tds-form-field-control w-full max-w-full border border-neutral-2-200 dark:bg-d-neutral-3-50 dark:border-d-neutral-2-200 p-2 cursor-pointer">
+                        <a class="text-body-2" (click)="selectAddress(item, i)">{{item.Address}}</a>
+                    </li>
+                </ul>
+            </div>
       </div>
   </form>
 </div>

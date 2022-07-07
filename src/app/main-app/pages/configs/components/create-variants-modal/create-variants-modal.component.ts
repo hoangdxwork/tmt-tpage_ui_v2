@@ -2,18 +2,21 @@ import { Subject, finalize } from 'rxjs';
 import { takeUntil } from 'rxjs';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
-import { TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperString, TDSHelperArray } from 'tds-ui/shared/utility';
 import { ProductTemplateService } from './../../../../services/product-template.service';
 import { ConfigProductVariant, ConfigAttributeValue, ConfigSuggestVariants } from './../../../../dto/configs/product/config-product-default.dto';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ConfigAttributeLine } from '../../../../dto/configs/product/config-product-default.dto';
-import { Component, Input, OnInit, ChangeDetectorRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, AfterViewInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { CreateVariantsHandler } from './create-variants.handler';
 
 @Component({
   selector: 'app-create-variants-modal',
-  templateUrl: './create-variants-modal.component.html'
+  templateUrl: './create-variants-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CreateVariantsModalComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CreateVariantsModalComponent implements OnInit, OnDestroy {
+  // @Input() isEdit!:boolean;
   @Input() attributeLines!:ConfigAttributeLine[];
   @Input() productTypeList!:TDSSafeAny[];
   @Input() defaultModel!:TDSSafeAny;
@@ -48,9 +51,8 @@ export class CreateVariantsModalComponent implements OnInit, AfterViewInit, OnDe
     }
 
   ngOnInit(): void {
-  }
+    this._form.controls["ImageUrl"].setValue(this.editModel?.ImageUrl);
 
-  ngAfterViewInit(): void {
     this.attributeLines.forEach((item)=>{
       let editValues = this.editModel?.AttributeValues.filter(f=>f.AttributeId == item.AttributeId);
       this.attributeModel.push({
@@ -65,15 +67,16 @@ export class CreateVariantsModalComponent implements OnInit, AfterViewInit, OnDe
       this.defaultModel = {
         Name:this.editModel.NameTemplate
       }
-      this.cdRef.detectChanges();
     }else{
       this._form.patchValue(this.defaultModel);
-      this.cdRef.detectChanges();
     }
+
+    this.cdRef.markForCheck();
   }
 
   createForm(){
     this._form = this.fb.group({
+      Image:[null],
       ImageUrl:[null],
       SaleOK:[true],
       PurchaseOK:[true],
@@ -89,11 +92,14 @@ export class CreateVariantsModalComponent implements OnInit, AfterViewInit, OnDe
     this._form.controls.ImageUrl.setValue(url);
   }
 
+  getBase64(base64:TDSSafeAny){
+    this._form.controls.Image.setValue(base64);
+  }
+
   onChangeAttribute(data:ConfigAttributeValue, attributeId:number){
-    this.attributeModel.forEach(
-      (item,i)=>{
+    this.attributeModel.map((item)=>{
         if(item.AttributeId == attributeId){
-          this.attributeModel[i].Values = [data] as ConfigAttributeValue[];
+          item.Values = [data] as ConfigAttributeValue[];
         }
       }
     )
@@ -112,16 +118,8 @@ export class CreateVariantsModalComponent implements OnInit, AfterViewInit, OnDe
   }
 
   prepareModel(data:ConfigProductVariant){
-    let formModel = this._form.value;
-    data.PriceVariant = formModel.PriceVariant || data.PriceVariant;
-    data.ImageUrl = formModel.ImageUrl || data.ImageUrl;
-    data.SaleOK = formModel.SaleOK || formModel.SaleOK == false ? formModel.SaleOK : data.SaleOK;
-    data.PurchaseOK = formModel.PurchaseOK || formModel.PurchaseOK == false ? formModel.PurchaseOK : data.PurchaseOK;
-    data.Active = formModel.Active || formModel.Active == false ? formModel.Active : data.Active;
-    data.Type = formModel.Type || data.Type;
-    data.DefaultCode = formModel.DefaultCode || data.DefaultCode;
-    data.Barcode = formModel.Barcode || data.Barcode;
-
+    CreateVariantsHandler.prepareModel(data,this._form.value);
+    data.AttributeValues = TDSHelperArray.hasListValue(data.AttributeValues) ? data.AttributeValues : this.editModel?.AttributeValues;
     return data;
   }
 
@@ -130,20 +128,24 @@ export class CreateVariantsModalComponent implements OnInit, AfterViewInit, OnDe
       if(this.suggestModel){
         this.suggestModel.AttributeLines = this.attributeModel;
       }
-      
-      this.isLoading = true;
-      this.productTemplateService.suggestVariants({model: this.suggestModel})
-        .pipe(takeUntil(this.destroy$), finalize(()=>this.isLoading = false))
-        .subscribe(
-          (res)=>{
-            let dataModel = this.prepareModel(res.value[0]);
-            this.message.success(this.editModel ? 'Chỉnh sửa biến thể thành công' : 'Thêm biến thể thành công');
-            this.modal.destroy(dataModel);
-          },
-          (err)=>{
-            this.message.error(err?.error?.message || 'Không thể tải dữ liệu biến thể');
-          }
-        )
+
+      if(this.editModel){
+        this.message.success('Chỉnh sửa biến thể thành công');
+        this.modal.destroy(this.prepareModel(this.editModel));
+      }else{
+        this.isLoading = true;
+        this.productTemplateService.suggestVariants({model: this.suggestModel})
+          .pipe(takeUntil(this.destroy$), finalize(()=>{this.isLoading = false; this.cdRef.checkNoChanges();}))
+          .subscribe(
+            (res)=>{
+              this.message.success('Thêm biến thể thành công');
+              this.modal.destroy(this.prepareModel(res.value[0]));
+            },
+            (err)=>{
+              this.message.error(err?.error?.message || 'Không thể tải dữ liệu biến thể');
+            }
+          )
+      }
     }else{
       this.message.error('Lỗi dữ liệu');
     }

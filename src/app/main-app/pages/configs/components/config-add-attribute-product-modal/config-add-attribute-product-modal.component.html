@@ -1,4 +1,4 @@
-<form [formGroup]="createAttributeForm" autocomplete="off">
+<form [formGroup]="_form" autocomplete="off">
     <div class="flex flex-row mb-4">
         <tds-form-field class="flex-auto col-span-3 mr-4">
             <tds-select valueField="Id" textField="Name" placeholder='Chọn thuộc tính'
@@ -15,7 +15,7 @@
     </div>
     <div>
         <tds-table #basicTable
-            [listData]="lstOfData"
+            [listData]="dataModel"
             [showPagination]="false"
             [loading]="isLoading"
             [noResult]="NoResultTable">
@@ -27,28 +27,32 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let data of lstOfData; let i = index">
-                    <td [width]="'160px'">{{ data.Attribute.Name }}</td>
-                    <td [width]="'492px'">
-                        <tds-form-field>
-                            <tds-select valueField="Id" textField="Name" placeholder='Chọn giá trị thuộc tính'
-                                disabledField="isActive" mode="multiple" [valuePrimitive]="false"
-                                [data]="data.Values" [autoClose]="true" [allowClear]="true" (selectChange)="onSelectValues($event,data.AttributeId)">
-                            </tds-select>
-                            <tds-error>
-                                Vui lòng chọn giá trị thuộc tính
-                            </tds-error>
-                        </tds-form-field>
-                    </td>
-                    <td [width]="'116px'" [align]="'center'">
-                        <button tds-button-flat-icon type="button" size="sm"
-                            (click)="deleteAttribute(data.AttributeId)">
-                            <span class="flex items-center">
-                              <i class="tdsi-trash-line text-error-400 text-xl leading-none"></i>
-                            </span>
-                        </button>
-                    </td>
-                </tr>
+                <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data" >
+                    <tr>
+                        <td [width]="'160px'">{{ data.Attribute.Name }}</td>
+                        <td [width]="'492px'">
+                            <tds-form-field>
+                                <tds-select valueField="Id" textField="Name" placeholder='Chọn giá trị thuộc tính'
+                                    disabledField="isActive" mode="multiple" [valuePrimitive]="false" 
+                                    [ngModel]="data.Values|selectMultipleValue" [ngModelOptions]="{standalone: true}"
+                                    [data]="lstOfValue[i]?.Values || []" [autoClose]="true" [allowClear]="true" 
+                                    (selectChange)="onSelectValues($event,data.AttributeId)">
+                                </tds-select>
+                                <tds-error>
+                                    Vui lòng chọn giá trị thuộc tính
+                                </tds-error>
+                            </tds-form-field>
+                        </td>
+                        <td [width]="'116px'" [align]="'center'">
+                            <button tds-button-flat-icon type="button" size="sm"
+                                (click)="deleteAttribute(data.AttributeId)">
+                                <span class="flex items-center">
+                                <i class="tdsi-trash-line text-error-400 text-xl leading-none"></i>
+                                </span>
+                            </button>
+                        </td>
+                    </tr>
+                </ng-template>
             </tbody>
         </tds-table>
         <ng-template #NoResultTable>
