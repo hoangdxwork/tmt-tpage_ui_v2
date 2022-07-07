@@ -45,7 +45,7 @@ export class ModalPaymentComponent implements OnInit, OnDestroy {
   createForm(){
     this._form = this.fb.group({
       Amount: [null,Validators.required],
-      Communication: [null,Validators.required],
+      Communication: [null],
       Journal: [null,[Validators.required]],
       Name: [{value:null, disabled:true }],
       PaymentDate: [null,Validators.required]

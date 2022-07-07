@@ -46,7 +46,7 @@
                             tds-dropdown
                             [tdsDropdownMenu]="menu2"
                             [placement]="'bottomRight'">
-                            <span class="text-neutral-1-400 text-caption-1 font-regular pr-1">{{ data.assigned_to ? 'Đã gán cho' : 'Gán cuộc hội thoại' }}</span>
+                            <span class="text-neutral-1-400 text-caption-1 font-regular pr-1">{{ data.assigned_to ? 'Đã gán cho' : 'Gán nhân viên' }}</span>
                             <span class="text-primary-1 text-caption-1 font-semibold pr-1">{{data.assigned_to ? data.assigned_to?.Name:''}}</span>
                             <i class="tdsi-arrow-down-line"></i>
                         </button>
@@ -79,9 +79,9 @@
                 </div>
             </div>
             <div class="flex flex-row items-center">
-                <button type="button" tds-button-flat-icon color="secondary" rounded="!rounded-full" class="mr-3" (click)="onProductLastV2()">
+                <!-- <button type="button" tds-button-flat-icon color="secondary" rounded="!rounded-full" class="mr-3" (click)="onProductLastV2()">
                     <img src="../../../assets/imagesv2/conversation/box-add.svg" width="21px" height="21px">
-                </button>
+                </button> -->
                 <button type="button" tds-button-flat-icon color="secondary" rounded="!rounded-full" class="mr-3 text-neutral-1-400" (click)="refreshRead()">
                     <svg [ngClass]="isLoadMessage?'animate-spin':''" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M7.62005 4.08293C7.85778 3.98571 8.10098 3.90247 8.34842 3.83363C9.54248 3.50676 10.8061 3.536 11.9838 3.91776C13.1616 4.29952 14.2023 5.01716 14.9779 5.98247C15.7535 6.94778 16.2303 8.1187 16.3496 9.3513C16.469 10.5839 16.2257 11.8245 15.6497 12.9205L14.9502 12.5245C14.8733 12.4803 14.7861 12.4574 14.6975 12.4581C14.6088 12.4588 14.522 12.4831 14.4459 12.5284C14.3736 12.5772 14.315 12.6436 14.2756 12.7215C14.2363 12.7993 14.2175 12.8859 14.2211 12.973C14.2277 13.0731 14.0555 16.4624 14.045 16.2523C14.0512 16.3323 14.0767 16.4096 14.1195 16.4775C14.1622 16.5454 14.2209 16.6019 14.2903 16.642C14.3598 16.6821 14.438 16.7047 14.5182 16.7078C14.5983 16.7109 14.678 16.6944 14.7503 16.6597C14.8403 16.6154 18.12 14.9962 17.932 15.0888C18.0111 15.05 18.078 14.9902 18.1256 14.9161C18.1733 14.8419 18.1997 14.7562 18.2022 14.6681C18.2046 14.58 18.183 14.4929 18.1395 14.4162C18.0961 14.3395 18.0326 14.2761 17.9558 14.2329L17.3773 13.8916C18.1317 12.4568 18.4516 10.8332 18.298 9.21931C18.1444 7.60542 17.524 6.07121 16.5125 4.80433C15.5011 3.53745 14.1425 2.59282 12.6029 2.08597C11.0634 1.57913 9.40958 1.53204 7.84383 1.95046L7.825 1.95551C7.55888 2.02682 7.35671 2.09383 7.20316 2.15057C7.10422 2.18686 7.01968 2.2542 6.96218 2.34253C6.90468 2.43087 6.87731 2.53545 6.88415 2.64064L6.9504 3.66143C6.95557 3.73835 6.97885 3.81296 7.01833 3.87917C7.05781 3.94539 7.11238 4.00133 7.17758 4.04244C7.24278 4.08356 7.31677 4.10868 7.39351 4.11575C7.47026 4.12283 7.54759 4.11166 7.61919 4.08316L7.62005 4.08293Z" fill="#929DAA"/>
@@ -325,7 +325,8 @@
                   </div>
               </div>
               <!-- toolbar -->
-              <div class="w-full flex items-center gap-x-1 pb-2">
+              <div class="flex w-full justify-end">
+                <div class="flex items-center gap-x-1 pb-2">
                   <a class="p-2 hover:bg-neutral-3-50 rounded-md" type="button" (click)="sendIconLike()" tds-tooltip tooltipTitle="Like">
                       <div class="tdsi-like-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
                   </a>
@@ -349,7 +350,7 @@
                       [ngClass]="displayDropZone?'absolute w-full h-full inset-0 bg-white border-dashed border-2 border-primary-1 rounded-xl z-50 flex justify-center items-center':''"
                       class="p-2 hover:bg-neutral-3-50 rounded-md" title="Hình ảnh">
                           <div *ngIf="!displayDropZone; else dropZone"
-                          class="tdsi-image-line text-neutral-1-400 text-xl leading-none cursor-pointer">
+                          class="tdsi-expand-2-line text-neutral-1-400 text-xl leading-none cursor-pointer">
                           </div>
                           <ng-template #dropZone>
                               <div class="flex flex-col gap-y-2.5 items-center">
@@ -372,10 +373,9 @@
                   <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Thư viện ảnh" (click)="showImageStore()">
                       <div class="tdsi-images-2-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
                   </div>
+                </div>
               </div>
           </div>
         </tds-spin>
     </div>
 </section>
-
-

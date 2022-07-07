@@ -5,7 +5,7 @@
                 <th width="">STT</th>
                 <th width="30%">Tên mẫu</th>
                 <th width="55%">Nội dung</th>
-                <th>Thao tác</th>
+                <!-- <th>Thao tác</th> -->
             </tr>
         </thead>
         <tbody>
@@ -15,13 +15,13 @@
                 <td>
                     <div [innerHTML]="data.BodyPlain | safeHtml"></div>
                 </td>
-                <td>
+                <!-- <td>
                     <button tds-button color="primary" (click)="chooseQuickReply(data)">Chọn</button>
-                </td>
+                </td> -->
             </tr>
         </tbody>
     </tds-table>
 </div>
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">Đóng</button>
+    <button tds-button class="mr-2 min-w-[100px]" type="button" color="secondary" (click)="cancel()">Đóng</button>
 </div>

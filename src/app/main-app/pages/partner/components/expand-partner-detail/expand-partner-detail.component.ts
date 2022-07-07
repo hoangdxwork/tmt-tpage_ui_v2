@@ -12,8 +12,9 @@ import { CreditDebitDTO } from 'src/app/main-app/dto/partner/partner-creditdebit
 import { ODataRegisterPartnerDTO } from 'src/app/main-app/dto/partner/partner-register-payment.dto';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSTableQueryParams } from 'tds-ui/table';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'expand-partner-detail',
@@ -41,6 +42,7 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
     private partnerService: PartnerService,
     private cdr: ChangeDetectorRef,
     private message: TDSMessageService,
+    private router: Router,
     private viewContainerRef: ViewContainerRef,
     private commonService: CommonService) {
   }
@@ -158,6 +160,19 @@ export class ExpandPartnerDetailComponent implements OnInit, AfterViewInit {
     else {
       this.message.error(Message.PartnerNotInfo);
     }
+  }
+
+  getStatusColor(statusText: string | undefined) {
+    if(TDSHelperArray.hasListValue(this.lstPartnerStatus)) {
+      let value = this.lstPartnerStatus.find(x => x.text == statusText);
+      if(value) return value.value;
+      else return '#e5e7eb';
+    }
+    else return '#e5e7eb';
+  }
+
+  onView(data: any) {
+    this.router.navigateByUrl(`bill/detail/${data.Id}`);
   }
 
   ngAfterViewInit() {
