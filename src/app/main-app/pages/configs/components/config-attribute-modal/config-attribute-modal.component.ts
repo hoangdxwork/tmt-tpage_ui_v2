@@ -1,8 +1,8 @@
 import { TDSHelperString } from 'tds-ui/shared/utility';
-import { Message } from './../../../../../lib/consts/message.const';
-import { ConfigAttributeLine, ConfigAttributeValue, ConfigAttribute } from './../../../../dto/configs/product/config-product-default.dto';
+import { Message } from '../../../../../lib/consts/message.const';
+import { ConfigAttributeLine, ConfigAttributeValue, ConfigAttribute } from '../../../../dto/configs/product/config-product-default.dto';
 import { takeUntil } from 'rxjs/operators';
-import { ProductTemplateService } from './../../../../services/product-template.service';
+import { ProductTemplateService } from '../../../../services/product-template.service';
 import { Subject } from 'rxjs';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit, OnDestroy, Input, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
@@ -11,17 +11,18 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
 
 @Component({
-  selector: 'app-config-add-attribute-product-modal',
-  templateUrl: './config-add-attribute-product-modal.component.html',
+  selector: 'app-config-attribute-modal',
+  templateUrl: './config-attribute-modal.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestroy {
-  @Input() dataModel: Array<ConfigAttributeLine> = []; //TODO: model thuộc tính- giá trị
+  @Input() defaultModel: Array<ConfigAttributeLine> = []; //TODO: model thuộc tính- giá trị
 
   _form!: FormGroup;
   valuesList: Array<ConfigAttributeValue> = [];
   attributeList: Array<ConfigAttribute> = []; //TODO: list get toàn bộ thuộc tính
-  lstOfValue: Array<ConfigAttributeLine> = [];//TODO: danh sách value (data của select attribute)
+  lstValue: Array<ConfigAttributeLine> = [];//TODO: danh sách value (data của select attribute)
+  dataModel: Array<ConfigAttributeLine> = [];
 
   isLoading = false;
 
@@ -68,11 +69,13 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
           }
         });
 
+        this.dataModel = [...this.defaultModel];
+
         //TODO: lấy danh sách select value cho các dòng attribute
         this.dataModel.forEach((data) => {
           let lstValues = this.valuesList.filter(f => f.AttributeId == data.AttributeId);
 
-          this.lstOfValue.push({
+          this.lstValue.push({
             Attribute: data.Attribute,
             AttributeId: data.AttributeId,
             Values: lstValues
@@ -109,7 +112,7 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
           Values: []
         });
 
-        this.lstOfValue.push({
+        this.lstValue.push({
           Attribute: attr,
           AttributeId: attr.Id,
           Values: lstValues
@@ -128,7 +131,7 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
     // remove trên model
     this.dataModel = this.dataModel.filter(f => f.AttributeId != AttributeId);
     // remove trên table data
-    this.lstOfValue = this.lstOfValue.filter(f => f.AttributeId != AttributeId);
+    this.lstValue = this.lstValue.filter(f => f.AttributeId != AttributeId);
 
     this.isLoading = false;
   }
@@ -150,7 +153,7 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
         result = 'Vui lòng chọn đầy đủ giá trị thuộc tính';
       }
     });
-    
+
     return result
   }
 
@@ -160,7 +163,7 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
   }
 
   cancel() {
-    this.modal.destroy(null);
+    this.modal.destroy(this.defaultModel);
   }
 
   save() {

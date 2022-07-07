@@ -4,7 +4,7 @@ import { CreateVariantsModalComponent } from '../components/create-variants-moda
 import { ConfigCateg, ConfigUOMPO, ConfigUOM, ConfigAttributeLine, ConfigSuggestVariants } from './../../../dto/configs/product/config-product-default.dto';
 import { ConfigUOMTypeDTO, ConfigOriginCountryDTO } from './../../../dto/configs/product/config-UOM-type.dto';
 import { ConfigProductVariant } from '../../../dto/configs/product/config-product-default.dto';
-import { ConfigAddAttributeProductModalComponent } from './../components/config-add-attribute-product-modal/config-add-attribute-product-modal.component';
+import { ConfigAddAttributeProductModalComponent } from '../components/config-attribute-modal/config-attribute-modal.component';
 import { ConfigAddCategoryModalComponent } from './../components/config-add-category-modal/config-add-category-modal.component';
 import { ProductTemplateOUMLineService } from './../../../services/product-template-uom-line.service';
 import { ProductTemplateService } from './../../../services/product-template.service';
@@ -275,20 +275,20 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         size: "lg",
         viewContainerRef: this.viewContainerRef,
         componentParams: {
-          dataModel: this.lstAttributes
+          defaultModel: this.lstAttributes
         }
       });
 
       modal.afterClose.subscribe((result: Array<ConfigAttributeLine>) => {
         if (TDSHelperObject.hasValue(result)) {
           this.lstAttributes = result;
-          let model = <ConfigSuggestVariants><unknown> this.prepareModel();
+          let model = <ConfigSuggestVariants><unknown>this.prepareModel();
           model.AttributeLines = result;
           this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe(
             (res) => {
               this.lstVariants = [...res.value];
               this.lstVariants.map(attr => {
-                if(attr.Id == 0){
+                if (attr.Id == 0) {
                   this.minIndex -= 1;
                   attr.Id = this.minIndex;
                 }
@@ -308,7 +308,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   showCreateVariantsModal() {
     if (TDSHelperArray.hasListValue(this.lstAttributes)) {
       let formModel = this._form.value;
-      let suggestModel = <ConfigSuggestVariants><unknown> this.prepareModel();
+      let suggestModel = <ConfigSuggestVariants><unknown>this.prepareModel();
 
       if (formModel.Name) {
         const modal = this.modalService.create({
@@ -318,10 +318,9 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
           viewContainerRef: this.viewContainerRef,
           componentParams: {
             attributeLines: this.lstAttributes,
-            productTypeList: this.productTypeList,
             suggestModel: suggestModel,
             defaultModel: {
-              Name: formModel.Name,
+              NameTemplate: formModel.NameTemplate,
               Type: formModel.Type,
               DefaultCode: formModel.DefaultCode,
               Barcode: formModel.Barcode
@@ -331,8 +330,23 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
 
         modal.afterClose.subscribe((result: ConfigProductVariant) => {
           if (TDSHelperObject.hasValue(result)) {
-            console.log(result)
-            this.lstVariants.push(result);
+            if (result.Id == 0) {
+              this.minIndex -= 1;
+              result.Id = this.minIndex;
+              this.lstVariants.push(result);
+            } else {
+              this.modalService.warning({
+                title: 'Biến thể đã tồn tại',
+                content: 'Nhấn [Tiếp tục] để thêm biến thể, nhấn [Hủy] để hủy biến thể',
+                onOk: () => {
+                  this.lstVariants.push(result);
+                  this.message.success('Thêm biến thể thành công');
+                },
+                onCancel: () => { },
+                okText: "Tiếp tục",
+                cancelText: "Hủy"
+              });
+            }
           }
         });
       } else {
@@ -342,43 +356,43 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   }
 
   showEditVariantsModal(data: ConfigProductVariant) {
-      let name = this._form.controls["Name"].value;
+    let name = this._form.controls["Name"].value;
 
-      if (name) {
-        let suggestModel = <ConfigSuggestVariants><unknown>this.prepareModel();
+    if (name) {
+      let suggestModel = <ConfigSuggestVariants><unknown>this.prepareModel();
 
-        const modal = this.modalService.create({
-          title: 'Sửa biến thể sản phẩm',
-          content: CreateVariantsModalComponent,
-          size: "lg",
-          viewContainerRef: this.viewContainerRef,
-          componentParams: {
-            attributeLines: this.lstAttributes,//TODO: danh sách thuộc tính-giá trị đã được chọn
-            productTypeList: this.productTypeList,
-            suggestModel: suggestModel, //TODO: model param dùng để gọi API tạo biến thể
-            editModel: data //TODO: model variants được chọn để chỉnh sửa
-          }
-        });
+      const modal = this.modalService.create({
+        title: 'Sửa biến thể sản phẩm',
+        content: CreateVariantsModalComponent,
+        size: "lg",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          listType: this.productTypeList,
+          attributeLines: this.lstAttributes,//TODO: danh sách thuộc tính-giá trị đã được chọn
+          suggestModel: suggestModel, //TODO: model param dùng để gọi API tạo biến thể
+          editModel: data //TODO: model variants được chọn để chỉnh sửa
+        }
+      });
 
-        modal.afterClose.subscribe((result: ConfigProductVariant) => {
-          if (TDSHelperObject.hasValue(result)) {
-            this.lstVariants.map((item) => {
-              if (item.Id == result.Id) {
-                item = result;
-              }
-            });
-          }
-        });
-      } else {
-        this.message.error('Vui lòng nhập tên sản phẩm');
-      }
+      modal.afterClose.subscribe((result: ConfigProductVariant) => {
+        if (TDSHelperObject.hasValue(result)) {
+          this.lstVariants.map((item) => {
+            if (item.Id == result.Id) {
+              item = result;
+            }
+          });
+        }
+      });
+    } else {
+      this.message.error('Vui lòng nhập tên sản phẩm');
+    }
   }
 
   removeVariants(data: ConfigProductVariant) {
-    if(this.lstVariants.length > 1){
+    if (this.lstVariants.length > 1) {
       let variants = this.lstVariants.filter(f => f.NameGet != data.NameGet || f.Id != data.Id);
       this.lstVariants = [...variants];
-    }else{
+    } else {
       this.message.error('Sản phẩm phải tồn tại ít nhất một biến thể');
     }
   }
@@ -532,7 +546,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
 
   editProduct() {
     let model = this.prepareModel();
-    
+
     if (model.Name) {
       this.productTemplateService.updateProductTemplate(model)
         .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))

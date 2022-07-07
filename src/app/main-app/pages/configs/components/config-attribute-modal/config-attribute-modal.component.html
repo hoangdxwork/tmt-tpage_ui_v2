@@ -1,23 +1,19 @@
 <form [formGroup]="_form" autocomplete="off">
     <div class="flex flex-row mb-4">
         <tds-form-field class="flex-auto col-span-3 mr-4">
-            <tds-select valueField="Id" textField="Name" placeholder='Chọn thuộc tính'
-                disabledField="isActive" formControlName="Attributes" [autoClose]="true"
-                [data]="attributeList" [allowClear]="true" [mode]="'multiple'" [valuePrimitive]="false">
+            <tds-select valueField="Id" textField="Name" placeholder='Chọn thuộc tính' disabledField="isActive"
+                formControlName="Attributes" [autoClose]="true" [data]="attributeList" [allowClear]="true"
+                [mode]="'multiple'" [valuePrimitive]="false">
             </tds-select>
         </tds-form-field>
-        <button tds-button color="primary" type="button"
-            (click)="onSelectAttribute()">
+        <button tds-button color="primary" type="button" (click)="onSelectAttribute()">
             <span class="flex items-center">
-              <i class="tdsi-tick-fill text-lg leading-none mr-2"></i>Thêm thuộc tính
+                <i class="tdsi-tick-fill text-lg leading-none mr-2"></i>Thêm thuộc tính
             </span>
         </button>
     </div>
     <div>
-        <tds-table #basicTable
-            [listData]="dataModel"
-            [showPagination]="false"
-            [loading]="isLoading"
+        <tds-table #basicTable [listData]="dataModel" [showPagination]="false" [loading]="isLoading"
             [noResult]="NoResultTable">
             <thead>
                 <tr>
@@ -27,15 +23,15 @@
                 </tr>
             </thead>
             <tbody>
-                <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data" >
+                <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
                     <tr>
                         <td [width]="'160px'">{{ data.Attribute.Name }}</td>
                         <td [width]="'492px'">
                             <tds-form-field>
                                 <tds-select valueField="Id" textField="Name" placeholder='Chọn giá trị thuộc tính'
-                                    disabledField="isActive" mode="multiple" [valuePrimitive]="false" 
+                                    disabledField="isActive" mode="multiple" [valuePrimitive]="false"
                                     [ngModel]="data.Values|selectMultipleValue" [ngModelOptions]="{standalone: true}"
-                                    [data]="lstOfValue[i]?.Values || []" [autoClose]="true" [allowClear]="true" 
+                                    [data]="lstValue[i]?.Values || []" [autoClose]="true" [allowClear]="true"
                                     (selectChange)="onSelectValues($event,data.AttributeId)">
                                 </tds-select>
                                 <tds-error>
@@ -47,7 +43,7 @@
                             <button tds-button-flat-icon type="button" size="sm"
                                 (click)="deleteAttribute(data.AttributeId)">
                                 <span class="flex items-center">
-                                <i class="tdsi-trash-line text-error-400 text-xl leading-none"></i>
+                                    <i class="tdsi-trash-line text-error-400 text-xl leading-none"></i>
                                 </span>
                             </button>
                         </td>
@@ -57,10 +53,11 @@
         </tds-table>
         <ng-template #NoResultTable>
             <div class="flex flex-col items-center justify-center w-full h-[150px]">
-              <tds-avatar [tdsSrc]="'../../../assets/imagesv2/config/Empty_Table.svg'" [isAvatar]="false" [size]="90" [shape]="'square'"></tds-avatar>
-              <span class="text-neutral-1-400 text-body-2 text-center font-regular mt-3">Chưa có thuộc tính nào</span>
+                <tds-avatar [tdsSrc]="'../../../assets/imagesv2/config/Empty_Table.svg'" [isAvatar]="false" [size]="90"
+                    [shape]="'square'"></tds-avatar>
+                <span class="text-neutral-1-400 text-body-2 text-center font-regular mt-3">Chưa có thuộc tính nào</span>
             </div>
-          </ng-template>
+        </ng-template>
     </div>
 </form>
 <!-- footer -->
