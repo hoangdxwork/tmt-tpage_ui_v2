@@ -439,8 +439,10 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
       onOk: () => {
         this.partnerService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
           this.message.success('Xóa thành công!')
+          this.loadData(this.pageSize, this.pageIndex);
         }, error => {
           this.message.error(`${error.error.message}`)
+          this.loadData(this.pageSize, this.pageIndex);
         })
       },
       onCancel: () => { that.isProcessing = false; },
@@ -448,6 +450,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
       cancelText: "Đóng",
       confirmViewType: "compact"
     });
+
   }
 
   editPartner(data: any) {
