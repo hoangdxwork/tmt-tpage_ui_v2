@@ -20,10 +20,7 @@ import { TDSModalRef } from 'tds-ui/modal';
 
 export class ModalListProductComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
 
-  @Input() useListPrice: boolean = false;
-  @Input() isSelectProduct: boolean = false;
-
-  @Output() selectProduct = new EventEmitter<any>();
+  // @Output() selectProduct = new EventEmitter<any>();
 
   @ViewChild('basicTable', { static: false }) tableComponent?: TDSTableComponent<any>;
   @ViewChild('innerText') innerText!: ElementRef;
@@ -52,7 +49,6 @@ export class ModalListProductComponent implements OnInit, OnDestroy, AfterViewIn
 
   constructor(private modal: TDSModalRef,
     private sharedService: SharedService,
-    private cdRef : ChangeDetectorRef,
     private viewContainerRef: ViewContainerRef,
     private productIndexDBService: ProductIndexDBService,
     private commonService: CommonService,) {
@@ -93,13 +89,13 @@ export class ModalListProductComponent implements OnInit, OnDestroy, AfterViewIn
             this.indexDbStorage = res.cacheDbStorage;
 
             this.loadDataTable();
-            this.cdRef.markForCheck();
         }
     })
   }
 
   addItem(item: DataPouchDBDTO) {
-    this.selectProduct.emit(item);
+    // this.selectProduct.emit(item);
+    this.modal.destroy(item);
   }
 
   cancel(){

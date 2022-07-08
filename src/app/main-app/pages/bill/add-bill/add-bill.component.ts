@@ -1275,9 +1275,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
         });
       }
     }).catch((e: any) => {
-      // let error = e.error.message || e.error.error_description;
-      // if (error)
-      // this.message.error(error);
+     console.log(e);
     });
   }
 
@@ -1524,7 +1522,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   copyOrderLine(item: OrderLineV2, index: number) {
-    var item: OrderLineV2 = {
+    var item = {
       Id: 0,
       ProductId: item.ProductId,
       ProductUOMId: item.ProductUOMId,
@@ -1562,7 +1560,8 @@ export class AddBillComponent implements OnInit, OnDestroy {
       Account: item.Account,
       SaleLine: null,
       User: this.dataModel.User
-    }
+    } as OrderLineV2
+
 
     if (item.Id <= 0) {
       item.Id = this.idPush + 1;
@@ -1611,7 +1610,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     }
   }
 
-  pushProductToOrderlines(event: DataPouchDBDTO): any {
+  pushProductToOrderlines(event: DataPouchDBDTO): any {debugger
     let data = {
       model: {
         Discount: event.DiscountSale,
@@ -1643,7 +1642,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.fsOrderLineService.onChangeProduct(data)
       .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => { this.isLoadingProduct = false }))
-      .subscribe((res: FSOrderLines) => {
+      .subscribe((res: FSOrderLines) => {debugger
         delete res['@odata.context'];
         var item: OrderLineV2 = {
           Id: 0,

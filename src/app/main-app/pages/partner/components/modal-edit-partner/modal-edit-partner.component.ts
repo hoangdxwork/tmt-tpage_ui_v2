@@ -86,7 +86,7 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
       Supplier: [false],
       Addresses: this.fb.array([]),
       CompanyType: ['person'],
-      Street: [null],
+      Street: [null]
     })
   }
 
@@ -97,7 +97,6 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     return this._form.get("Phone")?.hasError('pattern') ?
       'Vui lòng nhập đủ 10 số, không nhập kí tự' : '';
   }
-
 
   ngOnInit(): void {
     if (this.partnerId) {

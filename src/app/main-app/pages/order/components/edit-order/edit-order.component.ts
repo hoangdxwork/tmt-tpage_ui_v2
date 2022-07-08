@@ -8,7 +8,7 @@ import { CommonService } from 'src/app/main-app/services/common.service';
 import { ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { TAuthService } from 'src/app/lib';
 import { UserInitDTO } from 'src/app/lib/dto';
-import { DataSuggestionDTO } from 'src/app/main-app/dto/address/address.dto';
+import { DataSuggestionDTO, ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SaleOnline_FacebookCommentService } from 'src/app/main-app/services/sale-online-facebook-comment.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { ProductService } from 'src/app/main-app/services/product.service';
@@ -327,6 +327,7 @@ export class EditOrderComponent implements OnInit {
         viewContainerRef: this.viewContainerRef,
         componentParams: {}
     });
+
     modal.afterClose.subscribe(result =>{
       if(TDSHelperObject.hasValue(result)) {
         let data = result[0];
@@ -351,15 +352,13 @@ export class EditOrderComponent implements OnInit {
         this.coDAmount();
       }
     })
-    // modal.componentInstance?.onLoadedProductSelect.subscribe(result => {
-    // });
   }
 
   confirmShipService(carrier: TDSSafeAny) {
     this.modal.info({
       title: 'Cảnh báo',
       content: 'Đối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
-      onOk: () => this.calculateFee(carrier),
+      onOk: () => this.calculateFee(carrier).catch((err) => { console.log(err)}),
       onCancel:()=>{},
       okText:"Đồng ý",
       cancelText:"Hủy"
@@ -402,7 +401,7 @@ export class EditOrderComponent implements OnInit {
     InitServiceHandler.initService(this.saleModel, this.shipExtraServices, this.shipServices);
     InitInfoOrderDeliveryHandler.initInfoOrderDelivery(this.saleModel, this.quickOrderModel, this.shipExtraServices, this.enableInsuranceFee);
 
-    this.calculateFee(this.saleModel.Carrier);
+    this.calculateFee(this.saleModel.Carrier).catch((err) => { console.log(err)});
   }
 
   calcFee(): any {
@@ -410,7 +409,7 @@ export class EditOrderComponent implements OnInit {
       return this.message.error(Message.Carrier.EmptyCarrier);
     }
 
-    this.calculateFee(this.saleModel.Carrier);
+    this.calculateFee(this.saleModel.Carrier).catch((err) => { console.log(err)});;
   }
 
   selectShipService(item: any) {
@@ -480,9 +479,7 @@ export class EditOrderComponent implements OnInit {
       },
       okText:"Xóa",
       cancelText:"Đóng"
-  });
-    this.calcTotal();
-    this.coDAmount();
+    });
   }
 
   calcTotal() {
@@ -534,19 +531,19 @@ export class EditOrderComponent implements OnInit {
                 return false;
               }
           }
-          
+
           PrepareSaleModelHandler.prepareSaleModel(this.saleModel, this.quickOrderModel, this.shipExtraServices);
       }
 
       this.isLoading = true;
       this.saleOnline_OrderService.update(id, model)
         .pipe(takeUntil(this.destroy$)).subscribe((res: any): any => {
-              if(this.isEnableCreateOrder) {
-                  if(!this.enableInsuranceFee) {
-                    this.saleModel.Ship_InsuranceFee = 0;
-                  }
-                  // call api tạo hóa đơn
-                  this.createFastSaleOrder(this.saleModel, type);
+            if(this.isEnableCreateOrder) {
+                if(!this.enableInsuranceFee) {
+                  this.saleModel.Ship_InsuranceFee = 0;
+                }
+                // call api tạo hóa đơn
+                this.createFastSaleOrder(this.saleModel, type);
             } else {
                 this.orderPrintService.printId(this.dataItem.Id, this.quickOrderModel);
                 this.modalRef.destroy(null);
@@ -743,6 +740,8 @@ export class EditOrderComponent implements OnInit {
                     exist.Fee = 0;
                 }
             }
+      }).catch(e => {
+        console.log(e);
       });
     }
   }
@@ -785,7 +784,6 @@ export class EditOrderComponent implements OnInit {
           }, error => {
               this.isLoading = false;
               this.message.error(error.error_description || error.message);
-              reject(error);
               this.cdRef.detectChanges();
           })
       } else {
@@ -821,10 +819,6 @@ export class EditOrderComponent implements OnInit {
       else return '#e5e7eb';
     }
     else return '#e5e7eb';
-  }
-
-  ngAfterViewInit (): void {
-    this.cdRef.detectChanges();
   }
 
   ngOnDestroy(): void {
