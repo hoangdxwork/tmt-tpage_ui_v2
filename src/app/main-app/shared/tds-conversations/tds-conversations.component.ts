@@ -255,14 +255,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       title: 'Danh sách sản phẩm',
       content: ModalListProductComponent,
       viewContainerRef: this.viewContainerRef,
-      size: 'xl',
-      componentParams: {
-        useListPrice: true,
-        isSelectProduct: true
-      }
+      size: 'xl'
     });
 
-    modal.componentInstance?.selectProduct.subscribe((res: DataPouchDBDTO) => {
+    modal.afterClose.subscribe((res: DataPouchDBDTO) => {
       if (TDSHelperObject.hasValue(res)) {
         // this.conversationOrderFacade.onAddProductOrder.emit(res);
       }

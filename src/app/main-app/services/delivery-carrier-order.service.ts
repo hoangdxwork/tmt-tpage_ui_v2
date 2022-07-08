@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable} from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
-import { TDSSafeAny } from 'tds-ui';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { BaseSevice } from './base.service';
 
 @Injectable()

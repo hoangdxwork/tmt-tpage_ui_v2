@@ -636,7 +636,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     PaymentInfo: any[];
     Search?: any;
     Partner: Partner;
-    User: User;
+    User: User | any;
     Warehouse: Warehouse;
     Company: Company;
     PriceList: PriceList;
