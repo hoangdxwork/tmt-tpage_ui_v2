@@ -23,11 +23,12 @@ export class YiDateTimeFormatPipe extends DatePipe implements PipeTransform {
 
     if (currentYear == toYear) {
         if (currentMonth == toMonth) {
-          if (currentDay == toDay) {
-              return super.transform(value, DateFormat.HHmm_FORMAT);
-          } else {
-              return super.transform(value, DateFormat.ddMMHHmm_FORMAT);
-          }
+          // if (currentDay == toDay) {
+          //     return super.transform(value, DateFormat.HHmm_FORMAT);
+          // } else {
+
+          // }
+          return super.transform(value, DateFormat.ddMMHHmm_FORMAT);
         } else {
           return super.transform(value, DateFormat.ddMMHHmm_FORMAT);
         }
