@@ -47,6 +47,8 @@ import { formatNumber } from '@angular/common';
 import { SelectShipServiceHandler } from 'src/app/main-app/commands/select-ship-service.handler';
 import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { TACheckboxChange } from 'tds-ui/tds-checkbox';
+import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
+import { InsertFromMessageState } from 'src/app/main-app/services/facebook-state/insert-frommessage.state';
 
 @Component({
     selector: 'conversation-order',
@@ -109,6 +111,8 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     private generalConfigsFacade: GeneralConfigsFacade,
     private deliveryCarrierService: DeliveryCarrierService,
     private auth: TAuthService,
+    private insertFromMessageState: InsertFromMessageState,
+    private saleOnline_OrderService: SaleOnline_OrderService,
     private partnerService: PartnerService,
     private fastSaleOrderService: FastSaleOrderService,
     private orderPrintService: OrderPrintService,
@@ -135,16 +139,16 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   onSelectOrderFromMessage() {
     this.conversationOrderFacade.onSelectOrderFromMessage$.pipe(takeUntil(this.destroy$)).subscribe(res => {
 
-        // if(res && TDSHelperString.hasValueString(res.phone) && this.partner) {
-        //     this.partner.Phone = res.phone;
-        // }
-        // if(res && TDSHelperString.hasValueString(res.address) && this.partner) {
-        //     this.partner.Street = res.address;
-        // }
-        // if(res && TDSHelperString.hasValueString(res.note) && this.partner) {
-        //     let text = (this.partner.Comment || "") + ((this.partner.Comment || "").length > 0 ? '\n' + res.note : res.note);
-        //     this.partner.Comment = text;
-        // }
+        if(res && TDSHelperString.hasValueString(res.phone) ) {
+            this.quickOrderModel.Telephone = res.phone;
+        }
+        if(res && TDSHelperString.hasValueString(res.address)) {
+            this.quickOrderModel.Address = res.address;
+        }
+        if(res && TDSHelperString.hasValueString(res.note)) {
+            let text = (this.quickOrderModel.Note || "") + ((this.quickOrderModel.Note || "").length > 0 ? '\n' + res.note : res.note);
+            this.quickOrderModel.Note = text;
+        }
     })
   }
 
@@ -493,8 +497,20 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     //   });
   }
 
-  onSaveInvoice(print:string){
+  onSave(type: string) {
+      let model = this.insertFromMessageState.prepareInsertFromMessage(this.quickOrderModel);
+      this.saleOnline_OrderService.insertFromMessage({ model: model }).subscribe((res) => {
 
+      }, error => {
+          if(TDSHelperString.hasValueString(error.error?.message)) {
+              this.message.error(`${error?.error?.message}`);
+          } else {
+              this.message.error('Đã xảy ra lỗi');
+          }
+      })
+  }
+
+  onSaveInvoice(print:string){
 
     // let billModel = this.prepareBillModel(); // Bản chất đã change this.saleModel
     // billModel.FormAction = print;

@@ -114,7 +114,7 @@ export class ConversationOrderFacade extends BaseSevice  {
                     if(obs) {
                         this.lastOrder = { ...obs };
 
-                        this.lastOrder.Details = [...this.lastOrder.Details, ...obs.Details];
+                        this.lastOrder.Details = [...obs.Details];
                         this.lastOrder.PartnerId = obs.PartnerId || obs.Partner?.Id;
                         this.lastOrder.PartnerName = obs.PartnerId || obs.Partner?.Name;
 
@@ -143,7 +143,7 @@ export class ConversationOrderFacade extends BaseSevice  {
   loadUserLogged() {
     this.auth.getUserInit().subscribe(res => {
         if(res) {
-          this.userInit = res;
+            this.userInit = res;
         }
     });
   }
@@ -285,6 +285,7 @@ export class ConversationOrderFacade extends BaseSevice  {
     x = {...order};
     x.PartnerId = order.PartnerId || order.Partner?.Id;
     x.PartnerName = order.PartnerName || order.Partner?.Name;
+    x.Name = order.Name ||  order.PartnerName || order.Partner?.Name || model.Facebook_UserName;
 
     x.UserId = order.UserId || order.User?.Id;
     x.UserName = order.UserName || order.User?.Name;
@@ -295,8 +296,10 @@ export class ConversationOrderFacade extends BaseSevice  {
     x.Telephone = order.Telephone || model.Facebook_UserPhone;
     x.Email = order.Email || model.Email;
 
+    x.Note = order.Note || model.Comment;
+
     if(TDSHelperArray.hasListValue(order.Details)) {
-        x.Details = [ ...x.Details, ...order.Details];
+        x.Details = [ ...order.Details];
     } else {
         x.Details = []
     }
@@ -322,7 +325,7 @@ export class ConversationOrderFacade extends BaseSevice  {
   loadLastOrderDraft(model: TabPartnerCvsRequestModel): Observable<any> {
     let x = {} as QuickSaleOnlineOrderModel;
 
-    x.Name = model.Name;
+    x.Name = model.Name || model.Facebook_UserName;
     x.PartnerId = model.Id;
     x.PartnerName = model.Name;
     x.Facebook_ASUserId = model.Facebook_ASUserId;
@@ -348,6 +351,8 @@ export class ConversationOrderFacade extends BaseSevice  {
         x.UserId = this.userInit?.Id;
         x.UserName = this.userInit?.Name;
     }
+
+    x.Note = model.Comment;
 
     if(TDSHelperArray.hasListValue(model.LastOrder?.Details)) {
         x.Details = [ ...model?.LastOrder.Details ];
@@ -408,7 +413,7 @@ export class ConversationOrderFacade extends BaseSevice  {
     let x = this.partner.LastOrder as QuickSaleOnlineOrderModel;
 
     x.Telephone = this.partner.Phone || model.Facebook_UserPhone;
-    x.Name = model.Name || model.Facebook_UserName;
+    x.Name = model.Name || model.Facebook_UserName || x.Partner?.Name || x.PartnerName;
 
     x.PartnerName = model.Name || model.Facebook_UserName;
     x.Facebook_UserName = x.Facebook_UserName || model.Facebook_UserName;
@@ -420,6 +425,8 @@ export class ConversationOrderFacade extends BaseSevice  {
 
     x.Telephone = x.Telephone || model.Facebook_UserPhone;
     x.Email = x.Email || model.Email;
+
+    x.Note = x.Note || model.Comment;
 
     if(TDSHelperArray.hasListValue(this.partner?.LastOrder?.Details)) {
         x.Details = [ ... this.partner.LastOrder.Details ]

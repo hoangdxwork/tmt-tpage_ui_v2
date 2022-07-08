@@ -99,7 +99,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private router: Router,
     private ngZone: NgZone,
     private cdRef: ChangeDetectorRef,
-    private conversationOrderFacade: ConversationOrderFacade,
     private viewContainerRef: ViewContainerRef,
     private partnerService: PartnerService) {
   }
@@ -748,7 +747,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     });
   }
 
-
   refreshRead() {
     this.validateData();
     this.loadMessages(this.data);
@@ -848,11 +846,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   ngAfterViewInit() {
     this.yiAutoScroll?.forceScrollDown();
   }
-
-  // ngAfterViewChecked(){
-  //   //your code to update the model
-  //   this.cdRef.detectChanges();
-  // }
 
   ngOnDestroy(): void {
     this.destroyTimer();

@@ -1,7 +1,7 @@
 import { FacebookRESTService } from './../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from './../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, Observable, Subject } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -23,7 +23,7 @@ import { TDSModalService } from 'tds-ui/modal';
   animations: [eventFadeStateTrigger, eventCollapTrigger]
 })
 
-export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
+export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
@@ -191,10 +191,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     if (this.isChanged || this.isProcessing) {
       return;
     }
+
+
     this.isChanged = true;
     (this.currentConversationItem as any) = null;
 
     this.setCurrentConversationItem(item);
+    this.cdRef.detectChanges();
   }
 
   trackByIndex(_: number, data: any): number {
@@ -410,11 +413,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
         this.loadFilterText(text);
       })
     }
-  }
-
-  ngAfterViewChecked(){
-    //your code to update the model
-    this.cdRef.detectChanges();
   }
 
   onSearch(event: any) {
