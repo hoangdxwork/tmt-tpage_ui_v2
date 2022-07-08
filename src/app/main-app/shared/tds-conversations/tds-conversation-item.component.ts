@@ -447,7 +447,6 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
         this.tdsMessage.info('Đã copy số điện thoại');
       }
     }
-
   }
 
   ngOnDestroy(): void {

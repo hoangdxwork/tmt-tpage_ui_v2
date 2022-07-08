@@ -2,10 +2,10 @@ import { EventEmitter, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tds-ui/shared/utility";
-import { ODataModelDTO, ODataModelTeamDTO } from "../dto/odata/odata.dto";
 import { PartnerTempDTO } from "../dto/partner/partner.dto";
 import { SaleOnline_OrderDTO } from "../dto/saleonlineorder/sale-online-order.dto";
 import { BaseSevice } from "./base.service";
+import { InsertFromMessageModel } from "./facebook-state/insert-frommessage.state";
 
 @Injectable({
   providedIn: 'root'
@@ -115,13 +115,13 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  insertFromMessage(data: ODataModelDTO<SaleOnline_OrderDTO>): Observable<SaleOnline_OrderDTO> {
+  insertFromMessage(data: any): Observable<InsertFromMessageModel> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertFromMessage?$expand=Details,User`,
       method: TApiMethodType.post,
     }
 
-    return this.apiService.getData<SaleOnline_OrderDTO>(api, data);
+    return this.apiService.getData<InsertFromMessageModel>(api, data);
   }
 
   insertFromPost(data: SaleOnline_OrderDTO, isIncrease: boolean = false): Observable<SaleOnline_OrderDTO> {

@@ -1,185 +1,184 @@
 import { ActivityByGroup } from './../../dto/conversation/post/comment-group.dto';
-import { Message } from './../../../lib/consts/message.const';
-import { OrderFormHandler } from './../handlers/order-form.handler';
-import { ChangeDetectorRef, EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
+import { EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
 import { Observable, Subject } from "rxjs";
-import { finalize, takeUntil } from "rxjs/operators";
+import { map, takeUntil } from "rxjs/operators";
 import { TAuthService, TCommonService, UserInitDTO } from "src/app/lib";
-import { CheckConversationData, CheckConversationDTO, ConversationLastOrderDetailDTO } from "../../dto/partner/check-conversation.dto";
+import { CheckConversationData } from "../../dto/partner/check-conversation.dto";
 import { BaseSevice } from "../base.service";
-import { ConversationService } from "../conversation/conversation.service";
 import { CRMTeamService } from "../crm-team.service";
 import { PartnerService } from "../partner.service";
 import { SharedService } from "../shared.service";
 import { SignalRConnectionService } from "../signalR/signalR-connection.service";
-import { ConversationOrderForm, ConversationOrderProductDefaultDTO } from '../../dto/coversation-order/conversation-order.dto';
+import { ConversationOrderForm } from '../../dto/coversation-order/conversation-order.dto';
 import { GeneralConfigsFacade } from "./general-config.facade";
 import { ProductDTO } from "../../dto/product/product.dto";
-import { FacebookCommentService } from "../facebook-comment.service";
-import { SaleOnline_OrderDTO, SaleOnline_Order_DetailDTO } from "../../dto/saleonlineorder/sale-online-order.dto";
-import { CheckFormHandler } from '../handlers/check-form.handler';
-import { SaleOnline_OrderService } from '../sale-online-order.service';
-import { FormGroup } from '@angular/forms';
-import { ProductTemplateV2DTO } from '../../dto/producttemplate/product-tempalte.dto';
-import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ChangeTabConversationEnum } from '../../dto/conversation/conversation.dto';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
+import { TabPartnerCvsRequestModel } from '../../dto/conversation-partner/partner-conversation-request.dto';
+import { CRMTeamDTO } from '../../dto/team/team.dto';
+import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from '../../dto/saleonlineorder/quick-saleonline-order.dto';
+import { ProductService } from '../product.service';
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
+export class ConversationOrderFacade extends BaseSevice  {
 
   prefix: string = "";
   table: string = "";
   baseRestApi: string = "";
-  private destroy$ = new Subject<void>();
-
+  private currentTeam!: CRMTeamDTO;;
   private userInit!: UserInitDTO;
-  private order!: ConversationOrderForm;
-  private productDefault!: ConversationOrderProductDefaultDTO | undefined;
 
-  public onAddProductOrder = new EventEmitter<DataPouchDBDTO>();
+  private lastOrder!: QuickSaleOnlineOrderModel;
+  private partner!: TabPartnerCvsRequestModel;
+  private productDefault!: Detail_QuickSaleOnlineOrder;
 
   // Event loading tab partner, order
   public onChangeTab$ = new EventEmitter<ChangeTabConversationEnum>();
-
   // Event Output
   public onLastOrderUpdated$: EventEmitter<any> = new EventEmitter<any>();
-  public onLastOrderCheckCvs$: EventEmitter<ConversationOrderForm> = new EventEmitter<ConversationOrderForm>();
-
+  // output dùng để đẩy dữ liệu sang conversation-order
+  public onLastOrderCheckedConversation$: EventEmitter<QuickSaleOnlineOrderModel> = new EventEmitter<QuickSaleOnlineOrderModel>();
   // TODO: Chọn làm địa chỉ, số điện thoại, ghi chú  selectOrder(type: string)
   public onSelectOrderFromMessage$: EventEmitter<any> = new EventEmitter<any>();
 
   public loadPartnerByPostComment$ = new EventEmitter<any>();
   public onOrderCheckPost$: EventEmitter<ConversationOrderForm> = new EventEmitter<ConversationOrderForm>();
 
-  constructor( private apiService: TCommonService,
+  constructor(private apiService: TCommonService,
       private message: TDSMessageService,
       private crmTeamService: CRMTeamService,
-      private service: ConversationService,
       private partnerService: PartnerService,
       private sgRConnectionService: SignalRConnectionService,
       private generalConfigsFacade: GeneralConfigsFacade,
-      private facebookCommentService: FacebookCommentService,
-      private orderFormHandler: OrderFormHandler,
-      private checkFormHandler: CheckFormHandler,
-      private saleOnline_OrderService: SaleOnline_OrderService,
       private auth: TAuthService,
+      private productService: ProductService,
       private sharedService: SharedService) {
         super(apiService);
+
         this.onInit();
   }
 
   onInit(): void {
-    //TODO: Load đơn mặc định ở tab đơn hàng
-    this.initialize();
-    //TODO: Dùng để update realtime đơn hàng
-    this.loadOrderFromSignalR();
-
-    this.loadData();
-  }
-
-  loadData() {
+    // this.loadSaleConfig();
     this.loadUserLogged();
-    this.loadSaleConfig();
+    this.loadTeam();
+
+    // TODO: Load đơn mặc định ở tab đơn hàng
+    this.initialize();
+    // TODO: Dùng để update realtime đơn hàng
+    this.loadOrderFromSignalR();
   }
 
   initialize() {
-    this.changePartner();
+    this.partnerService.onLoadOrderFromTabPartner$.subscribe((obs: TabPartnerCvsRequestModel) => {
+
+      // TODO: load dữ liệu từ coversation-parter và check dk nếu là partner mới hay cũ để mapping
+      let exits = this.partner && obs && (obs.Id == this.partner.Id || obs.Facebook_ASUserId == this.partner.Facebook_ASUserId);
+
+      if(!exits) {
+          this.partner = { ... obs };
+
+          // TODO: partner có đơn hàng gần nhất LastOrder
+          if(obs && obs?.LastOrder) {
+              this.lastOrder = this.loadLastOrder(obs);
+              this.onLastOrderCheckedConversation$.emit(this.lastOrder);
+          }
+          // TODO: Không có đơn hàng gần nhất thì sử dụng đơn hàng nháp gần nhất
+          else {
+              this.loadLastOrderDraft(obs).subscribe((res: any) => {
+                  if(res) {
+                      this.onLastOrderCheckedConversation$.emit(res);
+                  }
+              })
+          }
+      } else {
+          this.lastOrder = this.loadCurrentPartner(obs);
+          this.onLastOrderCheckedConversation$.emit(this.lastOrder);
+      }
+    });
+  }
+
+  loadOrderFromSignalR(){
+    this.sgRConnectionService._onSaleOnlineOrder$.subscribe((res: any) => {
+        if(res && (res.action == "create" || res.action == "updated")) {
+
+          if(this.partner && this.currentTeam && this.partner.Id &&
+            (this.partner.Facebook_ASUserId == res.data.facebook_ASUserId && res.data.facebook_PageId == this.currentTeam.Facebook_PageId ||
+            this.partner.Facebook_ASUserId == res.data.facebook.psId && res.data.facebook.pageId == this.currentTeam.Facebook_PageId)) {
+
+                this.partnerService.getLastOrder(this.partner.Id).subscribe((obs: any) => {
+                    if(obs) {
+                        this.lastOrder = { ...obs };
+
+                        this.lastOrder.Details = [...obs.Details];
+                        this.lastOrder.PartnerId = obs.PartnerId || obs.Partner?.Id;
+                        this.lastOrder.PartnerName = obs.PartnerId || obs.Partner?.Name;
+
+                    } else {
+                      this.lastOrder && (delete this.lastOrder.Id)
+                      this.lastOrder && (delete this.lastOrder.Code)
+                    }
+
+                    this.onLastOrderCheckedConversation$.emit(this.lastOrder);
+                })
+          }
+        }
+      }, error => {
+          console.log(`Load đơn hàng từ signalR đã xảy ra lỗi: ${error}`);
+      });
   }
 
   loadSaleConfig() {
     this.generalConfigsFacade.getSaleConfigs().subscribe(res => {
-      if(TDSHelperObject.hasValue(res?.SaleSetting)){
-        let saleSetting = res.SaleSetting;
-
-        if(TDSHelperObject.hasValue(saleSetting?.Product)) {
-          this.productDefault = this.updateProductDefault(saleSetting?.Product);
+        if(TDSHelperObject.hasValue(res.SaleSetting?.Product)) {
+            this.productDefault = this.createProductDefault(res.SaleSetting?.Product);
         }
-      }
     });
   }
 
   loadUserLogged() {
     this.auth.getUserInit().subscribe(res => {
-      this.userInit = res || {};
+        if(res) {
+            this.userInit = res;
+        }
     });
   }
 
-  updateProductDefault(productSetting: ProductDTO | undefined): ConversationOrderProductDefaultDTO | undefined {
-    if(productSetting) {
-      let result: ConversationOrderProductDefaultDTO = {
-        Note: productSetting.Note ? productSetting.Note : null,
-        Price: productSetting.Price || productSetting.PriceVariant || 0,
-        ProductCode: productSetting.DefaultCode,
-        ProductId: productSetting.Id,
-        ProductName: productSetting.Name,
-        ProductNameGet: productSetting.NameGet,
+  loadTeam() {
+    this.currentTeam = this.crmTeamService.getCurrentTeam() as any;
+  }
+
+  createProductDefault(model: ProductDTO): any {
+    let x = {
+        Note: model.Note,
+        Price: model.Price || model.PriceVariant || 0,
+        ProductCode: model.DefaultCode,
+        ProductId: model.Id,
+        ProductName: model.Name,
+        ProductNameGet: model.NameGet,
         Quantity: 1,
-        UOMId: productSetting.UOMId,
-        UOMName: productSetting.UOMName,
-      };
+        UOMId: model.UOMId,
+        UOMName: model.UOMName
+    } as Detail_QuickSaleOnlineOrder
 
-      return result;
-    }
-
-    return undefined;
-  }
-
-  loadOrderFromSignalR(){
-    this.sgRConnectionService._onSaleOnlineOrder$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-        if(res && (res.action == "create" || res.action == "updated")) {
-
-        }
-      }, error => {
-          // this.message.error('Load đơn hàng từ signalR đã xảy ra lỗi');
-          console.log(`Load đơn hàng từ signalR đã xảy ra lỗi: ${error}`);
-      });
-  }
-
-  changePartner() {
-    this.partnerService.onLoadOrderFromTabPartner$.pipe(takeUntil(this.destroy$)).subscribe((res: CheckConversationData) => {
-        // Partner có đơn hàng gần nhất LastOrder
-        if(res?.LastOrder) {
-          this.order = this.loadLastOrder(res.LastOrder, res);
-        }
-        //Không có đơn hàng gần nhất thì sử dụng order form mặc định
-        else {
-          this.order = this.loadOrderDefault(res);
-        }
-
-        this.onLastOrderCheckCvs$.emit(this.order);
-      });
-  }
-
-  checkInfoPartner(userId: string, pageId: string): Observable<any> {
-    return new Observable(observer => {
-      let model = {
-        UserId: userId,
-        PageId: pageId
-      };
-
-      this.partnerService.checkInfo(model).subscribe(res => {
-        observer.next(res);
-        observer.complete();
-      }, error => observer.error(error));
-    });
+    return x;
   }
 
   editOrderFormPost(order: TDSSafeAny) {
-    this.onChangeTab$.emit(ChangeTabConversationEnum.order);
-    this.saleOnline_OrderService.getById(order.Id)
-      .subscribe(res => {
-        let pageId = res?.Facebook_PostId.split("_")[0];
-        let psid = res?.Facebook_ASUserId || res?.Facebook_UserId;
+    // this.onChangeTab$.emit(ChangeTabConversationEnum.order);
+    // this.saleOnline_OrderService.getById(order.Id)
+    //   .subscribe(res => {
+    //     let pageId = res?.Facebook_PostId.split("_")[0];
+    //     let psid = res?.Facebook_ASUserId || res?.Facebook_UserId;
 
-        this.order = this.loadLastOrder(res);
-        this.onOrderCheckPost$.emit(this.order);
-        this.checkConversation(pageId, psid, res);
-      });
+    //     this.order = this.loadLastOrder(res);
+    //     this.onOrderCheckPost$.emit(this.order);
+    //     this.checkConversation(pageId, psid, res);
+    //   });
   }
 
   commentFormPost(data: ActivityByGroup, isCreateOrder: boolean) {
@@ -199,10 +198,10 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
       }
       else {
         this.onChangeTab$.emit(ChangeTabConversationEnum.partner);
-        this.loadPartnerByComment(data, psid, postId, currentTeam?.Id)
-          .subscribe(res => {
-            this.checkConversation(pageId, psid, data);
-          }, error => {});
+        // this.loadPartnerByComment(data, psid, postId, currentTeam?.Id)
+        //   .subscribe(res => {
+        //     this.checkConversation(pageId, psid, data);
+        //   }, error => {});
       }
     }else{
       this.message.error('Không tìm thấy thông tin page')
@@ -212,60 +211,60 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
   createOrderByComment(comment: TDSSafeAny, psid: string, pageId: string): Observable<any> {
     return new Observable(observer => {
 
-      this.checkInfoPartner(psid, pageId).subscribe(infoPartner => {
-        if(infoPartner?.Data) {
-          // Tạo order form, update theo comment
-          let formOrder = this.orderFormHandler.createOrderFormGroup();
-          this.orderFormHandler.updateFormByComment(formOrder, comment, infoPartner?.Data);
+      // this.checkInfoPartner(psid, pageId).subscribe(infoPartner => {
+      //   if(infoPartner?.Data) {
+      //     // Tạo order form, update theo comment
+      //     let formOrder = this.orderFormHandler.createOrderFormGroup();
+      //     this.orderFormHandler.updateFormByComment(formOrder, comment, infoPartner?.Data);
 
-          // Gán Facebook_Comments
-          let fbComment = this.checkFormHandler.prepareOrderComment(comment);
-          formOrder.controls.Facebook_Comments.setValue([fbComment]);
+      //     // Gán Facebook_Comments
+      //     let fbComment = this.checkFormHandler.prepareOrderComment(comment);
+      //     formOrder.controls.Facebook_Comments.setValue([fbComment]);
 
-          // Chuẩn bị model
-          let model = this.checkFormHandler.prepareOrder(formOrder);
+      //     // Chuẩn bị model
+      //     let model = this.checkFormHandler.prepareOrder(formOrder);
 
-          // Tạo đơn theo bình luận
-          this.saleOnline_OrderService.insertFromPost(model, true).subscribe((res) => {
-            this.order = this.loadLastOrder(res);
-            this.onOrderCheckPost$.emit(this.order);
-            this.message.success(Message.Order.UpdateSuccess);
+      //     // Tạo đơn theo bình luận
+      //     this.saleOnline_OrderService.insertFromPost(model, true).subscribe((res) => {
+      //       // this.order = this.loadLastOrder(res);
+      //       this.onOrderCheckPost$.emit(this.order);
+      //       this.message.success(Message.Order.UpdateSuccess);
 
-            observer.next();
-            observer.complete();
-          }, error => {
-            this.message.error(`${error?.error?.message}` || JSON.stringify(error));
-            observer.next(error);
-          });
-        }
-      });
+      //       observer.next();
+      //       observer.complete();
+      //     }, error => {
+      //       this.message.error(`${error?.error?.message}` || JSON.stringify(error));
+      //       observer.next(error);
+      //     });
+      //   }
+      // });
     });
   }
 
-  loadPartnerByComment(comment: TDSSafeAny, psid: string, postId: string, teamId: number): Observable<any> {
-    return new Observable(observer => {
+  loadPartnerByComment(comment: TDSSafeAny, psid: string, postId: string, teamId: number) {
+    // return new Observable(observer => {
 
-      this.facebookCommentService.getCustomersByFacebookId(psid, postId, teamId).subscribe(customer => {
-        if(TDSHelperArray.hasListValue(customer?.orders)) {
-          this.order = this.loadLastOrder(customer.orders[0]);
-          this.onOrderCheckPost$.emit(this.order);
+    //   this.facebookCommentService.getCustomersByFacebookId(psid, postId, teamId).subscribe(customer => {
+    //     if(TDSHelperArray.hasListValue(customer?.orders)) {
+    //       this.order = this.loadLastOrder(customer.orders[0]);
+    //       this.onOrderCheckPost$.emit(this.order);
 
-          observer.next();
-          observer.complete();
-        }
-        else {
-          let pageId = postId.split("_")[0];
+    //       observer.next();
+    //       observer.complete();
+    //     }
+    //     else {
+    //       let pageId = postId.split("_")[0];
 
-          this.checkInfoPartner(psid, pageId).subscribe(partner => {
-            this.order = this.loadOrderDefault(partner?.Data, comment);
-            this.onOrderCheckPost$.emit(this.order);
+    //       this.checkInfoPartner(psid, pageId).subscribe(partner => {
+    //         this.order = this.loadOrderDefault(partner?.Data, comment);
+    //         this.onOrderCheckPost$.emit(this.order);
 
-            observer.next();
-            observer.complete();
-          });
-        }
-      });
-    });
+    //         observer.next();
+    //         observer.complete();
+    //       });
+    //     }
+    //   });
+    // });
   }
 
   checkConversation(pageId: string, psid: string, dataComment?: any ) {
@@ -279,84 +278,183 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
       });
   }
 
-  updateOrderFormByComment(form: FormGroup, comment: any) {
-    form.reset();
-  }
+  loadLastOrder(model: TabPartnerCvsRequestModel): any {
+    let x = {} as QuickSaleOnlineOrderModel;
+    let order = model.LastOrder;
 
-  loadLastOrder(data: SaleOnline_OrderDTO, conversationData?: CheckConversationData): any {
-    const order = conversationData?.LastOrder || data;
-    const model = {} as ConversationOrderForm;
+    x = {...order};
+    x.PartnerId = order.PartnerId || order.Partner?.Id;
+    x.PartnerName = order.PartnerName || order.Partner?.Name;
+    x.Name = order.Name ||  order.PartnerName || order.Partner?.Name || model.Facebook_UserName;
 
-    model.Id = order.Id;
-    model.Code = order.Code;
-    model.LiveCampaignId = order.LiveCampaignId;
-    model.Facebook_UserId = order.Facebook_UserId;
-    model.Facebook_ASUserId = order.Facebook_ASUserId;
-    model.Facebook_UserName = TDSHelperString.hasValueString(order.Facebook_UserName) ? order.Facebook_UserName : (conversationData?.Facebook_UserName || '');
-    model.Facebook_CommentId = order.Facebook_CommentId;
-    model.Facebook_PostId = order.Facebook_PostId;
-    model.PartnerId = order.PartnerId || order.Partner?.Id;
-    model.PartnerName = order.PartnerName || order.Partner?.Name;
-    model.Name = order.Name;
-    model.Email = order.Email;
-    model.TotalAmount = order.TotalAmount;
-    model.TotalQuantity = order.TotalQuantity;
+    x.UserId = order.UserId || order.User?.Id;
+    x.UserName = order.UserName || order.User?.Name;
 
-    model.UserId = order.UserId;
-    model.Telephone = order.Telephone;
-    model.Note = order.Note;
-    model.CRMTeamId = order.CRMTeamId;
-    model.PrintCount = order.PrintCount;
-    model.Session = order.Session;
-    model.SessionIndex = order.SessionIndex;
-    model.StatusText = order.StatusText;
+    x.Facebook_ASUserId = order.Facebook_UserId || model.Facebook_ASUserId;
+    x.Facebook_UserName = order.Facebook_UserName || model.Facebook_UserName;
 
-    model.Details = this.updateDetail(order.Details);
+    x.Telephone = order.Telephone || model.Facebook_UserPhone;
+    x.Email = order.Email || model.Email;
 
-    if(order.Address){
-      model.Street = order.Address;
-      model.City = order.CityCode ? { Code: order.CityCode, Name: order.CityName } : undefined;
-      model.District = order.DistrictCode ? { Code: order.DistrictCode, Name: order.DistrictName } : undefined;
-      model.Ward = order.WardCode ? { Code: order.WardCode, Name: order.WardName } : undefined;
+    x.Note = order.Note || model.Comment;
+
+    if(TDSHelperArray.hasListValue(order.Details)) {
+        x.Details = [ ...order.Details];
+    } else {
+        x.Details = []
     }
 
-    // Nếu đơn hàng không cho địa chỉ thì gán địa chỉ partner
-    else if(conversationData?.Street) {
-      model.Street = conversationData.Street;
-      model.City = conversationData.City;
-      model.District = conversationData.District;
-      model.Ward = conversationData.Ward;
-    }
-
-    model.User = order.User ? { Id: order.User?.Id, Name: order.User?.Name } : undefined;
-
-    return model;
-  }
-
-  updateDetail(details: SaleOnline_Order_DetailDTO[]) {
-    let formDetails = [] as ConversationOrderProductDefaultDTO[];
-
-    formDetails = details.map(detail => {
-      let product: ConversationOrderProductDefaultDTO = {
-        Price: detail.Price || 0,
-        ProductCode: detail.ProductCode,
-        ProductId: detail.ProductId,
-        ProductName: detail.ProductName,
-        ProductNameGet: detail.ProductNameGet,
-        Quantity: detail.Quantity || 0,
-        UOMId: detail.UOMId || 0,
-        UOMName: detail.UOMName,
-        Note: detail.Note
+    if(TDSHelperString.hasValueString(model.Street) && !TDSHelperString.hasValueString(order.Address)) {
+      x.Address = model.Street;
+      if(model.City?.code) {
+          x.CityCode = model.City.code;
+          x.CityName = model.City.name;
       }
+      if(model.District?.code) {
+          x.DistrictCode = model.District.code;
+          x.DistrictName = model.District.name;
+      }
+      if(model.Ward?.code) {
+          x.WardCode = model.Ward.code;
+          x.WardName = model.Ward.name;
+      }
+    }
+    return x;
+  }
 
-      return product;
-    });
+  loadLastOrderDraft(model: TabPartnerCvsRequestModel): Observable<any> {
+    let x = {} as QuickSaleOnlineOrderModel;
 
-    return formDetails;
+    x.Name = model.Name || model.Facebook_UserName;
+    x.PartnerId = model.Id;
+    x.PartnerName = model.Name;
+    x.Facebook_ASUserId = model.Facebook_ASUserId;
+    x.Facebook_UserName = model.Facebook_UserName;
+    x.Telephone = model.Phone || model.Facebook_UserPhone;
+    x.Email = model.Email;
+    x.Address = model.Street || model.Facebook_UserAddress;
+
+    if(model.City?.code) {
+        x.CityCode = model.City?.code;
+        x.CityName = model.City?.name
+    }
+    if(model.District?.code) {
+        x.DistrictCode = model.District.code;
+        x.DistrictName = model.District.name;
+    }
+    if(model.Ward?.code) {
+        x.WardCode = model.Ward.code;
+        x.WardName = model.Ward.name;
+    }
+
+    if(this.userInit) {
+        x.UserId = this.userInit?.Id;
+        x.UserName = this.userInit?.Name;
+    }
+
+    x.Note = model.Comment;
+
+    if(TDSHelperArray.hasListValue(model.LastOrder?.Details)) {
+        x.Details = [ ...model?.LastOrder.Details ];
+    } else {
+        x.Details = [];
+    }
+
+    return new Observable(obs => {
+
+      if(TDSHelperString.hasValueString(model.page_id) && TDSHelperString.hasValueString(model.psid)) {
+
+        let data = {
+            UserId: model.page_id,
+            PageId: model.psid
+        };
+
+        this.partnerService.checkInfo(data).subscribe((res: any) => {
+            if(res?.Success && res?.Data?.Id) {
+
+                  if(TDSHelperString.hasValueString(res.Data.Name)) {
+                      x.PartnerName = res.Data.Name;
+                      x.Name = res.Data.Name;
+                  }
+
+                  x.Email = res.Data.Email;
+                  x.PartnerId = res.Data.Id;
+
+                  if(TDSHelperString.hasValueString(res.Data.Street)) {
+                      x.Address = res.Data.Street;
+                  }
+                  if(TDSHelperString.hasValueString(res.Data.Phone)) {
+                      x.Telephone = res.Data.Phone;
+                  }
+
+                  obs.next(x);
+                  obs.complete();
+            } else {
+                obs.next(x);
+                obs.complete();
+            }
+          }, error => {
+              obs.next(x);
+              obs.complete();
+        })
+      }
+    })
+  }
+
+  loadCurrentPartner(model: TabPartnerCvsRequestModel): any {
+
+    this.partner = { ... model} as any;
+    this.partner.LastOrder = { ... model.LastOrder };
+
+    if(TDSHelperArray.hasListValue(model.LastOrder?.Details)) {
+        this.partner.LastOrder.Details = [...model.LastOrder.Details];
+    }
+
+    let x = this.partner.LastOrder as QuickSaleOnlineOrderModel;
+
+    x.Telephone = this.partner.Phone || model.Facebook_UserPhone;
+    x.Name = model.Name || model.Facebook_UserName || x.Partner?.Name || x.PartnerName;
+
+    x.PartnerName = model.Name || model.Facebook_UserName;
+    x.Facebook_UserName = x.Facebook_UserName || model.Facebook_UserName;
+
+    x.UserId = x.UserId || x.User?.Id;
+    x.UserName = x.UserName || x.User?.Name;
+    x.Facebook_ASUserId = x.Facebook_UserId || model.Facebook_ASUserId;
+    x.Facebook_UserName = x.Facebook_UserName || model.Facebook_UserName;
+
+    x.Telephone = x.Telephone || model.Facebook_UserPhone;
+    x.Email = x.Email || model.Email;
+
+    x.Note = x.Note || model.Comment;
+
+    if(TDSHelperArray.hasListValue(this.partner?.LastOrder?.Details)) {
+        x.Details = [ ... this.partner.LastOrder.Details ]
+    } else {
+        x.Details = [];
+    }
+
+    if(TDSHelperString.hasValueString(model.Street) && !TDSHelperString.hasValueString(x.Address)) {
+      x.Address = model.Street;
+      if(model.City?.code) {
+          x.CityCode = model.City.code;
+          x.CityName = model.City.name;
+      }
+      if(model.District?.code) {
+          x.DistrictCode = model.District.code;
+          x.DistrictName = model.District.name;
+      }
+      if(model.Ward?.code) {
+          x.WardCode = model.Ward.code;
+          x.WardName = model.Ward.name;
+      }
+    }
+
+    return x;
   }
 
   loadOrderDefault(data: CheckConversationData, dataComment?: TDSSafeAny){
-    const model = this.orderDefault() as ConversationOrderForm;
+    const model =  {} as any; //this.orderDefault() as ConversationOrderForm;
 
     model.Name = data.Name || "";
     model.PartnerName = data.Name || "";
@@ -384,58 +482,4 @@ export class ConversationOrderFacade extends BaseSevice implements OnDestroy {
 
     return model;
   }
-
-  orderDefault() {
-    let result: ConversationOrderForm = {
-        Id: undefined,
-        PartnerName: "",
-        Facebook_ASUserId: "",
-        Facebook_UserId: "",
-        Facebook_UserName: "",
-        Facebook_CommentId: "",
-        Facebook_PostId: "",
-        LiveCampaignId: "",
-        Name: "",
-        Code: "",
-        // StatusText: "",
-        Telephone: "",
-        SessionIndex: 0,
-        Session: 0,
-        PrintCount: 0,
-        PartnerId: undefined,
-        CRMTeamId: undefined,
-        AmountUntaxed: 0,
-        AmountTax: 0,
-        TotalAmount: 0,
-        TotalAmountBill: 0,
-        TotalQuantity: 0,
-        DecreaseAmount: 0,
-        PaymentAmount: 0,
-        DiscountAmount: 0,
-        Discount: 0,
-        Tax: {},
-        Email: "",
-        Note: "",
-        Street: "",
-
-        City: undefined,
-        District: undefined,
-        Ward: undefined,
-        Carrier: undefined,
-        User: undefined,
-        UserId: undefined,
-        StatusText: "",
-
-        Details: [],
-        // tempPartner: []
-    };
-
-    return result;
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
 }

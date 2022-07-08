@@ -61,16 +61,15 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
       Email: ["", [Validators.required, Validators.email], this.userRestHandler.validateExitEmail(this.userId).bind(this)],
       PhoneNumber: [null, [Validators.required]],
       Active: [false],
-      // Password: ["", [Validators.required, Validators.minLength(6)]],
-      // ConfirmPassword: ["", [Validators.required]],
       Roles: [null, [Validators.required]]
     });
   }
 
   loadUserLogged() {
     this.auth.getUserInit().subscribe(res => {
-      console.log(res);
-      this.userInit = res || {};
+        if(res) {
+            this.userInit = res || {};
+        }
     });
   }
 

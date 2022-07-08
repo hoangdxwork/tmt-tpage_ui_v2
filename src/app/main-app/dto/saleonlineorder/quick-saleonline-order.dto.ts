@@ -117,8 +117,8 @@ export interface User {
 }
 
 export interface QuickSaleOnlineOrderModel {
-  Id: string;
-  Code: string;
+  Id?: string;
+  Code?: string;
   Facebook_UserId?: any;
   Facebook_PostId: string;
   Facebook_ASUserId: string;
@@ -182,7 +182,7 @@ export interface QuickSaleOnlineOrderModel {
   CompanyName: string;
   FormAction?: any;
   MessageCount: number;
-  Details: Detail_QuickSaleOnlineOrder[];
+  Details: Detail_QuickSaleOnlineOrder[] | any[];
   Partner: Partner;
   User: User | any;
 }

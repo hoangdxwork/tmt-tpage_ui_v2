@@ -44,7 +44,7 @@ export abstract class PrepareSaleModelHandler {
       }
 
       // Gán id của đơn hàng
-      saleModel.SaleOnlineIds = [quickOrderModel.Id];
+      saleModel.SaleOnlineIds = [quickOrderModel.Id as any];
       saleModel.OrderLines = [];
 
       quickOrderModel.Details.map(x => {

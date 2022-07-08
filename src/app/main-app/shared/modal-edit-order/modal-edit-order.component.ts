@@ -174,7 +174,7 @@ export class ModalEditOrderComponent implements OnInit {
 
   loadUserInfo() {
     this.auth.getUserInit().subscribe(res => {
-      this.userInit = res || {};
+      // this.userInit = res || {};
 
       if(this.userInit?.Company?.Id) {
         this.loadInventoryWarehouseId(this.userInit?.Company?.Id);
@@ -455,15 +455,15 @@ export class ModalEditOrderComponent implements OnInit {
 
   onSelectShipServices(event: any) {
     !this.shipExtraServices && (this.shipExtraServices = []);
-    this.carrierHandler.selectShipService(event, this.defaultBill, this.shipExtraServices);
+    // this.carrierHandler.selectShipService(event, this.defaultBill, this.shipExtraServices);
 
     if (this.defaultBill.Carrier?.DeliveryType === 'GHN') {
-      this.onUpdateInsuranceFee('16').subscribe(res => {});
+      this.onUpdateInsuranceFee('16')
     }
   }
 
-  onUpdateInsuranceFee(serviceId: any): Observable<any> {
-    return this.carrierHandler.onUpdateInsuranceFee(serviceId, this.defaultBill, this._form, this.shipExtraServices);
+  onUpdateInsuranceFee(serviceId: any) {
+    // return this.carrierHandler.onUpdateInsuranceFee(serviceId, this.defaultBill, this._form, this.shipExtraServices);
   }
 
   existDeliveryTypes(deliveryType: string) {

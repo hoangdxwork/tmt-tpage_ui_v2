@@ -65,8 +65,8 @@ export interface SaleSettingsDTO {
   GroupSaleLayout: boolean;
   DeliveryCarrierId?: number;
   DeliveryCarrier?: DeliveryCarrierDTO;
-  ProductId?: number;
-  Product?: ProductDTO;
+  ProductId: number;
+  Product: ProductDTO;
   GroupSaleOnlineNote?: boolean;
   GroupFastSaleReceiver?: boolean;
   TaxId?: number;

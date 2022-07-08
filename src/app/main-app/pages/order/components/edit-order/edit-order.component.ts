@@ -5,10 +5,10 @@ import { Ship_ExtrasServiceModel } from './../../../../commands/dto-handler/ship
 import { DeliveryCarrierDTOV2 } from './../../../../dto/delivery-carrier.dto';
 import { FilterObjDTO, OdataProductService } from './../../../../services/mock-odata/odata-product.service';
 import { CommonService } from 'src/app/main-app/services/common.service';
-import { AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { TAuthService } from 'src/app/lib';
 import { UserInitDTO } from 'src/app/lib/dto';
-import { DataSuggestionDTO, ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
+import { DataSuggestionDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SaleOnline_FacebookCommentService } from 'src/app/main-app/services/sale-online-facebook-comment.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { ProductService } from 'src/app/main-app/services/product.service';
@@ -52,7 +52,7 @@ import { PrepareSaleModelHandler } from 'src/app/main-app/commands/prepare-salem
   templateUrl: './edit-order.component.html'
 })
 
-export class EditOrderComponent implements OnInit, AfterViewInit {
+export class EditOrderComponent implements OnInit {
 
   @Input() dataItem!: SaleOnline_Order_V2DTO;
 
@@ -330,21 +330,22 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
     modal.afterClose.subscribe(result =>{
       if(TDSHelperObject.hasValue(result)) {
         let data = result[0];
-        let item = {
-          Quantity: 1,
-          Price: data.ListPrice,
-          ProductId: data.Id,
-          ProductName: data.Name,
-          ProductNameGet: data.NameGet,
-          ProductCode: data.DefaultCode,
-          UOMId: data.UOMId,
-          UOMName: data.UOMName,
-          Note: null,
-          Factor: 1,
-          OrderId: this.dataItem.Id,
-          Priority: 0,
-          ImageUrl: result.ImageUrl,
-        } as  Detail_QuickSaleOnlineOrder
+          let item = {
+              Quantity: 1,
+              Price: data.ListPrice,
+              ProductId: data.Id,
+              ProductName: data.Name,
+              ProductNameGet: data.NameGet,
+              ProductCode: data.DefaultCode,
+              UOMId: data.UOMId,
+              UOMName: data.UOMName,
+              Note: null,
+              Factor: 1,
+              OrderId: this.dataItem.Id,
+              Priority: 0,
+              ImageUrl: result.ImageUrl,
+          } as Detail_QuickSaleOnlineOrder;
+
         this.quickOrderModel.Details.push(item);
         this.calcTotal();
         this.coDAmount();
@@ -622,10 +623,12 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
 
   loadUserInfo() {
     this.auth.getUserInit().pipe(takeUntil(this.destroy$)).subscribe(res => {
+       if(res) {
         this.userInit = res || {};
         if(this.userInit?.Company?.Id) {
             this.loadInventoryWarehouseId(this.userInit?.Company?.Id);
         }
+       }
     })
   }
 

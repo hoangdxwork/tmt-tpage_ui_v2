@@ -204,7 +204,7 @@ export class CarrierHandler {
               // Phí ship đối tác
               saleModel.CustomerDeliveryPrice = res.TotalFee;
               if(TDSHelperArray.hasListValue(res.Services)) {
-                this.selectShipService(res.Services[0], saleModel, shipExtraServices);
+                // this.selectShipService(res.Services[0], saleModel, shipExtraServices);
               }
 
               observer.next(res);
@@ -332,148 +332,148 @@ export class CarrierHandler {
   }
 
   // Dịch vụ
-  selectShipService(shipService: any, saleModel: any, shipExtraServices: any[]) {
-    if(shipService) {
-      saleModel.Ship_ServiceId = shipService.ServiceId;
-      saleModel.Ship_ServiceName = shipService.ServiceName;
-      saleModel.CustomerDeliveryPrice = shipService.TotalFee;
-    }
+  // selectShipService(shipService: any, saleModel: any, shipExtraServices: any[]) {
+  //   if(shipService) {
+  //     saleModel.Ship_ServiceId = shipService.ServiceId;
+  //     saleModel.Ship_ServiceName = shipService.ServiceName;
+  //     saleModel.CustomerDeliveryPrice = shipService.TotalFee;
+  //   }
 
-    let oldShipExtraServices = shipExtraServices.map(x => ({...x}));
+  //   let oldShipExtraServices = shipExtraServices.map(x => ({...x}));
 
-    if(shipService && TDSHelperArray.hasListValue(shipService.Extras)) {
-      shipExtraServices.length = 0;
+  //   if(shipService && TDSHelperArray.hasListValue(shipService.Extras)) {
+  //     shipExtraServices.length = 0;
 
-      shipService.Extras.forEach((item: any) => {
-        shipExtraServices.push(item);
-      });
+  //     shipService.Extras.forEach((item: any) => {
+  //       shipExtraServices.push(item);
+  //     });
 
-      let listServiceTemp: any[] = [];
+  //     let listServiceTemp: any[] = [];
 
-      oldShipExtraServices.forEach(old => {
-        let exist = shipExtraServices.filter(s => s.ServiceId === old.ServiceId)[0];
+  //     oldShipExtraServices.forEach(old => {
+  //       let exist = shipExtraServices.filter(s => s.ServiceId === old.ServiceId)[0];
 
-        if(exist) {
-          exist.IsSelected = old.IsSelected;
-          if (exist.ServiceId == 'XMG' && saleModel.Carrier.DeliveryType == 'ViettelPost' && exist.IsSelected == true) {
-            exist.ExtraMoney = ( saleModel.Ship_Extras &&
-              saleModel.Ship_Extras.IsCollectMoneyGoods &&
-              saleModel.Ship_Extras.CollectMoneyGoods) ?
-              saleModel.Ship_Extras.CollectMoneyGoods :
-              saleModel.CustomerDeliveryPrice;
-          }else {
-            listServiceTemp.push(old);
-          }
-        }
-      });
+  //       if(exist) {
+  //         exist.IsSelected = old.IsSelected;
+  //         if (exist.ServiceId == 'XMG' && saleModel.Carrier.DeliveryType == 'ViettelPost' && exist.IsSelected == true) {
+  //           exist.ExtraMoney = ( saleModel.Ship_Extras &&
+  //             saleModel.Ship_Extras.IsCollectMoneyGoods &&
+  //             saleModel.Ship_Extras.CollectMoneyGoods) ?
+  //             saleModel.Ship_Extras.CollectMoneyGoods :
+  //             saleModel.CustomerDeliveryPrice;
+  //         }else {
+  //           listServiceTemp.push(old);
+  //         }
+  //       }
+  //     });
 
-      shipExtraServices = [...shipExtraServices, ...listServiceTemp];
-    }
-    else {
-      shipExtraServices.length = 0;
-    }
-  }
+  //     shipExtraServices = [...shipExtraServices, ...listServiceTemp];
+  //   }
+  //   else {
+  //     shipExtraServices.length = 0;
+  //   }
+  // }
 
   // Cập nhật giá dịch vụ giao hàng
-  onUpdateInsuranceFee(serviceId: any, saleModel: any, orderForm: any, shipExtraServices: Array<any>): Observable<any> {
-    return Observable.create((observer: TDSSafeAny) => {
-      let carrier = saleModel.Carrier;
-      this.calculateFee(carrier, saleModel, orderForm, shipExtraServices)
-      .subscribe((res: any) => {
-        if (res.Costs && res.Costs.length > 0) {
-          res.Costs.map((x: TDSSafeAny) => {
-            let exist = shipExtraServices.filter(s => s.ServiceId === x.ServiceId)[0];
-            if (exist) {
-              exist.Fee = x.TotalFee;
-            }
-          });
-        } else {
-          let exist = shipExtraServices.filter(s => s.ServiceId === serviceId)[0];
-          if (exist) {
-            exist.Fee = 0;
-          }
-        }
+  // onUpdateInsuranceFee(serviceId: any, saleModel: any, orderForm: any, shipExtraServices: Array<any>): Observable<any> {
+  //   return Observable.create((observer: TDSSafeAny) => {
+  //     let carrier = saleModel.Carrier;
+  //     this.calculateFee(carrier, saleModel, orderForm, shipExtraServices)
+  //     .subscribe((res: any) => {
+  //       if (res.Costs && res.Costs.length > 0) {
+  //         res.Costs.map((x: TDSSafeAny) => {
+  //           let exist = shipExtraServices.filter(s => s.ServiceId === x.ServiceId)[0];
+  //           if (exist) {
+  //             exist.Fee = x.TotalFee;
+  //           }
+  //         });
+  //       } else {
+  //         let exist = shipExtraServices.filter(s => s.ServiceId === serviceId)[0];
+  //         if (exist) {
+  //           exist.Fee = 0;
+  //         }
+  //       }
 
-        observer.next();
-        observer.complete();
+  //       observer.next();
+  //       observer.complete();
 
-      }, error => {
-        observer.error();
-      });
-    });
-  }
+  //     }, error => {
+  //       observer.error();
+  //     });
+  //   });
+  // }
 
   // Dịch vụ bổ xung
-  onCheckExtraService(extrasShip: any, shipServices: any[], saleModel: any, orderForm: any, shipExtraServices: Array<any>): Observable<any> {
-    return new Observable(observer => {
-      let enableInsuranceFee: TDSSafeAny = null;
+  // onCheckExtraService(extrasShip: any, shipServices: any[], saleModel: any, orderForm: any, shipExtraServices: Array<any>): Observable<any> {
+  //   return new Observable(observer => {
+  //     let enableInsuranceFee: TDSSafeAny = null;
 
-      if (extrasShip.ServiceId === "16" || extrasShip.ServiceId === "GBH" || extrasShip.ServiceId === "OrderAmountEvaluation") {
-        enableInsuranceFee = extrasShip.IsSelected;
+  //     if (extrasShip.ServiceId === "16" || extrasShip.ServiceId === "GBH" || extrasShip.ServiceId === "OrderAmountEvaluation") {
+  //       enableInsuranceFee = extrasShip.IsSelected;
 
-        saleModel.Ship_InsuranceFee = saleModel.Ship_Extras.InsuranceFee || saleModel.AmountTotal;
+  //       saleModel.Ship_InsuranceFee = saleModel.Ship_Extras.InsuranceFee || saleModel.AmountTotal;
 
-        this.onUpdateInsuranceFee(extrasShip.ServiceId, saleModel, orderForm, shipExtraServices).subscribe(
-          res => {
-            observer.next(enableInsuranceFee);
-            observer.complete();
-          },
-          error => {
-            extrasShip.IsSelected = !extrasShip.IsSelected;
-            enableInsuranceFee = extrasShip.IsSelected;
+  //       this.onUpdateInsuranceFee(extrasShip.ServiceId, saleModel, orderForm, shipExtraServices).subscribe(
+  //         res => {
+  //           observer.next(enableInsuranceFee);
+  //           observer.complete();
+  //         },
+  //         error => {
+  //           extrasShip.IsSelected = !extrasShip.IsSelected;
+  //           enableInsuranceFee = extrasShip.IsSelected;
 
-            observer.next(enableInsuranceFee);
-            observer.complete();
-          });
+  //           observer.next(enableInsuranceFee);
+  //           observer.complete();
+  //         });
 
-      } else if (saleModel.Carrier.DeliveryType === "EMS") {
+  //     } else if (saleModel.Carrier.DeliveryType === "EMS") {
 
-        this.onUpdateInsuranceFee(extrasShip.ServiceId, saleModel, orderForm, shipExtraServices).subscribe(res => {
-          observer.next(enableInsuranceFee);
-          observer.complete();
-        }, error =>{
-          observer.next(enableInsuranceFee);
-          observer.complete();
-        });
+  //       this.onUpdateInsuranceFee(extrasShip.ServiceId, saleModel, orderForm, shipExtraServices).subscribe(res => {
+  //         observer.next(enableInsuranceFee);
+  //         observer.complete();
+  //       }, error =>{
+  //         observer.next(enableInsuranceFee);
+  //         observer.complete();
+  //       });
 
-      } else if (saleModel.Carrier.DeliveryType === "NinjaVan") {
-        saleModel.Ship_InsuranceFee = saleModel.Ship_Extras.InsuranceFee || saleModel.AmountTotal;
-        enableInsuranceFee = extrasShip.IsSelected;
+  //     } else if (saleModel.Carrier.DeliveryType === "NinjaVan") {
+  //       saleModel.Ship_InsuranceFee = saleModel.Ship_Extras.InsuranceFee || saleModel.AmountTotal;
+  //       enableInsuranceFee = extrasShip.IsSelected;
 
-        if (!extrasShip.IsSelected) {
-          saleModel.Ship_InsuranceFee = 0;
-        }
+  //       if (!extrasShip.IsSelected) {
+  //         saleModel.Ship_InsuranceFee = 0;
+  //       }
 
-        observer.next(enableInsuranceFee);
-        observer.complete();
-      } else {
-        var service = shipServices.filter(x => x.ServiceId === saleModel.Ship_ServiceId)[0];
-        let totalFee: number = 0;
+  //       observer.next(enableInsuranceFee);
+  //       observer.complete();
+  //     } else {
+  //       var service = shipServices.filter(x => x.ServiceId === saleModel.Ship_ServiceId)[0];
+  //       let totalFee: number = 0;
 
-        if (service) {
-          service.TotalFee;
+  //       if (service) {
+  //         service.TotalFee;
 
-          if (shipExtraServices) {
-            shipExtraServices.map(x => {
-              if (x.IsSelected) {
-                totalFee += x.Fee;
-              }
-            });
-          }
+  //         if (shipExtraServices) {
+  //           shipExtraServices.map(x => {
+  //             if (x.IsSelected) {
+  //               totalFee += x.Fee;
+  //             }
+  //           });
+  //         }
 
-          saleModel.CustomerDeliveryPrice += totalFee;
-        }
+  //         saleModel.CustomerDeliveryPrice += totalFee;
+  //       }
 
-        if (extrasShip.ServiceId === "XMG" && saleModel.Carrier.DeliveryType === "ViettelPost" && extrasShip.IsSelected == true) {
-          extrasShip.ExtraMoney = (saleModel.Ship_Extras && saleModel.Ship_Extras.IsCollectMoneyGoods && saleModel.Ship_Extras.CollectMoneyGoods)
-          ? saleModel.Ship_Extras.CollectMoneyGoods : totalFee || saleModel.CustomerDeliveryPrice;
-        }
+  //       if (extrasShip.ServiceId === "XMG" && saleModel.Carrier.DeliveryType === "ViettelPost" && extrasShip.IsSelected == true) {
+  //         extrasShip.ExtraMoney = (saleModel.Ship_Extras && saleModel.Ship_Extras.IsCollectMoneyGoods && saleModel.Ship_Extras.CollectMoneyGoods)
+  //         ? saleModel.Ship_Extras.CollectMoneyGoods : totalFee || saleModel.CustomerDeliveryPrice;
+  //       }
 
-        observer.next(enableInsuranceFee);
-        observer.complete();
-      }
+  //       observer.next(enableInsuranceFee);
+  //       observer.complete();
+  //     }
 
-    });
+  //   });
 
-  }
+  // }
 }

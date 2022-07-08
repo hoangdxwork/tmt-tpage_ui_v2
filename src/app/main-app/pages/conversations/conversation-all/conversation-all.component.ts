@@ -1,7 +1,7 @@
 import { FacebookRESTService } from './../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from './../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, Observable, Subject } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -23,7 +23,7 @@ import { TDSModalService } from 'tds-ui/modal';
   animations: [eventFadeStateTrigger, eventCollapTrigger]
 })
 
-export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
+export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
@@ -37,7 +37,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   psid!: string;
   currentConversationItem!: ConversationMatchingItem;
   isFastSend: boolean = false;
-  currentOrderCode!: string | undefined;
   checked: boolean = false;
   isOpenCollapCheck: boolean = false;
   isSort: boolean = false;
@@ -192,10 +191,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     if (this.isChanged || this.isProcessing) {
       return;
     }
+
+
     this.isChanged = true;
     (this.currentConversationItem as any) = null;
 
     this.setCurrentConversationItem(item);
+    this.cdRef.detectChanges();
   }
 
   trackByIndex(_: number, data: any): number {
@@ -273,10 +275,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   fetchLiveConversations(team: CRMTeamDTO): void {
     this.fbGraphService.api(`me/conversations?fields=id,link,participants,senders&access_token=${team.Facebook_PageToken}`)
       .subscribe();
-  }
-
-  changeOrderId(orderCode: string | undefined) {
-    this.currentOrderCode = orderCode;
   }
 
   setCheck(){
@@ -366,10 +364,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.conversationDataFacade.checkAllSendMessage(this.currentTeam.Facebook_PageId, this.type, this.isCheckedAll);
   }
 
-  onTabOrder(event: boolean) {
-    event && (this.currentOrderTab = 1);
-  }
-
   onSubmitFilter(data: any) {
     this.filterValue = data;
 
@@ -421,30 +415,25 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     }
   }
 
-  ngAfterViewChecked(){
-    //your code to update the model
-    this.cdRef.detectChanges();
-  }
-
   onSearch(event: any) {
-    if(event) {
-       let text = event.target.value;
-       this.loadFilterText(text);
-    }
-    event.preventDefault();
-    event.stopImmediatePropagation();
+      if(event) {
+        let text = event.target.value;
+        this.loadFilterText(text);
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
   }
 
   loadFilterText(text: string) {
     if(TDSHelperString.hasValueString(text)) {
-      let query = this.conversationDataFacade.createQuery(this.currentTeam.Facebook_PageId, this.type) as any;
-      query['keyword'] = text;
-      this.queryFilter = query;
+        let query = this.conversationDataFacade.createQuery(this.currentTeam.Facebook_PageId, this.type) as any;
+        query['keyword'] = text;
+        this.queryFilter = query;
 
-      this.makeDataSource(query);
+        this.makeDataSource(query);
     } else {
-      (this.innerText.nativeElement.value as any) = null;
-      this.makeDataSource({});
+        (this.innerText.nativeElement.value as any) = null;
+        this.makeDataSource({});
     }
   }
 

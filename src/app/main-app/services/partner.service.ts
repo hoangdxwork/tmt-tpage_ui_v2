@@ -213,6 +213,16 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<CheckInfoPartnerDTO>(api, data);
   }
 
+  getLastOrder(partnerId: number): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/rest/v1.0/partner/${partnerId}/lastorder`,
+      method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<CheckInfoPartnerDTO>(api, null);
+  }
+
+
   getPartnersByTimestamp(teamId: any, timestamp: any): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/getfacebookdictionarybytimestamp?teamId=${teamId}&timestamp=${timestamp}`,

@@ -35,8 +35,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   @Input() data!: ConversationMatchingItem; // dữ liệu nhận từ conversation-all
   @Input() team!: CRMTeamDTO;
   @Input() type!: string;
-  @Output() onTabOrder = new EventEmitter<boolean>(); // sự kiện đổi tab
-
 
   dataModel!: ConversationMatchingItem; // dùng gán lại this.data input
   objRevenue!: ResRevenueCustomerDTO;
@@ -96,7 +94,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     // TODO: update partner từ conversation realtime signalR
     this.loadUpdateInfoByConversation();
 
-    // TODO: update partner từ conversation item
+    // TODO: Chọn làm địa chỉ, số điện thoại, ghi chú  selectOrder(type: string)
     this.onSelectOrderFromMessage();
 
     this.loadPartnerStatus();
@@ -147,7 +145,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
                 x.Phone = x.Phone || this.dataModel?.phone;
                 x.Street = x.Street || this.dataModel?.address;
 
+                // TODO: 2 field gán thêm để mapping qua conversation-order, xem cmt dto
+                x.page_id = pageId;
+                x.psid = psid;
+
                 this.partner = {...x};
+                this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);
             }
         }, error => {
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
@@ -417,7 +420,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           }
 
           // cập nhật dữ liệu khách hàng sang form conversation-order
-          this.partnerService.onLoadOrderFromTabPartner$.emit(res);
+          // this.partnerService.onLoadOrderFromTabPartner$.emit(res);
           this.isEditPartner = false;
 
       }, error => {
@@ -442,10 +445,6 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
         Ward: this.partner?.Ward
     }
     return model;
-  }
-
-  createOrder() {
-    this.onTabOrder.emit(true);
   }
 
   editBill(data:TDSSafeAny){

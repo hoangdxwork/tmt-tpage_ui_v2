@@ -443,19 +443,19 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   onSelectShipService(shipService: TDSSafeAny) {
-    this.isLoadingCarrier = true;
+    // this.isLoadingCarrier = true;
 
-    !this.shipExtraServices && (this.shipExtraServices = []);
-    this.carrierHandler.selectShipService(shipService, this.saleModel, this.shipExtraServices);
+    // !this.shipExtraServices && (this.shipExtraServices = []);
+    // this.carrierHandler.selectShipService(shipService, this.saleModel, this.shipExtraServices);
 
-    if (this.saleModel.Carrier?.DeliveryType === 'GHN') {
-      this.onUpdateInsuranceFee('16')
-        .pipe((finalize(() => this.isLoadingCarrier = false)))
-        .subscribe(res => {});
-    }
-    else {
-      this.isLoadingCarrier = false;
-    }
+    // if (this.saleModel.Carrier?.DeliveryType === 'GHN') {
+    //   this.onUpdateInsuranceFee('16')
+    //     .pipe((finalize(() => this.isLoadingCarrier = false)))
+    //     .subscribe(res => {});
+    // }
+    // else {
+    //   this.isLoadingCarrier = false;
+    // }
   }
 
   calcFee() {
@@ -467,17 +467,17 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
     this.calculateFee(this.saleModel.Carrier);
   }
 
-  onUpdateInsuranceFee(serviceId: any): Observable<any> {
-    return this.carrierHandler.onUpdateInsuranceFee(serviceId, this.saleModel, this.orderForm, this.shipExtraServices);
+  onUpdateInsuranceFee(serviceId: any) {
+    // return this.carrierHandler.onUpdateInsuranceFee(serviceId, this.saleModel, this.orderForm, this.shipExtraServices);
   }
 
   onChangeExtraService(extra: TDSSafeAny) {
-    this.isLoadingCarrier = true;
-    this.carrierHandler.onCheckExtraService(extra, this.lstShipServices, this.saleModel, this.orderForm, this.shipExtraServices)
-      .pipe(finalize(() => this.isLoadingCarrier = false))
-      .subscribe(res => {
-        if(res != null)  this.isEnableInsuranceFee = res;
-      });
+    // this.isLoadingCarrier = true;
+    // this.carrierHandler.onCheckExtraService(extra, this.lstShipServices, this.saleModel, this.orderForm, this.shipExtraServices)
+    //   .pipe(finalize(() => this.isLoadingCarrier = false))
+    //   .subscribe(res => {
+    //     if(res != null)  this.isEnableInsuranceFee = res;
+    //   });
   }
 
   startEdit(id: string): void {
