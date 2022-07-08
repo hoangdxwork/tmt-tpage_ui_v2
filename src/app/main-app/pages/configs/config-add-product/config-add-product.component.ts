@@ -1,3 +1,5 @@
+import { TpageAddCategoryComponent } from './../../../shared/tpage-add-category/tpage-add-category.component';
+import { ProductCategoryService } from './../../../services/product-category.service';
 import { WallPicturesDTO } from './../../../dto/attachment/wall-pictures.dto';
 import { Message } from './../../../../lib/consts/message.const';
 import { CreateVariantsModalComponent } from '../components/create-variants-modal/create-variants-modal.component';
@@ -5,12 +7,10 @@ import { ConfigCateg, ConfigUOMPO, ConfigUOM, ConfigAttributeLine, ConfigSuggest
 import { ConfigUOMTypeDTO, ConfigOriginCountryDTO } from './../../../dto/configs/product/config-UOM-type.dto';
 import { ConfigProductVariant } from '../../../dto/configs/product/config-product-default.dto';
 import { ConfigAddAttributeProductModalComponent } from '../components/config-attribute-modal/config-attribute-modal.component';
-import { ConfigAddCategoryModalComponent } from './../components/config-add-category-modal/config-add-category-modal.component';
 import { ProductTemplateOUMLineService } from './../../../services/product-template-uom-line.service';
 import { ProductTemplateService } from './../../../services/product-template.service';
 import { OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { ProductService } from 'src/app/main-app/services/product.service';
 import { ConfigAddOriginCountryModalComponent } from '../components/config-add-origin-country-modal/config-add-origin-country-modal.component';
 import { ConfigAddUOMModalComponent } from '../components/config-add-UOM-modal/config-add-UOM-modal.component';
 import { takeUntil, finalize } from 'rxjs/operators';
@@ -69,7 +69,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private productService: ProductService,
+    private productCategoryService: ProductCategoryService,
     private productTemplateService: ProductTemplateService,
     private productTemplateOUMLine: ProductTemplateOUMLineService) {
     this.createForm();
@@ -185,7 +185,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   }
 
   loadProductCategory() {
-    this.productService.getProductCategory().pipe(takeUntil(this.destroy$)).subscribe(
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe(
       (res: TDSSafeAny) => {
         this.categoryList = [...res.value];
       }, error => {
@@ -400,7 +400,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   addCategory() {
     const modal = this.modalService.create({
       title: 'Thêm nhóm sản phẩm',
-      content: ConfigAddCategoryModalComponent,
+      content: TpageAddCategoryComponent,
       size: "lg",
       viewContainerRef: this.viewContainerRef
     });

@@ -36,6 +36,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   public readonly lstProductType = ProductType;
   fileList: TDSUploadFile[] = [];
+
   private destroy$ = new Subject<void>();
 
   constructor(private sharedService: SharedService,
@@ -73,6 +74,9 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   loadCategory() {
     this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.lstCategory = [...res.value];
+    },
+    error=>{
+      this.message.error(error?.error?.message || Message.CanNotLoadData);
     });
   }
 
@@ -82,10 +86,88 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     });
   }
 
+  createForm() {
+    this._form = this.fb.group({
+      Name: [null, Validators.required],
+      Type: [null],
+      DefaultCode: [null],
+      Barcode: [null],
+      Categ: [null, Validators.required],
+      Weight: [0],
+      ListPrice: [0],
+      DiscountSale: [0],
+      PurchasePrice: [0],
+      DiscountPurchase: [0],
+      StandardPrice: [0],
+      ImageUrl: [null],
+      UOM: [null, Validators.required],
+      UOMPO: [null, Validators.required]
+    });
+  }
+
+  updateForm(data: ProductTemplateDTO) {
+    let formControls = this._form.controls;
+
+    formControls["Type"].setValue(data.ShowType);
+    formControls["Categ"].setValue(data.Categ);
+    formControls["UOM"].setValue(data.UOM);
+    formControls["UOMPO"].setValue(data.UOMPO);
+    formControls["ImageUrl"].setValue(data.ImageUrl);
+
+    formControls["Name"].setValue(data.Name);
+    formControls["DefaultCode"].setValue(data.DefaultCode);
+    formControls["Barcode"].setValue(data.Barcode);
+    formControls["Weight"].setValue(data.Weight);
+    formControls["ListPrice"].setValue(data.ListPrice);
+    formControls["DiscountSale"].setValue(
+      data.DiscountSale
+    );
+    formControls["PurchasePrice"].setValue(
+      data.PurchasePrice
+    );
+    formControls["DiscountPurchase"].setValue(
+      data.DiscountPurchase
+    );
+    formControls["StandardPrice"].setValue(
+      data.StandardPrice
+    );
+  }
+
+  prepareModel() {
+    const formModel = this._form.value;
+
+    this.defaultGet["Name"] = formModel.Name;
+    this.defaultGet["Type"] = formModel.Type;
+    this.defaultGet["DefaultCode"] = formModel.DefaultCode;
+    this.defaultGet["Barcode"] = formModel.Barcode;
+    this.defaultGet["Categ"] = formModel.Categ;
+    this.defaultGet["CategId"] = formModel.Categ.Id;
+
+    this.defaultGet["Weight"] = formModel.Weight;
+    this.defaultGet["ListPrice"] = formModel.ListPrice;
+    this.defaultGet["DiscountSale"] = formModel.DiscountSale;
+    this.defaultGet["PurchasePrice"] = formModel.PurchasePrice;
+    this.defaultGet["DiscountPurchase"] = formModel.DiscountPurchase;
+    this.defaultGet["StandardPrice"] = formModel.StandardPrice;
+
+    if (formModel.UOM) {
+      this.defaultGet["UOM"] = formModel.UOM;
+      this.defaultGet["UOMId"] = formModel.UOM.Id;
+    }
+
+    if (formModel.UOMPO) {
+      this.defaultGet["UOMPO"] = formModel.UOMPO;
+      this.defaultGet["UOMPOId"] = formModel.UOMPO.Id;
+    }
+    this.defaultGet["ImageUrl"] = formModel.ImageUrl;
+
+    return this.defaultGet;
+  }
+
   onSave(type?: string) :any {
     let model = this.prepareModel();
     this.isLoading = true;
-
+    
     this.productTemplateService.insert(model)
       .pipe(map((res: any) => { return res}),
         mergeMap((res) => {
@@ -96,7 +178,6 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(([res, x]) => {
-
         delete res['@odata.context'];
         this.message.success(Message.Product.InsertSuccess);
 
@@ -106,7 +187,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
           this.onCancel(null);
         }
       }, error => {
-        this.message.error(`${error.error.message}`);
+        this.message.error(`${error?.error?.message}`);
     });
   }
 
@@ -114,7 +195,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     this.modalRef.destroy(result);
   }
 
-  onAddCateg() {
+  onCreateCategory() {
     const modal = this.modal.create({
       title: 'Thêm nhóm sản phẩm',
       content: TpageAddCategoryComponent,
@@ -124,9 +205,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     });
 
     modal.afterClose.subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
-        this.loadCategory();
-      }
+      this.loadCategory();
     });
   }
 
@@ -174,84 +253,6 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
         this.cdRef.markForCheck();
     }, error => {
       this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
-    });
-  }
-
-  prepareModel() {
-    const formModel = this._form.value;
-
-    this.defaultGet["Name"] = formModel.Name;
-    this.defaultGet["Type"] = formModel.Type;
-    this.defaultGet["DefaultCode"] = formModel.DefaultCode;
-    this.defaultGet["Barcode"] = formModel.Barcode;
-    this.defaultGet["Categ"] = formModel.Categ;
-    this.defaultGet["CategId"] = formModel.Categ.Id;
-
-    this.defaultGet["Weight"] = formModel.Weight;
-    this.defaultGet["ListPrice"] = formModel.ListPrice;
-    this.defaultGet["DiscountSale"] = formModel.DiscountSale;
-    this.defaultGet["PurchasePrice"] = formModel.PurchasePrice;
-    this.defaultGet["DiscountPurchase"] = formModel.DiscountPurchase;
-    this.defaultGet["StandardPrice"] = formModel.StandardPrice;
-
-    if (formModel.UOM) {
-      this.defaultGet["UOM"] = formModel.UOM;
-      this.defaultGet["UOMId"] = formModel.UOM.Id;
-    }
-
-    if (formModel.UOMPO) {
-      this.defaultGet["UOMPO"] = formModel.UOMPO;
-      this.defaultGet["UOMPOId"] = formModel.UOMPO.Id;
-    }
-    this.defaultGet["ImageUrl"] = formModel.ImageUrl;
-
-    return this.defaultGet;
-  }
-
-  updateForm(data: ProductTemplateDTO) {
-    let formControls = this._form.controls;
-
-    formControls["Type"].setValue(data.ShowType);
-    formControls["Categ"].setValue(data.Categ);
-    formControls["UOM"].setValue(data.UOM);
-    formControls["UOMPO"].setValue(data.UOMPO);
-    formControls["ImageUrl"].setValue(data.ImageUrl);
-
-    formControls["Name"].setValue(data.Name);
-    formControls["DefaultCode"].setValue(data.DefaultCode);
-    formControls["Barcode"].setValue(data.Barcode);
-    formControls["Weight"].setValue(data.Weight);
-    formControls["ListPrice"].setValue(data.ListPrice);
-    formControls["DiscountSale"].setValue(
-      data.DiscountSale
-    );
-    formControls["PurchasePrice"].setValue(
-      data.PurchasePrice
-    );
-    formControls["DiscountPurchase"].setValue(
-      data.DiscountPurchase
-    );
-    formControls["StandardPrice"].setValue(
-      data.StandardPrice
-    );
-  }
-
-  createForm() {
-    this._form = this.fb.group({
-      Name: [null, Validators.required],
-      Type: [null],
-      DefaultCode: [null],
-      Barcode: [null],
-      Categ: [null, Validators.required],
-      Weight: [0],
-      ListPrice: [0],
-      DiscountSale: [0],
-      PurchasePrice: [0],
-      DiscountPurchase: [0],
-      StandardPrice: [0],
-      ImageUrl: [null],
-      UOM: [null, Validators.required],
-      UOMPO: [null, Validators.required]
     });
   }
 

@@ -140,10 +140,6 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    const key = this.fastSaleOrderService._keyCacheUrlParams;
-    this.activatedRoute.queryParams.subscribe(res => {
-      localStorage.setItem(key, JSON.stringify(res));
-    })
     this.loadSummaryStatus();
     this.loadTags();
     this.loadGridConfig();
@@ -157,7 +153,6 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   loadCarrier() {
-    
     return this.deliveryCarrierService.get().pipe(map(res => res.value));
   }
 

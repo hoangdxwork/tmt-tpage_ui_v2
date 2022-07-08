@@ -1,5 +1,5 @@
 import { mergeMap } from 'rxjs/operators';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { TCommonService, THelperCacheService } from 'src/app/lib';
 import { DataPouchDBDTO, KeyCacheIndexDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
@@ -83,19 +83,17 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
     this.loadData();
   }
 
-  loadData(): void {
+  loadData(reload?:boolean): void {
     this.validateData();
     this.isLoading = true;
-    this.productIndexDBService.loadProductIndexDBV2()
+    this.productIndexDBService.loadProductIndexDBV2(reload)
       .pipe(takeUntil(this.destroy$)).pipe(finalize(() => {this.isLoading = false }))
       .subscribe((res: KeyCacheIndexDBDTO) => {
         if(TDSHelperObject.hasValue(res)) {
-
             this.indexDbProductCount = res.cacheCount;
             this.indexDbVersion = res.cacheVersion;
             this.indexDbStorage = res.cacheDbStorage;
             this.loadDataTable();
-
         }
     })
   }
@@ -189,7 +187,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
     this.sharedService.getConfigs().subscribe((res: InitSaleDTO) => {
         this.roleConfigs = res.SaleSetting;
     }, error => {
-        this.message.error('Load thông tin cấu hình mặc định đã xảy ra lỗi!');
+        this.message.error(error?.error?.message || 'Load thông tin cấu hình mặc định đã xảy ra lỗi!');
     });
 
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$))
@@ -212,9 +210,8 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
 
     modal.afterClose.pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
-        console.log(res)
         if(res) {
-          let productTmplItems = res[0]
+          let productTmplItems = res[0];
           let cacheObject = res[1];
 
           this.indexDbProductCount = cacheObject.cacheCount;
@@ -233,6 +230,8 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
             this.addItem(item);
           }
         }
+        //TODO: reload sản phẩm
+        this.reloadIndexDB();
       })
   }
 
@@ -249,7 +248,7 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
     let keyCache = this.productIndexDBService._keyCacheProductIndexDB;
     this.cacheApi.removeItem(keyCache);
 
-    this.loadData();
+    this.loadData(true);
   }
 
   addItem(data: DataPouchDBDTO) {
@@ -261,15 +260,6 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: number) => {});
 
-    fromEvent(this.innerText.nativeElement, 'keyup').pipe(
-      map((event: any) => {
-        return event.target.value
-      }), debounceTime(750)).subscribe((text: string) => {
-        this.isLoading = true;
-        this.keyFilter = text;
-        this.loadDataTable();
-        this.isLoading = false;
-    });
     this.cdRef.detectChanges();
   }
 
@@ -296,6 +286,13 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
     if(changes['isLoadingProduct'] && (changes['isLoadingProduct'].currentValue == true || changes['isLoadingProduct'].currentValue == false)) {
       this.isLoading = changes['isLoadingProduct'].currentValue;
     }
+  }
+
+  onInputKeyup(ev:TDSSafeAny){
+    this.isLoading = true;
+    this.keyFilter = ev.value;
+    this.loadDataTable();
+    this.isLoading = false;
   }
 
   ngOnDestroy(): void {

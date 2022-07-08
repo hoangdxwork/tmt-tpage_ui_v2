@@ -1,3 +1,4 @@
+import { CRMTeamService } from './../../../services/crm-team.service';
 import { ExcelExportService } from './../../../services/excel-export.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { THelperCacheService } from './../../../../lib/utility/helper-cache';
@@ -7,7 +8,7 @@ import { takeUntil, finalize } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { HistoryDeliveryDTO } from './../../../dto/bill/bill.dto';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 
@@ -45,14 +46,19 @@ export class HistoryDeliveryStatusDetailComponent implements OnInit {
     private router: Router,
     private fastSaleOrderService: FastSaleOrderService,
     private excelExportService: ExcelExportService,
+    private cRMTeamService: CRMTeamService,
     private cacheApi: THelperCacheService,
-    private message: TDSMessageService
+    private message: TDSMessageService,
+    private cdRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
-    // TODO: lấy teamId
-    const key = this.fastSaleOrderService._keyCacheUrlParams;
-    this.teamId = JSON.parse(localStorage.getItem(key) || '').teamId;
+    this.teamId = this.cRMTeamService.getCurrentTeam()?.Id;
+    //TODO: load teamId from indexedDB
+    // this.cRMTeamService.getCacheTeamId().subscribe((res)=>{
+    //   this.teamId = res;
+    //   this.cdRef.markForCheck();
+    // })
     // TODO: lấy id lịch sử đối soát
     this.id = this.route.snapshot.paramMap.get("id");
     this.loadData();
