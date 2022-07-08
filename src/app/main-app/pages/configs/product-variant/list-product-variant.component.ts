@@ -77,7 +77,6 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((team) => {
         (this.team as any) = team;
-        localStorage.setItem(this.crmTeamService.__keyCacheFacebook_PageId, this.team.Facebook_PageId);
       });
   }
 

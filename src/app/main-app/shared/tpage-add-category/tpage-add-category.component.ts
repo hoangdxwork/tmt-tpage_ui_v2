@@ -1,4 +1,6 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSMessageService } from 'tds-ui/message';
@@ -9,96 +11,119 @@ import { ProductCategoryService } from '../../services/product-category.service'
 
 @Component({
   selector: 'tpage-add-category',
-  templateUrl: './tpage-add-category.component.html',
-  styleUrls: ['./tpage-add-category.component.scss']
+  templateUrl: './tpage-add-category.component.html'
 })
 
-export class TpageAddCategoryComponent implements OnInit {
+export class TpageAddCategoryComponent implements OnInit, OnDestroy {
 
-  formAddCategory!: FormGroup;
-
-  defaultGet!: ProductCategoryDTO;
-
-  lstParent!: Array<ProductCategoryDTO>;
-
-  lstPropertyCostMethod: any[] = [
-    {type: "standard", text: "Giá cố định"},
-    {type: "fifo", text: "Nhập trước xuất trước"},
-    {type: "average", text: "Bình quân giá quyền"},
+  categoryList: ProductCategoryDTO[] = [];
+  costMethodList: TDSSafeAny[] = [
+    { value: 'standard', text: 'Giá cố định' },
+    { value: 'fifo', text: 'Nhập trước xuất trước' },
+    { value: 'average', text: 'Bình quân giá quyền' }
   ];
+  modelDefault!: ProductCategoryDTO;
+  _form!: FormGroup;
 
-  constructor(
-    private fb: FormBuilder,
-    private modal: TDSModalRef,
+  private destroy$ = new Subject<void>();
+
+  constructor(private modal: TDSModalRef,
     private message: TDSMessageService,
+    private formBuilder: FormBuilder,
     private productCategoryService: ProductCategoryService
-  ) { }
+  ) {
+    this.createForm();
+  }
 
   ngOnInit(): void {
-    this.createForm();
-
-    this.loadParent();
     this.loadDefault();
-  }
-
-  loadDefault() {
-    this.productCategoryService.getDefault().subscribe((res: TDSSafeAny) => {
-      delete res["@odata.context"];
-
-      this.defaultGet = res;
-      this.updateForm(res);
-    });
-  }
-
-  loadParent() {
-    this.productCategoryService.getParent().subscribe((res: TDSSafeAny) => {
-      this.lstParent = res.value;
-    });
-  }
-
-  onSave() {
-    let model = this.prepareModel();
-
-    this.productCategoryService.insert(model).subscribe(res => {
-      this.message.success(Message.ProductCategory.InsertSuccess);
-      this.onCancel(res);
-    });
-  }
-
-  onCancel(result: TDSSafeAny) {
-    this.modal.destroy(result);
-  }
-
-  prepareModel() {
-    const formModel = this.formAddCategory.value;
-
-    this.defaultGet.Name = formModel.Name;
-    this.defaultGet.Parent = formModel.Parent;
-    this.defaultGet.Sequence = formModel.Sequence;
-    this.defaultGet.PropertyCostMethod = formModel.PropertyCostMethod;
-    this.defaultGet.IsPos = formModel.IsPos;
-
-    return this.defaultGet;
-  }
-
-  updateForm(data: ProductCategoryDTO) {
-    let formControls = this.formAddCategory.controls;
-
-    formControls["Name"].setValue(data.Name);
-    formControls["Parent"].setValue(data.Parent);
-    formControls["Sequence"].setValue(data.Sequence);
-    formControls["PropertyCostMethod"].setValue(data.PropertyCostMethod);
-    formControls["IsPos"].setValue(data.IsPos);
+    this.loadCateg();
   }
 
   createForm() {
-    this.formAddCategory = this.fb.group({
+    this._form = this.formBuilder.group({
       Name: [null, Validators.required],
       Parent: [null],
       Sequence: [null],
-      PropertyCostMethod: ["average"],
+      PropertyCostMethod: ['average'],
       IsPos: [true]
     });
   }
 
+  loadDefault() {
+    this.productCategoryService.getDefault().pipe(takeUntil(this.destroy$)).subscribe(
+      (res: TDSSafeAny) => {
+        delete res['@odata.context'];
+        this.modelDefault = res;
+      },
+      err => {
+        this.message.error(err.error.message);
+      }
+    );
+  }
+
+  loadCateg() {
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe(
+      (res: TDSSafeAny) => {
+        this.categoryList = res.value;
+      },
+      err => {
+        this.message.error(err.error.message || Message.CanNotLoadData);
+      }
+    );
+  }
+
+  prepareModel() {
+    let formModel = this._form.value;
+
+    if (formModel.Name) {
+      this.modelDefault.Name = formModel.Name
+    }
+
+    if (formModel.Parent) {
+      this.modelDefault.Parent = formModel.Parent;
+      this.modelDefault.ParentId = formModel.Parent.Id;
+    }
+
+    if (formModel.Sequence) {
+      this.modelDefault.Sequence = formModel.Sequence
+    }
+
+    if (formModel.PropertyCostMethod) {
+      this.modelDefault.PropertyCostMethod = formModel.PropertyCostMethod;
+    }
+
+    if (formModel.IsPos) {
+      this.modelDefault.IsPos = formModel.IsPos;
+    }
+
+    return this.modelDefault;
+  }
+
+  cancel() {
+    this.modal.destroy(null);
+  }
+
+  save() {
+    if (!this._form.invalid) {
+      let model = this.prepareModel();
+
+      this.productCategoryService.insert(model).pipe(takeUntil(this.destroy$)).subscribe(
+        (res: TDSSafeAny) => {
+          this.message.success(Message.InsertSuccess);
+          this.modal.destroy(null);
+        },
+        err => {
+          this.message.error(err?.error?.message || Message.InsertFail);
+        }
+      );
+    } else {
+      this.message.error('Vui lòng nhập tên nhóm');
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

@@ -57,6 +57,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   @Input() data!: ConversationMatchingItem;
   @Input() type!: string;
   @Input() team!: CRMTeamDTO;
+  @Input() miniChat!: boolean;
 
   destroy$ = new Subject<void>();
   isLoadMessage: boolean = false;

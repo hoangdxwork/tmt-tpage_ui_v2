@@ -49,12 +49,14 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
     private message: TDSMessageService,
     private viewContainerRef: ViewContainerRef,
     private excelExportService: ExcelExportService,
-    private printerService: PrinterService) {
+    private printerService: PrinterService,
+    private activatedRoute: ActivatedRoute) {
   }
 
   ngOnInit() {
-    const key = this.fastSaleOrderService._keyCacheUrlParams;
-    this.params = JSON.parse(localStorage.getItem(key) || '');
+    this.activatedRoute.queryParams.subscribe(res => {
+      this.params = res;
+    })
   }
 
   exportExcel(type: string): any {

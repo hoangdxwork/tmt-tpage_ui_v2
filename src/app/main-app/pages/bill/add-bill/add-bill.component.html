@@ -31,7 +31,7 @@
                     <tds-select valueField="Id" textField="DisplayName" [valuePrimitive]="false"
                       placeholder='Chọn tên khách hàng' formControlName="Partner" (onSearch)="onSearchPartner($event)"
                       (selectChange)="selectChangePartner($event)" disabledField="isActive"
-                      [data]="(lstCustomers | async) || []" [allowClear]="true">
+                      [data]="(lstCustomers | async) || []" [allowClear]="false">
                       <ng-template tds-label-tmp let-item="item">
                         {{item.data.DisplayName || item.data.Name}}
                       </ng-template>

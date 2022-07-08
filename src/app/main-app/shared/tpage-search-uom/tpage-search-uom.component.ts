@@ -37,9 +37,7 @@ export class TpageSearchUOMComponent implements OnInit {
       title: 'Thêm đơn vị tính',
       content: TpageAddUOMComponent,
       size: 'md',
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-      }
+      viewContainerRef: this.viewContainerRef
     });
 
     modal.afterClose.subscribe(result => {

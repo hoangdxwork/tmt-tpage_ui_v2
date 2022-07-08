@@ -1,3 +1,5 @@
+import { CRMTeamService } from './../../../services/crm-team.service';
+import { THelperCacheService } from 'src/app/lib';
 import { Router } from '@angular/router';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { OnDestroy, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
@@ -34,11 +36,17 @@ export class HistoryDeliveryStatusComponent implements OnInit, AfterViewInit, On
   constructor(private fastSaleOrderService: FastSaleOrderService,
     private router: Router,
     private message: TDSMessageService,
-    private resizeObserver: TDSResizeObserver) { }
+    private cRMTeamService: CRMTeamService,
+    private resizeObserver: TDSResizeObserver,
+    private cdRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    const key = this.fastSaleOrderService._keyCacheUrlParams;
-    this.teamId = JSON.parse(localStorage.getItem(key) || '').teamId;
+    this.teamId = this.cRMTeamService.getCurrentTeam()?.Id;
+    //TODO: load teamId from indexedDB
+    // this.cRMTeamService.getCacheTeamId().subscribe((res)=>{
+    //   this.teamId = res;
+    //   this.cdRef.markForCheck();
+    // })
   }
 
   ngAfterViewInit(): void {
