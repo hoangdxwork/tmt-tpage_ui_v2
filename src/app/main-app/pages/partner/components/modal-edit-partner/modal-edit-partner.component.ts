@@ -27,7 +27,6 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
   _form!: FormGroup;
   data!: PartnerDetailDTO;
   isLoading: boolean = false;
-
   lstCategory: Array<PartnerCategoryDTO> = [];
   lstStatus: Array<StatusDTO> = [];
   lstPrice: Array<PartnerCategoryDTO> = [];

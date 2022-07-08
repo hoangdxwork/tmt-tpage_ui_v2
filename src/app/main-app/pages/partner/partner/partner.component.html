@@ -1,273 +1,305 @@
 <div class="w-full h-full flex flex-col">
-  <div class="p-4 w-full bg-white">
-    <div class="w-full flex justify-between">
-      <h1 class="flex items-center">
-        <span class="text-neutral-1-900 text-header-1 font-semibold">Khách hàng</span>
-      </h1>
-      <div class="flex gap-x-2">
-        <button tds-button color="primary" size="md" (click)="createPartner()">
-          <span class="flex items-center">
-            <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
-          </span>
-        </button>
-        <button tds-button color="secondary" size="md" (click)="openTransferPartner()">
-          <span class="flex items-center">
-            <i class="tdsi-in-out-fill text-lg leading-none mr-2 text-neutral-500"></i>Chuyển đổi khách hàng
-          </span>
-        </button>
-        <button tds-button color="secondary" size="md" (click)="resetLoyaltyPoint()">
-          <span class="flex items-center">
-            <i class="tdsi-reload-fill text-lg leading-none mr-2 text-neutral-500"></i>Reset điểm tích lũy
-          </span>
-        </button>
-        <button tds-button color="secondary" size="md" (click)="exportExcel()">
-          <span class="flex items-center">
-            <i class="tdsi-excel-fill text-lg leading-none mr-2 text-neutral-500"></i>Xuất Excel
-          </span>
-        </button>
-      </div>
+    <div class="p-4 w-full bg-white">
+        <div class="w-full flex justify-between">
+            <h1 class="flex items-center">
+                <span class="text-neutral-1-900 text-header-1 font-semibold">Khách hàng</span>
+            </h1>
+            <div class="flex gap-x-2">
+                <button tds-button color="primary" size="md" (click)="createPartner()">
+                    <span class="flex items-center">
+                        <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
+                    </span>
+                </button>
+                <button tds-button color="secondary" size="md" (click)="openTransferPartner()">
+                    <span class="flex items-center">
+                        <i class="tdsi-in-out-fill text-lg leading-none mr-2 text-neutral-500"></i>Chuyển đổi khách hàng
+                    </span>
+                </button>
+                <button tds-button color="secondary" size="md" (click)="resetLoyaltyPoint()">
+                    <span class="flex items-center">
+                        <i class="tdsi-reload-fill text-lg leading-none mr-2 text-neutral-500"></i>Reset điểm tích lũy
+                    </span>
+                </button>
+                <button tds-button color="secondary" size="md" (click)="exportExcel()">
+                    <span class="flex items-center">
+                        <i class="tdsi-excel-fill text-lg leading-none mr-2 text-neutral-500"></i>Xuất Excel
+                    </span>
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="p-4 h-full w-full flex">
-    <div class="bg-white flex flex-col w-full h-full rounded-xl border border-neutral-200 partner-resize">
-      <div class="flex flex-col h-full w-full">
-        <div class="flex justify-between pt-3 pb-3">
-          <div [tooltipTrigger]="'hover'" tooltipTitle="Chọn khách hàng để gửi tin nhắn" class="ml-3"
-            tooltipPlacement="top" tds-tooltip>
-            <button tds-button color="primary" (click)="showModalSendMessage()">
-              <span class="flex items-center">
-                <i class="tdsi-send-fill mr-2"></i>Gửi tin nhắn
-              </span>
-            </button>
-          </div>
-          <div class="flex items-center gap-x-2 pr-4">
+    <div class="p-4 h-full w-full flex">
+        <div class="bg-white flex flex-col w-full h-full rounded-xl border border-neutral-200 partner-resize">
+            <div class="flex flex-col h-full w-full">
+                <div class="flex justify-between pt-3 pb-3">
+                    <div [tooltipTrigger]="'hover'" tooltipTitle="Chọn khách hàng để gửi tin nhắn" class="ml-3"
+                        tooltipPlacement="top" tds-tooltip>
+                        <button tds-button color="primary" (click)="showModalSendMessage()">
+                            <span class="flex items-center">
+                                <i class="tdsi-send-fill mr-2"></i>Gửi tin nhắn
+                            </span>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-x-2 pr-4">
 
-            <tds-button-group>
-              <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
-                <span class="flex items-center">
-                  Thao tác <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
-                </span>
-              </button>
-              <tds-dropdown-menu #menu="tdsDropdownMenu">
-                <div class="w-full">
-                  <div tds-dropdown-item (click)="setActive('active')">Mở hiệu lực</div>
-                  <div tds-dropdown-item (click)="setActive('unactive')">Hết hiệu lực</div>
+                        <tds-button-group>
+                            <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
+                                <span class="flex items-center">
+                                    Thao tác <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                                </span>
+                            </button>
+                            <tds-dropdown-menu #menu="tdsDropdownMenu">
+                                <div class="w-full">
+                                    <div tds-dropdown-item (click)="setActive('active')">Mở hiệu lực</div>
+                                    <div tds-dropdown-item (click)="setActive('unactive')">Hết hiệu lực</div>
+                                </div>
+                            </tds-dropdown-menu>
+                        </tds-button-group>
+
+                        <tds-form-field class="w-80">
+                            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText />
+                            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                        </tds-form-field>
+
+                        <tds-badge class="mr-1" [count]="lstBirtdays.length" showZero>
+                            <button tds-button-icon color="secondary" class="flex" (click)="showModalBirthday()">
+                                <span class="flex items-center">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M17.6359 14.2953C16.6807 14.2953 16.5703 13.2214 15.0962 13.2214C13.6157 13.2214 13.5 14.2953 12.5481 14.2953C11.604 14.2953 11.4758 13.2214 9.99989 13.2214C8.53944 13.2214 8.39026 14.2953 7.46024 14.2953C6.50069 14.2953 6.39658 13.2214 4.91206 13.2214C3.42758 13.2214 3.3217 14.2953 2.36389 14.2953V11.6107C2.36389 10.7215 3.09681 10 4.00018 10H4.5456V5.16786H6.72732V10H8.90903V5.16786H11.0907V10H13.2725V5.16786H15.4542V10H15.9996C16.903 10 17.6359 10.7215 17.6359 11.6107V14.2953ZM17.6359 17.5905C17.6359 18.1428 17.1882 18.5905 16.6359 18.5905H3.36389C2.81161 18.5905 2.36389 18.1428 2.36389 17.5905V15.3691C3.84187 15.3691 3.95814 14.2953 4.91206 14.2953C5.86489 14.2953 5.97746 15.3691 7.46024 15.3691C8.92072 15.3691 9.06983 14.2953 9.99989 14.2953C10.9594 14.2953 11.0635 15.3691 12.5481 15.3691C14.0261 15.3691 14.1423 14.2953 15.0962 14.2953C16.0333 14.2953 16.1616 15.3691 17.6359 15.3691V17.5905ZM5.63646 4.63095C5.03138 4.63095 4.5456 4.15277 4.5456 3.55714C4.5456 2.51688 5.63646 2.78534 5.63646 1.40952C6.04553 1.40952 6.72732 2.39944 6.72732 3.28869C6.72732 4.17794 6.24155 4.63095 5.63646 4.63095ZM9.99989 4.63095C9.3948 4.63095 8.90903 4.15277 8.90903 3.55714C8.90903 2.51688 9.99989 2.78534 9.99989 1.40952C10.409 1.40952 11.0907 2.39944 11.0907 3.28869C11.0907 4.17794 10.605 4.63095 9.99989 4.63095ZM14.3633 4.63095C13.7582 4.63095 13.2725 4.15277 13.2725 3.55714C13.2725 2.51688 14.3633 2.78534 14.3633 1.40952C14.7724 1.40952 15.4542 2.39944 15.4542 3.28869C15.4542 4.17794 14.9684 4.63095 14.3633 4.63095Z"
+                                            fill="#929DAA" />
+                                    </svg>
+                                </span>
+                            </button>
+                        </tds-badge>
+
+                        <filter-option-partner [status]="partnerStatusReport" (onLoadOption)="onLoadOption($event)">
+                        </filter-option-partner>
+
+                        <config-column-partner [columns]="hiddenColumns" (columnsChange)="columnsChange($event)">
+                        </config-column-partner>
+                    </div>
                 </div>
-              </tds-dropdown-menu>
-            </tds-button-group>
-
-            <tds-form-field class="w-80">
-              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText/>
-              <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-            </tds-form-field>
-
-            <tds-badge class="mr-1" [count]="lstBirtdays.length" showZero>
-              <button tds-button-icon color="secondary" class="flex" (click)="showModalBirthday()">
-                <span class="flex items-center">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M17.6359 14.2953C16.6807 14.2953 16.5703 13.2214 15.0962 13.2214C13.6157 13.2214 13.5 14.2953 12.5481 14.2953C11.604 14.2953 11.4758 13.2214 9.99989 13.2214C8.53944 13.2214 8.39026 14.2953 7.46024 14.2953C6.50069 14.2953 6.39658 13.2214 4.91206 13.2214C3.42758 13.2214 3.3217 14.2953 2.36389 14.2953V11.6107C2.36389 10.7215 3.09681 10 4.00018 10H4.5456V5.16786H6.72732V10H8.90903V5.16786H11.0907V10H13.2725V5.16786H15.4542V10H15.9996C16.903 10 17.6359 10.7215 17.6359 11.6107V14.2953ZM17.6359 17.5905C17.6359 18.1428 17.1882 18.5905 16.6359 18.5905H3.36389C2.81161 18.5905 2.36389 18.1428 2.36389 17.5905V15.3691C3.84187 15.3691 3.95814 14.2953 4.91206 14.2953C5.86489 14.2953 5.97746 15.3691 7.46024 15.3691C8.92072 15.3691 9.06983 14.2953 9.99989 14.2953C10.9594 14.2953 11.0635 15.3691 12.5481 15.3691C14.0261 15.3691 14.1423 14.2953 15.0962 14.2953C16.0333 14.2953 16.1616 15.3691 17.6359 15.3691V17.5905ZM5.63646 4.63095C5.03138 4.63095 4.5456 4.15277 4.5456 3.55714C4.5456 2.51688 5.63646 2.78534 5.63646 1.40952C6.04553 1.40952 6.72732 2.39944 6.72732 3.28869C6.72732 4.17794 6.24155 4.63095 5.63646 4.63095ZM9.99989 4.63095C9.3948 4.63095 8.90903 4.15277 8.90903 3.55714C8.90903 2.51688 9.99989 2.78534 9.99989 1.40952C10.409 1.40952 11.0907 2.39944 11.0907 3.28869C11.0907 4.17794 10.605 4.63095 9.99989 4.63095ZM14.3633 4.63095C13.7582 4.63095 13.2725 4.15277 13.2725 3.55714C13.2725 2.51688 14.3633 2.78534 14.3633 1.40952C14.7724 1.40952 15.4542 2.39944 15.4542 3.28869C15.4542 4.17794 14.9684 4.63095 14.3633 4.63095Z" fill="#929DAA"/>
-                    </svg>
-                </span>
-              </button>
-            </tds-badge>
-
-            <filter-option-partner [status]="partnerStatusReport" (onLoadOption)="onLoadOption($event)"></filter-option-partner>
-
-            <config-column-partner [columns]="hiddenColumns" (columnsChange)="columnsChange($event)">
-            </config-column-partner>
-          </div>
+                <div #viewChildWidthTable class="w-full flex-auto pb-4" *ngIf="lstOfData">
+                    <tds-table #rowSelectionTable [showSizeChanger]="true" [frontPagination]="false"
+                        [listData]="lstOfData" [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count"
+                        [scroll]="{y:'auto', x: 'auto'}" [loading]="isLoading" (clickRefresh)="refreshData()"
+                        (queryParams)="onQueryParamsChange($event)">
+                        <thead>
+                            <tr>
+                                <th width="50px" [tdsLeft]="true"></th>
+                                <th width="50px" [tdsLeft]="true" [(checked)]="checked" [indeterminate]="indeterminate"
+                                    class="border-x text-center" (checkedChange)="onAllChecked($event)">
+                                </th>
+                                <th *ngIf="isHidden('DisplayName')" width="280px" [tdsLeft]="true" class="border-r">Tên
+                                </th>
+                                <th *ngIf="isHidden('Phone')" width="120px" class="border-r">Điện thoại</th>
+                                <th *ngIf="isHidden('Email')" width="210px" class="border-r">Email</th>
+                                <th *ngIf="isHidden('Street')" width="410px" class="border-r">Địa chỉ</th>
+                                <th *ngIf="isHidden('StatusText')" width="150px" class="border-r">Trạng thái</th>
+                                <th *ngIf="isHidden('Tag')" width="200px" class="border-r">Nhãn</th>
+                                <th *ngIf="isHidden('FacebookId')" width="200px" class="border-r">Facebook</th>
+                                <th *ngIf="isHidden('Zalo')" width="200px" class="border-r">Zalo</th>
+                                <th *ngIf="isHidden('Credit')" width="120px" class="text-right border-r">Nợ hiện tại
+                                </th>
+                                <th *ngIf="isHidden('Active')" width="120px" class="text-center border-r">Hiệu lực</th>
+                                <th *ngIf="isHidden('DateCreated')" width="150px" class="text-center border-r">Ngày tạo
+                                </th>
+                                <th width="140px" class="text-center" [tdsRight]="true">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd'>
+                                <tr class="text-body-2 text-neutral-900 font-regular"
+                                    [ngClass]="setOfCheckedId.has(data.Id)?'bg-[#F2FCF5]':''">
+                                    <td [expand]="expandSet.has(data.Id)"
+                                        (expandChange)="onExpandChange(data.Id, $event)" [tdsLeft]="true"
+                                        [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
+                                    </td>
+                                    <td [checked]="setOfCheckedId.has(data.Id)"
+                                        (checkedChange)="onItemChecked(data.Id, $event)"
+                                        [style]="setOfCheckedId.has(data.Id)?'background-color:#F2FCF5' : '' "
+                                        class="border-l border-r text-center border-neutral-200" [tdsLeft]="true"></td>
+                                    <td *ngIf="isHidden('DisplayName')" class=" border-r border-neutral-200"
+                                        [tdsLeft]="true"
+                                        [style]="setOfCheckedId.has(data.Id)?'background-color:#F2FCF5' : '' ">
+                                        <div class="flex flex-col">
+                                            <span>{{data.DisplayName}}</span>
+                                        </div>
+                                    </td>
+                                    <td *ngIf="isHidden('Phone')" class=" border-r border-neutral-200">
+                                        <div class="flex flex-col">
+                                            <span>{{data.Phone}}</span>
+                                            <tds-tag *ngIf="data.NameNetwork"
+                                                [status]="checkNameNetwork(data.NameNetwork)" type="outline">
+                                                {{data.NameNetwork}} </tds-tag>
+                                        </div>
+                                    </td>
+                                    <td *ngIf="isHidden('Email')" class="border-r border-neutral-200">{{ data.Email }}
+                                    </td>
+                                    <td *ngIf="isHidden('Street')" class="border-r border-neutral-200 ">
+                                        <div class="w-full flex ">
+                                            <span class="">{{ data.Street }}</span>
+                                        </div>
+                                    </td>
+                                    <td *ngIf="isHidden('StatusText')" class="border-r border-neutral-200 ">
+                                        <div class="w-full flex items-center">
+                                            <span [ngStyle]="{'color': checkStatusText(data.StatusText)}"
+                                                class="tdsi-radio-circle-fill"></span>
+                                            <span class="ml-1">{{data.StatusText}}</span>
+                                        </div>
+                                    </td>
+                                    <td *ngIf="isHidden('Tag')" class="border-r border-neutral-200">
+                                        <div class="flex w-full gap-x-2 items-center">
+                                            <div *ngIf="data.Tags" class="flex flex-wrap gap-2">
+                                                <tds-tag class="truncate" *ngFor="let item of data.Tags | prettyjson"
+                                                    status='primary'>
+                                                    {{item.Name}}</tds-tag>
+                                            </div>
+                                            <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover
+                                                [popoverVisible]="indClickTag == data.Id" popoverTrigger="click"
+                                                [popoverFooter]="footerAddTag" [popoverContent]="contentAddtag"
+                                                [popoverBackdrop]="true" popoverPlacement="left" color="secondary"
+                                                size="sm" class=" border-0">
+                                                <div class="w-5 h-5 relative">
+                                                    <i
+                                                        class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
+                                                    <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0"
+                                                        width="12" height="12" viewBox="0 0 11 11" fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M6.00263 0.185353C5.78089 0.14704 5.55607 0.129611 5.3311 0.133295C3.96134 0.134421 2.64803 0.680863 1.67966 1.65259C0.711296 2.62431 0.167057 3.94186 0.166496 5.3158C0.162824 5.54146 0.180199 5.76697 0.218396 5.98938C0.342953 6.94846 0.732804 7.85338 1.34378 8.60162C1.95476 9.34986 2.76244 9.91151 3.67532 10.2229C4.5882 10.5344 5.56979 10.5831 6.50889 10.3637C7.44798 10.1443 8.30703 9.66541 8.98873 8.98138C9.67042 8.29736 10.1475 7.4355 10.3659 6.49346C10.5843 5.55142 10.5354 4.56685 10.2246 3.65129C9.91374 2.73574 9.3535 1.92579 8.60732 1.31322C7.86114 0.70065 6.95883 0.309939 6.00263 0.185353ZM8.09029 5.79283H5.80879V8.08342H4.85553V5.79283H2.57403V4.83665H4.85764V2.53756H5.81091V4.83878H8.09452L8.09029 5.79283Z"
+                                                            fill="#28A745" />
+                                                    </svg>
+                                                </div>
+                                            </button>
+                                            <!-- button thêm nhãn -->
+                                            <ng-template #contentAddtag>
+                                                <div class="w-96">
+                                                    <tds-form-field>
+                                                        <tds-select valueField="Id" textField="Name"
+                                                            placeholder='select item' [(ngModel)]="modelTags"
+                                                            [allowClear]="true" [valuePrimitive]="false"
+                                                            [data]="lstDataTag" mode="multiple">
+                                                        </tds-select>
+                                                    </tds-form-field>
+                                                </div>
+                                            </ng-template>
+                                            <ng-template #footerAddTag>
+                                                <div class="flex justify-end pt-2">
+                                                    <button tds-button-icon color="secondary" class="mr-2" size="sm"
+                                                        (click)="closeTag()">
+                                                        <span class="flex items-center">
+                                                            <i class="tdsi-close-fill"></i>
+                                                        </span>
+                                                    </button>
+                                                    <button tds-button-icon size="sm"
+                                                        (click)="assignTags(data.Id, modelTags)">
+                                                        <span class="flex items-center">
+                                                            <i class="tdsi-tick-fill"></i>
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+                                    </td>
+                                    <td *ngIf="isHidden('FacebookId')" class="border-r border-neutral-200 text-right">{{
+                                        data.FacebookId}}
+                                    </td>
+                                    <td *ngIf="isHidden('Zalo')" class="border-r border-neutral-200 text-right">{{
+                                        data.Zalo}}</td>
+                                    <td *ngIf="isHidden('Credit')" class="border-r border-neutral-200 text-right">
+                                        {{ data.Credit || 0 | number :'1.0-3'}}</td>
+                                    <td *ngIf="isHidden('Active')" class="text-center border-r border-neutral-200">
+                                        <div class="w-full">
+                                            <span
+                                                [ngClass]="data.Active ? 'tdsi-success-fill text-success-400' : 'tdsi-error-fill text-error-400'"
+                                                class="text-xl leading-5"></span>
+                                        </div>
+                                    </td>
+                                    <td *ngIf="isHidden('DateCreated')" class="border-r border-neutral-200 text-center">
+                                        {{ data.DateCreated | date:"dd/MM/yyyy"}}</td>
+                                    <td [tdsRight]="true"
+                                        [style]="setOfCheckedId.has(data.Id)?'background-color:#F2FCF5' : '' ">
+                                        <div class="flex gap-x-2">
+                                            <button tds-button-icon color="secondary" tds-tooltip="Gửi tin nhắn"
+                                                size="sm" (click)="openMiniChat(data)">
+                                                <span class="flex items-center">
+                                                    <i class="tdsi-messenger-fill text-neutral-1-500"></i>
+                                                </span>
+                                            </button>
+                                            <button tds-button-icon color="secondary" tds-tooltip="Chỉnh sửa" size="sm"
+                                                (click)="editPartner(data)">
+                                                <span class="flex items-center">
+                                                    <i class="tdsi-edit-fill text-neutral-1-500"></i>
+                                                </span>
+                                            </button>
+                                            <button tds-button-icon color="secondary" tds-tooltip="Xóa" size="sm"
+                                                (click)="onDelete(data)">
+                                                <span class="flex items-center">
+                                                    <i class="tdsi-trash-fill text-neutral-1-500"></i>
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- expand partner details -->
+                                <tr [expand]="expandSet.has(data.Id)"
+                                    class="border-b border-neutral-2-100 text-neutral-1-900 bg-light-50 w-full">
+                                    <div #viewChildDetailPartner
+                                        [ngStyle]="{'max-width.px': widthTable, 'margin-left.px': marginLeftCollapse}"
+                                        class="flex items-center justify-center k-grid-table-wrap-detail">
+                                        <expand-partner-detail class="w-full" *ngIf="expandSet.has(data.Id)"
+                                            [dataPartner]="data">
+                                        </expand-partner-detail>
+                                    </div>
+                                </tr>
+                            </ng-template>
+                        </tbody>
+                    </tds-table>
+                </div>
+            </div>
         </div>
-        <div #viewChildWidthTable class="w-full flex-auto pb-4" *ngIf="lstOfData">
-          <tds-table #rowSelectionTable [showSizeChanger]="true" [frontPagination]="false" [listData]="lstOfData"
-            [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" [scroll]="{y:'auto', x: 'auto'}"
-            [loading]="isLoading" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
-            <thead>
-              <tr>
-                <th width="50px" [tdsLeft]="true"></th>
-                <th width="50px" [tdsLeft]="true" [(checked)]="checked" [indeterminate]="indeterminate" class="border-x text-center"
-                  (checkedChange)="onAllChecked($event)">
-                </th>
-                <th *ngIf="isHidden('DisplayName')" width="280px" [tdsLeft]="true" class="border-r">Tên</th>
-                <th *ngIf="isHidden('Phone')" width="120px" class="border-r">Điện thoại</th>
-                <th *ngIf="isHidden('Email')" width="210px" class="border-r">Email</th>
-                <th *ngIf="isHidden('Street')" width="410px" class="border-r">Địa chỉ</th>
-                <th *ngIf="isHidden('StatusText')" width="150px" class="border-r">Trạng thái</th>
-                <th *ngIf="isHidden('Tag')" width="200px" class="border-r">Nhãn</th>
-                <th *ngIf="isHidden('FacebookId')" width="200px" class="border-r">Facebook</th>
-                <th *ngIf="isHidden('Zalo')" width="200px" class="border-r">Zalo</th>
-                <th *ngIf="isHidden('Credit')" width="120px" class="text-right border-r">Nợ hiện tại</th>
-                <th *ngIf="isHidden('Active')" width="120px" class="text-center border-r">Hiệu lực</th>
-                <th *ngIf="isHidden('DateCreated')" width="150px" class="text-center border-r">Ngày tạo</th>
-                <th width="140px" class="text-center" [tdsRight]="true">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd'>
-                <tr class="text-body-2 text-neutral-900 font-regular"
-                  [ngClass]="setOfCheckedId.has(data.Id)?'bg-[#F2FCF5]':''">
-                  <td [expand]="expandSet.has(data.Id)" (expandChange)="onExpandChange(data.Id, $event)" [tdsLeft]="true">
-                  </td>
-                  <td [checked]="setOfCheckedId.has(data.Id)" (checkedChange)="onItemChecked(data.Id, $event)"
-                    class="border-l border-r text-center border-neutral-200" [tdsLeft]="true"></td>
-
-                  <td *ngIf="isHidden('DisplayName')" class=" border-r border-neutral-200" [tdsLeft]="true">
-                    <div class="flex flex-col">
-                      <span>{{data.DisplayName}}</span>
-                    </div>
-                  </td>
-                  <td *ngIf="isHidden('Phone')" class=" border-r border-neutral-200">
-                    <div class="flex flex-col">
-                      <span>{{data.Phone}}</span>
-                      <tds-tag *ngIf="data.NameNetwork" [status]="checkNameNetwork(data.NameNetwork)" type="outline">
-                        {{data.NameNetwork}} </tds-tag>
-                    </div>
-                  </td>
-                  <td *ngIf="isHidden('Email')" class="border-r border-neutral-200">{{ data.Email }}</td>
-                  <td *ngIf="isHidden('Street')" class="border-r border-neutral-200 ">
-                    <div class="w-full flex ">
-                      <span class="">{{ data.Street }}</span>
-                    </div>
-                  </td>
-                  <td *ngIf="isHidden('StatusText')" class="border-r border-neutral-200 ">
-                    <div class="w-full flex items-center">
-                      <span [ngStyle]="{'color': checkStatusText(data.StatusText)}"
-                        class="tdsi-radio-circle-fill"></span>
-                      <span class="ml-1">{{data.StatusText}}</span>
-                    </div>
-                  </td>
-                  <td *ngIf="isHidden('Tag')" class="border-r border-neutral-200">
-                    <div class="flex w-full gap-x-2 items-center">
-                      <div *ngIf="data.Tags" class="flex flex-wrap gap-2">
-                        <tds-tag class="truncate" *ngFor="let item of data.Tags | prettyjson" status='primary'>
-                          {{item.Name}}</tds-tag>
-                      </div>
-                      <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover
-                        [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
-                        [popoverContent]="contentAddtag" [popoverBackdrop]="true" popoverPlacement="left"
-                        color="secondary" size="sm" class=" border-0">
-                        <div class="w-5 h-5 relative">
-                          <i class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
-                          <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12" height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M6.00263 0.185353C5.78089 0.14704 5.55607 0.129611 5.3311 0.133295C3.96134 0.134421 2.64803 0.680863 1.67966 1.65259C0.711296 2.62431 0.167057 3.94186 0.166496 5.3158C0.162824 5.54146 0.180199 5.76697 0.218396 5.98938C0.342953 6.94846 0.732804 7.85338 1.34378 8.60162C1.95476 9.34986 2.76244 9.91151 3.67532 10.2229C4.5882 10.5344 5.56979 10.5831 6.50889 10.3637C7.44798 10.1443 8.30703 9.66541 8.98873 8.98138C9.67042 8.29736 10.1475 7.4355 10.3659 6.49346C10.5843 5.55142 10.5354 4.56685 10.2246 3.65129C9.91374 2.73574 9.3535 1.92579 8.60732 1.31322C7.86114 0.70065 6.95883 0.309939 6.00263 0.185353ZM8.09029 5.79283H5.80879V8.08342H4.85553V5.79283H2.57403V4.83665H4.85764V2.53756H5.81091V4.83878H8.09452L8.09029 5.79283Z" fill="#28A745"/>
-                          </svg>
-                        </div>
-                      </button>
-                      <!-- button thêm nhãn -->
-                      <ng-template #contentAddtag>
-                        <div class="w-96">
-                          <tds-form-field>
-                            <tds-select valueField="Id" textField="Name" placeholder='select item'
-                              [(ngModel)]="modelTags" [allowClear]="true" [valuePrimitive]="false" [data]="lstDataTag"
-                              mode="multiple">
-                            </tds-select>
-                          </tds-form-field>
-                        </div>
-                      </ng-template>
-                      <ng-template #footerAddTag>
-                        <div class="flex justify-end pt-2">
-                          <button tds-button-icon color="secondary" class="mr-2" size="sm" (click)="closeTag()">
-                            <span class="flex items-center">
-                              <i class="tdsi-close-fill"></i>
-                            </span>
-                          </button>
-                          <button tds-button-icon size="sm" (click)="assignTags(data.Id, modelTags)">
-                            <span class="flex items-center">
-                              <i class="tdsi-tick-fill"></i>
-                            </span>
-                          </button>
-                        </div>
-                      </ng-template>
-                    </div>
-                  </td>
-                  <td *ngIf="isHidden('FacebookId')" class="border-r border-neutral-200 text-right">{{ data.FacebookId}}
-                  </td>
-                  <td *ngIf="isHidden('Zalo')" class="border-r border-neutral-200 text-right">{{ data.Zalo}}</td>
-                  <td *ngIf="isHidden('Credit')" class="border-r border-neutral-200 text-right">
-                    {{ data.Credit || 0 | number :'1.0-3'}}</td>
-                  <td *ngIf="isHidden('Active')" class="text-center border-r border-neutral-200">
-                    <div class="w-full">
-                      <span
-                        [ngClass]="data.Active ? 'tdsi-success-fill text-success-400' : 'tdsi-error-fill text-error-400'"
-                        class="text-xl leading-5"></span>
-                    </div>
-                  </td>
-                  <td *ngIf="isHidden('DateCreated')" class="border-r border-neutral-200 text-center">
-                    {{ data.DateCreated | date:"dd/MM/yyyy"}}</td>
-                  <td [tdsRight]="true">
-                    <div class="flex gap-x-2">
-                      <button tds-button-icon color="secondary" tds-tooltip="Gửi tin nhắn" size="sm" (click)="openMiniChat(data)">
-                        <span class="flex items-center">
-                          <i class="tdsi-messenger-fill text-neutral-1-500"></i>
-                        </span>
-                      </button>
-                      <button tds-button-icon color="secondary" tds-tooltip="Chỉnh sửa" size="sm" (click)="editPartner(data)">
-                        <span class="flex items-center">
-                          <i class="tdsi-edit-fill text-neutral-1-500"></i>
-                        </span>
-                      </button>
-                      <button tds-button-icon color="secondary" tds-tooltip="Xóa" size="sm" (click)="onDelete(data)">
-                        <span class="flex items-center">
-                          <i class="tdsi-trash-fill text-neutral-1-500"></i>
-                        </span>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                <!-- expand partner details -->
-                <tr [expand]="expandSet.has(data.Id)"
-                    class="border-b border-neutral-2-100 text-neutral-1-900 bg-light-50 w-full"  >
-                    <div #viewChildDetailPartner [ngStyle]="{'max-width.px': widthTable, 'margin-left.px': marginLeftCollapse}"  class="flex items-center justify-center k-grid-table-wrap-detail">
-                        <expand-partner-detail class="w-full" *ngIf="expandSet.has(data.Id)" [dataPartner]="data">
-                        </expand-partner-detail>
-                    </div>
-                </tr>
-              </ng-template>
-            </tbody>
-          </tds-table>
-        </div>
-      </div>
     </div>
-  </div>
 
-  <tds-drawer [visible]="isOpenDrawer" [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
-    [placement]="'right'"  [title]="titleMessage" (onClose)="closeDrawer()" [width]="'890px'">
-    <ng-template #titleMessage>
-      <div class="flex gap-x-2 w-full items-center text-body-2 text-neutral-900">
-        <div *ngIf="mappingTeams.length > 0" class="flex gap-3 items-center">
-          <tpage-avatar-facebook [fbid]="currentMappingTeam?.team?.Facebook_PageId || currentMappingTeam?.team?.Facebook_ASUserId"
-            [token]="currentMappingTeam?.team?.Facebook_PageToken || currentMappingTeam?.team?.Facebook_UserToken">
-          </tpage-avatar-facebook>
-          <tds-button-group>
-            <button tds-dropdown trigger="click" type="button" [tdsDropdownMenu]="menu1">
-                <span class="flex items-center">
-                    {{currentMappingTeam?.team?.Facebook_PageName || 'Hãy chọn kênh'}}
-                    <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
-                </span>
-            </button>
-            <tds-dropdown-menu #menu1="tdsDropdownMenu">
-              <div class="w-full">
-                  <div tds-dropdown-item *ngFor="let item of mappingTeams"  (click)="selectMappingTeam(item)">
-                    <a> {{ item.team.Facebook_PageName }} </a>
-                  </div>
-              </div>
-            </tds-dropdown-menu>
-          </tds-button-group>
-        </div>
-      </div>
-  </ng-template>
-    <ng-container *tdsDrawerContent>
-        <div class="w-full h-full flex overflow-hidden bg-neutral-3-200 tds-custom-scroll" cdkScrollable>
-          <div *ngIf="currentConversation && currentMappingTeam?.team" class="w-full">
-            <shared-tds-conversations
-                class="flex w-full h-full"
-                [team]="currentMappingTeam?.team"
-                [data]="currentConversation"
-                [type]="'all'">
-            </shared-tds-conversations>
-          </div>
-        </div>
-
-    </ng-container>
-  </tds-drawer>
-
+    <tds-drawer [visible]="isOpenDrawer"
+        [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
+        [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'890px'">
+        <ng-template #titleMessage>
+            <div class="flex gap-x-2 w-full items-center text-body-2 text-neutral-900">
+                <div *ngIf="mappingTeams.length > 0" class="flex gap-3 items-center">
+                    <tpage-avatar-facebook
+                        [fbid]="currentMappingTeam?.team?.Facebook_PageId || currentMappingTeam?.team?.Facebook_ASUserId"
+                        [token]="currentMappingTeam?.team?.Facebook_PageToken || currentMappingTeam?.team?.Facebook_UserToken">
+                    </tpage-avatar-facebook>
+                    <tds-button-group>
+                        <button tds-dropdown trigger="click" type="button" [tdsDropdownMenu]="menu1">
+                            <span class="flex items-center">
+                                {{currentMappingTeam?.team?.Facebook_PageName || 'Hãy chọn kênh'}}
+                                <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                            </span>
+                        </button>
+                        <tds-dropdown-menu #menu1="tdsDropdownMenu">
+                            <div class="w-full">
+                                <div tds-dropdown-item *ngFor="let item of mappingTeams"
+                                    (click)="selectMappingTeam(item)">
+                                    <a> {{ item.team.Facebook_PageName }} </a>
+                                </div>
+                            </div>
+                        </tds-dropdown-menu>
+                    </tds-button-group>
+                </div>
+            </div>
+        </ng-template>
+        <ng-container *tdsDrawerContent>
+            <div class="w-full h-full flex overflow-hidden bg-neutral-3-200 tds-custom-scroll" cdkScrollable>
+                <div *ngIf="currentConversation && currentMappingTeam?.team" class="w-full">
+                    <shared-tds-conversations class="flex w-full h-full" [team]="currentMappingTeam?.team"
+                        [data]="currentConversation" [type]="'all'" [miniChat]="true">
+                    </shared-tds-conversations>
+                </div>
+            </div>
+        </ng-container>
+    </tds-drawer>
 </div>
