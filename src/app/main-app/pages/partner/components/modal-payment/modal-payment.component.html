@@ -22,7 +22,7 @@
 
       <tds-label>Ngày thanh toán</tds-label>
       <tds-form-field class="col-span-4 w-full mb-3">
-        <tds-date-picker formControlName="PaymentDate">
+        <tds-date-picker formControlName="PaymentDate" class="!w-full">
         </tds-date-picker>
         <tds-error>Vui lòng chọn ngày thanh toán</tds-error>
       </tds-form-field>
@@ -39,7 +39,7 @@
       Đóng
     </button>
 
-    <button tds-button class="mr-4" type="submit" [disabled]="checkValidate() || isSubmit" color="info"
+    <button tds-button class="mr-4" type="submit" [disabled]="checkValidate() || isSubmit" color="primary"
       (click)="onSave('print')">Thanh toán và in
     </button>
 

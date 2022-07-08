@@ -104,7 +104,15 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
 
   loadData(pageSize: number, pageIndex: number, filter?: FilterDataRequestDTO, sort?: SortDataRequestDTO[]) {
     filter = this.odataService.buildFilter(this.filterObj);
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filter || null, sort);
+    // TODO: mặc định sắp xếp giảm dần theo ngày tạo
+    let defaultSort = [
+      {
+        field: 'DateCreated',
+        dir: SortEnum.desc
+      }
+    ];
+
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filter || null, sort || defaultSort);
 
     this.getViewData(params).subscribe((res: ODataProductTemplateDTO) => {
       this.count = res['@odata.count'] as number;
@@ -149,12 +157,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     this.indClickTag = -1;
 
     this.filterObj.searchText = ev.value;
-    let filters = this.odataService.buildFilter(this.filterObj);
-    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters || null);
-    this.getViewData(params).subscribe((res: TDSSafeAny) => {
-      this.count = res['@odata.count'] as number;
-      this.lstOfData = res.value;
-    });
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   loadTagList() {

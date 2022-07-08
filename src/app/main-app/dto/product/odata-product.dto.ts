@@ -43,6 +43,7 @@ export interface ProductDTOV2 {
   InvoicePolicy: string;
   Variant_TeamId: number;
   Name: string;
+  Note?: string;
   PropertyCostMethod?: any;
   PropertyValuation?: any;
   PurchaseMethod: string;

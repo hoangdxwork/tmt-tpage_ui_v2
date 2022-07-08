@@ -23,7 +23,8 @@
                     <div>
                         <button tds-button color="secondary" type="button" (click)="showModalSampleMessage('facebook')">
                             <span class="flex items-center">
-                                <i class="tdsi-conversation-fill text-lg leading-none mr-2"></i>Nội dung mẫu
+                                <i class="tdsi-conversation-fill text-lg leading-none mr-2 text-neutral-1-500"></i>
+                                <div class="text-body-2 font-semibold text-neutral-1-900">Nội dung mẫu</div>
                             </span>
                         </button>
                     </div>
@@ -62,8 +63,12 @@
 
                                     <tds-dropdown-menu #menu="tdsDropdownMenu">
                                         <div class="w-full">
-                                            <button tds-button-menu-item>Item 0</button>
-                                            <button tds-button-menu-item>Item 2</button>
+                                            <div>
+                                              <button tds-button-menu-item>Item 0</button>
+                                            </div>
+                                            <div>
+                                              <button tds-button-menu-item>Item 1</button>
+                                            </div>
                                         </div>
                                     </tds-dropdown-menu>
                                 </div>
@@ -96,7 +101,8 @@
                     <div>
                         <button tds-button type="button" color="secondary" (click)="showModalSampleMessage('SMS')">
                             <span class="flex items-center">
-                                <i class="tdsi-conversation-fill text-lg leading-none mr-2"></i>Nội dung mẫu
+                                <i class="tdsi-conversation-fill text-lg leading-none mr-2 text-neutral-1-500"></i>
+                                <div class="text-neutral-1-900 font-semibold text-body-2">Nội dung mẫu</div>
                             </span>
                         </button>
                     </div>
@@ -141,13 +147,13 @@
 </div>
 </tds-spin>
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button *ngIf="indexTab == 0 && !isTableSendMessageFacebook" class="mr-2" type="button" color="secondary"
+    <button tds-button *ngIf="indexTab == 0 && !isTableSendMessageFacebook" class="mr-2 min-w-[100px]" type="button" color="secondary"
         (click)="close()">Đóng</button>
     <button tds-button *ngIf=" indexTab == 0 && !isTableSendMessageFacebook" type="submit" color="primary"
         [disabled]="isLoading" (click)="setStepFacebook()">
         Bước tiếp theo
     </button>
-    <button tds-button *ngIf="indexTab == 0 &&isTableSendMessageFacebook" class="mr-2" type="button" color="secondary"
+    <button tds-button *ngIf="indexTab == 0 &&isTableSendMessageFacebook" class="mr-2 min-w-[100px]" type="button" color="secondary"
         (click)="cancel()">Hủy</button>
     <button tds-button *ngIf="indexTab == 0 && isTableSendMessageFacebook" type="submit" color="primary"
         [disabled]="isLoading" (click)="sendMessageFacebook()">
@@ -155,13 +161,13 @@
             <i class="tdsi-send-fill mr-2"></i>Gửi tin nhắn
         </span>
     </button>
-    <button tds-button *ngIf="indexTab == 1 && !isTableSendMessageSMS" class="mr-2" type="button" color="secondary"
+    <button tds-button *ngIf="indexTab == 1 && !isTableSendMessageSMS" class="mr-2 min-w-[100px]" type="button" color="secondary"
         (click)="close()">Đóng</button>
     <button tds-button *ngIf=" indexTab == 1 && !isTableSendMessageSMS" type="submit" color="primary"
         [disabled]="isLoading" (click)="setStepSMS()">
         Bước tiếp theo
     </button>
-    <button tds-button *ngIf="indexTab == 1 &&isTableSendMessageSMS" class="mr-2" type="button" color="secondary"
+    <button tds-button *ngIf="indexTab == 1 &&isTableSendMessageSMS" class="mr-2 min-w-[100px]" type="button" color="secondary"
         (click)="cancel()">Hủy</button>
     <button tds-button *ngIf="indexTab == 1 && isTableSendMessageSMS" type="submit" color="primary"
         [disabled]="isLoading" (click)="sendMessageSMS()">
