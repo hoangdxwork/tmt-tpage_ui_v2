@@ -14,7 +14,7 @@
                           <input tdsInput autocomplete="off" placeholder="Nhập tên Khách hàng" [required]='true' formControlName="Name" />
                           <tds-error>Vui lòng nhập tên khách hàng</tds-error>
                       </tds-form-field>
-                      <tds-radio-group formControlName="CompanyType" [(ngModel)]="radioValue">
+                      <tds-radio-group formControlName="CompanyType">
                           <label class="mr-10" tds-radio value="person"> Cá nhân </label>
                           <label class="" tds-radio value="company"> Công ty </label>
                       </tds-radio-group>
@@ -112,9 +112,8 @@
                       </div>
                   </div>
               </div>
-              <div class="">
-                  <!-- [ngClass]="{'hidden' : radioValue == 'person'}" -->
-                  <div *ngIf="data.CompanyType == 'company' || radioValue == 'company'" class="grid grid-cols-3 gap-x-4 mt-4">
+              <div>
+                  <div *ngIf="_form.controls.CompanyType.value == 'company'" class="grid grid-cols-3 gap-x-4 mt-4">
                     <div class="flex items-center">
                         <tds-label>Mã số thuế</tds-label>
                     </div>
