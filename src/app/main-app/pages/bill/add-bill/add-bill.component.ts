@@ -144,8 +144,12 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.lstTeams = this.loadAllFacebookChilds();
     this.lstUser = this.loadUser();
     this.loadPartnerStatus();
-    const key = this.fastSaleOrderService._keyCacheUrlParams;
-    this.teamId = JSON.parse(localStorage.getItem(key) || '').teamId;
+    this.teamId = this.cRMTeamService.getCurrentTeam()?.Id;
+    //TODO: load teamId from indexedDB
+    // this.cRMTeamService.getCacheTeamId().subscribe((res)=>{
+    //   this.teamId = res;
+    //   this.cdRef.markForCheck();
+    // })
   }
 
   loadPartnerStatus() {
@@ -303,7 +307,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       }
       this.updateForm(this.dataModel);
     }, error => {
-      this.message.error('Load hóa đơn đã xảy ra lỗi!');
+      this.message.error(error?.error?.message || 'Load hóa đơn đã xảy ra lỗi!');
     })
   }
 
@@ -326,7 +330,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       this.dataModel = data;
       this.loadCacheCopy(this.dataModel);
     }, error => {
-      this.message.error('Load thông tin mặc định đã xảy ra lỗi!');
+      this.message.error(error?.error?.message || 'Load thông tin mặc định đã xảy ra lỗi!');
     });
   }
 
@@ -349,8 +353,8 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   loadTeamById(id: any) {
     this.cRMTeamService.getTeamById(id).pipe(takeUntil(this.destroy$)).subscribe((team: any) => {
-        this.dataModel.Team.Name = team.Name;
-        this.dataModel.Team.Facebook_PageName = team.Facebook_PageName;
+        this.dataModel.Team.Name = team?.Name;
+        this.dataModel.Team.Facebook_PageName = team?.Facebook_PageName;
     })
   }
 
@@ -360,7 +364,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       this.commonService.getPriceListItems(data.PriceListId).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
           this.priceListItems = res;
       }, error => {
-          this.message.error('Load bảng giá đã xảy ra lỗi!')
+          this.message.error(error?.error?.message || 'Load bảng giá đã xảy ra lỗi!')
       })
     }
 
@@ -438,7 +442,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.sharedService.getConfigs().pipe(takeUntil(this.destroy$)).subscribe((res: InitSaleDTO) => {
       this.roleConfigs = res.SaleSetting;
     }, error => {
-      this.message.error('Load thông tin cấu hình mặc định đã xảy ra lỗi!');
+      this.message.error(error?.error?.message || 'Load thông tin cấu hình mặc định đã xảy ra lỗi!');
     });
   }
 
@@ -446,7 +450,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe((res: CompanyCurrentDTO) => {
       this.companyCurrents = res;
     }, error => {
-      this.message.error('Load thông tin công ty mặc định đã xảy ra lỗi!');
+      this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
     });
   }
   loadCarrier() {
@@ -568,7 +572,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       this.commonService.getPriceListItems(event.Id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.priceListItems = res;
       }, error => {
-        this.message.error('Load bảng giá đã xảy ra lỗi!');
+        this.message.error(error?.error?.message || 'Load bảng giá đã xảy ra lỗi!');
       })
     }
   }
@@ -1288,7 +1292,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
         this.message.error(res.Message || 'Thao tác thất bại');
       }
     }, error => {
-      this.message.error('Đã xảy ra lỗi!');
+      this.message.error(error?.error?.message || 'Đã xảy ra lỗi!');
     });
   }
 
@@ -1305,7 +1309,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
         this.message.error(res.Message || 'Thao tác thất bại');
       }
     }, error => {
-      this.message.error('Đã xảy ra lỗi!');
+      this.message.error(error?.error?.message || 'Đã xảy ra lỗi!');
     });
   }
 
@@ -1654,7 +1658,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
           PriceSubTotal: res.PriceSubTotal,
           Weight: res.Weight,
           WeightTotal: res.WeightTotal,
-          AccountId: res.AccountId,
+          AccountId: res.AccountId || res.Account?.Id,
           PriceRecent: res.PriceRecent,
           Name: res.Name,
           IsName: false,

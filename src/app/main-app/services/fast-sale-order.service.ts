@@ -26,7 +26,6 @@ export class FastSaleOrderService extends BaseSevice {
   public readonly _keyCacheDefaultGetV2 = '_keycache_default_getV2';
   public readonly _keyCacheDHSDetails = '_keycache_dhs_details';
   public readonly _keyCacheCopyInvoice = '_keycache_copy_invoice';
-  public readonly _keyCacheUrlParams = 'urlParams';
 
   public onLoadPage$: EventEmitter<string> = new EventEmitter<string>();
 

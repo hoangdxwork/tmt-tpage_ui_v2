@@ -1,5 +1,5 @@
 import { ModalPaymentComponent } from './../../partner/components/modal-payment/modal-payment.component';
-import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
@@ -47,20 +47,25 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   constructor(private route: ActivatedRoute,
     private router: Router,
     private cacheApi: THelperCacheService,
-    private crmTeamService: CRMTeamService,
+    private cRMTeamService: CRMTeamService,
     private commonService: CommonService,
     private fastSaleOrderService: FastSaleOrderService,
     private modalService: TDSModalService,
     private printerService: PrinterService,
     private message: TDSMessageService,
-    private viewContainerRef: ViewContainerRef) {
+    private viewContainerRef: ViewContainerRef,
+    private cdRef: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get("id");
     this.loadData();
-    const key = this.fastSaleOrderService._keyCacheUrlParams;
-    this.teamId = JSON.parse(localStorage.getItem(key) || '').teamId;
+    this.teamId = this.cRMTeamService.getCurrentTeam()?.Id;
+    //TODO: load teamId from indexedDB
+    // this.cRMTeamService.getCacheTeamId().subscribe((res)=>{
+    //   this.teamId = res;
+    //   this.cdRef.markForCheck();
+    // })
   }
 
   directPage(route:string){
@@ -125,7 +130,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   }
 
   loadTeamById(id: any) {
-    this.crmTeamService.getTeamById(id).subscribe((team: any) => {
+    this.cRMTeamService.getTeamById(id).subscribe((team: any) => {
         this.dataModel.Team.Name = team.Name;
         this.dataModel.Team.Facebook_PageName = team.Facebook_PageName;
     })

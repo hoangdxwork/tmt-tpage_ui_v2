@@ -58,7 +58,6 @@ import { ConfigGreetingComponent } from './config-pages/config-pages-basic/confi
 import { ConfigConversationTagsCreateDataModalComponent } from './components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
 import { FacebookService } from '../../services/facebook.service';
 import { ConfigProductDetailsComponent } from './components/config-product-details/config-product-details.component';
-import { ConfigAddCategoryModalComponent } from './components/config-add-category-modal/config-add-category-modal.component';
 import { ApplicationRoleService } from '../../services/application-role.service';
 import { UserRestHandler } from '../../services/handlers/user-rest.handler';
 import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
@@ -166,7 +165,6 @@ const SERVICES = [
     ConfigGreetingComponent,
     ConfigConversationTagsCreateDataModalComponent,
     ConfigProductDetailsComponent,
-    ConfigAddCategoryModalComponent,
     ConfigAddAttributeProductModalComponent,
     ConfigAddPromotionComponent,
     ConfigEditPromotionComponent,

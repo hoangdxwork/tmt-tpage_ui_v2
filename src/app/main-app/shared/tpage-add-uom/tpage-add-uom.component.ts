@@ -1,5 +1,6 @@
+import { Subject } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, OnDestroy } from '@angular/core';
 import { ProductUOMService } from '../../services/product-uom.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ProductUOMDTO } from '../../dto/product/product-uom.dto';
@@ -9,12 +10,11 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'tpage-add-uom',
-  templateUrl: './tpage-add-uom.component.html',
-  styleUrls: ['./tpage-add-uom.component.scss']
+  templateUrl: './tpage-add-uom.component.html'
 })
-export class TpageAddUOMComponent implements OnInit {
+export class TpageAddUOMComponent implements OnInit, OnDestroy {
 
-  formAddUOM!: FormGroup;
+  _form!: FormGroup;
 
   lstUOMCategory!: Array<ProductUOMDTO>;
 
@@ -23,6 +23,8 @@ export class TpageAddUOMComponent implements OnInit {
     {type: "reference",text: "Là đơn vị gốc của nhóm này"},
     {type: "smaller",text: "Nhỏ hơn đơn vị gốc"},
   ];
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
@@ -33,7 +35,6 @@ export class TpageAddUOMComponent implements OnInit {
 
   ngOnInit(): void {
     this.createForm();
-
     this.loadProductUOMCateg();
   }
 
@@ -43,21 +44,20 @@ export class TpageAddUOMComponent implements OnInit {
     });
   }
 
-  onSave() {
-    let model = this.prepareModel();
-
-    this.productUOMService.insert(model).subscribe(res => {
-      this.message.success(Message.ProductUOM.InsertSuccess);
-      this.onCancel(res);
+  createForm() {
+    this._form = this.fb.group({
+      Name: [null, Validators.required],
+      Category: [null, Validators.required],
+      UOMType: ["reference"],
+      Factor: [1],
+      FactorInv: [1],
+      Active: [true],
+      Rounding: [0.01]
     });
   }
 
-  onCancel(result: TDSSafeAny) {
-    this.modalRef.destroy(result);
-  }
-
   prepareModel() {
-    const formModel = this.formAddUOM.value;
+    const formModel = this._form.value;
 
     let model = {
       Active: formModel.Active,
@@ -74,16 +74,21 @@ export class TpageAddUOMComponent implements OnInit {
     return model;
   }
 
-  createForm() {
-    this.formAddUOM = this.fb.group({
-      Name: [null, Validators.required],
-      Category: [null, Validators.required],
-      UOMType: ["reference"],
-      Factor: [1],
-      FactorInv: [1],
-      Active: [true],
-      Rounding: [0.01]
+  onSave() {
+    let model = this.prepareModel();
+
+    this.productUOMService.insert(model).subscribe(res => {
+      this.message.success(Message.ProductUOM.InsertSuccess);
+      this.onCancel(res);
     });
   }
 
+  onCancel(result: TDSSafeAny) {
+    this.modalRef.destroy(result);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }
