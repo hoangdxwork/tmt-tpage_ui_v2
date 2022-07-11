@@ -1,3 +1,151 @@
+<form class="flex flex-col" [formGroup]="_form" >
+  <div class="w-full text-body-2 text-neutral-1-900">
+    <div class="grid grid-cols-2 gap-x-8 gap-y-4">
+        <div class="col-span-1 row-span-2 flex gap-x-6 items-center">
+            <div class="px-4">
+                <tds-upload [beforeUpload]="beforeUpload" [showUploadList]="false">
+                  <tds-avatar [isAvatar]="false" class="rounded-lg" [shape]="'square'" [size]="84"
+                    tdsSrc="{{ _form.controls['ImageUrl'].value }}">
+                  </tds-avatar>
+                </tds-upload>
+            </div>
+            <div class="w-full">
+                <tds-form-field>
+                    <tds-label>Tên sản phẩm</tds-label>
+                    <input tdsInput autocomplete="off" placeholder="Nhập tên sản phẩm" [required]='true' formControlName="Name" />
+                    <tds-error>Vui lòng nhập tên sản phẩm</tds-error>
+                </tds-form-field>
+            </div>
+        </div>
+        <div class="flex items-center">
+            <tds-label class="w-1/3">Giá bán</tds-label>
+            <div class="w-2/3">
+                <tds-input-number [min]="0" [step]="1000" formControlName="ListPrice">
+                </tds-input-number>
+            </div>
+        </div>
+        <div class="flex items-center">
+            <tds-label class="w-1/3">Chiết khấu bán (%)</tds-label>
+            <div class="w-2/3">
+                <tds-input-number [min]="0" [max]="100" [step]="1" formControlName="DiscountSale">
+                </tds-input-number>
+            </div>
+        </div>
+        <div class="flex items-center">
+            <tds-label class="w-1/3">Loại sản phẩm</tds-label>
+            <div class="w-2/3">
+                <tds-form-field>
+                    <tds-select placeholder='Chọn loại sản phẩm' formControlName="Type"
+                        disabledField="isActive" [required]='true' [data]="lstProductType" [allowClear]="true">
+                    </tds-select>
+                </tds-form-field>
+            </div>
+        </div>
+        <div class="flex items-center">
+            <tds-label class="w-1/3">Giá mua mặc định</tds-label>
+            <div class="w-2/3">
+                <tds-input-number [min]="0" [step]="1000" formControlName="PurchasePrice">
+                </tds-input-number>
+            </div>
+        </div>
+        <div class="flex items-center">
+            <tds-label class="w-1/3">Mã sản phẩm</tds-label>
+            <div class="w-2/3">
+                <tds-form-field>
+                    <input tdsInput autocomplete="off" placeholder="Để trống sẽ phát sinh tự động" formControlName="DefaultCode"/>
+                </tds-form-field>
+            </div>
+        </div>
+        <div class="flex items-center">
+            <tds-label class="w-1/3">Chiết khấu mua (%)</tds-label>
+            <div class="w-2/3">
+                <tds-input-number [min]="0" [max]="100" [step]="1" formControlName="DiscountPurchase">
+                </tds-input-number>
+            </div>
+        </div>
+        <div class="flex items-center">
+            <tds-label class="w-1/3">Mã vạch</tds-label>
+            <div class="w-2/3">
+                <tds-form-field>
+                    <input tdsInput autocomplete="off" placeholder="Nhập mã vạch" formControlName="Barcode" />
+                </tds-form-field>
+            </div>
+        </div>
+        <div class="flex items-center">
+            <tds-label class="w-1/3">Giá vốn</tds-label>
+            <div class="w-2/3">
+                <tds-input-number [min]="0" [step]="1000" formControlName="StandardPrice">
+                </tds-input-number>
+            </div>
+        </div>
+        <div class="flex items-center">
+            <tds-label class="w-1/3">Nhóm sản phẩm</tds-label>
+            <div class="w-2/3 flex gap-x-2">
+                <div class="w-full">
+                    <tds-form-field>
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm sản phẩm' formControlName="Categ"
+                            disabledField="isActive" [required]='true' [data]="lstCategory" [allowClear]="true" [valuePrimitive]="false">
+                        </tds-select>
+                    </tds-form-field>
+                </div>
+                <button tds-button-icon type="button" color="primary" size="md" (click)="onCreateCategory()">
+                    <span class="flex items-center">
+                        <i class="tdsi-plus-fill"></i>
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div class="flex items-center">
+            <tds-label class="w-1/3">Đơn vị mặc định</tds-label>
+            <div class="w-2/3 flex gap-x-2">
+                <div class="w-full">
+                    <tds-form-field>
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn đơn vị mặc định' formControlName="UOM"
+                            disabledField="isActive" [required]='true' [data]="lstUOMCategory" [allowClear]="true" [valuePrimitive]="false">
+                        </tds-select>
+                    </tds-form-field>
+                </div>
+                <button tds-button-icon type="button" color="secondary" size="md"  (click)="onSearchUOM()">
+                    <span class="flex items-center">
+                        <i class="tdsi-search-fill text-neutral-1-500"></i>
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div class="flex items-center">
+            <tds-label class="w-1/3">Khối lượng (kg)</tds-label>
+            <div class="w-2/3">
+                <tds-input-number [min]="0" [step]="1" formControlName="Weight">
+                </tds-input-number>
+            </div>
+        </div>
+        <div class="flex items-center">
+            <tds-label class="w-1/3">Đơn vị mua</tds-label>
+            <div class="w-2/3 flex gap-x-2">
+                <div class="w-full">
+                    <tds-form-field>
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn đơn vị mua' formControlName="UOMPO"
+                            disabledField="isActive" [required]='true' [data]="lstUOMCategory" [allowClear]="true" [valuePrimitive]="false">
+                        </tds-select>
+                    </tds-form-field>
+                </div>
+                <button tds-button-icon type="button" color="secondary" size="md" (click)="onSearchUOM()">
+                    <span class="flex items-center">
+                        <i class="tdsi-search-fill text-neutral-1-500"></i>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="w-full flex justify-end p-4" *tdsModalFooter>
+        <button tds-button type="button" class="mr-4 w-[100px]" color="secondary" (click)="onCancel(null)">Đóng</button>
+        <button tds-button type="button" color="custom" class="min-w-[120px] mr-4 text-white focus:ring-4 focus:ring-secondary-1/20
+        border-secondary-1 bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1
+        focus:border-secondary-1" (click)="onSave('select')" [disabled]="!_form?.valid">Lưu và chọn</button>
+        <button tds-button type="submit" class="w-[100px] mr-4" color="primary" (click)="onSave()" [disabled]="!_form?.valid">Lưu</button>
+    </div>
+  </div>
+</form>
 <tds-spin [spinning]="isLoading">
   <form class="flex flex-col" [formGroup]="_form" >
     <div class="w-full text-body-2 text-neutral-1-900">

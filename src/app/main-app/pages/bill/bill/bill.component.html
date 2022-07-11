@@ -22,7 +22,7 @@
 
         <!-- TODO: Thao tác -->
         <div class="flex items-center gap-x-2">
-          <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]>
+          <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId] (reloadBill)="reloadBill($event)">
           </action-dropdown>
           <div>
             <tds-form-field class="w-[240px]">
@@ -192,7 +192,7 @@
                     <span tds-popover [popoverVisible]="indClickStatus == data.Id" popoverTrigger="click"
                       [popoverFooter]="footerShipStatus" [popoverContent]="contentShipStatus" [popoverBackdrop]="true"
                       popoverPlacement="bottom" [popoverAutoClose]="false"
-                      class="text-info-400 cursor-pointer hover:underline active:underline"
+                      class="text-info-400 cursor-pointer border-b border-info-400 border-dashed"
                       (click)="openShipStatus(data,data.Id)">
                       {{data.ShowShipStatus}}
                     </span>

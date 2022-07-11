@@ -242,14 +242,11 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     });
 
     modal.afterClose.subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
-        this.loadUOMCateg();
-      }
+      this.loadUOMCateg();
     });
   }
 
   handleChangeImage(info: TDSUploadChangeParam) {
-    console.log(info);
     if (info.file.status === 'done') {
       this.message.success(`${info.file.name} ${Message.Upload.Success}`);
     } else if (info.file.status === 'error') {

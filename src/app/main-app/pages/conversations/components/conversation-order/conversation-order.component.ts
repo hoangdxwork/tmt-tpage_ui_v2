@@ -150,21 +150,21 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     })
   }
 
-  onSelectOrderFromMessage() {
-    this.conversationOrderFacade.onSelectOrderFromMessage$.pipe(takeUntil(this.destroy$)).subscribe(res => {
+  // onSelectOrderFromMessage() {
+  //   this.conversationOrderFacade.onSelectOrderFromMessage$.pipe(takeUntil(this.destroy$)).subscribe(res => {
 
-        if(res && TDSHelperString.hasValueString(res.phone) ) {
-            this.quickOrderModel.Telephone = res.phone;
-        }
-        if(res && TDSHelperString.hasValueString(res.address)) {
-            this.quickOrderModel.Address = res.address;
-        }
-        if(res && TDSHelperString.hasValueString(res.note)) {
-            let text = (this.quickOrderModel.Note || "") + ((this.quickOrderModel.Note || "").length > 0 ? '\n' + res.note : res.note);
-            this.quickOrderModel.Note = text;
-        }
-    })
-  }
+  //       if(res && TDSHelperString.hasValueString(res.phone) ) {
+  //           this.quickOrderModel.Telephone = res.phone;
+  //       }
+  //       if(res && TDSHelperString.hasValueString(res.address)) {
+  //           this.quickOrderModel.Address = res.address;
+  //       }
+  //       if(res && TDSHelperString.hasValueString(res.note)) {
+  //           let text = (this.quickOrderModel.Note || "") + ((this.quickOrderModel.Note || "").length > 0 ? '\n' + res.note : res.note);
+  //           this.quickOrderModel.Note = text;
+  //       }
+  //   })
+  // }
 
   loadSaleModel() {
     let model = { Type: 'invoice' };

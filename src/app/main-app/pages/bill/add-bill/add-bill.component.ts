@@ -1610,7 +1610,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     }
   }
 
-  pushProductToOrderlines(event: DataPouchDBDTO): any {debugger
+  pushProductToOrderlines(event: DataPouchDBDTO): any {
     let data = {
       model: {
         Discount: event.DiscountSale,
@@ -1642,7 +1642,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.fsOrderLineService.onChangeProduct(data)
       .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => { this.isLoadingProduct = false }))
-      .subscribe((res: FSOrderLines) => {debugger
+      .subscribe((res: FSOrderLines) => {
         delete res['@odata.context'];
         var item: OrderLineV2 = {
           Id: 0,

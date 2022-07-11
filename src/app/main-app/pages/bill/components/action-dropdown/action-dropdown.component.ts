@@ -4,7 +4,7 @@ import { ShipCodeDeliveryComponent } from './../ship-code-delivery/ship-code-del
 import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { GenerateMessageTypeEnum } from './../../../../dto/conversation/message.dto';
 import { CrossCheckingStatusComponent } from '../cross-checking-status/cross-checking-status.component';
-import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewContainerRef } from "@angular/core";
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewContainerRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subject } from "rxjs";
 import { finalize, map, takeUntil } from "rxjs/operators";
@@ -33,6 +33,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   @Input() setOfCheckedId: any = [];
   @Input() lstOfData: FastSaleOrderDTO[] = [];
   @Input() type!: string;
+  @Output() reloadBill: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   isProcessing: boolean = false;
   isLoading: boolean = false;
@@ -377,6 +378,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         onOk: () => {
           that.fastSaleOrderService.actionInvoiceOpen({ ids: that.idsModel }).pipe(takeUntil(this.destroy$),finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
             that.message.success('Xác nhận bán hàng thành công!');
+            this.reloadBill.emit(true);
           }, error => {
             that.message.error(`${error?.error?.message}` || 'Xác nhận bán hàng thất bại');
           })
