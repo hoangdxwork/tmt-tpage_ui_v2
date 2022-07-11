@@ -236,11 +236,11 @@
                             <td [width]="'80px'">{{ 1 + i }}</td>
                             <td>
                               <div class="flex flex-col">
-                                <span class="mb-2">{{ data.NameTemplate }}</span>
+                                <span class="mb-2">{{ data.NameTemplate || data.Name }}</span>
                                 <div class="flex flex-wrap items-center gap-1">
                                   <tds-tag *ngFor="let item of data.AttributeValues" status='secondary'
                                     rounded="rounded-full">
-                                    {{item.NameGet}}
+                                    {{item.NameGet || (item.AttributeName + ': ' + item.Name)}}
                                   </tds-tag>
                                 </div>
                               </div>

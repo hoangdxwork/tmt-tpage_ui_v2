@@ -80,6 +80,9 @@ export class TpageAddUOMComponent implements OnInit, OnDestroy {
     this.productUOMService.insert(model).subscribe(res => {
       this.message.success(Message.ProductUOM.InsertSuccess);
       this.onCancel(res);
+    },
+    error=>{
+      this.message.error(error?.error?.message || Message.InsertFail);
     });
   }
 
