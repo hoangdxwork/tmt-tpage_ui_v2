@@ -37,7 +37,7 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
   innerText: string = '';
 
   tempAddresses: Array<ResultCheckAddressDTO> = [];
-  ExpandedLstAddress: boolean = false;
+  expandedLstAddress: boolean = false;
   index: number = 0;
 
   private citySubject = new BehaviorSubject<SuggestCitiesDTO[]>([]);
@@ -311,8 +311,8 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
   }
 
   checkAddress(event: any) {
-    this.ExpandedLstAddress = !this.ExpandedLstAddress;
-    if(!this.ExpandedLstAddress){
+    this.expandedLstAddress = !this.expandedLstAddress;
+    if(!this.expandedLstAddress){
       return
     }
     let text = this.innerText;

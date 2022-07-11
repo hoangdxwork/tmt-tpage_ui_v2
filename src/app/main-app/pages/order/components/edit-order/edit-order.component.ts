@@ -147,11 +147,12 @@ export class EditOrderComponent implements OnInit {
     this.saleOnline_OrderService.getById(id).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
       delete res['@odata.context'];
       this.quickOrderModel = res;
-      this.cdRef.detectChanges();
       this.mappingAddress(this.quickOrderModel)
       if(res.Facebook_PostId && res.CRMTeamId && res.Facebook_ASUserId) {
           this.commentsOfOrder(res.Facebook_PostId, res.CRMTeamId, res.Facebook_ASUserId);
       }
+      
+      this.cdRef.detectChanges();
     }, error => {
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Load đơn hàng đã xảy ra lỗi');
     });
