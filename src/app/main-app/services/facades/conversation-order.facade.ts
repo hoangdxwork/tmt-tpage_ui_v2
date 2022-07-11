@@ -39,7 +39,7 @@ export class ConversationOrderFacade extends BaseSevice  {
   // Event loading tab partner, order
   public onChangeTab$ = new EventEmitter<ChangeTabConversationEnum>();
   // Event Output
-  public onLastOrderUpdated$: EventEmitter<any> = new EventEmitter<any>();
+  // public onLastOrderUpdated$: EventEmitter<any> = new EventEmitter<any>();
   // output dùng để đẩy dữ liệu sang conversation-order
   public onLastOrderCheckedConversation$: EventEmitter<QuickSaleOnlineOrderModel> = new EventEmitter<QuickSaleOnlineOrderModel>();
   // TODO: Chọn làm địa chỉ, số điện thoại, ghi chú  selectOrder(type: string)

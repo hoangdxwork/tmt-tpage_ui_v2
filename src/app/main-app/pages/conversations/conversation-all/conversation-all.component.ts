@@ -1,3 +1,4 @@
+import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { FacebookRESTService } from './../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from './../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';

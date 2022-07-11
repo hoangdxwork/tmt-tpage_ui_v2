@@ -62,19 +62,20 @@
                       </tds-button-group>
                     </div>
                     <div class="flex gap-x-2">
-                      <button tds-button-icon color="secondary" type="button" *ngIf="_form.controls['Partner'].value"
+                      <button tds-button-icon color="secondary" type="button" tds-tooltip tooltipTitle="Sửa khách hàng"
+                        *ngIf="_form.controls['Partner'].value"
                         (click)="editPartner(_form.controls['Partner'].value)">
                         <span class="flex items-center">
                           <i class="tdsi-edit-fill text-neutral-1-500"></i>
                         </span>
                       </button>
-                      <button tds-button-icon color="primary" type="button" tds-tooltip tooltipTitle="Sửa khách hàng"
+                      <button tds-button-icon color="primary" type="button" tds-tooltip tooltipTitle="Thêm mới khách hàng"
                         (click)="editPartner(null)">
                         <span class="flex items-center">
                           <i class="tdsi-plus-fill"></i>
                         </span>
                       </button>
-                      <button tds-button-icon color="secondary" type="button" tds-tooltip tooltipTitle="Tìm khách hàng"
+                      <button tds-button-icon color="secondary" type="button" tds-tooltip tooltipTitle="Tìm kiếm khách hàng"
                         (click)="showModalSearchPartner()">
                         <span class="flex items-center">
                           <i class="tdsi-search-fill text-neutral-1-500"></i>

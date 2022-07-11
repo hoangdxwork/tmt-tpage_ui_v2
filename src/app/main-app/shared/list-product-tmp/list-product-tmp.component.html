@@ -6,7 +6,7 @@
           <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
       </tds-form-field>
       <tds-button-group>
-          <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu1">
+          <button tds-button type="button" color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu1">
               <span class="flex items-center" *ngIf="currentOption">
                   {{currentOption.text}} <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
               </span>
@@ -18,7 +18,7 @@
           </tds-dropdown-menu>
       </tds-button-group>
       <tds-button-group>
-          <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu2">
+          <button tds-button type="button" color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu2">
               <span class="flex items-center" *ngIf="currentType">
                 {{currentType.text}} <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
               </span>
@@ -29,12 +29,12 @@
               </div>
           </tds-dropdown-menu>
       </tds-button-group>
-      <button tds-button-icon color="primary" tds-tooltip tooltipTitle="Thêm sản phẩm" (click)="showModalAddProduct()" type="button">
+      <button tds-button-icon type="button" color="primary" tds-tooltip tooltipTitle="Thêm sản phẩm" (click)="showModalAddProduct()" type="button">
           <span class="flex items-center">
               <i class="tdsi-plus-fill"></i>
           </span>
       </button>
-      <button tds-button-icon color="info" tds-tooltip tooltipTitle="Reload" type="button" (click)="reloadIndexDB()">
+      <button tds-button-icon type="button" color="info" tds-tooltip tooltipTitle="Reload" type="button" (click)="reloadIndexDB()">
           <span class="flex items-center">
               <i class="tdsi-reload-fill"></i>
           </span>
@@ -81,7 +81,7 @@
                       <td class="text-body-2">{{ data.UOMName }}</td>
                       <td class="text-body-2">{{ data.Price | number: '1.0-3'}} đ</td>
                       <td>
-                          <button class="group-hover:block hidden" tds-button-icon color="primary" size="sm" (click)="addItem(data)">
+                          <button class="group-hover:block hidden" tds-button-icon type="button" color="primary" size="sm" (click)="addItem(data)">
                               <span class="flex items-center">
                                   <i class="tdsi-arrow-right-line"></i>
                               </span>
