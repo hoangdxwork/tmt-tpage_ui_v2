@@ -88,20 +88,20 @@
           [loading]="isLoading" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
           <thead>
             <tr>
-              <th [align]="'center'" width="50px" [tdsLeft]="true" class="border-r"></th>
-              <th [(checked)]="checked" [indeterminate]="indeterminate" width="50px" class="border-r" [align]="'center'"
+              <th [align]="'center'" width="32px" [tdsLeft]="true" class="border-r"></th>
+              <th [(checked)]="checked" [indeterminate]="indeterminate" width="42px" class="border-r" [align]="'center'"
                 (checkedChange)="onAllChecked($event)" [tdsLeft]="true"></th>
               <th width="64px" [tdsLeft]="true" class="border-r">STT</th>
-              <th *ngIf="isHidden('Code')" width="240px" [tdsLeft]="true" class="border-r">Mã</th>
-              <th *ngIf="isHidden('CRMTeamName')" width="240px" class="border-r">Kênh kết nối</th>
-              <th *ngIf="isHidden('Name')" width="250px" class="border-r">Tên</th>
+              <th *ngIf="isHidden('Code')" width="200px" [tdsLeft]="true" class="border-r">Mã</th>
+              <th *ngIf="isHidden('CRMTeamName')" width="160px" class="border-r">Kênh kết nối</th>
+              <th *ngIf="isHidden('Name')" width="240px" class="border-r">Tên</th>
               <th *ngIf="isHidden('Address')" width="380px" class="border-r">Địa chỉ</th>
-              <th *ngIf="isHidden('TotalAmount')" width="240px" class="border-r text-right">Tổng tiền</th>
+              <th *ngIf="isHidden('TotalAmount')" width="140px" class="border-r text-right">Tổng tiền</th>
               <th *ngIf="isHidden('TotalQuantity')" width="140px" class="border-r">Tổng SL</th>
-              <th *ngIf="isHidden('StatusText')" width="150px" class="border-r">Trạng thái</th>
-              <th *ngIf="isHidden('DateCreated')" width="240px" class="border-r">Ngày tạo</th>
-              <th *ngIf="isHidden('UserName')" width="240px" class="border-r">Nhân viên</th>
-              <th width="140px" [tdsRight]="true" class="border-r">Thao tác</th>
+              <th *ngIf="isHidden('DateCreated')" width="155px" class="border-r">Ngày tạo</th>
+              <th *ngIf="isHidden('StatusText')" width="160px" class="border-r">Trạng thái</th>
+              <th *ngIf="isHidden('UserName')" width="126px" class="border-r">Nhân viên</th>
+              <th width="130px" [tdsRight]="true" class="border-r">Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -248,6 +248,11 @@
                   <span>{{data.TotalQuantity || 0 | number}}</span>
                 </td>
 
+                <!-- Ngày hóa đơn -->
+                <td *ngIf="isHidden('DateCreated')" class="border-r">
+                  <span>{{data.DateCreated | date:"dd/MM/yyyy HH:mm"}}</span>
+                </td>
+
                 <!-- Trạng thái -->
                 <!--   [popoverFooter]="footerShipStatus" [popoverContent]="contentShipStatus" -->
                 <td *ngIf="isHidden('StatusText')" class="border-r">
@@ -267,11 +272,6 @@
                       </div>
                     </div>
                   </tds-dropdown-menu>
-                </td>
-
-                <!-- Ngày hóa đơn -->
-                <td *ngIf="isHidden('DateCreated')" class="border-r">
-                  <span>{{data.DateCreated | date:"dd-MM-yyyy HH:mm"}}</span>
                 </td>
 
                 <!-- Nhân viên -->

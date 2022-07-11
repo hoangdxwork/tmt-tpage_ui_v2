@@ -8,7 +8,7 @@ import { CommonService } from 'src/app/main-app/services/common.service';
 import { ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { TAuthService } from 'src/app/lib';
 import { UserInitDTO } from 'src/app/lib/dto';
-import { DataSuggestionDTO } from 'src/app/main-app/dto/address/address.dto';
+import { DataSuggestionDTO, ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SaleOnline_FacebookCommentService } from 'src/app/main-app/services/sale-online-facebook-comment.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { ProductService } from 'src/app/main-app/services/product.service';
@@ -534,7 +534,7 @@ export class EditOrderComponent implements OnInit {
                 return false;
               }
           }
-          
+
           PrepareSaleModelHandler.prepareSaleModel(this.saleModel, this.quickOrderModel, this.shipExtraServices);
       }
 
