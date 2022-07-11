@@ -37,6 +37,7 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
   innerText: string = '';
 
   tempAddresses: Array<ResultCheckAddressDTO> = [];
+  expandedLstAddress: boolean = false;
   index: number = 0;
 
   private citySubject = new BehaviorSubject<SuggestCitiesDTO[]>([]);
@@ -310,6 +311,10 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
   }
 
   checkAddress(event: any) {
+    this.expandedLstAddress = !this.expandedLstAddress;
+    if(!this.expandedLstAddress){
+      return
+    }
     let text = this.innerText;
 
     if(!TDSHelperString.hasValueString(text)) {
@@ -338,18 +343,24 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
                 code: item.CityCode,
                 name: item.CityName
             });
+            this.loadDistricts(item.CityCode)
         }
         if(item.DistrictCode) {
           this._form.controls['District'].patchValue({
                 code: item.DistrictCode,
                 name: item.DistrictName
             });
+            this.loadWards(item.DistrictCode)
+        }else{
+          this._form.controls['District'].patchValue(null);
         }
         if(item.WardCode) {
           this._form.controls['Ward'].patchValue({
                 code: item.WardCode,
                 name: item.WardName
             });
+        }else{
+          this._form.controls['Ward'].patchValue(null);
         }
         this.onLoadSuggestion.emit(item);
     }
