@@ -234,6 +234,7 @@ export class ModalEditOrderComponent implements OnInit {
       size: 'xl',
       viewContainerRef: this.viewContainerRef,
       componentParams: {
+        typeComponent: null,
       }
     });
 

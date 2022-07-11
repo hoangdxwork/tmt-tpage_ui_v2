@@ -205,18 +205,23 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
       title: 'Thêm sản phẩm',
       content: TpageAddProductComponent,
       size: "xl",
-      viewContainerRef: this.viewContainerRef
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        typeComponent: 'lst-product-tmp',
+      }
     });
 
     modal.afterClose.pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
         if(res) {
           let productTmplItems = res[0];
-          let cacheObject = res[1];
+          if(res[1]) {
+            let cacheObject = res[1];
 
-          this.indexDbProductCount = cacheObject.cacheCount;
-          this.indexDbVersion = cacheObject.cacheVersion;
-          this.indexDbStorage = cacheObject.cacheDbStorage;
+            this.indexDbProductCount = cacheObject.cacheCount;
+            this.indexDbVersion = cacheObject.cacheVersion;
+            this.indexDbStorage = cacheObject.cacheDbStorage;
+          }
 
           // TODO: trường hợp thêm mới push sp vào orderLines
           if(productTmplItems?.Id) {
@@ -238,7 +243,10 @@ export class ListProductTmpComponent  implements OnInit, AfterViewInit, OnDestro
   reloadIndexDB() {
     this.currentType = { text: "Bán chạy", value: "PosSalesCount" };
     this.currentOption = { text: 'Tất cả', value: 'all'};
-    this.innerText.nativeElement.value = '';
+
+    if(this.innerText?.nativeElement?.value) {
+      this.innerText.nativeElement.value = '';
+    }
     this.keyFilter = '';
 
     this.indexDbProductCount = -1;

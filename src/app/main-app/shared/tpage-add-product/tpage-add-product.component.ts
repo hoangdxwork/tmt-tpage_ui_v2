@@ -1,6 +1,6 @@
 import { Subject, finalize } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewContainerRef, NgZone, OnDestroy, ChangeDetectorRef, Input } from '@angular/core';
 import { ProductTemplateDTO, ProductType, ProductUOMDTO } from '../../dto/product/product.dto';
 import { ProductTemplateService } from '../../services/product-template.service';
 import { ProductCategoryService } from '../../services/product-category.service';
@@ -17,6 +17,7 @@ import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSUploadChangeParam, TDSUploadFile } from 'tds-ui/upload';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
+import { TDSNotificationService } from 'tds-ui/notification';
 
 @Component({
   selector: 'tpage-add-product',
@@ -26,6 +27,7 @@ import { TDSMessageService } from 'tds-ui/message';
 export class TpageAddProductComponent implements OnInit, OnDestroy {
 
   @Output() onLoadedProductSelect = new EventEmitter<TDSSafeAny>();
+  @Input() typeComponent!: any;
 
   _form!: FormGroup;
   defaultGet!: ProductTemplateDTO;
@@ -50,6 +52,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     private productTemplateService: ProductTemplateService,
     private productCategoryService: ProductCategoryService,
     private productUOMService: ProductUOMService,
+    private notification: TDSNotificationService,
     public zone: NgZone) {
     this.createForm();
   }
@@ -63,9 +66,11 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   loadDefault() {
     this.isLoading = true;
     this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: TDSSafeAny) => {
-      delete res["@odata.context"];
-      this.defaultGet = res;
-      this.updateForm(res);
+
+        delete res["@odata.context"];
+        this.defaultGet = res;
+        this.updateForm(res);
+
     }, error => {
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
     });
@@ -167,24 +172,41 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   onSave(type?: string) :any {
     let model = this.prepareModel();
     this.isLoading = true;
-    
-    this.productTemplateService.insert(model)
-      .pipe(map((res: any) => { return res}),
-        mergeMap((res) => {
-          return this.productIndexDBService.loadProductIndexDBV2()
-            .pipe(map((x: KeyCacheIndexDBDTO) => { return [res, x] }
-          ))}
-      ))
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(([res, x]) => {
-        delete res['@odata.context'];
-        this.message.success(Message.Product.InsertSuccess);
 
-        if (type == "select") {
-          this.onCancel([res, x]);
-        } else {
-          this.onCancel(null);
+    this.productTemplateService.insert(model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+      .subscribe((res) => {
+
+        delete res['@odata.context'];
+        this.message.success('Thêm mới sản phẩm thành công');
+
+        // TODO: Trường hợp ở component Phiếu bán hàng
+        if(this.typeComponent == 'lst-product-tmp') {
+            this.productIndexDBService.loadProductIndexDBV2().subscribe((x) => {
+                if (type == "select") {
+                    this.onCancel([res, x]);
+                } else {
+                    this.onCancel(null);
+                }
+            }, error => {
+                if (type == "select") {
+                    this.onCancel([res, null]);
+                } else {
+                    this.onCancel(null);
+                }
+
+                this.notification.warning(
+                  'Đã xảy ra lỗi',
+                  'Không thể cập nhật IndexDB ProductLastV2')
+            })
+        }
+
+        else {
+          if (type == "select") {
+              this.onCancel([res, null]);
+          } else {
+              this.onCancel(null);
+          }
+          this.productIndexDBService.loadProductIndexDBV2().subscribe();
         }
       }, error => {
         this.message.error(`${error?.error?.message}`);
