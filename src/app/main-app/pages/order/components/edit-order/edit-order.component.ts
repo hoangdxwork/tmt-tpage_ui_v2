@@ -1,3 +1,4 @@
+import { ProductTemplateOUMLineService } from './../../../../services/product-template-uom-line.service';
 import { ODataProductDTOV2, ProductDTOV2 } from './../../../../dto/product/odata-product.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
@@ -125,7 +126,8 @@ export class EditOrderComponent implements OnInit {
     private generalConfigsFacade: GeneralConfigsFacade,
     private odataProductService: OdataProductService,
     private deliveryCarrierService: DeliveryCarrierService,
-    private partnerService: PartnerService) {
+    private partnerService: PartnerService,
+    private productTemplateOUMLineService: ProductTemplateOUMLineService) {
   }
 
   ngOnInit(): void {
@@ -286,13 +288,6 @@ export class EditOrderComponent implements OnInit {
 
   closeSearchProduct(){
     this.textSearchProduct = '';
-  }
-
-  chooseProduct(nameGet: string){
-    let product = this.lstProductSearch.find(x => x.NameGet === nameGet);
-    if (product) {
-      this.selectProduct(product);
-    }
   }
 
   selectProduct(data: ProductDTOV2){
@@ -674,16 +669,10 @@ export class EditOrderComponent implements OnInit {
 
   loadProduct(textSearch: string) {
     this.isLoadingProduct = true;
-    let filterObj: FilterObjDTO = {
-      searchText: textSearch,
-    }
-    let pageSize = 20;
-    let pageIndex = 1;
+    let top = 20;
+    let skip = 0;
 
-    let filters = this.odataProductService.buildFilter(filterObj);
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
-
-    this.odataProductService.getView(params).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{ this.isLoadingProduct = false; }))
+    this.productTemplateOUMLineService.getProductUOMLine(skip, top, textSearch).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{ this.isLoadingProduct = false; }))
     .subscribe((res: ODataProductDTOV2) => {
       this.lstProductSearch = [...res.value]
     },err=>{

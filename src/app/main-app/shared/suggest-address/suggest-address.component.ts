@@ -37,7 +37,6 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
   innerText: string = '';
 
   tempAddresses: Array<ResultCheckAddressDTO> = [];
-  expandedLstAddress: boolean = false;
   index: number = 0;
 
   private citySubject = new BehaviorSubject<SuggestCitiesDTO[]>([]);
@@ -311,10 +310,6 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
   }
 
   checkAddress(event: any) {
-    this.expandedLstAddress = !this.expandedLstAddress;
-    if(!this.expandedLstAddress){
-      return
-    }
     let text = this.innerText;
 
     if(!TDSHelperString.hasValueString(text)) {
@@ -332,6 +327,11 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
         this.message.error('Không tìm thấy kết quả phù hợp!');
       }
     })
+  }
+
+  closeSearchAddress(){
+    this.tempAddresses = [];
+    this.innerText = ''
   }
 
   selectAddress(item: ResultCheckAddressDTO, index: number) {

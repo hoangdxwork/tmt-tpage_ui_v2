@@ -1,4 +1,4 @@
-<div class="w-full flex flex-col gap-y-4">
+<div class="w-full flex flex-col gap-y-4 text-body-2 text-neutral-1-900">
   <div class="flex gap-x-2">
     <tds-form-field class="w-full">
       <input [(ngModel)]="filterObj.searchText" #innerText
@@ -14,11 +14,8 @@
     </button>
     <tds-dropdown-menu #menu="tdsDropdownMenu">
       <div class="w-full">
-        <div tds-dropdown-item>
-          <a> Sử dụng nhiều nhất </a>
-        </div>
-        <div tds-dropdown-item>
-          <a> Sử dụng gần nhất </a>
+        <div tds-dropdown-item *ngFor="let item of sortOptions" (click)="switchSort(item.value)" >
+          <a>{{ item.text }} </a>
         </div>
       </div>
     </tds-dropdown-menu>

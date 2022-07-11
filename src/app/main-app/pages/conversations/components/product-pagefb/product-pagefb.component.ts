@@ -30,6 +30,11 @@ export class ProductPagefbComponent implements AfterViewInit, OnDestroy {
     searchText: ''
   }
   isLoading: boolean = false;
+  sortOptions: any[] = [
+    { value: "count", text: "Sử dụng nhiều nhất" },
+    { value: "recent", text: "Sử dụng gần nhất" },
+  ];
+  currentSort = "count";
 
   constructor( private odataProductService: OdataProductService,
     private message: TDSMessageService,
@@ -81,6 +86,19 @@ export class ProductPagefbComponent implements AfterViewInit, OnDestroy {
       }, error => {
           this.message.error('Tìm kiếm không thành công');
       });
+  }
+
+  switchSort(value: string) {
+    debugger
+    var temps = this.lstOfData.sort((a, b) => {
+      if (value === "count") {
+        return (a.Id - b.Id);
+      } else {
+        return (<any>new Date(b.LastViewDate) - <any>new Date(a.LastViewDate));
+      }
+    });
+    this.lstOfData = [...[], ...temps];
+    this.currentSort = value;
   }
 
   onPushItem(item: any) {
