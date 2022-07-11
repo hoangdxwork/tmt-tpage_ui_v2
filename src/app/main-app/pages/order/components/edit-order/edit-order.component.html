@@ -141,32 +141,34 @@
         <tds-tab title="Sản phẩm ({{quickOrderModel.Details?.length}})" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
           <div class="w-full">
             <div class="w-full flex gap-x-8">
-              <div class=" relative flex-auto">
+              <div class="relative flex-auto">
                 <tds-form-field class="w-full">
-                  <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750"
-                    [(ngModel)]="textSearchProduct" [ngModelOptions]="{standalone: true}"
-                    (inputKeyup)="onSearchProduct($event)">
-                  <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-                  <span *ngIf="textSearchProduct" tdsSuffix><i (click)="closeSearchProduct()"
-                      class="text-neutral-1-500 tdsi-close-fill"></i></span>
+                    <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750"
+                        [(ngModel)]="textSearchProduct" [ngModelOptions]="{standalone: true}"
+                        (inputKeyup)="onSearchProduct($event)">
+
+                    <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+
+                    <span *ngIf="textSearchProduct" tdsSuffix>
+                      <i (click)="closeSearchProduct()" class="text-neutral-1-500 tdsi-close-fill"></i>
+                    </span>
                 </tds-form-field>
+
                 <div *ngIf="textSearchProduct && lstProductSearch.length > 0; else noDataProduct"
                   class="absolute left-0 right-0 -bottom-2 top-full p-2 h-56 overflow-hidden overflow-y-auto tds-panel-scroll z-10 bg-white flex flex-col gap-y-2 shadow-md">
                   <tds-spin [spinning]="isLoadingProduct">
-                    <span *ngFor="let item of lstProductSearch" (click)="selectProduct(item)"
-                      class="p-2 cursor-pointer hover:bg-neutral-3-50 rounded-md flex gap-x-2">
-                      <span class="text-info-400">
-                        {{ item.NameGet }} - {{item.Price | number}}đ
+                      <span *ngFor="let item of lstProductSearch" (click)="selectProduct(item)"
+                          class="p-2 cursor-pointer hover:bg-neutral-3-50 rounded-md flex gap-x-2">
+
+                          <span class="text-info-400"> {{ item.NameGet }} - {{item.Price | number}}đ </span>
+
+                          <div class="fw-5" *ngIf="lstInventory && lstInventory[item.Id]">
+                              <span class="text-neutral-1-400">Tồn kho: </span>
+                              <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].QtyAvailable : 0}}</span>/
+                              <span class="text-neutral-1-400">Tồn dự báo: </span>
+                              <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].VirtualAvailable : 0}}</span>
+                          </div>
                       </span>
-                      <div class="fw-5" *ngIf="lstInventory && lstInventory[item.Id]">
-                        <span class="text-neutral-1-400">Tồn kho: </span>
-                        <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].QtyAvailable
-                          : 0}}</span>/
-                        <span class="text-neutral-1-400">Tồn dự báo: </span>
-                        <span class="text-primary-1">{{lstInventory[item.Id] ?
-                          lstInventory[item.Id].VirtualAvailable : 0}}</span>
-                      </div>
-                    </span>
                   </tds-spin>
                 </div>
                 <ng-template #noDataProduct>

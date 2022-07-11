@@ -140,7 +140,7 @@
                       </tds-tag>
                     </div>
 
-                    <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover
+                    <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover tds-tooltip="Thêm nhãn"
                       [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
                       [popoverContent]="contentAddtag" [popoverBackdrop]="true" popoverPlacement="left"
                       color="secondary" size="sm" class=" border-0">
@@ -282,17 +282,17 @@
                 <!-- Thao tác -->
                 <td [tdsRight]="true" class="border-r">
                   <div class="flex justify-center gap-x-2">
-                    <button tds-button-icon color="secondary" size="sm" (click)="openMiniChat(data)">
+                    <button tds-button-icon color="secondary" tds-tooltip="Gửi tin nhắn" size="sm" (click)="openMiniChat(data)">
                       <span class="flex items-center">
                         <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                       </span>
                     </button>
-                    <button tds-button-icon color="secondary" size="sm" (click)="onEdit(data)">
+                    <button tds-button-icon color="secondary" tds-tooltip="Chỉnh sửa" size="sm" (click)="onEdit(data)">
                       <span class="flex items-center">
                         <i class="tdsi-edit-fill text-neutral-1-500"></i>
                       </span>
                     </button>
-                    <button tds-button-icon color="secondary" size="sm" (click)="onRemove(data.Id, data.Code)">
+                    <button tds-button-icon color="secondary" tds-tooltip="Xóa" size="sm" (click)="onRemove(data.Id, data.Code)">
                       <span class="flex items-center">
                         <i class="tdsi-trash-fill text-neutral-1-500"></i>
                       </span>

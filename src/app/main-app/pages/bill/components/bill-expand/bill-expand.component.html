@@ -49,7 +49,7 @@
     <tds-tab title="Chi tiết"  (tabSelect)="onLoadTab('detail')">
       <ng-template tds-tab>
         <div class="flex flex-col items-end w-full h-full">
-          <tds-table #basicTable [listData]="lstOfData" [loading]="isLoading" [showPagination]="false">
+          <tds-table #basicTable [listData]="lstOfData" [loading]="isLoading" [showPagination]="false" [noResult]=" ">
             <thead>
               <tr>
                 <th>STT</th>
@@ -75,7 +75,7 @@
               </ng-template>
             </tbody>
           </tds-table>
-          <div class="w-1/5 text-right">
+          <div class="w-1/5 text-right mt-4">
             <div class="grid grid-cols-3 gap-x-6 gap-y-4 pb-4">
               <span class="text-right">Tổng</span>
               <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountUntaxed| number) || 0 }}</span>
@@ -84,8 +84,10 @@
               <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountTax | number) || 0 }}</span>
 
               <span class="text-right font-semibold">Tổng tiền</span>
-              <span class="text-header-1 font-semibold w-full col-span-2 text-right">{{ (dataItem.AmountTotal | number) ||
-                0 }}</span>
+
+              <span class="text-header-1 font-semibold w-full col-span-2 text-right">
+                  {{ (dataItem.AmountTotal | number) || 0 }}
+              </span>
 
               <span class="text-right">Nợ</span>
               <span class="font-semibold w-full col-span-2 text-right">{{ (dataItem.Residual | number) || 0 }}</span>
