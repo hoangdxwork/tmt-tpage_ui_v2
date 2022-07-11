@@ -4,8 +4,8 @@ import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tds-ui/shared/utility";
 import { PartnerTempDTO } from "../dto/partner/partner.dto";
 import { SaleOnline_OrderDTO } from "../dto/saleonlineorder/sale-online-order.dto";
+import { InsertFromMessageModel } from "../pages/conversations/components/conversation-order/conversation-order.handler";
 import { BaseSevice } from "./base.service";
-import { InsertFromMessageModel } from "./facebook-state/insert-frommessage.state";
 
 @Injectable({
   providedIn: 'root'
@@ -115,13 +115,13 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  insertFromMessage(data: any): Observable<InsertFromMessageModel> {
+  insertFromMessage(data: any): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.InsertFromMessage?$expand=Details,User`,
       method: TApiMethodType.post,
     }
 
-    return this.apiService.getData<InsertFromMessageModel>(api, data);
+    return this.apiService.getData<any>(api, data);
   }
 
   insertFromPost(data: SaleOnline_OrderDTO, isIncrease: boolean = false): Observable<SaleOnline_OrderDTO> {
@@ -133,13 +133,13 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<SaleOnline_OrderDTO>(api, data);
   }
 
-  createUpdatePartner(data: any): Observable<PartnerTempDTO> {
+  createUpdatePartner(data: any): Observable<any> {
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.CreateUpdatePartner`,
         method: TApiMethodType.post
     }
 
-    return this.apiService.getData<PartnerTempDTO>(api, data);
+    return this.apiService.getData<any>(api, data);
   }
 
   setCommentOrder(data: any, fbid: string) {

@@ -38,9 +38,9 @@ export interface TabPartnerCvsRequestModel {
   Facebook_UserAddress: string;
   Facebook_ASUserId: string;
   Facebook_UserName: string;
-  City: City;
-  District: District;
-  Ward: Ward;
+  City: City | any;
+  District: District | any;
+  Ward: Ward | any;
   LastOrder: QuickSaleOnlineOrderModel; // get dữ liệu từ QuickSaleOnlineOrderModel dto
   Comment?: any;
 

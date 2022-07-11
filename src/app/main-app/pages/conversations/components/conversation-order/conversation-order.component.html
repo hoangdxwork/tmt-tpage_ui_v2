@@ -66,16 +66,13 @@
                                   {{quickOrderModel.Address || 'Chưa có địa chỉ'}}
                               </span>
 
-                            <!-- <div *ngIf="isEditPartner" class="flex flex-auto items-center gap-2">
-                              <tpage-conversation-address class="w-full"
-                                [streetText]="_form.value['Street']"
-                                [cityCode]="_form.value['City']?.Code"
-                                [districtCode]="_form.value['District']?.Code"
-                                [wardCode]="_form.value['Ward']?.Code"
-                                (onChangeAddress)="onChangeAddress($event)">
-                              </tpage-conversation-address>
-                            </div> -->
-
+                              <div *ngIf="isEditPartner" class="w-full">
+                                  <suggest-address [_isBtnExtend]="true" [_isExpanded]="false"
+                                      [_cities]="_cities" [_districts]="_districts"
+                                      [_wards]="_wards" [_street]="_street"
+                                      (onLoadSuggestion)="onLoadSuggestion($event)">
+                                  </suggest-address>
+                              </div>
                           </div>
                         </div>
                         <div class="w-full pt-6 flex items-center">
@@ -118,14 +115,51 @@
 
                       <div class="flex flex-col gap-4 w-full h-full">
                           <div class="flex gap-1.5">
-                            <tds-form-field class="w-full">
-                                <input class="placeholder-neutral-1-400" placeholder="Nhập tên sản phẩm" tdsInput/>
-                                <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
+                            <div class="w-full">
+                                <div class="relative flex-auto">
+                                  <tds-form-field class="w-full">
+                                      <input tdsInput placeholder="Tìm kiếm sản phẩm" autocomplete="off" [tdsInputDebounce]="750"
+                                          [(ngModel)]="textSearchProduct" [ngModelOptions]="{standalone: true}"
+                                          (inputKeyup)="onSearchProduct($event)">
 
-                                <span tdsSuffix class="cursor-pointer" title="Chọn sản phẩm" (click)="showModalListProduct()">
-                                  <i class="tdsi-product-line"></i>
-                                </span>
-                            </tds-form-field>
+                                      <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+
+                                      <span *ngIf="textSearchProduct" tdsSuffix>
+                                        <i (click)="closeSearchProduct()" class="text-neutral-1-500 tdsi-close-fill"></i>
+                                      </span>
+                                  </tds-form-field>
+
+                                  <div *ngIf="textSearchProduct && lstProductSearch.length > 0; else noDataProduct"
+                                    class="absolute left-0 right-0 -bottom-2 top-full p-2 h-56 overflow-hidden overflow-y-auto tds-panel-scroll z-10 bg-white flex flex-col gap-y-2 shadow-md">
+                                    <tds-spin [spinning]="isLoadingProduct">
+                                        <span *ngFor="let item of lstProductSearch" (click)="pushItemProduct(item)"
+                                            class="p-2 cursor-pointer hover:bg-neutral-3-50 rounded-md flex gap-x-2">
+
+                                            <span class="text-info-400"> {{ item.NameGet }} - {{item.Price | number}}đ </span>
+
+                                            <div class="fw-5" *ngIf="lstInventory && lstInventory[item.Id]">
+                                                <span class="text-neutral-1-400">Tồn kho: </span>
+                                                <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].QtyAvailable : 0}}</span>/
+                                                <span class="text-neutral-1-400">Tồn dự báo: </span>
+                                                <span class="text-primary-1">{{lstInventory[item.Id] ? lstInventory[item.Id].VirtualAvailable : 0}}</span>
+                                            </div>
+                                        </span>
+                                    </tds-spin>
+                                  </div>
+                                  <ng-template #noDataProduct>
+                                    <div *ngIf="textSearchProduct" class="absolute left-0 right-0 -bottom-2 top-full p-2 h-44 overflow-hidden z-10 bg-white shadow-md">
+                                      <tds-spin [spinning]="isLoadingProduct">
+                                        <tds-empty></tds-empty>
+                                      </tds-spin>
+                                    </div>
+                                  </ng-template>
+                                </div>
+                            </div>
+
+                            <span tdsSuffix class="cursor-pointer" title="Chọn sản phẩm" (click)="showModalListProduct()">
+                              <i class="tdsi-product-line"></i>
+                            </span>
+
 
                             <button tds-button-flat-icon type="button" color="secondary" class="cursor-pointer" title="Thêm sản phẩm" (click)="showModalAddProduct()">
                                 <span class="flex items-center"> <i class="tdsi-add-fill text-primary-1"></i></span>
@@ -315,7 +349,7 @@
                                       <tds-form-field class="w-full col-span-2">
                                           <tds-input-number [min]="0" [step]="1000" autocomplete="off" placeholder="0" [required]='true'
                                           [formatter]="numberWithCommas" [parser]="parserComas" [ngModel]="saleModel.PaymentAmount"
-                                          [ngModelOptions]="{standalone: true}"></tds-input-number>
+                                          [ngModelOptions]="{standalone: true}" [max]="saleModel.AmountTotal"></tds-input-number>
                                       </tds-form-field>
                                   </div>
                               </div>
@@ -330,7 +364,7 @@
             </div>
 
             <div class="pt-1">
-                <div *ngIf="isEnableCreateOrder">
+                <div *ngIf="isEnableCreateOrder && saleModel">
                     <tds-collapse [expandIconPosition]="'right'" class="bg-neutral-3-50 collapse-content-bg-white">
                       <tds-collapse-panel [header]="headerCarrier" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'">
                         <ng-template #headerCarrier>
