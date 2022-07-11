@@ -88,20 +88,20 @@
           [loading]="isLoading" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
           <thead>
             <tr>
-              <th [align]="'center'" width="50px" [tdsLeft]="true" class="border-r"></th>
-              <th [(checked)]="checked" [indeterminate]="indeterminate" width="50px" class="border-r" [align]="'center'"
+              <th [align]="'center'" width="32px" [tdsLeft]="true" class="border-r"></th>
+              <th [(checked)]="checked" [indeterminate]="indeterminate" width="42px" class="border-r" [align]="'center'"
                 (checkedChange)="onAllChecked($event)" [tdsLeft]="true"></th>
               <th width="64px" [tdsLeft]="true" class="border-r">STT</th>
-              <th *ngIf="isHidden('Code')" width="240px" [tdsLeft]="true" class="border-r">Mã</th>
-              <th *ngIf="isHidden('CRMTeamName')" width="240px" class="border-r">Kênh kết nối</th>
-              <th *ngIf="isHidden('Name')" width="250px" class="border-r">Tên</th>
+              <th *ngIf="isHidden('Code')" width="200px" [tdsLeft]="true" class="border-r">Mã</th>
+              <th *ngIf="isHidden('CRMTeamName')" width="160px" class="border-r">Kênh kết nối</th>
+              <th *ngIf="isHidden('Name')" width="240px" class="border-r">Tên</th>
               <th *ngIf="isHidden('Address')" width="380px" class="border-r">Địa chỉ</th>
-              <th *ngIf="isHidden('TotalAmount')" width="240px" class="border-r text-right">Tổng tiền</th>
+              <th *ngIf="isHidden('TotalAmount')" width="140px" class="border-r text-right">Tổng tiền</th>
               <th *ngIf="isHidden('TotalQuantity')" width="140px" class="border-r">Tổng SL</th>
-              <th *ngIf="isHidden('StatusText')" width="150px" class="border-r">Trạng thái</th>
-              <th *ngIf="isHidden('DateCreated')" width="240px" class="border-r">Ngày tạo</th>
-              <th *ngIf="isHidden('UserName')" width="240px" class="border-r">Nhân viên</th>
-              <th width="140px" [tdsRight]="true" class="border-r">Thao tác</th>
+              <th *ngIf="isHidden('DateCreated')" width="155px" class="border-r">Ngày tạo</th>
+              <th *ngIf="isHidden('StatusText')" width="160px" class="border-r">Trạng thái</th>
+              <th *ngIf="isHidden('UserName')" width="126px" class="border-r">Nhân viên</th>
+              <th width="130px" [tdsRight]="true" class="border-r">Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -140,7 +140,7 @@
                       </tds-tag>
                     </div>
 
-                    <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover
+                    <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover tds-tooltip="Thêm nhãn"
                       [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
                       [popoverContent]="contentAddtag" [popoverBackdrop]="true" popoverPlacement="left"
                       color="secondary" size="sm" class=" border-0">
@@ -248,6 +248,11 @@
                   <span>{{data.TotalQuantity || 0 | number}}</span>
                 </td>
 
+                <!-- Ngày hóa đơn -->
+                <td *ngIf="isHidden('DateCreated')" class="border-r">
+                  <span>{{data.DateCreated | date:"dd/MM/yyyy HH:mm"}}</span>
+                </td>
+
                 <!-- Trạng thái -->
                 <!--   [popoverFooter]="footerShipStatus" [popoverContent]="contentShipStatus" -->
                 <td *ngIf="isHidden('StatusText')" class="border-r">
@@ -269,11 +274,6 @@
                   </tds-dropdown-menu>
                 </td>
 
-                <!-- Ngày hóa đơn -->
-                <td *ngIf="isHidden('DateCreated')" class="border-r">
-                  <span>{{data.DateCreated | date:"dd-MM-yyyy HH:mm"}}</span>
-                </td>
-
                 <!-- Nhân viên -->
                 <td *ngIf="isHidden('UserName')" class="border-r">
                   <span>{{data.UserName}}</span>
@@ -282,17 +282,17 @@
                 <!-- Thao tác -->
                 <td [tdsRight]="true" class="border-r">
                   <div class="flex justify-center gap-x-2">
-                    <button tds-button-icon color="secondary" size="sm" (click)="openMiniChat(data)">
+                    <button tds-button-icon color="secondary" tds-tooltip="Gửi tin nhắn" size="sm" (click)="openMiniChat(data)">
                       <span class="flex items-center">
                         <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                       </span>
                     </button>
-                    <button tds-button-icon color="secondary" size="sm" (click)="onEdit(data)">
+                    <button tds-button-icon color="secondary" tds-tooltip="Chỉnh sửa" size="sm" (click)="onEdit(data)">
                       <span class="flex items-center">
                         <i class="tdsi-edit-fill text-neutral-1-500"></i>
                       </span>
                     </button>
-                    <button tds-button-icon color="secondary" size="sm" (click)="onRemove(data.Id, data.Code)">
+                    <button tds-button-icon color="secondary" tds-tooltip="Xóa" size="sm" (click)="onRemove(data.Id, data.Code)">
                       <span class="flex items-center">
                         <i class="tdsi-trash-fill text-neutral-1-500"></i>
                       </span>

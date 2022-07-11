@@ -114,7 +114,6 @@ import { ProductPagefbComponent } from './components/product-pagefb/product-page
 import { ModalApplyPromotionComponent } from './components/modal-apply-promotion/modal-apply-promotion.component';
 import { OdataProductService } from '../../services/mock-odata/odata-product.service';
 import { ModalPostComponent } from './components/modal-post/modal-post.component';
-import { InsertFromMessageState } from '../../services/facebook-state/insert-frommessage.state';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -155,8 +154,7 @@ const SERVICES = [
   AccountTaxService,
   AccountRegisterPaymentService,
   OdataSaleCouponProgramService,
-  OdataProductService,
-  InsertFromMessageState
+  OdataProductService
 ]
 
 @NgModule({

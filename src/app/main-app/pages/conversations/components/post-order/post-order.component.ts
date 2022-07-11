@@ -493,7 +493,10 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
         title: 'Thêm sản phẩm',
         content: TpageAddProductComponent,
         size: "xl",
-        viewContainerRef: this.viewContainerRef
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          typeComponent: null,
+        }
     });
 
     modal.componentInstance?.onLoadedProductSelect

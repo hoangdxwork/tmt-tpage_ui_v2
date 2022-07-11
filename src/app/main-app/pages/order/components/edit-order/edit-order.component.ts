@@ -5,7 +5,7 @@ import { Ship_ExtrasServiceModel } from './../../../../commands/dto-handler/ship
 import { DeliveryCarrierDTOV2 } from './../../../../dto/delivery-carrier.dto';
 import { FilterObjDTO, OdataProductService } from './../../../../services/mock-odata/odata-product.service';
 import { CommonService } from 'src/app/main-app/services/common.service';
-import { ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef, AfterViewInit } from '@angular/core';
 import { TAuthService } from 'src/app/lib';
 import { UserInitDTO } from 'src/app/lib/dto';
 import { DataSuggestionDTO, ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
@@ -151,6 +151,8 @@ export class EditOrderComponent implements OnInit {
       if(res.Facebook_PostId && res.CRMTeamId && res.Facebook_ASUserId) {
           this.commentsOfOrder(res.Facebook_PostId, res.CRMTeamId, res.Facebook_ASUserId);
       }
+
+      this.cdRef.detectChanges();
     }, error => {
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Load đơn hàng đã xảy ra lỗi');
     });
@@ -299,24 +301,26 @@ export class EditOrderComponent implements OnInit {
     );
     if (index < 0){
       let item = {
-        Factor: data.Factor,
-        Price: data.Price,
-        ProductId: data.Id,
-        Note: data?.Note || null,
-        ProductName: data.Name,
-        ProductNameGet: data.NameGet,
-        ProductCode: data.DefaultCode,
-        Quantity: 1,
-        UOMId: data.UOMId,
-        UOMName: data.UOMName,
-    } as Detail_QuickSaleOnlineOrder
-    this.quickOrderModel.Details.push(item);
-  }else{
-    this.quickOrderModel.Details[index].Quantity += 1;
-  }
-  this.closeSearchProduct();
-  this.calcTotal();
-  this.coDAmount();
+          Factor: data.Factor,
+          Price: data.Price,
+          ProductId: data.Id,
+          Note: data?.Note || null,
+          ProductName: data.Name,
+          ProductNameGet: data.NameGet,
+          ProductCode: data.DefaultCode,
+          Quantity: 1,
+          UOMId: data.UOMId,
+          UOMName: data.UOMName,
+      } as Detail_QuickSaleOnlineOrder;
+
+      this.quickOrderModel.Details.push(item);
+    } else{
+      this.quickOrderModel.Details[index].Quantity += 1;
+    }
+
+    this.closeSearchProduct();
+    this.calcTotal();
+    this.coDAmount();
   }
 
   onAddProduct() {
@@ -325,27 +329,29 @@ export class EditOrderComponent implements OnInit {
         content: TpageAddProductComponent,
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
-        componentParams: {}
+        componentParams: {
+          typeComponent: null,
+        }
     });
 
-    modal.afterClose.subscribe(result =>{
+    modal.afterClose.subscribe(result => {
       if(TDSHelperObject.hasValue(result)) {
         let data = result[0];
-          let item = {
-              Quantity: 1,
-              Price: data.ListPrice,
-              ProductId: data.Id,
-              ProductName: data.Name,
-              ProductNameGet: data.NameGet,
-              ProductCode: data.DefaultCode,
-              UOMId: data.UOMId,
-              UOMName: data.UOMName,
-              Note: null,
-              Factor: 1,
-              OrderId: this.dataItem.Id,
-              Priority: 0,
-              ImageUrl: result.ImageUrl,
-          } as Detail_QuickSaleOnlineOrder;
+        let item = {
+            Quantity: 1,
+            Price: data.ListPrice,
+            ProductId: data.Id,
+            ProductName: data.Name,
+            ProductNameGet: data.NameGet,
+            ProductCode: data.DefaultCode,
+            UOMId: data.UOMId,
+            UOMName: data.UOMName,
+            Note: null,
+            Factor: 1,
+            OrderId: this.dataItem.Id,
+            Priority: 0,
+            ImageUrl: result.ImageUrl,
+        } as Detail_QuickSaleOnlineOrder;
 
         this.quickOrderModel.Details.push(item);
         this.calcTotal();
@@ -360,8 +366,8 @@ export class EditOrderComponent implements OnInit {
       content: 'Đối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
       onOk: () => this.calculateFee(carrier).catch((err) => { console.log(err)}),
       onCancel:()=>{},
-      okText:"Đồng ý",
-      cancelText:"Hủy"
+      okText: "OK",
+      cancelText: "Cancel"
     });
   }
 
@@ -487,12 +493,44 @@ export class EditOrderComponent implements OnInit {
     let totalQuantity = 0;
 
     this.quickOrderModel.Details.map((item) => {
-      totalAmount += (item.Price * item.Quantity);
-      totalQuantity += (item.Quantity);
+        totalAmount += (item.Price * item.Quantity);
+        totalQuantity += (item.Quantity);
     });
 
     this.quickOrderModel.TotalAmount = totalAmount;
     this.quickOrderModel.TotalQuantity = totalQuantity;
+
+    if(this.saleModel) {
+      let discountAmount = Math.round(totalAmount * (this.saleModel.Discount / 100));
+      this.saleModel.DiscountAmount = discountAmount;
+
+      totalAmount = totalAmount -this.saleModel.DiscountAmount - this.saleModel.DecreaseAmount;
+      this.saleModel.AmountUntaxed = totalAmount;
+
+      //TODO: Tính thuế để gán lại tổng tiền AmountTotal
+      this.calcTax();
+
+      if(!this.saleConfig?.SaleSetting?.GroupAmountPaid) {
+        //TODO: Gán lại số tiền trả PaymentAmount;
+        let amountDepositSale = this.saleModel.SaleOrder ? this.saleModel.SaleOrder?.AmountDeposit : 0;
+        let paymentAmount = amountDepositSale ? (this.saleModel.AmountTotal - amountDepositSale) : this.saleModel.AmountTotal;
+
+        this.saleModel.PaymentAmount = paymentAmount;
+      }
+
+      this.saleModel.TotalQuantity = totalQuantity;
+    }
+  }
+
+  calcTax() {
+    this.saleModel.AmountTax = 0;
+    if(this.saleModel.Tax) {
+      let amountTax = Math.round(this.saleModel.AmountUntaxed * ((this.saleModel.Tax?.Amount) / 100));
+      this.saleModel.AmountTax = amountTax;
+    }
+
+    let amountTotal = Math.round(this.saleModel.AmountUntaxed + this.saleModel.AmountTax);
+    this.saleModel.AmountTotal = amountTotal;
   }
 
   coDAmount() {
@@ -528,7 +566,6 @@ export class EditOrderComponent implements OnInit {
               }
               if(this.saleModel.Carrier && (this.saleModel.Carrier.DeliveryType === "ViettelPost" || this.saleModel.Carrier.DeliveryType === "GHN" || this.saleModel.Carrier.DeliveryType === "TinToc" || this.saleModel.Carrier.DeliveryType === "FlashShip")){
                 this.confirmShipService(this.saleModel.Carrier);
-                return false;
               }
           }
 

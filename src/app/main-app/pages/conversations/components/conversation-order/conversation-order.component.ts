@@ -10,11 +10,9 @@ import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-use
 import { GeneralConfigsFacade } from 'src/app/main-app/services/facades/general-config.facade';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { Message } from 'src/app/lib/consts/message.const';
-import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { SaleHandler } from 'src/app/main-app/services/handlers/sale.handler';
 import { ModalListProductComponent } from '../modal-list-product/modal-list-product.component';
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-product/tpage-add-product.component';
@@ -38,10 +36,17 @@ import { SelectShipServiceHandler } from 'src/app/main-app/commands/select-ship-
 import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { TACheckboxChange } from 'tds-ui/tds-checkbox';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { InsertFromMessageState } from 'src/app/main-app/services/facebook-state/insert-frommessage.state';
 import { PrepareSaleModelHandler } from 'src/app/main-app/commands/prepare-salemodel.handler';
 import { TDSNotificationService } from 'tds-ui/notification';
-import { ProductTemplateDTO } from 'src/app/main-app/dto/product/product.dto';
+import { GetInventoryDTO, ProductTemplateDTO } from 'src/app/main-app/dto/product/product.dto';
+import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
+import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
+import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
+import { ODataProductDTOV2, ProductDTOV2 } from 'src/app/main-app/dto/product/odata-product.dto';
+import { FilterObjDTO, OdataProductService } from 'src/app/main-app/services/mock-odata/odata-product.service';
+import { ProductService } from 'src/app/main-app/services/product.service';
+import { ConversationPartnerHandler } from '../conversation-partner/conversation-partner.handler';
+import { ConversationOrderHandler } from './conversation-order.handler';
 
 @Component({
     selector: 'conversation-order',
@@ -57,6 +62,9 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   isEditPartner: boolean = false;
   isEnableCreateOrder: boolean = false;
   isEnableInsuranceFee: boolean = false;
+
+  textSearchProduct!: string;
+  isLoadingProduct: boolean = false;
 
   lstUser!: Array<ApplicationUserDTO>;
   lstCarriers!: Observable<DeliveryCarrierDTOV2[]>;
@@ -74,6 +82,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   saleModel!: FastSaleOrder_DefaultDTOV2;
   enableInsuranceFee: boolean = false;
   userInit!: UserInitDTO;
+  lstProductSearch: ProductDTOV2[] = [];
 
   delivery_types = ["fixed", "base_on_rule", "VNPost"];
   carrierTypeInsurance = ["MyVNPost", "GHN", "GHTK", "ViettelPost", "NinjaVan", "HolaShip"];
@@ -93,7 +102,13 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     return value
   };
 
+  _cities!: SuggestCitiesDTO;
+  _districts!: SuggestDistrictsDTO;
+  _wards!: SuggestWardsDTO;
+  _street!: string;
+
   private destroy$ = new Subject<void>();
+  lstInventory!: GetInventoryDTO;
 
   constructor(private message: TDSMessageService,
     private conversationOrderFacade: ConversationOrderFacade,
@@ -102,20 +117,20 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     private generalConfigsFacade: GeneralConfigsFacade,
     private deliveryCarrierService: DeliveryCarrierService,
     private auth: TAuthService,
+    private odataProductService: OdataProductService,
     private cdRef: ChangeDetectorRef,
-    private insertFromMessageState: InsertFromMessageState,
+    private productService: ProductService,
     private saleOnline_OrderService: SaleOnline_OrderService,
-    private partnerService: PartnerService,
     private fastSaleOrderService: FastSaleOrderService,
     private notification: TDSNotificationService,
     private orderPrintService: OrderPrintService,
     private printerService: PrinterService,
-    private viewContainerRef: ViewContainerRef,
-    private saleHandler: SaleHandler) {
+    private viewContainerRef: ViewContainerRef) {
   }
 
   ngOnInit(): void {
     this.loadData();
+
     this.loadSaleConfig();
     this.loadUsers();
     this.loadUserLogged();
@@ -126,6 +141,11 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     this.validateData();
     this.conversationOrderFacade.onLastOrderCheckedConversation$.pipe(takeUntil(this.destroy$)).subscribe((res: QuickSaleOnlineOrderModel) => {
         this.quickOrderModel = { ... res };
+        this.mappingAddress(this.quickOrderModel);
+
+        if(TDSHelperString.hasValueString(this.quickOrderModel.Code)){
+          this.conversationOrderFacade.onPushLastOrderCode$.emit(this.quickOrderModel.Code);
+        }
     })
   }
 
@@ -147,6 +167,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
   loadSaleModel() {
     let model = { Type: 'invoice' };
+    this.isLoading = true;
     this.fastSaleOrderService.defaultGetV2({model: model}).pipe(takeUntil(this.destroy$)).subscribe(res => {
       delete res["@odata.context"];
 
@@ -204,8 +225,10 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
       this.updateCoDAmount();
 
       this.saleModel.CompanyId = this.saleModel.CompanyId || this.quickOrderModel.CompanyId || this.saleConfig?.SaleSetting?.CompanyId;
+      this.isLoading = false;
     }, error => {
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+      this.isLoading = false;
     });
   }
 
@@ -249,11 +272,14 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
       //TODO: Tính thuế để gán lại tổng tiền AmountTotal
       this.calcTax();
 
-      //TODO: Gán lại số tiền trả PaymentAmount;
-      let amountDepositSale = this.saleModel.SaleOrder ? this.saleModel.SaleOrder?.AmountDeposit : 0;
-      let paymentAmount = amountDepositSale ? (this.saleModel.AmountTotal - amountDepositSale) : this.saleModel.AmountTotal;
+      if(!this.saleConfig?.SaleSetting?.GroupAmountPaid) {
+        //TODO: Gán lại số tiền trả PaymentAmount;
+        let amountDepositSale = this.saleModel.SaleOrder ? this.saleModel.SaleOrder?.AmountDeposit : 0;
+        let paymentAmount = amountDepositSale ? (this.saleModel.AmountTotal - amountDepositSale) : this.saleModel.AmountTotal;
 
-      this.saleModel.PaymentAmount = paymentAmount;
+        this.saleModel.PaymentAmount = paymentAmount;
+      }
+
       this.saleModel.TotalQuantity = totalQuantity;
     }
   }
@@ -269,13 +295,6 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     this.saleModel.AmountTotal = amountTotal;
   }
 
-  eventAddProduct() {
-    // this.conversationOrderFacade.onAddProductOrder.pipe(takeUntil(this.destroy$)).subscribe(res => {
-    //   let product = this.convertDetail(res);
-    //   this.selectProduct(product);
-    // });
-  }
-
   loadUsers() {
     this.applicationUserService.getActive().pipe(takeUntil(this.destroy$)).subscribe(res => {
         this.lstUser = [...res.value];
@@ -286,6 +305,9 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     this.auth.getUserInit().pipe(takeUntil(this.destroy$)).subscribe(res => {
         if(res) {
             this.userInit = res || {};
+            if(this.userInit?.Company?.Id) {
+              this.loadInventoryWarehouseId(this.userInit?.Company?.Id);
+            }
         }
     })
   }
@@ -298,18 +320,6 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
   loadCarrier() {
     return this.deliveryCarrierService.get().pipe(map(res => res.value));
-  }
-
-  searchCarrier() {
-    // let data = this.carriers;
-    // let key = this.keyFilterUser;
-
-    // if (TDSHelperString.hasValueString(key)) {
-    //   key = TDSHelperString.stripSpecialChars(key.trim());
-    // }
-    // data = data.filter((x) =>
-    //   (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(key.toLowerCase())) !== -1))
-    // this.lstCarriers = data
   }
 
   onVisibleChange(){
@@ -374,6 +384,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
           }
 
           let model = PrepareCalculateFeeV2Handler.prepareCalculateFeeV2(this.saleModel, this.quickOrderModel, this.shipExtraServices, this.userInit, this.enableInsuranceFee);
+
           this.fastSaleOrderService.calculateFeeV2(model).pipe(takeUntil(this.destroy$)).subscribe((response: any) => {
 
             this.message.info(`Đối tác ${item.Name} có phí vận chuyển: ${formatNumber(Number(response.TotalFee), 'en-US', '1.0-0')} đ`);
@@ -390,7 +401,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
           }, error => {
               this.isLoading = false;
-              this.message.error(error.error_description || error.message);
+              this.message.error(error.error_description || error.message || error.error?.message);
           })
       } else {
           this.isLoading = false;
@@ -543,7 +554,8 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
 
   onSave(type: string): any {
-      let model =  this.insertFromMessageState.prepareInsertFromMessage(this.quickOrderModel);
+      let model = ConversationOrderHandler.prepareInsertFromMessage(this.quickOrderModel);
+
       if(this.isEnableCreateOrder) {
         if (!TDSHelperArray.hasListValue(this.quickOrderModel.Details)) {
             this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
@@ -564,8 +576,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
                 return false;
             }
             if(this.saleModel.Carrier && (this.saleModel.Carrier.DeliveryType === "ViettelPost" || this.saleModel.Carrier.DeliveryType === "GHN" || this.saleModel.Carrier.DeliveryType === "TinToc" || this.saleModel.Carrier.DeliveryType === "FlashShip")){
-              this.confirmShipService(this.saleModel.Carrier);
-              return false;
+                this.confirmShipService(this.saleModel.Carrier);
             }
         }
 
@@ -654,8 +665,8 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
       content: 'Đối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
       onOk: () => this.calculateFee(carrier).catch((err) => { console.log(err);}),
       onCancel:()=>{},
-      okText:"Đồng ý",
-      cancelText:"Hủy"
+      okText: "Ok",
+      cancelText: "Cancel"
     });
   }
 
@@ -664,8 +675,11 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
         title: 'Thêm sản phẩm',
         content: TpageAddProductComponent,
         size: "xl",
-        viewContainerRef: this.viewContainerRef
-    });
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          typeComponent: null,
+        }
+    })
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
         if(TDSHelperObject.hasValue(result)) {
@@ -685,11 +699,14 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
               OrderId: this.quickOrderModel.Id,
               ImageUrl: data.ImageUrl,
               Priority: 0,
-          } as Detail_QuickSaleOnlineOrder;
+            } as Detail_QuickSaleOnlineOrder;
 
-          this.quickOrderModel.Details.push(x);
+            this.quickOrderModel.Details.push(x);
+
+            this.computeAmountTotal();
+            this.updateCoDAmount();
         }
-      })
+    })
   }
 
   showModalAddPromotion(){
@@ -726,7 +743,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   }
 
   selectProduct(item: DataPouchDBDTO) {
-    let exist = this.quickOrderModel.Details.filter(a => a.Id === item.ProductTmplId)[0];
+    let exist = this.quickOrderModel.Details.filter(a => a.Id === item.Id)[0];
     if(!exist) {
       let x: Detail_QuickSaleOnlineOrder = {
           Quantity: 1,
@@ -744,10 +761,13 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
           Priority: 0,
       } as Detail_QuickSaleOnlineOrder;
       this.quickOrderModel.Details.push(x);
+
     } else {
       exist.Quantity = exist.Quantity + 1;
     }
+
     this.computeAmountTotal();
+    this.updateCoDAmount();
   }
 
   showModalTax() {
@@ -857,6 +877,78 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  closeSearchProduct(){
+    this.textSearchProduct = '';
+  }
+
+  onSearchProduct(event: any) {
+    let text = this.textSearchProduct;
+    this.loadProduct(text);
+  }
+
+  loadProduct(textSearch: string) {
+    this.isLoadingProduct = true;
+
+    let filterObj: FilterObjDTO = {
+      searchText: textSearch,
+    }
+    let pageSize = 20;
+    let pageIndex = 1;
+
+    let filters = this.odataProductService.buildFilter(filterObj);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
+
+    this.odataProductService.getView(params).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{ this.isLoadingProduct = false; }))
+    .subscribe((res: ODataProductDTOV2) => {
+        this.lstProductSearch = [...res.value]
+    },err=>{
+        this.message.error(err.error? err.error.message: Message.CanNotLoadData);
+    });
+  }
+
+  loadInventoryWarehouseId(warehouseId: number) {
+    this.productService.getInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe(res => {
+      this.lstInventory = res;
+    });
+  }
+
+  pushItemProduct(item: any) {
+  }
+
+  onLoadSuggestion(item: ResultCheckAddressDTO) {
+    ConversationOrderHandler.onLoadSuggestion(item, this.quickOrderModel);
+  }
+
+  mappingAddress(data: QuickSaleOnlineOrderModel) {
+    if (data && data.CityCode) {
+      this._cities = {
+        code: data.CityCode,
+        name: data.CityName
+      }
+    }
+    if (data && data.DistrictCode) {
+      this._districts = {
+        cityCode: data.CityCode,
+        cityName: data.CityName,
+        code: data.DistrictCode,
+        name: data.DistrictName
+      }
+    }
+    if (data && data.WardCode) {
+      this._wards = {
+        cityCode: data.CityCode,
+        cityName: data.CityName,
+        districtCode: data.DistrictCode,
+        districtName: data.DistrictCode,
+        code: data.WardCode,
+        name: data.WardName
+      }
+    }
+    if (data && (data.Address)) {
+      this._street = data.Address;
+    }
   }
 
 }

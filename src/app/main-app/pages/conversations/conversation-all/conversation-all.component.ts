@@ -17,6 +17,7 @@ import { eventFadeStateTrigger, eventCollapTrigger } from 'src/app/main-app/shar
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
+import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 
 @Component({
   selector: 'app-conversation-all',
@@ -53,6 +54,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   clickReload: number = 0;
   isCheckedAll: boolean = false;
 
+  orderCode: any;
+
   currentOrderTab: number = 0;
   letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
   private destroy$ = new Subject<void>();
@@ -64,6 +67,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     public activatedRoute: ActivatedRoute,
     public router: Router,
     private ngZone: NgZone,
+    private conversationOrderFacade: ConversationOrderFacade,
     private cdRef : ChangeDetectorRef,
     private printerService: PrinterService,
     private modalService: TDSModalService,
@@ -98,9 +102,14 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       if(exist){
           this.onChangeConversation(team);
       }
-    });
+    })
 
     this.spinLoading();
+
+    // TODO: gán mã code load từ Tab Order
+    this.conversationOrderFacade.onPushLastOrderCode$.subscribe((code: any) => {
+        this.orderCode = code;
+    })
   }
 
   spinLoading() {
