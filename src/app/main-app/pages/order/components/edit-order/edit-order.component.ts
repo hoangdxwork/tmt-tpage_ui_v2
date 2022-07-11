@@ -5,7 +5,7 @@ import { Ship_ExtrasServiceModel } from './../../../../commands/dto-handler/ship
 import { DeliveryCarrierDTOV2 } from './../../../../dto/delivery-carrier.dto';
 import { FilterObjDTO, OdataProductService } from './../../../../services/mock-odata/odata-product.service';
 import { CommonService } from 'src/app/main-app/services/common.service';
-import { ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef, AfterViewInit } from '@angular/core';
 import { TAuthService } from 'src/app/lib';
 import { UserInitDTO } from 'src/app/lib/dto';
 import { DataSuggestionDTO, ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
@@ -147,6 +147,7 @@ export class EditOrderComponent implements OnInit {
     this.saleOnline_OrderService.getById(id).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
       delete res['@odata.context'];
       this.quickOrderModel = res;
+      this.cdRef.detectChanges();
       this.mappingAddress(this.quickOrderModel)
       if(res.Facebook_PostId && res.CRMTeamId && res.Facebook_ASUserId) {
           this.commentsOfOrder(res.Facebook_PostId, res.CRMTeamId, res.Facebook_ASUserId);

@@ -101,13 +101,13 @@
                     </span>
                 </button>
             </div>
-            <div *ngIf="tempAddresses.length > 0" >
-                <ul class="">
-                    <li *ngFor="let item of tempAddresses; index as i" class="{{index == i ? 'bg-primary-1 text-white' : 'bg-white'}}  flex tds-form-field-control w-full max-w-full border border-neutral-2-200 dark:bg-d-neutral-3-50 dark:border-d-neutral-2-200 p-2 cursor-pointer">
-                        <a class="text-body-2" (click)="selectAddress(item, i)">{{item.Address}}</a>
-                    </li>
-                </ul>
-            </div>
       </div>
+      <div *ngIf="tempAddresses.length > 0 && ExpandedLstAddress" class="pt-2">
+        <ul class="">
+            <li *ngFor="let item of tempAddresses; index as i" class="{{index == i ? 'bg-primary-1 text-white' : 'bg-white'}}  flex tds-form-field-control w-full max-w-full border border-neutral-2-200 dark:bg-d-neutral-3-50 dark:border-d-neutral-2-200 p-2 cursor-pointer">
+                <a class="text-body-2" (click)="selectAddress(item, i)">{{item.Address}}</a>
+            </li>
+        </ul>
+    </div>
   </form>
 </div>
