@@ -7,8 +7,7 @@ import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/util
 
 @Component({
   selector: 'tpage-search-uom',
-  templateUrl: './tpage-search-uom.component.html',
-  styleUrls: ['./tpage-search-uom.component.scss']
+  templateUrl: './tpage-search-uom.component.html'
 })
 export class TpageSearchUOMComponent implements OnInit {
 
