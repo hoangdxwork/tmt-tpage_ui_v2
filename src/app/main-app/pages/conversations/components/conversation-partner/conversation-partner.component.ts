@@ -23,11 +23,15 @@ import { TabPartnerCvsRequestDTO, TabPartnerCvsRequestModel } from 'src/app/main
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import { ModalBlockPhoneComponent } from '../modal-block-phone/modal-block-phone.component';
 import { ModalListBlockComponent } from '../modal-list-block/modal-list-block.component';
+import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
+import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
+import { ConversationPartnerHandler } from './conversation-partner.handler';
+import { CreateOrUpdatePartnerModel } from 'src/app/main-app/dto/conversation-partner/create-update-partner.dto';
 
 @Component({
     selector: 'conversation-partner',
     templateUrl: './conversation-partner.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
+    // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class ConversationPartnerComponent implements OnInit, OnChanges {
@@ -35,6 +39,11 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   @Input() data!: ConversationMatchingItem; // dữ liệu nhận từ conversation-all
   @Input() team!: CRMTeamDTO;
   @Input() type!: string;
+
+  _cities!: SuggestCitiesDTO;
+  _districts!: SuggestDistrictsDTO;
+  _wards!: SuggestWardsDTO;
+  _street!: string;
 
   dataModel!: ConversationMatchingItem; // dùng gán lại this.data input
   objRevenue!: ResRevenueCustomerDTO;
@@ -74,15 +83,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
       let psid = this.dataModel?.psid;
       let pageId = this.dataModel?.page_id || this.team.Facebook_PageId;
-
       this.loadData(pageId, psid);
-      this.loadNotes(pageId, psid);
-
-      let partnerId = this.dataModel?.partner_id || this.dataModel.partner?.id;
-      if(partnerId) {
-          this.loadPartnerBill(partnerId);
-          this.loadPartnerRevenue(partnerId);
-      }
     }
 
     // TODO: load lại form conversation-partner từ conversation-order
@@ -109,21 +110,25 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
             this.dataModel = x;
             let psid = this.dataModel?.psid;
             let pageId = this.dataModel?.page_id || this.team.Facebook_PageId;
-
             this.loadData(pageId, psid);
-            this.loadNotes(pageId, psid);
-
-            let partnerId = this.dataModel?.partner_id || this.dataModel.partner?.id;
-            if(partnerId) {
-                this.loadPartnerBill(partnerId);
-                this.loadPartnerRevenue(partnerId);
-            }
         }
     }
   }
 
-  loadData(pageId: string, psid: string): any {
+  loadData(pageId: string, psid: string) {
 
+    // TODO: dữ liệu chính gán cho partner
+    this.checkConversation(pageId, psid);
+    this.loadNotes(pageId, psid);
+
+    let partnerId = this.dataModel?.partner_id || this.dataModel.partner?.id;
+    if(partnerId) {
+        this.loadPartnerBill(partnerId);
+        this.loadPartnerRevenue(partnerId);
+    }
+  }
+
+  checkConversation(pageId: string, psid: string): any {
     if(!TDSHelperString.hasValueString(pageId)) {
         return this.message.error('Không tìm thấy Facebook_PageId');
     }
@@ -135,7 +140,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.isLoading = true;
 
     this.partnerService.checkConversation(pageId, psid).pipe(takeUntil(this.destroy$),
-        finalize(() => { this.isLoading = false; this.cdRef.markForCheck() })).subscribe((res: TabPartnerCvsRequestDTO) => {
+        finalize(() => { this.isLoading = false })).subscribe((res: TabPartnerCvsRequestDTO) => {
 
             if(res?.Data && res?.Success) {
                 let x = { ... res.Data} as TabPartnerCvsRequestModel;
@@ -149,8 +154,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
                 x.page_id = pageId;
                 x.psid = psid;
 
-                this.partner = {...x};
+                this.partner = x;
+
+                this.mappingAddress(this.partner);
                 this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);
+
+                this.cdRef.detectChanges();
             }
         }, error => {
             this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
@@ -160,7 +169,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   loadPartnerFromTabOrder() {
     this.isLoading = true;
     this.partnerService.onLoadPartnerFromTabOrder$.pipe(takeUntil(this.destroy$),
-      finalize(() => { this.isLoading = false; this.cdRef.markForCheck() })).subscribe(res => {
+      finalize(() => { this.isLoading = false })).subscribe(res => {
         if(res && TDSHelperString.hasValueString(res.phone)) {
             this.partner.Phone = res.phone;
         }
@@ -173,12 +182,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   loadPartnerByPostComment() {
     this.isLoading = true;
     this.conversationOrderFacade.loadPartnerByPostComment$.pipe(takeUntil(this.destroy$),
-      finalize(() => { this.isLoading = false; this.cdRef.markForCheck() })).subscribe(res => {
+      finalize(() => { this.isLoading = false })).subscribe(res => {
         if(res) {
             let pageId = this.team.Facebook_PageId;
             let psid = res.psid;
 
-            this.loadData(pageId, psid);
+            this.checkConversation(pageId, psid);
         }
     });
   }
@@ -186,7 +195,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   loadUpdateInfoByConversation() {
     this.isLoading = true;
     this.conversationDataFacade.onUpdateInfoByConversation$.pipe(takeUntil(this.destroy$),
-      finalize(() => { this.isLoading = false; this.cdRef.markForCheck() })).subscribe(res => {
+      finalize(() => { this.isLoading = false })).subscribe(res => {
         if(res) {
             if(!TDSHelperString.hasValueString(this.partner?.Phone) && res.has_phone && TDSHelperString.hasValueString(res.phone) && this.partner){
                 this.partner.Phone = res.phone;
@@ -201,7 +210,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   onSelectOrderFromMessage() {
     this.isLoading = true;
     this.conversationOrderFacade.onSelectOrderFromMessage$.pipe(takeUntil(this.destroy$),
-      finalize(() => { this.isLoading = false; this.cdRef.markForCheck() })).subscribe(res => {
+      finalize(() => { this.isLoading = false })).subscribe(res => {
 
         if(res && TDSHelperString.hasValueString(res.phone) && this.partner) {
             this.partner.Phone = res.phone;
@@ -246,6 +255,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
       }, error => {
           this.message.error(`${error?.error?.message}`);
       });
+  }
+
+  onLoadSuggestion(item: ResultCheckAddressDTO) {
+    ConversationPartnerHandler.onLoadSuggestion(item, this.partner);
   }
 
   addNote() {
@@ -400,12 +413,15 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
     this.isLoading = true;
     this.saleOnline_OrderService.createUpdatePartner({ model: model, teamId: teamId })
-      .pipe(takeUntil(this.destroy$), finalize(() => { this.isLoading = false; this.cdRef.markForCheck() })).subscribe(res => {
+      .pipe(takeUntil(this.destroy$), finalize(() => { this.isLoading = false })).subscribe(res => {
 
+          delete res['@odata.context'];
           this.message.success('Cập nhật khách hàng thành công');
 
+          let x = { ... res} as CreateOrUpdatePartnerModel;
+
           // TODO: kiểm tra số điện thoại
-          let phone = this.partner?.Phone as string;
+          let phone = x.Phone as string;
           if(TDSHelperString.hasValueString(phone)) {
             this.crmMatchingService.checkPhoneReport(phone).pipe(takeUntil(this.destroy$)).subscribe((obs) => {
                 // TODO: gán phoneReport
@@ -419,9 +435,13 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
             })
           }
 
+          ConversationPartnerHandler.mappingPartnerModel(this.partner, x);
+
           // cập nhật dữ liệu khách hàng sang form conversation-order
-          // this.partnerService.onLoadOrderFromTabPartner$.emit(res);
+          this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);
           this.isEditPartner = false;
+
+          this.cdRef.markForCheck();
 
       }, error => {
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
@@ -429,21 +449,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   prepareModel() {
-    let model = {
-        Id: this.partner?.Id,
-        StatusText: this.partner?.StatusText,
-        Name: this.partner?.Name,
-        Phone: this.partner?.Phone,
-        PhoneReport: this.partner?.PhoneReport,
-        Email: this.partner?.Email,
-        Comment: this.partner?.Comment,
-        Street: this.partner?.Street,
-        FacebookASIds: this.partner?.Facebook_ASUserId || (this.dataModel.partner_id == this.partner?.Id ? this.dataModel.id : null),
-        FacebookId: (this.dataModel.partner_id == this.partner?.Id ? this.dataModel.id : null),
-        City: this.partner?.City,
-        District: this.partner?.District,
-        Ward: this.partner?.Ward
-    }
+    let model = ConversationPartnerHandler.prepareModel(this.partner, this.dataModel) as any;
     return model;
   }
 
@@ -481,6 +487,36 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   ngOnDestroy(): void {
       this.destroy$.next();
       this.destroy$.complete();
+  }
+
+  mappingAddress(partner: TabPartnerCvsRequestModel) {
+    if (partner && partner.City?.code) {
+      this._cities = {
+        code: partner.City.code,
+        name: partner.City.name
+      }
+    }
+    if (partner && partner.District?.code) {
+      this._districts = {
+        cityCode: partner.City?.code,
+        cityName: partner.City?.name,
+        code: partner.District.code,
+        name: partner.District.name
+      }
+    }
+    if (partner && partner.Ward?.code) {
+      this._wards = {
+        cityCode: partner.City?.code,
+        cityName: partner.City?.name,
+        districtCode: partner.District.code,
+        districtName: partner.District.name,
+        code: partner.Ward?.code,
+        name: partner.Ward?.name
+      }
+    }
+    if (partner && (partner.Street)) {
+      this._street = partner.Street;
+    }
   }
 
 }
