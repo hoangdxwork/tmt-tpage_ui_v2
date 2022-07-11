@@ -120,6 +120,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     this.loadUsers();
     this.loadUserLogged();
     this.lstCarriers = this.loadCarrier();
+    this.onSelectOrderFromMessage();
   }
 
   loadData() {

@@ -29,8 +29,10 @@ export class ShowMoreDirective implements OnInit {
     }
 
     ngOnInit(): void {
-        this.isInnerHTML = this.text.includes('<span ' && '</span>');
-        this.length = this.isInnerHTML ? (this.length + this.countChar) : this.length;
+        if(this.text){   
+            this.isInnerHTML = this.text.includes('<span ' && '</span>');
+            this.length = this.isInnerHTML ? (this.length + this.countChar) : this.length;
+        }
     }
 
     showContent(e: any){

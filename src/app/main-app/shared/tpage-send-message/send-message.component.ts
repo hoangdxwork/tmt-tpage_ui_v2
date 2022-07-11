@@ -1,3 +1,4 @@
+import { QuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-reply.dto';
 import { FastSaleOrderService } from './../../services/fast-sale-order.service';
 import { finalize, map, switchMap } from 'rxjs/operators';
 import { fromEvent, Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
@@ -33,7 +34,7 @@ export class SendMessageComponent implements OnInit, AfterViewInit {
   @Input() orderIds: string[] = [];
   @Input() selectedUsers: any;
 
-  lstMessage: Array<TDSSafeAny> = [];
+  lstMessage: Array<QuickReplyDTO> = [];
   messages: Array<TDSSafeAny> = [];
   messageContent: TDSSafeAny[] = [];
   messageSelect: TDSSafeAny;
@@ -61,7 +62,7 @@ export class SendMessageComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadData();
-
+    console.log(this.orderIds)
     this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.currentTeam = res;
     });
@@ -131,6 +132,8 @@ export class SendMessageComponent implements OnInit, AfterViewInit {
         .pipe(finalize(()=>{this.isLoading = false}))
         .subscribe((res: TDSSafeAny) => {
           this.messageContent = res;
+        },err=>{
+          this.message.error(err.error? err.error.message : 'có lỗi xảy ra')
         });
     }
 
@@ -216,7 +219,20 @@ export class SendMessageComponent implements OnInit, AfterViewInit {
     };
 
     this.mailTemplateService.insert(model, "Active").subscribe(res => {
+      delete res['@odata.context'];
+      delete res['@odata.type'];
+      delete res['WritedById'];
+      delete res['CreatedById'];
+      delete res['CreatedById'];
+      delete res['IRModelId'];
+      delete res['LastUpdated'];
+      delete res['MailServerId'];
+      delete res['MailServerId'];
+      delete res['MailServerId'];
+
+      console.log(res as QuickReplyDTO)
       this.lstMessage.unshift(res);
+      console.log(this.lstMessage)
       this.message.success(Message.InsertSuccess);
 
       if(!TDSHelperString.hasValueString(type)) {
@@ -225,6 +241,9 @@ export class SendMessageComponent implements OnInit, AfterViewInit {
       else {
         this.onMessage(res);
       }
+      this.createForm();
+    },err=>{
+      this.message.error(err.error.message? err.error.message: 'Thêm tin nhắn thất bại')
     });
   }
 
