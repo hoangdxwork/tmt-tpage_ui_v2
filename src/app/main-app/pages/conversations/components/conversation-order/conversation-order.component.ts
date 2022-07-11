@@ -675,7 +675,10 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
         title: 'Thêm sản phẩm',
         content: TpageAddProductComponent,
         size: "xl",
-        viewContainerRef: this.viewContainerRef
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          typeComponent: null,
+        }
     })
 
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {

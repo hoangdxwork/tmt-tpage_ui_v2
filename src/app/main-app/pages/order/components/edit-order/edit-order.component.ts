@@ -151,7 +151,7 @@ export class EditOrderComponent implements OnInit {
       if(res.Facebook_PostId && res.CRMTeamId && res.Facebook_ASUserId) {
           this.commentsOfOrder(res.Facebook_PostId, res.CRMTeamId, res.Facebook_ASUserId);
       }
-      
+
       this.cdRef.detectChanges();
     }, error => {
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Load đơn hàng đã xảy ra lỗi');
@@ -329,27 +329,29 @@ export class EditOrderComponent implements OnInit {
         content: TpageAddProductComponent,
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
-        componentParams: {}
+        componentParams: {
+          typeComponent: null,
+        }
     });
 
-    modal.afterClose.subscribe(result =>{
+    modal.afterClose.subscribe(result => {
       if(TDSHelperObject.hasValue(result)) {
         let data = result[0];
-          let item = {
-              Quantity: 1,
-              Price: data.ListPrice,
-              ProductId: data.Id,
-              ProductName: data.Name,
-              ProductNameGet: data.NameGet,
-              ProductCode: data.DefaultCode,
-              UOMId: data.UOMId,
-              UOMName: data.UOMName,
-              Note: null,
-              Factor: 1,
-              OrderId: this.dataItem.Id,
-              Priority: 0,
-              ImageUrl: result.ImageUrl,
-          } as Detail_QuickSaleOnlineOrder;
+        let item = {
+            Quantity: 1,
+            Price: data.ListPrice,
+            ProductId: data.Id,
+            ProductName: data.Name,
+            ProductNameGet: data.NameGet,
+            ProductCode: data.DefaultCode,
+            UOMId: data.UOMId,
+            UOMName: data.UOMName,
+            Note: null,
+            Factor: 1,
+            OrderId: this.dataItem.Id,
+            Priority: 0,
+            ImageUrl: result.ImageUrl,
+        } as Detail_QuickSaleOnlineOrder;
 
         this.quickOrderModel.Details.push(item);
         this.calcTotal();
