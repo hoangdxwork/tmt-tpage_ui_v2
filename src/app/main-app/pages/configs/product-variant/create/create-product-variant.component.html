@@ -87,9 +87,13 @@
 
                                 <tds-label>Thuộc tính:</tds-label>
                                 <tds-form-field class="w-full col-span-2">
-                                  <input tdsInput formControlName="AttributeValues" placeholder="" class="text-neutral-1-900 text-body-2 font-regular"/>
+                                  <tds-select valueField="Id" textField="NameGet" placeholder='Chọn thuộc tính'
+                                  disabledField="isActive" formControlName="AttributeValues"
+                                  [data]="lstShowAttribute" [allowClear]="false" [valuePrimitive]="false" [mode]="'multiple'"
+                                  (selectChange)="onChangeAttribute($event)">
+                                  </tds-select>
                                   <tds-error>
-                                      Vui lòng nhập thuộc tính
+                                      Vui lòng chọn thuộc tính
                                   </tds-error>
                                 </tds-form-field>
                               </div>
