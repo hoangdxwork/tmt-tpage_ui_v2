@@ -15,7 +15,6 @@ export abstract class AddVariantHandler {
         dataModel.Type = formModel.Type ? formModel.Type : dataModel.Type;
         dataModel.DefaultCode = formModel.DefaultCode ? formModel.DefaultCode : dataModel.DefaultCode;
         dataModel.Barcode = formModel.Barcode ? formModel.Barcode : dataModel.Barcode;
-        dataModel.AttributeValues = formModel.AttributeValues ? formModel.AttributeValues : dataModel.AttributeValues;
         dataModel.Active = (formModel.Active || formModel.Active == false) ? formModel.Active : dataModel.Active;
         dataModel.PriceVariant = formModel.PriceVariant ? formModel.PriceVariant : dataModel.PriceVariant;
         dataModel.StandardPrice = formModel.StandardPrice ? formModel.StandardPrice : dataModel.StandardPrice;
@@ -24,6 +23,7 @@ export abstract class AddVariantHandler {
         dataModel.SaleDelay = formModel.SaleDelay ? formModel.SaleDelay : dataModel.SaleDelay;
         dataModel.AvailableInPOS = (formModel.AvailableInPOS || formModel.AvailableInPOS == false) ? formModel.AvailableInPOS : dataModel.AvailableInPOS;
         dataModel.InvoicePolicy = formModel.InvoicePolicy ? formModel.InvoicePolicy : dataModel.InvoicePolicy;
+        dataModel.AttributeValues = formModel.AttributeValues ? formModel.AttributeValues : dataModel.AttributeValues;
         if (formModel.Categ) {
             dataModel.Categ = formModel.Categ;
             dataModel.CategId = formModel.Categ.Id;
