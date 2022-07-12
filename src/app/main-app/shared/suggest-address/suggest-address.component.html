@@ -25,7 +25,7 @@
             </div>
             <ng-template #noExpanded>
                 <div class="w-full flex gap-x-2 justify-between">
-                    <tds-form-field class="w-full">
+                    <tds-form-field class="w-full" tds-tooltip tooltipTitle="Vui lòng nhập đầy đủ thông tin địa chỉ">
                         <input  tdsInput placeholder="Số nhà, đường,..." formControlName="Street" (change)="changeStreet($event)"/>
                         <span tdsSuffix>
                             <tds-button-group>
@@ -45,7 +45,7 @@
         </div>
         <ng-template #noBtnExtend>
             <div class="w-full flex gap-x-2 justify-between">
-                <tds-form-field class="w-full">
+                <tds-form-field class="w-full" tds-tooltip tooltipTitle="Vui lòng nhập đầy đủ thông tin địa chỉ">
                     <input  tdsInput placeholder="Số nhà, đường,..." formControlName="Street" (change)="changeStreet($event)"/>
                 </tds-form-field>
                 <button tds-button-icon color="primary" (click)="expanded()">
