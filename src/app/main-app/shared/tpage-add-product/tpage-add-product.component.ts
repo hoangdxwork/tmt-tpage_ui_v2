@@ -65,8 +65,8 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
 
   loadDefault() {
     this.isLoading = true;
-    this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: TDSSafeAny) => {
 
+    this.productTemplateService.getDefault().pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: TDSSafeAny) => {
         delete res["@odata.context"];
         this.defaultGet = res;
         this.updateForm(res);
@@ -76,8 +76,10 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadCategory() {
-    this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+  loadCategory() { 
+    this.isLoading = true;
+
+    this.productCategoryService.get().pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
       this.lstCategory = [...res.value];
     },
     error=>{
@@ -86,7 +88,9 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
   }
 
   loadUOMCateg() {
-    this.productUOMService.get().pipe(takeUntil(this.destroy$)).subscribe(res => {
+    this.isLoading = true;
+
+    this.productUOMService.get().pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
       this.lstUOMCategory = [...res.value];
     });
   }

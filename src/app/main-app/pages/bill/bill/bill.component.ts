@@ -73,7 +73,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     {value:'refund', text:'Hàng trả về'},
     {value:'other', text:'Đối soát không thành công'},
     {value:'sent', text:'Đã tiếp nhận'},
-    {value:'cancel', text:'Hủy bỏ'},
+    {value:'cancel', text:'Đã hủy'},
     {value:'done', text:'Đã thu tiền'},
     {value:'done_and_refund', text:'Đã thu tiền và trả hàng về'}
   ]

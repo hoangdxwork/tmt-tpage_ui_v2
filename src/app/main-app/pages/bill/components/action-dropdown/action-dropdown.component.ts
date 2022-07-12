@@ -190,12 +190,19 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   }
 
   manualUpdateDelivery() {
-    this.modal.create({
-      title: 'Cập nhật trạng thái giao hàng',
-      size:'xl',
-      content: ModalManualUpdateDeliveryComponent,
-      viewContainerRef: this.viewContainerRef
-    });
+    if (this.checkValueEmpty()) {
+      let datas = this.lstOfData.filter(f=> this.idsModel.includes(f.Id));
+      
+      this.modal.create({
+        title: 'Cập nhật trạng thái giao hàng',
+        size:'xl',
+        content: ModalManualUpdateDeliveryComponent,
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          model: datas
+        }
+      });
+    }
   }
 
   updateDeliveryFromExcel(){
