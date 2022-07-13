@@ -101,7 +101,8 @@ export class ConfigConversationTagsCreateDataModalComponent implements OnInit {
       this.crmService.update(this.isEdit,model,this.isForce).subscribe(
         (res)=>{
             this.message.success('Cập nhật thành công');
-            this.modal.destroy(model);
+            delete res['@odata.context']
+            this.modal.destroy(res);
         },
         (err)=>{
             this.confirmForceUpdate(model, err.error.message);
@@ -111,7 +112,8 @@ export class ConfigConversationTagsCreateDataModalComponent implements OnInit {
       this.crmService.insert(model).subscribe(
         (res) => {
           this.message.success('Thêm thành công');
-          this.modal.destroy(model);
+          delete res['@odata.context']
+          this.modal.destroy(res)
         },
         (err) => {
           this.message.error(err.error?err.error.message:'Thêm thất bại');

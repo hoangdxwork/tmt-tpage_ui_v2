@@ -130,12 +130,14 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this.isLoading = true;
     let model = {
       is_approve: TDSHelperString.hasValueString(confirm) ? true : false,
       model: this.lstData
     };
 
-    this.fastSaleOrderService.insertListOrderModel(model).subscribe(res => {
+    this.fastSaleOrderService.insertListOrderModel(model).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{ this.isLoading = false; }))
+    .subscribe(res => {
       if (!res.Error) {
         this.message.success(Message.Bill.InsertSuccess);
 

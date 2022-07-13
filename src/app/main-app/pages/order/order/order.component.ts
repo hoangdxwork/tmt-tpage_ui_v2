@@ -581,7 +581,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.checkValueEmpty() == 1) {
       let ids = [...this.setOfCheckedId];
       this.modal.create({
-        title: 'Gửi tin nhắn nhanh',
+        title: 'Gửi tin nhắn Facebook',
         content: SendMessageComponent,
         size: 'lg',
         viewContainerRef: this.viewContainerRef,
@@ -592,6 +592,18 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     }
   }
+  showMessageModal(orderMessage: TDSSafeAny){
+    this.modal.create({
+      title: 'Gửi tin nhắn Facebook',
+      size:'lg',
+      content: SendMessageComponent,
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        orderIds: [orderMessage.Id],
+        messageType: GenerateMessageTypeEnum.Order
+      }
+    });
+}
 
   // Nhãn
   loadStatusTypeExt() {

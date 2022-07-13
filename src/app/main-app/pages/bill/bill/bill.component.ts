@@ -1,3 +1,4 @@
+import { Message } from './../../../../lib/consts/message.const';
 import { GenerateMessageTypeEnum } from './../../../dto/conversation/message.dto';
 import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
@@ -71,7 +72,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     {value:'refund', text:'Hàng trả về'},
     {value:'other', text:'Đối soát không thành công'},
     {value:'sent', text:'Đã tiếp nhận'},
-    {value:'cancel', text:'Hủy bỏ'},
+    {value:'cancel', text:'Đã hủy'},
     {value:'done', text:'Đã thu tiền'},
     {value:'done_and_refund', text:'Đã thu tiền và trả hàng về'}
   ]
@@ -274,6 +275,12 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     })
   }
 
+  reloadBill(reload:boolean){
+    if(reload){
+      this.loadData(this.pageSize,this.pageIndex);
+    }
+  }
+
   onSelectChange(index: TDSSafeAny) {
     let item = this.tabNavs.filter(f => f.Index == index )[0];
 
@@ -347,14 +354,27 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
   assignShipStatus(dataId: number){
     if(this.currentStatus){
-      let model = { id:dataId, status:this.currentStatus.value };
+      let model = { id: dataId, status: this.currentStatus.value };
+
       this.fastSaleOrderService.updateShipStatus(model).pipe(takeUntil(this.destroy$)).subscribe(
         (res)=>{
-          this.message.success('Cập nhật thành công');
+          if(res.success){
+            this.lstOfData.map((fso:FastSaleOrderDTO)=>{
+              if(fso.Id == dataId){
+                fso.ShipStatus = this.currentStatus.value;
+                fso.ShowShipStatus = this.currentStatus.text;
+              }
+            });
+
+            this.message.success(Message.UpdatedSuccess);
+          }else{
+            this.message.error(Message.UpdatedFail);
+          }
+
           this.indClickStatus = -1;
         },
         err=>{
-          this.message.error( err.error.message ?? 'Cập nhật thất bại');
+          this.message.error( err?.error?.message || Message.UpdatedFail);
           this.indClickStatus = -1;
         }
       )

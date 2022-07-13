@@ -1,47 +1,68 @@
 <div class="w-full flex flex-col gap-y-4">
     <div class="w-full inline-flex">
         <tds-form-field class="w-full mr-2">
-            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText />
+            <input tdsInput placeholder="Nhập mã vận đơn" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onInputKeyup($event)" />
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
         </tds-form-field>
         <button tds-button-flat-icon color="secondary">
             <i class="tdsi-barcode-fill"></i>
         </button>
     </div>
-    <div>
-        <tds-table #basicTable [listData]="listOfData">
+    <div *ngIf="lstOfData">
+        <tds-table #basicTable [listData]="lstOfData" [showPagination]="false" [frontPagination]="false" [outerBordered]="true"
+            [scroll]="{y:'450px'}">
             <thead>
                 <tr>
-                    <th>Khách hàng</th>
-                    <th>Hóa đơn</th>
-                    <th>Tổng tiền</th>
-                    <th>Mã vận đơn</th>
-                    <th>Tổng tiền COD</th>
-                    <th>Trạng thái</th>
-                    <th>Đối tác GH</th>
+                    <th width="200px">Khách hàng</th>
+                    <th width="150px">Hóa đơn</th>
+                    <th width="120px" class="text-right">Tổng tiền</th>
+                    <th width="120px">Mã vận đơn</th>
+                    <th width="120px" class="text-right">Tổng tiền COD</th>
+                    <th width="170px">Trạng thái</th>
+                    <th width="170px">Đối tác GH</th>
                 </tr>
             </thead>
             <tbody>
-                <ng-template ngFor let-data [ngForOf]="basicTable.data" >
+                <ng-template ngFor let-data [ngForOf]="basicTable.data">
                     <tr>
-                        <td>{{ data.name }}</td>
-                        <td>{{ data.age }}</td>
-                        <td>{{ data.company }}</td>
-                        <td>{{ data.name }}</td>
-                        <td>{{ data.name }}</td>
-                        <td>{{ data.name }}</td>
-                        <td>{{ data.name }}</td>
+                        <td>{{ data.PartnerDisplayName }}</td>
+                        <td>
+                            <span [ngClass]="data.Number ? 'text-info-500':'text-error-500'">{{ data.Number || 'N/A' }}</span>
+                        </td>
+                        <td class="text-right">{{ (data.AmountTotal || 0)|number }}đ</td>
+                        <td>
+                            <span class="text-info-500">{{ data.TrackingRef }}</span>
+                        </td>
+                        <td class="text-right">{{ (data.CashOnDelivery || 0)|number }}đ</td>
+                        <td>
+                            <tds-select valueField="value" textField="text" [(ngModel)]="data.ShipStatus"
+                                [ngModelOptions]="{standalone: true}" placeholder='Trạng thái' [valuePrimitive]="false"
+                                (selectChange)="onChangeStatus($event,data)" disabledField="isActive"
+                                [valuePrimitive]="false" [data]="lstShipStatus">
+                            </tds-select>
+                        </td>
+                        <td>
+                            <tds-select valueField="Id" textField="Name" [(ngModel)]="data.CarrierId"
+                                [ngModelOptions]="{standalone: true}" placeholder='Đối tác GH' [valuePrimitive]="false"
+                                (selectChange)="onChangeCarrier($event,data)" disabledField="isActive"
+                                [valuePrimitive]="false" [data]="lstCarriers">
+                            </tds-select>
+                        </td>
                     </tr>
                 </ng-template>
             </tbody>
         </tds-table>
+        <div class="flex flex-col gap-y-4 w-fit mt-4">
+            <tds-checkbox [checked]="true">Ghi chú đối soát cho hóa đơn giao hàng</tds-checkbox>
+            <tds-checkbox [checked]="true">Cho phép xác nhận thanh toán HĐ giao hàng (áp dụng với HĐ đã thu tiền)</tds-checkbox>
+        </div>
     </div>
-    <tds-checkbox [checked]="true">Ghi chú đối soát cho hóa đơn giao hàng</tds-checkbox>
-    <tds-checkbox [checked]="true">Cho phép xác nhận thanh toán HĐ giao hàng (áp dụng với HĐ đã thu tiền)</tds-checkbox>
+    
     <div>
         <div class="w-full flex justify-end p-4" *tdsModalFooter>
-            <button tds-button type="button" class="mr-2 min-w-[100px]" color="secondary" (click)="onCancel()">Đóng</button>
-            <button tds-button type="button" class="min-w-[100px]" color="primary" (click)="onSave()">Lưu</button>
+            <button tds-button type="button" class="mr-2 min-w-[100px]" color="secondary"
+                (click)="onCancel()">Đóng</button>
+            <button tds-button type="submit" class="min-w-[100px]" color="primary" (click)="onSave()">Lưu</button>
         </div>
     </div>
 </div>

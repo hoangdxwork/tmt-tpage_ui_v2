@@ -223,10 +223,10 @@
     </div>
     <div class="flex justify-between gap-x-2">
       <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-      <button tds-button class="w-[170px]" type="submit" color="info" (click)="onSave('confirm')">
+      <button tds-button class="w-[170px]" type="submit" color="info" [disabled]="isLoading" (click)="onSave('confirm')">
         Lưu và xác nhận
       </button>
-      <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
+      <button tds-button class="w-[100px]" type="submit" color="primary" [disabled]="isLoading" (click)="onSave()">Lưu</button>
     </div>
   </div>
 </form>

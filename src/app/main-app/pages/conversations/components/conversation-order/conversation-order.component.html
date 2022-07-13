@@ -76,7 +76,7 @@
                           </div>
                         </div>
                         <div class="w-full pt-6 flex items-center">
-                          <textarea tdsInput placeholder="Ghi chú"
+                          <textarea tdsInput placeholder="Ghi chú" [(ngModel)]="quickOrderModel.Note" [ngModelOptions]="{standalone: true}"
                               class="resize-none no-scrollbar w-3/4 mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50 !text-neutral-1-400"></textarea>
 
                             <button tds-button-flat-icon color="secondary" tds-dropdown trigger="click" [placement]="'bottomRight'" [backdrop]="true" [tdsDropdownMenu]="menuUser"

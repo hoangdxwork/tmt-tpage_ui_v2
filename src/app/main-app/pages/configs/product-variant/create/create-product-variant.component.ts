@@ -1,3 +1,5 @@
+import { ConfigAttributeLine } from './../../../../dto/configs/product/config-product-default.dto';
+import { ProductTemplateService } from './../../../../services/product-template.service';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { IRAttachmentDTO } from './../../../../dto/attachment/attachment.dto';
@@ -29,6 +31,8 @@ export class CreateProductVariantComponent implements OnInit {
   lstUOM: Array<ProductUOMDTO> = [];
   lstUOMPO: Array<ProductUOMDTO> = [];
   lstPOSCateg: Array<POS_CategoryDTO> = [];
+  lstAttributeLine: ConfigAttributeLine[] = [];
+  lstShowAttribute: ConfigAttributeLine[] = [];
   listCateg = [
     { value: "product", text: "Có thể lưu trữ" },
     { value: "consu", text: "Có thể tiêu thụ" },
@@ -49,6 +53,7 @@ export class CreateProductVariantComponent implements OnInit {
     private notification: TDSNotificationService,
     private CRMService: CRMTeamService,
     private productService: ProductService,
+    private productTemplateService: ProductTemplateService,
     private productUOMService: ProductUOMService,
     private productCategoryService: ProductCategoryService) {
     this.createForm();
@@ -56,6 +61,7 @@ export class CreateProductVariantComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDefault();
+    this.loadProductCategory();
     this.loadAttributeValues();
     this.loadUOM();
     this.loadUOMPO();
@@ -141,12 +147,24 @@ export class CreateProductVariantComponent implements OnInit {
     });
   }
 
-  loadAttributeValues() {
+  loadProductCategory(){
     this.productCategoryService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.lstProductCateg = res.value;
     }, err => {
       this.message.error(err?.error?.message || Message.CanNotLoadData);
     });
+  }
+
+  loadAttributeValues() {
+    this.productTemplateService.getProductAttributeValue().pipe(takeUntil(this.destroy$)).subscribe(
+      (res: TDSSafeAny) => {
+        this.lstAttributeLine = res.value;
+        this.lstShowAttribute = this.lstAttributeLine;
+      },
+      err => {
+        this.message.error(err?.error?.message || Message.CanNotLoadData);
+      }
+    )
   }
 
   loadUOM() {
@@ -212,6 +230,11 @@ export class CreateProductVariantComponent implements OnInit {
     this._form.controls["Image"].setValue(base64);
   }
 
+  onChangeAttribute(lines:ConfigAttributeLine[]){
+    let attrIds = lines.map(f=> { return f.AttributeId });
+    this.lstShowAttribute = this.lstAttributeLine.filter(f=> !attrIds.includes(f.AttributeId));
+  }
+
   onChangeAddToFBPage(ev: boolean) {
     this.addToFBPage = !ev;
   }
@@ -239,7 +262,7 @@ export class CreateProductVariantComponent implements OnInit {
 
   onSave() {
     let model = this.prepareModel();
-
+    
     if (!model.Name) {
       this.message.error('Vui lòng nhập tên sản phẩm');
     }
