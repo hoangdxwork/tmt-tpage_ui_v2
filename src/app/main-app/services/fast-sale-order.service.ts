@@ -505,4 +505,11 @@ export class FastSaleOrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
+  updateStatusDeliveryPayment(data:any){
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.updateStatusDeliveryPayment`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<any>(api, data);
+  }
 }

@@ -5,16 +5,16 @@ import { CRMMatchingService } from './../../../services/crm-matching.service';
 import { CRMTeamService } from './../../../services/crm-team.service';
 import { PartnerService } from './../../../services/partner.service';
 import { addDays } from 'date-fns/esm';
-import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy, AfterViewChecked } from '@angular/core';
-import { SaleOnlineOrderSummaryStatusDTO, SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
+import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy, AfterViewChecked, AfterViewInit } from '@angular/core';
+import { SaleOnlineOrderSummaryStatusDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { ColumnTableDTO } from 'src/app/main-app/dto/common/table.dto';
 import { SortEnum, THelperCacheService } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
-import { OdataSaleOnline_OrderService } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
+import { FilterObjSOOrderModel, OdataSaleOnline_OrderService, TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { TagService } from 'src/app/main-app/services/tag.service';
-import { Subject, Observable, fromEvent } from 'rxjs';
+import { Subject, fromEvent, Observable } from 'rxjs';
 import { takeUntil, finalize, map, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { EditOrderComponent } from '../components/edit-order/edit-order.component';
 import { CreateBillFastComponent } from '../components/create-bill-fast/create-bill-fast.component';
@@ -34,26 +34,25 @@ import { CommonService } from 'src/app/main-app/services/common.service';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { GetListOrderIdsDTO } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
-import { SaleOnline_Order_V2DTO } from 'src/app/main-app/dto/saleonlineorder/saleonline-order-v2.dto';
 import { HostListener } from '@angular/core';
+import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/main-app/dto/saleonlineorder/odata-saleonline-order.dto';
 
 @Component({
   selector: 'app-order',
   templateUrl: './order.component.html'
 })
 
-export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
+export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('innerText') innerText!: ElementRef;
 
-  lstOfData!: SaleOnline_Order_V2DTO[];
+  lstOfData!: ODataSaleOnline_OrderModel[];
   pageSize = 20;
   pageIndex = 1;
   isLoading: boolean = false;
   count: number = 1;
   idsModel: any = [];
   indClickStatus = -1;
-  currentStatus:TDSSafeAny;
   lstStatusTypeExt!: Array<any>;
   public mappingTeams: any[] = [];
   public currentMappingTeam: any;
@@ -63,14 +62,14 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
   orderMessage: TDSSafeAny;
   private destroy$ = new Subject<void>();
 
-  public filterObj: TDSSafeAny = {
-    tags: [],
-    status: '',
-    searchText: '',
-    dateRange: {
-      startDate: addDays(new Date(), -30),
-      endDate: new Date(),
-    }
+  public filterObj: FilterObjSOOrderModel = {
+      tags: [],
+      status: [],
+      searchText: '',
+      dateRange: {
+          startDate: addDays(new Date(), -30),
+          endDate: new Date()
+      }
   }
 
   public hiddenColumns = new Array<ColumnTableDTO>();
@@ -86,7 +85,7 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
     { value: 'UserName', name: 'Nhân viên', isChecked: true },
   ];
 
-  public tabNavs: Array<TDSSafeAny> = [];
+  public tabNavs: Array<TabNavsDTO> = [];
   public modelTags: Array<TDSSafeAny> = [];
 
   sort: Array<SortDataRequestDTO> = [{
@@ -96,8 +95,6 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   tabIndex: number = 1;
   public lstDataTag: Array<TDSSafeAny> = [];
-  firstPhone = ['036', '090', '093', '077', '082']
-  namePhone = ['Viettel', 'Mobifone', 'Mobifone', 'Mobifone', 'Vinaphone']
 
   expandSet = new Set<string>();
   isOpenMessageFacebook = false;
@@ -107,14 +104,14 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
   indeterminate = false;
   setOfCheckedId = new Set<string>();
 
-  widthTable: number = 0;
   paddingCollapse: number = 36;
   marginLeftCollapse: number = 0;
   isLoadingCollapse: boolean = false;
 
-  @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
-  @ViewChild('viewChildDetailPartner') viewChildDetailPartner!: ElementRef;
-
+  @ViewChild('WidthTable') widthTable!: ElementRef;
+  @ViewChild('billOrderLines') billOrderLines!: ElementRef;
+  widthCollapse: number = 0;
+  isTabNavs: boolean = false;
   isProcessing: boolean = false;
 
   constructor(private cdRef: ChangeDetectorRef,
@@ -134,30 +131,38 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
     private partnerService: PartnerService,
     private crmTeamService: CRMTeamService,
     private crmMatchingService: CRMMatchingService,
-    private modalService: TDSModalService) { }
+    private modalService: TDSModalService) {
+  }
 
   ngOnInit(): void {
     this.loadTags();
     this.loadGridConfig();
-    this.loadStatusTypeExt()
+    this.loadStatusTypeExt();
+    this.loadSummaryStatus();
   }
 
   ngAfterViewInit(): void {
-    this.widthTable = this.viewChildWidthTable?.nativeElement?.offsetWidth - this.paddingCollapse
+
+    this.widthCollapse = this.widthTable?.nativeElement?.offsetWidth - this.paddingCollapse
     this.resizeObserver
-      .observe(this.viewChildWidthTable)
+      .observe(this.widthTable)
       .subscribe(() => {
-        this.widthTable = this.viewChildWidthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
-        this.viewChildWidthTable?.nativeElement?.click()
+        this.widthCollapse = this.widthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
+        this.widthTable?.nativeElement?.click()
       });
 
     setTimeout(() => {
       let that = this;
-      let wrapScroll = this.viewChildDetailPartner?.nativeElement?.closest('.tds-table-body');
-      wrapScroll?.addEventListener('scroll', function () {
-        var scrollleft = wrapScroll.scrollLeft;
-        that.marginLeftCollapse = scrollleft;
-      });
+
+      if(that.billOrderLines) {
+          let wrapScroll = that.billOrderLines?.nativeElement?.closest('.tds-table-body');
+
+          wrapScroll?.addEventListener('scroll', function () {
+            let scrollleft = wrapScroll.scrollLeft;
+            that.marginLeftCollapse = scrollleft;
+          });
+      }
+
     }, 500);
 
     fromEvent(this.innerText.nativeElement, 'keyup').pipe(
@@ -211,6 +216,7 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   loadData(pageSize: number, pageIndex: number) {
+    this.lstOfData = [];
     let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
@@ -220,15 +226,13 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
     }, error => {
       this.message.error(`${error?.error?.message}` || Message.CanNotLoadData)
     });
-
-    this.loadSummaryStatus();
   }
 
-  getViewData(params: string) {
+  getViewData(params: string): Observable<ODataSaleOnline_OrderDTOV2>{
     this.isLoading = true;
     return this.odataSaleOnline_OrderService
-      .getView(params, this.filterObj)
-      .pipe(finalize(() => this.isLoading = false));
+      .getView(params, this.filterObj).pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() =>  this.isLoading = false ));
   }
 
   loadSummaryStatus() {
@@ -239,56 +243,43 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
       TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
     }
 
-    this.isLoading = true;
-    this.saleOnline_OrderService.getSummaryStatus(model)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe((res: Array<TDSSafeAny>) => {
+    this.isTabNavs = true;
+    this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$),
+       finalize(() => this.isTabNavs = false)).subscribe((res: Array<TDSSafeAny>) => {
+
+        let tabs: TabNavsDTO[] = [];
         let total = 0;
+        res.map((x: TDSSafeAny, index: number) => {
 
-        this.tabNavs.length = 0;
-
-        res.map((x: TDSSafeAny) => {
           total += x.Total;
-          switch (x.StatusText) {
-            case "Nháp":
-              this.tabNavs.push({ Name: "Nháp", Index: 2, Total: x.Total });
-              break;
-            case "Đã xác nhận":
-              this.tabNavs.push({ Name: "Đã xác nhận", Index: 3, Total: x.Total });
-              break;
-            case "Đơn hàng":
-              this.tabNavs.push({ Name: "Đơn hàng", Index: 3, Total: x.Total });
-              break;
-            case "Đã thanh toán":
-              this.tabNavs.push({ Name: "Đã thanh toán", Index: 4, Total: x.Total });
-              break;
-            case "Hủy":
-              this.tabNavs.push({ Name: "Hủy", Index: 5, Total: x.Total });
-              break;
-          }
+          index = index + 2;
+
+          tabs.push({ Name: `${x.StatusText}`, Index: index, Total: x.Total });
         });
 
-        this.tabNavs.push({ Name: "Tất cả", Index: 1, Total: total });
-        this.tabNavs.sort((a, b) => a.Index - b.Index);
+        tabs.push({ Name: "Tất cả", Index: 1, Total: total });
+        tabs.sort((a, b) => a.Index - b.Index);
+
+        this.tabNavs = [...tabs];
       });
   }
 
   loadGridConfig() {
     const key = this.saleOnline_OrderService._keyCacheGrid;
     this.cacheApi.getItem(key).subscribe((res: TDSSafeAny) => {
-      if (res && res.value) {
-        let jsColumns = JSON.parse(res.value) as any;
-        this.hiddenColumns = jsColumns.value.columnConfig;
-      } else {
-        this.hiddenColumns = this.columns;
-      }
-    });
+        if (res && res.value) {
+            let jsColumns = JSON.parse(res.value) as any;
+            this.hiddenColumns = jsColumns.value.columnConfig;
+        } else {
+            this.hiddenColumns = this.columns;
+        }
+    })
   }
 
   loadTags() {
     let type = "saleonline";
     this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
-      this.lstDataTag = res.value;
+      this.lstDataTag = [ ...res.value ];
     });
   }
 
@@ -323,9 +314,9 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
               }
           });
       }
-  }, error => {
+    }, error => {
       this.message.error(error?.error?.message ? error?.error?.message : 'Đã xảy ra lỗi');
-  });
+    });
   }
 
   onCreateBillDefault() {
@@ -350,38 +341,20 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
   }
 
-  checkPhone(phone: string) {
-    if (TDSHelperString.hasValueString(phone)) {
-      for (let i = 0; i < this.firstPhone.length; i++) {
-        if (phone.indexOf(this.firstPhone[i]) == 0)
-          return this.namePhone[i];
-      }
+  onSelectChange(index: TDSSafeAny) {
+    let item = this.tabNavs.filter(f => f.Index == index )[0];
+
+    if(item?.Name == 'Tất cả') {
+      this.filterObj.status = [];
+    } else {
+      this.filterObj.status.push(item.Name);
     }
 
-    return 'Chưa xác định';
-  }
-
-  onSelectChange(Index: TDSSafeAny) {
-    const dataItem = this.tabNavs.find(f => { return f.Index == Index })
     this.pageIndex = 1;
     this.indClickTag = "";
 
-    this.filterObj = {
-      tags: [],
-      status: dataItem?.Name != 'Tất cả' ? dataItem?.Name : null,
-      searchText: '',
-      dateRange: {
-        startDate: addDays(new Date(), -30),
-        endDate: new Date(),
-      }
-    };
     this.indeterminate = false;
     this.loadData(this.pageSize, this.pageIndex);
-  }
-
-  // Drawer tin nhắn facebook
-  openDrawerMessage(linkFacebook: string) {
-    this.isOpenMessageFacebook = true;
   }
 
   openTag(id: string, data: TDSSafeAny) {
@@ -461,14 +434,6 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.loadData(params.pageSize, params.pageIndex);
   }
 
-  applyFilter(event: TDSSafeAny) {
-    this.tabIndex = 1;
-    this.pageIndex = 1;
-
-    this.filterObj.searchText = event.target.value;
-    this.loadData(this.pageSize, this.pageIndex);
-  }
-
   refreshData() {
     this.pageIndex = 1;
     this.indClickTag = "";
@@ -479,7 +444,7 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     this.filterObj = {
       tags: [],
-      status: '',
+      status: [],
       searchText: '',
       dateRange: {
         startDate: addDays(new Date(), -30),
@@ -501,19 +466,16 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.loadData(this.pageSize, this.pageIndex);
   }
 
-  onLoadOption(event: any): void {
+  onLoadOption(event: FilterObjSOOrderModel) {
     this.tabIndex = 1;
     this.pageIndex = 1;
-    this.pageSize = 20;
 
-    this.filterObj = {
-      tags: event.tags,
-      status: event?.status != 'Tất cả' ? event?.status : null,
-      searchText: event.searchText,
-      dateRange: {
-        startDate: event.dateRange.startDate,
-        endDate: event.dateRange.endDate,
-      }
+    this.filterObj.tags = event.tags;
+    this.filterObj.status = event.status;
+
+    this.filterObj.dateRange = {
+      startDate: event.dateRange.startDate,
+      endDate: event.dateRange.endDate
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -533,7 +495,7 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
   }
 
-  onEdit(item: SaleOnline_Order_V2DTO) {
+  onEdit(item: ODataSaleOnline_OrderModel) {
     const modal = this.modal.create({
       content: EditOrderComponent,
       size: 'xl',
@@ -619,7 +581,7 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (this.checkValueEmpty() == 1) {
       let ids = [...this.setOfCheckedId];
       this.modal.create({
-        title: 'Gửi tin nhắn nhanh',
+        title: 'Gửi tin nhắn Facebook',
         content: SendMessageComponent,
         size: 'lg',
         viewContainerRef: this.viewContainerRef,
@@ -630,6 +592,18 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
       })
     }
   }
+  showMessageModal(orderMessage: TDSSafeAny){
+    this.modal.create({
+      title: 'Gửi tin nhắn Facebook',
+      size:'lg',
+      content: SendMessageComponent,
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        orderIds: [orderMessage.Id],
+        messageType: GenerateMessageTypeEnum.Order
+      }
+    });
+}
 
   // Nhãn
   loadStatusTypeExt() {
@@ -640,26 +614,17 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   updateStatusSaleOnline(data: any, status: any){
     let value = status.Text;
+
     this.saleOnline_OrderService.updateStatusSaleOnline(data.Id, value).pipe(takeUntil(this.destroy$)).subscribe((res) => {
         this.message.success('Cập nhật thành công');
         data.StatusText = status.Text;
-        this.cdRef.detectChanges();
-    },err => {
-      this.message.error( err.error.message ?? 'Cập nhật thất bại');
+
+        this.loadSummaryStatus();
+        this.cdRef.markForCheck();
+    }, error => {
+        this.message.error( error.error.message ?? 'Cập nhật thất bại');
     });
   }
-
-  // lịch sử tin nhắn
-  // public openHistoryMessageSent(orderId: any) {
-  //   const modalRef = this.modalService.open(HistoryChatModalComponent, { size: 'xl' });
-  //   modalRef.componentInstance.orderId = orderId;
-  //   modalRef.componentInstance.type = "order";
-  //   modalRef.result.then(res => {
-
-  //   }, (reason) => {
-
-  //   });
-  // }
 
   printMultiOrder() {
     if (this.checkValueEmpty() == 1) {
@@ -675,9 +640,11 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
       })
     }
   }
+
   openMiniChat(data: TDSSafeAny) {
     let partnerId = data.PartnerId;
     this.orderMessage = data;
+
     if(this.orderMessage.DateCreated){
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
     }
@@ -706,13 +673,14 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
           teams.map((x: any) => {
             var exist = res.filter((r: any) => r.page_id == x.Facebook_PageId)[0];
             if (exist && !pageDic[exist.Facebook_PageId]) {
+
               pageDic[exist.Facebook_PageId] = true; // Cờ này để không thêm trùng page vào
               this.mappingTeams.push({
-                psid: exist.psid,
-                team: x
-              });
+                  psid: exist.psid,
+                  team: x
+              })
             }
-          });
+          })
 
           if (this.mappingTeams.length > 0) {
             this.currentMappingTeam = this.mappingTeams[0];
@@ -723,6 +691,7 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
     })
   }
+
   loadMDBByPSId(pageId: string, psid: string) {
     // Xoá hội thoại hiện tại
     (this.currentConversation as any) = null;
@@ -749,6 +718,7 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
         }
       });
   }
+
   selectMappingTeam(item: any) {
     this.currentMappingTeam = item;
     this.loadMDBByPSId(item.psid, item.team.Facebook_PageId); // Tải lại hội thoại
@@ -760,14 +730,6 @@ export class OrderComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   get getCheckedRow() {
     return [...this.setOfCheckedId].length;
-  }
-
-  ngAfterViewChecked(): void {
-    this.cdRef.detectChanges();
-  }
-
-  onClose(e:Event) {
-
   }
 
   @HostListener('document:keyup', ['$event'])

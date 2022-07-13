@@ -1,13 +1,12 @@
 import { Message } from 'src/app/lib/consts/message.const';
 import { finalize, switchMap } from 'rxjs/operators';
-import { da } from 'date-fns/locale';
 import { ModalBirthdayPartnerComponent } from './../components/modal-birthday-partner/modal-birthday-partner.component';
 import { ModalSendMessageComponent } from './../components/modal-send-message/modal-send-message.component';
 import { ModalConvertPartnerComponent } from './../components/modal-convert-partner/modal-convert-partner.component';
 import { ModalEditPartnerComponent } from './../components/modal-edit-partner/modal-edit-partner.component';
 
-import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef, ElementRef, AfterViewInit, HostListener } from '@angular/core';
-import { OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
+import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef, ElementRef, AfterViewInit } from '@angular/core';
+import { FilterObjPartnerModel, OdataPartnerService } from 'src/app/main-app/services/mock-odata/odata-partner.service';
 import { OperatorEnum, SortEnum, THelperCacheService } from 'src/app/lib';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { CommonService } from 'src/app/main-app/services/common.service';
@@ -32,6 +31,7 @@ import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.servi
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
+import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 
 @Component({
   selector: 'app-partner',
@@ -48,10 +48,16 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   isLoading: boolean = false;
   count: number = 1;
 
-  public filterObj: TDSSafeAny = {
+  public filterObj: FilterObjPartnerModel = {
+    tags: [],
+    status: [],
     searchText: '',
-    statusText: null
   }
+
+  sort: Array<SortDataRequestDTO> = [{
+    field: "DateCreated",
+    dir: SortEnum.desc
+  }];
 
   tabIndex: any = null;
   partnerStatusReport: Array<PartnerStatusReportDTO> = [];
@@ -144,7 +150,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    // this.loadData() >Đã load đầu tiên khi sử dụng queryParams
+    // this.loadData() Đã load đầu tiên khi sử dụng queryParams
     this.loadTags();
     this.loadGridConfig();
     this.loadPartnerStatusReport();
@@ -168,20 +174,20 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   loadData(pageSize: number, pageIndex: number) {
     let filters = this.odataPartnerService.buildFilter(this.filterObj);
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
     this.getViewData(params).subscribe((res: ODataPartnerDTO) => {
-      this.count = res['@odata.count'] as number;
-      this.lstOfData = [...res.value];
+        this.count = res['@odata.count'] as number;
+        this.lstOfData = [...res.value];
     }, error => {
-      this.message.error('Tải dữ liệu khách hàng thất bại!');
+        this.message.error('Tải dữ liệu khách hàng thất bại!');
     });
   }
 
   private getViewData(params: string): Observable<ODataPartnerDTO> {
     this.isLoading = true;
     return this.odataPartnerService
-      .getView(params).pipe(takeUntil(this.destroy$))
+      .getView(params, this.filterObj).pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => { this.isLoading = false }));
   }
 
@@ -205,7 +211,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   refreshData() {
     this.pageIndex = 1;
     this.indClickTag = -1;
-    this.tabIndex = null;
+    this.tabIndex = 1;
     this.innerText.nativeElement.value = '';
 
     this.checked = false;
@@ -213,8 +219,9 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.setOfCheckedId = new Set<number>();
 
     this.filterObj = {
-      searchText: '',
-      statusText: null
+      tags: [],
+      status: [],
+      searchText: ''
     }
 
     this.loadData(this.pageSize, this.pageIndex);
@@ -237,19 +244,6 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     let exits = this.partnerStatusReport.filter(x => x.StatusText.toLowerCase() == text.toLowerCase())[0] as any;
     if (exits) {
       return exits.StatusStyle;
-    }
-  }
-
-  checkNameNetwork(type: string) {
-    switch (type) {
-      case "Viettel":
-        return "error"
-      case "Mobifone":
-        return "success"
-      case "Vinaphone":
-        return "info"
-      default:
-        return "info"
     }
   }
 
@@ -287,6 +281,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
       this.message.error('Gán nhãn thất bại!');
     });
   }
+
   ngAfterViewInit(): void {
     this.widthTable = this.viewChildWidthTable?.nativeElement?.offsetWidth - this.paddingCollapse
 
@@ -311,7 +306,8 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
       distinctUntilChanged(),
       // TODO: switchMap xử lý trường hợp sub in sub
       switchMap((text: TDSSafeAny) => {
-        this.tabIndex = null;
+
+        this.tabIndex = 1;
         this.pageIndex = 1;
         this.indClickTag = -1;
 
@@ -322,10 +318,10 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
         return this.getViewData(params);
       }))
       .subscribe((res: any) => {
-        this.count = res['@odata.count'] as number;
-        this.lstOfData = [...res.value];
+          this.count = res['@odata.count'] as number;
+          this.lstOfData = [...res.value];
       }, error => {
-        this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
+          this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
       });
   }
 
@@ -347,14 +343,12 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  onLoadOption(event: any) {
+  onLoadOption(event: FilterObjPartnerModel) {
     this.pageIndex = 1;
     this.indClickTag = -1;
 
-    this.filterObj = {
-      statusText: event.statusText,
-      searchText: event.searchText,
-    }
+    this.filterObj.tags = event.tags;
+    this.filterObj.status = event.status;
 
     this.loadData(this.pageSize, this.pageIndex);
   }

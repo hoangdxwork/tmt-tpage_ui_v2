@@ -1,3 +1,4 @@
+import { ODataProductDTO } from 'src/app/main-app/dto/configs/product/config-odata-product.dto';
 import { ODataProductInventoryDTO } from './../dto/configs/product/config-odata-product.dto';
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
@@ -27,5 +28,17 @@ export class ProductTemplateOUMLineService extends BaseSevice {
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  getProductUOMLine(skip: number, top: number, keyword: string): Observable<any> {
+    let filter = ""
+    if (keyword) {
+      filter = `&$filter=(contains(NameNoSign,'${keyword}')+or+contains(NameGet,'${keyword}')+or+contains(Barcode,'${keyword}'))`;
+    }
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}?$skip=${skip}&$top=${top}&$orderby=Name asc${filter}`,
+      method: TApiMethodType.get,
+  }
+  return this.apiService.getData<ODataProductDTO>(api, null);
   }
 }

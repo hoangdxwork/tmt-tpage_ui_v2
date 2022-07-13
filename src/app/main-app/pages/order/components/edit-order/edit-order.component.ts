@@ -1,3 +1,4 @@
+import { ProductTemplateOUMLineService } from './../../../../services/product-template-uom-line.service';
 import { ODataProductDTOV2, ProductDTOV2 } from './../../../../dto/product/odata-product.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
@@ -27,7 +28,6 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'td
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TACheckboxChange } from 'tds-ui/tds-checkbox';
-import { SaleOnline_Order_V2DTO } from 'src/app/main-app/dto/saleonlineorder/saleonline-order-v2.dto';
 import { CreateFastSaleOrderDTO } from 'src/app/main-app/dto/saleonlineorder/create-fastsaleorder.dto';
 import { CommentsOfOrderDTO } from 'src/app/main-app/dto/saleonlineorder/comment-of-order.dto';
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
@@ -46,6 +46,7 @@ import { TDSNotificationService } from 'tds-ui/notification';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { PrepareSaleModelHandler } from 'src/app/main-app/commands/prepare-salemodel.handler';
+import { ODataSaleOnline_OrderModel } from 'src/app/main-app/dto/saleonlineorder/odata-saleonline-order.dto';
 
 @Component({
   selector: 'edit-order',
@@ -54,7 +55,7 @@ import { PrepareSaleModelHandler } from 'src/app/main-app/commands/prepare-salem
 
 export class EditOrderComponent implements OnInit {
 
-  @Input() dataItem!: SaleOnline_Order_V2DTO;
+  @Input() dataItem!: ODataSaleOnline_OrderModel;
 
   dataSuggestion!: DataSuggestionDTO;
   userInit!: UserInitDTO;
@@ -125,7 +126,8 @@ export class EditOrderComponent implements OnInit {
     private generalConfigsFacade: GeneralConfigsFacade,
     private odataProductService: OdataProductService,
     private deliveryCarrierService: DeliveryCarrierService,
-    private partnerService: PartnerService) {
+    private partnerService: PartnerService,
+    private productTemplateOUMLineService: ProductTemplateOUMLineService) {
   }
 
   ngOnInit(): void {
@@ -151,7 +153,7 @@ export class EditOrderComponent implements OnInit {
       if(res.Facebook_PostId && res.CRMTeamId && res.Facebook_ASUserId) {
           this.commentsOfOrder(res.Facebook_PostId, res.CRMTeamId, res.Facebook_ASUserId);
       }
-      
+
       this.cdRef.detectChanges();
     }, error => {
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Load đơn hàng đã xảy ra lỗi');
@@ -288,13 +290,6 @@ export class EditOrderComponent implements OnInit {
     this.textSearchProduct = '';
   }
 
-  chooseProduct(nameGet: string){
-    let product = this.lstProductSearch.find(x => x.NameGet === nameGet);
-    if (product) {
-      this.selectProduct(product);
-    }
-  }
-
   selectProduct(data: ProductDTOV2){
     let index = this.quickOrderModel.Details.findIndex(
       (x) => x.ProductId === data.Id && x.UOMId === data.UOMId
@@ -329,27 +324,29 @@ export class EditOrderComponent implements OnInit {
         content: TpageAddProductComponent,
         size: 'xl',
         viewContainerRef: this.viewContainerRef,
-        componentParams: {}
+        componentParams: {
+          typeComponent: null,
+        }
     });
 
-    modal.afterClose.subscribe(result =>{
+    modal.afterClose.subscribe(result => {
       if(TDSHelperObject.hasValue(result)) {
         let data = result[0];
-          let item = {
-              Quantity: 1,
-              Price: data.ListPrice,
-              ProductId: data.Id,
-              ProductName: data.Name,
-              ProductNameGet: data.NameGet,
-              ProductCode: data.DefaultCode,
-              UOMId: data.UOMId,
-              UOMName: data.UOMName,
-              Note: null,
-              Factor: 1,
-              OrderId: this.dataItem.Id,
-              Priority: 0,
-              ImageUrl: result.ImageUrl,
-          } as Detail_QuickSaleOnlineOrder;
+        let item = {
+            Quantity: 1,
+            Price: data.ListPrice,
+            ProductId: data.Id,
+            ProductName: data.Name,
+            ProductNameGet: data.NameGet,
+            ProductCode: data.DefaultCode,
+            UOMId: data.UOMId,
+            UOMName: data.UOMName,
+            Note: null,
+            Factor: 1,
+            OrderId: this.dataItem.Id,
+            Priority: 0,
+            ImageUrl: result.ImageUrl,
+        } as Detail_QuickSaleOnlineOrder;
 
         this.quickOrderModel.Details.push(item);
         this.calcTotal();
@@ -672,16 +669,10 @@ export class EditOrderComponent implements OnInit {
 
   loadProduct(textSearch: string) {
     this.isLoadingProduct = true;
-    let filterObj: FilterObjDTO = {
-      searchText: textSearch,
-    }
-    let pageSize = 20;
-    let pageIndex = 1;
+    let top = 20;
+    let skip = 0;
 
-    let filters = this.odataProductService.buildFilter(filterObj);
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
-
-    this.odataProductService.getView(params).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{ this.isLoadingProduct = false; }))
+    this.productTemplateOUMLineService.getProductUOMLine(skip, top, textSearch).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{ this.isLoadingProduct = false; }))
     .subscribe((res: ODataProductDTOV2) => {
       this.lstProductSearch = [...res.value]
     },err=>{

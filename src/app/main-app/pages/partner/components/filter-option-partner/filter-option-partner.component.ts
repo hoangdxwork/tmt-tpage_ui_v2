@@ -1,68 +1,64 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { CommonService } from "src/app/main-app/services/common.service";
-import { TDSContextMenuService } from "tds-ui/dropdown";
-import { TDSMessageService } from "tds-ui/message";
-import { TDSSafeAny } from "tds-ui/shared/utility";
+import { FilterObjPartnerModel } from "src/app/main-app/services/mock-odata/odata-partner.service";
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 
 @Component({
   selector: 'filter-option-partner',
   templateUrl: './filter-option-partner.component.html',
 })
 
-export class FilterOptionPartnerComponent implements OnInit {
+export class FilterOptionPartnerComponent  {
 
   @Output() onLoadOption = new EventEmitter<TDSSafeAny>();
   @Input() status: any = [];
+  @Input() lstDataTag: Array<TDSSafeAny> = [];
+  @Input() filterObj!: FilterObjPartnerModel;
 
   isVisible: boolean = false;
-
-  public filterObj: TDSSafeAny = {
-      searchText: '',
-      statusText: null
-  }
-
-  currentStatus = { value: 'all', text: 'Tất cả'};
+  selectTags: Array<TDSSafeAny> = [];
   isActive: boolean = false;
 
-  constructor(private message: TDSMessageService,
-      private commonService: CommonService,
-      private tdsContextMenuService: TDSContextMenuService) {
-  }
-
-  ngOnInit(): void {
-  }
+  constructor() {}
 
   selectState(event: any): void {
-    if(event == "all") {
-      this.currentStatus = { value: 'all', text: 'Tất cả'};
-
-      this.filterObj = {
-          statusText: null,
-          searchText: '',
-      }
+    if(this.filterObj.status.includes(event.StatusText)) {
+        this.filterObj.status = this.filterObj.status.filter((x: any) => !(x == event.StatusText));
     } else {
-      this.currentStatus = { value: event.StatusText, text: event.StatusText };
-      this.filterObj = {
-          statusText: event.StatusText,
-          searchText: '',
-      }
+        this.filterObj.status.push(event.StatusText);
     }
   }
 
   onApply() {
+    this.isActive = true;
     this.onLoadOption.emit(this.filterObj);
   }
 
-  onCancel() {
-    this.currentStatus = { value: 'all', text: 'Tất cả'};
-
-    this.filterObj = {
-        statusText: null,
-        searchText: '',
+  onChangeTags(event: Array<TDSSafeAny>): void {
+    this.selectTags = [];
+    if(event){
+      event.forEach(x => {
+          this.selectTags.push(x);
+      })
     }
+    this.filterObj.tags = [...this.selectTags];
+  }
 
-    this.onLoadOption.emit(this.filterObj);
+  checkActive(): boolean {
+    let exist = TDSHelperArray.hasListValue(this.filterObj.tags) || TDSHelperArray.hasListValue(this.filterObj.status)
+    if(exist) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  onCancel() {
+    this.selectTags = [];
+    this.filterObj.tags = [];
+    this.filterObj.status = [];
+
     this.isActive = false;
+    this.onLoadOption.emit(this.filterObj);
   }
 
   closeMenu() {

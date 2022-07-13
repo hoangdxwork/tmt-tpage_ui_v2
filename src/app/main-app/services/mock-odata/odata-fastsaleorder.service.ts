@@ -1,24 +1,22 @@
 import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { format } from 'date-fns';
-import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
-import { FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
-import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ODataFastSaleOrderDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
 import { BaseSevice } from '../base.service';
 
-export interface FilterObjDTO  {
-    tags: Array<TDSSafeAny>,
-    status: '',
-    bill: null,
+export interface FilterObjFastSaleModel  {
+    tags: string[],
+    status: string[],
+    hasTracking: string | null,
     deliveryType: '',
     searchText: '',
     dateRange: {
-        startDate: Date,
-        endDate: Date
-    },
-    // carrierId: null
+      startDate: Date,
+      endDate: Date
+    }
 }
 
 @Injectable()
@@ -33,7 +31,7 @@ export class OdataFastSaleOrderService extends BaseSevice {
     super(apiService)
   }
 
-  getView(params: string, filterObj: FilterObjDTO): Observable<TDSSafeAny>{
+  getView(params: string, filterObj: FilterObjFastSaleModel): Observable<TDSSafeAny>{
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&deliveryType=${filterObj.deliveryType}&${params}&$count=true`,
         method: TApiMethodType.get,
@@ -41,7 +39,7 @@ export class OdataFastSaleOrderService extends BaseSevice {
     return this.apiService.getData<ODataFastSaleOrderDTO>(api, null);
   }
 
-  public buildFilter(filterObj: FilterObjDTO) {
+  public buildFilter(filterObj: FilterObjFastSaleModel) {
     let dataFilter: FilterDataRequestDTO = {
         logic: "or",
         filters: [],
@@ -88,26 +86,28 @@ export class OdataFastSaleOrderService extends BaseSevice {
         })
     }
 
-    if(TDSHelperString.hasValueString(filterObj.bill)) {
-      if(filterObj.bill === "isCode"){
+    if(TDSHelperString.hasValueString(filterObj.hasTracking)) {
+      if(filterObj.hasTracking === "isCode"){
           dataFilter.filters.push({ field: "TrackingRef", operator: OperatorEnum.neq, value: null })
           dataFilter.logic = "and";
       }
-      if(filterObj.bill === "noCode"){
+      if(filterObj.hasTracking === "noCode"){
         dataFilter.filters.push({ field: "TrackingRef", operator: OperatorEnum.eq, value: null })
         dataFilter.logic = "and";
       }
     }
 
-    if (TDSHelperString.hasValueString(filterObj.status)) {
-      dataFilter.filters.push({ field: "State", operator: OperatorEnum.eq, value: filterObj.status })
-      dataFilter.logic = "and";
-    }
+    if (TDSHelperArray.hasListValue(filterObj.status)) {
+      dataFilter.filters.push({
+          filters: filterObj.status.map((x) => ({
+              field: "State",
+              operator: "eq",
+              value: x,
+          })),
 
-    // if(filterObj.carrierId != null) {
-    //   dataFilter.filters.push({ field: "CarrierId", operator: OperatorEnum.eq, value: filterObj.carrierId })
-    //   dataFilter.logic = "and";
-    // }
+          logic: "or"
+      })
+    }
 
     return dataFilter;
   }

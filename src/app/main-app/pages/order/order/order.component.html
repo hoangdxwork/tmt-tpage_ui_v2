@@ -31,21 +31,32 @@
   <div class="p-4 h-full">
     <div class="bg-white w-full h-full rounded-md border border-neutral-200 flex flex-col">
       <div class="flex justify-between" *ngIf="getCheckedRow < 1">
-        <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
-          <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
-            <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
-            </tds-filter-status-item>
-          </ng-template>
-        </tds-filter-status>
+
+        <tds-spin [spinning]="isTabNavs" delay="350">
+            <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
+                <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
+                    <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
+                    </tds-filter-status-item>
+                </ng-template>
+            </tds-filter-status>
+        </tds-spin>
+
         <!-- TODO: Thao tác -->
         <div class="flex items-center gap-x-2 pr-4">
-          <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]
+            <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]
             (onRefreshData)="refreshDataCurrent()"></action-dropdown>
+
           <tds-form-field class="w-full">
-            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText />
-            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText />
+              <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
           </tds-form-field>
-          <order-filter-options (onLoadOption)="onLoadOption($event)"></order-filter-options>
+
+          <div *ngIf="tabNavs && filterObj">
+              <order-filter-options (onLoadOption)="onLoadOption($event)"
+                  [tabNavs]="tabNavs" [lstDataTag]="lstDataTag" [filterObj]="filterObj">
+              </order-filter-options>
+          </div>
+
           <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
         </div>
       </div>
@@ -74,15 +85,23 @@
           </button>
           <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]
             (onRefreshData)="refreshDataCurrent()"></action-dropdown>
+
           <tds-form-field class="w-full">
-            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText />
-            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText />
+              <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
           </tds-form-field>
-          <order-filter-options (onLoadOption)="onLoadOption($event)"></order-filter-options>
+
+          <div *ngIf="tabNavs && filterObj">
+              <order-filter-options (onLoadOption)="onLoadOption($event)"
+                  [tabNavs]="tabNavs" [lstDataTag]="lstDataTag" [filterObj]="filterObj">
+              </order-filter-options>
+          </div>
+
           <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
         </div>
       </div>
-      <div #viewChildWidthTable class="flex-auto w-full pb-2.5">
+
+      <div #WidthTable class="flex-auto w-full pb-2.5" >
         <tds-table #rowSelectionTable [showSizeChanger]="true" [frontPagination]="false" [listData]="lstOfData"
           [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" [scroll]="{y:'auto', x: 'auto'}"
           [loading]="isLoading" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
@@ -94,7 +113,7 @@
               <th width="64px" [tdsLeft]="true" class="border-r">STT</th>
               <th *ngIf="isHidden('Code')" width="200px" [tdsLeft]="true" class="border-r">Mã</th>
               <th *ngIf="isHidden('CRMTeamName')" width="160px" class="border-r">Kênh kết nối</th>
-              <th *ngIf="isHidden('Name')" width="240px" class="border-r">Tên</th>
+              <th *ngIf="isHidden('Name')" width="240px" class="border-r">Khách hàng</th>
               <th *ngIf="isHidden('Address')" width="380px" class="border-r">Địa chỉ</th>
               <th *ngIf="isHidden('TotalAmount')" width="140px" class="border-r text-right">Tổng tiền</th>
               <th *ngIf="isHidden('TotalQuantity')" width="140px" class="border-r">Tổng SL</th>
@@ -219,10 +238,8 @@
 
                     <div class="flex items-center gap-1">
                       <p class="text-[#929DAA]">{{data.Telephone}}</p>
-                      <tds-tag class="ml-1" *ngIf="data.Telephone"
-                        [status]="checkPhone(data.Telephone)=='Viettel'?'error':(checkPhone(data.Telephone)=='Mobifone'?'success':'info')"
-                        type="outline">
-                        {{checkPhone(data.Telephone)}}
+                      <tds-tag class="ml-1" *ngIf="data.NameNetwork"  [status]="data.NameNetwork | nameNetWork" type="outline">
+                        {{ data.NameNetwork }}
                       </tds-tag>
                       <button *ngIf="data.Address" class="bg-orange-500 rounded-md p-1">
                         <span class="flex items-center text-white ">
@@ -301,12 +318,10 @@
                 </td>
               </tr>
               <!-- expand order details -->
-              <tr [expand]="expandSet.has(data.Id)"
-                class="border-b border-neutral-2-100 text-neutral-1-900 bg-light-50">
-                <div #viewChildDetailPartner
-                  [ngStyle]="{'max-width.px': widthTable, 'margin-left.px': marginLeftCollapse}"
-                  class="flex items-center justify-center k-grid-table-wrap-detail">
-                  <expand-order-detail class="w-full" *ngIf="expandSet.has(data.Id)" [dataOrder]="data">
+              <tr [expand]="expandSet.has(data.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 bg-gray-200 w-full">
+                <div #billOrderLines
+                  [ngStyle]="{'max-width.px': widthCollapse, 'margin-left.px': marginLeftCollapse}">
+                  <expand-order-detail *ngIf="expandSet.has(data.Id)" [dataOrder]="data">
                   </expand-order-detail>
                 </div>
               </tr>
@@ -331,7 +346,7 @@
           <div class="flex justify-between items-center">
             <span class="text-header-2 text-neutral-1-600 font-semibold">Thông tin</span>
             <div class="flex gap-x-2">
-              <button tds-button color="info" (click)="sendMessage()">
+              <button tds-button color="info" (click)="showMessageModal(orderMessage)">
                 <span class="flex items-center">
                   <i class="tdsi-message-fill text-lg leading-none mr-2"></i>Gửi tin nhắn nhanh
                 </span>

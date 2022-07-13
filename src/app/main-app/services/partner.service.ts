@@ -236,8 +236,15 @@ export class PartnerService extends BaseSevice {
         url: `${this._BASE_URL}//rest/v1.0/partner/${partnerId}/pages`,
         method: TApiMethodType.get,
     }
-
     return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  updatePartnerSimple(data: TDSSafeAny) {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdatePartnerSimple `,
+      method: TApiMethodType.post,
+  }
+  return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
 }

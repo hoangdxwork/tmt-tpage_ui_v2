@@ -1,21 +1,21 @@
-export interface SaleOnline_Order_V2DTO {
+export interface ODataSaleOnline_OrderModel {
   Id: string;
-  Code: string;
+  Code?: any;
   Facebook_UserId?: any;
-  Facebook_PostId: string;
+  Facebook_PostId?: any;
   Facebook_ASUserId: string;
-  Facebook_CommentId: string;
+  Facebook_CommentId?: any;
   Facebook_UserName: string;
   Facebook_UserAvatar?: any;
-  Facebook_Content: string;
+  Facebook_Content?: any;
   Telephone: string;
   Address: string;
   Name: string;
   Email?: any;
-  Note: string;
+  Note?: any;
   Deposit: number;
-  LiveCampaignId: string;
-  LiveCampaignName: string;
+  LiveCampaignId?: any;
+  LiveCampaignName?: any;
   PartnerId: number;
   PartnerName: string;
   PartnerNameNosign: string;
@@ -35,11 +35,17 @@ export interface SaleOnline_Order_V2DTO {
   UserId: string;
   UserName: string;
   CreateByName?: any;
-  CompanyId?: number;
-  CompanyName: string;
-  WarehouseId?: number;
-  WarehouseName: string;
+  CompanyId?: any;
+  CompanyName?: any;
+  WarehouseId?: any;
+  WarehouseName?: any;
   PrintCount?: any;
   HasTag: string;
   MessageCount: number;
+}
+
+export interface ODataSaleOnline_OrderDTOV2 {
+  '@odata.context': string;
+  '@odata.count': number;
+  value: ODataSaleOnline_OrderModel[];
 }

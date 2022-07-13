@@ -77,6 +77,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   lstUser!: TDSSafeAny[];
   users: TDSSafeAny[] = [];
   keyFilterUser: string = '';
+  isLoadingSelectUser: boolean = false;
 
   lstOfTag: TDSSafeAny[] = [];
   tags: TDSSafeAny[] = [];
@@ -121,6 +122,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.activityDataFacade.hasNextData$.pipe(takeUntil(this.destroy$)).subscribe((obs: any) => {
       if(obs == false) {
         this.isNextData = obs;
+        this.cdRef.detectChanges();
       }
     })
   }
@@ -281,11 +283,17 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   showModalAddTag() {
     this.isVisbleTag = false
-    this.modalService.create({
+    let modal = this.modalService.create({
       title: 'Thêm thẻ hội thoại',
       content: ConfigConversationTagsCreateDataModalComponent,
       viewContainerRef: this.viewContainerRef,
     });
+    modal.afterClose.subscribe(result=>{
+      if(result){
+        this.lstOfTag.push(result);
+        this.tags.push(result);
+      }
+    })
   }
 
   callbackTag(ev: boolean) {
@@ -641,14 +649,25 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   assignUser(item: TDSSafeAny) {
+    if(this.isLoadingSelectUser){
+      return
+    }
+    this.isLoadingSelectUser = true;
     this.activityMatchingService.assignUserToConversation(this.data.id, item.Id, this.team.Facebook_PageId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
         this.data.assigned_to = res;
+        this.message.success('Thao tác thành công');
+        this.isLoadingSelectUser = false;
+
+        this.cdRef.detectChanges();
       },
-        err => {
-          this.message.error("Thao tác thất bại");
-        });
+      err => {
+        this.message.error(err.error? err.error.message: "Thao tác thất bại");
+        this.isLoadingSelectUser = false;
+
+        this.cdRef.detectChanges();
+      });
   }
 
   searchUser() {

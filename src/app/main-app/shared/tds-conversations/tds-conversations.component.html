@@ -59,7 +59,7 @@
                                 </tds-form-field>
                             </div>
                             <div class="gap-y-2 flex flex-col overflow-y-auto tds-panel-scroll">
-                                <div *ngFor="let item of lstUser" (click)="assignUser(item)"
+                                <div *ngFor="let item of lstUser" (click)="assignUser(item)" [ngClass]="isLoadingSelectUser? 'cursor-wait': ''"
                                 class="py-2 px-3 rounded-full cursor-pointer hover:bg-neutral-3-50 flex justify-between items-center" >
                                 <div class="flex gap-x-2">
                                     <tds-avatar size="sm" [tdsSrc]="item.Avatar"></tds-avatar>
