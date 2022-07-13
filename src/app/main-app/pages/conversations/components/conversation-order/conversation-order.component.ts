@@ -856,15 +856,15 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     }
   }
 
-  onChangeQuantity(event: any, item: Detail_QuickSaleOnlineOrder, index: number) {
-    let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
+  // onChangeQuantity(event: any, item: Detail_QuickSaleOnlineOrder, index: number) {
+  //   let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
 
-    if(exit) {
-        this.quickOrderModel.Details[index].Quantity = event;
-        this.computeAmountTotal();
-        this.updateCoDAmount();
-    }
-  }
+  //   if(exit) {
+  //       this.quickOrderModel.Details[index].Quantity = event;
+  //       this.computeAmountTotal();
+  //       this.updateCoDAmount();
+  //   }
+  // }
 
   onRemoveProduct(item: Detail_QuickSaleOnlineOrder, index: number) {
     let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
@@ -949,6 +949,29 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     }
     if (data && (data.Address)) {
       this._street = data.Address;
+    }
+  }
+
+  plus(item: Detail_QuickSaleOnlineOrder, index: number) {
+    let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
+
+    if(exit) {
+        this.quickOrderModel.Details[index].Quantity++;
+        this.computeAmountTotal();
+        this.updateCoDAmount();
+    }
+  }
+
+  minus(item: Detail_QuickSaleOnlineOrder, index: number) {
+    let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
+
+    if(exit) {
+        this.quickOrderModel.Details[index].Quantity--;
+        if(this.quickOrderModel.Details[index].Quantity < 1) {
+          this.quickOrderModel.Details[index].Quantity == 1;
+        }
+        this.computeAmountTotal();
+        this.updateCoDAmount();
     }
   }
 
