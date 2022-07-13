@@ -2,15 +2,16 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
-import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ODataCreditDebitDTO } from '../../dto/partner/partner-creditdebit.dto';
 import { ODataPartnerInvoiceDTO } from '../../dto/partner/partner-invocie.dto';
 import { ODataPartnerDTO } from '../../dto/partner/partner.dto';
 import { BaseSevice } from '../base.service';
 
-export interface FilterObjDTO  {
-    searchText: '',
-    statusText: null
+export interface FilterObjPartnerModel  {
+    tags: string[],
+    status: string[],
+    searchText: ''
 }
 
 @Injectable()
@@ -25,15 +26,15 @@ export class OdataPartnerService extends BaseSevice {
     super(apiService)
   }
 
-  getView(params: string): Observable<TDSSafeAny>{
+  getView(params: string, filterObj: FilterObjPartnerModel): Observable<TDSSafeAny>{
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?${params}&$count=true`,
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&${params}&$count=true`,
         method: TApiMethodType.get,
     }
     return this.apiService.getData<ODataPartnerDTO>(api, null);
   }
 
-  public buildFilter(filterObj: FilterObjDTO) {
+  public buildFilter(filterObj: FilterObjPartnerModel) {
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",
         filters: [],
@@ -41,11 +42,6 @@ export class OdataPartnerService extends BaseSevice {
 
     dataFilter.filters.push({ field: "Customer", operator: OperatorEnum.eq, value: true})
     dataFilter.logic = "and";
-
-    if(TDSHelperString.hasValueString(filterObj.statusText)) {
-        dataFilter.filters.push({ field: "StatusText", operator: OperatorEnum.eq, value: filterObj.statusText})
-        dataFilter.logic = "and";
-    }
 
     if (TDSHelperString.hasValueString(filterObj?.searchText)) {
         let value = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim());
@@ -62,6 +58,19 @@ export class OdataPartnerService extends BaseSevice {
             logic: 'or'
         })
     }
+
+    if (TDSHelperArray.hasListValue(filterObj.status)) {
+      dataFilter.filters.push({
+          filters: filterObj.status.map((x) => ({
+              field: "StatusText",
+              operator: "eq",
+              value: x,
+          })),
+
+          logic: "or"
+      })
+    }
+
     return dataFilter;
   }
 
