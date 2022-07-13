@@ -153,6 +153,13 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
     }
   }
 
+  mappingStreet(){
+    let street = (this._form.controls['Ward'].value?.name ? (this._form.controls['Ward'].value.name + ', '): '') 
+      + (this._form.controls['District'].value?.name ? (this._form.controls['District'].value.name + ', '): '')
+      + (this._form.controls['City'].value?.name ? this._form.controls['City'].value?.name: '')
+    this._form.controls['Street'].setValue(street);
+  }
+
   changeCity(event: SuggestCitiesDTO) {
     if (event) {
       this.loadDistricts(event.code);
@@ -160,6 +167,7 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
       this._form.controls['City'].setValue(event);
       this._form.controls['District'].setValue(null);
       this._form.controls['Ward'].setValue(null);
+      this.mappingStreet();
 
       let item: ResultCheckAddressDTO = {
         Telephone: null,
@@ -202,6 +210,7 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
       this.loadWards(event.code);
       this._form.controls['District'].setValue(event);
       this._form.controls['Ward'].setValue(null);
+      this.mappingStreet();
 
       let item: ResultCheckAddressDTO = {
         Telephone: null,
@@ -241,6 +250,8 @@ export class SuggestAddressComponent implements  OnChanges, AfterViewInit, OnDes
   changeWard(event: SuggestWardsDTO) {
     if(event) {
       this._form.controls['Ward'].setValue(event);
+      this.mappingStreet();
+
       let item: ResultCheckAddressDTO = {
         Telephone: null,
         Address: this._form.controls['Street'].value,

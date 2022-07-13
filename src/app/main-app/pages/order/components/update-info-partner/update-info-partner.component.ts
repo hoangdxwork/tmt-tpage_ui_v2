@@ -1,9 +1,12 @@
+import { TDSMessageService } from 'tds-ui/message';
+import { takeUntil, Subject } from 'rxjs';
+import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, Input, OnInit } from '@angular/core';
-import { CheckAddressDTO, ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
+import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 import { TDSModalRef } from 'tds-ui/modal';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { Partner } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
 
 @Component({
   selector: 'app-update-info-partner',
@@ -12,15 +15,18 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 export class UpdateInfoPartnerComponent implements OnInit {
 
   _form!: FormGroup;
+  private destroy$ = new Subject<void>();
 
-  @Input() partner: TDSSafeAny;
+  @Input() partner!: Partner;
   _cities!: SuggestCitiesDTO;
   _districts!: SuggestDistrictsDTO;
   _wards!: SuggestWardsDTO;
   _street!: string;
 
   constructor(private fb: FormBuilder,
-    private modalRef: TDSModalRef) {
+    private modalRef: TDSModalRef,
+    private partnerService : PartnerService,
+    private message: TDSMessageService) {
       this.createForm();
   }
 
@@ -111,29 +117,46 @@ export class UpdateInfoPartnerComponent implements OnInit {
 
   save() {
     if (this._form.valid) {
-      let result = this.prepareModel();
-      this.modalRef.destroy(result);
+      let result = {
+        model: this.prepareModel()
+      }
+      this.partnerService.updatePartnerSimple(result).pipe(takeUntil(this.destroy$))
+        .subscribe(res=>{
+          this.modalRef.destroy(res);
+        },err=>{
+          this.message.error(err.error? err.error.message: 'Sửa thất bại')
+      })
     }
   }
 
   prepareModel() {
     let formValue = this._form.value;
 
-    let model: TDSSafeAny = {
-      Name: formValue["Name"],
-      Phone: formValue["Phone"],
-      Street: formValue["Street"],
-      City: formValue["City"]?.Code ? {code: formValue["City"].Code, name: formValue["City"].Name } : null,
-      District: formValue["District"]?.Code ? {code: formValue["District"].Code, name: formValue["District"].Name } : null,
-      Ward: formValue["Ward"]?.Code ? {code: formValue["Ward"].Code, name: formValue["Ward"].Name } : null,
-    };
+    this.partner.Name = formValue["Name"],
+    this.partner.Phone = formValue["Phone"],
+    this.partner.Street = formValue["Street"] ? formValue["Street"]: this.partner.Street,
+    this.partner.City = formValue["City"]?.code? {
+      code: formValue["City"].code, 
+      name: formValue["City"].name
+    }: this.partner.City,
+    this.partner.District = formValue["District"]?.code? {
+      code: formValue["District"].code,
+      name: formValue["District"].name
+    }: this.partner.District,
+    this.partner.Ward = formValue["Ward"]?.code? {
+      code: formValue["Ward"].code,
+      name: formValue["Ward"].name
+    }: this.partner.Ward
 
-    return model;
+    return this.partner;
   }
 
   onCancel() {
     this.modalRef.destroy(null);
   }
 
-
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }
