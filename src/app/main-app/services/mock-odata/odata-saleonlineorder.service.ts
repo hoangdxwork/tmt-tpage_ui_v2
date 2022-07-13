@@ -1,19 +1,27 @@
+import { TDSHelperArray } from 'tds-ui/shared/utility';
 import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
-import { FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { BaseSevice } from '../base.service';
+import { ODataSaleOnline_OrderDTOV2 } from '../../dto/saleonlineorder/odata-saleonline-order.dto';
 
-export interface FilterObjDTO  {
-    tags: Array<TDSSafeAny>,
-    status: '',
-    searchText: '',
-    dateRange: {
-      startDate: Date,
-      endDate: Date
+export interface FilterObjSOOrderModel  {
+  tags: string[],
+  status: string[],
+  searchText: '',
+  dateRange: {
+    startDate: Date,
+    endDate:  Date
   }
+}
+
+export interface TabNavsDTO {
+  Name: string,
+  Index: number,
+  Total: number
 }
 
 @Injectable()
@@ -23,23 +31,21 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
   table: string = "SaleOnline_Order";
   baseRestApi: string = "rest/v1.0/saleonlineorder";
 
-  constructor(
-      private apiService: TCommonService,
-      public caheApi: THelperCacheService
-  ) {
+  constructor(private apiService: TCommonService,
+    public caheApi: THelperCacheService) {
     super(apiService)
   }
 
-  getView(params: string, filterObj: FilterObjDTO): Observable<TDSSafeAny>{
+  getView(params: string, filterObj: FilterObjSOOrderModel): Observable<ODataSaleOnline_OrderDTOV2>{
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&${params}&$count=true`,
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, null);
+    return this.apiService.getData<ODataSaleOnline_OrderDTOV2>(api, null);
   }
 
-  getViewByPost(postId: string, params: string, filterObj: FilterObjDTO): Observable<TDSSafeAny>{
+  getViewByPost(postId: string, params: string, filterObj: FilterObjSOOrderModel): Observable<TDSSafeAny>{
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersByPostId?PostId=${postId}&TagIds=${filterObj.tags}&${params}&$count=true`,
         method: TApiMethodType.get,
@@ -57,7 +63,7 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
-  public buildFilter(filterObj: FilterObjDTO) {
+  public buildFilter(filterObj: FilterObjSOOrderModel) {
 
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",
@@ -86,7 +92,7 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
 
     if (TDSHelperString.hasValueString(filterObj?.searchText)) {
         let value = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim())
-        dataFilter.filters.push( {
+        dataFilter.filters.push({
             filters: [
               { field: "Code", operator: OperatorEnum.contains, value: value },
               { field: "Name", operator: OperatorEnum.contains, value: value },
@@ -94,7 +100,6 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
               { field: "Address", operator: OperatorEnum.contains, value: value },
               { field: "PartnerName", operator: OperatorEnum.contains, value: value },
               { field: "PartnerNameNosign", operator: OperatorEnum.contains, value: value },
-              { field: "StatusText", operator: OperatorEnum.contains, value: value },
               { field: "CRMTeamName", operator: OperatorEnum.contains, value: value },
               { field: "UserName", operator: OperatorEnum.contains, value: value}
             ],
@@ -102,15 +107,22 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
         })
     }
 
-    if (TDSHelperString.hasValueString(filterObj.status)) {
-      dataFilter.filters.push({ field: "StatusText", operator: OperatorEnum.eq, value: filterObj.status })
-      dataFilter.logic = "and";
+    if (TDSHelperArray.hasListValue(filterObj.status)) {
+      dataFilter.filters.push({
+          filters: filterObj.status.map((x) => ({
+              field: "StatusText",
+              operator: "eq",
+              value: x,
+          })),
+
+          logic: "or"
+      })
     }
 
     return dataFilter;
   }
 
-  public buildFilterByPartner(filterObj: FilterObjDTO, partnerId: TDSSafeAny) {
+  public buildFilterByPartner(filterObj: FilterObjSOOrderModel, partnerId: TDSSafeAny) {
 
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",
@@ -161,7 +173,7 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
     return dataFilter;
   }
 
-  public buildFilterByPost(filterObj: FilterObjDTO) {
+  public buildFilterByPost(filterObj: FilterObjSOOrderModel) {
 
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",

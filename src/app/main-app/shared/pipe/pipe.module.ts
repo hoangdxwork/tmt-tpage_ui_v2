@@ -19,6 +19,7 @@ import { ScrollConversationPipe } from './scroll-conversation.pipe';
 import { OrderByPipe } from './order-by.pipe';
 import { LastActivityMessagePipe } from './last-activity-message.pipe';
 import { ShowAttributeValuePipe } from './show-attribute-value.pipe';
+import { NameNetWorkPipe } from './name-network.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -37,7 +38,8 @@ const cmp =[
   LastActivityMessagePipe,
   ShowAttributeValuePipe,
   ConvertListUrlPipe,
-  SelectMultipleValuePipe
+  SelectMultipleValuePipe,
+  NameNetWorkPipe
 ]
 
 @NgModule({

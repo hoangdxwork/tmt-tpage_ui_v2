@@ -10,7 +10,7 @@ import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib/enum/sort.enum';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
-import { OdataFastSaleOrderService } from 'src/app/main-app/services/mock-odata/odata-fastsaleorder.service';
+import { FilterObjFastSaleModel, OdataFastSaleOrderService } from 'src/app/main-app/services/mock-odata/odata-fastsaleorder.service';
 import { addDays } from 'date-fns/esm';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { THelperCacheService } from 'src/app/lib';
@@ -35,8 +35,8 @@ import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carri
 export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('innerText') innerText!: ElementRef;
-  @ViewChild('WidthTable') widthTable!: ElementRef;
-  @ViewChild('BillOrderLines') billOrderLines!: ElementRef;
+  @ViewChild('widthTable') widthTable!: ElementRef;
+  @ViewChild('billOrderLines') billOrderLines!: ElementRef;
 
   lstOfData: Array<FastSaleOrderDTO> = [];
   pageSize = 20;
@@ -54,17 +54,16 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   orderMessage: TDSSafeAny;
   lstCarriers!: Observable<DeliveryCarrierDTOV2[]>;
 
-  public filterObj: TDSSafeAny = {
+  public filterObj: FilterObjFastSaleModel = {
     tags: [],
-    status: '',
-    bill: null,
+    status: [],
+    hasTracking: null,
     deliveryType: '',
     searchText: '',
     dateRange: {
         startDate: addDays(new Date(), -30),
         endDate: new Date(),
-    },
-    carrierId: null
+    }
   }
 
   public lstShipStatus: any[] = [
@@ -149,6 +148,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         this.loadData(this.pageSize, this.pageIndex);
       }
     })
+
     this.lstCarriers = this.loadCarrier();
   }
 
@@ -210,14 +210,15 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   loadData(pageSize : number, pageIndex: number) {
+    this.lstOfData = [];
     let filters = this.odataFastSaleOrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
     this.getViewData(params).subscribe((res: ODataFastSaleOrderDTO) => {
         this.count = res['@odata.count'] as number;
-        this.lstOfData = res.value;
+        this.lstOfData = [...res.value];;
     }, error => {
-        this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Tải dữ liệu phiếu bán hàng thất bại!');
     });
   }
 
@@ -231,12 +232,12 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   loadSummaryStatus(){
     this.tabNavs = [];
     let model = {
-        DateStart: this.filterObj.dateRange.startDate,
-        DateEnd: this.filterObj.dateRange.endDate,
-        SearchText: TDSHelperString.stripSpecialChars(this.filterObj.searchText.trim()) ,
-        TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
-        TrackingRef: this.filterObj.bill,
-        DeliveryType: this.filterObj.deliveryType ? this.filterObj.deliveryType.value : null,
+      DateStart: this.filterObj.dateRange.startDate,
+      DateEnd: this.filterObj.dateRange.endDate,
+      SearchText: TDSHelperString.stripSpecialChars(this.filterObj.searchText.trim()) ,
+      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+      TrackingRef: this.filterObj.hasTracking,
+      DeliveryType: this.filterObj.deliveryType ? this.filterObj.deliveryType : null,
     };
 
     this.fastSaleOrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$)).subscribe((res: Array<FastSaleOrderSummaryStatusDTO>) => {
@@ -274,21 +275,17 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onSelectChange(index: TDSSafeAny) {
-    const dataItem =  this.tabNavs.find(f =>{ return f.Index == index })
+    let item = this.tabNavs.filter(f => f.Index == index )[0];
+
+    if(item?.Name == 'Tất cả') {
+      this.filterObj.status = [];
+    } else {
+      this.filterObj.status.push(item.Name);
+    }
+
     this.pageIndex = 1;
     this.indClickTag = -1;
-
-    this.filterObj = {
-      tags: [],
-      status: dataItem?.Type,
-      bill: '',
-      deliveryType: '',
-      searchText: '',
-      dateRange: {
-          startDate: addDays(new Date(), -30),
-          endDate: new Date()
-      }
-    };
+    this.indeterminate = false;
 
     this.loadData(this.pageSize, this.pageIndex);
   }
@@ -367,18 +364,18 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.widthCollapse = this.widthTable.nativeElement.offsetWidth - this.paddingCollapse
+    this.widthCollapse = this.widthTable?.nativeElement?.offsetWidth - this.paddingCollapse
     this.resizeObserver
       .observe(this.widthTable)
       .subscribe(() => {
-        this.widthCollapse = this.widthTable.nativeElement.offsetWidth - this.paddingCollapse;
-        this.widthTable.nativeElement.click()
+        this.widthCollapse = this.widthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
+        this.widthTable?.nativeElement?.click()
       });
       setTimeout(() => {
         let that = this;
 
         if(that.billOrderLines){
-          let wrapScroll = that.billOrderLines.nativeElement.closest('.tds-table-body');
+          let wrapScroll = that.billOrderLines?.nativeElement?.closest('.tds-table-body');
 
           wrapScroll.addEventListener('scroll', function() {
             let scrollleft = wrapScroll.scrollLeft;
@@ -413,22 +410,22 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  onLoadOption(event: any): void {
+  onLoadOption(event: FilterObjFastSaleModel): void {
     this.tabIndex = 1;
     this.pageIndex = 1;
     this.indClickTag = -1;
 
-    this.filterObj = {
-      tags: event.tags,
-      status: event.status,
-      bill: event.bill,
-      deliveryType: event.deliveryType,
-      searchText: event.searchText,
-      dateRange: {
+    this.filterObj.tags = event.tags;
+    this.filterObj.status = event.status;
+    this.filterObj.hasTracking = event.hasTracking;
+    this.filterObj.deliveryType = event.deliveryType;
+    this.filterObj.tags = event.tags;
+
+    this.filterObj.dateRange = {
         startDate: event.dateRange.startDate,
         endDate: event.dateRange.endDate
-      }
     }
+
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -456,8 +453,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.filterObj = {
       tags: [],
-      status: '',
-      bill: null,
+      status: [],
+      hasTracking: null,
       deliveryType: '',
       searchText: '',
       dateRange: {
@@ -577,21 +574,24 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   showMessageModal(orderMessage: TDSSafeAny){
-      this.modal.create({
-        title: 'Gửi tin nhắn Facebook',
-        size:'lg',
-        content: SendMessageComponent,
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          selectedUsers: [orderMessage.Id],
-          messageType: GenerateMessageTypeEnum.Bill
-        }
-      });
+    this.modal.create({
+      title: 'Gửi tin nhắn Facebook',
+      size:'lg',
+      content: SendMessageComponent,
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        selectedUsers: [orderMessage.Id],
+        messageType: GenerateMessageTypeEnum.Bill
+      }
+    })
   }
 
-  onChangeCarrier(event: any){
-    this.filterObj.deliveryType = event.DeliveryType;
-    // this.filterObj.carrierId = event.Id;
+  onChangeCarrier(event: any) {
+    if(event && event.DeliveryType) {
+        this.filterObj.deliveryType = event.DeliveryType;
+    } else {
+        this.filterObj.deliveryType = '';
+    }
     this.loadData(this.pageSize, this.pageIndex);
   }
 

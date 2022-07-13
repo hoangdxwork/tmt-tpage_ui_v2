@@ -27,7 +27,6 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'td
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TACheckboxChange } from 'tds-ui/tds-checkbox';
-import { SaleOnline_Order_V2DTO } from 'src/app/main-app/dto/saleonlineorder/saleonline-order-v2.dto';
 import { CreateFastSaleOrderDTO } from 'src/app/main-app/dto/saleonlineorder/create-fastsaleorder.dto';
 import { CommentsOfOrderDTO } from 'src/app/main-app/dto/saleonlineorder/comment-of-order.dto';
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
@@ -46,6 +45,7 @@ import { TDSNotificationService } from 'tds-ui/notification';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { PrepareSaleModelHandler } from 'src/app/main-app/commands/prepare-salemodel.handler';
+import { ODataSaleOnline_OrderModel } from 'src/app/main-app/dto/saleonlineorder/odata-saleonline-order.dto';
 
 @Component({
   selector: 'edit-order',
@@ -54,7 +54,7 @@ import { PrepareSaleModelHandler } from 'src/app/main-app/commands/prepare-salem
 
 export class EditOrderComponent implements OnInit {
 
-  @Input() dataItem!: SaleOnline_Order_V2DTO;
+  @Input() dataItem!: ODataSaleOnline_OrderModel;
 
   dataSuggestion!: DataSuggestionDTO;
   userInit!: UserInitDTO;

@@ -74,7 +74,7 @@
                             </button>
                         </tds-badge>
 
-                        <filter-option-partner [status]="partnerStatusReport" (onLoadOption)="onLoadOption($event)">
+                        <filter-option-partner [status]="partnerStatusReport" (onLoadOption)="onLoadOption($event)" [lstDataTag]="lstDataTag" [filterObj]="filterObj">
                         </filter-option-partner>
 
                         <config-column-partner [columns]="hiddenColumns" (columnsChange)="columnsChange($event)">
@@ -131,9 +131,9 @@
                                     <td *ngIf="isHidden('Phone')" class=" border-r border-neutral-200">
                                         <div class="flex flex-col">
                                             <span>{{data.Phone}}</span>
-                                            <tds-tag *ngIf="data.NameNetwork"
-                                                [status]="checkNameNetwork(data.NameNetwork)" type="outline">
-                                                {{data.NameNetwork}} </tds-tag>
+                                            <tds-tag *ngIf="data.NameNetwork" [status]="data.NameNetwork | nameNetWork" type="outline">
+                                                {{ data.NameNetwork }}
+                                            </tds-tag>
                                         </div>
                                     </td>
                                     <td *ngIf="isHidden('Email')" class="border-r border-neutral-200">{{ data.Email }}

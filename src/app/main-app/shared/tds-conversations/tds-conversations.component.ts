@@ -121,6 +121,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     this.activityDataFacade.hasNextData$.pipe(takeUntil(this.destroy$)).subscribe((obs: any) => {
       if(obs == false) {
         this.isNextData = obs;
+        this.cdRef.detectChanges();
       }
     })
   }

@@ -1,17 +1,11 @@
 
-<button tds-button-icon color="secondary"
-    tds-dropdown
-    trigger="click"
-    [tdsDropdownMenu]="menu"
-    [autoClose]="false"
-    size="md" class="relative"
-    [(visible)]="isVisible"
-    tds-tooltip
-    tooltipTitle="Lọc dữ liệu">
+<button tds-button-icon color="secondary" tds-dropdown trigger="click"
+    [tdsDropdownMenu]="menu"  [autoClose]="false"
+    size="md" class="relative" [(visible)]="isVisible" tds-tooltip tooltipTitle="Lọc dữ liệu">
   <span class="flex items-center">
       <i class="tdsi-filter-2-line text-lg leading-none text-neutral-1-500"></i>
   </span>
-  <span *ngIf="isActive == true" class="tdsi-success-fill absolute text-[#28A745] text-body-2 top-[4px]"></span>
+  <span *ngIf="checkActive() && isActive " class="tdsi-success-fill absolute text-[#28A745] text-body-2 top-[-8px] right-[-2px]"></span>
 </button>
 <tds-dropdown-menu #menu="tdsDropdownMenu" >
   <div class="w-full p-4">
@@ -24,16 +18,16 @@
       <div class="w-full mb-4">
           <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">TRẠNG THÁI</p>
           <div>
-              <a *ngFor="let item of status" (click)="selectState(item)" [ngClass]="item.value === currentStatus ? 'bg-primary-1 text-[#fff]' : 'bg-neutral-3-200 '"
+              <a *ngFor="let item of status" (click)="selectState(item)" [ngClass]="filterObj.status.includes(item.value) ? 'bg-primary-1 text-[#fff]' : 'bg-neutral-3-200 '"
                 class="items-center  dark:bg-d-neutral-3-200 group  hover:bg-neutral-3-300 dark:hover:bg-d-neutral-3-300 rounded py-0.5 pl-2 pr-2 mr-2">
-                <span class="text-body-2 font-regular  dark:text-d-neutral-1-900 whitespace-nowrap box-border truncate"> {{item.text}}</span>
+                <span class="text-body-2 font-regular dark:text-d-neutral-1-900 whitespace-nowrap box-border truncate"> {{item.text}}</span>
               </a>
           </div>
       </div>
       <div class="w-full mb-4">
           <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">VẬN ĐƠN</p>
           <div>
-            <a *ngFor="let item of trackingRefs" (click)="selectTracking(item)" [ngClass]="item.value === currentTracking ? 'bg-primary-1  text-[#fff]' : 'bg-neutral-3-200 '"
+            <a *ngFor="let item of trackingRefs" (click)="selectTracking(item)" [ngClass]="item.value == selectRefs ? 'bg-primary-1  text-[#fff]' : 'bg-neutral-3-200 '"
                 class="items-center dark:bg-d-neutral-3-200 group  hover:bg-neutral-3-300 dark:hover:bg-d-neutral-3-300 rounded py-0.5 pl-2 pr-2 mr-2">
               <span class="text-body-2 font-regular  dark:text-d-neutral-1-900 whitespace-nowrap box-border truncate"> {{item.text}}</span>
             </a>

@@ -73,7 +73,7 @@ export class ConversationOrderFacade extends BaseSevice  {
     this.loadUserLogged();
     this.loadTeam();
 
-    // TODO: Load đơn mặc định ở tab đơn hàng
+    // TODO: Load data mặc định ở tab đơn hàng
     this.initialize();
     // TODO: Dùng để update realtime đơn hàng
     this.loadOrderFromSignalR();
