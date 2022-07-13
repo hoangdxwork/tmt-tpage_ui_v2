@@ -108,7 +108,7 @@
   <!--Xử lí thông tin khách hàng & Đơn hàng-->
   <!-- Dữ liệu load vào form partner trước từ funtion checkConversation(),sau đó lấy dữ liệu gán lại form order -->
   <tds-spin class="flex w-[32%] h-full" [spinning]="isLoading">
-      <div class="w-full h-full flex flex-col pb-1">
+      <div class="w-full h-full flex flex-col">
           <tds-tabset class="bg-white border border-neutral-2-200 w-full" [clsTab]="'flex-1'" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
               <tds-tab [title]="conversationPartner" clsContent="border-t border-neutral-2-200 -mt-px h-full flex flex-col">
                   <ng-template #conversationPartner let-active="active">
