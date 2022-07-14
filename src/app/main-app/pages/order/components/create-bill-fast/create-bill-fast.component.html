@@ -79,7 +79,7 @@
               <td class="align-top">
                 <tds-form-field>
                   <tds-input-number [min]="0" [step]="1000" [(ngModel)]="data.AmountTotal"
-                    [ngModelOptions]="{standalone: true}">
+                    [ngModelOptions]="{standalone: true}" [formatter]="numberWithCommas" [parser]="parserComas">
                   </tds-input-number>
                 </tds-form-field>
               </td>
@@ -87,7 +87,7 @@
               <td class="align-top">
                 <tds-form-field>
                   <tds-input-number [min]="0" [step]="1000" [(ngModel)]="data.DeliveryPrice"
-                    [ngModelOptions]="{standalone: true}">
+                    [ngModelOptions]="{standalone: true}" [formatter]="numberWithCommas" [parser]="parserComas">
                   </tds-input-number>
                 </tds-form-field>
               </td>
@@ -100,8 +100,10 @@
                 </tds-form-field>
               </td>
               <!-- Thanh toán -->
-              <td class="text-center">
-                <tds-checkbox (change)="onCheckPayment(data)"></tds-checkbox>
+              <td class="text-center align-top">
+                <div class="h-[34px] w-full flex items-center justify-center">
+                  <tds-checkbox></tds-checkbox>
+                </div>
               </td>
               <!-- Thao tác -->
               <td class="align-top">
@@ -130,7 +132,7 @@
                         <div class="font-semibold">Danh sách sản phẩm</div>
                       </div>
                     </ng-template>
-                    <div style="margin: 0;">
+                    <div style="margin: 0;" class="pb-2.5">
                       <tds-table class="tds-table-rounded" #orderLinesTable [listData]="data.OrderLines"
                         [showPagination]="false">
                         <thead class="rounded">

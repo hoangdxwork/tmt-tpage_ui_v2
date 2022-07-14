@@ -243,7 +243,7 @@
                         </h1>
                     </div>
                     <div class="w-full">
-                        <tds-table #tableProduct [listData]="dataModel.OrderLines" [showPagination]="false">
+                        <tds-table #tableProduct [listData]="dataModel.OrderLines" [showPagination]="false" [noResult]="empty">
                             <thead>
                                 <tr>
                                     <th>STT</th>
@@ -272,8 +272,9 @@
                                 </ng-template>
                             </tbody>
                         </tds-table>
+                        <ng-template #empty></ng-template>
                     </div>
-                    <div class="w-full flex justify-end pb-4 pr-4 border-b border-neutral-2-100">
+                    <div class="w-full flex justify-end py-4 pr-4 border-b border-neutral-2-100">
                         <div class="w-1/2 text-right flex flex-col">
                             <div class="flex mb-5">
                                 <span class="w-1/2"> Tổng số lượng</span>

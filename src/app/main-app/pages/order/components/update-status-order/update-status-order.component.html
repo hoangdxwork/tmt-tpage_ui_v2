@@ -31,7 +31,7 @@
                 <td class="text-body-2">{{ index + 1 }}</td>
                 <td class="text-body-2">{{ item.PartnerName }}</td>
                 <td class="text-body-2">{{ item.Code }}</td>
-                <td class="text-body-2">{{ item.AmountTotal || 0 | number : '1.0-3'}}</td>
+                <td class="text-body-2">{{ item.AmountTotal || 0 | numberCustom : '.'}}</td>
                 <td>
                   <tds-form-field>
                       <tds-select valueField="value" textField="text" placeholder='Chọn trạng thái'

@@ -3,8 +3,8 @@
     <tds-checkbox (change)="change($event, error)">
       <tds-label>
         Khách hàng {{error.Partner.Name}} {{error.Partner.Phone?'('+error.Partner.Phone+')' : '' }} đã tạo đơn hàng
-        tổng tiền là {{ error.AmountTotal | number}} trong khoảng thời gian {{error.TimeLock}} phút. Bạn hãy đợi
-        hết {{error.TimeLock}} phút tạo lại hoặc chọn trên danh sách để tạo cưỡng bức !"
+        tổng tiền là {{ error.AmountTotal | numberCustom:'.'}} trong khoảng thời gian {{error.TimeLock}} phút. Bạn hãy đợi
+        hết {{error.TimeLock}} phút tạo lại hoặc chọn trên danh sách để tạo cưỡng bức !
       </tds-label>
     </tds-checkbox>
   </div>

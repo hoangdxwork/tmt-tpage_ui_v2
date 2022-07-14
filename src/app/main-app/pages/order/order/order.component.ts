@@ -496,19 +496,25 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onEdit(item: ODataSaleOnline_OrderModel) {
-    const modal = this.modal.create({
-      content: EditOrderComponent,
-      size: 'xl',
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-        dataItem: item
-      }
-    });
+    this.isLoading = true;
+    this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
+      delete res['@odata.context'];
+      const modal = this.modal.create({
+        content: EditOrderComponent,
+        size: 'xl',
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          dataItem: item
+        }
+      });
 
-    modal.afterClose.subscribe((obs: string) => {
-      if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
-          this.loadData(this.pageSize, this.pageIndex);
-      }
+      modal.afterClose.subscribe((obs: string) => {
+        if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
+            this.loadData(this.pageSize, this.pageIndex);
+        }
+      });
+    }, error => {
+      this.message.error('Load đơn hàng đã xảy ra lỗi');
     });
   }
 
@@ -518,8 +524,9 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       content: 'Bạn có chắc muốn xóa đơn hàng',
       onOk: () => this.remove(id, code),
       onCancel: () => {  },
-      okText: "Xóa",
-      cancelText: "Hủy"
+      okText: "Xác nhận",
+      cancelText: "Đóng",
+      confirmViewType: "compact"
     });
   }
 

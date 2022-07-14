@@ -20,6 +20,7 @@ import { OrderByPipe } from './order-by.pipe';
 import { LastActivityMessagePipe } from './last-activity-message.pipe';
 import { ShowAttributeValuePipe } from './show-attribute-value.pipe';
 import { NameNetWorkPipe } from './name-network.pipe';
+import { NumberCustomPipe } from './numberCustom.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -39,7 +40,8 @@ const cmp =[
   ShowAttributeValuePipe,
   ConvertListUrlPipe,
   SelectMultipleValuePipe,
-  NameNetWorkPipe
+  NameNetWorkPipe,
+  NumberCustomPipe
 ]
 
 @NgModule({
