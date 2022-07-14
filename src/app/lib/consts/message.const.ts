@@ -61,7 +61,7 @@ export const Message = {
   },
   Upload: {
     Failed: 'Tải tệp không thành công.',
-    Success: 'Tải tập thành công.',
+    Success: 'Tải tệp thành công.',
     RemoveImageSuccess: 'Xóa ảnh thành công.',
     RemoveCollectionSuccess: 'Xóa bộ sưu tập thành công.',
     NameEmpty: 'Tên không được để trống.',

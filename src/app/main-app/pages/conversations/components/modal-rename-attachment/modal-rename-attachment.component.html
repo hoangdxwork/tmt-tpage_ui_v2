@@ -1,0 +1,11 @@
+<div class="w-full py-4 flex gap-x-2 text-body-2 text-neutral-1-900 items-center">
+    <label class="font-semibold ">Nhập tên:</label>
+    <tds-form-field class="flex-auto">
+        <input autocomplete="off" tdsInput placeholder="Nhập tên ảnh" 
+            [(ngModel)]="nameAttachment" [ngModelOptions]="{standalone: true}"  />
+    </tds-form-field>
+</div>
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+    <button tds-button class="mr-2 w-[100px]" color="secondary" (click)="onCancel()">Hủy bỏ</button>
+    <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
+</div>

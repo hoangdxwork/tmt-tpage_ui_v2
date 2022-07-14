@@ -39,9 +39,9 @@
                             <div class="flex p-2.5 gap-2.5 bg-gradient-to-b from-black/0 to-black/100 items-center rounded-b-lg justify-between">
                                 <div class="text-body-2 text-white font-semibold font-sans"> {{ data.Name }} </div>
                                 <div class="flex gap-0.5">
-                                    <!-- <div class="flex items-center">
+                                    <div class="flex items-center cursor-pointer" tds-tooltip tooltipTitle="Đổi tên" (click)="showModalRenameAttachment(data.id, data, 'inner')">
                                       <i class="tdsi-edit-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i>
-                                    </div> -->
+                                    </div>
 
                                     <div class="flex items-center" tds-flat-button-icon tds-tooltip tooltipTitle="Thêm vào bộ sưu tập"
                                       (click)="showModalAddAttachmentCollection(data.id)">

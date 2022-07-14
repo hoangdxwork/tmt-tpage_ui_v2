@@ -115,6 +115,44 @@ export class AttachmentDataFacade {
     }
   }
 
+  
+  // UPDATE
+  updateNameAttachment(id: string, name: string): Observable<any> {
+    return new Observable(observer => {
+      this.attachmentService.updateName(id, name).subscribe(res => {
+
+        this.attachmentState.updateNameAttachment(id, name);
+
+        observer.next();
+        observer.complete();
+      }, error => observer.error());
+    });
+  }
+
+  updateNameCollection(id: string, name: string) {
+    return new Observable(observer => {
+      this.attachmentService.updateNameCollection(id, name).subscribe(res => {
+
+        this.attachmentState.updateNameCollection(id, name);
+
+        observer.next();
+        observer.complete();
+      }, error => observer.error());
+    });
+  }
+
+  updateNameInner(id: string, innerId :string, name: string) {
+    return new Observable(observer => {
+      this.attachmentService.updateNameInner(id, innerId, name).subscribe(res => {
+
+        this.attachmentState.updateNameInner(id, innerId, name);
+
+        observer.next();
+        observer.complete();
+      }, error => observer.error());
+    });
+  }
+
   // REMOVE
   removeAttachment(ids: Array<string>): Observable<undefined> {
     return new Observable(observer => {
@@ -149,10 +187,13 @@ export class AttachmentDataFacade {
     return new Observable(observer => {
       this.attachmentService.createAttachment(name, files, attachments).subscribe(res => {
         this.attachmentState.addCollection(res);
+        if(res?.Attachments){
+          this.addAttachment(res.Attachments);
+        }
 
         observer.next();
         observer.complete();
-      }, error => observer.error(error));
+      }, error => { observer.error(error)});
     });
   }
 

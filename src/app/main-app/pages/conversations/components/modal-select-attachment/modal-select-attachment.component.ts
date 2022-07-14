@@ -19,6 +19,7 @@ export class ModalSelectAttachmentComponent implements OnInit {
 
   public lstAll$!: Observable<PagedList2<MDBAttachmentDTO>>;
   public numberSelect: number = 0;
+  firstLoad:boolean = true;
 
   constructor(
     private modalRef: TDSModalRef,
@@ -33,11 +34,19 @@ export class ModalSelectAttachmentComponent implements OnInit {
   loadData() {
     this.lstAll$ = this.attachmentDataFacade.makeAttachment().pipe(map(res => {
       if(res && res.Items) {
+        if(this.firstLoad){
+          res.Items.forEach(x => {if(x.SelectAddInner) delete x['SelectAddInner']})
+          this.firstLoad = false
+        }
         this.numberSelect = res.Items.filter(x => x["SelectAddInner"]).length;
       }
-      console.log(res);
       return res;
     }));
+  }
+
+  selectAttachment(item: any) {
+    item["SelectAddInner"] = item["SelectAddInner"] ? false : true;
+    this.numberSelect = item["SelectAddInner"] ? this.numberSelect + 1 : this.numberSelect - 1;
   }
 
   checkValue(item: any) {

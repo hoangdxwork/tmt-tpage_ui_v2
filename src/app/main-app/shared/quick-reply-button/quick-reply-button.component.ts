@@ -21,7 +21,7 @@ export class QuickReplyButtonComponent implements OnInit {
   lstquickReplyDefault!: Array<QuickReplyDTO>
   objQuickReply: TDSSafeAny = {};
   partner: TDSSafeAny;
-  keyFilterMail!: string;
+  keyFilterMail: string = '';
 
   destroy$ = new Subject();
 
@@ -72,6 +72,12 @@ export class QuickReplyButtonComponent implements OnInit {
     modal.afterClose.subscribe(result=>{
       console.log(result)
     })
+  }
+
+  changeVisible(event: boolean){
+    if(!event){
+      this.searchMail();
+    }
   }
 
   setTextquickReply(item: QuickReplyDTO) {

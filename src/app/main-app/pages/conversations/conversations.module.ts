@@ -114,6 +114,7 @@ import { ProductPagefbComponent } from './components/product-pagefb/product-page
 import { ModalApplyPromotionComponent } from './components/modal-apply-promotion/modal-apply-promotion.component';
 import { OdataProductService } from '../../services/mock-odata/odata-product.service';
 import { ModalPostComponent } from './components/modal-post/modal-post.component';
+import { ModalRenameAttachmentComponent } from './components/modal-rename-attachment/modal-rename-attachment.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -198,7 +199,8 @@ const SERVICES = [
     ModalTaxComponent,
     ProductPagefbComponent,
     ModalApplyPromotionComponent,
-    ModalPostComponent
+    ModalPostComponent,
+    ModalRenameAttachmentComponent
   ],
 
   imports: [

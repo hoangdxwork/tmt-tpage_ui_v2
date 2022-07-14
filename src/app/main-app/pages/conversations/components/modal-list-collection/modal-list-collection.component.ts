@@ -1,6 +1,6 @@
-
+import { InnerAttachmentDTO } from './../../../../dto/attachment/attachment.dto';
+import { ModalRenameAttachmentComponent } from './../modal-rename-attachment/modal-rename-attachment.component';
 import { ChangeDetectorRef, OnDestroy, ViewContainerRef } from '@angular/core';
-
 import { Component, Input, OnInit } from '@angular/core';
 import { map, finalize, takeUntil } from 'rxjs/operators';
 import { AttachmentDataFacade } from 'src/app/main-app/services/facades/attachment-data.facade';
@@ -12,7 +12,7 @@ import { ModalAddAttachmentCollectionComponent } from '../modal-add-attachment-c
 import { TDSUploadFile } from 'tds-ui/upload';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
-import { TDSHelperArray } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'modal-list-collection',
@@ -30,6 +30,7 @@ export class ModalListCollectionComponent implements OnInit, OnDestroy {
 
   fileList: TDSUploadFile[] = [];
   searchText: string = '';
+  firstLoad: boolean = true;
 
   constructor(private cdRef: ChangeDetectorRef,
     private attachmentDataFacade: AttachmentDataFacade,
@@ -46,12 +47,16 @@ export class ModalListCollectionComponent implements OnInit, OnDestroy {
   loadCollection(collectionId: string) {
     this.isLoading = true;
     this.lstData$ = this.attachmentDataFacade.getInner(collectionId)
-      .pipe((finalize(() => this.isLoading = false)))
       .pipe(map(res => {
         if(res?.Attachments) {
+          if(this.firstLoad){
+            res.Attachments.forEach(x => {if(x.Select) delete x['Select']})
+            this.firstLoad = false;
+          }
           this.numberSelect = res.Attachments.filter(x => x.Select).length;
         }
-
+        this.isLoading = false;
+        this.cdRef.detectChanges();
         return res;
       }));
   }
@@ -125,6 +130,22 @@ export class ModalListCollectionComponent implements OnInit, OnDestroy {
     });
   }
 
+  showModalRenameAttachment(id: string, data:InnerAttachmentDTO, type?: string){
+    const modal = this.modal.create({
+      title: 'Đổi tên',
+      content: ModalRenameAttachmentComponent,
+      size: 'md',
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        attachmentIds: this.collectionId,
+        data: data,
+        idInner: id,
+        type: type
+      }
+    });
+  }
+
+
   showModalAddAttachmentCollection(id: string) {
     const modal = this.modal.create({
       title: 'Thêm vào bộ sưu tập khác',
@@ -149,6 +170,11 @@ export class ModalListCollectionComponent implements OnInit, OnDestroy {
     let formData: any = new FormData();
     formData.append("files", file as any, file.name);
     formData.append('id', '0000000000000051');
+    let size = file?.size? (file?.size / 1048576).toFixed(2) : 0;
+    if(size > 5){
+      this.message.error('Chỉ tải ảnh có dung lượng tối đa 5Mb');
+      return
+    }
 
     this.isLoading =  true;
     return this.attachmentService.addAttachment(this.collectionId, formData)
