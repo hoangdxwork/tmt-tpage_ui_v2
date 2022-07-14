@@ -1,3 +1,4 @@
+import { ModalRenameAttachmentComponent } from './../modal-rename-attachment/modal-rename-attachment.component';
 import { finalize } from 'rxjs/operators';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -37,24 +38,31 @@ export class ModalAddCollectionComponent implements OnInit {
   };
 
   handleUpload(file: any) {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-
-    reader.onload = () => {
-      this.lstData.push({
-        Url: reader.result,
-        Name: file.name,
-        File: file
-      });
-    };
+    if(file.type?.includes('image')){
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      let size = file?.size? (file?.size / 1048576).toFixed(2) : 0;
+      if(size > 5){
+        this.message.error('Chỉ tải ảnh có dung lượng tối đa 5Mb');
+        return
+      }
+      reader.onload = () => {
+        this.lstData.push({
+          Url: reader.result,
+          Name: file.name,
+          File: file
+        });
+      };
+    }else{
+      this.message.error('Chỉ nhận upload ảnh');
+    }
   }
 
   handleChange(info: TDSUploadChangeParam): void {
     if (info.file.status !== 'uploading') {
-      console.log(info.file, info.fileList);
+      
     }
     if (info.file.status === 'done') {
-      debugger;
       // this.mes.success(`${info.file.name} file uploaded successfully`);
     } else if (info.file.status === 'error') {
       this.message.error(`${info.file.name} file upload failed.`);
@@ -68,7 +76,9 @@ export class ModalAddCollectionComponent implements OnInit {
   onSave() {
     if(this.isCheckValue() === 1) {
       this.isLoading = true;
-      let files = this.lstData.map(x => x.File);
+      let files = this.lstData.filter(x => {
+        if(x.File) return x;
+      }).map(x => x.File);
 
       let attachments = this.lstData.filter(x => {
         if(x.id) return x;
@@ -107,6 +117,29 @@ export class ModalAddCollectionComponent implements OnInit {
     modal.componentInstance?.onSelect.subscribe(res => {
       this.lstData = [...this.lstData, ...res];
     });
+  }
+
+  showModalRenameAttachment(index:number, id: string, data:TDSSafeAny, type?: string){
+    const modal = this.modal.create({
+      title: 'Đổi tên',
+      content: ModalRenameAttachmentComponent,
+      size: 'md',
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        attachmentIds: id,
+        data: data,
+        type: type? type: 'attachment'
+      }
+    });
+    modal.afterClose.subscribe(result=>{
+      if(TDSHelperString.hasValueString(result)){
+        this.lstData[index].Name = result;
+      }
+    })
+  }
+
+  removeAttachment(index: number) {
+    this.lstData.splice(index, 1);
   }
 
   onCancel() {

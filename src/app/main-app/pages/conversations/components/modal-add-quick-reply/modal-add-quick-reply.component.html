@@ -1,7 +1,8 @@
-<form [formGroup]="_form" class="flex flex-col gap-y-4">
+<form [formGroup]="_form" class="flex flex-col gap-y-4 text-body-2 text-neutral-1-900">
     <tds-form-field class="w-full">
         <tds-label>Tên mẫu</tds-label>
         <input formControlName="subjectHtml" tdsInput placeholder="Nhập tên mẫu" />
+        <tds-error>Vui lòng nhập tên mẫu</tds-error>
     </tds-form-field>
     <tds-form-field class="w-full">
         <tds-label>Phím tắt</tds-label>
@@ -15,9 +16,10 @@
         <span>Kích hoạt</span>
         <tds-switch formControlName="active" size="md"></tds-switch>
     </div>
+    <div class="w-full flex justify-end" >
+        <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">Hủy</button>
+        <button tds-button type="submit" color="primary" (click)="onSave()">Thêm</button>
+    </div>
 </form>
+<div *tdsModalFooter></div>
 
-<div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button class="mr-2" color="secondary" (click)="cancel()">Hủy</button>
-    <button tds-button class="mr-2" color="primary" (click)="onSave()">Thêm</button>
-</div>
