@@ -10,26 +10,25 @@ import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-add-page',
-  templateUrl: './add-page.component.html',
-  styleUrls: ['./add-page.component.scss']
+  templateUrl: './add-page.component.html'
 })
+
 export class AddPageComponent implements OnInit {
+
   @Input() data!: UserPageDTO;
   @Input() user!: CRMTeamDTO;
 
   addPageForm!: FormGroup;
-
   isLoading: boolean = false;
 
-  constructor(
-    private modal: TDSModalRef,
+  constructor( private modal: TDSModalRef,
     private fb: FormBuilder,
     private message: TDSMessageService,
-    private crmTeamService: CRMTeamService
-  ) { }
+    private crmTeamService: CRMTeamService) {
+    this.createForm();
+  }
 
   ngOnInit(): void {
-    this.createForm();
     this.updateForm();
   }
 
@@ -38,9 +37,9 @@ export class AddPageComponent implements OnInit {
     this.isLoading = true;
 
     this.crmTeamService.insert(model).subscribe(res => {
-      this.message.success(Message.SaveSuccess);
-      this.isLoading = false;
-      this.onCancel(true);
+        this.message.success(Message.SaveSuccess);
+        this.isLoading = false;
+        this.onCancel(true);
     }, error => {
       if(error?.error?.message) {
         this.message.error(error?.error?.message);

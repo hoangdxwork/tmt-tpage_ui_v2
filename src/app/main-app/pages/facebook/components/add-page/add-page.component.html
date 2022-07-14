@@ -1,5 +1,5 @@
 <tds-spin tip="Loading..." [spinning]="isLoading">
-  <form [formGroup]="addPageForm" autocomplete="off" (ngSubmit)="onSubmit()">
+  <form [formGroup]="addPageForm" autocomplete="off" (ngSubmit)="onSubmit()" *ngIf="data">
     <div class="w-full flex flex-col gap-8">
         <tds-form-field >
             <tds-label>Facebook</tds-label>

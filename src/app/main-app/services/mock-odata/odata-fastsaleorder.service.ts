@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { ODataFastSaleOrderDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
 import { BaseSevice } from '../base.service';
 
 export interface FilterObjFastSaleModel  {
@@ -36,7 +35,7 @@ export class OdataFastSaleOrderService extends BaseSevice {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&deliveryType=${filterObj.deliveryType}&${params}&$count=true`,
         method: TApiMethodType.get,
     }
-    return this.apiService.getData<ODataFastSaleOrderDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
   public buildFilter(filterObj: FilterObjFastSaleModel) {
@@ -76,7 +75,6 @@ export class OdataFastSaleOrderService extends BaseSevice {
               { field: "Phone", operator: OperatorEnum.contains, value: value },
               { field: "Address", operator: OperatorEnum.contains, value: value },
               { field: "Number", operator: OperatorEnum.contains, value: value },
-              { field: "State", operator: OperatorEnum.contains, value: value },
               { field: "Phone", operator: OperatorEnum.contains, value: value },
               { field: "PartnerNameNoSign", operator: OperatorEnum.contains, value: value },
               { field: "CarrierName", operator: OperatorEnum.contains, value: value},
