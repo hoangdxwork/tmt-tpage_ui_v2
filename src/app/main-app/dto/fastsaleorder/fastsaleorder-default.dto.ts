@@ -276,9 +276,9 @@ export interface OrderLineV2 {
   PriceRecent?: any;
   Name?: any;
   IsName: boolean;
-  LiveCampaign_DetailId: any;
-  LiveCampaignQtyChange: number;
-  OrderId: number;
+  LiveCampaign_DetailId: any | null;
+  LiveCampaignQtyChange: any | null;
+  OrderId: any | null;
   ProductName: string;
   ProductUOMName: string;
   SaleLineIds: any[];
@@ -597,6 +597,8 @@ export interface FastSaleOrder_DefaultDTOV2 {
     FacebookName: string;
     FacebookNameNosign: string;
     FacebookId: string;
+    LiveCampaignId: string | null; // bổ sung 14/07/2022
+    LiveCampaignName: string | null; // bổ sung 14/07/2022
     DisplayFacebookName: string;
     Deliver: string;
     ShipWeight: number ;
