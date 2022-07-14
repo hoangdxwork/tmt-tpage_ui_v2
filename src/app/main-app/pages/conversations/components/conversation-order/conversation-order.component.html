@@ -191,10 +191,11 @@
                                     <td width="30%">
                                         <div class="flex gap-x-2 items-center">
                                             <button type="button" class="tdsi-minus-fill text-white p-0.5 bg-neutral-1-200 rounded-full hover:bg-primary-1" [disabled]="item.Quantity == 1" (click)="minus(item, index)"></button>
-                                            <tds-form-field class="w-[60px]">
-                                                <tds-input-number autocomplete="off" placeholder="Số lượng" [min]="1" [step]="1" [formatter]="numberWithCommas"
+                                            <tds-form-field class="w-[50px]">
+                                                <!-- <tds-input-number autocomplete="off" placeholder="Số lượng" [min]="1" [step]="1" [formatter]="numberWithCommas"
                                                     [parser]="parserComas" [(ngModel)]="item.Quantity" [ngModelOptions]="{standalone: true}" disabled="true">
-                                                </tds-input-number>
+                                                </tds-input-number> -->
+                                                <input tdsInput autocomplete="off" class="text-center" placeholder="Số lượng" [(ngModel)]="item.Quantity" [ngModelOptions]="{standalone: true}" disabled="true" />
                                             </tds-form-field>
                                             <button type="button" class="tdsi-plus-fill text-white p-0.5 bg-neutral-1-200 rounded-full hover:bg-primary-1" (click)="plus(item, index)"></button>
                                         </div>
@@ -310,7 +311,7 @@
                             </tds-form-field>
                         </div>
                         <div class="flex flex-col gap-y-2">
-                            <div *ngIf="shipExtraServices && shipExtraServices.length > 0">
+                            <div *ngIf="shipExtraServices && shipExtraServices.length > 0" class="flex flex-col gap-y-2">
                                 <div *ngFor="let item of shipExtraServices">
                                     <tds-checkbox [(ngModel)]="item.IsSelected" (change)="onCheckExtraService(item)" [ngModelOptions]="{standalone: true}"><i></i>
                                         {{item.ServiceName}}
