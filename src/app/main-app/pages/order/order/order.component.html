@@ -162,10 +162,9 @@
                     <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover tds-tooltip="Thêm nhãn"
                       [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
                       [popoverContent]="contentAddtag" [popoverBackdrop]="true" popoverPlacement="left"
-                      color="secondary" size="sm" class=" border-0">
+                      color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
                       <div class="w-5 h-5 relative">
-                        <i
-                          class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
+                        <i class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
                         <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12"
                           height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path
@@ -179,8 +178,8 @@
                     <ng-template #contentAddtag>
                       <div class="w-96">
                         <tds-form-field>
-                          <tds-select valueField="Id" textField="Name" placeholder='select item' [(ngModel)]="modelTags"
-                            [allowClear]="true" [valuePrimitive]="false" [data]="lstDataTag" mode="multiple">
+                          <tds-select valueField="Id" textField="Name" placeholder='Chọn các tag' [(ngModel)]="modelTags"
+                            [allowClear]="true" [valuePrimitive]="false" [data]="lstDataTag" [autoClose]="true" mode="multiple">
                           </tds-select>
                         </tds-form-field>
                       </div>
@@ -257,12 +256,12 @@
 
                 <!-- Tổng tiền -->
                 <td *ngIf="isHidden('TotalAmount')" class="border-r text-right">
-                  <span>{{data.TotalAmount || 0 | number :'1.0-3'}} đ</span>
+                  <span>{{data.TotalAmount || 0 | numberCustom :'.' }} đ</span>
                 </td>
 
                 <!-- Tổng SL -->
                 <td *ngIf="isHidden('TotalQuantity')" class="border-r">
-                  <span>{{data.TotalQuantity || 0 | number}}</span>
+                  <span>{{data.TotalQuantity || 0 | numberCustom:'.' }}</span>
                 </td>
 
                 <!-- Ngày hóa đơn -->
@@ -365,7 +364,7 @@
             </div>
             <div class="flex gap-x-1">
               <span class="w-1/3">Tổng tiền</span>
-              <span class="w-2/3 font-semibold">{{orderMessage.TotalAmount?orderMessage.TotalAmount:0 | number}}</span>
+              <span class="w-2/3 font-semibold">{{orderMessage.TotalAmount?orderMessage.TotalAmount:0 | numberCustom:'.' }}</span>
             </div>
             <div class="flex gap-x-1">
               <span class="w-1/3">Ngày tạo</span>

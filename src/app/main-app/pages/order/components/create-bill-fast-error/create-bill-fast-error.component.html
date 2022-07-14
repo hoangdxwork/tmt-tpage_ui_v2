@@ -6,14 +6,14 @@
 </div>
 
 <tds-spin [spinning]="isLoading">
-  <div class="flex flex-col w-full"> 
+  <div class="flex flex-col w-full">
     <div class="flex flex-col gap-y-2 max-h-[500px] overflow-y-auto tds-custom-scroll pr-2">
       <div *ngFor="let item of lstErrorSelected; let i = index;" class="flex items-center gap-x-4">
         <tds-checkbox [checked]="item.isSelected" (change)="change($event.checked, i)">
           <tds-label>
             Khách hàng {{ item.error.Partner.Name }} {{ item.error.Partner.Phone ? '(' + item.error.Partner.Phone + ')' : '' }} đã tạo đơn hàng
             tổng tiền là {{ item.error.AmountTotal | number }} trong khoảng thời gian {{item.error.TimeLock}} phút. Bạn hãy đợi
-            hết {{ item.error.TimeLock }} phút tạo lại hoặc chọn trên danh sách để tạo cưỡng bức !"
+            hết {{ item.error.TimeLock }} phút tạo lại hoặc chọn trên danh sách để tạo cưỡng bức !
           </tds-label>
         </tds-checkbox>
       </div>

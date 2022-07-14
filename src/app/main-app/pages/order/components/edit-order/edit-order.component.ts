@@ -85,7 +85,7 @@ export class EditOrderComponent implements OnInit {
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null)
     {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
     }
     return value
   } ;

@@ -46,7 +46,7 @@
                   </div>
                   <div class="flex items-baseline gap-x-2">
                     <div class="text-neutral-1-600">Mã ĐH:</div>
-                    <div class="font-semibold text-info-500">{{ data.SaleOnlineName }}</div>
+                    <div class="font-semibold text-info-500">{{ data.Reference }}</div>
                   </div>
                   <div class="flex items-baseline gap-x-2">
                     <span class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></span>
@@ -57,8 +57,7 @@
                     <span>{{data.Partner.Street}}</span>
                   </div>
                   <div class="flex items-baseline gap-x-2">
-                    <span *ngIf="data?.Carrier?.GHN_NoteCode"
-                      class="text-neutral-1-600 italic text-xs">{{data.Carrier?.GHN_NoteCode}}</span>
+                    <span *ngIf="data?.Carrier?.GHN_NoteCode" class="text-neutral-1-600 italic text-xs">{{data.Carrier?.GHN_NoteCode}}</span>
                     <span *ngIf="!data?.Carrier?.GHN_NoteCode" class="text-neutral-1-600 italic text-xs">(Chưa có ghi chú)</span>
                   </div>
                 </div>

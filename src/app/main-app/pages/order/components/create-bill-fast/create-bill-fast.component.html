@@ -72,16 +72,16 @@
               <!-- Tiền hàng -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-input-number [min]="0" [step]="1000" [(ngModel)]="data.AmountTotal" [formatter]="numberWithCommas" [parser]="parserComas"
-                    [ngModelOptions]="{standalone: true}">
+                  <tds-input-number [min]="0" [step]="1000" [(ngModel)]="data.AmountTotal"
+                    [ngModelOptions]="{standalone: true}" [formatter]="numberWithCommas" [parser]="parserComas">
                   </tds-input-number>
                 </tds-form-field>
               </td>
               <!-- Phí ship -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-input-number [min]="0" [step]="1000" [(ngModel)]="data.DeliveryPrice" [formatter]="numberWithCommas" [parser]="parserComas"
-                    [ngModelOptions]="{standalone: true}">
+                  <tds-input-number [min]="0" [step]="1000" [(ngModel)]="data.DeliveryPrice"
+                    [ngModelOptions]="{standalone: true}" [formatter]="numberWithCommas" [parser]="parserComas">
                   </tds-input-number>
                 </tds-form-field>
               </td>
@@ -95,7 +95,9 @@
               </td>
               <!-- Thanh toán -->
               <td class="text-center align-top">
-                <tds-checkbox (change)="onCheckPayment(data)"></tds-checkbox>
+                <div class="h-[34px] w-full flex items-center justify-center">
+                  <tds-checkbox (change)="onCheckPayment(data)"></tds-checkbox>
+                </div>
               </td>
               <!-- Thao tác -->
               <td class="align-top">
@@ -124,7 +126,7 @@
                         <div class="font-semibold">Danh sách sản phẩm</div>
                       </div>
                     </ng-template>
-                    <div style="margin: 0;">
+                    <div style="margin: 0;" class="pb-2.5">
                       <tds-table class="tds-table-rounded" #orderLinesTable [listData]="data.OrderLines"
                         [showPagination]="false" [frontPagination]="false">
                         <thead class="rounded">
