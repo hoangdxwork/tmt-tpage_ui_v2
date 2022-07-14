@@ -1,3 +1,4 @@
+import { ModalRenameAttachmentComponent } from './../modal-rename-attachment/modal-rename-attachment.component';
 import { ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -33,6 +34,7 @@ export class ModalImageStoreComponent implements OnInit, OnDestroy {
   numberSelect: number = 0;
   numberSelectColl: number = 0;
 
+  isCheckAllAttachment: boolean = false;
   isLoading: boolean = false;
   tabIndex: number = 0;
 
@@ -70,6 +72,9 @@ export class ModalImageStoreComponent implements OnInit, OnDestroy {
     if(!this.isLoading) {
       this.isLoading = true;
       this.attachmentDataFacade.getNextPage().pipe(finalize(()=>{ this.isLoading = false })).subscribe(res => {
+        if(this.isCheckAllAttachment){
+          this.checkAllAttachment(this.isCheckAllAttachment);
+        }
       }, error => {
         this.message.error(error.message? error.error.message : 'Load dữ liệu thất bại');
       });
@@ -208,17 +213,26 @@ export class ModalImageStoreComponent implements OnInit, OnDestroy {
   };
 
   handleUpload(file: TDSUploadFile) {
-    let formData: any = new FormData();
-    formData.append("files", file as any, file.name);
-    formData.append('id', '0000000000000051');
-
-    return this.attachmentService.add(formData).subscribe((res: any) => {
-      this.attachmentDataFacade.addAttachment(res);
-      this.message.success(Message.Upload.Success);
-      this.cdRef.markForCheck();
-    }, error => {
-      this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
-    });
+    if(file.type?.includes('image')){
+      let formData: any = new FormData();
+      formData.append("files", file as any, file.name);
+      formData.append('id', '0000000000000051');
+      let size = file?.size? (file?.size / 1048576).toFixed(2) : 0;
+      if(size > 5){
+        this.message.error('Chỉ tải ảnh có dung lượng tối đa 5Mb');
+        return
+      }
+      return this.attachmentService.add(formData).subscribe((res: any) => {
+        this.attachmentDataFacade.addAttachment(res);
+        this.message.success(Message.Upload.Success);
+        this.cdRef.markForCheck();
+      }, error => {
+        this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
+      });
+    }else{
+      this.message.error('Chỉ nhận upload ảnh');
+      return
+    }
   }
 
   showModalAddCollection() {
@@ -231,22 +245,32 @@ export class ModalImageStoreComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-  showModalAddAttachmentCollection() {
-    this.lstAll$.subscribe(res => {
-      let ids = res.Items.filter(x => x.Select).map(x => x.id);
-
-      const modal = this.modal.create({
-        title: 'Thêm vào bộ sưu tập khác',
-        content: ModalAddAttachmentCollectionComponent,
-        size: 'md',
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          attachmentIds: ids,
-        }
-      });
+  
+  showModalRenameAttachment(id: string, data:TDSSafeAny, type?: string){
+    const modal = this.modal.create({
+      title: 'Đổi tên',
+      content: ModalRenameAttachmentComponent,
+      size: 'md',
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        attachmentIds: id,
+        data: data,
+        type: type? type: 'attachment'
+      }
     });
+  }
 
+  showModalAddAttachmentCollection(id: string) {
+    let ids = [id];
+    const modal = this.modal.create({
+      title: 'Thêm vào bộ sưu tập khác',
+      content: ModalAddAttachmentCollectionComponent,
+      size: 'md',
+      viewContainerRef: this.viewContainerRef,
+      componentParams: {
+        attachmentIds: ids,
+      }
+    });
   }
 
   showModalListCollection(id: any, name: string) {

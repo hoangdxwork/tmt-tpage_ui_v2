@@ -1,9 +1,10 @@
+import { takeUntil, Subject } from 'rxjs';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from './../../../../dto/suggest-address/suggest-address.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { FastSaleOrder_DefaultDTOV2 } from './../../../../dto/fastsaleorder/fastsaleorder-default.dto';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
 import { TDSModalRef } from 'tds-ui/modal';
 import { AddressService } from 'src/app/main-app/services/address.service';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
@@ -23,31 +24,34 @@ export class ModalConfirmShippingAddressComponent implements OnInit {
   wardName: any;
 
   _form!: FormGroup;
+  private destroy$ = new Subject<void>();
   constructor(
     private modal: TDSModalRef,
     private fb: FormBuilder,
     private fastSaleOrderService: FastSaleOrderService,
     private message: TDSMessageService,
     private addressService: AddressService,
+    private cdref: ChangeDetectorRef
   ) {
     this.createForm();
    }
 
-  private createForm() {
+  createForm() {
     this._form = this.fb.group({
-      Name: [null, [Validators.required]],
-      Phone: [null, Validators.required],
-      Street: [null, Validators.required],
-      City: [null, Validators.required],
-      District: [null, Validators.required],
-      Ward: [null, Validators.required],
-      Note: [null],
+      Name: new FormControl('',[Validators.required]),
+      Phone:  new FormControl('',[Validators.required]),
+      Street:  new FormControl('',[Validators.required]),
+      City:  new FormControl(null),
+      District: new FormControl(null),
+      Ward: new FormControl(null),
+      Note: new FormControl(null),
     });
   }
 
   ngOnInit(): void {
     this.detailShipReceiver = this.data.Ship_Receiver;
     this.getData();
+    this.updateForm();
   }
 
   getData() {
@@ -58,7 +62,6 @@ export class ModalConfirmShippingAddressComponent implements OnInit {
     this.getDistrict(cityId);
     this.getWard(districtId);
 
-    this.updateForm();
   }
 
   getCities() {
@@ -87,6 +90,8 @@ export class ModalConfirmShippingAddressComponent implements OnInit {
     this._form.controls.District.setValue(this.detailShipReceiver.District.code);
     this._form.controls.Ward.setValue(this.detailShipReceiver.Ward.code);
     this._form.controls.Note.setValue(this.data.DeliveryNote);
+
+    this.cdref.detectChanges();
   }
 
   changeCity(value: number) {
@@ -128,12 +133,28 @@ export class ModalConfirmShippingAddressComponent implements OnInit {
   }
 
   onSave() {
+    if(this._form.controls.Name.invalid){
+      this.message.warning('Vui lòng nhập tên người nhận');
+      return
+    }
+    if(this._form.controls.Phone.invalid){
+      this.message.warning('Vui lòng nhập số điện thoại');
+      return
+    }
+    if(this._form.controls.Street.invalid){
+      this.message.warning('Vui lòng nhập số nhà, đường');
+      return
+    }
+
     var model = this.prepareModel();
     delete model.PaymentMethod;
 
-    this.fastSaleOrderService.update(this.data.Id, model).subscribe((res: any) => {
+    this.fastSaleOrderService.update(this.data.Id, model).pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
       this.message.success("Cập nhật địa chỉ giao hàng thành công.");
       this.modal.destroy(model);
+    },err=>{
+      this.message.error(err?.error ? err.error.message : 'Cập nhật địa chỉ giao hàng thất bại')
     });
   }
 
@@ -155,5 +176,10 @@ export class ModalConfirmShippingAddressComponent implements OnInit {
     model.DeliveryNote = formModel.Note;
 
     return model;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

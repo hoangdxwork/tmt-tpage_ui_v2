@@ -1639,6 +1639,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       .pipe(finalize(() => { this.isLoadingProduct = false }))
       .subscribe((res: FSOrderLines) => {
         delete res['@odata.context'];
+
         var item: OrderLineV2 = {
           Id: 0,
           ProductId: res.ProductId,
@@ -1676,13 +1677,14 @@ export class AddBillComponent implements OnInit, OnDestroy {
           ProductUOM: res.ProductUOM,
           Account: res.Account,
           SaleLine: null,
-          User: this.dataModel.User
-        }
+          User: this.dataModel.User || null,
+        }  as any
 
         if (item.Id <= 0) {
           item.Id = this.idPush - 1;
           this.idPush = item.Id;
         }
+
         this.addOrderLines(item);
         this.computeAmountTotal();
         this.cdRef.detectChanges();
@@ -1995,7 +1997,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     model.WarehouseId = formModel.Warehouse ? formModel.Warehouse.Id : model.WarehouseId;
     model.PaymentJournal = formModel.PaymentJournal ? formModel.PaymentJournal : model.PaymentJournal;
     model.PaymentJournalId = formModel.PaymentJournal ? formModel.PaymentJournal.Id : model.PaymentJournalId;
-    model.PaymentAmount = formModel.PaymentAmount ? formModel.PaymentAmount : model.PaymentAmount;
+    model.PaymentAmount = Number(formModel.PaymentAmount) ? Number(formModel.PaymentAmount) : model.PaymentAmount;
     model.Team = formModel.Team ? formModel.Team : model.Team;
     model.TeamId = formModel.Team ? formModel.Team.Id : model.TeamId;
     model.Deliver = formModel.Deliver ? formModel.Deliver : model.Deliver;
@@ -2063,11 +2065,32 @@ export class AddBillComponent implements OnInit, OnDestroy {
     model.TaxId = formModel.Tax ? formModel.Tax.Id : model.TaxId;
 
     model.OrderLines = formModel.OrderLines ? formModel.OrderLines : model.OrderLines;
-    model.OrderLines.forEach((x: any) => {
+    model.OrderLines.forEach((x: OrderLineV2) => {
       if (x.Id <= 0) {
         x.Id = 0;
       }
+
+      if(!x.OrderId && model.Id && model.Id != 0) {
+        x.OrderId = model.Id;
+      }
+
+      if(!x.PartnerId && model.PartnerId && model.PartnerId != 0) {
+        x.PartnerId = model.PartnerId;
+      }
+      if(!x.CompanyId && model.CompanyId && model.CompanyId != 0) {
+        x.CompanyId = model.CompanyId;
+      }
+      if(!x.UserId && model.UserId ) {
+        x.UserId = model.UserId;
+      }
+      if(!x.User && model.User || model.UserId) {
+        x.User = {
+          Id: model.User?.Id || model.UserId,
+          Name: model.User?.Name || model.UserName
+        } as any
+      }
     })
+
 
     return model;
   }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
 import { AttachmentDataFacade } from 'src/app/main-app/services/facades/attachment-data.facade';
 import { MDBCollectionDTO } from 'src/app/main-app/dto/attachment/attachment.dto';
 import { Observable } from 'rxjs';
@@ -24,7 +24,8 @@ export class ModalAddAttachmentCollectionComponent implements OnInit {
   constructor(
     private modalRef: TDSModalRef,
     private message: TDSMessageService,
-    private attachmentDataFacade: AttachmentDataFacade
+    private attachmentDataFacade: AttachmentDataFacade,
+    private cdRef: ChangeDetectorRef, 
   ) { }
 
   ngOnInit(): void {
@@ -35,6 +36,8 @@ export class ModalAddAttachmentCollectionComponent implements OnInit {
     this.lstData$ = this.attachmentDataFacade.makeCollection().pipe(map(res => {
       if(res && res[0]) {
         this.select = res[0];
+
+        this.cdRef.detectChanges();
       }
       return res;
     }));

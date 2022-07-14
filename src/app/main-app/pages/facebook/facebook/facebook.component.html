@@ -162,10 +162,10 @@
 
                           <ng-template #templatePageNotConnect>
                             <div *ngFor="let pageNot of lstData[team.Id].notConnected as lstPageNotConnects; let index = index"
-                            class="flex justify-between items-center" [ngClass]="index == lstPageNotConnects.length - 1 ? '' : 'border-b border-neutral-2-200 border-solid pb-4'">
-                              <div class="flex gap-4 items-center">
+                              class="flex justify-between items-center" [ngClass]="index == lstPageNotConnects.length - 1 ? '' : 'border-b border-neutral-2-200 border-solid pb-4'">
+                              <div class="flex gap-4 items-center" *ngIf="pageNot">
                                   <div class="mr-3 relative">
-                                      <tds-avatar size="lg" class="bg-accent-4 text-white" text="AD" tdsSrc="{{ pageNot?.picture?.data?.url }}">
+                                      <tds-avatar size="lg" class="bg-accent-4 text-white" tdsSrc="{{ pageNot?.picture?.data?.url || 'error-link'}}">
                                       </tds-avatar>
                                       <div class="absolute bottom-0 right-0 rounded-full bg-white flex items-center justify-center">
                                         <span><img src="../../../assets/imagesv2/conversation/union.svg"></span>

@@ -303,16 +303,16 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fastSaleOrderService.getListOrderIds({ids: ids})
     .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
       if(res) {
-          this.modal.create({
-              title: 'Tạo hóa đơn nhanh',
-              content: CreateBillFastComponent,
-              centered: true,
-              size: 'xl',
-              viewContainerRef: this.viewContainerRef,
-              componentParams: {
-                lstData: [...res.value] as GetListOrderIdsDTO[]
-              }
-          });
+        this.modal.create({
+          title: 'Tạo hóa đơn nhanh',
+          content: CreateBillFastComponent,
+          centered: true,
+          size: 'xl',
+          viewContainerRef: this.viewContainerRef,
+          componentParams: {
+            lstData: [...res.value] as GetListOrderIdsDTO[]
+          }
+        });
       }
     }, error => {
       this.message.error(error?.error?.message ? error?.error?.message : 'Đã xảy ra lỗi');
@@ -342,6 +342,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSelectChange(index: TDSSafeAny) {
+    this.filterObj.status = [];
     let item = this.tabNavs.filter(f => f.Index == index )[0];
 
     if(item?.Name == 'Tất cả') {
@@ -352,6 +353,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.pageIndex = 1;
     this.indClickTag = "";
+    this.filterObj.tags = [];
 
     this.indeterminate = false;
     this.loadData(this.pageSize, this.pageIndex);
@@ -655,6 +657,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     if(this.orderMessage.DateCreated){
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
     }
+
     this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe((res: any): any => {
 
       let pageIds: any = [];
@@ -667,21 +670,22 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       this.crmTeamService.getActiveByPageIds$(pageIds)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((teams: any): any => {
+        .pipe(takeUntil(this.destroy$)).subscribe((teams: any): any => {
 
           if (teams.length == 0) {
             return this.message.error('Không có kênh kết nối với khách hàng này.');
           }
 
-          this.mappingTeams.length = 0;
-          var pageDic = {} as any;
+          this.mappingTeams = [];
+          let pageDic = {} as any;
 
           teams.map((x: any) => {
-            var exist = res.filter((r: any) => r.page_id == x.Facebook_PageId)[0];
-            if (exist && !pageDic[exist.Facebook_PageId]) {
+            let exist = res.filter((r: any) => r.page_id == x.Facebook_PageId)[0];
 
-              pageDic[exist.Facebook_PageId] = true; // Cờ này để không thêm trùng page vào
+            if (exist && !pageDic[exist.page_id]) {
+
+              pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
+
               this.mappingTeams.push({
                   psid: exist.psid,
                   team: x
@@ -690,8 +694,8 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
           })
 
           if (this.mappingTeams.length > 0) {
-            this.currentMappingTeam = this.mappingTeams[0];
-            this.loadMDBByPSId(this.currentMappingTeam.team.Facebook_PageId, this.currentMappingTeam.psid);
+              this.currentMappingTeam = this.mappingTeams[0];
+              this.loadMDBByPSId(this.currentMappingTeam.team.Facebook_PageId, this.currentMappingTeam.psid);
           }
       });
     }, error => {
@@ -705,30 +709,30 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // get data currentConversation
     this.crmMatchingService.getMDBByPSId(pageId, psid)
-      .subscribe((res: MDBByPSIdDTO) => {
+      .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
         if (res) {
-          //tags
           res["keyTags"] = {};
 
           if(res.tags && res.tags.length > 0) {
-            res.tags.map((x: any) => {
-              res["keyTags"][x.id] = true;
-            });
-          }
-          else {
-            res.tags = [];
+              res.tags.map((x: any) => {
+                  res["keyTags"][x.id] = true;
+              })
+          } else {
+              res.tags = [];
           }
 
           this.currentConversation = { ...res, ...this.currentConversation};
           this.psid = res.psid;
           this.isOpenDrawer = true;
         }
-      });
+      }, error => {
+        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
+      })
   }
 
   selectMappingTeam(item: any) {
     this.currentMappingTeam = item;
-    this.loadMDBByPSId(item.psid, item.team.Facebook_PageId); // Tải lại hội thoại
+    this.loadMDBByPSId(item.team?.Facebook_PageId, item.psid); // Tải lại hội thoại
   }
 
   closeDrawer() {

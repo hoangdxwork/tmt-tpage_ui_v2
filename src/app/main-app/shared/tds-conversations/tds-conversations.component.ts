@@ -202,12 +202,14 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       viewContainerRef: this.viewContainerRef
     });
     modal.afterClose.subscribe((result : string[]) => {
-      let data = this.uploadedImages;
-      result.forEach((x: string)=>{
-        data.push(x);
-      })
-      this.uploadedImages = [...data];
-      this.cdRef.markForCheck();
+      if(TDSHelperArray.hasListValue(result)){
+        let data = this.uploadedImages;
+        result.forEach((x: string)=>{
+          data.push(x);
+        })
+        this.uploadedImages = [...data];
+        this.cdRef.markForCheck();
+      }
     });
   }
 
@@ -298,6 +300,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   callbackTag(ev: boolean) {
     this.isVisbleTag = ev
+    if(!ev){
+      this.searchTag();
+    }
   }
 
   loadEmojiMart(event: any) {

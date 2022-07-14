@@ -31,6 +31,7 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostBinding("@eventFadeState") eventAnimation = true;
   @ViewChild('innerText') innerText!: ElementRef;
+  @ViewChild('templatePageNotConnect') templatePageNotConnect!: ElementRef;
 
   data: CRMTeamDTO[] = [];
   dataSearch?: CRMTeamDTO[];

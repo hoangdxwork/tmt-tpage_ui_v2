@@ -59,6 +59,14 @@ export class ModalConfirmPaymentComponent implements OnInit {
   }
 
   onSave() {
+    if(this._form.controls.PaymentMethod.invalid){
+      this.message.warning('Vui lòng chọn Phương thức thanh toán');
+      return
+    }
+    if(this._form.controls.CashOnDelivery.invalid){
+      this.message.warning('Vui lòng nhập số tiền thanh toán');
+      return
+    }
     var model = this.prepareModel();
     this.message.success('Cập nhật phương thức thanh toán thành công.');
     this.modal.destroy(model);

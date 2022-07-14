@@ -1,15 +1,15 @@
 <form [formGroup]="_form" class="grid grid-cols-2 gap-x-8 gap-y-4 text-body-2 text-neutral-1-900">
     <tds-form-field>
         <tds-label>Họ và tên người nhận</tds-label>
-        <input tdsInput placeholder="Nhập tên người nhận" formControlName="Name"/>
+        <input tdsInput placeholder="Nhập tên người nhận" formControlName="Name" [required]="true"/>
     </tds-form-field>
     <tds-form-field>
         <tds-label>Số điện thoại</tds-label>
-        <input tdsInput placeholder="Nhập số điện thoại" formControlName="Phone"/>
+        <input tdsInput placeholder="Nhập số điện thoại" formControlName="Phone" [required]="true"/>
     </tds-form-field>
     <tds-form-field>
         <tds-label>Số nhà, đường</tds-label>
-        <input tdsInput placeholder="Nhập số nhà"  formControlName="Street"/>
+        <input tdsInput placeholder="Nhập số nhà" formControlName="Street" [required]="true"/>
     </tds-form-field>
     <tds-form-field>
         <tds-label>Tỉnh/ Thành phố</tds-label>
@@ -37,8 +37,9 @@
         <tds-label>Ghi chú đơn hàng</tds-label>
         <textarea class="resize-none" tdsInput placeholder="Nhập ghi chú" formControlName="Note"></textarea>
     </tds-form-field>
+    <div class="col-span-2 w-full flex justify-end">
+        <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">Đóng</button>
+        <button tds-button color="primary" (click)="onSave()">Xác nhận</button>
+    </div>
 </form>
-<div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button class="mr-2" color="secondary" (click)="cancel()">Đóng</button>
-    <button tds-button class="mr-2" color="primary" (click)="onSave()">Xác nhận</button>
-</div>
+<div *tdsModalFooter></div>
