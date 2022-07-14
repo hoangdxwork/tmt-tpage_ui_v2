@@ -20,17 +20,17 @@
   <div class="w-full mt-[30px] rounded-md max-h-[580px]">
     <div class="w-full h-full ">
       <tds-table class="tds-table-rounded" #productTable [loading]="isLoading" [bordered]="true" [listData]="lstData"
-        [showPagination]="false">
+        [showPagination]="false" [frontPagination]="false" [scroll]="{y:'500px'}">
         <thead class="rounded">
           <tr>
-            <th width="60px">STT</th>
-            <th width="280px">Khách hàng</th>
-            <th width="120px">Đối tác giao hàng</th>
-            <th width="120px">Tiền hàng</th>
-            <th width="120px">Phí ship</th>
-            <th width="120px">KL ship (g)</th>
-            <th width="100px">Thanh toán</th>
-            <th width="80px">Thao tác</th>
+            <th width="48px">STT</th>
+            <th>Khách hàng</th>
+            <th width="192px">Đối tác giao hàng</th>
+            <th width="130px">Tiền hàng</th>
+            <th width="130px">Phí ship</th>
+            <th width="130px">KL ship (g)</th>
+            <th width="97px">Thanh toán</th>
+            <th width="92px">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -49,20 +49,14 @@
                   </div>
                   <div class="flex items-baseline gap-x-2">
                     <span class="tdsi-call-fill text-md text-white bg-green-400 p-0.5 rounded-md"></span>
-                    <span *ngIf="data?.Partner?.Phone">{{data.Partner.Phone}}</span>
-                    <span *ngIf="!data?.Partner?.Phone">---</span>
+                    <span>{{ data?.Partner?.Phone ? data.Partner.Phone : '---'}}</span>
                   </div>
                   <div class="flex items-baseline gap-x-2">
                     <span class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></span>
-                    <span *ngIf="data?.Partner?.Street">{{data.Partner.Street}}</span>
-                    <span *ngIf="!data?.Partner?.Street">---</span>
+                    <span>{{ data?.Partner?.Street ? data.Partner.Street : '---'}}</span>
                   </div>
                   <div class="flex items-baseline gap-x-2">
-                    <span *ngIf="data?.Carrier?.GHN_NoteCode"
-                      class="text-neutral-1-600 italic text-xs">{{data.Carrier?.GHN_NoteCode}}</span>
-                    <span *ngIf="!data?.Carrier?.GHN_NoteCode" class="text-neutral-1-600 italic text-xs">(Chưa
-                      có
-                      ghi chú)</span>
+                    <span class="text-neutral-1-600 italic text-xs">{{data?.Carrier?.GHN_NoteCode ? data.Carrier.GHN_NoteCode : '(Chưa có ghi chú)'}}</span>
                   </div>
                 </div>
               </td>
@@ -78,7 +72,7 @@
               <!-- Tiền hàng -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-input-number [min]="0" [step]="1000" [(ngModel)]="data.AmountTotal"
+                  <tds-input-number [min]="0" [step]="1000" [(ngModel)]="data.AmountTotal" [formatter]="numberWithCommas" [parser]="parserComas"
                     [ngModelOptions]="{standalone: true}">
                   </tds-input-number>
                 </tds-form-field>
@@ -86,7 +80,7 @@
               <!-- Phí ship -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-input-number [min]="0" [step]="1000" [(ngModel)]="data.DeliveryPrice"
+                  <tds-input-number [min]="0" [step]="1000" [(ngModel)]="data.DeliveryPrice" [formatter]="numberWithCommas" [parser]="parserComas"
                     [ngModelOptions]="{standalone: true}">
                   </tds-input-number>
                 </tds-form-field>
@@ -94,13 +88,13 @@
               <!-- Khối lượng -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-input-number [min]="0" [step]="1" [(ngModel)]="data.ShipWeight"
+                  <tds-input-number [min]="0" [step]="1" [(ngModel)]="data.ShipWeight" [formatter]="numberWithCommas" [parser]="parserComas"
                     [ngModelOptions]="{standalone: true}">
                   </tds-input-number>
                 </tds-form-field>
               </td>
               <!-- Thanh toán -->
-              <td class="text-center">
+              <td class="text-center align-top">
                 <tds-checkbox (change)="onCheckPayment(data)"></tds-checkbox>
               </td>
               <!-- Thao tác -->
@@ -132,7 +126,7 @@
                     </ng-template>
                     <div style="margin: 0;">
                       <tds-table class="tds-table-rounded" #orderLinesTable [listData]="data.OrderLines"
-                        [showPagination]="false">
+                        [showPagination]="false" [frontPagination]="false">
                         <thead class="rounded">
                           <tr>
                             <th width="5%">STT</th>

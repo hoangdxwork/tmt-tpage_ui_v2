@@ -303,16 +303,16 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fastSaleOrderService.getListOrderIds({ids: ids})
     .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
       if(res) {
-          this.modal.create({
-              title: 'Tạo hóa đơn nhanh',
-              content: CreateBillFastComponent,
-              centered: true,
-              size: 'xl',
-              viewContainerRef: this.viewContainerRef,
-              componentParams: {
-                lstData: [...res.value] as GetListOrderIdsDTO[]
-              }
-          });
+        this.modal.create({
+          title: 'Tạo hóa đơn nhanh',
+          content: CreateBillFastComponent,
+          centered: true,
+          size: 'xl',
+          viewContainerRef: this.viewContainerRef,
+          componentParams: {
+            lstData: [...res.value] as GetListOrderIdsDTO[]
+          }
+        });
       }
     }, error => {
       this.message.error(error?.error?.message ? error?.error?.message : 'Đã xảy ra lỗi');
