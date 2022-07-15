@@ -50,7 +50,7 @@
                   </div>
                   <div class="col-span-3">
                     <tds-form-field>
-                      <input tdsInput placeholder="Để trống sẽ phát sinh tự động"
+                      <input tdsInput placeholder="Nhập số điện thoại"
                         [(ngModel)]="quickOrderModel.Telephone" [ngModelOptions]="{standalone: true}" />
                     </tds-form-field>
                   </div>
@@ -61,7 +61,7 @@
                   </div>
                   <div class="col-span-3">
                     <tds-form-field>
-                      <input tdsInput placeholder="Để trống sẽ phát sinh tự động" [(ngModel)]="quickOrderModel.Email"
+                      <input tdsInput placeholder="Nhập email" [(ngModel)]="quickOrderModel.Email"
                         [ngModelOptions]="{standalone: true}" />
                     </tds-form-field>
                   </div>
@@ -100,7 +100,7 @@
                   </div>
                   <div class="col-span-3">
                     <tds-form-field>
-                      <textarea tdsInput placeholder="Nhập ghi chú giao hàng" [(ngModel)]="quickOrderModel.Note"
+                      <textarea tdsInput placeholder="Nhập ghi chú" [(ngModel)]="quickOrderModel.Note"
                       [ngModelOptions]="{standalone: true}" class="h-16 resize-none no-scrollbar">
                       </textarea>
                     </tds-form-field>
@@ -160,7 +160,7 @@
                       <span *ngFor="let item of lstProductSearch" (click)="selectProduct(item)"
                           class="p-2 cursor-pointer hover:bg-neutral-3-50 rounded-md flex gap-x-2">
 
-                          <span class="text-info-400"> {{ item.NameGet }} - {{item.Price | number}}đ </span>
+                          <span class="text-info-400"> {{ item.NameGet }} - {{ item.Price | numberCustom:'.' }}đ </span>
 
                           <div class="fw-5" *ngIf="lstInventory && lstInventory[item.Id]">
                               <span class="text-neutral-1-400">Tồn kho: </span>
@@ -182,7 +182,7 @@
               </div>
               <button tds-button type="button" size="md" color="primary" (click)="onAddProduct()">
                 <span class="flex items-center">
-                  <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i> Thêm mẫu mới
+                  <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i> Thêm sản phẩm
                 </span>
               </button>
             </div>
@@ -232,7 +232,7 @@
                     <td>
                       <tds-form-field>
                         <tds-input-number [min]="0" [step]="1000" (ngModelChange)="onChangePrice($event, index)"
-                          [(ngModel)]="data.Price" [ngModelOptions]="{standalone: true}" [parser]="parserComas">
+                          [(ngModel)]="data.Price" [ngModelOptions]="{standalone: true}" [formatter]="numberWithCommas" [parser]="parserComas">
                         </tds-input-number>
                       </tds-form-field>
                     </td>
@@ -242,7 +242,7 @@
                           [ngModelOptions]="{standalone: true}" [ngModelOptions]="{standalone: true}" />
                       </tds-form-field>
                     </td>
-                    <td> {{ data.Price * data.Quantity | number }} </td>
+                    <td> {{ data.Price * data.Quantity | numberCustom:'.' }} </td>
                     <td>
                       <button tds-button-icon color="secondary" size="sm" (click)="onRemoveProduct(data, index)">
                         <span class="flex items-center text-neutral-1-500">
@@ -255,7 +255,7 @@
                     <td colspan="7">
                       <div class="flex items-center gap-x-4 justify-end">
                         <tds-label class="text-sm">Tổng tiền:</tds-label>
-                        <tds-label class="text-xl text-success-400"> {{ quickOrderModel.TotalAmount | number: '1.0-3' }}
+                        <tds-label class="text-xl text-success-400"> {{ quickOrderModel.TotalAmount | numberCustom:'.'  }}
                         </tds-label>
                       </div>
                     </td>
@@ -293,7 +293,7 @@
                     </div>
                     <div class="col-span-2 flex gap-x-2 items-center">
                       <span class="text-primary-1 font-semibold mr-4">
-                        {{saleModel.CustomerDeliveryPrice? (saleModel.CustomerDeliveryPrice | number:'1.0-3'): 0 }}
+                        {{saleModel.CustomerDeliveryPrice? (saleModel.CustomerDeliveryPrice | numberCustom:'.') : 0 }}
                       </span>
                       <button tds-button-icon color="secondary" (click)="calcFee()"><i class="tdsi-reload-fill text-neutral-1-500"></i></button>
                       <button tds-button-icon color="secondary"><i class="tdsi-three-dots-horizon-fill text-neutral-1-500"></i></button>
@@ -390,7 +390,7 @@
                             <tds-checkbox [(ngModel)]="item.IsSelected" (change)="onCheckExtraService(item)"
                               [ngModelOptions]="{standalone: true}"><i></i> {{item.ServiceName}}</tds-checkbox>
                             <p *ngIf="item.Fee && !saleModel.Ship_Extras.IsInsuranceEqualTotalAmount">
-                              (<strong>{{item.Fee | number:'1.0-3'}}</strong>)
+                              (<strong>{{item.Fee | numberCustom:'.'}}</strong>)
                             </p>
                           </label>
                           <div *ngIf="saleModel.Carrier?.DeliveryType == 'ViettelPost' && item.ServiceId == 'XMG' && item.IsSelected == true">
@@ -494,18 +494,19 @@
           </tds-checkbox>
         </div>
 
-        <div class="flex gap-x-2">
-          <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-          <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave('print')">
-            <span class="tdsi-print-fill"></span>
-            Lưu và in
-          </button>
-          <button *ngIf="isEnableCreateOrder" tds-button class="w-[170px]" type="button" color="info"
-            (click)="onSave('print_ship')">
-            <span class="tdsi-print-fill"></span>
-            Lưu và in phiếu ship
-          </button>
-          <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave('null')">Lưu</button>
+        <div class="flex gap-x-4">
+            <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+            <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave('print')">
+                <span class="flex items-center">
+                    <i class="tdsi-print-fill text-lg leading-none mr-2"></i>Lưu và in
+                </span>
+            </button>
+            <button *ngIf="isEnableCreateOrder" tds-button class="w-[170px]" type="button" color="info" (click)="onSave('print_ship')">
+                <span class="flex items-center">
+                    <i class="tdsi-print-fill text-lg leading-none mr-2"></i>Lưu và in phiếu ship
+                </span>
+            </button>
+            <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave('null')">Lưu</button>
         </div>
       </div>
     </form>

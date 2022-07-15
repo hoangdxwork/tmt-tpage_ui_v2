@@ -1,5 +1,5 @@
 <div class="tdsi-message-template-line text-neutral-1-400 text-xl leading-none cursor-pointer"
-tds-popover [(popoverVisible)]="isVisibleReply"
+tds-popover [(popoverVisible)]="isVisibleReply" (popoverVisibleChange)="changeVisible($event)"
 popoverTrigger="click"
 [popoverContent]="contentTemplate"></div>
 <ng-template #contentTemplate>

@@ -37,7 +37,7 @@ export class ModalAddQuickReplyComponent implements OnInit {
 
   createForm(){
     this._form = this.fb.group({
-      active: new FormControl(false),
+      active: new FormControl(true),
       bodyHtml: new FormControl(''),
       subjectHtml: new FormControl('',[Validators.required]),
     })
@@ -48,7 +48,8 @@ export class ModalAddQuickReplyComponent implements OnInit {
   }
 
   onSave(){
-    if(this._form.invalid){
+    if(this._form.controls.subjectHtml.invalid){
+      this.message.warning('Vui lòng nhập tên mẫu')
       return
     }
     let model = this.prepareModel();

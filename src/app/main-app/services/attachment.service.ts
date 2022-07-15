@@ -137,6 +137,33 @@ export class AttachmentService extends BaseSevice {
     return this.apiService.getFileUpload<any>(api, formData);
   }
 
+  updateName(id: string, name: string): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${id}/updatename?id=${id}&name=${name}`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getFileUpload<any>(api, null);
+  }
+
+  updateNameCollection(id: string, name: string): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${id}/updatenamecollection?id=${id}&name=${name}`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getFileUpload<any>(api, null);
+  }
+
+  updateNameInner(id: string, innerId: string, name: string): Observable<any> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/${id}/updatenameinner?id=${id}&innerId=${innerId}&name=${name}`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getFileUpload<any>(api, null);
+  }
+
   removeInners(id: string, idInners: Array<string>): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/removeinners?id=${id}`,

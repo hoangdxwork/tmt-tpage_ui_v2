@@ -61,7 +61,7 @@ export class ModalListBillComponent implements OnInit {
 
   ngOnInit(): void {
     this.commonService.shopPaymentProviders$.pipe(takeUntil(this.destroy$)).subscribe((res : paymentMethodDTO[]) => {
-      this.paymentMethodOptions = [...res];
+      this.paymentMethodOptions = res;
     });
     this.createModal();
   }

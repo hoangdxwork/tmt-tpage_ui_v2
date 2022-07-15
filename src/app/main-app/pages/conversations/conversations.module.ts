@@ -115,6 +115,7 @@ import { ModalApplyPromotionComponent } from './components/modal-apply-promotion
 import { OdataProductService } from '../../services/mock-odata/odata-product.service';
 import { ModalPostComponent } from './components/modal-post/modal-post.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { ModalRenameAttachmentComponent } from './components/modal-rename-attachment/modal-rename-attachment.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -199,7 +200,8 @@ const SERVICES = [
     ModalTaxComponent,
     ProductPagefbComponent,
     ModalApplyPromotionComponent,
-    ModalPostComponent
+    ModalPostComponent,
+    ModalRenameAttachmentComponent
   ],
 
   imports: [

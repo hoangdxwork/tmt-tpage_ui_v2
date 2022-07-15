@@ -14,24 +14,21 @@
     </div>
     <div class="max-h-[calc(100vh-375px)] w-full overflow-y-auto tds-custom-scroll py-5">
         <div class="grid grid-cols-4 gap-5 h-full w-full" *ngIf="lstData && lstData.length > 0; else noData">
-          <ng-template ngFor let-data [ngForOf]="lstData">
+          <ng-template ngFor let-data [ngForOf]="lstData" let-index="index">
             <div>
-                <div class="relative rounded-lg border border-transparent border-solid group">
-                    <!-- <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100">
-                        <tds-checkbox [(ngModel)]="data.Select" (change)="checkValue(data)"></tds-checkbox>
-                    </div> -->
-                    <img [src]="data.Url">
+                <div class="relative rounded-lg border border-transparent border-solid group h-[250px]">
+                    <img [src]="data.Url" class="w-full h-full object-cover rounded-lg">
                     <div class="absolute bottom-0 opacity-0 group-hover:opacity-100 w-full">
                         <div class="flex p-2.5 gap-2.5 bg-gradient-to-b from-black/0 to-black/100 items-center rounded-b-lg justify-between">
-                            <div class="text-body-2 text-white font-semibold font-sans"> {{ data.Name }} </div>
+                            <div class="text-body-2 text-white font-semibold font-sans truncate"> {{ data.Name }} </div>
                             <div class="flex gap-0.5">
-                                <div class="flex items-center">
-                                  <i class="tdsi-edit-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i>
-                                </div>
+                              <div class="flex items-center cursor-pointer" tds-tooltip tooltipTitle="Đổi tên" (click)="showModalRenameAttachment(index, data.id, data,'new_coll')">
+                                <i class="tdsi-edit-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i>
+                              </div>
 
-                                <div class="flex items-center">
-                                  <i class="tdsi-trash-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i>
-                                </div>
+                              <div class="flex items-center cursor-pointer" tds-tooltip tooltipTitle="Xóa ảnh" (click)="removeAttachment(index)">
+                                <i class="tdsi-trash-fill text-sm text-white leading-none p-1.5 bg-inherit hover:bg-neutral-3-50/9 rounded-md"></i>
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -57,8 +54,8 @@
                 </p>
 
                 <div class="flex gap-x-2">
-                  <button tds-button class="mr-2 w-[100px]" color="secondary" (click)="showModalSelectAttachment()">
-                    <span class="tdsi-images-fill"></span>
+                  <button tds-button class="mr-2" color="secondary" (click)="showModalSelectAttachment()">
+                    <span class="tdsi-images-fill text-lg leading-none mr-2 text-neutral-1-500"></span>
                     Chọn ảnh có sẵn
                   </button>
                   <tds-upload [multiple]="true" [beforeUpload]="beforeUpload">

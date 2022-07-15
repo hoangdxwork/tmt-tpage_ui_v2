@@ -1,16 +1,20 @@
-<form [formGroup]="_form" class="flex w-full gap-x-8">
-    <tds-form-field class="w-1/2">
-        <tds-label>Hình thức thanh toán</tds-label>
-        <tds-select valueField="Value" textField="Text" placeholder='Hình thức thanh toán' disabledField="isActive"
-            [required]='true' [data]="paymentMethodOptions" [allowClear]="true" formControlName="PaymentMethod">
-        </tds-select>
-    </tds-form-field>
-    <tds-form-field class="w-1/2">
-        <tds-label>Số tiền cần thanh toán</tds-label>
-        <tds-input-number tdsInput placeholder="Nhập số tiền phải thanh toán" formControlName="CashOnDelivery"></tds-input-number>
-    </tds-form-field>
+<form [formGroup]="_form" class="flex flex-col gap-y-4 w-full">
+    <div class="flex gap-x-8 w-full">
+        <tds-form-field class="w-1/2">
+            <tds-label>Hình thức thanh toán</tds-label>
+            <tds-select valueField="Value" textField="Text" placeholder='Hình thức thanh toán' disabledField="isActive"
+                [required]='true' [data]="paymentMethodOptions" [allowClear]="true" formControlName="PaymentMethod">
+            </tds-select>
+        </tds-form-field>
+        <tds-form-field class="w-1/2">
+            <tds-label>Số tiền cần thanh toán</tds-label>
+            <tds-input-number tdsInput placeholder="Nhập số tiền phải thanh toán" formControlName="CashOnDelivery"></tds-input-number>
+        </tds-form-field>
+    </div>
+    <div class="w-full flex justify-end">
+        <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">Đóng</button>
+        <button tds-button color="primary" (click)="onSave()">Xác nhận</button>
+    </div>
 </form>
-<div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button class="mr-2" color="secondary" (click)="cancel()">Đóng</button>
-    <button tds-button class="mr-2" color="primary" (click)="onSave()">Xác nhận</button>
+<div *tdsModalFooter>
 </div>

@@ -1,7 +1,7 @@
 <div class="flex flex-col gap-y-4 text-body-2 max-h-[calc(65vh)] overflow-hidden p-1">
     <div class="flex gap-x-2.5">
         <tds-form-field class="w-full">
-            <input tdsInput class="text-neutral-1-600" placeholder="Nhập tên sản phẩm" autocomplete="off" 
+            <input tdsInput class="text-neutral-1-600" placeholder="Tìm kiếm" autocomplete="off" 
             [(ngModel)]="searchText" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="750" (inputKeyup)="searchBill()"/>
             <span tdsPrefix><i class="text-neutral-1-600 tdsi-search-fill"></i></span>
         </tds-form-field>

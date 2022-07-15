@@ -1,16 +1,31 @@
-<div class="flex flex-col gap-y-2">
-  <div *ngFor="let error of lstError" class="flex items-center gap-x-4">
-    <tds-checkbox (change)="change($event, error)">
-      <tds-label>
-        Khách hàng {{error.Partner.Name}} {{error.Partner.Phone?'('+error.Partner.Phone+')' : '' }} đã tạo đơn hàng
-        tổng tiền là {{ error.AmountTotal | number}} trong khoảng thời gian {{error.TimeLock}} phút. Bạn hãy đợi
-        hết {{error.TimeLock}} phút tạo lại hoặc chọn trên danh sách để tạo cưỡng bức !"
-      </tds-label>
-    </tds-checkbox>
-  </div>
-
-  <div class="w-full flex justify-end gap-x-2 p-4" *tdsModalFooter>
-    <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
-    <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
+<div *tdsModalTitle>
+  <div class="flex flex-row items-center gap-x-2">
+    <tds-checkbox [checked]="checkedAll" [indeterminate]="indeterminate" (change)="changeAll($event.checked)"></tds-checkbox>
+    <tds-label class="text-error-500">Danh sách lỗi</tds-label>
   </div>
 </div>
+
+<tds-spin [spinning]="isLoading">
+  <div class="flex flex-col w-full">
+    <div class="flex flex-col gap-y-2 max-h-[500px] overflow-y-auto tds-custom-scroll pr-2">
+      <div *ngFor="let item of lstErrorSelected; let i = index;" class="flex items-center gap-x-4">
+        <tds-checkbox [checked]="item.isSelected" (change)="change($event.checked, i)">
+          <tds-label>
+            Khách hàng {{ item.error.Partner.Name }} {{ item.error.Partner.Phone ? '(' + item.error.Partner.Phone + ')' : '' }} đã tạo đơn hàng
+            tổng tiền là {{ item.error.AmountTotal | number }} trong khoảng thời gian {{item.error.TimeLock}} phút. Bạn hãy đợi
+            hết {{ item.error.TimeLock }} phút tạo lại hoặc chọn trên danh sách để tạo cưỡng bức !
+          </tds-label>
+        </tds-checkbox>
+      </div>
+    </div>
+    <div class="flex flex-row gap-x-2 items-center pt-4 mt-4 border-t">
+      <tds-checkbox [checked]="(printType === 'print')" (change)="changePrintType('print')">In phiếu</tds-checkbox>
+      <tds-checkbox [checked]="(printType === 'printShip')" (change)="changePrintType('printShip')">In phiếu ship</tds-checkbox>
+    </div>
+
+    <div class="w-full flex justify-end gap-x-2 p-4" *tdsModalFooter>
+      <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
+      <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
+    </div>
+  </div>
+</tds-spin>

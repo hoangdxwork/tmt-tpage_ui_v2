@@ -22,18 +22,18 @@ import { GetListOrderIdsDTO } from 'src/app/main-app/dto/saleonlineorder/list-or
 
 export class CreateBillFastComponent implements OnInit, OnDestroy {
 
-  _form!: FormGroup;
   @Input() ids: string[] = [];
   @Input() lstData!: GetListOrderIdsDTO[];
 
-  lstPayment: { Id:number, Payment:RegisterPayment }[] = [];
+  _form!: FormGroup;
 
+  lstPayment: { Id:number, Payment:RegisterPayment }[] = [];
   lstCarriers: Array<DeliveryCarrierDTO> = [];
   isLoading: boolean = false;
-  private destroy$ = new Subject<void>();
-
   isPrint: boolean = false;
   isPrintShip: boolean = false;
+
+  private destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder,
     private message: TDSMessageService,
@@ -55,7 +55,7 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null){
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
     }
     return value;
   }
@@ -125,6 +125,10 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
   }
 
   onSave(confirm?: string) {
+    if(this.isLoading){
+      return
+    }
+
     if(!this.lstData || this.lstData.length === 0) {
       this.message.error(Message.EmptyData);
       return;
@@ -151,7 +155,6 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
 
   onModalError(error: TDSSafeAny[]) {
     const modal = this.modal.create({
-      title: 'Danh sách lỗi tạo đơn',
       content: CreateBillFastErrorComponent,
       size: 'xl',
       viewContainerRef: this.viewContainerRef,
@@ -159,10 +162,6 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
         lstOrder: this.lstData,
         lstError: error
       }
-    });
-
-    modal.afterClose.subscribe((result) => {
-      this.printSave(result);
     });
   }
 

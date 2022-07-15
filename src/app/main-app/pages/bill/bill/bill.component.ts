@@ -496,7 +496,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onDelete(data: any) {
-    this.modal.success({
+    this.modal.error({
       title: 'Xóa hóa đơn',
       content: 'Bạn có muốn xóa hóa đơn',
       onOk: () => {
@@ -508,9 +508,10 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
             this.message.error(`${error?.error?.message}`);
         })
       },
-      onCancel: () => { },
+      onCancel: () => {  },
       okText: "Xác nhận",
       cancelText: "Đóng",
+      confirmViewType: "compact"
     });
   }
 
