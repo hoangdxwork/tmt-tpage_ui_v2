@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ImageFacade } from '../../../services/facades/image.facade';
 
@@ -8,7 +9,7 @@ import { ImageFacade } from '../../../services/facades/image.facade';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class TpageAvatarFacebookComponent implements OnInit {
+export class TpageAvatarFacebookComponent implements OnInit, OnDestroy {
 
   @Input() fbid!: TDSSafeAny;
   @Input() psid!: TDSSafeAny;
@@ -20,6 +21,7 @@ export class TpageAvatarFacebookComponent implements OnInit {
   url!: string;
   nativeElement: HTMLElement;
   id: any;
+  private destroy$ = new Subject<void>();
 
   constructor(element: ElementRef,
     private cdRef : ChangeDetectorRef,
@@ -48,19 +50,23 @@ export class TpageAvatarFacebookComponent implements OnInit {
     }
   }
 
-  buildUrl(id: string, token: string){
+  buildUrl(id: string, token: string) {
+    this.url = '';
     if(TDSHelperString.hasValueString(id) && TDSHelperString.hasValueString(token)){
         let url = `https://graph.facebook.com/${id}/picture?type=large&access_token=${token}`;
-        this.imageFacade.getImage(url)
-          .subscribe(res => {
-              this.url = res;
-              this.cdRef.markForCheck();
+
+        this.imageFacade.getImage(url).pipe(takeUntil(this.destroy$)).subscribe(res => {
+            this.url = res;
+            this.cdRef.markForCheck();
         }, error => {
-          this.cdRef.markForCheck();
-        });
-    } else {
-        this.url = '';
+            this.cdRef.markForCheck();
+        })
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }
