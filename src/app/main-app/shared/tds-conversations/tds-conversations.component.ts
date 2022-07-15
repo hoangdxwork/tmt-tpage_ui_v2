@@ -85,6 +85,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   isVisbleTag: boolean = false;
   isNextData: boolean = false;
   eventHandler!: Event;
+  userLoggedId!: string;
 
   constructor(private modalService: TDSModalService,
     private message: TDSMessageService,
@@ -103,6 +104,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private cdRef: ChangeDetectorRef,
     private viewContainerRef: ViewContainerRef,
     private partnerService: PartnerService) {
+
+      this.userLoggedId = this.sharedService.userLogged?.Id;
   }
 
   ngOnInit() {
@@ -129,11 +132,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   loadData(data: ConversationMatchingItem) {
     this.loadTags(data);
-    this.initiateTimer();
     this.loadUser();
 
     // TODO: Nội dung tin nhắn
     this.loadMessages(data);
+
+    this.initiateTimer();
   }
 
   //TODO: data.id = data.psid
@@ -182,8 +186,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   private markSeen() {
-    let userLoggedId = this.sharedService.userLogged?.Id || null;
-    this.crmMatchingService.markSeen(this.team.Facebook_PageId, this.data.psid, this.type, userLoggedId)
+    let assign_user_id = this.userLoggedId;
+    let page_id = this.team.Facebook_PageId;
+
+    this.crmMatchingService.markSeen(page_id, this.data.psid, this.type, assign_user_id)
       .pipe(takeUntil(this.destroy$)).subscribe((x: any) => {
           // Cập nhật count_unread
           this.conversationEventFacade.updateMarkSeenBadge(this.data.page_id, this.type, this.data.psid);

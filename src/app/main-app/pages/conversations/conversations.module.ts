@@ -114,6 +114,7 @@ import { ProductPagefbComponent } from './components/product-pagefb/product-page
 import { ModalApplyPromotionComponent } from './components/modal-apply-promotion/modal-apply-promotion.component';
 import { OdataProductService } from '../../services/mock-odata/odata-product.service';
 import { ModalPostComponent } from './components/modal-post/modal-post.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ModalRenameAttachmentComponent } from './components/modal-rename-attachment/modal-rename-attachment.component';
 
 const SERVICES = [
@@ -241,7 +242,8 @@ const SERVICES = [
     PipeModule,
     TDSEmptyModule,
     TDSUploadModule,
-    DirectivesModule
+    DirectivesModule,
+    ScrollingModule
   ],
   providers: [ ...SERVICES]
 })
