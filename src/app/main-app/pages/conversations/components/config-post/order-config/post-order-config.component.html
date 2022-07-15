@@ -195,6 +195,13 @@
                 </button>
               </div>
             </div>
+            <div>
+              <button tds-button color="secondary" (click)="addTemplate()">
+                <span class="flex items-center text-primary-1">
+                  <i class="tdsi-plus-fill text-lg leading-none mr-2 text-primary-1"></i>Thêm mẫu
+                </span>
+              </button>
+            </div>
           </div>
 
           <div class="border border-neutral-3-300 border-solid rounded-lg p-4 w-full h-full">
@@ -224,11 +231,11 @@
                 </tds-form-field>
                 <button tds-button-icon color="secondary">
                   <input type="file" (change)="addExcludedPhone($event)" id="ip_add_excel_phone" class="hidden">
-                  <label class="tdsi-note-fill flex items-center" for="ip_add_excel_phone"></label>
+                  <label class="tdsi-note-fill flex items-center text-neutral-1-500" for="ip_add_excel_phone"></label>
                 </button>
                 <button tds-button-icon color="secondary">
                   <input type="file" (change)="addExcludedPhone($event)" id="ip_add_txt_phone" class="hidden">
-                  <label class="tdsi-excel-fill flex items-center" for="ip_add_txt_phone"></label>
+                  <label class="tdsi-excel-fill flex items-center text-neutral-1-500" for="ip_add_txt_phone"></label>
                 </button>
               </div>
             </div>
@@ -251,10 +258,6 @@
           </div>
 
         </div>
-      </div>
-      <div class="w-full flex justify-end p-4 gap-x-4" *tdsModalFooter>
-        <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Đóng</button>
-        <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
       </div>
     </div>
   </form>

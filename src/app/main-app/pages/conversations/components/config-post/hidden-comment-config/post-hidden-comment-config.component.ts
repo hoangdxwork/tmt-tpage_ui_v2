@@ -1,5 +1,5 @@
 
-import { finalize } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { OnChanges, SimpleChanges } from '@angular/core';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
@@ -10,6 +10,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'post-hidden-comment-config',
@@ -20,6 +21,7 @@ export class PostHiddenCommentConfigComponent implements OnInit, OnChanges {
 
   formHiddenComment!: FormGroup;
   isLoading: boolean = false;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private formBuilder: FormBuilder,
@@ -43,6 +45,7 @@ export class PostHiddenCommentConfigComponent implements OnInit, OnChanges {
   loadHiddenComment(postId: string) {
     this.isLoading = true;
     this.facebookPostService.getHiddenCommentConfigs(postId)
+      .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.updateForm(res);
@@ -80,6 +83,7 @@ export class PostHiddenCommentConfigComponent implements OnInit, OnChanges {
 
     this.isLoading = true;
     this.facebookPostService.updateHiddenCommentConfigs(postId, model)
+      .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.message.success(Message.UpdatedSuccess);
@@ -112,4 +116,8 @@ export class PostHiddenCommentConfigComponent implements OnInit, OnChanges {
     this.modalRef.destroy(null);
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

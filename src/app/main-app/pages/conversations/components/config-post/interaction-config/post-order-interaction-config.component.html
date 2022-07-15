@@ -1,49 +1,63 @@
 <tds-spin [spinning]="isLoading">
   <form [formGroup]="formInteractionConfig">
-    <div class="w-full h-full flex flex-col gap-y-2">
-      <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Cấu hình phản hồi khi tạo đơn</div>
-      <div class="flex flex-col gap-y-4 h-full w-full">
-
-        <div class="flex items-center gap-x-2">
-          <tds-switch size="md" formControlName="IsEnableOrderReplyAuto"></tds-switch>
-          <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Gửi tin nhắn thông báo khi chốt đơn?</div>
-        </div>
-
-        <div class="w-full h-full flex flex-col gap-y-4" *ngIf="formInteractionConfig.value.IsEnableOrderReplyAuto">
-          <tds-form-field>
-            <textarea class="resize-none h-[100px]" tdsInput placeholder="Nhập nội dung" formControlName="OrderReplyTemplate"></textarea>
-          </tds-form-field>
-
-          <div class="w-full h-full flex flex-col gap-y-4 px-4">
-            <div class="w-full h-full flex flex-col gap-y-1">
-              <div class="flex items-center gap-x-2">
-                <tds-switch size="md" formControlName="IsEnableShopLink"></tds-switch>
-                <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Bật giỏ hàng</div>
-              </div>
-              <span class="flex text-sm font-normal text-neutral-1-400">Cho phép khách hàng kiểm tra giỏ hàng, cập nhật thông tin xác nhận giỏ hàng.</span>
+    <div class="w-full flex gap-x-24">
+      <div class="w-3/5 h-full flex flex-col gap-y-2">
+        <div class="text-header-2 text-neutral-1-900 font-semibold font-sans">Cấu hình phản hồi khi tạo đơn</div>
+        <div class="flex flex-col gap-y-4 h-full w-full">
+  
+          <div class="flex items-center gap-x-2">
+            <tds-switch size="md" formControlName="IsEnableOrderReplyAuto"></tds-switch>
+            <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Gửi tin nhắn thông báo khi chốt đơn?</div>
+          </div>
+  
+          <div class="w-full h-full flex flex-col gap-y-4" *ngIf="formInteractionConfig.value.IsEnableOrderReplyAuto">
+            <div class="rounded-xl bg-light-100 p-4 relative" *ngIf="!isEditSendMess; else editSendMessage">
+              <div [innerHtml]="formInteractionConfig.controls.OrderReplyTemplate?.value || '...'" class="whitespace-pre-wrap"></div>
+              <span class="absolute bottom-4 right-4 tdsi-edit-fill text-neutral-1-500 cursor-pointer" (click)="editSendMess()"></span>           
             </div>
-            <tds-form-field *ngIf="formInteractionConfig.value.IsEnableShopLink">
-              <tds-label>Tiêu đề nút xem giỏ hàng</tds-label>
-              <input tdsInput autocomplete="off" placeholder="Nhập tiêu đề nút xem giở hàng" formControlName="ShopLabel"/>
-            </tds-form-field>
-            <tds-form-field *ngIf="formInteractionConfig.value.IsEnableShopLink">
-              <tds-label>Tiêu đề nút xác nhận đồng ý</tds-label>
-              <input tdsInput autocomplete="off"  placeholder="Nhập tiêu đề nút xác nhận đồng ý" formControlName="ShopLabel2"/>
-            </tds-form-field>
-            <div class="flex items-center gap-x-2">
-              <tds-switch size="md" formControlName="IsOrderAutoReplyOnlyOnce"></tds-switch>
-              <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Chỉ gửi tin nhắn thông báo lần đầu?</div>
+            <ng-template #editSendMessage>
+              <tds-form-field>
+                <textarea class="resize-none h-[80px]" tdsInput placeholder="Nhập nội dung" formControlName="OrderReplyTemplate"></textarea>
+              </tds-form-field>
+            </ng-template>
+            <div class="w-full h-full flex flex-col gap-y-4 px-4">
+              <div class="w-full h-full flex flex-col gap-y-1">
+                <div class="flex items-center gap-x-2">
+                  <tds-switch size="md" formControlName="IsEnableShopLink"></tds-switch>
+                  <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Bật giỏ hàng</div>
+                </div>
+                <span class="flex text-sm font-normal text-neutral-1-400">Cho phép khách hàng kiểm tra giỏ hàng, cập nhật thông tin xác nhận giỏ hàng.</span>
+              </div>
+              <tds-form-field *ngIf="formInteractionConfig.value.IsEnableShopLink">
+                <tds-label>Tiêu đề nút xem giỏ hàng</tds-label>
+                <input tdsInput autocomplete="off" placeholder="Nhập tiêu đề nút xem giở hàng" formControlName="ShopLabel"/>
+              </tds-form-field>
+              <tds-form-field *ngIf="formInteractionConfig.value.IsEnableShopLink">
+                <tds-label>Tiêu đề nút xác nhận đồng ý</tds-label>
+                <input tdsInput autocomplete="off"  placeholder="Nhập tiêu đề nút xác nhận đồng ý" formControlName="ShopLabel2"/>
+              </tds-form-field>
+              <div class="flex items-center gap-x-2">
+                <tds-switch size="md" formControlName="IsOrderAutoReplyOnlyOnce"></tds-switch>
+                <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Chỉ gửi tin nhắn thông báo lần đầu?</div>
+              </div>
+            </div>
+  
+          </div>
+        </div>
+      </div>
+      <div class="w-2/5 bg-light-100 rounded-lg flex flex-row-reverse justify-center items-end">
+        <div class="w-4/5 bg-white min-h-[373px] rounded-t-20 border-x-8 border-t-8 border-light-200 flex p-4 justify-end">
+          <div class="w-5/6 overflow-hidden">
+            <div class="rounded-l-xl rounded-t-xl bg-light-100 p-4 flex flex-col gap-y-3">
+              <div [innerHtml]="formInteractionConfig.controls.OrderReplyTemplate?.value || '...'" class="whitespace-pre-wrap"></div>
+              <div class="flex gap-x-2.5">
+                <button class="bg-white rounded-md px-2 py-1 font-semibold">Xem giỏ hàng</button>
+                <button class="bg-white rounded-md px-2 py-1 font-semibold">Đồng ý</button>
+              </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
-
-    <div class="w-full flex justify-end p-4 gap-x-4" *tdsModalFooter>
-      <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Đóng</button>
-      <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
-    </div>
-
   </form>
 </tds-spin>

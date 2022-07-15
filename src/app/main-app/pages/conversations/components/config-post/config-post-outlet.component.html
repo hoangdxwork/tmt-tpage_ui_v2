@@ -1,19 +1,37 @@
-
-<tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex" class="border border-neutral-2-200 rounded-md">
-    <tds-tab title="Chốt đơn" clsContent="p-4 border-t border-neutral-2-200">
-        <post-order-config [data]="data"></post-order-config>
+<tds-tabset [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}" [(selectedIndex)]="selectedIndex"
+    class="border border-neutral-2-200 rounded-md text-body-2 text-neutral-1-900">
+    <tds-tab title="Chốt đơn"
+        clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll border-t border-neutral-2-200">
+        <div class="p-4">
+            <post-order-config [data]="data"></post-order-config>
+        </div>
     </tds-tab>
-    <tds-tab title="Tương tác chốt đơn" clsContent="p-4 border-t border-neutral-2-200">
-        <post-order-interaction-config [data]="data"></post-order-interaction-config>
+    <tds-tab title="Tương tác chốt đơn"
+        clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll border-t border-neutral-2-200">
+        <div class="p-4">
+            <post-order-interaction-config [data]="data"></post-order-interaction-config>
+        </div>
     </tds-tab>
-    <tds-tab title="Ẩn bình luận" clsContent="p-4 border-t border-neutral-2-200">
-        <post-hidden-comment-config [data]="data"></post-hidden-comment-config>
+    <tds-tab title="Ẩn bình luận"
+        clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll border-t border-neutral-2-200">
+        <div class="p-4">
+            <post-hidden-comment-config [data]="data"></post-hidden-comment-config>
+        </div>
     </tds-tab>
-    <tds-tab title="Phản hồi bình luận" clsContent="p-4 border-t border-neutral-2-200">
-        <auto-reply-config [data]="data"></auto-reply-config>
+    <tds-tab title="Phản hồi bình luận"
+        clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll  border-t border-neutral-2-200">
+        <div class="p-4">
+            <auto-reply-config [data]="data"></auto-reply-config>
+        </div>
     </tds-tab>
-    <tds-tab title="Gán thẻ hội thoại" clsContent="p-4 border-t border-neutral-2-200">
-        <auto-label-config [data]="data"></auto-label-config>
+    <tds-tab title="Gán thẻ hội thoại"
+        clsContent="max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll  border-t border-neutral-2-200">
+        <div class="p-4">
+            <auto-label-config [data]="data"></auto-label-config>
+        </div>
     </tds-tab>
 </tds-tabset>
-
+<div *tdsModalFooter class="w-full flex justify-end p-4 gap-x-4">
+    <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Đóng</button>
+    <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
+  </div>

@@ -1,13 +1,13 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from "@angular/core";
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
-import { finalize, takeUntil } from "rxjs/operators";
+import { finalize } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
 import { AutoReplyConfigDTO } from "src/app/main-app/dto/configs/page-config.dto";
 import { FacebookPostItem } from "src/app/main-app/dto/facebook-post/facebook-post.dto";
 import { FacebookPostService } from "src/app/main-app/services/facebook-post.service";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSModalRef } from "tds-ui/modal";
-import { TDSHelperString } from "tds-ui/shared/utility";
+import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 
 @Component({
   selector: 'auto-reply-config',
@@ -75,6 +75,21 @@ export class AutoReplyConfigComponent implements OnInit, OnChanges {
     this.formReplyConfig.reset();
   }
 
+  selectChange(event: TDSSafeAny){
+    console.log(this.selectedWord2)
+  }
+
+  keyupWord(event: TDSSafeAny){
+    let key = event?.target.value
+    if(key){
+      this.selectedWord2.push(key)
+      console.log(this.selectedWord2)
+    }
+  }
+
+  onModelChange(event: TDSSafeAny){
+    console.log(event)
+  }
   updateForm(data: AutoReplyConfigDTO) {
     if(TDSHelperString.hasValueString(data?.ContentOfCommentForAutoReply)) {
       this.selectedWord1 = data.ContentOfCommentForAutoReply.split(',');
