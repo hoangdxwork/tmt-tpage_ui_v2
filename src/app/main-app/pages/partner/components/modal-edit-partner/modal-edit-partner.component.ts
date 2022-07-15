@@ -14,6 +14,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { vi_VN } from 'tds-ui/i18n';
+import { NumberCustomPipe } from 'src/app/main-app/shared/pipe/numberCustom.pipe';
 
 @Component({
   selector: 'app-modal-edit-partner',
@@ -34,8 +35,8 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
 
   formatterPercent = (value: number) => `${formatNumber(value,vi_VN.locale,'1.2-2')} %`;
   parserPercent = (value: string) => value.replace(' %', '');
-  formatterVND = (value: number) => `${formatNumber(value,vi_VN.locale,'1.2-2')} VND`;
-  parserVND = (value: string) => value.replace(' VNĐ', '');
+  formatterVND = (value: number) => `${formatNumber(value,vi_VN.locale)} VNĐ`;
+  parserVND = (value: string) => value.replace(' VNĐ', '.');
 
   _cities!: SuggestCitiesDTO;
   _districts!: SuggestDistrictsDTO;
@@ -277,7 +278,6 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
         this.modal.destroy(this.partnerId);
       }, error => {
         this.message.error('Cập nhật khách hàng thất bại!');
-        this.modal.destroy(null);
       })
     } else {
       this.isLoading = false;
@@ -286,7 +286,6 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
         this.modal.destroy(res.Id);
       }, error => {
         this.message.error('Thêm mới khách hàng thất bại!');
-        this.modal.destroy(null);
       })
     }
   }
@@ -525,10 +524,11 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     if (formModel.PropertyProductPricelist != null) {
       this.data['PropertyProductPricelistId'] = this._form.controls['PropertyProductPricelist'].value.Id;
     }
-    if (formModel.Discount != null) {
+    if (formModel.Discount != null && formModel.Discount) {
+      console.log(formModel.Discount)
       this.data['Discount'] = formModel.Discount;
     }
-    if (formModel.AmountDiscount != null) {
+    if (formModel.AmountDiscount != null && formModel.Discount) {
       this.data['AmountDiscount'] = formModel.AmountDiscount;
     }
     if (formModel.Supplier != null) {
