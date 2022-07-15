@@ -48,7 +48,7 @@
                 <tds-form-field class="w-full" tds-tooltip tooltipTitle="Vui lòng nhập đầy đủ thông tin địa chỉ">
                     <input  tdsInput placeholder="Số nhà, đường,..." formControlName="Street" (change)="changeStreet($event)"/>
                 </tds-form-field>
-                <button tds-button-icon color="primary" (click)="expanded()">
+                <button tds-button-icon color="primary" (click)="expanded()" tds-tooltip="Thu gọn/Mở rộng">
                     <span class="flex items-center">
                       <i class="tdsi-move-line"></i>
                     </span>
@@ -97,7 +97,7 @@
                     <span *ngIf="tempAddresses.length > 0" tdsSuffix><i (click)="closeSearchAddress()"
                         class="text-neutral-1-500 tdsi-close-fill"></i></span>
                 </tds-form-field>
-                <button tds-button-icon color="primary" type="button" (click)="checkAddress($event)">
+                <button tds-button-icon color="primary" type="button" (click)="checkAddress($event)" tds-tooltip="Tìm kiếm địa chỉ">
                     <span class="flex items-center">
                       <i class="tdsi-location-fill"></i>
                     </span>
