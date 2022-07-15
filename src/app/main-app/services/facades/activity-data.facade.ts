@@ -13,7 +13,6 @@ import { map, shareReplay, takeUntil } from "rxjs/operators";
 import { CRMMessagesRequest } from "../../dto/conversation/make-activity.dto";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSHelperArray, TDSHelperString } from "tds-ui/shared/utility";
-import { ConversationDataFacade } from "./conversation-data.facade";
 
 @Injectable({
   providedIn: 'root'

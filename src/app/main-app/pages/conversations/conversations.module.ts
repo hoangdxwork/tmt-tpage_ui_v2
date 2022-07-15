@@ -114,6 +114,7 @@ import { ProductPagefbComponent } from './components/product-pagefb/product-page
 import { ModalApplyPromotionComponent } from './components/modal-apply-promotion/modal-apply-promotion.component';
 import { OdataProductService } from '../../services/mock-odata/odata-product.service';
 import { ModalPostComponent } from './components/modal-post/modal-post.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -239,7 +240,8 @@ const SERVICES = [
     PipeModule,
     TDSEmptyModule,
     TDSUploadModule,
-    DirectivesModule
+    DirectivesModule,
+    ScrollingModule
   ],
   providers: [ ...SERVICES]
 })
