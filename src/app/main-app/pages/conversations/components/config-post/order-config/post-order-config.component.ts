@@ -91,7 +91,8 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
 
   loadLiveCampaignById(liveCampaignId: string | undefined) {
     if(liveCampaignId) {
-      this.liveCampaignService.getById(this.data.live_campaign_id).subscribe(res => {
+      this.liveCampaignService.getById(this.data.live_campaign_id)
+        .pipe(takeUntil(this.destroy$)).subscribe(res => {
         this.currentLiveCampaign = res;
       });
     }
@@ -130,6 +131,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
   loadOrderConfig(postId: string) {
     this.isLoading = true;
     this.facebookPostService.getOrderConfig(postId)
+      .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.updateForm(res);
@@ -371,7 +373,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   selectProduct(product: DataPouchDBDTO, index: number) {
-    this.productService.getAttributeValuesById(product.Id).subscribe(res => {
+    this.productService.getAttributeValuesById(product.Id).pipe(takeUntil(this.destroy$)).subscribe(res => {
       let defaultProductConfig = this.defaultOrderConfigProduct(res);
       let selectedWord2s = this.handleAddWord2s(defaultProductConfig);
       let selectedWord3s = selectedWord2s;
@@ -489,6 +491,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
   loadConfigLiveCampaign(liveCampaignId: string) {
     this.isLoading = true;
     this.liveCampaignService.getDetailAndAttributes(liveCampaignId)
+      .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         let users: MDBInnerCreatedByDTO[] = [];
@@ -516,6 +519,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
     this.isLoading = true;
     if(this.isCheckValue(model) === 1) {
       this.facebookPostService.updateOrderConfig(this.data.fbid, this.isImmediateApply, model)
+        .pipe(takeUntil(this.destroy$))
         .pipe(finalize(() => this.isLoading = false))
         .subscribe(res => {
           this.message.success(Message.UpdatedSuccess);
@@ -570,7 +574,6 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
 
   isCheckValue(model: AutoOrderConfigDTO): number {
     if(TDSHelperArray.hasListValue(model.TextContentToOrders)) {
-      debugger;
       let findIndex = model.TextContentToOrders.findIndex(x => !TDSHelperString.hasValueString(x?.Content));
 
       if(findIndex >= 0) {

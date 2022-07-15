@@ -12,7 +12,7 @@
             </div>
             <tds-form-field *ngIf="formLabelConfig.value.AssignOnPhone">
               <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" formControlName="TagOnPhone"
-                  disabledField="isActive" [required]='true' [data]="(lstTags$ | async) || []" [allowClear]="true" >
+                  disabledField="isActive" [data]="(lstTags$ | async) || []" [allowClear]="true" >
               </tds-select>
             </tds-form-field>
           </div>
@@ -23,7 +23,7 @@
             </div>
             <tds-form-field *ngIf="formLabelConfig.value.AssignOnBillDraft">
               <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" formControlName="TagOnBillDraft"
-                  disabledField="isActive"  [required]='true' [data]="(lstTags$ | async) || []" [allowClear]="true">
+                  disabledField="isActive"  [data]="(lstTags$ | async) || []" [allowClear]="true">
               </tds-select>
             </tds-form-field>
           </div>
@@ -34,7 +34,7 @@
             </div>
             <tds-form-field *ngIf="formLabelConfig.value.AssignOnOrder">
               <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" formControlName="TagOnOrder"
-                  disabledField="isActive"  [required]='true' [data]="(lstTags$ | async) || []" [allowClear]="true">
+                  disabledField="isActive"  [data]="(lstTags$ | async) || []" [allowClear]="true">
               </tds-select>
             </tds-form-field>
           </div>
@@ -45,7 +45,7 @@
             </div>
             <tds-form-field *ngIf="formLabelConfig.value.AssignOnBillPrintShip">
               <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" formControlName="TagOnBillPrintShip"
-                  disabledField="isActive"  [required]='true' [data]="(lstTags$ | async) || []" [allowClear]="true">
+                  disabledField="isActive"  [data]="(lstTags$ | async) || []" [allowClear]="true">
               </tds-select>
             </tds-form-field>
           </div>
@@ -56,7 +56,7 @@
             </div>
             <tds-form-field *ngIf="formLabelConfig.value.AssignOnBillPrint">
               <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn' [valuePrimitive]="false" formControlName="TagOnBillPrint"
-                  disabledField="isActive"  [required]='true' [data]="(lstTags$ | async) || []" [allowClear]="true">
+                  disabledField="isActive"  [data]="(lstTags$ | async) || []" [allowClear]="true">
               </tds-select>
             </tds-form-field>
           </div>
@@ -66,10 +66,10 @@
       <div class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full flex flex-col gap-y-4">
         <div class="flex justify-between items-center">
           <div class="flex w-full justify-start gap-x-2">
-            <tds-switch size="md" formControlName="AssignOnPhone"></tds-switch>
-            <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Tự động gắn thẻ vào hội thoại có chứa số điện thoại?</div>
+            <tds-switch size="md" formControlName="AssignOnPattern"></tds-switch>
+            <div class="text-body-2 font-regular text-neutral-1-900 font-sans">Tự động gắn thẻ vào hội thoại có chứa từ khóa?</div>
           </div>
-          <button tds-button color="success" size="md" (click)="addCRMKeyTag(null)" class="w-min" *ngIf="formLabelConfig.value.AssignOnPhone">
+          <button tds-button color="success" size="md" type="button" (click)="addCRMKeyTag(null)" class="w-min" *ngIf="formLabelConfig.value.AssignOnPattern">
             <span class="flex items-center">
               <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm nhãn
             </span>
@@ -77,16 +77,16 @@
         </div>
 
         <div class="border border-neutral-3-300 border-solid rounded-xl p-4 w-full h-full flex flex-col gap-y-4"
-          *ngIf="formLabelConfig.value.AssignOnPhone && tagOnPatternFormGroups.length > 0" formArrayName="TagOnPattern">
+          *ngIf="formLabelConfig.value.AssignOnPattern && tagOnPatternFormGroups.length > 0" formArrayName="TagOnPattern">
           <div class="flex gap-x-4" *ngFor="let item of tagOnPatternFormGroups; let index=index" [formGroupName]="index">
             <tds-form-field class="w-full">
               <tds-select valueField="Id" textField="Name" placeholder='Chọn nhãn'
-                  disabledField="isActive" [required]='true' [data]="(lstTags$ | async) || []" formControlName="CrmTag" [valuePrimitive]="false"
+                  disabledField="isActive" [data]="(lstTags$ | async) || []" formControlName="CrmTag" [valuePrimitive]="false"
                   [allowClear]="true">
               </tds-select>
             </tds-form-field>
             <tds-form-field class="w-full">
-              <tds-select valueField="id" textField="name" [required]='true' formControlName="CrmKey" placeholder='Chọn từ khóa' mode="tags">
+              <tds-select valueField="id" textField="name" formControlName="CrmKey" placeholder='Chọn từ khóa' mode="tags">
               </tds-select>
             </tds-form-field>
             <button tds-button-icon color="error" size="md" (click)="deleteCRMKeyTag(index)" >
@@ -100,11 +100,5 @@
       </div>
 
     </div>
-
-    <div class="w-full flex justify-end p-4 gap-x-4" *tdsModalFooter>
-      <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Đóng</button>
-      <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
-    </div>
-
   </form>
 </tds-spin>

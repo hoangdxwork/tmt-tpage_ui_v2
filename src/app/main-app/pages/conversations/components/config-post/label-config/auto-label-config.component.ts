@@ -59,6 +59,7 @@ export class AutoLabelConfigComponent implements OnInit, OnChanges, OnDestroy {
   loadAutoLabelConfigs(pageId: string) {
     this.isLoading = true;
     this.facebookPostService.getAutoLabelConfigs(pageId)
+      .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => { this.isLoading = false }))
       .subscribe(res => {
         this.updateForm(res);
@@ -124,6 +125,7 @@ export class AutoLabelConfigComponent implements OnInit, OnChanges, OnDestroy {
     if(this.isCheckValue() === 1) {
       this.isLoading = true;
       this.facebookPostService.updateAutoLabelConfigs(postId, model)
+        .pipe(takeUntil(this.destroy$))
         .pipe(finalize(() => this.isLoading = false))
         .subscribe((res: any) => {
           this.message.success(Message.UpdatedSuccess);

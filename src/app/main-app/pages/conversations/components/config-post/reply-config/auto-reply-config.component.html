@@ -10,7 +10,7 @@
         <div>
           <tds-form-field>
             <tds-label>Nội dung phản hồi tự động</tds-label>
-            <textarea class="resize-none h-[70px]" tdsInput placeholder="Nhập nội dung phản hồi tự động" formControlName="ContentForAutoReplyWithComment"></textarea>
+            <input tdsInput placeholder="Nhập nội dung phản hồi tự động" formControlName="ContentForAutoReplyWithComment"/>
           </tds-form-field>
         </div>
 
@@ -33,8 +33,8 @@
           <div *ngIf="formReplyConfig.value.IsEnableAutoReplyAllComment">
             <tds-form-field class="w-full">
               <tds-label>Không phản hồi nếu bình luận chứa nội dung:</tds-label>
-              <tds-select valueField="id" textField="name" placeholder='Nhập nội dung'  mode="tags" [maxTagCount]="10"
-                [(ngModel)]="selectedWord2" [ngModelOptions]="{standalone: true}">
+              <tds-select valueField="id" textField="name" placeholder='Nhập nội dung và bấm chọn'  mode="tags" [maxTagCount]="10"
+                [(ngModel)]="selectedWord2" [ngModelOptions]="{standalone: true}" (selectChange)="selectChange($event)" (ngModelChange)="onModelChange($event)" (keyup.enter)="keyupWord($event)">
               </tds-select>
             </tds-form-field>
           </div>
@@ -56,17 +56,11 @@
           <div *ngIf="formReplyConfig.value.IsEnableAutoReplyCommentInMessage">
             <tds-form-field>
               <tds-label>Nội dung phản hồi với tin nhắn:</tds-label>
-              <textarea class="resize-none h-[70px]" tdsInput placeholder="Nhập nội dung phản hồi" formControlName="ContentForAutoReplyWithMessage"></textarea>
+              <input tdsInput placeholder="Nhập nội dung phản hồi" formControlName="ContentForAutoReplyWithMessage"/>
             </tds-form-field>
           </div>
         </div>
       </div>
     </div>
-
-    <div class="w-full flex justify-end p-4 gap-x-4" *tdsModalFooter>
-      <button tds-button class="w-[100px]" color="secondary" (click)="onCannel()">Đóng</button>
-      <button tds-button class="w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
-    </div>
-
   </form>
 </tds-spin>

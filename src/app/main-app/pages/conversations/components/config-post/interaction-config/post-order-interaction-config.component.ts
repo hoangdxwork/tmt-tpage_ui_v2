@@ -1,4 +1,4 @@
-import { finalize } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { OnChanges, SimpleChanges } from '@angular/core';
 import { Component, Input, OnInit } from '@angular/core';
 import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
@@ -9,6 +9,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperString } from 'tds-ui/shared/utility';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'post-order-interaction-config',
@@ -18,6 +19,8 @@ export class PostOrderInteractionConfigComponent implements OnInit, OnChanges {
   @Input() data!: FacebookPostItem;
 
   isLoading: boolean = false;
+  isEditSendMess: boolean = false;
+  private destroy$ = new Subject<void>();
 
   formInteractionConfig!: FormGroup;
 
@@ -44,6 +47,7 @@ export class PostOrderInteractionConfigComponent implements OnInit, OnChanges {
   loadInteractionConfig(postId: string) {
     this.isLoading = false;
     this.facebookPostService.getOrderConfig(postId)
+      .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.updateForm(res);
@@ -65,11 +69,16 @@ export class PostOrderInteractionConfigComponent implements OnInit, OnChanges {
     this.formInteractionConfig.reset();
   }
 
-  updateForm(data: AutoOrderConfigDTO) {
-    if (TDSHelperString.hasValueString(data?.OrderReplyTemplate)) {
-      data.OrderReplyTemplate = data.OrderReplyTemplate.replace(/\\n/, "<p><br></p>");
-    }
+  editSendMess(){
+    this.isEditSendMess = true
+  }
 
+  updateForm(data: AutoOrderConfigDTO) {
+    let temp = document.createElement("div");
+    if (TDSHelperString.hasValueString(data?.OrderReplyTemplate)) {
+      temp.innerHTML = data?.OrderReplyTemplate
+      data.OrderReplyTemplate = temp.textContent || temp.innerText || "";
+    }
     this.formInteractionConfig.patchValue(data);
   }
 
@@ -79,6 +88,7 @@ export class PostOrderInteractionConfigComponent implements OnInit, OnChanges {
 
     this.isLoading = true;
     this.facebookPostService.updateInteractionConfig(postId, model)
+      .pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.message.success(Message.UpdatedSuccess);
@@ -98,7 +108,7 @@ export class PostOrderInteractionConfigComponent implements OnInit, OnChanges {
     model.ShopLabel = formValue.ShopLabel;
     model.ShopLabel2 = formValue.ShopLabel2;
     model.IsOrderAutoReplyOnlyOnce = formValue.IsOrderAutoReplyOnlyOnce;
-
+    console.log(formValue.OrderReplyTemplate)
     return model;
   }
 
@@ -106,4 +116,8 @@ export class PostOrderInteractionConfigComponent implements OnInit, OnChanges {
     this.modalRef.destroy(null);
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }
