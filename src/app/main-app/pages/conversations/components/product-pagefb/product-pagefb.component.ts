@@ -35,6 +35,7 @@ export class ProductPagefbComponent implements AfterViewInit, OnDestroy {
     { value: "recent", text: "Sử dụng gần nhất" },
   ];
   currentSort = "count";
+  objProduct: TDSSafeAny = {};
 
   constructor( private odataProductService: OdataProductService,
     private message: TDSMessageService,
@@ -89,12 +90,22 @@ export class ProductPagefbComponent implements AfterViewInit, OnDestroy {
   }
 
   switchSort(value: string) {
-    debugger
+    let getLSTProduct = JSON.parse(localStorage.getItem("ListProduct") || "{}");
     var temps = this.lstOfData.sort((a, b) => {
       if (value === "count") {
-        return (a.Id - b.Id);
+        return (
+          (getLSTProduct[b.Id] || { TotalView: 0 }).TotalView -
+          (getLSTProduct[a.Id] || { TotalView: 0 }).TotalView
+        );
       } else {
-        return (<any>new Date(b.LastViewDate) - <any>new Date(a.LastViewDate));
+        return (
+          Date.parse(
+            (getLSTProduct[b.Id] || { LastViewDate: "200-01-01" }).LastViewDate
+          ) -
+          Date.parse(
+            (getLSTProduct[a.Id] || { LastViewDate: "200-01-01" }).LastViewDate
+          )
+        );
       }
     });
     this.lstOfData = [...[], ...temps];
@@ -102,6 +113,28 @@ export class ProductPagefbComponent implements AfterViewInit, OnDestroy {
   }
 
   onPushItem(item: any) {
+    let getLSTProduct = JSON.parse(localStorage.getItem("ListProduct") || "{}");
+
+    if (getLSTProduct == null) {
+      this.objProduct[item.Id] = {
+        TotalView: 1,
+        LastViewDate: new Date(),
+      };
+      localStorage.setItem("ListProduct", JSON.stringify(this.objProduct));
+    } else {
+      let findIndex = getLSTProduct[item.Id];
+      if (findIndex === undefined) {
+        getLSTProduct[item.Id] = {
+          TotalView: 1,
+          LastViewDate: new Date(),
+        };
+      } else {
+        findIndex.TotalView = findIndex.TotalView + 1;
+        findIndex.LastViewDate = new Date();
+      }
+      localStorage.setItem("ListProduct", JSON.stringify(getLSTProduct));
+    }
+
     let model = {
       Id: item.Id,
       Name: item.Name,
