@@ -9,15 +9,12 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let data of listSampleMessage; let idx = index" class="cursor-pointer">
+            <tr *ngFor="let data of listSampleMessage; let idx = index" class="cursor-pointer" (click)="selectQuickReply(data)">
                 <td>{{ idx }}</td>
                 <td>{{ data.Name }}</td>
                 <td>
-                    <div [innerHTML]="data.BodyPlain | safeHtml"></div>
+                    <span showMore [length]="75" [text]="data.BodyPlain"></span>
                 </td>
-                <!-- <td>
-                    <button tds-button color="primary" (click)="chooseQuickReply(data)">Chọn</button>
-                </td> -->
             </tr>
         </tbody>
     </tds-table>

@@ -11,7 +11,7 @@
                 </tds-form-field>
                 <tds-form-field>
                     <tds-label>Nội dung</tds-label>
-                    <textarea tdsInput class="h-16" formControlName="content" [tdsInputDebounce]="700" (inputKeyup)="checkIncludes($event)" placeholder="Nhập nội dung"></textarea>
+                    <textarea tdsInput class="h-16 resize-none no-scrollbar" formControlName="content" [tdsInputDebounce]="700" (inputKeyup)="checkIncludes($event)" placeholder="Nhập nội dung"></textarea>
                 </tds-form-field>
                 <div class="flex justify-between">
                     <div class="">
@@ -89,7 +89,7 @@
             <form *ngIf="!isTableSendMessageSMS" [formGroup]="formSendMessageSMS" class="flex flex-col gap-y-4">
                 <tds-form-field>
                     <tds-label>Nội dung</tds-label>
-                    <textarea tdsInput class="h-16" tdsInput formControlName="content" [tdsInputDebounce]="700" (inputKeyup)="checkIncludes($event)" placeholder="Nhập nội dung"></textarea>
+                    <textarea tdsInput class="h-16 resize-none no-scrollbar" tdsInput formControlName="content" [tdsInputDebounce]="700" (inputKeyup)="checkIncludes($event)" placeholder="Nhập nội dung"></textarea>
                 </tds-form-field>
                 <div class="flex justify-between">
                     <div class="">

@@ -34,7 +34,7 @@ export class ModalSampleMessageComponent implements OnInit {
     })
   }
 
-  chooseQuickReply(data: QuickReplyDTO){
+  selectQuickReply(data: QuickReplyDTO){
     if(data){
       this.modal.destroy(data)
     }
