@@ -1,0 +1,74 @@
+  export interface OdataGetOrderPartnerIdModal {
+      Id: string;
+      Code?: any;
+      Facebook_UserId?: any;
+      Facebook_PostId?: any;
+      Facebook_ASUserId: string;
+      Facebook_CommentId?: any;
+      Facebook_AttachmentId?: any;
+      Facebook_UserName: string;
+      Facebook_UserAvatar?: any;
+      Facebook_Content?: any;
+      Telephone: string;
+      Address: string;
+      PartnerPhone?: any;
+      Name: string;
+      Email?: any;
+      Note?: any;
+      Deposit: number;
+      LiveCampaignId?: any;
+      LiveCampaignName?: any;
+      PartnerId: number;
+      PartnerName: string;
+      PartnerStatus: string;
+      PartnerStatusText?: any;
+      PartnerCode?: any;
+      CityCode?: any;
+      CityName?: any;
+      DistrictCode?: any;
+      DistrictName?: any;
+      WardCode?: any;
+      WardName?: any;
+      TotalAmount: number;
+      TotalQuantity: number;
+      DateCreated: Date;
+      LastUpdated?: any;
+      Status?: any;
+      StatusText: string;
+      Facebook_CommentsText?: any;
+      StatusStr?: any;
+      CommentIds: any[];
+      CompanyId?: any;
+      PartnerNameNosign?: any;
+      SessionIndex: number;
+      Session: number;
+      Source?: any;
+      Source_FacebookUserId?: any;
+      Source_FacebookMessageId?: any;
+      ZaloOrderCode?: any;
+      ZaloOrderId?: any;
+      ZaloOAId?: any;
+      DeliveryInfo?: any;
+      CRMTeamId: number;
+      MatchingId?: any;
+      IsCreated: boolean;
+      IsUpdated: boolean;
+      CRMTeamName: string;
+      PrintCount: number;
+      UserId?: any;
+      Tags?: any;
+      NameNetwork?: any;
+      UserName?: any;
+      WarehouseId?: any;
+      WarehouseName?: any;
+      CompanyName?: any;
+      FormAction?: any;
+      MessageCount: number;
+  }
+
+  export interface OdataGetOrderPartnerIdDTO {
+      "@odata.context": string;
+      "@odata.count": number;
+      value: OdataGetOrderPartnerIdModal[];
+  }
+
