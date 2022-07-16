@@ -183,11 +183,11 @@ export class LayoutComponent implements OnInit {
         name: "Phiếu bán hàng",
         icon: "tdsi-dataset-fill",
         link: `/bill`,
-        linkProps: {
-          queryParams: {
-            'teamId': data?.Id,
-          },
-        },
+        // linkProps: {
+        //   queryParams: {
+        //     'teamId': data?.Id,
+        //   },
+        // },
         hidden: hidden,
       },
       {

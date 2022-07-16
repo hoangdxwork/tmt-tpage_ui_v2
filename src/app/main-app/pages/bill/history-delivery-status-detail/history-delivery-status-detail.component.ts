@@ -53,12 +53,6 @@ export class HistoryDeliveryStatusDetailComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.teamId = this.cRMTeamService.getCurrentTeam()?.Id;
-    //TODO: load teamId from indexedDB
-    // this.cRMTeamService.getCacheTeamId().subscribe((res)=>{
-    //   this.teamId = res;
-    //   this.cdRef.markForCheck();
-    // })
     // TODO: lấy id lịch sử đối soát
     this.id = this.route.snapshot.paramMap.get("id");
     this.loadData();

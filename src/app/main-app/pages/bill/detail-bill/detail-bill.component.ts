@@ -60,12 +60,6 @@ export class DetailBillComponent implements OnInit, OnDestroy{
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get("id");
     this.loadData();
-    this.teamId = this.cRMTeamService.getCurrentTeam()?.Id;
-    //TODO: load teamId from indexedDB
-    // this.cRMTeamService.getCacheTeamId().subscribe((res)=>{
-    //   this.teamId = res;
-    //   this.cdRef.markForCheck();
-    // })
   }
 
   directPage(route:string){

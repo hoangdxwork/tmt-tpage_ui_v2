@@ -41,12 +41,6 @@ export class HistoryDeliveryStatusComponent implements OnInit, AfterViewInit, On
     private cdRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    this.teamId = this.cRMTeamService.getCurrentTeam()?.Id;
-    //TODO: load teamId from indexedDB
-    // this.cRMTeamService.getCacheTeamId().subscribe((res)=>{
-    //   this.teamId = res;
-    //   this.cdRef.markForCheck();
-    // })
   }
 
   ngAfterViewInit(): void {

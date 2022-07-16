@@ -1,6 +1,6 @@
 import { filter } from 'rxjs/operators';
 import { Event, RouterEvent, Router } from '@angular/router';
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { TDSMenuDTO } from 'tds-ui/menu';
 
 @Component({
