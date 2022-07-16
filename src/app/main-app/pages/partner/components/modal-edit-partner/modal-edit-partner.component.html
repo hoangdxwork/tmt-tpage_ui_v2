@@ -194,9 +194,7 @@
                                   <tds-label>Chiết khấu mặc định(%)</tds-label>
                               </div>
                               <div class="col-span-3">
-                                  <tds-input-number [min]="1" [max]="100" [step]="1"
-                                      formControlName="Discount" [formatter]="formatterPercent"
-                                      [parser]="parserPercent">
+                                  <tds-input-number [min]="1" [max]="100" [step]="1" formControlName="Discount" [formatter]="formatterPercent">
                                   </tds-input-number>
                               </div>
                           </div>
@@ -205,8 +203,7 @@
                                   <tds-label>Chiết khấu mặc định (số tiền)</tds-label>
                               </div>
                               <div class="col-span-3">
-                                  <tds-input-number [min]="1" [step]="1" [formControlName]="'AmountDiscount'"
-                                      [formatter]="formatterVND" [parser]="parserVND">
+                                  <tds-input-number [min]="1" [step]="1" [formControlName]="'AmountDiscount'" [formatter]="formatterVND">
                                   </tds-input-number>
                               </div>
                           </div>
