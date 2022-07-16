@@ -1,7 +1,7 @@
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
-import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, EventEmitter, ChangeDetectionStrategy, AfterViewInit, ViewChildren, QueryList, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, EventEmitter, ChangeDetectionStrategy, AfterViewInit, ViewChildren, QueryList, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, DoCheck } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
+import { ConversationMatchingItem, StateChatbot } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { DraftMessageService } from 'src/app/main-app/services/conversation/draft-message.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -20,7 +20,7 @@ import { Subject, takeUntil } from 'rxjs';
     }
 })
 
-export class CurrentConversationItemComponent  implements OnInit, OnChanges, AfterViewInit,OnDestroy {
+export class CurrentConversationItemComponent  implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
   @Input() isFastSend: boolean | undefined;
   @Input() item!: ConversationMatchingItem;
@@ -30,6 +30,8 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges, Aft
   @Input() currentConversationItem!: ConversationMatchingItem;
   @Input() isOpenCollapCheck!: boolean;
   @Input() checked!: boolean;
+  @Input() state!: StateChatbot | null;
+
   @Output() checkedChange = new EventEmitter<boolean>();
 
   // @ViewChild
@@ -87,6 +89,10 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges, Aft
   ngOnChanges(changes: SimpleChanges): void {
     if(changes["currentConversationItem"] && !changes["currentConversationItem"].firstChange) {
         this.currentConversationItem = changes["currentConversationItem"].currentValue;
+    }
+    if(changes["state"] && !changes["state"].firstChange) {
+      this.state = changes["state"].currentValue;
+      this.item.state = this.state;
     }
   }
 

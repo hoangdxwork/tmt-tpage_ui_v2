@@ -6,6 +6,7 @@ import { SignalRHttpClient } from "./client-signalR";
 import * as signalR from "@microsoft/signalr";
 import { HubEvents } from "./app-constant/hub-event";
 import { TDSSafeAny } from "tds-ui/shared/utility";
+import { OnChatBotSignalRModel } from "../../dto/event-signalR/on-chatbot-signalR.dto";
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +38,7 @@ export class SignalRConnectionService  {
   public _onSendMessageWithBill$ = new EventEmitter<any>();
   public _onAddTemplateMessage$ = new EventEmitter<any>();
   public _onFacebookScanData$ = new EventEmitter<any>();
+  public _onChatbotEvent$ = new EventEmitter<any>();
 
   constructor(@Inject('BASE_SIGNALR') private BASE_SIGNALR: string,
       private authen: TAuthService) {
@@ -128,27 +130,38 @@ export class SignalRConnectionService  {
           break;
       }
     });
+
     this._hubConnection.on(`${HubEvents.onFacebookEvent}`, (data:TDSSafeAny) => {
-      this._onFacebookEvent$.emit(data);
-      console.log(data);
+        this._onFacebookEvent$.emit(data);
+        console.log(data);
     });
+
     this._hubConnection.on(`${HubEvents.onReadConversation}`, (data:TDSSafeAny) => {
-      this._onReadConversation$.emit(data);
+        this._onReadConversation$.emit(data);
     });
+
     this._hubConnection.on(`${HubEvents.onSentConversation}`, (data:TDSSafeAny) => {
-      this._onSentConversation$.emit(data);
+        this._onSentConversation$.emit(data);
     });
+
     this._hubConnection.on(`${HubEvents.onPaymentEvent}`, (data:TDSSafeAny) => {
-      this._onPaymentEvent$.emit(data);
+        this._onPaymentEvent$.emit(data);
     });
+
+    this._hubConnection.on(`${HubEvents.onChatbotEvent}`, (data: OnChatBotSignalRModel) => {
+        this._onChatbotEvent$.emit(data);
+    });
+
     this._hubConnection.onreconnecting(() => {
-      this.statusDisConnecting();
+        this.statusDisConnecting();
     });
+
     this._hubConnection.onreconnected(() => {
-      this.statusConnecting();
+        this.statusConnecting();
     });
+
     this._hubConnection.onclose(() => {
-      this.statusDisConnecting();
+        this.statusDisConnecting();
     });
   }
 
@@ -223,18 +236,18 @@ export class SignalRConnectionService  {
 
   public sendMessage(action: any, data: any): void {
     if (this.connectionIsEstablished) {
-        this._hubConnection
-            .invoke(action, data)
-            .catch(err => console.error(err));
+      this._hubConnection
+          .invoke(action, data)
+          .catch(err => console.error(err));
     } else {
-        // Xử lý chờ kết nối và gửi
-        this._connectionEstablished$.subscribe(data => {
-            if (data) {
-                this._hubConnection
-                    .invoke(action, data)
-                    .catch(err => console.error(err));
-            }
-        })
+      // Xử lý chờ kết nối và gửi
+      this._connectionEstablished$.subscribe(data => {
+        if (data) {
+            this._hubConnection
+                .invoke(action, data)
+                .catch(err => console.error(err));
+        }
+      })
     }
   }
 

@@ -6,7 +6,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, N
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, Observable, Subject } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { ConversationMatchingItem, CRMMatchingMappingDTO } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
+import { ConversationMatchingItem, CRMMatchingMappingDTO, StateChatbot } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
@@ -18,6 +18,11 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'td
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
+import { DataCvsChatBotModel, OnChatBotSignalRModel, TypeOnChatBot } from 'src/app/main-app/dto/event-signalR/on-chatbot-signalR.dto';
+import { SignalRConnectionService } from 'src/app/main-app/services/signalR/signalR-connection.service';
+import { TDSNotificationService } from 'tds-ui/notification';
+import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
+import { THelperCacheService } from 'src/app/lib';
 
 @Component({
   selector: 'app-conversation-all',
@@ -53,7 +58,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   isChanged: boolean = false;
   clickReload: number = 0;
   isCheckedAll: boolean = false;
-
+  cacheChatbot: OnChatBotSignalRModel[] = [];
   orderCode: any;
 
   currentOrderTab: number = 0;
@@ -67,11 +72,15 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     public activatedRoute: ActivatedRoute,
     public router: Router,
     private ngZone: NgZone,
+    private crmMatchingService: CRMMatchingService,
+    private notification: TDSNotificationService,
     private conversationOrderFacade: ConversationOrderFacade,
     private cdRef : ChangeDetectorRef,
     private printerService: PrinterService,
+    private cacheApi: THelperCacheService,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
+    private sgRConnectionService: SignalRConnectionService,
     private facebookRESTService: FacebookRESTService) {
       super(crmService, activatedRoute, router);
   }
@@ -104,12 +113,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       }
     })
 
-    this.spinLoading();
-
     // TODO: gán mã code load từ Tab Order
     this.conversationOrderFacade.onPushLastOrderCode$.subscribe((code: any) => {
         this.orderCode = code;
     })
+
+    this.hubEvents(); // các sự kiện realtime
+    this.spinLoading();
   }
 
   spinLoading() {
@@ -450,5 +460,39 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  hubEvents() {
+    this.sgRConnectionService._onChatbotEvent$.pipe(takeUntil(this.destroy$)).subscribe((hubs: OnChatBotSignalRModel) => {
+        if(hubs && hubs.data) {
+            // TODO: nếu dữ liệu ko phải là conversation hiện tại
+            let item = this.lstMatchingItem.filter(x => x.page_id == hubs.data.pageId && x.psid == hubs.data.psid)[0];
+            // TODO: dữ liệu là conversation hiện tại truyền cho shared-tds-conversations
+            let exits = this.currentConversationItem.page_id == hubs.data.pageId && this.currentConversationItem.psid == hubs.data.psid;
+
+            switch (hubs.type) {
+              case `${TypeOnChatBot.AdminTransferChatBot}`:
+                  if(item) {
+                    item.state = StateChatbot.Warning;
+                  }
+                  if(exits) {
+                    this.currentConversationItem.state = StateChatbot.Warning;
+                  }
+                  this.notification.warning('Chatbot gặp vấn đề' , `${hubs.message}`, { placement: 'bottomLeft' });
+                break;
+              case `${TypeOnChatBot.ChatbotTranserAdmin}`:
+                  if(item) {
+                    item.state = StateChatbot.Normal;
+                  }
+                  if(exits) {
+                    this.currentConversationItem.state = StateChatbot.Normal;
+                  }
+                  this.notification.info('Chatbot đã được xử lý' , `${hubs.message}`, { placement: 'bottomLeft' });
+                break;
+              default:
+                break;
+            }
+       }
+    })
   }
 }

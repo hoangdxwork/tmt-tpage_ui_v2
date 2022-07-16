@@ -21,6 +21,8 @@ export class ActivityMatchingService extends BaseSevice  {
   public dataSource$!: Observable<any>;
   public onGetComment$: EventEmitter<any> = new EventEmitter();
 
+  public onCopyMessageHasAminRequired$: EventEmitter<any> = new EventEmitter();
+
   constructor(private apiService: TCommonService) {
     super(apiService)
   }

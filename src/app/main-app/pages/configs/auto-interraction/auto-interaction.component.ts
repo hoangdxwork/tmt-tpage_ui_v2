@@ -48,6 +48,10 @@ export class AutoInteractionComponent implements OnInit, OnDestroy {
   areaText2 = 'Xin chào {partner.name}, hoá đơn có mã {bill.code} đã được tạo.\n{bill.details}\n{bill.note}\n{shipping.details}';
   areaText3 = 'Xin chào {partner.name}, hoá đơn có mã {bill.code} đã được cập nhật trạng thái giao hàng.\n{shipping.details}';
 
+  baseUrlLocation = {
+    document_base_url: 'https://test.tpos.dev'
+  }
+
   constructor(private fb: FormBuilder,
     private generalConfigService: GeneralConfigService,
     private message: TDSMessageService) {
@@ -77,6 +81,7 @@ export class AutoInteractionComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadShippingStatus();
     this.loadData();
+
   }
 
   loadShippingStatus() {

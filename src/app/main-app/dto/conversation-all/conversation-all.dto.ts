@@ -70,6 +70,7 @@ export interface ConversationMatchingItem {
   has_phone: boolean;
   has_address: boolean;
   has_order: boolean;
+  state: number | null; //StateChatbot
   count_unread_messages: number;
   count_unread_comments: number;
   count_unread_activities: number;
@@ -87,6 +88,12 @@ export interface ConversationMatchingItem {
   LastActivityTimeConverted: Date;
   checkSendMessage: boolean;
   keyTags: any;
+}
+
+export enum StateChatbot {
+  Normal = 0, // trạng thái bình thường
+  Transfer = 1, // đang chuyển cho admin xử lý
+  Warning = 2 , // hệ thống đang gặp vấn đề
 }
 
 export interface Query {

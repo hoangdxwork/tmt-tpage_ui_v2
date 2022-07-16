@@ -622,7 +622,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   }
 
   getConversationWithQuery(pageId: string, type: string, queryObj: any): Observable<any> {
-    var query = Object.keys(queryObj).map(key => {
+    let query = Object.keys(queryObj).map(key => {
       return key + '=' + queryObj[key]
     }).join('&');
 
@@ -647,7 +647,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   }
 
   checkAllSendMessage(pageId: any, type: any, status: boolean) {
-    var exist = this.cvsFbState.get(pageId, type);
+    let exist = this.cvsFbState.get(pageId, type);
 
     if(exist && exist.items) {
       exist.items.forEach((item: any) => {
@@ -658,14 +658,14 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
 
   getChecked(pageId: any, type: any, lstPsid: string[]) {
     let result: TDSSafeAny[] = [];
-    var exist = this.cvsFbState.get(pageId, type);
+    let exist = this.cvsFbState.get(pageId, type);
     if(exist && exist.items && lstPsid) {
-      var data: TDSSafeAny[] = [];
+      let data: TDSSafeAny[] = [];
       lstPsid.forEach((id: TDSSafeAny) => {
         data.push(exist.items.find((x : TDSSafeAny)=>x.psid == id))
       })
       data.forEach((x: TDSSafeAny) => {
-        var r = {
+        let r = {
           to_id: x.psid,
           to_name: x.name,
           partner_id: x.partner_id

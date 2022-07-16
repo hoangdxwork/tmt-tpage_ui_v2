@@ -5,7 +5,8 @@ export enum HubEvents {
     onFacebookEvent = "onFacebookEvent",
     onReadConversation= "onReadConversation",
     onSentConversation = "onSentConversation",
-    onPaymentEvent = "onPaymentEvent"
+    onPaymentEvent = "onPaymentEvent",
+    onChatbotEvent = "onChatbotEvent"
 }
 
 

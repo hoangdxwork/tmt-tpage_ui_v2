@@ -16,13 +16,13 @@ import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utili
 import { TDSMessageService } from "tds-ui/message";
 import { TDSModalService } from "tds-ui/modal";
 import { ProductPagefbComponent } from "../../pages/conversations/components/product-pagefb/product-pagefb.component";
+import { FormatIconLikePipe } from "../pipe/format-icon-like.pipe";
 
 @Component({
   selector: "tds-conversation-item",
   templateUrl:'./tds-conversation-item.component.html',
   styleUrls: ['./tds-conversations.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
   animations: [eventReplyCommentTrigger]
 })
 
@@ -61,6 +61,7 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
     private modalService: TDSModalService,
     private tdsMessage: TDSMessageService,
     private cdRef : ChangeDetectorRef,
+    private formatIconLike: FormatIconLikePipe,
     private viewContainerRef: ViewContainerRef,
     private activityDataFacade: ActivityDataFacade,
     private conversationDataFacade: ConversationDataFacade,
@@ -208,13 +209,13 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
         this.cdRef.markForCheck();
 
     }, error => {
-      this.tdsMessage.error('Không thành công');
+        this.tdsMessage.error('Không thành công');
     })
   }
 
-  checkErrorMessage(message: string): Boolean {
+  checkErrorMessage(message: string): boolean {
     if(message.includes("(#10)")) {
-       return true;
+        return true;
     }
     return false;
   }
@@ -224,8 +225,16 @@ export class TDSConversationItemComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
           this.tdsMessage.success("Thao tác thành công");
       }, error => {
-      this.tdsMessage.error('Không thành công');
-    })
+          this.tdsMessage.error('Không thành công');
+      })
+  }
+
+  // has_admin_required: copy lại tn đẩy qua input tds-conversation để gửi lại
+  copyMessage() {
+    if(this.contentMessage?.nativeElement?.innerText) {
+        let message = this.contentMessage.nativeElement.innerText;
+        this.activityMatchingService.onCopyMessageHasAminRequired$.emit(message);
+    }
   }
 
   changeIsPrivateReply() {
