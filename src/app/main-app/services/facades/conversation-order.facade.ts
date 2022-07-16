@@ -80,7 +80,7 @@ export class ConversationOrderFacade extends BaseSevice  {
   }
 
   initialize() {
-    this.partnerService.onLoadOrderFromTabPartner$.subscribe((obs: TabPartnerCvsRequestModel) => {
+    this.partnerService.onLoadOrderFromTabPartner$.subscribe((obs: TabPartnerCvsRequestModel) => {debugger
 
       // TODO: load dữ liệu từ coversation-parter và check dk nếu là partner mới hay cũ để mapping
       let exits = this.partner && obs && (obs.Id == this.partner.Id || obs.Facebook_ASUserId == this.partner.Facebook_ASUserId);
@@ -284,7 +284,7 @@ export class ConversationOrderFacade extends BaseSevice  {
       });
   }
 
-  loadLastOrder(model: TabPartnerCvsRequestModel): any {
+  loadLastOrder(model: TabPartnerCvsRequestModel): any {debugger
     let x = {} as QuickSaleOnlineOrderModel;
     let order = model.LastOrder;
 
@@ -328,7 +328,7 @@ export class ConversationOrderFacade extends BaseSevice  {
     return x;
   }
 
-  loadLastOrderDraft(model: TabPartnerCvsRequestModel): Observable<any> {
+  loadLastOrderDraft(model: TabPartnerCvsRequestModel): Observable<any> {debugger
     let x = {} as QuickSaleOnlineOrderModel;
 
     x.Name = model.Name || model.Facebook_UserName;
@@ -407,7 +407,7 @@ export class ConversationOrderFacade extends BaseSevice  {
     })
   }
 
-  loadCurrentPartner(model: TabPartnerCvsRequestModel): any {
+  loadCurrentPartner(model: TabPartnerCvsRequestModel): any {debugger
 
     this.partner = { ... model} as any;
     this.partner.LastOrder = { ... model.LastOrder };

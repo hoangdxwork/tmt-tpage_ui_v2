@@ -91,7 +91,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   userLoggedId!: string;
 
   isEnableChatbot: boolean = false;
-  isAlertChatbot: boolean = true;
 
   constructor(private modalService: TDSModalService,
     private message: TDSMessageService,
@@ -195,14 +194,16 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     let assign_user_id = this.userLoggedId;
     let page_id = this.team.Facebook_PageId;
 
-    this.crmMatchingService.markSeen(page_id, this.data.psid, this.type, assign_user_id)
-      .pipe(takeUntil(this.destroy$)).subscribe((x: any) => {
+    if(assign_user_id) {
+      this.crmMatchingService.markSeen(page_id, this.data.psid, this.type, assign_user_id)
+        .pipe(takeUntil(this.destroy$)).subscribe((x: any) => {
           // Cập nhật count_unread
           this.conversationEventFacade.updateMarkSeenBadge(this.data.page_id, this.type, this.data.psid);
           this.cdRef.markForCheck();
-      }, error => {
+        }, error => {
           this.message.error(`markseen: ${error?.error?.message}`);
-      });
+      })
+    }
   }
 
   showImageStore(): void {
@@ -890,77 +891,66 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   onStartChatbot() {
    if(this.data && this.data.state == 2) {
-    let pageId = this.data.page_id;
-    let psid = this.data.psid;
+      let pageId = this.data.page_id;
+      let psid = this.data.psid;
 
-    this.crmMatchingService.transferChatbot(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe((data) => {
+      this.crmMatchingService.transferChatbot(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe((data) => {
 
-        this.message.success('Bật chatbot thành công')
+          this.message.success('Bật chatbot thành công')
+          this.isEnableChatbot = true;
+          this.data.state = StateChatbot.Normal;
 
-        this.isEnableChatbot = true;
-        this.data.state = StateChatbot.Normal;
+          // TODO: bật chatbot thành công 5s rồi tắt
+          setTimeout(() =>{
+              this.isEnableChatbot = false;
+          }, 5 * 1000)
 
-        // TODO: bật chatbot thành công 5s rồi tắt
-        setTimeout(() =>{
-            this.isEnableChatbot = false;
-        }, 5 * 1000);
+          this.cdRef.detectChanges();
 
-      }, error => {
-
-        this.isEnableChatbot = true;
-        this.data.state = StateChatbot.Normal;
-
-        // TODO: bật chatbot thành công 5s rồi tắt
-        setTimeout(() =>{
-            this.isEnableChatbot = false;
-        }, 5 * 1000)
-
-        this.chatbotTransferAdmin();
-        this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
-      })
+        }, error => {
+            this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+            this.cdRef.detectChanges();
+        })
     }
   }
 
-  alertChatbot() {
-  }
+  // adminTransferChatbot() {
+  //   let data: OnChatBotSignalRModel = {
+  //     action: 'transfer',
+  //     companyId: 1,
+  //     data: {
+  //       name: this.data.partner_name,
+  //       pageId: this.data.page_id,
+  //       psid: this.data.psid
+  //     },
+  //     enableAlert: true,
+  //     enablePopup: false,
+  //     error: false,
+  //     message: `Admin chuyển hội thoại cho Chatbot`,
+  //     type: TypeOnChatBot.AdminTransferChatBot
+  //   }
 
-  adminTransferChatbot() {
-    let data: OnChatBotSignalRModel = {
-      action: 'transfer',
-      companyId: 1,
-      data: {
-        name: this.data.partner_name,
-        pageId: this.data.page_id,
-        psid: this.data.psid
-      },
-      enableAlert: true,
-      enablePopup: false,
-      error: false,
-      message: `Admin chuyển hội thoại cho Chatbot`,
-      type: TypeOnChatBot.AdminTransferChatBot
-    }
+  //   this.sgRConnectionService._onChatbotEvent$.emit(data);
+  // }
 
-    this.sgRConnectionService._onChatbotEvent$.emit(data);
-  }
+  // chatbotTransferAdmin() {
+  //   let data: OnChatBotSignalRModel = {
+  //     action: 'transfer',
+  //     companyId: 1,
+  //     data: {
+  //       name: this.data.partner_name,
+  //       pageId: this.data.page_id,
+  //       psid: this.data.psid
+  //     },
+  //     enableAlert: true,
+  //     enablePopup: false,
+  //     error: false,
+  //     message: `Chatbot chuyển hội thoại cho ${this.data.partner_name}`,
+  //     type: TypeOnChatBot.ChatbotTranserAdmin
+  //   }
 
-  chatbotTransferAdmin() {
-    let data: OnChatBotSignalRModel = {
-      action: 'transfer',
-      companyId: 1,
-      data: {
-        name: this.data.partner_name,
-        pageId: this.data.page_id,
-        psid: this.data.psid
-      },
-      enableAlert: true,
-      enablePopup: false,
-      error: false,
-      message: `Chatbot chuyển hội thoại cho ${this.data.partner_name}`,
-      type: TypeOnChatBot.ChatbotTranserAdmin
-    }
-
-    this.sgRConnectionService._onChatbotEvent$.emit(data);
-  }
+  //   this.sgRConnectionService._onChatbotEvent$.emit(data);
+  // }
 
   ngAfterViewInit() {
     this.yiAutoScroll?.forceScrollDown();

@@ -438,7 +438,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           ConversationPartnerHandler.mappingPartnerModel(this.partner, x);
 
           // cập nhật dữ liệu khách hàng sang form conversation-order
-          this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);
+          this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);debugger
           this.isEditPartner = false;
 
           this.cdRef.markForCheck();

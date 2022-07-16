@@ -480,6 +480,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                   }
                   this.notification.warning('Chatbot gặp vấn đề' , `${hubs.message}`, { placement: 'bottomLeft' });
                 break;
+
               case `${TypeOnChatBot.ChatbotTranserAdmin}`:
                   if(item) {
                     item.state = StateChatbot.Normal;
@@ -489,6 +490,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                   }
                   this.notification.info('Chatbot đã được xử lý' , `${hubs.message}`, { placement: 'bottomLeft' });
                 break;
+
               default:
                 break;
             }
