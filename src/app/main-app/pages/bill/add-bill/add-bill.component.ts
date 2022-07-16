@@ -41,6 +41,7 @@ import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { THelperCacheService } from 'src/app/lib';
 import { PartnerDetailDTO } from 'src/app/main-app/dto/partner/partner-detail.dto';
 import { ChangePartnerPriceListDTO } from 'src/app/main-app/dto/partner/change-partner-pricelist.dto';
+import { AddBillHandler } from './add-bill.handler';
 
 @Component({
   selector: 'app-add-bill',
@@ -86,7 +87,6 @@ export class AddBillComponent implements OnInit, OnDestroy {
   visiblePopoverDiscount: boolean = false;
   visiblePopoverTax: boolean = false;
   visibleDiscountLines: boolean = false;
-  visibleShipFee: boolean = false;
   visibleShipExtraMoney: boolean = false;
   extraMoney: number = 0;
   insuranceFee: number = 0;
@@ -99,7 +99,8 @@ export class AddBillComponent implements OnInit, OnDestroy {
   shipExtraServices: any = [];
   listServiceTemp: any = [];
   lstCalcFee!: CalculatorListFeeDTO[];
-  teamId!:TDSSafeAny;
+  showShipService!:boolean;
+  selectedIndex = 0;
 
   private destroy$ = new Subject<void>();
 
@@ -144,7 +145,6 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.lstTeams = this.loadAllFacebookChilds();
     this.lstUser = this.loadUser();
     this.loadPartnerStatus();
-    this.teamId = this.cRMTeamService.getCurrentTeam()?.Id;
   }
 
   loadPartnerStatus() {
@@ -156,6 +156,19 @@ export class AddBillComponent implements OnInit, OnDestroy {
   directPage(route:string){
     this.router.navigateByUrl(route);
   }
+
+  numberWithCommas = (value: TDSSafeAny) => {
+    if (value != null) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    return value
+  };
+  parserComas = (value: TDSSafeAny) => {
+    if (value != null) {
+      return TDSHelperString.replaceAll(value, ',', '');
+    }
+    return value
+  };
 
   selectStatus(item: any): void {
     let partnerId = this._form.controls['Partner'].value.Id;
@@ -408,6 +421,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   onLoadSuggestion(item: ResultCheckAddressDTO) {
+    this._form.controls['ReceiverAddress'].setValue(item.Address);
     this._form.controls['Ship_Receiver'].patchValue({
       Street: item.Address ? item.Address : null,
       City: item.CityCode ? { code: item.CityCode, name: item.CityName } : null,
@@ -602,7 +616,6 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   onChangeCarrier(event: DeliveryCarrierDTOV2, showMessage?: boolean) {
     if (TDSHelperObject.hasValue(event)) {
-
       this.shipServices = [];
       this.shipExtraServices = [];
       this.enableInsuranceFee = false;
@@ -1171,75 +1184,6 @@ export class AddBillComponent implements OnInit, OnDestroy {
     });
   }
 
-  public prepareModelFeeV2() {
-    const formModel = this._form.value as FastSaleOrder_DefaultDTOV2;
-    const model: any = {
-      PartnerId: formModel.Partner?.Id,
-      CompanyId: formModel.Company?.Id || this.roleConfigs.CompanyId,
-      CarrierId: formModel.Carrier?.Id,
-      ServiceId: formModel.Ship_ServiceId || null,
-      InsuranceFee: formModel.Ship_InsuranceFee || 0,
-      ShipWeight: formModel.ShipWeight,
-      CashOnDelivery: formModel.CashOnDelivery,
-      ServiceExtras: [],
-      Ship_Receiver: {}
-    }
-
-    this.shipExtraServices || (this.shipExtraServices = []);
-    this.shipExtraServices.map((x: any) => {
-      if (x.IsSelected) {
-        model.ServiceExtras.push({
-          Id: x.ServiceId,
-          Name: x.ServiceName,
-          Fee: x.Fee,
-          Type: x.Type,
-          ExtraMoney: x.ExtraMoney
-        });
-      }
-    })
-
-    if (!formModel.Ship_Extras && formModel.Carrier && formModel.Carrier.Extras) {
-      this._form.controls['Ship_Extras'].setValue(formModel.Carrier.Extras);
-    }
-
-    if (!this.enableInsuranceFee) {
-      model.Ship_InsuranceFee = 0;
-    } else {
-      if (!model.Ship_InsuranceFee) {
-        if (formModel.Ship_Extras) {
-          model.Ship_InsuranceFee = formModel.Ship_Extras.InsuranceFee || formModel.AmountTotal;
-        } else {
-          model.Ship_InsuranceFee = formModel.AmountTotal;
-        }
-      }
-    }
-
-    if (formModel.Ship_Receiver) {
-      model.Ship_Receiver = {
-        Name: formModel.Ship_Receiver.Name,
-        Street: formModel.Ship_Receiver.Street,
-        Phone: formModel.Ship_Receiver.Phone,
-
-        City: formModel.Ship_Receiver.City?.code ? {
-          code: formModel.Ship_Receiver.City?.code,
-          name: formModel.Ship_Receiver.City?.name
-        } : null,
-
-        District: formModel.Ship_Receiver.District?.code ? {
-          code: formModel.Ship_Receiver.District?.code,
-          name: formModel.Ship_Receiver.District?.name
-        } : null,
-
-        Ward: formModel.Ship_Receiver.Ward?.code ? {
-          code: formModel.Ship_Receiver.Ward?.code,
-          name: formModel.Ship_Receiver.Ward?.name
-        } : null
-      };
-    }
-
-    return model;
-  }
-
   changeDeliveryPrice(event: any) {
     if (event) {
       // this._form.controls['DeliveryPrice'].setValue(event);
@@ -1313,7 +1257,6 @@ export class AddBillComponent implements OnInit, OnDestroy {
         if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && x.Id == item.Id) {
           x.ProductUOMQty = event;
         }
-        console.log(x)
       });
       this.computeAmountTotal();
     }
@@ -1795,31 +1738,6 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.onUpdateInsuranceFee();
   }
 
-  changeShipInsuranceFee() {
-    this._form.controls["Ship_InsuranceFee"].setValue(this.insuranceFee);
-    // add
-    let event = this._form.controls['Carrier'].value;
-    if (event) {
-      this.calculateFee(event).then((res: any) => {})
-      .catch((e: any) => {
-          let error = e.error.message || e.error.error_description;
-          if (error)
-          this.message.error(error);
-        }
-      );
-    }
-    this.visibleShipFee = false;
-  }
-
-  openPopoverShipFee() {
-    this.insuranceFee = this._form.controls["Ship_InsuranceFee"].value;
-    this.visibleShipFee = true;
-  }
-
-  closePopoverShipFee() {
-    this.visibleShipFee = false;
-  }
-
   changeShipExtraMoney() {
     let idx = this.shipExtraServices.findIndex((f: any) => f.ServiceId === 'XMG');
     this.shipExtraServices[idx].ExtraMoney = this.extraMoney;
@@ -1885,6 +1803,115 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.visibleShipExtraMoney = false;
   }
 
+  showStatus(status: string): any {
+    switch (status) {
+      case 'draft':
+        return 'Nháp';
+      case 'cancel':
+        return 'Huỷ bỏ';
+      case 'open':
+        return 'Xác nhận';
+      case 'paid':
+        return 'Đã thanh toán';
+    }
+  }
+
+  editPartner(data: any) {
+    let modal = this.modalService.create({
+      title: 'Sửa khách hàng',
+      content: ModalEditPartnerComponent,
+      size: "xl",
+      viewContainerRef: this.viewContainerRef,
+      centered: true,
+      componentParams: {
+        partnerId: data?.Id
+      }
+    });
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((event: any) => {
+      if (event) {
+        this.changePartner(event);
+      }
+    })
+  }
+
+  prepareModelFeeV2() {
+    const formModel = this._form.value as FastSaleOrder_DefaultDTOV2;
+    const model: any = {
+      PartnerId: formModel.Partner?.Id,
+      CompanyId: formModel.Company?.Id || this.roleConfigs.CompanyId,
+      CarrierId: formModel.Carrier?.Id,
+      ServiceId: formModel.Ship_ServiceId || null,
+      InsuranceFee: formModel.Ship_InsuranceFee || 0,
+      ShipWeight: formModel.ShipWeight,
+      CashOnDelivery: formModel.CashOnDelivery,
+      ServiceExtras: [],
+      Ship_Receiver: {}
+    }
+
+    this.shipExtraServices || (this.shipExtraServices = []);
+    this.shipExtraServices.map((x: any) => {
+      if (x.IsSelected) {
+        model.ServiceExtras.push({
+          Id: x.ServiceId,
+          Name: x.ServiceName,
+          Fee: x.Fee,
+          Type: x.Type,
+          ExtraMoney: x.ExtraMoney
+        });
+      }
+    })
+
+    if (!formModel.Ship_Extras && formModel.Carrier && formModel.Carrier.Extras) {
+      this._form.controls['Ship_Extras'].setValue(formModel.Carrier.Extras);
+    }
+
+    if (!this.enableInsuranceFee) {
+      model.Ship_InsuranceFee = 0;
+    } else {
+      if (!model.Ship_InsuranceFee) {
+        if (formModel.Ship_Extras) {
+          model.Ship_InsuranceFee = formModel.Ship_Extras.InsuranceFee || formModel.AmountTotal;
+        } else {
+          model.Ship_InsuranceFee = formModel.AmountTotal;
+        }
+      }
+    }
+
+    if (formModel.Ship_Receiver) {
+      model.Ship_Receiver = {
+        Name: formModel.Ship_Receiver.Name,
+        Street: formModel.Ship_Receiver.Street,
+        Phone: formModel.Ship_Receiver.Phone,
+
+        City: formModel.Ship_Receiver.City?.code ? {
+          code: formModel.Ship_Receiver.City?.code,
+          name: formModel.Ship_Receiver.City?.name
+        } : null,
+
+        District: formModel.Ship_Receiver.District?.code ? {
+          code: formModel.Ship_Receiver.District?.code,
+          name: formModel.Ship_Receiver.District?.name
+        } : null,
+
+        Ward: formModel.Ship_Receiver.Ward?.code ? {
+          code: formModel.Ship_Receiver.Ward?.code,
+          name: formModel.Ship_Receiver.Ward?.name
+        } : null
+      };
+    }
+
+    return model;
+  }
+
+  prepareModel(): any {
+    const formModel = this._form.value as FastSaleOrder_DefaultDTOV2;
+    const model = this.dataModel as FastSaleOrder_DefaultDTOV2;
+
+    AddBillHandler.prepareModel(model,formModel);
+
+    return model;
+  }
+
   onSave(): any {
     this.updateShipExtras();
     this.updateShipServiceExtras();
@@ -1935,164 +1962,11 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   onBack() {
-    history.back();
-  }
-
-  showStatus(status: string): any {
-    switch (status) {
-      case 'draft':
-        return 'Nháp';
-      case 'cancel':
-        return 'Huỷ bỏ';
-      case 'open':
-        return 'Xác nhận';
-      case 'paid':
-        return 'Đã thanh toán';
-    }
-  }
-
-  editPartner(data: any) {
-    let modal = this.modalService.create({
-      title: 'Sửa khách hàng',
-      content: ModalEditPartnerComponent,
-      size: "xl",
-      viewContainerRef: this.viewContainerRef,
-      centered: true,
-      componentParams: {
-        partnerId: data?.Id
-      }
-    });
-    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((event: any) => {
-      if (event) {
-        this.changePartner(event);
-      }
-    })
+    this.router.navigateByUrl('bill');
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
-  prepareModel(): any {
-    const formModel = this._form.value as FastSaleOrder_DefaultDTOV2;
-    const model = this.dataModel as FastSaleOrder_DefaultDTOV2;
-    // TODO: set lại company id
-    if (!model.CompanyId) {
-      model.CompanyId = this.dataModel.Company?.Id;
-    }
-
-    model.Id = formModel.Id ? formModel.Id : model.Id;
-
-    if (formModel.Account) {
-      model.Account = formModel.Account;
-      model.AccountId = formModel.Account.Id;
-    }
-
-    model.Partner = formModel.Partner ? formModel.Partner : model.Partner;
-    model.PartnerId = formModel.Partner ? formModel.Partner.Id : model.PartnerId;
-    model.PriceList = formModel.PriceList ? formModel.PriceList : model.PriceList;
-    model.PriceListId = formModel.PriceList ? formModel.PriceList.Id : model.PriceListId;
-    model.Warehouse = formModel.Warehouse ? formModel.Warehouse : model.Warehouse;
-    model.WarehouseId = formModel.Warehouse ? formModel.Warehouse.Id : model.WarehouseId;
-    model.PaymentJournal = formModel.PaymentJournal ? formModel.PaymentJournal : model.PaymentJournal;
-    model.PaymentJournalId = formModel.PaymentJournal ? formModel.PaymentJournal.Id : model.PaymentJournalId;
-    model.PaymentAmount = Number(formModel.PaymentAmount) ? Number(formModel.PaymentAmount) : model.PaymentAmount;
-    model.Team = formModel.Team ? formModel.Team : model.Team;
-    model.TeamId = formModel.Team ? formModel.Team.Id : model.TeamId;
-    model.Deliver = formModel.Deliver ? formModel.Deliver : model.Deliver;
-    model.PreviousBalance = formModel.PreviousBalance ? formModel.PreviousBalance : model.PreviousBalance;
-    model.Reference = formModel.Reference ? formModel.Reference : model.Reference;
-    model.Revenue = formModel.Revenue ? formModel.Revenue : model.Revenue;
-    model.Carrier = formModel.Carrier ? formModel.Carrier : model.Carrier;
-    model.CarrierId = formModel.Carrier ? formModel.Carrier.Id : model.CarrierId;
-    model.DeliveryPrice = formModel.DeliveryPrice ? formModel.DeliveryPrice : model.DeliveryPrice;
-    model.AmountDeposit = formModel.AmountDeposit ? formModel.AmountDeposit : model.AmountDeposit;
-    model.CashOnDelivery = formModel.CashOnDelivery ? formModel.CashOnDelivery : model.CashOnDelivery;
-    model.ShipWeight = formModel.ShipWeight ? formModel.ShipWeight : model.ShipWeight;
-    model.DeliveryNote = formModel.DeliveryNote ? formModel.DeliveryNote : model.DeliveryNote;
-
-    model.Ship_ServiceId = formModel.Ship_ServiceId ? formModel.Ship_ServiceId : model.Ship_ServiceId;
-    model.Ship_ServiceName = formModel.Ship_ServiceName ? formModel.Ship_ServiceName : model.Ship_ServiceName;
-    model.Ship_ServiceExtras = formModel.Ship_ServiceExtras ? formModel.Ship_ServiceExtras : model.Ship_ServiceExtras;
-    model.Ship_Extras = formModel.Ship_Extras ? formModel.Ship_Extras : model.Ship_Extras;
-
-    model.Ship_ServiceExtrasText = formModel.Ship_ServiceExtras ? JSON.stringify(formModel.Ship_ServiceExtras) : model.Ship_ServiceExtrasText;
-    model.Ship_ExtrasText = formModel.Ship_ExtrasText ? JSON.stringify(formModel.Ship_Extras) : model.Ship_ExtrasText;
-
-    model.Ship_InsuranceFee = formModel.Ship_InsuranceFee ? formModel.Ship_InsuranceFee : model.Ship_InsuranceFee;
-    model.CustomerDeliveryPrice = formModel.CustomerDeliveryPrice ? formModel.CustomerDeliveryPrice : model.CustomerDeliveryPrice;
-    model.TrackingRef = formModel.TrackingRef ? formModel.TrackingRef : model.TrackingRef;
-    model.Ship_Receiver = formModel.Ship_Receiver ? formModel.Ship_Receiver : model.Ship_Receiver;
-
-    model.Address = formModel.Address ? formModel.Address : model.Address;
-    model.ReceiverName = formModel.ReceiverName ? formModel.ReceiverName : model.ReceiverName;
-    model.ReceiverPhone = formModel.ReceiverPhone ? formModel.ReceiverPhone : model.ReceiverPhone;
-
-    if(formModel.ReceiverDate) {
-      model.ReceiverDate = formModel.ReceiverDate.toISOString();
-    }
-
-    model.ReceiverAddress = formModel.ReceiverAddress ? formModel.ReceiverAddress : model.ReceiverAddress;
-    model.ReceiverNote = formModel.ReceiverNote ? formModel.ReceiverNote : model.ReceiverNote;
-
-    model.User = formModel.User ? formModel.User : model.User;
-    model.UserId = formModel.User ? formModel.User.Id : model.UserId;
-
-    if(formModel.DateOrderRed) {
-      model.DateOrderRed = formModel.DateOrderRed.toISOString();
-    }
-    if(formModel.DateInvoice) {
-      model.DateInvoice = formModel.DateInvoice.toISOString();
-    }
-
-    model.State = formModel.State ? formModel.State : model.State;
-    model.NumberOrder = formModel.NumberOrder ? formModel.NumberOrder : model.NumberOrder;
-    model.Comment = formModel.Comment ? formModel.Comment : model.Comment;
-    model.Seri = formModel.Seri ? formModel.Seri : model.Seri;
-
-    model.WeightTotal = formModel.WeightTotal ? formModel.WeightTotal : model.WeightTotal;
-    model.DiscountAmount = formModel.DiscountAmount ? formModel.DiscountAmount : model.DiscountAmount;
-    model.Discount = formModel.Discount ? formModel.Discount : model.Discount;
-    model.DecreaseAmount = formModel.DecreaseAmount ? formModel.DecreaseAmount : model.DecreaseAmount;
-    model.AmountUntaxed = formModel.AmountUntaxed ? formModel.AmountUntaxed : model.AmountUntaxed;
-    model.Type = formModel.Type ? formModel.Type : model.Type;
-    model.SaleOrder = formModel.SaleOrder ? formModel.SaleOrder : model.SaleOrder;
-    model.AmountTotal = formModel.AmountTotal ? formModel.AmountTotal : model.AmountTotal;
-    model.TotalQuantity = formModel.TotalQuantity ? formModel.TotalQuantity : model.TotalQuantity;
-
-    model.Tax = formModel.Tax ? formModel.Tax : model.Tax;
-    model.TaxId = formModel.Tax ? formModel.Tax.Id : model.TaxId;
-
-    model.OrderLines = formModel.OrderLines ? formModel.OrderLines : model.OrderLines;
-    model.OrderLines.forEach((x: OrderLineV2) => {
-      if (x.Id <= 0) {
-        x.Id = 0;
-      }
-
-      if(!x.OrderId && model.Id && model.Id != 0) {
-        x.OrderId = model.Id;
-      }
-
-      if(!x.PartnerId && model.PartnerId && model.PartnerId != 0) {
-        x.PartnerId = model.PartnerId;
-      }
-      if(!x.CompanyId && model.CompanyId && model.CompanyId != 0) {
-        x.CompanyId = model.CompanyId;
-      }
-      if(!x.UserId && model.UserId ) {
-        x.UserId = model.UserId;
-      }
-      if(!x.User && model.User || model.UserId) {
-        x.User = {
-          Id: model.User?.Id || model.UserId,
-          Name: model.User?.Name || model.UserName
-        } as any
-      }
-    })
-
-
-    return model;
-  }
-
 }
