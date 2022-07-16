@@ -33,10 +33,8 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
   lstPrice: Array<PartnerCategoryDTO> = [];
   fileList: TDSUploadFile[] = [];
 
-  formatterPercent = (value: number) => `${formatNumber(value,vi_VN.locale,'1.2-2')} %`;
-  parserPercent = (value: string) => value.replace(' %', '');
-  formatterVND = (value: number) => `${formatNumber(value,vi_VN.locale)} VNĐ`;
-  parserVND = (value: string) => value.replace(' VNĐ', '.');
+  formatterPercent = (value: number) => `${formatNumber(value,vi_VN.locale,'1.2-2')}`;
+  formatterVND = (value: number) => `${formatNumber(value,vi_VN.locale)}`;
 
   _cities!: SuggestCitiesDTO;
   _districts!: SuggestDistrictsDTO;

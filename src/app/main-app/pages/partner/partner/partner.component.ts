@@ -507,7 +507,6 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
       onCancel: () => { that.isProcessing = false; },
       okText: "Xác nhận",
       cancelText: "Đóng",
-      // confirmViewType:"compact"
     });
   }
 
