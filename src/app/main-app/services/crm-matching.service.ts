@@ -71,7 +71,7 @@ export class CRMMatchingService extends BaseSevice {
         url: `${this._BASE_URL}/${this.baseRestApi}/${fbid}/markseen`,
         method: TApiMethodType.post
     }
-    return this.apiService.getData<TDSSafeAny>(api, {page_id: page_id, type: type, assign_user_id: assign_user_id});
+    return this.apiService.getData<TDSSafeAny>(api, { page_id: page_id, type: type, assign_user_id: assign_user_id });
   }
 
   addNote(psid: string, data: MDBFacebookMappingNoteDTO) {
@@ -151,7 +151,7 @@ export class CRMMatchingService extends BaseSevice {
 
   getMDBByPSId(pageId: TDSSafeAny, psid: string) {
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/rest/v1.0/crmmatching/${pageId}_${psid}`,
+      url: `${this._BASE_URL}/${this.baseRestApi}/${pageId}_${psid}`,
       method: TApiMethodType.get,
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
@@ -159,10 +159,18 @@ export class CRMMatchingService extends BaseSevice {
 
   checkPhoneReport(phone: string): Observable<any> {
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/rest/v1.0/crmmatching/${phone}/checkphonereport`,
+        url: `${this._BASE_URL}/${this.baseRestApi}/${phone}/checkphonereport`,
         method: TApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
+  }
+
+  transferChatbot(pageId: string, psId: string) {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/transferchatbot?page_id=${pageId}&psid=${psId}`,
+        method: TApiMethodType.get
+    }
+    return this.apiService.getData(api, null);
   }
 
 }

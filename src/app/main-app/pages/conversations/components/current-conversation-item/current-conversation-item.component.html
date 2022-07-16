@@ -45,8 +45,16 @@
         </div>
         <div class="w-full flex flex-col gap-1" *ngIf="(item | lastActivityMessage: type)">
             <div class="flex w-full justify-between items-center gap-x-1.5">
-                <div [ngClass]="seenedMessage()?'font-semibold':''" class="w-1/2 text-body-1 text-neutral-1-900 truncate" [tooltipTitle]="item.name || item.partner_name" [tooltipPlacement]="['topLeft', 'leftTop']"
-                    tds-tooltip>{{item.name || item.partner_name}}</div>
+                <div [ngClass]="seenedMessage()?'font-semibold':''" class="w-1/2 text-body-1 text-neutral-1-900 truncate" [tooltipTitle]="item.name || item.partner_name"
+                    [tooltipPlacement]="['topLeft', 'leftTop']" tds-tooltip>{{item.name || item.partner_name}}
+                    <!-- Chatbot bình thường -->
+                    <span *ngIf="item.state && item.state == 0" class="ml-2" ></span>
+                    <!-- Đang chuyển cho admin xử lý -->
+                    <span *ngIf="item.state && item.state == 1" class="tdsi-friend-fill ml-2" tds-tooltip tooltipTitle="Đang chuyển cho admin xử lý"></span>
+                    <!-- Chatbot đang gặp vấn đề -->
+                    <span *ngIf="item.state && item.state == 2" class="tdsi-bot-fill ml-2" tds-tooltip tooltipTitle="Hệ thống chatbot đang gặp vấn đề"></span>
+                </div>
+
                 <div class="flex items-center gap-2 truncate" >
                     <span *ngIf="type == 'all' && item.count_unread_activities > 0">
                         <tds-badge class="flex items-center" [standalone]="true" [count]="item.count_unread_activities" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>

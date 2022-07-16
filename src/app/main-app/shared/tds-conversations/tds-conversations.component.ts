@@ -1,3 +1,4 @@
+import { da } from 'date-fns/locale';
 import { ReplaceHelper } from './../helper/replace.helper';
 import { QuickReplyDTO } from './../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -11,7 +12,7 @@ import {
   SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, AfterViewChecked, NgZone, HostBinding
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { ConversationMatchingItem } from '../../dto/conversation-all/conversation-all.dto';
+import { ConversationMatchingItem, StateChatbot } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
 import { finalize, takeUntil, tap } from 'rxjs/operators';
@@ -38,6 +39,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSUploadChangeParam } from 'tds-ui/upload';
 import { ProductPagefbComponent } from '../../pages/conversations/components/product-pagefb/product-pagefb.component';
 import { ModalPostComponent } from '../../pages/conversations/components/modal-post/modal-post.component';
+import { OnChatBotSignalRModel, TypeOnChatBot } from '../../dto/event-signalR/on-chatbot-signalR.dto';
 
 @Component({
   selector: 'shared-tds-conversations',
@@ -58,6 +60,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   @Input() type!: string;
   @Input() team!: CRMTeamDTO;
   @Input() miniChat!: boolean;
+  @Input() state!: StateChatbot | null;
 
   destroy$ = new Subject<void>();
   isLoadMessage: boolean = false;
@@ -87,6 +90,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   eventHandler!: Event;
   userLoggedId!: string;
 
+  isEnableChatbot: boolean = false;
+  isAlertChatbot: boolean = true;
+
   constructor(private modalService: TDSModalService,
     private message: TDSMessageService,
     private activityMatchingService: ActivityMatchingService,
@@ -104,7 +110,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     private cdRef: ChangeDetectorRef,
     private viewContainerRef: ViewContainerRef,
     private partnerService: PartnerService) {
-
       this.userLoggedId = this.sharedService.userLogged?.Id;
   }
 
@@ -118,14 +123,16 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       this.partner = res;
     });
 
+    // TODO: has_admin_required nhận từ tds-conversation-item để gửi lại tn
+    this.onRetryMessage();
     this.spinLoading();
   }
 
   spinLoading() {
     this.activityDataFacade.hasNextData$.pipe(takeUntil(this.destroy$)).subscribe((obs: any) => {
       if(obs == false) {
-        this.isNextData = obs;
-        this.cdRef.detectChanges();
+          this.isNextData = obs;
+          this.cdRef.detectChanges();
       }
     })
   }
@@ -136,7 +143,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
     // TODO: Nội dung tin nhắn
     this.loadMessages(data);
-
     this.initiateTimer();
   }
 
@@ -165,11 +171,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   loadUser() {
     this.applicationUserService.dataActive$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.users = res;
-      this.lstUser = res;
+        this.users = res;
+        this.lstUser = res;
     }, error => {
-      this.message.error('Load user đã xảy ra lỗi');
-    });
+        this.message.error('Load user đã xảy ra lỗi');
+    })
   }
 
   initiateTimer() {
@@ -372,6 +378,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       }
       this.loadData(this.data);
     }
+
+    if(changes["state"] && !changes["state"].firstChange) {
+      this.state = changes["state"].currentValue;
+      this.data.state = this.state;
+    }
   }
 
   loadTags(data: ConversationMatchingItem) {
@@ -459,11 +470,13 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   messageSendingToServer(): any {
     let message = this.messageModel as string;
+
     if (!TDSHelperArray.hasListValue(this.uploadedImages) && !TDSHelperString.hasValueString(message)) {
       this.eventHandler.preventDefault();
       this.eventHandler.stopImmediatePropagation();
       return this.message.error('Hãy nhập nội dung cần gửi');
     }
+
     if (this.isLoadingSendMess) {
       this.eventHandler.preventDefault();
       this.eventHandler.stopImmediatePropagation();
@@ -492,23 +505,20 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     this.crmMatchingService.addMessage(this.data.psid, model)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-        this.messageResponse(res, model);
+      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+          this.messageResponse(res, model);
       }, error => {
         this.message.error(`${error.error.message}`? `${error.error.message}` : "Like thất bại");
-      });
+        });
   }
 
   sendMessage(message: string) {
     const model = this.prepareModel(message);
-    this.crmMatchingService.addMessage(this.data.psid, model)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => { this.isLoadingSendMess = false }))
+    this.crmMatchingService.addMessage(this.data.psid, model).pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false }))
       .subscribe((res: any) => {
-        this.messageResponse(res, model);
+          this.messageResponse(res, model);
       }, error => {
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại');
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Trả lời bình luận thất bại');
       });
   }
 
@@ -521,9 +531,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     model.comment_id = activityFinal?.comment?.id || activityFinal?.id || null;
 
     this.crmMatchingService.addQuickReplyComment(model)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => { this.isLoadingSendMess = false }))
-      .subscribe((res: any) => {
+      .pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false })).subscribe((res: any) => {
 
         let countImageAdd = 0;
         if (TDSHelperArray.hasListValue(res)) {
@@ -565,9 +573,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     model.to_name = activityFinal?.comment?.from?.name || null;
 
     this.activityMatchingService.replyComment(this.team?.Id, model)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => { this.isLoadingSendMess = false; }))
-      .subscribe((res: any) => {
+      .pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false; })).subscribe((res: any) => {
 
         this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });
         this.conversationDataFacade.messageServer(res);
@@ -625,6 +631,18 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
     this.yiAutoScroll?.forceScrollDown();
     this.cdRef.detectChanges();
+  }
+
+  onRetryMessage() {
+    this.activityMatchingService.onCopyMessageHasAminRequired$.subscribe((message: string) => {
+      if(TDSHelperString.hasValueString(message)) {
+        if (TDSHelperString.hasValueString(this.messageModel)) {
+            this.messageModel = `${this.messageModel}${message}`;
+        } else {
+            this.messageModel = `${message}`;
+        }
+      }
+    })
   }
 
   prepareModel(message: string): any {
@@ -868,6 +886,80 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   trackByIndex(_: number, data: any): number {
     return data.psid;
+  }
+
+  onStartChatbot() {
+   if(this.data && this.data.state == 2) {
+    let pageId = this.data.page_id;
+    let psid = this.data.psid;
+
+    this.crmMatchingService.transferChatbot(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe((data) => {
+
+        this.message.success('Bật chatbot thành công')
+
+        this.isEnableChatbot = true;
+        this.data.state = StateChatbot.Normal;
+
+        // TODO: bật chatbot thành công 5s rồi tắt
+        setTimeout(() =>{
+            this.isEnableChatbot = false;
+        }, 5 * 1000);
+
+      }, error => {
+
+        this.isEnableChatbot = true;
+        this.data.state = StateChatbot.Normal;
+
+        // TODO: bật chatbot thành công 5s rồi tắt
+        setTimeout(() =>{
+            this.isEnableChatbot = false;
+        }, 5 * 1000)
+
+        this.chatbotTransferAdmin();
+        this.message.error(error?.error?.message || 'Đã xảy ra lỗi');
+      })
+    }
+  }
+
+  alertChatbot() {
+  }
+
+  adminTransferChatbot() {
+    let data: OnChatBotSignalRModel = {
+      action: 'transfer',
+      companyId: 1,
+      data: {
+        name: this.data.partner_name,
+        pageId: this.data.page_id,
+        psid: this.data.psid
+      },
+      enableAlert: true,
+      enablePopup: false,
+      error: false,
+      message: `Admin chuyển hội thoại cho Chatbot`,
+      type: TypeOnChatBot.AdminTransferChatBot
+    }
+
+    this.sgRConnectionService._onChatbotEvent$.emit(data);
+  }
+
+  chatbotTransferAdmin() {
+    let data: OnChatBotSignalRModel = {
+      action: 'transfer',
+      companyId: 1,
+      data: {
+        name: this.data.partner_name,
+        pageId: this.data.page_id,
+        psid: this.data.psid
+      },
+      enableAlert: true,
+      enablePopup: false,
+      error: false,
+      message: `Chatbot chuyển hội thoại cho ${this.data.partner_name}`,
+      type: TypeOnChatBot.ChatbotTranserAdmin
+    }
+
+    this.sgRConnectionService._onChatbotEvent$.emit(data);
   }
 
   ngAfterViewInit() {

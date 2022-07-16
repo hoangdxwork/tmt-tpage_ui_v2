@@ -201,6 +201,7 @@ export interface MakeActivityItemWebHook {
   has_address: number;
   is_show_break: boolean;
   errorShowAttachment: boolean;
+  has_admin_required: boolean; // 15/07/2022 Thêm icon copy đoạn văn bản xuống input nhập nội dung gửi và cho admin sửa lại nội dung để gửi bằng api retry
 }
 
 export interface MakeActivityQueryObj {

@@ -74,6 +74,7 @@
                           <current-conversation-item
                               [item]="item" [psid]="item.psid" [type]="type"
                               [currentConversationItem]="currentConversationItem"
+                              [state]="item.state"
                               [team]="currentTeam" [isFastSend]="isFastSend"
                               [isOpenCollapCheck]="isOpenCollapCheck"
                               [checked]="setOfCheckedId.has(item.psid)"
@@ -99,6 +100,7 @@
         <div class="flex w-full flex-col h-full" *ngIf="currentConversationItem && currentTeam" @eventFadeState>
             <shared-tds-conversations
                 class="flex w-full h-full"
+                [state]="currentConversationItem.state"
                 [data]="currentConversationItem"
                 [type]="type" [team]="currentTeam">
             </shared-tds-conversations>

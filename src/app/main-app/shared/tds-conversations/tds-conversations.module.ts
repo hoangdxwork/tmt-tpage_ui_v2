@@ -40,6 +40,7 @@ import { TDSImageModule } from 'tds-ui/image';
 import { TDSMessageModule } from 'tds-ui/message';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
+import { FormatIconLikePipe } from '../pipe/format-icon-like.pipe';
 
 const CMP =[
   TDSConversationsComponent,
@@ -96,6 +97,7 @@ const CMP =[
     QuickReplyService,
     CRMTagService,
     ActivityFacebookState,
+    FormatIconLikePipe
   ]
 })
 
