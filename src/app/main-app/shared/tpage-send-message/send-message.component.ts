@@ -1,8 +1,8 @@
 import { QuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-reply.dto';
 import { FastSaleOrderService } from './../../services/fast-sale-order.service';
-import { finalize, map, switchMap } from 'rxjs/operators';
-import { fromEvent, Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { finalize } from 'rxjs/operators';
+import { Subject, takeUntil } from 'rxjs';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { format } from 'date-fns';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -28,7 +28,7 @@ export enum Tabs {
   templateUrl: './send-message.component.html',
 })
 
-export class SendMessageComponent implements OnInit, AfterViewInit {
+export class SendMessageComponent implements OnInit {
 
   @Input() messageType: GenerateMessageTypeEnum = GenerateMessageTypeEnum.Default;
   @Input() orderIds: string[] = [];
@@ -43,6 +43,7 @@ export class SendMessageComponent implements OnInit, AfterViewInit {
   isLoading: boolean = false;
   currentTeam: TDSSafeAny;
   currentTab: Tabs = Tabs.List;
+  keyFilterMail: string = '';
   formAddTemplate!: FormGroup;
   readonly typeId: string = "Messenger";
 
@@ -62,7 +63,6 @@ export class SendMessageComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadData();
-    console.log(this.orderIds)
     this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.currentTeam = res;
     });
@@ -90,23 +90,19 @@ export class SendMessageComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit(): void {
-      fromEvent(this.innerText.nativeElement, 'keyup').pipe(
-        map((event: any) => { return event.target.value }),
-        debounceTime(750), distinctUntilChanged())
-        .subscribe((text: any) => {
-          if(!TDSHelperString.hasValueString(text)) {
-              this.lstMessage = this.messages;
-          } else {
-            text = TDSHelperString.stripSpecialChars(text.trim());
+  searchMail(){
+    let text = this.keyFilterMail
+    if(!TDSHelperString.hasValueString(text)) {
+      this.lstMessage = this.messages;
+    } else {
+      text = TDSHelperString.stripSpecialChars(text.trim());
 
-            let data = this.messages.filter((x: any) =>
-            (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(text.toLowerCase())) !== -1) ||
-            (x.BodyPlain && TDSHelperString.stripSpecialChars(x.BodyPlain.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(text.toLowerCase())) !== -1));
+      let data = this.messages.filter((x: any) =>
+      (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(text.toLowerCase())) !== -1) ||
+      (x.BodyPlain && TDSHelperString.stripSpecialChars(x.BodyPlain.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(text.toLowerCase())) !== -1));
 
-            this.lstMessage =  [...data];
-          }
-      });
+      this.lstMessage =  [...data];
+    }
   }
 
   onAddTemplate() {
@@ -150,9 +146,14 @@ export class SendMessageComponent implements OnInit, AfterViewInit {
       this.fastSaleOrderService.generateMessages(model).pipe(takeUntil(this.destroy$))
         .pipe(finalize(()=>{this.isLoading = false})) .subscribe((res) => {
           this.messageContent = res.value;
-        }, error => {
+        }, err => {
+          this.message.error(err.error? err.error.message : 'có lỗi xảy ra')
       });
     }
+  }
+
+  onRemove(index: number){
+    this.messageContent.splice(index,1);
   }
 
   onSendMessage() {
@@ -230,9 +231,7 @@ export class SendMessageComponent implements OnInit, AfterViewInit {
       delete res['MailServerId'];
       delete res['MailServerId'];
 
-      console.log(res as QuickReplyDTO)
       this.lstMessage.unshift(res);
-      console.log(this.lstMessage)
       this.message.success(Message.InsertSuccess);
 
       if(!TDSHelperString.hasValueString(type)) {
