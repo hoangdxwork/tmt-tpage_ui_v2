@@ -23,6 +23,9 @@ import { ListProductVariantComponent } from './product-variant/list-product-vari
 import { CreateProductVariantComponent } from './product-variant/create/create-product-variant.component';
 import { FacebookCartComponent } from './facebook-cart/facebook-cart.component';
 import { AshipV2Component } from './aship-v2/aship-v2.component';
+import { ListConfigDeliveryComponent } from './config-delivery/list-config-delivery.component';
+import { ConfigDeliveryConnectComponent } from './config-delivery/config-delivery-connect/config-delivery-connect.component';
+import { ConfigDeliveryUpdateComponent } from './config-delivery/config-delivery-update/config-delivery-update.component';
 
 const routes: Routes = [
   {
@@ -61,7 +64,6 @@ const routes: Routes = [
       {
         path:'product-variant',
         component: ListProductVariantComponent,
-
       },
       {
         path:'product-variant/create',
@@ -128,7 +130,19 @@ const routes: Routes = [
             component: ConfigPagesDivideTaskComponent
           }
         ]
-      }
+      },
+      {
+        path:'delivery',
+        component: ListConfigDeliveryComponent,
+      },
+      {
+        path: 'delivery/connect',
+        component: ConfigDeliveryConnectComponent,
+      },
+      {
+        path: 'delivery/edit',
+        component: ConfigDeliveryUpdateComponent,
+      },
     ]
   },
 ];

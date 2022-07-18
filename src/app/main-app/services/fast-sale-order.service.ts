@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { ODataPaymentJsonDTO } from '../dto/bill/payment-json.dto';
-import { CalculateFeeResponse_DataDTO, ShippingCalculateFeeInputDTO } from '../dto/carrier/delivery-carrier.dto';
+import { CalculateFeeResponse_DataDTO, DeliveryCarrierDTO, ShippingCalculateFeeInputDTO } from '../dto/carrier/delivery-carrier.dto';
 import { ConversationOrderBillByPartnerDTO } from '../dto/conversation/conversation.dto';
 import { ODataCalculatorListFeeDTO } from '../dto/fastsaleorder/calculate-listFee.dto';
 
@@ -14,6 +14,7 @@ import { AccountRegisterPaymentDTO } from '../dto/fastsaleorder/payment.dto';
 import { ODataIdsDTO, ODataModelDTO } from '../dto/odata/odata.dto';
 import { ChangePartnerPriceListDTO } from '../dto/partner/change-partner-pricelist.dto';
 import { BaseSevice } from './base.service';
+import { CaculateFeeResponseDto, DeliveryResponseDto } from '../dto/carrierV2/delivery-carrier-response.dto';
 
 @Injectable()
 export class FastSaleOrderService extends BaseSevice {
@@ -511,5 +512,12 @@ export class FastSaleOrderService extends BaseSevice {
       method: TApiMethodType.post
     }
     return this.apiService.getData<any>(api, data);
+  }
+  calculateFeeAship(data: any): Observable<DeliveryResponseDto<CaculateFeeResponseDto>> {
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.baseRestApi}/calculatefee-aship`,
+      method: TApiMethodType.post
+    }
+    return this.apiService.getData<DeliveryResponseDto<CaculateFeeResponseDto>>(api, data);
   }
 }

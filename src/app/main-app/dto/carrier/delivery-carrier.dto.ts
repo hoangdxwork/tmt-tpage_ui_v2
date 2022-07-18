@@ -71,6 +71,9 @@ export interface DeliveryCarrierDTO {
   Config_DefaultWeight?: number;
   ExtrasText: string;
   Extras?: any;
+  DateCreated: Date;
+  ExtraProperties: string;
+  ConfigId: string;
 }
 
 export interface DeliveryCarrier_ExtraDTO {
