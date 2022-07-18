@@ -3,6 +3,8 @@ import { ResultCheckAddressDTO } from "src/app/main-app/dto/address/address.dto"
 import { ConversationMatchingItem } from "src/app/main-app/dto/conversation-all/conversation-all.dto";
 import { CreateOrUpdatePartnerModel } from "src/app/main-app/dto/conversation-partner/create-update-partner.dto";
 import { TabPartnerCvsRequestModel } from "src/app/main-app/dto/conversation-partner/partner-conversation-request.dto";
+import { QuickSaleOnlineOrderModel } from "src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto";
+import { TDSHelperString } from "tds-ui/shared/utility";
 
 @Injectable({
   providedIn: 'root'
@@ -94,6 +96,42 @@ export abstract class ConversationPartnerHandler {
       partner.Ward = null;
     }
 
+  }
+
+  static loadPartnerFromTabOrder(partner: TabPartnerCvsRequestModel, order: QuickSaleOnlineOrderModel) {
+    if(TDSHelperString.hasValueString(order.PartnerName)) {
+      partner.Name = order.PartnerName;
+    }
+    if(TDSHelperString.hasValueString(order.Telephone)) {
+      partner.Phone = order.Telephone;
+    }
+    if(TDSHelperString.hasValueString(order.Email)) {
+      partner.Email = order.Email;
+    }
+    if(TDSHelperString.hasValueString(order.Note)) {
+      partner.Comment = order.Note;
+    }
+    if(TDSHelperString.hasValueString(order.Address)) {
+      partner.Street = order.Address;
+    }
+    if(TDSHelperString.hasValueString(order.CityCode)) {
+      partner.City = {
+        code: order.CityCode,
+        name: order.CityName
+      }
+    }
+    if(TDSHelperString.hasValueString(order.DistrictCode)) {
+      partner.District = {
+        code: order.DistrictCode,
+        name: order.DistrictName
+      }
+    }
+    if(TDSHelperString.hasValueString(order.WardCode)) {
+      partner.Ward = {
+        code: order.WardCode,
+        name: order.WardName
+      }
+    }
   }
 
 }

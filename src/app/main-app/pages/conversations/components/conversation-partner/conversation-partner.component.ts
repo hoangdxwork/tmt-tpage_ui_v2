@@ -27,6 +27,7 @@ import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto'
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 import { ConversationPartnerHandler } from './conversation-partner.handler';
 import { CreateOrUpdatePartnerModel } from 'src/app/main-app/dto/conversation-partner/create-update-partner.dto';
+import { QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
 
 @Component({
     selector: 'conversation-partner',
@@ -168,15 +169,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   loadPartnerFromTabOrder() {
     this.isLoading = true;
-    this.partnerService.onLoadPartnerFromTabOrder$.pipe(takeUntil(this.destroy$),
-      finalize(() => { this.isLoading = false })).subscribe(res => {
-        if(res && TDSHelperString.hasValueString(res.phone)) {
-            this.partner.Phone = res.phone;
-        }
-        if(res && TDSHelperString.hasValueString(res.address)) {
-            this.partner.Street = res.address;
-        }
-    });
+    this.partnerService.onLoadPartnerFromTabOrder$.pipe(takeUntil(this.destroy$), finalize(() => { this.isLoading = false }))
+      .subscribe((res: QuickSaleOnlineOrderModel) => {
+          ConversationPartnerHandler.loadPartnerFromTabOrder(this.partner, res);
+      });
   }
 
   loadPartnerByPostComment() {
@@ -438,7 +434,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           ConversationPartnerHandler.mappingPartnerModel(this.partner, x);
 
           // cập nhật dữ liệu khách hàng sang form conversation-order
-          this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);debugger
+          this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);
           this.isEditPartner = false;
 
           this.cdRef.markForCheck();

@@ -4,6 +4,7 @@ import { GeneralConfigService } from 'src/app/main-app/services/general-config.s
 import { AutoInteractionDTO, GeneralConfigUpdateDTO, ShippingStatuesDTO } from 'src/app/main-app/dto/configs/general-config.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { Subject, takeUntil, finalize } from 'rxjs';
+import { BaseHelper } from 'src/app/main-app/shared/helper/base.helper';
 
 @Component({
   selector: 'auto-interaction',
@@ -49,7 +50,7 @@ export class AutoInteractionComponent implements OnInit, OnDestroy {
   areaText3 = 'Xin chào {partner.name}, hoá đơn có mã {bill.code} đã được cập nhật trạng thái giao hàng.\n{shipping.details}';
 
   baseUrlLocation = {
-    document_base_url: 'https://test.tpos.dev'
+    document_base_url: BaseHelper.getBaseApi()
   }
 
   constructor(private fb: FormBuilder,

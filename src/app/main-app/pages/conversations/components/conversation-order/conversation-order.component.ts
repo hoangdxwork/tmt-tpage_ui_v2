@@ -47,6 +47,7 @@ import { FilterObjDTO, OdataProductService } from 'src/app/main-app/services/moc
 import { ProductService } from 'src/app/main-app/services/product.service';
 import { ConversationPartnerHandler } from '../conversation-partner/conversation-partner.handler';
 import { ConversationOrderHandler } from './conversation-order.handler';
+import { PartnerService } from 'src/app/main-app/services/partner.service';
 
 @Component({
     selector: 'conversation-order',
@@ -117,6 +118,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     private generalConfigsFacade: GeneralConfigsFacade,
     private deliveryCarrierService: DeliveryCarrierService,
     private auth: TAuthService,
+    private partnerService: PartnerService,
     private odataProductService: OdataProductService,
     private cdRef: ChangeDetectorRef,
     private productService: ProductService,
@@ -596,13 +598,16 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
               this.isLoading = false;
               this.message.success('Cập nhật đơn hàng thành công');
           }
+
+          // TODO: lưu thành công thì đẩy dữ update sang tab conversation-partner
+          this.partnerService.onLoadPartnerFromTabOrder$.emit(this.quickOrderModel);
         }, error => {
-            this.isLoading = false;
-            if(TDSHelperString.hasValueString(error.error?.message)) {
-                this.message.error(`${error?.error?.message}`);
-            } else {
-                this.message.error('Đã xảy ra lỗi');
-            }
+          this.isLoading = false;
+          if(TDSHelperString.hasValueString(error.error?.message)) {
+              this.message.error(`${error?.error?.message}`);
+          } else {
+              this.message.error('Đã xảy ra lỗi');
+          }
       })
   }
 
@@ -632,14 +637,13 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
               if (this.saleModel.Carrier && this.saleModel.Carrier?.IsPrintCustom && printTemplateDefault.includes(this.saleModel.Carrier?.DeliveryType)) {
                   obs = this.printerService.printIP(`odata/fastsaleorder/OdataService.PrintShip`, { ids: [res.Data.Id]})
               } else {
-                obs = this.printerService.printUrl(`/fastsaleorder/printshipthuan?ids=${res.Data.Id}`);
+                  obs = this.printerService.printUrl(`/fastsaleorder/printshipthuan?ids=${res.Data.Id}`);
               }
             }
 
             if (TDSHelperObject.hasValue(obs)) {
                 obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
                     this.printerService.printHtml(res);
-
                 }, (error: TDSSafeAny) => {
                     if(error?.error?.message) {
                       this.message.error(error?.error?.message);
