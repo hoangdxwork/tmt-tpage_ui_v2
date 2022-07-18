@@ -258,13 +258,15 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     this.modal.destroy(null);
   }
 
-  onSave() {
+  onSave(): any {
     let model = this.prepareModel();
     if (!TDSHelperString.hasValueString(model.Name)) {
-      this.message.error('Vui lòng nhập tên khách hàng');
+        this.message.error('Vui lòng nhập tên khách hàng');
+        return
     }
     if (!TDSHelperString.hasValueString(model.Phone)) {
-      this.message.error('Vui lòng nhập số điện thoại');
+        this.message.error('Vui lòng nhập số điện thoại');
+        return
     }
 
     if (this.partnerId) {
