@@ -4,13 +4,22 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
     {
         name: "Cấu hình chung",
         icon: "tdsi-gear-2-fill",
-        link: '/configs/overview',
+        link: '/configs',
+        listChild:[
+          {
+              name: "Cấu hình chốt đơn",
+              link: '/configs/saleorder',
+          },
+          {
+              name: "Cấu hình giỏ hàng",
+              link: '/configs/facebook-cart',
+          },
+          {
+              name: "Đối tác giao hàng",
+              link: '/configs/delivery-carrier',
+          },
+      ]
     },
-    // {
-    //     name: "Cấu hình in đơn hàng",
-    //     icon: "tdsi-setting-print-fill",
-    //     link: '/configs/print-bills',
-    // },
     {
         name: "Thẻ hội thoại",
         icon: "tdsi-tag-fill",

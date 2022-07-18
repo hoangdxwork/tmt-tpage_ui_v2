@@ -73,8 +73,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   loadBill() {
     this.isLoading = true;
-    this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => this.isLoading = false))
+    this.fastSaleOrderService.getById(this.id).pipe(takeUntil(this.destroy$),finalize(() => this.isLoading = false))
       .subscribe((res: any) => {
         delete res['@odata.context'];
 
@@ -119,7 +118,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
           this.loadTeamById(res.TeamId);
         }
     }, error => {
-      this.message.error('Load dữ liệu PBH đã xảy ra lỗi!')
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi')
     })
   }
 

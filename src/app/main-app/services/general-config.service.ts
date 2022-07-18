@@ -36,13 +36,13 @@ export class GeneralConfigService extends BaseSevice {
     return this.apiService.getData<Array<ShippingStatuesDTO>>(api, null);
   }
 
-  update(data: GeneralConfigUpdateDTO<TDSSafeAny>): Observable<TDSSafeAny> {
+  update(name: string, data: any): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/update`,
       method: TApiMethodType.put,
     }
 
-    return this.apiService.getData<TDSSafeAny>(api, data);
+    return this.apiService.getData<TDSSafeAny>(api, { name: name, value: data });
   }
 
 }
