@@ -515,61 +515,65 @@ export class AddBillComponent implements OnInit, OnDestroy {
       .subscribe(([data, partner]) => {
           if(data && partner) {
 
-            const dataModel = data as ChangePartnerPriceListDTO;
+            const obs = data as ChangePartnerPriceListDTO;
             const partnerModel = partner as PartnerDetailDTO;
 
-            dataModel.ReceiverName = partnerModel.Name;
-            dataModel.ReceiverPhone = partnerModel.Phone;
-            dataModel.ReceiverAddress = partnerModel.Street;
+            obs.ReceiverName = partnerModel.Name;
+            obs.ReceiverPhone = partnerModel.Phone;
+            obs.ReceiverAddress = partnerModel.Street;
 
-            dataModel.Ship_Receiver.Name = partnerModel.Name;
-            dataModel.Ship_Receiver.Phone = partnerModel.Phone;
-            dataModel.Ship_Receiver.Street = partnerModel.Street;
+            obs.Ship_Receiver.Name = partnerModel.Name;
+            obs.Ship_Receiver.Phone = partnerModel.Phone;
+            obs.Ship_Receiver.Street = partnerModel.Street;
 
-            dataModel.Ship_Receiver.City = {
+            obs.Ship_Receiver.City = {
               code: partnerModel.CityCode, name: partnerModel.CityName
             }
-            dataModel.Ship_Receiver.District = {
+            obs.Ship_Receiver.District = {
               code: partnerModel.DistrictCode, name: partnerModel.DistrictName
             }
-            dataModel.Ship_Receiver.Ward = {
+            obs.Ship_Receiver.Ward = {
               code: partnerModel.WardCode, name: partnerModel.WardName
             }
 
-            this._form.controls['PriceList'].setValue(dataModel.PriceList);
-            this._form.controls['PriceListId'].setValue(dataModel.PriceList?.Id);
-            this._form.controls['Revenue'].setValue(dataModel.Revenue);
-            this._form.controls['DeliveryNote'].setValue(dataModel.DeliveryNote);
-            this._form.controls['ReceiverName'].setValue(dataModel.ReceiverName);
-            this._form.controls['ReceiverPhone'].setValue(dataModel.ReceiverPhone);
-            this._form.controls['ReceiverNote'].setValue(dataModel.ReceiverNote);
-            this._form.controls['ReceiverAddress'].setValue(dataModel.ReceiverAddress);
+            if(obs.Account) {
+              this._form.controls['Account'].setValue(obs.Account);
+            }
+
+            this._form.controls['PriceList'].setValue(obs.PriceList);
+            this._form.controls['PriceListId'].setValue(obs.PriceList?.Id);
+            this._form.controls['Revenue'].setValue(obs.Revenue);
+            this._form.controls['DeliveryNote'].setValue(obs.DeliveryNote);
+            this._form.controls['ReceiverName'].setValue(obs.ReceiverName);
+            this._form.controls['ReceiverPhone'].setValue(obs.ReceiverPhone);
+            this._form.controls['ReceiverNote'].setValue(obs.ReceiverNote);
+            this._form.controls['ReceiverAddress'].setValue(obs.ReceiverAddress);
 
             //TODO: Cập nhật lại nợ cũ
-            this._form.controls['PreviousBalance'].setValue(dataModel.PreviousBalance);
+            this._form.controls['PreviousBalance'].setValue(obs.PreviousBalance);
 
             //TODO: Cập nhật lại dataSuggestion
-            if (dataModel && dataModel.Ship_Receiver) {
+            if (obs && obs.Ship_Receiver) {
               this._form.controls['Ship_Receiver'].patchValue({
-                  Name: dataModel.Ship_Receiver?.Name,
-                  Phone: dataModel.Ship_Receiver?.Phone,
-                  Street: dataModel.Ship_Receiver?.Street,
+                  Name: obs.Ship_Receiver?.Name,
+                  Phone: obs.Ship_Receiver?.Phone,
+                  Street: obs.Ship_Receiver?.Street,
                   City: {
-                      code: dataModel.Ship_Receiver?.City?.code,
-                      name: dataModel.Ship_Receiver?.City?.name
+                      code: obs.Ship_Receiver?.City?.code,
+                      name: obs.Ship_Receiver?.City?.name
                   },
                   District: {
-                      code: dataModel.Ship_Receiver.District.code,
-                      name: dataModel.Ship_Receiver.District.name
+                      code: obs.Ship_Receiver.District.code,
+                      name: obs.Ship_Receiver.District.name
                   },
                   Ward: {
-                      code: dataModel.Ship_Receiver.Ward.code,
-                      name: dataModel.Ship_Receiver.Ward.name
+                      code: obs.Ship_Receiver.Ward.code,
+                      name: obs.Ship_Receiver.Ward.name
                   }
               })
             }
 
-            this.mappingAddress(dataModel);
+            this.mappingAddress(obs);
           }
       }, error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thay đổi khách hàng đã xảy ra lỗi!');

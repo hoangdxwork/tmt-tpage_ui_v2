@@ -58,7 +58,8 @@
                   </div>
                   <div *ngIf="_form.controls['IsUsingProviderTemplate'].value == true" class="flex flex-col">
                       <span class="text-neutral-1-900 text-body-2 font-semibold pb-2">Nội dung mẫu</span>
-                      <tds-editor [height]="104" class="bg-white" formControlName="BillTemplate" [mentionSuggest]="tagHelpers" [mention]="'value'"></tds-editor>
+                      <tds-editor [height]="104" class="bg-white" formControlName="BillTemplate" [mentionSuggest]="tagHelpers"
+                        [mention]="'value'" [init]="baseUrlLocation"></tds-editor>
                   </div>
               </div>
           </div>
@@ -80,7 +81,8 @@
                   </tds-form-field>
                   <div class="flex flex-col">
                       <span class="text-neutral-1-900 text-body-2 font-semibold pb-2">Nội dung mẫu</span>
-                      <tds-editor [height]="104" class="bg-white" formControlName="ShippingTemplate" [mentionSuggest]="tagHelpers" [mention]="'value'"></tds-editor>
+                      <tds-editor [height]="104" class="bg-white" formControlName="ShippingTemplate" [mentionSuggest]="tagHelpers"
+                        [mention]="'value'" [init]="baseUrlLocation"></tds-editor>
                   </div>
               </div>
           </div>
