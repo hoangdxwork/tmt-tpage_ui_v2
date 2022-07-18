@@ -101,6 +101,13 @@ import { TDSTimePickerModule } from 'tds-ui/time-picker';
 import { TDSFilterStatusModule } from 'tds-ui/filter-status';
 import { TDSEditorModule } from 'tds-editor';
 import { CreateVariantsModalComponent } from './components/create-variants-modal/create-variants-modal.component';
+import { ListConfigDeliveryComponent } from './config-delivery/list-config-delivery.component';
+import { TDSCollapseModule } from 'tds-ui/collapse';
+import { TDSEmptyModule } from 'tds-ui/empty';
+import { DeliveryCarrierV2Service } from '../../services/delivery-carrier-v2.service';
+import { ConfigDeliveryConnectComponent } from './config-delivery/config-delivery-connect/config-delivery-connect.component';
+import { ConfigDeliveryUpdateComponent } from './config-delivery/config-delivery-update/config-delivery-update.component';
+
 
 const SERVICES = [
     OdataCRMTagService,
@@ -124,7 +131,8 @@ const SERVICES = [
     UserRestHandler,
     CompanyService,
     ProductIndexDBService,
-    THelperCacheService
+    THelperCacheService,
+    DeliveryCarrierV2Service
 ]
 
 @NgModule({
@@ -173,7 +181,10 @@ const SERVICES = [
     ConfigPromotionGroupComponent,
     ConfigPromotionComboComponent,
     ConfigPromotionAllComponent,
-    CreateVariantsModalComponent
+    CreateVariantsModalComponent,
+    ListConfigDeliveryComponent,
+    ConfigDeliveryConnectComponent,
+    ConfigDeliveryUpdateComponent
   ],
   imports: [
     CommonModule,
@@ -210,7 +221,9 @@ const SERVICES = [
     TDSFilterStatusModule,
     UploadImageModule,
     TDSEditorModule,
-    TDSNotificationModule
+    TDSNotificationModule,
+    TDSCollapseModule,
+    TDSEmptyModule
   ],
   providers:[
     ...SERVICES

@@ -21,6 +21,9 @@ import { ConfigAddPromotionComponent } from './config-promotions/components/conf
 import { ConfigEditPromotionComponent } from './config-promotions/components/config-edit-promotion/config-edit-promotion.component';
 import { ListProductVariantComponent } from './product-variant/list-product-variant.component';
 import { CreateProductVariantComponent } from './product-variant/create/create-product-variant.component';
+import { ListConfigDeliveryComponent } from './config-delivery/list-config-delivery.component';
+import { ConfigDeliveryConnectComponent } from './config-delivery/config-delivery-connect/config-delivery-connect.component';
+import { ConfigDeliveryUpdateComponent } from './config-delivery/config-delivery-update/config-delivery-update.component';
 
 const routes: Routes = [
   {
@@ -55,7 +58,6 @@ const routes: Routes = [
       {
         path:'product-variant',
         component: ListProductVariantComponent,
-
       },
       {
         path:'product-variant/create',
@@ -122,7 +124,19 @@ const routes: Routes = [
             component: ConfigPagesDivideTaskComponent
           }
         ]
-      }
+      },
+      {
+        path:'delivery',
+        component: ListConfigDeliveryComponent,
+      },
+      {
+        path: 'delivery/connect',
+        component: ConfigDeliveryConnectComponent,
+      },
+      {
+        path: 'delivery/edit',
+        component: ConfigDeliveryUpdateComponent,
+      },
     ]
   },
 ];

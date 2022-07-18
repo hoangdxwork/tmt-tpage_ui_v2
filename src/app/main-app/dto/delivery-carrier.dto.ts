@@ -70,6 +70,7 @@ export interface DeliveryCarrierDTOV2 {
   Config_DefaultWeight?: number;
   ExtrasText: string;
   Extras?: any;
+  ConfigId: string;
 }
 export interface ODataDeliveryCarrierDTOV2 {
   "@odata.context": string;
