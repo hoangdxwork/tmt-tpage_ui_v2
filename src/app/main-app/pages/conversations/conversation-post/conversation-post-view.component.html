@@ -3,11 +3,11 @@
     <div class="post-view bg-white h-auto w-full mb-1">
         <div class="flex flex-row justify-between p-2 border-b-3 border-neutral-3-200">
             <div class="flex items-center">
-                <tds-avatar
-                    [tdsSrc]="data.status_type === 'added_video' ? '../../../assets/imagesv2/conversation/live-circle.svg' : '../../../assets/imagesv2/conversation/facebook-circle.svg'"
-                    [size]="36" [shape]="'circle'" [isAvatar]="false" class="mr-1">
+                <tds-avatar [icon]="data.status_type === 'added_video'? 'tdsi-video-camera-fill': 'tdsi-facebook-f-fill'"
+                    [ngClass]="data.status_type === 'added_video'? 'bg-base-red-500' : 'bg-base-blue-500'" class="text-white mr-1"
+                    [size]="36" [shape]="'circle'" [isAvatar]="false">
                 </tds-avatar>
-                <tds-tag
+                <tds-tag 
                     [status]="data.status_type === 'added_video' ? 'bg-base-red-50 text-base-red-600' : 'bg-base-blue-50 text-base-blue-600'"
                     rounded="rounded-full">
                     <span class="flex flex-row items-center py-0.5">
@@ -23,14 +23,7 @@
                 </tds-tag>
             </div>
             <div class="post-option flex flex-row items-center gap-3">
-                <!-- filter -->
-                <!-- <tds-form-field>
-          <tds-select valueField="value" textField="text" placeholder='Lọc theo' tooltipTitle="Lọc bài viết" tooltipPlacement="bottom" tds-tooltip
-              [(ngModel)]="currentFilter" [valuePrimitive]="false"
-              [data]="filterOptions" (ngModelChange)="onChangeFilter($event)">
-          </tds-select>
-        </tds-form-field> -->
-                <button tds-button color="secondary" tooltipTitle="Lọc bài viết" tooltipPlacement="bottom" tds-tooltip>
+                <button tds-button color="secondary">
                     <span class="flex items-center">
                         <i class="tdsi-product-fill text-lg text-neutral-1-400 leading-none mr-2"></i>Chọn sản phẩm
                     </span>
@@ -42,26 +35,18 @@
               [data]="sortOptions" (ngModelChange)="onChangeSort($event)">
           </tds-select>
         </tds-form-field> -->
-                <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" tooltipTitle="Sắp xếp bài viết" tooltipPlacement="bottom" tds-tooltip>
+                <button tds-button color="secondary" tds-dropdown trigger="click"
+                    [tdsDropdownMenu]="menu" tooltipTitle="Thao tác excel" tooltipPlacement="bottom" tds-tooltip>
                     <span class="flex items-center">
                         <i class="tdsi-excel-fill text-2xl leading-none text-neutral-1-600"></i>
                         <i class="tdsi-arrow-down-fill text-lg leading-none ml-2 text-neutral-1-600"></i>
                     </span>
                 </button>
                 <tds-dropdown-menu #menu="tdsDropdownMenu">
-                    <div class="w-full">
-                        <div tds-dropdown-item>
-                            <a> Item 1 </a>
-                        </div>
-                        <div tds-dropdown-item>
-                            <a> Item 2 </a>
-                        </div>
-                        <div tds-dropdown-item>
-                            <a> Item 3 </a>
-                        </div>
-                        <div tds-dropdown-item>
-                            <a> Item 4 </a>
-                        </div>
+                    <div class="w-[200px] flex flex-col gap-y-1">
+                        <span tds-dropdown-item *ngFor="let item of filterExcel" (click)="onChangeFilter(item)">
+                            <a>{{item.text}}</a>
+                        </span>
                     </div>
                 </tds-dropdown-menu>
 
@@ -99,69 +84,104 @@
         </div>
         <div class="post-block bg-white flex flex-col">
             <div class="post-body flex flex-row justify-between p-4">
-                <div class="post-item">
-                    <div class="w-full block">
-                        <p class="story font-semibold" *ngIf="data.story">
+                <div class="flex flex-col justify-between gap-y-3">
+                    <div class="w-full flex flex-col gap-y-3">
+                        <p class="text-title-1 font-semibold" *ngIf="data.story">
                             {{data.story}}
                         </p>
                         <div [innerHTML]="data.message | safeHtml"></div>
                         <p *ngIf="!data.message && !data.story" class="italic text-neutral-1-900 text-caption-1">(Chưa
                             có nội dung tiêu đề)</p>
                         <!-- <p class="description" *ngIf="data.description">{{data.description}}</p> -->
-                        <tds-tag size="sm" status='bg-neutral-3-100 text-neutral-1-600'>
-                          <span class="flex items-center py-0.5 cursor-pointer">
-                              <span class="truncate max-w-[150px] flex">Chọn chiến dịch</span>
-                              <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
-                          </span>
-                      </tds-tag>
+                    </div>
+                    <div *ngIf="data.live_campaign">
+                        <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500" >
+                            <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip
+                                [tooltipTitle]="data.live_campaign?.name">
+                                <span class="flex-auto truncate">{{data.live_campaign?.name}}</span>
+                                <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
+                            </span>
+                        </tds-tag>
+                    </div>
+                    <div *ngIf="!data.live_campaign">
+                        <tds-tag size="sm" status="bg-neutral-3-100 text-neutral-1-600">
+                            <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
+                                <span class="flex-auto truncate">Chọn chiến dịch</span>
+                                <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
+                            </span>
+                        </tds-tag>
                     </div>
                 </div>
                 <div class="post-picture" *ngIf="data.picture">
-                    <img tds-image [tdsSrc]="data.picture" class="rounded-xl" />
+                    <img [src]="data.picture" class="rounded-xl h-[122px] object-cover" />
                 </div>
             </div>
-            <div
-                class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 px-4">
-                <div class="emotion-count flex flex-row items-center">
-                    <div class="flex flex-row mr-1">
-                        <img src="../../../assets/imagesv2/conversation/like-circle.svg" width="20px" height="20px"
-                            class="rounded-full z-50">
-                        <img src="../../../assets/imagesv2/conversation/love-circle.svg" width="20px" height="20px"
-                            class="rounded-full z-40 -ml-2">
-                    </div>
-                    <span>
-                        {{data.count_reactions || 0}}
-                    </span>
-                </div>
-                <div class="comment flex flex-row items-center gap-3">
-                    <span class="comment-count">
-                        {{data.count_comments || 0}} bình luận
-                    </span>
-                    <span class="share-count  mr-3">
-                        {{data.count_shares || 0}} lượt chia sẻ
-                    </span>
-                    <div class="h-[30px] w-[30px] rounded-md cursor-pointer" title="Tất cả bình luận"
-                        [ngClass]="showComment?'bg-primary-3 text-primary-1 border border-primary-1':'border border-transparent'"
-                        (click)="openChat()">
-                        <div class="flex items-center justify-center">
-                            <i class="tdsi-livechat-line text-xl"></i>
+            <div class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 px-4 gap-x-2">
+                <container-element [ngSwitch]="indClickFilter">
+                    <!-- lọc tất cả bình luận -->
+                    <ng-container *ngSwitchCase="0">
+                        <div class="emotion-count flex flex-row items-center flex-auto justify-between">
+                            <div class="flex gap-x-2">
+                                <div class="flex flex-row">
+                                    <img src="../../../assets/imagesv2/conversation/like-circle.svg" width="20px" height="20px"
+                                        class="rounded-full z-50">
+                                    <img src="../../../assets/imagesv2/conversation/love-circle.svg" width="20px" height="20px"
+                                        class="rounded-full z-40 -ml-2">
+                                </div>
+                                <span>
+                                    {{data.count_reactions || 0}}
+                                </span>
+                            </div>
+                            <div class="flex gap-x-3">
+                                <span class="comment-count">
+                                    {{data.count_comments || 0}} bình luận
+                                </span>
+                                <span class="share-count  mr-3">
+                                    {{data.count_shares || 0}} lượt chia sẻ
+                                </span> 
+                            </div>
                         </div>
+                    </ng-container>
+                    <!-- lọc người dùng -->
+                    <ng-container *ngSwitchCase="1">
+                        <button *ngIf="!isShowFilterUser; else showFilterUser" tds-button size="sm" color="primary" rounded="!rounded-full" (click)="onShowFilterUser()">
+                            <span class="flex items-center text-caption-1">
+                              <i class="tdsi-success-line text-[20px] leading-none mr-2"></i>Thao tác
+                            </span>
+                        </button>
+                        <ng-template #showFilterUser>
+                            <div class="flex gap-x-3 items-center">
+                                <tds-checkbox class="pr-2" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
+                                <button tds-button color="primary" size="sm">
+                                    <span class="flex items-center">
+                                        <i class="tdsi-messenger-fill text-lg leading-none mr-2"></i>Gửi tin nhắn
+                                    </span>
+                                </button>
+                                <button tds-button color="info" size="sm">
+                                    <span class="flex items-center">
+                                        <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In thông tin
+                                    </span>
+                                </button>
+                                <button tds-button color="error" size="sm" rounded="!rounded-full" (click)="onShowFilterUser()">
+                                    <span class="flex items-center">
+                                        <i class="tdsi-close-fill text-lg leading-none mr-2"></i>Đóng
+                                    </span>
+                                </button>
+                            </div>
+                        </ng-template>
+                    </ng-container>
+                </container-element>
+                
+                <div class="flex flex-row items-center gap-3"> 
+                    <!-- filter -->                 
+                    <div *ngFor="let item of filterOptions; let index = index" (click)="fillterAll(item, index)"
+                        [ngClass]="indClickFilter == index ?'bg-primary-3 text-primary-1 border border-primary-1':'border border-transparent'"
+                        class="h-[30px] w-[30px] rounded-md cursor-pointer" tds-tooltip [tooltipTitle]="item.text">
+                        <span class="flex items-center justify-center">
+                            <i class="{{item.icon}} text-xl"></i>
+                        </span>
                     </div>
-                    <div class="h-[30px] w-[30px] rounded-md cursor-pointer" title="Người dùng">
-                        <i class="tdsi-user-line text-xl"></i>
-                    </div>
-                    <div class="h-[30px] w-[30px] rounded-md cursor-pointer" title="Quản lý bình luận">
-                        <a href="{{data.permalink_url}}" target="_blank">
-                            <i class="tdsi-eye-line text-xl"></i>
-                        </a>
-                    </div>
-                    <div class="h-[30px] w-[30px] rounded-md cursor-pointer" title="Lọc bình luận">
-                        <i class="tdsi-search-fill text-xl"></i>
-                    </div>
-                    <div class="h-[30px] w-[30px] rounded-md cursor-pointer" title="Thống kê chốt đơn">
-                        <i class="tdsi-chart-pie-line text-xl"></i>
-                    </div>
-                    <div class="h-[30px] w-[30px] rounded-md cursor-pointer" title="Mới nhất">
+                    <div class="h-[30px] w-[30px] rounded-md cursor-pointer" tds-tooltip tooltipTitle="Bình luận cũ nhất">
                         <i class="tdsi-sort-arrow-down-fill text-xl text-primary-1"></i>
                     </div>
                 </div>
@@ -169,8 +189,15 @@
         </div>
     </div>
     <!-- Danh sách bình luận -->
-    <div *ngIf="showComment" class="flex w-full flex-auto overflow-hidden">
-        <item-post-comment [post]="data" [sort]="currentSort" [filter]="currentFilter" class="h-full w-full">
+    <div class="flex w-full flex-auto overflow-hidden">
+        <item-post-comment [post]="data" 
+        [sort]="currentSort" 
+        [filter]="currentFilter"
+        [isShowFilterUser]="isShowFilterUser"
+        class="h-full w-full">
         </item-post-comment>
+        <!-- 
+        [checked]="setOfCheckedId.has(item.psid)"
+        (checkedChange)="onItemChecked(item.psid, $event)" -->
     </div>
 </div>

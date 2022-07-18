@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, fromEvent, Observable, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, finalize, map, mergeMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
@@ -46,9 +47,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   type = 'All';
   eventType: string = 'TYPE';
+  isLoadFrist = false;
   currentType: any = this.lstType[0];
   postId: any;
-  postChilds = [];
+  postChilds: TDSSafeAny[] = [];
   listBadge: any = {};
 
   data!: FacebookPostItem[];
@@ -75,7 +77,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private modal: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private conversationOrderFacade: ConversationOrderFacade,
-    public router: Router) {
+    public router: Router,
+    private cdRef : ChangeDetectorRef) {
       super(crmService, activatedRoute, router);
   }
 
@@ -146,6 +149,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   setType(item: any, eventType: string) {
+    this.isLoadFrist = true;
     this.eventType = eventType;
     if (this.currentType.type != item.type) {
       this.currentType = item;
@@ -239,6 +243,15 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
       let uri = this.router.url.split("?")[0];
       let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&post_id=${item?.fbid}`;
       this.router.navigateByUrl(uriParams);
+       // get posts child
+       if (!this.postChilds || this.postChilds.length < 1 || (!item.parent_id && this.postChilds.length > 0 && this.postChilds[0].parent_id != item.fbid)) {
+        this.postChilds = [];
+
+        this.facebookPostService.getByPostParent(this.currentTeam?.Id, item.parent_id || item.fbid).subscribe(res => {
+          this.postChilds = res.Items;
+          item.count_post_child = res.Items && res.Items.length;
+        });
+      }
     }
   }
 
@@ -278,15 +291,6 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     } else {
       return "tdsi-page-line";
     }
-  }
-
-  compareToday(date: any) {
-    let d = new Date(date);
-    let today = new Date();
-    if (d.getFullYear() == today.getFullYear() && d.getMonth() - 1 == today.getMonth() && d.getDate() == d.getDate()) {
-      return true;
-    }
-    return false;
   }
 
   onTabOrder(event: boolean) {

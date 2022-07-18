@@ -1,6 +1,6 @@
 <tds-spin [spinning]="isLoading">
     <div class="w-full h-full flex items-stretch bg-neutral-3-200 overflow-hidden text-body-2 text-neutral-1-900">
-        <div class="w-[20%] h-full flex flex-col gap-y-1 text-body-2 text-neutral-1-900 overflow-hidden">
+        <div class="w-[20%] h-full flex flex-col text-body-2 text-neutral-1-900 overflow-hidden">
             <div class="w-full flex flex-col gap-1 px-1">
                 <div class="bg-white p-2.5 flex flex-col gap-y-4">
                     <div class="w-full">
@@ -14,9 +14,8 @@
                         <button tds-flat-button-icon tds-dropdown trigger="click" placement="bottomRight"
                             [tdsDropdownMenu]="btnFilter">
                             <span class="flex text-neutral-1-500 relative w-[34px] h-[34px]">
-                                <i
-                                    class="tdsi-filter-2-line text-xl leading-5 h-full w-full flex items-center justify-center"></i>
-                                <div class="overflow-hidden h-3 w-3 bg-primary-1 text-white rounded-full absolute top-2 right-2 flex justify-center items-center"
+                                <i class="tdsi-filter-2-line text-xl leading-5 h-full w-full flex items-center justify-center"></i>
+                                <div *ngIf="isLoadFrist && eventType == 'TYPE'" class="overflow-hidden h-3 w-3 bg-primary-1 text-white rounded-full absolute top-2 right-2 flex justify-center items-center"
                                     style="transform: translate(30%, -30%); transform-origin: 100% 0px;">
                                     <span class="text-[7px] leading-[5px] tdsi-tick-fill">
                                     </span>
@@ -26,23 +25,33 @@
                         <!-- droupdown filter -->
                         <tds-dropdown-menu #btnFilter="tdsDropdownMenu">
                             <div class="w-[225px] py-2">
-                                <div tds-dropdown-item *ngFor="let item of lstType" (click)="setType(item, 'TYPE')">
+                                <div tds-dropdown-item *ngFor="let item of lstType" (click)="setType(item, 'TYPE')"
+                                    class="w-full flex justify-between items-center">
                                     {{item.text}}
+                                    <span class="tdsi-success-fill text-success-500"
+                                        *ngIf="item?.text == currentType?.text && isLoadFrist"></span>
                                 </div>
                             </div>
                         </tds-dropdown-menu>
                         <button tds-flat-button-icon tds-dropdown trigger="click" placement="bottomRight"
                             [tdsDropdownMenu]="btnUpDown">
-                            <span class="flex text-neutral-1-500 w-[24px] h-[24px]">
-                                <i
-                                    class="tdsi-sort-up-down-fill text-xl leading-5 h-full w-full flex items-center justify-center"></i>
+                            <span class="flex text-neutral-1-500 w-[34px] h-[34px] relative">
+                                <i class="tdsi-sort-up-down-fill text-xl leading-5 h-full w-full flex items-center justify-center"></i>
+                                <div *ngIf="eventType == 'SORT'" class="overflow-hidden h-3 w-3 bg-primary-1 text-white rounded-full absolute top-2 right-2 flex justify-center items-center"
+                                    style="transform: translate(30%, -30%); transform-origin: 100% 0px;">
+                                    <span class="text-[7px] leading-[5px] tdsi-tick-fill">
+                                </span>
+                            </div>
                             </span>
                         </button>
                         <!-- droupdown up down -->
                         <tds-dropdown-menu #btnUpDown="tdsDropdownMenu">
                             <div class="w-[225px] py-2">
-                                <div tds-dropdown-item *ngFor="let item of lstTime" (click)="setType(item, 'SORT')">
+                                <div tds-dropdown-item *ngFor="let item of lstTime" (click)="setType(item, 'SORT')" 
+                                    class="w-full flex justify-between items-center">
                                     {{item.text}}
+                                    <span class="tdsi-success-fill text-success-500"
+                                        *ngIf="item?.text == currentType?.text"></span>
                                 </div>
                             </div>
                         </tds-dropdown-menu>
@@ -56,91 +65,196 @@
                         (click)="selectPost(item)">
                         <div class="flex flex-col gap-y-3">
                             <div class="relative w-[120px] h-[88px]">
-                                <div *ngIf="item.picture; else noPicture">
-                                    <img tds-image [tdsSrc]="item.picture" alt=""
-                                        class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md">
+                                <div *ngIf="item.picture; else noPicture" class="relative">
+                                    <img [src]="item.picture" alt=""
+                                        class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md object-cover">
+                                    <span
+                                        class="absolute inset-0 flex items-center justify-center text-heading-4 text-white font-semibold bg-black bg-opacity-40 rounded-md"
+                                        *ngIf="item.count_post_child && item.count_post_child > 0">
+                                        {{'+' + item.count_post_child}}
+                                    </span>
                                 </div>
                                 <ng-template #noPicture>
                                     <div *ngIf="!item.picture; else errorPicture">
-                                        <img tds-image tdsSrc="assets/imagesv2/conversation-post-img.svg" alt=""
-                                            class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
+                                        <img src="assets/imagesv2/conversation-post-img.svg" alt=""
+                                            class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.fbid == item.fbid ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                                     </div>
                                     <ng-template #errorPicture>
-                                        <img tds-image tdsSrc="assets/imagesv2/errorPic.svg" alt=""
+                                        <img src="assets/imagesv2/errorPic.svg" alt=""
                                             class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
                                     </ng-template>
                                 </ng-template>
-                                <container-element [ngSwitch]="item.type">
-                                    <ng-container *ngSwitchCase="'video_inline'">
-                                        <div
-                                            class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 border p-1 border-white bg-gradient-to-b from-[#F22727] to-[#FF7575]">
+                                <container-element [ngSwitch]="item.status_type">
+                                    <ng-container *ngSwitchCase="'added_video'">
+                                        <div class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
                                             <div class="tdsi-video-camera-fill text-white leading-none"></div>
                                         </div>
                                     </ng-container>
                                     <ng-container *ngSwitchCase="'added_photos'">
-                                        <div
-                                            class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 border p-1 border-white bg-gradient-to-b from-[#3B7AD9] to-[#6EB3F8]">
+                                        <div class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#3B7AD9] to-[#6EB3F8]">
                                             <div class="tdsi-images-fill text-white leading-none"></div>
                                         </div>
                                     </ng-container>
+                                    <ng-container
+                                        *ngSwitchCase="'mobile_status_update' || 'published_story' || 'shared_story'">
+                                        <div class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-r from-[#3B7AD9] to-[#6EB3F8]">
+                                            <div class="tdsi-facebook-f-fill text-white leading-none"></div>
+                                        </div>
+                                    </ng-container>
                                     <ng-container *ngSwitchDefault>
-                                        <div
-                                            class="h-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 border p-1 border-white bg-gradient-to-b from-[#F22727] to-[#FF7575]">
-                                            <div
-                                                class="tdsi-arrow-right-fill text-white leading-2 mr-1 text-caption-2 font-[Lato]">
+                                        <div= class="h-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
+                                            <div class="tdsi-arrow-right-fill text-white leading-2 mr-1 text-caption-2 font-[Lato]">
                                                 LIVE</div>
                                         </div>
                                     </ng-container>
                                 </container-element>
                             </div>
                             <div class="flex items-center w-full">
-                                <div class="flex items-center gap-x-2">
-                                    <i class="tdsi-like-line text-neutral-1-500"></i>
+                                <div class="flex items-center gap-x-2 text-neutral-1-400">
+                                    <i class="tdsi-like-line"></i>
                                     <div>{{item.count_reactions || 0}}</div>
                                 </div>
-                                <div class="ml-4 flex items-center gap-x-2">
-                                    <i class="tdsi-message-line text-neutral-1-500"></i>
+                                <div class="ml-4 flex items-center gap-x-2 text-neutral-1-400">
+                                    <i class="tdsi-message-line"></i>
                                     <div>{{item.count_comments || 0}}</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="w-full">
-                            <div class="w-full" *ngIf="item.description" tds-typography ellipsis [ellipsisRows]="2">
-                                {{item.description}}</div>
-                            <p *ngIf="!item.description">
+                        <div class="flex-auto flex flex-col overflow-hidden gap-y-2">
+                            <span class="w-full font-semibold truncate" *ngIf="item.description">
+                                {{item.description}}
+                            </span>
+                            <span *ngIf="!item.description">
                                 (Chưa có tiêu đề)
-                            </p>
-                            <div *ngIf="item.message" class="mt-2 text-neutral-1-400">{{item.message}}</div>
-                            <div class="flex justify-between items-center mt-2">
+                            </span>
+                            <span *ngIf="item.message" class=" text-neutral-1-400">{{item.message | slice: 0: 50}}
+                                <span *ngIf="item.message.length > 50">...</span>
+                            </span>
+                            <span *ngIf="item.created_time | compareToday" class="text-neutral-1-400">
+                                {{item.created_time | yiDateTimeFormat}}
+                            </span>
+                            <span *ngIf="!(item.created_time | compareToday)" class="text-neutral-1-400">
+                                {{item.created_time | date:'dd/MM/yyyy HH:mm'}}
+                            </span>
+                            <div class="w-full flex justify-between items-center">
                                 <div *ngIf="item.live_campaign">
                                     <tds-tag size="sm"
                                         status="{{ currentPost?.fbid == item.fbid ? 'bg-base-orange-50 text-base-orange-500' : 'bg-neutral-3-100 text-neutral-1-600'}}"
                                         (click)="showModalLiveCampaign(item)">
-                                        <span class="flex items-center py-0.5 cursor-pointer" tds-tooltip
+                                        <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip
                                             [tooltipTitle]="item.live_campaign?.name">
-                                            <span
-                                                class="truncate max-w-[150px] flex">{{item.live_campaign?.name}}</span>
+                                            <span class="flex-auto truncate">{{item.live_campaign?.name}}</span>
                                             <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
                                         </span>
                                     </tds-tag>
                                 </div>
                                 <div *ngIf="!item.live_campaign">
-                                    <tds-tag size="sm" status='bg-neutral-3-100 text-neutral-1-600'>
-                                        <span class="flex items-center py-0.5 cursor-pointer">
-                                            <span class="truncate max-w-[150px] flex">Chọn chiến dịch</span>
+                                    <tds-tag size="sm"
+                                        status="{{ currentPost?.fbid == item.fbid ? 'bg-neutral-3-100 text-neutral-1-600': 'bg-neutral-3-50 text-neutral-1-600'}}">
+                                        <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
+                                            <span class="flex-auto truncate">Chọn chiến dịch</span>
                                             <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
                                         </span>
                                     </tds-tag>
                                 </div>
-                                <div class="flex items-center justify-center">
-                                  <div class="w-5 h-5 rounded-full bg-accent-9 flex items-center justify-center">
-                                    <i class="tdsi-flash-on-fill text-white leading-5"></i>
-                                  </div>
+                                <div *ngIf="item.live_campaign" class="flex items-center justify-center">
+                                    <div class="w-5 h-5 rounded-full bg-accent-9 flex items-center justify-center"
+                                        tds-tooltip tooltipTitle="Bật tạo đơn tự động">
+                                        <i class="tdsi-flash-on-fill text-white leading-5"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div *ngIf="postChilds && postChilds.length > 0" class="pl-7 flex flex-col gap-y-1">
+                        <div *ngFor="let postChild of postChilds">
+                            <ng-container *ngIf="postChild.parent_id && postChild.parent_id == item.fbid">
+                                <div class="pl-2.5 pr-[14px] py-[14px] flex gap-x-4 {{ currentPost?.fbid == postChild.fbid ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}"
+                                    (click)="selectPost(postChild)">
+                                    <div class="flex flex-col gap-y-3">
+                                        <div class="relative w-[120px] h-[88px]">
+                                            <div *ngIf="postChild.picture; else noPicture" class="relative">
+                                                <img [src]="postChild.picture" alt=""
+                                                    class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md">
+                                            </div>
+                                            <ng-template #noPicture>
+                                                <div *ngIf="!postChild.picture; else errorPicture">
+                                                    <img src="assets/imagesv2/conversation-post-img.svg" alt=""
+                                                        class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.fbid == postChild.fbid ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
+                                                </div>
+                                                <ng-template #errorPicture>
+                                                    <img src="assets/imagesv2/errorPic.svg" alt=""
+                                                        class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
+                                                </ng-template>
+                                            </ng-template>                                          
+                                        </div>
+                                        <div class="flex items-center w-full">
+                                            <div class="flex items-center gap-x-2 text-neutral-1-400">
+                                                <i class="tdsi-like-line"></i>
+                                                <div>{{postChild.count_reactions || 0}}</div>
+                                            </div>
+                                            <div class="ml-4 flex items-center gap-x-2 text-neutral-1-400">
+                                                <i class="tdsi-message-line"></i>
+                                                <div>{{postChild.count_comments || 0}}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex-auto flex flex-col overflow-hidden gap-y-2">
+                                        <span class="w-full font-semibold truncate" *ngIf="postChild.description">
+                                            {{postChild.description}}
+                                        </span>
+                                        <span *ngIf="!postChild.description">
+                                            (Chưa có tiêu đề)
+                                        </span>
+                                        <span *ngIf="postChild.message" class=" text-neutral-1-400">{{postChild.message
+                                            | slice: 0: 50}}
+                                            <span *ngIf="postChild.message.length > 50">...</span>
+                                        </span>
+                                        <span *ngIf="postChild.created_time | compareToday" class="text-neutral-1-400">
+                                            {{postChild.created_time | yiDateTimeFormat}}
+                                        </span>
+                                        <span *ngIf="!(postChild.created_time | compareToday)"
+                                            class="text-neutral-1-400">
+                                            {{postChild.created_time | date:'dd/MM/yyyy HH:mm'}}
+                                        </span>
+                                        <div class="w-full flex justify-between items-center">
+                                            <div *ngIf="postChild.live_campaign">
+                                                <tds-tag size="sm"
+                                                    status="{{ currentPost?.fbid == postChild.fbid ? 'bg-base-orange-50 text-base-orange-500' : 'bg-neutral-3-100 text-neutral-1-600'}}"
+                                                    (click)="showModalLiveCampaign(postChild)">
+                                                    <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]"
+                                                        tds-tooltip [tooltipTitle]="postChild.live_campaign?.name">
+                                                        <span
+                                                            class="flex-auto truncate">{{postChild.live_campaign?.name}}</span>
+                                                        <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
+                                                    </span>
+                                                </tds-tag>
+                                            </div>
+                                            <div *ngIf="!postChild.live_campaign">
+                                                <tds-tag size="sm"
+                                                    status="{{ currentPost?.fbid == postChild.fbid ? 'bg-neutral-3-100 text-neutral-1-600': 'bg-neutral-3-50 text-neutral-1-600'}}">
+                                                    <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
+                                                        <span class="flex-auto truncate">Chọn chiến dịch</span>
+                                                        <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
+                                                    </span>
+                                                </tds-tag>
+                                            </div>
+                                            <div *ngIf="postChild.live_campaign"
+                                                class="flex items-center justify-center">
+                                                <div class="w-5 h-5 rounded-full bg-accent-9 flex items-center justify-center"
+                                                    tds-tooltip tooltipTitle="Bật tạo đơn tự động">
+                                                    <i class="tdsi-flash-on-fill text-white leading-5"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
                 </ng-container>
+
+                <div class="bg-white flex-auto"></div>
             </div>
         </div>
         <!--Chọn bài viết để hiển thị chi tiết-->

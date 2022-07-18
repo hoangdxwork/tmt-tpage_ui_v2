@@ -1,5 +1,5 @@
-<div *ngIf="data && data?.Items" class="h-full w-full overflow-auto tds-custom-scroll p-2">
-  <div *ngFor="let item of data.Items; let i= index" class="flex flex-auto w-full mb-3">
+<div *ngIf="data && data?.Items" class="h-full w-full overflow-auto tds-custom-scroll p-3 flex flex-col gap-y-3">
+  <div *ngFor="let item of data.Items; let i= index" class="flex flex-auto w-full">
     <div *ngIf="item" class="flex flex-auto w-full">
       <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="item.from.id" [token]="team?.Facebook_PageToken">
       </tpage-avatar-facebook>
