@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 
 import { ConfigsRoutingModule } from './configs-routing.module';
 import { ConfigComponent } from './config/config.component';
-import { AutoInteractionComponent } from './auto-interraction/auto-interaction.component';
+import { SaleOrderComponent } from './sale-order/sale-order.component';
 import { AutoQuickReplyComponent } from './auto-quick-reply/auto-quick-reply.component';
 import { ConfigConversationTagsComponent } from './config-conversation-tags/config-conversation-tags.component';
 import { ConfigSmsMessagesComponent } from './config-sms-messages/config-sms-messages.component';
@@ -100,6 +100,8 @@ import { TDSTimePickerModule } from 'tds-ui/time-picker';
 import { TDSFilterStatusModule } from 'tds-ui/filter-status';
 import { TDSEditorModule } from 'tds-editor';
 import { CreateVariantsModalComponent } from './components/create-variants-modal/create-variants-modal.component';
+import { FacebookCartComponent } from './facebook-cart/facebook-cart.component';
+import { AshipV2Component } from './aship-v2/aship-v2.component';
 
 const SERVICES = [
     OdataCRMTagService,
@@ -129,7 +131,7 @@ const SERVICES = [
 @NgModule({
   declarations: [
     ConfigComponent,
-    AutoInteractionComponent,
+    SaleOrderComponent,
     AutoQuickReplyComponent,
     ConfigConversationTagsComponent,
     ConfigSmsMessagesComponent,
@@ -171,7 +173,9 @@ const SERVICES = [
     ConfigPromotionGroupComponent,
     ConfigPromotionComboComponent,
     ConfigPromotionAllComponent,
-    CreateVariantsModalComponent
+    CreateVariantsModalComponent,
+    FacebookCartComponent,
+    AshipV2Component
   ],
   imports: [
     CommonModule,

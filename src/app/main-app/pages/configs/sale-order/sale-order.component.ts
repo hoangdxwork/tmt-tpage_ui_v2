@@ -1,23 +1,25 @@
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { GeneralConfigService } from 'src/app/main-app/services/general-config.service';
-import { AutoInteractionDTO, GeneralConfigUpdateDTO, ShippingStatuesDTO } from 'src/app/main-app/dto/configs/general-config.dto';
+import { AutoInteractionDTO, ShippingStatuesDTO } from 'src/app/main-app/dto/configs/general-config.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { BaseHelper } from 'src/app/main-app/shared/helper/base.helper';
+import { ConfigSaleOrderDTO } from 'src/app/main-app/dto/configs/sale-order/config-sale-order.dto';
 
 @Component({
-  selector: 'auto-interaction',
-  templateUrl: './auto-interaction.component.html'
+  selector: 'sale-order',
+  templateUrl: './sale-order.component.html'
 })
 
-export class AutoInteractionComponent implements OnInit, OnDestroy {
+export class SaleOrderComponent implements OnInit, OnDestroy {
 
   _form!: FormGroup;
 
   isLoading: boolean = false;
-  lstShippingStatues: ShippingStatuesDTO[] = [];
+  lstShippingStatus: ShippingStatuesDTO[] = [];
   private destroy$ = new Subject<void>();
+  dataModel!: ConfigSaleOrderDTO;
 
   tagHelpers = [
     { id: "Bài live", value: "{order.live_title}" },
@@ -49,9 +51,7 @@ export class AutoInteractionComponent implements OnInit, OnDestroy {
   areaText2 = 'Xin chào {partner.name}, hoá đơn có mã {bill.code} đã được tạo.\n{bill.details}\n{bill.note}\n{shipping.details}';
   areaText3 = 'Xin chào {partner.name}, hoá đơn có mã {bill.code} đã được cập nhật trạng thái giao hàng.\n{shipping.details}';
 
-  baseUrlLocation = {
-    document_base_url: BaseHelper.getBaseApi()
-  }
+  urlLocation: any = {};
 
   constructor(private fb: FormBuilder,
     private generalConfigService: GeneralConfigService,
@@ -80,14 +80,17 @@ export class AutoInteractionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.loadShippingStatus();
     this.loadData();
+    this.loadShippingStatus();
 
+    this.urlLocation = {
+        document_base_url: `${BaseHelper.getBaseApi()}`
+    }
   }
 
   loadShippingStatus() {
     this.generalConfigService.getShippingStatues().pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.lstShippingStatues = res;
+        this.lstShippingStatus = res;
     });
   }
 
@@ -96,8 +99,8 @@ export class AutoInteractionComponent implements OnInit, OnDestroy {
     this.isLoading  = true;
 
     this.generalConfigService.getByName(name)
-      .pipe(finalize(() => this.isLoading = false))
-      .pipe(takeUntil(this.destroy$)).subscribe((res: AutoInteractionDTO) => {
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+      .subscribe((res: ConfigSaleOrderDTO) => {
         if (res.ShippingTemplate) {
           res.ShippingTemplate = res.ShippingTemplate.replace(/\\n/, "<p><br></p>")
         }
@@ -107,23 +110,44 @@ export class AutoInteractionComponent implements OnInit, OnDestroy {
         if (res.OrderTemplate) {
           res.OrderTemplate = res.OrderTemplate.replace(/\\n/, "<p><br></p>")
         }
+
+        this.dataModel = res;
         this.updateForm(res);
+
+      }, error => {
+        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
     })
   }
 
-  onSave(){
+  changeIsEnableOrder(event: any) {
+    if(event == false) {
+        this._form.controls['IsEnableShopLink'].setValue(false)
+    }
+  }
+
+  changeIsEnableBill(event: any) {
+    if(event == false) {
+      this._form.controls['IsUsingProviderTemplate'].setValue(false)
+  }
+  }
+
+  onSave() {
+    let name = "AutoInteraction";
     let model = this.prepareModel();
-    this.generalConfigService.update(model).pipe(takeUntil(this.destroy$)).subscribe(res => {
-      this.message.success('Thao tác thành công');
+
+    this.isLoading = true;
+
+    this.generalConfigService.update(name, model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
+        this.message.success('Thao tác thành công');
     }, error =>{
-      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
     });
   }
 
-  prepareModel(): GeneralConfigUpdateDTO<AutoInteractionDTO> {
-    const formModel = this._form.value;
+  prepareModel() {
+    let formModel = this._form.value;
 
-    let value: AutoInteractionDTO = {
+    let model: any = {
       IsEnableShipping: formModel["IsEnableShipping"],
       ShippingStatues: formModel["ShippingStatues"] as string[],
       ShippingTemplate: formModel["ShippingTemplate"],
@@ -136,12 +160,7 @@ export class AutoInteractionComponent implements OnInit, OnDestroy {
       IsEnableBill: formModel["IsEnableBill"],
       IsUsingProviderTemplate: formModel["IsUsingProviderTemplate"],
       BillTemplate: formModel["BillTemplate"]
-    };
-
-    let model: GeneralConfigUpdateDTO<AutoInteractionDTO> = {
-      Name: 'AutoInteraction',
-      Value: value
-    };
+    } as ConfigSaleOrderDTO
 
     return model;
   }

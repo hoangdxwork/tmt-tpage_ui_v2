@@ -500,23 +500,24 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   onEdit(item: ODataSaleOnline_OrderModel) {
     this.isLoading = true;
     this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
-      delete res['@odata.context'];
-      const modal = this.modal.create({
-        content: EditOrderComponent,
-        size: 'xl',
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          dataItem: item
-        }
-      });
+        delete res['@odata.context'];
 
-      modal.afterClose.subscribe((obs: string) => {
-        if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
-            this.loadData(this.pageSize, this.pageIndex);
-        }
-      });
+        const modal = this.modal.create({
+            content: EditOrderComponent,
+            size: 'xl',
+            viewContainerRef: this.viewContainerRef,
+            componentParams: {
+              dataItem: item
+            }
+        });
+
+        modal.afterClose.subscribe((obs: string) => {
+            if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
+                this.loadData(this.pageSize, this.pageIndex);
+            }
+        });
     }, error => {
-      this.message.error('Load đơn hàng đã xảy ra lỗi');
+      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
     });
   }
 

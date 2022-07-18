@@ -146,6 +146,7 @@ export class EditOrderComponent implements OnInit {
   loadData() {
     this.isLoading = true;
     let id = this.dataItem.Id;
+
     this.saleOnline_OrderService.getById(id).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
       delete res['@odata.context'];
       this.quickOrderModel = res;
@@ -158,6 +159,8 @@ export class EditOrderComponent implements OnInit {
     }, error => {
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Load đơn hàng đã xảy ra lỗi');
     });
+
+
   }
 
   loadSaleModel() {
