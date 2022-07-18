@@ -21,6 +21,7 @@ import { LastActivityMessagePipe } from './last-activity-message.pipe';
 import { ShowAttributeValuePipe } from './show-attribute-value.pipe';
 import { NameNetWorkPipe } from './name-network.pipe';
 import { NumberCustomPipe } from './numberCustom.pipe';
+import { CompareToday } from './compare-today.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -41,7 +42,8 @@ const cmp =[
   ConvertListUrlPipe,
   SelectMultipleValuePipe,
   NameNetWorkPipe,
-  NumberCustomPipe
+  NumberCustomPipe,
+  CompareToday
 ]
 
 @NgModule({

@@ -237,8 +237,10 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
       }
     });
 
-    modal.afterClose.subscribe((res: any) => {
-      this.onProductSelected(res);
+    modal.componentInstance?.onSendProduct.subscribe(res=>{
+      if(res){
+        this.onProductSelected(res);
+      }
     })
   }
 

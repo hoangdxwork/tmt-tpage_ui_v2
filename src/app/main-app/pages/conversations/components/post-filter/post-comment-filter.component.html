@@ -12,7 +12,7 @@
   </div>
 </div>
 <!-- Danh sách bình luận lọc theo bình luận -->
-<div *ngIf="data?.Items" class="p-2" style="max-height: 750px;overflow: auto">
+<div *ngIf="data?.Items" class="p-3 h-full overflow-y-auto tds-custom-scroll">
   <div *ngFor="let item of data.Items; let i= index" class="mb-3 mt-3">
     <div *ngIf="item" class="flex">
       <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="item.from.id" [token]="team?.Facebook_PageToken">

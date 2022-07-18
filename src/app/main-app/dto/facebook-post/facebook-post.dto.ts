@@ -1,3 +1,4 @@
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { PartnerDTO } from "../partner/partner.dto";
 import { SaleOnlineFacebookFromDTO, SaleOnline_OrderDTO } from "../saleonlineorder/sale-online-order.dto";
 
@@ -139,6 +140,7 @@ export interface FacebookPostItem {
   shares?: any;
   live_campaign_id?: string;
   live_campaign?: LiveCampaign;
+  count_post_child?: number;
 }
 
 export interface FacebookPostDTO {
