@@ -102,6 +102,13 @@ import { TDSEditorModule } from 'tds-editor';
 import { CreateVariantsModalComponent } from './components/create-variants-modal/create-variants-modal.component';
 import { FacebookCartComponent } from './facebook-cart/facebook-cart.component';
 import { AshipV2Component } from './aship-v2/aship-v2.component';
+import { ListConfigDeliveryComponent } from './config-delivery/list-config-delivery.component';
+import { TDSCollapseModule } from 'tds-ui/collapse';
+import { TDSEmptyModule } from 'tds-ui/empty';
+import { DeliveryCarrierV2Service } from '../../services/delivery-carrier-v2.service';
+import { ConfigDeliveryConnectComponent } from './config-delivery/config-delivery-connect/config-delivery-connect.component';
+import { ConfigDeliveryUpdateComponent } from './config-delivery/config-delivery-update/config-delivery-update.component';
+
 
 const SERVICES = [
     OdataCRMTagService,
@@ -125,7 +132,8 @@ const SERVICES = [
     UserRestHandler,
     CompanyService,
     ProductIndexDBService,
-    THelperCacheService
+    THelperCacheService,
+    DeliveryCarrierV2Service
 ]
 
 @NgModule({
@@ -174,8 +182,11 @@ const SERVICES = [
     ConfigPromotionComboComponent,
     ConfigPromotionAllComponent,
     CreateVariantsModalComponent,
-    FacebookCartComponent,
-    AshipV2Component
+    ListConfigDeliveryComponent,
+    ConfigDeliveryConnectComponent,
+        ConfigDeliveryUpdateComponent,
+        FacebookCartComponent,
+        AshipV2Component
   ],
   imports: [
     CommonModule,
@@ -212,7 +223,9 @@ const SERVICES = [
     TDSFilterStatusModule,
     UploadImageModule,
     TDSEditorModule,
-    TDSNotificationModule
+    TDSNotificationModule,
+    TDSCollapseModule,
+    TDSEmptyModule
   ],
   providers:[
     ...SERVICES

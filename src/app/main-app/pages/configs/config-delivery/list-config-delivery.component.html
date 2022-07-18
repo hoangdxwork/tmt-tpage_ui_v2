@@ -1,0 +1,108 @@
+<div class="w-full h-full pb-4 px-4">
+  <div class="flex flex-col w-full h-full bg-white rounded-xl">
+    <div class="flex flex-row items-center justify-between px-4 py-3">
+      <div class="flex flex-row items-center">
+        <tds-avatar class="bg-primary-1 text-white" icon="tdsi-transport-fill"></tds-avatar>
+        <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">ĐỐI TÁC GIAO HÀNG</span>
+      </div>
+    </div>
+    <div class="flex flex-col w-full h-full">
+      <div class="flex flex-row items-center justify-between border-t py-2.5 px-4">
+        <span class="text-neutral-1-900 text-title-1 font-semibold">Danh sách đối tác</span>
+      </div>
+      <div class="w-full h-full">
+        <tds-spin [spinning]="isLoading">
+          <div *ngIf="providerDataSource && providerDataSource.length > 0" class="tds-custom-scroll" style="max-height: calc(80vh - 8px); overflow: auto;">
+            <div *ngFor="let item of providerDataSource; let index = index" class="px-4 py-2">
+              <tds-collapse [expandIconPosition]="'right'" class="bg-white rounded-xl w-full">
+                <tds-collapse-panel [header]="header" header="This is panel header" [active]="false" [disabled]=false
+                  [expandedIcon]="'tdsi-arrow-up-line'" bordered="false" [expandedIcon]="icon"
+                  (activeChange)="onChangeCollapse(index, $event)" [active]="expandSet.has(index)">
+                  <ng-template #header>
+                    <div class="flex gap-4 items-center bg-neutral-3-500">
+                      <div class="relative">
+
+                        <tds-avatar
+                          class="bg-base-white-100 dark:bg-d-base-white-100 justify-self-center text-base-white-500 dark:text-d-base-white-500"
+                          [shape]="'square'" [size]="'xl'" [tdsSrc]="item.UrlLogo">
+                        </tds-avatar>
+                      </div>
+                      <div class="flex flex-col gap-1">
+                        <div class="flex gap-2 items-center">
+                          <div class="text-title-1 font-sans font-semibold"> {{item.Name}} </div>
+                        </div>
+                        <div class="font-regular font-sans text-xs flex gap-x-2">
+                          <p class="text-success-400 font-semibold">
+                            J&T Express tự hào đã & đang mở rộng mạng lưới quốc tế để mang đến trải nghiệm tốt nhất
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                  <!-- Header Icon -->
+                  <ng-template #icon>
+                    <div class="flex gap-4">
+
+                      <button tds-button color="primary" [routerLink]="['/configs/delivery/connect']"
+                      [queryParams]="{type: item.Type}">Kết nối</button>
+                    </div>
+                  </ng-template>
+                  <tds-spin [spinning]="isLoading1">
+                    <div *ngIf="deliveryDataSource; else notDeliveryConnected" class="flex flex-col w-full gap-4">
+                      <tds-table #basicTable [listData]="deliveryDataSource" [bordered]="true" (clickRefresh)="refreshDataDelivery(item)">
+                        <thead>
+                          <tr class="text-neutral-1-900 text-body-2 font-semibold">
+                            <th width="400px">Tên</th>
+                            <th>Đối tác giao hàng</th>
+                            <!-- <th>Ngày tạo</th> -->
+                            <th>Hiệu lực</th>
+                            <th>Thao tác</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data" let-odd='odd'>
+                            <tr class="text-neutral-1-900 text-body-2 font-regular">
+                              <td>{{ data.Name }}</td>
+                              <td>{{ data.DeliveryType }}</td>
+                              <!-- <td>{{data.DateCreated | date:'dd/MM/yyyy HH:mm'}}</td> -->
+                              <td>
+                                <span class="flex items-center">
+                                  <i
+                                    class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
+                                </span>
+                              </td>
+                              <td>
+                                <button tds-button-icon color="secondary" size="sm" class=" mr-2" [routerLink]="['/configs/delivery/edit']"
+                                [queryParams]="{id: data.Id}">
+                                  <span class="flex items-center">
+                                    <i class="tdsi-edit-fill text-neutral-1-500 text-xl leading-none"></i>
+                                  </span>
+                                </button>
+                                <button tds-button-icon color="secondary" size="sm" (click)="onDeleteDelivery(data)">
+                                  <span class="flex items-center">
+                                    <i class="tdsi-trash-fill text-neutral-1-500 text-xl leading-none"></i>
+                                  </span>
+                                </button>
+                              </td>
+                            </tr>
+                          </ng-template>
+                        </tbody>
+                      </tds-table>
+                    </div>
+                    <!-- Chưa có Page nào được kết nối -->
+                    <ng-template #notDeliveryConnected>
+                      <tds-empty></tds-empty>
+                    </ng-template>
+                  </tds-spin>
+                </tds-collapse-panel>
+              </tds-collapse>
+            </div>
+          </div>
+          <div *ngIf="(providerDataSource && providerDataSource.length === 0) || !providerDataSource">
+            <tds-empty></tds-empty>
+          </div>
+        </tds-spin>
+      </div>
+    </div>
+  </div>
+</div>
