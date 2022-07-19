@@ -54,8 +54,9 @@ export class OdataFastSaleOrderService extends BaseSevice {
 
         let date1 = formatDate(new Date(), 'dd-MM-yyyy', 'en-US');
         let date2 = formatDate(filterObj?.dateRange.endDate, 'dd-MM-yyyy', 'en-US');
+
         if(date1 != date2) {
-          endDate = new Date(filterObj?.dateRange.endDate.setHours(23, 59, 59, 0)).toISOString();
+          endDate = new Date(filterObj?.dateRange.endDate.setHours(23, 59, 59, 59)).toISOString();
         }
 
         dataFilter.filters.push({

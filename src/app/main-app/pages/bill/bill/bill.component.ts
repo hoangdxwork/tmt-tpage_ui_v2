@@ -217,7 +217,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.getViewData(params).subscribe((res: ODataFastSaleOrderDTO) => {
         this.count = res['@odata.count'] as number;
-        this.lstOfData = [...res.value];;
+        this.lstOfData = [...res.value];
     }, error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Tải dữ liệu phiếu bán hàng thất bại!');
     });
