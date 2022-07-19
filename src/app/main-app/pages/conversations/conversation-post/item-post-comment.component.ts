@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, EventEmitter } from '@angular/core';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
 import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -14,7 +14,7 @@ import { RequestCommentByPost } from 'src/app/main-app/dto/conversation/post/com
 import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from 'src/app/main-app/dto/conversation/post/comment-order-post.dto';
 import { RequestCommentByGroup } from 'src/app/main-app/dto/conversation/post/comment-group.dto';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSHelperArray, TDSHelperObject } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'item-post-comment',
@@ -27,7 +27,14 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   @Input() post!: FacebookPostItem;
   @Input() sort: any;
   @Input() filter: any;
+  @Input() currentFilterComment: TDSSafeAny;
+  @Input() textSearchFilterComment!: string;
   @Input() isShowFilterUser!: boolean;
+  @Input() checkedAll!: boolean;
+
+  @Output() onOuputCheckAll = new EventEmitter<boolean>();
+  @Output() onOuputIndeterminate = new EventEmitter<boolean>();
+  setOfCheckedId = new Set<string>();
 
   team!: CRMTeamDTO | null;
   data: any = { Items: []};
@@ -88,10 +95,8 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
 
               this.facebookCommentService.setSort(this.currentSort.value);
               this.loadData();
-              this.cdRef.detectChanges();
           }, error => {
             this.message.error('Thao tác thất bại');
-            this.cdRef.detectChanges();
           })
           break;
       }
@@ -199,6 +204,12 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
     this.commentOrders = [];
   }
 
+  validateCheck(){
+    this.setOfCheckedId = new Set<string>();
+    this.onOuputCheckAll.emit(false);
+    this.onOuputIndeterminate.emit(false);
+  }
+
   loadData() {
     this.isLoading = true;
     this.validateData();
@@ -207,6 +218,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
     switch(this.currentFilter.value){
       case 'group':
         // TODO: Lọc theo người dùng
+        this.validateCheck();
         this.loadGroupCommentsByPost();
         break;
       case 'filter':
@@ -215,6 +227,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
         break;
       case 'manage':
           // TODO:Quản lý bình luận
+          this.validateCheck();
           this.loadManageCommentsByPost();
           break;
       default:
@@ -226,7 +239,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
 
   loadGroupCommentsByPost() {
     this.facebookCommentService.getGroupCommentsByPostId(this.post?.fbid)
-      .pipe(takeUntil(this.destroy$), finalize(() => {this.isLoading = false })).subscribe((res: RequestCommentByGroup) => {
+      .pipe(takeUntil(this.destroy$)).subscribe((res: RequestCommentByGroup) => {
 
         if(TDSHelperArray.hasListValue(res.Items)) {
           res.Items.map((x: any) => {
@@ -235,17 +248,20 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
           });
         }
         this.data = res;
-        this.cdRef.detectChanges();
+        this.isLoading = false;
 
+        this.cdRef.detectChanges();
     }, error => {
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Lọc theo người dùng đã xảy ra lỗi');
+      this.isLoading = false;
+
       this.cdRef.detectChanges();
     });
   }
 
   loadFilterCommentsByPost(){
     this.facebookCommentService.getFilterCommentsByPostId(this.post?.fbid)
-      .pipe(takeUntil(this.destroy$), finalize(() => {this.isLoading = false })).subscribe((res: RequestCommentByGroup) => {
+      .pipe(takeUntil(this.destroy$)).subscribe((res: RequestCommentByGroup) => {
 
         if(TDSHelperArray.hasListValue(res.Items)) {
           res.Items.map((x: any) => {
@@ -254,19 +270,21 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
             x.created_time = first.created_time;
           });
         }
-
         this.data = res;
-        this.cdRef.detectChanges();
+        this.isLoading = false;
 
+        this.cdRef.detectChanges();
     }, error => {
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}`: 'Lọc theo bình luận đã xảy ra lỗi');
+      this.isLoading = false;
+
       this.cdRef.detectChanges();
     });
   }
 
   loadManageCommentsByPost(){
     this.facebookCommentService.getManageCommentsByLimit(this.post?.fbid)
-      .pipe(takeUntil(this.destroy$), finalize(() => {this.isLoading = false })).subscribe((res: RequestCommentByPost) => {
+      .pipe(takeUntil(this.destroy$)).subscribe((res: RequestCommentByPost) => {
 
         if(TDSHelperArray.hasListValue(res.Items)) {
           res.Items.forEach((x: any) => {
@@ -274,19 +292,21 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
             x["error_message"] = null;
           });
         }
-
         this.data = res;
-        this.cdRef.detectChanges();
+        this.isLoading = false;
 
+        this.cdRef.detectChanges();
       }, error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+        this.isLoading = false;
+
         this.cdRef.detectChanges();
       });
   }
 
   loadAllCommentsByPost() {
     this.facebookCommentService.getCommentsByPostId(this.post?.fbid)
-      .pipe(takeUntil(this.destroy$), finalize(() => {this.isLoading = false })).subscribe((res: RequestCommentByPost) => {
+      .pipe(takeUntil(this.destroy$)).subscribe((res: RequestCommentByPost) => {
 
         // Xử lý nếu bình luận đó là bình luận của 1 post child
         const childIds = Object.keys(res.Extras['childs']);
@@ -303,9 +323,13 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
 
         this.data = res;
         this.childs = res.Extras['childs'] || {};
+        this.isLoading = false;
+        
         this.cdRef.detectChanges();
     }, error => {
       this.message.error(`${error?.error?.message}` || 'Load comment bài viết đã xảy ra lỗi');
+      this.isLoading = false;
+
       this.cdRef.detectChanges();
     });
   }
@@ -335,6 +359,18 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
 
         this.cdRef.detectChanges();
     });
+  }
+
+  onCheckAll(event: boolean){
+    this.onOuputCheckAll.emit(event);
+  }
+
+  onIndeterminate(event: boolean){
+    this.onOuputIndeterminate.emit(event);
+  }
+
+  onSetOfCheckedId(event: Set<string>){
+    this.setOfCheckedId = event;
   }
 
   ngOnChanges(changes: SimpleChanges) {

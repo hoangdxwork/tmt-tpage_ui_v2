@@ -28,13 +28,6 @@
                         <i class="tdsi-product-fill text-lg text-neutral-1-400 leading-none mr-2"></i>Chọn sản phẩm
                     </span>
                 </button>
-                <!-- sort -->
-                <!-- <tds-form-field>
-          <tds-select valueField="value" textField="text" placeholder='Sắp xếp theo' tooltipTitle="Sắp xếp bài viết" tooltipPlacement="bottom" tds-tooltip
-              [(ngModel)]="currentSort" [valuePrimitive]="false"
-              [data]="sortOptions" (ngModelChange)="onChangeSort($event)">
-          </tds-select>
-        </tds-form-field> -->
                 <button tds-button color="secondary" tds-dropdown trigger="click"
                     [tdsDropdownMenu]="menu" tooltipTitle="Thao tác excel" tooltipPlacement="bottom" tds-tooltip>
                     <span class="flex items-center">
@@ -170,6 +163,42 @@
                             </div>
                         </ng-template>
                     </ng-container>
+                    <!-- quản lý bình luận -->
+                    <ng-container *ngSwitchCase="2">
+                        <div class="flex gap-x-3 items-center">
+                            <tds-checkbox class="pr-2" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
+                            <button tds-button color="primary" size="sm">
+                                <span class="flex items-center">
+                                    <i class="tdsi-eye-close-fill text-lg leading-none mr-2"></i>Ẩn
+                                </span>
+                            </button>
+                            <button tds-button color="primary" size="sm">
+                                <span class="flex items-center">
+                                    <i class="tdsi-eye-open-fill text-lg leading-none mr-2"></i>Hiện
+                                </span>
+                            </button>
+                            <button tds-button color="error" size="sm">
+                                <span class="flex items-center">
+                                    <i class="tdsi-trash-fill text-lg leading-none mr-2"></i>Xóa
+                                </span>
+                            </button>
+                        </div>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="3">
+                        <div class="flex w-full gap-x-3" >
+                            <tds-form-field class="w-[350px]">
+                                <span tdsPrefix><i class="tdsi-search-fill"></i></span>
+                                <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [tdsInputDebounce]="500" (inputKeyup)="onSearchFilterComment()"
+                                [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}" />
+                            </tds-form-field>
+                            <tds-form-field class="w-[160px]">
+                                <tds-select valueField="value" textField="text" placeholder='Chọn thuộc tính'
+                                    [(ngModel)]="currentFilterComment" [valuePrimitive]="false"
+                                    [data]="filterOptionsComment" (ngModelChange)="onChangeFilterComment($event)" >
+                                </tds-select>
+                            </tds-form-field>
+                        </div>
+                    </ng-container>
                 </container-element>
                 
                 <div class="flex flex-row items-center gap-3"> 
@@ -181,9 +210,14 @@
                             <i class="{{item.icon}} text-xl"></i>
                         </span>
                     </div>
-                    <div class="h-[30px] w-[30px] rounded-md cursor-pointer" tds-tooltip tooltipTitle="Bình luận cũ nhất">
-                        <i class="tdsi-sort-arrow-down-fill text-xl text-primary-1"></i>
-                    </div>
+                    <button *ngIf="currentSort.text == 'Mới nhất'; else cmtOld" class="h-[30px] w-[30px] rounded-md cursor-pointer" tds-tooltip tooltipTitle="Bình luận mới nhất nhất" (click)="onChangeSort(sortOptions[1])">
+                        <i class="tdsi-sort-arrow-up-fill text-xl text-primary-1"></i>
+                    </button>
+                    <ng-template #cmtOld>
+                        <button class="h-[30px] w-[30px] rounded-md cursor-pointer" tds-tooltip tooltipTitle="Bình luận cũ nhất" (click)="onChangeSort(sortOptions[0])">
+                            <i class="tdsi-sort-arrow-down-fill text-xl text-primary-1"></i>
+                        </button>
+                    </ng-template>
                 </div>
             </div>
         </div>
@@ -194,10 +228,12 @@
         [sort]="currentSort" 
         [filter]="currentFilter"
         [isShowFilterUser]="isShowFilterUser"
+        [checkedAll]="checked"
+        (onOuputCheckAll)="onCheckAll($event)"
+        (onOuputIndeterminate)="onIndeterminate($event)"
+        [currentFilterComment]="currentFilterComment"
+        [textSearchFilterComment]="textSearchFilterComment"
         class="h-full w-full">
         </item-post-comment>
-        <!-- 
-        [checked]="setOfCheckedId.has(item.psid)"
-        (checkedChange)="onItemChecked(item.psid, $event)" -->
     </div>
 </div>
