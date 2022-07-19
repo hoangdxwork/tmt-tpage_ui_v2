@@ -4,7 +4,7 @@ import { ExcelExportService } from './../../../../services/excel-export.service'
 import { PrinterService } from './../../../../services/printer.service';
 import { FastSaleOrderDTO } from './../../../../dto/fastsaleorder/fastsaleorder.dto';
 import { OdataFSOrderLinesV2, FSOrderLinesV2 } from './../../../../dto/fastsaleorder/fastsale-orderline.dto';
-import { Subject, finalize, takeUntil, pipe } from 'rxjs';
+import { Subject, finalize, takeUntil } from 'rxjs';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { Component, Input, OnInit, OnDestroy, ViewContainerRef } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';

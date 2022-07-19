@@ -7,23 +7,8 @@ import { Injectable } from "@angular/core";
 export abstract class AddVariantHandler {
 
     static prepareModel(dataModel: ProductDTO, formModel: any) {
-        dataModel.Name = formModel.Name ? formModel.Name : dataModel.Name;
-        dataModel.ImageUrl = formModel.ImageUrl ? formModel.ImageUrl : dataModel.ImageUrl;
-        dataModel.Image = formModel.Image ? formModel.Image : dataModel.Image;
-        dataModel.SaleOK = (formModel.SaleOK || formModel.SaleOK == false) ? formModel.SaleOK : dataModel.SaleOK;
-        dataModel.PurchaseOK = (formModel.PurchaseOK || formModel.PurchaseOK == false) ? formModel.PurchaseOK : dataModel.PurchaseOK;
-        dataModel.Type = formModel.Type ? formModel.Type : dataModel.Type;
-        dataModel.DefaultCode = formModel.DefaultCode ? formModel.DefaultCode : dataModel.DefaultCode;
-        dataModel.Barcode = formModel.Barcode ? formModel.Barcode : dataModel.Barcode;
-        dataModel.Active = (formModel.Active || formModel.Active == false) ? formModel.Active : dataModel.Active;
-        dataModel.PriceVariant = formModel.PriceVariant ? formModel.PriceVariant : dataModel.PriceVariant;
-        dataModel.StandardPrice = formModel.StandardPrice ? formModel.StandardPrice : dataModel.StandardPrice;
-        dataModel.PurchaseMethod = formModel.PurchaseMethod ? formModel.PurchaseMethod : dataModel.PurchaseMethod;
-        dataModel.Weight = formModel.Weight ? formModel.Weight : dataModel.Weight;
-        dataModel.SaleDelay = formModel.SaleDelay ? formModel.SaleDelay : dataModel.SaleDelay;
-        dataModel.AvailableInPOS = (formModel.AvailableInPOS || formModel.AvailableInPOS == false) ? formModel.AvailableInPOS : dataModel.AvailableInPOS;
-        dataModel.InvoicePolicy = formModel.InvoicePolicy ? formModel.InvoicePolicy : dataModel.InvoicePolicy;
-        dataModel.AttributeValues = formModel.AttributeValues ? formModel.AttributeValues : dataModel.AttributeValues;
+        
+        dataModel = {...dataModel,...formModel};
         if (formModel.Categ) {
             dataModel.Categ = formModel.Categ;
             dataModel.CategId = formModel.Categ.Id;

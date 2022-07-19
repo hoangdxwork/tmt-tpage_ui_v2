@@ -43,7 +43,6 @@ import { PartnerDetailDTO } from 'src/app/main-app/dto/partner/partner-detail.dt
 import { ChangePartnerPriceListDTO } from 'src/app/main-app/dto/partner/change-partner-pricelist.dto';
 import { AddBillHandler } from './add-bill.handler';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { deburr } from 'lodash';
 
 @Component({
   selector: 'app-add-bill',
@@ -104,6 +103,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   loadByOrder: any;
   showShipService!: boolean;
   selectedIndex = 0;
+  pageChange:string = 'bill';
 
   private destroy$ = new Subject<void>();
 
@@ -341,8 +341,10 @@ export class AddBillComponent implements OnInit, OnDestroy {
       delete data['@odata.context'];
 
       this.dataModel = data;
-      // Trường hợp copy
+      //Trường hợp copy
       this.loadCacheCopy(this.dataModel);
+      //Trường hợp Tạo hóa đơn F10 bên Đơn hàng
+      this.updateByOrder(this.dataModel);
     }, error => {
       this.message.error(error?.error?.message || 'Load thông tin mặc định đã xảy ra lỗi!');
     });
@@ -351,13 +353,14 @@ export class AddBillComponent implements OnInit, OnDestroy {
   loadCacheCopy(data: FastSaleOrder_DefaultDTOV2) {
     let keyCache = this.fastSaleOrderService._keyCacheCopyInvoice as string;
     this.cacheApi.getItem(keyCache).subscribe((obs) => {
-
+      
       if (TDSHelperString.hasValueString(obs)) {
         let cache = JSON.parse(obs['value']) as TDSSafeAny;
         let cacheDB = JSON.parse(cache['value']) as TDSSafeAny;
         data = { ...data, ...cacheDB };
         // Copy xong xóa dữ liệu cache
         this.cacheApi.removeItem(keyCache);
+        this.pageChange = 'bill';
       }
 
       if (data.DateInvoice) {
@@ -381,6 +384,65 @@ export class AddBillComponent implements OnInit, OnDestroy {
     })
   }
 
+  updateByOrder(data: FastSaleOrder_DefaultDTOV2) {
+    const key = this.saleOnlineOrderService._keyCreateBillOrder;
+
+    this.cacheApi.getItem(key).subscribe((res) => {
+      if (TDSHelperObject.hasValue(res)) {
+        let model = JSON.parse(res?.value)?.value?.data;
+
+        if(TDSHelperObject.hasValue(model)){
+          data.SaleOnlineIds = model.ids;
+          // data.Partner = model.partner;
+          data.Reference = model.Reference;
+          data.Comment = model.comment || '';
+          data.FacebookId = model.facebookId;
+          data.FacebookName = model.facebookName;
+          data.IsProductDefault = model.isProductDefault;
+          //Check kho hàng
+          if (model.warehouse) {
+            data.Warehouse = model.warehouse;
+          }
+          data.ReceiverName = model.partner.DisplayName;
+  
+          var orderLines: any = [];
+          for (var item of model.orderLines) {
+            orderLines.push({
+              AccountId: item.AccountId,
+              Discount: item.Discount || 0,
+              Discount_Fixed: item.Discount_Fixed || 0,
+              Note: item.Note,
+              PriceRecent: item.PriceRecent || 0,
+              PriceSubTotal: item.PriceSubTotal || 0,
+              PriceTotal: item.PriceTotal || 0,
+              PriceUnit: item.PriceUnit || 0,
+              Product: item.Product,
+              ProductId: item.ProductId,
+              ProductName: item.ProductName,
+              ProductNameGet: item.Product.NameGet,
+              ProductUOM: item.ProductUOM,
+              ProductUOMId: item.ProductUOMId,
+              ProductUOMName: item.ProductUOMName,
+              ProductUOMQty: item.ProductUOMQty,
+              Type: item.Product.Type,
+              Weight: item.Weight || 0,
+              WeightTotal: 0
+            });
+          }
+
+          if(model.partner){
+            this.changePartner(model.partner.Id)
+          }
+  
+          data.OrderLines = orderLines;
+        }
+        this.pageChange = 'order';
+      }
+      this.mappingAddress(data);
+      this.updateForm(data);
+    })
+  }
+
   loadTeamById(id: any) {
     this.cRMTeamService.getTeamById(id).pipe(takeUntil(this.destroy$)).subscribe((team: any) => {
       this.dataModel.Team.Name = team?.Name;
@@ -397,7 +459,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
         this.message.error(error?.error?.message || 'Load bảng giá đã xảy ra lỗi!')
       })
     }
-
+    
     if (TDSHelperArray.hasListValue(data.OrderLines)) {
       data.OrderLines.forEach((x: OrderLineV2) => {
         this.addOrderLines(x);
@@ -408,7 +470,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       let cod = data.AmountTotal + data.DeliveryPrice - data.AmountDeposit;
       data.CashOnDelivery = cod;
     }
-
+    
     this._form.patchValue(data);
   }
 
@@ -1982,10 +2044,13 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
       this.isLoading = true;
       this.fastSaleOrderService.insert(model).pipe(takeUntil(this.destroy$), finalize(() => { this.isLoading = false })).subscribe((res: any) => {
-
-        this.message.success('Tạo mới phiếu bán hàng  thành công!');
-        this.router.navigateByUrl(`bill/detail/${res.Id}`)
-
+        this.message.success('Tạo mới phiếu bán hàng thành công!');
+        if(this.pageChange === 'order'){
+          this.onBack();
+        }else{
+          this.message.success('Tạo mới phiếu bán hàng  thành công!');
+          this.router.navigateByUrl(`bill/detail/${res.Id}`);
+        }
       }, error => {
         this.message.error(`${error.error.message}` || 'Tạo mới phiếu bán hàng thất bại!');
       });
@@ -1993,7 +2058,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   onBack() {
-    this.router.navigateByUrl('bill');
+    this.router.navigateByUrl(this.pageChange);
   }
 
   ngOnDestroy(): void {
