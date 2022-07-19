@@ -84,7 +84,7 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     this.loadShippingStatus();
 
     this.urlLocation = {
-        document_base_url: `${BaseHelper.getBaseApi()}`
+        document_base_url: `https://test.tpos.dev/`
     }
   }
 
