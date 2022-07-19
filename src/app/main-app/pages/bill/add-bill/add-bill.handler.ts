@@ -1,68 +1,135 @@
 import { FastSaleOrder_DefaultDTOV2, OrderLineV2 } from './../../../dto/fastsaleorder/fastsaleorder-default.dto';
 import { Injectable } from "@angular/core";
+import { FormGroup } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
 })
-export abstract class AddBillHandler {
+export class AddBillHandler {
 
-  static prepareModel(model: FastSaleOrder_DefaultDTOV2, formModel: FastSaleOrder_DefaultDTOV2) {
-    model = {...model,...formModel};
-    model.PartnerId = formModel.Partner ? formModel.Partner.Id : model.PartnerId;
-    model.PriceListId = formModel.PriceList ? formModel.PriceList.Id : model.PriceListId;
-    model.WarehouseId = formModel.Warehouse ? formModel.Warehouse.Id : model.WarehouseId;
-    model.PaymentJournalId = formModel.PaymentJournal ? formModel.PaymentJournal.Id : model.PaymentJournalId;
-    model.PaymentAmount = Number(formModel.PaymentAmount) ? Number(formModel.PaymentAmount) : model.PaymentAmount;
-    model.TeamId = formModel.Team ? formModel.Team.Id : model.TeamId;
-    model.CarrierId = formModel.Carrier ? formModel.Carrier.Id : model.CarrierId;
-    model.UserId = formModel.User ? formModel.User.Id : model.UserId;
-    model.TaxId = formModel.Tax ? formModel.Tax.Id : model.TaxId;
-    model.Ship_ServiceExtrasText = formModel.Ship_ServiceExtras ? JSON.stringify(formModel.Ship_ServiceExtras) : model.Ship_ServiceExtrasText;
-    model.Ship_ExtrasText = formModel.Ship_ExtrasText ? JSON.stringify(formModel.Ship_Extras) : model.Ship_ExtrasText;
-    if (!model.CompanyId && model.Company) {
-      model.CompanyId = model.Company?.Id;
-    }
-    if (formModel.Account) {
-      model.Account = formModel.Account;
-      model.AccountId = formModel.Account.Id;
-    }
-    if (model.Ship_Receiver) {
-      model.Ship_Receiver.Name = model.ReceiverName ? model.ReceiverName : model.Ship_Receiver.Name;
-      model.Ship_Receiver.Phone = model.ReceiverPhone ? model.ReceiverPhone : model.Ship_Receiver.Phone;
-    }
-    if (formModel.ReceiverDate) {
-      model.ReceiverDate = formModel.ReceiverDate.toISOString();
-    }
-    if (formModel.DateOrderRed) {
-      model.DateOrderRed = formModel.DateOrderRed.toISOString();
-    }
-    if (formModel.DateInvoice) {
-      model.DateInvoice = formModel.DateInvoice.toISOString();
-    }
-    model.OrderLines.forEach((x: OrderLineV2) => {
-      if (x.Id <= 0) {
-        x.Id = 0;
-      }
+  prepareModel(model: FastSaleOrder_DefaultDTOV2, _form: FormGroup) {
 
-      if (!x.OrderId && model.Id && model.Id != 0) {
-        x.OrderId = model.Id;
-      }
+    const formModel = _form.value;
+    let data = {...model,...formModel };
 
-      if (!x.PartnerId && model.PartnerId && model.PartnerId != 0) {
-        x.PartnerId = model.PartnerId;
+    data.AccountId = data.Account?.Id || data.AccountId;
+    _form.controls['AccountId'].setValue(data.AccountId);
+
+    data.CarrierId = data.Carrier?.Id || data.CarrierId;
+    _form.controls['CarrierId'].setValue(data.CarrierId);
+
+    data.CompanyId = data.Company?.Id || data.CompanyId;
+    _form.controls['CompanyId'].setValue(data.CompanyId);
+
+    data.JournalId = data.Journal?.Id || data.JournalId;
+    _form.controls['JournalId'].setValue(data.JournalId);
+
+    data.PaymentJournalId = data.PaymentJournal?.Id || data.PaymentJournalId;
+    _form.controls['PaymentJournalId'].setValue(data.PaymentJournalId);
+
+    data.PriceListId = data.PriceList?.Id || data.PriceListId;
+    _form.controls['PriceListId'].setValue(data.PriceListId);
+
+    data.TaxId = data.Tax?.Id || data.TaxId;
+    _form.controls['TaxId'].setValue(data.TaxId);
+
+    data.UserId = data.User?.Id || data.UserId;
+    _form.controls['UserId'].setValue(data.UserId);
+
+    data.TeamId = data.Team?.Id || data.TeamId;
+    _form.controls['TeamId'].setValue(data.TeamId);
+
+    data.PartnerId = data.Partner?.Id || data.PartnerId;
+    _form.controls['PartnerId'].setValue(data.PartnerId);
+
+    data.WarehouseId = data.Warehouse?.Id || data.WarehouseId;
+    _form.controls['WarehouseId'].setValue(data.WarehouseId);
+
+    data.PaymentAmount = Number(data.PaymentAmount)
+
+    data.Ship_ServiceExtrasText = data.Ship_ServiceExtras ? JSON.stringify(data.Ship_ServiceExtras) : data.Ship_ServiceExtrasText;
+    data.Ship_ExtrasText = data.Ship_ExtrasText ? JSON.stringify(data.Ship_Extras) : data.Ship_ExtrasText;
+
+    if (data.Ship_Receiver) {
+      data.Ship_Receiver.Name = data.ReceiverName;
+      data.Ship_Receiver.Phone = data.ReceiverPhone;
+
+      data.Ship_Receiver.City = {
+        code: data.Ship_Receiver?.City?.code,
+        name: data.Ship_Receiver?.City?.name
+      };
+
+      data.Ship_Receiver.District = {
+        code: data.Ship_Receiver?.District?.code,
+        name: data.Ship_Receiver?.District?.name
+      };
+
+      data.Ship_Receiver.Ward = {
+        code: data.Ship_Receiver?.Ward?.code,
+        name: data.Ship_Receiver?.Ward?.name
       }
-      if (!x.CompanyId && model.CompanyId && model.CompanyId != 0) {
-        x.CompanyId = model.CompanyId;
-      }
-      if (!x.UserId && model.UserId) {
-        x.UserId = model.UserId;
-      }
-      if (!x.User && model.User || model.UserId) {
-        x.User = {
-          Id: model.User?.Id || model.UserId,
-          Name: model.User?.Name || model.UserName
-        } as any
-      }
-    })
+    }
+
+    data.ReceiverDate = data.ReceiverDate || null;
+    data.DateOrderRed = data.DateOrderRed || null;
+    data.DateInvoice = data.DateInvoice || new Date();
+
+    // TODO: trường hợp edit
+    if(data.Id && data.Id > 0) {
+      data.OrderLines.forEach((x: OrderLineV2) => {
+        if (x.Id <= 0) {
+          x.Id = 0;
+        }
+        x.Account = x.Account || data.Account;
+        x.AccountId = data.AccountId;
+        x.OrderId = data.Id;
+        x.PartnerId = data.PartnerId;
+        x.CompanyId = data.CompanyId;
+        x.UserId = data.UserId;
+        x.User = x.User || data.User;
+
+        if(!x.LiveCampaign_DetailId) {
+          delete x.LiveCampaign_DetailId;
+        }
+        if(x.LiveCampaignQtyChange <= 0) {
+          delete x.LiveCampaignQtyChange;
+        }
+        
+        //nếu chuyển sang tên miền test.tpos.dev thì bật lên
+        delete x.OrderId;
+      })
+    }
+
+    // TODO: trường hợp thêm mới
+    else {
+      let details: any = [];
+      data.OrderLines.forEach((x: OrderLineV2) => {
+        let item = {
+            Account: data.Account,
+            AccountId: data.AccountId,
+            Discount: x.Discount,
+            Discount_Fixed: x.Discount_Fixed,
+            Note: x.Note,
+            PriceRecent: x.PriceRecent,
+            PriceTotal: x.PriceTotal,
+            PriceUnit: x.PriceUnit,
+            Product: x.Product,
+            ProductId: x.ProductId,
+            ProductUOM: x.ProductUOM,
+            ProductUOMId: x.ProductUOMId,
+            ProductUOMQty: x.ProductUOMQty,
+            Type: x.Type || 'percent',
+            User: model.User,
+            Weight: x.Weight,
+            WeightTotal: x.WeightTotal
+        }
+
+        details.push(item);
+      })
+
+      data.OrderLines = [... details] as any;
+    }
+
+    return data;
   }
 }

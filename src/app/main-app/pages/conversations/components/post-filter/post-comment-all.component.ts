@@ -58,7 +58,6 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initialize();
-    console.log(this.itemPostCommentCmp)
   }
 
   editOrder(id: any, item: CommentByPost){

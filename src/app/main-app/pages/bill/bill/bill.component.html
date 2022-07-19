@@ -153,7 +153,7 @@
                 </td>
                 <td *ngIf="isHidden('DateCreated')" class="border-r">
                   <div class="w-full">
-                    <span>{{data.DateCreated | date:"dd/MM/yyyy HH:mm:ss"}}</span>
+                    <span>{{data.DateCreated | yiDateTimeFormat}}</span>
                   </div>
                 </td>
                 <td *ngIf="isHidden('CarrierName')" class="border-r">
@@ -230,7 +230,7 @@
                 </td>
                 <td *ngIf="isHidden('DateInvoice')" [align]="'center'" class="border-r">
                   <div class="w-full">
-                    <span>{{data.DateInvoice | date:"dd/MM/yyyy HH:mm"}}</span>
+                    <span>{{data.DateInvoice | yiDateTimeFormat}}</span>
                   </div>
                 </td>
                 <td *ngIf="isHidden('CashOnDelivery')" [align]="'right'" class="border-r">
@@ -262,14 +262,12 @@
                 </td>
                 <td [tdsRight]="true" [align]="'center'" class="border-r">
                   <div class="flex items-center justify-center gap-x-2">
-                    <button tds-button-icon color="secondary" size="sm" tds-tooltip="Gửi tin nhắn"
-                      (click)="openMiniChat(data)">
+                    <button tds-button-icon color="secondary" size="sm" tds-tooltip="Gửi tin nhắn" (click)="openMiniChat(data)">
                       <span class="flex items-center">
                         <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                       </span>
                     </button>
-                    <button tds-button-icon type="button" color="secondary" size="sm" tds-tooltip="Chỉnh sửa"
-                      (click)="onView(data)">
+                    <button tds-button-icon type="button" color="secondary" size="sm" tds-tooltip="Chỉnh sửa" (click)="onView(data)">
                       <span class="flex items-center">
                         <i class="tdsi-edit-fill text-neutral-1-500"></i>
                       </span>

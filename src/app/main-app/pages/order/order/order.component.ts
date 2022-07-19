@@ -5,7 +5,7 @@ import { CRMMatchingService } from './../../../services/crm-matching.service';
 import { CRMTeamService } from './../../../services/crm-team.service';
 import { PartnerService } from './../../../services/partner.service';
 import { addDays } from 'date-fns/esm';
-import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy, AfterViewChecked, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy, AfterViewChecked, AfterViewInit, AfterContentChecked } from '@angular/core';
 import { SaleOnlineOrderSummaryStatusDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { ColumnTableDTO } from 'src/app/main-app/dto/common/table.dto';
@@ -514,26 +514,32 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onEdit(item: ODataSaleOnline_OrderModel) {
-    this.isLoading = true;
-    this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
-      delete res['@odata.context'];
-      const modal = this.modal.create({
-        content: EditOrderComponent,
-        size: 'xl',
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          dataItem: item
-        }
-      });
+    if(item && item.Id) {
+      this.saleOnline_OrderService.getById(item.Id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
 
-      modal.afterClose.subscribe((obs: string) => {
-        if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
-          this.loadData(this.pageSize, this.pageIndex);
-        }
+          if(res && res.Id) {
+            delete res['@odata.context'];
+
+            const modal = this.modal.create({
+                content: EditOrderComponent,
+                size: 'xl',
+                viewContainerRef: this.viewContainerRef,
+                componentParams: {
+                  dataItem: { ...res }
+                }
+            })
+
+            modal.afterClose?.subscribe((obs: string) => {
+                if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
+                    this.loadData(this.pageSize, this.pageIndex);
+                }
+            })
+          }
+      }, error => {
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
       });
-    }, error => {
-      this.message.error('Load đơn hàng đã xảy ra lỗi');
-    });
+    }
+
   }
 
   onRemove(id: string, code: string) {

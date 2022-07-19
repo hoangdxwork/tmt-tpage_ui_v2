@@ -1,10 +1,13 @@
-import { Component, OnChanges, OnDestroy, OnInit, Optional, Host, SkipSelf } from '@angular/core';
+import { TDSMessageService } from 'tds-ui/message';
+import { CommonService } from 'src/app/main-app/services/common.service';
+import { Component, OnChanges, OnDestroy, OnInit, Optional, Host, SkipSelf, Input } from '@angular/core';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { CommentByPost } from 'src/app/main-app/dto/conversation/post/comment-post.dto';
 import { ItemPostCommentComponent } from '../../conversation-post/item-post-comment.component';
 import { TDSHelperArray, TDSHelperObject } from 'tds-ui/shared/utility';
+import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 
 @Component({
   selector: 'post-comment-group',
@@ -13,6 +16,7 @@ import { TDSHelperArray, TDSHelperObject } from 'tds-ui/shared/utility';
 
 export class PostCommentGroupComponent implements OnInit, OnDestroy {
 
+  @Input() isShowFilterUser!: boolean;
   team!: CRMTeamDTO | null;
   data: any = { Items: []};
   childs: any = {};
@@ -20,11 +24,14 @@ export class PostCommentGroupComponent implements OnInit, OnDestroy {
   currentGroup: any;
   otherSelecteds: any = [];
   partners$!: Observable<any>;
+  lstPartnerStatus!: Array<PartnerStatusDTO>;
 
   destroy$ = new Subject<void>();
   messageModel!: string;
 
   constructor(private conversationPostFacade: ConversationPostFacade,
+    private commonService: CommonService,
+    private message: TDSMessageService,
     @Host() @Optional() @SkipSelf() public itemPostCommentCmp: ItemPostCommentComponent) {
   }
 
@@ -40,6 +47,22 @@ export class PostCommentGroupComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initialize();
+  }
+  loadPartnerStatus() {
+    this.commonService.getPartnerStatus().subscribe(res => {
+      this.lstPartnerStatus = [...res];
+    },err=>{
+      this.message.error(err.error? err.error.message: 'Tải trạng thái khách hàng lỗi');
+    });
+  }
+
+  getStatusColor(statusText: string | undefined) {
+    if(TDSHelperArray.hasListValue(this.lstPartnerStatus)) {
+      let value = this.lstPartnerStatus.find(x => x.text == statusText);
+      if(value) return value.value;
+      else return '';
+    }
+    else return '';
   }
 
   editOrder(id: any, item: CommentByPost){

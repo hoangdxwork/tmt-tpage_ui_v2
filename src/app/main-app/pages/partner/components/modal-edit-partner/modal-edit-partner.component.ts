@@ -113,22 +113,20 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     }
 
     this.partnerService.getDefault(model)
-      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
-      .subscribe((res: any) => {
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
         delete res['@odata.context'];
 
         this.data = res;
         this.updateForm(this.data);
       }, error => {
-        this.message.error('Tải dữ liệu mặc định khách hàng thất bại');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
       })
   }
 
   loadPartner() {
     this.isLoading = true;
     this.partnerService.getById(this.partnerId)
-      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
-      .subscribe((res: any) => {
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
         delete res['@odata.context'];
 
         if (res.BirthDay != null) {
@@ -139,7 +137,7 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
         this.updateForm(this.data);
         this.mappingAddress(res);
       }, error => {
-        this.message.error('Tải dữ liệu khách hàng thất bại');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
       })
   }
 
@@ -260,13 +258,15 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     this.modal.destroy(null);
   }
 
-  onSave() {
+  onSave(): any {
     let model = this.prepareModel();
     if (!TDSHelperString.hasValueString(model.Name)) {
-      this.message.error('Vui lòng nhập tên khách hàng');
+        this.message.error('Vui lòng nhập tên khách hàng');
+        return
     }
     if (!TDSHelperString.hasValueString(model.Phone)) {
-      this.message.error('Vui lòng nhập số điện thoại');
+        this.message.error('Vui lòng nhập số điện thoại');
+        return
     }
 
     if (this.partnerId) {

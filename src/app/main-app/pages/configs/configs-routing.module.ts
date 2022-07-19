@@ -12,7 +12,7 @@ import { ConfigActivitiesComponent } from './config-activities/config-activities
 import { ConfigProductsComponent } from './config-products/config-products.component';
 import { ConfigSmsMessagesComponent } from './config-sms-messages/config-sms-messages.component';
 import { AutoQuickReplyComponent } from './auto-quick-reply/auto-quick-reply.component';
-import { AutoInteractionComponent } from './auto-interraction/auto-interaction.component';
+import { SaleOrderComponent } from './sale-order/sale-order.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ConfigComponent } from './config/config.component';
@@ -21,25 +21,34 @@ import { ConfigAddPromotionComponent } from './config-promotions/components/conf
 import { ConfigEditPromotionComponent } from './config-promotions/components/config-edit-promotion/config-edit-promotion.component';
 import { ListProductVariantComponent } from './product-variant/list-product-variant.component';
 import { CreateProductVariantComponent } from './product-variant/create/create-product-variant.component';
+import { FacebookCartComponent } from './facebook-cart/facebook-cart.component';
+import { AshipV2Component } from './aship-v2/aship-v2.component';
+import { ListConfigDeliveryComponent } from './config-delivery/list-config-delivery.component';
+import { ConfigDeliveryConnectComponent } from './config-delivery/config-delivery-connect/config-delivery-connect.component';
+import { ConfigDeliveryUpdateComponent } from './config-delivery/config-delivery-update/config-delivery-update.component';
 
 const routes: Routes = [
   {
-    path:'',
-    redirectTo:'overview',
-    pathMatch:'full'
+    path: '',
+    redirectTo: 'saleorder',
+    pathMatch: 'full'
   },
   {
     path: '',
     component: ConfigComponent,
     children:[
       {
-        path:'overview',
-        component: AutoInteractionComponent
+        path:'saleorder',
+        component: SaleOrderComponent
       },
-      // {
-      //   path:'print-bills',
-      //   component: ConfigPrintBillsComponent
-      // },
+      {
+        path:'facebook-cart',
+        component: FacebookCartComponent
+      },
+      {
+        path:'delivery-carrier',
+        component: AshipV2Component
+      },
       {
         path:'conversation-tags',
         component: ConfigConversationTagsComponent
@@ -55,7 +64,6 @@ const routes: Routes = [
       {
         path:'product-variant',
         component: ListProductVariantComponent,
-
       },
       {
         path:'product-variant/create',
@@ -122,7 +130,19 @@ const routes: Routes = [
             component: ConfigPagesDivideTaskComponent
           }
         ]
-      }
+      },
+      {
+        path:'delivery',
+        component: ListConfigDeliveryComponent,
+      },
+      {
+        path: 'delivery/connect',
+        component: ConfigDeliveryConnectComponent,
+      },
+      {
+        path: 'delivery/edit',
+        component: ConfigDeliveryUpdateComponent,
+      },
     ]
   },
 ];

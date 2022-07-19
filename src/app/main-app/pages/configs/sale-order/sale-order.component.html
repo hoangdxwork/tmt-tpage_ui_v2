@@ -1,26 +1,26 @@
 <div class="w-full h-full px-4 overflow-auto tds-custom-scroll">
-  <div class="w-full">
+  <div class="w-full" *ngIf="dataModel">
     <!-- CẤU HÌNH TƯƠNG TÁC TỰ ĐỘNG -->
     <tds-spin [spinning]="isLoading">
       <form [formGroup]="_form">
         <div class="w-full h-full bg-white rounded-xl p-4 mb-4">
           <div class="flex flex-row items-center pb-4">
               <tds-avatar class="bg-primary-1 text-white" icon="tdsi-gear-2-fill"></tds-avatar>
-              <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">TƯƠNG TÁC TỰ ĐỘNG</span>
+              <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">CẤU HÌNH CHỐT ĐƠN</span>
           </div>
 
           <!-- Cấu hình nội dung mẫu chốt đơn -->
-          <div class="flex flex-col pb-4">
+          <div class="flex flex-col pb-4  w-full">
               <span class="text-neutral-1-900 text-title-1 font-semibold pt-4">Cấu hình nội dung mẫu chốt đơn</span>
               <div class="flex flex-row items-center pt-4">
-                  <tds-switch size="md" formControlName="IsEnableOrder"></tds-switch>
+                  <tds-switch size="md" formControlName="IsEnableOrder" (ngModelChange)="changeIsEnableOrder($event)"></tds-switch>
                   <span class="text-neutral-1-900 text-body-2 pl-2">Phản hồi tự động khi chốt đơn?</span>
               </div>
-              <div *ngIf="_form.controls['IsEnableOrder'].value == true" class="flex flex-col bg-neutral-3-50 rounded-md p-4 mt-4">
-                  <div class="flex flex-col pb-4">
+              <div *ngIf="_form.controls['IsEnableOrder'].value == true" class="flex flex-col bg-neutral-3-50 rounded-md p-4 mt-4  w-full">
+                  <div class="flex flex-col pb-4  w-full" *ngIf="urlLocation && urlLocation.document_base_url">
                       <span class="text-neutral-1-900 text-body-2 font-semibold pb-2">Nội dung mẫu</span>
-                      <tds-editor [height]="104" class="bg-white" formControlName="OrderTemplate"
-                       [mentionKey]="'@'" [mentionSuggest]="tagHelpers" [mention]="'value'" [init]="baseUrlLocation"></tds-editor>
+                      <tds-editor [height]="104" class="bg-white w-full" formControlName="OrderTemplate"
+                       [mentionKey]="'@'" [mentionSuggest]="tagHelpers" [mention]="'value'" [init]="urlLocation"></tds-editor>
                   </div>
                   <div class="flex flex-col">
                       <div class="flex flex-row items-center pb-4">
@@ -45,44 +45,43 @@
           </div>
 
           <!-- Cấu hình nội dung mẫu tạo hóa đơn -->
-          <div class="flex flex-col pb-4">
+          <div class="flex flex-col pb-4  w-full">
               <span class="text-neutral-1-900 text-title-1 font-semibold pt-4">Cấu hình nội dung mẫu tạo hóa đơn</span>
               <div class="flex flex-row items-center pt-4">
-                  <tds-switch size="md" formControlName="IsEnableBill"></tds-switch>
+                  <tds-switch size="md" formControlName="IsEnableBill" (ngModelChange)="changeIsEnableBill($event)"></tds-switch>
                   <span class="text-neutral-1-900 text-body-2 pl-2">Phản hồi tự động khi tạo hóa đơn?</span>
               </div>
-              <div *ngIf="_form.controls['IsEnableBill'].value == true" class="flex flex-col bg-neutral-3-50 rounded-md p-4 mt-4 gap-y-4">
+              <div *ngIf="_form.controls['IsEnableBill'].value == true" class="flex flex-col bg-neutral-3-50 rounded-md p-4 mt-4 gap-y-4  w-full">
                   <div class="flex flex-row items-center">
                       <tds-switch size="md" formControlName="IsUsingProviderTemplate"></tds-switch>
                       <span class="text-neutral-1-900 text-body-2 font-semibold pl-2">Sử dụng mẫu nhà cung cấp?</span>
                   </div>
-                  <div *ngIf="_form.controls['IsUsingProviderTemplate'].value == true" class="flex flex-col">
+                  <div *ngIf="_form.controls['IsUsingProviderTemplate'].value == true && urlLocation && urlLocation.document_base_url" class="flex flex-col  w-full">
                       <span class="text-neutral-1-900 text-body-2 font-semibold pb-2">Nội dung mẫu</span>
-                      <tds-editor [height]="104" class="bg-white" formControlName="BillTemplate" [mentionSuggest]="tagHelpers"
-                        [mention]="'value'" [init]="baseUrlLocation"></tds-editor>
+                      <tds-editor [height]="104" class="bg-white  w-full" formControlName="BillTemplate" [mentionSuggest]="tagHelpers"
+                        [mention]="'value'" [init]="urlLocation"></tds-editor>
                   </div>
               </div>
           </div>
 
           <!-- Trạng thái vận chuyển -->
-          <div class="flex flex-col pb-4">
+          <div class="flex flex-col pb-4  w-full">
               <span class="text-neutral-1-900 text-title-1 font-semibold pt-4">Trạng thái vận chuyển</span>
               <div class="flex flex-row items-center pt-4">
                   <tds-switch size="md" formControlName="IsEnableShipping"></tds-switch>
                   <span class="text-neutral-1-900 text-body-2 pl-2">Thông báo khi có sự thay đổi trạng thái vận đơn?</span>
               </div>
-              <div *ngIf="_form.controls['IsEnableShipping'].value == true" class="flex flex-col bg-neutral-3-50 rounded-md p-4 mt-4">
+              <div *ngIf="_form.controls['IsEnableShipping'].value == true" class="flex flex-col bg-neutral-3-50 rounded-md p-4 mt-4  w-full">
                   <tds-form-field class="pb-4">
                       <tds-label class="text-neutral-1-900 text-body-2 font-semibold">Chọn trạng thái gửi</tds-label>
                       <tds-select valueField="Code" textField="Name" placeholder='Chọn trạng thái gửi'
-                          formControlName="ShippingStatues" mode="multiple"
-                          [data]="lstShippingStatues" [allowClear]="true" >
+                          formControlName="ShippingStatues" mode="multiple" [data]="lstShippingStatus" [allowClear]="true" >
                       </tds-select>
                   </tds-form-field>
-                  <div class="flex flex-col">
+                  <div class="flex flex-col  w-full" *ngIf="urlLocation && urlLocation.document_base_url">
                       <span class="text-neutral-1-900 text-body-2 font-semibold pb-2">Nội dung mẫu</span>
-                      <tds-editor [height]="104" class="bg-white" formControlName="ShippingTemplate" [mentionSuggest]="tagHelpers"
-                        [mention]="'value'" [init]="baseUrlLocation"></tds-editor>
+                      <tds-editor [height]="104" class="bg-white w-full" formControlName="ShippingTemplate" [mentionSuggest]="tagHelpers"
+                        [mention]="'value'" [init]="urlLocation"></tds-editor>
                   </div>
               </div>
           </div>

@@ -27,6 +27,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   @Input() post!: FacebookPostItem;
   @Input() sort: any;
   @Input() filter: any;
+  @Input() isShowFilterUser!: boolean;
 
   team!: CRMTeamDTO | null;
   data: any = { Items: []};

@@ -11,7 +11,7 @@ import { ModalReportOrderPostComponent } from '../components/post-filter/modal-r
 import { ConfigPostOutletComponent } from '../components/config-post/config-post-outlet.component';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSHelperString } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'conversation-post-view',
@@ -24,20 +24,27 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
   @Input() data!: FacebookPostItem;
   @Input() team!: CRMTeamDTO;
 
-  showComment = true;
+  indClickFilter = 0;
+  isShowFilterUser = false;
+
+  indeterminate: boolean = false;
+  checked: boolean = false;
+
   private destroy$ = new Subject<void>();
   sortOptions: any[] = [
     { value: "DateCreated desc", text: "Mới nhất" },
     { value: "DateCreated asc", text: "Cũ nhất" },
   ];
   currentSort: any = this.sortOptions[0];
+  filterOptions: TDSSafeAny[] = [
+    { value: "all", text: "Tất cả bình luận", icon: 'tdsi-livechat-line' },
+    { value: "group", text: "Người dùng", icon: 'tdsi-user-line' },
+    { value: "manage", text: "Quản lí bình luận", icon: 'tdsi-eye-line' },
+    { value: "filter", text: "Tìm kiếm bình luận", icon: 'tdsi-search-fill' },
+    { value: "report", text: "Thống kê chốt đơn", icon: 'tdsi-chart-pie-line' },
+  ]
 
-  filterOptions: any[] = [
-    { value: "all", text: "Tất cả bình luận" },
-    { value: "group", text: "Người dùng" },
-    { value: "filter", text: "Lọc bình luận" },
-    { value: "manage", text: "Quản lí bình luận" },
-    { value: "report", text: "Thống kê chốt đơn" },
+  filterExcel: any[] = [
     { value: "excel", text: "Tải file excel" },
     { value: "excel_phone", text: "Tải file excel có SĐT" },
     { value: "excel_phone_distinct", text: "Tải file excel lọc trùng SĐT" },
@@ -71,6 +78,7 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
   }
 
   onChangeFilter(event: any): any {
+    console.log(event)
     if (this.isProcessing) { return }
 
     if(!TDSHelperString.hasValueString(this.data.fbid)) {
@@ -166,8 +174,17 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
     });
   }
 
-  openChat(){
-    this.showComment = !this.showComment;
+  fillterAll(data: TDSSafeAny, index: number){
+    this.indClickFilter = index;
+    this.facebookCommentService.onFilterSortCommentPost$.emit({type: 'filter', data: data});
+  }
+
+  onShowFilterUser(){
+    this.isShowFilterUser = !this.isShowFilterUser
+  }
+
+  onAllChecked(event: TDSSafeAny){
+    
   }
 
   ngOnDestroy(): void {

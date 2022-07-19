@@ -31,7 +31,7 @@
                     <tds-select valueField="Id" textField="DisplayName" [valuePrimitive]="false"
                       placeholder='Chọn tên khách hàng' formControlName="Partner" (onSearch)="onSearchPartner($event)"
                       (selectChange)="selectChangePartner($event)" disabledField="isActive"
-                      [data]="(lstCustomers | async) || []" [allowClear]="false">
+                      [data]="(lstCustomers | async) || []" [allowClear]="true">
                       <ng-template tds-label-tmp let-item="item">
                         {{item.data.DisplayName || item.data.Name}}
                       </ng-template>
@@ -335,7 +335,7 @@
                     <input tdsInput autocomplete="off" placeholder="Nhập tên điện thoại" formControlName="ReceiverPhone" />
                   </tds-form-field>
                 </div>
-                <!-- <div class="flex gap-x-6 items-center">
+                <div class="flex gap-x-6 items-center">
                   <tds-label class="w-1/3">Ngày giao hàng</tds-label>
                   <div class="w-2/3">
                     <tds-date-picker showTime formControlName="ReceiverDate"></tds-date-picker>
@@ -346,7 +346,7 @@
                   <tds-form-field class="w-2/3">
                     <input tdsInput autocomplete="off" placeholder="Nhập ghi chú" formControlName="ReceiverNote" />
                   </tds-form-field>
-                </div> -->
+                </div>
               </div>
               <div class="col-span-1 gap-y-4">
                 <div class="flex gap-x-6 items-start">
@@ -546,7 +546,7 @@
                       <div class="px-4">
                         <span class="border rounded-md py-1 px-2 text-primary-1">{{_form.controls["CustomerDeliveryPrice"].value || 0 | number}}đ</span>
                       </div>
-                      
+
                       <div class="px-4 border-l">
                         <button *ngIf="!_form.controls['TrackingRef'].value" tds-button-icon color="info" size="sm" (click)="calcFee()"
                           title="Tính lại tiền ship" type="button">
@@ -555,7 +555,7 @@
                           </span>
                         </button>
                       </div>
-                      
+
                       <!-- <div class="px-4 border-l">
                         <button tds-button-icon color="primary" title="Tính gợi ý ship đối tác" type="button" size="sm" (click)="calcFeeList()">
                           <span class="flex items-center justify-center">

@@ -1,4 +1,4 @@
-import { AfterViewInit, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ElementRef, Input, OnDestroy, Output, ViewChild, EventEmitter } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { TDSModalRef } from 'tds-ui/modal';
 import { fromEvent, Observable, Subject } from 'rxjs';
@@ -19,6 +19,7 @@ export class ProductPagefbComponent implements AfterViewInit, OnDestroy {
 
   @ViewChild('innerText') innerText!: ElementRef;
   @Input() pageId: any;
+  @Output() onSendProduct = new EventEmitter<TDSSafeAny>();
 
   lstOfData: any[] = [];
   destroy$ = new Subject<void>();
@@ -142,7 +143,7 @@ export class ProductPagefbComponent implements AfterViewInit, OnDestroy {
       Price: item.Price,
     } as any;
 
-    this.modal.destroy(model);
+    this.onSendProduct.emit(model)
   }
 
   refreshData() {

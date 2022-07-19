@@ -123,6 +123,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     private cRMTeamService: CRMTeamService,
     private cdRef: ChangeDetectorRef,
     private modal: TDSModalService,
+    private addBillHandler: AddBillHandler,
     private applicationUserService: ApplicationUserService,
     private registerPaymentService: AccountRegisterPaymentService,
     private accountTaxService: AccountTaxService,
@@ -201,13 +202,20 @@ export class AddBillComponent implements OnInit, OnDestroy {
   createForm() {
     this._form = this.fb.group({
       Id: [null],
+      Account: [null],
+      AccountId: [null],
+      Company: [null],
+      CompanyId: [null],
       Partner: [null],
       PartnerId: [null],
       PriceList: [null],
       PriceListId: [null],
       Warehouse: [null],
       WarehouseId: [null],
+      Journal: [null],
+      JournalId: [null],
       PaymentJournal: [null],
+      PaymentJournalId: [null],
       PaymentAmount: [0],
       Team: [null],
       TeamId: [null],
@@ -332,16 +340,6 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.fastSaleOrderService.defaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isLoading = false)).subscribe((data: any) => {
       delete data['@odata.context'];
 
-      if (data.DateInvoice) {
-        data.DateInvoice = new Date(data.DateInvoice);
-      }
-      if (data.DateOrderRed) {
-        data.DateOrderRed = new Date(data.DateOrderRed);
-      }
-      if (data.ReceiverDate) {
-        data.ReceiverDate = new Date(data.ReceiverDate);
-      }
-
       this.dataModel = data;
       //Trường hợp copy
       this.loadCacheCopy(this.dataModel);
@@ -365,8 +363,24 @@ export class AddBillComponent implements OnInit, OnDestroy {
         this.pageChange = 'bill';
       }
 
+      if (data.DateInvoice) {
+        data.DateInvoice = new Date(data.DateInvoice);
+      }
+      if (data.DateOrderRed) {
+        data.DateOrderRed = new Date(data.DateOrderRed);
+      }
+      if (data.ReceiverDate) {
+        data.ReceiverDate = new Date(data.ReceiverDate);
+      }
+
       this.mappingAddress(data);
       this.updateForm(data);
+
+      // TODO: nếu trường hợp load thêm mới, gán dữ liệu địa chỉ khách hàng cho form khởi tạo
+      if(data.PartnerId || data.Partner?.Id) {
+        let partnerId = data.PartnerId || data.Partner?.Id;
+        this.changePartner(partnerId);
+      }
     })
   }
 
@@ -606,9 +620,9 @@ export class AddBillComponent implements OnInit, OnDestroy {
           obs.Ship_Receiver.Ward = {
             code: partnerModel.WardCode, name: partnerModel.WardName
           }
-
           if (obs.Account) {
             this._form.controls['Account'].setValue(obs.Account);
+            this._form.controls['AccountId'].setValue(obs.AccountId);
           }
 
           this._form.controls['PriceList'].setValue(obs.PriceList);
@@ -1464,7 +1478,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
         IsName: [data.IsName],
         LiveCampaign_DetailId: [data.LiveCampaign_DetailId],
         LiveCampaignQtyChange: [0],
-        OrderId: [null],
+        OrderId: [data.OrderId],
         ProductName: [data.ProductName],
         ProductUOMName: [data.ProductUOMName],
         SaleLineIds: [data.SaleLineIds],
@@ -1979,12 +1993,10 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   prepareModel(): any {
-    const formModel = this._form.value as FastSaleOrder_DefaultDTOV2;
-    const model = this.dataModel as FastSaleOrder_DefaultDTOV2;
+    let model = this.dataModel as FastSaleOrder_DefaultDTOV2;
+    let x = this.addBillHandler.prepareModel(model, this._form);
 
-    AddBillHandler.prepareModel(model, formModel);
-
-    return model;
+    return x;
   }
 
   onSave(): any {
@@ -1993,7 +2005,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     let model = this.prepareModel();
 
     // console.log(model)
-    if (!TDSHelperObject.hasValue(this._form.controls['Partner'].value) || !this._form.controls['PartnerId'].value) {
+    if (!TDSHelperObject.hasValue(this._form.controls['Partner'].value) && !this._form.controls['PartnerId'].value) {
       return this.message.error('Vui lòng chọn khách hàng!');
     }
     if (!TDSHelperArray.hasListValue(this._form.controls['OrderLines'].value)) {
@@ -2020,18 +2032,24 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   saveRequest(model: any) {
     if (this.id) {
+
       this.isLoading = true;
       this.fastSaleOrderService.update(this.id, model).pipe(takeUntil(this.destroy$), finalize(() => { this.isLoading = false })).subscribe((res: any) => {
         this.message.success('Cập nhật phiếu bán hàng thành công!');
       }, error => {
         this.message.error(`${error.error.message}` || 'Cập nhật phiếu bán hàng thất bại!');
       })
+
     } else {
+
       this.isLoading = true;
       this.fastSaleOrderService.insert(model).pipe(takeUntil(this.destroy$), finalize(() => { this.isLoading = false })).subscribe((res: any) => {
         this.message.success('Tạo mới phiếu bán hàng thành công!');
         if(this.pageChange === 'order'){
           this.onBack();
+        }else{
+          this.message.success('Tạo mới phiếu bán hàng  thành công!');
+          this.router.navigateByUrl(`bill/detail/${res.Id}`);
         }
       }, error => {
         this.message.error(`${error.error.message}` || 'Tạo mới phiếu bán hàng thất bại!');

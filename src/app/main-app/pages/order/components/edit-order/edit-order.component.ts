@@ -4,7 +4,6 @@ import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { Ship_ExtrasServiceModel } from './../../../../commands/dto-handler/ship-extra-service.dto';
 import { DeliveryCarrierDTOV2 } from './../../../../dto/delivery-carrier.dto';
-import { FilterObjDTO, OdataProductService } from './../../../../services/mock-odata/odata-product.service';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { ChangeDetectorRef, Component, Input, OnInit, ViewContainerRef, AfterViewInit } from '@angular/core';
 import { TAuthService } from 'src/app/lib';
@@ -20,7 +19,6 @@ import { TpageAddProductComponent } from 'src/app/main-app/shared/tpage-add-prod
 import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { Observable, Subject, takeUntil } from 'rxjs';
-import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { finalize, map } from 'rxjs/operators';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
@@ -46,16 +44,15 @@ import { TDSNotificationService } from 'tds-ui/notification';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { PrepareSaleModelHandler } from 'src/app/main-app/commands/prepare-salemodel.handler';
-import { ODataSaleOnline_OrderModel } from 'src/app/main-app/dto/saleonlineorder/odata-saleonline-order.dto';
 
 @Component({
   selector: 'edit-order',
-  templateUrl: './edit-order.component.html'
+  templateUrl: './edit-order.component.html',
 })
 
-export class EditOrderComponent implements OnInit {
+export class EditOrderComponent implements OnInit, AfterViewInit {
 
-  @Input() dataItem!: ODataSaleOnline_OrderModel;
+  @Input() dataItem!: QuickSaleOnlineOrderModel;
 
   dataSuggestion!: DataSuggestionDTO;
   userInit!: UserInitDTO;
@@ -71,7 +68,6 @@ export class EditOrderComponent implements OnInit {
   lstProductSearch: ProductDTOV2[] = [];
   textSearchProduct!: string;
   isLoadingProduct: boolean = false;
-  // Giá trị này phải khởi tạo = []
   shipExtraServices: Ship_ExtrasServiceModel[] = [];
   shipServices: any[] = [];
 
@@ -83,15 +79,13 @@ export class EditOrderComponent implements OnInit {
   // numberWithCommas = (value: number) => `${value} đ`;
   // parserComas = (value: string) => value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null)
-    {
+    if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
     }
     return value
-  } ;
+  }
   parserComas = (value: TDSSafeAny) =>{
-    if(value != null)
-    {
+    if(value != null) {
       return TDSHelperString.replaceAll(value,',','');
     }
     return value
@@ -124,7 +118,6 @@ export class EditOrderComponent implements OnInit {
     private commonService: CommonService,
     private fastSaleOrderService: FastSaleOrderService,
     private generalConfigsFacade: GeneralConfigsFacade,
-    private odataProductService: OdataProductService,
     private deliveryCarrierService: DeliveryCarrierService,
     private partnerService: PartnerService,
     private productTemplateOUMLineService: ProductTemplateOUMLineService) {
@@ -144,20 +137,20 @@ export class EditOrderComponent implements OnInit {
   }
 
   loadData() {
-    this.isLoading = true;
-    let id = this.dataItem.Id;
-    this.saleOnline_OrderService.getById(id).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res: any) => {
-      delete res['@odata.context'];
-      this.quickOrderModel = res;
-      this.mappingAddress(this.quickOrderModel)
-      if(res.Facebook_PostId && res.CRMTeamId && res.Facebook_ASUserId) {
-          this.commentsOfOrder(res.Facebook_PostId, res.CRMTeamId, res.Facebook_ASUserId);
-      }
+    this.quickOrderModel = { ...this.dataItem };
+    this.mappingAddress(this.quickOrderModel);
 
-      this.cdRef.detectChanges();
-    }, error => {
-      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Load đơn hàng đã xảy ra lỗi');
-    });
+    let postId = this.quickOrderModel.Facebook_PostId;
+    let teamId = this.quickOrderModel.CRMTeamId;
+    let asId = this.quickOrderModel.Facebook_ASUserId;
+
+    if(postId && teamId && asId) {
+        this.commentsOfOrder(postId, teamId, asId);
+    }
+  }
+
+  ngAfterViewInit() {
+    this.cdRef.detectChanges();
   }
 
   loadSaleModel() {
@@ -343,7 +336,7 @@ export class EditOrderComponent implements OnInit {
             UOMName: data.UOMName,
             Note: null,
             Factor: 1,
-            OrderId: this.dataItem.Id,
+            OrderId: this.quickOrderModel.Id,
             Priority: 0,
             ImageUrl: result.ImageUrl,
         } as Detail_QuickSaleOnlineOrder;
@@ -359,7 +352,7 @@ export class EditOrderComponent implements OnInit {
     this.modal.info({
       title: 'Cảnh báo',
       content: 'Đối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
-      onOk: () => this.calculateFee(carrier).catch((err) => { console.log(err)}),
+      onOk: () => this.calculateFee(carrier).catch((err: any) => { console.log(err)}),
       onCancel:()=>{},
       okText: "OK",
       cancelText: "Cancel"
@@ -402,7 +395,7 @@ export class EditOrderComponent implements OnInit {
     InitServiceHandler.initService(this.saleModel, this.shipExtraServices, this.shipServices);
     InitInfoOrderDeliveryHandler.initInfoOrderDelivery(this.saleModel, this.quickOrderModel, this.shipExtraServices, this.enableInsuranceFee);
 
-    this.calculateFee(this.saleModel.Carrier).catch((err) => { console.log(err)});
+    this.calculateFee(this.saleModel.Carrier).catch((err: any) => { console.log(err)});
   }
 
   calcFee(): any {
@@ -410,7 +403,7 @@ export class EditOrderComponent implements OnInit {
       return this.message.error(Message.Carrier.EmptyCarrier);
     }
 
-    this.calculateFee(this.saleModel.Carrier).catch((err) => { console.log(err)});;
+    this.calculateFee(this.saleModel.Carrier).catch((err: any) => { console.log(err)});;
   }
 
   selectShipService(item: any) {
@@ -454,7 +447,7 @@ export class EditOrderComponent implements OnInit {
   }
 
   onChangePrice(value: number, index: number) {
-    if(value>=0){
+    if(value >= 0){
       this.quickOrderModel.Details[index].Price = value;
       this.calcTotal();
       this.coDAmount();
@@ -537,7 +530,7 @@ export class EditOrderComponent implements OnInit {
 
   onSave(type: string): any {
       let model = this.quickOrderModel;
-      let id = this.dataItem.Id;
+      let id = this.quickOrderModel.Id as string;
       if(this.isEnableCreateOrder) {
           if (!TDSHelperArray.hasListValue(this.quickOrderModel.Details)) {
               this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
@@ -577,7 +570,7 @@ export class EditOrderComponent implements OnInit {
                 // call api tạo hóa đơn
                 this.createFastSaleOrder(this.saleModel, type);
             } else {
-                this.orderPrintService.printId(this.dataItem.Id, this.quickOrderModel);
+                this.orderPrintService.printId(id, this.quickOrderModel);
                 this.modalRef.destroy(null);
                 this.isLoading = false;
                 this.message.success('Cập nhật đơn hàng thành công');
@@ -766,59 +759,61 @@ export class EditOrderComponent implements OnInit {
                     exist.Fee = 0;
                 }
             }
-      }).catch(e => {
+      }).catch((e: any) => {
         console.log(e);
       });
     }
   }
 
-  calculateFee(item: any) {
-    this.isLoading = true;
-    let promise = new Promise((resolve, reject) => {
+  calculateFee(item: any): any {
+    if(item) {
+      this.isLoading = true;
+      let promise = new Promise((resolve, reject) => {
 
-      if(this.isEnableCreateOrder == false) {
-        return;
-      }
+        if(this.isEnableCreateOrder == false) {
+          return;
+        }
 
-      if (this.apiDeliveries.includes(item.DeliveryType)) {
-          // check insuranceFee để hiện thị Giá trị hàng hóa = tổng hóa đơn
-          let exist = ValidateInsuranceFeeHandler.validateInsuranceFee(this.saleModel, this.shipExtraServices);
-          if (exist) {
-              this.enableInsuranceFee = true;
+        if (this.apiDeliveries.includes(item.DeliveryType)) {
+            // check insuranceFee để hiện thị Giá trị hàng hóa = tổng hóa đơn
+            let exist = ValidateInsuranceFeeHandler.validateInsuranceFee(this.saleModel, this.shipExtraServices);
+            if (exist) {
+                this.enableInsuranceFee = true;
 
-              //gán giá trị bảo hiểm"
-              if (!this.saleModel.Ship_InsuranceFee) {
-                this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras.InsuranceFee || this.quickOrderModel.TotalAmount;
-              }
-          }
-
-          let model = PrepareCalculateFeeV2Handler.prepareCalculateFeeV2(this.saleModel, this.quickOrderModel, this.shipExtraServices, this.userInit, this.enableInsuranceFee);
-          this.fastSaleOrderService.calculateFeeV2(model).pipe(takeUntil(this.destroy$)).subscribe((response: any) => {
-
-            this.message.info(`Đối tác ${item.Name} có phí vận chuyển: ${formatNumber(Number(response.TotalFee), 'en-US', '1.0-0')} đ`);
-            // Cập nhật lại phí ship (đối tác)
-            this.saleModel.CustomerDeliveryPrice = response.TotalFee;
-
-            if (response.Services && response.Services.length > 0) {
-                this.shipServices = response.Services;
-                this.selectShipService(this.shipServices[0]);
+                //gán giá trị bảo hiểm"
+                if (!this.saleModel.Ship_InsuranceFee) {
+                  this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras.InsuranceFee || this.quickOrderModel.TotalAmount;
+                }
             }
 
-            this.isLoading = false;
-            resolve(response);
-            this.cdRef.detectChanges();
-          }, error => {
-              this.isLoading = false;
-              this.message.error(error.error_description || error.message);
-              this.cdRef.detectChanges();
-          })
-      } else {
-          this.isLoading = false;
-          this.cdRef.detectChanges();
-      }
-    })
+            let model = PrepareCalculateFeeV2Handler.prepareCalculateFeeV2(this.saleModel, this.quickOrderModel, this.shipExtraServices, this.userInit, this.enableInsuranceFee);
+            this.fastSaleOrderService.calculateFeeV2(model).pipe(takeUntil(this.destroy$)).subscribe((response: any) => {
 
-    return promise;
+              this.message.info(`Đối tác ${item.Name} có phí vận chuyển: ${formatNumber(Number(response.TotalFee), 'en-US', '1.0-0')} đ`);
+              // Cập nhật lại phí ship (đối tác)
+              this.saleModel.CustomerDeliveryPrice = response.TotalFee;
+
+              if (response.Services && response.Services.length > 0) {
+                  this.shipServices = response.Services;
+                  this.selectShipService(this.shipServices[0]);
+              }
+
+              this.isLoading = false;
+              resolve(response);
+              this.cdRef.detectChanges();
+            }, error => {
+                this.isLoading = false;
+                this.message.error(error.error_description || error.message);
+                this.cdRef.detectChanges();
+            })
+        } else {
+            this.isLoading = false;
+            this.cdRef.detectChanges();
+        }
+      })
+
+      return promise;
+    }
   }
 
   selectStatus(status: PartnerStatusDTO) {

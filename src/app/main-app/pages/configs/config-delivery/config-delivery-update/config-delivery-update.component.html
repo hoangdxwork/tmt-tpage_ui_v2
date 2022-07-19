@@ -1,0 +1,142 @@
+<tds-spin [spinning]="isLoading">
+  <form [formGroup]="submitForm" autocomplete="off">
+    <div class="w-full pb-4 px-4">
+      <div class="flex flex-col w-full bg-white rounded-xl">
+        <div class="flex flex-row items-center justify-between px-4 py-3">
+          <div class="flex flex-row items-center">
+            <button tds-flat-button-icon size="md" type="button" [routerLink]="['/configs/delivery']">
+              <span class="flex items-center">
+                <i class="tdsi-back-fill text-xl leading-5"></i>
+              </span>
+            </button>
+            <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">Cập nhật đối tác</span>
+          </div>
+          <button tds-button color="primary" type="submit" class="w-[100px]" [disabled]="this.onValidForm()"
+            (click)="onSubmit()">
+            <span class="text-body-2 font-semibold">Lưu</span>
+          </button>
+        </div>
+        <div class="flex flex-col p-4">
+          <div class="flex flex-row items-center justify-start w-2/3 pb-6">
+            <div class="flex flex-col w-full">
+              <tds-form-field>
+                <tds-label>Tên đối tác</tds-label>
+                <input tdsInput formControlName="Name" placeholder="Nhập tên đối tác"
+                  class="text-neutral-1-900 text-body-2 font-regular" [required]='true' />
+                <tds-error>
+                  Vui lòng nhập đối tác
+                </tds-error>
+              </tds-form-field>
+
+              <div class="grid grid-cols-3 gap-y-4 text-neutral-1-900 text-body-2 font-regular pt-4">
+
+                <tds-checkbox formControlName="Active">Hiệu lực</tds-checkbox>
+                <tds-checkbox formControlName="IsPrintCustom">Mẫu in mặc định</tds-checkbox>
+              </div>
+            </div>
+          </div>
+          <div class="w-full h-full border border-neutral-2-100 rounded-md">
+            <tds-tabset>
+              <tds-tab title="Cấu hình">
+                <div class="grid grid-cols-3 gap-4">
+                  <ng-container *ngFor="let item of configsProviderDataSource">
+                    <div>
+                      <div class="font-bold break-all">
+                        <tds-label class="text-body-2 font-semibold text-neutral-1-900 block">{{item.DisplayName}}
+                          <span *ngIf="item.IsRequried" class="text-error-500">*</span>
+                        </tds-label>
+                      </div>
+                      <div class="break-all">
+                        <ng-container *ngIf="item.InputType == 'text'">
+                          <tds-form-field *ngIf="item.Type == 'password'">
+                            <input tdsInput placeholder="Nhập giá trị" name="DefaultValue"
+                              [(ngModel)]="item.ConfigValue" [ngModelOptions]="{standalone: true}" type="password"
+                              class="text-neutral-1-900 text-body-2 font-regular" />
+                          </tds-form-field>
+                          <div *ngIf="item.Type == 'string'" class="flex">
+                            <tds-form-field class="w-full">
+                              <input tdsInput placeholder="Nhập giá trị" name="DefaultValue"
+                                [(ngModel)]="item.ConfigValue" [ngModelOptions]="{standalone: true}" />
+                            </tds-form-field>
+                            <button size="sm" *ngIf="item.ConfigName == 'otp'" tds-button type="submit"
+                              color="primary">Lấy OTP
+                            </button>
+                          </div>
+                        </ng-container>
+                        <ng-container *ngIf="item.InputType == 'drop_down'">
+                          <tds-form-field>
+                            <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
+                              [data]="item.ConfigsValue" [(ngModel)]="item.ConfigValue"
+                              [ngModelOptions]="{standalone: true}">
+                            </tds-select>
+                          </tds-form-field>
+                        </ng-container>
+                        <ng-container *ngIf="item.InputType == 'combo_box'">
+                          <tds-form-field>
+                            <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
+                              [data]="item.ConfigsValue" [(ngModel)]="item.ConfigValue"
+                              [ngModelOptions]="{standalone: true}" [allowClear]="true">
+                            </tds-select>
+                          </tds-form-field>
+                        </ng-container>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </tds-tab>
+              <tds-tab title="Giá trị mặc định">
+                <div class="grid grid-cols-2 gap-y-4 gap-x-8">
+                  <div class="grid grid-cols-3 gap-y-4 gap-x-6 items-center">
+                    <tds-label>Khối lượng mặc định (g)</tds-label>
+                    <tds-form-field class="w-full col-span-2">
+                      <tds-input-number formControlName="Config_DefaultWeight" [min]="0"
+                        [formatter]="this.deliveryCarrierV2Service.numberWithCommas"
+                        [parser]="this.deliveryCarrierV2Service.parserComas"
+                        class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                      <tds-error>
+                        Vui lòng nhập khối lượng
+                      </tds-error>
+                    </tds-form-field>
+
+                    <tds-label>Chiều dài (cm)</tds-label>
+                    <tds-form-field class="w-full col-span-2">
+                      <tds-input-number formControlName="GHN_PackageLength" [min]="0"
+                        [formatter]="this.deliveryCarrierV2Service.numberWithCommas"
+                        [parser]="this.deliveryCarrierV2Service.parserComas"
+                        class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                      <tds-error>
+                        Vui lòng nhập chiều dài
+                      </tds-error>
+                    </tds-form-field>
+
+                    <tds-label>Chiều rộng (cm)</tds-label>
+                    <tds-form-field class="w-full col-span-2">
+                      <tds-input-number formControlName="GHN_PackageWidth" [min]="0"
+                        [formatter]="this.deliveryCarrierV2Service.numberWithCommas"
+                        [parser]="this.deliveryCarrierV2Service.parserComas"
+                        class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                      <tds-error>
+                        Vui lòng nhập chiều rộng
+                      </tds-error>
+                    </tds-form-field>
+
+                    <tds-label>Chiều cao (cm)</tds-label>
+                    <tds-form-field class="w-full col-span-2">
+                      <tds-input-number formControlName="GHN_PackageHeight" [min]="0"
+                        [formatter]="this.deliveryCarrierV2Service.numberWithCommas"
+                        [parser]="this.deliveryCarrierV2Service.parserComas"
+                        class="text-neutral-1-900 text-body-2 font-regular"></tds-input-number>
+                      <tds-error>
+                        Vui lòng nhập chiều cao
+                      </tds-error>
+                    </tds-form-field>
+
+                  </div>
+                </div>              </tds-tab>
+            </tds-tabset>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</tds-spin>
