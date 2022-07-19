@@ -71,6 +71,8 @@ import { OrderPrintService } from '../../services/print/order-print.service';
 import { ExpandOrderDetailComponent } from './components/expand-order/expand-order-detail.component';
 import { TDSNotificationModule } from "tds-ui/notification";
 import { ModalHistoryChatComponent } from './components/modal-history-chat/modal-history-chat.component';
+import { OdataGetOrderPartnerIdService } from '../../services/mock-odata/odata-getorder-partnerid.service';
+import { LiveOrderComponent } from './components/live-order/live-order.component';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -98,6 +100,7 @@ const SERVICES = [
   AttachmentDataFacade,
   AttachmentService,
   AttachmentState,
+  OdataGetOrderPartnerIdService,
 ]
 
 @NgModule({
@@ -117,6 +120,7 @@ const SERVICES = [
     InfoPartnerComponent,
     UpdateInfoPartnerComponent,
     ModalHistoryChatComponent,
+    LiveOrderComponent,
   ],
   imports: [
     CommonModule,

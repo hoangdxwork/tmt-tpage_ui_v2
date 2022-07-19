@@ -1,0 +1,44 @@
+<div class="w-full flex flex-col gap-y-4">
+    <div class="w-full">
+        <tds-form-field class="w-full">
+            <input tdsInput placeholder="Tìm kiếm phiếu bán hàng" autocomplete="off" />
+            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+        </tds-form-field>
+    </div>
+    <div class="max-h-[450px] h-[450px]">
+        <tds-table class="w-full h-full tds-table-rounded" [scroll]="{ y:'auto' }" #productTable [bordered]="true"
+            [listData]="lstOrder" (queryParams)="onQueryParamsChange($event)">
+            <thead class="rounded">
+                <tr>
+                    <th>STT</th>
+                    <th>Sản phẩm</th>
+                    <th>Kênh kết nối</th>
+                    <th>Tổng tiền</th>
+                    <th>Tổng SL</th>
+                    <th>Ngày tạo đơn</th>
+                    <th>Trạng thái</th>
+                    <th>Nhân viên</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-template ngFor let-data [ngForOf]="productTable.data">
+                    <tr>
+                        <td>{{ data.Session }}</td>
+                        <td>
+                          <div>
+                            {{ data.Code }}
+                          </div>
+                        </td>
+                        <td></td>
+                        <td>{{ data.DateCreated | date: 'dd/MM/yyyy' }}</td>
+                        <td>{{ data.PartnerName }}</td>
+                        <td>{{ data.Code }}</td>
+                        <td>{{ data.TotalAmount }}</td>
+                        <td>{{ data.Email }}</td>
+                        <td>{{ data.StatusText }}</td>
+                    </tr>
+                </ng-template>
+            </tbody>
+        </tds-table>
+    </div>
+</div>

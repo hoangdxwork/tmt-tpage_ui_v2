@@ -4,7 +4,7 @@
             <span class="font-semibold text-title-1 pr-2">Sửa đơn hàng</span>
             <span class="text-primary-1 font-semibold text-title-1">{{quickOrderModel ? quickOrderModel.Code : ''}}</span>
         </div>
-        <div class="flex flex-col" >
+        <div class="flex flex-col">
             <tds-tabset class="border border-neutral-2-200 rounded-md ">
               <tds-tab class="px-2" title="Thông tin liên hệ" clsContent="border-t border-neutral-2-200 w-full h-full">
                 <div class="w-full p-4">
@@ -414,36 +414,7 @@
               </tds-tab>
 
               <tds-tab title="Đơn hàng" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
-                <div class="w-full flex flex-col gap-y-4">
-                  <div class="w-full">
-                    <tds-form-field class="w-full">
-                      <input tdsInput placeholder="Tìm kiếm phiếu bán hàng" autocomplete="off" />
-                      <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-                    </tds-form-field>
-                  </div>
-                  <div class="w-full h-full">
-                    <tds-table class="tds-table-rounded" #productTable [bordered]="true" [listData]="quickOrderModel.Details"
-                      [showPagination]="false" [scroll]="{y:'auto'}">
-                      <thead class="rounded">
-                        <tr>
-                          <th>STT</th>
-                          <th>Số HĐ</th>
-                          <th>Thông tin</th>
-                          <th>Ngày tạo đơn</th>
-                          <th>Đối tác giao hàng</th>
-                          <th>Mã vận đơn</th>
-                          <th>Tổng tiền</th>
-                          <th>Còn nợ</th>
-                          <th>Trạng thái</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                        </tr>
-                      </tbody>
-                    </tds-table>
-                  </div>
-                </div>
+                <app-live-order [partnerId]="quickOrderModel.PartnerId"></app-live-order>
               </tds-tab>
 
               <tds-tab title="Phiếu bán hàng" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
