@@ -9,7 +9,7 @@ import { ConversationOrderBillByPartnerDTO } from '../dto/conversation/conversat
 import { ODataCalculatorListFeeDTO } from '../dto/fastsaleorder/calculate-listFee.dto';
 
 import { FastSaleOrder_DefaultDTOV2 } from '../dto/fastsaleorder/fastsaleorder-default.dto';
-import { FastSaleOrderSummaryStatusDTO, ListUpdateDepositDTO } from '../dto/fastsaleorder/fastsaleorder.dto';
+import { ListUpdateDepositDTO } from '../dto/fastsaleorder/fastsaleorder.dto';
 import { AccountRegisterPaymentDTO } from '../dto/fastsaleorder/payment.dto';
 import { ODataIdsDTO, ODataModelDTO } from '../dto/odata/odata.dto';
 import { ChangePartnerPriceListDTO } from '../dto/partner/change-partner-pricelist.dto';
@@ -94,7 +94,7 @@ export class FastSaleOrderService extends BaseSevice {
       method: TApiMethodType.post,
     }
 
-    return this.apiService.getData<Array<FastSaleOrderSummaryStatusDTO>>(api, data);
+    return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   getListOrderIds(data: TDSSafeAny): Observable<TDSSafeAny> {

@@ -29,11 +29,11 @@ import { ModalBatchRefundComponent } from '../modal-batch-refund/modal-batch-ref
 })
 
 export class ActionDropdownComponent implements OnInit, OnDestroy {
+
   @Input() filterObj: any;
   @Input() setOfCheckedId: any = [];
   @Input() lstOfData: FastSaleOrderDTO[] = [];
   @Input() type!: string;
-  @Output() reloadBill: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   isProcessing: boolean = false;
   isLoading: boolean = false;
@@ -192,7 +192,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
   manualUpdateDelivery() {
     if (this.checkValueEmpty()) {
       let datas = this.lstOfData.filter(f=> this.idsModel.includes(f.Id));
-      
+
       this.modal.create({
         title: 'Cập nhật trạng thái giao hàng',
         size:'xl',
@@ -385,7 +385,6 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
         onOk: () => {
           that.fastSaleOrderService.actionInvoiceOpen({ ids: that.idsModel }).pipe(takeUntil(this.destroy$),finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
             that.message.success('Xác nhận bán hàng thành công!');
-            this.reloadBill.emit(true);
           }, error => {
             that.message.error(`${error?.error?.message}` || 'Xác nhận bán hàng thất bại');
           })

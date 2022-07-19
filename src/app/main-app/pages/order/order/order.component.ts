@@ -420,7 +420,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     modal.afterClose.subscribe(result => {
       if (TDSHelperObject.hasValue(result)) {
       }
-    });
+    })
   }
 
   getColorStatusText(status: string): TDSTagStatusType {
