@@ -59,11 +59,11 @@
 
   <!-- update delivery -->
   <tds-button-group *ngIf="type === 'delivery' || type === 'all'">
-    <button tds-button color="info" size="md" 
-      [disabled]="isProcessing" 
-      [placement]="'bottomRight'" 
-      tds-dropdown 
-      trigger="click" 
+    <button tds-button color="info" size="md"
+      [disabled]="isProcessing"
+      [placement]="'bottomRight'"
+      tds-dropdown
+      trigger="click"
       [tdsDropdownMenu]="updateDeliveryMenu">
       <span class="flex items-center">
         <i class="tdsi-transport-fill text-lg leading-none mr-2"></i>
@@ -85,11 +85,11 @@
 
   <!-- delivery status -->
   <tds-button-group *ngIf="type === 'DS' || type === 'all'">
-    <button tds-button color="info" size="md" 
-      [disabled]="isProcessing" 
-      [placement]="'bottomRight'" 
-      tds-dropdown 
-      trigger="click" 
+    <button tds-button color="info" size="md"
+      [disabled]="isProcessing"
+      [placement]="'bottomRight'"
+      tds-dropdown
+      trigger="click"
       [tdsDropdownMenu]="deliveryStatusMenu">
       <span class="flex items-center">
         <i class="tdsi-inventory-check-fill text-lg leading-none mr-2"></i>

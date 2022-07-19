@@ -428,11 +428,6 @@ export interface FastSaleOrderDTO {
   PartnerPhone: string;
 }
 
-export interface FastSaleOrderSummaryStatusDTO {
-  Type: string;
-  Total: number;
-}
-
 export interface FastSaleOrderModelDTO {
   Id: number;
   Name?: string;

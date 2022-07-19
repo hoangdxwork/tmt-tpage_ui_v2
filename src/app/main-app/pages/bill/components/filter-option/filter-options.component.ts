@@ -1,10 +1,10 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { addDays } from "date-fns";
+import { Subject, takeUntil } from "rxjs";
 import { DeliveryCarrierDTOV2 } from "src/app/main-app/dto/delivery-carrier.dto";
-import { DeliveryCarrierService } from "src/app/main-app/services/delivery-carrier.service";
+import { FastSaleOrderService } from "src/app/main-app/services/fast-sale-order.service";
 import { FilterObjFastSaleModel } from "src/app/main-app/services/mock-odata/odata-fastsaleorder.service";
-import { TagService } from "src/app/main-app/services/tag.service";
-import { TDSContextMenuService } from "tds-ui/dropdown";
+import { TDSMessageService } from "tds-ui/message";
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 
 @Component({
@@ -12,7 +12,7 @@ import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utili
   templateUrl: './filter-options.component.html',
 })
 
-export class FilterOptionsComponent {
+export class FilterOptionsComponent implements OnInit, OnDestroy {
 
   @Input() lstTags: Array<TDSSafeAny> = [];
   @Output() onLoadOption = new EventEmitter<TDSSafeAny>();
@@ -20,18 +20,19 @@ export class FilterOptionsComponent {
   @Input() lstCarriers: Array<DeliveryCarrierDTOV2> = [];
 
   datePicker: any = [addDays(new Date(), -30), new Date()];
-
   trackingRefs = [
     { text: 'Chưa có mã vận đơn', value: 'noCode' },
     { text: 'Đã có mã vận đơn', value: 'isCode' },
   ];
 
   status = [
-    { text: 'Nháp', value: 'draft' },
-    { text: 'Đã xác nhận', value: 'open' },
-    { text: 'Đã thanh toán', value: 'paid' },
-    { text: 'Hủy bỏ', value: 'cancel' }
+    { Name: 'Nháp', Type: 'draft', Total: 0 },
+    { Name: 'Đã xác nhận', Type: 'open', Total: 0 },
+    { Name: 'Đã thanh toán', Type: 'paid', Total: 0 },
+    { Name: 'Hủy bỏ', Type: 'cancel', Total: 0 }
   ];
+
+  private destroy$ = new Subject<void>();
 
   modelCarrier: TDSSafeAny;
   selectTags:  Array<TDSSafeAny> = [];
@@ -40,9 +41,12 @@ export class FilterOptionsComponent {
   isActive: boolean = false;
   isVisible: boolean = false;
 
-  constructor(private tagService: TagService,
-    private tdsContextMenuService: TDSContextMenuService,
-    private carrierService: DeliveryCarrierService) {
+  constructor(private message: TDSMessageService,
+    private fastSaleOrderService: FastSaleOrderService) {
+  }
+
+  ngOnInit() {
+    this.loadSummaryStatus();
   }
 
   onChangeDate(event: any[]) {
@@ -85,11 +89,35 @@ export class FilterOptionsComponent {
   }
 
   selectState(event: any): void {
-    if(this.filterObj.status.includes(event.value)) {
-        this.filterObj.status = this.filterObj.status.filter((x: any) => !(x == event.value));
+    if(this.filterObj.status.includes(event.Type)) {
+        this.filterObj.status = this.filterObj.status.filter((x: any) => !(x == event.Type));
     } else {
-        this.filterObj.status.push(event.value);
+        this.filterObj.status.push(event.Type);
     }
+  }
+
+  loadSummaryStatus(){
+    let model = {
+        DateStart: this.filterObj.dateRange.startDate,
+        DateEnd: this.filterObj.dateRange.endDate,
+        SearchText: TDSHelperString.stripSpecialChars(this.filterObj.searchText.trim()) ,
+        TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+        TrackingRef: this.filterObj.hasTracking,
+        DeliveryType: this.filterObj.deliveryType ? this.filterObj.deliveryType : null,
+    };
+
+    this.fastSaleOrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        if(TDSHelperArray.hasListValue(res)) {
+            res.map((x: any) => {
+              let exits = this.status.filter(a => a.Type === x.Type)[0];
+              if(exits) {
+                  exits.Total = x.Total;
+              }
+            })
+        }
+      }, error => {
+        this.message.error(`${error?.error?.message}`)
+    })
   }
 
   onApply() {
@@ -99,6 +127,7 @@ export class FilterOptionsComponent {
     }
 
     this.isActive = true;
+    this.loadSummaryStatus();
     this.onLoadOption.emit(this.filterObj);
   }
 
@@ -135,6 +164,11 @@ export class FilterOptionsComponent {
 
   closeMenu() {
     this.isVisible = false;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }
