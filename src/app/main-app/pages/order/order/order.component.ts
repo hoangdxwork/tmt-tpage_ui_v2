@@ -44,8 +44,6 @@ import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/
 
 export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild('innerText') innerText!: ElementRef;
-
   lstOfData!: ODataSaleOnline_OrderModel[];
   pageSize = 20;
   pageIndex = 1;
@@ -63,13 +61,13 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   public filterObj: FilterObjSOOrderModel = {
-      tags: [],
-      status: [],
-      searchText: '',
-      dateRange: {
-          startDate: addDays(new Date(), -30),
-          endDate: new Date()
-      }
+    tags: [],
+    status: [],
+    searchText: '',
+    dateRange: {
+      startDate: addDays(new Date(), -30),
+      endDate: new Date()
+    }
   }
 
   public hiddenColumns = new Array<ColumnTableDTO>();
@@ -135,6 +133,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.loadPagination();
     this.loadTags();
     this.loadGridConfig();
     this.loadStatusTypeExt();
@@ -154,42 +153,33 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       let that = this;
 
-      if(that.billOrderLines) {
-          let wrapScroll = that.billOrderLines?.nativeElement?.closest('.tds-table-body');
+      if (that.billOrderLines) {
+        let wrapScroll = that.billOrderLines?.nativeElement?.closest('.tds-table-body');
 
-          wrapScroll?.addEventListener('scroll', function () {
-            let scrollleft = wrapScroll.scrollLeft;
-            that.marginLeftCollapse = scrollleft;
-          });
+        wrapScroll?.addEventListener('scroll', function () {
+          let scrollleft = wrapScroll.scrollLeft;
+          that.marginLeftCollapse = scrollleft;
+        });
       }
 
     }, 500);
+  }
 
-    fromEvent(this.innerText.nativeElement, 'keyup').pipe(
-      map((event: any) => { return event.target.value }),
-      debounceTime(750),
-      distinctUntilChanged(),
-      // TODO: switchMap xử lý trường hợp sub in sub
-      switchMap((text: TDSSafeAny) => {
+  onSearch(data: TDSSafeAny) {
+    this.tabIndex = 1;
+    this.pageIndex = 1;
+    this.indClickTag = "";
 
-        this.tabIndex = 1;
-        this.pageIndex = 1;
-        this.indClickTag = "";
+    this.filterObj.searchText = data.value;
+    let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
+    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
 
-        this.filterObj.searchText = text;
-        let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
-        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
-
-        return this.getViewData(params);
-
-      }))
-      .subscribe((res: any) => {
-        this.count = res['@odata.count'] as number;
-        this.lstOfData = [...res.value];
-      }, error => {
-        this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
-      });
-
+    this.getViewData(params).subscribe((res: any) => {
+      this.count = res['@odata.count'] as number;
+      this.lstOfData = [...res.value];
+    }, error => {
+      this.message.error(error?.error?.message || 'Tải dữ liệu phiếu bán hàng thất bại!');
+    });
   }
 
   updateCheckedSet(id: string, checked: boolean): void {
@@ -228,11 +218,11 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  getViewData(params: string): Observable<ODataSaleOnline_OrderDTOV2>{
+  getViewData(params: string): Observable<ODataSaleOnline_OrderDTOV2> {
     this.isLoading = true;
     return this.odataSaleOnline_OrderService
       .getView(params, this.filterObj).pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() =>  this.isLoading = false ));
+      .pipe(finalize(() => this.isLoading = false));
   }
 
   loadSummaryStatus() {
@@ -245,7 +235,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.isTabNavs = true;
     this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$),
-       finalize(() => this.isTabNavs = false)).subscribe((res: Array<TDSSafeAny>) => {
+      finalize(() => this.isTabNavs = false)).subscribe((res: Array<TDSSafeAny>) => {
 
         let tabs: TabNavsDTO[] = [];
         let total = 0;
@@ -267,19 +257,32 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   loadGridConfig() {
     const key = this.saleOnline_OrderService._keyCacheGrid;
     this.cacheApi.getItem(key).subscribe((res: TDSSafeAny) => {
-        if (res && res.value) {
-            let jsColumns = JSON.parse(res.value) as any;
-            this.hiddenColumns = jsColumns.value.columnConfig;
-        } else {
-            this.hiddenColumns = this.columns;
-        }
+      if (res && res.value) {
+        let jsColumns = JSON.parse(res.value) as any;
+        this.hiddenColumns = jsColumns.value.columnConfig;
+      } else {
+        this.hiddenColumns = this.columns;
+      }
+    })
+  }
+
+  loadPagination(){
+    const key = this.saleOnline_OrderService._keyCreateBillOrder;
+
+    this.cacheApi.getItem(key).pipe(takeUntil(this.destroy$)).subscribe((res)=>{
+      if (TDSHelperObject.hasValue(res)) {
+        this.pageIndex = JSON.parse(res?.value)?.value?.pageIndex;
+        this.pageSize = JSON.parse(res?.value)?.value?.pageSize;
+        this.loadData(this.pageSize,this.pageIndex);
+        this.cacheApi.removeItem(key);
+      }
     })
   }
 
   loadTags() {
     let type = "saleonline";
     this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
-      this.lstDataTag = [ ...res.value ];
+      this.lstDataTag = [...res.value];
     });
   }
 
@@ -299,24 +302,24 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  showModalCreateBillFast(ids: string[]){
-    this.fastSaleOrderService.getListOrderIds({ids: ids})
-    .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
-      if(res) {
-        this.modal.create({
-          title: 'Tạo hóa đơn nhanh',
-          content: CreateBillFastComponent,
-          centered: true,
-          size: 'xl',
-          viewContainerRef: this.viewContainerRef,
-          componentParams: {
-            lstData: [...res.value] as GetListOrderIdsDTO[]
-          }
-        });
-      }
-    }, error => {
-      this.message.error(error?.error?.message ? error?.error?.message : 'Đã xảy ra lỗi');
-    });
+  showModalCreateBillFast(ids: string[]) {
+    this.fastSaleOrderService.getListOrderIds({ ids: ids })
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
+        if (res) {
+          this.modal.create({
+            title: 'Tạo hóa đơn nhanh',
+            content: CreateBillFastComponent,
+            centered: true,
+            size: 'xl',
+            viewContainerRef: this.viewContainerRef,
+            componentParams: {
+              lstData: [...res.value] as GetListOrderIdsDTO[]
+            }
+          });
+        }
+      }, error => {
+        this.message.error(error?.error?.message ? error?.error?.message : 'Đã xảy ra lỗi');
+      });
   }
 
   onCreateBillDefault() {
@@ -337,15 +340,28 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onUrlCreateInvoiceFast() {
     if (this.checkValueEmpty() == 1) {
-      this.router.navigateByUrl(`bill/create`);
+      let model = {
+        ids: [...this.setOfCheckedId]
+      }
+      this.isLoading = true;
+
+      this.saleOnline_OrderService.getDetails(model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res) => {
+        const key = this.saleOnline_OrderService._keyCreateBillOrder;
+        delete res['@odata.context'];
+        this.cacheApi.setItem(key, { data:res, pageIndex: this.pageIndex, pageSize: this.pageSize });
+        this.router.navigateByUrl(`bill/create`);
+      },
+        error => {
+          this.message.error(error?.error?.message || 'Không thể tạo hóa đơn');
+      })
     }
   }
 
   onSelectChange(index: TDSSafeAny) {
     this.filterObj.status = [];
-    let item = this.tabNavs.filter(f => f.Index == index )[0];
+    let item = this.tabNavs.filter(f => f.Index == index)[0];
 
-    if(item?.Name == 'Tất cả') {
+    if (item?.Name == 'Tất cả') {
       this.filterObj.status = [];
     } else {
       this.filterObj.status.push(item.Name);
@@ -390,7 +406,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  showModalHistoryChat(orderId:string){
+  showModalHistoryChat(orderId: string) {
     const modal = this.modalService.create({
       title: 'Lịch sử gửi tin nhắn',
       content: ModalHistoryChatComponent,
@@ -399,7 +415,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       componentParams: {
         orderId: orderId,
         type: "order"
-    }
+      }
     });
     modal.afterClose.subscribe(result => {
       if (TDSHelperObject.hasValue(result)) {
@@ -512,7 +528,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
       modal.afterClose.subscribe((obs: string) => {
         if (TDSHelperString.hasValueString(obs) && obs == 'onLoadPage') {
-            this.loadData(this.pageSize, this.pageIndex);
+          this.loadData(this.pageSize, this.pageIndex);
         }
       });
     }, error => {
@@ -525,7 +541,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       title: 'Xóa đơn hàng',
       content: 'Bạn có chắc muốn xóa đơn hàng',
       onOk: () => this.remove(id, code),
-      onCancel: () => {  },
+      onCancel: () => { },
       okText: "Xác nhận",
       cancelText: "Đóng",
       confirmViewType: "compact"
@@ -536,10 +552,10 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = true;
     this.saleOnline_OrderService.remove(id).pipe(finalize(() => this.isLoading = false))
       .subscribe((res: TDSSafeAny) => {
-          this.message.info(`${Message.Order.DeleteSuccess} ${code}`);
-          this.refreshDataCurrent();
+        this.message.info(`${Message.Order.DeleteSuccess} ${code}`);
+        this.refreshDataCurrent();
       }, error => {
-          this.message.error(`${error?.error?.message}` || Message.ErrorOccurred);
+        this.message.error(`${error?.error?.message}` || Message.ErrorOccurred);
       });
   }
 
@@ -601,10 +617,10 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     }
   }
-  showMessageModal(orderMessage: TDSSafeAny){
+  showMessageModal(orderMessage: TDSSafeAny) {
     this.modal.create({
       title: 'Gửi tin nhắn Facebook',
-      size:'lg',
+      size: 'lg',
       content: SendMessageComponent,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
@@ -612,26 +628,26 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
         messageType: GenerateMessageTypeEnum.Order
       }
     });
-}
+  }
 
   // Nhãn
   loadStatusTypeExt() {
     this.commonService.getStatusTypeExt().subscribe(res => {
-        this.lstStatusTypeExt = [...res];
+      this.lstStatusTypeExt = [...res];
     });
   }
 
-  updateStatusSaleOnline(data: any, status: any){
+  updateStatusSaleOnline(data: any, status: any) {
     let value = status.Text;
 
     this.saleOnline_OrderService.updateStatusSaleOnline(data.Id, value).pipe(takeUntil(this.destroy$)).subscribe((res) => {
-        this.message.success('Cập nhật thành công');
-        data.StatusText = status.Text;
+      this.message.success('Cập nhật thành công');
+      data.StatusText = status.Text;
 
-        this.loadSummaryStatus();
-        this.cdRef.markForCheck();
+      this.loadSummaryStatus();
+      this.cdRef.markForCheck();
     }, error => {
-        this.message.error( error.error.message ?? 'Cập nhật thất bại');
+      this.message.error(error.error.message ?? 'Cập nhật thất bại');
     });
   }
 
@@ -640,8 +656,8 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       let ids = [...this.setOfCheckedId];
       ids.map((x: string) => {
         this.saleOnline_OrderService.getById(x).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-          if(res) {
-              this.orderPrintService.printIpFromOrder(res);
+          if (res) {
+            this.orderPrintService.printIpFromOrder(res);
           }
         }, error => {
           this.message.error('Load thông tin đơn hàng đã xảy ra lỗi');
@@ -654,7 +670,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     let partnerId = data.PartnerId;
     this.orderMessage = data;
 
-    if(this.orderMessage.DateCreated){
+    if (this.orderMessage.DateCreated) {
       this.orderMessage.DateCreated = new Date(this.orderMessage.DateCreated);
     }
 
@@ -662,10 +678,10 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
       let pageIds: any = [];
       res.map((x: any) => {
-          pageIds.push(x.page_id);
+        pageIds.push(x.page_id);
       });
 
-      if(pageIds.length == 0) {
+      if (pageIds.length == 0) {
         return this.message.error('Không có kênh kết nối với khách hàng này.');
       }
 
@@ -687,17 +703,17 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
               pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
 
               this.mappingTeams.push({
-                  psid: exist.psid,
-                  team: x
+                psid: exist.psid,
+                team: x
               })
             }
           })
 
           if (this.mappingTeams.length > 0) {
-              this.currentMappingTeam = this.mappingTeams[0];
-              this.loadMDBByPSId(this.currentMappingTeam.team.Facebook_PageId, this.currentMappingTeam.psid);
+            this.currentMappingTeam = this.mappingTeams[0];
+            this.loadMDBByPSId(this.currentMappingTeam.team.Facebook_PageId, this.currentMappingTeam.psid);
           }
-      });
+        });
     }, error => {
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
     })
@@ -713,15 +729,15 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
         if (res) {
           res["keyTags"] = {};
 
-          if(res.tags && res.tags.length > 0) {
-              res.tags.map((x: any) => {
-                  res["keyTags"][x.id] = true;
-              })
+          if (res.tags && res.tags.length > 0) {
+            res.tags.map((x: any) => {
+              res["keyTags"][x.id] = true;
+            })
           } else {
-              res.tags = [];
+            res.tags = [];
           }
 
-          this.currentConversation = { ...res, ...this.currentConversation};
+          this.currentConversation = { ...res, ...this.currentConversation };
           this.psid = res.psid;
           this.isOpenDrawer = true;
         }
@@ -745,13 +761,13 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostListener('document:keyup', ['$event'])
   handleKeyboardEventCreate(event: KeyboardEvent) {
-    if(event.key === 'F9'){
+    if (event.key === 'F9') {
       this.onUrlCreateInvoiceFast();
     }
-    else if(event.key === 'F8'){
+    else if (event.key === 'F8') {
       this.onCreateBillDefault();
     }
-    else if(event.key === 'F10'){
+    else if (event.key === 'F10') {
       this.onCreateBillFast();
     }
   }

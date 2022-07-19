@@ -112,7 +112,7 @@ const SERVICES = [
   AttachmentState,
   OdataProductService,
   AccountJournalService,
-  AccountPaymentJsonService,
+  AccountPaymentJsonService
 ]
 
 @NgModule({

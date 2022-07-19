@@ -11,7 +11,7 @@ import { ODataSaleOnline_OrderDTOV2 } from '../../dto/saleonlineorder/odata-sale
 export interface FilterObjSOOrderModel  {
   tags: string[],
   status: string[],
-  searchText: '',
+  searchText: string,
   dateRange: {
     startDate: Date,
     endDate:  Date

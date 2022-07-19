@@ -5,21 +5,21 @@
         <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Đơn hàng</span>
       </h1>
       <div class="flex gap-x-2">
-        <button tds-button color="primary" size="md" (click)="onUrlCreateInvoiceFast()" (keypress)="handleKeyboardEventCreate($event)">
+        <button tds-button color="primary" size="md" (click)="onUrlCreateInvoiceFast()">
           <span class="flex items-center">
             <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Tạo HĐ (F9)
           </span>
         </button>
         <button tds-button color="custom" class="text-white focus:ring-4 focus:ring-secondary-1/20
             border-secondary-1 bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1
-            focus:border-secondary-1" size="md" (click)="onCreateBillDefault()" (keypress)="handleKeyboardEventCreate($event)">
+            focus:border-secondary-1" size="md" (click)="onCreateBillDefault()">
           <span class="flex items-center">
             <i class="tdsi-in-out-fill text-lg leading-none mr-2"></i>Tạo HĐ SP mặc định (F8)
           </span>
         </button>
         <button tds-button color="custom" class="text-white focus:ring-4 focus:ring-secondary-1/20
             border-secondary-1 bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1
-            focus:border-secondary-1" size="md" (click)="onCreateBillFast()" (keypress)="handleKeyboardEventCreate($event)">
+            focus:border-secondary-1" size="md" (click)="onCreateBillFast()">
           <span class="flex items-center">
             <i class="tdsi-reload-fill text-lg leading-none mr-2"></i>Tạo nhanh HĐ (F10)
           </span>
@@ -47,7 +47,7 @@
             (onRefreshData)="refreshDataCurrent()"></action-dropdown>
 
           <tds-form-field class="w-full">
-              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText />
+              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)"/>
               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
           </tds-form-field>
 

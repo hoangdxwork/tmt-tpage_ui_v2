@@ -9,36 +9,11 @@ export abstract class AddProductHandler {
 
    static prepareModel(dataModel: ConfigProductDefaultDTO, formModel: any, images: WallPicturesDTO[], listAttributeLines: ConfigAttributeLine[], listProductVariants: ConfigProductVariant[]) {
 
-      dataModel.Name = formModel.Name ? formModel.Name : dataModel.Name;
-      dataModel.Image = formModel.Image ? formModel.Image : dataModel.Image;
-      dataModel.Images = images || [];
-      dataModel.ImageUrl = formModel.ImageUrl ? formModel.ImageUrl : dataModel.ImageUrl;
-      dataModel.SaleOK = (formModel.SaleOK || formModel.SaleOK == false) ? formModel.SaleOK : dataModel.SaleOK;
-      dataModel.PurchaseOK = (formModel.PurchaseOK || formModel.PurchaseOK == false) ? formModel.PurchaseOK : dataModel.PurchaseOK;
-      dataModel.IsCombo = (formModel.IsCombo || formModel.IsCombo == false) ? formModel.IsCombo : dataModel.IsCombo;
-      dataModel.Active = (formModel.Active || formModel.Active == false) ? formModel.Active : dataModel.Active;
-      dataModel.AvailableInPOS = (formModel.AvailableInPOS || formModel.AvailableInPOS == false) ? formModel.AvailableInPOS : dataModel.AvailableInPOS;
-      dataModel.EnableAll = (formModel.EnableAll || formModel.EnableAll == false) ? formModel.EnableAll : dataModel.EnableAll;
-      dataModel.Type = formModel.Type ? formModel.Type : dataModel.Type;
-      dataModel.DefaultCode = formModel.DefaultCode ? formModel.DefaultCode : dataModel.DefaultCode;
-      dataModel.Barcode = formModel.Barcode ? formModel.Barcode : dataModel.Barcode;
-      dataModel.StandardPrice = formModel.StandardPrice ? formModel.StandardPrice : dataModel.StandardPrice;
-      dataModel.ListPrice = formModel.ListPrice ? formModel.ListPrice : dataModel.ListPrice;
-      dataModel.DiscountSale = formModel.DiscountSale ? formModel.DiscountSale : dataModel.DiscountSale;
-      dataModel.PurchasePrice = formModel.PurchasePrice ? formModel.PurchasePrice : dataModel.PurchasePrice;
-      dataModel.DiscountPurchase = formModel.DiscountPurchase ? formModel.DiscountPurchase : dataModel.DiscountPurchase;
-      dataModel.Tracking = formModel.Tracking ? formModel.Tracking : dataModel.Tracking;
-      dataModel.Weight = formModel.Weight ? formModel.Weight : dataModel.Weight;
-      dataModel.Volume = formModel.Volume ? formModel.Volume : dataModel.Volume;
-      dataModel.DescriptionSale = formModel.DescriptionSale ? formModel.DescriptionSale : dataModel.DescriptionSale;
-      dataModel.Description = formModel.Description ? formModel.Description : dataModel.Description;
-      dataModel.YearOfManufacture = formModel.YearOfManufacture ? formModel.YearOfManufacture : dataModel.YearOfManufacture;
-      dataModel.Element = formModel.Element ? formModel.Element : dataModel.Element;
-      dataModel.Specifications = formModel.Specifications ? formModel.Specifications : dataModel.Specifications;
-      dataModel.InfoWarning = formModel.InfoWarning ? formModel.InfoWarning : dataModel.InfoWarning;
+      dataModel = {...dataModel,...formModel};
       dataModel.AttributeLines = listAttributeLines ?? dataModel.AttributeLines;
       dataModel.ProductVariants = listProductVariants ?? dataModel.ProductVariants;
       dataModel.ProductVariantCount = listProductVariants?.length ?? dataModel.ProductVariants?.length;
+      dataModel.Images = images || [];
       dataModel.ProductVariants.map(
          (variant)=>{
             if(variant.Id < 0) variant.Id = 0;

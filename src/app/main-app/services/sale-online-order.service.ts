@@ -2,9 +2,7 @@ import { EventEmitter, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tds-ui/shared/utility";
-import { PartnerTempDTO } from "../dto/partner/partner.dto";
 import { SaleOnline_OrderDTO } from "../dto/saleonlineorder/sale-online-order.dto";
-import { InsertFromMessageModel } from "../pages/conversations/components/conversation-order/conversation-order.handler";
 import { BaseSevice } from "./base.service";
 
 @Injectable({
@@ -18,6 +16,7 @@ export class SaleOnline_OrderService extends BaseSevice {
   baseRestApi: string = "rest/v1.0/saleonline_order";
 
   public _keyCacheGrid: string = 'saleonline_order-page:grid_saleonline_order:settings';
+  public _keyCreateBillOrder: string = 'saleonline_order:create_bill_order';
   public onSetCommentOrders: EventEmitter<any> = new EventEmitter();
 
   constructor(private apiService: TCommonService) {
@@ -31,6 +30,15 @@ export class SaleOnline_OrderService extends BaseSevice {
     }
 
     return this.apiService.getData<any>(api, null);
+  }
+
+  getDetails(data:TDSSafeAny){
+    const api: TAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetDetails?$expand=orderLines($expand=Product,ProductUOM),partner,warehouse`,
+      method: TApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api,data);
   }
 
   getLines(id: string): Observable<TDSSafeAny> {
