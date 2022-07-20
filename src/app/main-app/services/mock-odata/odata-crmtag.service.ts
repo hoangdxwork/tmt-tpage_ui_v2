@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { ODataCRMTagDTO } from '../../dto/crm-tag/odata-crmtag.dto';
-import { CTMTagFilterObjDTO } from '../../dto/odata/odata.dto';
 import { BaseSevice } from '../base.service';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
@@ -30,7 +29,7 @@ export class OdataCRMTagService extends BaseSevice {
     return this.apiService.getData<ODataCRMTagDTO>(api, null);
   }
 
-  public buildFilter(filterObj: CTMTagFilterObjDTO) {
+  public buildFilter(filterObj: any) {
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",
         filters: []

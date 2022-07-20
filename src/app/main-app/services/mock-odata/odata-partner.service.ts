@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
-import { FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ODataCreditDebitDTO } from '../../dto/partner/partner-creditdebit.dto';
 import { ODataPartnerInvoiceDTO } from '../../dto/partner/partner-invocie.dto';
@@ -23,7 +23,7 @@ export class OdataPartnerService extends BaseSevice {
 
   constructor(private apiService: TCommonService,
       public caheApi: THelperCacheService) {
-    super(apiService)
+      super(apiService)
   }
 
   getView(params: string, filterObj: FilterObjPartnerModel): Observable<TDSSafeAny>{

@@ -23,7 +23,6 @@ import { ConversationOrderFacade } from '../../services/facades/conversation-ord
 import { SaleOnline_OrderService } from '../../services/sale-online-order.service';
 import { PartnerService } from '../../services/partner.service';
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
-import { CheckFormHandler } from '../../services/handlers/check-form.handler';
 import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { CommonService } from '../../services/common.service';
 import { FacebookGraphService } from '../../services/facebook-graph.service';
@@ -34,9 +33,6 @@ import { ModalConfirmPaymentComponent } from './components/modal-confirm-payment
 import { ModalAddQuickReplyComponent } from './components/modal-add-quick-reply/modal-add-quick-reply.component';
 import { OrderPrintService } from '../../services/print/order-print.service';
 import { PrinterService } from '../../services/printer.service';
-import { OrderFormHandler } from '../../services/handlers/order-form.handler';
-import { CarrierHandler } from '../../services/handlers/carier.handler';
-import { SaleHandler } from '../../services/handlers/sale.handler';
 import { ModalListProductComponent } from './components/modal-list-product/modal-list-product.component';
 import { ModalListBillComponent } from './components/modal-list-bill/modal-list-bill.component';
 import { ModalDetailBillComponent } from './components/modal-detail-bill/modal-detail-bill.component';
@@ -130,17 +126,13 @@ const SERVICES = [
   SaleOnline_OrderService,
   PartnerService,
   FastSaleOrderService,
-  CheckFormHandler,
   DeliveryCarrierService,
   CommonService,
-  SaleHandler,
   FacebookGraphService,
   ActivityMatchingService,
   ApplicationUserService,
   OrderPrintService,
   PrinterService,
-  OrderFormHandler,
-  CarrierHandler,
   CRMMatchingService,
   FacebookPostService,
   FacebookCommentService,

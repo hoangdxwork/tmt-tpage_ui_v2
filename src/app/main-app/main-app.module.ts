@@ -7,7 +7,7 @@ import { MainSharedModule } from './shared/shared.module';
 import { PipeModule } from './shared/pipe/pipe.module';
 
 import { UploadImageModule } from './shared/upload-image/tpage-avatar-facebook/upload-image.module';
-import { ProductDataFacade } from './services/facades/product.data.facade';
+// import { ProductDataFacade } from './services/facades/product.data.facade';
 import { DirectivesModule } from './shared/directives/directives.module';
 import { TDSUploadModule } from 'tds-ui/upload';
 import { TDSAvatarModule } from 'tds-ui/avatar';
@@ -25,9 +25,9 @@ import { TDSModalModule } from 'tds-ui/modal';
 import { TDSNotificationModule } from 'tds-ui/notification';
 import { TDSTagModule } from 'tds-ui/tag';
 
-const SERVICES = [
-  ProductDataFacade,
-]
+// const SERVICES = [
+//   // ProductDataFacade,
+// ]
 
 @NgModule({
   declarations: [
@@ -59,7 +59,7 @@ const SERVICES = [
     TDSTagModule,
   ],
   providers:[
-    ...SERVICES,
+    // ...SERVICES,
   ]
 })
 export class MainAppModule { }

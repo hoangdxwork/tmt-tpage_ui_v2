@@ -33,7 +33,6 @@ import { AddLiveCampaignComponent } from './add-live-campaign/add-live-campaign.
 import { OverviewLiveCampaignComponent } from './overview-live-campaign/overview-live-campaign.component';
 import { FastSaleOrderLineService } from '../services/fast-sale-orderline.service';
 import { QuickReplyButtonComponent } from './quick-reply-button/quick-reply-button.component';
-import { ModalEditOrderComponent } from './modal-edit-order/modal-edit-order.component';
 import { BillFilterOptionsComponent } from './bill-filter-options/bill-filter-options.component';
 import { TpageNotificationDropdownComponent } from './tpage-notification-dropdown/tpage-notification-dropdown.component';
 import { TDSAvatarModule } from 'tds-ui/avatar';
@@ -81,7 +80,6 @@ const cmp =[
   QuickReplyButtonComponent,
   OverviewLiveCampaignComponent,
   BillFilterOptionsComponent,
-  ModalEditOrderComponent,
   TpageNotificationDropdownComponent
 ]
 

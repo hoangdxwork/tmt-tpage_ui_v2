@@ -75,7 +75,6 @@ export class DeliveryCarrierV2Service extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
-
   create(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/create`,
@@ -100,7 +99,7 @@ export class DeliveryCarrierV2Service extends BaseSevice {
         method: TApiMethodType.delete,
     }
 
-    return this.apiService.getData<undefined>(api, null);
+    return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   getById(id: number): Observable<DeliveryCarrierDTO> {

@@ -304,8 +304,7 @@
               <div class="grid grid-cols-3 gap-x-8" *ngIf="_form.controls['TrackingRef'].value">
                 <tds-label class="col-span-1 w-full">Mã vận đơn</tds-label>
                 <div class="col-span-2 w-full">
-                  <span class="font-semibold">{{_form.controls['TrackingRef'].value ?
-                    _form.controls['TrackingRef'].value : ''}} </span>
+                  <span class="font-semibold">{{_form.controls['TrackingRef'].value ? _form.controls['TrackingRef'].value : ''}} </span>
                   <span class="text-primary-1"
                     *ngIf="_form.controls['Carrier'].value && _form.controls['Carrier'].value?.DeliveryType == 'GHN' && _form.controls['TrackingRef'].value"
                     (click)="openTrackingOrderGHN()" title="Theo dõi đơn hàng">

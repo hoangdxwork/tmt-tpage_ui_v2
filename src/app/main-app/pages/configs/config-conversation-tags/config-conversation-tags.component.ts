@@ -9,7 +9,6 @@ import { takeUntil, finalize, map, debounceTime, distinctUntilChanged } from 'rx
 import { THelperDataRequest } from './../../../../lib/services/helper-data.service';
 import { OdataCRMTagService } from './../../../services/mock-odata/odata-crmtag.service';
 import { Component, OnInit, ViewContainerRef, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { CTMTagFilterObjDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSTableQueryParams } from 'tds-ui/table';
@@ -28,7 +27,7 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
   pageIndex = 1;
   isLoading = false;
   count: number = 1;
-  public filterObj: CTMTagFilterObjDTO = {
+  public filterObj: any = {
     searchText: ''
   }
 

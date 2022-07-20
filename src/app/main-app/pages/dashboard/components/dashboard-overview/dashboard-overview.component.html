@@ -3,8 +3,8 @@
         <span class="text-neutral-1-900 text-header-1 font-semibold font-sans">Tổng quan</span>
         <div class="flex flex-row items-center">
             <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị:</span>
-            <tds-select valueField="name" textField="name" [ngModel]="currentFilter" [border]="false"
-                [data]="filterList" size="md" class="tds-dashboard-filter w-32 truncate ..." [valuePrimitive]="false"
+            <tds-select valueField="name" textField="name" [ngModel]="currentDateRanges" [border]="false"
+                [data]="tdsDateRanges" size="md" class="tds-dashboard-filter w-32 truncate ..." [valuePrimitive]="false"
                 (ngModelChange)="onChangeFilter($event)" classIcon="tdsi-arrow-down-fill">
             </tds-select>
         </div>
@@ -28,7 +28,7 @@
                 </span>
                 <div class="flex flex-col pl-6">
                     <span class="text-neutral-1-900 text-heading-4 font-semibold font-sans pb-1">{{dataSummaryOverview?.TotalPartner|number:'1.0-3'}}</span>
-                    <div class="flex flex-row items-center">                       
+                    <div class="flex flex-row items-center">
                         <span class="text-neutral-1-400 text-title-1 font-semibold font-sans">Khách hàng</span>
                     </div>
                 </div>

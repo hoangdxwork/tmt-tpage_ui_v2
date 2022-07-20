@@ -17,7 +17,7 @@ import { ExcelExportService } from 'src/app/main-app/services/excel-export.servi
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
-import { TACheckboxChange } from 'tds-ui/tds-checkbox';
+import { TDSCheckboxChange } from 'tds-ui/tds-checkbox';
 
 @Component({
   selector: 'conversation-order-list',
@@ -192,7 +192,7 @@ export class ConversationOrderListComponent implements OnInit,OnDestroy {
     this.conversationOrderFacade.editOrderFormPost(order);
   }
 
-  onCheck(orderId: string, event: TACheckboxChange) {
+  onCheck(orderId: string, event: TDSCheckboxChange) {
     if (event?.checked) {
       this.setOfCheckedId.add(orderId);
     } else {

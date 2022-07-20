@@ -102,11 +102,12 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   expandSet = new Set<number>();
   private destroy$ = new Subject<void>();
-  private _destroy = new Subject<void>();
+
   widthTable: number = 0;
   paddingCollapse: number = 36;
   marginLeftCollapse: number = 0;
-  isLoadingCollapse: boolean = false
+  isLoadingCollapse: boolean = false;
+
   @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
   @ViewChild('viewChildDetailPartner') viewChildDetailPartner!: ElementRef;
 
@@ -155,7 +156,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loadGridConfig();
     this.loadPartnerStatusReport();
     this.loadBirtdays();
-    this.configService.set('message',{pauseOnHover: true});
+    this.configService.set('message',{ pauseOnHover: true });
 
     this.team = this.crmTeamService.getCurrentTeam() as any;
   }
@@ -180,7 +181,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
         this.count = res['@odata.count'] as number;
         this.lstOfData = [...res.value];
     }, error => {
-        this.message.error('Tải dữ liệu khách hàng thất bại!');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
     });
   }
 
@@ -375,7 +376,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.excelExportService.exportPost('/Partner/ExportFile', { data: JSON.stringify(data) }, 'danh-sach-kh')
-      .pipe(finalize(() => this.isProcessing = false), takeUntil(this._destroy))
+      .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
       .subscribe();
   }
 

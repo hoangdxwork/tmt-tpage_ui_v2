@@ -11,9 +11,8 @@ import { FastSaleOrderLineService } from '../../services/fast-sale-orderline.ser
 import { ApplicationUserService } from '../../services/application-user.service';
 import { AddLiveCampaignComponent } from './components/add-livecampaign/add-livecampaign.component';
 import { LiveCampaignComponent } from './live-campaign/live-campaign.component';
-import { SummaryFacade } from '../../services/facades/summary.facede';
 import { LiveCampaignListComponent } from './components/live-campaign-list/live-campaign-list.component';
-import { LiveCampaignDebtComponent } from './components/live-campaign-debt/live-campaign-debt.component';
+import { ExpandLiveCampaignComponent } from './components/expand-live-campaign/expand-live-campaign.component';
 import { LiveCampaignDetailComponent } from './components/live-campaign-detail/live-campaign-detail.component';
 import { ConfigColumnComponent } from './components/config-column/config-column.component';
 import { DetailReportComponent } from './components/detail-report/detail-report.component';
@@ -32,10 +31,8 @@ import { TagService } from '../../services/tag.service';
 import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { ODataLiveCampaignOrderService } from '../../services/mock-odata/odata-live-campaign-order.service';
 import { FastSaleOrderService } from '../../services/fast-sale-order.service';
-import { CarrierHandler } from '../../services/handlers/carier.handler';
 import { PartnerService } from '../../services/partner.service';
 import { OdataProductService } from '../../services/mock-odata/odata-product.service';
-import { CheckFormHandler } from '../../services/handlers/check-form.handler';
 import { ODataLiveCampaignBillService } from '../../services/mock-odata/odata-live-campaign-bill.service';
 import { TableOrderWaitComponent } from './components/table-order-wait/table-order-wait.component';
 import { TableOrderCancelComponent } from './components/table-order-cancel/table-order-cancel.component';
@@ -73,12 +70,15 @@ import { TDSSelectModule } from 'tds-ui/select';
 import { TDSCheckBoxModule } from 'tds-ui/tds-checkbox';
 import { TDSPopoverModule } from 'tds-ui/popover';
 import { TDSSwitchModule } from 'tds-ui/switch';
+import { CommonHandler } from '../../services/handlers/common.handler';
+import { ODataLiveCampaignService } from '../../services/mock-odata/odata-live-campaign.service';
+import { FilterOptionCampaignComponent } from './components/filter-option-campaign/filter-option-campaign.component';
 
 const cmp =[
   AddLiveCampaignComponent,
   LiveCampaignComponent,
   LiveCampaignListComponent,
-  LiveCampaignDebtComponent,
+  ExpandLiveCampaignComponent,
   LiveCampaignDetailComponent,
   ConfigColumnComponent,
   DetailReportComponent,
@@ -97,7 +97,11 @@ const cmp =[
   TableOrderCancelComponent,
   TableBillConfirmedComponent,
   TableBillCancelComponent,
-  ModalHistoryCartComponent
+  ModalHistoryCartComponent,
+  ModalConfirmedDepositComponent,
+  ModalPaymentComponent,
+  DrawerOrderMessageComponent,
+  FilterOptionCampaignComponent
 ]
 
 const SERVICES = [
@@ -106,26 +110,22 @@ const SERVICES = [
   LiveCampaignService,
   FastSaleOrderLineService,
   ApplicationUserService,
-  SummaryFacade,
+  CommonHandler,
   TagService,
   DeliveryCarrierService,
   ODataLiveCampaignOrderService,
   FastSaleOrderService,
-  CarrierHandler,
   PartnerService,
   OdataProductService,
-  CheckFormHandler,
   ODataLiveCampaignBillService,
   AccountJournalService,
-  AccountRegisterPaymentService
+  AccountRegisterPaymentService,
+  ODataLiveCampaignService
 ]
 
 @NgModule({
   declarations: [
-    ...cmp,
-    ModalConfirmedDepositComponent,
-    ModalPaymentComponent,
-    DrawerOrderMessageComponent
+    ...cmp
   ],
   imports: [
     CommonModule,
@@ -166,4 +166,5 @@ const SERVICES = [
     ...SERVICES
   ]
 })
+
 export class LiveCampaignModule { }

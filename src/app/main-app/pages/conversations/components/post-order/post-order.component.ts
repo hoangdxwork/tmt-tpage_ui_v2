@@ -25,10 +25,7 @@ import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conve
 import { GeneralConfigsFacade } from 'src/app/main-app/services/facades/general-config.facade';
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
-import { CarrierHandler } from 'src/app/main-app/services/handlers/carier.handler';
-import { CheckFormHandler } from 'src/app/main-app/services/handlers/check-form.handler';
-import { OrderFormHandler } from 'src/app/main-app/services/handlers/order-form.handler';
-import { SaleHandler } from 'src/app/main-app/services/handlers/sale.handler';
+
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
@@ -88,7 +85,6 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     private activatedRoute: ActivatedRoute,
-    private checkFormHandler: CheckFormHandler,
     private modalService: TDSModalService,
     private generalConfigsFacade: GeneralConfigsFacade,
     private commonService: CommonService,
@@ -98,10 +94,7 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
     private fastSaleOrderService: FastSaleOrderService,
     private orderPrintService: OrderPrintService,
     private printerService: PrinterService,
-    private orderFormHandler: OrderFormHandler,
-    private carrierHandler: CarrierHandler,
     private viewContainerRef: ViewContainerRef,
-    private saleHandler: SaleHandler,
     private facebookCommentService: FacebookCommentService,
     private saleOnline_FacebookCommentService: SaleOnline_FacebookCommentService,
     private router: Router) {
@@ -112,17 +105,17 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.createForm();
-    this.createSaleModel();
-    this.loadConfig();
-    this.loadOrder();
-    this.loadUsers();
-    this.loadCarrier();
-    this.loadCurrentTeam();
+    // this.createForm();
+    // this.createSaleModel();
+    // this.loadConfig();
+    // this.loadOrder();
+    // this.loadUsers();
+    // this.loadCarrier();
+    // this.loadCurrentTeam();
   }
 
   createForm(): void {
-    this.orderForm = this.orderFormHandler.createOrderFormGroup();
+    // this.orderForm = this.orderFormHandler.createOrderFormGroup();
   }
 
   resetForm(): void {
@@ -158,12 +151,12 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   createSaleModel() {
-    this.orderFormHandler.createBillDefault().subscribe(res => {
-      this.saleModel = res;
+    // this.orderFormHandler.createBillDefault().subscribe(res => {
+    //   this.saleModel = res;
 
-      this.updateShipExtraServices(res.Carrier);
-      this.updateOrderFormByBill(res);
-    });
+    //   this.updateShipExtraServices(res.Carrier);
+    //   this.updateOrderFormByBill(res);
+    // });
   }
 
   updateOrderFormByBill(bill: FastSaleOrderRestDTO) {
@@ -238,22 +231,22 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
     this.lstShipServices.length = 0;
     this.isEnableInsuranceFee = false;
 
-    this.carrierHandler.changeCarrierV2(this.saleModel, this.orderForm, carrier, this.shipExtraServices)
-      .pipe(finalize(() => this.isLoadingCarrier = false))
-      .subscribe(res => {
-        this.lstShipServices = res?.Services || [];
-        this.updateShipExtraServices(carrier);
+    // this.carrierHandler.changeCarrierV2(this.saleModel, this.orderForm, carrier, this.shipExtraServices)
+    //   .pipe(finalize(() => this.isLoadingCarrier = false))
+    //   .subscribe(res => {
+    //     this.lstShipServices = res?.Services || [];
+    //     this.updateShipExtraServices(carrier);
 
-      }, error => {
-          this.message.error(error?.error_description ? error.error_description : JSON.stringify(error));
-      });
+    //   }, error => {
+    //       this.message.error(error?.error_description ? error.error_description : JSON.stringify(error));
+    //   });
   }
 
   updateShipExtraServices(carrier: DeliveryCarrierDTO | undefined) {
     if(carrier) {
       let insuranceFee = this.orderForm.value.Ship_Extras?.InsuranceFee || 0;
 
-      this.isEnableInsuranceFee = this.carrierHandler.getShipExtraServices(carrier, this.shipExtraServices);
+      // this.isEnableInsuranceFee = this.carrierHandler.getShipExtraServices(carrier, this.shipExtraServices);
       this.isEnableInsuranceFee && (this.orderForm.controls.Ship_InsuranceFee.setValue(insuranceFee));
     }
   }
@@ -266,7 +259,7 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   updateTotalAmount() {
-    this.saleHandler.updateTotalAmount(this.orderForm);
+    // this.saleHandler.updateTotalAmount(this.orderForm);
     this.updateTotalAmountByOrderForm();
   }
 
@@ -294,12 +287,12 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
             this.orderPrintService.printOrder(res, null);
           }
 
-          if(orderModel.Id && orderModel.Code) {
-            this.message.success(Message.Order.UpdateSuccess);
-          }
-          else {
-            this.message.success(Message.Order.InsertSuccess);
-          }
+          // if(orderModel.Id && orderModel.Code) {
+          //   this.message.success(Message.Order.UpdateSuccess);
+          // }
+          // else {
+          //   this.message.success(Message.Order.InsertSuccess);
+          // }
 
           this.isLoading = false;
           // this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
@@ -307,38 +300,38 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
         }
         else {
           let billModel = this.prepareBillModel(); // Bản chất đã change this.saleModel
-          billModel.FormAction = print;
+          // billModel.FormAction = print;
 
           this.isLoading = false;
 
-          if(this.isCheckBillValue(billModel) === 1) {
-            if(this.checkShipServiceId(billModel) === 1) {
-              let isDraft = print == "draft" ?  true : false;
+          // if(this.isCheckBillValue(billModel) === 1) {
+          //   if(this.checkShipServiceId(billModel) === 1) {
+          //     let isDraft = print == "draft" ?  true : false;
 
-              this.isLoading = true;
-              this.fastSaleOrderService.saveV2(billModel, isDraft)
-                .pipe(finalize(() => this.isLoading = false))
-                .subscribe(bill => {
-                  this.message.success(Message.Bill.InsertSuccess);
-                  // TODO: Cập nhật doanh thu, danh sách phiếu bán hàng gần nhất
+          //     this.isLoading = true;
+          //     this.fastSaleOrderService.saveV2(billModel, isDraft)
+          //       .pipe(finalize(() => this.isLoading = false))
+          //       .subscribe(bill => {
+          //         this.message.success(Message.Bill.InsertSuccess);
+          //         // TODO: Cập nhật doanh thu, danh sách phiếu bán hàng gần nhất
 
-                  if (print == "print") {
-                    this.printerService.printUrl(`/fastsaleorder/print?ids=${bill.Data.Id}`);
-                  }
+          //         if (print == "print") {
+          //           this.printerService.printUrl(`/fastsaleorder/print?ids=${bill.Data.Id}`);
+          //         }
 
-                  if (print == "printShip") {
-                    let params = "";
-                    bill.Data.CarrierId && (params = `&carrierId=${bill.Data.CarrierId}`);
-                    this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${bill.Data.Id}${params}`);
-                  }
+          //         if (print == "printShip") {
+          //           let params = "";
+          //           bill.Data.CarrierId && (params = `&carrierId=${bill.Data.CarrierId}`);
+          //           this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${bill.Data.Id}${params}`);
+          //         }
 
-                  this.partnerService.onLoadPartnerFromTabOrder$.emit(this.data);
-                  // this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
-                }, error => {
-                  this.message.error(`${error?.error?.message}` || JSON.stringify(error));
-                });
-            }
-          }
+          //         this.partnerService.onLoadPartnerFromTabOrder$.emit(this.data);
+          //         // this.updatePartner(this.currentTeam?.Facebook_PageId, orderModel.Facebook_ASUserId);
+          //       }, error => {
+          //         this.message.error(`${error?.error?.message}` || JSON.stringify(error));
+          //       });
+          //   }
+          // }
         }
       }, error => {
         this.isLoading = false;
@@ -346,48 +339,48 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
       });
   }
 
-  isCheckBillValue(model: TDSSafeAny): number {
-    let errorMessage = this.checkFormHandler.checkValueBill(model);
+  isCheckBillValue(model: TDSSafeAny) {
+    // let errorMessage = this.checkFormHandler.checkValueBill(model);
 
-    if(TDSHelperString.hasValueString(errorMessage) && errorMessage) {
-      this.message.error(errorMessage);
-      return 0;
-    }
+    // if(TDSHelperString.hasValueString(errorMessage) && errorMessage) {
+    //   this.message.error(errorMessage);
+    //   return 0;
+    // }
 
-    return 1;
+    // return 1;
   }
 
   checkShipServiceId(model: TDSSafeAny) {
-    let result = this.checkFormHandler.checkShipServiceId(model);
+    // let result = this.checkFormHandler.checkShipServiceId(model);
 
-    if(result === 0) {
-      const modal = this.modalService.error({
-        title: 'Xác nhận đối tác',
-        content: 'Đối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại.',
-        iconType: 'tdsi-trash-fill',
-        okText: "Xác nhận",
-        cancelText: "Hủy bỏ",
-        onOk: () => {
-          this.calculateFee(model.Carrier);
-        },
-        onCancel: () => {
-          modal.close();
-        },
-      });
-    }
+    // if(result === 0) {
+    //   const modal = this.modalService.error({
+    //     title: 'Xác nhận đối tác',
+    //     content: 'Đối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại.',
+    //     iconType: 'tdsi-trash-fill',
+    //     okText: "Xác nhận",
+    //     cancelText: "Hủy bỏ",
+    //     onOk: () => {
+    //       this.calculateFee(model.Carrier);
+    //     },
+    //     onCancel: () => {
+    //       modal.close();
+    //     },
+    //   });
+    // }
 
-    return result;
+    // return result;
   }
 
   calculateFee(carrier: TDSSafeAny) {
-    this.isLoadingCarrier = true;
-    this.carrierHandler.calculateFee(this.saleModel, this.orderForm, carrier, this.shipExtraServices)
-      .pipe(finalize(() => this.isLoadingCarrier = false))
-      .subscribe(res => {
-        this.lstShipServices = res?.Services || [];
-      }, error => {
-        this.message.error(error?.error_description ? error.error_description : JSON.stringify(error));
-      });
+    // this.isLoadingCarrier = true;
+    // this.carrierHandler.calculateFee(this.saleModel, this.orderForm, carrier, this.shipExtraServices)
+    //   .pipe(finalize(() => this.isLoadingCarrier = false))
+    //   .subscribe(res => {
+    //     this.lstShipServices = res?.Services || [];
+    //   }, error => {
+    //     this.message.error(error?.error_description ? error.error_description : JSON.stringify(error));
+    //   });
   }
 
   updatePartner(pageId: string | undefined, psid: string) {
@@ -404,19 +397,19 @@ export class PostOrderComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  prepareOrderModel(): SaleOnline_OrderDTO {
-    let model = this.checkFormHandler.prepareOrder(this.orderForm);
+  prepareOrderModel() {
+    // let model = this.checkFormHandler.prepareOrder(this.orderForm);
 
-    if(!TDSHelperString.hasValueString(model.Facebook_ASUserId)) {
-      model.Facebook_ASUserId = this.data?.psid;
-    }
+    // if(!TDSHelperString.hasValueString(model.Facebook_ASUserId)) {
+    //   model.Facebook_ASUserId = this.data?.psid;
+    // }
 
-    return model;
+    // return model;
   }
 
-  prepareBillModel(): FastSaleOrderRestDTO {
-    let model = this.checkFormHandler.prepareBill(this.orderForm, this.saleModel, this.shipExtraServices);
-    return model;
+  prepareBillModel() {
+    // let model = this.checkFormHandler.prepareBill(this.orderForm, this.saleModel, this.shipExtraServices);
+    // return model;
   }
 
   updateBillByForm(form: FormGroup) {

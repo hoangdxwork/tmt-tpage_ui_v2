@@ -3,8 +3,6 @@ import { AttachmentState } from './../../services/facebook-state/attachment.stat
 import { AttachmentService } from '../../services/attachment.service';
 import { AttachmentDataFacade } from './../../services/facades/attachment-data.facade';
 import { UploadImageModule } from './../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
-import { CheckFormHandler } from './../../services/handlers/check-form.handler';
-import { OrderFormHandler } from './../../services/handlers/order-form.handler';
 import { CRMMatchingService } from './../../services/crm-matching.service';
 import { TDSConversationsModule } from './../../shared/tds-conversations/tds-conversations.module';
 import { ConversationOrderFacade } from './../../services/facades/conversation-order.facade';
@@ -106,8 +104,6 @@ const SERVICES = [
   ConversationEventFacade,
   ConversationOrderFacade,
   CRMMatchingService,
-  OrderFormHandler,
-  CheckFormHandler,
   AttachmentDataFacade,
   AttachmentService,
   AttachmentState,

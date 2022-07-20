@@ -124,8 +124,10 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   loadTeamById(id: any) {
     this.cRMTeamService.getTeamById(id).subscribe((team: any) => {
-        this.dataModel.Team.Name = team.Name;
-        this.dataModel.Team.Facebook_PageName = team.Facebook_PageName;
+        if(team) {
+          this.dataModel.Team.Name = team.Name;
+          this.dataModel.Team.Facebook_PageName = team.Facebook_PageName;
+        }
     })
   }
 

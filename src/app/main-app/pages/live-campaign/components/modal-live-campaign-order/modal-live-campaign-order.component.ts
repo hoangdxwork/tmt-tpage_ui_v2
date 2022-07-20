@@ -1,5 +1,4 @@
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
-import { ViewReportSaleOnlineOrderLiveCampaignDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { ModalInfoOrderComponent } from '../modal-info-order/modal-info-order.component';
 
@@ -9,7 +8,7 @@ import { ModalInfoOrderComponent } from '../modal-info-order/modal-info-order.co
 })
 export class ModalLiveCampaignOrderComponent implements OnInit {
 
-  @Input() data: ViewReportSaleOnlineOrderLiveCampaignDTO[] = [];
+  @Input() data: any[] = [];
 
   pageSize = 10;
   pageIndex = 1;

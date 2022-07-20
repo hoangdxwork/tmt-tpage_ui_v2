@@ -88,15 +88,15 @@ export class AddBillHandler {
         x.UserId = data.UserId;
         x.User = x.User || data.User;
 
-        if(!x.LiveCampaign_DetailId) {
-          delete x.LiveCampaign_DetailId;
-        }
-        if(x.LiveCampaignQtyChange <= 0) {
-          delete x.LiveCampaignQtyChange;
-        }
-        
-        //nếu chuyển sang tên miền test.tpos.dev thì bật lên
-        delete x.OrderId;
+        // if(!x.LiveCampaign_DetailId) {
+        //   delete x.LiveCampaign_DetailId;
+        // }
+        // if(x.LiveCampaignQtyChange <= 0) {
+        //   delete x.LiveCampaignQtyChange;
+        // }
+
+        // //nếu chuyển sang tên miền test.tpos.dev thì bật lên
+        // delete x.OrderId;
       })
     }
 

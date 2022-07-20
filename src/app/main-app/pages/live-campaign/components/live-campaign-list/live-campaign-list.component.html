@@ -1,116 +1,128 @@
-<div class="h-full w-full bg-white rounded-xl flex flex-col">
+<div class="h-full w-full bg-white rounded-xl flex flex-col" *ngIf="lstOfData">
   <div class="w-full flex space-x-2 justify-end items-center px-4 py-2.5">
     <div class="w-1/4">
         <tds-form-field class="w-full">
-            <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm chiến dịch"
-                tdsInput (keyup.enter)="onSearch($event)" />
+            <input aria-colspan="" class="placeholder-neutral-1-400" placeholder="Tìm kiếm" tdsInput #innerText />
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
         </tds-form-field>
     </div>
 
-    <button tds-button-icon color="secondary">
-        <span class="flex items-center">
-            <i class="tdsi-filter-2-line"></i>
-        </span>
-    </button>
-
+    <filter-option-campaign (onLoadOption)="onLoadOption($event)" [filterObj]="filterObj" ></filter-option-campaign>
     <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
   </div>
 
-  <div class="h-full pb-2.5">
-    <tds-table class="table-vertical-line" #tableLiveCampaign
-      [listData]="lstOfData"
-      [(pageSize)]="pageSize"
-      [(pageIndex)]="pageIndex"
-      [loading]="isLoading"
-      [showSizeChanger]="true"
-      [frontPagination]="false"
-      [total]="count"
-      [scroll]="{y:'auto'}"
-      (clickRefresh)="refreshData()"
-      (queryParams)="onQueryParamsChange($event)">
+  <div #viewChildWidthTable class="h-full pb-2.5" >
+    <tds-table #rowSelectionTable [showSizeChanger]="true" [frontPagination]="false"
+        [listData]="lstOfData" [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count"
+        [scroll]="{y:'auto', x: 'auto'}" [loading]="isLoading" (clickRefresh)="refreshData()"
+        (queryParams)="onQueryParamsChange($event)">
         <thead>
             <tr>
-                <th rowSpan="2" width="68px"></th>
-                <th rowSpan="2" *ngIf="isHidden('Name')">Tên chiến dịch</th>
-                <th colSpan="3" *ngIf="isHidden('Order')" class="text-center">Đơn hàng</th>
-                <th colSpan="3" *ngIf="isHidden('Product')" class="text-center">Sản phẩm</th>
-                <th rowSpan="2" *ngIf="isHidden('Time')">Thống kê gửi tin</th>
-                <th rowSpan="2" *ngIf="isHidden('Active')">Hoạt động</th>
-                <th rowSpan="2" *ngIf="isHidden('DateCreated')">Ngày tạo</th>
-                <th rowSpan="2" *ngIf="isHidden('Action')">Thao tác</th>
+                <th width="50px" class="border-r" [tdsLeft]="true" rowspan="2"></th>
+                <th width="280px" [tdsLeft]="true" class="border-r" rowspan="2" *ngIf="isHidden('Name')">Tên chiến dịch</th>
+                <th class="text-center border-r" colspan="3" class="text-center" *ngIf="isHidden('Order')">Đơn hàng</th>
+                <th class="text-center border-r" colspan="3" class="text-center" *ngIf="isHidden('Product')">Sản phẩm</th>
+                <th width="300px" class="border-r" rowspan="2" *ngIf="isHidden('ResumeTime')">Thống kê gửi tin</th>
+                <th width="160px" class="border-r" rowspan="2"  *ngIf="isHidden('IsActive')">Hoạt động</th>
+                <th width="160px" class="border-r" rowspan="2" *ngIf="isHidden('DateCreated')">Ngày tạo</th>
+                <th width="160px" class="border-r" rowspan="2">Thao tác</th>
             </tr>
-            <tr class="">
-                <th *ngIf="isHidden('Order')">Chờ chốt</th>
-                <th *ngIf="isHidden('Order')">Đã chốt</th>
-                <th *ngIf="isHidden('Order')">Đã hủy</th>
-                <th *ngIf="isHidden('Product')">Chờ chốt</th>
-                <th *ngIf="isHidden('Product')">Đã chốt</th>
-                <th *ngIf="isHidden('Product')">Đã hủy</th>
+            <tr>
+                <th class="border-r" width="100px" *ngIf="isHidden('Order')">Chờ chốt</th>
+                <th class="border-r" width="100px" *ngIf="isHidden('Order')">Đã chốt</th>
+                <th class="border-r" width="100px" *ngIf="isHidden('Order')">Đã hủy</th>
+
+                <th class="border-r" width="100px" *ngIf="isHidden('Product')">Chờ chốt</th>
+                <th class="border-r" width="100px" *ngIf="isHidden('Product')">Đã chốt</th>
+                <th class="border-r" width="100px" *ngIf="isHidden('Product')">Đã hủy</th>
             </tr>
         </thead>
         <tbody>
-          <ng-template ngFor let-data [ngForOf]="tableLiveCampaign.data" let-odd='odd' let-index="index">
-            <tr>
-                <td [expand]="expandSet.has(data.Id)" (expandChange)="onExpandChange(data.Id, $event)">
+          <ng-template ngFor let-data [ngForOf]="rowSelectionTable.data" let-odd='odd' let-index="index">
+            <tr class="text-body-2 text-neutral-900 font-regular">
+
+                <td [expand]="expandSet.has(data.Id)" class="border-r"
+                    (expandChange)="onExpandChange(data.Id, $event)" [tdsLeft]="true"
+                    [style]="setOfCheckedId.has(data.Id) ? 'background-color:#F2FCF5' : '' ">
                 </td>
 
                 <!-- Tên chiến dịch -->
-                <td *ngIf="isHidden('Name')">{{ data.Name }}</td>
+                <td [tdsLeft]="true" class="border-r" *ngIf="isHidden('Name')">
+                    <div class="w-full">
+                        <span>{{data.Name}}</span>
+                    </div>
+                </td>
 
                 <!-- Đơn hàng -->
-                <td *ngIf="isHidden('Order')">{{data.SumOrderWaitCheckOut || 0 | number}}</td>
-                <td *ngIf="isHidden('Order')">{{data.SumOrderCheckOut || 0 | number}}</td>
-                <td *ngIf="isHidden('Order')"> <!-- style chỉnh sửa sau -->
-                  <span class="text-error-400">
-                    {{data.SumOrderCancelCheckOut || 0 | number}}
-                  </span>
+                <td class="border-r" *ngIf="isHidden('Order')">
+                    <div class="w-full">
+                        <span>{{data.SumOrderWaitCheckOut | number: '1.0-3'}}</span>
+                    </div>
+                </td>
+                <td class="border-r" *ngIf="isHidden('Order')">
+                    <div class="w-full">
+                        <span>{{data.SumOrderCheckOut | number: '1.0-3'}}</span>
+                    </div>
+                </td>
+                <td class="border-r"  *ngIf="isHidden('Order')">
+                    <div class="w-full">
+                        <span class="text-error-400"> {{data.SumOrderCancelCheckOut | number: '1.0-3'}}</span>
+                    </div>
                 </td>
 
                 <!-- Sản phẩm -->
-                <td *ngIf="isHidden('Product')">{{data.SumQtyWaitCheckOut || 0 | number}}</td>
-                <td *ngIf="isHidden('Product')">{{data.SumQtyCheckOut || 0 | number}}</td>
-                <td *ngIf="isHidden('Product')"> <!-- style chỉnh sửa sau -->
-                  <span class="text-error-400">
-                    {{data.SumCancelCheckout || 0 | number}}
-                  </span>
+                <td class="border-r" *ngIf="isHidden('Product')">
+                    <div class="w-full">
+                        <span> {{data.SumQtyWaitCheckOut | number: '1.0-3'}}</span>
+                    </div>
+                </td>
+                <td class="border-r" *ngIf="isHidden('Product')">
+                  <div class="w-full">
+                      <span> {{data.SumQtyCheckOut | number: '1.0-3'}}</span>
+                  </div>
+                </td>
+                <td class="border-r"  *ngIf="isHidden('Product')">
+                    <div class="w-full">
+                        <span class="text-error-400"> {{data.SumCancelCheckout | number: '1.0-3'}}</span>
+                    </div>
                 </td>
 
                 <!-- Thống kê gửi tin -->
-                <td *ngIf="isHidden('Time')">
-                  <div class="flex space-x-1 font-semibold">
-                    <span>Tổng hợp: </span>
-                    <span class="text-info-400">
-                      {{data.ResumeTime || 0}} phút
-                    </span>
-                  </div>
-                  <div class="mt-1">
-                    <span>{{data.StartDate | date:'dd/MM/yyyy HH:mm'}} - {{data.EndDate | date:'dd/MM/yyyy HH:mm'}}</span>
-                  </div>
+                <td class="border-r"  *ngIf="isHidden('ResumeTime')">
+                    <div class="w-full">
+                        <div class="w-full">
+                            <span class="font-semibold mr-2">Tổng hợp:</span>
+                            <span class="text-info-400"> {{data.ResumeTime || 0}} phút </span>
+                        </div>
+                        <div class="mt-1">{{data.StartDate | date:'dd/MM/yyyy HH:mm'}} - {{data.EndDate | date:'dd/MM/yyyy HH:mm'}}</div>
+                    </div>
                 </td>
 
                 <!-- Hoạt động -->
-                <td *ngIf="isHidden('Active')">
-                  <div>
-                    <tds-switch size="md" [checked]="data.IsActive" (change)="onChangeActive($event, data)"></tds-switch>
-                  </div>
+                <td class="border-r"  *ngIf="isHidden('IsActive')">
+                    <div class="text-left w-full">
+                        <tds-switch size="md" [checked]="data.IsActive" (change)="onChangeActive($event, data)"></tds-switch>
+                    </div>
                 </td>
 
                 <!-- Ngày tạo -->
-                <td *ngIf="isHidden('DateCreated')">
-                  {{data.DateCreated | date:'dd/MM/yyyy HH:mm'}}
+                <td class="border-r" *ngIf="isHidden('DateCreated')">
+                    <div class="w-full">
+                        <span>{{data.DateCreated | date:'dd/MM/yyyy HH:mm'}}</span>
+                    </div>
                 </td>
 
                 <!-- Thao tác -->
-                <td *ngIf="isHidden('Action')">
-                    <div class="flex space-x-2">
-                        <button tds-button-icon color="secondary" size="sm" (click)="onDetail(data.Id)">
+                <td [tdsRight]="true" class="border-r"
+                    [style]="setOfCheckedId.has(data.Id)?'background-color:#F2FCF5' : '' ">
+                    <div class="flex space-x-2 w-full">
+                        <button tds-button-icon color="secondary" size="sm" (click)="onDetail(data.Id)" tds-tooltip tooltipTitle="Xem chi tiết">
                             <span class="flex items-center">
                                 <i class="tdsi-eye-open-fill text-neutral-1-500"></i>
                             </span>
                         </button>
 
-                        <button tds-button-icon color="secondary" size="sm" (click)="onEdit(data.Id)">
+                        <button tds-button-icon color="secondary" size="sm" (click)="onEdit(data.Id)" tds-tooltip tooltipTitle="Chỉnh sửa chiến dịch">
                             <span class="flex items-center">
                                 <i class="tdsi-edit-fill text-neutral-1-500"></i>
                             </span>
@@ -124,7 +136,7 @@
 
                         <tds-dropdown-menu #menu="tdsDropdownMenu">
                             <div class="w-full">
-                                <div tds-dropdown-item (click)="onCopy(data.Id)">
+                                <div tds-dropdown-item (click)="onCopyCampaign(data.Id)">
                                     <a> Sao chép chiến dịch </a>
                                 </div>
                                 <div tds-dropdown-item (click)="showModalRemove(data)">
@@ -135,9 +147,11 @@
                     </div>
                 </td>
             </tr>
-            <tr [expand]="expandSet.has(data.Id)" class="bg-neutral-3-50">
-                <div class="w-full bg-white rounded-md">
-                  <live-campaign-debt *ngIf="expandSet.has(data.Id)" [liveCampaignId]="data.Id"></live-campaign-debt>
+            <!-- expand  details -->
+            <tr [expand]="expandSet.has(data.Id)"  class="border-b border-neutral-2-100 text-neutral-1-900 bg-light-50 w-full">
+                <div #viewChildDetailPartner [ngStyle]="{'max-width.px': widthTable, 'margin-left.px': marginLeftCollapse}"
+                    class="flex items-center justify-center k-grid-table-wrap-detail">
+                    <expand-live-campaign  class="w-full" *ngIf="expandSet.has(data.Id)" [liveCampaignId]="data.Id"></expand-live-campaign>
                 </div>
             </tr>
           </ng-template>
