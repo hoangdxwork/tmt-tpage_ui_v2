@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { filter, finalize, map, mergeMap,take, takeUntil } from 'rxjs/operators';
@@ -19,7 +20,7 @@ import { NetworkHelper } from '../shared/helper/network.helper';
   templateUrl: './layout.component.html'
 })
 
-export class LayoutComponent implements OnInit {
+export class LayoutComponent implements OnInit, AfterViewInit {
 
   userInit!: UserInitDTO;
   currentTeam!: CRMTeamDTO | null;
@@ -30,6 +31,9 @@ export class LayoutComponent implements OnInit {
   isNetwork: boolean = false;
   disabledSignalRConnect = false;
   _connectionEstablished: boolean = false;
+  withLayout!: number;
+  withLaptop: number = 1600;
+  @ViewChild('withLayout') ViewChildWithLayout!: ElementRef;
 
   constructor(private auth: TAuthService,
     private signalRConnectionService: SignalRConnectionService,
@@ -37,7 +41,9 @@ export class LayoutComponent implements OnInit {
     private modalService: TDSModalService,
     private message: TDSMessageService,
     private activatedRoute: ActivatedRoute,
-    private router: Router) {
+    private router: Router,
+    private resizeObserver: TDSResizeObserver
+    ) {
 
     router.events.pipe(
       takeUntil(this.destroy$),
@@ -53,7 +59,11 @@ export class LayoutComponent implements OnInit {
       mergeMap(route => route.data) ,
       // get the data
     ).subscribe(res => {
-      this.inlineCollapsed = res.collapse;
+      if(this.withLayout < this.withLaptop){
+        this.inlineCollapsed = true;
+      }else{
+        this.inlineCollapsed = res.collapse;
+      }
     })
   }
 
@@ -78,6 +88,20 @@ export class LayoutComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe(res => {
       this.params = res;
     });
+  }
+
+  ngAfterViewInit(): void {
+    this.withLayout = this.ViewChildWithLayout?.nativeElement?.offsetWidth
+    this.resizeObserver
+      .observe(this.ViewChildWithLayout)
+      .subscribe(() => {
+        this.withLayout = this.ViewChildWithLayout?.nativeElement?.offsetWidth;
+        if(this.withLayout < this.withLaptop){
+          this.inlineCollapsed = true;
+        }else{
+          this.inlineCollapsed = false;
+        }
+      });
   }
 
   onSelectShopChange(event: TDSSafeAny) {
