@@ -1,3 +1,6 @@
+import { Subject, takeUntil, finalize } from 'rxjs';
+import { Carrier, Line, OrderBillDefaultDTO, LineV2, Partner } from './../../../../dto/order/order-bill-default.dto';
+import { ResultCheckAddressDTO } from './../../../../dto/address/address.dto';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -18,12 +21,13 @@ export class CreateBillDefaultComponent implements OnInit {
 
   @Input() ids: TDSSafeAny[] = [];
 
-  lstCarriers: Array<TDSSafeAny> = [];
-  lstData!: TDSSafeAny[];
-  lstLine!: TDSSafeAny[];
+  lstCarriers: Array<Carrier> = [];
+  lstData: Array<OrderBillDefaultDTO> = [];
+  lstLine: Array<LineV2> = [];
 
   isApplyPromotion: boolean = false;
-  carrier: TDSSafeAny;
+  carrier!: Carrier;
+  isLoading = false;
 
   saveType = {
     billSave: 1,
@@ -31,20 +35,7 @@ export class CreateBillDefaultComponent implements OnInit {
     billPrintShip: 3
   }
 
-  numberWithCommas =(value:TDSSafeAny) =>{
-    if(value != null)
-    {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-    }
-    return value
-  } ;
-  parserComas = (value: TDSSafeAny) =>{
-    if(value != null)
-    {
-      return TDSHelperString.replaceAll(value,',','');
-    }
-    return value
-  };
+  private destroy$ = new Subject<void>();
 
   constructor(
     private message: TDSMessageService,
@@ -59,28 +50,64 @@ export class CreateBillDefaultComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadCarrier();
-
     this.loadData();
   }
 
   loadData() {
-    this.saleOnline_OrderService.getDefaultOrderIds({ids: this.ids}).subscribe(res => {
-      delete res['@odata.context'];
-      this.lstData = res;
+    this.isLoading = true;
 
-      this.lstLine = res.Lines.map((x: TDSSafeAny) => {return this.createLines(x)});
-    });
+    this.saleOnline_OrderService.getDefaultOrderIds({ ids: this.ids })
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
+        delete res['@odata.context'];
+        this.lstData = res;
+        this.lstLine = res.Lines.map((x: TDSSafeAny) => { return this.createLines(x) });
+      });
   }
 
   loadCarrier() {
-    this.carrierService.get().subscribe((res: any) => {
+    this.carrierService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.lstCarriers = res.value;
+    },
+    err=>{
+      this.message.error(err?.error?.message || Message.CanNotLoadData);
     });
   }
 
-  createLines(line: TDSSafeAny) {
-    let result = {
+  numberWithCommas = (value: TDSSafeAny) => {
+    if (value != null) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+    }
+    return value
+  };
+
+  parserComas = (value: TDSSafeAny) => {
+    if (value != null) {
+      return TDSHelperString.replaceAll(value, ',', '');
+    }
+    return value
+  };
+
+  mappingAddress(data: Partner) {
+    if (data && data.City) {
+      data.CityCode = data.City.code;
+      data.CityName = data.City.Name;
+    }
+    if (data && data.District) {
+      data.DistrictCode = data.District.code;
+      data.DistrictName = data.District.Name;
+    }
+    if (data && data.Ward) {
+      data.WardCode = data.Ward.code;
+      data.WardName = data.Ward.Name;
+    }
+  }
+
+  createLines(line: TDSSafeAny): LineV2 {
+    this.mappingAddress(line.Partner);
+
+    return {
       COD: line.COD,
+      CheckAddress: line.CheckAddress,
       CarrierId: line.CarrierId,
       CarrierName: line.CarrierName,
       Comment: line.Comment,
@@ -100,11 +127,35 @@ export class CreateBillDefaultComponent implements OnInit {
       ShipWeight: line.ShipWeight,
       TimeLock: line.TimeLock,
       TotalAmount: line.TotalAmount,
-      WarehouseId: line.WarehouseId,
-      CheckAddress: line.CheckAddress
+      WarehouseId: line.WarehouseId
     };
+  }
 
-    return result;
+  changeCarrierAll() {
+    if (this.carrier) {
+      this.lstLine.forEach(item => {
+        this.onChangeCarrier(this.carrier, item);
+      });
+    }
+  }
+
+  onChangeCarrier(event: TDSSafeAny, item: TDSSafeAny) {
+    item.CarrierId = event.Id;
+    item.CarrierName = event.Name;
+    item.ShipAmount = event.Config_DefaultFee || 0;
+    item.ShipWeight = event.Config_DefaultWeight || 100;
+  }
+
+  onLoadSuggestion(item: ResultCheckAddressDTO, index: number) {
+    if (TDSHelperObject.hasValue(item)) {
+      this.lstLine[index].Partner.Street = item.Address;
+      this.lstLine[index].Partner.CityCode = item.CityCode;
+      this.lstLine[index].Partner.CityName = item.CityName;
+      this.lstLine[index].Partner.DistrictCode = item.DistrictCode;
+      this.lstLine[index].Partner.DistrictName = item.DistrictName;
+      this.lstLine[index].Partner.WardCode = item.WardCode;
+      this.lstLine[index].Partner.WardName = item.WardName;
+    }
   }
 
   onEdit(index: number) {
@@ -119,15 +170,8 @@ export class CreateBillDefaultComponent implements OnInit {
       }
     });
 
-    // modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
     modal.afterClose.subscribe((result: TDSSafeAny) => {
-      console.log('[afterClose] The result is:', result);
       if (TDSHelperObject.hasValue(result)) {
-
-        if(!this.lstLine[index]?.Partner) {
-          this.lstLine[index]["Partner"] = {};
-        }
-
         this.lstLine[index].Partner["Name"] = result.Name;
         this.lstLine[index].Partner["Phone"] = result.Phone;
         this.lstLine[index].Partner["Street"] = result.Street;
@@ -146,40 +190,10 @@ export class CreateBillDefaultComponent implements OnInit {
   }
 
   onRemove(index: number) {
-    this.lstLine = this.lstLine.filter((item, i) => i !== index);
+    this.lstLine.splice(index, 1);
   }
 
-  onSave(type: TDSSafeAny) {
-    if(!this.carrier) {
-      this.message.error(Message.Bill.ErrorEmptyCarrier);
-      return;
-    }
-
-    if(!this.lstLine || this.lstLine.length === 0) {
-      this.message.error(Message.EmptyData);
-      return;
-    }
-
-    let orderInfo = this.lstLine.find(x => !x?.Partner?.Phone || !x?.Partner?.Street || !x?.Partner?.Name);
-    if(orderInfo) {
-      this.message.error(Message.Bill.ErrorEmptyPartner);
-      return;
-    }
-
-    let model = this.prepareModel();
-
-    this.fastSaleOrderService.insertOrderProductDefault({model: model}).subscribe(res => {
-      if(!res.Error) {
-        this.message.success(Message.Bill.InsertSuccess);
-        this.printSave(type, res, model?.CarrierId);
-      }
-      else {
-        this.onModalError(res.DataErrorDefault, type, model?.CarrierId);
-      }
-    });
-  }
-
-  onModalError(error: TDSSafeAny[], type: TDSSafeAny,  carrierId: string) {
+  onModalError(error: TDSSafeAny[], type: TDSSafeAny, carrierId: string) {
     const modal = this.modal.create({
       title: 'Danh sách lỗi tạo đơn',
       content: CreateBillDefaultErrorComponent,
@@ -197,34 +211,15 @@ export class CreateBillDefaultComponent implements OnInit {
     });
   }
 
-  printSave(type: TDSSafeAny, data: TDSSafeAny, carrierId: string) {
-    if (TDSHelperObject.hasValue(data) && data.Ids) {
-      data.Ids.forEach((id: TDSSafeAny) => {
-        if(type == this.saveType.billPrint) {
-          this.printerService.printUrl(`/fastsaleorder/print?ids=${id}`).subscribe();;
-        }
-        else if(type == this.saveType.billPrintShip) {
-          let params = "";
-          params = `&carrierId=${carrierId}`;
-          this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${id}${params}`);
-        }
-      });
-    }
-  }
-
   prepareModel() {
-    let lines = this.lstLine.map(item => {
+    let lines: Line[] = this.lstLine.map(item => {
       delete item.CheckAddress;
       delete item.COD;
-
-      // item.TotalAmount = parseNumber(item.TotalAmount);
-      // item.ShipWeight = parseNumber(item.ShipWeight);
-      // item.ShipAmount = parseNumber(item.ShipAmount);
 
       return item;
     });
 
-    let result = {
+    let result: OrderBillDefaultDTO = {
       Id: 0,
       ApplyPromotion: this.isApplyPromotion,
       Carrier: this.carrier,
@@ -235,23 +230,66 @@ export class CreateBillDefaultComponent implements OnInit {
     return result;
   }
 
-  changeCarrierAll() {
-    if(this.carrier) {
-      this.lstLine.forEach(item => {
-        this.onChangeCarrier(this.carrier, item);
-      });
+  onSave(type: TDSSafeAny) {
+    if(this.isLoading){
+      return;
     }
+
+    if (!this.carrier) {
+      this.message.error(Message.Bill.ErrorEmptyCarrier);
+      return;
+    }
+
+    if (!this.lstLine || this.lstLine.length === 0) {
+      this.message.error(Message.EmptyData);
+      return;
+    }
+
+    let orderInfo = this.lstLine.find(x => !x?.Partner?.Phone || !x?.Partner?.Street || !x?.Partner?.Name);
+    if (orderInfo) {
+      this.message.error(Message.Bill.ErrorEmptyPartner);
+      return;
+    }
+
+    let model = this.prepareModel();
+    this.isLoading = true;
+
+    this.fastSaleOrderService.insertOrderProductDefault({ model: model })
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
+        if (!res.Error) {
+          this.message.success(Message.Bill.InsertSuccess);
+          this.printSave(type, res, model?.CarrierId.toString());
+        }
+        else {
+          this.onModalError(res.DataErrorDefault, type, model?.CarrierId.toString());
+        }
+      },
+        err => {
+          this.message.error(err?.error?.message || 'Tạo đơn hàng thất bại');
+        });
   }
 
-  onChangeCarrier(event: TDSSafeAny, item: TDSSafeAny) {
-    item.CarrierId = event.Id;
-    item.CarrierName = event.Name;
-    item.ShipAmount = event.Config_DefaultFee || 0;
-    item.ShipWeight = event.Config_DefaultWeight || 100;
+  printSave(type: TDSSafeAny, data: TDSSafeAny, carrierId: string) {
+    if (TDSHelperObject.hasValue(data) && data.Ids) {
+      data.Ids.forEach((id: TDSSafeAny) => {
+        if (type == this.saveType.billPrint) {
+          this.printerService.printUrl(`/fastsaleorder/print?ids=${id}`).subscribe();;
+        }
+        else if (type == this.saveType.billPrintShip) {
+          let params = "";
+          params = `&carrierId=${carrierId}`;
+          this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${id}${params}`);
+        }
+      });
+    }
   }
 
   onCancel() {
     this.modalRef.destroy(null);
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

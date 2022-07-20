@@ -389,8 +389,8 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
     this.cacheApi.getItem(key).subscribe((res) => {
       if (TDSHelperObject.hasValue(res)) {
-        let model = JSON.parse(res?.value)?.value?.data;
-
+        let model = JSON.parse(res?.value)?.value;
+        
         if(TDSHelperObject.hasValue(model)){
           data.SaleOnlineIds = model.ids;
           // data.Partner = model.partner;

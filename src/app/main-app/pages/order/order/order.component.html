@@ -47,7 +47,7 @@
             (onRefreshData)="refreshDataCurrent()"></action-dropdown>
 
           <tds-form-field class="w-full">
-              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)"/>
+              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" #filterText/>
               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
           </tds-form-field>
 
@@ -87,7 +87,7 @@
             (onRefreshData)="refreshDataCurrent()"></action-dropdown>
 
           <tds-form-field class="w-full">
-              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText />
+              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" />
               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
           </tds-form-field>
 

@@ -1,3 +1,4 @@
+import { Partner } from './../../../../dto/order/order-bill-default.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { takeUntil, Subject } from 'rxjs';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -6,7 +7,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
 import { TDSModalRef } from 'tds-ui/modal';
-import { Partner } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
 
 @Component({
   selector: 'app-update-info-partner',

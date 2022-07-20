@@ -20,7 +20,7 @@ import { OrderByPipe } from './order-by.pipe';
 import { LastActivityMessagePipe } from './last-activity-message.pipe';
 import { ShowAttributeValuePipe } from './show-attribute-value.pipe';
 import { NameNetWorkPipe } from './name-network.pipe';
-import { NumberCustomPipe } from './numberCustom.pipe';
+import { NumberCustomPipe } from './number-custom.pipe';
 import { CompareToday } from './compare-today.pipe';
 
 const cmp =[

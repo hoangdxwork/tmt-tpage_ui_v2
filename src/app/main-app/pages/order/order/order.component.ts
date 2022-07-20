@@ -44,6 +44,8 @@ import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/
 
 export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  @ViewChild('filterText') filterText!:ElementRef;
+
   lstOfData!: ODataSaleOnline_OrderModel[];
   pageSize = 20;
   pageIndex = 1;
@@ -133,7 +135,6 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.loadPagination();
     this.loadTags();
     this.loadGridConfig();
     this.loadStatusTypeExt();
@@ -169,8 +170,8 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tabIndex = 1;
     this.pageIndex = 1;
     this.indClickTag = "";
-
     this.filterObj.searchText = data.value;
+
     let filters = this.odataSaleOnline_OrderService.buildFilter(this.filterObj);
     let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters, this.sort);
 
@@ -266,19 +267,6 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
-  loadPagination(){
-    const key = this.saleOnline_OrderService._keyCreateBillOrder;
-
-    this.cacheApi.getItem(key).pipe(takeUntil(this.destroy$)).subscribe((res)=>{
-      if (TDSHelperObject.hasValue(res)) {
-        this.pageIndex = JSON.parse(res?.value)?.value?.pageIndex;
-        this.pageSize = JSON.parse(res?.value)?.value?.pageSize;
-        this.loadData(this.pageSize,this.pageIndex);
-        this.cacheApi.removeItem(key);
-      }
-    })
-  }
-
   loadTags() {
     let type = "saleonline";
     this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
@@ -348,7 +336,9 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       this.saleOnline_OrderService.getDetails(model).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe((res) => {
         const key = this.saleOnline_OrderService._keyCreateBillOrder;
         delete res['@odata.context'];
-        this.cacheApi.setItem(key, { data:res, pageIndex: this.pageIndex, pageSize: this.pageSize });
+        this.cacheApi.setItem(key, res);
+        // TODO: lưu filter cache trước khi load trang add bill
+        this.storeFilterCache();
         this.router.navigateByUrl(`bill/create`);
       },
         error => {
@@ -447,9 +437,37 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.hiddenColumns.find(x => x.value == columnName)?.isChecked;
   }
 
+  storeFilterCache(){
+    const key =  this.saleOnline_OrderService._keyCacheFilter;
+    this.cacheApi.setItem(key,{filterObj: this.filterObj, pageIndex: this.pageIndex, pageSize: this.pageSize});
+  }
+
+  removeFilterCache(){
+    const key =  this.saleOnline_OrderService._keyCacheFilter;
+    this.cacheApi.removeItem(key);
+  }
+
   onQueryParamsChange(params: TDSTableQueryParams) {
-    this.pageSize = params.pageSize;
-    this.loadData(params.pageSize, params.pageIndex);
+    const key =  this.saleOnline_OrderService._keyCacheFilter;
+    this.cacheApi.getItem(key).subscribe((res)=>{
+
+      if(TDSHelperObject.hasValue(res)){
+        let dataObj = JSON.parse(res.value)?.value;
+
+        if(dataObj){
+          this.filterObj = dataObj.filterObj;
+          this.filterObj.dateRange.startDate = new Date(dataObj.filterObj.dateRange.startDate);
+          this.filterObj.dateRange.endDate = new Date(dataObj.filterObj.dateRange.endDate);
+          this.pageIndex = dataObj.pageIndex;
+          this.pageSize = dataObj.pageSize;
+          this.filterText.nativeElement.value = this.filterObj.searchText;
+        }
+      }else{
+        this.pageSize = params.pageSize;
+      }
+      this.removeFilterCache();
+      this.loadData(params.pageSize, params.pageIndex);
+    })
   }
 
   refreshData() {
@@ -488,6 +506,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tabIndex = 1;
     this.pageIndex = 1;
 
+    this.filterText.nativeElement.value = this.filterObj.searchText;
     this.filterObj.tags = event.tags;
     this.filterObj.status = event.status;
 
