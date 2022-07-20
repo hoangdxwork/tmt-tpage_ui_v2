@@ -32,32 +32,54 @@
         <div class="bg-white flex flex-col w-full h-full rounded-xl border border-neutral-200 partner-resize">
             <div class="flex flex-col h-full w-full">
                 <div class="flex justify-between pt-3 pb-3">
-                    <div [tooltipTrigger]="'hover'" tooltipTitle="Chọn khách hàng để gửi tin nhắn" class="ml-3"
-                        tooltipPlacement="top" tds-tooltip>
-                        <button tds-button color="primary" (click)="showModalSendMessage()">
-                            <span class="flex items-center">
-                                <i class="tdsi-send-fill mr-2"></i>Gửi tin nhắn
-                            </span>
-                        </button>
-                    </div>
-                    <div class="flex items-center gap-x-2 pr-4">
+                    <div *ngIf="getCheckedRow > 0" class="flex flex-row items-center justify-start gap-x-2 ml-2">
+                        <div class="flex items-center gap-x-4 px-2 pr-4">
+                            <div class="text-neutral-1-500 text-body-2">{{getCheckedRow}} dòng được chọn</div>
+                            <div class="flex gap-1 items-center rounded-md bg-neutral-3-50 pl-1.5 pr-2.5 cursor-pointer">
+                              <i class="tdsi-close-fill text-base text-neutral-1-500"></i>
+                              <div class="text-body-2 font-semibold text-neutral-1-700" (click)="removeCheckedRow()">Bỏ chọn</div>
+                            </div>
+                        </div>
 
-                        <tds-button-group>
-                            <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
+                        <div [tooltipTrigger]="'hover'" tooltipTitle="Chọn khách hàng để gửi tin nhắn"
+                            tooltipPlacement="top" tds-tooltip>
+                            <button tds-button color="primary" (click)="showModalSendMessage()">
                                 <span class="flex items-center">
-                                    Thao tác <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                                    <i class="tdsi-send-fill mr-2"></i>Gửi tin nhắn
                                 </span>
                             </button>
-                            <tds-dropdown-menu #menu="tdsDropdownMenu">
-                                <div class="w-full">
-                                    <div tds-dropdown-item (click)="setActive('active')">Mở hiệu lực</div>
-                                    <div tds-dropdown-item (click)="setActive('unactive')">Hết hiệu lực</div>
-                                </div>
-                            </tds-dropdown-menu>
-                        </tds-button-group>
+                        </div>
+                        
+                        <button tds-button color="secondary" (click)="setActive('active')">
+                            <span class="flex items-center">
+                              <i class="tdsi-tick-fill text-lg leading-none mr-2"></i>Mở hiệu lực
+                            </span>
+                        </button>
 
+                        <button tds-button color="secondary" (click)="setActive('unactive')">
+                            <span class="flex items-center">
+                              <i class="tdsi-close-fill text-lg leading-none mr-2"></i>Hết hiệu lực
+                            </span>
+                        </button>                            
+                    </div>
+
+                    <tds-button-group *ngIf="getCheckedRow == 0" class="flex flex-auto flex-row items-center justify-end px-2">
+                        <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
+                            <span class="flex items-center">
+                                Thao tác <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                            </span>
+                        </button>
+                        <tds-dropdown-menu #menu="tdsDropdownMenu">
+                            <div class="w-full">
+                                <div tds-dropdown-item (click)="setActive('active')">Mở hiệu lực</div>
+                                <div tds-dropdown-item (click)="setActive('unactive')">Hết hiệu lực</div>
+                            </div>
+                        </tds-dropdown-menu>
+                    </tds-button-group>
+
+                    <div class="flex items-center gap-x-2 pr-4">
                         <tds-form-field class="w-80">
-                            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText />
+                            <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" #innerText/>
                             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
                         </tds-form-field>
 

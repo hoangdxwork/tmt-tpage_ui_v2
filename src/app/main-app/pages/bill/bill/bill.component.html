@@ -12,17 +12,10 @@
   </div>
   <div class="p-4 h-full">
     <div class="bg-white w-full h-full rounded-md border border-neutral-200 flex flex-col">
-      <div class="flex justify-between px-4">
-        <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
-          <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
-            <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
-            </tds-filter-status-item>
-          </ng-template>
-        </tds-filter-status>
-
+      <div class="flex justify-end pt-3 pb-3">
         <!-- TODO: Thao tác -->
-        <div class="flex items-center gap-x-2">
-          <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId] (reloadBill)="reloadBill($event)">
+        <div class="flex items-center gap-x-2 pr-4">
+          <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId] >
           </action-dropdown>
           <div>
             <tds-form-field class="w-[240px]">

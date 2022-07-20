@@ -19,7 +19,7 @@ import { ColumnTableDTO } from '../components/config-column/config-column.compon
 import { Router, ActivatedRoute } from '@angular/router';
 import { fromEvent, Observable, Subject } from 'rxjs';
 import { debounceTime, finalize, map, switchMap, takeUntil } from 'rxjs/operators';
-import { FastSaleOrderDTO, FastSaleOrderSummaryStatusDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
+import { FastSaleOrderDTO, ODataFastSaleOrderDTO } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder.dto';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { TDSMessageService } from 'tds-ui/message';
@@ -98,7 +98,6 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     {value: 'CreateByName', name: 'Người lập', isChecked: false},
   ];
 
-  public tabNavs: Array<TDSSafeAny> = [];
   public modelTags: Array<TDSSafeAny> = [];
 
   sort: Array<SortDataRequestDTO>= [{
@@ -121,7 +120,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   setOfCheckedId = new Set<number>();
   private destroy$ = new Subject<void>();
 
-  constructor( private  odataFastSaleOrderService: OdataFastSaleOrderService,
+  constructor( private odataFastSaleOrderService: OdataFastSaleOrderService,
       private tagService: TagService,
       private router: Router,
       private modal: TDSModalService,
@@ -140,7 +139,6 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.loadSummaryStatus();
     this.loadTags();
     this.loadGridConfig();
 
@@ -230,76 +228,11 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
         .pipe(finalize(() => { this.isLoading = false }));
   }
 
-  loadSummaryStatus(){
-    this.tabNavs = [];
-    let model = {
-      DateStart: this.filterObj.dateRange.startDate,
-      DateEnd: this.filterObj.dateRange.endDate,
-      SearchText: TDSHelperString.stripSpecialChars(this.filterObj.searchText.trim()) ,
-      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
-      TrackingRef: this.filterObj.hasTracking,
-      DeliveryType: this.filterObj.deliveryType ? this.filterObj.deliveryType : null,
-    };
-
-    this.fastSaleOrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$)).subscribe((res: Array<FastSaleOrderSummaryStatusDTO>) => {
-        var total = 0;
-        res.map((x: TDSSafeAny) => {
-            total = total + x.Total;
-            switch(x.Type) {
-                case "cancel" :
-                    this.tabNavs.push({  Name: "Hủy bỏ", Index: 5, Type: x.Type, Total: x.Total })
-                  break;
-                case "paid" :
-                    this.tabNavs.push({ Name: "Đã thanh toán",  Index: 4, Type: x.Type, Total: x.Total })
-                  break;
-                case "open" :
-                    this.tabNavs.push({ Name: "Đã xác nhận", Index: 3, Type: x.Type, Total: x.Total })
-                  break;
-                case "draft" :
-                    this.tabNavs.push({Name: "Nháp", Index: 2, Type: x.Type, Total: x.Total })
-                    break;
-                default:
-                    break;
-            }
-        });
-
-        this.tabNavs.push({ Name: "Tất cả",  Type: null, Index: 1, Total: total });
-        this.tabNavs.sort((a, b) => a.Index - b.Index);
-    })
-  }
-
   loadTags(){
     let type = "fastsaleorder";
     this.tagService.getByType(type).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
         this.lstTags = res.value;
     })
-  }
-
-  reloadBill(reload:boolean){
-    if(reload){
-      this.loadData(this.pageSize,this.pageIndex);
-    }
-  }
-
-  onSelectChange(index: TDSSafeAny) {
-    this.filterObj.status = [];
-    let item = this.tabNavs.filter(f => f.Index == index )[0];
-
-    if(item?.Type == null) {
-      this.filterObj.status = [];
-    } else {
-      this.filterObj.status.push(item.Type);
-    }
-
-    this.filterObj.tags = [];
-    this.filterObj.deliveryType = '';
-    this.filterObj.hasTracking = null;
-
-    this.pageIndex = 1;
-    this.indClickTag = -1;
-    this.indeterminate = false;
-
-    this.loadData(this.pageSize, this.pageIndex);
   }
 
   onExpandChange(id: number, checked: boolean): void {
@@ -502,7 +435,6 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       onOk: () => {
         this.fastSaleOrderService.delete(data.Id).pipe(takeUntil(this.destroy$)).subscribe(() => {
             this.message.success('Xóa hóa đơn thành công!');
-            this.loadSummaryStatus();
             this.loadData(this.pageSize, this.pageIndex);
         }, error => {
             this.message.error(`${error?.error?.message}`);

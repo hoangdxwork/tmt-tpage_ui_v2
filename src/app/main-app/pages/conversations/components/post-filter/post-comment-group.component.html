@@ -3,7 +3,7 @@
   <div *ngFor="let item of data.Items; let i= index">
     <div *ngIf="item" class="flex items-start">
       <div class="flex gap-x-4 items-center">
-        <tds-checkbox *ngIf="isShowFilterUser" [checked]="true"></tds-checkbox>
+        <tds-checkbox *ngIf="isShowFilterUser" [checked]="setOfCheckedId.has(item.id)" (change)="onItemChecked(item.id, $event.checked)"></tds-checkbox>
         <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="item.from.id"
           [token]="team?.Facebook_PageToken">
         </tpage-avatar-facebook>

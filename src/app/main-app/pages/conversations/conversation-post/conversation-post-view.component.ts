@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Host, Input, OnChanges, OnDestroy, OnInit, Optional, SimpleChanges, SkipSelf, ViewContainerRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
@@ -51,6 +51,16 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
   ];
 
   currentFilter: any = this.filterOptions[0];
+
+  filterOptionsComment: any[] = [
+    { value: "All", text: "Từ khóa" },
+    { value: "Number", text: "Tìm theo số" },
+    { value: "Phone", text: "Tìm số điện thoại" }
+  ];
+  currentFilterComment = this.filterOptionsComment[0];
+  innerText: string = '';
+  textSearchFilterComment: string = '';
+
   isProcessing: boolean = false;
 
   constructor(private facebookPostService: FacebookPostService,
@@ -72,13 +82,20 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
     }
   }
 
+  onSearchFilterComment(){
+    this.textSearchFilterComment = this.innerText
+  }
+
+  onChangeFilterComment(event: TDSSafeAny){
+    this.currentFilterComment = event;
+  }
+
   onChangeSort(event: any) {
     this.currentSort = event;
     this.facebookCommentService.onFilterSortCommentPost$.emit({type: 'sort', data: event})
   }
 
   onChangeFilter(event: any): any {
-    console.log(event)
     if (this.isProcessing) { return }
 
     if(!TDSHelperString.hasValueString(this.data.fbid)) {
@@ -184,7 +201,15 @@ export class ConversationPostViewComponent implements OnInit, OnChanges, OnDestr
   }
 
   onAllChecked(event: TDSSafeAny){
-    
+    this.checked = event.checked;
+  }
+
+  onCheckAll(event: TDSSafeAny){
+    this.checked = event;
+  }
+
+  onIndeterminate(event: TDSSafeAny){
+    this.indeterminate = event;
   }
 
   ngOnDestroy(): void {

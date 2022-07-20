@@ -1,19 +1,26 @@
-import { Component, OnChanges, OnDestroy, OnInit, Optional, Host, SkipSelf, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { fromEvent, Observable, Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, finalize, map, takeUntil } from 'rxjs/operators';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSMessageService } from 'tds-ui/message';
+import { CommonService } from './../../../../services/common.service';
+import { Component, OnChanges, OnDestroy, OnInit, Optional, Host, SkipSelf, ViewChild, ElementRef, Input, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { CommentByPost } from 'src/app/main-app/dto/conversation/post/comment-post.dto';
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
 import { ItemPostCommentComponent } from '../../conversation-post/item-post-comment.component';
 import { TDSHelperArray, TDSHelperObject } from 'tds-ui/shared/utility';
+import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 
 @Component({
   selector: 'post-comment-filter',
   templateUrl: './post-comment-filter.component.html',
 })
 
-export class PostCommentFilterComponent implements OnInit, OnDestroy, AfterViewInit {
+export class PostCommentFilterComponent implements OnInit, OnDestroy, OnChanges {
+
+  @Input() currentFilterComment: TDSSafeAny;
+  @Input() textSearchFilterComment: string = '';
 
   team!: CRMTeamDTO | null;
   data: any = { Items: []};
@@ -25,18 +32,19 @@ export class PostCommentFilterComponent implements OnInit, OnDestroy, AfterViewI
 
   destroy$ = new Subject<void>();
   messageModel!: string;
+  lstPartnerStatus!: Array<PartnerStatusDTO>;
 
   filterOptions: any[] = [
     { value: "All", text: "Từ khóa" },
     { value: "Number", text: "Tìm theo số" },
     { value: "Phone", text: "Tìm số điện thoại" }
   ];
-  currentFilter = this.filterOptions[0];
-
-  @ViewChild("innerText") innerText!: ElementRef;
 
   constructor(private facebookCommentService: FacebookCommentService,
     private conversationPostFacade: ConversationPostFacade,
+    private commonService: CommonService,
+    private message: TDSMessageService,
+    private cdf : ChangeDetectorRef,
     @Host() @Optional() @SkipSelf() public itemPostCommentCmp: ItemPostCommentComponent) {
   }
 
@@ -103,14 +111,13 @@ export class PostCommentFilterComponent implements OnInit, OnDestroy, AfterViewI
     this.itemPostCommentCmp.isLoading = true;
     this.data = null;
 
-    this.currentFilter = item;
-    this.facebookCommentService.queryObj3.q = this.innerText?.nativeElement?.value;
-    this.facebookCommentService.queryObj3.Type = this.currentFilter.value;
+    this.currentFilterComment = item;
+    this.facebookCommentService.queryObj3.q = this.textSearchFilterComment;
+    this.facebookCommentService.queryObj3.Type = this.currentFilterComment.value;
 
     let fbid = this.itemPostCommentCmp?.post?.fbid;
     this.facebookCommentService.getFilterCommentsByPostId(fbid)
       .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => { this.itemPostCommentCmp.isLoading = false }))
       .subscribe((res: any) => {
         if(TDSHelperArray.hasListValue(res.Items)) {
           res.Items.map((x: any) => {
@@ -119,21 +126,35 @@ export class PostCommentFilterComponent implements OnInit, OnDestroy, AfterViewI
             x.created_time = first.created_time;
           });
         }
-        this.data = res;
+        this.data = {...res};
+
+        this.itemPostCommentCmp.isLoading = false;
+        this.cdf.detectChanges();
       })
   }
+  loadPartnerStatus() {
+    this.commonService.getPartnerStatus().subscribe(res => {
+      this.lstPartnerStatus = [...res];
+    },err=>{
+      this.message.error(err.error? err.error.message: 'Tải trạng thái khách hàng lỗi');
+    });
+  }
 
-  ngAfterViewInit() {
-    if (this.innerText) {
-      fromEvent(this.innerText.nativeElement, "keyup")
-        .pipe(map((event: any) => {
-          return event.target.value;
-        }),debounceTime(500),
-          distinctUntilChanged()
-        ).subscribe((text: string) => {
-          //TODO xử lý
-          this.onChangeFilter(this.currentFilter);
-        }, () => { });
+  getStatusColor(statusText: string | undefined) {
+    if(TDSHelperArray.hasListValue(this.lstPartnerStatus)) {
+      let value = this.lstPartnerStatus.find(x => x.text == statusText);
+      if(value) return value.value;
+      else return '';
+    }
+    else return '';
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes["currentFilterComment"] && !changes["currentFilterComment"].firstChange){
+      this.onChangeFilter(this.currentFilterComment);
+    }
+    if(changes["textSearchFilterComment"] && !changes["textSearchFilterComment"].firstChange){
+      this.onChangeFilter(this.currentFilterComment);
     }
   }
 

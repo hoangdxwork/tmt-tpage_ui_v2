@@ -14,7 +14,6 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { vi_VN } from 'tds-ui/i18n';
-import { NumberCustomPipe } from 'src/app/main-app/shared/pipe/numberCustom.pipe';
 
 @Component({
   selector: 'app-modal-edit-partner',

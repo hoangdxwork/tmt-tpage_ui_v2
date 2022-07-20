@@ -178,8 +178,8 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
     this.getViewData(params).subscribe((res: ODataPartnerDTO) => {
-        this.count = res['@odata.count'] as number;
-        this.lstOfData = [...res.value];
+      this.count = res['@odata.count'] as number;
+      this.lstOfData = [...res.value];
     }, error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
     });
@@ -283,6 +283,24 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  onSearch(data: TDSSafeAny) {
+    this.tabIndex = 1;
+    this.pageIndex = 1;
+    this.indClickTag = -1;
+
+    this.filterObj.searchText = data.value;
+    let filters = this.odataPartnerService.buildFilter(this.filterObj);
+
+    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
+
+    this.getViewData(params).subscribe((res: any) => {
+      this.count = res['@odata.count'] as number;
+      this.lstOfData = [...res.value];
+    }, error => {
+      this.message.error(error?.error?.message ||'Tải dữ liệu phiếu bán hàng thất bại!');
+    });
+  }
+
   ngAfterViewInit(): void {
     this.widthTable = this.viewChildWidthTable?.nativeElement?.offsetWidth - this.paddingCollapse
 
@@ -300,30 +318,6 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
         that.marginLeftCollapse = scrollleft;
       });
     }, 500);
-
-    fromEvent(this.innerText.nativeElement, 'keyup').pipe(
-      map((event: any) => { return event.target.value }),
-      debounceTime(750),
-      distinctUntilChanged(),
-      // TODO: switchMap xử lý trường hợp sub in sub
-      switchMap((text: TDSSafeAny) => {
-
-        this.tabIndex = 1;
-        this.pageIndex = 1;
-        this.indClickTag = -1;
-
-        this.filterObj.searchText = text;
-        let filters = this.odataPartnerService.buildFilter(this.filterObj);
-
-        let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters);
-        return this.getViewData(params);
-      }))
-      .subscribe((res: any) => {
-          this.count = res['@odata.count'] as number;
-          this.lstOfData = [...res.value];
-      }, error => {
-          this.message.error('Tải dữ liệu phiếu bán hàng thất bại!');
-      });
   }
 
   isHidden(columnName: string) {
@@ -342,6 +336,14 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
       event.forEach(column => { this.isHidden(column.value) });
     }
+  }
+
+  get getCheckedRow() {
+    return [...this.setOfCheckedId].length;
+  }
+
+  removeCheckedRow() {
+    this.setOfCheckedId = new Set<number>();
   }
 
   onLoadOption(event: FilterObjPartnerModel) {
@@ -371,9 +373,6 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     let data = { customer: true, data: JSON.stringify(state) }
 
     let that = this;
-    let callBackFn = () => {
-      that.isProcessing = false;
-    }
 
     this.excelExportService.exportPost('/Partner/ExportFile', { data: JSON.stringify(data) }, 'danh-sach-kh')
       .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$))
@@ -381,6 +380,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   setActive(type: string) {
+    debugger
     if (this.checkValueEmpty() == 1) {
       switch (type) {
         case "active":
@@ -525,7 +525,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   //Modal gửi tin nhắn đến khách hàng
   showModalSendMessage() {
-    if(this.setOfCheckedId.size == 0){
+    if (this.setOfCheckedId.size == 0) {
       this.message.error(Message.SelectOneLine)
       return
     }
@@ -576,10 +576,10 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
       let pageIds: any = [];
       res.map((x: any) => {
-          pageIds.push(x.page_id);
+        pageIds.push(x.page_id);
       });
 
-      if(pageIds.length == 0) {
+      if (pageIds.length == 0) {
         return this.message.error('Không có kênh kết nối với khách hàng này.');
       }
 
@@ -608,10 +608,10 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
           });
 
           if (this.mappingTeams.length > 0) {
-              this.currentMappingTeam = this.mappingTeams[0];
-              this.loadMDBByPSId(this.currentMappingTeam.team?.Facebook_PageId, this.currentMappingTeam.psid);
+            this.currentMappingTeam = this.mappingTeams[0];
+            this.loadMDBByPSId(this.currentMappingTeam.team?.Facebook_PageId, this.currentMappingTeam.psid);
           }
-      });
+        });
     }, error => {
       this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
     })
@@ -627,15 +627,15 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
         if (res) {
           res["keyTags"] = {};
 
-          if(res.tags && res.tags.length > 0) {
+          if (res.tags && res.tags.length > 0) {
             res.tags.map((x: any) => {
-                res["keyTags"][x.id] = true;
+              res["keyTags"][x.id] = true;
             })
           } else {
             res.tags = [];
           }
 
-          this.currentConversation = { ...res, ...this.currentConversation};
+          this.currentConversation = { ...res, ...this.currentConversation };
           this.psid = res.psid;
           this.isOpenDrawer = true;
         }
@@ -646,7 +646,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   selectMappingTeam(item: any) {
     this.currentMappingTeam = item;
-    this.loadMDBByPSId(item.team?.Facebook_PageId, item.psid ); // Tải lại hội thoại
+    this.loadMDBByPSId(item.team?.Facebook_PageId, item.psid); // Tải lại hội thoại
   }
 
   closeDrawer() {
