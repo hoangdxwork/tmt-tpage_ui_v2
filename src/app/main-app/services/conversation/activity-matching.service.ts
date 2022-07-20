@@ -195,6 +195,7 @@ export class ActivityMatchingService extends BaseSevice  {
       url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/assignuser`,
       method: TApiMethodType.post
     }
+
     let model = {
       pageId: pageId,
       userId: userId

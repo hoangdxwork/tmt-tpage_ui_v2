@@ -1,6 +1,5 @@
 import { finalize } from 'rxjs/operators';
 import { Component, Input, OnInit } from '@angular/core';
-import { SaleOnlineLiveCampaignDetailDTO, SaleOnline_LiveCampaignDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FacebookMappingPostDTO } from 'src/app/main-app/dto/conversation/post/post.dto';
@@ -8,15 +7,15 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TdsSwitchChange } from 'tds-ui/switch';
 
 @Component({
-  selector: 'live-campaign-debt',
-  templateUrl: './live-campaign-debt.component.html'
+  selector: 'expand-live-campaign',
+  templateUrl: './expand-live-campaign.component.html'
 })
-export class LiveCampaignDebtComponent implements OnInit {
+export class ExpandLiveCampaignComponent implements OnInit {
 
   @Input() liveCampaignId!: string | undefined;
 
   isLoading: boolean = false;
-  data!: SaleOnline_LiveCampaignDTO;
+  data!: any;
 
   lstPost: FacebookMappingPostDTO[] = [];
 
@@ -99,7 +98,7 @@ export class LiveCampaignDebtComponent implements OnInit {
       });
   }
 
-  onChangeActive(event: TdsSwitchChange, data: SaleOnlineLiveCampaignDetailDTO) {
+  onChangeActive(event: TdsSwitchChange, data: any) {
     this.isLoading = true;
     this.liveCampaignService.updateActiveDetail(data.Id, event.checked)
       .pipe(finalize(() => this.isLoading = false))

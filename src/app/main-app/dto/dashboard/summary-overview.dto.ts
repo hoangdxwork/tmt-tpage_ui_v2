@@ -5,13 +5,6 @@ export interface SummaryOverviewDTO {
   dateEnd: Date;
 }
 
-export interface SummaryFilterDTO {
-  id: number;
-  name: string;
-  startDate: Date;
-  endDate: Date;
-}
-
 export interface InputSummaryOverviewDTO {
   PageId?: string;
   PageIds: string[];

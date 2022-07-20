@@ -1,7 +1,6 @@
 import { Observable } from 'rxjs';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { LiveCampaignService } from '../../services/live-campaign.service';
-import { SaleOnline_LiveCampaignDTO, UpdateFacebookLiveCampaignDTO } from '../../dto/live-campaign/live-campaign.dto';
 import { FacebookPostItem, From } from '../../dto/facebook-post/facebook-post.dto';
 import { SaleOnlineFacebookFromDTO, SaleOnlineFacebookPostDTO } from '../../dto/saleonlineorder/sale-online-order.dto';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -13,7 +12,6 @@ import { SortEnum } from 'src/app/lib';
 import { finalize } from 'rxjs/operators';
 import { AddLiveCampaignComponent } from '../add-live-campaign/add-live-campaign.component';
 import { OverviewLiveCampaignComponent } from '../overview-live-campaign/overview-live-campaign.component';
-import { FilterLiveCampaignDTO } from '../../dto/odata/odata.dto';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -26,7 +24,7 @@ export class ListLiveCampaignComponent implements OnInit {
 
   @Input() post!: FacebookPostItem;
 
-  filterObj: FilterLiveCampaignDTO = {
+  filterObj: any = {
     status: '',
     searchText: '',
     dateRange: {
@@ -40,9 +38,9 @@ export class ListLiveCampaignComponent implements OnInit {
     dir: SortEnum.desc,
   }];
 
-  lstOfData: Array<SaleOnline_LiveCampaignDTO> = [];
+  lstOfData: Array<any> = [];
 
-  currentLiveCampaign?: SaleOnline_LiveCampaignDTO;
+  currentLiveCampaign?: any;
   isLoading: boolean = false;
   pageSize = 30;
   pageIndex = 1;
@@ -57,18 +55,10 @@ export class ListLiveCampaignComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadData(this.pageSize, this.pageIndex);
   }
 
   loadData(pageSize: number, pageIndex: number) {
-    let filters = this.oDataLiveCampaignService.buildFilter(this.filterObj);
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.isLoading = true;
-    this.getViewData(params).pipe(finalize(() => this.isLoading = false)).subscribe((res: TDSSafeAny) => {
-        this.lstOfData = res.value;
-        this.getCurrentLiveCampaign(this.post?.live_campaign_id);
-    }, error => this.message.error(`${error?.error?.message}` || Message.CanNotLoadData));
   }
 
   getCurrentLiveCampaign(liveCampaignId: string | undefined) {
@@ -78,15 +68,8 @@ export class ListLiveCampaignComponent implements OnInit {
     }
   }
 
-  getViewData(params: string) {
-    this.isLoading = true;
-    return this.oDataLiveCampaignService
-        .get(params)
-        .pipe(finalize(() => this.isLoading = false ));
-  }
-
-  onSelectLiveCampaign(liveCampaign: SaleOnline_LiveCampaignDTO) {
-    this.currentLiveCampaign = ({...liveCampaign}) as SaleOnline_LiveCampaignDTO;
+  onSelectLiveCampaign(liveCampaign: any) {
+    this.currentLiveCampaign = ({...liveCampaign}) as any;
   }
 
   onSearch(event: TDSSafeAny) {
@@ -99,7 +82,7 @@ export class ListLiveCampaignComponent implements OnInit {
     let facebookPost = this.prepareFacebookPost();
     let model =  this.prepareModel(facebookPost);
 
-    let data = {} as UpdateFacebookLiveCampaignDTO;
+    let data = {} as any;
     data.action = 'update';
     data.model = model;
 
@@ -120,7 +103,7 @@ export class ListLiveCampaignComponent implements OnInit {
   }
 
   prepareModel(facebookPost: SaleOnlineFacebookPostDTO) {
-    let result = {} as SaleOnline_LiveCampaignDTO;
+    let result = {} as any;
 
     result.Facebook_Post = facebookPost;
     result.DateCreated = new Date();

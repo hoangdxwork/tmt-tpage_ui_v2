@@ -1,89 +1,82 @@
-<tds-spin [spinning]="isLoading">
-  <div class="w-full h-full flex flex-col text-body-2">
-    <tds-page-header title="Chiến dịch live" class="bg-white pt-4">
-        <tds-page-header-extra class="flex space-x-8 items-center">
-            <button type="button" tds-button color="primary" (click)="onCreate()">
-                <span class="flex items-center">
-                    <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
-                </span>
-            </button>
-            <div class="flex">
-                <div class="text-neutral-1-400 my-auto">Hiển thị tổng quan:</div>
-                <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu"
-                    class="border-0 hover:bg-transparent focus:ring-0">
-                    <span class="flex items-center text-primary-1">
-                        {{currentSelectReport}} <i class="tdsi-arrow-down-fill text-lg leading-none ml-2 text-neutral-1-500"></i>
-                    </span>
-                </button>
-                <tds-dropdown-menu #menu="tdsDropdownMenu">
-                    <div class="w-full">
-                        <div tds-dropdown-item *ngFor="let item of dropdownList">
-                          <a (click)="selectDateReport(item.startDate, item.endDate, item.name)"> {{item.name}} </a>
-                        </div>
-                    </div>
-                </tds-dropdown-menu>
-            </div>
-        </tds-page-header-extra>
-    </tds-page-header>
-    <div class="h-full w-full flex flex-col space-y-4 p-4">
-        <div class="grid grid-cols-3 gap-6">
+<div class="w-full h-full flex flex-col text-body-2">
+  <tds-page-header title="Chiến dịch live" class="bg-white pt-4">
+      <tds-page-header-extra class="flex space-x-8 items-center">
+          <button type="button" tds-button color="primary" (click)="onCreate()">
+              <span class="flex items-center">
+                  <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
+              </span>
+          </button>
+          <div class="flex flex-row items-center justify-between py-4">
+              <div class="flex flex-row items-center">
+                  <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị tổng quan:</span>
+                  <tds-select valueField="name" textField="name" [ngModel]="currentDateRanges" [border]="false"
+                      [data]="tdsDateRanges" size="md" class="tds-dashboard-filter w-32 truncate ..." [valuePrimitive]="false"
+                      (ngModelChange)="onChangeFilter($event)" classIcon="tdsi-arrow-down-fill">
+                  </tds-select>
+              </div>
+          </div>
+      </tds-page-header-extra>
+  </tds-page-header>
+  <div class="h-full w-full flex flex-col space-y-4 p-4" *ngIf="dataReports">
+      <tds-spin [spinning]="isLoadingReport">
+          <div class="grid grid-cols-3 gap-6">
             <div class="bg-white rounded-xl p-6 flex space-x-6">
-                <div><img src="../../../assets/imagesv2/live-campaign/product.svg" alt=""></div>
+                <div><img src="../../../assets/imagesv2/live-campaign/product.svg"></div>
                 <div class="w-full flex flex-col space-y-2">
                     <div class="flex justify-between items-center">
                         <div class="text-neutral-1-500">Tổng số lượng sản phẩm</div>
-                        <div class="text-header-1 font-semibold text-neutral-1-900">{{dataReport?.SumQtyInCart || 0 | number}}</div>
+                        <div class="text-header-1 font-semibold text-neutral-1-900">{{dataReports?.SumQtyInCart | number: '1.0-3'}}</div>
                     </div>
                     <div class="flex justify-between items-center">
                         <div class="text-neutral-1-500">Số lượng đã chốt</div>
-                        <div class="text-header-1 font-semibold text-neutral-1-900">{{dataReport?.SumQtyCheckOut || 0 | number}}</div>
+                        <div class="text-header-1 font-semibold text-neutral-1-900">{{dataReports?.SumQtyCheckOut | number: '1.0-3'}}</div>
                     </div>
                     <div class="flex justify-between items-center">
                         <div class="text-neutral-1-500">Số lượng bị hủy</div>
-                        <div class="text-header-1 font-semibold text-error-400">{{dataReport?.SumCancelCheckout || 0 | number}}</div>
+                        <div class="text-header-1 font-semibold text-error-400">{{dataReports?.SumCancelCheckout | number: '1.0-3'}}</div>
                     </div>
                 </div>
             </div>
             <div class="bg-white rounded-xl p-6 flex space-x-6">
-                <div><img src="../../../assets/imagesv2/live-campaign/order.svg" alt=""></div>
+                <div><img src="../../../assets/imagesv2/live-campaign/order.svg" ></div>
                 <div class="w-full flex flex-col space-y-2">
                     <div class="flex justify-between items-center">
                         <div class="  text-neutral-1-500">Tổng đơn chờ chốt</div>
-                        <div class="text-header-1 font-semibold text-neutral-1-900">{{dataReport?.SumOrderWaitCheckOut || 0 | number}}</div>
+                        <div class="text-header-1 font-semibold text-neutral-1-900">{{dataReports?.SumOrderWaitCheckOut | number: '1.0-3' }}</div>
                     </div>
                     <div class="flex justify-between items-center">
                         <div class="  text-neutral-1-500">Tổng đơn đã chốt</div>
-                        <div class="text-header-1 font-semibold text-neutral-1-900">{{dataReport?.SumOrderCheckOut || 0 | number}}</div>
+                        <div class="text-header-1 font-semibold text-neutral-1-900">{{dataReports?.SumOrderCheckOut | number: '1.0-3' }}</div>
                     </div>
                     <div class="flex justify-between items-center">
                         <div class="  text-neutral-1-500">Tổng đơn bị hủy</div>
-                        <div class="text-header-1 font-semibold text-error-400">{{dataReport?.SumOrderCancelCheckOut || 0 | number}}</div>
+                        <div class="text-header-1 font-semibold text-error-400">{{dataReports?.SumOrderCancelCheckOut | number: '1.0-3' }}</div>
                     </div>
                 </div>
             </div>
             <div class="bg-white rounded-xl p-6 flex space-x-6">
-                <div><img src="../../../assets/imagesv2/live-campaign/money.svg" alt=""></div>
+                <div><img src="../../../assets/imagesv2/live-campaign/money.svg" ></div>
                 <div class="w-full flex flex-col space-y-2">
                     <div class="flex justify-between items-center">
                         <div class="  text-neutral-1-500">Tiền chờ chốt</div>
-                        <div class="text-header-1 font-semibold text-neutral-1-900">{{dataReport?.SumAmountWaitCheckOut || 0 | number}}</div>
+                        <div class="text-header-1 font-semibold text-neutral-1-900">{{dataReports?.SumAmountWaitCheckOut | number: '1.0-3' }}</div>
                     </div>
                     <div class="flex justify-between items-center">
                         <div class="  text-neutral-1-500">Tiền chờ thanh toán</div>
-                        <div class="text-header-1 font-semibold text-neutral-1-900">{{dataReport?.SumAmountWaitingPayment || 0 | number}}</div>
+                        <div class="text-header-1 font-semibold text-neutral-1-900">{{dataReports?.SumAmountWaitingPayment | number: '1.0-3' }}</div>
                     </div>
                     <div class="flex justify-between items-center">
                         <div class="  text-neutral-1-500">Tiền đã thanh toán</div>
-                        <div class="text-header-1 font-semibold text-error-400">{{dataReport?.SumAmountPaid || 0 | number}}</div>
+                        <div class="text-header-1 font-semibold text-error-400">{{dataReports?.SumAmountPaid | number: '1.0-3'}}</div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="w-full h-full">
-          <live-campaign-list></live-campaign-list>
-        </div>
-    </div>
+          </div>
+      </tds-spin>
+      <div class="w-full h-full">
+          <live-campaign-list [currentDateRanges]="currentDateRanges"></live-campaign-list>
+      </div>
   </div>
-</tds-spin>
+</div>
 
 

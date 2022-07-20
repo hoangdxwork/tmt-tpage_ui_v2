@@ -2,18 +2,20 @@ import { formatNumber } from '@angular/common';
 import { Color } from 'echarts';
 import { TDSChartOptions, TDSBarChartComponent, TDSBarChartDataSeries } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
-import { InputSummaryPostDTO, InputSummaryTimelineDTO, MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO, SummaryFilterDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
+import { InputSummaryPostDTO, InputSummaryTimelineDTO, MDBSummaryByPostDTO, MDBTotalCommentMessageFbDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
-import { SummaryFacade } from 'src/app/main-app/services/facades/summary.facede';
 import { format } from 'date-fns';
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
+import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/services/handlers/common.handler';
 
 @Component({
   selector: 'app-dashboard-facebook-report',
   templateUrl: './dashboard-facebook-report.component.html',
   styleUrls: ['./dashboard-facebook-report.component.scss']
 })
+
 export class DashboardFacebookReportComponent implements OnInit {
+
   fbReportOption:TDSSafeAny;
   chartOption = TDSChartOptions();
   labelData:TDSSafeAny[] = [];
@@ -23,34 +25,28 @@ export class DashboardFacebookReportComponent implements OnInit {
 
   emptyData = false;
 
-  filterList: SummaryFilterDTO[] = [];
-  currentFilter!: SummaryFilterDTO;
+  currentDateRanges!: TDSDateRangeDTO;
+  tdsDateRanges: TDSDateRangeDTO[] = [];
 
   dataSummaryPost!: MDBSummaryByPostDTO;
   dataCommentAndMessage: MDBTotalCommentMessageFbDTO[] = [];
 
-  constructor(
-    private summaryFacade: SummaryFacade,
-    private reportFacebookService: ReportFacebookService
-  ) { }
-
-  ngOnInit(): void {
-    this.loadFilter();
-
-    this.loadSummary();
-    this.loadCommentAndMessage();
+  constructor(private commonHandler: CommonHandler,
+    private reportFacebookService: ReportFacebookService) {
+        this.tdsDateRanges = this.commonHandler.tdsDateRanges;
+        this.currentDateRanges = this.commonHandler.currentDateRanges;
   }
 
-  loadFilter() {
-    this.filterList = this.summaryFacade.getMultipleFilter();
-    this.currentFilter = this.filterList[4];
+  ngOnInit(): void {
+    this.loadSummary();
+    this.loadCommentAndMessage();
   }
 
   loadSummary() {
     let model = {} as InputSummaryPostDTO;
     model.PageId = undefined;
-    model.DateStart = this.currentFilter.startDate;
-    model.DateEnd = this.currentFilter.endDate;
+    model.DateStart = this.currentDateRanges.startDate;
+    model.DateEnd = this.currentDateRanges.endDate;
 
     this.reportFacebookService.getSummaryPost(model).subscribe(res => {
       this.dataSummaryPost = res;
@@ -59,9 +55,10 @@ export class DashboardFacebookReportComponent implements OnInit {
 
   loadCommentAndMessage() {
     let model = {} as InputSummaryTimelineDTO;
+
     model.PageId = undefined;
-    model.DateStart = this.currentFilter.startDate;
-    model.DateEnd = this.currentFilter.endDate;
+    model.DateStart = this.currentDateRanges.startDate;
+    model.DateEnd = this.currentDateRanges.endDate;
 
     this.reportFacebookService.getCommentAndMessage(model).subscribe(res => {
       this.dataCommentAndMessage = res;
@@ -215,8 +212,9 @@ export class DashboardFacebookReportComponent implements OnInit {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   }
 
-  onChangeFilter(data:any){
-    this.currentFilter = data;
+  onChangeFilter(data: any ){
+    this.currentDateRanges = data;
+
     this.loadSummary();
     this.loadCommentAndMessage();
   }

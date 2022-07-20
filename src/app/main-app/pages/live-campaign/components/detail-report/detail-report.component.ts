@@ -1,7 +1,6 @@
 import { finalize } from 'rxjs/operators';
 import { LiveCampaignService } from './../../../../services/live-campaign.service';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
-import { DetailReportLiveCampaignDTO, SaleOnlineLiveCampaignDetailReportDTO, SaleOnline_LiveCampaignDTO, ViewReportFastSaleOrderLiveCampaignDTO, ViewReportSaleOnlineOrderLiveCampaignDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
 import { ModalLiveCampaignOrderComponent } from '../modal-live-campaign-order/modal-live-campaign-order.component';
 import { ModalLiveCampaignBillComponent } from '../modal-live-campaign-bill/modal-live-campaign-bill.component';
 import { Message } from 'src/app/lib/consts/message.const';
@@ -17,13 +16,13 @@ export class DetailReportComponent implements OnInit {
   @Input() liveCampaignId!: string;
 
   isLoading: boolean = false;
-  data!: DetailReportLiveCampaignDTO;
+  data!: any;
   indClickQuantity: number = -1;
 
-  currentChangeQuantity?: SaleOnlineLiveCampaignDetailReportDTO;
+  currentChangeQuantity?: any;
 
-  lstDetails: SaleOnlineLiveCampaignDetailReportDTO[] = [];
-  dataLiveCampaign!: SaleOnline_LiveCampaignDTO;
+  lstDetails: any[] = [];
+  dataLiveCampaign!: any;
 
   constructor(
     private liveCampaignService: LiveCampaignService,
@@ -56,7 +55,7 @@ export class DetailReportComponent implements OnInit {
       });
   }
 
-  onChangeQuantity(data: SaleOnlineLiveCampaignDetailReportDTO, index: number) {
+  onChangeQuantity(data: any, index: number) {
     this.indClickQuantity = index;
     this.currentChangeQuantity = Object.assign({}, data);
   }
@@ -66,7 +65,7 @@ export class DetailReportComponent implements OnInit {
     this.currentChangeQuantity = undefined;
   }
 
-  onSaveQuantity(data: SaleOnlineLiveCampaignDetailReportDTO) {
+  onSaveQuantity(data: any) {
     if(this.currentChangeQuantity) {
       this.isLoading = true;
       this.liveCampaignService.updateProductQuantity(this.currentChangeQuantity.Id, this.currentChangeQuantity.Quantity, this.liveCampaignId)
@@ -83,7 +82,7 @@ export class DetailReportComponent implements OnInit {
     }
   }
 
-  showModalLiveCampaignOrder(lstData: ViewReportSaleOnlineOrderLiveCampaignDTO[]) {
+  showModalLiveCampaignOrder(lstData: any[]) {
     this.modal.create({
       title: 'Đơn hàng chờ chốt',
       size:'xl',
@@ -95,7 +94,7 @@ export class DetailReportComponent implements OnInit {
     });
   }
 
-  showModalLiveCampaignBill(lstData: ViewReportFastSaleOrderLiveCampaignDTO[]) {
+  showModalLiveCampaignBill(lstData: any[]) {
     this.modal.create({
       title: 'Hóa đơn chờ chốt',
       size:'xl',

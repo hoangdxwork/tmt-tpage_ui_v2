@@ -7,9 +7,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { finalize } from 'rxjs/operators';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib';
-import { FilterLiveCampaignOrderDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { ModalEditOrderComponent } from 'src/app/main-app/shared/modal-edit-order/modal-edit-order.component';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTagStatusType } from 'tds-ui/tag';
@@ -24,7 +22,7 @@ export class DetailOrderComponent implements OnInit {
 
   @Input() liveCampaignId!: string;
 
-  public filterObj: FilterLiveCampaignOrderDTO = {
+  public filterObj: any = {
     tags: [],
     status: '',
     searchText: '',
@@ -115,23 +113,23 @@ export class DetailOrderComponent implements OnInit {
   }
 
   onEdit(id: string) {
-    const modal = this.modal.create({
-      title: 'Sửa đơn hàng',
-      content: ModalEditOrderComponent,
-      size: 'xl',
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-        idOrder: id
-      }
-    });
+    // const modal = this.modal.create({
+    //   title: 'Sửa đơn hàng',
+    //   content: ModalEditOrderComponent,
+    //   size: 'xl',
+    //   viewContainerRef: this.viewContainerRef,
+    //   componentParams: {
+    //     idOrder: id
+    //   }
+    // });
 
     // modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
-    modal.afterClose.subscribe((result: TDSSafeAny) => {
-      console.log('[afterClose] The result is:', result);
-      if (TDSHelperObject.hasValue(result)) {
-        this.loadData(this.pageSize, this.pageIndex);
-      }
-    });
+    // modal.afterClose.subscribe((result: TDSSafeAny) => {
+    //   console.log('[afterClose] The result is:', result);
+    //   if (TDSHelperObject.hasValue(result)) {
+    //     this.loadData(this.pageSize, this.pageIndex);
+    //   }
+    // });
   }
 
   onRemove(id: string, code: string) {

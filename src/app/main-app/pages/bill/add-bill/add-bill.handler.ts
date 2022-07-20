@@ -94,7 +94,8 @@ export class AddBillHandler {
         // if(x.LiveCampaignQtyChange <= 0) {
         //   delete x.LiveCampaignQtyChange;
         // }
-        // nếu chuyển sang tên miền test.tpos.dev thì bật lên
+
+        // //nếu chuyển sang tên miền test.tpos.dev thì bật lên
         // delete x.OrderId;
       })
     }

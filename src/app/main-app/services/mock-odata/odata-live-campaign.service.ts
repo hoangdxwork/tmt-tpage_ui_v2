@@ -1,12 +1,22 @@
 import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
-import { FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
-import { TDSHelperString } from 'tds-ui/shared/utility';
-import { LiveCampaignFSOrderDTO, LiveCampaignSOOrderDTO, ReportLiveCampaignProductDataDTO, SaleOnline_LiveCampaignDTO } from '../../dto/live-campaign/live-campaign.dto';
-import { FilterLiveCampaignDTO, FilterLiveCampaignProductDTO, ODataResponsesDTO } from '../../dto/odata/odata.dto';
+import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
+import { ODataLiveCampaignDTO } from '../../dto/live-campaign/odata-live-campaign.dto';
 import { BaseSevice } from '../base.service';
+import { Guid } from "guid-typescript";
+
+export interface FilterObjLiveCampaignDTO  {
+    ids: string[],
+    searchText: string,
+    isActive: boolean | null,
+    dateRange: {
+      startDate: Date | null,
+      endDate: Date | null
+    }
+}
 
 @Injectable()
 export class ODataLiveCampaignService extends BaseSevice {
@@ -15,81 +25,30 @@ export class ODataLiveCampaignService extends BaseSevice {
   table: string = "SaleOnline_LiveCampaign";
   baseRestApi: string = "";
 
-  constructor(
-      private apiService: TCommonService,
-      public caheApi: THelperCacheService
-  ) {
-    super(apiService)
+  constructor(private apiService: TCommonService,
+      public caheApi: THelperCacheService) {
+      super(apiService)
   }
 
-  get(params: string): Observable<ODataResponsesDTO<SaleOnline_LiveCampaignDTO>>{
+  getView(params: string): Observable<ODataLiveCampaignDTO>{
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}?${params}&$count=true`,
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<ODataResponsesDTO<SaleOnline_LiveCampaignDTO>>(api, null);
+    return this.apiService.getData<ODataLiveCampaignDTO>(api, null);
   }
 
-  getView(params: string): Observable<ODataResponsesDTO<SaleOnline_LiveCampaignDTO>>{
-    const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetViewCampaign?${params}&$count=true${params}&$count=true`,
-        method: TApiMethodType.get,
-    }
-
-    return this.apiService.getData<ODataResponsesDTO<SaleOnline_LiveCampaignDTO>>(api, null);
-  }
-
-  getProduct(liveCampaignId: string, params: string): Observable<ODataResponsesDTO<ReportLiveCampaignProductDataDTO>> {
-    const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.ReportLiveCampaignProduct?key=${liveCampaignId}&${params}&$count=true`,
-        method: TApiMethodType.get,
-    }
-
-    return this.apiService.getData<ODataResponsesDTO<ReportLiveCampaignProductDataDTO>>(api, null);
-  }
-
-  getSOOrder(liveCampaignId: string, productId: number, params: string) {
-    const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetLiveCampaignSOOrder?key=${liveCampaignId}&product_id=${productId}&${params}&$count=true`,
-        method: TApiMethodType.get,
-    }
-
-    return this.apiService.getData<ODataResponsesDTO<LiveCampaignSOOrderDTO>>(api, null);
-  }
-
-  getSOOrderCancel(liveCampaignId: string, productId: number, params: string) {
-    const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetLiveCampaignSOOrderCancel?key=${liveCampaignId}&product_id=${productId}&${params}&$count=true`,
-        method: TApiMethodType.get,
-    }
-
-    return this.apiService.getData<ODataResponsesDTO<LiveCampaignSOOrderDTO>>(api, null);
-  }
-
-  getFSOrder(liveCampaignId: string, productId: number, params: string) {
-    const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetLiveCampaignFSOrder?key=${liveCampaignId}&product_id=${productId}&${params}&$count=true`,
-        method: TApiMethodType.get,
-    }
-
-    return this.apiService.getData<ODataResponsesDTO<LiveCampaignFSOrderDTO>>(api, null);
-  }
-
-  getFSOrderCancel(liveCampaignId: string, productId: number, params: string) {
-    const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetLiveCampaignFSOrderCancel?key=${liveCampaignId}&product_id=${productId}&${params}&$count=true`,
-        method: TApiMethodType.get,
-    }
-
-    return this.apiService.getData<ODataResponsesDTO<LiveCampaignFSOrderDTO>>(api, null);
-  }
-
-  public buildFilter(filterObj: FilterLiveCampaignDTO) {
+  public buildFilter(filterObj: FilterObjLiveCampaignDTO) {
 
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",
         filters: [],
+    }
+
+    if (TDSHelperString.hasValueString(filterObj.isActive)) {
+        dataFilter.filters.push({ field: "IsActive", operator: OperatorEnum.eq, value: filterObj.isActive })
+        dataFilter.logic = "and";
     }
 
     if (filterObj?.dateRange && filterObj?.dateRange.startDate && filterObj?.dateRange.endDate) {
@@ -100,7 +59,7 @@ export class ODataLiveCampaignService extends BaseSevice {
         let date1 = formatDate(new Date(), 'dd-MM-yyyy', 'en-US');
         let date2 = formatDate(filterObj?.dateRange.endDate, 'dd-MM-yyyy', 'en-US');
         if(date1 != date2) {
-          endDate = new Date(filterObj?.dateRange.endDate.setHours(23, 59, 59, 0)).toISOString();
+            endDate = new Date(filterObj?.dateRange.endDate.setHours(23, 59, 59, 59)).toISOString();
         }
 
         dataFilter.filters.push({
@@ -113,37 +72,26 @@ export class ODataLiveCampaignService extends BaseSevice {
     }
 
     if (TDSHelperString.hasValueString(filterObj?.searchText)) {
+        let value = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim());
         dataFilter.filters.push( {
             filters: [
-              { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "NameNoSign", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "Facebook_UserName", operator: OperatorEnum.contains, value: filterObj.searchText },
+              { field: "Name", operator: OperatorEnum.contains, value: value },
+              { field: "Facebook_UserName", operator: OperatorEnum.contains, value: value }
             ],
             logic: 'or'
         })
     }
 
-    if (TDSHelperString.hasValueString(filterObj.status)) {
-      dataFilter.filters.push({ field: "IsActive", operator: OperatorEnum.eq, value: filterObj.status })
-      dataFilter.logic = "and";
-    }
+    if (TDSHelperArray.hasListValue(filterObj.ids)) {
 
-    return dataFilter;
-  }
+        dataFilter.filters.push({
+            filters: filterObj.ids.map((x: string) => ({
+                field: "Id",
+                operator: OperatorEnum.eq,
+                value: Guid.parse(x)
+            })),
 
-  buildFilterProduct(filterObj: FilterLiveCampaignProductDTO) {
-    let dataFilter: FilterDataRequestDTO = {
-        logic: "and",
-        filters: [],
-    }
-
-    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
-        dataFilter.filters.push( {
-            filters: [
-              { field: "ProductName", operator: OperatorEnum.contains, value: filterObj.searchText },
-              { field: "ProductNameNoSign", operator: OperatorEnum.contains, value: filterObj.searchText }
-            ],
-            logic: 'or'
+            logic: "or"
         })
     }
 

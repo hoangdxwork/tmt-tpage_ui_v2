@@ -1,9 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FilterLiveCampaignProductDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { finalize } from 'rxjs/operators';
-import { ReportLiveCampaignProductDataDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { ODataLiveCampaignService } from 'src/app/main-app/services/mock-odata/odata-live-campaign.service';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
@@ -71,7 +69,7 @@ export class DetailProductComponent implements OnInit {
     },
   ];
 
-  filterObj: FilterLiveCampaignProductDTO = {
+  filterObj: any = {
     searchText: ''
   };
 
@@ -80,7 +78,7 @@ export class DetailProductComponent implements OnInit {
   count: number = 0;
   isLoading: boolean = false;
 
-  lstOfData: ReportLiveCampaignProductDataDTO[] = [];
+  lstOfData: any[] = [];
 
   constructor(
     private message: TDSMessageService,
@@ -92,21 +90,9 @@ export class DetailProductComponent implements OnInit {
   }
 
   loadData(pageSize: number, pageIndex: number) {
-    let filters = this.oDataLiveCampaignService.buildFilterProduct(this.filterObj);
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
-
-    this.getViewData(params).subscribe((res: TDSSafeAny) => {
-        this.count = res['@odata.count'] as number;
-        this.lstOfData = res.value;
-
-    }, error => this.message.error(`${error?.error?.message}` || Message.CanNotLoadData));
   }
 
   getViewData(params: string) {
-    this.isLoading = true;
-    return this.oDataLiveCampaignService
-        .getProduct(this.liveCampaignId, params)
-        .pipe(finalize(() => this.isLoading = false ));
   }
 
   onExpandChange(id: number | undefined, checked: boolean): void {

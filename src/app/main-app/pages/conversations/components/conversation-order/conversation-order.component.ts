@@ -34,7 +34,7 @@ import { ValidateInsuranceFeeHandler } from 'src/app/main-app/commands/validate-
 import { formatNumber } from '@angular/common';
 import { SelectShipServiceHandler } from 'src/app/main-app/commands/select-ship-service.handler';
 import { TAuthService, UserInitDTO } from 'src/app/lib';
-import { TACheckboxChange } from 'tds-ui/tds-checkbox';
+import { TDSCheckboxChange } from 'tds-ui/tds-checkbox';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { PrepareSaleModelHandler } from 'src/app/main-app/commands/prepare-salemodel.handler';
 import { TDSNotificationService } from 'tds-ui/notification';
@@ -240,7 +240,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     (this.saleModel as any) = null;
   }
 
-  onEnableCreateOrder(event: TACheckboxChange) {
+  onEnableCreateOrder(event: TDSCheckboxChange) {
     if(event.checked == true && !this.saleModel) {
         this.loadSaleModel();
     }

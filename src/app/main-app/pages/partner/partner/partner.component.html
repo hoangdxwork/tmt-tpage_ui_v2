@@ -150,7 +150,7 @@
                                             <span>{{data.DisplayName}}</span>
                                         </div>
                                     </td>
-                                    <td *ngIf="isHidden('Phone')" class=" border-r border-neutral-200">
+                                    <td *ngIf="isHidden('Phone')" class="border-r border-neutral-200">
                                         <div class="flex flex-col">
                                             <span>{{data.Phone}}</span>
                                             <tds-tag *ngIf="data.NameNetwork" [status]="data.NameNetwork | nameNetWork" type="outline">

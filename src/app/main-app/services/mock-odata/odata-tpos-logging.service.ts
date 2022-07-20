@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { CTMTagFilterObjDTO, TposLoggingFilterObjDTO } from '../../dto/odata/odata.dto';
 import { BaseSevice } from '../base.service';
 
 @Injectable()
@@ -26,10 +25,10 @@ export class OdataTPosLoggingService extends BaseSevice {
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<TposLoggingFilterObjDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
-  public buildFilter(filterObj: TposLoggingFilterObjDTO) {
+  public buildFilter(filterObj: any) {
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",
         filters: []
@@ -43,7 +42,7 @@ export class OdataTPosLoggingService extends BaseSevice {
       let date1 = formatDate(new Date(), 'dd-MM-yyyy', 'en-US');
       let date2 = formatDate(filterObj?.dateRange.endDate, 'dd-MM-yyyy', 'en-US');
       if(date1 != date2) {
-        endDate = new Date(filterObj?.dateRange.endDate.setHours(23, 59, 59, 0)).toISOString();
+        endDate = new Date(filterObj?.dateRange.endDate.setHours(23, 59, 59, 59)).toISOString();
       }
 
       dataFilter.filters.push({
@@ -56,9 +55,10 @@ export class OdataTPosLoggingService extends BaseSevice {
     }
 
     if (TDSHelperString.hasValueString(filterObj?.searchText)) {
+        let value = TDSHelperString.stripSpecialChars(filterObj.searchText.toLowerCase().trim());
         dataFilter.filters.push( {
             filters: [
-              { field: "Content", operator: OperatorEnum.contains, value: filterObj.searchText }
+              { field: "Content", operator: OperatorEnum.contains, value: value }
             ],
             logic: 'or'
         })

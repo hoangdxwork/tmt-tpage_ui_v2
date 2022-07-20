@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { addDays, endOfWeek, endOfYear, endOfYesterday, startOfYear, startOfYesterday } from 'date-fns';
 import { endOfMonth, startOfMonth } from 'date-fns';
 import { startOfWeek } from 'date-fns/esm';
-import { TposLoggingFilterObjDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { OdataTPosLoggingService } from 'src/app/main-app/services/mock-odata/odata-tpos-logging.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { TDSTableSortFn, TDSTableSortOrder } from 'tds-ui/table';
@@ -33,7 +32,7 @@ export class ConfigActivitiesComponent implements OnInit {
   listOfColumns: Array<ColumnItem> = [];
   testDate = new Date('Thu Mar 17 2022 17:00:24');
 
-  public filterObj: TposLoggingFilterObjDTO = {
+  public filterObj: any = {
     name: '',
     searchText: '',
     dateRange: {

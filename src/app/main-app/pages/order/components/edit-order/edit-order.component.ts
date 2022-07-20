@@ -25,7 +25,7 @@ import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
-import { TACheckboxChange } from 'tds-ui/tds-checkbox';
+import { TDSCheckboxChange } from 'tds-ui/tds-checkbox';
 import { CreateFastSaleOrderDTO } from 'src/app/main-app/dto/saleonlineorder/create-fastsaleorder.dto';
 import { CommentsOfOrderDTO } from 'src/app/main-app/dto/saleonlineorder/comment-of-order.dto';
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
@@ -268,7 +268,7 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onEnableCreateOrder(event: TACheckboxChange) {
+  onEnableCreateOrder(event: TDSCheckboxChange) {
     if(event.checked == true && !this.saleModel) {
         this.loadSaleModel();
     }

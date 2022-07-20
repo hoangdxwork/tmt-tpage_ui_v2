@@ -4,7 +4,6 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { id } from 'date-fns/locale';
 import { Message } from 'src/app/lib/consts/message.const';
-import { SaleOnlineLiveCampaignDetailDTO, SaleOnline_LiveCampaignDTO } from '../../dto/live-campaign/live-campaign.dto';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ApplicationUserDTO } from '../../dto/account/application-user.dto';
 import { Observable } from 'rxjs';
@@ -24,7 +23,7 @@ export class AddLiveCampaignComponent implements OnInit {
   @Input() id?: string;
   @Input() isCopy?: boolean;
 
-  @Output() onSuccess = new EventEmitter<SaleOnline_LiveCampaignDTO>();
+  @Output() onSuccess = new EventEmitter<any>();
 
   lstConfig: any = [
     { text: "Nháp", value: "Draft" },
@@ -100,7 +99,7 @@ export class AddLiveCampaignComponent implements OnInit {
     }
   }
 
-  updateForm(data: SaleOnline_LiveCampaignDTO) {
+  updateForm(data: any) {
     if(!this.isCopy) data.Id = undefined;
 
     this.formCreateLiveCampaign.patchValue(data);
@@ -108,7 +107,7 @@ export class AddLiveCampaignComponent implements OnInit {
     this.initFormDetails(data.Details);
   }
 
-  initFormDetails(details: SaleOnlineLiveCampaignDetailDTO[]) {
+  initFormDetails(details: any[]) {
     if(TDSHelperArray.hasListValue(details)) {
       details.forEach(detail => {
         const control = <FormArray>this.formCreateLiveCampaign.controls['Details'];
@@ -117,7 +116,7 @@ export class AddLiveCampaignComponent implements OnInit {
     }
   }
 
-  initDetail(detail?: SaleOnlineLiveCampaignDetailDTO) {
+  initDetail(detail?: any) {
     let detailFormGroup = this.formBuilder.group({
         Id: [null],
         Index: [null],
@@ -190,7 +189,7 @@ export class AddLiveCampaignComponent implements OnInit {
   prepareModel() {
     let formValue = this.formCreateLiveCampaign.value;
 
-    let model = {} as SaleOnline_LiveCampaignDTO;
+    let model = {} as any;
 
     model.Config = formValue.Config?.value;
     model.Name = formValue.Name;
@@ -208,7 +207,7 @@ export class AddLiveCampaignComponent implements OnInit {
     // model.IsShift = formValue.IsShift;
 
     if (TDSHelperArray.hasListValue(formValue.Details)) {
-      formValue.Details.forEach((detail: SaleOnlineLiveCampaignDetailDTO, index: number) => {
+      formValue.Details.forEach((detail: any, index: number) => {
         detail["Index"] = index;
       });
     }

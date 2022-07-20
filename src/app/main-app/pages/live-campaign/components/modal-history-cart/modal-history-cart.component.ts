@@ -1,7 +1,6 @@
 import { finalize } from 'rxjs/operators';
 import { Component, Input, OnInit } from '@angular/core';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { CartHistoryEventDTO, FSOrderHistoryEventDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 
@@ -18,7 +17,7 @@ export class ModalHistoryCartComponent implements OnInit {
 
   isLoading: boolean = false;
 
-  lstData: CartHistoryEventDTO[] = [];
+  lstData: any[] = [];
 
   constructor(
     private liveCampaignService: LiveCampaignService,

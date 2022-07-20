@@ -5,7 +5,6 @@ import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperString } from 'tds-ui/shared/utility';
 import { SaleCouponProgramDTO } from '../../dto/configs/sale-coupon-program.dto';
 import { ODataCRMTagDTO } from '../../dto/crm-tag/odata-crmtag.dto';
-import { CTMTagFilterObjDTO, ODataResponsesDTO, SaleCouponProgramFilterObjDTO, TposLoggingFilterObjDTO } from '../../dto/odata/odata.dto';
 import { BaseSevice } from '../base.service';
 
 @Injectable()
@@ -21,16 +20,16 @@ export class OdataSaleCouponProgramService extends BaseSevice {
     super(apiService)
   }
 
-  getView(params: string): Observable<ODataResponsesDTO<SaleCouponProgramDTO>>{
+  getView(params: string): Observable<any>{
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}?${params}&$count=true`,
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<ODataResponsesDTO<SaleCouponProgramDTO>>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
-  public buildFilter(filterObj: SaleCouponProgramFilterObjDTO) {
+  public buildFilter(filterObj: any) {
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",
         filters: []

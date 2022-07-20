@@ -25,7 +25,6 @@ import { DashboardConnectingPageReportComponent } from './components/dashboard-c
 import { DashboardProductReportComponent } from './components/dashboard-product-report/dashboard-product-report.component';
 import { DashboardEmptyDataComponent } from './components/dashboard-empty-data/dashboard-empty-data.component';
 import { ReportFacebookService } from '../../services/report-facebook.service';
-import { SummaryFacade } from '../../services/facades/summary.facede';
 import { CRMMatchingService } from '../../services/crm-matching.service';
 import { TDSAvatarModule } from 'tds-ui/avatar';
 import { TDSTabsModule } from 'tds-ui/tabs';
@@ -36,11 +35,12 @@ import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
 import { TDSCardModule } from 'tds-ui/card';
 import { TDSTableModule } from 'tds-ui/table';
 import { TDSEmptyModule } from 'tds-ui/empty';
+import { CommonHandler } from '../../services/handlers/common.handler';
 
 const SERVICES = [
   ReportFacebookService,
   CRMMatchingService,
-  SummaryFacade
+  CommonHandler
 ]
 
 @NgModule({

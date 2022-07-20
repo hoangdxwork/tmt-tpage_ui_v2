@@ -18,7 +18,6 @@ import * as XLSX from 'xlsx';
 import { ModalListProductComponent } from "../../modal-list-product/modal-list-product.component";
 import { MDBInnerCreatedByDTO } from 'src/app/main-app/dto/conversation/inner.dto';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { LiveCampaignDetailDataDTO, SaleOnline_LiveCampaignDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
@@ -48,7 +47,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
 
   lstTags$!: Observable<CRMTagDTO[]>;
   lstUser$!: Observable<ApplicationUserDTO[]>;
-  currentLiveCampaign!: SaleOnline_LiveCampaignDTO | undefined;
+  currentLiveCampaign!: any | undefined;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -196,14 +195,14 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
     return formGroup;
   }
 
-  initTextContentToDetail(details: LiveCampaignDetailDataDTO[], liveCampaign: SaleOnline_LiveCampaignDTO) {
+  initTextContentToDetail(details: any[], liveCampaign: any) {
     details.forEach(content => {
       const control = <FormArray>this.formOrderConfig.controls['TextContentToOrders'];
       control.push(this.initOrderContentLiveCampaign(content, liveCampaign));
     });
   }
 
-  initOrderContentLiveCampaign(data: LiveCampaignDetailDataDTO, liveCampaign: SaleOnline_LiveCampaignDTO): FormGroup {
+  initOrderContentLiveCampaign(data: any, liveCampaign: any): FormGroup {
     let currentIndex = this.formOrderConfig.value.TextContentToOrders.length;
 
     let formGroup = this.formBuilder.group({
@@ -422,7 +421,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
     return result;
   }
 
-  defaultOrderConfigProductByLiveCampaignDetail(detail: LiveCampaignDetailDataDTO, isEnableQuantityHandling: boolean): AutoOrderConfig_ProductDTO {
+  defaultOrderConfigProductByLiveCampaignDetail(detail: any, isEnableQuantityHandling: boolean): AutoOrderConfig_ProductDTO {
     let result = {} as AutoOrderConfig_ProductDTO;
 
     result.ProductId = detail.ProductId;
@@ -443,8 +442,8 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
     result.DescriptionAttributeValues = [];
 
     if(TDSHelperArray.hasListValue(detail?.AttributeValues)) {
-      let listName = detail.AttributeValues.map(x => x.Name);
-      let listNameGet = detail.AttributeValues.map(x => x.NameGet);
+      let listName = detail.AttributeValues.map((x: any) => x.Name);
+      let listNameGet = detail.AttributeValues.map((x: any) => x.NameGet);
 
       result.AttributeValues = listName;
       result.DescriptionAttributeValues = listNameGet;

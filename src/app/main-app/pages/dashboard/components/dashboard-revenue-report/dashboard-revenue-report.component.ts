@@ -1,37 +1,34 @@
-import { SummaryFilterDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
-import { SummaryFacade } from 'src/app/main-app/services/facades/summary.facede';
 import { Color } from 'echarts';
 import { TDSChartOptions, TDSBarChartComponent, TDSBarChartDataSeries } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/services/handlers/common.handler';
 
 @Component({
   selector: 'app-dashboard-revenue-report',
   templateUrl: './dashboard-revenue-report.component.html'
 })
 export class DashboardRevenueReportComponent implements OnInit {
-  //#region variable
+
   revenueOption:TDSSafeAny;
   chartOption = TDSChartOptions();
   labelData:TDSSafeAny[] = [];
   axisData:TDSSafeAny[] = [];
   seriesData:TDSSafeAny[] = [];
-  colors:Color[] = [];
+  colors: Color[] = [];
 
-  filterList!: SummaryFilterDTO[];
-  currentFilter!: SummaryFilterDTO;
+  currentDateRanges!: TDSDateRangeDTO;
+  tdsDateRanges: TDSDateRangeDTO[] = [];
+
   emptyData = false;
-  //#endregion
-  constructor(private summaryFacade: SummaryFacade) { }
+
+  constructor(private commonHandler: CommonHandler) {
+      this.tdsDateRanges = this.commonHandler.tdsDateRanges;
+      this.currentDateRanges = this.commonHandler.currentDateRanges;
+  }
 
   ngOnInit(): void {
     this.loadData();
-    this.loadFilter();
-  }
-
-  loadFilter() {
-    this.filterList = this.summaryFacade.getMultipleFilter();
-    this.currentFilter = this.filterList[4];
   }
 
   loadData(){
@@ -179,7 +176,7 @@ export class DashboardRevenueReportComponent implements OnInit {
     return list;
   }
 
-  onChangeFilter(data:any){
-    this.currentFilter = data;
+  onChangeFilter(data:any) {
+    this.currentDateRanges = data;
   }
 }

@@ -4,8 +4,7 @@ import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperString } from 'tds-ui/shared/utility';
-import { SaleOnline_LiveCampaignDTO } from '../../dto/live-campaign/live-campaign.dto';
-import { FilterLiveCampaignOrderDTO, ODataResponsesDTO } from '../../dto/odata/odata.dto';
+import { ODataResponsesDTO } from '../../dto/odata/odata.dto';
 import { BaseSevice } from '../base.service';
 
 @Injectable()
@@ -15,23 +14,21 @@ export class ODataLiveCampaignOrderService extends BaseSevice {
   table: string = "SaleOnline_Order";
   baseRestApi: string = "";
 
-  constructor(
-      private apiService: TCommonService,
-      public caheApi: THelperCacheService
-  ) {
-    super(apiService)
+  constructor( private apiService: TCommonService,
+      public caheApi: THelperCacheService) {
+      super(apiService)
   }
 
-  getView(params: string, filterObj: FilterLiveCampaignOrderDTO, liveCampaignId: string): Observable<ODataResponsesDTO<SaleOnline_LiveCampaignDTO>>{
+  getView(params: string, filterObj: any, liveCampaignId: string): Observable<ODataResponsesDTO<any>>{
     const api: TAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetViewCampaign?TagIds=${filterObj.tags}&liveCampaignId=${liveCampaignId}&${params}&$count=true`,
         method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<ODataResponsesDTO<SaleOnline_LiveCampaignDTO>>(api, null);
+    return this.apiService.getData<ODataResponsesDTO<any>>(api, null);
   }
 
-  public buildFilter(filterObj: FilterLiveCampaignOrderDTO) {
+  public buildFilter(filterObj: any) {
 
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",

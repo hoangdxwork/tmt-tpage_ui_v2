@@ -13,7 +13,6 @@ import { ODataProductTagDTO, ODataProductTemplateDTO } from './../../../dto/conf
 import { Subject, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { THelperDataRequest } from './../../../../lib/services/helper-data.service';
-import { CTMTagFilterObjDTO } from './../../../dto/odata/odata.dto';
 import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { SortEnum } from 'src/app/lib';
@@ -60,7 +59,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
 
   configModelTags: Array<TagDTO> = [];
   configTagDataList: Array<TagDTO> = [];
-  public filterObj: CTMTagFilterObjDTO = {
+  public filterObj: any = {
     searchText: ''
   }
   indClickTag = -1;

@@ -2,7 +2,6 @@ import { Router } from '@angular/router';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { OdataSaleCouponProgramService } from 'src/app/main-app/services/mock-odata/odata-sale-coupon-program.service';
 import { SaleCouponProgramDTO } from 'src/app/main-app/dto/configs/sale-coupon-program.dto';
-import { SaleCouponProgramFilterObjDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { SortEnum } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
@@ -32,7 +31,7 @@ export class ConfigPromotionsComponent implements OnInit {
     },
   ];
 
-  public filterObj: SaleCouponProgramFilterObjDTO = {
+  public filterObj: any = {
     programType: 'promotion_program',
     searchText: '',
   }

@@ -2,16 +2,18 @@ import { finalize } from 'rxjs/operators';
 import { Color } from 'echarts';
 import { TDSPieChartComponent, TDSChartOptions } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
-import { SummaryFacade } from 'src/app/main-app/services/facades/summary.facede';
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
-import { SummaryActivityByStaffDTO, SummaryFilterDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
+import { SummaryActivityByStaffDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/services/handlers/common.handler';
 
 @Component({
   selector: 'app-dashboard-staff-report',
   templateUrl: './dashboard-staff-report.component.html'
 })
+
 export class DashboardStaffReportComponent implements OnInit {
+
   //#region variable
   staffOption:TDSSafeAny;
   chartOption = TDSChartOptions();
@@ -22,33 +24,28 @@ export class DashboardStaffReportComponent implements OnInit {
   totalCountReport = 0;
   //#endregion
 
-  currentFilter!: SummaryFilterDTO;
-  filterList: SummaryFilterDTO[] = [];
-  isLoading: boolean = false;
+  currentDateRanges!: TDSDateRangeDTO;
+  tdsDateRanges: TDSDateRangeDTO[] = [];
 
+  isLoading: boolean = false;
   lstSummaryActivityByStaff: SummaryActivityByStaffDTO[] = [];
 
-  constructor(
-    private summaryFacade: SummaryFacade,
-    private reportFacebookService: ReportFacebookService
-  ) { }
+  constructor(private reportFacebookService: ReportFacebookService,
+    private commonHandler: CommonHandler) {
+
+      this.tdsDateRanges = this.commonHandler.tdsDateRanges;
+      this.currentDateRanges = this.commonHandler.currentDateRanges;
+  }
 
   ngOnInit(): void {
-    this.loadFilter();
     this.loadOverviewEmploy();
   }
 
-  loadFilter() {
-    this.filterList = this.summaryFacade.getMultipleFilter();
-    this.currentFilter = this.filterList[4];
-  }
-
   loadOverviewEmploy() {
-    let startDate = this.currentFilter.startDate.toISOString();
-    let endDate = this.currentFilter.endDate.toISOString();
+    let startDate = this.currentDateRanges.startDate.toISOString();
+    let endDate = this.currentDateRanges.endDate.toISOString();
 
     this.isLoading = true;
-
     this.reportFacebookService.getSummaryByStaffs(startDate, endDate)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
@@ -160,7 +157,7 @@ export class DashboardStaffReportComponent implements OnInit {
   }
 
   onChangeFilter(data:any){
-    this.currentFilter = data;
+    this.currentDateRanges = data;
     this.totalCountReport = 0;
     this.loadOverviewEmploy();
   }

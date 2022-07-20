@@ -12,7 +12,6 @@ import { ApplicationUserDTO } from 'src/app/main-app/dto/account/application-use
 import { QuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-reply.dto';
 import { Observable } from 'rxjs';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { SaleOnlineLiveCampaignDetailDTO, SaleOnline_LiveCampaignDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
@@ -115,13 +114,13 @@ export class AddLiveCampaignComponent implements OnInit {
     });
   }
 
-  updateForm(data: SaleOnline_LiveCampaignDTO) {
+  updateForm(data: any) {
     if(!this.isCopy) data.Id = undefined;
     this.formLiveCampaign.patchValue(data);
     this.initFormDetails(data.Details);
   }
 
-  initFormDetails(details: SaleOnlineLiveCampaignDetailDTO[]) {
+  initFormDetails(details: any[]) {
     if(TDSHelperArray.hasListValue(details)) {
       details.forEach(detail => {
         const control = <FormArray>this.formLiveCampaign.controls['Details'];
@@ -130,7 +129,7 @@ export class AddLiveCampaignComponent implements OnInit {
     }
   }
 
-  initDetailByLiveCampaign(detail?: SaleOnlineLiveCampaignDetailDTO) {
+  initDetailByLiveCampaign(detail?: any) {
     let detailFormGroup = this.formBuilder.group({
         Id: [null],
         Index: [null],
@@ -287,7 +286,7 @@ export class AddLiveCampaignComponent implements OnInit {
     }
   }
 
-  create(model: SaleOnline_LiveCampaignDTO) {
+  create(model: any) {
     this.isLoading = true;
     this.liveCampaignService.create(model)
       .pipe(finalize(() => this.isLoading = false))
@@ -298,7 +297,7 @@ export class AddLiveCampaignComponent implements OnInit {
       });
   }
 
-  update(model: SaleOnline_LiveCampaignDTO) {
+  update(model: any) {
     this.isLoading = true;
     this.liveCampaignService.update(model, false)
       .pipe(finalize(() => this.isLoading = false))
@@ -312,7 +311,7 @@ export class AddLiveCampaignComponent implements OnInit {
   prepareModel() {
     let formValue = this.formLiveCampaign.value;
 
-    let model = {} as SaleOnline_LiveCampaignDTO;
+    let model = {} as any;
 
     model.Id = (this.isEdit && this.liveCampaignId) ? this.liveCampaignId : undefined;
     model.Config = formValue.Config?.value;
@@ -331,7 +330,7 @@ export class AddLiveCampaignComponent implements OnInit {
     // model.IsShift = formValue.IsShift;
 
     if (TDSHelperArray.hasListValue(formValue.Details)) {
-      formValue.Details.forEach((detail: SaleOnlineLiveCampaignDetailDTO, index: number) => {
+      formValue.Details.forEach((detail: any, index: number) => {
         detail["Index"] = index;
         detail.Tags = detail?.Tags.toString();
       });

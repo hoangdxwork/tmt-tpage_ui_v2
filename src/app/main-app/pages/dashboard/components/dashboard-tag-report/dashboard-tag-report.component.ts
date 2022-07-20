@@ -5,10 +5,9 @@ import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject, finalize } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { SummaryFacade } from 'src/app/main-app/services/facades/summary.facede';
-import { SummaryFilterDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
 import { ConversationSummaryByTagDTO } from 'src/app/main-app/dto/conversation/conversation.dto';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { CommonHandler } from 'src/app/main-app/services/handlers/common.handler';
 
 @Component({
   selector: 'app-dashboard-tag-report',
@@ -27,11 +26,9 @@ export class DashboardTagReportComponent implements OnInit, OnDestroy {
 
   lstDataTagReport: ConversationSummaryByTagDTO[] = [];
 
-  constructor(
-    private summaryFacade: SummaryFacade,
+  constructor(private commonHandler: CommonHandler,
     private crmTeamService: CRMTeamService,
-    private crmMatchingService: CRMMatchingService
-  ) { }
+    private crmMatchingService: CRMMatchingService) { }
 
   ngOnInit(): void {
     this.loadCurrentTeam();
@@ -46,6 +43,7 @@ export class DashboardTagReportComponent implements OnInit, OnDestroy {
 
   loadSummaryByTags(pageId: string | undefined) {
     this.isLoading = true
+
     let startDate = new Date('2000').toISOString();
     let endDate =  new Date().toISOString();
 

@@ -3,86 +3,77 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tds-ui/shared/utility";
 import { FacebookMappingPostDTO } from "../dto/conversation/post/post.dto";
-import { ApproveLiveCampaignDTO, CartHistoryEventDTO, DetailReportLiveCampaignDTO, FSOrderHistoryEventDTO, LiveCampaign_SimpleDataDTO, ReportLiveCampaignOverviewDTO, SaleOnlineLiveCampaignDetailDTO, SaleOnline_LiveCampaignDTO, SearchReportLiveCampaignOverviewDTO, UpdateFacebookLiveCampaignDTO } from "../dto/live-campaign/live-campaign.dto";
+import { ODataLiveCampaignDTO } from "../dto/live-campaign/odata-live-campaign.dto";
 import { ODataModelDTO, ODataResponsesDTO } from "../dto/odata/odata.dto";
 import { BaseSevice } from "./base.service";
 
 @Injectable()
 export class LiveCampaignService extends BaseSevice {
+
   prefix: string = "odata";
   table: string = "SaleOnline_LiveCampaign";
   baseRestApi: string = "rest/v1.0/saleonine_livecampaign";
-  public _keyCacheGrid: string = 'saleonine_livecampaign-page:grid_saleonine_livecampaign:settings';
-
-  public dataActive$ = new BehaviorSubject<SaleOnline_LiveCampaignDTO[]>([]);
+  public _keyCacheGrid: string = 'livecampaign-page:grid_livecampaign:settings';
 
   constructor(private apiService: TCommonService) {
     super(apiService);
-    this.initialize();
   }
 
-  initialize() {
-    this.getAvailables().subscribe(res => {
-      let dataActive = res?.value.filter(x => x.IsActive);
-      this.dataActive$.next(dataActive);
-    })
+  get(): Observable<ODataLiveCampaignDTO>{
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<ODataLiveCampaignDTO>(api, null);
   }
 
-  getById(id: any): Observable<SaleOnline_LiveCampaignDTO> {
+  getById(id: any): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})?$expand=Details,Users`,
       method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<SaleOnline_LiveCampaignDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
 	}
 
-  getDetailById(id: string | undefined): Observable<SaleOnline_LiveCampaignDTO> {
+  getDetailById(id: string | undefined): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})?$expand=Details,Users,Preliminary_Template,ConfirmedOrder_Template`,
       method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<SaleOnline_LiveCampaignDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
-  getAvailables(): Observable<ODataResponsesDTO<SaleOnline_LiveCampaignDTO>> {
-    const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetAvailables?$orderby=DateCreated%20desc&$top=${30}`,
-      method: TApiMethodType.get,
-    }
-
-    return this.apiService.getData<ODataResponsesDTO<SaleOnline_LiveCampaignDTO>>(api, null);
-  }
-
-  getDetailAndAttributes(id: any): Observable<LiveCampaign_SimpleDataDTO> {
+  getDetailAndAttributes(id: any): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/getwithdetailandattributes`,
       method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<LiveCampaign_SimpleDataDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
-  create(data: SaleOnline_LiveCampaignDTO): Observable<SaleOnline_LiveCampaignDTO> {
+  create(data: any): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
       method: TApiMethodType.post,
     }
 
-    return this.apiService.getData<SaleOnline_LiveCampaignDTO>(api, data);
+    return this.apiService.getData<any>(api, data);
   }
 
-  update(data: SaleOnline_LiveCampaignDTO, isUpdate: boolean): Observable<SaleOnline_LiveCampaignDTO> {
+  update(data: any, isUpdate: boolean): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${data.Id})?isUpdate=${isUpdate}`,
       method: TApiMethodType.put,
     }
 
-    return this.apiService.getData<SaleOnline_LiveCampaignDTO>(api, data);
+    return this.apiService.getData<any>(api, data);
   }
 
-  updateLiveCampaignPost(id: string | undefined, data: UpdateFacebookLiveCampaignDTO): Observable<boolean> {
+  updateLiveCampaignPost(id: string | undefined, data: any): Observable<boolean> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})/ODataService.UpdateFacebook`,
       method: TApiMethodType.post,
@@ -91,22 +82,22 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<boolean>(api, data);
   }
 
-  getReportLiveCampaignOverview(data: ODataModelDTO<SearchReportLiveCampaignOverviewDTO>): Observable<ReportLiveCampaignOverviewDTO>{
+  getReportLiveCampaignOverview(data: any): Observable<any>{
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.ReportLiveCampaignOverview`,
       method: TApiMethodType.post,
     }
 
-    return this.apiService.getData<ReportLiveCampaignOverviewDTO>(api, data);
+    return this.apiService.getData<any>(api, data);
   }
 
-  approve(id: string | undefined): Observable<ApproveLiveCampaignDTO> {
+  approve(id: string | undefined): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.table}/Approve?id=${id}`,
       method: TApiMethodType.post,
     }
 
-    return this.apiService.getData<ApproveLiveCampaignDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
   delete(id: string | undefined): Observable<undefined> {
@@ -118,13 +109,13 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<undefined>(api, null);
   }
 
-  updateActiveDetail(id: string, isActive: boolean): Observable<SaleOnlineLiveCampaignDetailDTO> {
+  updateActiveDetail(id: string, isActive: boolean): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.UpdateActiveDetail?key=${id}&isActive=${isActive}`,
       method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<SaleOnlineLiveCampaignDetailDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
   getAllFacebookPost(id: string | undefined): Observable<FacebookMappingPostDTO[]> {
@@ -136,13 +127,13 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<FacebookMappingPostDTO[]>(api, null);
   }
 
-  getReport(id: string): Observable<DetailReportLiveCampaignDTO> {
+  getReport(id: string): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/getreport`,
       method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<DetailReportLiveCampaignDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
   updateProductQuantity(id: string, quantity: number | undefined, liveCampaignId: string): Observable<boolean> {
@@ -154,22 +145,67 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<boolean>(api, null);
   }
 
-  getSOCartHistory(liveCampaignId: string, productId: number, orderId: TDSSafeAny): Observable<ODataResponsesDTO<CartHistoryEventDTO>> {
+  getSOCartHistory(liveCampaignId: string, productId: number, orderId: TDSSafeAny): Observable<ODataResponsesDTO<any>> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetSOCartHistory?key=${liveCampaignId}&product_id=${productId}&order_id=${orderId}`,
       method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<ODataResponsesDTO<CartHistoryEventDTO>>(api, null);
+    return this.apiService.getData<ODataResponsesDTO<any>>(api, null);
   }
 
-  getFSCartHistory(liveCampaignId: string, productId: number, orderId: TDSSafeAny): Observable<FSOrderHistoryEventDTO> {
+  getFSCartHistory(liveCampaignId: string, productId: number, orderId: TDSSafeAny): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetFSCartHistory?key=${liveCampaignId}&product_id=${productId}&order_id=${orderId}`,
       method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<FSOrderHistoryEventDTO>(api, null);
+    return this.apiService.getData<any>(api, null);
+  }
+
+  getProduct(liveCampaignId: string, params: string): Observable<any> {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.ReportLiveCampaignProduct?key=${liveCampaignId}&${params}&$count=true`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
+  getSOOrder(liveCampaignId: string, productId: number, params: string) {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetLiveCampaignSOOrder?key=${liveCampaignId}&product_id=${productId}&${params}&$count=true`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
+  getSOOrderCancel(liveCampaignId: string, productId: number, params: string) {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetLiveCampaignSOOrderCancel?key=${liveCampaignId}&product_id=${productId}&${params}&$count=true`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
+  getFSOrder(liveCampaignId: string, productId: number, params: string) {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetLiveCampaignFSOrder?key=${liveCampaignId}&product_id=${productId}&${params}&$count=true`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
+  }
+
+  getFSOrderCancel(liveCampaignId: string, productId: number, params: string) {
+    const api: TAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetLiveCampaignFSOrderCancel?key=${liveCampaignId}&product_id=${productId}&${params}&$count=true`,
+        method: TApiMethodType.get,
+    }
+
+    return this.apiService.getData<any>(api, null);
   }
 
 }

@@ -6,7 +6,6 @@ import { FastSaleOrderDTO, FastSaleOrderModelDTO, ODataFastSaleOrderDTO } from '
 import { SortEnum } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { finalize } from 'rxjs/operators';
-import { FilterLiveCampaignBillDTO } from 'src/app/main-app/dto/odata/odata.dto';
 import { TagService } from 'src/app/main-app/services/tag.service';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { Router } from '@angular/router';
@@ -23,7 +22,7 @@ export class DetailBillComponent implements OnInit {
 
   @Input() liveCampaignId!: string;
 
-  public filterObj: FilterLiveCampaignBillDTO = {
+  public filterObj: any = {
     tags: [],
     status: '',
     bill: null,

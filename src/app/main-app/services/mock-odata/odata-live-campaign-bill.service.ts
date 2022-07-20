@@ -5,8 +5,7 @@ import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheServ
 import { FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
 import { FastSaleOrderModelDTO, ODataFastSaleOrderDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
-import { SaleOnline_LiveCampaignDTO } from '../../dto/live-campaign/live-campaign.dto';
-import { FilterLiveCampaignBillDTO, FilterLiveCampaignOrderDTO, ODataResponsesDTO } from '../../dto/odata/odata.dto';
+import { ODataResponsesDTO } from '../../dto/odata/odata.dto';
 import { BaseSevice } from '../base.service';
 
 @Injectable()
@@ -23,7 +22,7 @@ export class ODataLiveCampaignBillService extends BaseSevice {
     super(apiService)
   }
 
-  getView(params: string, filterObj: FilterLiveCampaignBillDTO): Observable<ODataResponsesDTO<FastSaleOrderModelDTO>>{
+  getView(params: string, filterObj: any): Observable<ODataResponsesDTO<FastSaleOrderModelDTO>>{
     params += this.buildParams(filterObj);
 
     const api: TAPIDTO = {
@@ -33,7 +32,7 @@ export class ODataLiveCampaignBillService extends BaseSevice {
     return this.apiService.getData<ODataResponsesDTO<FastSaleOrderModelDTO>>(api, null);
   }
 
-  public buildFilter(filterObj: FilterLiveCampaignBillDTO) {
+  public buildFilter(filterObj: any) {
     let dataFilter: FilterDataRequestDTO = {
         logic: "or",
         filters: [],
@@ -97,7 +96,7 @@ export class ODataLiveCampaignBillService extends BaseSevice {
     return dataFilter;
   }
 
-  public buildParams(filterObj: FilterLiveCampaignBillDTO) {
+  public buildParams(filterObj: any) {
     let str = '';
 
     if(TDSHelperString.hasValueString(filterObj.liveCampaignId)) {

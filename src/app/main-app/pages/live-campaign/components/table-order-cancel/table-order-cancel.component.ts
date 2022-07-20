@@ -2,7 +2,6 @@ import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 import { Message } from 'src/app/lib/consts/message.const';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
-import { LiveCampaignSOOrderDTO } from 'src/app/main-app/dto/live-campaign/live-campaign.dto';
 import { ODataLiveCampaignService } from 'src/app/main-app/services/mock-odata/odata-live-campaign.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
@@ -19,7 +18,7 @@ export class TableOrderCancelComponent implements OnInit {
   @Input() liveCampaignId!: string;
   @Input() productId!: number;
 
-  lstOfData: LiveCampaignSOOrderDTO[] = [];
+  lstOfData: any[] = [];
 
   pageSize = 20;
   pageIndex = 1;
@@ -38,20 +37,10 @@ export class TableOrderCancelComponent implements OnInit {
   }
 
   loadData(pageSize: number, pageIndex: number) {
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex);
-
-    this.getViewData(params).subscribe(res => {
-        this.count = res['@odata.count'] as number;
-        this.lstOfData = res.value;
-
-    }, error => this.message.error(`${error?.error?.message}` || Message.CanNotLoadData));
   }
 
   getViewData(params: string) {
-    this.isLoading = true;
-    return this.oDataLiveCampaignService
-        .getSOOrderCancel(this.liveCampaignId, this.productId, params)
-        .pipe(finalize(() => this.isLoading = false ));
+
   }
 
   refreshData(){

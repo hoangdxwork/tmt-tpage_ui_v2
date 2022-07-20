@@ -3,7 +3,6 @@ import { DirectivesModule } from './../../shared/directives/directives.module';
 import { AttachmentState } from './../../services/facebook-state/attachment.state';
 import { AttachmentService } from '../../services/attachment.service';
 import { AttachmentDataFacade } from './../../services/facades/attachment-data.facade';
-import { OrderFormHandler } from './../../services/handlers/order-form.handler';
 import { ConversationOrderFacade } from './../../services/facades/conversation-order.facade';
 import { ConversationEventFacade } from './../../services/facades/conversation-event.facade';
 import { DraftMessageService } from './../../services/conversation/draft-message.service';
@@ -45,9 +44,6 @@ import { PrinterService } from '../../services/printer.service';
 import { ExcelExportService } from '../../services/excel-export.service';
 import { DeliveryCarrierService } from '../../services/delivery-carrier.service';
 import { OdataProductService } from '../../services/mock-odata/odata-product.service';
-import { CheckFormHandler } from '../../services/handlers/check-form.handler';
-import { CarrierHandler } from '../../services/handlers/carier.handler';
-import { SaleHandler } from '../../services/handlers/sale.handler';
 import { TDSAvatarModule } from 'tds-ui/avatar';
 import { TDSTabsModule } from 'tds-ui/tabs';
 import { TDSInputModule } from 'tds-ui/tds-input';
@@ -84,10 +80,7 @@ const SERVICES = [
   PartnerService,
   PrinterService,
   ExcelExportService,
-  SaleHandler,
-  CheckFormHandler,
   OdataProductService,
-  CarrierHandler,
   OrderPrintService,
   CRMMatchingService,
   TDSMessageService,
@@ -96,7 +89,6 @@ const SERVICES = [
   DraftMessageService,
   ConversationEventFacade,
   ConversationOrderFacade,
-  OrderFormHandler,
   AttachmentDataFacade,
   AttachmentService,
   AttachmentState,
