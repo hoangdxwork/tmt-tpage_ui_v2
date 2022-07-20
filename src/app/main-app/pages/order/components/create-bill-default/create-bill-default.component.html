@@ -1,8 +1,6 @@
-<div class="flex flex-col gap-x-6 min-h-[578px]">
+<tds-spin [spinning]="isLoading" class="flex flex-col gap-x-6 min-h-[578px]">
   <div class="items-center grid grid-cols-6 gap-x-6 justify-between">
-    <div class="">
-      <tds-label style="width: max-content;">Đối tác giao hàng</tds-label>
-    </div>
+    <tds-label style="width: max-content;">Đối tác giao hàng</tds-label>
     <div class="col-span-5 w-full flex gap-x-4">
       <div class="w-full flex flex-col">
         <tds-form-field>
@@ -13,9 +11,7 @@
             <i class="tdsi-warning-2-fill mr-1.5"></i>Phần mềm sẽ tự chọn đối tác với số tiền ship thấp nhất</span>
         </tds-form-field>
       </div>
-      <div class="">
-        <button tds-button color="primary" (click)="changeCarrierAll()">Áp dụng tất cả</button>
-      </div>
+      <button tds-button color="primary" (click)="changeCarrierAll()">Áp dụng tất cả</button>
     </div>
   </div>
 
@@ -56,16 +52,12 @@
                     <span class="tdsi-pin-fill text-md text-white bg-orange-500 p-0.5 rounded-md"></span>
                     <span>{{data.Partner.Street}}</span>
                   </div>
-                  <div class="flex items-baseline gap-x-2">
-                    <span *ngIf="data?.Carrier?.GHN_NoteCode" class="text-neutral-1-600 italic text-xs">{{data.Carrier?.GHN_NoteCode}}</span>
-                    <span *ngIf="!data?.Carrier?.GHN_NoteCode" class="text-neutral-1-600 italic text-xs">(Chưa có ghi chú)</span>
-                  </div>
                 </div>
               </td>
               <!-- Đối tác -->
               <td class="align-top">
                 <tds-form-field>
-                  <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác' [allowClear]="true"
+                  <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác' [allowClear]="false"
                     [valuePrimitive]="false" [(ngModel)]="data.CarrierId" [ngModelOptions]="{standalone: true}"
                     [data]="lstCarriers" (onChange)="onChangeCarrier($event, data)">
                   </tds-select>
@@ -117,6 +109,20 @@
                 </div>
               </td>
             </tr>
+            <tr [classList]="'border-t-0'">
+              <td></td>
+              <td colspan="3">
+                <suggest-address [_isBtnExtend]="false" [_isExpanded]="false" [_cities]="data.Partner.City"
+                  [_districts]="data.Partner.District" [_wards]="data.Partner.Ward" [_street]="data.Partner.Street"
+                  (onLoadSuggestion)="onLoadSuggestion($event,index)">
+                </suggest-address>
+              </td>
+              <td colspan="4">
+                <tds-form-field>
+                  <input tdsInput placeholder="Ghi chú sản phẩm" autocomplete="off" [(ngModel)]="data.ProductNote"/>
+                </tds-form-field>
+              </td>
+            </tr>
           </ng-template>
         </tbody>
       </tds-table>
@@ -136,4 +142,4 @@
         (click)="onSave(saveType.billSave)">Lưu</button>
     </div>
   </div>
-</div>
+</tds-spin>

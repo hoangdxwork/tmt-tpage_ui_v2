@@ -17,6 +17,7 @@ export class SaleOnline_OrderService extends BaseSevice {
 
   public _keyCacheGrid: string = 'saleonline_order-page:grid_saleonline_order:settings';
   public _keyCreateBillOrder: string = 'saleonline_order:create_bill_order';
+  public _keyCacheFilter: string = 'saleonline_order:filter_cache';
   public onSetCommentOrders: EventEmitter<any> = new EventEmitter();
 
   constructor(private apiService: TCommonService) {
