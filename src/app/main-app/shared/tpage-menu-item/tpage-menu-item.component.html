@@ -3,11 +3,11 @@
         <tds-collapse [bordered]="false" [expandIconPosition]="'right'">
             <tds-collapse-panel [header]="headerTpl" [active]="openCollapsePanel(item.link)" [tdsClass]="'p-0'">
                 <ng-template #headerTpl>
-                    <div class="flex items-center px-2 border-transparent text-neutral-500 {{loading ? 'cursor-wait' : 'cursor-pointer'}}">
+                    <div class="flex items-center px-2 border-transparent text-neutral-500 overflow-hidden truncate {{loading ? 'cursor-wait' : 'cursor-pointer'}}">
                         <i class="text-lg leading-none mr-2 
                             {{item.icon ?? 'p-2.5'}}">
                         </i>
-                        <span class="font-semibold text-body-2 font-sans w-full">{{item.name}}</span>
+                        <span class="font-semibold text-body-2 font-sans w-full truncate overflow-hidden">{{item.name}}</span>
                     </div>
                 </ng-template>
                 <div *ngFor="let child of item.listChild">
@@ -20,7 +20,7 @@
                                 {{child.icon ?? 'p-2.5'}}
                                 {{(currentURL === child.link)||(currentURL.includes(child.link)) ? 'text-white' : 'text-neutral-1-500'}}">
                             </i>
-                            <span class="font-semibold text-body-2 font-sans w-full 
+                            <span class="font-semibold text-body-2 font-sans w-full truncate overflow-hidden
                                 {{(currentURL === child.link)||(currentURL.includes(child.link)) ? 'text-white' : 'text-neutral-1-600 group-hover:text-neutral-1-900'}}">
                                 {{child.name}}
                             </span>
@@ -38,7 +38,7 @@
                     {{item.icon ?? 'p-2.5'}}
                     {{(currentURL === item.link)||(currentURL.includes(item.link)) ? 'text-white' : 'text-neutral-1-500'}}">
                 </i>
-                <span class="font-semibold text-body-2 font-sans w-full 
+                <span class="font-semibold text-body-2 font-sans w-full  truncate overflow-hidden
                     {{(currentURL === item.link)||(currentURL.includes(item.link)) ? 'text-white' : 'text-neutral-1-600 group-hover:text-neutral-1-900'}}">
                     {{item.name}}
                 </span>
