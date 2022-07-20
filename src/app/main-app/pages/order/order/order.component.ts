@@ -473,7 +473,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   refreshData() {
     this.pageIndex = 1;
     this.indClickTag = "";
-
+    this.filterText.nativeElement.value = '';
     this.checked = false;
     this.indeterminate = false;
     this.setOfCheckedId = new Set<string>();
@@ -494,7 +494,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   // Refresh nhưng không refresh lại Tab, Index
   refreshDataCurrent() {
     this.indClickTag = "";
-
+    
     this.checked = false;
     this.indeterminate = false;
     this.setOfCheckedId = new Set<string>();
@@ -782,6 +782,10 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   get getCheckedRow() {
     return [...this.setOfCheckedId].length;
+  }
+
+  removeCheckedRow(){
+    this.setOfCheckedId = new Set<string>();
   }
 
   @HostListener('document:keyup', ['$event'])
