@@ -243,6 +243,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
     }
 
+
     this.isTabNavs = true;
     this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$),
        finalize(() => this.isTabNavs = false)).subscribe((res: Array<TDSSafeAny>) => {

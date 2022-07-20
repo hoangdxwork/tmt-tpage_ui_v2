@@ -121,7 +121,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   setOfCheckedId = new Set<number>();
   private destroy$ = new Subject<void>();
 
-  constructor( private  odataFastSaleOrderService: OdataFastSaleOrderService,
+  constructor( private odataFastSaleOrderService: OdataFastSaleOrderService,
       private tagService: TagService,
       private router: Router,
       private modal: TDSModalService,
