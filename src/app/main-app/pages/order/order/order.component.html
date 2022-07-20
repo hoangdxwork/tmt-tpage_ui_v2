@@ -30,22 +30,50 @@
 
   <div class="p-4 h-full">
     <div class="bg-white w-full h-full rounded-md border border-neutral-200 flex flex-col">
-      <div class="flex justify-between" *ngIf="getCheckedRow < 1">
+      <div class="flex flex-row items-center justify-between w-full">
+        <div class="flex flex-auto justify-between items-center pr-2" *ngIf="getCheckedRow == 0">
+          <tds-spin [spinning]="isTabNavs" delay="350">
+              <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
+                  <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
+                      <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
+                      </tds-filter-status-item>
+                  </ng-template>
+              </tds-filter-status>
+          </tds-spin>
 
-        <tds-spin [spinning]="isTabNavs" delay="350">
-            <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
-                <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
-                    <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
-                    </tds-filter-status-item>
-                </ng-template>
-            </tds-filter-status>
-        </tds-spin>
+          <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]
+            (onRefreshData)="refreshDataCurrent()"></action-dropdown>
+        </div>
+
+        <div class="flex justify-start py-3" *ngIf="getCheckedRow > 0">
+          <div class="flex items-center gap-x-4 px-2">
+            <div class="text-neutral-1-500 text-body-2">{{getCheckedRow}} dòng được chọn</div>
+            <div class="flex gap-1 items-center rounded-md bg-neutral-3-50 pl-1.5 pr-2.5 cursor-pointer">
+              <i class="tdsi-close-fill text-base text-neutral-1-500"></i>
+              <div class="text-body-2 font-semibold text-neutral-1-700" (click)="removeCheckedRow()">Bỏ chọn</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-x-2 pr-4">
+            <button tds-button color="primary" size="md" (click)="sendMessage()">
+              <span class="flex items-center">
+                <i class="tdsi-messenger-fill text-xl leading-none mr-2"></i>Gửi tin nhắn
+              </span>
+            </button>
+            <button type="button" tds-button color="custom" class="text-white focus:ring-4 focus:ring-secondary-1/20
+              border-secondary-1 bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1
+              focus:border-secondary-1" size="md" (click)="printMultiOrder()">
+              <span class="flex items-center">
+                <i class="tdsi-print-fill text-xl leading-none mr-2"></i>In phiếu
+              </span>
+            </button>
+            <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]
+              (onRefreshData)="refreshDataCurrent()"></action-dropdown>
+          </div>
+        </div>
 
         <!-- TODO: Thao tác -->
         <div class="flex items-center gap-x-2 pr-4">
-            <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]
-            (onRefreshData)="refreshDataCurrent()"></action-dropdown>
-
           <tds-form-field class="w-full">
               <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" #filterText/>
               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
@@ -60,47 +88,6 @@
           <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
         </div>
       </div>
-
-      <div class="flex justify-between py-3" *ngIf="getCheckedRow > 0">
-        <div class="flex items-center gap-x-4 pl-4">
-          <div class="text-neutral-1-500 text-body-2">{{getCheckedRow}} dòng được chọn</div>
-          <div class="flex gap-1 items-center rounded-md bg-neutral-3-50 pl-1.5 pr-2.5 cursor-pointer">
-            <i class="tdsi-close-fill text-base text-neutral-1-500"></i>
-            <div class="text-body-2 font-semibold text-neutral-1-700">Bỏ chọn</div>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-x-2 pr-4">
-          <button tds-button color="primary" size="md" (click)="sendMessage()">
-            <span class="flex items-center">
-              <i class="tdsi-messenger-fill text-xl leading-none mr-2"></i>Gửi tin nhắn
-            </span>
-          </button>
-          <button type="button" tds-button color="custom" class="text-white focus:ring-4 focus:ring-secondary-1/20
-            border-secondary-1 bg-secondary-1 hover:bg-secondary-2 focus:bg-secondary-1
-            focus:border-secondary-1" size="md" (click)="printMultiOrder()">
-            <span class="flex items-center">
-              <i class="tdsi-print-fill text-xl leading-none mr-2"></i>In phiếu
-            </span>
-          </button>
-          <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]
-            (onRefreshData)="refreshDataCurrent()"></action-dropdown>
-
-          <tds-form-field class="w-full">
-              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" />
-              <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-          </tds-form-field>
-
-          <div *ngIf="tabNavs && filterObj">
-              <order-filter-options (onLoadOption)="onLoadOption($event)"
-                  [tabNavs]="tabNavs" [lstDataTag]="lstDataTag" [filterObj]="filterObj">
-              </order-filter-options>
-          </div>
-
-          <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
-        </div>
-      </div>
-
       <div #WidthTable class="flex-auto w-full pb-2.5" >
         <tds-table #rowSelectionTable [showSizeChanger]="true" [frontPagination]="false" [listData]="lstOfData"
           [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" [scroll]="{y:'auto', x: 'auto'}"

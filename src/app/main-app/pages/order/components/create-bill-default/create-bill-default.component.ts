@@ -61,6 +61,9 @@ export class CreateBillDefaultComponent implements OnInit {
         delete res['@odata.context'];
         this.lstData = res;
         this.lstLine = res.Lines.map((x: TDSSafeAny) => { return this.createLines(x) });
+      },
+      err=>{
+        this.message.error(err?.error?.message || Message.CanNotLoadData);
       });
   }
 
