@@ -104,7 +104,7 @@ export class FacebookPostService extends BaseSevice implements OnInit, OnDestroy
   getPostsByTeamId(teamId: number, link?: string, type?: string, eventType?: string, text?: string): Observable<any> {
     if(link) {
       let api: TAPIDTO = {
-        url: `${this._BASE_URL}/${link}`,
+        url: `${link}`,
         method: TApiMethodType.get
       }
 
