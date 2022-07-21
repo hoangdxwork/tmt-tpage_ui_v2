@@ -84,7 +84,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   ngOnInit(): void {
     // TODO: change team tds header
-    this.crmService.changeTeamFromLayout.pipe(takeUntil(this.destroy$)).subscribe((team) => {
+    this.crmService.changeTeamFromLayout$.pipe(takeUntil(this.destroy$)).subscribe((team) => {
         this.onClickTeam(team);
     })
 

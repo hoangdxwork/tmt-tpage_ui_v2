@@ -228,8 +228,7 @@ export class SendMessageComponent implements OnInit {
       delete res['IRModelId'];
       delete res['LastUpdated'];
       delete res['MailServerId'];
-      delete res['MailServerId'];
-      delete res['MailServerId'];
+      delete res['EventDatas'];
 
       this.lstMessage.unshift(res);
       this.message.success(Message.InsertSuccess);

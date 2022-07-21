@@ -954,6 +954,23 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   //   this.sgRConnectionService._onChatbotEvent$.emit(data);
   // }
 
+  // newMessage(){
+  //     let data = {
+  //       data:{
+  //         page_id: this.data.page_id,
+  //         psid: this.data.psid,
+  //         message:  'tin nhắn mới',
+  //         last_activity: {
+  //           type: 'all'
+  //         },
+  //         from: {
+  //           id : this.data.psid
+  //         }
+  //       } 
+  //     }
+  //     this.sgRConnectionService._onFacebookEvent$.emit(data);
+  // }
+
   ngAfterViewInit() {
     this.yiAutoScroll?.forceScrollDown();
   }

@@ -1,8 +1,7 @@
-import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { FacebookRESTService } from './../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from './../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, Observable, Subject } from 'rxjs';
 import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -18,7 +17,7 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'td
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
-import { DataCvsChatBotModel, OnChatBotSignalRModel, TypeOnChatBot } from 'src/app/main-app/dto/event-signalR/on-chatbot-signalR.dto';
+import { OnChatBotSignalRModel, TypeOnChatBot } from 'src/app/main-app/dto/event-signalR/on-chatbot-signalR.dto';
 import { SignalRConnectionService } from 'src/app/main-app/services/signalR/signalR-connection.service';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
@@ -37,6 +36,9 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   @HostBinding("@eventFadeState") eventAnimation = true;
   @HostBinding("@openCollapse") eventAnimationCollap = false;
   @ViewChild('conversationSearchInput') innerText!: ElementRef;
+  @ViewChild('templateAdminTransferChatBot') templateAdminTransferChatBot!: TemplateRef<{}>;
+  @ViewChild('templateChatbotTranserAdmin') templateChatbotTranserAdmin!: TemplateRef<{}>;
+  @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
 
   isLoading: boolean = false;
   dataSource$!: Observable<any>;
@@ -72,12 +74,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     public activatedRoute: ActivatedRoute,
     public router: Router,
     private ngZone: NgZone,
-    private crmMatchingService: CRMMatchingService,
     private notification: TDSNotificationService,
     private conversationOrderFacade: ConversationOrderFacade,
     private cdRef : ChangeDetectorRef,
     private printerService: PrinterService,
-    private cacheApi: THelperCacheService,
     private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private sgRConnectionService: SignalRConnectionService,
@@ -87,7 +87,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   ngOnInit(): void {
     // TODO: change team tds header
-    this.crmService.changeTeamFromLayout.pipe(takeUntil(this.destroy$)).subscribe((team) => {
+    this.crmService.changeTeamFromLayout$.pipe(takeUntil(this.destroy$)).subscribe((team) => {
         this.onClickTeam(team);
     })
 
@@ -120,6 +120,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     this.hubEvents(); // các sự kiện realtime
     this.spinLoading();
+    this.notificationMessNew(); // thông báo tin nhắn mới
   }
 
   spinLoading() {
@@ -470,6 +471,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
             // TODO: dữ liệu là conversation hiện tại truyền cho shared-tds-conversations
             let exits = this.currentConversationItem.page_id == hubs.data.pageId && this.currentConversationItem.psid == hubs.data.psid;
 
+            let data = {
+              team: {},
+              psid: hubs.data.psid,
+              message:  hubs.message,
+            }
+
             switch (hubs.type) {
               case `${TypeOnChatBot.AdminTransferChatBot}`:
                   if(item) {
@@ -478,7 +485,16 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                   if(exits) {
                     this.currentConversationItem.state = StateChatbot.Warning;
                   }
-                  this.notification.warning('Chatbot gặp vấn đề' , `${hubs.message}`, { placement: 'bottomLeft' });
+                  // TODO: Lấy teamId của page
+                  this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
+                    if(res){
+                       data.team = res[0];
+                    }
+                    this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
+                  }, err =>{
+                    this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
+                  })
+                  // this.notification.warning('Chatbot gặp vấn đề' , `${hubs.message}`, { placement: 'bottomLeft' });
                 break;
 
               case `${TypeOnChatBot.ChatbotTranserAdmin}`:
@@ -488,13 +504,45 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
                   if(exits) {
                     this.currentConversationItem.state = StateChatbot.Normal;
                   }
-                  this.notification.info('Chatbot đã được xử lý' , `${hubs.message}`, { placement: 'bottomLeft' });
+                  this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
+                    if(res){
+                      data.team = res[0];
+                    }
+                    this.notification.template(this.templateChatbotTranserAdmin, { data: data, placement: 'bottomLeft' });
+                  }, err =>{
+                    this.notification.template(this.templateChatbotTranserAdmin, { data: data, placement: 'bottomLeft' });
+                  })
                 break;
 
               default:
                 break;
             }
        }
+    })
+  }
+  getLink(team: TDSSafeAny, psid: string){
+    if(TDSHelperObject.hasValue(team)){
+      if(team.Id != this.currentTeam.Id){
+        this.crmService.changeTeamFromLayout$.emit(team);
+        this.onChangeConversation(team);
+      }
+      let data = this.lstMatchingItem.find(x=> x.psid == psid)
+      if(data){
+        this.currentConversationItem = data;
+      }
+
+      let uri = 'conversation/all';
+      let uriParams = `${uri}?teamId=${team.Id}&type=all&psid=${psid}`;
+      this.router.navigateByUrl(uriParams)
+    }
+
+  }
+
+  notificationMessNew(){
+    this.conversationDataFacade.notificationMessNew$.pipe(takeUntil(this.destroy$)).subscribe(res=>{
+      if(res){
+        this.notification.template(this.templateNotificationMessNew, { data: res, placement: 'bottomLeft' });
+      }
     })
   }
 }

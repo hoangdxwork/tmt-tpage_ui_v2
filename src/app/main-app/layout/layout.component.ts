@@ -254,7 +254,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   onClickTeam(data: CRMTeamDTO): any{
     let uri = this.router.url;
     if(uri && uri.startsWith("/conversation")){
-      this.crmService.changeTeamFromLayout.emit(data);
+      this.crmService.changeTeamFromLayout$.emit(data);
     } else {
       this.crmService.onUpdateTeam(data);
     }
