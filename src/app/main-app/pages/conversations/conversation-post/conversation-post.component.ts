@@ -18,6 +18,7 @@ import { ListLiveCampaignComponent } from 'src/app/main-app/shared/list-live-cam
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 @Component({
   selector: 'app-conversation-post',
@@ -28,6 +29,9 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/
 export class ConversationPostComponent extends TpageBaseComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('innerText') innerText!: ElementRef;
+
+  @ViewChild(CdkVirtualScrollViewport)
+  viewport!: CdkVirtualScrollViewport;
 
   public lstType: any[] = [
     { type: '', text: 'Tất cả bài viết' },
@@ -151,6 +155,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   setType(item: any, eventType: string) {
     this.isLoadFrist = true;
     this.eventType = eventType;
+
     if (this.currentType.type != item.type) {
       this.currentType = item;
       this.loadData();
@@ -164,6 +169,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   loadData(){
     this.isLoading = true;
     this.validateData();
+
     if(this.currentTeam?.Id) {
       const batchMap = this.offset.pipe(throttleTime(500),
         mergeMap((x: any) => this.getData(x, this.currentType.type, this.keyFilter)));
@@ -270,6 +276,27 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
           }, {});
         })
       );
+  }
+
+  nextData(e: any, nextUrl :any) {
+    if (!this.hasNextPage) {
+      return;
+    }
+
+    if (this.viewport) {
+      const end = this.viewport.getRenderedRange().end;
+      const total = this.viewport.getDataLength();
+
+      if (end === total) {
+        this.offset.next(nextUrl);
+      }
+    } else {
+      this.offset.next(nextUrl);
+    }
+  }
+
+  trackByIndex(i: any) {
+    return i;
   }
 
   onClickTeam(data: CRMTeamDTO): any {

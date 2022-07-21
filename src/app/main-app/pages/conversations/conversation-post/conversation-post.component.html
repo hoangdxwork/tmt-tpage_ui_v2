@@ -47,7 +47,7 @@
                         <!-- droupdown up down -->
                         <tds-dropdown-menu #btnUpDown="tdsDropdownMenu">
                             <div class="w-[225px] py-2">
-                                <div tds-dropdown-item *ngFor="let item of lstTime" (click)="setType(item, 'SORT')" 
+                                <div tds-dropdown-item *ngFor="let item of lstTime" (click)="setType(item, 'SORT')"
                                     class="w-full flex justify-between items-center">
                                     {{item.text}}
                                     <span class="tdsi-success-fill text-success-500"
@@ -59,10 +59,12 @@
                 </div>
             </div>
             <div class="h-full flex flex-col gap-y-1 overflow-y-auto no-scrollbar p-1">
-                <ng-container *ngFor="let item of (data$ | async); let i=index">
-                    <div *ngIf="item"
-                        class="pl-2.5 pr-[14px] py-[14px] flex gap-x-4 {{ currentPost?.fbid == item.fbid ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}"
-                        (click)="selectPost(item)">
+              <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="myScroll" is-lock="true"
+                yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event, nextPage)">
+
+                <ng-container *ngFor="let item of ((data$ | async) || []) | orderBy:'LastActivityTimeConverted'; let i=index;trackBy: trackByIndex">
+                    <div *ngIf="item" (click)="selectPost(item)" class="pl-2.5 pr-[14px] py-[14px] flex gap-x-4
+                        {{ currentPost?.fbid == item.fbid ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}">
                         <div class="flex flex-col gap-y-3">
                             <div class="relative w-[120px] h-[88px]">
                                 <div *ngIf="item.picture; else noPicture" class="relative">
@@ -186,7 +188,7 @@
                                                     <img src="assets/imagesv2/errorPic.svg" alt=""
                                                         class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
                                                 </ng-template>
-                                            </ng-template>                                          
+                                            </ng-template>
                                         </div>
                                         <div class="flex items-center w-full">
                                             <div class="flex items-center gap-x-2 text-neutral-1-400">
@@ -255,6 +257,7 @@
                 </ng-container>
 
                 <div class="bg-white flex-auto"></div>
+              </div>
             </div>
         </div>
         <!--Chọn bài viết để hiển thị chi tiết-->
@@ -291,8 +294,8 @@
                         </div>
                     </ng-template>
                     <div>
-                        <conversation-partner [team]="currentTeam" [type]="type">
-                        </conversation-partner>
+                        <!-- <conversation-partner [team]="currentTeam" [type]="type">
+                        </conversation-partner> -->
                     </div>
                 </tds-tab>
                 <!-- tab đơn hàng -->
@@ -304,7 +307,7 @@
                         </div>
                     </ng-template>
                     <div>
-                        <post-order [team]="currentTeam"></post-order>
+                        <!-- <post-order [team]="currentTeam"></post-order> -->
                     </div>
                 </tds-tab>
             </tds-tabset>
