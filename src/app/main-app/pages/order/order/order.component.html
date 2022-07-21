@@ -32,14 +32,13 @@
     <div class="bg-white w-full h-full rounded-md border border-neutral-200 flex flex-col">
       <div class="flex flex-row items-center justify-between w-full">
         <div class="flex flex-auto justify-between items-center pr-2" *ngIf="getCheckedRow == 0">
-          <tds-spin [spinning]="isTabNavs" delay="350">
-              <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
-                  <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
-                      <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
-                      </tds-filter-status-item>
-                  </ng-template>
-              </tds-filter-status>
-          </tds-spin>
+          
+          <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)" [disabled]="isTabNavs">
+            <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
+                <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
+                </tds-filter-status-item>
+            </ng-template>
+          </tds-filter-status>
 
           <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId]
             (onRefreshData)="refreshDataCurrent()"></action-dropdown>
@@ -75,7 +74,10 @@
         <!-- TODO: Thao tác -->
         <div class="flex items-center gap-x-2 pr-4">
           <tds-form-field class="w-full">
-              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" #filterText/>
+              <input tdsInput placeholder="Tìm kiếm" autocomplete="off"
+                [(ngModel)]="filterObj.searchText" 
+                [tdsInputDebounce]="750" 
+                (inputKeyup)="onSearch($event)"/>
               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
           </tds-form-field>
 
