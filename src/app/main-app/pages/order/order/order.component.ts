@@ -44,8 +44,6 @@ import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/
 
 export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild('filterText') filterText!:ElementRef;
-
   lstOfData!: ODataSaleOnline_OrderModel[];
   pageSize = 20;
   pageIndex = 1;
@@ -461,7 +459,6 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
           this.filterObj.dateRange.endDate = new Date(dataObj.filterObj.dateRange.endDate);
           this.pageIndex = dataObj.pageIndex;
           this.pageSize = dataObj.pageSize;
-          this.filterText.nativeElement.value = this.filterObj.searchText;
         }
       }else{
         this.pageSize = params.pageSize;
@@ -474,7 +471,6 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   refreshData() {
     this.pageIndex = 1;
     this.indClickTag = "";
-    this.filterText.nativeElement.value = '';
     this.checked = false;
     this.indeterminate = false;
     this.setOfCheckedId = new Set<string>();
@@ -507,7 +503,6 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tabIndex = 1;
     this.pageIndex = 1;
 
-    this.filterText.nativeElement.value = this.filterObj.searchText;
     this.filterObj.tags = event.tags;
     this.filterObj.status = event.status;
 

@@ -213,9 +213,9 @@
   <div class="w-full flex justify-between p-4 items-center" *tdsModalFooter>
     <div class="flex justify-between gap-x-2">
       <tds-checkbox [(ngModel)]="isPrint" [ngModelOptions]="{standalone: true}"
-        (ngModelChange)="changePrint('isPrint')">In phiếu</tds-checkbox>
+        (ngModelChange)="changePrint('isPrint',$event)">In phiếu</tds-checkbox>
       <tds-checkbox [(ngModel)]="isPrintShip" [ngModelOptions]="{standalone: true}"
-        (ngModelChange)="changePrint('isPrintShip')">In phiếu ship</tds-checkbox>
+        (ngModelChange)="changePrint('isPrintShip',$event)">In phiếu ship</tds-checkbox>
     </div>
     <div class="flex justify-between gap-x-2">
       <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>

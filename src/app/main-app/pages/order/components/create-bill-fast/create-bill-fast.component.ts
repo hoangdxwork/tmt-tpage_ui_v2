@@ -70,6 +70,9 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
   loadCarrier() {
     this.carrierService.get().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       this.lstCarriers = [...res.value];
+    },
+    err=>{
+      this.message.error(err?.error?.message || Message.CanNotLoadData);
     });
   }
 
@@ -124,35 +127,6 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSave(confirm?: string) {
-    if(this.isLoading){
-      return
-    }
-
-    if(!this.lstData || this.lstData.length === 0) {
-      this.message.error(Message.EmptyData);
-      return;
-    }
-
-    this.isLoading = true;
-    let model = {
-      is_approve: TDSHelperString.hasValueString(confirm) ? true : false,
-      model: this.lstData
-    };
-
-    this.fastSaleOrderService.insertListOrderModel(model).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{ this.isLoading = false; }))
-    .subscribe(res => {
-      if (!res.Error) {
-        this.message.success(Message.Bill.InsertSuccess);
-
-        this.printSave(res);
-      }
-      else {
-        this.onModalError(res.DataErrorFast);
-      }
-    });
-  }
-
   onModalError(error: TDSSafeAny[]) {
     const modal = this.modal.create({
       content: CreateBillFastErrorComponent,
@@ -163,36 +137,12 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
         lstError: error
       }
     });
-  }
 
-  printSave(data: TDSSafeAny) {
-    if (TDSHelperObject.hasValue(data) && data.Ids) {
-      let obs: TDSSafeAny;
-      if(this.isPrint == true) {
-        // TODO: in
-        obs = this.printerService.printUrl(`fastsaleorder/print?ids=${data.Ids}`);
+    modal.afterClose.subscribe(result => {
+      if(result){
+        this.modalRef.destroy(null);
       }
-      else if(this.isPrintShip == true) {
-        // TODO: in
-        obs = this.printerService.printIP(`odata/fastsaleorder/OdataService.PrintShip`, {
-          ids: data.Ids,
-        })
-      }
-      else {
-        this.onCancel();
-      }
-
-      if (TDSHelperObject.hasValue(obs)) {
-        obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-            this.printerService.printHtml(res);
-            this.onCancel();
-        }, (error: TDSSafeAny) => {
-          if(error?.error?.message) {
-            this.message.error(error?.error?.message);
-          }
-        });
-      }
-    }
+    })
   }
 
   changeCarrierAll() {
@@ -293,13 +243,75 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
     this.modalRef.destroy(null);
   }
 
-  changePrint(str: string) {
-    if(str == 'isPrint') {
-      this.isPrintShip = false;
+  changePrint(str: string, active:boolean) {
+    switch(str){
+      case 'isPrint': 
+        this.isPrint = active;
+        this.isPrintShip = false;
+        break;
+      case 'isPrintShip':
+        this.isPrintShip = active;
+        this.isPrint = false;
     }
-    else if(str == 'isPrintShip') {
-      this.isPrint = false;
+  }
+
+  printSave(data: TDSSafeAny) {
+    if (TDSHelperObject.hasValue(data) && data.Ids) {
+      let obs: TDSSafeAny;
+      if(this.isPrint == true) {
+        obs = this.printerService.printUrl(`fastsaleorder/print?ids=${data.Ids}`);
+      }
+      else if(this.isPrintShip == true) {
+        obs = this.printerService.printIP(`odata/fastsaleorder/OdataService.PrintShip`, {
+          ids: data.Ids,
+        })
+      }
+      else {
+        this.onCancel();
+      }
+
+      if (TDSHelperObject.hasValue(obs)) {
+        obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+            this.printerService.printHtml(res);
+            this.onCancel();
+        }, (error: TDSSafeAny) => {
+          if(error?.error?.message) {
+            this.message.error(error?.error?.message);
+          }
+        });
+      }
     }
+  }
+
+  onSave(confirm?: string) {
+    if(this.isLoading){
+      return
+    }
+
+    if(!this.lstData || this.lstData.length === 0) {
+      this.message.error(Message.EmptyData);
+      return;
+    }
+
+    this.isLoading = true;
+    let model = {
+      is_approve: TDSHelperString.hasValueString(confirm) ? true : false,
+      model: this.lstData
+    };
+    
+    this.fastSaleOrderService.insertListOrderModel(model).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{ this.isLoading = false; }))
+    .subscribe(res => {
+      if (!res.Error) {
+        this.message.success(Message.Bill.InsertSuccess);
+        this.printSave(res);
+        this.modalRef.destroy(null);
+      }
+      else {
+        this.onModalError(res.DataErrorFast);
+      }
+    },err=>{
+      this.message.error(err?.error?.message || Message.InsertFail);
+    });
   }
 
   ngOnDestroy(): void {

@@ -5,7 +5,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
-import { TDSSafeAny, TDSHelperArray, TDSHelperObject } from 'tds-ui/shared/utility';
+import { TDSSafeAny, TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 
 @Component({
   selector: 'app-create-bill-fast-error',
@@ -21,7 +21,8 @@ export class CreateBillFastErrorComponent implements OnInit, OnDestroy {
   checkedAll = false;
   indeterminate = false;
   isLoading = false;
-  printType = '';
+  isPrint = false;
+  isPrintShip = false;
 
   private destroy$ = new Subject<void>();
 
@@ -34,17 +35,17 @@ export class CreateBillFastErrorComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.lstError.forEach((item)=>{
-      this.lstErrorSelected.push({isSelected: false, error: item});
+    this.lstError.forEach((item) => {
+      this.lstErrorSelected.push({ isSelected: false, error: item });
     });
     this.cdr.markForCheck();
   }
 
-  changeAll(checked: TDSSafeAny){
-    this.lstErrorSelected.map((item)=>{
+  changeAll(checked: TDSSafeAny) {
+    this.lstErrorSelected.map((item) => {
       item.isSelected = checked;
     });
-    
+
     this.checkAllStatus();
   }
 
@@ -53,54 +54,60 @@ export class CreateBillFastErrorComponent implements OnInit, OnDestroy {
     this.checkAllStatus();
   }
 
-  checkAllStatus(){
+  checkAllStatus() {
     let countChecked = 0;
 
-    this.lstErrorSelected.forEach((item)=>{
-      if(item.isSelected){
+    this.lstErrorSelected.forEach((item) => {
+      if (item.isSelected) {
         countChecked += 1;
       }
     })
 
-    if(countChecked == this.lstErrorSelected.length){
+    if (countChecked == this.lstErrorSelected.length) {
       this.checkedAll = true;
       this.indeterminate = false;
-    }else{
-      if(countChecked == 0){
+    } else {
+      if (countChecked == 0) {
         this.checkedAll = false;
         this.indeterminate = false;
-      }else{
+      } else {
         this.indeterminate = true;
       }
     }
-  
+
     this.cdr.detectChanges();
   }
 
-  changePrintType(type:string){
-    this.printType = type;
+  changePrint(str: string, active: boolean) {
+    switch (str) {
+      case 'isPrint':
+        this.isPrint = active;
+        this.isPrintShip = false;
+        break;
+      case 'isPrintShip':
+        this.isPrintShip = active;
+        this.isPrint = false;
+    }
   }
 
-  print(type:string, data:TDSSafeAny){
+  print(data: TDSSafeAny) {
     let obs: TDSSafeAny;
-    
-    switch(type){
-      case 'print': 
-        obs = this.printerService.printUrl(`fastsaleorder/print?ids=${data.Ids}`);
-        break;
-      case 'printShip':
-        obs = this.printerService.printIP(`odata/fastsaleorder/OdataService.PrintShip`, {
-          ids: data.Ids,
-        });
-        break;
+
+    if (this.isPrint == true) {
+      obs = this.printerService.printUrl(`fastsaleorder/print?ids=${data.Ids}`);
     }
-    
+
+    if (this.isPrintShip == true) {
+      obs = this.printerService.printIP(`odata/fastsaleorder/OdataService.PrintShip`, {
+        ids: data.Ids,
+      });
+    }
+
     if (TDSHelperObject.hasValue(obs)) {
       obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-          this.printerService.printHtml(res);
-          
+        this.printerService.printHtml(res);
       }, (error: TDSSafeAny) => {
-        if(error?.error?.message) {
+        if (error?.error?.message) {
           this.message.error(error?.error?.message);
         }
       });
@@ -112,18 +119,18 @@ export class CreateBillFastErrorComponent implements OnInit, OnDestroy {
   }
 
   onSave() {
-    let lstInsertOrder:any[] = [];
-    let lstChecked:number[] = [];
+    let lstInsertOrder: any[] = [];
+    let lstChecked: number[] = [];
 
-    this.lstErrorSelected.forEach((item,i)=>{
-      if(item.isSelected){
+    this.lstErrorSelected.forEach((item, i) => {
+      if (item.isSelected) {
         //TODO: lấy danh sách đơn hàng cần thêm
         lstInsertOrder.push(this.lstOrder[i]);
         lstChecked.push(i);
       }
     });
 
-    if(lstChecked.length == 0){
+    if (lstChecked.length == 0) {
       this.message.error(Message.EmptyData);
       return;
     }
@@ -131,8 +138,8 @@ export class CreateBillFastErrorComponent implements OnInit, OnDestroy {
     this.isLoading = true;
 
     //TODO: check danh sách lỗi và đơn hàng còn lại chưa được chọn
-    this.lstErrorSelected = this.lstErrorSelected.filter((f,i)=> !lstChecked.includes(i));
-    this.lstOrder = this.lstOrder.filter((f,i)=> !lstChecked.includes(i));
+    this.lstErrorSelected = this.lstErrorSelected.filter((f, i) => !lstChecked.includes(i));
+    this.lstOrder = this.lstOrder.filter((f, i) => !lstChecked.includes(i));
     this.checkAllStatus();
 
     let model = {
@@ -140,20 +147,23 @@ export class CreateBillFastErrorComponent implements OnInit, OnDestroy {
       model: lstInsertOrder,
     };
 
-    this.fastSaleOrderService.insertListOrderModel(model, true).subscribe(res =>{
-      if(res.Success){
+    this.fastSaleOrderService.insertListOrderModel(model, true).pipe(takeUntil(this.destroy$)).subscribe(res => {
+      if (res.Success) {
         this.message.success(Message.Bill.InsertSuccess);
-      }else{
+      } else {
         this.message.error(res.Error);
       }
 
       this.isLoading = false;
       
-      this.print(this.printType, res);
-      this.printType = '';
+      if (TDSHelperArray.hasListValue(res)) {
+        this.print(res);
+        this.isPrint = false;
+        this.isPrintShip = false;
+      }
 
-      if(!TDSHelperArray.hasListValue(this.lstOrder)){
-        this.modalRef.destroy(null);
+      if (!TDSHelperArray.hasListValue(this.lstOrder)) {
+        this.modalRef.destroy(true);
       }
       this.cdr.markForCheck();
     }, error => {

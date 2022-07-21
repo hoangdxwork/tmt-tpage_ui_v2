@@ -40,8 +40,6 @@ import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 
 export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @ViewChild('innerText') innerText!: ElementRef;
-
   lstOfData: Array<PartnerDTO> = [];
   pageSize = 20;
   pageIndex = 1;
@@ -213,7 +211,6 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.pageIndex = 1;
     this.indClickTag = -1;
     this.tabIndex = 1;
-    this.innerText.nativeElement.value = '';
 
     this.checked = false;
     this.indeterminate = false;

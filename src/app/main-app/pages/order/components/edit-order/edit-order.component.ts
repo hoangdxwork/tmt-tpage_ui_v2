@@ -265,6 +265,9 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
   loadSaleConfig() {
     this.generalConfigsFacade.getSaleConfigs().subscribe(res => {
       this.saleConfig = res;
+    },
+    err=>{
+      this.message.error(err?.error?.message || Message.CanNotLoadData);
     });
   }
 
@@ -443,7 +446,22 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
           if(data) {
               this.lstComment = data.filter((x: any) => x.message != '');
           }
+    },
+    err=>{
+      this.message.error(err?.error?.message || Message.ErrorOccurred);
     });
+  }
+
+  addComment(comment:string){
+    if(this.quickOrderModel.Note?.includes(comment)){
+      this.quickOrderModel.Note = this.quickOrderModel.Note.replace(comment,'');
+    }else{
+      if(this.quickOrderModel.Note){
+        this.quickOrderModel.Note = this.quickOrderModel.Note.concat(comment);
+      }else{
+        this.quickOrderModel.Note = comment;
+      }
+    }
   }
 
   onChangePrice(value: number, index: number) {
@@ -651,12 +669,18 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
             this.loadInventoryWarehouseId(this.userInit?.Company?.Id);
         }
        }
+    },
+    err=>{
+      this.message.error(err?.error?.message || Message.CanNotLoadData);
     })
   }
 
   loadInventoryWarehouseId(warehouseId: number) {
     this.productService.getInventoryWarehouseId(warehouseId).pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.lstInventory = res;
+    },
+    err=>{
+      this.message.error(err?.error?.message || Message.CanNotLoadData);
     });
   }
 
@@ -676,12 +700,18 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
   loadUser() {
     this.applicationUserService.getActive().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.lstUser = [...res.value];
+    },
+    err=>{
+      this.message.error(err?.error?.message || Message.CanNotLoadData);
     });
   }
 
   loadPartnerStatus() {
     this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.lstPartnerStatus = res;
+    },
+    err=>{
+      this.message.error(err?.error?.message || Message.CanNotLoadData);
     });
   }
 
@@ -846,5 +876,4 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
 }

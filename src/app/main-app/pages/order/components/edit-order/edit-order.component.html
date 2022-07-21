@@ -112,14 +112,14 @@
                               </div>
                             </ng-template>
 
-                            <div *ngIf="lstComment" style="margin:0;" class="overflow-auto tds-panel-scroll flex flex-col divide-neutral-2-200 divide-y max-h-60 pt-4">
-                              <div *ngFor="let comment of lstComment; let index = index" class="mr-2 ml-4 flex justify-between items-center">
-                                <div class="py-3 flex justify-between gap-x-4"
-                                  [ngStyle]="{'padding-top': !index ? '0px' : ''}">
-                                  <span>
-                                    {{comment.message}}<span class="text-info-400 ml-2">{{ comment.created_time | date: "dd/MM/yyyy hh:mm:ss" }}</span>
-                                  </span>
-                                </div>
+                            <div *ngIf="lstComment" style="margin:0;" class="overflow-auto tds-panel-scroll flex flex-col max-h-60 py-2">
+                              <div *ngFor="let comment of lstComment; let index = index" 
+                                [ngClass]="quickOrderModel.Note?.includes(comment.message) ? 'bg-neutral-3-50':''"
+                                class="p-3 border-b border-neutral-2-200 flex justify-between w-full cursor-pointer hover:bg-neutral-3-50"
+                                (click)="addComment(comment.message)">
+                                <span>
+                                  {{comment.message}}<span class="text-info-400 ml-2">{{ comment.created_time | date: "dd/MM/yyyy hh:mm:ss" }}</span>
+                                </span>
                                 <span *ngIf="quickOrderModel.Note?.includes(comment.message)" class="tdsi-success-fill text-primary-1"></span>
                               </div>
                             </div>
