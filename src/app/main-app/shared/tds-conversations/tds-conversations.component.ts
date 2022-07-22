@@ -16,7 +16,7 @@ import { ConversationMatchingItem, StateChatbot } from '../../dto/conversation-a
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
 import { finalize, takeUntil, tap } from 'rxjs/operators';
-import { MakeActivityItemWebHook, MakeActivityMessagesDTO } from '../../dto/conversation/make-activity.dto';
+import { ExtrasPostItem, MakeActivityItemWebHook, MakeActivityMessagesDTO } from '../../dto/conversation/make-activity.dto';
 import { ApplicationUserService } from '../../services/application-user.service';
 import { ActivityMatchingService } from '../../services/conversation/activity-matching.service';
 import { Router } from '@angular/router';
@@ -786,12 +786,20 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
   }
 
-  openModalPost() {
+  openModalPost(item: ExtrasPostItem) {
+    let data: TDSSafeAny;
+    this.dataSource$.subscribe((res: any) => {
+      data = res.extras.posts[item.object_id];
+    });
     this.modalService.create({
       title: 'Bài viết tổng quan',
       content: ModalPostComponent,
       size: "xl",
+      bodyStyle: { padding : '0px'},
       viewContainerRef: this.viewContainerRef,
+      componentParams:{
+        data: data
+      }
     });
   }
 

@@ -98,8 +98,6 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         this.withLayout = this.ViewChildWithLayout?.nativeElement?.offsetWidth;
         if(this.withLayout < this.withLaptop){
           this.inlineCollapsed = true;
-        }else{
-          this.inlineCollapsed = false;
         }
       });
   }

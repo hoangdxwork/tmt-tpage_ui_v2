@@ -20,6 +20,7 @@
     </div>
     <div *ngIf="currentFilter.value === 'manage'" class="h-full w-full">
       <manage-post-comment
+      [isShowCheckboxComent]="isShowCheckboxComent"
       [checkedAll]="checkedAll"
       (onCheckAll)="onCheckAll($event)"
       (onIndeterminate)="onIndeterminate($event)"

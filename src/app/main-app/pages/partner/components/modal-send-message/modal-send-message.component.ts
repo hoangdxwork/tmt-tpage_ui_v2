@@ -298,10 +298,7 @@ export class ModalSendMessageComponent implements OnInit {
 
   changeTab(ev: TDSSafeAny) {
     this.indexTab = ev.index;
-    this.isTableSendMessageFacebook = false;
-    this.isTableSendMessageSMS = false;
     this.setOfCheckedTag= new Set<string>();
-    this.resetForm();
   }
 
   checkIncludes(ev: TDSSafeAny){
