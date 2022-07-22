@@ -79,9 +79,7 @@
             <div class="post-body flex flex-row justify-between p-4">
                 <div class="flex flex-col justify-between gap-y-3">
                     <div class="w-full flex flex-col gap-y-3">
-                        <p class="text-title-1 font-semibold" *ngIf="data.story">
-                            {{data.story}}
-                        </p>
+                        <p class="text-title-1 font-semibold" *ngIf="data.story"> {{data.story}} </p>
                         <div [innerHTML]="data.message | safeHtml"></div>
                         <p *ngIf="!data.message && !data.story" class="italic text-neutral-1-900 text-caption-1">(Chưa có nội dung tiêu đề)</p>
                         <!-- <p class="description" *ngIf="data.description">{{data.description}}</p> -->
@@ -109,10 +107,11 @@
                 </div>
             </div>
             <div class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 px-4 gap-x-2">
-                <container-element [ngSwitch]="indClickFilter">
+                <container-element [ngSwitch]="indClickFilter" class="w-full">
+
                     <!-- lọc tất cả bình luận -->
-                    <ng-container *ngSwitchCase="0">
-                        <div class="emotion-count flex flex-row items-center flex-auto justify-between">
+                    <ng-container *ngSwitchCase="0" class="w-full">
+                        <div class="emotion-count flex flex-row items-center flex-auto justify-between w-full">
                             <div class="flex gap-x-2">
                                 <div class="flex flex-row">
                                     <img src="../../../assets/imagesv2/conversation/like-circle.svg" width="20px" height="20px"
@@ -120,22 +119,17 @@
                                     <img src="../../../assets/imagesv2/conversation/love-circle.svg" width="20px" height="20px"
                                         class="rounded-full z-40 -ml-2">
                                 </div>
-                                <span>
-                                    {{data.count_reactions || 0}}
-                                </span>
+                                <span> {{data.count_reactions || 0}} </span>
                             </div>
                             <div class="flex gap-x-3">
-                                <span class="comment-count">
-                                    {{data.count_comments || 0}} bình luận
-                                </span>
-                                <span class="share-count  mr-3">
-                                    {{data.count_shares || 0}} lượt chia sẻ
-                                </span>
+                                <span class="comment-count"> {{data.count_comments || 0}} bình luận </span>
+                                <span class="share-count  mr-3"> {{data.count_shares || 0}} lượt chia sẻ </span>
                             </div>
                         </div>
                     </ng-container>
+
                     <!-- lọc người dùng -->
-                    <ng-container *ngSwitchCase="1">
+                    <ng-container *ngSwitchCase="1" class="w-full">
                         <button *ngIf="!isShowFilterUser; else showFilterUser" tds-button size="sm" color="primary" rounded="!rounded-full" (click)="onShowFilterUser()">
                             <span class="flex items-center text-caption-1">
                               <i class="tdsi-success-line text-[20px] leading-none mr-2"></i>Thao tác
@@ -162,8 +156,9 @@
                             </div>
                         </ng-template>
                     </ng-container>
+
                     <!-- quản lý bình luận -->
-                    <ng-container *ngSwitchCase="2">
+                    <ng-container *ngSwitchCase="2" class="w-full">
                         <div class="flex gap-x-3 items-center">
                             <tds-checkbox class="pr-2" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
                             <button tds-button color="primary" size="sm">
@@ -183,7 +178,8 @@
                             </button>
                         </div>
                     </ng-container>
-                    <ng-container *ngSwitchCase="3">
+
+                    <ng-container *ngSwitchCase="3" class="w-full">
                         <div class="flex w-full gap-x-3" >
                             <tds-form-field class="w-[350px]">
                                 <span tdsPrefix><i class="tdsi-search-fill"></i></span>
@@ -223,7 +219,8 @@
     </div>
     <!-- Danh sách bình luận -->
     <div class="flex w-full flex-auto overflow-hidden">
-        <item-post-comment [post]="data"
+        <item-post-comment
+            [post]="data"
             [sort]="currentSort"
             [filter]="currentFilter"
             [isShowFilterUser]="isShowFilterUser"
@@ -232,7 +229,7 @@
             (onOuputIndeterminate)="onIndeterminate($event)"
             [currentFilterComment]="currentFilterComment"
             [textSearchFilterComment]="textSearchFilterComment"
-          class="h-full w-full">
+            class="h-full w-full">
         </item-post-comment>
     </div>
 </div>

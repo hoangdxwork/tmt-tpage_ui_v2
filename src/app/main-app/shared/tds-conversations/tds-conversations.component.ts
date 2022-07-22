@@ -966,7 +966,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   //         from: {
   //           id : this.data.psid
   //         }
-  //       } 
+  //       }
   //     }
   //     this.sgRConnectionService._onFacebookEvent$.emit(data);
   // }

@@ -1,35 +1,40 @@
 import { TDSMessageService } from 'tds-ui/message';
 import { CommonService } from 'src/app/main-app/services/common.service';
-import { Component, OnChanges, OnDestroy, OnInit, Optional, Host, SkipSelf, Input, SimpleChanges, Output, EventEmitter } from '@angular/core';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Component, OnChanges, OnDestroy, OnInit, Optional, Host, SkipSelf, Input, SimpleChanges, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Observable, Subject, Subscription, takeUntil } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
 import { CommentByPost } from 'src/app/main-app/dto/conversation/post/comment-post.dto';
 import { ItemPostCommentComponent } from '../../conversation-post/item-post-comment.component';
-import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
+import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
+import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
 
 @Component({
-  selector: 'post-comment-user',
-  templateUrl: './post-comment-user.component.html',
+  selector: 'post-comment-group',
+  templateUrl: './post-comment-group.component.html',
+  animations: [eventFadeStateTrigger],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class PostCommentUserComponent implements OnInit, OnDestroy, OnChanges {
+export class PostCommentGroupComponent implements  OnDestroy, OnChanges {
 
+  @Input() postId!: string;
+  @Input() data: any = { Items: []};
+  @Input() team!: CRMTeamDTO | null;
+  @Input() commentOrders!: any[];
+  @Input() childs: any;
   @Input() isShowFilterUser!: boolean;
   @Input() checkedAll!: boolean;
+  @Input() setOfCheckedId = new Set<string>();
 
   @Output() onCheckAll = new EventEmitter<boolean>();
   @Output() onIndeterminate = new EventEmitter<boolean>();
   @Output() onSetOfCheckedId = new EventEmitter<Set<string>>();
 
-  setOfCheckedId = new Set<string>();
   indeterminate!: boolean;
 
-  team!: CRMTeamDTO | null;
-  data: any = { Items: []};
-  childs: any = {};
-  commentOrders: any = [];
   currentGroup: any;
   otherSelecteds: any = [];
   partners$!: Observable<any>;
@@ -37,27 +42,15 @@ export class PostCommentUserComponent implements OnInit, OnDestroy, OnChanges {
 
   destroy$ = new Subject<void>();
   messageModel!: string;
+  isLoading: boolean = false;
 
   constructor(private conversationPostFacade: ConversationPostFacade,
     private commonService: CommonService,
-    private message: TDSMessageService,
-    @Host() @Optional() @SkipSelf() public itemPostCommentCmp: ItemPostCommentComponent) {
+    private facebookCommentService: FacebookCommentService,
+    private cdRef: ChangeDetectorRef,
+    private message: TDSMessageService) {
   }
 
-  initialize() {
-    if(TDSHelperObject.hasValue(this.itemPostCommentCmp?.data)) {
-      this.data = {...this.itemPostCommentCmp.data};
-      this.commentOrders = {...this.itemPostCommentCmp.commentOrders};
-      this.team = {...this.itemPostCommentCmp.team} as CRMTeamDTO | null;
-      this.childs = {...this.itemPostCommentCmp.childs};
-      this.partners$ = this.itemPostCommentCmp.partners$;
-      this.setOfCheckedId = this.itemPostCommentCmp.setOfCheckedId;
-    }
-  }
-
-  ngOnInit() {
-    this.initialize();
-  }
   loadPartnerStatus() {
     this.commonService.getPartnerStatus().subscribe(res => {
       this.lstPartnerStatus = [...res];
@@ -144,6 +137,38 @@ export class PostCommentUserComponent implements OnInit, OnDestroy, OnChanges {
     this.onCheckAll.emit(this.checkedAll);
     this.onIndeterminate.emit(this.indeterminate);
     this.onSetOfCheckedId.emit(this.setOfCheckedId);
+  }
+
+  nextData(event: any) {
+    if(this.isLoading) {
+      return;
+    }
+
+    if(this.data && this.data.HasNextPage && TDSHelperString.hasValueString(this.data.NextPage)) {
+      let postId = this.postId;
+      this.isLoading = true;
+
+      this.facebookCommentService.getCommentsByQuery(this.data.NextPage, postId)
+        .pipe(takeUntil(this.destroy$)).subscribe((res: any)=> {
+
+          if(res) {
+              res.Items = [...this.data.Items, ...res.Items];
+              this.data = res;
+
+              this.isLoading = false;
+              this.cdRef.detectChanges();
+          }
+
+      }, error => {
+          this.isLoading = false;
+          this.message.error(`${error.error?.message}`)
+      });
+    }
+  }
+
+
+  trackByIndex(i: any) {
+    return i;
   }
 
   ngOnChanges(changes: SimpleChanges) {

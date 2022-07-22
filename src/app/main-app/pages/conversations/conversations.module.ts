@@ -51,7 +51,7 @@ import { PostOrderComponent } from './components/post-order/post-order.component
 import { ConfigPostOutletComponent } from './components/config-post/config-post-outlet.component';
 import { ConversationAllFilterComponent } from './components/conversation-all-filter/conversation-all-filter.component';
 import { PostCommentAllComponent } from './components/post-filter/post-comment-all.component';
-import { PostCommentUserComponent } from './components/post-filter/post-comment-user.component';
+import { PostCommentGroupComponent } from './components/post-filter/post-comment-group.component';
 import { PostCommentFilterComponent } from './components/post-filter/post-comment-filter.component';
 import { ConversationOrderListComponent } from './components/conversation-order-list/conversation-order-list.component';
 import { OdataSaleOnline_OrderService } from '../../services/mock-odata/odata-saleonlineorder.service';
@@ -171,7 +171,7 @@ const SERVICES = [
     ItemPostCommentComponent,
     ModalListBlockComponent,
     PostCommentAllComponent,
-    PostCommentUserComponent,
+    PostCommentGroupComponent,
     PostCommentFilterComponent,
     ManagePostCommentComponent,
     PostOrderComponent,

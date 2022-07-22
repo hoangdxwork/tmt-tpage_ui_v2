@@ -324,7 +324,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
         this.data = res;
         this.childs = res.Extras['childs'] || {};
         this.isLoading = false;
-        
+
         this.cdRef.detectChanges();
     }, error => {
       this.message.error(`${error?.error?.message}` || 'Load comment bài viết đã xảy ra lỗi');
