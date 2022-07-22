@@ -62,7 +62,7 @@
               <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="myScroll" is-lock="true"
                 yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event, nextPage)">
 
-                <ng-container *ngFor="let item of ((data$ | async) || []) | orderBy:'LastActivityTimeConverted'; let i=index;trackBy: trackByIndex">
+                <ng-container *ngFor="let item of ((data$ | async) || []) | orderBy:'LastActivityTimeConverted'; let i=index; trackBy: trackByIndex">
                     <div *ngIf="item" (click)="selectPost(item)" class="pl-2.5 pr-[14px] py-[14px] flex gap-x-4
                         {{ currentPost?.fbid == item.fbid ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}">
                         <div class="flex flex-col gap-y-3">
@@ -78,11 +78,11 @@
                                 </div>
                                 <ng-template #noPicture>
                                     <div *ngIf="!item.picture; else errorPicture">
-                                        <img src="assets/imagesv2/conversation-post-img.svg" alt=""
+                                        <img src="../../../assets/imagesv2/conversation-post-img.svg" alt=""
                                             class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 {{currentPost?.fbid == item.fbid ?'bg-neutral-3-100' :'bg-neutral-3-50'}}">
                                     </div>
                                     <ng-template #errorPicture>
-                                        <img src="assets/imagesv2/errorPic.svg" alt=""
+                                        <img src="../../../assets/imagesv2/errorPic.svg" alt=""
                                             class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md p-4 bg-neutral-3-50">
                                     </ng-template>
                                 </ng-template>

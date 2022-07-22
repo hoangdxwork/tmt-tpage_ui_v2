@@ -1,113 +1,77 @@
 import { finalize } from 'rxjs/operators';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
-import { Message } from 'src/app/lib/consts/message.const';
-import { FacebookMappingPostDTO } from 'src/app/main-app/dto/conversation/post/post.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { TdsSwitchChange } from 'tds-ui/switch';
+import { Subject, takeUntil } from 'rxjs';
+import { GetAllFacebookPostDTO } from 'src/app/main-app/dto/live-campaign/getall-facebook-post.dto';
+import { ODataLiveCampaignDetailDTO } from 'src/app/main-app/dto/live-campaign/odata-livecampaign-detail.dto';
 
 @Component({
   selector: 'expand-live-campaign',
   templateUrl: './expand-live-campaign.component.html'
 })
-export class ExpandLiveCampaignComponent implements OnInit {
 
-  @Input() liveCampaignId!: string | undefined;
+export class ExpandLiveCampaignComponent implements OnInit, OnDestroy {
+
+  @Input() liveCampaignId!: string;
 
   isLoading: boolean = false;
-  data!: any;
+  liveCampaigns!: ODataLiveCampaignDetailDTO;
+  facebookPosts!: GetAllFacebookPostDTO[];
 
-  lstPost: FacebookMappingPostDTO[] = [];
+  private destroy$ = new Subject<void>();
 
-  listOfData = [
-    {
-      id: 1,
-      name: 'John Brown',
-      age: 32,
-      expand: false,
-      address: 'New York No. 1 Lake Park',
-      description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.'
-    },
-    {
-      id: 2,
-      name: 'Jim Green',
-      age: 42,
-      expand: false,
-      address: 'London No. 1 Lake Park',
-      description: 'My name is Jim Green, I am 42 years old, living in London No. 1 Lake Park.'
-    },
-    {
-      id: 3,
-      name: 'Joe Black',
-      age: 32,
-      expand: false,
-      address: 'Sidney No. 1 Lake Park',
-      description: 'My name is Joe Black, I am 32 years old, living in Sidney No. 1 Lake Park.'
-    },
-    {
-      id: 4,
-      name: 'John Brown',
-      age: 32,
-      expand: false,
-      address: 'New York No. 1 Lake Park',
-      description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.'
-    },
-    {
-      id: 5,
-      name: 'Jim Green',
-      age: 42,
-      expand: false,
-      address: 'London No. 1 Lake Park',
-      description: 'My name is Jim Green, I am 42 years old, living in London No. 1 Lake Park.'
-    },
-    {
-      id: 6,
-      name: 'Joe Black',
-      age: 32,
-      expand: false,
-      address: 'Sidney No. 1 Lake Park',
-      description: 'My name is Joe Black, I am 32 years old, living in Sidney No. 1 Lake Park.'
-    },
-  ];
-
-  constructor(
-    private message: TDSMessageService,
-    private liveCampaignService: LiveCampaignService
-  ) { }
+  constructor(private message: TDSMessageService,
+    private liveCampaignService: LiveCampaignService ) { }
 
   ngOnInit(): void {
     this.loadLiveCampaign(this.liveCampaignId);
     this.loadFacebookPost(this.liveCampaignId);
   }
 
-  loadLiveCampaign(id: string | undefined) {
+  loadLiveCampaign(id: string) {
     this.isLoading = true;
-    this.liveCampaignService.getDetailById(id)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.data = res;
-      });
-  }
-
-  loadFacebookPost(id: string | undefined) {
-    this.isLoading = true;
-    this.liveCampaignService.getAllFacebookPost(id)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        this.lstPost = res;
-      });
-  }
-
-  onChangeActive(event: TdsSwitchChange, data: any) {
-    this.isLoading = true;
-    this.liveCampaignService.updateActiveDetail(data.Id, event.checked)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res => {
-        data.IsActive = event.checked;
-        this.message.success(Message.UpdatedActiveSuccess);
+    this.liveCampaignService.getDetailById(id).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
+          if(res) {
+              delete res['@odata.context'];
+              this.liveCampaigns = { ...res };
+          }
       }, error => {
-        this.message.error(`${error?.error?.message || JSON.stringify(error)}`);
-      });
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+    });
+  }
+
+  loadFacebookPost(id: string) {
+    this.isLoading = true;
+    this.liveCampaignService.getAllFacebookPost(id).pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+      .subscribe(res => {
+          if(res) {
+              this.facebookPosts = [...res];
+          }
+      }, error => {
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+      })
+  }
+
+  onChangeActive(event: TdsSwitchChange, item: any) {
+    if(event) {
+      this.isLoading = true;
+      this.liveCampaignService.updateActiveDetail(item.Id, event.checked)
+        .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
+
+            item.IsActive = event.checked;
+            this.message.success('Thao tác thành công');
+
+        }, error => {
+            this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
+        });
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

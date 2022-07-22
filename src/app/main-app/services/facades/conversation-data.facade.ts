@@ -33,6 +33,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   public lstTeam!: any[];
   private nextPageUrlCurrent!: string;
   isProcessing: boolean = false;
+
   public onUpdateInfoByConversation$ = new EventEmitter<any>();
   public onLoadTdsConversation$ = new EventEmitter<any>();
 

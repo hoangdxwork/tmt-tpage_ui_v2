@@ -6,6 +6,7 @@ import { ConversationFacebookState } from "../facebook-state/conversation-facebo
 import { SignalRConnectionService } from "../signalR/signalR-connection.service";
 import { CRMTeamService } from '../crm-team.service';
 import { TDSMessageService } from "tds-ui/message";
+import { TDSNotificationService } from "tds-ui/notification";
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +22,8 @@ export class ConversationEventFacade extends BaseSevice implements OnDestroy {
 
   constructor(private apiService: TCommonService,
       private cvsFbState: ConversationFacebookState,
-      private message: TDSMessageService,
       public crmService: CRMTeamService,
+      private notification: TDSNotificationService,
       private sgRConnectionService: SignalRConnectionService) {
         super(apiService);
 
@@ -34,37 +35,45 @@ export class ConversationEventFacade extends BaseSevice implements OnDestroy {
     this.sgRConnectionService._onSentConversation$.subscribe((res: any) => {
       this.updateSendMessage(res);
     });
+
     // Update mark seen
     this.sgRConnectionService._onReadConversation$.subscribe((data: any) => {
       this.updateMarkSeen(data);
     });
+
     // Send Message With Bill
     this.sgRConnectionService._onSendMessageWithBill$.subscribe(res => {
       this.updateSendMessage(res);
     });
+
     // Update SaleOnline_Order
     this.sgRConnectionService._onSaleOnlineOrder$.subscribe((data: any) => {
       if (data.action == "created" || data.action == "updated") {
-        let currentTeam = this.crmService.getCurrentTeam();
-        // Thông báo cho shop
-        if(data && data.message && data.data && currentTeam && data.data.facebook_PageId == currentTeam.Facebook_PageId) {
-          let message = data.message;
-          if(data.data && data.data.facebook_UserName) {
-            message += `Với khách hàng: ${data.data.facebook_UserName}`;
+
+          let currentTeam = this.crmService.getCurrentTeam();
+
+          // Thông báo cho shop
+          if(data && data.message && data.data && currentTeam && data.data.facebook_PageId == currentTeam.Facebook_PageId) {
+              let message = data.message;
+
+              if(data.data && data.data.facebook_UserName) {
+                  message += `Với khách hàng: ${data.data.facebook_UserName}`;
+              }
+              this.notification.info('Cập nhật đơn hàng', `${message}`, { placement: 'bottomLeft' });
           }
-          this.message.info(message);
-        }
-        this.updateSaleOnlineOrder(data);
+
+          this.updateSaleOnlineOrder(data);
       }
-    });
+    })
 
     // Update FastSaleOrder
     this.sgRConnectionService._onFastSaleOrderEvent$.subscribe((data: any) => {
       if (data.action = "created") {
-        this.message.info(data.message);
+
         this.updateFastSaleOrder(data);
+        this.notification.info('Cập nhật hóa đơn', `${data.message}`, { placement: 'bottomLeft' });
       }
-    });
+    })
   }
 
   getEvent() {

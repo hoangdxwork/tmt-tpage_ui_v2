@@ -10,11 +10,11 @@ import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utili
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 
 @Component({
-  selector: 'post-comment-group',
-  templateUrl: './post-comment-group.component.html',
+  selector: 'post-comment-user',
+  templateUrl: './post-comment-user.component.html',
 })
 
-export class PostCommentGroupComponent implements OnInit, OnDestroy, OnChanges {
+export class PostCommentUserComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() isShowFilterUser!: boolean;
   @Input() checkedAll!: boolean;

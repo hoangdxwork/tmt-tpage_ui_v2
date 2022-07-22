@@ -7,7 +7,7 @@
                     [ngClass]="data.status_type === 'added_video'? 'bg-base-red-500' : 'bg-base-blue-500'" class="text-white mr-1"
                     [size]="36" [shape]="'circle'" [isAvatar]="false">
                 </tds-avatar>
-                <tds-tag 
+                <tds-tag
                     [status]="data.status_type === 'added_video' ? 'bg-base-red-50 text-base-red-600' : 'bg-base-blue-50 text-base-blue-600'"
                     rounded="rounded-full">
                     <span class="flex flex-row items-center py-0.5">
@@ -83,15 +83,14 @@
                             {{data.story}}
                         </p>
                         <div [innerHTML]="data.message | safeHtml"></div>
-                        <p *ngIf="!data.message && !data.story" class="italic text-neutral-1-900 text-caption-1">(Chưa
-                            có nội dung tiêu đề)</p>
+                        <p *ngIf="!data.message && !data.story" class="italic text-neutral-1-900 text-caption-1">(Chưa có nội dung tiêu đề)</p>
                         <!-- <p class="description" *ngIf="data.description">{{data.description}}</p> -->
                     </div>
                     <div *ngIf="data.live_campaign">
                         <tds-tag size="sm" status="bg-base-orange-50 text-base-orange-500" >
                             <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip
-                                [tooltipTitle]="data.live_campaign?.name">
-                                <span class="flex-auto truncate">{{data.live_campaign?.name}}</span>
+                                [tooltipTitle]="data.live_campaign.name">
+                                <span class="flex-auto truncate">{{data.live_campaign.name}}</span>
                                 <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
                             </span>
                         </tds-tag>
@@ -131,7 +130,7 @@
                                 </span>
                                 <span class="share-count  mr-3">
                                     {{data.count_shares || 0}} lượt chia sẻ
-                                </span> 
+                                </span>
                             </div>
                         </div>
                     </ng-container>
@@ -200,9 +199,9 @@
                         </div>
                     </ng-container>
                 </container-element>
-                
-                <div class="flex flex-row items-center gap-3"> 
-                    <!-- filter -->                 
+
+                <div class="flex flex-row items-center gap-3">
+                    <!-- filter -->
                     <div *ngFor="let item of filterOptions; let index = index" (click)="fillterAll(item, index)"
                         [ngClass]="indClickFilter == index ?'bg-primary-3 text-primary-1 border border-primary-1':'border border-transparent'"
                         class="h-[30px] w-[30px] rounded-md cursor-pointer" tds-tooltip [tooltipTitle]="item.text">
@@ -224,16 +223,16 @@
     </div>
     <!-- Danh sách bình luận -->
     <div class="flex w-full flex-auto overflow-hidden">
-        <item-post-comment [post]="data" 
-        [sort]="currentSort" 
-        [filter]="currentFilter"
-        [isShowFilterUser]="isShowFilterUser"
-        [checkedAll]="checked"
-        (onOuputCheckAll)="onCheckAll($event)"
-        (onOuputIndeterminate)="onIndeterminate($event)"
-        [currentFilterComment]="currentFilterComment"
-        [textSearchFilterComment]="textSearchFilterComment"
-        class="h-full w-full">
+        <item-post-comment [post]="data"
+            [sort]="currentSort"
+            [filter]="currentFilter"
+            [isShowFilterUser]="isShowFilterUser"
+            [checkedAll]="checked"
+            (onOuputCheckAll)="onCheckAll($event)"
+            (onOuputIndeterminate)="onIndeterminate($event)"
+            [currentFilterComment]="currentFilterComment"
+            [textSearchFilterComment]="textSearchFilterComment"
+          class="h-full w-full">
         </item-post-comment>
     </div>
 </div>

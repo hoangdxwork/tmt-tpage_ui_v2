@@ -16,7 +16,7 @@ import { CustomerDTO } from 'src/app/main-app/dto/partner/customer.dto';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, map, takeUntil, mergeMap } from 'rxjs/operators';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, startWith, pairwise } from 'rxjs';
 import { StockWarehouseDTO } from 'src/app/main-app/dto/product/warehouse.dto';
 import { AllFacebookChildTO } from 'src/app/main-app/dto/team/all-facebook-child.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -150,6 +150,8 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.lstTeams = this.loadAllFacebookChilds();
     this.lstUser = this.loadUser();
     this.loadPartnerStatus();
+
+
   }
 
   loadPartnerStatus() {
@@ -275,6 +277,13 @@ export class AddBillComponent implements OnInit, OnDestroy {
       Ship_ServiceExtras: this.fb.array([]),
       OrderLines: this.fb.array([])
     });
+
+    // Prevent deprecation notice when using `startWith` since it has not been deprecated
+    // this._form.controls['ShipWeight'].valueChanges.pipe(startWith(null as any), pairwise())
+    //   .subscribe(([prev, next]: [any, any]) => {debugger
+
+    // })
+
   }
 
   loadBill(id: number) {
@@ -353,7 +362,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   loadCacheCopy(data: FastSaleOrder_DefaultDTOV2) {
     let keyCache = this.fastSaleOrderService._keyCacheCopyInvoice as string;
     this.cacheApi.getItem(keyCache).subscribe((obs) => {
-      
+
       if (TDSHelperString.hasValueString(obs)) {
         let cache = JSON.parse(obs['value']) as TDSSafeAny;
         let cacheDB = JSON.parse(cache['value']) as TDSSafeAny;
@@ -390,7 +399,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.cacheApi.getItem(key).subscribe((res) => {
       if (TDSHelperObject.hasValue(res)) {
         let model = JSON.parse(res?.value)?.value;
-        
+
         if(TDSHelperObject.hasValue(model)){
           data.SaleOnlineIds = model.ids;
           // data.Partner = model.partner;
@@ -404,7 +413,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
             data.Warehouse = model.warehouse;
           }
           data.ReceiverName = model.partner.DisplayName;
-  
+
           var orderLines: any = [];
           for (var item of model.orderLines) {
             orderLines.push({
@@ -433,7 +442,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
           if(model.partner){
             this.changePartner(model.partner.Id)
           }
-  
+
           data.OrderLines = orderLines;
         }
         this.pageChange = 'order';
@@ -459,7 +468,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
         this.message.error(error?.error?.message || 'Load bảng giá đã xảy ra lỗi!')
       })
     }
-    
+
     if (TDSHelperArray.hasListValue(data.OrderLines)) {
       data.OrderLines.forEach((x: OrderLineV2) => {
         this.addOrderLines(x);
@@ -470,7 +479,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       let cod = data.AmountTotal + data.DeliveryPrice - data.AmountDeposit;
       data.CashOnDelivery = cod;
     }
-    
+
     this._form.patchValue(data);
   }
 
@@ -1293,6 +1302,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     }
 
     let model = this._form.controls['Carrier'].value;
+
     this.calculateFee(model).then((res: any) => {
       if (res?.Costs) {
         res.Costs.map((x: any) => {

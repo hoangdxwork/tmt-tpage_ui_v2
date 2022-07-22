@@ -18,7 +18,7 @@
                     <tds-dropdown-menu #menu="tdsDropdownMenu">
                         <div class="w-full">
                             <ng-template ngFor let-item [ngForOf]="listFilter">
-                                <div tds-dropdown-item (click)="onClickFieldListAll(item)">
+                                <div tds-dropdown-item (click)="onClickFieldListAll(item)" *ngIf="item.id != 4">
                                     <a class="text-primary-1 flex items-center">
                                         <div class="pl-2 text-neutral-1-900">{{item.name}}</div>
                                     </a>
@@ -226,38 +226,35 @@
           </div>
 
           <ng-template #userLoggedFacebook>
-            <div class="bg-white rounded-xl w-full p-4 flex flex-col gap-y-4">
-              <div class="flex gap-4 items-center bg-neutral-3-500">
-                <div class="relative">
-                    <tds-avatar [size]="'xl'" [tdsSrc]="userFBLogin?.picture?.data.url" [shape]="'circle'">
-                    </tds-avatar>
-                    <span class="absolute bottom-0 right-0">
-                      <span><img src="../../../assets/imagesv2/conversation/facebook-circle.svg"></span>
-                    </span>
+            <div class="bg-white rounded-xl w-full p-4">
+              <div class="bg-neutral-3-500 w-full flex items-center flex-wrap">
+                  <div class="flex items-center w-full">
+                     <div class="relative">
+                        <tds-avatar [size]="'xl'" [tdsSrc]="userFBLogin?.picture?.data.url" [shape]="'circle'"></tds-avatar>
+                        <span class="absolute bottom-0 right-0 w-[24px] h-[24px] block">
+                            <img src="../../../assets/imagesv2/conversation/facebook-circle.svg">
+                        </span>
+                     </div>
+                     <div class="text-title-1 font-sans font-semibold ml-4">{{userFBLogin?.name}}</div>
                   </div>
-                <div class="flex flex-col gap-1">
-                    <div class="flex flex-col">
-                        <div class="text-title-1 font-sans font-semibold"> {{userFBLogin?.name}} </div>
-                        <div class="text-body-2 font-regular font-sans flex gap-x-2 cursor-pointer">
-                          <p class="text-error-400" (click)="facebookSignOut()">Đăng xuất</p>
-                        </div>
+                  <div class="w-full" style="margin-top: 30px">
+                    <div *ngIf="!isUserConnectChannel" class="w-full grid ">
+                        <button  type="button" tds-button color="primary" (click)="onFacebookConnected()"
+                        tds-tooltip tooltipTitle="Thêm page vào kênh kết nối">Thêm vào TPage</button>
                     </div>
-                </div>
-                <div *ngIf="!isUserConnectChannel">
-                  <button tds-button color="primary" class="mr-2" (click)="onFacebookConnected()">
-                    <span class="flex items-center">
-                      <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Kết nối
-                    </span>
-                  </button>
-                </div>
+                    <div *ngIf="isUserConnectChannel" class="w-full grid mt-2">
+                        <button type="button" tds-button color="info" (click)="facebookSignOut()"
+                        tds-tooltip tooltipTitle="Đăng xuất khỏi Facebook">Đăng xuất</button>
+                    </div>
+                  </div>
               </div>
             </div>
           </ng-template>
 
           <div class="bg-white rounded-xl w-full p-4 gap-y-4">
             <div class="flex gap-x-2 items-center">
-              <p class="text-lg font-semibold">Thông tin chi tiết</p>
-              <i class="tdsi-information-fill text-neutral-1-500 flex"></i>
+                <p class="text-lg font-semibold">Thông tin chi tiết</p>
+                <i class="tdsi-information-fill text-neutral-1-500 flex"></i>
             </div>
             <span class="flex text-sm font-normal"> Các trang có lượt tương tác & hoạt động tốt nhất gần đây. </span>
           </div>

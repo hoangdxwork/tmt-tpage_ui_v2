@@ -1,5 +1,5 @@
 import { FacebookUser } from './../../../../lib/dto/facebook.dto';
-import { AfterViewInit, Component, ElementRef, HostBinding, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { fromEvent, Subject } from 'rxjs';
 import { Message } from 'src/app/lib/consts/message.const';
 import { FacebookAuth, FacebookAuthResponse } from 'src/app/lib/dto/facebook.dto';
@@ -40,8 +40,8 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
   lstPageNotConnect: PageNotConnectDTO = {};
   lstData: TDSSafeAny = {};
 
-  userFBLogin?: FacebookUser;
-  userFBAuth?: FacebookAuth;
+  userFBLogin!: FacebookUser | null;
+  userFBAuth!: FacebookAuth | null;
 
   isUserConnectChannel: boolean = false;
 
@@ -60,12 +60,12 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoading: boolean = true;
   lastScrollPosition: TDSSafeAny = null;
   isLoadChannel: boolean = false;
-
   private _destroy$ = new Subject<void>();
 
   constructor( private modal: TDSModalService,
     private modalService: TDSModalService,
     private crmTeamService: CRMTeamService,
+    private cdRef: ChangeDetectorRef,
     private message: TDSMessageService,
     private facebookGraphService: FacebookGraphService,
     private viewContainerRef: ViewContainerRef,
@@ -83,10 +83,10 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
             }
 
           },error => {
-              this.userFBLogin = undefined;
+              this.userFBLogin = null;
           })
       }, error => {
-          this.userFBLogin = undefined;
+          this.userFBLogin = null;
       })
 
       if(this.innerText?.nativeElement) {
@@ -114,23 +114,26 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
   facebookSignIn(): void {
     this.isLoading = true;
     this.facebookLoginService.login().pipe(takeUntil(this._destroy$)).subscribe((res: FacebookAuth) => {
+        if(res) {
+            this.userFBAuth = res;
+            this.getMe();
 
-        this.userFBAuth = res;
-        this.getMe();
-        this.sortByFbLogin(this.userFBLogin?.id);
-        this.isLoading = false;
-
+            if(this.userFBLogin) {
+              this.sortByFbLogin(this.userFBLogin.id);
+            }
+            this.isLoading = false;
+        }
       }, error => {
         this.isLoading = false;
       }
-    );
+    )
   }
 
   facebookSignOut() {
     this.isLoading = true;
     this.facebookLoginService.logout().pipe(takeUntil(this._destroy$)).subscribe(() => {
 
-        this.userFBLogin = undefined;
+        this.userFBLogin = null;
         this.isLoading = false;
 
       },error => {
@@ -140,14 +143,16 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getMe() {
     this.facebookLoginService.getMe().pipe(takeUntil(this._destroy$)).subscribe((res: FacebookUser) => {
-        this.userFBLogin = res;
+        if(res && res.id) {
+          this.userFBLogin = res;
 
-        if (this.data && this.data.length > 0) {
-          this.onChangeCollapse(this.data[0].Id, false);
-          this.sortByFbLogin(this.userFBLogin?.id);
+          if (this.data && this.data.length > 0) {
+            this.onChangeCollapse(this.data[0].Id, false);
+            this.sortByFbLogin(res.id);
+          }
         }
       },error => {
-        this.userFBLogin = undefined
+          this.userFBLogin = null
       });
   }
 
@@ -155,10 +160,12 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = true;
     this.isLoadChannel = true;
 
-    this.crmTeamService.getAllChannels().pipe(takeUntil(this._destroy$), finalize(() => this.isLoadChannel = false)).subscribe((res: TDSSafeAny) => {
-        this.data = res;
+    this.crmTeamService.getAllChannels().pipe(takeUntil(this._destroy$)).subscribe((res: TDSSafeAny) => {
 
-        if(res && TDSHelperArray.hasListValue(res)) {
+        if(res ) {
+          // TOD0: gán lại danh sách team
+          this.data = [...res];
+
           res.sort((a: any, b: any) => {
               if (a.Active) return -1;
               return 1;
@@ -184,12 +191,17 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         this.isLoading = false;
+        this.isLoadChannel = false;
+        this.cdRef.detectChanges();
       }, error => {
-          this.isLoading = false
+        this.isLoading = false;
+        this.isLoadChannel = false
+        this.cdRef.detectChanges();
       })
   }
 
   onFacebookConnected() {
+    this.isLoading = true;
     let channel = this.data.find((x) => x.Facebook_UserId == this.userFBLogin?.id);
 
     if (channel || !this.userFBLogin) {
@@ -202,14 +214,12 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   insertUserChannel(accessToken: string | undefined) {
-    this.isLoading = true;
-
     let model = {
         fb_exchange_token: accessToken,
         grant_type: 'fb_exchange_token',
     };
 
-    this.crmTeamService.getLongLiveToken(model).pipe(takeUntil(this._destroy$), finalize(() => this.isLoading = false)).subscribe((res) => {
+    this.crmTeamService.getLongLiveToken(model).pipe(takeUntil(this._destroy$)).subscribe((res) => {
         let team = {
           Facebook_ASUserId: this.userFBLogin?.id,
           Facebook_TypeId: 'User',
@@ -223,11 +233,17 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
           Type: 'Facebook',
         };
 
-        this.crmTeamService.insert(team).pipe(takeUntil(this._destroy$), finalize(() => this.isLoading = false)).subscribe((obs) => {
+        this.crmTeamService.insert(team).pipe(takeUntil(this._destroy$)).subscribe((obs) => {
 
-            this.message.success(Message.InsertSuccess);
+            this.message.success('Thêm page thành công');
             this.loadListTeam(true);
+            this.isLoading = false;
+            this.cdRef.detectChanges();
 
+          }, error => {
+            this.message.error(`${error?.error?.message}` || 'Thêm mới page đã xảy ra lỗi');
+            this.isLoading = false;
+            this.cdRef.detectChanges();
           })
 
       }, error => {
@@ -248,25 +264,28 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
           };
 
           this.crmTeamService.insert(team).pipe(takeUntil(this._destroy$), finalize(() => this.isLoading = false)).subscribe((obs) => {
-              this.message.success(Message.InsertSuccess);
+              this.message.success('Thêm page thành công');
               this.loadListTeam(true);
+          }, error => {
+              this.message.error(`${error?.error?.message}` || 'Thêm mới page đã xảy ra lỗi');
+              this.isLoading = false;
+              this.cdRef.detectChanges();
           })
         }
-      });
+      })
   }
 
-  sortByFbLogin(userId: string | undefined | null) {
-    let item = this.data.find(
-      (x) => x.Facebook_UserId && x.Facebook_UserId == userId
-    );
+  sortByFbLogin(userId: string) {
+    let exits = this.data.find((x) => x.Facebook_UserId && x.Facebook_UserId == userId)
 
-    if (item) {
-      this.data.splice(this.data.indexOf(item), 1);
-      this.data.unshift(item);
+    if (exits) {
+      this.data.splice(this.data.indexOf(exits), 1);
+      this.data.unshift(exits);
 
-      this.onChangeCollapse(item.Id, true);
+      this.onChangeCollapse(exits.Id, true);
       this.isUserConnectChannel = true;
     }
+
     else {
       this.isUserConnectChannel = false;
     }
@@ -303,7 +322,6 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
         this.delete(id)
       },
       onCancel: () => {
-        console.log('cancel');
         this.lastScrollPosition = null;
       },
       okText: 'Xác nhận',
@@ -314,10 +332,9 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
   delete(id: number) {
     this.crmTeamService.delete(id).pipe(takeUntil(this._destroy$)).subscribe(
       (res) => {
-        this.message.success(Message.DeleteSuccess);
+        this.message.success('Hủy kết nối thành công');
         this.loadListTeam(true);
-      },
-      (error) => {
+      },(error) => {
         if (error?.error?.message) {
           this.message.error(error?.error?.message);
         } else {

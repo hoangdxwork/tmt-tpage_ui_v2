@@ -46,7 +46,7 @@ export class DetailReportComponent implements OnInit {
       })
   }
 
-  loadLiveCampaign(id: string | undefined) {
+  loadLiveCampaign(id: string) {
     this.isLoading = true;
     this.liveCampaignService.getDetailById(id)
       .pipe(finalize(() => this.isLoading = false))

@@ -30,7 +30,7 @@ export class ConfigSmsMessagesComponent implements OnInit {
 
   loadData() {
     this.isLoading = true;
-    
+
     this.restSMSService.get().pipe(takeUntil(this.destroy$)).subscribe((res: Array<RestSMSDTO>) => {
       this.listOfDataRestSMS = res;
       this.isLoading = false;
@@ -46,15 +46,6 @@ export class ConfigSmsMessagesComponent implements OnInit {
       viewContainerRef: this.viewContainerRef,
       size: 'md'
     });
-    modal.afterOpen.subscribe(() => {
-
-    });
-    //receive result from modal after close modal
-    modal.afterClose.subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
-        //get new changed value here
-      }
-    });
   }
 
   showEditModal(id: TDSSafeAny) {
@@ -67,9 +58,7 @@ export class ConfigSmsMessagesComponent implements OnInit {
         dataId: id
       }
     });
-    modal.afterOpen.subscribe(() => {
 
-    });
     //receive result from modal after close modal
     modal.afterClose.subscribe(result => {
       if (TDSHelperObject.hasValue(result)) {

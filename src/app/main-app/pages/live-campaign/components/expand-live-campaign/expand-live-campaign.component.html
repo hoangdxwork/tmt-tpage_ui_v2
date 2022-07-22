@@ -7,13 +7,13 @@
                 <span class="mr-2">Chi tiết</span>
                 <div class="text-caption-2 font-semibold py-0.5 px-1.5 rounded-full flex"
                     [ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 bg-neutral-3-100 group-hover:text-white group-hover:bg-primary-1':!active}">
-                    {{data?.Details?.length || 0}}
+                    {{liveCampaigns?.Details?.length || 0}}
                 </div>
             </div>
         </ng-template>
         <div class="h-60">
             <tds-table #rowSelectionTable showPagination showSizeChanger
-                [listData]="data?.Details || []" [scroll]="{y:'auto'}">
+                [listData]="liveCampaigns?.Details || []" [scroll]="{y:'auto'}">
                 <thead>
                     <tr class="bg-neutral-3-50">
                         <th>STT</th>
@@ -55,28 +55,28 @@
       <div class="w-full grid grid-cols-3 gap-8">
         <div class="grid grid-cols-3 gap-4">
           <div>Tên chiến dịch:</div>
-          <div class="col-span-2 font-semibold">{{data.Name}}</div>
+          <div class="col-span-2 font-semibold">{{liveCampaigns.Name}}</div>
           <div>Ghi chú:</div>
-          <div class="col-span-2 font-semibold">{{data.Note}}</div>
+          <div class="col-span-2 font-semibold">{{liveCampaigns.Note}}</div>
           <div>Nhân viên chốt đơn:</div>
-          <div class="col-span-2 font-semibold flex gap-x-2" *ngIf="data?.Users">
-            <span *ngFor="let user of data.Users; let i = index">
+          <div class="col-span-2 font-semibold flex gap-x-2" *ngIf="liveCampaigns?.Users">
+            <span *ngFor="let user of liveCampaigns.Users; let i = index">
               {{user.Name}}
-              <span *ngIf="data.Users.length > (i + 1)">,</span>
+              <span *ngIf="liveCampaigns.Users.length > (i + 1)">,</span>
             </span>
           </div>
         </div>
         <div class="grid grid-cols-3 gap-4">
           <div>Facebook:</div>
-          <div class="col-span-2 font-semibold text-blue-500">{{data.Facebook_UserName}}</div>
+          <div class="col-span-2 font-semibold text-blue-500">{{liveCampaigns.Facebook_UserName}}</div>
           <div>Live ID:</div>
-          <div class="col-span-2 font-semibold">{{data.Facebook_LiveId}}</div>
+          <div class="col-span-2 font-semibold">{{liveCampaigns.Facebook_LiveId}}</div>
           <div>Đặt cọc tối thiểu:</div>
-          <div class="col-span-2 font-semibold">{{data.MinAmountDeposit || 0 | number}} đ</div>
+          <div class="col-span-2 font-semibold">{{liveCampaigns.MinAmountDeposit || 0 | number}} đ</div>
         </div>
         <div class="grid grid-cols-3 gap-4">
           <div>Đặt cọc bắt buộc:</div>
-          <div class="col-span-2 font-semibold">{{data.MaxAmountDepositRequired || 0 | number}} đ</div>
+          <div class="col-span-2 font-semibold">{{liveCampaigns.MaxAmountDepositRequired || 0 | number}} đ</div>
         </div>
       </div>
     </tds-tab>
@@ -86,12 +86,12 @@
                 [ngClass]='{"border-primary-1":active,"border-transparent text-neutral-1-400  hover:border-primary-1":!active}'>
                 <span class="mr-2">Danh sách bài viết</span>
                 <div class="text-caption-2 font-semibold py-0.5 px-1.5 rounded-full flex" [ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 bg-neutral-3-100 group-hover:text-white group-hover:bg-primary-1':!active}">
-                    {{lstPost?.length || 0}}
+                    {{facebookPosts?.length || 0}}
                 </div>
             </div>
         </ng-template>
         <div class="w-full grid grid-cols-3 gap-8">
-          <div class="bg-white p-4 rounded-lg flex space-x-4" *ngFor="let post of lstPost">
+          <div class="bg-white p-4 rounded-lg flex space-x-4" *ngFor="let post of facebookPosts">
             <div class="flex flex-col space-y-3">
               <div><img src="{{post.picture}}" alt=""></div>
               <div class="flex space-x-4 text-neutral-1-400">

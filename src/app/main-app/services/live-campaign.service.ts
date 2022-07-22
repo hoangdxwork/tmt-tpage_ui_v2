@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tds-ui/shared/utility";
-import { FacebookMappingPostDTO } from "../dto/conversation/post/post.dto";
+import { GetAllFacebookPostDTO } from "../dto/live-campaign/getall-facebook-post.dto";
 import { ODataLiveCampaignDTO } from "../dto/live-campaign/odata-live-campaign.dto";
 import { ODataModelDTO, ODataResponsesDTO } from "../dto/odata/odata.dto";
 import { BaseSevice } from "./base.service";
@@ -37,7 +37,7 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
 	}
 
-  getDetailById(id: string | undefined): Observable<any> {
+  getDetailById(id: string ): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})?$expand=Details,Users,Preliminary_Template,ConfirmedOrder_Template`,
       method: TApiMethodType.get,
@@ -118,13 +118,13 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
-  getAllFacebookPost(id: string | undefined): Observable<FacebookMappingPostDTO[]> {
+  getAllFacebookPost(id: string | undefined): Observable<any> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/getallfacebookpost`,
       method: TApiMethodType.get,
     }
 
-    return this.apiService.getData<FacebookMappingPostDTO[]>(api, null);
+    return this.apiService.getData<any>(api, null);
   }
 
   getReport(id: string): Observable<any> {

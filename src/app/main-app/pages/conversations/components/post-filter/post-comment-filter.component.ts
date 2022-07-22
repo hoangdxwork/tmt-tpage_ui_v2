@@ -1,7 +1,7 @@
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { CommonService } from './../../../../services/common.service';
-import { Component, OnChanges, OnDestroy, OnInit, Optional, Host, SkipSelf, ViewChild, ElementRef, Input, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, OnChanges, OnDestroy, OnInit, Optional, Host, SkipSelf, ViewChild, ElementRef, Input, SimpleChanges, ChangeDetectorRef, HostBinding } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
@@ -11,16 +11,22 @@ import { FacebookCommentService } from 'src/app/main-app/services/facebook-comme
 import { ItemPostCommentComponent } from '../../conversation-post/item-post-comment.component';
 import { TDSHelperArray, TDSHelperObject } from 'tds-ui/shared/utility';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
+import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
+import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
 
 @Component({
   selector: 'post-comment-filter',
   templateUrl: './post-comment-filter.component.html',
+  animations: [eventFadeStateTrigger]
 })
 
 export class PostCommentFilterComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() currentFilterComment: TDSSafeAny;
   @Input() textSearchFilterComment: string = '';
+
+  @HostBinding("@eventFadeState") eventAnimation = true;
+  @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
   team!: CRMTeamDTO | null;
   data: any = { Items: []};
@@ -40,11 +46,13 @@ export class PostCommentFilterComponent implements OnInit, OnDestroy, OnChanges 
     { value: "Phone", text: "Tìm số điện thoại" }
   ];
 
+  isLoading: boolean = false;
+
   constructor(private facebookCommentService: FacebookCommentService,
     private conversationPostFacade: ConversationPostFacade,
     private commonService: CommonService,
     private message: TDSMessageService,
-    private cdf : ChangeDetectorRef,
+    private cdRef : ChangeDetectorRef,
     @Host() @Optional() @SkipSelf() public itemPostCommentCmp: ItemPostCommentComponent) {
   }
 
@@ -129,7 +137,7 @@ export class PostCommentFilterComponent implements OnInit, OnDestroy, OnChanges 
         this.data = {...res};
 
         this.itemPostCommentCmp.isLoading = false;
-        this.cdf.detectChanges();
+        this.cdRef.detectChanges();
       })
   }
   loadPartnerStatus() {
@@ -156,6 +164,34 @@ export class PostCommentFilterComponent implements OnInit, OnDestroy, OnChanges 
     if(changes["textSearchFilterComment"] && !changes["textSearchFilterComment"].firstChange){
       this.onChangeFilter(this.currentFilterComment);
     }
+  }
+
+  nextData(event: any) {
+    if(this.isLoading) {
+      return;
+    }
+
+    if(this.data && this.data.HasNextPage && TDSHelperString.hasValueString(this.data.NextPage)) {
+      let postId = this.itemPostCommentCmp.post.fbid;
+      this.isLoading = true;
+
+      this.facebookCommentService.getCommentsByQuery(this.data.NextPage, postId)
+        .pipe(takeUntil(this.destroy$)).subscribe((res: any)=> {
+
+          res.Items = [...this.data.Items, ...res.Items];
+          this.data = res;
+
+          this.isLoading = false;
+          this.cdRef.detectChanges();
+      }, error => {
+          this.isLoading = false;
+          this.message.error(`${error.error?.message}`)
+      });
+    }
+  }
+
+  trackByIndex(i: any) {
+    return i;
   }
 
   ngOnDestroy(): void {

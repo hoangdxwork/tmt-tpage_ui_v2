@@ -24,6 +24,6 @@ export class CommonHandler {
     {id: 7, name:'Tháng trước', startDate: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1), endDate: new Date(new Date().getFullYear(), new Date().getMonth(), 0)}
   ]
 
-  public currentDateRanges: TDSDateRangeDTO = this.tdsDateRanges[4];
+  public currentDateRanges: TDSDateRangeDTO = this.tdsDateRanges[2];
 
 }

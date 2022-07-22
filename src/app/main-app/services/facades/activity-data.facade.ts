@@ -13,6 +13,7 @@ import { map, shareReplay, takeUntil } from "rxjs/operators";
 import { CRMMessagesRequest } from "../../dto/conversation/make-activity.dto";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSHelperArray, TDSHelperString } from "tds-ui/shared/utility";
+import { TDSNotificationService } from "tds-ui/notification";
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +38,7 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
     private activityFbState: ActivityFacebookState,
     private facebookPostService: FacebookPostService,
     private crmTeamService: CRMTeamService,
-    private message: TDSMessageService,
+    private notification: TDSNotificationService,
     private service: ActivityMatchingService,
     private sgRConnectionService: SignalRConnectionService) {
       super(apiService);
@@ -63,19 +64,23 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
 
     //TODO: gửi tin nhắn
     this.sgRConnectionService._onSendMessageSendingEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.message.info(res.message);
-      this.messageSending(res);
+        if(res) {
+            this.messageSending(res);
+            this.notification.info('Tin nhắn mới', `${res.message}`, { placement: 'bottomLeft' });
+        }
     });
 
     //TODO: tin nhắn lỗi
     this.sgRConnectionService._onSendMessageFailEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.message.error(res.message);
-      this.messageFail(res);
+        if(res) {
+            this.messageFail(res);
+            this.notification.error('Tin nhắn lỗi', `${res.message}`, { placement: 'bottomLeft' });
+        }
     });
 
     //TODO: Retry Message
     this.sgRConnectionService._onRetryMessage$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.messageRetry(res);
+        this.messageRetry(res);
     });
 
     //TODO: Data From Scan
@@ -157,7 +162,7 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
     const psid = data.to_id;
 
     if(TDSHelperString.hasValueString(data.error_messages)) {
-      this.message.error(`Thử gửi lại tin với ${data.to_name} thất bại.`);
+      this.notification.error('Gửi lại tin', `Thử gửi lại tin với ${data.to_name} thất bại`, { placement: 'bottomLeft' });
     }
     this.activityFbState.updateRetryMessage(pageId, psid, data);
   }
