@@ -1,20 +1,118 @@
-<div class="w-full">
-  <tds-tabset>
-    <tds-tab title="Tổng quan" clsContent="py-4 w-full h-full border-t">
+<div class="w-full text-body-2 text-neutral-1-900 flex justify-between">
+  <tds-tabset [tabBarExtraContent]="extraTemplate" [(selectedIndex)]="selectedIndex">
+    <tds-tab title="Tổng quan" clsContent="py-4 p-4 w-full h-full border-t">
       <div class="flex flex-col gap-6">
-        <div class="h-20 w-full flex gap-x-6">
-          <div class="w-4/5 bg-zinc-600"></div>
-          <div class="w-1/5 bg-zinc-600"></div>
+        <div class="w-full flex gap-x-6">
+          <div class="w-4/5 flex flex-col gap-y-2">
+            <span class="text-neutral-1-500">Đã đăng: {{data.DateCreated | yiDateTimeV3}}</span>
+            <span>{{data.message}}</span>
+          </div>
+          <div class="w-1/5 max-h-[150px] flex justify-end">
+            <img [src]="data.full_picture" alt="" class="rounded-xl max-w-full max-h-full object-cover">
+          </div>
         </div>
-        <div class="h-20 w-full bg-slate-600 py-2 px-4 grid grid-cols-4 gap-4">
-          <div class="bg-red-400">jflkdfg</div>
-          <div class="bg-red-400">jflkdfg</div>
-          <div class="bg-red-400">jflkdfg</div>
-          <div class="bg-red-400">jflkdfg</div>
+        <div class="w-full py-2 px-4 grid grid-cols-4 gap-4">
+          <div class="flex gap-x-2">
+            <div class="p-2 bg-info-400 bg-opacity-30 rounded-2xl">
+              <img src="../../../../../../assets/imagesv2/conversation/iconFacebokkComment.svg" alt="">
+            </div>
+            <div class="flex flex-col gap-y-1.5">
+              <span class="font-semibold">Bình luận</span>
+              <div>
+                <span class="px-3 bg-primary-3 text-primary-1 font-semibold rounded-full">{{data.count_comments || 0}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-x-2">
+            <div class="p-2 bg-info-400 bg-opacity-30 rounded-2xl">
+              <img src="../../../../../../assets/imagesv2/conversation/iconShare.svg" alt="">
+            </div>
+            <div class="flex flex-col gap-y-1.5">
+              <span class="font-semibold">Chia sẻ</span>
+              <div>
+                <span class="px-3 bg-primary-3 text-primary-1 font-semibold rounded-full">{{data.count_shares || 0}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-x-2">
+            <div class="p-2 bg-warning-400 bg-opacity-30 rounded-2xl">
+              <img src="../../../../../../assets/imagesv2/conversation/iconOrder.svg" alt="">
+            </div>
+            <div class="flex flex-col gap-y-1.5">
+              <span class="font-semibold">Đơn hàng</span>
+              <div>
+                <span class="px-3 bg-primary-3 text-primary-1 font-semibold rounded-full">{{ 0}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-x-2">
+            <div class="p-2 bg-info-400 bg-opacity-30 rounded-2xl">
+              <img src="../../../../../../assets/imagesv2/dashboard/customers-icon.svg" class="h-[33px]" alt="">
+            </div>
+            <div class="flex flex-col gap-y-1.5">
+              <span class="font-semibold">Khách hàng</span>
+              <div>
+                <span class="px-3 bg-primary-3 text-primary-1 font-semibold rounded-full">{{0}}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </tds-tab>
-    <tds-tab title="Bình luận">Content of Tab Pane 2</tds-tab>
+    <tds-tab title="Bình luận" clsContent="max-h-[calc(65vh)] overflow-hidden flex">
+      <div class="w-full max-h-full overflow-hidden p-1 bg-neutral-3-100">
+        <div *ngIf="currentFilter.value == 'filter'" class="flex-auto flex p-4 gap-x-2">
+          <tds-form-field class="w-full">
+              <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [tdsInputDebounce]="500" (inputKeyup)="onSearchFilterComment()"
+              [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}" />
+              <span tdsAddOnLeft class="bg-white">
+                <div tds-dropdown
+                  trigger="click"
+                  [tdsDropdownMenu]="menu">
+                  <span class="flex text-body-2 items-center pl-1.5 py-0 font-semibold cursor-pointer"
+                    tds-dropdown trigger="click" [tdsDropdownMenu]="menu">
+                    {{currentFilterComment.text}}
+                    <i class="tdsi-arrow-down-fill text-lg leading-none ml-2 text-neutral-1-400"></i>
+                  </span>
+                </div>
+                <tds-dropdown-menu #menu="tdsDropdownMenu">
+                  <div class="w-full">
+                    <ng-template ngFor let-item [ngForOf]="filterOptionsComment">
+                      <div tds-dropdown-item (click)="onChangeFilterComment(item)">
+                        <a> {{item.text}}</a>
+                      </div>
+                    </ng-template>
+                  </div>
+                </tds-dropdown-menu>
+              </span>
+          </tds-form-field>
+        </div>
+        <item-post-comment [post]="data" 
+        [sort]="currentSort" 
+        [filter]="currentFilter"
+        [isShowCheckboxComent]="isShowCheckbox"
+        [currentFilterComment]="currentFilterComment"
+        [textSearchFilterComment]="textSearchFilterComment"
+        class="h-full w-full overflow-hidden">
+        </item-post-comment>
+      </div>
+    </tds-tab>
+    <ng-template #extraTemplate>
+      <div *ngIf="selectedIndex == 1" class="flex gap-x-2">
+        <tds-form-field class="w-[170px]">
+          <tds-select valueField="value" textField="text" placeholder='Lọc theo' tooltipTitle="Lọc bài viết" tooltipPlacement="bottom" tds-tooltip
+              [(ngModel)]="currentFilter" [valuePrimitive]="false"
+              [data]="filterOptions" (ngModelChange)="onChangeFilter($event)">
+          </tds-select>
+        </tds-form-field>
+        <tds-form-field *ngIf="currentFilter.value == 'all'" class="w-[110px]">
+          <tds-select valueField="value" textField="text" placeholder='Sắp xếp' tooltipTitle="sắp xếp bài viết" tooltipPlacement="bottom" tds-tooltip
+              [(ngModel)]="currentSort" [valuePrimitive]="false"
+              [data]="sortOptions" (ngModelChange)="onChangeSort($event)">
+          </tds-select>
+        </tds-form-field>
+      </div>
+    </ng-template>
   </tds-tabset>
 </div>
 <div class="w-full flex justify-end gap-2 p-4" *tdsModalFooter>

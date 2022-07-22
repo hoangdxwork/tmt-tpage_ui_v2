@@ -14,7 +14,7 @@ import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utili
 export class ManagePostCommentComponent implements OnInit, OnDestroy {
 
   @Input() checkedAll!: boolean;
-
+  @Input() isShowCheckboxComent: boolean = true;
   @Output() onCheckAll = new EventEmitter<boolean>();
   @Output() onIndeterminate = new EventEmitter<boolean>();
   @Output() onSetOfCheckedId = new EventEmitter<Set<string>>();

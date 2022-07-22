@@ -27,6 +27,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   @Input() post!: FacebookPostItem;
   @Input() sort: any;
   @Input() filter: any;
+  @Input() isShowCheckboxComent: boolean = true;
   @Input() currentFilterComment: TDSSafeAny;
   @Input() textSearchFilterComment!: string;
   @Input() isShowFilterUser!: boolean;
