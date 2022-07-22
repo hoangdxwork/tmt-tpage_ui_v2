@@ -9,37 +9,30 @@
                 <tds-form-field size='md' class="mr-4 w-1/2">
                     <input tdsInput class="text-neutral-1-900" placeholder="Tìm thẻ hội thoại" autocomplete="off" #filterText/>
                     <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                    <span tdsSuffix (click)="onClearAll($event)">
+                        <i class="tdsi-close-fill text-neutral-1-500 text-base" *ngIf="filterText.value && filterText.value != ''"></i>
+                    </span>
                 </tds-form-field>
                 <button tds-button color="primary" (click)="showCreateModal()">
                     <span class="flex items-center">
-                      <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
-                      <span class="text-body-2 font-semibold">Thêm mới</span>
+                        <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+                        <span class="text-body-2 font-semibold">Thêm mới</span>
                     </span>
                 </button>
             </div>
         </div>
         <div class="flex flex-auto pb-2.5">
-            <tds-table #basicTable
-                [listData]="lstOfData"
-                [showSizeChanger]="true"
-                [frontPagination]="false"
-                [loading]="isLoading"
-                [scroll]="{y:'auto'}"
-                [(pageSize)]="pageSize"
-                [(pageIndex)]="pageIndex"
-                [total]="count"
-                (clickRefresh)="refreshData()"
-                (queryParams)="onQueryParamsChange($event)"
-                >
+            <tds-table #basicTable [listData]="lstOfData" [showSizeChanger]="true" [frontPagination]="false" [loading]="isLoading" [scroll]="{y:'auto'}"
+                [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count" (clickRefresh)="refreshData()" (queryParams)="onQueryParamsChange($event)">
                 <thead>
-                      <tr class="text-neutral-1-900 text-body-2 font-semibold">
-                            <th [width]="'100px'">STT</th>
-                            <th>Tên thẻ</th>
-                            <th [align]="'center'" >Màu sắc</th>
-                            <!-- <th>Lượt gán</th> -->
-                            <th [align]="'center'" >Trạng thái</th>
-                            <th [align]="'center'" >Thao tác</th>
-                      </tr>
+                    <tr class="text-neutral-1-900 text-body-2 font-semibold">
+                        <th [width]="'100px'">STT</th>
+                        <th>Tên thẻ</th>
+                        <th [align]="'center'">Màu sắc</th>
+                        <th>Lượt gán</th>
+                        <th [align]="'center'">Trạng thái</th>
+                        <th [align]="'center'">Thao tác</th>
+                    </tr>
                 </thead>
                 <tbody>
                     <ng-template ngFor let-data let-i="index" [ngForOf]="basicTable.data">
@@ -51,7 +44,7 @@
                                     <div class="w-16 h-6 rounded-full" [style.background-color]="data.ColorClassName"></div>
                                 </div>
                             </td>
-                            <!-- <td>{{ data.usedTime }}</td> -->
+                            <td>1</td>
                             <td [align]="'center'" >
                                 <tds-switch [(ngModel)]="!data.IsDeleted" (ngModelChange)="updateStatus(data)"></tds-switch>
                             </td>

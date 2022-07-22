@@ -3,51 +3,36 @@
     <div class="flex flex-col w-full">
         <tds-form-field class="mb-4">
             <tds-label>Đối tác</tds-label>
-            <tds-select valueField="provider" textField="name" placeholder='Chọn'
-                disabledField="isActive" formControlName="currentValue"
-                [data]="items" [allowClear]="true"
-                (selectChange)="valueChange($event)">
+            <tds-select valueField="provider" textField="name" placeholder='Chọn' disabledField="isActive"
+                formControlName="currentValue" [required]='true' [data]="items" [allowClear]="true" (selectChange)="valueChange($event)">
             </tds-select>
-            <tds-error>
-                Vui lòng chọn tên đối tác
-            </tds-error>
+            <tds-error>Vui lòng chọn tên đối tác</tds-error>
         </tds-form-field>
 
         <tds-form-field class="mb-4">
             <tds-label>API Key</tds-label>
             <input tdsInput formControlName="apiKey" placeholder="######" class="text-neutral-1-900 text-body-2 font-regular" [required]='true'/>
-            <tds-error>
-                Vui lòng nhập API key
-            </tds-error>
+            <tds-error>Vui lòng nhập API key</tds-error>
         </tds-form-field>
 
         <tds-form-field class="mb-4">
             <tds-label>Secret Key</tds-label>
-            <input tdsInput formControlName="secretKey" placeholder="######" class="text-neutral-1-900 text-body-2 font-regular"/>
-            <tds-error>
-                Vui lòng nhập secret key
-            </tds-error>
+            <input tdsInput formControlName="secretKey" placeholder="######" class="text-neutral-1-900 text-body-2 font-regular" [required]='true'/>
+            <tds-error>Vui lòng nhập secret key</tds-error>
         </tds-form-field>
 
         <tds-form-field>
             <tds-label>Loại dịch vụ</tds-label>
-            <tds-select valueField="key" textField="datasource" placeholder='Chọn'
-                disabledField="isActive" formControlName="category"
-                [data]="categorySMS" [allowClear]="true">
+            <tds-select valueField="key" textField="datasource" placeholder='Chọn' disabledField="isActive"
+                formControlName="category" [required]='true' [data]="categorySMS" [allowClear]="true">
             </tds-select>
-            <tds-error>
-                Vui lòng chọn loại dịch vụ
-            </tds-error>
+            <tds-error>Vui lòng chọn loại dịch vụ</tds-error>
         </tds-form-field>
     </div>
 </form>
 </tds-spin>
 <!-- footer -->
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">
-        Hủy bỏ
-    </button>
-    <button tds-button type="submit" [disabled]="!serviceForm?.valid || isLoading" color="primary" (click)="OnSave()">
-        {{dataId?'Cập nhật':'Tạo mới'}}
-    </button>
+    <button tds-button class="mr-2" type="button" color="secondary" (click)="cancel()">Hủy bỏ</button>
+    <button tds-button type="submit" color="primary" (click)="OnSave()">{{ dataId?'Cập nhật':'Tạo mới' }}</button>
 </div>

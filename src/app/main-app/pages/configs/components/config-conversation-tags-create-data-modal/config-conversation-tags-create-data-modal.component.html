@@ -2,51 +2,42 @@
     <div class="flex flex-col w-full">
         <tds-form-field>
             <tds-label>Tên Thẻ</tds-label>
-            <input tdsInput type="text" formControlName="name" 
-                placeholder="Nhập tên thẻ" id="name" (change)="change()"/>
-            <span tdsPrefix><div class="w-6 py-2 rounded-lg bg-neutral-1-300" [style.background-color]="_form.controls.color.value?_form.controls.color.value:''"></div></span>
-            <span tdsSuffix class="text-body-2 text-neutral-1-400">{{_form.controls.name.value.length}}/50</span>
-            <tds-error *ngIf="hasError('name','required')">
-                Vui lòng nhập tên thẻ
-            </tds-error>
-            <tds-error *ngIf="hasError('name','maxlength')">
-                Chuỗi tối đa 50 ký tự
-            </tds-error>
+            <input tdsInput type="text" formControlName="name" placeholder="Nhập tên thẻ" id="name" (change)="change()"/>
+            <!-- <span tdsPrefix><div class="w-6 py-2 rounded-lg bg-neutral-1-300" [style.background-color]="_form.controls.color.value?_form.controls.color.value:''"></div></span> -->
+            <!-- <span tdsSuffix class="text-body-2 text-neutral-1-400">{{_form.controls.name.value.length}}/50</span> -->
+            <tds-error *ngIf="hasError('name','required')"> Vui lòng nhập tên thẻ</tds-error>
+            <tds-error *ngIf="hasError('name','maxlength')">Chuỗi tối đa 50 ký tự</tds-error>
         </tds-form-field>
 
         <div class="w-full pt-4">
             <tds-label class="pb-2">Chọn màu</tds-label>
             <div class="flex flex-wrap w-full gap-x-3.5 gap-y-3">
                 <div *ngFor="let color of palette">
-                    <div class="w-8 h-8 border-2 text-white border-white rounded-full shadow cursor-pointer flex items-center justify-center" 
+                    <div class="w-8 h-8 border-2 text-white border-white rounded-full shadow cursor-pointer flex items-center justify-center"
                         [style.background-color]="color" (click)="onChangeColor(color)">
                         <span *ngIf="color.toLocaleLowerCase() === _form.value.color.toLocaleLowerCase()" class="flex items-center">
-                            <i class="tdsi-tick-fill"></i>
+                            <i class="tdsi-tick-fill leading-none text-xl"></i>
                         </span>
                     </div>
                 </div>
-                <!-- <div class="w-8 h-8 border text-neutral-1-500 bg-white border-neutral-2-200 rounded-full cursor-pointer flex items-center justify-center" 
+                <div class="w-8 h-8 border text-neutral-1-500 bg-white border-neutral-2-200 rounded-full cursor-pointer flex items-center justify-center"
                     (click)="addNewColor()">
                     <span class="flex items-center">
-                        <i class="tdsi-plus-fill"></i>
+                        <i class="tdsi-plus-fill leading-none text-xl"></i>
                     </span>
-                </div> -->
+                </div>
             </div>
         </div>
 
-        <div class="w-full pt-4 flex gap-8 items-center">
+        <!-- <div class="w-full pt-4 flex gap-8 items-center">
             <tds-label class="pb-2">Kích hoạt</tds-label>
             <tds-switch [checked]="_form.value.status" (change)="onChangeStatus()"></tds-switch>
-        </div>
+        </div> -->
     </div>
 </form>
 
 <!-- footer -->
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button class="mr-2" color="secondary" (click)="cancel()">
-        Hủy bỏ
-    </button>
-    <button tds-button type="submit" [disabled]="!_form.valid" color="primary" (click)="save()">
-        Áp dụng
-    </button>
+    <button tds-button class="mr-2 min-w-[100px]" color="secondary" (click)="cancel()">Hủy bỏ</button>
+    <button tds-button type="submit" class="min-w-[100px]" color="primary" (click)="save()">Áp dụng</button>
 </div>

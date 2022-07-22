@@ -63,11 +63,8 @@
         </div>
     </div>
     <!-- table -->
-    <div class="h-full w-full">
-        <tds-table #headerTable
-        [listData]="lstOfData"
-        [showPagination]="false"
-        [scroll]="{x:'auto'}">
+    <div class="h-full w-full pb-2.5">
+        <tds-table #headerTable [listData]="lstOfData" [showPagination]="false" [scroll]="{x:'auto'}">
             <thead>
                 <tr>
                     <th width="80px" [align]="'center'" [tdsLeft]="true">STT</th>
