@@ -165,3 +165,44 @@
       </div>
   </tds-spin>
 </div>
+
+<!-- Notification Admin Transfer ChatBot -->
+<ng-template #templateAdminTransferChatBot let-data="data" >
+  <div class="bg-white flex gap-x-4 text-body-2 text-neutral-1-900 py-1 cursor-pointer" (click)="getLink(data.team, data.psid)">
+    <span class="tdsi-warning-fill text-warning-400 text-heading-4"></span>
+    <div class="flex flex-col gap-y-2">
+      <span class="font-semibold text-body-1">
+        Chatbot gặp vấn đề 
+        <span class="text-caption-2 font-regular">{{!data.teamId? '':'(không tìm thấy trang)'}}</span>
+      </span>
+      <span class="">{{data.message}}</span>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Notification ChatBot Transfer Admin -->
+<ng-template #templateChatbotTranserAdmin let-data="data">
+  <div class="bg-white flex gap-x-4 text-body-2 text-neutral-1-900 py-1 cursor-pointer" (click)="getLink(data.team, data.psid)">
+    <span class="tdsi-information-fill text-info-400 text-heading-4"></span>
+    <div class="flex flex-col gap-y-2">
+      <span class="font-semibold text-body-1">
+        Chatbot đã được xử lý
+        <span class="text-caption-2 font-regular">{{!data.teamId? '':'(không tìm thấy trang)'}}</span>
+      </span>
+      <span class="">{{data.message}}</span>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Notification Tin nhắn mới -->
+<ng-template #templateNotificationMessNew let-data="data">
+  <div class="bg-white flex gap-x-4 text-body-2 text-neutral-1-900 py-1 cursor-pointer" (click)="getLink(data.team, data.psid)">
+    <span class="{{data.teamId? 'tdsi-success-fill': 'tdsi-error-fill'}} text-success-400 text-heading-4"></span>
+    <div class="flex flex-col gap-y-2">
+      <span class="font-semibold text-body-1">
+        Tin nhắn mới
+      </span>
+      <span class="">{{data.message}}</span>
+    </div>
+  </div>
+</ng-template>

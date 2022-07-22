@@ -24,7 +24,7 @@ export class CRMTeamService extends BaseSevice {
   private readonly currentTeam$ = new ReplaySubject<CRMTeamDTO | null>(1);
   private _currentTeam!: CRMTeamDTO | null;
 
-  @Output() changeTeamFromLayout = new EventEmitter<any>();
+  @Output() changeTeamFromLayout$ = new EventEmitter<any>();
 
   constructor(private apiService: TCommonService, public caheApi: THelperCacheService) {
     super(apiService);

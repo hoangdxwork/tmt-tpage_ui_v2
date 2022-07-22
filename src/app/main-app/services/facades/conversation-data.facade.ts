@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
+import { EventEmitter, Injectable, OnDestroy} from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import { map, shareReplay, takeUntil } from "rxjs/operators";
 import { TCommonService } from "src/app/lib";
@@ -35,6 +35,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   isProcessing: boolean = false;
   public onUpdateInfoByConversation$ = new EventEmitter<any>();
   public onLoadTdsConversation$ = new EventEmitter<any>();
+  public notificationMessNew$ = new EventEmitter<any>();
 
   constructor(private message: TDSMessageService,
     private cvsFbState: ConversationFacebookState,
@@ -137,24 +138,16 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
       let team = this.getTeamByPageId(pageId) as any;
 
       if (TDSHelperObject.hasValue(team)) {
-
         let message = `${splitMessage} tới Page: ${team.Facebook_PageName}`;
-        let url = `conversation/all?teamId=${team.Id}&type=all&psid=${psid}`;
+        data.message = message;
+        data.team = team;
 
-        let baseUrl = BaseHelper.getBaseUrl();
-        if(TDSHelperString.hasValueString(baseUrl)) {
-          url = `${baseUrl}#/${url}`;
-        }
-        let template = ` <a value="${url}" href="${url}">${message}</a>`;
-
-        this.notification.success('Tin nhắn mới', template, { placement: 'bottomLeft' });
+        this.notificationMessNew$.emit(data);
       } else {
-        let messageError = 'Không tìm thấy trang';
-        this.notification.error('Tin nhắn mới', messageError, { placement: 'bottomLeft' });
+        data.message = 'Không tìm thấy trang'
+        this.notificationMessNew$.emit(data);
       }
     }
-
-   console.log(value);
   }
 
   messageServer(value: any) {
