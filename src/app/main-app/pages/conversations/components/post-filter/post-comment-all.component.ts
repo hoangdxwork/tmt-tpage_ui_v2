@@ -1,6 +1,6 @@
 import { ActivityByGroup } from './../../../../dto/conversation/post/comment-group.dto';
 import { ReplaceHelper } from './../../../../shared/helper/replace.helper';
-import { Component, OnChanges, OnDestroy, OnInit, Optional, Host, SkipSelf, Self } from '@angular/core';
+import { Component, OnChanges, OnDestroy, OnInit, Optional, Host, SkipSelf, Self, ViewChild, ChangeDetectorRef, Input, HostBinding } from '@angular/core';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
@@ -17,13 +17,23 @@ import { ItemPostCommentComponent } from '../../conversation-post/item-post-comm
 import { TDSMessageService } from 'tds-ui/message';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
+import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
+import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
+import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
+import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
 
 @Component({
   selector: 'post-comment-all',
   templateUrl: './post-comment-all.component.html',
+  animations: [eventFadeStateTrigger]
 })
 
 export class PostCommentAllComponent implements OnInit, OnDestroy {
+
+  @Input() post!: FacebookPostItem;
+
+  @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
+  @HostBinding("@eventFadeState") eventAnimation = true;
 
   team!: CRMTeamDTO | null;
   data: any = { Items: []};
@@ -33,12 +43,15 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
   partners$!: Observable<any>;
   destroy$ = new Subject<void>();
   messageModel!: string;
-  currentId:string = '';
+  currentId: string = '';
+  isLoading: boolean = false;
 
   constructor(private message: TDSMessageService,
+    private cdRef: ChangeDetectorRef,
     private crmMatchingService: CRMMatchingService,
     private activityMatchingService: ActivityMatchingService,
     private activityDataFacade: ActivityDataFacade,
+    private facebookCommentService: FacebookCommentService,
     private conversationDataFacade: ConversationDataFacade,
     private conversationPostFacade: ConversationPostFacade,
     private conversationOrderFacade: ConversationOrderFacade,
@@ -74,7 +87,11 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
   }
 
   loadEmojiMart(event: any) {
-    // this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
+    if (TDSHelperString.hasValueString(this.messageModel)) {
+      this.messageModel = `${this.messageModel}${event?.emoji?.native}`;
+    } else {
+      this.messageModel = `${event?.emoji?.native}`;
+    }
   }
 
   onProductSelected(event :any) {
@@ -82,7 +99,7 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
       page_id: this.team?.Facebook_PageId,
       to_id: this.data.from_id,
       comment_id: this.data.id,
-      message: this.message,
+      message: this.messageModel,
 
       product: {
         Id: event.Id,
@@ -93,10 +110,11 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
     };
 
     this.activityMatchingService.addTemplateMessage(this.data.psid, model)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
+      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+
         this.activityDataFacade.messageServer(res);
         this.conversationDataFacade.messageServer(res);
+
         this.message.success('Gửi thành công sản phẩm');
     }, error => {
       this.message.error('Gửi sản phẩm thất bại');
@@ -108,16 +126,14 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
   onQuickReplySelected(event: any) {
     let text = event.BodyPlain || event.BodyHtml || event.text;
     if(this.partners$){
-      this.partners$.subscribe(
-        (res:any)=>{
+      this.partners$.pipe(takeUntil(this.destroy$)).subscribe((res:any)=>{
           text = ReplaceHelper.quickReply(text, res);
           this.message = text;
-        },
-        (err)=>{
+        }, (err)=>{
           this.message.error(`${err.error.message}` || 'Đã xảy ra lỗi');
         }
       )
-    }else{
+    } else{
       this.message.error('Không lấy được thông tin khách hàng');
     }
   }
@@ -125,6 +141,7 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
   onEnter(item: CommentByPost, event: any) {
     let message = this.messageModel;
     this.replyComment(item,message);
+
     (this.messageModel as any) = null;
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -132,9 +149,11 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
 
   messageSendingToServer(item: CommentByPost) {
     let message = this.messageModel;
+
     if (!TDSHelperString.hasValueString(message)) {
       this.message.error('Hãy nhập nội dung cần gửi');
     }
+
     this.replyComment(item, message);
     (this.messageModel as any) = null;
   }
@@ -146,8 +165,8 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
       if(item.isPrivateReply){
         model.comment_id = item.id;
         this.crmMatchingService.addQuickReplyComment(model)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((res: any) => {
+          .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+
               this.message.success('Gửi tin thành công');
               if(TDSHelperArray.hasListValue(res)){
                 res.forEach((x: any) => {
@@ -155,21 +174,24 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
                     this.activityDataFacade.messageServer({...x});
                 });
               }
+
               let items = res.pop();
               this.conversationDataFacade.messageServer(items);
           }, error => {
-            this.message.error( `${error.error?.message}` || 'Gửi tin nhắn thất bại');
+            this.message.error(`${error.error?.message}` || 'Gửi tin nhắn thất bại');
          })
+
       } else {
         // TODO: Trả lời bình luận
         model.parent_id = item.id;
         model.fbid = item.from?.id;
 
         this.activityMatchingService.replyComment(this.team?.Id, model)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((res: any) => {
+          .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+
             this.message.success("Trả lời bình luận thành công.");
             this.addReplyComment(item, model);
+
         }, error => {
           this.message.error(`${error.error?.message}` || "Trả lời bình luận thất bại.");
         })
@@ -234,6 +256,33 @@ export class PostCommentAllComponent implements OnInit, OnDestroy {
   onCreateOrder(item: ActivityByGroup) {
     this.currentId = item.id;
     this.conversationOrderFacade.commentFormPost(item, true);
+  }
+
+  nextData(event: any) {
+    if(this.isLoading) {
+      return;
+    }
+    if(this.data && this.data.HasNextPage && TDSHelperString.hasValueString(this.data.NextPage)) {
+      let postId = this.itemPostCommentCmp.post.fbid;
+      this.isLoading = true;
+
+      this.facebookCommentService.getCommentsByQuery(this.data.NextPage, postId)
+        .pipe(takeUntil(this.destroy$)).subscribe((res: any)=> {
+
+          res.Items = [...this.data.Items, ...res.Items];
+          this.data = res;
+
+          this.isLoading = false;
+          this.cdRef.detectChanges();
+      }, error => {
+          this.isLoading = false;
+          this.message.error(`${error.error?.message}`)
+      });
+    }
+  }
+
+  trackByIndex(i: any) {
+    return i;
   }
 
   ngOnDestroy(): void {

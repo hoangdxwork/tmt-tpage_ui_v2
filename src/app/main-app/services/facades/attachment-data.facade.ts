@@ -15,11 +15,8 @@ export class AttachmentDataFacade {
 
   public onSendImages = new EventEmitter<Array<string>>();
 
-  constructor(
-    private attachmentService: AttachmentService,
-    private attachmentState: AttachmentState,
-    // private toaStr: ToastrService,
-  ) { }
+  constructor(private attachmentService: AttachmentService,
+    private attachmentState: AttachmentState) { }
 
   makeAttachment(): Observable<PagedList2<MDBAttachmentDTO>> {
     this.dataAttachment$ = this.getAttachment();
@@ -115,7 +112,7 @@ export class AttachmentDataFacade {
     }
   }
 
-  
+
   // UPDATE
   updateNameAttachment(id: string, name: string): Observable<any> {
     return new Observable(observer => {

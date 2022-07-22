@@ -1,19 +1,19 @@
 <tds-spin [spinning]="isLoading" class="flex-auto h-full w-full flex overflow-hidden">
   <div *ngIf="data && data?.Items" class="flex w-full h-full overflow-hidden">
     <div *ngIf="currentFilter.value === 'all'" class="h-full w-full">
-      <post-comment-all></post-comment-all>
+      <post-comment-all [post]="post"></post-comment-all>
     </div>
     <div *ngIf="currentFilter.value === 'group'" class="h-full w-full">
-      <post-comment-group 
+      <post-comment-user
       [isShowFilterUser]="isShowFilterUser"
       [checkedAll]="checkedAll"
       (onCheckAll)="onCheckAll($event)"
       (onIndeterminate)="onIndeterminate($event)"
       (onSetOfCheckedId)="onSetOfCheckedId($event)">
-    </post-comment-group>
+    </post-comment-user>
     </div>
     <div *ngIf="currentFilter.value === 'filter'" class="h-full w-full">
-      <post-comment-filter 
+      <post-comment-filter
       [currentFilterComment]="currentFilterComment"
       [textSearchFilterComment]="textSearchFilterComment">
     </post-comment-filter>

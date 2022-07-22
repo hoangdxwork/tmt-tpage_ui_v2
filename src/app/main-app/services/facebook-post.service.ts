@@ -12,7 +12,7 @@ import { BaseSevice } from './base.service';
   providedIn: 'root'
 })
 
-export class FacebookPostService extends BaseSevice implements OnInit, OnDestroy {
+export class FacebookPostService extends BaseSevice implements OnDestroy {
 
   prefix: string = "odata";
   table: string = "";
@@ -31,9 +31,6 @@ export class FacebookPostService extends BaseSevice implements OnInit, OnDestroy
     public caheApi: THelperCacheService) {
       super(apiService);
       this.setQuery();
-  }
-
-  ngOnInit() {
   }
 
   loadPost(data: any) {

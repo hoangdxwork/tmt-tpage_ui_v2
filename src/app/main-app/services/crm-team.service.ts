@@ -136,6 +136,7 @@ export class CRMTeamService extends BaseSevice {
   setCacheTeamId(data: TDSSafeAny) {
     this.caheApi.setItem(this.__keyCacheTeamId, data);
   }
+
   //TODO: cập nhật team cho các componet đăng ký sự kiện onChangeTeam, lưu cache.
   onUpdateTeam(data: CRMTeamDTO | null) {
     this.setCacheTeamId(data ? data.Id : null);

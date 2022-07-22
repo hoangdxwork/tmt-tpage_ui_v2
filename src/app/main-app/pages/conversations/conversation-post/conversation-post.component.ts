@@ -193,8 +193,8 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                 this.selectPost(this.data[0]);
             }
           }
-          this.isLoading = false;
 
+          this.isLoading = false;
           return this.data;
         }));
       }
@@ -210,9 +210,11 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
                     exist.picture = x.picture;
                     exist.message = x.message;
                 }
-
-            }});
+              }
+            })
           }
+      }, error => {
+          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi')
       });
     }
   }
@@ -274,8 +276,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
               let data = current;
               return { ...acc, [id]: data };
           }, {});
-        })
-      );
+    }))
   }
 
   nextData(e: any, nextUrl :any) {
@@ -293,6 +294,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     } else {
       this.offset.next(nextUrl);
     }
+    this.cdRef.detectChanges();
   }
 
   trackByIndex(i: any) {

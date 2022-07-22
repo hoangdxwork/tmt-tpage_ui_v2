@@ -27,6 +27,7 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { DeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
+import { TDSNotificationService } from 'tds-ui/notification';
 
 @Component({
   selector: 'app-bill',
@@ -133,12 +134,12 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
       private resizeObserver: TDSResizeObserver,
       private partnerService: PartnerService,
       private crmTeamService: CRMTeamService,
-      private cd: ChangeDetectorRef,
       private deliveryCarrierService: DeliveryCarrierService,
       private crmMatchingService: CRMMatchingService) {
   }
 
   ngOnInit(): void {
+
     this.loadTags();
     this.loadGridConfig();
 

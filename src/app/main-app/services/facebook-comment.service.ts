@@ -67,6 +67,19 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
     return this.apiService.getData<any>(api, null);
   }
 
+  getCommentsByQuery(query: string, postId: string){
+    let api: TAPIDTO = {
+        url: `${query}`,
+        method: TApiMethodType.get
+    }
+
+    return this.apiService.getData<RequestCommentByPost>(api, null)
+      .pipe(map((res: RequestCommentByPost) => {
+          this.onResolveData(res, postId);
+          return res;
+      }));
+  }
+
   getCommentsOrderByPost(id: any): Observable<any> {
     let api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/SaleOnline_Facebook_Post/ODataService.GetCommentOrders?$expand=orders&PostId=${id}`,
@@ -74,7 +87,6 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
     }
     return this.apiService.getData<OdataCommentOrderPostDTO>(api, null);
   }
-
 
   getCommentsByPostId(postId: string): Observable<any> {
     let queryString = Object.keys(this.queryObj).map(key => {

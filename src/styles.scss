@@ -47,3 +47,6 @@ select:-webkit-autofill:focus {
 .phone.info.text-copyable:hover {
   cursor: pointer;
 }
+.tds-custom-scroll::-webkit-scrollbar-thumb {
+  height: 30%
+}
