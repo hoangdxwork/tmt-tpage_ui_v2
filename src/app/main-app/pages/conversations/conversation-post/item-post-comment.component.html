@@ -1,23 +1,38 @@
 <tds-spin [spinning]="isLoading" class="flex-auto h-full w-full flex overflow-hidden">
   <div *ngIf="data && data?.Items" class="flex w-full h-full overflow-hidden">
     <div *ngIf="currentFilter.value === 'all'" class="h-full w-full">
-      <post-comment-all [post]="post"></post-comment-all>
+        <post-comment-all
+            [postId]="post.fbid"
+            [data]="data"
+            [team]="team"
+            [childs]="childs"
+            [commentOrders]="commentOrders">
+        </post-comment-all>
     </div>
+
     <div *ngIf="currentFilter.value === 'group'" class="h-full w-full">
-      <post-comment-user
-      [isShowFilterUser]="isShowFilterUser"
-      [checkedAll]="checkedAll"
-      (onCheckAll)="onCheckAll($event)"
-      (onIndeterminate)="onIndeterminate($event)"
-      (onSetOfCheckedId)="onSetOfCheckedId($event)">
-    </post-comment-user>
+        <post-comment-group
+            [postId]="post.fbid"
+            [data]="data"
+            [team]="team"
+            [childs]="childs"
+            [commentOrders]="commentOrders"
+            [isShowFilterUser]="isShowFilterUser"
+            [setOfCheckedId]="setOfCheckedId"
+            [checkedAll]="checkedAll"
+            (onCheckAll)="onCheckAll($event)"
+            (onIndeterminate)="onIndeterminate($event)"
+            (onSetOfCheckedId)="onSetOfCheckedId($event)">
+        </post-comment-group>
     </div>
+
     <div *ngIf="currentFilter.value === 'filter'" class="h-full w-full">
       <post-comment-filter
-      [currentFilterComment]="currentFilterComment"
-      [textSearchFilterComment]="textSearchFilterComment">
-    </post-comment-filter>
+        [currentFilterComment]="currentFilterComment"
+        [textSearchFilterComment]="textSearchFilterComment">
+      </post-comment-filter>
     </div>
+
     <div *ngIf="currentFilter.value === 'manage'" class="h-full w-full">
       <manage-post-comment
       [checkedAll]="checkedAll"
