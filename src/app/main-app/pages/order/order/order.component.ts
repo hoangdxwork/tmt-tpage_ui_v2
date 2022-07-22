@@ -44,6 +44,9 @@ import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/
 
 export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  @ViewChild('WidthTable') widthTable!: ElementRef;
+  @ViewChild('billOrderLines') billOrderLines!: ElementRef;
+
   lstOfData!: ODataSaleOnline_OrderModel[];
   pageSize = 20;
   pageIndex = 1;
@@ -58,8 +61,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   psid: any;
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;
-  private destroy$ = new Subject<void>();
-
+  
   public filterObj: FilterObjSOOrderModel = {
     tags: [],
     status: [],
@@ -105,12 +107,11 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   paddingCollapse: number = 36;
   marginLeftCollapse: number = 0;
   isLoadingCollapse: boolean = false;
-
-  @ViewChild('WidthTable') widthTable!: ElementRef;
-  @ViewChild('billOrderLines') billOrderLines!: ElementRef;
   widthCollapse: number = 0;
   isTabNavs: boolean = false;
   isProcessing: boolean = false;
+  
+  private destroy$ = new Subject<void>();
 
   constructor(private cdRef: ChangeDetectorRef,
     private fastSaleOrderService: FastSaleOrderService,
@@ -573,7 +574,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = true;
     this.saleOnline_OrderService.remove(id).pipe(finalize(() => this.isLoading = false))
       .subscribe((res: TDSSafeAny) => {
-        this.message.info(`${Message.Order.DeleteSuccess} ${code}`);
+        this.message.info(`${Message.Order.DeleteSuccess} ${code || ''}`);
         this.refreshDataCurrent();
       }, error => {
         this.message.error(`${error?.error?.message}` || Message.ErrorOccurred);
@@ -617,11 +618,6 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   // Gủi tin nhắn FB
   sendMessage() {
     if (this.checkValueEmpty() == 1) {
@@ -655,6 +651,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   loadStatusTypeExt() {
     this.commonService.getStatusTypeExt().subscribe(res => {
       this.lstStatusTypeExt = [...res];
+      this.cdRef.markForCheck();
     });
   }
 
@@ -797,4 +794,8 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

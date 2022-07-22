@@ -18,8 +18,9 @@ import { Component, Input, OnInit, OnDestroy, ChangeDetectionStrategy } from '@a
 export class ModalManualUpdateDeliveryComponent implements OnInit, OnDestroy {
   @Input() model!: FastSaleOrderDTO[];
 
-  lstOfData!:FastSaleOrderDTO[];
+  lstOfData!: FastSaleOrderDTO[];
   lstCarriers: DeliveryCarrierDTOV2[] = [];
+  statusAll: any;
   lstShipStatus = [
     { value: 'none', text: 'Chưa tiếp nhận' },
     { value: 'refund', text: 'Hàng trả về' },
@@ -39,7 +40,6 @@ export class ModalManualUpdateDeliveryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadCarrier();
-
     this.lstOfData = this.model;
   }
 
@@ -76,6 +76,12 @@ export class ModalManualUpdateDeliveryComponent implements OnInit, OnDestroy {
         fso.CarrierDeliveryType = carrier.DeliveryType;
         fso.CarrierName = carrier.Name;
       }
+    })
+  }
+
+  changeStatusForAll(){
+    this.lstOfData.map((item)=>{
+      item.ShipStatus = this.statusAll;
     })
   }
 

@@ -1,3 +1,7 @@
+import { CommonService } from './../../../../services/common.service';
+import { Message } from './../../../../../lib/consts/message.const';
+import { Subject, finalize } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { SaleOnline_OrderDTO, UpdateStatusTextSaleOnlineDTO } from './../../../../dto/saleonlineorder/sale-online-order.dto';
 import { Component, Input, OnInit } from '@angular/core';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
@@ -14,21 +18,26 @@ export class UpdateStatusOrderComponent implements OnInit {
   @Input() listData: any[] = [];
 
   statusAll: any;
+  lstStatus: any[] = [];
+  isLoading = false;
 
-  lstStatus = [
-    { text: 'Nháp', value: 'draft' },
-    { text: 'Hủy', value: 'canceled' },
-    { text: 'Xác nhận', value: 'confirmed' },
-  ];
+  private destroy$ = new Subject<void>();
 
   constructor(
     private message: TDSMessageService,
     private modal: TDSModalRef,
+    private commonService: CommonService,
     private saleOnline_OrderService: SaleOnline_OrderService
   ) { }
 
   ngOnInit(): void {
-    console.log(this.listData);
+    this.loadStatusTypeExt();
+  }
+
+  loadStatusTypeExt() {
+    this.commonService.getStatusTypeExt().subscribe(res => {
+      this.lstStatus = [...res];
+    });
   }
 
   onChangeStatus(event: any, item: any) {
@@ -54,6 +63,8 @@ export class UpdateStatusOrderComponent implements OnInit {
       return;
     }
 
+    this.isLoading = true;
+
     let model = this.listData.map((x: SaleOnline_OrderDTO) => {
       let item: UpdateStatusTextSaleOnlineDTO = {
         Id: x.Id,
@@ -66,9 +77,13 @@ export class UpdateStatusOrderComponent implements OnInit {
       return item;
     });
 
-    this.saleOnline_OrderService.updateStatusTextSaleOnline({model: model}).subscribe(res => {
-      this.message.success("Cập nhật thành công.");
+    this.saleOnline_OrderService.updateStatusTextSaleOnline({model: model})
+    .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
+      this.message.success("Cập nhật thành công");
       this.onCancel(true);
+    },
+    err=>{
+      this.message.error(err?.error?.message || Message.UpdatedFail);
     });
   }
 
@@ -76,4 +91,8 @@ export class UpdateStatusOrderComponent implements OnInit {
     this.modal.destroy(result);
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

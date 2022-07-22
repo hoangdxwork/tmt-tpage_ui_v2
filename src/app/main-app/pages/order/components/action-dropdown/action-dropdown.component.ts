@@ -18,7 +18,6 @@ import { UpdateStatusOrderComponent } from '../update-status-order/update-status
 })
 export class ActionDropdownComponent implements OnInit {
 
-  private _destroy = new Subject<void>();
   @Input() filterObj: any;
   @Input() setOfCheckedId: any = [];
   @Input() lstOfData: any = [];
@@ -27,6 +26,8 @@ export class ActionDropdownComponent implements OnInit {
 
   isProcessing: boolean = false;
   idsModel: any = [];
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private modal: TDSModalService,
@@ -52,7 +53,7 @@ export class ActionDropdownComponent implements OnInit {
         title: 'Xóa đơn hàng',
         content: 'Bạn có chắc muốn xóa!',
         onOk: () => {
-          that.odataSaleOnline_OrderService.removeIds({ ids: that.idsModel }).pipe(takeUntil(this._destroy)).subscribe((res: TDSSafeAny) => {
+          that.odataSaleOnline_OrderService.removeIds({ ids: that.idsModel }).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
             that.message.success('Xóa đơn thành công!');
             that.isProcessing = false;
             this.onRefreshData.emit(true);
@@ -104,22 +105,22 @@ export class ActionDropdownComponent implements OnInit {
     }
   }
 
-  sendMessage() {
-    if (this.checkValueEmpty() == 1) {
-      let orderIds = this.lstOfData.filter((a: any) => this.idsModel.includes(a.Id)).map((x: any) => x.Id);
-      this.modal.create({
-        title: 'Gửi tin nhắn nhanh',
-        content: SendMessageComponent,
-        size: 'lg',
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          // listData: listData
-          orderIds: orderIds,
-          messageType: GenerateMessageTypeEnum.Order
-        }
-      });
-    }
-  }
+  // sendMessage() {
+  //   if (this.checkValueEmpty() == 1) {
+  //     let orderIds = this.lstOfData.filter((a: any) => this.idsModel.includes(a.Id)).map((x: any) => x.Id);
+  //     this.modal.create({
+  //       title: 'Gửi tin nhắn nhanh',
+  //       content: SendMessageComponent,
+  //       size: 'lg',
+  //       viewContainerRef: this.viewContainerRef,
+  //       componentParams: {
+  //         // listData: listData
+  //         orderIds: orderIds,
+  //         messageType: GenerateMessageTypeEnum.Order
+  //       }
+  //     });
+  //   }
+  // }
 
   getUpdateUIds() {
     this.saleOnline_OrderService.getUpdateUIds().subscribe(res => {
@@ -140,4 +141,8 @@ export class ActionDropdownComponent implements OnInit {
     return 1;
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }
