@@ -14,7 +14,7 @@ import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 })
 export class ConfigSmsMessagesComponent implements OnInit {
   listOfDataRestSMS: Array<RestSMSDTO> = [];
-
+  // lstOfService:TDSSafeAny[] = [];
   isLoading = false;
   private destroy$ = new Subject<void>();
 
@@ -30,14 +30,29 @@ export class ConfigSmsMessagesComponent implements OnInit {
 
   loadData() {
     this.isLoading = true;
-    
+
     this.restSMSService.get().pipe(takeUntil(this.destroy$)).subscribe((res: Array<RestSMSDTO>) => {
       this.listOfDataRestSMS = res;
+      // res.forEach(item => {
+      //   if(item.CustomProperties){
+      //     let service = this.getCustomProperties(item.CustomProperties);
+      //     this.lstOfService.push(service);
+      //   }
+      // });
       this.isLoading = false;
     }, err => {
       this.message.error('Load dữ liệu thất bại!');
     })
   }
+
+  // getCustomProperties(data:TDSSafeAny){debugger
+  //   let obj = JSON.parse(JSON.stringify(data));
+  //   if(JSON.parse(obj)?.type){
+  //     return JSON.parse(obj).type?.datasource;
+  //   }else{
+  //     this.getCustomProperties(obj);
+  //   }
+  // }
 
   onAddNewData(data: TDSSafeAny) {
     const modal = this.modalService.create({

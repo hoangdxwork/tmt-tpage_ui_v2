@@ -7,20 +7,14 @@
             </div>
             <button tds-button color="primary" (click)="onAddNewData($event)">
                 <span class="flex items-center">
-                  <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
-                  <span class="text-body-2 font-semibold">Thêm mới</span>
+                    <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>
+                    <span class="text-body-2 font-semibold">Thêm mới</span>
                 </span>
             </button>
         </div>
         <div class="flex flex-auto pb-2.5">
-            <tds-table #basicTable
-                [listData]="listOfDataRestSMS"
-                [showSizeChanger]="true"
-                [loading]="isLoading"
-                [scroll]="{y:'auto'}"
-                [pageSize]="20"
-                [total]="listOfDataRestSMS.length"
-                >
+            <tds-table #basicTable [listData]="listOfDataRestSMS" [showSizeChanger]="true"
+                [loading]="isLoading" [scroll]="{y:'auto'}" [pageSize]="20" [total]="listOfDataRestSMS.length">
                 <thead>
                       <tr class="text-neutral-1-900 text-body-2 font-semibold">
                             <th [width]="'100px'">#</th>

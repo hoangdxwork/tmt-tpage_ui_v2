@@ -75,9 +75,9 @@ export class EditProductVariantComponent implements OnInit {
       PriceVariant: [0],
       IsAvailableOnTPage: [null],
       ImageUrl: [null],
-      Categ: [null],
-      UOM: [null],
-      UOMPO: [null],
+      Categ: [null, Validators.required],
+      UOM: [null, Validators.required],
+      UOMPO: [null, Validators.required],
       Images: this.fb.array([])
     })
   }
@@ -199,11 +199,29 @@ export class EditProductVariantComponent implements OnInit {
     return this.dataModel;
   }
 
-  onSave(): any {
+  checkError(){
     let model = this.prepareModel();
 
     if (!model.Name) {
-      return this.message.error('Vui lòng nhập tên sản phẩm');
+      this.message.error('Vui lòng nhập tên sản phẩm');
+    }
+
+    if (!model.Categ) {
+      this.message.error('Vui lòng nhập nhóm sản phẩm');
+    }
+
+    if (!model.UOM && !model.UOMPO) {
+      this.message.error('Vui lòng nhập đơn vị');
+    }
+
+    return !model.Name || !model.Categ || (!model.UOM && !model.UOMPO);
+  }
+
+  onSave(): any {
+    let model = this.prepareModel();
+
+    if(this.checkError()){
+      return;
     }
 
     this.productService.updateProduct(this.id, model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
