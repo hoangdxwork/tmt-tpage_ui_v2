@@ -137,7 +137,7 @@ export class ConversationService extends BaseSevice {
     } as QueryStateConversationDTO;
   }
 
-  createQuery_v2(pageId: any, type: any, next?: number, state?: any) {
+  createQuery_v2(pageId: any, type: any) {
     return {
         pageId: pageId,
         type: type,
