@@ -1,174 +1,187 @@
 <tds-spin [spinning]="isLoading">
-<div class="rounded-xl border border-light-50 text-body-2 text-neutral-1-900">
-    <tds-tabset class="" (selectChange)="changeTab($event)">
-        <tds-tab title="Gửi tin nhắn Facebook">
-            <!-- Trang gửi tin nhắn facbook -->
-            <form *ngIf="!isTableSendMessageFacebook" [formGroup]="formSendMessageFacebook"
-                class="flex flex-col gap-y-4">
-                <tds-form-field>
-                    <tds-label>Tiêu đề</tds-label>
-                    <input tdsInput autocomplete="off" placeholder="Nhập tiêu đề" formControlName="title" />
-                </tds-form-field>
-                <tds-form-field>
-                    <tds-label>Nội dung</tds-label>
-                    <textarea tdsInput class="h-16 resize-none no-scrollbar" formControlName="content" [tdsInputDebounce]="700" (inputKeyup)="checkIncludes($event)" placeholder="Nhập nội dung"></textarea>
-                </tds-form-field>
-                <div class="flex justify-between">
-                    <div class="">
-                        <tds-tag *ngFor="let item of tagCustomers" (click)="addTagContentFB(item.value)"
-                            class="mr-2 cursor-pointer" [status]="setOfCheckedTag.has(item.value)?'success':'secondary'" type="outline" rounded="rounded-full">
-                            {{item.text}}
-                        </tds-tag>
+    <div class="rounded-xl border border-light-50 text-body-2 text-neutral-1-900">
+        <tds-tabset class="" (selectChange)="changeTab($event)">
+            <tds-tab title="Gửi tin nhắn Facebook">
+                <!-- Trang gửi tin nhắn facbook -->
+                <form *ngIf="!isTableSendMessageFacebook" [formGroup]="formSendMessageFacebook"
+                    class="flex flex-col gap-y-4">
+                    <tds-form-field>
+                        <tds-label>Tiêu đề</tds-label>
+                        <input tdsInput autocomplete="off" placeholder="Nhập tiêu đề" formControlName="title"/>
+                    </tds-form-field>
+                    <tds-form-field>
+                        <tds-label>Nội dung</tds-label>
+                        <textarea tdsInput class="h-16 resize-none no-scrollbar" formControlName="content"
+                            [tdsInputDebounce]="700" (inputKeyup)="checkIncludes($event)"
+                            placeholder="Nhập nội dung"></textarea>
+                    </tds-form-field>
+                    <div class="flex justify-between">
+                        <div class="">
+                            <tds-tag *ngFor="let item of tagCustomers" (click)="addTagContentFB(item.value)"
+                                class="mr-2 cursor-pointer"
+                                [status]="setOfCheckedTag.has(item.value)?'success':'secondary'" type="outline"
+                                rounded="rounded-full">
+                                {{item.text}}
+                            </tds-tag>
+                        </div>
+                        <div>
+                            <button tds-button color="secondary" type="button"
+                                (click)="showModalSampleMessage('facebook')">
+                                <span class="flex items-center">
+                                    <i class="tdsi-conversation-fill text-lg leading-none mr-2 text-neutral-1-500"></i>
+                                    <div class="text-body-2 font-semibold text-neutral-1-900">Nội dung mẫu</div>
+                                </span>
+                            </button>
+                        </div>
                     </div>
-                    <div>
-                        <button tds-button color="secondary" type="button" (click)="showModalSampleMessage('facebook')">
-                            <span class="flex items-center">
-                                <i class="tdsi-conversation-fill text-lg leading-none mr-2 text-neutral-1-500"></i>
-                                <div class="text-body-2 font-semibold text-neutral-1-900">Nội dung mẫu</div>
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            </form>
-            <div *ngIf="isTableSendMessageFacebook" class="w-full h-96">
-                <tds-table templateMode [scroll]="{y: 'auto'}">
-                    <thead>
-                        <tr>
-                            <th width="20%">Tên khách hàng</th>
-                            <th width="20%">Tên Facebook</th>
-                            <th width="34%">Nội dung tin nhắn</th>
-                            <th width="26%">Page Facebook</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let data of listSendMessageFacebook ">
-                            <td>{{ data.PartnerName }}</td>
-                            <td>{{ data.Name}}</td>
-                            <td>
-                               <div [innerHTML]="data.Message | safeHtml"></div>
-                            </td>
-                            <td>
-                                <div class="flex">
-                                    <button class="" tds-button color="secondary" tds-dropdown trigger="click"
-                                        [tdsDropdownMenu]="menu" [backdrop]="true">
-                                        <span class="flex justify-between ">
-                                            <div class=" flex gap-x-2.5 items-center">
-                                                <tds-avatar class="bg-accent-4 text-white" size="sm"
-                                                    [tdsSrc]="data.Teams[0].Facebook_PageLogo">
-                                                </tds-avatar> {{data.Teams[0].Facebook_PageName}}
-                                            </div>
-                                            <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
-                                        </span>
-                                    </button>
-
-                                    <tds-dropdown-menu #menu="tdsDropdownMenu">
-                                        <div class="w-full">
-                                            <div>
-                                              <button tds-button-menu-item>Item 0</button>
-                                            </div>
-                                            <div>
-                                              <button tds-button-menu-item>Item 1</button>
-                                            </div>
-                                        </div>
-                                    </tds-dropdown-menu>
-                                </div>
-                            </td>
-                        </tr>
-                        <td colspan="4">
-                            <div *ngIf="this.listSendMessageFacebook && this.listSendMessageFacebook.length == 0" class="flex w-full justify-center">
-                                <tds-empty notFoundContent="Tất cả khách hàng được chọn chưa thêm thông tin Facebook">
-                                </tds-empty>
-                            </div>
-                        </td>
-                    </tbody>
-                </tds-table>
-            </div>
-            <!-- Trang gửi tin nhắn SMS -->
-        </tds-tab>
-        <tds-tab title="Gửi tin nhắn SMS">
-            <form *ngIf="!isTableSendMessageSMS" [formGroup]="formSendMessageSMS" class="flex flex-col gap-y-4">
-                <tds-form-field>
-                    <tds-label>Nội dung</tds-label>
-                    <textarea tdsInput class="h-16 resize-none no-scrollbar" tdsInput formControlName="content" [tdsInputDebounce]="700" (inputKeyup)="checkIncludes($event)" placeholder="Nhập nội dung"></textarea>
-                </tds-form-field>
-                <div class="flex justify-between">
-                    <div class="">
-                        <tds-tag *ngFor="let item of tagCustomers" (click)="addTagContentSMS(item.value)"
-                            class="mr-2 cursor-pointer" [status]="setOfCheckedTag.has(item.value)?'success':'secondary'" type="outline" rounded="rounded-full">
-                            {{item.text}}
-                        </tds-tag>
-                    </div>
-                    <div>
-                        <button tds-button type="button" color="secondary" (click)="showModalSampleMessage('SMS')">
-                            <span class="flex items-center">
-                                <i class="tdsi-conversation-fill text-lg leading-none mr-2 text-neutral-1-500"></i>
-                                <div class="text-neutral-1-900 font-semibold text-body-2">Nội dung mẫu</div>
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            </form>
-            <div *ngIf="isTableSendMessageSMS" class="flex flex-col gap-y-4">
-                <tds-form-field>
-                    <tds-label>Dịch vụ</tds-label>
-                    <tds-select [(ngModel)]="selectSMS" valueField="Id" textField="Name" placeholder='Chọn dịch vụ'
-                        [allowClear]="true" [data]="currentSMS">
-                    </tds-select>
-                </tds-form-field>
-                <div class="w-full h-96">
+                </form>
+                <div *ngIf="isTableSendMessageFacebook" class="w-full h-96">
                     <tds-table templateMode [scroll]="{y: 'auto'}">
                         <thead>
                             <tr>
                                 <th width="20%">Tên khách hàng</th>
-                                <th width="20%">Số điện thoại</th>
-                                <th width="60%">Nội dung tin nhắn</th>
+                                <th width="20%">Tên Facebook</th>
+                                <th width="34%">Nội dung tin nhắn</th>
+                                <th width="26%">Page Facebook</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let data of listSendMessageSMS">
-                                <td>{{ data.Name }}</td>
-                                <td>{{ data.Phone }}</td>
+                            <tr *ngFor="let data of listSendMessageFacebook ">
+                                <td>{{ data.PartnerName }}</td>
+                                <td>{{ data.Name}}</td>
                                 <td>
-                                  <div [innerHTML]="data.Message | safeHtml"></div>
+                                    <div [innerHTML]="data.Message | safeHtml"></div>
+                                </td>
+                                <td>
+                                    <div class="flex">
+                                        <button class="" tds-button color="secondary" tds-dropdown trigger="click"
+                                            [tdsDropdownMenu]="menu" [backdrop]="true">
+                                            <span class="flex justify-between ">
+                                                <div class=" flex gap-x-2.5 items-center">
+                                                    <tds-avatar class="bg-accent-4 text-white" size="sm"
+                                                        [tdsSrc]="data.Teams[0].Facebook_PageLogo">
+                                                    </tds-avatar> {{data.Teams[0].Facebook_PageName}}
+                                                </div>
+                                                <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
+                                            </span>
+                                        </button>
+
+                                        <tds-dropdown-menu #menu="tdsDropdownMenu">
+                                            <div class="w-full">
+                                                <div>
+                                                    <button tds-button-menu-item>Item 0</button>
+                                                </div>
+                                                <div>
+                                                    <button tds-button-menu-item>Item 1</button>
+                                                </div>
+                                            </div>
+                                        </tds-dropdown-menu>
+                                    </div>
                                 </td>
                             </tr>
-                            <td colspan="3">
-                                <div *ngIf="this.listSendMessageSMS && this.listSendMessageSMS.length == 0" class="flex w-full justify-center">
-                                    <tds-empty notFoundContent="Tất cả khách hàng được chọn chưa thêm số điện thoại">
+                            <td colspan="4">
+                                <div *ngIf="this.listSendMessageFacebook && this.listSendMessageFacebook.length == 0"
+                                    class="flex w-full justify-center">
+                                    <tds-empty
+                                        notFoundContent="Tất cả khách hàng được chọn chưa thêm thông tin Facebook">
                                     </tds-empty>
                                 </div>
                             </td>
                         </tbody>
                     </tds-table>
                 </div>
-            </div>
-        </tds-tab>
-    </tds-tabset>
-</div>
+                <!-- Trang gửi tin nhắn SMS -->
+            </tds-tab>
+            <tds-tab title="Gửi tin nhắn SMS">
+                <form *ngIf="!isTableSendMessageSMS" [formGroup]="formSendMessageSMS" class="flex flex-col gap-y-4">
+                    <tds-form-field>
+                        <tds-label>Nội dung</tds-label>
+                        <textarea tdsInput class="h-16 resize-none no-scrollbar" tdsInput formControlName="content"
+                            [tdsInputDebounce]="700" (inputKeyup)="checkIncludes($event)"
+                            placeholder="Nhập nội dung"></textarea>
+                    </tds-form-field>
+                    <div class="flex justify-between">
+                        <div class="">
+                            <tds-tag *ngFor="let item of tagCustomers" (click)="addTagContentSMS(item.value)"
+                                class="mr-2 cursor-pointer"
+                                [status]="setOfCheckedTag.has(item.value)?'success':'secondary'" type="outline"
+                                rounded="rounded-full">
+                                {{item.text}}
+                            </tds-tag>
+                        </div>
+                        <div>
+                            <button tds-button type="button" color="secondary" (click)="showModalSampleMessage('SMS')">
+                                <span class="flex items-center">
+                                    <i class="tdsi-conversation-fill text-lg leading-none mr-2 text-neutral-1-500"></i>
+                                    <div class="text-neutral-1-900 font-semibold text-body-2">Nội dung mẫu</div>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div *ngIf="isTableSendMessageSMS" class="flex flex-col gap-y-4">
+                    <tds-form-field>
+                        <tds-label>Dịch vụ</tds-label>
+                        <tds-select [(ngModel)]="selectSMS" valueField="Id" textField="Name" placeholder='Chọn dịch vụ'
+                            [allowClear]="true" [data]="currentSMS">
+                        </tds-select>
+                    </tds-form-field>
+                    <div class="w-full h-96">
+                        <tds-table templateMode [scroll]="{y: 'auto'}">
+                            <thead>
+                                <tr>
+                                    <th width="20%">Tên khách hàng</th>
+                                    <th width="20%">Số điện thoại</th>
+                                    <th width="60%">Nội dung tin nhắn</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let data of listSendMessageSMS">
+                                    <td>{{ data.Name }}</td>
+                                    <td>{{ data.Phone }}</td>
+                                    <td>
+                                        <div [innerHTML]="data.Message | safeHtml"></div>
+                                    </td>
+                                </tr>
+                                <td colspan="3">
+                                    <div *ngIf="this.listSendMessageSMS && this.listSendMessageSMS.length == 0"
+                                        class="flex w-full justify-center">
+                                        <tds-empty
+                                            notFoundContent="Tất cả khách hàng được chọn chưa thêm số điện thoại">
+                                        </tds-empty>
+                                    </div>
+                                </td>
+                            </tbody>
+                        </tds-table>
+                    </div>
+                </div>
+            </tds-tab>
+        </tds-tabset>
+    </div>
 </tds-spin>
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button *ngIf="indexTab == 0 && !isTableSendMessageFacebook" class="mr-2 min-w-[100px]" type="button" color="secondary"
-        (click)="close()">Đóng</button>
+    <button tds-button *ngIf="indexTab == 0 && !isTableSendMessageFacebook" class="mr-2 min-w-[100px]" type="button"
+        color="secondary" (click)="close()">Đóng</button>
     <button tds-button *ngIf=" indexTab == 0 && !isTableSendMessageFacebook" type="submit" color="primary"
         [disabled]="isLoading" (click)="setStepFacebook()">
         Bước tiếp theo
     </button>
-    <button tds-button *ngIf="indexTab == 0 &&isTableSendMessageFacebook" class="mr-2 min-w-[100px]" type="button" color="secondary"
-        (click)="cancel()">Hủy</button>
+    <button tds-button *ngIf="indexTab == 0 &&isTableSendMessageFacebook" class="mr-2 min-w-[100px]" type="button"
+        color="secondary" (click)="cancel()">Hủy</button>
     <button tds-button *ngIf="indexTab == 0 && isTableSendMessageFacebook" type="submit" color="primary"
         [disabled]="isLoading" (click)="sendMessageFacebook()">
         <span class="flex items-center">
             <i class="tdsi-send-fill mr-2"></i>Gửi tin nhắn
         </span>
     </button>
-    <button tds-button *ngIf="indexTab == 1 && !isTableSendMessageSMS" class="mr-2 min-w-[100px]" type="button" color="secondary"
-        (click)="close()">Đóng</button>
+    <button tds-button *ngIf="indexTab == 1 && !isTableSendMessageSMS" class="mr-2 min-w-[100px]" type="button"
+        color="secondary" (click)="close()">Đóng</button>
     <button tds-button *ngIf=" indexTab == 1 && !isTableSendMessageSMS" type="submit" color="primary"
         [disabled]="isLoading" (click)="setStepSMS()">
         Bước tiếp theo
     </button>
-    <button tds-button *ngIf="indexTab == 1 &&isTableSendMessageSMS" class="mr-2 min-w-[100px]" type="button" color="secondary"
-        (click)="cancel()">Hủy</button>
+    <button tds-button *ngIf="indexTab == 1 &&isTableSendMessageSMS" class="mr-2 min-w-[100px]" type="button"
+        color="secondary" (click)="cancel()">Hủy</button>
     <button tds-button *ngIf="indexTab == 1 && isTableSendMessageSMS" type="submit" color="primary"
         [disabled]="isLoading" (click)="sendMessageSMS()">
         <span class="flex items-center">

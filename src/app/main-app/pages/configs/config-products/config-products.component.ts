@@ -49,7 +49,8 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
 
   count: number = 1;
   tableWidth: number = 0;
-  paddingCollapse: number = 32;
+  marginLeftCollapse: number = 0;
+  paddingCollapse: number = 36;
 
   checked = false;
   indeterminate = false;
@@ -66,6 +67,9 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
   isProcessing: boolean = false;
 
   private destroy$ = new Subject<void>();
+
+  @ViewChild('viewChildWidthTable') viewChildWidthTable!: ElementRef;
+  @ViewChild('viewChildDetailPartner') viewChildDetailPartner!: ElementRef;
 
   constructor(
     private router: Router,
@@ -86,14 +90,22 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   ngAfterViewInit(): void {
-    this.tableWidth = this.parentElement.nativeElement.offsetWidth - this.paddingCollapse
+    this.tableWidth = this.viewChildWidthTable?.nativeElement?.offsetWidth - this.paddingCollapse
+
     this.resizeObserver
-      .observe(this.parentElement)
-      .pipe(takeUntil(this.destroy$))
+      .observe(this.viewChildWidthTable)
       .subscribe(() => {
-        this.tableWidth = this.parentElement.nativeElement.offsetWidth - this.paddingCollapse
-        this.parentElement.nativeElement.click()
+        this.tableWidth = this.viewChildWidthTable?.nativeElement?.offsetWidth - this.paddingCollapse;
+        this.viewChildWidthTable?.nativeElement.click()
       });
+    setTimeout(() => {
+      let that = this;
+      let wrapScroll = this.viewChildDetailPartner?.nativeElement?.closest('.tds-table-body');
+      wrapScroll?.addEventListener('scroll', function () {
+        let scrollleft = wrapScroll.scrollLeft;
+        that.marginLeftCollapse = scrollleft;
+      });
+    }, 500);
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
