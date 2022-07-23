@@ -27,6 +27,7 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
   _form!: FormGroup;
   data!: PartnerDetailDTO;
   isLoading: boolean = false;
+  price!: PartnerCategoryDTO;
   lstCategory: Array<PartnerCategoryDTO> = [];
   lstStatus: Array<StatusDTO> = [];
   lstPrice: Array<PartnerCategoryDTO> = [];
@@ -102,6 +103,7 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     } else {
       this.loadDefault();
     }
+    this.openlstPrice();
   }
 
   loadDefault() {
@@ -228,11 +230,12 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     })
   }
 
-  openlstPrice(event: any) {
+  openlstPrice() {
     let date = formatDate(new Date(), 'yyyy-MM-ddTHH:mm:ss', 'en-US');
     this.commonService.getPriceListAvailable(date).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if (TDSHelperString.hasValueString(res.value)) {
         this.lstPrice = [...res.value];
+        this.price = this.lstPrice[0];
       }
     }, error => {
       this.message.error(`${error?.error?.message}`)

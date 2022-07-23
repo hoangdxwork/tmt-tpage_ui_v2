@@ -128,8 +128,14 @@ export class ModalSendMessageComponent implements OnInit {
   setStepFacebook() {
     if (this.indexTab == 0) {
       if (!this.formSendMessageFacebook.valid) {
-        this.message.error('Tiêu đề và nội dung không được bỏ trống')
-        return;
+        if(!this.formSendMessageFacebook.controls.title.valid) {
+          this.message.error('Tiêu đề không được bỏ trống')
+          return;
+        }
+        if(!this.formSendMessageFacebook.controls.content.valid) {
+          this.message.error('Nội dung không được bỏ trống')
+          return;
+        }
       } else {
         this.isLoading = true;
         this.isTableSendMessageFacebook = true
@@ -203,7 +209,7 @@ export class ModalSendMessageComponent implements OnInit {
   setStepSMS() {
     if (this.indexTab == 1) {
       if (!this.formSendMessageSMS.valid) {
-        this.message.error('Tiêu đề và nội dung không được bỏ trống')
+        this.message.error('Nội dung không được bỏ trống')
         return;
       } else {
         this.isLoading = true;
