@@ -1,7 +1,7 @@
 <!-- Danh sách bình luận lọc theo người dùng -->
 <tds-spin [spinning]="isLoading">
   <div *ngIf="data?.Items" class="p-4 h-full overflow-y-auto tds-custom-scroll flex flex-col gap-y-3">
-    <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="myScroll" is-lock="true"
+    <div class="flex flex-col gap-y-1" id="myScroll" is-lock="true"
           yiAutoScroll lock-y-offset="10" scroll-end="true" observe-attributes (on-change-bottom)="nextData($event)">
 
           <div *ngFor="let item of data.Items; let i= index; trackBy: trackByIndex">
