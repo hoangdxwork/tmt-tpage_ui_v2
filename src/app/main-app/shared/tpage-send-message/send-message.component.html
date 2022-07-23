@@ -41,14 +41,6 @@
         <div class="overflow-y-auto tds-custom-scroll w-full flex flex-col gap-y-2">
           <div class="flex justify-between items-center py-1">
             <p class="text-neutral-1-600 text-lg font-semibold">Tên mô tả: {{messageSelect.Name}}</p>
-            <div class="flex gap-x-2 items-center pr-1">
-              <button tds-button-icon color="secondary" tds-tooltip="Chỉnh sửa" size="sm">
-                <i class="tdsi-edit-fill text-neutral-1-500"></i>
-              </button>
-              <button tds-button-icon color="secondary" tds-tooltip="Xóa" size="sm">
-                <i class="tdsi-trash-fill text-neutral-1-500"></i>
-              </button>
-            </div>
           </div>
           <div class="text-sm font-normal bg-neutral-3-50 mt-4 p-4">
             {{messageSelect.BodyPlain}}
@@ -58,19 +50,14 @@
               <p class="font-semibold">{{index + 1}}. {{item.PartnerName}}</p>
               <span >{{item.OrderCode || item.SaleCode}}</span>
             </div>
-            <div>
-              <button tds-button-icon color="secondary" tds-tooltip="Xóa dòng" size="sm" (click)="onRemove(index)">
-                <i class="tdsi-trash-fill text-neutral-1-500"></i>
-              </button>
-            </div>
+            <button *ngIf="!inBillExpand" tds-button-icon color="secondary" tds-tooltip="Xóa dòng" size="sm" (click)="onRemove(index)">
+              <i class="tdsi-trash-fill text-neutral-1-500"></i>
+            </button>
             <ng-template #tooltipTitleMessage>
               <div class="max-w-[320px]">
                 {{item.Content}}
               </div>
             </ng-template>
-          </div>
-          <div *ngIf="isLoading" class="w-full flex items-center justify-center">
-            <tds-spinner [color]="'primary'" class="mr-1 h-8 w-8"> </tds-spinner>
           </div>
         </div>
       </div>

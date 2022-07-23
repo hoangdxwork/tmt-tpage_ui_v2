@@ -26,10 +26,10 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
   ];
 
   status = [
-    { Name: 'Nháp', Type: 'draft', Total: 0 },
-    { Name: 'Đã xác nhận', Type: 'open', Total: 0 },
-    { Name: 'Đã thanh toán', Type: 'paid', Total: 0 },
-    { Name: 'Hủy bỏ', Type: 'cancel', Total: 0 }
+    { Name: 'Nháp', Type: 'draft', Total: 0, IsSelected: false },
+    { Name: 'Đã xác nhận', Type: 'open', Total: 0, IsSelected: false },
+    { Name: 'Đã thanh toán', Type: 'paid', Total: 0, IsSelected: false },
+    { Name: 'Hủy bỏ', Type: 'cancel', Total: 0, IsSelected: false }
   ];
 
   private destroy$ = new Subject<void>();
@@ -47,6 +47,7 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadSummaryStatus();
+    this.checkActiveStatus();
   }
 
   onChangeDate(event: any[]) {
@@ -94,6 +95,7 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
     } else {
         this.filterObj.status.push(event.Type);
     }
+    this.checkActiveStatus();
   }
 
   loadSummaryStatus(){
@@ -129,6 +131,13 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
     this.isActive = true;
     this.loadSummaryStatus();
     this.onLoadOption.emit(this.filterObj);
+    this.closeMenu();
+  }
+
+  checkActiveStatus(){
+    this.status.map(stt=>{
+      stt.IsSelected = this.filterObj.status.some(f=>f == stt.Type);
+    })
   }
 
   checkActive(): boolean {
@@ -159,7 +168,9 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
     }
 
     this.isActive = false;
+    this.checkActiveStatus();
     this.onLoadOption.emit(this.filterObj);
+    this.closeMenu();
   }
 
   closeMenu() {
@@ -170,5 +181,4 @@ export class FilterOptionsComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
 }

@@ -1,3 +1,4 @@
+import { GetStatusNamePipe } from './get-status-name.pipe';
 import { SelectMultipleValuePipe } from './select-multiple-value.pipe';
 import { ConvertListUrlPipe } from './convert-list-url.pipe';
 import { ButtonStatusColorPipe } from './button-status-color.pipe';
@@ -43,7 +44,8 @@ const cmp =[
   SelectMultipleValuePipe,
   NameNetWorkPipe,
   NumberCustomPipe,
-  CompareToday
+  CompareToday,
+  GetStatusNamePipe
 ]
 
 @NgModule({

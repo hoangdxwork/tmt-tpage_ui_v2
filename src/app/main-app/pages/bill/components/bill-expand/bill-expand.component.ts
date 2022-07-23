@@ -111,7 +111,8 @@ export class BillExpandComponent implements OnInit, OnDestroy {
       viewContainerRef: this.viewContainerRef,
       componentParams: {
         selectedUsers: [this.dataItem.Id],
-        messageType: GenerateMessageTypeEnum.Bill
+        messageType: GenerateMessageTypeEnum.Bill,
+        inBillExpand: true
       }
     });
   }

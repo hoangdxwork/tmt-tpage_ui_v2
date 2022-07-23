@@ -440,7 +440,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
           }
 
           if(model.partner){
-            this.changePartner(model.partner.Id)
+            this.changePartner(model.partner.Id);
           }
 
           data.OrderLines = orderLines;
@@ -1250,6 +1250,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   onSelectShipServiceId(event: any) {
     let item = this.shipServices.find((x: any) => x.ServiceId === event.ServiceId);
+
     if (item && item.ServiceId) {
       this.selectShipService(item);
 
@@ -1261,6 +1262,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
   onUpdateInsuranceFee() {
     let model = this.prepareModel();
+
     this.calculateFee(model.Carrier).then((res: any) => {
       if (res.Costs && res.Costs.length > 0) {
         res.Costs.map((x: any) => {
@@ -1282,18 +1284,24 @@ export class AddBillComponent implements OnInit, OnDestroy {
     });
   }
 
-  changeDeliveryPrice(event: any) {
-    if (event) {
-      // this._form.controls['DeliveryPrice'].setValue(event);
-      this.updateCoDAmount();
-    }
+  changeDeliveryPrice(value: number) {
+    if (value && value > 0) {
+      this._form.controls['DeliveryPrice'].setValue(value);
+    }else{
+      this._form.controls['DeliveryPrice'].setValue(0);
+    }      
+    
+    this.updateCoDAmount();
   }
 
-  changeAmountDeposit(event: any) {
-    if (event) {
-      // this._form.controls['AmountDeposit'].setValue(event);
-      this.updateCoDAmount();
+  changeAmountDeposit(value: number) {
+    if (value && value > 0) {
+      this._form.controls['AmountDeposit'].setValue(value);
+    }else{
+      this._form.controls['AmountDeposit'].setValue(0);
     }
+
+    this.updateCoDAmount();
   }
 
   changeShipWeight(event: any): any {
@@ -1824,8 +1832,10 @@ export class AddBillComponent implements OnInit, OnDestroy {
   updateCoDAmount() {
     let formModel = this._form.value;
     let coDAmount = (formModel.AmountTotal + formModel.DeliveryPrice) - formModel.AmountDeposit;
-    if (coDAmount) {
+    if (coDAmount > 0) {
       this._form.controls['CashOnDelivery'].setValue(coDAmount);
+    }else{
+      this._form.controls['CashOnDelivery'].setValue(0);
     }
   }
 
