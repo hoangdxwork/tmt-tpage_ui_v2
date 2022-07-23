@@ -50,7 +50,7 @@
                         <tds-form-field>
                           <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm'
                               formControlName="Categories" mode="multiple"
-                              (FocusChange)="openCategory($event)"  [valuePrimitive]="false"
+                              (FocusChange)="openCategory($event)" [valuePrimitive]="false"
                               disabledField="isActive" [data]="lstCategory" [allowClear]="true">
                           </tds-select>
                         </tds-form-field>
@@ -130,7 +130,7 @@
                       </div>
                       <div class="block col-span-2">
                           <suggest-address
-                              [_isExpanded]="true"
+                              [_isExpanded]="false"
                               [_cities]="_cities"
                               [_districts]="_districts"
                               [_wards]="_wards"
