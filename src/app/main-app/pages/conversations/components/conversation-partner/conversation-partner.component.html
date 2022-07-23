@@ -1,7 +1,7 @@
 
 <tds-spin [spinning]="isLoading">
   <div *ngIf="partner">
-    <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-y-auto tds-custom-scroll flex-col flex">
+    <div class="w-full h-[calc(100vh-109px)] bg-neutral-3-100 overflow-hidden overflow-y-auto tds-custom-scroll flex-col flex">
       <div class="bg-white px-4 py-4">
         <div class="flex gap-6">
           <tpage-avatar-facebook [shape]="'circle'" [size]="'lg'" [psid]="partner?.Facebook_ASUserId" [token]="team?.Facebook_PageToken">
@@ -71,8 +71,8 @@
         <div class="pt-3 flex gap-2" *ngIf="!isEditPartner">
           <tds-button-group>
             <button type="button" tds-dropdown color="secondary" trigger="click" [tdsDropdownMenu]="menuRevenue"
-              class="rounded-full border border-neutral-2-100 border-solid bg-white py-1.5 px-4">
-              <span class="flex items-center text-body-2 font-semibold text-neutral-1-500 cursor-pointer">
+              class="rounded-full border border-neutral-2-100 border-solid bg-white py-1.5 2xl:px-4 px-2">
+              <span class="flex items-center text-body-2 font-semibold text-neutral-1-500 cursor-pointer whitespace-nowrap">
                 Tổng doanh số: <span class="pl-2 text-primary-1">{{objRevenue?.RevenueTotal || 0 | number: '1.0-3'}} đ</span>
                 <i class="tdsi-arrow-down-line text-lg leading-none ml-2"></i>
               </span>
@@ -85,8 +85,8 @@
               </div>
             </tds-dropdown-menu>
           </tds-button-group>
-          <button type="button" class="border border-neutral-2-100 border-solid px-4 rounded-full" (click)="onBlockPhone()">
-            <span class="flex items-center text-body-2 font-semibold font-sans text-neutral-1-900">
+          <button type="button" class="border border-neutral-2-100 border-solid 2xl:px-4 px-2 rounded-full" (click)="onBlockPhone()">
+            <span class="flex items-center text-body-2 font-semibold font-sans text-neutral-1-900 whitespace-nowrap">
               <i class="tdsi-block-fill text-lg mr-2 text-neutral-1-400"></i> Chặn SĐT
             </span>
           </button>
@@ -184,11 +184,11 @@
             </ng-template>
             <div class="w-full h-full">
               <div class="w-full">
-                <tds-filter-status (selectChange)="onChangeBill($event)" [ngModel]='tabBillCurrent' [ngModelOptions]="{standalone: true}">
+                <tds-filter-status (selectChange)="onChangeBill($event)" [ngModel]='tabBillCurrent' [ngModelOptions]="{standalone: true}" class="gap-2 flex flex-wrap">
                   <tds-filter-status-item *ngFor="let bills of lstBill; let index = index"
                     [name]='bills.data[0].ShowState' [value]='index' [count]='bills.total'>
                     <ng-template tds-filter-status-template let-active='active' let-count='count' let-name='name' let-value>
-                      <div class="py-1 px-2 flex items-center border border-neutral-2-100 border-solid rounded-full mr-2"
+                      <div class="py-1 px-2 flex items-center border border-neutral-2-100 border-solid rounded-full"
                         [ngClass]="{' border-primary-1':active,'border-neutral-2-100 group-hover:border-primary-1':!active}">
                           <div class="text-body-2 mr-2 font-semibold" [ngClass]="{'text-primary-1':active,'text-neutral-1-400 group-hover:text-primary-1':!active}">
                             {{name}}&nbsp; {{count}}

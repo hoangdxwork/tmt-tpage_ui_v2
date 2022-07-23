@@ -43,13 +43,13 @@
             </div>
 
         </div>
-        <div class="w-full flex flex-col gap-1" *ngIf="(item | lastActivityMessage: type)">
-            <div class="flex w-full justify-between items-center gap-x-1.5">
-                <div class="flex w-full items-center">
-                    <div [ngClass]="seenedMessage() ? 'font-semibold' : ''" class="text-body-1 text-neutral-1-900 truncate" [tooltipTitle]="item.name || item.partner_name"
-                        [tooltipPlacement]="['topLeft', 'leftTop']" tds-tooltip style="max-width: 50%">{{item.name || item.partner_name}}
+        <div class="flex-auto overflow-hidden flex flex-col gap-1" *ngIf="(item | lastActivityMessage: type)">
+            <div class="flex flex-auto justify-between items-center gap-x-1.5 overflow-hidden">
+                <div class="flex flex-auto items-center overflow-hidden">
+                    <div [ngClass]="seenedMessage() ? 'font-semibold' : ''" class="text-body-1 text-neutral-1-900 {{item.state ? 'w-4/5': 'flex-auto'}} truncate" [tooltipTitle]="item.name || item.partner_name"
+                        [tooltipPlacement]="['topLeft', 'leftTop']" tds-tooltip>{{item.name || item.partner_name}}
                     </div>
-                    <div *ngIf="item.state" class="text-body-2">
+                    <div *ngIf="item.state" class="text-body-2 flex-auto">
                         <!-- Chatbot bình thường -->
                         <span *ngIf="item.state && item.state == 0" class="ml-2" ></span>
                         <!-- Đang chuyển cho admin xử lý -->
@@ -59,7 +59,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 truncate" >
+                <div class="flex items-center gap-2" >
                     <span *ngIf="type == 'all' && item.count_unread_activities > 0">
                         <tds-badge class="flex items-center" [standalone]="true" [count]="item.count_unread_activities" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
                     </span>
@@ -69,9 +69,9 @@
                     <span *ngIf="type == 'comment' && item.count_unread_comments > 0">
                         <tds-badge class="flex items-center" [standalone]="true" [count]="item.count_unread_comments" title="Tin nhắn chưa đọc" [tdsStyle]="{ backgroundColor: '#FA5171' }"></tds-badge>
                     </span>
-                    <div *ngIf="!isOpenCollapCheck" class="text-neutral-1-400 text-body-2 font-regular font-sans">
+                    <span *ngIf="!isOpenCollapCheck" class="text-neutral-1-400 text-body-2 font-regular font-sans whitespace-nowrap">
                         {{item.LastActivityTimeConverted | yiDateTimeFormat}}
-                    </div>
+                    </span>
                     <div *ngIf="isOpenCollapCheck">
                         <tds-checkbox [checked]="checked" class="checkboxMessage" (click)="changeCheck($event)"></tds-checkbox>
                     </div>
