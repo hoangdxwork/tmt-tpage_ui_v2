@@ -1,5 +1,8 @@
+import { Subject, takeUntil } from 'rxjs';
+import { TDSModalService } from 'tds-ui/modal';
+import { Message } from 'src/app/lib/consts/message.const';
 import { finalize } from 'rxjs/operators';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { FormControl } from '@angular/forms';
 import { addDays } from 'date-fns';
@@ -15,7 +18,7 @@ import { TDSTableQueryParams } from 'tds-ui/table';
   selector: 'info-partner',
   templateUrl: './info-partner.component.html'
 })
-export class InfoPartnerComponent implements OnInit {
+export class InfoPartnerComponent implements OnInit, OnDestroy {
 
   @Input() dataOrder: TDSSafeAny;
   @Input() partnerId: TDSSafeAny;
@@ -43,20 +46,23 @@ export class InfoPartnerComponent implements OnInit {
     status: '',
     searchText: '',
     dateRange: {
-        startDate: addDays(new Date(), -30),
-        endDate: new Date(),
+      startDate: addDays(new Date(), -30),
+      endDate: new Date(),
     }
   }
 
-  sort: Array<SortDataRequestDTO>= [{
+  sort: Array<SortDataRequestDTO> = [{
     field: "DateCreated",
     dir: SortEnum.desc,
   }];
 
   isLoading: boolean = false;
 
+  private destroy$ = new Subject<void>();
+
   constructor(
     private modalRef: TDSModalRef,
+    private message: TDSModalService,
     private partnerService: PartnerService,
     private odataSaleOnline_OrderService: OdataSaleOnline_OrderService
   ) { }
@@ -73,16 +79,23 @@ export class InfoPartnerComponent implements OnInit {
   loadPartner() {
     this.isLoading = true;
     this.partnerService.getById(this.partnerId)
-      .pipe(finalize(() => this.isLoading = false))
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
       .subscribe((res: any) => {
         this.data = res;
-      });
+        },
+        err => {
+          this.message.error(err?.error?.message || Message.CanNotLoadData);
+        });
   }
 
   loadPartnerRevenueById() {
-    this.partnerService.getPartnerRevenueById(this.partnerId).subscribe((res :any) => {
+    this.partnerService.getPartnerRevenueById(this.partnerId)
+    .subscribe((res: any) => {
       this.revenue = res;
-    });
+      },
+      err => {
+        this.message.error(err?.error?.message || Message.CanNotLoadData);
+      });
   }
 
   loadOrder(pageSize: number, pageIndex: number) {
@@ -91,18 +104,18 @@ export class InfoPartnerComponent implements OnInit {
     let filters = this.odataSaleOnline_OrderService.buildFilterByPartner(this.filterObj, this.partnerId);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    this.odataSaleOnline_OrderService.getView(params, this.filterObj).subscribe((res: TDSSafeAny) => {
-
-        console.log("view:", res);
-        this.count = res['@odata.count'] as number;
-        this.lstOfDataOrder = res.value;
-        this.isLoading = false;
-    }, (error: TDSSafeAny) => {
-      this.isLoading = false;
-    });
+    this.odataSaleOnline_OrderService.getView(params, this.filterObj)
+    .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+    .subscribe((res: TDSSafeAny) => {
+      this.count = res['@odata.count'] as number;
+      this.lstOfDataOrder = res.value;
+      },
+      err => {
+        this.message.error(err?.error?.message || Message.CanNotLoadData);
+      });
   }
 
-  refreshData(){
+  refreshData() {
     this.pageIndex = 1;
 
     this.filterObj = {
@@ -128,7 +141,7 @@ export class InfoPartnerComponent implements OnInit {
     let startDate = (this.rangeDate && this.rangeDate[0]) ? new Date(this.rangeDate[0]) : addDays(new Date(), -30);
     let endDate = (this.rangeDate && this.rangeDate[1]) ? new Date(this.rangeDate[1]) : new Date();
 
-    if(this.selectedIndex == 1) {
+    if (this.selectedIndex == 1) {
       this.filterObj.searchText = textSearch;
       this.filterObj.dateRange = {
         startDate: startDate,
@@ -137,8 +150,8 @@ export class InfoPartnerComponent implements OnInit {
 
       this.loadOrder(this.pageSize, this.pageIndex);
     }
-    else if(this.selectedIndex == 2) {
-      if(!TDSHelperString.hasValueString(textSearch) && (!this.rangeDate || this.rangeDate.length < 2)) {
+    else if (this.selectedIndex == 2) {
+      if (!TDSHelperString.hasValueString(textSearch) && (!this.rangeDate || this.rangeDate.length < 2)) {
         delete this.lstDebitDetailsSearch;
         return;
       }
@@ -146,7 +159,7 @@ export class InfoPartnerComponent implements OnInit {
       let textLowerCase = textSearch.toLowerCase();
 
       this.lstDebitDetailsSearch = this.lstDebitDetails.filter(x => x.DisplayedName.toLowerCase().indexOf(textLowerCase) !== -1 &&
-      (new Date(x.Date)).getTime() >= startDate.getTime() && (new Date(x.Date)).getTime() <= endDate.getTime())
+        (new Date(x.Date)).getTime() >= startDate.getTime() && (new Date(x.Date)).getTime() <= endDate.getTime())
     }
   }
 
@@ -154,7 +167,7 @@ export class InfoPartnerComponent implements OnInit {
     let startDate = (this.rangeDate && this.rangeDate[0]) ? new Date(this.rangeDate[0]) : addDays(new Date(), -30);
     let endDate = (this.rangeDate && this.rangeDate[1]) ? new Date(this.rangeDate[1]) : new Date();
 
-    if(this.selectedIndex == 1) {
+    if (this.selectedIndex == 1) {
       this.filterObj.searchText = this.textSearch;
       this.filterObj.dateRange = {
         startDate: startDate,
@@ -163,8 +176,8 @@ export class InfoPartnerComponent implements OnInit {
 
       this.loadOrder(this.pageSize, this.pageIndex);
     }
-    else if(this.selectedIndex == 2) {
-      if(!TDSHelperString.hasValueString(this.textSearch) && (!this.rangeDate || this.rangeDate.length < 2)) {
+    else if (this.selectedIndex == 2) {
+      if (!TDSHelperString.hasValueString(this.textSearch) && (!this.rangeDate || this.rangeDate.length < 2)) {
         delete this.lstDebitDetailsSearch;
         return;
       }
@@ -172,20 +185,23 @@ export class InfoPartnerComponent implements OnInit {
       let textLowerCase = this.textSearch.toLowerCase();
 
       this.lstDebitDetailsSearch = this.lstDebitDetails.filter(x => x.DisplayedName.toLowerCase().indexOf(textLowerCase) !== -1 &&
-      (new Date(x.Date)).getTime() >= startDate.getTime() && (new Date(x.Date)).getTime() <= endDate.getTime())
+        (new Date(x.Date)).getTime() >= startDate.getTime() && (new Date(x.Date)).getTime() <= endDate.getTime())
     }
   }
 
   loadCreditDebitCustomerDetail(pageSize: number, pageIndex: number) {
     // TODO: mặc định lấy 20 đơn đầu, do tính năng ít dùng, dữ liệu ít
     this.isLoading = true;
-    this.partnerService.getCreditDebitCustomerDetail(this.partnerId, pageIndex, pageSize).subscribe((res: any) => {
+
+    this.partnerService.getCreditDebitCustomerDetail(this.partnerId, pageIndex, pageSize)
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+      .subscribe((res: any) => {
         this.lstDebitDetails = res.value;
         this.countDebitDetails = res.count;
-        this.isLoading = false;
-    }, (error: TDSSafeAny) => {
-      this.isLoading = false;
-    });
+        },
+        err => {
+          this.message.error(err?.error?.message || Message.CanNotLoadData);
+        });
   }
 
   refreshCreditDebit() {
@@ -200,4 +216,8 @@ export class InfoPartnerComponent implements OnInit {
     this.modalRef.destroy(null);
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

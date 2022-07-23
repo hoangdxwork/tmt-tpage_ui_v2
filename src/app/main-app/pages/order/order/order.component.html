@@ -30,8 +30,8 @@
 
   <div class="p-4 h-full">
     <div class="bg-white w-full h-full rounded-md border border-neutral-200 flex flex-col">
-      <div class="flex flex-row items-center justify-between w-full" [ngClass]="(getCheckedRow > 0) || isTabNavs ? 'py-[10.5px]' : ''">
-        <div class="flex flex-auto justify-between items-center pr-2" *ngIf="getCheckedRow == 0">
+      <div class="flex flex-row items-center justify-between w-full" [ngClass]="(setOfCheckedId.size > 0) || isTabNavs ? 'py-[10.5px]' : ''">
+        <div class="flex flex-auto justify-between items-center pr-2" *ngIf="setOfCheckedId.size == 0">
           
           <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)" [disabled]="isTabNavs">
             <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
@@ -44,9 +44,9 @@
             (onRefreshData)="refreshDataCurrent()"></action-dropdown>
         </div>
 
-        <div class="flex justify-start" *ngIf="getCheckedRow > 0">
+        <div class="flex justify-start" *ngIf="setOfCheckedId.size > 0">
           <div class="flex items-center gap-x-4 px-2">
-            <div class="text-neutral-1-500 text-body-2">{{getCheckedRow}} dòng được chọn</div>
+            <div class="text-neutral-1-500 text-body-2">{{setOfCheckedId.size}} dòng được chọn</div>
             <div class="flex gap-1 items-center rounded-md bg-neutral-3-50 pl-1.5 pr-2.5 cursor-pointer">
               <i class="tdsi-close-fill text-base text-neutral-1-500"></i>
               <div class="text-body-2 font-semibold text-neutral-1-700" (click)="removeCheckedRow()">Bỏ chọn</div>
@@ -139,29 +139,25 @@
                   </div>
                   <!-- Nhãn -->
                   <div class="flex w-full gap-x-1 items-center">
-                    <div *ngIf='data.Tags && data.Tags !== "[]"' class="flex w-full flex-wrap gap-1">
-                      <tds-tag *ngFor="let item of data.Tags | prettyjson" status='primary' tds-tooltip
-                        [tooltipTitle]="item.Name">
-                        <div class="truncate max-w-[100px]">
-                          {{item.Name}}
-                        </div>
-                      </tds-tag>
-                    </div>
-
-                    <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover tds-tooltip="Thêm nhãn"
-                      [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
-                      [popoverContent]="contentAddtag" [popoverBackdrop]="true" popoverPlacement="left"
-                      color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
-                      <div class="w-5 h-5 relative">
-                        <i class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
-                        <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12"
-                          height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M6.00263 0.185353C5.78089 0.14704 5.55607 0.129611 5.3311 0.133295C3.96134 0.134421 2.64803 0.680863 1.67966 1.65259C0.711296 2.62431 0.167057 3.94186 0.166496 5.3158C0.162824 5.54146 0.180199 5.76697 0.218396 5.98938C0.342953 6.94846 0.732804 7.85338 1.34378 8.60162C1.95476 9.34986 2.76244 9.91151 3.67532 10.2229C4.5882 10.5344 5.56979 10.5831 6.50889 10.3637C7.44798 10.1443 8.30703 9.66541 8.98873 8.98138C9.67042 8.29736 10.1475 7.4355 10.3659 6.49346C10.5843 5.55142 10.5354 4.56685 10.2246 3.65129C9.91374 2.73574 9.3535 1.92579 8.60732 1.31322C7.86114 0.70065 6.95883 0.309939 6.00263 0.185353ZM8.09029 5.79283H5.80879V8.08342H4.85553V5.79283H2.57403V4.83665H4.85764V2.53756H5.81091V4.83878H8.09452L8.09029 5.79283Z"
-                            fill="#28A745" />
-                        </svg>
+                    <div class="flex flex-wrap items-center w-fit">
+                      <div *ngFor="let item of data.Tags | prettyjson">
+                        <tds-tag class="truncate mr-1 mb-1" status='primary'>{{item.Name}}</tds-tag>
                       </div>
-                    </button>
+                      <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover tds-tooltip="Thêm nhãn"
+                        [popoverVisible]="indClickTag == data.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
+                        [popoverAutoClose]="false" [popoverContent]="contentAddtag" [popoverBackdrop]="true"
+                        popoverPlacement="left" color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
+                        <div class="w-5 h-5 relative">
+                          <i class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
+                          <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12"
+                            height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                              d="M6.00263 0.185353C5.78089 0.14704 5.55607 0.129611 5.3311 0.133295C3.96134 0.134421 2.64803 0.680863 1.67966 1.65259C0.711296 2.62431 0.167057 3.94186 0.166496 5.3158C0.162824 5.54146 0.180199 5.76697 0.218396 5.98938C0.342953 6.94846 0.732804 7.85338 1.34378 8.60162C1.95476 9.34986 2.76244 9.91151 3.67532 10.2229C4.5882 10.5344 5.56979 10.5831 6.50889 10.3637C7.44798 10.1443 8.30703 9.66541 8.98873 8.98138C9.67042 8.29736 10.1475 7.4355 10.3659 6.49346C10.5843 5.55142 10.5354 4.56685 10.2246 3.65129C9.91374 2.73574 9.3535 1.92579 8.60732 1.31322C7.86114 0.70065 6.95883 0.309939 6.00263 0.185353ZM8.09029 5.79283H5.80879V8.08342H4.85553V5.79283H2.57403V4.83665H4.85764V2.53756H5.81091V4.83878H8.09452L8.09029 5.79283Z"
+                              fill="#28A745" />
+                          </svg>
+                        </div>
+                      </button>
+                    </div>
 
                     <!-- Button thêm nhãn -->
                     <ng-template #contentAddtag>
