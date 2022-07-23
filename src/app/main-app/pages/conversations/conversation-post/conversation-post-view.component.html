@@ -3,26 +3,28 @@
     <div class="post-view bg-white h-auto w-full mb-1">
         <div class="flex flex-row justify-between p-2 border-b-3 border-neutral-3-200">
             <div class="flex items-center">
-                <tds-avatar [icon]="data.status_type === 'added_video'? 'tdsi-video-camera-fill': 'tdsi-facebook-f-fill'"
+                <div>
+                    <tds-avatar [icon]="data.status_type === 'added_video'? 'tdsi-video-camera-fill': 'tdsi-facebook-f-fill'"
                     [ngClass]="data.status_type === 'added_video'? 'bg-base-red-500' : 'bg-base-blue-500'" class="text-white mr-1"
                     [size]="36" [shape]="'circle'" [isAvatar]="false">
                 </tds-avatar>
+                </div>
                 <tds-tag
                     [status]="data.status_type === 'added_video' ? 'bg-base-red-50 text-base-red-600' : 'bg-base-blue-50 text-base-blue-600'"
                     rounded="rounded-full">
-                    <span class="flex flex-row items-center py-0.5">
-                        <div class="font-semibold mr-3">
+                    <span class="flex flex-row items-center py-0.5 gap-x-3 px-1.5">
+                        <div class="font-semibold flex flex-col items-center 2xl:block">
                             <span>{{translateType(data.type, data.status_type)}}</span>
-                            {{data.created_time | date: "dd-MM-yyyy HH:mm"}}
+                            <span class="whitespace-nowrap">{{data.created_time | date: "dd-MM-yyyy HH:mm"}}</span>
                         </div>
                         <!-- truy cập bài viết -->
-                        <a href="{{data.permalink_url}}" target="_blank" class="text-neutral-1-400 pr-1.5">
+                        <a href="{{data.permalink_url}}" target="_blank" class="text-neutral-1-400">
                             <i class="tdsi-expand-2-line leading-none text-xl"></i>
                         </a>
                     </span>
                 </tds-tag>
             </div>
-            <div class="post-option flex flex-row items-center gap-3">
+            <div class="post-option flex flex-row items-center gap-2 2xl:gap-3">
                 <button tds-button color="secondary">
                     <span class="flex items-center">
                         <i class="tdsi-product-fill text-lg text-neutral-1-400 leading-none mr-2"></i>Chọn sản phẩm
@@ -181,7 +183,7 @@
 
                     <ng-container *ngSwitchCase="3" class="w-full">
                         <div class="flex w-full gap-x-3" >
-                            <tds-form-field class="w-[350px]">
+                            <tds-form-field class="2xl:w-[270px] w-auto">
                                 <span tdsPrefix><i class="tdsi-search-fill"></i></span>
                                 <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [tdsInputDebounce]="500" (inputKeyup)="onSearchFilterComment()"
                                 [(ngModel)]="innerText" [ngModelOptions]="{standalone: true}" />
