@@ -12,23 +12,44 @@
   </div>
   <div class="p-4 h-full">
     <div class="bg-white w-full h-full rounded-md border border-neutral-200 flex flex-col">
-      <div class="flex justify-end pt-3 pb-3">
-        <!-- TODO: Thao tác -->
-        <div class="flex items-center gap-x-2 pr-4">
-          <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId] >
-          </action-dropdown>
-          <div>
-            <tds-form-field class="w-[240px]">
-              <tds-select valueField="Id" textField="Name"
-                placeholder='Chọn đối tác giao hàng' [valuePrimitive]="false" (selectChange)="onChangeCarrier($event)"
-                disabledField="isActive" [data]="(lstCarriers | async) || []" [allowClear]="true">
-              </tds-select>
-            </tds-form-field>
+      <div class="flex items-center justify-between w-full" [ngClass]="(getCheckedRow > 0) || isTabNavs ? 'py-[10.5px]' : ''">
+        <div *ngIf="getCheckedRow > 0" class="flex flex-row items-center justify-start gap-x-2 ml-2">
+          <div class="flex items-center gap-x-4 px-2 pr-4">
+              <div class="text-neutral-1-500 text-body-2">{{getCheckedRow}} dòng được chọn</div>
+              <div class="flex gap-1 items-center rounded-md bg-neutral-3-50 pl-1.5 pr-2.5 cursor-pointer">
+                <i class="tdsi-close-fill text-base text-neutral-1-500"></i>
+                <div class="text-body-2 font-semibold text-neutral-1-700" (click)="removeCheckedRow()">Bỏ chọn</div>
+              </div>
           </div>
-          <tds-form-field class="w-full">
+
+          <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId] >
+          </action-dropdown>                    
+        </div>
+        <div *ngIf="getCheckedRow == 0" class="flex flex-row items-center justify-start">
+          <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)" [disabled]="isTabNavs">
+            <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
+                <tds-filter-status-item [name]='item.Name|getStatusName:filterStatus' [count]='item.Total' [value]="item.Index">
+                </tds-filter-status-item>
+            </ng-template>
+          </tds-filter-status>
+        </div>
+        <!-- TODO: Thao tác -->
+        <div class="flex flex-row items-center justify-end gap-x-2 pr-4">
+          <action-dropdown *ngIf="getCheckedRow == 0" [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId] >
+          </action-dropdown>
+
+          <tds-form-field class="w-[240px]">
+            <tds-select valueField="Id" textField="Name"
+              placeholder='Chọn đối tác giao hàng' [valuePrimitive]="false" (selectChange)="onChangeCarrier($event)"
+              disabledField="isActive" [data]="(lstCarriers | async) || []" [allowClear]="true">
+            </tds-select>
+          </tds-form-field>
+
+          <tds-form-field class="flex flex-auto">
               <input tdsInput placeholder="Tìm kiếm" autocomplete="off" #innerText />
               <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
           </tds-form-field>
+
           <filter-options [lstTags]="lstTags" (onLoadOption)="onLoadOption($event)"
               [filterObj]="filterObj" [lstCarriers]="(lstCarriers | async) || []"></filter-options>
           <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>

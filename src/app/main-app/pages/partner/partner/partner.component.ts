@@ -66,6 +66,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   public modelTags: Array<TagsPartnerDTO> = [];
   public lstDataTag: Array<TagsPartnerDTO> = [];
   public lstBirtdays: Array<PartnerBirthdayDTO> = [];
+  public lstStatus: Array<TDSSafeAny> = [];//TODO: dùng để filter
 
   currentConversation!: ConversationMatchingItem;
   psid: any;
@@ -201,6 +202,14 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.commonService.getPartnerStatusReport().pipe(takeUntil(this.destroy$)).subscribe((res: PartnerStatusReport) => {
       if (res && TDSHelperArray.isArray(res.item)) {
         this.partnerStatusReport = [...res.item];
+        
+        res.item.forEach(item => {
+          this.lstStatus.push({
+            Name: item.StatusText,
+            Total: item.Count,
+            IsSelected: false
+          });
+        });
       }
     }, error => {
       this.message.error('Tải dữ liệu trạng thái khách hàng thất bại!');

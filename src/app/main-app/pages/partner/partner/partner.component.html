@@ -99,7 +99,7 @@
                             </button>
                         </tds-badge>
 
-                        <filter-option-partner [status]="partnerStatusReport" (onLoadOption)="onLoadOption($event)" [lstDataTag]="lstDataTag" [filterObj]="filterObj">
+                        <filter-option-partner [lstStatus]="lstStatus" (onLoadOption)="onLoadOption($event)" [lstDataTag]="lstDataTag" [filterObj]="filterObj">
                         </filter-option-partner>
 
                         <config-column-partner [columns]="hiddenColumns" (columnsChange)="columnsChange($event)">

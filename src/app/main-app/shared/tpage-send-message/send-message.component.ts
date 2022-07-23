@@ -33,6 +33,7 @@ export class SendMessageComponent implements OnInit {
   @Input() messageType: GenerateMessageTypeEnum = GenerateMessageTypeEnum.Default;
   @Input() orderIds: string[] = [];
   @Input() selectedUsers: any;
+  @Input() inBillExpand!:boolean;
 
   lstMessage: Array<QuickReplyDTO> = [];
   messages: Array<TDSSafeAny> = [];

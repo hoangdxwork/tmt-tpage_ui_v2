@@ -7,15 +7,16 @@
 </button>
 
 <tds-dropdown-menu #menu="tdsDropdownMenu">
-  <div class="w-full p-4" style="max-width: 450px;">
+  <div class="w-full p-4 max-w-[450px]">
       <div class="w-full mb-4">
           <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">TRẠNG THÁI</p>
-          <div class="flex flex-wrap">
-              <a type="button" *ngFor="let item of status" (click)="selectState(item)" [ngClass]="filterObj.status.includes(item.StatusText) ? 'bg-primary-1 text-[#fff]' : 'bg-neutral-3-200 '"
-                class="items-center  dark:bg-d-neutral-3-200 group  hover:bg-neutral-3-300 dark:hover:bg-d-neutral-3-300 rounded py-0.5 pl-2 pr-2 mr-2 mb-2">
-                <span class="text-body-2 font-regular  dark:text-d-neutral-1-900 whitespace-nowrap box-border truncate"> {{item.StatusText}}</span>
-              </a>
-          </div>
+          <div class="w-full flex flex-wrap items-center gap-x-2 gap-y-2">
+            <div *ngFor="let item of lstStatus">
+              <tds-tag mode="checkable" [(checked)]="item.IsSelected" (checkedChange)="selectState(item)">
+                {{item.Name}} ({{item.Total}})
+              </tds-tag>
+            </div>
+        </div>
       </div>
 
       <!-- Tag -->

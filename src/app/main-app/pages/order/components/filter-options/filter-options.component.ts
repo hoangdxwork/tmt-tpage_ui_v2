@@ -1,3 +1,8 @@
+import { OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
+import { SaleOnline_OrderService } from './../../../../services/sale-online-order.service';
+import { takeUntil } from 'rxjs';
+import { SaleOnlineOrderSummaryStatusDTO } from './../../../../dto/saleonlineorder/sale-online-order.dto';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { addDays } from 'date-fns/esm';
 import { FilterObjSOOrderModel, TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
@@ -9,7 +14,7 @@ import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
   templateUrl: './filter-options.component.html',
 })
 
-export class FilterOptionsComponent  {
+export class FilterOptionsComponent implements OnInit {
 
   @Output() onLoadOption = new EventEmitter<TDSSafeAny>();
   @Input() tabNavs!: TabNavsDTO[];
@@ -19,11 +24,37 @@ export class FilterOptionsComponent  {
   datePicker: any = [addDays(new Date(), -30), new Date()];
   lstTags: Array<TDSSafeAny> = [];
   selectTags: Array<TDSSafeAny> = [];
+  listStatus: Array<TDSSafeAny> = [];
 
   isActive: boolean = false;
   isVisible: boolean = false;
 
-  constructor(private tdsContextMenuService: TDSContextMenuService) {
+  private destroy$ = new Subject<void>();
+
+  constructor(private saleOnline_OrderService: SaleOnline_OrderService) {
+  }
+
+  ngOnInit(): void {
+    this.loadSummaryStatus();
+  }
+
+  loadSummaryStatus() {
+    let model: SaleOnlineOrderSummaryStatusDTO = {
+      DateStart: this.filterObj.dateRange.startDate,
+      DateEnd: this.filterObj.dateRange.endDate,
+      SearchText: this.filterObj.searchText,
+      TagIds: this.filterObj.tags.map((x: TDSSafeAny) => x.Id).join(","),
+    }
+
+    this.saleOnline_OrderService.getSummaryStatus(model).pipe(takeUntil(this.destroy$)).subscribe((res: Array<TDSSafeAny>) => {
+        res.forEach(item => {
+          this.listStatus.push({
+            Name: item.StatusText,
+            Total: item.Total,
+            IsSelected: false
+          })
+        });
+      });
   }
 
   onChangeDate(event: any[]) {
@@ -51,6 +82,13 @@ export class FilterOptionsComponent  {
     } else {
         this.filterObj.status.push(event.Name);
     }
+    this.checkActiveStatus();
+  }
+
+  checkActiveStatus(){
+    this.listStatus.map(stt=>{
+      stt.IsSelected = this.filterObj.status.some(f=>f == stt.Name);
+    })
   }
 
   onApply() {
@@ -61,6 +99,7 @@ export class FilterOptionsComponent  {
 
     this.isActive = true;
     this.onLoadOption.emit(this.filterObj);
+    this.closeMenu();
   }
 
   checkActive(): boolean {
@@ -87,11 +126,17 @@ export class FilterOptionsComponent  {
     }
 
     this.isActive = false;
+    this.checkActiveStatus();
     this.onLoadOption.emit(this.filterObj);
+    this.closeMenu();
   }
 
   closeMenu(): void {
     this.isVisible = false;
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

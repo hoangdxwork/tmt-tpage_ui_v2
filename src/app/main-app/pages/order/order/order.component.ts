@@ -22,7 +22,7 @@ import { CreateBillDefaultComponent } from '../components/create-bill-default/cr
 import { Router } from '@angular/router';
 import { Message } from 'src/app/lib/consts/message.const';
 import { ExcelExportService } from 'src/app/main-app/services/excel-export.service';
-import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny, TDSHelperArray } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSTagStatusType } from 'tds-ui/tag';
 import { TDSTableQueryParams } from 'tds-ui/table';
@@ -85,6 +85,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     { value: 'UserName', name: 'Nhân viên', isChecked: true },
   ];
 
+  public lstOftabNavs: Array<TabNavsDTO> = [];
   public tabNavs: Array<TabNavsDTO> = [];
   public modelTags: Array<TDSSafeAny> = [];
 
@@ -252,6 +253,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
         tabs.sort((a, b) => a.Index - b.Index);
 
         this.tabNavs = [...tabs];
+        this.lstOftabNavs = this.tabNavs;
       });
   }
 
@@ -510,6 +512,12 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.filterObj.dateRange = {
       startDate: event.dateRange.startDate,
       endDate: event.dateRange.endDate
+    }
+
+    if (TDSHelperArray.hasListValue(event.status)) {
+      this.tabNavs = this.lstOftabNavs.filter(f => event.status.includes(f.Name));
+    }else{
+      this.tabNavs = this.lstOftabNavs;
     }
 
     this.loadData(this.pageSize, this.pageIndex);
