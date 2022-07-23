@@ -163,6 +163,18 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
         })).subscribe(() => {}, error => {
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
       });
+
+      // this.activityMatchingService.get_v3(this.team.Id, data.psid, this.type).subscribe((result) => {
+
+      //   result.Items.map((x: any)=> {
+
+      //     if(x && x.ObjectId) {
+      //       this.activityMatchingService.get_v2_comment(this.team.Id, x.ObjectId).subscribe((b) => {
+
+      //       })
+      //     }
+      //   })
+      // })
     })
 
     this.yiAutoScroll?.forceScrollDown();
