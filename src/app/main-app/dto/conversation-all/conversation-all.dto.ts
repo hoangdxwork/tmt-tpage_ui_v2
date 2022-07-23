@@ -1,3 +1,6 @@
+import { PagingTimestampLowcase } from "../../services/conversation/conversation.service";
+
+
 export interface From {
   id?: any;
   name: string;
@@ -103,6 +106,13 @@ export interface Query {
   type: string;
 }
 
+export interface Query_v2 {
+  pageId: string;
+  type: string;
+  next: number;
+  state: any; // trạng thái chatbot
+}
+
 export interface Response {
   hasNextPage: boolean;
   nextPageUrl: string;
@@ -115,4 +125,10 @@ export interface CRMMatchingMappingDTO {
   items: ConversationMatchingItem[];
   query: Query;
   response: Response;
+}
+
+export interface CRMMatchingMappingDTO_v2 {
+  items: ConversationMatchingItem[];
+  query: Query_v2;
+  response: PagingTimestampLowcase;
 }

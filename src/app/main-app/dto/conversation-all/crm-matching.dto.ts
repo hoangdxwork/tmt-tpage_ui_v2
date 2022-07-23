@@ -82,3 +82,15 @@ export interface CRMMatchingDTO {
   HasPreviousPage: boolean;
   HasNextPage: boolean;
 }
+
+export interface CRMMatchingDTO_v2 {
+  Items: CRMMatchingItem[];
+  Extras?: any;
+  Paging?: PagingTimestamp;
+}
+
+export interface PagingTimestamp {
+  HasNext: boolean;
+  Next: number;
+  UrlNext: string;
+}

@@ -1,3 +1,4 @@
+import { PagingTimestampLowcase, QueryStateConversationDTO_v2 } from './../conversation/conversation.service';
 import { EventEmitter, Injectable, OnDestroy} from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import { map, shareReplay, takeUntil } from "rxjs/operators";
@@ -6,8 +7,8 @@ import { BaseSevice } from "../base.service";
 import { ConversationService } from "../conversation/conversation.service";
 import { ConversationFacebookState } from "../facebook-state/conversation-facebook.state";
 import { SignalRConnectionService } from "../signalR/signalR-connection.service";
-import { CRMMatchingDTO } from '../../dto/conversation-all/crm-matching.dto';
-import { CRMMatchingMappingDTO } from "../../dto/conversation-all/conversation-all.dto";
+import { CRMMatchingDTO, CRMMatchingDTO_v2 } from '../../dto/conversation-all/crm-matching.dto';
+import { ConversationMatchingItem, CRMMatchingMappingDTO, CRMMatchingMappingDTO_v2 } from "../../dto/conversation-all/conversation-all.dto";
 import { DataUpdate } from "../../dto/conversation/conversation.dto";
 import { CRMTeamService } from "../crm-team.service";
 import { StringHelperV2 } from "../../shared/helper/string.helper";
@@ -15,7 +16,6 @@ import { Router } from "@angular/router";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { TDSNotificationService } from "tds-ui/notification";
-import { BaseHelper } from "../../shared/helper/base.helper";
 
 @Injectable({
   providedIn: 'root'
@@ -224,6 +224,11 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     return this.getConversation(pageId, type);
   }
 
+  makeDataSource_v2(pageId: any, type: string): Observable<any> {
+    this.cvsFbState.createEventData(pageId);
+    return this.getConversation_v2(pageId, type);
+  }
+
   getConversation(pageId: any, type: string): Observable<any> {
     let exist = this.cvsFbState.get(pageId, type);
     if (exist) {
@@ -243,12 +248,41 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     return this.dataSource$;
   }
 
+  getConversation_v2(pageId: any, type: string): Observable<any> {
+    let exist = this.cvsFbState.get(pageId, type);
+    if (exist) {
+        this.dataSource$ = Observable.create((obs :any) => {
+            obs.next(exist);
+            obs.complete();
+        });
+    } else {
+      let query = this.service.createQuery_v2(pageId, type);
+      this.dataSource$ = this.service.get_v2(query).pipe(map((res: CRMMatchingDTO_v2) => {
+
+          let data = this.createConversation_v2(res, query, type);
+          if(data) {
+              return this.cvsFbState.setConversation(pageId, type, data);
+          }
+
+      }), shareReplay({ bufferSize: 1, refCount: true }));
+    }
+    return this.dataSource$;
+  }
+
   createConversation(data: any, query: any, type: string) {
     return {
         items: [...this.prepareData(data.Items)],
         query: query,
         response: this.service.createResponse(data)
     } as CRMMatchingMappingDTO;
+  }
+
+  createConversation_v2(data: CRMMatchingDTO_v2, query: QueryStateConversationDTO_v2, type: string) {
+    return {
+        items: [...this.prepareData(data.Items)],
+        query: query,
+        response: this.service.createResponse_v2(data)
+    } as CRMMatchingMappingDTO_v2;
   }
 
   checkSendMessage(pageId: any, type: any, psid: any) {
@@ -511,14 +545,14 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   }
 
   nextData(pageId: any, type: any): Observable<any> {
-    const data = this.cvsFbState.get(pageId, type);
+    const data = this.cvsFbState.get(pageId, type)
     let exist = data && data.response?.hasNextPage || data && data.response?.nextPageUrl != this.nextPageUrlCurrent;
 
     return new Observable(observer => {
       if(this.isProcessing) {
-        observer.next(false);
-        observer.complete();
-        return;
+          observer.next(false);
+          observer.complete();
+          return;
       }
 
       if(!exist) {
@@ -548,11 +582,41 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     });
   }
 
+  nextData_v2(pageId: any, type: any): Observable<any> {
+    let data = this.cvsFbState.get(pageId, type) as CRMMatchingMappingDTO_v2;
+
+    return new Observable(obs => {
+
+      this.nextPageUrlCurrent = data.response.urlNext;
+      this.service.getLink_v2(this.nextPageUrlCurrent).subscribe((res: CRMMatchingDTO_v2) => {
+
+        if(res && TDSHelperArray.hasListValue(res.Items)) {
+
+          data.items = [...data.items, ...this.prepareData(res.Items)] as ConversationMatchingItem[];
+          data.response = this.service.createResponse_v2(res) as PagingTimestampLowcase;
+
+          obs.next(data);
+          obs.complete();
+        }
+        // TODO: trường hợp phân trang bị trùng hoặc đã hết page
+        else {
+          obs.next();
+          obs.complete();
+        }
+      }, error => {
+          (this.nextPageUrlCurrent as any) = null;
+          obs.next();
+          obs.complete();
+      });
+    });
+  }
+
   createQuery(pageId: string, type: any) {
     return this.service.createQuery(pageId, type);
   }
 
   nextDataWithQuery(pageId: string, type: string, queryObj: any): Observable<any> {
+
     let query = Object.keys(queryObj).map(key => {
       return key + '=' + queryObj[key]
     }).join('&');
@@ -584,6 +648,39 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
             observer.complete();
         });
       }
+    })
+  }
+
+  nextDataWithQuery_v2(pageId: string, type: string, queryObj: any): Observable<any> {
+
+    let query = Object.keys(queryObj).map(key => {
+      return key + '=' + queryObj[key]
+    }).join('&');
+
+    let data = this.cvsFbState.getByQuery(query) as CRMMatchingMappingDTO_v2;
+    return new Observable(obs => {
+
+        this.nextPageUrlCurrent = data.response.urlNext;
+        this.service.getLink(this.nextPageUrlCurrent).subscribe((res: any) => {
+
+          if(TDSHelperArray.hasListValue(res.Items)) {
+
+            data.items = [...data.items, ...this.prepareData(res.Items)] as ConversationMatchingItem[];
+            data.response = this.service.createResponse_v2(res) as PagingTimestampLowcase;
+
+            obs.next(data);
+            obs.complete();
+          }
+          // TODO: trường hợp phân trang bị trùng hoặc đã hết page
+          else {
+            obs.next();
+            obs.complete();
+          }
+        }, error => {
+            (this.nextPageUrlCurrent as any) = null;
+            obs.next();
+            obs.complete();
+        })
     })
   }
 
