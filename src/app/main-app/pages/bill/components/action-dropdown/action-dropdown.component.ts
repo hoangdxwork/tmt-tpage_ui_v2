@@ -429,7 +429,7 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
       this.fastSaleOrderService.getRegisterPayment({ ids: this.idsModel }).pipe(takeUntil(this.destroy$)).subscribe(
         (res) => {
           delete res['@odata.context'];
-          this.modal.create({
+          const modal = this.modal.create({
             title: 'Đăng ký thanh toán',
             size: 'lg',
             content: ModalPaymentComponent,
@@ -438,8 +438,12 @@ export class ActionDropdownComponent implements OnInit, OnDestroy {
               dataModel: res
             }
           });
+
+          modal.afterClose.subscribe((result) => {
+
+          });
         }, err => {
-          this.message.error(err.error.message ?? 'Không tải được dữ liệu');
+          this.message.error(err?.error?.message || 'Không tải được dữ liệu');
         }
       )
     }

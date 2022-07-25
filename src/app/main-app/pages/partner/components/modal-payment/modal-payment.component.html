@@ -8,7 +8,7 @@
 
       <tds-label>Phương thức</tds-label>
       <tds-form-field class="col-span-4 w-full mb-3">
-        <tds-select valueField="Id" textField="Name" placeholder='Chọn phương thức thanh toán' formControlName="Journal"
+        <tds-select valueField="Id" textField="Name" placeholder='Chọn phương thức thanh toán' formControlName="Journal" [required]="true"
           [data]="lstAcJournal" [allowClear]="true" [valuePrimitive]="false" (selectChange)="onchangeJournal($event)">
         </tds-select>
         <tds-error>Vui lòng chọn phương thức thanh toán</tds-error>
@@ -39,11 +39,11 @@
       Đóng
     </button>
 
-    <button tds-button class="mr-4" type="submit" [disabled]="checkValidate() || isSubmit" color="primary"
+    <button tds-button class="mr-4" type="submit" color="primary"
       (click)="onSave('print')">Thanh toán và in
     </button>
 
-    <button tds-button type="submit" [disabled]="checkValidate() || isSubmit" color="primary"
+    <button tds-button type="submit" color="primary"
       (click)="onSave('null')">Thanh toán
     </button>
   </div>
