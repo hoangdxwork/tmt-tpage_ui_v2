@@ -1,10 +1,10 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
 import { addDays } from "date-fns";
 import { Observable } from "rxjs";
 import { DeliveryCarrierDTOV2 } from "src/app/main-app/dto/delivery-carrier.dto";
 import { LiveCampaignModel, ODataLiveCampaignDTO } from "src/app/main-app/dto/live-campaign/odata-live-campaign.dto";
 import { DeliveryCarrierService } from "src/app/main-app/services/delivery-carrier.service";
-import { CommonHandler } from "src/app/main-app/services/handlers/common.handler";
+import { CommonHandler, TDSDateRangeDTO } from "src/app/main-app/services/handlers/common.handler";
 import { LiveCampaignService } from "src/app/main-app/services/live-campaign.service";
 import { FilterObjFastSaleModel } from "src/app/main-app/services/mock-odata/odata-fastsaleorder.service";
 import { FilterObjLiveCampaignDTO } from "src/app/main-app/services/mock-odata/odata-live-campaign.service";
@@ -17,12 +17,15 @@ import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utili
   templateUrl: './filter-option-campaign.component.html',
 })
 
-export class FilterOptionCampaignComponent implements OnInit {
+export class FilterOptionCampaignComponent implements OnInit, OnChanges {
 
   @Output() onLoadOption = new EventEmitter<TDSSafeAny>();
   @Input() filterObj!: FilterObjLiveCampaignDTO;
+  @Input() currentDateRanges!: TDSDateRangeDTO;
+
 
   datePicker: any = [];
+  lstSelectLive: ODataLiveCampaignDTO[] = [];
   orders = [
     { text: 'Chưa có đơn hàng', value: false },
     { text: 'Đã có đơn hàng', value: true },
@@ -36,14 +39,20 @@ export class FilterOptionCampaignComponent implements OnInit {
   isVisible: boolean = false;
   lstLiveCampaigns!: Observable<ODataLiveCampaignDTO>;
 
-  constructor(private commonHandler: CommonHandler,
+  constructor(
     private liveCampaignService: LiveCampaignService) {
-      let startDate = this.commonHandler.currentDateRanges.startDate;
-      let endDate = this.commonHandler.currentDateRanges.endDate;
+}
+
+  mapDatePicker(){
+    if(this.currentDateRanges){
+      let startDate = this.currentDateRanges.startDate;
+      let endDate = this.currentDateRanges.endDate; 
       this.datePicker = [startDate, endDate];
+    }
   }
 
   ngOnInit(): void {
+    this.mapDatePicker();
     this.lstLiveCampaigns = this.loadLiveCampaign();
   }
 
@@ -96,12 +105,13 @@ export class FilterOptionCampaignComponent implements OnInit {
   }
 
   onCancel() {
-    let startDate = this.commonHandler.currentDateRanges.startDate;
-    let endDate = this.commonHandler.currentDateRanges.endDate;
+    let startDate = this.currentDateRanges.startDate;
+    let endDate = this.currentDateRanges.endDate;
 
     this.datePicker = [startDate, endDate];
     this.filterObj.isActive = null;
     this.filterObj.ids = [];
+    this.lstSelectLive = [];
 
     this.filterObj.dateRange = {
       startDate: startDate,
@@ -114,6 +124,12 @@ export class FilterOptionCampaignComponent implements OnInit {
 
   closeMenu() {
     this.isVisible = false;
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes["currentDateRanges"] && !changes["currentDateRanges"].firstChange) {
+      this.mapDatePicker();
+    }
   }
 
 }
