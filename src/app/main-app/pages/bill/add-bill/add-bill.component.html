@@ -47,7 +47,7 @@
                       <tds-button-group *ngIf="_form.controls['Partner']?.value">
                         <button tds-dropdown trigger="click" type="button" [tdsDropdownMenu]="menu1">
                           <span class="flex items-center font-semibold"
-                            [ngStyle]="{'color': onCurrentStatus(_form.controls['Partner']?.value?.StatusText, lstPartnerStatus) }">
+                            [ngStyle]="{'color': onCurrentStatus(_form.controls['Partner'].value?.StatusText, lstPartnerStatus) }">
                             {{_form.controls["Partner"].value ? _form.controls["Partner"].value.StatusText : "N/A" }}
                             <i class="tdsi-arrow-down-fill text-lg leading-none ml-2"></i>
                           </span>
@@ -69,7 +69,7 @@
                         </span>
                       </button>
                       <button tds-button-icon color="primary" type="button" tds-tooltip
-                        tooltipTitle="Thêm mới khách hàng" (click)="editPartner(null)">
+                        tooltipTitle="Thêm khách hàng" (click)="createPartner()">
                         <span class="flex items-center">
                           <i class="tdsi-plus-fill"></i>
                         </span>

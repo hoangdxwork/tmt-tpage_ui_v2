@@ -1289,8 +1289,8 @@ export class AddBillComponent implements OnInit, OnDestroy {
       this._form.controls['DeliveryPrice'].setValue(value);
     }else{
       this._form.controls['DeliveryPrice'].setValue(0);
-    }      
-    
+    }
+
     this.updateCoDAmount();
   }
 
@@ -1934,6 +1934,24 @@ export class AddBillComponent implements OnInit, OnDestroy {
       centered: true,
       componentParams: {
         partnerId: data?.Id
+      }
+    });
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((event: any) => {
+      if (event) {
+        this.changePartner(event);
+      }
+    })
+  }
+
+  createPartner() {
+    const modal = this.modalService.create({
+      title: 'Thêm khách hàng',
+      content: ModalEditPartnerComponent,
+      size: "xl",
+      viewContainerRef: this.viewContainerRef,
+      centered: true,
+      componentParams: {
+        partnerId: null
       }
     });
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((event: any) => {

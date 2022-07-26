@@ -120,16 +120,18 @@ export class BillExpandComponent implements OnInit, OnDestroy {
   showPayInvoiceModal(Id: TDSSafeAny) {
     this.fSOService.getRegisterPayment({ ids: [Id] }).pipe(takeUntil(this.destroy$)).subscribe(
       (res) => {
-        delete res['@odata.context']; console.log(res)
-        this.modalService.create({
-          title: 'Đăng ký thanh toán',
-          size: 'lg',
-          content: ModalPaymentComponent,
-          viewContainerRef: this.viewContainerRef,
-          componentParams: {
-            dataModel: res
-          }
-        });
+        if(res) {
+          delete res['@odata.context']; console.log(res)
+          this.modalService.create({
+            title: 'Đăng ký thanh toán',
+            size: 'lg',
+            content: ModalPaymentComponent,
+            viewContainerRef: this.viewContainerRef,
+            componentParams: {
+              dataModel: res
+            }
+          });
+        }
       }, err => {
         this.message.error(err.error.message ?? 'Không tải được dữ liệu');
       }
