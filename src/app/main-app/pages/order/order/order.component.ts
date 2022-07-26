@@ -521,7 +521,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     }else{
       this.tabNavs = this.lstOftabNavs;
     }
-
+    this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -781,10 +781,6 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   closeDrawer() {
     this.isOpenDrawer = false;
-  }
-
-  get getCheckedRow() {
-    return [...this.setOfCheckedId].length;
   }
 
   removeCheckedRow(){

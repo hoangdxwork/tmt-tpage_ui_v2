@@ -12,10 +12,10 @@
   </div>
   <div class="p-4 h-full">
     <div class="bg-white w-full h-full rounded-md border border-neutral-200 flex flex-col">
-      <div class="flex items-center justify-between w-full" [ngClass]="(getCheckedRow > 0) || isTabNavs ? 'py-[10.5px]' : ''">
-        <div *ngIf="getCheckedRow > 0" class="flex flex-row items-center justify-start gap-x-2 ml-2">
+      <div class="flex items-center justify-between w-full" [ngClass]="(setOfCheckedId.size > 0) || isTabNavs ? 'py-[10.5px]' : ''">
+        <div *ngIf="setOfCheckedId.size > 0" class="flex flex-row items-center justify-start gap-x-2 ml-2">
           <div class="flex items-center gap-x-4 px-2 pr-4">
-              <div class="text-neutral-1-500 text-body-2">{{getCheckedRow}} dòng được chọn</div>
+              <div class="text-neutral-1-500 text-body-2">{{setOfCheckedId.size}} dòng được chọn</div>
               <div class="flex gap-1 items-center rounded-md bg-neutral-3-50 pl-1.5 pr-2.5 cursor-pointer">
                 <i class="tdsi-close-fill text-base text-neutral-1-500"></i>
                 <div class="text-body-2 font-semibold text-neutral-1-700" (click)="removeCheckedRow()">Bỏ chọn</div>
@@ -25,7 +25,7 @@
           <action-dropdown [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId] >
           </action-dropdown>
         </div>
-        <div *ngIf="getCheckedRow == 0" class="flex flex-row items-center justify-start">
+        <div *ngIf="setOfCheckedId.size == 0" class="flex flex-row items-center justify-start">
           <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)" [disabled]="isTabNavs">
             <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
                 <tds-filter-status-item [name]='item.Name|getStatusName:filterStatus' [count]='item.Total' [value]="item.Index">
@@ -35,7 +35,7 @@
         </div>
         <!-- TODO: Thao tác -->
         <div class="flex flex-row items-center justify-end gap-x-2 pr-4">
-          <action-dropdown *ngIf="getCheckedRow == 0" [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId] >
+          <action-dropdown *ngIf="setOfCheckedId.size == 0" [filterObj]="filterObj" [lstOfData]="lstOfData" [setOfCheckedId]=[setOfCheckedId] >
           </action-dropdown>
 
           <tds-form-field class="w-[240px]">
