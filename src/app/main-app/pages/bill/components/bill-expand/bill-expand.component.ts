@@ -149,6 +149,8 @@ export class BillExpandComponent implements OnInit, OnDestroy {
       case 'detail':
         this.loadData();
         break;
+      case 'information':
+        break;
       case 'histories':
         this.logOrder = [];
         this.fSOService.getHistoryEditOrder(this.dataItem.Id).subscribe((res: any) => {
