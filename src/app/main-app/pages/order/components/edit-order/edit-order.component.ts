@@ -76,8 +76,6 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
   _wards!: SuggestWardsDTO;
   _street!: string;
 
-  // numberWithCommas = (value: number) => `${value} đ`;
-  // parserComas = (value: string) => value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null) {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
@@ -127,7 +125,6 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
     if(this.dataItem) {
       // Thông tin đơn hàng
       this.loadData();
-
       this.loadUserInfo();
       this.lstCarriers = this.loadCarrier();
       this.loadUser();
@@ -263,11 +260,11 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
   }
 
   loadSaleConfig() {
-    this.generalConfigsFacade.getSaleConfigs().subscribe(res => {
+    this.generalConfigsFacade.getSaleConfigs().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.saleConfig = res;
     },
     err=>{
-      this.message.error(err?.error?.message || Message.CanNotLoadData);
+      this.message.error(err?.error?.message || 'Không thể tải cấu hình bán hàng');
     });
   }
 
@@ -671,7 +668,7 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
        }
     },
     err=>{
-      this.message.error(err?.error?.message || Message.CanNotLoadData);
+      this.message.error(err?.error?.message || 'Không thể tải thông tin user');
     })
   }
 
@@ -680,7 +677,7 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
       this.lstInventory = res;
     },
     err=>{
-      this.message.error(err?.error?.message || Message.CanNotLoadData);
+      this.message.error(err?.error?.message || 'Không thể tải thông tin kho hàng');
     });
   }
 
@@ -689,11 +686,12 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
     let top = 20;
     let skip = 0;
 
-    this.productTemplateOUMLineService.getProductUOMLine(skip, top, textSearch).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{ this.isLoadingProduct = false; }))
+    this.productTemplateOUMLineService.getProductUOMLine(skip, top, textSearch)
+    .pipe(takeUntil(this.destroy$)).pipe(finalize(()=> this.isLoadingProduct = false ))
     .subscribe((res: ODataProductDTOV2) => {
       this.lstProductSearch = [...res.value]
     },err=>{
-      this.message.error(err.error? err.error.message: Message.CanNotLoadData);
+      this.message.error(err?.error?.message || 'Không thể tải danh sách sản phẩm');
     });
   }
 
@@ -702,7 +700,7 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
       this.lstUser = [...res.value];
     },
     err=>{
-      this.message.error(err?.error?.message || Message.CanNotLoadData);
+      this.message.error(err?.error?.message || 'Không thể tải danh sách user');
     });
   }
 
@@ -711,7 +709,7 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
       this.lstPartnerStatus = res;
     },
     err=>{
-      this.message.error(err?.error?.message || Message.CanNotLoadData);
+      this.message.error(err?.error?.message || 'Không thể tải danh sách trạng thái khách hàng');
     });
   }
 

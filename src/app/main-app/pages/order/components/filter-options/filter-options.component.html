@@ -12,7 +12,7 @@
     <div class="mb-4">
       <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">TÌM THEO NGÀY</p>
       <div>
-          <tds-range-picker [(ngModel)]="datePicker" (ngModelChange)="onChangeDate($event)"> </tds-range-picker>
+          <tds-range-picker [(ngModel)]="datePicker" (ngModelChange)="onChangeDate($event)"></tds-range-picker>
       </div>
     </div>
 
@@ -34,10 +34,11 @@
       <div class="w-full">
         <tds-form-field>
             <tds-select
-                valueField="Id" textField="Name"
-                placeholder='select item' [(ngModel)]="selectTags"
-                (ngModelChange)="onChangeTags($event)"
-                [data]="lstDataTag" mode="multiple" >
+              valueField="Id" textField="Name"
+              placeholder='select item' 
+              [(ngModel)]="selectTags"
+              (ngModelChange)="onChangeTags($event)"
+              [data]="lstDataTag" mode="multiple">
             </tds-select>
         </tds-form-field>
       </div>

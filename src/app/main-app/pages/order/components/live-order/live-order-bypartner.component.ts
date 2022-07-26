@@ -25,7 +25,7 @@ export class LiveOrderByPartnerComponent implements OnInit {
   @ViewChild('innerText') innerText!: ElementRef;
   @Input() partnerId!: number;
   lstOfData!: ODataSaleOnline_OrderModel[];
-  pageSize: number = 1;
+  pageSize: number = 20;
   pageIndex: number = 1;
   count: number = 0;
   isLoading: boolean = false;
@@ -72,7 +72,7 @@ export class LiveOrderByPartnerComponent implements OnInit {
       this.lstOrder = [];
       let filters = this.odataGetOrderPartnerIdService.buildFilter(this.filterObj);
       let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
-      console.log(filters)
+      
       this.odataGetOrderPartnerIdService.getOrdersByPartner(this.partnerId, params).pipe(takeUntil(this.destroy$)).subscribe(res => {
         this.count = res["@odata.count"];
         this.lstOrder = res.value;
