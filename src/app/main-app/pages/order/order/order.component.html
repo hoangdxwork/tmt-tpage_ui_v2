@@ -106,7 +106,7 @@
               <th *ngIf="isHidden('Address')" width="380px" class="border-r">Địa chỉ</th>
               <th *ngIf="isHidden('TotalAmount')" width="140px" class="border-r text-right">Tổng tiền</th>
               <th *ngIf="isHidden('TotalQuantity')" width="140px" class="border-r">Tổng SL</th>
-              <th *ngIf="isHidden('DateCreated')" width="155px" class="border-r">Ngày tạo</th>
+              <th *ngIf="isHidden('DateCreated')" width="155px" class="border-r">Ngày tạo đơn</th>
               <th *ngIf="isHidden('StatusText')" width="160px" class="border-r">Trạng thái</th>
               <th *ngIf="isHidden('UserName')" width="126px" class="border-r">Nhân viên</th>
               <th width="130px" [tdsRight]="true" class="border-r">Thao tác</th>
@@ -251,7 +251,7 @@
 
                 <!-- Ngày hóa đơn -->
                 <td *ngIf="isHidden('DateCreated')" class="border-r">
-                  <span>{{data.DateCreated | date:"dd/MM/yyyy HH:mm"}}</span>
+                  <span>{{data.DateCreated | date:"dd/MM/yyyy HH:mm:ss"}}</span>
                 </td>
 
                 <!-- Trạng thái -->
@@ -266,10 +266,11 @@
                   </tds-tag>
 
                   <tds-dropdown-menu #menu1="tdsDropdownMenu">
-                    <div class="w-full">
-                      <div tds-dropdown-item *ngFor="let status of lstStatusTypeExt"
+                    <div class="w-[160px]">
+                      <div tds-dropdown-item *ngFor="let status of lstStatusTypeExt" class="flex items-center justify-between"
                         (click)="updateStatusSaleOnline(data, status)">
                         <a> {{ status.Text }} </a>
+                        <span class="tdsi-success-fill text-success-500" *ngIf="status.Text == data.StatusText"></span>
                       </div>
                     </div>
                   </tds-dropdown-menu>
@@ -373,7 +374,7 @@
         <div class="w-full h-full flex overflow-hidden bg-neutral-3-200" cdkScrollable>
           <div *ngIf="currentConversation && currentMappingTeam?.team" class="w-full">
             <shared-tds-conversations class="flex w-full h-full" [team]="currentMappingTeam?.team"
-              [data]="currentConversation" [type]="'all'" [miniChat]="true">
+              [data]="currentConversation" [type]="'all'">
             </shared-tds-conversations>
           </div>
         </div>

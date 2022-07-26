@@ -239,16 +239,22 @@
                       </span>
                   </button>
               </div>
+              <!-- Chỉnh sửa sau -->
               <tds-table #tableProduct [showSizeChanger]="true" [frontPagination]="false" [listData]="detailsFormGroups.value">
                   <thead>
                         <tr>
                             <th [width]="'48px'">STT</th>
-                            <th [width]="'400px'">Sản phẩm mua</th>
-                            <th>Số lượng</th>
-                            <th [width]="'400px'">Sản phẩm quà tặng</th>
-                            <th>Số lượng quà</th>
+                            <th>Sản phẩm mua</th>
+                            <th [width]="'137px'">Số lượng</th>
+                            <th [width]="'132px'">Số tiền</th>
+                            <th [width]="'137px'">% chiết khấu</th>
+                            <th [width]="'113px'">Tiền chiết khấu tối đa</th>
+                            <th>Sản phẩm mua</th>
+                            <th [width]="'137px'">Sản phẩm thưởng</th>
+                            <!-- <th [width]="'400px'">Sản phẩm quà tặng</th>
+                            <th>Số lượng quà</th> -->
                             <th [width]="'80px'">Hiệu lực</th>
-                            <th [width]="'80px'">Thao tác</th>
+                            <th [width]="'120px'">Thao tác</th>
                         </tr>
                   </thead>
                   <tbody formArrayName="Details">
@@ -256,7 +262,7 @@
                           <!-- STT -->
                           <td [width]="'48px'">{{ index + 1 }}</td>
                           <!-- Sản phẩm mua -->
-                          <td [width]="'400px'">
+                          <td>
                               <tds-form-field>
                                   <tds-select valueField="Id" textField="NameGet"
                                       placeholder='Chọn sản phẩm' formControlName="RuleCombo" [valuePrimitive]="false"
@@ -268,12 +274,47 @@
                           <!-- Số lượng -->
                           <td>
                               <div class="border border-neutral-2-200 rounded bg-white">
-                                  <input class="text-neutral-1-900 text-body-2 font-regular" formControlName="RuleMinQuantity"
+                                  <input class="text-neutral-1-900 text-body-2 font-regular"
                                     tdsInput type="number" [min]="0" />
                               </div>
                           </td>
+                          <!-- Số tiền -->
+                          <td>
+                              <div class="border border-neutral-2-200 rounded bg-white">
+                                  <input class="text-neutral-1-900 text-body-2 font-regular"
+                                    tdsInput type="number" [min]="0" />
+                              </div>
+                          </td>
+                          <!-- % chiết khấu -->
+                          <td>
+                              <div class="border border-neutral-2-200 rounded bg-white">
+                                  <input class="text-neutral-1-900 text-body-2 font-regular"
+                                    tdsInput type="number" [min]="0" />
+                              </div>
+                          </td>
+                          <!-- tiền chiết khấu tối đa -->
+                          <td>
+                              <div class="border border-neutral-2-200 rounded bg-white">
+                                  <input class="text-neutral-1-900 text-body-2 font-regular"
+                                    tdsInput type="number" [min]="0" />
+                              </div>
+                          </td>
+                          <!-- Sản phẩm mua -->
+                          <td>
+                              <tds-form-field>
+                                  <tds-select valueField="Id" textField="NameGet"
+                                      placeholder='Chọn sản phẩm' [valuePrimitive]="false"
+                                      disabledField="isActive" [data]="lstProduct" [allowClear]="true" mode="multiple">
+                                  </tds-select>
+                                  <tds-error>Vui lòng chọn sản phẩm mua</tds-error>
+                              </tds-form-field>
+                          </td>
+                          <!-- Sản phẩm thưởng -->
+                          <td>
+                            <div class="text-body-2">Giảm giá 0 % trên tổng tiền</div>
+                          </td>
                           <!-- Sản phẩm quà tặng -->
-                          <td [width]="'400px'">
+                          <!-- <td [width]="'400px'">
                               <tds-form-field >
                                   <tds-select valueField="Id" textField="NameGet"
                                       placeholder='Chọn sản phẩm' formControlName="RewardCombo" [valuePrimitive]="false"
@@ -281,14 +322,14 @@
                                   </tds-select>
                                   <tds-error>Vui lòng chọn sản phẩm</tds-error>
                               </tds-form-field>
-                          </td>
+                          </td> -->
                           <!-- Số lượng quà -->
-                          <td>
+                          <!-- <td>
                               <div class="border border-neutral-2-200 rounded bg-white">
                                   <input class="text-neutral-1-900 text-body-2 font-regular" formControlName="RewardProductQuantity"
                                     tdsInput type="number"  [min]="0" />
                               </div>
-                          </td>
+                          </td> -->
                           <!-- Hiệu lực -->
                           <td [width]="'80px'">
                               <tds-switch formControlName="Active"></tds-switch>
@@ -297,7 +338,7 @@
                           <td [width]="'80px'">
                               <button tds-button-icon color="secondary" (click)="deleteDetailCombo(index)">
                                   <span class="flex items-center">
-                                  <i class="tdsi-trash-fill text-lg leading-none"></i>
+                                  <i class="tdsi-trash-fill text-lg leading-none text-neutral-1-500"></i>
                                   </span>
                               </button>
                           </td>
