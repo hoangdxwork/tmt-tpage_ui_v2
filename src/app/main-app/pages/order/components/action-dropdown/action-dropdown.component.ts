@@ -1,14 +1,14 @@
+import { ODataSaleOnline_OrderModel } from './../../../../dto/saleonlineorder/odata-saleonline-order.dto';
+import { FilterObjSOOrderModel } from './../../../../services/mock-odata/odata-saleonlineorder.service';
 import { Component, Input, OnInit, Output, ViewContainerRef, EventEmitter } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Message } from 'src/app/lib/consts/message.const';
-import { GenerateMessageTypeEnum } from 'src/app/main-app/dto/conversation/message.dto';
 import { OdataSaleOnline_OrderService } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { SendMessageComponent } from 'src/app/main-app/shared/tpage-send-message/send-message.component';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
-import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { DuplicateUserComponent } from '../duplicate-user/duplicate-user.component';
 import { UpdateStatusOrderComponent } from '../update-status-order/update-status-order.component';
 
@@ -18,14 +18,14 @@ import { UpdateStatusOrderComponent } from '../update-status-order/update-status
 })
 export class ActionDropdownComponent implements OnInit {
 
-  @Input() filterObj: any;
-  @Input() setOfCheckedId: any = [];
-  @Input() lstOfData: any = [];
+  @Input() filterObj!: FilterObjSOOrderModel;
+  @Input() setOfCheckedId!: Set<string>;
+  @Input() lstOfData: ODataSaleOnline_OrderModel[] = [];
 
   @Output() onRefreshData =new EventEmitter<any>();
 
   isProcessing: boolean = false;
-  idsModel: any = [];
+  idsModel: string[] = [];
 
   private destroy$ = new Subject<void>();
 
@@ -72,7 +72,13 @@ export class ActionDropdownComponent implements OnInit {
 
   openUpdateStatusText() {
     if (this.checkValueEmpty() == 1) {
-      let listData = this.lstOfData.filter((a: any) => this.idsModel.includes(a.Id));
+      let listData:ODataSaleOnline_OrderModel[] = [];
+      this.lstOfData.forEach(a => {
+        if(this.idsModel.includes(a.Id)){
+          listData.push(a)
+        }
+      });
+
       const modal = this.modal.create({
         title: 'Cập nhật trạng thái đơn hàng',
         content: UpdateStatusOrderComponent,
@@ -84,7 +90,7 @@ export class ActionDropdownComponent implements OnInit {
       });
 
       modal.afterClose.subscribe(result => {
-        if(TDSHelperObject.hasValue(result)) {
+        if(result) {
           this.onRefreshData.emit(true);
         }
       });
@@ -105,23 +111,6 @@ export class ActionDropdownComponent implements OnInit {
     }
   }
 
-  // sendMessage() {
-  //   if (this.checkValueEmpty() == 1) {
-  //     let orderIds = this.lstOfData.filter((a: any) => this.idsModel.includes(a.Id)).map((x: any) => x.Id);
-  //     this.modal.create({
-  //       title: 'Gửi tin nhắn nhanh',
-  //       content: SendMessageComponent,
-  //       size: 'lg',
-  //       viewContainerRef: this.viewContainerRef,
-  //       componentParams: {
-  //         // listData: listData
-  //         orderIds: orderIds,
-  //         messageType: GenerateMessageTypeEnum.Order
-  //       }
-  //     });
-  //   }
-  // }
-
   getUpdateUIds() {
     this.saleOnline_OrderService.getUpdateUIds().subscribe(res => {
       this.message.success(Message.UpdatedSuccess);
@@ -130,8 +119,7 @@ export class ActionDropdownComponent implements OnInit {
   }
 
   checkValueEmpty() {
-    var ids: any[] = [...this.setOfCheckedId][0];
-    this.idsModel = [...ids];
+    this.idsModel = [...this.setOfCheckedId];
 
     if (this.idsModel.length == 0) {
       this.message.error('Vui lòng chọn tối thiểu một dòng!');
