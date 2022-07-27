@@ -48,6 +48,7 @@ import { ProductService } from 'src/app/main-app/services/product.service';
 import { ConversationPartnerHandler } from '../conversation-partner/conversation-partner.handler';
 import { ConversationOrderHandler } from './conversation-order.handler';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
+import { CrmMatchingV2Detail } from 'src/app/main-app/dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
 
 @Component({
     selector: 'conversation-order',
@@ -56,7 +57,7 @@ import { PartnerService } from 'src/app/main-app/services/partner.service';
 
 export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
-  @Input() data!: ConversationMatchingItem;
+  @Input() data!: CrmMatchingV2Detail;
   @Input() team!: CRMTeamDTO;
 
   isLoading: boolean = false;

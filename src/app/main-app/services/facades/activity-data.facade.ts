@@ -675,11 +675,6 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
     return this.getActivity(pageId, psid, type);
   }
 
-  makeActivity_v2(team: CRMTeamDTO, psid: string, type: string): Observable<any> {
-    this.activityFbState.initExtrasByPsid(team.Facebook_PageId, psid);
-    return this.getActivity_v2(team, psid, type);
-  }
-
   getActivity(pageId: any, psid: any, type: any): Observable<any> {
     let exist = this.activityFbState.getByType(pageId, psid, type);
     if (exist) {
@@ -701,34 +696,6 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
           return this.activityFbState.setActivity(pageId, psid, type, value);
 
       }), shareReplay({ bufferSize: 1, refCount: true }));
-    }
-  }
-
-  getActivity_v2(team: CRMTeamDTO, psid: any, type: any): Observable<any> {
-    let exist = this.activityFbState.getByType(team.Facebook_PageId, psid, type);
-
-    if (exist) {
-        return Observable.create((obs :any) => {
-            obs.next(exist);
-            obs.complete();
-        })
-    } else {
-
-        let query = this.service.createQuery_v2(type);
-        return this.service.get_v2(query, team.Id, psid).pipe(map((res: any) => {
-
-            // if(res && TDSHelperArray.isArray(res.Items)) {
-            //   res.Items = res.Items.sort((a: any, b: any) => Date.parse(a.DateCreated) - Date.parse(b.DateCreated));
-            // }
-
-            let data = this.createType_v2(res, query);
-
-            if(data) {
-                this.activityFbState.setExtras(team.Facebook_PageId, psid, data.extras);
-                return this.activityFbState.setActivity(team.Facebook_PageId, psid, type, data);
-            }
-
-        }), shareReplay({ bufferSize: 1, refCount: true }));
     }
   }
 
@@ -811,14 +778,6 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
     } as any;
   }
 
-  createType_v2(data: any, query: any) {debugger
-    return {
-        items: data.Items,
-        extras: data.Extras || {},
-        query: query,
-        response: this.service.createResponse_v2(data)
-    } as any;
-  }
 
   ngOnDestroy(): void {
     this.destroy$.next();

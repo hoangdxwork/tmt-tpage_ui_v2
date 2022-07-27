@@ -1,11 +1,11 @@
 import { da } from 'date-fns/locale';
-import { ReplaceHelper } from './../helper/replace.helper';
-import { QuickReplyDTO } from './../../dto/quick-reply.dto.ts/quick-reply.dto';
+import { ReplaceHelper } from '../helper/replace.helper';
+import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { ConfigConversationTagsCreateDataModalComponent } from './../../pages/configs/components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
-import { ModalListBillComponent } from './../../pages/conversations/components/modal-list-bill/modal-list-bill.component';
-import { ModalListProductComponent } from './../../pages/conversations/components/modal-list-product/modal-list-product.component';
-import { ModalImageStoreComponent } from './../../pages/conversations/components/modal-image-store/modal-image-store.component';
+import { ConfigConversationTagsCreateDataModalComponent } from '../../pages/configs/components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
+import { ModalListBillComponent } from '../../pages/conversations/components/modal-list-bill/modal-list-bill.component';
+import { ModalListProductComponent } from '../../pages/conversations/components/modal-list-product/modal-list-product.component';
+import { ModalImageStoreComponent } from '../../pages/conversations/components/modal-image-store/modal-image-store.component';
 import { ConversationDataFacade } from 'src/app/main-app/services/facades/conversation-data.facade';
 import {
   Component, Input, OnChanges, OnInit,
@@ -30,7 +30,6 @@ import { DraftMessageService } from '../../services/conversation/draft-message.s
 import { CRMTagService } from '../../services/crm-tag.service';
 import { Message } from 'src/app/lib/consts/message.const';
 import { DataPouchDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
-import { ConversationOrderFacade } from '../../services/facades/conversation-order.facade';
 import { YiAutoScrollDirective } from '../directives/yi-auto-scroll.directive';
 import { eventFadeStateTrigger } from '../helper/event-animations.helper';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -39,24 +38,27 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSUploadChangeParam } from 'tds-ui/upload';
 import { ProductPagefbComponent } from '../../pages/conversations/components/product-pagefb/product-pagefb.component';
 import { ModalPostComponent } from '../../pages/conversations/components/modal-post/modal-post.component';
-import { OnChatBotSignalRModel, TypeOnChatBot } from '../../dto/event-signalR/on-chatbot-signalR.dto';
+import { ChatomniMessageService } from '../../services/chatomni-service/chatomni-message.service';
+import { ChatomniMessageDTO } from '../../dto/conversation-all/chatomni/chatomni-message.dto';
+import { CrmMatchingV2Detail } from '../../dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
+import { ChatomniMessageFacade } from '../../services/chatomni-facade/chatomni-message.facade';
 
 @Component({
-  selector: 'shared-tds-conversations',
-  templateUrl: './tds-conversations.component.html',
+  selector: 'shared-tds-conversations-v2',
+  templateUrl: './tds-conversations-v2.component.html',
   styleUrls: ['./tds-conversations.component.sass'],
   animations: [eventFadeStateTrigger],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+export class TDSConversationsV2Component implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
   @ViewChild('scrollToIndex') scrollToIndex!: ElementRef<any>;
   @HostBinding("@eventFadeState") eventAnimation = true;
 
   @Input() tdsHeader?: string | TemplateRef<void>;
-  @Input() data!: ConversationMatchingItem;
+  @Input() data!: CrmMatchingV2Detail;
   @Input() type!: string;
   @Input() team!: CRMTeamDTO;
   @Input() miniChat!: boolean;
@@ -64,7 +66,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   destroy$ = new Subject<void>();
   isLoadMessage: boolean = false;
-  dataSource$!: Observable<MakeActivityMessagesDTO>;
+  dataSource$!: Observable<ChatomniMessageDTO>;
   partner: TDSSafeAny;
 
   isEnterSend: boolean = true;
@@ -93,6 +95,8 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   isEnableChatbot: boolean = false;
 
   constructor(private modalService: TDSModalService,
+    private chatomniMessageService: ChatomniMessageService,
+    private omniMessageFacade: ChatomniMessageFacade,
     private message: TDSMessageService,
     private activityMatchingService: ActivityMatchingService,
     private applicationUserService: ApplicationUserService,
@@ -119,7 +123,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     this.partnerService.onLoadOrderFromTabPartner$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.partner = res;
+        this.partner = res;
     });
 
     // TODO: has_admin_required nhận từ tds-conversation-item để gửi lại tn
@@ -133,10 +137,15 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
           this.isNextData = obs;
           this.cdRef.detectChanges();
       }
+    });
+
+    this.chatomniMessageService.spinningLoadMessage$.subscribe((obs: boolean) => {
+        this.isLoadMessage = obs;
+        this.cdRef.detectChanges()
     })
   }
 
-  loadData(data: ConversationMatchingItem) {
+  loadData(data: CrmMatchingV2Detail) {
     this.loadTags(data);
     this.loadUser();
 
@@ -146,23 +155,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   //TODO: data.id = data.psid
-  loadMessages(data: ConversationMatchingItem): any {
+  loadMessages(data: CrmMatchingV2Detail): any {
     this.isLoadMessage = true;
 
-    // Sử dụng ngZone chạy bất đồng bộ
     this.ngZone.run(() => {
-      this.dataSource$ = this.activityDataFacade.makeActivity(this.team?.Facebook_PageId, data.psid, this.type);
-
-      this.dataSource$.pipe(takeUntil(this.destroy$), finalize(() => {
-          setTimeout(() => {
-            this.isLoadMessage = false;
-          }, 300);
-
-          // this.conversationDataFacade.onLoadTdsConversation$.emit(false);
-          // this.cdRef.markForCheck();
-        })).subscribe(() => {}, error => {
-          this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
-      });
+        this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.psid, this.type);
     })
 
     this.yiAutoScroll?.forceScrollDown();
@@ -195,7 +192,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     let page_id = this.team.Facebook_PageId;
 
     if(assign_user_id) {
-      this.crmMatchingService.markSeen(page_id, this.data.psid, this.type, assign_user_id)
+      this.crmMatchingService.markSeen(page_id, this.data!.psid, this.type, assign_user_id)
         .pipe(takeUntil(this.destroy$)).subscribe((x: any) => {
           // Cập nhật count_unread
           this.conversationEventFacade.updateMarkSeenBadge(this.data.page_id, this.type, this.data.psid);
@@ -208,21 +205,24 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   showImageStore(): void {
     const modal = this.modalService.create({
-      title: 'Kho hình ảnh',
-      content: ModalImageStoreComponent,
-      centered: true,
-      size: "xl",
-      viewContainerRef: this.viewContainerRef
+        title: 'Kho hình ảnh',
+        content: ModalImageStoreComponent,
+        centered: true,
+        size: "xl",
+        viewContainerRef: this.viewContainerRef
     });
+
     modal.afterClose.subscribe((result : string[]) => {
-      if(TDSHelperArray.hasListValue(result)){
-        let data = this.uploadedImages;
-        result.forEach((x: string)=>{
-          data.push(x);
-        })
-        this.uploadedImages = [...data];
-        this.cdRef.markForCheck();
-      }
+        if(TDSHelperArray.hasListValue(result)){
+          let data = this.uploadedImages;
+
+          result.forEach((x: string)=>{
+            data.push(x);
+          })
+
+          this.uploadedImages = [...data];
+          this.cdRef.markForCheck();
+        }
     });
   }
 
@@ -285,7 +285,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     });
   }
 
-  showModalListBill(data:ConversationMatchingItem) {
+  showModalListBill(data: CrmMatchingV2Detail) {
     this.modalService.create({
       title: 'Phiếu bán hàng',
       content: ModalListBillComponent,
@@ -330,26 +330,26 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   validateData() {
     delete this.messageModel;
-    (this.dataSource$ as any) = null;
+
     this.isNextData = false;
     this.isLoadMessage = false;
     this.uploadedImages = [];
     this.tags = [];
   }
 
-  loadPrevMessages(): any {
+  nextData(): any {
     if (this.isNextData || this.isLoadMessage) {
       return;
     }
 
+    (this.dataSource$ as any)= null;
     this.scrollToIndex?.nativeElement?.scrollTo(0, 1);
     this.isNextData = true;
 
-    let pageId = this.team?.Facebook_PageId;
-    let psid = this.data.psid;
-    let type = this.type ? this.type : 'all';
-
-    this.activityDataFacade.nextData(pageId, psid, type);
+    let id = `${this.team.Id}_${this.data.psid}`;
+    this.ngZone.run(() => {
+        this.dataSource$ = this.chatomniMessageService.nextDataSource(id);
+    })
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -359,9 +359,9 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
       this.data = changes["data"].currentValue;
       let object = {
-        psid: this.data.psid,
-        messages: this.messageModel,
-        images: this.uploadedImages
+          psid: this.data.psid,
+          messages: this.messageModel,
+          images: this.uploadedImages
       }
 
       this.draftMessageService.onUpdateDraftMessage$.emit(object);
@@ -388,7 +388,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
   }
 
-  loadTags(data: ConversationMatchingItem) {
+  loadTags(data: CrmMatchingV2Detail) {
     if (data && data.keyTags) {
       if (!TDSHelperArray.hasListValue(this.tags)) {
         this.crmTagService.dataActive$.subscribe((res: any) => {
@@ -500,7 +500,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     }
   }
 
-  sendIconLike() {
+  sendIconLike() {debugger
     const message = "(y)";
     let model = this.prepareModel(message);
     model.attachment = {
@@ -605,6 +605,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     if (TDSHelperArray.hasListValue(res)) {
       res.map((x: any, i: number) => {
         x["status"] = ActivityStatus.sending;
+
         this.activityDataFacade.messageServer(x);
 
         if (TDSHelperArray.hasListValue(this.uploadedImages)) {
@@ -648,7 +649,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
     })
   }
 
-  prepareModel(message: string): any {
+  prepareModel(message: string): any {debugger
     const model = {} as SendMessageModelDTO;
     model.from = {
       id: this.team.Facebook_PageId,
@@ -788,7 +789,7 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
 
   openModalPost(item: ExtrasPostItem) {
     let data: TDSSafeAny;
-    this.dataSource$.subscribe((res: any) => {
+    this.dataSource$!.subscribe((res: any) => {
       data = res.extras.posts[item.object_id];
     });
     this.modalService.create({

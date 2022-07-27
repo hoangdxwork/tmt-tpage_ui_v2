@@ -7,8 +7,9 @@ import { DraftMessageService } from 'src/app/main-app/services/conversation/draf
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ConversationEventFacade } from 'src/app/main-app/services/facades/conversation-event.facade';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { Subject, takeUntil } from 'rxjs';
+import { CrmMatchingV2Detail } from 'src/app/main-app/dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
 
 @Component({
     selector: 'current-conversation-item',
@@ -23,11 +24,11 @@ import { Subject, takeUntil } from 'rxjs';
 export class CurrentConversationItemComponent  implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
   @Input() isFastSend: boolean | undefined;
-  @Input() item!: ConversationMatchingItem;
+  @Input() item!: CrmMatchingV2Detail;
   @Input() team!: CRMTeamDTO;
   @Input() type: any;
   @Input() psid: any;
-  @Input() currentConversationItem!: ConversationMatchingItem;
+  @Input() currentConversationItem!: CrmMatchingV2Detail;
   @Input() isOpenCollapCheck!: boolean;
   @Input() checked!: boolean;
   @Input() state!: StateChatbot | null;
@@ -47,7 +48,7 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges, Aft
   totalWidthTag :number =0;
   plusWidthTag: number = 0;
   gapTag: number = 4;
-  displayTag: number = 0;
+  displayTag: number = 0 ;
   countHiddenTag = 0;
   countNgafterview = 0;
 
@@ -82,7 +83,10 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges, Aft
           this.isDraftMessage = res.isDraftMessage;
         }
       });
-      this.displayTag = this.item.tags.length;
+
+      if(TDSHelperArray.hasListValue(this.item?.tags)) {
+          this.displayTag = this.item?.tags?.length || 0;
+      }
     }
   }
 
@@ -122,7 +126,9 @@ export class CurrentConversationItemComponent  implements OnInit, OnChanges, Aft
       this.plusWidthTag = this.plusWidthTag + x.nativeElement?.offsetWidth + this.gapTag;
     });
 
-    this.countHiddenTag = this.item.tags.length - this.displayTag;
+    if(TDSHelperArray.hasListValue(this.item?.tags)) {
+      this.countHiddenTag = (this.item.tags!.length - this.displayTag) || 0;
+    }
 
     if(this.countNgafterview > 1){
       this.cdr.detectChanges();

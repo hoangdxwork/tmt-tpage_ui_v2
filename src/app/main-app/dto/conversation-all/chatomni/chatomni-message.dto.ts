@@ -1,7 +1,15 @@
-export interface From {
+export interface Facebook_Graph_From {
   id: string;
   name: string;
   uid?: any;
+}
+
+export interface Parent {
+  id: string;
+}
+
+export interface Object {
+  id: string;
 }
 
 export interface ImageData {
@@ -30,19 +38,11 @@ export interface Attachments {
   paging?: any;
 }
 
-export interface Parent {
-  id: string;
-}
-
-export interface Object {
-  id: string;
-}
-
 export interface ChatomniDataFacebookMessage {
   id: string;
   message: string;
   created_time: Date;
-  from: From;
+  from: Facebook_Graph_From;
   to?: any;
   attachments: Attachments;
   parent: Parent;
@@ -57,25 +57,43 @@ export interface ChatomniDataFacebookMessage {
   comments?: any;
   attachment?: any;
   message_tags: any[];
+
+  // các dữ liệu bổ sung để check client
+  has_admin_required: boolean;
+  is_show_avatar?: boolean;
+  is_show_break?: boolean;
+
 }
 
-export interface Item {
+export interface ErrorMessageOmni {
+  Code: string;
+  Message: string;
+}
+
+export interface ChatomniInnerUser {
+  Id: string;
+  Name: string;
+}
+
+export interface ChatomniMessageDetail {
   Data: ChatomniDataFacebookMessage;
   Id: string;
   ObjectId: string;
-  ParentId?: any;
+  ParentId?: string;
   Message: string;
   Source?: any;
-  Type: number;
+  Type: ChatomniMessageType;
   UserId: string;
-  Error?: any;
-  Status: number;
+  Error?: ErrorMessageOmni;
+  Status: ChatomniStatus;
   IsSystem: boolean;
-  CreatedById?: any;
-  CreatedBy?: any;
-  CreatedTime: Date;
+  CreatedById?: string;
+  CreatedBy?: ChatomniInnerUser;
+  CreatedTime: Date | any;
   ChannelCreatedTime: Date;
   ChannelUpdatedTime?: any;
+  IsOwner: boolean;
+
 }
 
 export interface PagingTimestamp {
@@ -84,12 +102,11 @@ export interface PagingTimestamp {
   UrlNext: string;
 }
 
-export interface ChatomniMessageDTO {
-  Items: Item[];
-  Extras?: any;
-  Paging: PagingTimestamp;
+export enum ChatomniStatus {
+  Pending = 0, // Chờ gửi
+  Done = 1, // Gửi thành công
+  Error = 2 // Gửi lỗi
 }
-
 
 export enum ChatomniMessageType {
   System = 0,
@@ -103,3 +120,10 @@ export enum ChatomniMessageType {
   TShopComment = 91,
   TShopMessage = 92
 }
+
+export interface ChatomniMessageDTO {
+  Items: ChatomniMessageDetail[];
+  Extras?: any;
+  Paging: PagingTimestamp;
+}
+

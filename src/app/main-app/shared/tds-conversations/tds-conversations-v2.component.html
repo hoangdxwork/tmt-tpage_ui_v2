@@ -1,0 +1,404 @@
+<section *ngIf="data && team" class="chat-block text-body-2 text-neutral-1-900 w-full h-full flex flex-col relative">
+    <div #chatHeader class="chat-header flex items-center p-2">
+        <div class="flex flex-row justify-between items-center bg-white w-full rounded-xl p-3">
+            <div class="flex flex-row items-center">
+                <div class="avatar mr-2 relative">
+                    <tpage-avatar-facebook [size]="48"
+                      [noSeenMessage]="(type == 'all' && data.count_unread_activities > 0) || (type == 'message' && data.count_unread_messages > 0) || (type == 'comment' && data.count_unread_comments > 0)"
+                      [shape]="'circle'" [psid]="data.psid"
+                      [token]="team.Facebook_PageToken">
+                    </tpage-avatar-facebook>
+                    <span *ngIf="(data | lastActivityMessage: type)?.type == 2" class="absolute" style="top: 31px;left: 31px;">
+                        <svg width="20" height="21" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1.6665 13.0152C1.6665 16.3866 3.04389 19.3288 5.30367 21.373L5.36031 23.2061C5.36031 23.2061 5.36031 23.2061 5.36031 23.2061C5.4008 24.5175 6.75463 25.3774 7.96053 24.845C7.96056 24.8449 7.96059 24.8449 7.96062 24.8449C7.96097 24.8448 7.96132 24.8446 7.96168 24.8444L10.0314 23.9321C11.076 24.2135 12.1824 24.3646 13.3332 24.3646C19.857 24.3646 24.9998 19.55 24.9998 13.0179C24.9998 6.4862 19.8573 1.66858 13.3332 1.66858C6.80934 1.66858 1.6665 6.4832 1.6665 13.0152Z" fill="url(#paint0_linear_11437_27281)" stroke="white" stroke-width="2"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M16.4272 6.33233V8.49995L15.1407 8.5033C14.1322 8.5033 13.9379 8.98238 13.9379 9.68259V11.2338H16.3401L16.0285 13.6593H13.9379V19.9712H11.4323V13.6593H9.33466V11.2338H11.4323V9.44472C11.4323 7.36756 12.6983 6.23517 14.5544 6.23517C15.4392 6.23517 16.2027 6.30217 16.4272 6.33233Z" fill="white"/>
+                            <defs>
+                            <linearGradient id="paint0_linear_11437_27281" x1="8.04667" y1="4.43833" x2="18.8263" y2="22.09" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#005BE6"/>
+                            <stop offset="1" stop-color="#63A0FF"/>
+                            </linearGradient>
+                            </defs>
+                        </svg>
+                    </span>
+                    <!-- icon message -->
+                    <span *ngIf="(data | lastActivityMessage: type)?.type == 3"  class="absolute" style="top: 31px;left: 31px;">
+                        <svg width="20" height="21" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1.6665 13.0134C1.6665 16.3847 3.04389 19.327 5.30367 21.3711L5.36031 23.2042C5.36031 23.2042 5.36031 23.2042 5.36031 23.2042C5.4008 24.5156 6.75463 25.3755 7.96053 24.8431C7.96056 24.8431 7.96059 24.843 7.96062 24.843C7.96097 24.8429 7.96132 24.8427 7.96168 24.8426L10.0314 23.9302C11.076 24.2116 12.1824 24.3627 13.3332 24.3627C19.857 24.3627 24.9998 19.5481 24.9998 13.016C24.9998 6.48431 19.8573 1.66669 13.3332 1.66669C6.80934 1.66669 1.6665 6.48131 1.6665 13.0134Z" fill="url(#paint0_radial_11437_25390)" stroke="white" stroke-width="2" />
+                            <path d="M6.92785 16.04L10.0612 11.0694C10.5598 10.2774 11.6265 10.0827 12.3758 10.6427L14.8692 12.512C15.0985 12.6827 15.4132 12.6827 15.6398 12.5094L19.0051 9.9547C19.4531 9.61336 20.0398 10.152 19.7411 10.6294L16.6052 15.5974C16.1065 16.3894 15.0398 16.584 14.2905 16.024L11.7972 14.1547C11.5678 13.984 11.2532 13.984 11.0265 14.1574L7.66118 16.712C7.21318 17.0534 6.62651 16.5174 6.92785 16.04Z" fill="white" />
+                            <defs>
+                            <radialGradient id="paint0_radial_11437_25390" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(6.77317 23.8838) scale(23.2448)">
+                                <stop stop-color="#0099FF" />
+                                <stop offset="0.317708" stop-color="#5364FF" />
+                                <stop offset="0.6098" stop-color="#A033FF" />
+                                <stop offset="0.9348" stop-color="#FF91AE" />
+                                <stop offset="1" stop-color="#FFA399" />
+                            </radialGradient>
+                            </defs>
+                      </svg>
+                    </span>
+                </div>
+                <div class="user">
+                    <label class="text-black text-title-1 font-semibold">{{data.name || data.partner_name}}</label>
+                    <div class="flex flex-row">
+                        <button class="flex items-center"
+                            color="primary"  trigger="click"  tds-dropdown
+                            [tdsDropdownMenu]="menu2" [placement]="'bottomRight'">
+                            <span class="text-neutral-1-400 text-caption-1 font-regular pr-1">{{ data.assigned_to ? 'Đã gán cho' : 'Gán nhân viên' }}</span>
+                            <span class="text-primary-1 text-caption-1 font-semibold pr-1">{{data.assigned_to ? data.assigned_to.Name:''}}</span>
+                            <i class="tdsi-arrow-down-line"></i>
+                        </button>
+                        <tds-dropdown-menu #menu2="tdsDropdownMenu">
+                        <div class="w-72 max-h-80 overflow-hidden py-2 gap-y-2 flex flex-col">
+                            <div class="px-4">
+                                <tds-form-field class="w-full">
+                                    <input tdsInput placeholder="Tìm kiếm" autocomplete="off" [(ngModel)]="keyFilterUser" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="750" (inputKeyup)="searchUser()"/>
+                                    <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                                </tds-form-field>
+                            </div>
+                            <div class="gap-y-2 flex flex-col overflow-y-auto tds-panel-scroll">
+                                <div *ngFor="let item of lstUser" (click)="assignUser(item)" [ngClass]="isLoadingSelectUser? 'cursor-wait': ''"
+                                class="py-2 px-3 rounded-full cursor-pointer hover:bg-neutral-3-50 flex justify-between items-center" >
+                                <div class="flex gap-x-2">
+                                    <tds-avatar size="sm" [tdsSrc]="item.Avatar"></tds-avatar>
+                                    <span>{{item.Name}}</span>
+                                </div>
+                                <span class="tdsi-success-fill text-success-500" *ngIf="item.Id == data.assigned_to?.Id"></span>
+                                </div>
+                            </div>
+                            <div class="flex justify-center items-center text-caption-1 text-error-400 border-t border-neutral-2-100">
+                                <span class="cursor-pointer pt-2 flex items-center" (click)="assignUser('')">
+                                    <i class="tdsi-error-line leading-none mr-2"></i>Bỏ gán nhân viên
+                                </span>
+                            </div>
+                        </div>
+                        </tds-dropdown-menu>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-row items-center">
+                <!-- Chatbot đang gặp vấn đề -->
+                <div class="flex">
+                    <!-- chatbot lỗi -->
+                    <span *ngIf="data.state == 2" class="mr-3 cursor-pointer" tds-tooltip tooltipTitle="Hệ thống chatbot đang gặp vấn đề">
+                        <img src="../../../assets/imagesv2/chatbot-error.svg" width="38px" height="38px">
+                    </span>
+                    <!-- bật chatbot thành công sau 5s thì đóng -->
+                    <span *ngIf="data.state == 0 && isEnableChatbot" class="mr-3 cursor-pointer" tds-tooltip tooltipTitle="Bật chatbot thành công">
+                        <img src="../../../assets/imagesv2/chatbot-enable.svg" width="38px" height="38px">
+                    </span>
+                </div>
+
+                <div *ngIf="miniChat != true">
+                    <button type="button" tds-button-flat-icon color="secondary" rounded="!rounded-full" class="mr-3" (click)="onProductLastV2()">
+                        <img src="../../../assets/imagesv2/conversation/box-add.svg" width="21px" height="21px">
+                    </button>
+                </div>
+                <button type="button" tds-button-flat-icon color="secondary" rounded="!rounded-full" class="mr-3 text-neutral-1-400" (click)="refreshRead()">
+                    <svg [ngClass]="isLoadMessage?'animate-spin':''" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7.62005 4.08293C7.85778 3.98571 8.10098 3.90247 8.34842 3.83363C9.54248 3.50676 10.8061 3.536 11.9838 3.91776C13.1616 4.29952 14.2023 5.01716 14.9779 5.98247C15.7535 6.94778 16.2303 8.1187 16.3496 9.3513C16.469 10.5839 16.2257 11.8245 15.6497 12.9205L14.9502 12.5245C14.8733 12.4803 14.7861 12.4574 14.6975 12.4581C14.6088 12.4588 14.522 12.4831 14.4459 12.5284C14.3736 12.5772 14.315 12.6436 14.2756 12.7215C14.2363 12.7993 14.2175 12.8859 14.2211 12.973C14.2277 13.0731 14.0555 16.4624 14.045 16.2523C14.0512 16.3323 14.0767 16.4096 14.1195 16.4775C14.1622 16.5454 14.2209 16.6019 14.2903 16.642C14.3598 16.6821 14.438 16.7047 14.5182 16.7078C14.5983 16.7109 14.678 16.6944 14.7503 16.6597C14.8403 16.6154 18.12 14.9962 17.932 15.0888C18.0111 15.05 18.078 14.9902 18.1256 14.9161C18.1733 14.8419 18.1997 14.7562 18.2022 14.6681C18.2046 14.58 18.183 14.4929 18.1395 14.4162C18.0961 14.3395 18.0326 14.2761 17.9558 14.2329L17.3773 13.8916C18.1317 12.4568 18.4516 10.8332 18.298 9.21931C18.1444 7.60542 17.524 6.07121 16.5125 4.80433C15.5011 3.53745 14.1425 2.59282 12.6029 2.08597C11.0634 1.57913 9.40958 1.53204 7.84383 1.95046L7.825 1.95551C7.55888 2.02682 7.35671 2.09383 7.20316 2.15057C7.10422 2.18686 7.01968 2.2542 6.96218 2.34253C6.90468 2.43087 6.87731 2.53545 6.88415 2.64064L6.9504 3.66143C6.95557 3.73835 6.97885 3.81296 7.01833 3.87917C7.05781 3.94539 7.11238 4.00133 7.17758 4.04244C7.24278 4.08356 7.31677 4.10868 7.39351 4.11575C7.47026 4.12283 7.54759 4.11166 7.61919 4.08316L7.62005 4.08293Z" fill="#929DAA"/>
+                        <path d="M13.1184 17.3652L13.0555 16.3398C13.0506 16.2626 13.0275 16.1876 12.988 16.1211C12.9486 16.0546 12.8939 15.9983 12.8285 15.957C12.7631 15.9157 12.6888 15.8905 12.6118 15.8835C12.5348 15.8765 12.4572 15.8878 12.3854 15.9166C12.1458 16.0138 11.9007 16.0969 11.6514 16.1656C10.4579 16.4915 9.19507 16.4613 8.01835 16.0787C6.84163 15.6961 5.80234 14.9778 5.02834 14.0122C4.25435 13.0465 3.7794 11.8756 3.66197 10.6436C3.54453 9.41155 3.78971 8.17211 4.36735 7.07775L5.05746 7.47632C5.13433 7.52046 5.22154 7.54336 5.31016 7.54267C5.39878 7.54198 5.48561 7.51772 5.56176 7.47239C5.63409 7.42368 5.69273 7.35723 5.73208 7.27939C5.77144 7.20155 5.79019 7.11491 5.78655 7.02775C5.77992 6.92769 5.95216 3.53838 5.96259 3.74844C5.95813 3.66746 5.93319 3.58894 5.89008 3.52025C5.84697 3.45156 5.78711 3.39496 5.71613 3.35575C5.64645 3.31457 5.56758 3.29143 5.4867 3.28843C5.40582 3.28543 5.32548 3.30266 5.25295 3.33857L2.10293 4.90098C2.02341 4.94078 1.95625 5.00153 1.90867 5.07667C1.86109 5.15182 1.83491 5.23853 1.83293 5.32746C1.82982 5.41488 1.85123 5.50144 1.89474 5.57733C1.93826 5.65322 2.00213 5.71543 2.07914 5.7569L2.65315 6.08842C1.88736 7.52045 1.55726 9.14538 1.70353 10.7629C1.84981 12.3805 2.46607 13.9199 3.47635 15.1915C4.48663 16.4631 5.84678 17.4113 7.38912 17.9191C8.93147 18.427 10.5886 18.4723 12.1563 18.0496L12.1845 18.042C12.3933 17.9861 12.5966 17.9233 12.7965 17.8514C12.8957 17.8156 12.9805 17.7486 13.0384 17.6605C13.0963 17.5723 13.1241 17.4679 13.1177 17.3626L13.1184 17.3652Z" fill="#929DAA"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- main -->
+    <tds-spin class="flex-auto h-full w-full flex overflow-hidden" [color]="'secondary'" tip="Loading..." [spinning]="isLoadMessage" >
+        <div class="h-full w-full overflow-y-auto tds-custom-scroll flex flex-col relative delay-100"
+            #scrollToIndex yiAutoScroll observe-attributes is-lock="true" lock-y-offset="40" scroll-end="true" (onScrollToTop)="nextData()">
+
+            <div class="absolute w-full flex justify-center z-10" *ngIf="isNextData">
+                <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
+            </div>
+
+            <div *ngIf="(dataSource$ | async ) && (dataSource$ | async )?.Items?.length == 0" class="h-full w-full flex items-center justify-center">
+                <tds-empty notFoundContent="Không có nội dung"></tds-empty>
+            </div>
+
+            <div *ngIf="(dataSource$ | async ) && (dataSource$ | async)?.Items">
+                <ng-container *ngFor="let item of (dataSource$ | async)!.Items | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex">
+                  <div *ngIf="item" @eventFadeState>
+
+                      <div class="w-full relative">
+                          <div class="date-v3">
+                              <span class="text-neutral-1-400 text-[13px]" [innerHTML]="item.CreatedTime | yiDateTimeV3"></span>
+                              <span class="hr"></span>
+                          </div>
+                      </div>
+                      <!-- Thông tin bài post -->
+                      <!-- <div *ngIf="item.type == 2 && item.object_id && (dataSource$ | async)?.Extras!.posts[item?.object_id] &&
+                          (i == 0 || !(i == 0 || (item.object_id == (dataOrderBy[i-1])?.object_id)))" class="px-2">
+                          <div class="post-block mb-3 bg-white flex flex-col">
+                              <div class="post-body flex flex-row justify-between p-4">
+                                  <div class="post-content flex flex-col">
+                                      <div class="post-type flex flex-row items-center mb-3">
+                                          <tds-avatar
+                                              [tdsSrc]="(dataSource$ | async)?.Extras!.posts[item?.object_id].status_type=='added_video'?'../../../assets/imagesv2/conversation/live-circle.svg':'../../../assets/imagesv2/conversation/facebook-circle.svg'"
+                                              [size]="24"
+                                              [shape]="'circle'"
+                                              [isAvatar]="false"
+                                              class="mr-1">
+                                          </tds-avatar>
+                                          <tds-tag [status]="(dataSource$ | async)?.Extras!.posts[item?.object_id].status_type=='added_video'?'error':'info'" type="outline" rounded="rounded-full">
+                                              <span class="flex items-center py-0.5">
+                                                  <span>{{(dataSource$ | async)?.Extras!.posts[item?.object_id].created_time | date: "dd-MM-yyyy HH:mm"}}</span>
+                                              </span>
+                                          </tds-tag>
+                                      </div>
+                                      <div class="post-item">
+                                          <div class="w-full block">
+                                              <p class="story font-semibold" *ngIf="(dataSource$ | async)?.Extras!.posts[item?.object_id]?.story">
+                                                  {{(dataSource$ | async)?.Extras!.posts[item?.object_id].story}}
+                                              </p>
+                                              <div class="message font-regular" *ngIf="(dataSource$ | async)?.Extras!.posts[item?.object_id]?.message">
+                                                  <div [innerHTML]="(dataSource$ | async)?.Extras!.posts[item?.object_id].message | safeHtml"></div>
+                                              </div>
+                                              <p class="description" *ngIf="(dataSource$ | async)?.Extras!.posts[item?.object_id]?.description">{{(dataSource$ | async)?.Extras!.posts[item?.object_id].description}}</p>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div class="post-picture" *ngIf="(dataSource$ | async)?.Extras!.posts[item?.object_id]?.picture && !checkPostPictureError(item)">
+                                      <img (error)="errorPostPicture(item)"
+                                          [src]="(dataSource$ | async)?.Extras!.posts[item?.object_id].picture"
+                                          alt="{{(dataSource$ | async)?.Extras!.posts[item?.object_id].story}}" class="rounded-xl"/>
+                                  </div>
+                              </div>
+                              <div class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 px-4">
+                                  <div class="emotion-count flex flex-row items-center">
+                                      <div class="flex flex-row mr-1">
+                                          <img src="../../../assets/imagesv2/conversation/like-circle.svg" width="20px" height="20px"
+                                              class="rounded-full z-50">
+                                          <img src="../../../assets/imagesv2/conversation/love-circle.svg" width="20px" height="20px"
+                                              class="rounded-full z-40 -ml-2">
+                                      </div>
+                                      <span>
+                                          {{(dataSource$ | async)?.Extras!.posts[item?.object_id].count_reactions || 0}}
+                                      </span>
+                                  </div>
+                                  <div class="comment flex flex-row items-center">
+                                      <span class="comment-count  mr-4">
+                                          {{(dataSource$ | async)?.Extras!.posts[item?.object_id].count_comments || 0}} Bình luận
+                                      </span>
+                                      <div class="comment-button">
+                                          <button tds-button-flat-icon color="secondary" class="mr-4" tds-tooltip tooltipTitle="Bài viết tổng quan" tooltipPlacement="bottom"
+                                              (click)="openModalPost(item)">
+                                              <i class="tdsi-chart-pie-fill"></i>
+                                          </button>
+                                          <button tds-button-flat-icon color="secondary" class="mr-4" tds-tooltip tooltipTitle="Đi tới bình luận" tooltipPlacement="bottom"
+                                              (click)="openPost(item, 'post')">
+                                              <i class="tdsi-expand-line"></i>
+                                          </button>
+                                          <button tds-button-flat-icon color="secondary"  tds-tooltip tooltipTitle="Đi tới bài viết" tooltipPlacement="bottom">
+                                              <a href="https://www.facebook.com/{{item.id}}" target="_blank">
+                                                  <i class="tdsi-search-line"></i>
+                                              </a>
+                                          </button>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div> -->
+                      <ng-container *ngIf="item && (data.psid) && type && team">
+                          <tds-conversation-item-v2
+                              [team]="team" [psid]="data.psid"
+                              [name]="data.name" [dataItem]="item"
+                              [type]="type" [partner]="partner"
+                              [children]="">
+                          </tds-conversation-item-v2>
+                      </ng-container>
+                  </div>
+                </ng-container>
+            </div>
+
+        </div>
+    </tds-spin>
+
+    <!-- Thông báo Chatbot -->
+    <div *ngIf="data && data.state == 2" class="absolute top-[88px] left-[8px] right-[8px]" >
+        <tds-alert type="info" [message]="contentMessage" [closeable]="true" showIcon ></tds-alert>
+    </div>
+    <ng-template #contentMessage>
+        <div class="text-body-2 font-regular">Hệ thống chatbot chưa xử lý được kịch bản hội thoại này và chuyển cho admin xử lý. Hãy bật lại chatbot để xử lý tự động tin nhắn.
+            <span class="ml-3 text-info-500 font-semibold cursor-pointer" (click)="onStartChatbot()">Bật Chatbot</span>
+        </div>
+    </ng-template>
+
+    <!-- footer  -->
+    <div #chatFooter class="chat-footer w-full flex flex-col px-2 pb-2">
+        <div class="w-full pt-2 pb-3 flex items-center gap-x-2">
+            <div class="flex gap-x-2.5">
+                <tds-avatar tds-popover
+                    [popoverContent]="popoverContentOptionSendMessages"
+                    popoverTrigger="click"
+                    [popoverPlacement]="['topLeft', 'leftTop']"
+                    class="bg-white text-neutral-1-400 cursor-pointer" icon="tdsi-three-dots-horizon-fill">
+                </tds-avatar>
+                <ng-template #popoverContentOptionSendMessages>
+                    <div class="w-[336px] flex flex-col gap-y-3">
+                        <span class="font-semibold text-title-1">Tuỳ chọn gửi tin nhắn</span>
+                        <div class="w-full flex justify-between">
+                        <span class="text-neutral-1-400">Nhấn [Enter] để gửi</span>
+                        <tds-switch size="md" (change)="changeEnterSend($event)" [checked]="isEnterSend"></tds-switch>
+                        </div>
+                    </div>
+                </ng-template>
+                <tds-avatar tds-popover
+                    [popoverContent]="popoverContentTagConversat"
+                    popoverTrigger="click"
+                    [popoverVisible]="isVisbleTag"
+                    (popoverVisibleChange)="callbackTag($event)"
+                    [popoverPlacement]="['topLeft', 'leftTop']"
+                    class="bg-white text-neutral-1-400 cursor-pointer" icon="tdsi-tag-fill">
+                </tds-avatar>
+                <ng-template #popoverContentTagConversat>
+                    <div class="w-[336px] max-h-[500px] flex flex-col gap-y-3">
+                        <div class="flex justify-between">
+                            <span class="font-semibold text-title-1">Gắn nhãn hội thoại</span>
+                            <button tds-button-icon color="secondary" class="!rounded-full"
+                                (click)="showModalAddTag()"
+                                tds-tooltip
+                                tooltipTitle="Thêm nhãn mới">
+                                <span class="flex items-center">
+                                    <i class="tdsi-plus-fill"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <tds-form-field class="w-full">
+                            <input tdsInput placeholder="Tìm kiếm nhãn" autocomplete="off" [(ngModel)]="keyFilterTag" [ngModelOptions]="{standalone: true}" [tdsInputDebounce]="750" (inputKeyup)="searchTag()"/>
+                            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                        </tds-form-field>
+                        <div class="flex-auto flex flex-wrap gap-2.5 overflow-hidden overflow-y-auto tds-custom-scroll">
+                            <span *ngFor="let item of lstOfTag" (click)="onSelectTag(item)"
+                                class="cursor-pointer px-2 py-0.5 rounded text-white text-caption-2 font-semibold flex items-center gap-x-2 hover:opacity-100"
+                                [ngClass]="data.keyTags && data.keyTags[item.Id]?'tdsi-tick-fill opacity-100':'opacity-40'"
+                                [ngStyle]="{'background-color': [item.ColorClassName]}" >
+                                <span class="font-sans">{{item.Name}}</span>
+                            </span>
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+            <div class="flex-auto flex gap-2.5 ">
+                <div *ngFor="let item of data.tags | slice:0:4" (click)="onRemoveTag(item)" class="relative group text-caption-2 flex items-center max-w-[156px] truncate">
+                    <div class="cursor-pointer w-full px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
+                        [ngStyle]="{'background-color': [item.color_class]}">
+                        {{item.name}}
+                    </div>
+                    <button
+                        class="group-hover:text-accent-3 font-semibold absolute group-hover:flex w-full items-center justify-center hidden truncate">
+                        Gỡ nhãn
+                    </button>
+                </div>
+                <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded cursor-pointer" *ngIf="data.tags && data.tags.length - 4 > 0" tds-popover
+                    [popoverContent]="popoverContentTag"
+                    popoverPlacement="topRight">
+                    +{{data.tags.length - 4}}
+                </div>
+                <ng-template #popoverContentTag>
+                    <div class="flex gap-1 flex-wrap items-center max-w-[336px]">
+                        <div *ngFor="let tag of data.tags |  slice:4:data.tags!.length" (click)="onRemoveTag(tag)" class="relative group flex items-center text-caption-2 font-regular text-neutral-1-900 rounded truncate">
+                            <div class="cursor-pointer w-full px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
+                            [ngStyle]="{'background-color': [tag.color_class]}">
+                            {{tag.name}}
+                        </div>
+                        <button
+                            class="group-hover:text-accent-3 font-semibold absolute group-hover:flex w-full items-center justify-center hidden truncate">
+                            Gỡ nhãn
+                        </button>
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+        <!-- editer+toolbars -->
+        <tds-spin [spinning]="isLoadingImage">
+          <div class="flex flex-col w-full px-4 bg-white rounded-xl relative">
+              <div [ngClass]="isLoadingSendMess?'!cursor-wait':'hidden'" class="absolute top-0 left-0 z-10 w-full h-full opacity-100">
+              </div>
+              <!-- upload-wall -->
+              <div [ngClass]="uploadedImages.length>0?'translate-y-0 py-4 border-b':'translate-y-full h-0 '"
+                  class=" border-neutral-2-300 ease-in-out duration-300 max-h-40 overflow-hidden flex">
+                  <div class="overflow-hidden overflow-y-auto tds-panel-scroll flex justify-between w-full h-full">
+                      <upload-pictures-wall
+                      [isArray]="true"
+                      [data]="uploadedImages"
+                      (onLoadImage)="onLoadImage($event)">
+                      </upload-pictures-wall>
+                      <div class="p-1">
+                          <button tds-button-icon color="secondary" size="sm" class="!rounded-full" (click)="closeImages()">
+                              <span class="flex items-center">
+                                  <i class="tdsi-close-fill"></i>
+                              </span>
+                          </button>
+                      </div>
+                  </div>
+              </div>
+              <div class="w-full pt-4 flex flex-row">
+                  <textarea tdsInput [placeholder]="isEnterSend?'Nhập nội dung tin nhắn, nhấn [Enter] để gửi':'Nhập nội dung tin nhắn'"
+                      [(ngModel)]="messageModel" [ngModelOptions]="{standalone: true}"
+                      (keydown.enter)="onEnter($event)" class="h-16 resize-none !p-0 !m-0 no-scrollbar">
+                  </textarea>
+                  <div>
+                      <button tds-button type="button" color="primary" class="!rounded-full ml-2" [size]="'lg'"(click)="onClickSender()">
+                          <span class="flex items-center px-6">
+                              <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
+                          </span>
+                      </button>
+                  </div>
+              </div>
+              <!-- toolbar -->
+              <div class="flex w-full" [ngClass]="miniChat == true ? 'justify-end' : ''">
+                <div class="flex items-center gap-x-1 pb-2">
+                  <a class="p-2 hover:bg-neutral-3-50 rounded-md" type="button" (click)="sendIconLike()" tds-tooltip tooltipTitle="Like">
+                      <div class="tdsi-like-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
+                  </a>
+                  <a class="tdsi-emotion-line text-neutral-1-400 text-xl leading-none cursor-pointer p-2 hover:bg-neutral-3-50 rounded-md"
+                      type="button" tds-tooltip tooltipTitle="Cảm xúc"
+                      tds-popover popoverTrigger="click"
+                      [popoverContent]="infoEmojiMart"
+                      [popoverAutoClose]="true"
+                      [popoverBackdrop]="true"
+                      popoverPlacement="top">
+                      <ng-template #infoEmojiMart>
+                          <div (loadEmojiMart)="loadEmojiMart($event)" icon-emoji-mart></div>
+                      </ng-template>
+                  </a>
+                  <tds-upload
+                      (uploadChange)="handleChange($event)"
+                      listType="picture"
+                      [customRequest]="handleUpload"
+                      [showUploadList]="false">
+                      <a type="button" tds-tooltip tooltipTitle="Gửi ảnh"
+                      [ngClass]="displayDropZone?'absolute w-full h-full inset-0 bg-white border-dashed border-2 border-primary-1 rounded-xl z-50 flex justify-center items-center':''"
+                      class="p-2 hover:bg-neutral-3-50 rounded-md" title="Hình ảnh">
+                          <div *ngIf="!displayDropZone; else dropZone"
+                          class="tdsi-expand-2-line text-neutral-1-400 text-xl leading-none cursor-pointer">
+                          </div>
+                          <ng-template #dropZone>
+                              <div class="flex flex-col gap-y-2.5 items-center">
+                                  <span class="text-header-1 text-primary-1 font-semibold">Xem trước khi gửi</span>
+                                  <span class="text-body-1 text-neutral-1-500">Thả ảnh vào đây để xem trước khi gửi</span>
+                              </div>
+                          </ng-template>
+                    </a>
+                  </tds-upload>
+
+                  <div class="p-2 hover:bg-neutral-3-50 rounded-md" (click)="onProductsbypageFb()"  tds-tooltip tooltipTitle="Sản phẩm">
+                      <div class="tdsi-product-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
+                  </div>
+                  <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Tin nhắn nhanh">
+                      <quick-reply-button (onQuickReplySelected)="onQuickReplySelected($event)"></quick-reply-button>
+                  </div>
+                  <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Đơn hàng" (click)="showModalListBill(data)">
+                      <div class="tdsi-file-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
+                  </div>
+                  <div class="p-2 hover:bg-neutral-3-50 rounded-md" tds-tooltip tooltipTitle="Thư viện ảnh" (click)="showImageStore()">
+                      <div class="tdsi-images-2-line text-neutral-1-400 text-xl leading-none cursor-pointer"></div>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </tds-spin>
+    </div>
+</section>

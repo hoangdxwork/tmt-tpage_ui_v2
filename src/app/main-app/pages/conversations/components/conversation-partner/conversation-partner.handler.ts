@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { ResultCheckAddressDTO } from "src/app/main-app/dto/address/address.dto";
 import { ConversationMatchingItem } from "src/app/main-app/dto/conversation-all/conversation-all.dto";
+import { CrmMatchingV2Detail } from "src/app/main-app/dto/conversation-all/crm-matching-v2/crm-matching-v2.dot";
 import { CreateOrUpdatePartnerModel } from "src/app/main-app/dto/conversation-partner/create-update-partner.dto";
 import { TabPartnerCvsRequestModel } from "src/app/main-app/dto/conversation-partner/partner-conversation-request.dto";
 import { QuickSaleOnlineOrderModel } from "src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto";
@@ -29,7 +30,7 @@ export abstract class ConversationPartnerHandler {
     partner.Street = item.Address;
   }
 
-  static prepareModel(partner: TabPartnerCvsRequestModel, dataModel: ConversationMatchingItem) {
+  static prepareModel(partner: TabPartnerCvsRequestModel, dataModel: CrmMatchingV2Detail) {
     let  model = {
       Id: partner?.Id,
       StatusText: partner?.StatusText,
