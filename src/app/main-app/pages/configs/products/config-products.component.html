@@ -23,8 +23,9 @@
                             <div tds-dropdown-item class="px-3 py-4 w-full" (click)="exportExcel()">
                                 <a class="text-neutral-1-900 text-body-2 font-regular">Xuất excel kiểm kho</a>
                             </div>
-                            <div tds-dropdown-item class="px-3 py-4 w-full" (click)="sortByIds('Name')">
+                            <div tds-dropdown-item class="flex items-center justify-between gap-x-2 px-3 py-4 w-full" (click)="sortByIds('Name')">
                                 <a class="text-neutral-1-900 text-body-2 font-regular">Sắp xếp theo tên</a>
+                                <span class="font-semibold">{{sortByName}}</span>
                             </div>
                             <div tds-dropdown-item class="px-3 py-4 w-full" (click)="sortByIds('DateCreated')">
                                 <a class="text-neutral-1-900 text-body-2 font-regular">Sắp xếp theo ngày tạo mới nhất</a>

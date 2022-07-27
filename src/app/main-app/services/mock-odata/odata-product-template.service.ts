@@ -6,8 +6,9 @@ import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { BaseSevice } from '../base.service';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
-export interface FilterObjDTO  {
+export interface FilterProductTemplateObjDTO  {
     searchText: string,
+    active?:boolean
 }
 
 @Injectable()
@@ -22,7 +23,7 @@ export class OdataProductTemplateService extends BaseSevice {
     super(apiService)
   }
 
-  getView(params:string, filterObj?: FilterObjDTO): Observable<TDSSafeAny>{
+  getView(params:string): Observable<TDSSafeAny>{
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?${params}&$count=true`,
       method: TApiMethodType.get,
@@ -31,17 +32,23 @@ export class OdataProductTemplateService extends BaseSevice {
     return this.apiService.getData<ODataProductTemplateDTO>(api, null);
   }
 
-  public buildFilter(filterObj: FilterObjDTO) {
+  public buildFilter(filterObj: FilterProductTemplateObjDTO) {
     let dataFilter: FilterDataRequestDTO = {
         logic: "and",
         filters: []
     }
+    
+    if (filterObj.active || filterObj.active == false) {
+      dataFilter.filters.push({
+          filters: [
+            { field: "Active", operator: OperatorEnum.eq, value: filterObj.active },
+          ],
+          logic: 'and'
+      })
+    }
 
-    // dataFilter.filters.push({ field: "Active", operator: OperatorEnum.eq, value: true})
-    // dataFilter.logic = "and";
-
-    if (TDSHelperString.hasValueString(filterObj?.searchText)) {
-        dataFilter.filters.push( {
+    if (TDSHelperString.hasValueString(filterObj.searchText)) {
+        dataFilter.filters.push({
             filters: [
               { field: "Name", operator: OperatorEnum.contains, value: filterObj.searchText },
               { field: "NameGet", operator: OperatorEnum.contains, value: filterObj.searchText },
