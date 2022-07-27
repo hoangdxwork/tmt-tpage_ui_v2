@@ -71,6 +71,7 @@ export interface DeliveryCarrierDTOV2 {
   ExtrasText: string;
   Extras?: any;
   ConfigId: string;
+  ExtraProperties: string;
 }
 export interface ODataDeliveryCarrierDTOV2 {
   "@odata.context": string;

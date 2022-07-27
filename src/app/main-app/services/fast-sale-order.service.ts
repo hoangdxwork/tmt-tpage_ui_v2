@@ -513,6 +513,7 @@ export class FastSaleOrderService extends BaseSevice {
     }
     return this.apiService.getData<any>(api, data);
   }
+
   calculateFeeAship(data: any): Observable<DeliveryResponseDto<CaculateFeeResponseDto>> {
     const api: TAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/calculatefee-aship`,

@@ -75,7 +75,8 @@ export class ConfigDeliveryUpdateComponent implements OnInit {
         .subscribe(res => {
           if(res){
             this.onSetValueForm(res);
-            this.loadConfigProvider(res.ConfigId);
+            this.configsProviderDataSource = res.ExtraProperties ? JSON.parse(res.ExtraProperties) : [];
+            // this.loadConfigProvider(res.ConfigId);
           }
         });
     }
@@ -88,34 +89,26 @@ export class ConfigDeliveryUpdateComponent implements OnInit {
     return true
   }
 
-  loadConfigProvider(configId: string) {
-    if (configId) {
-      this.isLoading = true;
-      this.deliveryCarrierV2Service.getInfoConfigProviderToAship(configId)
-        .pipe(finalize(() => this.isLoading = false))
-        .subscribe(res => {
-          debugger
-          if (res.Success && res.Data) {
-            this.configsProviderDataSource = res.Data.Configs ?? []
-          } else {
-            this.message.error(res.Error?.Message);
-          }
-        });
-    }
-  }
+  // loadConfigProvider(configId: string) {
+  //   if (configId) {
+  //     this.isLoading = true;
+  //     this.deliveryCarrierV2Service.getInfoConfigProviderToAship(configId)
+  //       .pipe(finalize(() => this.isLoading = false))
+  //       .subscribe(res => {
+  //         debugger
+  //         if (res.Success && res.Data) {
+  //           this.configsProviderDataSource = res.Data.Configs ?? []
+  //         } else {
+  //           this.message.error(res.Error?.Message);
+  //         }
+  //       });
+  //   }
+  // }
 
   onSubmit() {
     this.isLoading = true;
-    var data = this.configsProviderDataSource.map(x=> {
-      return {
-
-        ConfigValue: x.ConfigValue,
-        ConfigName: x.ConfigName,
-      }
-    });
-    this.submitForm.controls.ExtraProperties.setValue(JSON.stringify(data));
+    this.submitForm.controls.ExtraProperties.setValue(JSON.stringify(this.configsProviderDataSource));
     var dataModel = this.submitForm.value;
-
     this.deliveryCarrierV2Service.update(dataModel)
     .pipe(finalize(() => this.isLoading = false))
     .subscribe(res => {

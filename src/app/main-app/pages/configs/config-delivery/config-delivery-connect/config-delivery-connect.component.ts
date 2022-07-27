@@ -75,16 +75,9 @@ export class ConfigDeliveryConnectComponent implements OnInit {
   }
 
   onSubmit() {
-    debugger
-    var data = this.configsProviderDataSource.map(x => {
-      return {
-        ConfigValue: x.ConfigValue,
-        ConfigName: x.ConfigName,
-      }
-    });
-    this.submitForm.controls.ExtraProperties.setValue(JSON.stringify(data));
+    this.submitForm.controls.ExtraProperties.setValue(JSON.stringify(this.configsProviderDataSource));
     var dataModel = this.submitForm.value;
-
+    this.isLoading = true;
     this.deliveryCarrierV2Service.create(dataModel)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {

@@ -35,4 +35,3 @@ export interface CalculateFeeServiceExtrasResponseDto {
   ServiceName: string;
   Fee: number;
 }
-

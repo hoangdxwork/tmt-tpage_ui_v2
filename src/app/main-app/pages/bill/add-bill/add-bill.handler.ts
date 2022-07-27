@@ -73,6 +73,7 @@ export class AddBillHandler {
     data.ReceiverDate = data.ReceiverDate || null;
     data.DateOrderRed = data.DateOrderRed || null;
     data.DateInvoice = data.DateInvoice || new Date();
+    data.DateCreated = new Date();
 
     // TODO: trường hợp edit
     if(data.Id && data.Id > 0) {
