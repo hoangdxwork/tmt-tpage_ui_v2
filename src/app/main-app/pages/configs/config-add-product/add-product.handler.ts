@@ -5,8 +5,8 @@ import { Injectable } from "@angular/core";
 @Injectable({
    providedIn: 'root'
 })
-export abstract class AddProductHandler {
-
+export class AddProductHandler {
+   
    static prepareModel(dataModel: ConfigProductDefaultDTO, formModel: any, images: WallPicturesDTO[], listAttributeLines: ConfigAttributeLine[], listProductVariants: ConfigProductVariant[]) {
 
       dataModel = {...dataModel,...formModel};
@@ -101,5 +101,7 @@ export abstract class AddProductHandler {
             dataModel.OriginCountryName = dataModel.OriginCountry.Name;
          }
       }
+
+      return dataModel;
    }
 }

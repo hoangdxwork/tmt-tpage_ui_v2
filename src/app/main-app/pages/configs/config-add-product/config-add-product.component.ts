@@ -54,6 +54,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     }
     return value
   };
+
   parserComas = (value: TDSSafeAny) => {
     if (value != null) {
       return TDSHelperString.replaceAll(value, ',', '');
@@ -534,7 +535,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
         .subscribe(
           (res: TDSSafeAny) => {
-            this.message.success('Thêm mới thành công');
+            this.message.success(Message.InsertSuccess);
             this.router.navigateByUrl('/configs/products');
           },
           err => {
@@ -546,7 +547,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
 
   editProduct() {
     let model = this.prepareModel();
-
+    
     if (model.Name) {
       this.productTemplateService.updateProductTemplate(model)
         .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
@@ -563,29 +564,25 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   }
 
   prepareModel() {
-    AddProductHandler.prepareModel(this.dataModel, this._form.value, this._form.controls["Images"].value, this.lstAttributes, this.lstVariants);
-
-    return this.dataModel;
+    return AddProductHandler.prepareModel(this.dataModel, this._form.value, this._form.controls["Images"].value, this.lstAttributes, this.lstVariants);
   }
 
   backToMain() {
     this.router.navigateByUrl('/configs/products');
   }
 
-  onSubmit() {
-    let model = this.prepareModel();
-
-    if (!TDSHelperString.hasValueString(model.Name)) {
+  onSave() {
+    if (!TDSHelperString.hasValueString(this.dataModel.Name || this._form.controls["Name"].value)) {
       this.message.error('Vui lòng nhập tên');
       return
     }
 
-    if (!TDSHelperObject.hasValue(model.UOM)) {
+    if (!TDSHelperObject.hasValue(this.dataModel.UOM || this._form.controls["UOM"].value)) {
       this.message.error('Vui lòng nhập đơn vị mặc định');
       return
     }
 
-    if (!TDSHelperObject.hasValue(model.UOMPO)) {
+    if (!TDSHelperObject.hasValue(this.dataModel.UOMPO || this._form.controls["UOMPO"].value)) {
       this.message.error('Vui lòng nhập đơn vị mua');
       return
     }
