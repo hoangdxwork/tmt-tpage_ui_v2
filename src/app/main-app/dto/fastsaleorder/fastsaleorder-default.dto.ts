@@ -1,3 +1,6 @@
+import { AshipGetInfoConfigProviderDto } from "../carrierV2/aship-info-config-provider-data.dto";
+import { CalculateFeeInsuranceInfoResponseDto } from "../carrierV2/delivery-carrier-response.dto";
+
 export interface Warehouse {
   Id: number;
   Code: string;
@@ -525,6 +528,7 @@ export interface Carrier {
   Config_DefaultWeight?: any;
   ExtrasText?: any;
   Extras?: any;
+  ExtraProperties: string;
 }
 
 export interface FastSaleOrder_DefaultDTOV2 {
@@ -652,6 +656,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     OrderLines: OrderLineV2[];
     Ship_ServiceExtras: ShipServiceExtra[];
     Team: Team;
+    ShipmentDetailsAship: ShipmentDetailsAshipDTO;
 }
 
 export interface OrderSendShipDTO {
@@ -663,4 +668,9 @@ export interface OrderSendShipDTO {
   CashOnDelivery: number;
   TotalAmount: number;
   Partner: Partner;
+}
+
+export interface ShipmentDetailsAshipDTO{
+  ConfigsProvider: AshipGetInfoConfigProviderDto[];
+  InsuranceInfo: CalculateFeeInsuranceInfoResponseDto
 }

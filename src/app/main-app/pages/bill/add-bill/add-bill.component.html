@@ -205,13 +205,13 @@
 
                 <div class="col-span-2 w-full flex flex-row gap-x-2" *ngIf="dataModel.State != 'open'">
                   <tds-form-field class="flex flex-auto">
-                    <tds-select valueField="Id" textField="Name" (selectChange)="onChangeCarrier($event, true)"
+                    <tds-select valueField="Id" textField="Name" (selectChange)="onChangeCarrierV2($event, true)"
                       placeholder='Chọn đối tác giao hàng' formControlName="Carrier" [valuePrimitive]="false"
                       disabledField="isActive" [data]="(lstCarriers | async) || []" [allowClear]="false">
                     </tds-select>
                   </tds-form-field>
                   <button tds-button-icon tds-tooltip tooltipTitle="Gợi ý phí ship các đối tác" color="primary"
-                    class="flex items-center justify-center" (click)="calcFee()">
+                    class="flex items-center justify-center">
                     <i class="tdsi-truck-fill text-xl"></i>
                   </button>
                 </div>
@@ -279,12 +279,12 @@
                 </div>
               </div>
 
-              <div class="grid grid-cols-3 gap-x-8">
+              <div class="grid grid-cols-3 gap-x-8" >
                 <tds-label class="col-span-1 w-full">Khối lượng ship (g)</tds-label>
                 <tds-form-field class="col-span-2 w-full"
                   *ngIf="dataModel.State != 'open' && _form.controls['Carrier'].value">
                   <tds-input-number [min]='0' [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
-                    placeholder="Nhập khối lượng" (ngModelChange)="changeShipWeight($event)"
+                    placeholder="Nhập khối lượng" (tdsBlur)="changeShipWeight($event)"
                     formControlName="ShipWeight">
                   </tds-input-number>
                 </tds-form-field>
@@ -493,8 +493,18 @@
                       </button>
                     </div>
                   </div>
-
-                  <div class="col-span-3 flex flex-row items-center" *ngIf="shipServices && shipServices.length > 0">
+                  <ng-container *ngFor="let item of configsProviderDataSource">
+                    <div class="col-span-3 flex flex-row items-center" *ngIf="!item.IsHidden">
+                      <tds-label class="w-1/4">{{item.DisplayName}}<span class="text-error-400">*</span></tds-label>
+                      <tds-form-field class="w-3/4">
+                        <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
+                          [data]="item.ConfigsValue" [(ngModel)]="item.ConfigValue"
+                          [ngModelOptions]="{standalone: true}" [allowClear]="item.InputType == 'combo_box'">
+                        </tds-select>
+                      </tds-form-field>
+                    </div>
+                  </ng-container>
+                  <!-- <div class="col-span-3 flex flex-row items-center" *ngIf="shipServices && shipServices.length > 0">
                     <tds-label class="w-1/4">Phương thức thanh toán<span class="text-error-400">*</span></tds-label>
                     <tds-form-field class="w-3/4">
                       <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
@@ -522,7 +532,7 @@
                         [data]="[]" [allowClear]="false">
                       </tds-select>
                     </tds-form-field>
-                  </div>
+                  </div> -->
                 </div>
                 <div class="grid grid-cols-3 gap-y-4 gap-x-6">
                   <!-- phí ship đối tác -->
