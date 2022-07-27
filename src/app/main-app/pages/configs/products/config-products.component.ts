@@ -1,3 +1,4 @@
+import { FilterProductTemplateObjDTO } from './../../../services/mock-odata/odata-product-template.service';
 import { ProductTemplateDTO } from '../../../dto/product/product.dto';
 import { ColumnTableDTO } from '../../partner/components/config-column/config-column-partner.component';
 import { THelperCacheService } from '../../../../lib/utility/helper-cache';
@@ -40,29 +41,34 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     { isChecked: true, value: 'DefaultCode', name: 'Mã SP' },
     { isChecked: true, value: 'Name', name: 'Tên SP' },
     { isChecked: true, value: 'ListPrice', name: 'Giá bán' },
+    { isChecked: true, value: 'Tags', name: 'Nhãn' },
+    { isChecked: true, value: 'Active', name: 'Hiệu lực' },
     { isChecked: false, value: 'QtyAvailable', name: 'SL thực tế' },
     { isChecked: false, value: 'UOMName', name: 'Đơn vị' },
-    { isChecked: true, value: 'Tags', name: 'Nhãn' },
-    { isChecked: false, value: 'DateCreated', name: 'Ngày tạo' },
-    { isChecked: true, value: 'Active', name: 'Hiệu lực' }
-  ]
-
+    { isChecked: false, value: 'DateCreated', name: 'Ngày tạo' }
+  ];
   count: number = 1;
   tableWidth: number = 0;
   marginLeftCollapse: number = 0;
   paddingCollapse: number = 36;
-
   checked = false;
   indeterminate = false;
   pageSize = 20;
   pageIndex = 1;
+  filterObj: FilterProductTemplateObjDTO = {
+    searchText: ''
+  };
+  sort: SortDataRequestDTO[] = [
+    {
+      field: 'DateCreated',
+      dir: SortEnum.desc
+    }
+  ];
+  sortByName:string = '';
   isLoading = false;
-
   configModelTags: Array<TagDTO> = [];
   configTagDataList: Array<TagDTO> = [];
-  public filterObj: any = {
-    searchText: ''
-  }
+  
   indClickTag = -1;
   isProcessing: boolean = false;
 
@@ -113,17 +119,11 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     this.loadData(params.pageSize, params.pageIndex);
   }
 
-  loadData(pageSize: number, pageIndex: number, filter?: FilterDataRequestDTO, sort?: SortDataRequestDTO[]) {
-    filter = this.odataService.buildFilter(this.filterObj);
+  loadData(pageSize: number, pageIndex: number) {
+    let filter = this.odataService.buildFilter(this.filterObj);
     // TODO: mặc định sắp xếp giảm dần theo ngày tạo
-    let defaultSort = [
-      {
-        field: 'DateCreated',
-        dir: SortEnum.desc
-      }
-    ];
 
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filter || null, sort || defaultSort);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filter || null, this.sort || null);
 
     this.getViewData(params).subscribe((res: ODataProductTemplateDTO) => {
       this.count = res['@odata.count'] as number;
@@ -137,7 +137,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
     this.isLoading = true;
 
     return this.odataService
-      .getView(params, this.filterObj).pipe(takeUntil(this.destroy$))
+      .getView(params).pipe(takeUntil(this.destroy$))
       .pipe(finalize(() => { this.isLoading = false }));
   }
 
@@ -191,14 +191,17 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
             this.loadData(this.pageSize, this.pageIndex);
           },
           err => {
-            this.message.error(err.error.message ?? 'Thao tác thất bại!');
+            this.message.error(err?.error?.message || 'Thao tác thất bại!');
           }
         );
     }
   }
 
   exportExcel() {
-    if (this.isProcessing) { return }
+    if (this.isProcessing) { 
+      return 
+    }
+
     let state = {
       skip: 0,
       take: 20,
@@ -228,23 +231,38 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   sortByIds(columnValue: string) {
-    let filter = {
-      logic: "and",
-      filters: [{
-        field: "Active",
-        operator: "eq",
-        value: true
-      }]
-    };
+    // this.filterObj.active = true;
+    
+    switch(this.sortByName){
+      case 'Z-A':
+        this.sortByName = 'A-Z';
+        this.sort = [
+          {
+            field: columnValue,
+            dir: SortEnum.asc
+          }
+        ];
+        break;
+      case 'A-Z':
+        this.sortByName = '';
+        this.sort = [
+          {
+            field: 'DateCreated',
+            dir: SortEnum.desc
+          }
+        ];
+        break;
+      default:
+        this.sortByName = 'Z-A';
+        this.sort = [
+          {
+            field: columnValue,
+            dir: SortEnum.desc
+          }
+        ];
+    }
 
-    let sort = [
-      {
-        field: columnValue,
-        dir: SortEnum.desc
-      }
-    ];
-
-    this.loadData(this.pageSize, this.pageIndex, filter, sort);
+    this.loadData(this.pageSize, this.pageIndex);
   }
 
   removeByIds() {
@@ -252,15 +270,13 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
       this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
       return;
     } else {
-      this.productTemplateService.getRemoveIds({ model: { ids: Array.from(this.setOfCheckedId) } })
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(
-          (res: TDSSafeAny) => {
-            this.message.success('Xóa dữ liệu thành công!');
+      this.productTemplateService.getRemoveIds({ ids: Array.from(this.setOfCheckedId) })
+        .pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
             this.loadData(this.pageSize, this.pageIndex);
+            this.message.success('Xóa dữ liệu thành công!');
           },
           err => {
-            this.message.error(err.error.message ?? 'Thao tác thất bại!');
+            this.message.error(err?.error?.message || 'Thao tác thất bại!');
           }
         );
     }
@@ -320,7 +336,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
         this.message.success('Gán nhãn thành công!');
       }
     }, error => {
-      this.message.error(error.error.message ?? 'Gán nhãn thất bại!');
+      this.message.error(error?.error?.message || 'Gán nhãn thất bại!');
     });
 
     this.indClickTag = -1;
@@ -376,7 +392,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
             this.loadData(this.pageSize, this.pageIndex);
           },
           err => {
-            this.message.error(err.error.message ?? 'Xóa thất bại');
+            this.message.error(err?.error?.message ?? 'Xóa thất bại');
           }
         )
       },

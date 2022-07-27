@@ -269,6 +269,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
 
   showCreateAttributeModal() {
     let productName = this._form.controls.Name.value;
+    
     if (productName) {
       const modal = this.modalService.create({
         title: 'Quản lý thuộc tính',
@@ -285,6 +286,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
           this.lstAttributes = result;
           let model = <ConfigSuggestVariants><unknown>this.prepareModel();
           model.AttributeLines = result;
+          
           this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe(
             (res) => {
               this.lstVariants = [...res.value];
