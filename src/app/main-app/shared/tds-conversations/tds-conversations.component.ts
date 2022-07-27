@@ -128,12 +128,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   spinLoading() {
-    this.activityDataFacade.hasNextData$.pipe(takeUntil(this.destroy$)).subscribe((obs: any) => {
-      if(obs == false) {
-          this.isNextData = obs;
-          this.cdRef.detectChanges();
-      }
-    })
+    // this.activityDataFacade.hasNextData$.pipe(takeUntil(this.destroy$)).subscribe((obs: any) => {
+    //   if(obs == false) {
+    //       this.isNextData = obs;
+    //       this.cdRef.detectChanges();
+    //   }
+    // })
   }
 
   loadData(data: ConversationMatchingItem) {

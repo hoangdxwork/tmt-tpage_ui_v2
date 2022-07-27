@@ -30,7 +30,6 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
   private postExist: Array<any> = [];
   private postIdExist: Array<any> = [];
 
-  public hasNextData$: EventEmitter<boolean> = new EventEmitter<boolean>();
   private destroy$ = new Subject<void>();
   lstTeam!: any[];
   isProcessing: boolean = false;
@@ -63,11 +62,11 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
         this.messageJob(res);
     });
 
-    //TODO: gửi tin nhắn
+    //TODO: Tin nhắn đã được tiếp nhập và đang được gửi đi send_message_sending
     this.sgRConnectionService._onSendMessageSendingEvent$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         if(res) {
             this.messageSending(res);
-            this.notification.info('Tin nhắn mới', `${res.message}`, { placement: 'bottomLeft' });
+            this.notification.info('Tin nhắn', `${res.message}`, { placement: 'bottomLeft' });
         }
     });
 
@@ -725,11 +724,11 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
     let exist = data && data.response?.hasNextPage || data && data.response?.nextPageUrl != this.nextPageUrlCurrent;
 
     if(this.isProcessing || !exist) {
-      this.hasNextData$.emit(false);
+      // this.hasNextData$.emit(false);
       return;
     }
 
-    this.hasNextData$.emit(true);
+    // this.hasNextData$.emit(true);
     this.nextPageUrlCurrent = data?.response?.nextPageUrl;
 
     this.service.getLink(this.nextPageUrlCurrent)
@@ -742,12 +741,12 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
           data.items = [ ...res.Items, ...data.items ];
 
           data.response = this.service.createResponse(res);
-          this.hasNextData$.emit(false);
+          // this.hasNextData$.emit(false);
         } else {
-          this.hasNextData$.emit(false);
+          // this.hasNextData$.emit(false);
         }
       }, error => {
-        this.hasNextData$.emit(false);
+        // this.hasNextData$.emit(false);
         (this.nextPageUrlCurrent as any) = null;
     });
   }

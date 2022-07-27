@@ -105,7 +105,7 @@ nextDataSource(pageId: string, queryObj?: any): Observable<CrmMatchingV2DTO> {
     return this.getLink(url, queryObj).pipe(map((res: CrmMatchingV2DTO) => {
 
        // TODO nếu trùng urlNext thì xóa không cho load
-       if(this.urlNext != res.Paging?.UrlNext) {
+       if(this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
             this.urlNext = res.Paging.UrlNext;
 
             exist.Items = [ ...exist.Items, ...res.Items ];

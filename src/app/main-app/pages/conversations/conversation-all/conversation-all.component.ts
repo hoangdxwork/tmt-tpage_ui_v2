@@ -44,7 +44,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
 
   isLoading: boolean = false;
-  dataSource$!: Observable<CrmMatchingV2DTO> | undefined;
+  dataSource$!: Observable<CrmMatchingV2DTO> ;
   lstCrmMatching: CrmMatchingV2Detail[] = [];
   psid!: string;
   currentCrmMatching!: CrmMatchingV2Detail | undefined;
@@ -133,11 +133,12 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   spinLoading() {
     // loading moused khi change, đợi phản hồi từ loadMessages trong shared-tds-conversations
-    this.chatomniMessageService.onLoadTdsConversation$.pipe(takeUntil(this.destroy$)).subscribe((obs: boolean) => {
-        if(obs == false) {
-            this.isChanged = obs;
-        }
-    })
+    // this.chatomniMessageService.spinningLoadMessage$.pipe(takeUntil(this.destroy$)).subscribe((obs: boolean) => {
+    //   if(obs) {
+    //       this.isChanged = obs;
+    //       this.cdRef.markForCheck();
+    //   }
+    // })
   }
 
   onChangeConversation(team: any, queryObj?: any) {
@@ -145,13 +146,14 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     // Sử dụng ngZone chạy bất đồng bộ dữ liệu
     this.ngZone.run(() => {
         this.dataSource$ = this.crmMatchingV2Service.makeDataSource(team.Facebook_PageId, this.type, queryObj);
-        this.loadConversations((this.dataSource$));
     })
+
+    this.loadConversations(this.dataSource$);
   }
 
   validateData(){
     delete this.currentCrmMatching;
-    delete this.dataSource$;
+    (this.dataSource$ as any) = null;
     this.lstCrmMatching = [];
   }
 
@@ -214,11 +216,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     if(item.psid == this.currentCrmMatching?.psid && item.page_id == this.currentCrmMatching?.page_id) {
       return;
     }
-    if (this.isChanged || this.isProcessing) {
-      return;
-    }
+    // if (this.isChanged || this.isProcessing) {
+    //   return;
+    // }
 
-    this.isChanged = true;
+    // this.isChanged = true;
     delete this.currentCrmMatching;
 
     this.setCurrentConversationItem(item);
@@ -237,17 +239,17 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
       this.isProcessing = true;
       this.ngZone.run(() => {
-          this.crmMatchingV2Service.nextDataSource(this.currentTeam?.Facebook_PageId, this.queryFilter)
-            .pipe(takeUntil(this.destroy$)).subscribe((res: CrmMatchingV2DTO) => {
+          this.dataSource$ = this.crmMatchingV2Service.nextDataSource(this.currentTeam?.Facebook_PageId, this.queryFilter);
+      })
 
-                if(res && res.Items.length > 0) {
-                    this.lstCrmMatching = [...res.Items];
-                }
-                this.isProcessing = false;
+      this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: CrmMatchingV2DTO) => {
+        if(res && res.Items.length > 0) {
+            this.lstCrmMatching = [...res.Items];
+        }
 
-          }, error => {
-              this.isProcessing = false;
-          })
+        this.isProcessing = false;
+      }, error => {
+          this.isProcessing = false;
       })
     }
   }

@@ -1,4 +1,3 @@
-import { da } from 'date-fns/locale';
 import { ReplaceHelper } from '../helper/replace.helper';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -11,8 +10,9 @@ import {
   Component, Input, OnChanges, OnInit,
   SimpleChanges, TemplateRef, ViewContainerRef, OnDestroy, ChangeDetectorRef, HostListener, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy, AfterViewChecked, NgZone, HostBinding
 } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { ConversationMatchingItem, StateChatbot } from '../../dto/conversation-all/conversation-all.dto';
+
+import { Observable, Subject, throttleTime } from 'rxjs';
+import { StateChatbot } from '../../dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from '../../dto/team/team.dto';
 import { ActivityDataFacade } from '../../services/facades/activity-data.facade';
 import { finalize, takeUntil, tap } from 'rxjs/operators';
@@ -65,8 +65,12 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   @Input() state!: StateChatbot | null;
 
   destroy$ = new Subject<void>();
-  isLoadMessage: boolean = false;
+  isLoading: boolean = false;
+  isProcessing: boolean = false;
+
   dataSource$!: Observable<ChatomniMessageDTO>;
+  dataSource!: ChatomniMessageDTO;
+
   partner: TDSSafeAny;
 
   isEnterSend: boolean = true;
@@ -88,7 +92,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   tags: TDSSafeAny[] = [];
   keyFilterTag: string = '';
   isVisbleTag: boolean = false;
-  isNextData: boolean = false;
   eventHandler!: Event;
   userLoggedId!: string;
 
@@ -116,7 +119,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       this.userLoggedId = this.sharedService.userLogged?.Id;
   }
 
-  ngOnInit() {
+  ngOnInit() {debugger
     this.validateData();
     if (this.data && this.team && TDSHelperString.hasValueString(this.type)) {
       this.loadData(this.data);
@@ -128,21 +131,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
     // TODO: has_admin_required nhận từ tds-conversation-item để gửi lại tn
     this.onRetryMessage();
-    this.spinLoading();
-  }
-
-  spinLoading() {
-    this.activityDataFacade.hasNextData$.pipe(takeUntil(this.destroy$)).subscribe((obs: any) => {
-      if(obs == false) {
-          this.isNextData = obs;
-          this.cdRef.detectChanges();
-      }
-    });
-
-    this.chatomniMessageService.spinningLoadMessage$.subscribe((obs: boolean) => {
-        this.isLoadMessage = obs;
-        this.cdRef.detectChanges()
-    })
   }
 
   loadData(data: CrmMatchingV2Detail) {
@@ -156,10 +144,23 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
   //TODO: data.id = data.psid
   loadMessages(data: CrmMatchingV2Detail): any {
-    this.isLoadMessage = true;
+    this.isLoading = true;
 
     this.ngZone.run(() => {
-        this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.psid, this.type);
+      this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.psid, this.type);
+    })
+
+    this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniMessageDTO) => {
+        if(res) {
+          this.dataSource = {...res};
+        }
+
+        this.isLoading = false;
+        this.cdRef.detectChanges();
+
+    }, error => {
+        this.isLoading = false;
+        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
     })
 
     this.yiAutoScroll?.forceScrollDown();
@@ -331,31 +332,45 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   validateData() {
     delete this.messageModel;
 
-    this.isNextData = false;
-    this.isLoadMessage = false;
+    this.isLoading = false;
+    this.isProcessing = false;
     this.uploadedImages = [];
     this.tags = [];
   }
 
-  nextData(): any {
-    if (this.isNextData || this.isLoadMessage) {
+  nextData() {
+    if (this.isLoading || this.isProcessing) {
       return;
     }
 
-    (this.dataSource$ as any)= null;
     this.scrollToIndex?.nativeElement?.scrollTo(0, 1);
-    this.isNextData = true;
 
+    this.isProcessing = true;
     let id = `${this.team.Id}_${this.data.psid}`;
+
     this.ngZone.run(() => {
         this.dataSource$ = this.chatomniMessageService.nextDataSource(id);
+    })
+
+    this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniMessageDTO) => {
+        if(res) {
+            this.dataSource.Extras = {...res.Extras};
+            this.dataSource.Items = [...res.Items];
+            this.dataSource.Paging = {...res.Paging};
+        }
+
+        this.isProcessing = false;
+        this.cdRef.detectChanges();
+
+    }, error => {
+        this.isProcessing = false;
+        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
     })
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes["data"] && !changes["data"].firstChange) {
       (this.data as any) = {};
-      this.validateData();
 
       this.data = changes["data"].currentValue;
       let object = {
@@ -375,10 +390,12 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
         delete this.currentImage;
         this.uploadedImages = [];
       }
+
       // TODO: Refetch data
       if (!this.data.name && this.data.psid && this.data.psid != "null") {
         this.refetch(changes["data"].currentValue.psid);
       }
+
       this.loadData(this.data);
     }
 
@@ -789,9 +806,9 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
   openModalPost(item: ExtrasPostItem) {
     let data: TDSSafeAny;
-    this.dataSource$!.subscribe((res: any) => {
-      data = res.extras.posts[item.object_id];
-    });
+    // this.dataSource$!.subscribe((res: any) => {
+    //   data = res.extras.posts[item.object_id];
+    // });
     this.modalService.create({
       title: 'Bài viết tổng quan',
       content: ModalPostComponent,

@@ -7,6 +7,8 @@ import * as signalR from "@microsoft/signalr";
 import { HubEvents } from "./app-constant/hub-event";
 import { TDSSafeAny } from "tds-ui/shared/utility";
 import { OnChatBotSignalRModel } from "../../dto/event-signalR/on-chatbot-signalR.dto";
+import { DataOnMessageModel, OnMessageModel } from "../../dto/event-signalR/on-message.dto";
+import { OnFacebookModel } from "../../dto/event-signalR/on-facebook.dto";
 
 @Injectable({
   providedIn: 'root'
@@ -66,72 +68,63 @@ export class SignalRConnectionService  {
   }
 
   public addHubEvents(): void {
-    this._hubConnection.on(`${HubEvents.onMessage}`, (data:TDSSafeAny) => {
+    this._hubConnection.on(`${HubEvents.onMessage}`, (data: OnMessageModel) => {
       switch (data.type) {
-        case "update_scan_feed":
-        case "update_scan_conversation":
-          {
-            this._onFacebookScanData$.emit(data);
-          }
-          break;
-        case "send_message_completed":
-          {
-            if (data.error) {
-              // this.message.error(data.message);
-            }
-            let res = Object.assign({}, data);
-            this._onSendMessageCompleteEvent$.emit(res);
-          }
-          break;
-        case "send_message_sending":
-          {
-            this._onSendMessageSendingEvent$.emit(data);
-          }
-          break;
-        case "send_message_failed":
-          {
-            this._onSendMessageFailEvent$.emit(data);
-          }
-          break;
-        case "send_message_retry":
-          this._onRetryMessage$.emit(data);
-          break;
-        case "append_tag_succeed":
-        case "remove_tag_succeed":
-          {
-            this._onAppendTagSucceedEvent$.emit(data);
-          }
-          break;
-        case "append_assign_user":
-          {
-            this._onAppendAssignUserEvent$.emit(data);
-          }
-          break;
-        case "send_message_with_bill":
-          {
-            this._onSendMessageWithBill$.emit(data);
-          }
-          break;
-        case "add_template_message":
-          {
-            this._onAddTemplateMessage$.emit(data);
-          }
-          break;
-        case "SaleOnline_Order":
-          {
-            this._onSaleOnlineOrder$.emit(data);
-          }
-          break;
-        // case "FastSaleOrder":
+        // case "update_scan_feed":
+        // case "update_scan_conversation":
         //   {
-        //       this._onFastSaleOrderEvent$.emit(data);
+        //     this._onFacebookScanData$.emit(data);
         //   }
+        //   break;
+
+        case "send_message_completed":
+            this._onSendMessageCompleteEvent$.emit(data);
+          break;
+
+        case "send_message_sending":
+            this._onSendMessageSendingEvent$.emit(data);
+          break;
+
+        case "send_message_failed":
+            this._onSendMessageFailEvent$.emit(data);
+          break;
+
+        case "send_message_retry":
+            this._onRetryMessage$.emit(data);
+          break;
+
+        // case "append_tag_succeed":
+        // case "remove_tag_succeed":
+        //   {
+        //     this._onAppendTagSucceedEvent$.emit(data);
+        //   }
+        //   break;
+        // case "append_assign_user":
+        //   {
+        //     this._onAppendAssignUserEvent$.emit(data);
+        //   }
+        //   break;
+        // case "send_message_with_bill":
+        //   {
+        //     this._onSendMessageWithBill$.emit(data);
+        //   }
+        //   break;
+        // case "add_template_message":
+        //   {
+        //     this._onAddTemplateMessage$.emit(data);
+        //   }
+        //   break;
+        // case "SaleOnline_Order":
+        //   {
+        //     this._onSaleOnlineOrder$.emit(data);
+        //   }
+        //   break;
         default:
           break;
       }
     });
 
-    this._hubConnection.on(`${HubEvents.onFacebookEvent}`, (data:TDSSafeAny) => {
+    this._hubConnection.on(`${HubEvents.onFacebookEvent}`, (data: OnFacebookModel) => {
         this._onFacebookEvent$.emit(data);
         console.log(data);
     });

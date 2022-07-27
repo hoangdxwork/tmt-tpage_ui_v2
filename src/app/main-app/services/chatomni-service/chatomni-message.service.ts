@@ -19,8 +19,6 @@ export class ChatomniMessageService extends BaseSevice  {
   prefix: string = "odata";
   table: string = "";
   baseRestApi: string = "rest/v2.0/chatomni";
-  public spinningLoadMessage$ = new EventEmitter<boolean>();
-  public onLoadTdsConversation$ = new EventEmitter<boolean>();
   urlNext: string | undefined;
 
   constructor(private apiService: TCommonService,
@@ -48,6 +46,7 @@ export class ChatomniMessageService extends BaseSevice  {
   makeDataSource(teamId: number, psid: any, type: string): Observable<ChatomniMessageDTO> {
 
       let id = `${teamId}_${psid}`;
+      this.urlNext = '';
       return this.get(teamId, psid, type).pipe(map((res: ChatomniMessageDTO) => {
 
           // TODO: sort lại dữ liệu theo ngày tạo mới nhất
@@ -61,8 +60,6 @@ export class ChatomniMessageService extends BaseSevice  {
           }
 
           this.urlNext = res.Paging?.UrlNext;
-          this.spinningLoadMessage$.emit(false);
-          this.onLoadTdsConversation$.emit(false);
 
           let result = this.omniFacade.getData(id);
           return result; //tương đương this.chatomniDataSource[id]
@@ -76,9 +73,6 @@ export class ChatomniMessageService extends BaseSevice  {
     if(exist && !TDSHelperString.hasValueString(this.urlNext)) {
 
         return Observable.create((obs :any) => {
-            this.spinningLoadMessage$.emit(false);
-            this.onLoadTdsConversation$.emit(false);
-
             obs.next();
             obs.complete();
         })
@@ -96,15 +90,13 @@ export class ChatomniMessageService extends BaseSevice  {
           exist.Paging = { ...res.Paging };
 
           // TODO nếu trùng urlNext thì xóa không cho load
-          if(this.urlNext != res.Paging?.UrlNext) {
+          if(this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
               this.urlNext = res.Paging.UrlNext;
           } else {
               delete this.urlNext;
           }
 
           this.omniFacade.setData(id, exist);
-          this.spinningLoadMessage$.emit(false);
-          this.onLoadTdsConversation$.emit(false);
 
           let result = this.omniFacade.getData(id);
           return result; //tương đương this.chatomniDataSource[id]]

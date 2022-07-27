@@ -69,7 +69,8 @@
                   <div *ngFor="let item of lstCrmMatching | orderBy:'LastActivityTimeConverted':(isSort?'asc':'desc'); let i= index ; trackBy: trackByIndex">
                       <div *ngIf="item && item.psid && currentCrmMatching && currentTeam" @eventFadeState>
 
-                        <a (click)="changeCurrentCvsItem(item)" class="w-full {{isChanged ? 'cursor-wait' : 'cursor-pointer'}}">
+                        <a (click)="changeCurrentCvsItem(item)" class="w-full">
+                          <!-- {{ (isChanged == true && currentCrmMatching) ? 'cursor-wait' : 'cursor-pointer'}} -->
                             <current-conversation-item
                                 [item]="item" [psid]="item.psid" [type]="type"
                                 [currentConversationItem]="currentCrmMatching"

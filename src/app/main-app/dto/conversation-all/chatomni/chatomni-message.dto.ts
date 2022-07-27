@@ -62,6 +62,7 @@ export interface ChatomniDataFacebookMessage {
   has_admin_required: boolean;
   is_show_avatar?: boolean;
   is_show_break?: boolean;
+  is_error_attachment: boolean;
 
 }
 

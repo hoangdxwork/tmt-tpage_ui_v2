@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef, ViewEncapsulation } from "@angular/core";
-import { Subject } from "rxjs";
-import { finalize, takeUntil } from "rxjs/operators";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
+import { Subject, takeUntil } from "rxjs";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
 import { ActivityMatchingService } from "../../services/conversation/activity-matching.service";
 import { ActivityDataFacade } from "../../services/facades/activity-data.facade";
@@ -8,14 +7,13 @@ import { ConversationDataFacade } from "../../services/facades/conversation-data
 import { ConversationOrderFacade } from "../../services/facades/conversation-order.facade";
 import { PhoneHelper } from "../helper/phone.helper";
 import { ReplaceHelper } from "../helper/replace.helper";
-import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
 import { eventReplyCommentTrigger } from "../helper/event-animations.helper";
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSModalService } from "tds-ui/modal";
 import { ProductPagefbComponent } from "../../pages/conversations/components/product-pagefb/product-pagefb.component";
 import { FormatIconLikePipe } from "../pipe/format-icon-like.pipe";
-import { ChatomniMessageDetail, ChatomniStatus, Datum } from "../../dto/conversation-all/chatomni/chatomni-message.dto";
+import { ChatomniMessageDetail, Datum } from "../../dto/conversation-all/chatomni/chatomni-message.dto";
 
 @Component({
   selector: "tds-conversation-item-v2",
@@ -68,21 +66,10 @@ export class TDSConversationItemV2Component implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    //TODO: mapping data from request to Webhook
-    if(this.dataItem) {
-      // this.activityDataFacade.makeActivity(this.team.Facebook_PageId, this.data.from_id, this.type);
-      // if (!this.data.message_formatted && this.data.id) {
-       // this.data.message_form['attachments'] = this.activityDataFacade.getMessageAttachments(this.team.Facebook_PageId, this.data.from_id, this.data.id);
-      // }
-    }
   }
 
   selectOrder(type: string): any {
-    let data = {
-      phone: null,
-      address: null,
-      note: null
-    } as any;
+    let data = { phone: null, address: null, note: null } as any;
 
     let value = this.getTextOfContentMessage();
     if (type == 'phone') {
@@ -92,11 +79,13 @@ export class TDSConversationItemV2Component implements OnInit, OnDestroy {
       }
       this.tdsMessage.info("Chọn làm số điện thoại thành công");
       data.phone = phone;
+
     } else if (type == 'address') {
       data.address = value;
       if (value) {
         this.tdsMessage.info("Chọn làm  địa chỉ thành công");
       }
+
     } else if (type == 'note') {
       data.note = value;
       if (value) {
@@ -188,9 +177,9 @@ export class TDSConversationItemV2Component implements OnInit, OnDestroy {
   }
 
   isErrorAttachment(att: Datum, dataItem: ChatomniMessageDetail){
-    // if(dataItem && (dataItem.Status != ChatomniStatus.Error || dataItem.Error)) {
-    //   this.data["errorShowAttachment"] = true;
-    // }
+    if(dataItem && (dataItem.Status != 2 || dataItem.Error?.Message)) {
+        this.dataItem.Data['is_error_attachment'] = true;
+    }
   }
 
   refreshAttachment(item: any) {
