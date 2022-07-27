@@ -34,6 +34,7 @@ export class AddLiveCampaignComponent implements OnInit {
   isLoading: boolean = false;
   isShowFormInfo: boolean = true;
   indClickTag: number = -1;
+  datePicker: Date[] = []
 
   dataModel!: ODataLiveCampaignDetailDTO;
 
@@ -58,8 +59,6 @@ export class AddLiveCampaignComponent implements OnInit {
       Name: [null],
       Note: [null],
       ResumeTime: [0],
-      StartDate: [null],
-      EndDate: [null],
       Users: [null],
       Preliminary_Template: [null],
       ConfirmedOrder_Template: [null],
@@ -127,16 +126,20 @@ export class AddLiveCampaignComponent implements OnInit {
     this.lstQuickReplies$ = this.quickReplyService.dataActive$;
   }
 
+  get detailsForm() {
+    return this._form.controls["Details"] as FormArray;
+  }
+
   updateForm(data: ODataLiveCampaignDetailDTO) {
     if(data && data.Details) {
       data.Details.map((x: LiveCampaignDetailDTO) => this.addDetails(x))
     }
     this._form.patchValue(data);
+    this.datePicker = [data.StartDate, data.EndDate]
   }
 
   addDetails(x: LiveCampaignDetailDTO) {
-    let control = <FormArray>this._form.controls['Details'];
-    control.push(this.initDetails(x));
+    this.detailsForm.push(this.initDetails(x));
   }
 
   initDetails(data: LiveCampaignDetailDTO | null) {
@@ -206,6 +209,7 @@ export class AddLiveCampaignComponent implements OnInit {
       ProductName: [null],
       ProductNameGet: [null],
       ProductId: [null],
+      ImageUrl: [null],
       Price: [null],
       UOMId: [null],
       UOMName: [null],
@@ -222,6 +226,7 @@ export class AddLiveCampaignComponent implements OnInit {
       model.controls.Tags.setValue(generateTag);
       model.controls.ProductName.setValue(product.NameGet);
       model.controls.ProductNameGet.setValue(product.NameGet);
+      model.controls.ImageUrl.setValue(product.ImageUrl);
       model.controls.ProductId.setValue(product.Id);
       model.controls.Price.setValue(product.Price);
       model.controls.UOMId.setValue(product.UOMId);
@@ -300,19 +305,22 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   onSave() {
-    if(this.isCheckValue() === 1) {
+    if(this.isCheckValue() === 1) {   
       let model = this.prepareModel();
-
-
+      if(this.liveCampaignId) {
         this.update(model);
-
-
+      }
+      else {
         this.create(model);
-
+      }
     }
   }
 
   create(model: any) {
+    if(!model.Name) {
+      this.message.error('Vui lòng nhập tên chiến dịch');
+      return
+    }
     this.isLoading = true;
     this.liveCampaignService.create(model)
       .pipe(finalize(() => this.isLoading = false))
@@ -345,15 +353,18 @@ export class AddLiveCampaignComponent implements OnInit {
     model.Users = formValue.Users || [];
     model.Note = formValue.Note;
     model.ResumeTime = formValue.ResumeTime;
-    model.StartDate = formValue.StartDate;
-    model.EndDate = formValue.EndDate;
+    if(this.datePicker){
+      model.StartDate = this.datePicker[0];
+      model.EndDate = this.datePicker[1];
+    }
     model.Preliminary_Template = formValue.Preliminary_Template;
     model.ConfirmedOrder_Template = formValue.ConfirmedOrder_Template;
     model.MinAmountDeposit = formValue.MinAmountDeposit;
     model.MaxAmountDepositRequired = formValue.MaxAmountDepositRequired;
     model.EnableQuantityHandling = formValue.EnableQuantityHandling;
     model.IsAssignToUserNotAllowed = formValue.IsAssignToUserNotAllowed;
-    // model.IsShift = formValue.IsShift;
+    model.IsShift = formValue.IsShift;
+    model.ImageUrl = formValue.ImageUrl;
 
     if (TDSHelperArray.hasListValue(formValue.Details)) {
       formValue.Details.forEach((detail: any, index: number) => {
@@ -385,6 +396,15 @@ export class AddLiveCampaignComponent implements OnInit {
 
   isNumber(value: TDSSafeAny): boolean {
     return Number.isInteger(value);
+  }
+
+  onChangeDate(event: any[]) {
+    this.datePicker = [];
+    if(event) {
+      event.forEach(x => {
+          this.datePicker.push(x);
+      })
+    }
   }
 
 }
