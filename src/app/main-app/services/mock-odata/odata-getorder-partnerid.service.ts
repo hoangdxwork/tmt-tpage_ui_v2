@@ -30,7 +30,7 @@ export class OdataGetOrderPartnerIdService extends BaseSevice {
 
   getOrdersByPartner(partnerId: number, params: string): Observable<OdataGetOrderPartnerIdDTO> {
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersByPartnerId?$orderby=DateCreated%20desc&PartnerId=${partnerId}&$count=true&${params}`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersByPartnerId?PartnerId=${partnerId}&$count=true&${params}`,
       method: TApiMethodType.get,
     }
 

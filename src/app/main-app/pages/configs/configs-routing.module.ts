@@ -9,7 +9,7 @@ import { ConfigPagesDivideTaskComponent } from './config-pages/config-pages-divi
 import { ConfigUsersOperationComponent } from './config-users/config-users-operation/config-users-operation.component';
 import { ConfigPromotionsComponent } from './config-promotions/config-promotions.component';
 import { ConfigActivitiesComponent } from './config-activities/config-activities.component';
-import { ConfigProductsComponent } from './config-products/config-products.component';
+import { ConfigProductsComponent } from './products/config-products.component';
 import { ConfigSmsMessagesComponent } from './config-sms-messages/config-sms-messages.component';
 import { AutoQuickReplyComponent } from './auto-quick-reply/auto-quick-reply.component';
 import { SaleOrderComponent } from './sale-order/sale-order.component';

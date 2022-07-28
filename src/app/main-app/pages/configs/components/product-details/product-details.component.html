@@ -1,6 +1,6 @@
-<div>
-    <tds-tabset>
-        <tds-tab title="Thông tin" (tabSelect)="onSelectTab('info')" clsContent="p-4 border-t">
+<div class="w-full h-full">
+    <tds-tabset (selectedIndexChange)="onChangeTab($event)">
+        <tds-tab title="Thông tin" clsContent="p-4 border-t">
             <div class="grid grid-cols-12 gap-x-8">
                 <div class="w-full col-span-1">
                     <tds-avatar [tdsSrc]="productTemplate.ImageUrl" [size]="80" [isAvatar]="false" class="rounded-lg">
@@ -166,7 +166,7 @@
                 </div>
             </div>
         </tds-tab>
-        <tds-tab title="Hình ảnh" (tabSelect)="onSelectTab('image')" clsContent="p-4 border-t">
+        <tds-tab title="Hình ảnh" clsContent="p-4 border-t">
             <div class="flex flex-wrap items-center gap-x-4">
                 <div *ngFor="let image of productTemplate.Images">
                     <tds-avatar [shape]="'square'" [size]="108" class="rounded-10" [isAvatar]="false"
@@ -175,7 +175,7 @@
                 </div>
             </div>
         </tds-tab>
-        <tds-tab title="Thẻ kho" (tabSelect)="onSelectTab('stockMove')" clsContent="p-4 border-t">
+        <tds-tab title="Thẻ kho" clsContent="p-4 border-t">
             <tds-table [listData]="lstStockMove" [loading]="isLoading_stockMove" [frontPagination]="false"
                 [scroll]="{ x: 'auto' }" [showSizeChanger]="true" [(pageSize)]="pageSize_stockMove"
                 [(pageIndex)]="pageIndex_stockMove" [total]="count_stockMove"
@@ -208,7 +208,7 @@
                 </tbody>
             </tds-table>
         </tds-tab>
-        <tds-tab title="Tồn kho" (tabSelect)="onSelectTab('inventory')" clsContent="p-4 border-t">
+        <tds-tab title="Tồn kho" clsContent="p-4 border-t">
             <tds-table [listData]="lstProductInventory" [loading]="isLoading_inventory" [frontPagination]="false"
                 [showSizeChanger]="true" [(pageSize)]="pageSize_inventory" [(pageIndex)]="pageIndex_inventory"
                 [total]="count_inventory" (queryParams)="onQueryParamsInventory($event)"
@@ -229,7 +229,7 @@
                 </tbody>
             </tds-table>
         </tds-tab>
-        <tds-tab title="Mô tả" (tabSelect)="onSelectTab('describe')" clsContent="p-4 border-t">
+        <tds-tab title="Mô tả" clsContent="p-4 border-t">
             <span class="text-body-2">Nội dung đang cập nhật</span>
         </tds-tab>
     </tds-tabset>

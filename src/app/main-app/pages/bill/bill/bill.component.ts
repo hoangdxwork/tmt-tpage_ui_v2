@@ -227,10 +227,6 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  get getCheckedRow() {
-    return [...this.setOfCheckedId].length;
-  }
-
   removeCheckedRow() {
     this.setOfCheckedId = new Set<number>();
     this.indeterminate = false;
@@ -459,7 +455,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     }else{
       this.tabNavs = this.lstOftabNavs;
     }
-
+    this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
   }
 

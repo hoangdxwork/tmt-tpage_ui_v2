@@ -1,21 +1,21 @@
 import { TDSTableQueryParams } from 'tds-ui/table';
-import { ProductTemplateDTO } from './../../../../dto/product/product.dto';
-import { ProductTemplateService } from './../../../../services/product-template.service';
+import { ProductTemplateDTO } from '../../../../dto/product/product.dto';
+import { ProductTemplateService } from '../../../../services/product-template.service';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
-import { ODataStokeMoveDTO, ODataProductInventoryDTO } from './../../../../dto/configs/product/config-odata-product.dto';
+import { ODataStokeMoveDTO, ODataProductInventoryDTO } from '../../../../dto/configs/product/config-odata-product.dto';
 import { Subject, finalize } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { StockMoveService } from '../../../../services/stock-move.service';
 import { ConfigProductInventoryDTO } from '../../../../dto/configs/product/config-inventory.dto';
-import { ConfigStockMoveDTO } from './../../../../dto/configs/product/config-warehouse.dto';
+import { ConfigStockMoveDTO } from '../../../../dto/configs/product/config-warehouse.dto';
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
-    selector: 'config-product-details',
-    templateUrl: './config-product-details.component.html'
+    selector: 'product-details',
+    templateUrl: './product-details.component.html'
 })
-export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
+export class ProductDetailsComponent implements OnInit, OnDestroy {
     @Input() productTemplate!: ProductTemplateDTO;
 
     lstStockMove: Array<ConfigStockMoveDTO> = [];
@@ -30,8 +30,8 @@ export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
     pageIndex_inventory = 1;
     isLoading_inventory = false;
     count_inventory: number = 1;
+    tabIndex:number = 0;
 
-    tabSelected = 'info';
     fallback = '../../../assets/imagesv2/config/no-image-default.svg';
 
     private destroy$ = new Subject<void>();
@@ -44,20 +44,21 @@ export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void { }
 
-    onSelectTab(tabName: string) {
-        this.tabSelected = tabName;
-        switch (tabName) {
-            case 'stockMove':
+    onChangeTab(tabIndex:number){
+        this.tabIndex = tabIndex;
+
+        switch (tabIndex) {
+            case 2:
                 this.getStockMoveProduct(this.pageSize_stockMove, this.pageIndex_stockMove);
                 break;
-            case 'inventory':
+            case 3:
                 this.getProductInventory(this.pageSize_inventory, this.pageIndex_inventory);
                 break;
         }
     }
 
     onQueryParamsStockMove(params: TDSTableQueryParams) {
-        if (this.tabSelected == 'stockMove') {
+        if (this.tabIndex == 2) {
             this.getStockMoveProduct(params.pageSize, params.pageIndex);
         }
     }
@@ -86,7 +87,7 @@ export class ConfigProductDetailsComponent implements OnInit, OnDestroy {
     }
 
     onQueryParamsInventory(params: TDSTableQueryParams) {
-        if (this.tabSelected == 'inventory') {
+        if (this.tabIndex == 3) {
             this.getProductInventory(params.pageSize, params.pageIndex);
         }
     }

@@ -58,6 +58,9 @@
                         [allowClear]="true">
                     </tds-select>
                   </tds-form-field>
+                  <button tds-button-icon color="secondary">
+                      <i class="tdsi-plus-circle-fill text-primary-1"></i>
+                  </button>
                 </div>
               </div>
 
@@ -114,32 +117,11 @@
                 </tds-form-field>
               </div>
 
-              <div class="flex gap-x-4 items-center">
-                <tds-label class="w-1/4">Ngày bắt đầu</tds-label>
-                <tds-form-field class="w-3/4">
-                  <tds-date-picker showTime formControlName="StartDate"></tds-date-picker>
-                </tds-form-field>
-              </div>
-
-              <div class="flex gap-x-4 items-center">
-                <tds-label class="w-1/4">Ngày kết thúc</tds-label>
-                <tds-form-field class="w-3/4">
-                  <tds-date-picker showTime formControlName="EndDate"></tds-date-picker>
-                </tds-form-field>
-              </div>
-
-              <div class="flex gap-x-4 items-center justify-between">
-                <tds-label>Bật số lượng</tds-label>
-                <tds-checkbox formControlName="EnableQuantityHandling"></tds-checkbox>
-              </div>
-
-              <div class="flex gap-x-4 items-baseline">
-                <tds-label class="w-1/4">Ghi chú</tds-label>
-                <tds-form-field class="w-3/4">
-                  <textarea class="resize-none h-[66px]" tdsInput placeholder="Nhập nội dung" formControlName="Note"></textarea>
-                </tds-form-field>
-              </div>
-              <div class="flex flex-col gap-y-4 items-baseline">
+              <div class="row-span-2 flex flex-col gap-y-4 items-center pt-3">
+                <div class="flex justify-between items-center w-full">
+                  <tds-label>Bật số lượng</tds-label>
+                  <tds-checkbox formControlName="EnableQuantityHandling"></tds-checkbox>
+                </div>
                 <div class="flex justify-between items-center w-full">
                   <tds-label>Tổng hợp đơn hàng trong thời gian ca làm việc</tds-label>
                   <tds-checkbox formControlName="IsShift"></tds-checkbox>
@@ -149,6 +131,22 @@
                   <tds-checkbox formControlName="IsAssignToUserNotAllowed"></tds-checkbox>
                 </div>
               </div>
+
+              <div class="flex gap-x-4 items-baseline">
+                <tds-label class="w-1/4">Ghi chú</tds-label>
+                <tds-form-field class="w-3/4">
+                  <textarea class="resize-none h-[66px]" tdsInput placeholder="Nhập nội dung" formControlName="Note"></textarea>
+                </tds-form-field>
+              </div>
+
+              <div class="flex gap-x-4">
+                <tds-label class="w-1/4">Thời gian gửi tin tự động</tds-label>
+                <tds-form-field class="w-3/4">
+                  <tds-range-picker  [(ngModel)]="datePicker" [ngModelOptions]="{standalone: true}" (ngModelChange)="onChangeDate($event)"> </tds-range-picker>
+                </tds-form-field>
+              </div>
+
+              
             </div>
           </tds-collapse-panel>
         </tds-collapse>
@@ -186,29 +184,29 @@
                   </tr>
                 </thead>
                 <tbody formArrayName="Details">
-                  <tr *ngFor="let detail of _form.controls['Details'].value; let index=index" [formGroupName]="index">
+                  <tr *ngFor="let detail of detailsForm.controls; let index = index"  [formGroupName]="index">
                     <td> {{ index + 1 }} </td>
 
                     <!-- Sản phẩm -->
                     <td>
                       <div class="flex gap-x-2 items-center">
                         <div class="w-1/5">
-                          <tds-avatar size="xl" [shape]="'square'" class="bg-accent-4 text-white h-[60px] w-[60px]" tdsSrc="{{ detail?.value?.ImageUrl }}">
+                          <tds-avatar size="xl" [shape]="'square'" class="bg-white h-[60px] w-[60px]" [tdsSrc]="detail?.value.ImageUrl">
                           </tds-avatar>
                         </div>
                         <div class="flex flex-col gap-y-1 cursor-pointer w-4/5">
                           <span class="font-semibold text-sm">
                             {{detail?.value.ProductNameGet || detail?.value.ProductName}}
-                            <span *ngIf="detail?.value?.UOMName">({{detail?.value?.UOMName}})</span>
+                            <span *ngIf="detail?.value.UOMName">({{detail?.value.UOMName}})</span>
                           </span>
 
                           <!-- Tags -->
                           <div class="flex w-full gap-x-2 items-center" (click)="openTag(index)" tds-popover
                               [popoverVisible]="indClickTag == index" popoverTrigger="click"
                               [popoverContent]="contentAddTag" [popoverBackdrop]="true" popoverPlacement="left">
-                            <span *ngIf="detail.value?.Tags.length <= 0" class="text-info-500 font-normal text-sm">+Thêm cú pháp chốt đơn</span>
-                            <div *ngIf="detail.value?.Tags.length > 0" class="flex w-full flex-wrap gap-2">
-                              <tds-tag *ngFor="let item of detail.value.Tags" status='primary' tds-tooltip [tooltipTitle]="item" >
+                            <span *ngIf="detail?.value.Tags.length <= 0" class="text-info-500 font-normal text-sm">+Thêm cú pháp chốt đơn</span>
+                            <div *ngIf="detail?.value.Tags.length > 0" class="flex w-full flex-wrap gap-2">
+                              <tds-tag *ngFor="let item of (detail.value.Tags | stringToStringArray)" status='primary' tds-tooltip [tooltipTitle]="item" >
                                 <div class="truncate max-w-[100px]">
                                   {{item}}
                                 </div>
@@ -221,7 +219,7 @@
                             <div class="w-96 flex flex-col gap-y-4">
                               <tds-form-field>
                                 <tds-select valueField="id" textField="name" placeholder='select item' formControlName="Tags"
-                                  [allowClear]="true" [data]="[detail.value?.Tags]" mode="multiple">
+                                  [allowClear]="true" [data]="[detail?.value.Tags]" mode="multiple">
                                 </tds-select>
                               </tds-form-field>
                               <div class="flex gap-x-2 justify-end">
@@ -274,7 +272,7 @@
 
                     <!-- Thao tác -->
                     <td class="text-center">
-                      <button tds-button-icon color="secondary" size="sm" (click)="removeDetail(index, detail.value)">
+                      <button tds-button-icon color="secondary" size="sm" (click)="removeDetail(index, detail)">
                         <span class="flex items-center">
                           <i class="tdsi-trash-fill"></i>
                         </span>

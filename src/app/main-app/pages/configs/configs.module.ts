@@ -19,7 +19,7 @@ import { AutoQuickReplyComponent } from './auto-quick-reply/auto-quick-reply.com
 import { ConfigConversationTagsComponent } from './config-conversation-tags/config-conversation-tags.component';
 import { ConfigSmsMessagesComponent } from './config-sms-messages/config-sms-messages.component';
 
-import { ConfigProductsComponent } from './config-products/config-products.component';
+import { ConfigProductsComponent } from './products/config-products.component';
 import { ConfigActivitiesComponent } from './config-activities/config-activities.component';
 import { ConfigPromotionsComponent } from './config-promotions/config-promotions.component';
 import { ConfigUsersOperationComponent } from './config-users/config-users-operation/config-users-operation.component';
@@ -57,7 +57,7 @@ import { ConfigQuickQuestionComponent } from './config-pages/config-pages-basic/
 import { ConfigGreetingComponent } from './config-pages/config-pages-basic/config-greeting/config-greeting.component';
 import { ConfigConversationTagsCreateDataModalComponent } from './components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
 import { FacebookService } from '../../services/facebook.service';
-import { ConfigProductDetailsComponent } from './components/config-product-details/config-product-details.component';
+import { ProductDetailsComponent } from './components/product-details/product-details.component';
 import { ApplicationRoleService } from '../../services/application-role.service';
 import { UserRestHandler } from '../../services/handlers/user-rest.handler';
 import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
@@ -174,7 +174,7 @@ const SERVICES = [
     ConfigQuickQuestionComponent,
     ConfigGreetingComponent,
     ConfigConversationTagsCreateDataModalComponent,
-    ConfigProductDetailsComponent,
+    ProductDetailsComponent,
     ConfigAddAttributeProductModalComponent,
     ConfigAddPromotionComponent,
     ConfigEditPromotionComponent,

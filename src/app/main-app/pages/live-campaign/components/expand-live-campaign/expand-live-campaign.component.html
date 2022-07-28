@@ -5,7 +5,7 @@
             <div class="p-4 font-semibold  border-b-3 cursor-pointer group flex items-center"
                 [ngClass]='{"border-primary-1":active,"border-transparent text-neutral-1-400  hover:border-primary-1":!active}'>
                 <span class="mr-2">Chi tiết</span>
-                <div class="text-caption-2 font-semibold py-0.5 px-1.5 rounded-full flex"
+                <div class="text-caption-2 font-semibold py-0.5 px-2 rounded-full flex"
                     [ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 bg-neutral-3-100 group-hover:text-white group-hover:bg-primary-1':!active}">
                     {{liveCampaigns?.Details?.length || 0}}
                 </div>
@@ -55,9 +55,9 @@
       <div class="w-full grid grid-cols-3 gap-8">
         <div class="grid grid-cols-3 gap-4">
           <div>Tên chiến dịch:</div>
-          <div class="col-span-2 font-semibold">{{liveCampaigns.Name}}</div>
+          <div class="col-span-2 font-semibold">{{liveCampaigns.Name || '...'}}</div>
           <div>Ghi chú:</div>
-          <div class="col-span-2 font-semibold">{{liveCampaigns.Note}}</div>
+          <div class="col-span-2 font-semibold">{{liveCampaigns.Note || '...'}}</div>
           <div>Nhân viên chốt đơn:</div>
           <div class="col-span-2 font-semibold flex gap-x-2" *ngIf="liveCampaigns?.Users">
             <span *ngFor="let user of liveCampaigns.Users; let i = index">
@@ -68,9 +68,9 @@
         </div>
         <div class="grid grid-cols-3 gap-4">
           <div>Facebook:</div>
-          <div class="col-span-2 font-semibold text-blue-500">{{liveCampaigns.Facebook_UserName}}</div>
+          <div class="col-span-2 font-semibold text-blue-500">{{liveCampaigns.Facebook_UserName || '...'}}</div>
           <div>Live ID:</div>
-          <div class="col-span-2 font-semibold">{{liveCampaigns.Facebook_LiveId}}</div>
+          <div class="col-span-2 font-semibold">{{liveCampaigns.Facebook_LiveId || '...'}}</div>
           <div>Đặt cọc tối thiểu:</div>
           <div class="col-span-2 font-semibold">{{liveCampaigns.MinAmountDeposit || 0 | number}} đ</div>
         </div>
@@ -85,7 +85,7 @@
             <div class="p-4 font-semibold  border-b-3 cursor-pointer group flex items-center"
                 [ngClass]='{"border-primary-1":active,"border-transparent text-neutral-1-400  hover:border-primary-1":!active}'>
                 <span class="mr-2">Danh sách bài viết</span>
-                <div class="text-caption-2 font-semibold py-0.5 px-1.5 rounded-full flex" [ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 bg-neutral-3-100 group-hover:text-white group-hover:bg-primary-1':!active}">
+                <div class="text-caption-2 font-semibold py-0.5 px-2 rounded-full flex" [ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 bg-neutral-3-100 group-hover:text-white group-hover:bg-primary-1':!active}">
                     {{facebookPosts?.length || 0}}
                 </div>
             </div>
@@ -93,7 +93,34 @@
         <div class="w-full grid grid-cols-3 gap-8">
           <div class="bg-white p-4 rounded-lg flex space-x-4" *ngFor="let post of facebookPosts">
             <div class="flex flex-col space-y-3">
-              <div><img src="{{post.picture}}" alt=""></div>
+              <div class="relative">
+                <img [src]="post.picture" alt=""
+                    class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md object-cover">
+                    <container-element [ngSwitch]="post.status_type">
+                      <ng-container *ngSwitchCase="'added_video'">
+                          <div class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
+                              <div class="tdsi-video-camera-fill text-white leading-none"></div>
+                          </div>
+                      </ng-container>
+                      <ng-container *ngSwitchCase="'added_photos'">
+                          <div class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#3B7AD9] to-[#6EB3F8]">
+                              <div class="tdsi-images-fill text-white leading-none"></div>
+                          </div>
+                      </ng-container>
+                      <ng-container
+                          *ngSwitchCase="'mobile_status_update' || 'published_story' || 'shared_story'">
+                          <div class="h-[22px] w-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-r from-[#3B7AD9] to-[#6EB3F8]">
+                              <div class="tdsi-facebook-f-fill text-white leading-none"></div>
+                          </div>
+                      </ng-container>
+                      <ng-container *ngSwitchDefault>
+                          <div= class="h-[22px] flex items-center justify-center rounded-full absolute top-2 right-2 p-1 ring-2 ring-white ring-opacity-30 bg-gradient-to-b from-[#F22727] to-[#FF7575]">
+                              <div class="tdsi-arrow-right-fill text-white leading-2 mr-1 text-caption-2 font-[Lato]">
+                                  LIVE</div>
+                          </div>
+                      </ng-container>
+                  </container-element>
+              </div>
               <div class="flex space-x-4 text-neutral-1-400">
                 <div class="flex items-center">
                   <i class="tdsi-like-line text-base"></i>

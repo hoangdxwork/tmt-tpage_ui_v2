@@ -1,8 +1,8 @@
-<div>
+<tds-spin [spinning]="isLoading" [formGroup]="_form">
   <div class="flex justify-end items-center gap-x-2 pr-4 mb-4">
     <tds-form-field class="w-1/6">
-      <tds-select valueField="Value" [(ngModel)]="statusAll" textField="Text" placeholder='Chọn trạng thái'
-          [allowClear]="true" [valuePrimitive]="false"
+      <tds-select valueField="Text" textField="Text" formControlName="statusAll" placeholder='Chọn trạng thái'
+          [allowClear]="true"
           [data]="lstStatus">
       </tds-select>
     </tds-form-field>
@@ -13,8 +13,12 @@
     </button>
   </div>
 
-  <div class="w-full" *ngIf="listData">
-    <tds-table #rowSelectionTable [listData]="listData">
+  <div class="w-full" *ngIf="listData" formArrayName="data">
+    <tds-table #rowSelectionTable 
+        [listData]="listData" 
+        [frontPagination]="false" 
+        [showPagination]="false"
+        [scroll]="{y: '450px'}">
         <thead>
             <tr class="bg-neutral-3-50" >
                 <th class="text-body-2" width="64px">STT</th>
@@ -25,16 +29,22 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let item of listData; let index = index">
-                <td class="text-body-2">{{ index + 1 }}</td>
-                <td class="text-body-2">{{ item.PartnerName }}</td>
-                <td class="text-body-2">{{ item.Code }}</td>
-                <td class="text-body-2">{{ item.AmountTotal || 0 | numberCustom : '.'}}</td>
+            <tr *ngFor="let item of dataArray.controls; let i = index" [formGroupName]="i">
+                <td class="text-body-2">{{ i + 1 }}</td>
+                <td class="text-body-2">
+                  {{ item.value.Name }}
+                </td>
+                <td class="text-body-2">
+                  {{ item.value.Code }}
+                </td>
+                <td class="text-body-2">
+                  {{ item.value.TotalAmount || 0 | numberCustom : '.'}}
+                </td>
                 <td>
                   <tds-form-field class="w-full">
-                      <tds-select valueField="Value" textField="Text" placeholder='Chọn trạng thái'
-                          [(ngModel)]="item.StatusText" [allowClear]="true" [valuePrimitive]="false"
-                          [data]="lstStatus" (ngModelChange)="onChangeStatus($event, item)" >
+                      <tds-select valueField="Text" textField="Text" placeholder='Chọn trạng thái'
+                          formControlName="StatusText" [allowClear]="false"
+                          [data]="lstStatus">
                       </tds-select>
                   </tds-form-field>
                 </td>
@@ -43,7 +53,7 @@
     </tds-table>
   </div>
   <div class="w-full flex justify-end p-4" *tdsModalFooter>
-      <button tds-button class="mr-2 w-[100px]" type="button" color="secondary" (click)="onCancel(null)">Đóng</button>
+      <button tds-button class="mr-2 w-[100px]" type="button" color="secondary" (click)="onCancel(false)">Đóng</button>
       <button tds-button class=" w-[100px]" type="submit" color="primary" (click)="onSave()">Lưu</button>
   </div>
-</div>
+</tds-spin>

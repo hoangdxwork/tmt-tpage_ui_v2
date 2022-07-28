@@ -344,10 +344,6 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  get getCheckedRow() {
-    return [...this.setOfCheckedId].length;
-  }
-
   removeCheckedRow() {
     this.setOfCheckedId = new Set<number>();
   }
@@ -358,7 +354,8 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.filterObj.tags = event.tags;
     this.filterObj.status = event.status;
-
+    
+    this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
   }
 

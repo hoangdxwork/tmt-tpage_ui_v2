@@ -1,9 +1,11 @@
+import { FormBuilder, FormArray, FormGroup } from '@angular/forms';
+import { SaleOnlineOrderStatusDTO } from './../../../../dto/saleonlineorder/sale-online-order-status.dto';
+import { ODataSaleOnline_OrderModel } from './../../../../dto/saleonlineorder/odata-saleonline-order.dto';
 import { CommonService } from './../../../../services/common.service';
 import { Message } from './../../../../../lib/consts/message.const';
 import { Subject, finalize } from 'rxjs';
 import { takeUntil } from 'rxjs';
-import { SaleOnline_OrderDTO, UpdateStatusTextSaleOnlineDTO } from './../../../../dto/saleonlineorder/sale-online-order.dto';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
@@ -15,10 +17,11 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 })
 export class UpdateStatusOrderComponent implements OnInit {
 
-  @Input() listData: any[] = [];
+  @Input() listData: ODataSaleOnline_OrderModel[] = [];
 
-  statusAll: any;
-  lstStatus: any[] = [];
+  _form!:FormGroup;
+  statusAll!: SaleOnlineOrderStatusDTO;
+  lstStatus: SaleOnlineOrderStatusDTO[] = [];
   isLoading = false;
 
   private destroy$ = new Subject<void>();
@@ -27,11 +30,40 @@ export class UpdateStatusOrderComponent implements OnInit {
     private message: TDSMessageService,
     private modal: TDSModalRef,
     private commonService: CommonService,
-    private saleOnline_OrderService: SaleOnline_OrderService
-  ) { }
+    private saleOnline_OrderService: SaleOnline_OrderService,
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef
+  ) { 
+    this.createForm();
+  }
 
   ngOnInit(): void {
     this.loadStatusTypeExt();
+    this.updateForm();
+  }
+
+  createForm(){
+    this._form = this.fb.group({
+      statusAll:[null],
+      data: this.fb.array([])
+    })
+  }
+
+  updateForm(){
+    this.listData.forEach((item)=>{
+      this.dataArray.push(this.fb.group({
+        Id:[item.Id],
+        Name:[item.PartnerName],
+        Code:[item.Code],
+        TotalAmount:[item.TotalAmount],
+        StatusText:[item.StatusText]
+      }))
+    })
+    this.cdr.markForCheck();
+  }
+
+  get dataArray(): FormArray {
+    return this._form.get('data') as FormArray;
   }
 
   loadStatusTypeExt() {
@@ -40,51 +72,42 @@ export class UpdateStatusOrderComponent implements OnInit {
     });
   }
 
-  onChangeStatus(event: any, item: any) {
-    item.StatusText = event.text;
-    item.Status = event.value.charAt(0).toUpperCase();
-  }
-
   onAllStatus() {
-    if(!this.statusAll) {
+    if (!this._form.controls["statusAll"].value) {
       this.message.error("Hãy chọn trạng thái!");
       return;
     }
 
-    this.listData.forEach((item: any) => {
-      item.StatusText = this.statusAll.text;
-      item.Status = this.statusAll.value.charAt(0).toUpperCase();
-    });
+    for (let i = 0; i < this.dataArray.length; i++) {
+      let data = this._form.controls["statusAll"].value as string;
+      let formData = <FormGroup> this.dataArray.at(i);
+      
+      formData.controls["StatusText"].setValue(data);
+    }
+  }
+
+  prepareModel(){
+    return this.dataArray.value as ODataSaleOnline_OrderModel[];;
   }
 
   onSave() {
-    if(!this.listData || this.listData.length < 1) {
+    if (!this.listData || this.listData.length < 1) {
       this.message.error("Dữ liệu trống!");
       return;
     }
 
     this.isLoading = true;
 
-    let model = this.listData.map((x: SaleOnline_OrderDTO) => {
-      let item: UpdateStatusTextSaleOnlineDTO = {
-        Id: x.Id,
-        Code: x.Code,
-        Name: x.Name,
-        StatusText: x.StatusText,
-        TotalAmount: x.TotalAmount
-      };
+    let model = this.prepareModel();
 
-      return item;
-    });
-
-    this.saleOnline_OrderService.updateStatusTextSaleOnline({model: model})
-    .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
-      this.message.success("Cập nhật thành công");
-      this.onCancel(true);
-    },
-    err=>{
-      this.message.error(err?.error?.message || Message.UpdatedFail);
-    });
+    this.saleOnline_OrderService.updateStatusTextSaleOnline({ model: model })
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
+          this.message.success(Message.UpdatedSuccess);
+          this.onCancel(true);
+        },
+        err => {
+          this.message.error(err?.error?.message || Message.UpdatedFail);
+        });
   }
 
   onCancel(result: TDSSafeAny) {

@@ -1,25 +1,25 @@
 
-<button tds-button-icon color="secondary" tds-dropdown trigger="click"
+<button tds-button-icon color="secondary" [backdrop]="true" tds-dropdown trigger="click"
     [tdsDropdownMenu]="menu"  [autoClose]="false"
     size="md" class="relative" [(visible)]="isVisible" tds-tooltip tooltipTitle="Lọc dữ liệu">
   <span class="flex items-center">
       <i class="tdsi-filter-2-line text-lg leading-none text-neutral-1-500"></i>
   </span>
-  <span *ngIf="checkActive() && isActive " class="tdsi-success-fill absolute text-[#28A745] text-body-2 top-[-11px] right-[-6px]" style="font-size: 22px"></span>
+  <span *ngIf="isActive" class="tdsi-success-fill absolute text-primary-1 text-body-2 top-[-11px] right-[-6px]" style="font-size: 22px"></span>
 </button>
 <tds-dropdown-menu #menu="tdsDropdownMenu" >
-  <div class="w-full p-4">
+  <div class="w-[400px] p-4 text-body-2 text-neutral-1-900">
       <div class="mb-4">
-          <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">TÌM THEO NGÀY</p>
+          <p class="mb-2 font-semibold">TÌM THEO NGÀY</p>
           <div>
              <tds-range-picker  [(ngModel)]="datePicker" (ngModelChange)="onChangeDate($event)"> </tds-range-picker>
           </div>
       </div>
       <div class="w-full mb-4">
-        <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">CHỌN CHIẾN DỊCH</p>
+        <p class="mb-2 font-semibold">CHỌN CHIẾN DỊCH</p>
         <div class="w-full">
           <tds-form-field >
-            <tds-select valueField="Id" textField="Name"
+            <tds-select valueField="Id" textField="Name" [(ngModel)]="lstSelectLive"
                 placeholder='Chọn chiến dịch' [valuePrimitive]="false" (selectChange)="onSearch($event)"
                 disabledField="isActive" [data]="(lstLiveCampaigns | async)?.value || []" [allowClear]="true" mode="multiple">
             </tds-select>
@@ -28,11 +28,12 @@
       </div>
       <div class="w-full mb-4">
           <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">TRẠNG THÁI HOẠT ĐỘNG</p>
-          <div>
-            <a *ngFor="let item of activities" (click)="selectActive(item)" [ngClass]="filterObj.isActive == item.value ? 'bg-primary-1  text-[#fff]' : 'bg-neutral-3-200 '"
-                class="items-center dark:bg-d-neutral-3-200 group  hover:bg-neutral-3-300 dark:hover:bg-d-neutral-3-300 rounded py-0.5 pl-2 pr-2 mr-2">
-              <span class="text-body-2 font-regular  dark:text-d-neutral-1-900 whitespace-nowrap box-border truncate"> {{item.text}}</span>
-            </a>
+          <div class="flex gap-2 flex-wrap">
+            <div *ngFor="let item of activities">
+              <tds-tag mode="checkable" [checked]="filterObj.isActive == item.value" (checkedChange)="selectActive(item)">
+                {{item.text}}
+              </tds-tag>
+            </div>
           </div>
       </div>
       <hr>
