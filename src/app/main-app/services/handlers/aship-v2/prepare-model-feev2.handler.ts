@@ -80,4 +80,73 @@ export class PrepareModelFeeV2Handler {
 
       return model;
     }
+
+    public so_prepareModelFeeV2(shipExtraServices: ShipServiceExtra[], saleModel: FastSaleOrder_DefaultDTOV2, companyId: number, insuranceInfo: CalculateFeeInsuranceInfoResponseDto | null) {
+
+      let model: any = {
+          PartnerId: saleModel.Partner?.Id,
+          CompanyId: saleModel.Company?.Id || companyId,
+          CarrierId: saleModel.Carrier?.Id,
+          ServiceId: saleModel.Ship_ServiceId || null,
+          InsuranceFee: saleModel.Ship_InsuranceFee || 0,
+          ShipWeight: saleModel.ShipWeight,
+          CashOnDelivery: saleModel.CashOnDelivery,
+          ServiceExtras: [],
+          Ship_Receiver: {}
+      }
+
+      shipExtraServices || (shipExtraServices = []);
+      shipExtraServices.map((x: ShipServiceExtra) => {
+          if (x.IsSelected) {
+              model.ServiceExtras.push({
+                Id: x.Id,
+                Name: x.Name,
+                Fee: x.Fee || 0,
+                Type: x.Type,
+                ExtraMoney: x.ExtraMoney
+              });
+          }
+      })
+
+      if (!saleModel.Ship_Extras && saleModel.Carrier && saleModel.Carrier.Extras) {
+          saleModel.Ship_Extras = saleModel.Carrier.Extras;
+      }
+
+      if (!insuranceInfo?.IsInsurance) {
+          model.Ship_InsuranceFee = 0;
+      } else {
+          if (!model.Ship_InsuranceFee) {
+              if (saleModel.Ship_Extras) {
+                  model.Ship_InsuranceFee = saleModel.Ship_Extras.InsuranceFee || saleModel.AmountTotal;
+              } else {
+                  model.Ship_InsuranceFee = saleModel.AmountTotal;
+              }
+          }
+      }
+
+      if (saleModel.Ship_Receiver) {
+          model.Ship_Receiver = {
+              Name: saleModel.Ship_Receiver.Name,
+              Street: saleModel.Ship_Receiver.Street,
+              Phone: saleModel.Ship_Receiver.Phone,
+
+              City: saleModel.Ship_Receiver.City?.code ? {
+                  code: saleModel.Ship_Receiver.City?.code,
+                  name: saleModel.Ship_Receiver.City?.name
+              } : null,
+
+              District: saleModel.Ship_Receiver.District?.code ? {
+                  code: saleModel.Ship_Receiver.District?.code,
+                  name: saleModel.Ship_Receiver.District?.name
+              } : null,
+
+              Ward: saleModel.Ship_Receiver.Ward?.code ? {
+                  code: saleModel.Ship_Receiver.Ward?.code,
+                  name: saleModel.Ship_Receiver.Ward?.name
+              } : null
+          }
+      }
+
+      return model;
+    }
 }

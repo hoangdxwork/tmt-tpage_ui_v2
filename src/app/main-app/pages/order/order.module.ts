@@ -71,6 +71,12 @@ import { OdataGetOrderPartnerIdService } from '../../services/mock-odata/odata-g
 import { LiveOrderByPartnerComponent } from './components/live-order-bypartner/live-order-bypartner.component';
 import { OverviewOrderBypartnerComponent } from './components/overview-order-bypartner/overview-order-bypartner.component';
 import { OdataFastSaleOrderPartnerIdService } from '../../services/mock-odata/odata-fastsaleorder-partnerid.service';
+import { PrepareModelFeeV2Handler } from '../../services/handlers/aship-v2/prepare-model-feev2.handler';
+import { SelectShipServiceV2Handler } from '../../services/handlers/aship-v2/select-shipservice-v2.handler';
+import { UpdateShipExtraHandler } from '../../services/handlers/aship-v2/update-shipextra.handler';
+import { UpdateShipServiceExtrasHandler } from '../../services/handlers/aship-v2/update-shipservice-extras.handler';
+import { UpdateShipmentDetailAshipHandler } from '../../services/handlers/aship-v2/shipment-detail-aship.handler';
+// import { EditOrderV2Component } from './components/edit-order/edit-order-v2.component';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -96,6 +102,11 @@ const SERVICES = [
   AttachmentState,
   OdataGetOrderPartnerIdService,
   OdataFastSaleOrderPartnerIdService,
+  PrepareModelFeeV2Handler,
+  SelectShipServiceV2Handler,
+  UpdateShipExtraHandler,
+  UpdateShipServiceExtrasHandler,
+  UpdateShipmentDetailAshipHandler
 ]
 
 @NgModule({
@@ -117,6 +128,7 @@ const SERVICES = [
     ModalHistoryChatComponent,
     LiveOrderByPartnerComponent,
     OverviewOrderBypartnerComponent,
+    // EditOrderV2Component
   ],
   imports: [
     CommonModule,

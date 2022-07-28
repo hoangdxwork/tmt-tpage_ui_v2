@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { FormArray, FormBuilder, FormGroup } from "@angular/forms";
-import { ShipServiceExtra } from "src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto";
+import { FastSaleOrder_DefaultDTOV2, ShipServiceExtra } from "src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto";
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +16,19 @@ export class UpdateShipServiceExtrasHandler {
           }
         })
       }
+    }
+
+    public so_updateShipServiceExtras(shipExtraServices: ShipServiceExtra[], saleModel: FastSaleOrder_DefaultDTOV2) {
+      if (shipExtraServices) {
+        shipExtraServices.map(x => {
+            if(x && x.IsSelected) {
+                let item = this.so_initShip_ServiceExtras(x);
+                saleModel.Ship_ServiceExtras.push(item);
+            }
+        })
+      }
+
+      return saleModel;
     }
 
     public addShip_ServiceExtras(x: any, _form: FormGroup, fb: FormBuilder) {
@@ -48,4 +61,19 @@ export class UpdateShipServiceExtrasHandler {
         })
       }
     }
+
+    public so_initShip_ServiceExtras(data: ShipServiceExtra) {
+      return {
+          Id: data.Id,
+          Name: data.Name,
+          Fee: data.Fee,
+          Type: data.Type,
+          ExtraMoney: data.ExtraMoney,
+          OrderTime: data.OrderTime,
+          Pickup_Time: data.Pickup_Time,
+          Pickup_Time_Range_Id: data.Pickup_Time_Range_Id
+      }
+    }
+
+
 }

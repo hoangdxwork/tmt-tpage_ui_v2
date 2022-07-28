@@ -382,7 +382,7 @@
                                 <label>
                                   <tds-checkbox [(ngModel)]="item.IsSelected" (change)="onCheckExtraService(item)"
                                     [ngModelOptions]="{standalone: true}"><i></i> {{item.ServiceName}}</tds-checkbox>
-                                  <p *ngIf="item.Fee && !saleModel.Ship_Extras.IsInsuranceEqualTotalAmount">
+                                  <p *ngIf="item.Fee && !saleModel.Ship_Extras!.IsInsuranceEqualTotalAmount">
                                     (<strong>{{item.Fee | numberCustom:'.'}}</strong>)
                                   </p>
                                 </label>

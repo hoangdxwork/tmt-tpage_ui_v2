@@ -316,7 +316,7 @@
                                     <tds-checkbox [(ngModel)]="item.IsSelected" (change)="onCheckExtraService(item)" [ngModelOptions]="{standalone: true}"><i></i>
                                         {{item.ServiceName}}
                                     </tds-checkbox>
-                                    <p *ngIf="item.Fee && !saleModel.Ship_Extras.IsInsuranceEqualTotalAmount">(<strong>{{item.Fee | number:'1.0-3'}}</strong>)</p>
+                                    <p *ngIf="item.Fee && !saleModel.Ship_Extras!.IsInsuranceEqualTotalAmount">(<strong>{{item.Fee | number:'1.0-3'}}</strong>)</p>
                                     <div *ngIf="saleModel.Carrier?.DeliveryType == 'ViettelPost' && item.ServiceId == 'XMG' && item.IsSelected == true">
                                         <tds-input-number [(ngModel)]="item.ExtraMoney" [ngModelOptions]="{standalone: true}" [min]="0" [step]="100"></tds-input-number>
                                     </div>

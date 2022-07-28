@@ -493,6 +493,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
     });
   }
+
   loadCarrier() {
     return this.deliveryCarrierService.get().pipe(map(res => res.value));
   }
@@ -1427,6 +1428,17 @@ export class AddBillComponent implements OnInit, OnDestroy {
     return x;
   }
 
+  confirmShipService(carrier: TDSSafeAny) {
+    this.modal.info({
+      title: 'Cảnh báo',
+      content: 'Đối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
+      onOk: () => this.calcFee(),
+      onCancel:()=>{},
+      okText: "OK",
+      cancelText: "Cancel"
+    });
+  }
+
   onSave(): any {
     this.updateShipExtras();
     this.updateShipServiceExtras();
@@ -1533,14 +1545,14 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   calculateFeeAship(event: DeliveryCarrierDTOV2): any {
-    let model = this.prepareModelFeeV2();
-
     if (!this._form.controls['Carrier'].value ) {
       return this.message.error('Vui lòng chọn  đối tác giao hàng');
     }
     if (!this._form.controls['ShipWeight'].value ) {
       return this.message.error('Vui lòng chọn nhập khối lượng');
     }
+
+    let model = this.prepareModelFeeV2();
 
     let promise = new Promise((resolve, reject): any => {
 

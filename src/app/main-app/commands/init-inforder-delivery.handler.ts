@@ -137,11 +137,11 @@ export abstract class InitInfoOrderDeliveryHandler{
 
   static getInsuranceFee(saleModel: FastSaleOrder_DefaultDTOV2, quickOrderModel: QuickSaleOnlineOrderModel) {
     let insuranceFee = 0;
-    if (saleModel.Ship_Extras.IsInsurance) {
-        if (saleModel.Ship_Extras.IsInsuranceEqualTotalAmount) {
+    if (saleModel.Ship_Extras!.IsInsurance) {
+        if (saleModel.Ship_Extras!.IsInsuranceEqualTotalAmount) {
             insuranceFee = quickOrderModel.TotalAmount;
-        } else if (saleModel.Ship_Extras.InsuranceFee) {
-            insuranceFee = saleModel.Ship_Extras.InsuranceFee;
+        } else if (saleModel!.Ship_Extras!.InsuranceFee) {
+            insuranceFee = saleModel.Ship_Extras!.InsuranceFee;
         } else {
             insuranceFee = quickOrderModel.TotalAmount;
         }
