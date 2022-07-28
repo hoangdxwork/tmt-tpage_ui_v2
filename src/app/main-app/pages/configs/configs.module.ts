@@ -101,7 +101,6 @@ import { TDSFilterStatusModule } from 'tds-ui/filter-status';
 import { TDSEditorModule } from 'tds-editor';
 import { CreateVariantsModalComponent } from './components/create-variants-modal/create-variants-modal.component';
 import { FacebookCartComponent } from './facebook-cart/facebook-cart.component';
-import { AshipV2Component } from './aship-v2/aship-v2.component';
 import { ListConfigDeliveryComponent } from './config-delivery/list-config-delivery.component';
 import { TDSCollapseModule } from 'tds-ui/collapse';
 import { TDSEmptyModule } from 'tds-ui/empty';
@@ -184,9 +183,8 @@ const SERVICES = [
     CreateVariantsModalComponent,
     ListConfigDeliveryComponent,
     ConfigDeliveryConnectComponent,
-        ConfigDeliveryUpdateComponent,
-        FacebookCartComponent,
-        AshipV2Component
+    ConfigDeliveryUpdateComponent,
+    FacebookCartComponent,
   ],
   imports: [
     CommonModule,

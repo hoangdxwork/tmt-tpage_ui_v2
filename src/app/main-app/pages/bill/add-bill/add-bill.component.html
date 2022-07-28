@@ -205,13 +205,14 @@
 
                 <div class="col-span-2 w-full flex flex-row gap-x-2" *ngIf="dataModel.State != 'open'">
                   <tds-form-field class="flex flex-auto">
-                    <tds-select valueField="Id" textField="Name" (selectChange)="onChangeCarrierV2($event, true)"
-                      placeholder='Chọn đối tác giao hàng' formControlName="Carrier" [valuePrimitive]="false"
-                      disabledField="isActive" [data]="(lstCarriers | async) || []" [allowClear]="false">
+                    <tds-select valueField="Id" textField="Name" (ngModelChange)="onChangeCarrierV2($event)"
+                      [(ngModel)]="dataModel.Carrier" [ngModelOptions]="{standalone: true}"
+                      placeholder='Chọn đối tác giao hàng'  [valuePrimitive]="false"
+                      disabledField="isActive" [data]="(lstCarriers | async) || []" [allowClear]="true">
                     </tds-select>
                   </tds-form-field>
                   <button tds-button-icon tds-tooltip tooltipTitle="Gợi ý phí ship các đối tác" color="primary"
-                    class="flex items-center justify-center">
+                    class="flex items-center justify-center" (click)="calcFeeList(false)">
                     <i class="tdsi-truck-fill text-xl"></i>
                   </button>
                 </div>
@@ -225,7 +226,7 @@
                 <tds-label class="col-span-1 w-full">Phí giao hàng</tds-label>
                 <tds-form-field class="col-span-2 w-full" *ngIf="dataModel.State != 'open'">
                   <tds-input-number [min]='0' [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
-                    placeholder="Nhập phí" formControlName="DeliveryPrice"
+                    placeholder="Nhập phí" [(ngModel)]="dataModel.DeliveryPrice" [ngModelOptions]="{standalone: true}"
                     (ngModelChange)="changeDeliveryPrice($event)">
                   </tds-input-number>
                 </tds-form-field>
@@ -240,7 +241,7 @@
                 <tds-label class="col-span-1 w-full">Tiền cọc</tds-label>
                 <tds-form-field class="col-span-2 w-full" *ngIf="dataModel.State != 'open'">
                   <tds-input-number [min]='0' [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
-                    placeholder="Nhập tiền cọc" formControlName="AmountDeposit"
+                    placeholder="Nhập tiền cọc"  [(ngModel)]="dataModel.AmountDeposit" [ngModelOptions]="{standalone: true}"
                     (ngModelChange)="changeAmountDeposit($event)">
                   </tds-input-number>
                 </tds-form-field>
@@ -281,12 +282,10 @@
 
               <div class="grid grid-cols-3 gap-x-8" >
                 <tds-label class="col-span-1 w-full">Khối lượng ship (g)</tds-label>
-                <tds-form-field class="col-span-2 w-full"
-                  *ngIf="dataModel.State != 'open' && _form.controls['Carrier'].value">
-                  <tds-input-number [min]='0' [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
-                    placeholder="Nhập khối lượng" (tdsBlur)="changeShipWeight($event)"
-                    formControlName="ShipWeight">
-                  </tds-input-number>
+                <tds-form-field class="col-span-2 w-full" *ngIf="dataModel.State != 'open'">
+                    <tds-input-number [min]='0' [step]="1" [formatter]="numberWithCommas" [parser]="parserComas"
+                      placeholder="Nhập khối lượng" (ngModelChange)="changeShipWeight($event)"  [(ngModel)]="dataModel.ShipWeight" [ngModelOptions]="{standalone: true}">
+                    </tds-input-number>
                 </tds-form-field>
 
                 <tds-label class="col-span-2 w-full" *ngIf="dataModel.State == ('open' || 'cancel')">
@@ -405,8 +404,7 @@
                 </div>
                 <div class="w-2/3" *ngIf="dataModel.State != 'draft'">
                   <span class="font-semibold"
-                    *ngIf="_form.controls['DateInvoice']?.value">{{_form.controls['DateInvoice'].value | date:
-                    'dd/MM/yyyy HH:mm'}} </span>
+                    *ngIf="_form.controls['DateInvoice']?.value">{{_form.controls['DateInvoice'].value | date: 'dd/MM/yyyy HH:mm'}} </span>
                 </div>
               </div>
               <div class=" col-span-1 flex gap-x-6 items-center">
@@ -467,24 +465,23 @@
                     <tds-label class="w-1/4">Dịch vụ<span class="text-error-400">*</span></tds-label>
                     <tds-form-field class="w-3/4">
                       <tds-select valueField="ServiceId" textField="ServiceName"
-                        (ngModelChange)="onSelectShipServiceId($event)" placeholder='Chọn dịch vụ'
-                        [valuePrimitive]="false" formControlName="Ship_ServiceId" disabledField="isActive"
-                        [data]="shipServices" [allowClear]="true">
-                        <ng-template tds-label-tmp let-item="item">
-                          {{item.data.ServiceName}}
-                          <span *ngIf="item.data.TotalFee > 0">: {{item.data.TotalFee | number:'1.0-3'}}</span>
-                        </ng-template>
+                          (ngModelChange)="onSelectShipServiceId($event)" placeholder='Chọn dịch vụ'
+                          [valuePrimitive]="false" formControlName="Ship_ServiceId" disabledField="isActive"
+                          [data]="shipServices" [allowClear]="true">
+                          <ng-template tds-label-tmp let-item="item">
+                            {{item.data.ServiceName}}
+                            <span *ngIf="item.data.TotalFee > 0">: {{item.data.TotalFee | number:'1.0-3'}}</span>
+                          </ng-template>
                       </tds-select>
                     </tds-form-field>
                   </div>
 
-                  <div class="col-span-3 flex flex-row items-center" *ngIf="enableInsuranceFee">
+                  <div class="col-span-3 flex flex-row items-center" *ngIf="insuranceInfo">
                     <tds-label class="w-1/4">Giá trị hàng hóa</tds-label>
                     <div class="flex flex-row items-center gap-x-2 w-3/4">
                       <tds-form-field class="flex flex-auto">
                         <tds-input-number [min]='0' [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
-                          placeholder="Nhập phí" formControlName="Ship_InsuranceFee"
-                          (ngModelChange)="changeDeliveryPrice($event)">
+                          placeholder="Nhập phí" (ngModelChange)="changeDeliveryPrice($event)" [(ngModel)]="dataModel.Ship_InsuranceFee" [ngModelOptions]="{standalone: true}">
                         </tds-input-number>
                       </tds-form-field>
                       <button tds-button-icon tds-tooltip tooltipTitle="Gán bằng tổng giá trị hoá đơn" color="primary"
@@ -494,15 +491,15 @@
                     </div>
                   </div>
                   <ng-container *ngFor="let item of configsProviderDataSource">
-                    <div class="col-span-3 flex flex-row items-center" *ngIf="!item.IsHidden">
-                      <tds-label class="w-1/4">{{item.DisplayName}}<span class="text-error-400">*</span></tds-label>
-                      <tds-form-field class="w-3/4">
-                        <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
-                          [data]="item.ConfigsValue" [(ngModel)]="item.ConfigValue"
-                          [ngModelOptions]="{standalone: true}" [allowClear]="item.InputType == 'combo_box'">
-                        </tds-select>
-                      </tds-form-field>
-                    </div>
+                      <div class="col-span-3 flex flex-row items-center" *ngIf="!item.IsHidden">
+                          <tds-label class="w-1/4">{{item.DisplayName}}<span class="text-error-400">*</span></tds-label>
+                          <tds-form-field class="w-3/4">
+                              <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
+                                  [data]="item.ConfigsValue" [(ngModel)]="item.ConfigValue" [allowClear]="true"
+                                  [ngModelOptions]="{standalone: true}" [allowClear]="item.InputType == 'combo_box'">
+                              </tds-select>
+                          </tds-form-field>
+                      </div>
                   </ng-container>
                   <!-- <div class="col-span-3 flex flex-row items-center" *ngIf="shipServices && shipServices.length > 0">
                     <tds-label class="w-1/4">Phương thức thanh toán<span class="text-error-400">*</span></tds-label>
@@ -545,11 +542,12 @@
                       </div>
 
                       <div class="px-4 border-l">
-                        <button *ngIf="!_form.controls['TrackingRef'].value" tds-button-icon color="info" size="sm" (click)="calcFee()"
-                          title="Tính lại tiền ship" type="button">
-                          <span class="flex items-center justify-center">
-                            <i class=" tdsi-reload-fill"></i>
-                          </span>
+                        <button *ngIf="!_form.controls['TrackingRef'].value" tds-button-icon color="info" size="sm"
+                            (click)="calcFee()" title="Tính lại tiền ship" type="button">
+
+                            <span class="flex items-center justify-center">
+                                <i class=" tdsi-reload-fill"></i>
+                            </span>
                         </button>
                       </div>
 
@@ -579,10 +577,11 @@
                   <div *ngIf="shipExtraServices && shipExtraServices.length > 0" class="col-span-3">
                     <div class="grid grid-cols-3 gap-y-4 gap-x-6">
                       <div *ngFor="let child of shipExtraServices; let i=index">
+
                         <tds-checkbox [(ngModel)]="child.IsSelected" [ngModelOptions]="{standalone: true}">
                           <div class="flex flex-row items-center w-full">
-                            <span class="mr-2">{{child.ServiceName}}</span>
-                            <div *ngIf="_form.controls['Carrier'].value?.DeliveryType === 'ViettelPost' && child.ServiceId == 'XMG' && child.IsSelected == true">
+                            <span class="mr-2">{{child.Name}}</span>
+                            <div *ngIf="_form.controls['Carrier'].value?.DeliveryType === 'ViettelPost' && child.Id == 'XMG' && child.IsSelected == true">
                               <button type="button" style="border-bottom: dashed 2px #2395FF;" tds-popover
                                 popoverTrigger="click" (click)="openPopoverShipExtraMoney(child.ExtraMoney)"
                                 [(popoverVisible)]="visibleShipExtraMoney"
@@ -604,7 +603,7 @@
                               <ng-template #popoverFooterShip_ExtraMoney>
                                 <div class="flex justify-end gap-x-2 mt-2">
                                   <button tds-button-icon color="primary" type="button"
-                                    (click)="changeShipExtraMoney()">
+                                    (click)="changeShipExtraMoney($event)">
                                     <span class="flex items-center">
                                       <i class="tdsi-checkbox-check-fill"></i>
                                     </span>

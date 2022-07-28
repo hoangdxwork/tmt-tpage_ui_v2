@@ -82,6 +82,12 @@ import { ModalUpdateDeliveryFromExcelComponent } from './components/modal-update
 import { ModalManualUpdateDeliveryComponent } from './components/modal-manual-update-delivery/modal-manual-update-delivery.component';
 import { DirectivesModule } from '../../shared/directives/directives.module';
 import { AddBillHandler } from './add-bill/add-bill.handler';
+import { UpdateShipExtraHandler } from '../../services/handlers/aship-v2/update-shipextra.handler';
+import { UpdateShipServiceExtrasHandler } from '../../services/handlers/aship-v2/update-shipservice-extras.handler';
+import { PrepareModelFeeV2Handler } from '../../services/handlers/aship-v2/prepare-model-feev2.handler';
+import { SelectShipServiceV2Handler } from '../../services/handlers/aship-v2/select-shipservice-v2.handler';
+import { UpdateShipmentDetailAshipHandler } from '../../services/handlers/aship-v2/shipment-detail-aship.handler';
+import { CreateFormBillHandler } from '../../services/handlers/bill-handler/create-form-bill.handler';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -110,7 +116,13 @@ const SERVICES = [
   OdataProductService,
   AccountJournalService,
   AccountPaymentJsonService,
-  AddBillHandler
+  AddBillHandler,
+  UpdateShipExtraHandler,
+  UpdateShipServiceExtrasHandler,
+  PrepareModelFeeV2Handler,
+  SelectShipServiceV2Handler,
+  UpdateShipmentDetailAshipHandler,
+  CreateFormBillHandler
 ]
 
 @NgModule({

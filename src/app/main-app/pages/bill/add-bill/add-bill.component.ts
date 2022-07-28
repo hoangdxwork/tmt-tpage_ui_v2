@@ -1,3 +1,4 @@
+import { id } from 'date-fns/locale';
 import { formatNumber } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
 import { ModalSearchPartnerComponent } from '../components/modal-search-partner/modal-search-partner.component';
@@ -9,7 +10,7 @@ import { formatDate } from '@angular/common';
 import { PartnerCategoryDTO } from 'src/app/main-app/dto/partner/partner-category.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { FastSaleOrder_DefaultDTOV2, OrderLineV2 } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
+import { FastSaleOrder_DefaultDTOV2, OrderLineV2, ServiceCustoms, ShipExtras, ShipServiceExtra } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
 import { DeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto';
 import { AccountJournalPaymentDTO } from 'src/app/main-app/dto/register-payment/register-payment.dto';
 import { CustomerDTO } from 'src/app/main-app/dto/partner/customer.dto';
@@ -43,8 +44,15 @@ import { PartnerDetailDTO } from 'src/app/main-app/dto/partner/partner-detail.dt
 import { ChangePartnerPriceListDTO } from 'src/app/main-app/dto/partner/change-partner-pricelist.dto';
 import { AddBillHandler } from './add-bill.handler';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { CaculateFeeResponseDto, DeliveryResponseDto } from 'src/app/main-app/dto/carrierV2/delivery-carrier-response.dto';
+import { CaculateFeeResponseDto, CalculateFeeInsuranceInfoResponseDto, CalculateFeeServiceExtrasResponseDto, CalculateFeeServiceResponseDto, DeliveryResponseDto } from 'src/app/main-app/dto/carrierV2/delivery-carrier-response.dto';
 import { AshipGetInfoConfigProviderDto } from 'src/app/main-app/dto/carrierV2/aship-info-config-provider-data.dto';
+import { UpdateShipExtraHandler } from 'src/app/main-app/services/handlers/aship-v2/update-shipextra.handler';
+import { UpdateShipServiceExtrasHandler } from 'src/app/main-app/services/handlers/aship-v2/update-shipservice-extras.handler';
+import { PrepareModelFeeV2Handler } from 'src/app/main-app/services/handlers/aship-v2/prepare-model-feev2.handler';
+import { SelectShipServiceV2Handler } from 'src/app/main-app/services/handlers/aship-v2/select-shipservice-v2.handler';
+import { UpdateShipmentDetailAshipHandler } from 'src/app/main-app/services/handlers/aship-v2/shipment-detail-aship.handler';
+import { CreateFormBillHandler } from 'src/app/main-app/services/handlers/bill-handler/create-form-bill.handler';
+import { TDSI18nService } from 'tds-ui/i18n';
 
 @Component({
   selector: 'app-add-bill',
@@ -86,7 +94,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
   totalQtyLines: number = 0;
   priceListItems: any;
 
-  enableInsuranceFee: boolean = false;
+  insuranceInfo!: CalculateFeeInsuranceInfoResponseDto | null;
   visiblePopoverDiscount: boolean = false;
   visiblePopoverTax: boolean = false;
   visibleDiscountLines: boolean = false;
@@ -95,22 +103,20 @@ export class AddBillComponent implements OnInit, OnDestroy {
   insuranceFee: number = 0;
   indClickTag = -1;
 
-  apiDeliveries: any = ['GHTK', 'ViettelPost', 'GHN', 'TinToc', 'SuperShip', 'FlashShip', 'OkieLa', 'MyVNPost', 'DHL', 'FulltimeShip', 'JNT', 'EMS', 'AhaMove', 'Snappy', 'NhatTin', 'HolaShip'];
-  carrierTypeInsurance = ["MyVNPost", "GHN", "GHTK", "ViettelPost", "NinjaVan"];
+  shipServices: CalculateFeeServiceResponseDto[] = [];
+  shipExtraServices: ShipServiceExtra[] = [];
 
-  shipServices: any = [];
-  shipExtraServices: any = [];
-  listServiceTemp: any = [];
   lstCalcFee!: CalculatorListFeeDTO[];
   loadByOrder: any;
   showShipService!: boolean;
   selectedIndex = 0;
   pageChange: string = 'bill';
-  configsProviderDataSource: Array<TDSSafeAny> = [];
+  configsProviderDataSource: Array<AshipGetInfoConfigProviderDto> = [];
 
   private destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder,
+    private i18n: TDSI18nService,
     private cacheApi: THelperCacheService,
     private router: Router,
     private route: ActivatedRoute,
@@ -127,11 +133,21 @@ export class AddBillComponent implements OnInit, OnDestroy {
     private cdRef: ChangeDetectorRef,
     private modal: TDSModalService,
     private addBillHandler: AddBillHandler,
+    private updateShipExtraHandler: UpdateShipExtraHandler,
+    private prepareModelFeeV2Handler: PrepareModelFeeV2Handler,
+    private selectShipServiceV2Handler: SelectShipServiceV2Handler,
+    private updateShipServiceExtrasHandler: UpdateShipServiceExtrasHandler,
+    private updateShipmentDetailAshipHandler: UpdateShipmentDetailAshipHandler,
+    private createFormBillHandler: CreateFormBillHandler,
     private applicationUserService: ApplicationUserService,
     private registerPaymentService: AccountRegisterPaymentService,
     private accountTaxService: AccountTaxService,
     private viewContainerRef: ViewContainerRef) {
     this.createForm();
+  }
+
+  createForm() {
+    this._form = this.createFormBillHandler.createForm(this._form, this.fb);
   }
 
   ngOnInit(): void {
@@ -141,8 +157,8 @@ export class AddBillComponent implements OnInit, OnDestroy {
     } else {
       // TODO: xử lý tạo mới + copy + tạo hóa đơn nhanh từ order nếu có
       this.loadDefault();
-
     }
+
     this.loadConfig();
     this.loadCurrentCompany();
     this.lstCarriers = this.loadCarrier();
@@ -153,8 +169,6 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.lstTeams = this.loadAllFacebookChilds();
     this.lstUser = this.loadUser();
     this.loadPartnerStatus();
-
-
   }
 
   loadPartnerStatus() {
@@ -204,110 +218,24 @@ export class AddBillComponent implements OnInit, OnDestroy {
     }
   }
 
-  createForm() {
-    this._form = this.fb.group({
-      Id: [null],
-      Account: [null],
-      AccountId: [null],
-      Company: [null],
-      CompanyId: [null],
-      Partner: [null],
-      PartnerId: [null],
-      PriceList: [null],
-      PriceListId: [null],
-      Warehouse: [null],
-      WarehouseId: [null],
-      Journal: [null],
-      JournalId: [null],
-      PaymentJournal: [null],
-      PaymentJournalId: [null],
-      PaymentAmount: [0],
-      Team: [null],
-      TeamId: [null],
-      Deliver: [null],
-      PreviousBalance: [null],
-      Reference: [null],
-      Revenue: [0],
-      Carrier: [null],
-      CarrierId: [null],
-      DeliveryPrice: [0],
-      AmountDeposit: [0],
-      CashOnDelivery: [0],
-      ShipWeight: [0],
-      DeliveryNote: [null],
-      Ship_InsuranceFee: [null],
-      CustomerDeliveryPrice: [null],
-      TrackingRef: [null],
-      Ship_Receiver: this.fb.group({
-        City: [null],
-        District: [null],
-        Ward: [null],
-        Name: [null],
-        Phone: [null],
-        Street: [null]
-      }),
-      Address: [null],
-      ReceiverName: [null],
-      ReceiverPhone: [null],
-      ReceiverDate: [null],
-      ReceiverAddress: [null],
-      ReceiverNote: [null],
-      User: [null],
-      UserId: [null],
-      DateOrderRed: [null],
-      State: [null],
-      DateInvoice: [null],
-      NumberOrder: [null],
-      Comment: [null],
-      Seri: [null],
-      WeightTotal: [0],
-      DiscountAmount: [0],
-      Discount: [0] as unknown as number,
-      DecreaseAmount: [0],
-      AmountUntaxed: [0],
-      AmountTax: [0],
-      Type: [null],
-      SaleOrder: [null],
-      AmountTotal: [0],
-      TotalQuantity: [0],
-      Tax: [null],
-      TaxId: [null],
-      Ship_ServiceId: [null],
-      Ship_ServiceName: [null],
-      Ship_ExtrasText: [null],
-      Ship_ServiceExtrasText: [null],
-      Ship_Extras: [null],
-      Ship_ServiceExtras: this.fb.array([]),
-      OrderLines: this.fb.array([]),
-      ShipmentDetailsAship: this.fb.group({
-        ConfigsProvider: new FormArray([]),
-        InsuranceInfo: [null],
-      }),
-      // ShipmentDetailsAship : new FormArray([])
-    });
-
-    // Prevent deprecation notice when using `startWith` since it has not been deprecated
-    // this._form.controls['ShipWeight'].valueChanges.pipe(startWith(null as any), pairwise())
-    //   .subscribe(([prev, next]: [any, any]) => {debugger
-
-    // })
-
-  }
-
   //Load thông tin ship aship
   loadConfigProvider(data: FastSaleOrder_DefaultDTOV2) {
     if (data.CarrierId && data.Carrier) {
-      var _shipmentDetailsAship = (JSON.parse(data.Carrier.ExtraProperties) ?? []).filter((x: AshipGetInfoConfigProviderDto) => !x.IsHidden) as Array<AshipGetInfoConfigProviderDto>;
+      let _shipmentDetailsAship = (JSON.parse(data.Carrier.ExtraProperties) ?? [])?.filter((x: AshipGetInfoConfigProviderDto) => !x.IsHidden) as Array<AshipGetInfoConfigProviderDto>;
+
+      this.insuranceInfo = data.ShipmentDetailsAship?.InsuranceInfo || null;
+
       this.configsProviderDataSource = _shipmentDetailsAship.map(x => {
-        var detailConfig = data.ShipmentDetailsAship?.ConfigsProvider.find(y => y.ConfigName == x.ConfigName);
-        x.ConfigValue = detailConfig ? detailConfig.ConfigValue : x.ConfigValue;
-        return x;
+          let detailConfig = data.ShipmentDetailsAship?.ConfigsProvider.find(y => y.ConfigName == x.ConfigName);
+          x.ConfigValue = detailConfig ? detailConfig.ConfigValue : x.ConfigValue;
+
+          return x;
       });
     }
   }
 
   loadBill(id: number) {
-    debugger
+
     this.isLoading = true;
     this.fastSaleOrderService.getById(id).pipe(takeUntil(this.destroy$)).pipe(finalize(() => { this.isLoading = false })).subscribe((res: any) => {
       delete res['@odata.context'];
@@ -325,29 +253,27 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
       this.dataModel = data;
       this.loadConfigProvider(data);
+
       if (data.Ship_ServiceId) {
         this.shipServices.push({
-          ServiceId: data.Ship_ServiceId,
-          ServiceName: data.Ship_ServiceName,
-          TotalFee: data.CustomerDeliveryPrice
+            ServiceId: data.Ship_ServiceId,
+            ServiceName: data.Ship_ServiceName,
+            TotalFee: data.CustomerDeliveryPrice,
+            InsuranceFee: 0,
+            Extras: []
         });
       }
 
       if (data.Ship_ServiceExtras && data.Ship_ServiceExtras.length > 0) {
-        for (let item of data.Ship_ServiceExtras) {
-          // let exits = ((item.Id == '16' || item.Id == "GBH" || item.Id == "GHN" || item.Id == "OrderAmountEvaluation" &&
-          //   data.Carrier?.DeliveryType === "MyVNPost" || item.Id === "NinjaVan"))
-          // if (exits) {
-          //   this.enableInsuranceFee = true;
-          // }
 
+        for (let item of data.Ship_ServiceExtras) {
           this.shipExtraServices.push({
-            ServiceId: item.Id,
-            ServiceName: item.Name,
-            Fee: item.Fee,
-            Type: item.Type,
-            ExtraMoney: item.ExtraMoney,
-            IsSelected: true as boolean
+              Id: item.Id,
+              Name: item.Name,
+              Fee: item.Fee || 0,
+              Type: item.Type,
+              ExtraMoney: item.ExtraMoney,
+              IsSelected: true as boolean,
           });
         }
       }
@@ -368,6 +294,8 @@ export class AddBillComponent implements OnInit, OnDestroy {
     let model = { Type: 'invoice' };
     this.fastSaleOrderService.defaultGetV2({ model: model }).pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isLoading = false)).subscribe((data: any) => {
       delete data['@odata.context'];
+
+      data.DateInvoice = new Date();
 
       this.dataModel = data;
       //Trường hợp copy
@@ -390,16 +318,6 @@ export class AddBillComponent implements OnInit, OnDestroy {
         // Copy xong xóa dữ liệu cache
         this.cacheApi.removeItem(keyCache);
         this.pageChange = 'bill';
-      }
-
-      if (data.DateInvoice) {
-        data.DateInvoice = new Date(data.DateInvoice);
-      }
-      if (data.DateOrderRed) {
-        data.DateOrderRed = new Date(data.DateOrderRed);
-      }
-      if (data.ReceiverDate) {
-        data.ReceiverDate = new Date(data.ReceiverDate);
       }
 
       this.mappingAddress(data);
@@ -732,391 +650,64 @@ export class AddBillComponent implements OnInit, OnDestroy {
     }
   }
 
-  onChangeCarrier(event: DeliveryCarrierDTOV2, showMessage?: boolean) {
-    debugger
-    if (TDSHelperObject.hasValue(event)) {
-      this.shipServices = [];
-      this.shipExtraServices = [];
-      this.enableInsuranceFee = false;
-      const model = this.prepareModel();
-
-      this._form.controls['Ship_InsuranceFee'].setValue(null);
-      this._form.controls['Ship_ServiceId'].setValue(null);
-      this._form.controls['Ship_ServiceName'].setValue(null);
-      this._form.controls['Ship_Extras'].setValue(null);
-      this._form.setControl('Ship_ServiceExtras', this.fb.array([]));
-
-      this._form.controls['Carrier'].setValue(event);
-      this._form.controls['CarrierId'].setValue(event.Id);
-
-      //TODO: Cập nhật giá trị ship mặc định
-      let deliveryPrice = event.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
-      if (this._form.controls['DeliveryPrice'].value != deliveryPrice) {
-        this._form.controls['DeliveryPrice'].setValue(deliveryPrice);
-        this.updateCoDAmount();
-      }
-
-      this._form.controls['ShipWeight'].setValue(event.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100);
-      if (TDSHelperString.hasValueString(event.ExtrasText)) {
-        this._form.controls['Ship_Extras'].setValue(JSON.parse(event.ExtrasText));
-      }
-
-      //TODO: Check giá trị mặc định trước khi gửi
-      this.initOkieLa();
-      this.initService();
-      this.initInfoOrderDelivery();
-
-      if (this.apiDeliveries.indexOf(event.DeliveryType) >= 0) {
-        //Check giá trị mặc định trước khi gửi
-        this.calcServiceDefault();
-
-        if (this.validateInsuranceFee()) {
-          this.enableInsuranceFee = true;
-          if (!model.Ship_InsuranceFee) {
-            this._form.controls['Ship_InsuranceFee'].setValue(model.Ship_Extras?.InsuranceFee || model.AmountTotal);
-          }
-        }
-
-        this.calculateFee(event, showMessage).then((res: any) => {
-
-        }).catch((e: any) => {
-          let error = e.error.message || e.error.error_description;
-          if (error && showMessage)
-            this.message.error(error);
-        });
-      }
-    }
-  }
-
-  validateInsuranceFee(): any {
-    if (!this.shipExtraServices) {
-      this.shipExtraServices = [];
-    }
-    var exist = null;
-    const model = this.prepareModel() as FastSaleOrder_DefaultDTOV2;
-
-    if (model.Carrier?.DeliveryType === "MyVNPost") {
-      var exist = this.shipExtraServices.filter((x: any) => x.ServiceId === "OrderAmountEvaluation")[0];
-      return (exist || { IsSelected: false }).IsSelected;
-    }
-    else if (model.Carrier?.DeliveryType === "GHN" || model.Carrier?.DeliveryType === "GHTK") {
-      exist = this.shipExtraServices.filter((x: any) => x.ServiceId === "16")[0];
-      return (exist || { IsSelected: false }).IsSelected;
-    }
-    else if (model.Carrier?.DeliveryType === "ViettelPost") {
-      exist = this.shipExtraServices.filter((x: any) => x.ServiceId === "GBH")[0];
-
-      return (exist || { IsSelected: false }).IsSelected;
-    }
-    else if (model.Carrier?.DeliveryType === "Snappy") {
-      exist = this.shipExtraServices.filter((x: any) => x.ServiceId === "Snappy_Insurance")[0];
-      return (exist || { IsSelected: false }).IsSelected;
-    }
-    else if (model.Carrier?.DeliveryType === "JNT") {
-      exist = this.shipExtraServices.filter((x: any) => x.ServiceId === "JNT_Insurance")[0];
-      return (exist || { IsSelected: false }).IsSelected;
-    }
-    return false;
-  }
-
-  initInfoOrderDelivery() {
-    const model = this.prepareModel() as FastSaleOrder_DefaultDTOV2;
-    if (model.Carrier && model.Carrier.DeliveryType == 'NinjaVan' && model.Ship_Extras) {
-      this.shipExtraServices = [];
-      let insuranceFee = this.getInsuranceFee();
-      this.shipExtraServices.push({
-        ServiceId: "NinjaVan",
-        ServiceName: "Khai giá hàng hóa",
-        Fee: insuranceFee || 0,
-        IsSelected: model.Ship_Extras.IsInsurance ? model.Ship_Extras.IsInsurance : false,
-      })
-
-      this.enableInsuranceFee = model.Ship_Extras.IsInsurance ? model.Ship_Extras.IsInsurance : false;
-      this._form.controls['Ship_InsuranceFee'].setValue(insuranceFee);
-    }
-
-    if (model.Carrier && model.Carrier.DeliveryType == 'BEST' && model.Ship_Extras) {
-      this.shipExtraServices = [];
-      let insuranceFee = this.getInsuranceFee();
-
-      this.shipExtraServices.push({
-        ServiceId: "BEST_Insurance",
-        ServiceName: "Bảo hiểm hàng hóa",
-        Fee: insuranceFee || 0,
-        IsSelected: model.Ship_Extras.IsInsurance ? model.Ship_Extras.IsInsurance : false,
-      })
-
-      this.enableInsuranceFee = model.Ship_Extras.IsInsurance ? model.Ship_Extras.IsInsurance : false;
-      this._form.controls['Ship_InsuranceFee'].setValue(insuranceFee);
-    }
-    if (model.Carrier && model.Carrier.DeliveryType == 'HolaShip' && model.Ship_Extras) {
-      this.shipExtraServices = [];
-      let insuranceFee = this.getInsuranceFee();
-
-      this.shipExtraServices.push({
-        ServiceId: "HolaShip_Insurance",
-        ServiceName: "Bảo hiểm hàng hóa",
-        Fee: insuranceFee || 0,
-        IsSelected: model.Ship_Extras.IsInsurance ? model.Ship_Extras.IsInsurance : false,
-      })
-
-      this.enableInsuranceFee = model.Ship_Extras.IsInsurance ? model.Ship_Extras.IsInsurance : false;
-      this._form.controls['Ship_InsuranceFee'].setValue(insuranceFee);
-    }
-    if (model.Carrier && model.Carrier.DeliveryType == 'JNT' && model.Ship_Extras) {
-      let insuranceFee = this.getInsuranceFee()
-      this._form.controls['Ship_InsuranceFee'].setValue(insuranceFee);
-    }
-  }
-
-  getInsuranceFee() {
-    const formModel = this.prepareModel() as FastSaleOrder_DefaultDTOV2;
-    let insuranceFee = 0;
-    if (formModel.Ship_Extras?.IsInsurance) {
-      if (formModel.Ship_Extras?.IsInsuranceEqualTotalAmount) {
-        insuranceFee = formModel.AmountTotal;
-      } else if (formModel.Ship_Extras.InsuranceFee) {
-        insuranceFee = formModel.Ship_Extras?.InsuranceFee;
-      } else {
-        insuranceFee = formModel.AmountTotal;
-      }
-    }
-    return insuranceFee || 0;
-  }
-
-  initService() {
-    const model = this._form.value as FastSaleOrder_DefaultDTOV2;
-    if (model.Carrier && model.Carrier.DeliveryType === 'ZTO') {
-      this.shipServices = [
-        { ServiceId: "0", ServiceName: "Express" },
-        { ServiceId: "1", ServiceName: "Ordinary Express" }
-      ];
-      this._form.controls['Ship_ServiceId'].setValue(model.Carrier?.Config_TransportId);
-    }
-  }
-
-  calcServiceDefault() {
-    const model = this._form.value as FastSaleOrder_DefaultDTOV2;
-    if (model.Carrier) {
-      switch (model.Carrier?.DeliveryType) {
-        case 'ViettelPost':
-          model.Ship_ServiceId = model.Carrier?.ViettelPost_ServiceId;
-
-          if (model.Ship_Extras && model.Ship_Extras.IsDropoff) {
-            this.shipExtraServices.push({
-              ServiceId: "GNG",
-              ServiceName: "Gửi tại bưu cục(Giảm 10% cước)",
-              Fee: 0,
-              IsSelected: true
-            });
-          }
-          if (model.Ship_Extras && model.Ship_Extras.ServiceCustoms) {
-            model.Ship_Extras.ServiceCustoms.forEach(x => {
-              this.shipExtraServices.push({
-                ServiceId: x.ServiceId,
-                ServiceName: x.Name,
-                Fee: 0,
-                IsSelected: x.IsDefault
-              });
-            })
-          }
-          if (model.Ship_Extras && model.Ship_Extras.IsCollectMoneyGoods) {
-            this.shipExtraServices.push({
-              ServiceId: "XMG",
-              ServiceName: "Thu tiền xem hàng",
-              Fee: 0,
-              IsSelected: true,
-            });
-          }
-          break;
-        case 'GHN':
-          model.Ship_ServiceId = model.Carrier?.GHN_ServiceId;
-          if (model.Ship_Extras && model.Ship_Extras.IsDropoff) {
-            this.shipExtraServices.push(
-              {
-                ServiceId: "53337",
-                ServiceName: "Gửi hàng tại điểm",
-                Fee: 0,
-                IsSelected: true
-              });
-          }
-          break;
-        case 'MyVNPost':
-          model.Ship_ServiceId = model.Carrier?.ViettelPost_ServiceId;
-          if (model.Ship_Extras && model.Ship_Extras.IsPackageViewable) {
-            this.shipExtraServices.push(
-              {
-                ServiceId: "IsPackageViewable",
-                ServiceName: "Cho xem hàng?",
-                Fee: 0,
-                IsSelected: true
-              });
-          }
-          break;
-        case 'OkieLa':
-          if (model.Ship_Extras && model.Ship_Extras.IsPackageViewable) {
-            this.shipExtraServices.push(
-              {
-                ServiceId: "check_before_accept",
-                ServiceName: "Cho xem hàng?",
-                Fee: 0,
-                IsSelected: true
-              });
-          }
-          if (model.Ship_Extras && model.Ship_Extras.Is_Fragile) {
-            this.shipExtraServices.push(
-              {
-                ServiceId: "is_fragile",
-                ServiceName: "Hàng dễ vỡ",
-                Fee: 0,
-                IsSelected: true
-              });
-          }
-          break;
-        case 'DHL':
-          if (model.Ship_Extras && model.Ship_Extras.IsPackageViewable) {
-            this.shipExtraServices.push(
-              {
-                ServiceId: "OBOX",
-                ServiceName: "Cho khách xem hàng?",
-                Fee: 0,
-                IsSelected: true
-              });
-          }
-          break;
-      }
-    }
-
-    //TODO: Bảo hiểm hàng hóa
-    if (model.Ship_Extras && model.Ship_Extras.IsInsurance) {
-
-      if (!model.Ship_InsuranceFee) {
-        this._form.controls['Ship_InsuranceFee'].setValue(model.Ship_Extras.InsuranceFee || model.AmountTotal);
-      }
-      switch (model.Carrier?.DeliveryType) {
-        case "MyVNPost":
-          this.shipExtraServices.push(
-            {
-              ServiceId: "OrderAmountEvaluation",
-              ServiceName: "Khai giá",
-              Fee: 0,
-              IsSelected: true
-            });
-          break;
-        case "GHTK":
-          this.shipExtraServices.push(
-            {
-              ServiceId: "16",
-              ServiceName: "Bảo hiểm hàng hóa",
-              Fee: 0,
-              IsSelected: true
-            });
-          break;
-        case "ViettelPost":
-          this.shipExtraServices.push(
-            {
-              ServiceId: "GBH",
-              ServiceName: "Bảo hiểm",
-              Fee: 0,
-              IsSelected: true
-            });
-          break;
-      }
-    }
-  }
-
-  initOkieLa() {
-    !this.shipExtraServices && (this.shipExtraServices = []);
-    if (this._form.controls['Carrier'].value && this._form.controls['Carrier'].value.Carrier?.DeliveryType === 'OkieLa' && this.shipExtraServices.length === 0) {
-      this.shipExtraServices = [
-        {
-          ServiceId: 'is_fragile',
-          ServiceName: 'Hàng dễ vỡ?',
-          Fee: 0,
-          IsSelected: true
-        },
-        {
-          ServiceId: 'check_before_accept',
-          ServiceName: 'Cho khách xem hàng?',
-          Fee: 0,
-          IsSelected: true
-        }
-      ];
-    }
-  }
+  // getInsuranceFee() {
+  //   // if (!model.Ship_InsuranceFee) {
+  //   //   this._form.controls['Ship_InsuranceFee'].setValue(model.Ship_Extras?.InsuranceFee || model.AmountTotal);
+  //   // }
+  //   const formModel = this.prepareModel() as FastSaleOrder_DefaultDTOV2;
+  //   let insuranceFee = 0;
+  //   if (formModel.Ship_Extras?.IsInsurance) {
+  //     if (formModel.Ship_Extras?.IsInsuranceEqualTotalAmount) {
+  //       insuranceFee = formModel.AmountTotal;
+  //     } else if (formModel.Ship_Extras.InsuranceFee) {
+  //       insuranceFee = formModel.Ship_Extras?.InsuranceFee;
+  //     } else {
+  //       insuranceFee = formModel.AmountTotal;
+  //     }
+  //   }
+  //   return insuranceFee || 0;
+  // }
 
   calcFee() {
-    let model = this._form.controls['Carrier'].value as DeliveryCarrierDTOV2;
-    this.calculateFeeAship(model).then((res: any) => {
-      if (res?.Costs) { }
-    }).catch((e: any) => {
+    let model = this._form.controls['Carrier'].value;
+    if(!model) {
+      this.message.error('Vui lòng chọn đối tác giao hàng')
+    }
+
+    this.calculateFeeAship(model).catch((e: any) => {
       let error = e.error.message || e.error.error_description;
       if (error)
-        this.message.error(error);
+          this.message.error(error);
     });
   }
 
-  calcFeeList() {
-    let model = this.prepareModel();
-    this.isCalcFee = true;
-    this.fastSaleOrderService.calculateListFee({ model: model }).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.lstCalcFee = res.value;
-      let exits = this.lstCalcFee.filter((x: CalculatorListFeeDTO) => x.CarrierId === model.Carrier?.Id)[0];
-      if (exits) {
-        this.setCarrier(exits);
-      }
-      this.isCalcFee = false;
-    }, error => {
-      this.isCalcFee = false;
-      this.message.error(`${error.error_description}` ? `${error.error_description}` : 'Gợi ý tính phí đã xảy ra lỗi!');
-    });
-  }
+  calcFeeList(type: boolean) {
+    if(type) {
+      let model = this.prepareModel();
+      this.isCalcFee = true;
 
-  calculateFee(event: DeliveryCarrierDTOV2, showMessage?: boolean): any {
-    debugger
-    let promise = new Promise((resolve, reject): any => {
-      if (this.apiDeliveries.includes(event.DeliveryType)) {
-        let model = this.prepareModelFeeV2();
+      this.fastSaleOrderService.calculateListFee({ model: model }).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
 
-        if (!this._form.controls['Carrier'].value && showMessage) {
-          return this.message.error('Vui lòng chọn  đối tác giao hàng');
+        this.lstCalcFee = [...res.value];
+        let exits = this.lstCalcFee.filter((x: CalculatorListFeeDTO) => x.CarrierId === model.Carrier?.Id)[0];
+        if (exits) {
+          this.setCarrier(exits);
         }
-        if (!this._form.controls['ShipWeight'].value && showMessage) {
-          return this.message.error('Vui lòng chọn nhập khối lượng');
-        }
-        debugger
-        this.isCalcFee = true;
-        this.fastSaleOrderService.calculateFeeV2(model).pipe(takeUntil(this.destroy$)).subscribe((res: CalculateFeeResponse_DataDTO) => {
-          if (res) {
-            //TODO: Cập nhật lại phí ship
-            this._form.controls['CustomerDeliveryPrice'].setValue(res.TotalFee);
-            if (res.Services && res.Services.length > 0) {
-              this.shipServices = res.Services;
-              this.selectShipService(this.shipServices[0]);
-            }
-            if (showMessage) {
-              this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(res.TotalFee), 'en-US', '1.0-0')} đ`);
-            }
-            resolve(res);
-          }
+        this.isCalcFee = false;
 
-          this.isCalcFee = false;
-        }, error => {
-          this.isCalcFee = false;
-          if (showMessage) {
-            this.message.error(`${error.error_description}` || 'Tính phí đã xảy ra lỗi!');
-          }
-          reject(error);
-        })
-      }
-    });
-    return promise;
+      }, error => {
+        this.isCalcFee = false;
+        this.message.error(`${error.error_description}` ? `${error.error_description}` : 'Gợi ý tính phí đã xảy ra lỗi!');
+      });
+    } else {
+      this.message.info('Tính nắng chưa khả dụng')
+    }
   }
 
   setCarrier(item: CalculatorListFeeDTO) {
     this.shipServices = [];
     this.shipExtraServices = [];
-    this.enableInsuranceFee = false;
+    this.insuranceInfo = null;
 
     const formModel = this.prepareModel();
     formModel.Carrier = {
@@ -1133,70 +724,13 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this._form.controls['DeliveryPrice'].setValue(formModel.Carrier.Config_DefaultFee || 0);
 
     if (item.Services && item.Services.length > 0) {
-      this.shipServices = item.Services;
+
       if (formModel.Carrier.Extras) {
         this._form.controls['Ship_Extras'].setValue(formModel.Carrier.Extras)
       }
-      this.selectShipService(this.shipServices[0]);
-    }
 
-    if (item.DeliveryType === 'GHTK') {
-      this.shipExtraServices = [
-        {
-          ServiceId: '16',
-          ServiceName: 'Bảo hiểm hàng hóa',
-          Fee: 0
-        }
-      ];
+      this.selectShipServiceV2(this.shipServices[0]);
     }
-    if ((item.DeliveryType === "ViettelPost" || item.DeliveryType === "GHN") && formModel.Ship_Extras && formModel.Ship_Extras?.IsDropoff) {
-      if (this.shipExtraServices) {
-        this.shipExtraServices.map((x: any) => {
-          if (x.ServiceId === '53337' && formModel.Carrier?.DeliveryType === 'GHN') {
-            x.IsSelected = true;
-          }
-          if (x.ServiceId === 'GNG' && formModel.Carrier?.DeliveryType === 'ViettelPost') {
-            x.IsSelected = true;
-          }
-        });
-      }
-    }
-
-    // Bảo hiểm
-    if (this.carrierTypeInsurance.includes(item.DeliveryType) && formModel.Ship_Extras && formModel.Ship_Extras?.IsInsurance) {
-      this.shipExtraServices.map((x: any) => {
-        if (x.ServiceId === 'OrderAmountEvaluation' || x.ServiceId === "16" || x.ServiceId === "GBH" || x.ServiceId === "Snappy_Insurance" || x.ServiceId === "JNT_Insurance") {
-          x.IsSelected = true;
-
-          this.enableInsuranceFee = true;
-          if (!formModel.Ship_InsuranceFee) {
-            this._form.controls['Ship_InsuranceFee'].setValue(formModel.Ship_Extras.InsuranceFee || formModel.AmountTotal)
-          }
-        }
-      });
-    }
-
-    // Cho xem hàng
-    if ((item.DeliveryType === "MyVNPost" || item.DeliveryType === "OkieLa") && formModel.Ship_Extras && formModel.Ship_Extras?.IsPackageViewable) {
-      this.shipExtraServices.map((x: any) => {
-        if (x.ServiceId === 'IsPackageViewable' && formModel.Carrier.DeliveryType === 'MyVNPost') {
-          x.IsSelected = true;
-        }
-        if (x.ServiceId === 'check_before_accept' && formModel.Carrier.DeliveryType === 'OkieLa') {
-          x.IsSelected = true;
-        }
-      });
-    }
-
-    if (item.DeliveryType === "OkieLa" && formModel.Ship_Extras && formModel.Ship_Extras?.Is_Fragile) {
-      this.shipExtraServices.map((x: any) => {
-        if (x.ServiceId === 'is_fragile' && formModel.Carrier?.DeliveryType === 'OkieLa') {
-          x.IsSelected = true;
-        }
-      });
-    }
-    // xứ lý mặc định ShipExtra
-    // Cho xem hàng
 
     //Phí xem hàng
     if ((item.DeliveryType === "ViettelPost") && formModel.Ship_Extras && formModel.Ship_Extras?.IsCollectMoneyGoods) {
@@ -1208,113 +742,40 @@ export class AddBillComponent implements OnInit, OnDestroy {
     }
   }
 
-  selectShipService(data: any): void {
-    this._form.controls['Ship_ServiceId'].setValue(data.ServiceId);
-    this._form.controls['Ship_ServiceName'].setValue(data.ServiceName);
-    this._form.controls['CustomerDeliveryPrice'].setValue(data.TotalFee);
+  onSelectShipServiceId(event: CalculateFeeServiceResponseDto) {
+    // let item = this.shipServices.find((x: any) => x.ServiceId === event.ServiceId);
 
-    const model = this.prepareModel() as FastSaleOrder_DefaultDTOV2;
-    if (model.Carrier && model.Carrier.DeliveryType === 'AhaMove') {
-      this.shipExtraServices = [];
-    }
+    // if (item && item.ServiceId) {
+    //   this.selectShipServiceV2(item);
+    // }
 
-    let temps = [];
-    if (this.shipExtraServices) {
-      model.Ship_Extras = model.Ship_Extras || { ServiceCustoms: [] };
-
-      // Check kiểm tra
-      if (model.Ship_Extras && model.Ship_Extras.ServiceCustoms) {
-        model.Ship_Extras.ServiceCustoms.forEach((x: any) => {
-          let check = this.shipExtraServices.find((a: any) => a.ServiceId == x.ServiceId);
-          if (!check) {
-            let service = {
-              ServiceId: x.ServiceId,
-              ServiceName: x.Name,
-              Fee: 0,
-              IsSelected: x.IsDefault,
-              Type: x.Type,
-              ExtraMoney: x.ExtraMoney,
-              OrderTime: x.OrderTime && new Date(x.OrderTime)
-            };
-            this.shipExtraServices.push(service);
-          }
-        })
-      }
-      temps = this.shipExtraServices.map((x: any) => x);
-    }
-
-    if (TDSHelperArray.hasListValue(data.Extras)) {
-      this.shipExtraServices = data.Extras;
-      this.listServiceTemp = [];
-
-      temps.map((x: TDSSafeAny) => {
-        let exist = this.shipExtraServices.filter((s: any) => s.ServiceId === x.ServiceId)[0];
-        if (exist) {
-          exist.IsSelected = x.IsSelected;
-          //check cấu hình thu tiền xem hàng mặc định
-          if (exist.ServiceId == 'XMG' && model.Carrier?.DeliveryType == 'ViettelPost' && exist.IsSelected == true) {
-            exist.ExtraMoney = (model.Ship_Extras && model.Ship_Extras.IsCollectMoneyGoods && model.Ship_Extras.CollectMoneyGoods) ? model.Ship_Extras.CollectMoneyGoods : model.CustomerDeliveryPrice || null;
-          }
-        } else {
-          this.listServiceTemp.push(x);
+    let isDirty = this._form.controls['Ship_ServiceId'].dirty;
+    if(event && isDirty) {
+        let exits = this.shipExtraServices.find(x => x.IsSelected);
+        // Tính lại phí bảo hiểm
+        if(this.insuranceInfo?.IsInsurance || exits) {
+          this.onUpdateInsuranceFee();
         }
-      });
-
-      if (this.listServiceTemp) {
-        this.listServiceTemp.forEach((item: any) => {
-          this.shipExtraServices.push(item);
-        });
-      }
-
-    } else {
-      delete this.shipExtraServices;
-    }
-  }
-
-  onSelectShipServiceId(event: any) {
-    let item = this.shipServices.find((x: any) => x.ServiceId === event.ServiceId);
-
-    if (item && item.ServiceId) {
-      this.selectShipService(item);
-
-      if (this._form.controls.Carrier.value.DeliveryType === "GHN") {
-        this.onUpdateInsuranceFee();
-      }
     }
   }
 
   onUpdateInsuranceFee() {
-    debugger
-    let model = this.prepareModel();
+    this.calcFee();
+  }
 
-    this.calculateFee(model.Carrier).then((res: any) => {
-      if (res.Costs && res.Costs.length > 0) {
-        res.Costs.map((x: any) => {
-          let exist = this.shipExtraServices.filter((s: any) => s.ServiceId === x.ServiceId)[0];
-          if (exist) {
-            exist.Fee = x.TotalFee;
-          }
-        });
-      } else {
-        let exist = this.shipExtraServices.filter((s: any) => s.ServiceId === '16')[0];
-        if (exist) {
-          exist.Fee = 0;
-        }
-      }
-    }).catch((e: any) => {
-      let error = e.error.message || e.error.error_description;
-      if (error)
-        this.message.error(error);
-    });
+  selectShipServiceV2(x: CalculateFeeServiceResponseDto) {
+    let value = this.selectShipServiceV2Handler.selectShipServiceV2(x, this.shipExtraServices, this._form);
+
+    this.shipExtraServices = [];
+    this.shipExtraServices = [...value];
   }
 
   changeDeliveryPrice(value: number) {
     if (value && value > 0) {
       this._form.controls['DeliveryPrice'].setValue(value);
-    }else{
+    } else {
       this._form.controls['DeliveryPrice'].setValue(0);
-    }      
-    
+    }
     this.updateCoDAmount();
   }
 
@@ -1329,25 +790,8 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   changeShipWeight(event: any): any {
-    debugger
-    if (!this._form.controls['Carrier'].value) {
-      return this.message.error('Vui lòng chọn đối tác giao hàng!');
-    }
-
-    let model = this._form.controls['Carrier'].value;
-
-    this.calculateFee(model).then((res: any) => {
-      if (res?.Costs) {
-        res.Costs.map((x: any) => {
-          let exist = this.shipExtraServices.filter((x: any) => x.ServiceId === x.ServiceId)[0];
-          if (exist) {
-            exist.Fee = x.TotalFee;
-          }
-        });
-      }
-    }).catch((e: any) => {
-      console.log(e);
-    });
+    this._form.controls['ShipWeight'].setValue(event);
+    this.calcFee();
   }
 
   openTrackingOrderGHN() {
@@ -1872,61 +1316,34 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.onUpdateInsuranceFee();
   }
 
-  changeShipExtraMoney() {
-    debugger
-    let idx = this.shipExtraServices.findIndex((f: any) => f.ServiceId === 'XMG');
-    this.shipExtraServices[idx].ExtraMoney = this.extraMoney;
-    let event = this._form.controls['Carrier'].value;
+  changeShipExtraMoney(event: any) {
+    if(event) {
+      let idx = this.shipExtraServices.findIndex((f: any) => f.ServiceId === 'XMG');
 
-    this.calculateFee(event, true).then((res: any) => { })
-      .catch((e: any) => {
-        let error = e.error.message || e.error.error_description;
-        if (error)
-          this.message.error(error);
-      });
+      this.shipExtraServices[idx].ExtraMoney = this.extraMoney;
+      this.calcFee();
 
-    this.visibleShipExtraMoney = false;
+      this.visibleShipExtraMoney = false;
+    }
   }
 
   // TODO: cập nhật giá xem hàng
   updateShipExtras() {
-    const model = this._form.value as FastSaleOrder_DefaultDTOV2;
-
-    if (this.shipExtraServices && model.Ship_Extras) {
-      this.shipExtraServices.forEach((service: TDSSafeAny) => {
-        if (service.ServiceId === 'XMG') {
-          model.Ship_Extras.CollectMoneyGoods = service.ExtraMoney;
-          model.Ship_Extras.IsCollectMoneyGoods = true;
-        }
-      });
-      // TODO: cập nhật phí bảo hiểm
-      model.Ship_Extras.InsuranceFee = model.Ship_InsuranceFee;
-    }
+    this.updateShipExtraHandler.updateShipExtraHandler(this.shipExtraServices, this._form);
   }
+
   // TODO: cập nhật danh sách dịch vụ
   updateShipServiceExtras() {
     if (this.shipExtraServices) {
-      let arr: FormArray;
-      let model = <FormArray>this._form.controls['Ship_ServiceExtras'];
-      // TODO: update new value
-      arr = this.fb.array([]);
-      this.shipExtraServices.forEach((service: any) => {
-        if (service.IsSelected) {
-          this.addService(service, arr);
-        }
-      });
-      model = arr;
+      this.updateShipServiceExtrasHandler.updateShipServiceExtras(this.shipExtraServices, this._form, this.fb);
     }
   }
 
-  addService(service: any, model: FormArray) {
-    model.push(this.fb.group({
-      ExtraMoney: service.ExtraMoney,
-      Fee: service.Fee,
-      Id: service.ServiceId,
-      Name: service.ServiceName,
-      Type: service.Type
-    }));
+  // TODO: cập nhật danh sách cấu hình aship
+  updateShipmentDetailsAship() {
+    if (this.configsProviderDataSource) {
+      this.updateShipmentDetailAshipHandler.updateShipmentDetailAship(this.configsProviderDataSource, this.insuranceInfo, this._form, this.fb);
+    }
   }
 
   openPopoverShipExtraMoney(value: number) {
@@ -1970,71 +1387,9 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   prepareModelFeeV2() {
-    const formModel = this._form.value as FastSaleOrder_DefaultDTOV2;
-    const model: any = {
-      PartnerId: formModel.Partner?.Id,
-      CompanyId: formModel.Company?.Id || this.roleConfigs.CompanyId,
-      CarrierId: formModel.Carrier?.Id,
-      ServiceId: formModel.Ship_ServiceId || null,
-      InsuranceFee: formModel.Ship_InsuranceFee || 0,
-      ShipWeight: formModel.ShipWeight,
-      CashOnDelivery: formModel.CashOnDelivery,
-      ServiceExtras: [],
-      Ship_Receiver: {}
-    }
+    let companyId = this.roleConfigs.CompanyId;
 
-    this.shipExtraServices || (this.shipExtraServices = []);
-    this.shipExtraServices.map((x: any) => {
-      if (x.IsSelected) {
-        model.ServiceExtras.push({
-          Id: x.ServiceId,
-          Name: x.ServiceName,
-          Fee: x.Fee,
-          Type: x.Type,
-          ExtraMoney: x.ExtraMoney
-        });
-      }
-    })
-
-    if (!formModel.Ship_Extras && formModel.Carrier && formModel.Carrier.Extras) {
-      this._form.controls['Ship_Extras'].setValue(formModel.Carrier.Extras);
-    }
-
-    if (!this.enableInsuranceFee) {
-      model.Ship_InsuranceFee = 0;
-    } else {
-      if (!model.Ship_InsuranceFee) {
-        if (formModel.Ship_Extras) {
-          model.Ship_InsuranceFee = formModel.Ship_Extras.InsuranceFee || formModel.AmountTotal;
-        } else {
-          model.Ship_InsuranceFee = formModel.AmountTotal;
-        }
-      }
-    }
-
-    if (formModel.Ship_Receiver) {
-      model.Ship_Receiver = {
-        Name: formModel.Ship_Receiver.Name,
-        Street: formModel.Ship_Receiver.Street,
-        Phone: formModel.Ship_Receiver.Phone,
-
-        City: formModel.Ship_Receiver.City?.code ? {
-          code: formModel.Ship_Receiver.City?.code,
-          name: formModel.Ship_Receiver.City?.name
-        } : null,
-
-        District: formModel.Ship_Receiver.District?.code ? {
-          code: formModel.Ship_Receiver.District?.code,
-          name: formModel.Ship_Receiver.District?.name
-        } : null,
-
-        Ward: formModel.Ship_Receiver.Ward?.code ? {
-          code: formModel.Ship_Receiver.Ward?.code,
-          name: formModel.Ship_Receiver.Ward?.name
-        } : null
-      };
-    }
-
+    let model = this.prepareModelFeeV2Handler.prepareModelFeeV2(this.shipExtraServices, this._form, companyId, this.insuranceInfo );
     return model;
   }
 
@@ -2046,10 +1401,10 @@ export class AddBillComponent implements OnInit, OnDestroy {
   }
 
   onSave(): any {
-    debugger
     this.updateShipExtras();
     this.updateShipServiceExtras();
     this.updateShipmentDetailsAship();
+
     let model = this.prepareModel();
 
     // console.log(model)
@@ -2062,16 +1417,17 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
     //TODO ràng buộc COD
     let COD = model.AmountTotal + model.DeliveryPrice - model.AmountDeposit;
+
     let exist = this.roleConfigs?.GroupFastSaleDeliveryCarrier && model.Type == "invoice" && model.CashOnDelivery != COD && !model.TrackingRef;
     if (exist) {
       this.modal.warning({
-        title: 'Cảnh báo',
-        content: `COD hiện tại ${formatNumber(model.CashOnDelivery, 'en-US', '1.0-3')} không bằng tổng COD phần mềm tính ${formatNumber(COD, 'en-US', '1.0-3')} bạn có muốn gán lại COD của phần mềm [${formatNumber(COD, 'en-US', '1.0-3')}]`,
-        onOk: () => { model.CashOnDelivery = COD; this.saveRequest(model) },
-        onCancel: () => { this.saveRequest(model) },
-        okText: "Đồng ý",
-        cancelText: "Hủy bỏ",
-        confirmViewType: "compact",
+          title: 'Cảnh báo',
+          content: `COD hiện tại ${formatNumber(model.CashOnDelivery, 'en-US', '1.0-3')} không bằng tổng COD phần mềm tính ${formatNumber(COD, 'en-US', '1.0-3')} bạn có muốn gán lại COD của phần mềm [${formatNumber(COD, 'en-US', '1.0-3')}]`,
+          onOk: () => { model.CashOnDelivery = COD; this.saveRequest(model) },
+          onCancel: () => { this.saveRequest(model) },
+          okText: "Đồng ý",
+          cancelText: "Hủy bỏ",
+          confirmViewType: "compact",
       });
     } else {
       this.saveRequest(model);
@@ -2113,197 +1469,102 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-
-  onChangeCarrierV2(event: DeliveryCarrierDTOV2, showMessage?: boolean) {
-    debugger
-    if (TDSHelperObject.hasValue(event)) {
-      this.shipServices = [];
+  onChangeCarrierV2(event: DeliveryCarrierDTOV2) {
+      this.shipServices = []; // dịch vụ
       this.shipExtraServices = [];
-      this.enableInsuranceFee = false;
+      this.insuranceInfo = null;
       this.configsProviderDataSource = [];
-      // const model = this.prepareModel();
 
       this._form.controls['Ship_InsuranceFee'].setValue(null);
       this._form.controls['Ship_ServiceId'].setValue(null);
       this._form.controls['Ship_ServiceName'].setValue(null);
       this._form.controls['Ship_Extras'].setValue(null);
+      this._form.controls['CustomerDeliveryPrice'].setValue(0);
+      this._form.controls['DeliveryPrice'].setValue(0);
       this._form.setControl('Ship_ServiceExtras', this.fb.array([]));
 
       this._form.controls['Carrier'].setValue(event);
-      this._form.controls['CarrierId'].setValue(event.Id);
+      this._form.controls['CarrierId'].setValue(event?.Id);
 
       //TODO: Cập nhật giá trị ship mặc định
-      let deliveryPrice = event.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
+      let deliveryPrice = event?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
       if (this._form.controls['DeliveryPrice'].value != deliveryPrice) {
-        this._form.controls['DeliveryPrice'].setValue(deliveryPrice);
-        this.updateCoDAmount();
+          this._form.controls['DeliveryPrice'].setValue(deliveryPrice);
+          this.updateCoDAmount();
       }
 
-      this._form.controls['ShipWeight'].setValue(event.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100);
-      if (TDSHelperString.hasValueString(event.ExtrasText)) {
+      this._form.controls['ShipWeight'].setValue(event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100);
+
+      if (TDSHelperString.hasValueString(event?.ExtrasText)) {
         this._form.controls['Ship_Extras'].setValue(JSON.parse(event.ExtrasText));
       }
 
-      //TODO: Check giá trị mặc định trước khi gửi
-      // this.initOkieLa();
-      // this.initService();
-      // this.initInfoOrderDelivery();
-
-      //Check giá trị mặc định trước khi gửi
-      // this.calcServiceDefault();
-
-      // if (this.validateInsuranceFee()) {
-      //   this.enableInsuranceFee = true;
-      //   if (!model.Ship_InsuranceFee) {
-      //     this._form.controls['Ship_InsuranceFee'].setValue(model.Ship_Extras?.InsuranceFee || model.AmountTotal);
-      //   }
-      // }
-
-      this.calculateFeeAship(event, showMessage).then((res: any) => {
-
-      }).catch((e: any) => {
-        let error = e.error.message || e.error.error_description;
-        if (error && showMessage)
-          this.message.error(error);
-      });
-    }
+      if(event) {
+          this.calcFee();
+      }
   }
 
-  calculateFeeAship(event: DeliveryCarrierDTOV2, showMessage?: boolean): any {
-    let promise = new Promise((resolve, reject): any => {
-      let model = this.prepareModelFeeV2();
+  calculateFeeAship(event: DeliveryCarrierDTOV2): any {
+    let model = this.prepareModelFeeV2();
 
-      if (!this._form.controls['Carrier'].value && showMessage) {
-        return this.message.error('Vui lòng chọn  đối tác giao hàng');
-      }
-      if (!this._form.controls['ShipWeight'].value && showMessage) {
-        return this.message.error('Vui lòng chọn nhập khối lượng');
-      }
+    if (!this._form.controls['Carrier'].value ) {
+      return this.message.error('Vui lòng chọn  đối tác giao hàng');
+    }
+    if (!this._form.controls['ShipWeight'].value ) {
+      return this.message.error('Vui lòng chọn nhập khối lượng');
+    }
+
+    let promise = new Promise((resolve, reject): any => {
+
       this.isCalcFee = true;
       this.fastSaleOrderService.calculateFeeAship(model).pipe(takeUntil(this.destroy$)).subscribe((res: DeliveryResponseDto<CaculateFeeResponseDto>) => {
-        debugger
-        if (res && res.Error) {
-          this.message.error(res.Error.Message);
-        } else if (res.Data?.Services) {
-          //  ;
-          var shipmentDetailsAship = event.ExtraProperties ? (JSON.parse(event.ExtraProperties) ?? []).filter((x: any) => !x.IsHidden) : [];
-          this.configsProviderDataSource = shipmentDetailsAship;
-          this.enableInsuranceFee = res.Data?.InsuranceInfo?.IsInsurance ?? false;
+
+        if (res && res.Data?.Services) {
+
+          let extras = event.ExtraProperties ? (JSON.parse(event.ExtraProperties) ?? []).filter((x: any) => !x.IsHidden) : [] as AshipGetInfoConfigProviderDto[];
+
+          if(TDSHelperArray.hasListValue(extras) && TDSHelperArray.hasListValue(this.configsProviderDataSource)) {
+            extras.map((x: AshipGetInfoConfigProviderDto) => {
+                let exits = this.configsProviderDataSource.filter(e => e.ConfigName === x.ConfigName && (x.ConfigsValue.find(t => t.Id == e.ConfigValue)))[0];
+                if(exits) {
+                    x.ConfigValue = exits.ConfigValue;
+                }
+            })
+          }
+
+          this.configsProviderDataSource = [];
+          this.configsProviderDataSource = [...extras];
+
+          this.insuranceInfo = res.Data?.InsuranceInfo ?? null;
           this.shipServices = res.Data?.Services ?? [];
-          var serviceDetail = this.shipServices[0];
-          this.selectShipServiceV2(serviceDetail);
-          if (showMessage) {
-            this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(serviceDetail.TotalFee), 'en-US', '1.0-0')} đ`);
+
+          if(TDSHelperArray.hasListValue(this.shipServices)) {
+              let serviceDetail = this.shipServices[0] as CalculateFeeServiceResponseDto;
+              this.selectShipServiceV2(serviceDetail);
+
+              this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(serviceDetail.TotalFee), 'en-US', '1.0-0')} đ`);
+          }
+        }
+
+        else {
+          if (res && res.Error) {
+            this.message.error(res.Error.Message);
           }
         }
 
         this.isCalcFee = false;
+        resolve(res);
+        this.cdRef.detectChanges();
+
       }, error => {
-        this.isCalcFee = false;
-        if (showMessage) {
+
+          this.isCalcFee = false;
           this.message.error(`${error.error_description}` || 'Tính phí đã xảy ra lỗi!');
-        }
-        reject(error);
+          this.cdRef.detectChanges();
       })
-    });
+    })
+
     return promise;
   }
 
-  selectShipServiceV2(data: any): void {
-    debugger
-    this._form.controls['Ship_ServiceId'].setValue(data.ServiceId);
-    this._form.controls['Ship_ServiceName'].setValue(data.ServiceName);
-    this._form.controls['CustomerDeliveryPrice'].setValue(data.TotalFee);
-
-    const model = this.prepareModel() as FastSaleOrder_DefaultDTOV2;
-    let temps = [];
-    if (this.shipExtraServices) {
-      model.Ship_Extras = model.Ship_Extras || { ServiceCustoms: [] };
-
-      // Check kiểm tra
-      if (model.Ship_Extras && model.Ship_Extras.ServiceCustoms) {
-        model.Ship_Extras.ServiceCustoms.forEach((x: any) => {
-          let check = this.shipExtraServices.find((a: any) => a.ServiceId == x.ServiceId);
-          if (!check) {
-            let service = {
-              ServiceId: x.ServiceId,
-              ServiceName: x.Name,
-              Fee: 0,
-              IsSelected: x.IsDefault,
-              Type: x.Type,
-              ExtraMoney: x.ExtraMoney,
-              OrderTime: x.OrderTime && new Date(x.OrderTime)
-            };
-            this.shipExtraServices.push(service);
-          }
-        })
-      }
-      temps = this.shipExtraServices.map((x: any) => x);
-    }
-
-    if (TDSHelperArray.hasListValue(data.Extras)) {
-      this.shipExtraServices = data.Extras;
-      this.listServiceTemp = [];
-
-      temps.map((x: TDSSafeAny) => {
-        let exist = this.shipExtraServices.filter((s: any) => s.ServiceId === x.ServiceId)[0];
-        if (exist) {
-          exist.IsSelected = x.IsSelected;
-          //check cấu hình thu tiền xem hàng mặc định
-          if (exist.ServiceId == 'XMG' && model.Carrier?.DeliveryType == 'ViettelPost' && exist.IsSelected == true) {
-            exist.ExtraMoney = (model.Ship_Extras && model.Ship_Extras.IsCollectMoneyGoods && model.Ship_Extras.CollectMoneyGoods) ? model.Ship_Extras.CollectMoneyGoods : model.CustomerDeliveryPrice || null;
-          }
-        } else {
-          this.listServiceTemp.push(x);
-        }
-      });
-
-      if (this.listServiceTemp) {
-        this.listServiceTemp.forEach((item: any) => {
-          this.shipExtraServices.push(item);
-        });
-      }
-
-    } else {
-      delete this.shipExtraServices;
-    }
-  }
-
-  // TODO: cập nhật danh sách cấu hình aship
-  updateShipmentDetailsAship() {
-    debugger
-    if (this.configsProviderDataSource) {
-      var controlForm = this._form.controls['ShipmentDetailsAship'] as FormGroup;
-      var configForm = controlForm.controls["ConfigsProvider"] as FormArray;
-
-      // this._form.controls['ShipmentDetailsAship'].patchValue({
-      //   Street: item.Address ? item.Address : null,
-      //   City: item.CityCode ? { code: item.CityCode, name: item.CityName } : null,
-      //   District: item.DistrictCode ? { code: item.DistrictCode, name: item.DistrictName } : null,
-      //   Ward: item.WardCode ? { code: item.WardCode, name: item.WardName } : null
-      // });
-      controlForm.controls['InsuranceInfo'].setValue(null);
-
-      // var controlForm = this._form.controls['ShipmentDetailsAship'] as FormArray;
-      // TODO: update new value
-      this.configsProviderDataSource.forEach((config: any) => {
-        configForm.push(this.fb.group({
-          ConfigName: config.ConfigName,
-          Type: config.Type,
-          InputType: config.InputType,
-          IsRequried: config.IsRequried,
-          IsHidden: config.IsHidden,
-          Description: config.Description,
-          DisplayName: config.DisplayName,
-          ConfigValue: config.ConfigValue,
-          ConfigsValue: config.ConfigsValue ? this.fb.array(config.ConfigsValue.map((item: any) => {
-            return this.fb.group({
-              Id: item.Id,
-              Name: item.Name
-            });
-          })) : this.fb.array([]),
-        }));
-      });
-    }
-  }
 }

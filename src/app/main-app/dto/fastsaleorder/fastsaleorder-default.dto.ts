@@ -429,6 +429,9 @@ export interface ShipServiceExtra {
   Type?: any;
   ExtraMoney?: any;
   OrderTime?: any;
+  Pickup_Time?: number | undefined;
+  Pickup_Time_Range_Id?: number | undefined;
+  IsSelected?: boolean | undefined;
 }
 
 export interface ShipExtras {
@@ -454,7 +457,13 @@ export interface ShipExtras {
   PartialDelivery?: any;
   IsRefund?: any;
   IsInsuranceEqualTotalAmount?: any;
-  ServiceCustoms: any[];
+  ServiceCustoms: ServiceCustoms[];
+}
+
+export interface ServiceCustoms {
+  ServiceId: string;
+  Name: string;
+  IsDefault: boolean;
 }
 
 export interface Carrier {
