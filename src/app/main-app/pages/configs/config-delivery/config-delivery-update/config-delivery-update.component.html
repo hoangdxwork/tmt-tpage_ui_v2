@@ -1,5 +1,5 @@
 <tds-spin [spinning]="isLoading">
-  <form [formGroup]="submitForm" autocomplete="off">
+  <form [formGroup]="_form" autocomplete="off">
     <div class="w-full pb-4 px-4">
       <div class="flex flex-col w-full bg-white rounded-xl">
         <div class="flex flex-row items-center justify-between px-4 py-3">
@@ -11,8 +11,7 @@
             </button>
             <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">Cập nhật đối tác</span>
           </div>
-          <button tds-button color="primary" type="submit" class="w-[100px]" [disabled]="this.onValidForm()"
-            (click)="onSubmit()">
+          <button tds-button color="primary" type="button" class="w-[100px]"  (click)="onSubmit()">
             <span class="text-body-2 font-semibold">Lưu</span>
           </button>
         </div>
@@ -39,7 +38,7 @@
             <tds-tabset>
               <tds-tab title="Cấu hình">
                 <div class="grid grid-cols-3 gap-4">
-                  <ng-container *ngFor="let item of configsProviderDataSource">
+                  <ng-container *ngFor="let item of data">
                     <div>
                       <div class="font-bold break-all">
                         <tds-label class="text-body-2 font-semibold text-neutral-1-900 block">{{item.DisplayName}}

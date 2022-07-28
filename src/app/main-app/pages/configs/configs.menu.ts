@@ -16,7 +16,7 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
           },
           {
               name: "Đối tác giao hàng",
-              link: '/configs/delivery-carrier',
+              link: '/configs/delivery',
           },
       ]
     },
@@ -88,10 +88,5 @@ export const ConfigsMenu: Array<TDSMenuDTO> = [
                 link: '/configs/pages/divide-task',
             },
         ]
-    },
-    {
-      name: "Đối tác giao hàng",
-      icon: "tdsi-transport-fill",
-      link: '/configs/delivery',
-  },
+    }
 ]
