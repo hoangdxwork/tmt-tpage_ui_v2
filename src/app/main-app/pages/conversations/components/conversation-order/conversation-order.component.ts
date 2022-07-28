@@ -338,7 +338,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     this.shipExtraServices = [];
 
     this.enableInsuranceFee =false;
-    this.saleModel.Ship_InsuranceFee = null;
+    this.saleModel.Ship_InsuranceFee = 0;
     this.saleModel.Ship_ServiceId = '';
     this.saleModel.Ship_ServiceName = '';
     delete this.saleModel.CustomerDeliveryPrice;

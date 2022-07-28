@@ -779,6 +779,15 @@ export class AddBillComponent implements OnInit, OnDestroy {
     this.updateCoDAmount();
   }
 
+  changeShip_InsuranceFee(value: number) {
+    if (value && value > 0) {
+      this._form.controls['Ship_InsuranceFee'].setValue(value);
+    } else {
+      this._form.controls['Ship_InsuranceFee'].setValue(0);
+    }
+    this.updateCoDAmount();
+  }
+
   changeAmountDeposit(value: number) {
     if (value && value > 0) {
       this._form.controls['AmountDeposit'].setValue(value);
@@ -1512,6 +1521,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       }
 
       this._form.controls['ShipWeight'].setValue(event?.Config_DefaultWeight || this.companyCurrents?.WeightDefault || 100);
+      this.dataModel.ShipWeight = this._form.controls['ShipWeight'].value;
 
       if (TDSHelperString.hasValueString(event?.ExtrasText)) {
         this._form.controls['Ship_Extras'].setValue(JSON.parse(event.ExtrasText));
