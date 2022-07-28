@@ -1,3 +1,4 @@
+import { TDSSwitchModule } from 'tds-ui/switch';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -129,6 +130,7 @@ const SERVICES = [
     TDSPopoverModule,
     TDSMessageModule,
     DirectivesModule,
+    TDSSwitchModule,
   ],
   exports:[
    ...cmp

@@ -4,7 +4,7 @@
     <div class="bg-white flex justify-between items-center py-2.5 px-4">
       <div class="flex flex-col gap-y-1">
         <tds-breadcrumb tds-page-header-breadcrumb class="px-0 pt-0 pb-0">
-            <tds-breadcrumb-item>Chiến dịch</tds-breadcrumb-item>
+            <tds-breadcrumb-item (click)="directPage('live-campaign')">Chiến dịch</tds-breadcrumb-item>
             <tds-breadcrumb-item>{{liveCampaignId ? 'Chỉnh sửa' : 'Thêm mới'}}</tds-breadcrumb-item>
         </tds-breadcrumb>
         <div class="">
@@ -54,13 +54,13 @@
                 <div class="w-3/4 flex gap-x-2 justify-between">
                   <tds-form-field class="w-full">
                     <tds-select valueField="Id" textField="Name" placeholder='Chọn mẫu tin' formControlName="ConfirmedOrder_Template"
-                        [valuePrimitive]="false" [allowClear]="true" disabledField="isActive" [data]="(lstQuickReplies$ | async) || []"
+                        [valuePrimitive]="false" [allowClear]="true" disabledField="isActive" [data]="lstQuickReplies"
                         [allowClear]="true">
                     </tds-select>
                   </tds-form-field>
-                  <button tds-button-icon color="secondary">
+                  <button type="button" tds-button-icon color="secondary" (click)="showModalAddQuickReply()">
                       <i class="tdsi-plus-circle-fill text-primary-1"></i>
-                  </button>
+                  </button>                 
                 </div>
               </div>
 
@@ -87,7 +87,7 @@
                 <tds-form-field class="w-3/4">
                   <tds-select valueField="Id" textField="Name"
                       placeholder='Chọn mẫu tin' [valuePrimitive]="false"  formControlName="Preliminary_Template"
-                      disabledField="isActive" [data]="(lstQuickReplies$ | async) || []" [allowClear]="true">
+                      disabledField="isActive" [data]="lstQuickReplies" [allowClear]="true">
                   </tds-select>
                 </tds-form-field>
               </div>
@@ -175,9 +175,9 @@
                       <th [width]="'15%'">Giới hạn trên đơn</th>
                       <th [width]="'15%'">Giá bán</th>
                       <th [width]="'11%'" class="text-center">
-                        <button tds-button-icon color="secondary">
+                        <button type="button" tds-button-icon color="secondary">
                           <span class="flex items-center">
-                          <i class="tdsi-trash-fill text-lg leading-none"></i>
+                          <i class="tdsi-trash-fill text-lg leading-none text-neutral-1-500"></i>
                           </span>
                         </button>
                       </th>
@@ -218,8 +218,8 @@
                           <ng-template #contentAddTag>
                             <div class="w-96 flex flex-col gap-y-4">
                               <tds-form-field>
-                                <tds-select valueField="id" textField="name" placeholder='select item' formControlName="Tags"
-                                  [allowClear]="true" [data]="[detail?.value.Tags]" mode="multiple">
+                                <tds-select placeholder='Nhập và chọn Tag' [valuePrimitive]="false" valueField="id" textField="name" formControlName="Tags"
+                                  [allowClear]="true" [data]="(detail.value.Tags | stringToStringArray)"  mode="tags">                        
                                 </tds-select>
                               </tds-form-field>
                               <div class="flex gap-x-2 justify-end">
@@ -274,7 +274,7 @@
                     <td class="text-center">
                       <button tds-button-icon color="secondary" size="sm" (click)="removeDetail(index, detail)">
                         <span class="flex items-center">
-                          <i class="tdsi-trash-fill"></i>
+                          <i class="tdsi-trash-fill text-neutral-1-500"></i>
                         </span>
                       </button>
                     </td>

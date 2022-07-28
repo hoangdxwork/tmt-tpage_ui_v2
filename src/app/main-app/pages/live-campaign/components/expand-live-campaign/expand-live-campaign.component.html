@@ -52,7 +52,7 @@
         </div>
     </tds-tab>
     <tds-tab title="Thông tin" clsContent="bg-white p-4 border-t rounded-b-md">
-      <div class="w-full grid grid-cols-3 gap-8">
+      <div class="w-full grid grid-cols-3 gap-8" *ngIf="liveCampaigns">
         <div class="grid grid-cols-3 gap-4">
           <div>Tên chiến dịch:</div>
           <div class="col-span-2 font-semibold">{{liveCampaigns.Name || '...'}}</div>
