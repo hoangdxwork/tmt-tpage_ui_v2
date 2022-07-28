@@ -227,12 +227,10 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  get getCheckedRow() {
-    return [...this.setOfCheckedId].length;
-  }
-
   removeCheckedRow() {
     this.setOfCheckedId = new Set<number>();
+    this.indeterminate = false;
+    this.checked = false;
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -457,7 +455,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     }else{
       this.tabNavs = this.lstOftabNavs;
     }
-
+    this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -473,6 +471,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.pageSize = params.pageSize;
     this.loadData(params.pageSize, params.pageIndex);
+    this.checked = false;
+    this.indeterminate = false;
   }
 
   refreshData() {

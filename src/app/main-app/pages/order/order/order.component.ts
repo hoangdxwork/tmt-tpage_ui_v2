@@ -61,7 +61,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   psid: any;
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;
-  
+
   public filterObj: FilterObjSOOrderModel = {
     tags: [],
     status: [],
@@ -111,7 +111,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   widthCollapse: number = 0;
   isTabNavs: boolean = false;
   isProcessing: boolean = false;
-  
+
   private destroy$ = new Subject<void>();
 
   constructor(private cdRef: ChangeDetectorRef,
@@ -214,6 +214,8 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getViewData(params).subscribe((res: TDSSafeAny) => {
       this.count = res['@odata.count'] as number;
       this.lstOfData = [...res.value];
+      console.log("HUi", this.lstOfData);
+
     }, error => {
       this.message.error(`${error?.error?.message}` || Message.CanNotLoadData)
     });
@@ -494,7 +496,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   // Refresh nhưng không refresh lại Tab, Index
   refreshDataCurrent() {
     this.indClickTag = "";
-    
+
     this.checked = false;
     this.indeterminate = false;
     this.setOfCheckedId = new Set<string>();
@@ -519,7 +521,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     }else{
       this.tabNavs = this.lstOftabNavs;
     }
-
+    this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -779,10 +781,6 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   closeDrawer() {
     this.isOpenDrawer = false;
-  }
-
-  get getCheckedRow() {
-    return [...this.setOfCheckedId].length;
   }
 
   removeCheckedRow(){

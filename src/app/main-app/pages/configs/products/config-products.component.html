@@ -23,8 +23,9 @@
                             <div tds-dropdown-item class="px-3 py-4 w-full" (click)="exportExcel()">
                                 <a class="text-neutral-1-900 text-body-2 font-regular">Xuất excel kiểm kho</a>
                             </div>
-                            <div tds-dropdown-item class="px-3 py-4 w-full" (click)="sortByIds('Name')">
+                            <div tds-dropdown-item class="flex items-center justify-between gap-x-2 px-3 py-4 w-full" (click)="sortByIds('Name')">
                                 <a class="text-neutral-1-900 text-body-2 font-regular">Sắp xếp theo tên</a>
+                                <span class="font-semibold">{{sortByName}}</span>
                             </div>
                             <div tds-dropdown-item class="px-3 py-4 w-full" (click)="sortByIds('DateCreated')">
                                 <a class="text-neutral-1-900 text-body-2 font-regular">Sắp xếp theo ngày tạo mới nhất</a>
@@ -188,7 +189,7 @@
                             </tr>
                             <tr [expand]="expandSet.has(data.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 bg-neutral-3-50 w-full">
                                 <div #viewChildDetailPartner [ngStyle]="{ 'max-width.px': tableWidth, 'margin-left.px': marginLeftCollapse}" class="bg-white rounded-xl flex items-center justify-center k-grid-table-wrap-detail">
-                                    <config-product-details class="w-full" [productTemplate]="data" *ngIf="expandSet.has(data.Id)"></config-product-details>
+                                    <product-details class="w-full" [productTemplate]="data" *ngIf="expandSet.has(data.Id)"></product-details>
                                 </div>
                             </tr>
                         </ng-template>

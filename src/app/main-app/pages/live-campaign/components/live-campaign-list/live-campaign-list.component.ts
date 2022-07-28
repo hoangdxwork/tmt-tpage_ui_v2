@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { fromEvent, Observable, pipe, Subject } from 'rxjs';
 import { finalize, map, takeUntil, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
@@ -82,13 +82,17 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
     private commonHandler: CommonHandler,
     private resizeObserver: TDSResizeObserver,
     private cacheApi: THelperCacheService,
-    private liveCampaignService: LiveCampaignService) {
+    private liveCampaignService: LiveCampaignService,
+    private cdref: ChangeDetectorRef) { 
+  }
 
-      this.currentDateRanges = this.commonHandler.currentDateRanges;
+  mapDatePicker(){
+    if(this.currentDateRanges){
       this.filterObj.dateRange = {
         startDate: this.currentDateRanges.startDate,
         endDate: this.currentDateRanges.endDate
-      }
+      }  
+    }
   }
 
   updateCheckedSet(id: string, checked: boolean): void {
@@ -115,6 +119,7 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
   }
 
   ngOnInit(): void {
+    this.mapDatePicker();
     this.loadGridConfig();
   }
 

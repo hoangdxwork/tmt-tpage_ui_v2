@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { fromEvent, Subject, takeUntil } from 'rxjs';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { OdataGetOrderPartnerIdModal } from 'src/app/main-app/dto/saleonlineorder/odata-getorderpartnerid.dto';
@@ -20,12 +20,12 @@ import { addDays } from 'date-fns';
   selector: 'live-order-bypartner',
   templateUrl: './live-order-bypartner.component.html',
 })
-export class LiveOrderByPartnerComponent implements OnInit {
+export class LiveOrderByPartnerComponent implements OnInit, OnDestroy {
 
   @ViewChild('innerText') innerText!: ElementRef;
   @Input() partnerId!: number;
   lstOfData!: ODataSaleOnline_OrderModel[];
-  pageSize: number = 1;
+  pageSize: number = 20;
   pageIndex: number = 1;
   count: number = 0;
   isLoading: boolean = false;
@@ -72,7 +72,7 @@ export class LiveOrderByPartnerComponent implements OnInit {
       this.lstOrder = [];
       let filters = this.odataGetOrderPartnerIdService.buildFilter(this.filterObj);
       let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
-      console.log(filters)
+
       this.odataGetOrderPartnerIdService.getOrdersByPartner(this.partnerId, params).pipe(takeUntil(this.destroy$)).subscribe(res => {
         this.count = res["@odata.count"];
         this.lstOrder = res.value;
@@ -130,6 +130,11 @@ export class LiveOrderByPartnerComponent implements OnInit {
 
     this.filterObj.searchText = data.value;
     this.loadData(this.pageSize,this.pageIndex);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

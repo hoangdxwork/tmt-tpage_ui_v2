@@ -1386,6 +1386,24 @@ export class AddBillComponent implements OnInit, OnDestroy {
     })
   }
 
+  createPartner() {
+    const modal = this.modalService.create({
+      title: 'Thêm khách hàng',
+      content: ModalEditPartnerComponent,
+      size: "xl",
+      viewContainerRef: this.viewContainerRef,
+      centered: true,
+      componentParams: {
+        partnerId: null
+      }
+    });
+    modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe((event: any) => {
+      if (event) {
+        this.changePartner(event);
+      }
+    })
+  }
+
   prepareModelFeeV2() {
     let companyId = this.roleConfigs.CompanyId;
 

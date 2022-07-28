@@ -12,7 +12,7 @@
                     <div class="flex flex-col gap-y-4">
                       <div class="grid grid-cols-4 gap-x-4">
                         <div class="flex justify-center items-center text-centefa-rotate-180">
-                          <tds-avatar [size]="84" [tdsSrc]="quickOrderModel.Partner?.ImageUrl || 'error-link'"></tds-avatar>
+                          <tds-avatar [size]="84" [tdsSrc]="quickOrderModel.Partner.ImageUrl || 'error-link'"></tds-avatar>
                         </div>
                         <div class="col-span-3 flex flex-col gap-y-2">
                           <tds-label>Tên Khách hàng</tds-label>
@@ -62,7 +62,7 @@
                         </div>
                       </div>
                       <div class="grid grid-cols-4 gap-x-4">
-                        <div class="flex items-center">
+                        <div class="flex items-start pt-1.5">
                           <tds-label>Địa chỉ</tds-label>
                         </div>
                         <div class="col-span-3">
@@ -113,8 +113,8 @@
                             </ng-template>
 
                             <div *ngIf="lstComment" style="margin:0;" class="overflow-auto tds-panel-scroll flex flex-col max-h-60 py-2">
-                              <div *ngFor="let comment of lstComment; let index = index" 
-                                [ngClass]="quickOrderModel.Note?.includes(comment.message) ? 'bg-neutral-3-50':''"
+                              <div *ngFor="let comment of lstComment; let index = index"
+                                [ngClass]="quickOrderModel.Note.includes(comment.message) ? 'bg-neutral-3-50':''"
                                 class="p-3 border-b border-neutral-2-200 flex justify-between w-full cursor-pointer hover:bg-neutral-3-50"
                                 (click)="addComment(comment.message)">
                                 <span>
@@ -131,7 +131,7 @@
                 </div>
               </tds-tab>
 
-              <tds-tab title="Sản phẩm ({{quickOrderModel?.Details?.length}})" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
+              <tds-tab title="Sản phẩm ({{ quickOrderModel.Details.length }})" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
                 <div class="w-full">
                   <div class="w-full flex gap-x-8">
                     <div class="relative flex-auto">
@@ -418,35 +418,7 @@
               </tds-tab>
 
               <tds-tab title="Phiếu bán hàng" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
-                <div class="w-full flex flex-col gap-y-4">
-                  <div class="w-full">
-                    <tds-form-field class="w-full">
-                      <input tdsInput placeholder="Tìm kiếm đơn hàng" autocomplete="off" />
-                      <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-                    </tds-form-field>
-                  </div>
-                  <div class="w-full h-full">
-                    <tds-table class="tds-table-rounded" #productTable [bordered]="true" [listData]="quickOrderModel.Details"
-                      [showPagination]="false" [scroll]="{y:'auto'}">
-                      <thead class="rounded">
-                        <tr>
-                          <th >STT</th>
-                          <th >Sản phẩm</th>
-                          <th >Kênh kết nối</th>
-                          <th >Tổng tiền</th>
-                          <th >Tổng SL</th>
-                          <th >Ngày tạo đơn</th>
-                          <th >Trạng thái</th>
-                          <th >Nhân viên</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                        </tr>
-                      </tbody>
-                    </tds-table>
-                  </div>
-                </div>
+                <overview-order-bypartner [partnerId]="quickOrderModel.PartnerId"></overview-order-bypartner>
               </tds-tab>
             </tds-tabset>
 

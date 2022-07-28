@@ -35,4 +35,8 @@ export class LiveCampaignDetailComponent implements OnInit {
     this.router.navigateByUrl(`live-campaign/edit/${this.liveCampaignId}`);
   }
 
+  directPage(route: string) {
+    this.router.navigateByUrl(route);
+  }
+
 }

@@ -23,6 +23,8 @@ import { ShowAttributeValuePipe } from './show-attribute-value.pipe';
 import { NameNetWorkPipe } from './name-network.pipe';
 import { NumberCustomPipe } from './number-custom.pipe';
 import { CompareToday } from './compare-today.pipe';
+import { GetOrderStatusPipe } from './get-order-status.pipe';
+import { StringToStringArrayPipe } from './string-stringArray.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -45,7 +47,9 @@ const cmp =[
   NameNetWorkPipe,
   NumberCustomPipe,
   CompareToday,
-  GetStatusNamePipe
+  GetStatusNamePipe,
+  GetOrderStatusPipe,
+  StringToStringArrayPipe
 ]
 
 @NgModule({
