@@ -1,0 +1,114 @@
+<div class="w-full flex flex-col gap-y-4">
+    <div class="w-full">
+        <tds-form-field class="w-full">
+            <input tdsInput placeholder="Tìm kiếm đơn hàng" autocomplete="off" />
+            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+        </tds-form-field>
+    </div>
+    <div>
+        <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
+            <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
+                <tds-filter-status-item [name]='item.Name|getOrderStatus:lstStatus' [count]='item.Total'
+                    [value]="item.Index">
+                </tds-filter-status-item>
+            </ng-template>
+        </tds-filter-status>
+        <div class="max-h-[450px] h-[450px]">
+            <tds-table class="w-full h-full tds-table-rounded" #productTable [bordered]="true" [listData]="lstOrder"
+                [pageIndex]="pageIndex" [pageSize]="pageSize" [total]="count" [loading]="isLoading"
+                (queryParams)="onQueryParamsChange($event)">
+                <thead class="rounded">
+                    <tr>
+                        <th [width]="'50px'">STT</th>
+                        <th>Số HĐ</th>
+                        <th>Thông tin</th>
+                        <th>Ngày tạo đơn</th>
+                        <th>Đối tác giao hàng</th>
+                        <th>Mã vận đơn</th>
+                        <th [align]="'right'">Tổng tiền</th>
+                        <th [align]="'right'">Còn nợ</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-template ngFor let-data [ngForOf]="productTable.data">
+                        <tr>
+                            <!-- STT -->
+                            <td>1</td>
+
+                            <!-- Số HĐ -->
+                            <td>
+                                <div class="w-full flex font-semibold text-center pb-2">
+                                    <span [ngClass]="data.Number ? 'text-info-400' : 'text-error-500'">{{ data.Number ||
+                                        'N/A' }}</span>
+                                </div>
+                                <!-- Nhãn -->
+                            </td>
+
+                            <!-- Thông tin -->
+                            <td>
+                                <div class="w-full flex">
+                                    <span class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
+                                    <span class="ml-1">---</span>
+                                </div>
+                            </td>
+
+                            <!-- Ngày tạo đơn -->
+                            <td>
+                                <div class="w-full">
+                                    <span>{{ data.DateCreated | yiDateTimeFormat }}</span>
+                                </div>
+                            </td>
+
+                            <!-- Đối tác GH -->
+                            <td>
+                                <div class="w-full">
+                                    <span class="text-info-400 font-semibold">{{ data.ShowShipStatus }}</span>
+                                </div>
+                            </td>
+
+                            <!-- Mã vận đơn -->
+                            <td>
+                                <div class="w-full">
+                                    <span class="text-info-400 font-semibold">{{ data.TrackingRef }}</span>
+                                </div>
+                            </td>
+
+                            <!-- Tổng tiền -->
+                            <td>
+                                <div class="w-full" [align]="'right'">
+                                    <span>{{ data.AmountTotal || 0 | number :'1.0-3' }} đ</span>
+                                </div>
+                            </td>
+
+                            <!-- Còn nợ -->
+                            <td>
+                                <div class="w-full" [align]="'right'">
+                                    <span>{{ data.Residual || 0 | number :'1.0-3' }} đ</span>
+                                </div>
+                            </td>
+
+                            <!-- Trạng thái -->
+                            <td>
+                                <div class="w-full">
+                                    <tds-tag *ngIf="data.State ==='draft'" status='secondary' type="outline">{{
+                                        data.ShowState }}
+                                    </tds-tag>
+                                    <tds-tag *ngIf="data.State ==='paid'" status='primary' type="outline">{{
+                                        data.ShowState }}</tds-tag>
+                                    <tds-tag *ngIf="data.State ==='open'" status='info' type="outline">{{ data.ShowState
+                                        }}
+                                    </tds-tag>
+                                    <tds-tag *ngIf="data.State ==='cancel'" status='error' type="outline">{{
+                                        data.ShowState }}</tds-tag>
+                                    <p *ngIf="data.PaymentMessageCount" class="text-neutral-1-400 text-xs pt-2">Đã gửi
+                                        yêu cầu thanh toán</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </tds-table>
+        </div>
+    </div>
+</div>
