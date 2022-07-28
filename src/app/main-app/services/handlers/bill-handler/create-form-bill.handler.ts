@@ -38,7 +38,7 @@ export class CreateFormBillHandler {
       CashOnDelivery: [0],
       ShipWeight: [0],
       DeliveryNote: [null],
-      Ship_InsuranceFee: [null],
+      Ship_InsuranceFee: [0],
       CustomerDeliveryPrice: [null],
       TrackingRef: [null],
       Ship_Receiver: fb.group({
