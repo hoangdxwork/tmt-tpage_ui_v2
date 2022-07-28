@@ -15,11 +15,12 @@
     <tds-table #rowSelectionTable [showSizeChanger]="true" [frontPagination]="false"
         [listData]="lstOfData" [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count"
         [scroll]="{y:'auto', x: '1200px'}" [loading]="isLoading" (clickRefresh)="refreshData()"
-        (queryParams)="onQueryParamsChange($event)">
+        (queryParams)="onQueryParamsChange($event)"
+        [widthConfig]="['32px','266px','100px','100px','100px','100px','100px','100px','300px','155px','155px','155px']">
         <thead>
             <tr>
-                <th width="50px" class="border-r" [tdsLeft]="true" rowspan="2"></th>
-                <th  [tdsLeft]="true" class="border-r" rowspan="2" width="200px" *ngIf="isHidden('Name')">Tên chiến dịch</th>
+                <th class="border-r" [tdsLeft]="true" rowspan="2"></th>
+                <th  [tdsLeft]="true" class="border-r" rowspan="2" *ngIf="isHidden('Name')">Tên chiến dịch</th>
                 <th  class="text-center border-r border-b" colspan="3"  *ngIf="isHidden('Order')">Đơn hàng</th>
                 <th  class="text-center border-r border-b" colspan="3"  *ngIf="isHidden('Product')">Sản phẩm</th>
                 <th  class="border-r" rowspan="2" *ngIf="isHidden('ResumeTime')">Thống kê gửi tin</th>
