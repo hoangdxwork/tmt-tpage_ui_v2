@@ -21,7 +21,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TDSHelperArray, TDSHelperObject, TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
-import { AddProductHandler } from './add-product.handler';
+import { AddProductHandler } from '../../../services/handlers/add-product.handler';
 
 @Component({
   selector: 'app-config-add-product',

@@ -21,7 +21,9 @@ export const Message = {
   },
   Tag: {
     InsertSuccess: 'Gán nhãn thành công!',
-    InsertFail: 'Gán nhãn thất bại!'
+    InsertFail: 'Gán nhãn thất bại!',
+    UpdateSuccess: 'Cập nhật nhãn thành công!',
+    UpdateFail: 'Cập nhật nhãn thất bại!',
   },
   Order: {
     UpdateSuccess: 'Cập nhật đơn hàng thành công.',
