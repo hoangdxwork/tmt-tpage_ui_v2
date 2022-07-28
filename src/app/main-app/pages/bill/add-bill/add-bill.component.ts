@@ -42,7 +42,7 @@ import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { THelperCacheService } from 'src/app/lib';
 import { PartnerDetailDTO } from 'src/app/main-app/dto/partner/partner-detail.dto';
 import { ChangePartnerPriceListDTO } from 'src/app/main-app/dto/partner/change-partner-pricelist.dto';
-import { AddBillHandler } from './add-bill.handler';
+import { AddBillHandler } from '../../../services/handlers/add-bill.handler';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { CaculateFeeResponseDto, CalculateFeeInsuranceInfoResponseDto, CalculateFeeServiceExtrasResponseDto, CalculateFeeServiceResponseDto, DeliveryResponseDto } from 'src/app/main-app/dto/carrierV2/delivery-carrier-response.dto';
 import { AshipGetInfoConfigProviderDto } from 'src/app/main-app/dto/carrierV2/aship-info-config-provider-data.dto';
