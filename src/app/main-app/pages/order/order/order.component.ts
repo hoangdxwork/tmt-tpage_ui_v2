@@ -61,7 +61,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   psid: any;
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;
-  
+
   public filterObj: FilterObjSOOrderModel = {
     tags: [],
     status: [],
@@ -111,7 +111,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   widthCollapse: number = 0;
   isTabNavs: boolean = false;
   isProcessing: boolean = false;
-  
+
   private destroy$ = new Subject<void>();
 
   constructor(private cdRef: ChangeDetectorRef,
@@ -494,7 +494,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   // Refresh nhưng không refresh lại Tab, Index
   refreshDataCurrent() {
     this.indClickTag = "";
-    
+
     this.checked = false;
     this.indeterminate = false;
     this.setOfCheckedId = new Set<string>();

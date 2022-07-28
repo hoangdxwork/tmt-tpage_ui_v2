@@ -37,8 +37,6 @@ export class OdataGetOrderPartnerIdService extends BaseSevice {
     return this.apiService.getData<OdataGetOrderPartnerIdDTO>(api, null);
   }
 
-
-
   public buildFilter(filterObj: FilterObjLiveOrderModel) {
     let dataFilter: FilterDataRequestDTO = {
       logic: "and",
@@ -80,7 +78,5 @@ export class OdataGetOrderPartnerIdService extends BaseSevice {
 
     return dataFilter;
   }
-
-
 
 }

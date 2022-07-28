@@ -68,7 +68,9 @@ import { ExpandOrderDetailComponent } from './components/expand-order/expand-ord
 import { TDSNotificationModule } from "tds-ui/notification";
 import { ModalHistoryChatComponent } from './components/modal-history-chat/modal-history-chat.component';
 import { OdataGetOrderPartnerIdService } from '../../services/mock-odata/odata-getorder-partnerid.service';
-import { LiveOrderByPartnerComponent } from './components/live-order/live-order-bypartner.component';
+import { LiveOrderByPartnerComponent } from './components/live-order-bypartner/live-order-bypartner.component';
+import { OverviewOrderBypartnerComponent } from './components/overview-order-bypartner/overview-order-bypartner.component';
+import { OdataFastSaleOrderPartnerIdService } from '../../services/mock-odata/odata-fastsaleorder-partnerid.service';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -93,6 +95,7 @@ const SERVICES = [
   AttachmentService,
   AttachmentState,
   OdataGetOrderPartnerIdService,
+  OdataFastSaleOrderPartnerIdService,
 ]
 
 @NgModule({
@@ -113,6 +116,7 @@ const SERVICES = [
     UpdateInfoPartnerComponent,
     ModalHistoryChatComponent,
     LiveOrderByPartnerComponent,
+    OverviewOrderBypartnerComponent,
   ],
   imports: [
     CommonModule,
