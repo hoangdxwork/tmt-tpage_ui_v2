@@ -87,7 +87,7 @@ export class OverviewOrderBypartnerComponent implements OnInit, OnDestroy {
       this.lstStatus = res.value as any[];
 
       tabs = this.lstStatus.map((x: any, index: number) => {
-        return { Name: x.State, Index: index + 1, Total: x.Count } as TabNavsDTO
+        return { Name: x.ShowState, Index: index + 1, Total: x.Count } as TabNavsDTO
       });
 
       // tabs.push({ Name: "Tất cả", Index: 1, Total: total });
@@ -97,7 +97,7 @@ export class OverviewOrderBypartnerComponent implements OnInit, OnDestroy {
       this.lstOftabNavs = this.tabNavs;
     },
       err => {
-        this.message.error(err?.error?.message || 'cui pap')
+        this.message.error(err?.error?.message || 'Không tải được dữ liệu')
       });
   }
 

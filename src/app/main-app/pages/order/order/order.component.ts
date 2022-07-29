@@ -214,8 +214,6 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getViewData(params).subscribe((res: TDSSafeAny) => {
       this.count = res['@odata.count'] as number;
       this.lstOfData = [...res.value];
-      console.log("HUi", this.lstOfData);
-
     }, error => {
       this.message.error(`${error?.error?.message}` || Message.CanNotLoadData)
     });
@@ -550,6 +548,9 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
                 content: EditOrderComponent,
                 size: 'xl',
                 viewContainerRef: this.viewContainerRef,
+                bodyStyle:{
+                  'padding':'0'
+                },
                 componentParams: {
                   dataItem: { ...res }
                 }

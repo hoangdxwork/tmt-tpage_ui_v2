@@ -60,7 +60,7 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
   isEnableCreateOrder: boolean = false;
   enableInsuranceFee: boolean = false;
   isLoading: boolean = false;
-
+  selectedIndex: number = 0;
   quickOrderModel!: QuickSaleOnlineOrderModel;
   saleModel!: FastSaleOrder_DefaultDTOV2;
 
@@ -368,7 +368,7 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
     this.shipExtraServices = [];
 
     this.enableInsuranceFee =false;
-    this.saleModel.Ship_InsuranceFee = null;
+    // this.saleModel.Ship_InsuranceFee = null;
     this.saleModel.Ship_ServiceId = '';
     this.saleModel.Ship_ServiceName = '';
     delete this.saleModel.CustomerDeliveryPrice;

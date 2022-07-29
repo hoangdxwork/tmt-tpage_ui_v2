@@ -8,13 +8,14 @@
     <div>
         <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
             <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
-                <tds-filter-status-item [name]='item.Name|getOrderStatus:lstStatus' [count]='item.Total'
+                <tds-filter-status-item [name]='item.Name' [count]='item.Total'
                     [value]="item.Index">
+                    <!-- |getOrderStatus:lstStatus -->
                 </tds-filter-status-item>
             </ng-template>
         </tds-filter-status>
         <div class="max-h-[450px] h-[450px]">
-            <tds-table class="w-full h-full tds-table-rounded" #productTable [bordered]="true" [listData]="lstOrder"
+            <tds-table class="w-full h-full" #productTable [bordered]="true" [listData]="lstOrder"
                 [pageIndex]="pageIndex" [pageSize]="pageSize" [total]="count" [loading]="isLoading"
                 (queryParams)="onQueryParamsChange($event)">
                 <thead class="rounded">
@@ -39,8 +40,7 @@
                             <!-- Số HĐ -->
                             <td>
                                 <div class="w-full flex font-semibold text-center pb-2">
-                                    <span [ngClass]="data.Number ? 'text-info-400' : 'text-error-500'">{{ data.Number ||
-                                        'N/A' }}</span>
+                                    <span [ngClass]="data.Number ? 'text-info-400' : 'text-error-500'">{{ data.Number || 'N/A' }}</span>
                                 </div>
                                 <!-- Nhãn -->
                             </td>
