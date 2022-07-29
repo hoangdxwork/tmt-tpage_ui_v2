@@ -21,6 +21,7 @@ import { TDSNotificationService } from 'tds-ui/notification';
 import { ConfigAddAttributeProductModalComponent } from '../../pages/configs/components/config-attribute-modal/config-attribute-modal.component';
 import { ConfigAttributeLine, ConfigProductVariant, ConfigSuggestVariants } from '../../dto/configs/product/config-product-default.dto';
 import { CreateVariantsModalComponent } from '../../pages/configs/components/create-variants-modal/create-variants-modal.component';
+import { TpageAddUOMComponent } from '../tpage-add-uom/tpage-add-uom.component';
 
 @Component({
   selector: 'tpage-add-product',
@@ -389,6 +390,21 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     } else {
       this.message.error('Sản phẩm phải tồn tại ít nhất một biến thể');
     }
+  }
+
+  onAddUOM() {
+    const modal = this.modal.create({
+      title: 'Thêm đơn vị tính',
+      content: TpageAddUOMComponent,
+      size: 'md',
+      viewContainerRef: this.viewContainerRef
+    });
+
+    modal.afterClose.subscribe(result => {
+      if(TDSHelperObject.hasValue(result)) {
+        this.loadUOMCateg();
+      }
+    });
   }
 
   ngOnDestroy(): void {

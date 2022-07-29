@@ -1,8 +1,15 @@
+import { CRMMatchingService } from './../../../../services/crm-matching.service';
 import { Component, Input, OnInit } from '@angular/core';
-import { finalize } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { MessageDeliveryHistoryLiveCampaignParamsDTO, MessageHistoryFSOrderDTO } from 'src/app/main-app/dto/common/table.dto';
+import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
+import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
 import { CommonService } from 'src/app/main-app/services/common.service';
+import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
+import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { TDSMessageService } from 'tds-ui/message';
+import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSTableQueryParams } from 'tds-ui/table';
 
 @Component({
@@ -20,12 +27,19 @@ export class TableBillMessageComponent implements OnInit {
 
   isLoading: boolean = false;
   lstData: MessageHistoryFSOrderDTO[] = [];
+  mappingTeams: any[] = [];
+  currentMappingTeam: any;
+  currentConversation!: ConversationMatchingItem;
+  psid: any;
+  isOpenDrawer: boolean = false;
 
-  isOpenMessageFacebook: boolean = false;
-
+  private destroy$ = new Subject<void>();
   constructor(
     private commonService: CommonService,
-    private message: TDSMessageService
+    private message: TDSMessageService,
+    private partnerService: PartnerService,
+    private crmTeamService: CRMTeamService,
+    private crmMatchingService: CRMMatchingService
   ) { }
 
   ngOnInit(): void {
@@ -59,12 +73,87 @@ export class TableBillMessageComponent implements OnInit {
     return `${total || 0} tin nhắn thất bại`;
   }
 
-  openDrawerMessage() {
-    this.isOpenMessageFacebook = true;
+  openMiniChat(data: TDSSafeAny) {
+    let partnerId = data.PartnerId;
+
+    this.partnerService.getAllByMDBPartnerId(partnerId).pipe(takeUntil(this.destroy$)).subscribe((res: any): any => {
+
+      let pageIds: any = [];
+      res.map((x: any) => {
+        pageIds.push(x.page_id);
+      });
+
+      if (pageIds.length == 0) {
+        return this.message.error('Không có kênh kết nối với khách hàng này.');
+      }
+
+      this.crmTeamService.getActiveByPageIds$(pageIds)
+        .pipe(takeUntil(this.destroy$)).subscribe((teams: any): any => {
+
+          if (teams.length == 0) {
+            return this.message.error('Không có kênh kết nối với khách hàng này.');
+          }
+
+          this.mappingTeams = [];
+          let pageDic = {} as any;
+
+          teams.map((x: any) => {
+            let exist = res.filter((r: any) => r.page_id == x.Facebook_PageId)[0];
+
+            if (exist && !pageDic[exist.page_id]) {
+              pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
+
+              this.mappingTeams.push({
+                psid: exist.psid,
+                team: x
+              })
+            }
+          })
+
+          if (this.mappingTeams.length > 0) {
+            this.currentMappingTeam = this.mappingTeams[0];
+            this.loadMDBByPSId(this.currentMappingTeam.team?.Facebook_PageId, this.currentMappingTeam.psid);
+          }
+        })
+    }, error => {
+      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thao tác không thành công');
+    })
   }
 
-  closeDrawerMessage() {
-    this.isOpenMessageFacebook = false;
+  loadMDBByPSId(pageId: string, psid: string) {
+    // Xoá hội thoại hiện tại
+    (this.currentConversation as any) = null;
+
+    // get data currentConversation
+    this.crmMatchingService.getMDBByPSId(pageId, psid)
+      .pipe(takeUntil(this.destroy$)).subscribe((res: MDBByPSIdDTO) => {
+        if (res) {
+          res["keyTags"] = {};
+
+          if (res.tags && res.tags.length > 0) {
+            res.tags.map((x: any) => {
+              res["keyTags"][x.id] = true;
+            })
+          } else {
+            res.tags = [];
+          }
+
+          this.currentConversation = { ...res, ...this.currentConversation };
+          this.psid = res.psid;
+          this.isOpenDrawer = true;
+        }
+      }, error => {
+        this.message.error(error?.error?.message || 'Đã xảy ra lỗi')
+      })
+  }
+
+  selectMappingTeam(item: any) {
+    this.currentMappingTeam = item;
+    this.loadMDBByPSId(item.team?.Facebook_PageId, item.psid); // Tải lại hội thoại
+  }
+
+  closeDrawer() {
+    this.isOpenDrawer = false;
   }
 
   refreshData() {
@@ -79,4 +168,9 @@ export class TableBillMessageComponent implements OnInit {
     this.loadData();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }
+
