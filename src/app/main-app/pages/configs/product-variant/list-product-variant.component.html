@@ -92,7 +92,7 @@
                             <td>{{ data.NameGet }}</td>
                             <td>{{ data.UOMName }}</td>
                             <td>{{ data.DefaultCode }}</td>
-                            <td>{{ data.ListPrice | number: '1.0-3' }}</td>
+                            <td>{{ data.PriceVariant | number: '1.0-3' }}</td>
                             <td>
                                 <span class="flex items-center">
                                     <i
@@ -106,7 +106,7 @@
                                         <i class="tdsi-edit-fill text-neutral-1-500 text-xl leading-none"></i>
                                     </span>
                                 </button>
-                                <button tds-button-icon color="secondary" size="sm" 
+                                <button tds-button-icon color="secondary" size="sm"
                                     (click)="showRemoveModal(data.Id)">
                                     <span class="flex items-center">
                                         <i class="tdsi-trash-fill text-neutral-1-500 text-xl leading-none"></i>

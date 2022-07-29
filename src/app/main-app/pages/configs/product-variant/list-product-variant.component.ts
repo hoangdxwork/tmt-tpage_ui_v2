@@ -16,6 +16,8 @@ import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
+import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { SortEnum } from 'src/app/lib';
 
 @Component({
   selector: 'list-product-variant',
@@ -235,8 +237,8 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
       title: 'Cập nhật biến thể sản phẩm',
       content: EditProductVariantComponent,
       viewContainerRef: this.viewContainerRef,
-      componentParams: { 
-        id: id 
+      componentParams: {
+        id: id
       },
     });
     modal.afterClose.subscribe((result: any) => {
