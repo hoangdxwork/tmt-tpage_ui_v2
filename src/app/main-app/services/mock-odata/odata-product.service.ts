@@ -24,7 +24,7 @@ export class OdataProductService extends BaseSevice {
 
   getView(params: string): Observable<TDSSafeAny>{
     const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.prefix}/${this.table}?${params}&$count=true`,
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetView?${params}&$count=true`,
         method: TApiMethodType.get,
     }
     return this.apiService.getData<ODataProductDTO>(api, null);

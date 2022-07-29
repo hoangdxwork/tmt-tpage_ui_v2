@@ -5,15 +5,32 @@ import { Injectable } from "@angular/core";
 @Injectable({
     providedIn: 'root'
 })
-export abstract class EditVariantHandler {
+export  class EditVariantHandler {
 
-    static prepareModel(dataModel:ProductDTO, formModel:TDSSafeAny, images?:TDSSafeAny[]) {    
-        
-        dataModel = {...dataModel,...formModel};
-        dataModel.CategId = formModel.Categ.Id ? formModel.Categ.Id : dataModel.CategId;
-        dataModel.UOMId = formModel.UOM.Id ? formModel.UOM.Id : dataModel.UOMId;
-        dataModel.UOMName = formModel.UOM.Name ? formModel.UOM.Name : dataModel.UOMName;
-        dataModel.UOMPOId = formModel.UOMPO.Id ? formModel.UOMPO.Id : dataModel.UOMPOId;
-        dataModel.Images = images ? images : dataModel.Images;
+    public prepareModel(dataModel:ProductDTO, formModel:TDSSafeAny, images?:TDSSafeAny[]) {
+
+        dataModel.Name = formModel.Name;
+        dataModel.PriceVariant = formModel.PriceVariant;
+
+        if(formModel.Categ) {
+          dataModel.CategId = formModel.Categ?.Id;
+          dataModel.Categ = formModel.Categ;
+        }
+
+        if(formModel.UOM) {
+          dataModel.UOMId = formModel.UOM?.Id;
+          dataModel.UOM = formModel.UOM;
+        }
+
+        if(formModel.UOMPO) {
+          dataModel.UOMPOId = formModel.UOMPO?.Id;
+          dataModel.UOMPO = formModel.UOMPO;
+        }
+
+        if(images) {
+          dataModel.Images = images;
+        }
+
+        return dataModel;
       }
 }

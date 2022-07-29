@@ -108,6 +108,7 @@ import { DeliveryCarrierV2Service } from '../../services/delivery-carrier-v2.ser
 import { ConfigDeliveryConnectComponent } from './config-delivery/config-delivery-connect/config-delivery-connect.component';
 import { ConfigDeliveryUpdateComponent } from './config-delivery/config-delivery-update/config-delivery-update.component';
 import { AddVariantHandler } from './product-variant/create/add-variant.handler';
+import { EditVariantHandler } from './product-variant/edit/edit-variant.handler';
 
 
 const SERVICES = [
@@ -134,7 +135,8 @@ const SERVICES = [
     ProductIndexDBService,
     THelperCacheService,
     DeliveryCarrierV2Service,
-    AddVariantHandler
+    AddVariantHandler,
+    EditVariantHandler
 ]
 
 @NgModule({

@@ -54,6 +54,7 @@ export class EditProductVariantComponent implements OnInit {
     private productIndexDBService: ProductIndexDBService,
     private cacheApi: THelperCacheService,
     private productService: ProductService,
+    private editVariantHandler: EditVariantHandler,
     private message: TDSMessageService,
     private productUOMService: ProductUOMService,
     private productCategoryService: ProductCategoryService,
@@ -113,10 +114,12 @@ export class EditProductVariantComponent implements OnInit {
   }
 
   updateForm(data: TDSSafeAny) {
-    this._form.patchValue(data);
+
     this._form.controls['Categ'].setValue(data.Categ);
     this._form.controls['UOM'].setValue(data.UOM);
     this._form.controls['UOMPO'].setValue(data.UOMPO);
+    this._form.patchValue(data);
+
 
     if (TDSHelperArray.hasListValue(data.Images)) {
       data.Images.map((x: any) => {
@@ -195,8 +198,9 @@ export class EditProductVariantComponent implements OnInit {
   }
 
   prepareModel() {
-    EditVariantHandler.prepareModel(this.dataModel, this._form.value, this._form.controls['Images'].value); console.log(this.dataModel)
-    return this.dataModel;
+    let model = this.editVariantHandler.prepareModel(this.dataModel, this._form.value, this._form.controls['Images'].value) as ProductDTO;
+
+    return model;
   }
 
   checkError(){
