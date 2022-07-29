@@ -119,7 +119,6 @@ export class LiveCampaignListComponent implements OnInit, AfterViewInit, OnChang
   }
 
   ngOnInit(): void {
-    this.mapDatePicker();
     this.loadGridConfig();
   }
 

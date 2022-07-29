@@ -6,33 +6,35 @@
   <span *ngIf="isActive == true" class="tdsi-success-fill absolute text-[#28A745] text-body-2 top-[4px]"></span>
 </button>
 <tds-dropdown-menu #menu="tdsDropdownMenu" >
-  <div class="w-full p-4">
+  <div class="w-full p-4 text-body-2 text-neutral-1-900">
       <div class="mb-4">
-          <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">TÌM THEO NGÀY</p>
+          <p class="mb-2 font-semibold">TÌM THEO NGÀY</p>
           <div>
              <tds-range-picker  [(ngModel)]="datePicker" (ngModelChange)="onChangeDate($event)"> </tds-range-picker>
           </div>
       </div>
       <div class="w-full mb-4">
-          <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">TRẠNG THÁI</p>
-          <div>
-              <a *ngFor="let item of status" (click)="selectState(item)" [ngClass]="item.value === currentStatus ? 'bg-primary-1 text-[#fff]' : 'bg-neutral-3-200 '"
-                class="items-center  dark:bg-d-neutral-3-200 group  hover:bg-neutral-3-300 dark:hover:bg-d-neutral-3-300 rounded py-0.5 pl-2 pr-2 mr-2">
-                <span class="text-body-2 font-regular  dark:text-d-neutral-1-900 whitespace-nowrap box-border truncate"> {{item.text}}</span>
-              </a>
+          <p class="mb-2 font-semibold">TRẠNG THÁI</p>
+          <div class="flex flex-wrap gap-x-2">
+            <div *ngFor="let item of status">
+              <tds-tag mode="checkable" [checked]="item.value == currentStatus" (checkedChange)="selectState(item)">
+                {{item.text}}
+              </tds-tag>
+            </div>
           </div>
       </div>
       <div class="w-full mb-4">
-          <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">VẬN ĐƠN</p>
-          <div>
-            <a *ngFor="let item of trackingRefs" (click)="selectTracking(item)" [ngClass]="item.value === currentTracking ? 'bg-primary-1  text-[#fff]' : 'bg-neutral-3-200 '"
-                class="items-center dark:bg-d-neutral-3-200 group  hover:bg-neutral-3-300 dark:hover:bg-d-neutral-3-300 rounded py-0.5 pl-2 pr-2 mr-2">
-              <span class="text-body-2 font-regular  dark:text-d-neutral-1-900 whitespace-nowrap box-border truncate"> {{item.text}}</span>
-            </a>
+          <p class="mb-2 font-semibold">VẬN ĐƠN</p>
+          <div class="flex flex-wrap gap-x-2">
+            <div *ngFor="let item of trackingRefs">
+              <tds-tag mode="checkable" [checked]="item.value == currentTracking " (checkedChange)="selectTracking(item)">
+                {{item.text}}
+              </tds-tag>
+            </div>
           </div>
       </div>
       <div class="w-full mb-4">
-          <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">LOẠI ĐỐI TÁC GH</p>
+          <p class="mb-2 font-semibold">LOẠI ĐỐI TÁC GH</p>
           <div class="w-full">
             <tds-form-field>
               <tds-select valueField="Id" textField="Name" placeholder='Chọn loại đối tác'
@@ -43,7 +45,7 @@
           </div>
       </div>
       <div class="w-full mb-4">
-          <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">THẺ</p>
+          <p class="mb-2 font-semibold">THẺ</p>
           <div class="w-full">
             <tds-form-field>
                 <tds-select

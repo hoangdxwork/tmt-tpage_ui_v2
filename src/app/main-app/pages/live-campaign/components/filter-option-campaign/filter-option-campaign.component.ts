@@ -52,7 +52,6 @@ export class FilterOptionCampaignComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.mapDatePicker();
     this.lstLiveCampaigns = this.loadLiveCampaign();
   }
 

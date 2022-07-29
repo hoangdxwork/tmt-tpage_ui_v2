@@ -1,3 +1,14 @@
+import { ConversationOrderFacade } from './../../services/facades/conversation-order.facade';
+import { TDSMessageService } from 'tds-ui/message';
+import { ConversationEventFacade } from './../../services/facades/conversation-event.facade';
+import { DraftMessageService } from './../../services/conversation/draft-message.service';
+import { ConversationDataFacade } from './../../services/facades/conversation-data.facade';
+import { ActivityDataFacade } from './../../services/facades/activity-data.facade';
+import { CRMMatchingService } from './../../services/crm-matching.service';
+import { TDSConversationsModule } from './../../shared/tds-conversations/tds-conversations.module';
+import { OdataGetOrderPartnerIdService } from 'src/app/main-app/services/mock-odata/odata-getorder-partnerid.service';
+import { OrderPrintService } from 'src/app/main-app/services/print/order-print.service';
+import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LiveCampaignRoutingModule } from './live-campaign-routing.module';
@@ -120,7 +131,17 @@ const SERVICES = [
   ODataLiveCampaignBillService,
   AccountJournalService,
   AccountRegisterPaymentService,
-  ODataLiveCampaignService
+  ODataLiveCampaignService,
+  PrinterService,
+  OrderPrintService,
+  OdataGetOrderPartnerIdService,
+  CRMMatchingService,
+  TDSMessageService,
+  ActivityDataFacade,
+  ConversationDataFacade,
+  DraftMessageService,
+  ConversationEventFacade,
+  ConversationOrderFacade,
 ]
 
 @NgModule({
@@ -160,7 +181,8 @@ const SERVICES = [
     TDSModalModule,
     TDSFilterStatusModule,
     TDSTimelineModule,
-    TDSDrawerModule
+    TDSDrawerModule,
+    TDSConversationsModule
   ],
   providers: [
     ...SERVICES

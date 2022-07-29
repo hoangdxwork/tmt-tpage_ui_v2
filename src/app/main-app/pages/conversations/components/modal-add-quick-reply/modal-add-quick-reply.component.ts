@@ -56,6 +56,16 @@ export class ModalAddQuickReplyComponent implements OnInit {
     this.quickReplyService.insert(model).pipe(takeUntil(this.destroy$))
       .subscribe(res=>{
         this.message.success('Thêm trả lời nhanh thành công');
+        delete res['@odata.context'];
+        delete res['@odata.type'];
+        delete res['WritedById'];
+        delete res['CreatedById'];
+        delete res['CreatedById'];
+        delete res['IRModelId'];
+        delete res['LastUpdated'];
+        delete res['MailServerId'];
+        delete res['EventDatas'];
+
         this.quickReplyService.addDataActive(res);
         this.modal.destroy(res);
       }, err=>{

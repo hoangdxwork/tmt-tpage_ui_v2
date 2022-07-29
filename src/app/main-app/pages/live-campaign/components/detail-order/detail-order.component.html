@@ -88,18 +88,18 @@
             <!-- Thao tác -->
             <td>
               <div class="flex gap-x-2">
-                <button tds-button-icon color="secondary" size="sm">
+                <button tds-button-icon color="secondary" size="sm" (click)="openMiniChat(order)">
                   <span class="flex items-center">
-                    <i class="tdsi-messenger-fill"></i>
+                    <i class="tdsi-messenger-fill text-neutral-1-500"></i>
                   </span>
                 </button>
-                <button tds-button-icon color="secondary" size="sm" (click)="onEdit(order.Id)">
-                  <span class="flex items-center">
+                <button tds-button-icon color="secondary" size="sm" (click)="onEdit(order)">
+                  <span class="flex items-center text-neutral-1-500">
                     <i class="tdsi-edit-fill"></i>
                   </span>
                 </button>
                 <button tds-button-icon color="secondary" size="sm" (click)="onRemove(order.Id, order.Code)">
-                  <span class="flex items-center">
+                  <span class="flex items-center text-neutral-1-500">
                     <i class="tdsi-trash-fill"></i>
                   </span>
                 </button>
@@ -110,4 +110,24 @@
       </tds-table>
     </div>
   </div>
+  <tds-drawer [visible]="isOpenDrawer"
+    [bodyStyle]="{'background-color':'rgb(235 237 239)','overflow':'hidden','display': 'flex','flex-direction': 'column','padding': '0'}"
+    [placement]="'right'" [title]="titleMessage" (onClose)="closeDrawer()" [width]="'890px'">
+    <ng-template #titleMessage>
+      <span class="flex w-full items-center text-title-1 font-semibold text-neutral-900">
+        Gửi tin nhắn Facebook
+      </span>
+    </ng-template>
+    <ng-container *tdsDrawerContent>
+      <div class="w-full h-full flex flex-col overflow-hidden text-body-2">
+        <div class="w-full h-full flex overflow-hidden bg-neutral-3-200" cdkScrollable>
+          <div *ngIf="currentConversation && currentMappingTeam?.team" class="w-full">
+            <shared-tds-conversations class="flex w-full h-full" [team]="currentMappingTeam?.team"
+              [data]="currentConversation" [type]="'all'">
+            </shared-tds-conversations>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </tds-drawer>
 </div>
