@@ -53,6 +53,7 @@ export class CreateProductVariantComponent implements OnInit {
     private notification: TDSNotificationService,
     private CRMService: CRMTeamService,
     private productService: ProductService,
+    private addVariantHandler: AddVariantHandler,
     private productTemplateService: ProductTemplateService,
     private productUOMService: ProductUOMService,
     private productCategoryService: ProductCategoryService) {
@@ -256,13 +257,13 @@ export class CreateProductVariantComponent implements OnInit {
   }
 
   prepareModel() {
-    AddVariantHandler.prepareModel(this.modelDefault, this._form.value);
-    return this.modelDefault;
+    let model = this.addVariantHandler.prepareModel(this.modelDefault, this._form.value);
+    return model;
   }
 
   onSave() {
     let model = this.prepareModel();
-    
+
     if (!model.Name) {
       this.message.error('Vui lòng nhập tên sản phẩm');
     }

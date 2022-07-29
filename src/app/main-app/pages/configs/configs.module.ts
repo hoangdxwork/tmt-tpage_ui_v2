@@ -107,6 +107,7 @@ import { TDSEmptyModule } from 'tds-ui/empty';
 import { DeliveryCarrierV2Service } from '../../services/delivery-carrier-v2.service';
 import { ConfigDeliveryConnectComponent } from './config-delivery/config-delivery-connect/config-delivery-connect.component';
 import { ConfigDeliveryUpdateComponent } from './config-delivery/config-delivery-update/config-delivery-update.component';
+import { AddVariantHandler } from './product-variant/create/add-variant.handler';
 
 
 const SERVICES = [
@@ -132,7 +133,8 @@ const SERVICES = [
     CompanyService,
     ProductIndexDBService,
     THelperCacheService,
-    DeliveryCarrierV2Service
+    DeliveryCarrierV2Service,
+    AddVariantHandler
 ]
 
 @NgModule({
