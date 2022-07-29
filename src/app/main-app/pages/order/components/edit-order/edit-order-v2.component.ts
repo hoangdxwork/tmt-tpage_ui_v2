@@ -82,6 +82,7 @@ export class EditOrderV2Component implements OnInit {
   visiblePopoverTax: boolean = false;
   visibleDiscountLines: boolean = false;
   visibleShipExtraMoney: boolean = false;
+  isCalcFee: boolean = false;
 
   _cities!: SuggestCitiesDTO;
   _districts!: SuggestDistrictsDTO;
@@ -102,7 +103,7 @@ export class EditOrderV2Component implements OnInit {
   };
 
 
-  lstCarriers!: Observable<DeliveryCarrierDTOV2[]>;
+  lstCarrier!: DeliveryCarrierDTOV2[];
   lstInventory!: GetInventoryDTO;
   lstUser!: Array<ApplicationUserDTO>;
   stateReports!: PartnerStatusDTO[];
@@ -147,7 +148,6 @@ export class EditOrderV2Component implements OnInit {
       this.loadUser();
       this.loadPartnerStatus();
       this.loadSaleConfig();
-      this.lstCarriers = this.loadCarrier();
     }
   }
 
@@ -253,7 +253,9 @@ export class EditOrderV2Component implements OnInit {
   }
 
   loadCarrier() {
-    return this.deliveryCarrierService.get().pipe(map(res => res.value));
+      this.deliveryCarrierService.get().pipe(takeUntil(this.destroy$)).subscribe(res => {
+          this.lstCarrier = [...res.value];
+      })
   }
 
   loadSaleConfig() {
@@ -267,8 +269,10 @@ export class EditOrderV2Component implements OnInit {
 
   onEnableCreateOrder(event: TDSCheckboxChange) {
     this.isEnableCreateOrder = event.checked;
+
     if(event.checked == true && !this.saleModel) {
         this.loadSaleModel();
+        this.loadCarrier();
     }
   }
 
@@ -402,7 +406,7 @@ export class EditOrderV2Component implements OnInit {
     this.calculateFeeAship(model).catch((e: any) => {
       let error = e.error.message || e.error.error_description;
 
-      this.isLoading = false;
+      this.isCalcFee = false;
       return this.message.error(error);
     });
   }
@@ -722,7 +726,7 @@ export class EditOrderV2Component implements OnInit {
       }
 
       let model = this.prepareModelFeeV2();
-      this.isLoading = true;
+      this.isCalcFee = true;
 
       let promise = new Promise((resolve, reject): any => {
           this.fastSaleOrderService.calculateFeeAship(model).pipe(takeUntil(this.destroy$)).subscribe((res: DeliveryResponseDto<CaculateFeeResponseDto>) => {
@@ -759,7 +763,7 @@ export class EditOrderV2Component implements OnInit {
               }
             }
 
-            this.isLoading = false;
+            this.isCalcFee = false;
             resolve(res);
           }, error => {
             reject(error)
@@ -777,10 +781,10 @@ export class EditOrderV2Component implements OnInit {
     this.shipExtraServices = data.shipExtraServices;
   }
 
-  prepareModelFeeV2() {
+  prepareModelFeeV2() {debugger
       let companyId = this.saleConfig.configs.CompanyId;
 
-      let model = this.prepareModelFeeV2Handler.so_prepareModelFeeV2(this.shipExtraServices, this.saleModel, companyId, this.insuranceInfo );
+      let model = this.prepareModelFeeV2Handler.so_prepareModelFeeV2(this.shipExtraServices, this.saleModel, this.quickOrderModel,  companyId, this.insuranceInfo );
       return model;
   }
 

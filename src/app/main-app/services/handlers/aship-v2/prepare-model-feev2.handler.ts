@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { FormGroup } from "@angular/forms";
 import { CalculateFeeInsuranceInfoResponseDto } from "src/app/main-app/dto/carrierV2/delivery-carrier-response.dto";
 import { FastSaleOrder_DefaultDTOV2, ShipServiceExtra } from "src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto";
+import { QuickSaleOnlineOrderModel } from "src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto";
 
 
 @Injectable({
@@ -81,10 +82,11 @@ export class PrepareModelFeeV2Handler {
       return model;
     }
 
-    public so_prepareModelFeeV2(shipExtraServices: ShipServiceExtra[], saleModel: FastSaleOrder_DefaultDTOV2, companyId: number, insuranceInfo: CalculateFeeInsuranceInfoResponseDto | null) {
+    public so_prepareModelFeeV2(shipExtraServices: ShipServiceExtra[], saleModel: FastSaleOrder_DefaultDTOV2, quickOrderModel: QuickSaleOnlineOrderModel, companyId: number, insuranceInfo: CalculateFeeInsuranceInfoResponseDto | null) {
 
+      saleModel.PartnerId = quickOrderModel.PartnerId || quickOrderModel.Partner?.Id;
       let model: any = {
-          PartnerId: saleModel.Partner?.Id,
+          PartnerId: saleModel.PartnerId,
           CompanyId: saleModel.Company?.Id || companyId,
           CarrierId: saleModel.Carrier?.Id,
           ServiceId: saleModel.Ship_ServiceId || null,
@@ -126,23 +128,21 @@ export class PrepareModelFeeV2Handler {
 
       if (saleModel.Ship_Receiver) {
           model.Ship_Receiver = {
-              Name: saleModel.Ship_Receiver.Name,
-              Street: saleModel.Ship_Receiver.Street,
-              Phone: saleModel.Ship_Receiver.Phone,
+              Name: quickOrderModel.Name,
+              Street:  quickOrderModel.Address,
+              Phone: quickOrderModel.Telephone,
 
-              City: saleModel.Ship_Receiver.City?.code ? {
-                  code: saleModel.Ship_Receiver.City?.code,
-                  name: saleModel.Ship_Receiver.City?.name
+              City: quickOrderModel.CityCode ? {
+                  code: quickOrderModel.CityCode,
+                  name: quickOrderModel.CityName
               } : null,
-
-              District: saleModel.Ship_Receiver.District?.code ? {
-                  code: saleModel.Ship_Receiver.District?.code,
-                  name: saleModel.Ship_Receiver.District?.name
+              District: quickOrderModel.DistrictCode ? {
+                  code: quickOrderModel.DistrictCode,
+                  name: quickOrderModel.DistrictName
               } : null,
-
-              Ward: saleModel.Ship_Receiver.Ward?.code ? {
-                  code: saleModel.Ship_Receiver.Ward?.code,
-                  name: saleModel.Ship_Receiver.Ward?.name
+              Ward: quickOrderModel.WardCode ? {
+                  code: quickOrderModel.WardCode,
+                  name: quickOrderModel.WardName
               } : null
           }
       }

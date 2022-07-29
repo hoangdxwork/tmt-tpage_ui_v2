@@ -268,13 +268,13 @@
                         <div class="flex items-center">
                           <tds-label>Đối tác giao hàng</tds-label>
                         </div>
-                        <div class="col-span-2" *ngIf="lstCarriers">
+                        <div class="col-span-2" *ngIf="lstCarrier">
                           <tds-form-field>
                             <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng'
-                              [valuePrimitive]="false" [allowClear]="true" disabledField="isActive"
-                              [data]="(lstCarriers | async) || []" [ngModel]="saleModel.Carrier"
-                              [ngModelOptions]="{standalone: true}" [allowClear]="true"
-                              (selectChange)="onChangeCarrierV2($event)">
+                                [valuePrimitive]="false" [allowClear]="true" disabledField="isActive"
+                                [data]="lstCarrier" [(ngModel)]="saleModel.Carrier"
+                                [ngModelOptions]="{standalone: true}" [allowClear]="true"
+                                (ngModelChange)="onChangeCarrierV2($event)">
                             </tds-select>
                           </tds-form-field>
                         </div>
@@ -467,7 +467,7 @@
                                     </span>
                                   </button>
                                 </div> -->
-                                <span *ngIf="isLoading">
+                                <span *ngIf="isCalcFee">
                                   <tds-spinner [color]="'primary'" class="mr-1 w-5 h-5"></tds-spinner>
                                 </span>
                               </div>
