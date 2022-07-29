@@ -44,11 +44,6 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
   }
   idsModel: any = [];
 
-  sort: Array<SortDataRequestDTO> = [{
-    field: "DateCreated",
-    dir: SortEnum.desc,
-  }];
-
   private destroy$ = new Subject<void>();
 
   constructor(private router: Router,
@@ -91,7 +86,7 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
     this.lstOfData = [];
 
     let filters = this.odataProductService.buildFilter(this.filterObj || null);
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters || null, this.sort);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters || null);
 
     this.getViewData(params).subscribe((res: any) => {
       this.count = res['@odata.count'] as number;
@@ -124,7 +119,7 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
     this.filterObj.searchText = ev.value;
 
     let filters = this.odataProductService.buildFilter(this.filterObj || null);
-    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters || null, this.sort);
+    let params = THelperDataRequest.convertDataRequestToString(this.pageSize, this.pageIndex, filters || null);
 
     this.getViewData(params).subscribe((res: any) => {
       this.count = res['@odata.count'] as number;
