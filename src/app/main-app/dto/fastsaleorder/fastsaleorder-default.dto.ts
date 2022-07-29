@@ -647,7 +647,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     TimeLock?: any;
     PageName: string;
     Ship_Receiver: ShipReceiver;
-    Ship_Extras: ShipExtras;
+    Ship_Extras: ShipExtras | null;
     PaymentInfo: any[];
     Search?: any;
     Partner: Partner;

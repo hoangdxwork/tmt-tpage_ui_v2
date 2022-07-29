@@ -382,7 +382,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
               //gán giá trị bảo hiểm"
               if (!this.saleModel.Ship_InsuranceFee) {
-                this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras.InsuranceFee || this.quickOrderModel.TotalAmount;
+                this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras!.InsuranceFee || this.quickOrderModel.TotalAmount;
               }
           }
 
@@ -510,7 +510,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
         this.enableInsuranceFee = item.IsSelected;
 
         if (!this.saleModel.Ship_InsuranceFee) {
-            this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras.InsuranceFee || this.saleModel.AmountTotal;
+            this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras!.InsuranceFee || this.saleModel.AmountTotal;
         }
 
         this.calculateFeeRequest();
@@ -518,7 +518,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
         this.enableInsuranceFee = item.IsSelected;
 
         if (!this.saleModel.Ship_InsuranceFee) {
-            this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras.InsuranceFee || this.saleModel.AmountTotal;
+            this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras!.InsuranceFee || this.saleModel.AmountTotal;
         }
 
         this.calculateFeeRequest();

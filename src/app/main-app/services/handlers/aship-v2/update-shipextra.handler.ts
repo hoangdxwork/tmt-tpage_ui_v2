@@ -15,13 +15,32 @@ export class UpdateShipExtraHandler {
 
       shipExtraServices.forEach((x: ShipServiceExtra) => {
         if (x.Id === 'XMG') {
-            model.Ship_Extras.CollectMoneyGoods = x.ExtraMoney;
-            model.Ship_Extras.IsCollectMoneyGoods = true;
+            model.Ship_Extras!.CollectMoneyGoods = x.ExtraMoney;
+            model.Ship_Extras!.IsCollectMoneyGoods = true;
         }
-      });
+      })
+
       // TODO: cập nhật phí bảo hiểm
       model.Ship_Extras.InsuranceFee = model.Ship_InsuranceFee;
     }
+  }
+
+  public so_updateShipExtraHandler(shipExtraServices: ShipServiceExtra[], saleModel: FastSaleOrder_DefaultDTOV2) {
+
+    if (shipExtraServices && saleModel.Ship_Extras) {
+
+      shipExtraServices.forEach((x: ShipServiceExtra) => {
+        if (x.Id === 'XMG') {
+            saleModel.Ship_Extras!.CollectMoneyGoods = x.ExtraMoney;
+            saleModel.Ship_Extras!.IsCollectMoneyGoods = true;
+        }
+      })
+
+      // TODO: cập nhật phí bảo hiểm
+      saleModel.Ship_Extras.InsuranceFee = saleModel.Ship_InsuranceFee;
+    }
+
+    return saleModel;
   }
 
 }
