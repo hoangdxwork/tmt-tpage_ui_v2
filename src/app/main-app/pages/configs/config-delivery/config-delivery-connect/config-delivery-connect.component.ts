@@ -2,13 +2,9 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { DeliveryCarrierV2Service } from 'src/app/main-app/services/delivery-carrier-v2.service';
-import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { DeliveryDataResponseDto, GetDeliveryResponseDto } from 'src/app/main-app/dto/carrierV2/get-delivery.dto';
-import { DeliveryResponseDto } from 'src/app/main-app/dto/carrierV2/delivery-carrier-response.dto';
+import { TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 import { finalize } from 'rxjs';
-import { DeliveryCarrierDTO } from 'src/app/main-app/dto/carrier/delivery-carrier.dto';
-import { isBuffer } from 'lodash';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AshipGetInfoConfigProviderDto } from 'src/app/main-app/dto/carrierV2/aship-info-config-provider-data.dto';
 
@@ -19,8 +15,8 @@ import { AshipGetInfoConfigProviderDto } from 'src/app/main-app/dto/carrierV2/as
 
 export class ConfigDeliveryConnectComponent implements OnInit {
 
-  isLoading: boolean = false;
   _form!: FormGroup;
+  isLoading: boolean = false;
   providerType!: string;
   data: Array<AshipGetInfoConfigProviderDto> = [];
 
@@ -30,26 +26,25 @@ export class ConfigDeliveryConnectComponent implements OnInit {
     public deliveryCarrierV2Service: DeliveryCarrierV2Service,
     private fb: FormBuilder) {
 
+    this.providerType = this.activatedRoute.snapshot.queryParams?.type;
     this.createForm();
-
   }
 
   ngOnInit(): void {
-    this.providerType = this.activatedRoute.snapshot.queryParams?.type;
     this.loadConfigProvider();
   }
 
   createForm() {
     this._form = this.fb.group({
-      Name: [null, Validators.required],
-      Active: [true],
-      IsPrintCustom: [false],
-      ExtraProperties: [null],
-      Config_DefaultWeight: [100, Validators.required],
-      GHN_PackageLength: [10, Validators.required],
-      GHN_PackageWidth: [10, Validators.required],
-      GHN_PackageHeight: [10, Validators.required],
-      DeliveryType: [this.providerType, Validators.required]
+        Name: [null, Validators.required],
+        Active: [true],
+        IsPrintCustom: [false],
+        ExtraProperties: [null],
+        Config_DefaultWeight: [100, Validators.required],
+        GHN_PackageLength: [10, Validators.required],
+        GHN_PackageWidth: [10, Validators.required],
+        GHN_PackageHeight: [10, Validators.required],
+        DeliveryType: [this.providerType, Validators.required]
     });
   }
 
@@ -58,8 +53,7 @@ export class ConfigDeliveryConnectComponent implements OnInit {
       this.isLoading = true;
 
       this.deliveryCarrierV2Service.getConfigProviderToAship(this.providerType)
-        .pipe(finalize(() => this.isLoading = false))
-        .subscribe(res => {
+        .pipe(finalize(() => this.isLoading = false)).subscribe(res => {
 
           if (res.Success && res.Data) {
             this.data = res.Data.Configs ?? []

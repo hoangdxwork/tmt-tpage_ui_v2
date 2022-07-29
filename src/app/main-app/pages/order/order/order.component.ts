@@ -36,6 +36,7 @@ import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.
 import { GetListOrderIdsDTO } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
 import { HostListener } from '@angular/core';
 import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/main-app/dto/saleonlineorder/odata-saleonline-order.dto';
+import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 // import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 
 @Component({
@@ -548,7 +549,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
             delete res['@odata.context'];
 
             const modal = this.modal.create({
-                content: EditOrderComponent,
+                content: EditOrderV2Component,
                 size: 'xl',
                 viewContainerRef: this.viewContainerRef,
                 componentParams: {

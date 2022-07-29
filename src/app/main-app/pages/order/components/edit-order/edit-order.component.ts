@@ -269,7 +269,8 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
   }
 
   onEnableCreateOrder(event: TDSCheckboxChange) {
-    if(event.checked == true && !this.saleModel) {
+    this.isEnableCreateOrder = event.checked;
+    if(event.checked == true) {
         this.loadSaleModel();
     }
   }

@@ -768,7 +768,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     let value = this.selectShipServiceV2Handler.selectShipServiceV2(x, this.shipExtraServices, this._form);
 
     this.shipExtraServices = [];
-    this.shipExtraServices = [...value];
+    this.shipExtraServices = value;
   }
 
   changeDeliveryPrice(value: number) {

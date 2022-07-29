@@ -91,7 +91,8 @@ export class SelectShipServiceV2Handler {
             shipExtraServices.push(item);
       })
 
-      return [saleModel, shipExtraServices];
     }
+
+    return { saleModel, shipExtraServices };
   }
 }

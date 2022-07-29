@@ -76,7 +76,8 @@ import { SelectShipServiceV2Handler } from '../../services/handlers/aship-v2/sel
 import { UpdateShipExtraHandler } from '../../services/handlers/aship-v2/update-shipextra.handler';
 import { UpdateShipServiceExtrasHandler } from '../../services/handlers/aship-v2/update-shipservice-extras.handler';
 import { UpdateShipmentDetailAshipHandler } from '../../services/handlers/aship-v2/shipment-detail-aship.handler';
-// import { EditOrderV2Component } from './components/edit-order/edit-order-v2.component';
+import { SO_ComputeCaclHandler } from '../../services/handlers/order-handler/compute-cacl.handler';
+import { EditOrderV2Component } from './components/edit-order/edit-order-v2.component';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -106,7 +107,8 @@ const SERVICES = [
   SelectShipServiceV2Handler,
   UpdateShipExtraHandler,
   UpdateShipServiceExtrasHandler,
-  UpdateShipmentDetailAshipHandler
+  UpdateShipmentDetailAshipHandler,
+  SO_ComputeCaclHandler
 ]
 
 @NgModule({
@@ -128,7 +130,7 @@ const SERVICES = [
     ModalHistoryChatComponent,
     LiveOrderByPartnerComponent,
     OverviewOrderBypartnerComponent,
-    // EditOrderV2Component
+    EditOrderV2Component
   ],
   imports: [
     CommonModule,
