@@ -64,105 +64,104 @@ export class ConversationService extends BaseSevice {
   prefix: string = "";
   table: string = "";
   baseRestApi: string = "rest/v1.0/crmmatching";
-  baseRestApi_v2: string = "rest/v2.0/crmmatching";
   public currentUrlNext: string = "";
 
   constructor(private apiService: TCommonService) {
       super(apiService)
   }
 
-  get(queryObj: any, url?: string): Observable<CRMMatchingDTO> {
-    if (url) {
-        return this.getLink(url);
-    }
-    else {
-      let queryString = Object.keys(queryObj).map(key => {
-          return key + '=' + queryObj[key]
-      }).join('&');
+  // get(queryObj: any, url?: string): Observable<CRMMatchingDTO> {
+  //   if (url) {
+  //       return this.getLink(url);
+  //   }
+  //   else {
+  //     let queryString = Object.keys(queryObj).map(key => {
+  //         return key + '=' + queryObj[key]
+  //     }).join('&');
 
-      let api: TAPIDTO = {
-          url: `${this._BASE_URL}/${this.baseRestApi}?${queryString}`,
-          method: TApiMethodType.get
-      }
-      return this.apiService.getData<CRMMatchingDTO>(api, null);
-    }
-  }
+  //     let api: TAPIDTO = {
+  //         url: `${this._BASE_URL}/${this.baseRestApi}?${queryString}`,
+  //         method: TApiMethodType.get
+  //     }
+  //     return this.apiService.getData<CRMMatchingDTO>(api, null);
+  //   }
+  // }
 
-  get_v2(queryObj: any, url?: string): Observable<CRMMatchingDTO_v2> {
-    if (url) {
-      return this.getLink_v2(url);
-    }
-    else {
-      let queryString = Object.keys(queryObj).map(key => {
-          return key + '=' + queryObj[key]
-      }).join('&');
+  // get_v2(queryObj: any, url?: string): Observable<CRMMatchingDTO_v2> {
+  //   if (url) {
+  //     return this.getLink_v2(url);
+  //   }
+  //   else {
+  //     let queryString = Object.keys(queryObj).map(key => {
+  //         return key + '=' + queryObj[key]
+  //     }).join('&');
 
-      let api: TAPIDTO = {
-          url: `${this._BASE_URL}/${this.baseRestApi_v2}?${queryString}`,
-          method: TApiMethodType.get
-      }
-      return this.apiService.getData<CRMMatchingDTO_v2>(api, null);
-    }
-  }
+  //     let api: TAPIDTO = {
+  //         url: `${this._BASE_URL}/${this.baseRestApi_v2}?${queryString}`,
+  //         method: TApiMethodType.get
+  //     }
+  //     return this.apiService.getData<CRMMatchingDTO_v2>(api, null);
+  //   }
+  // }
 
-  getLink(url: string): Observable<CRMMatchingDTO> {
-    let api: TAPIDTO = {
-        url: `${url}`,
-        method: TApiMethodType.get
-    }
-    return this.apiService.getData<CRMMatchingDTO>(api, null);
-  }
+  // getLink(url: string): Observable<CRMMatchingDTO> {
+  //   let api: TAPIDTO = {
+  //       url: `${url}`,
+  //       method: TApiMethodType.get
+  //   }
+  //   return this.apiService.getData<CRMMatchingDTO>(api, null);
+  // }
 
-  getLink_v2(url: string): Observable<CRMMatchingDTO_v2> {
-    if(url != this.currentUrlNext) {
-        this.currentUrlNext = url; // check phân trang bị trùng
+  // getLink_v2(url: string): Observable<CRMMatchingDTO_v2> {
+  //   if(url != this.currentUrlNext) {
+  //       this.currentUrlNext = url; // check phân trang bị trùng
 
-        let api: TAPIDTO = {
-            url: `${url}`,
-            method: TApiMethodType.get
-        }
+  //       let api: TAPIDTO = {
+  //           url: `${url}`,
+  //           method: TApiMethodType.get
+  //       }
 
-        return this.apiService.getData<CRMMatchingDTO_v2>(api, null);
-    } else {
-      return of({} as any);
-    }
-  }
+  //       return this.apiService.getData<CRMMatchingDTO_v2>(api, null);
+  //   } else {
+  //     return of({} as any);
+  //   }
+  // }
 
-  createQuery(pageId: any, type: any, keyword?: any, page?: any, limit?: any) {
-    return {
-        pageId: pageId,
-        page: page || 1,
-        limit: limit || 20,
-        type: type
-    } as QueryStateConversationDTO;
-  }
+  // createQuery(pageId: any, type: any, keyword?: any, page?: any, limit?: any) {
+  //   return {
+  //       pageId: pageId,
+  //       page: page || 1,
+  //       limit: limit || 20,
+  //       type: type
+  //   } as QueryStateConversationDTO;
+  // }
 
-  createQuery_v2(pageId: any, type: any) {
-    return {
-        pageId: pageId,
-        type: type,
-    } as QueryStateConversationDTO_v2;
-  }
+  // createQuery_v2(pageId: any, type: any) {
+  //   return {
+  //       pageId: pageId,
+  //       type: type,
+  //   } as QueryStateConversationDTO_v2;
+  // }
 
-  createResponse(response: any) {
-    return {
-        hasNextPage: response.HasNextPage,
-        nextPageUrl: response.NextPage,
-        pageSize: response.PageSize,
-        totalCount: response.TotalCount,
-        totalPages: response.TotalPages
-    } as ResponseStateConversationDTO;
-  }
+  // createResponse(response: any) {
+  //   return {
+  //       hasNextPage: response.HasNextPage,
+  //       nextPageUrl: response.NextPage,
+  //       pageSize: response.PageSize,
+  //       totalCount: response.TotalCount,
+  //       totalPages: response.TotalPages
+  //   } as ResponseStateConversationDTO;
+  // }
 
-  createResponse_v2(response: CRMMatchingDTO_v2): any {
-    if(response && response.Paging) {
-        return {
-            hasNext: response.Paging.HasNext,
-            next: response.Paging.Next,
-            urlNext: response.Paging.UrlNext
-        } as PagingTimestampLowcase;
-    }
-  }
+  // createResponse_v2(response: CRMMatchingDTO_v2): any {
+  //   if(response && response.Paging) {
+  //       return {
+  //           hasNext: response.Paging.HasNext,
+  //           next: response.Paging.Next,
+  //           urlNext: response.Paging.UrlNext
+  //       } as PagingTimestampLowcase;
+  //   }
+  // }
 
   getNotes(page_id: string, psid: string): Observable<PagedList2<MDBFacebookMappingNoteDTO>> {
     const api: TAPIDTO = {
@@ -183,7 +182,8 @@ export class ConversationService extends BaseSevice {
   }
 
   setExtrasQuery(pageId: any, type: any, data: any) {
-    let query = this.createQuery(pageId, type);
+    // let query = this.createQuery(pageId, type);
+    let query: any = {};
 
     if (data.tag_ids) {
       query["tag_ids"] = data.tag_ids.join(',');

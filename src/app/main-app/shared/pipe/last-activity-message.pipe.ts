@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { ConversationMatchingItem } from "../../dto/conversation-all/conversation-all.dto";
+import { CrmMatchingV2Detail } from "../../dto/conversation-all/crm-matching-v2/crm-matching-v2.dot";
 
 @Pipe({
   name: 'lastActivityMessage'
@@ -7,7 +7,7 @@ import { ConversationMatchingItem } from "../../dto/conversation-all/conversatio
 
 export class LastActivityMessagePipe implements PipeTransform {
 
-    transform(item: ConversationMatchingItem, type: any): any {
+    transform(item: CrmMatchingV2Detail, type: any): any {
       if(type && type == "message" && item && item.last_message) return item.last_message;
 
       else if(type && type == "comment" && item && item.last_comment) return item.last_comment;

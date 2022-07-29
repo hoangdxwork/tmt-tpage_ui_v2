@@ -41,10 +41,14 @@ import { TDSMessageModule } from 'tds-ui/message';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import { FormatIconLikePipe } from '../pipe/format-icon-like.pipe';
+import { TDSConversationsV2Component } from './tds-conversations-v2.component';
+import { TDSConversationItemV2Component } from './tds-conversation-item-v2.component';
 
 const CMP =[
   TDSConversationsComponent,
+  TDSConversationsV2Component,
   TDSConversationItemComponent,
+  TDSConversationItemV2Component,
   IconEmojiMartComponent,
   ShowAttachmentComponent,
   ShowItemImageComponent

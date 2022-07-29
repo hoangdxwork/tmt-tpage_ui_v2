@@ -2,13 +2,15 @@ import { MakeActivityItemWebHook } from './../../dto/conversation/make-activity.
 import { CRMTeamDTO } from './../../dto/team/team.dto';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { ChatomniMessageDetail } from '../../dto/conversation-all/chatomni/chatomni-message.dto';
 
 @Component({
   selector: 'show-item-image',
   templateUrl: './show-item-image.component.html',
 })
 export class ShowItemImageComponent implements OnInit {
-  @Input() data!: MakeActivityItemWebHook;
+
+  @Input() data!: ChatomniMessageDetail;
   @Input() lstImage: TDSSafeAny[] = [];
   @Input() team!: CRMTeamDTO;
   @Input() name!: string;

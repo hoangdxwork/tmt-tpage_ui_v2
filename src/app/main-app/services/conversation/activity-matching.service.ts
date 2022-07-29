@@ -45,39 +45,6 @@ export class ActivityMatchingService extends BaseSevice  {
     }
   }
 
-  get_v2(queryObj: any, teamId: number, psid: any, url?: any): Observable<any> {
-    if (url) {
-        return this.getLink_v2(url);
-    } else {
-      let queryString = Object.keys(queryObj).map(key => {
-          return key + '=' + queryObj[key]
-      }).join('&');
-
-      let api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi_v2}/${teamId}_${psid}/messages?${queryString}`,
-        method: TApiMethodType.get,
-      }
-      return this.apiService.getData<any>(api, null);
-    }
-  }
-
-  get_v3(teamId: number, psid: any, type?: string): Observable<any> {
-      let api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi_v2}/${teamId}_${psid}/messages?type=${type}`,
-        method: TApiMethodType.get,
-      }
-      return this.apiService.getData<any>(api, null);
-  }
-
-  get_v2_comment(teamId: number, objectId: any): Observable<any> {
-
-    let api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi_v2}/${teamId}_${objectId}/comments`,
-      method: TApiMethodType.get,
-    }
-    return this.apiService.getData<any>(api, null);
-  }
-
   getLink(url: string): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
       url: `${url}`,
@@ -86,31 +53,12 @@ export class ActivityMatchingService extends BaseSevice  {
     return this.apiService.getData<CRMMessagesRequest>(api, null);
   }
 
-  getLink_v2(url: string): Observable<TDSSafeAny> {
-    if(url != this.currentUrlNext) {
-        this.currentUrlNext = url; // check phân trang bị trùng
-        const api: TAPIDTO = {
-          url: `${url}`,
-          method: TApiMethodType.get,
-        }
-        return this.apiService.getData<any>(api, null);
-    } else {
-      return of({} as any);
-    }
-  }
-
   createQuery(pageId: any, type: any, page?: any, limit?: any) {
     return {
       page_id: pageId,
       type: type,
       page: page || 1,
       limit: limit || 20,
-    } as any;
-  }
-
-  createQuery_v2(type: any) {
-    return {
-        type: type,
     } as any;
   }
 
@@ -124,15 +72,6 @@ export class ActivityMatchingService extends BaseSevice  {
     } as any;
   }
 
-  createResponse_v2(response: any): any {
-    if(response && response.Paging) {
-        return {
-            hasNext: response.Paging.HasNext,
-            next: response.Paging.Next,
-            urlNext: response.Paging.UrlNext
-        } as PagingTimestampLowcase;
-    }
-  }
 
   refreshAttachment(id: string, message_id: string, image_id: string): Observable<TDSSafeAny> {
     const api: TAPIDTO = {

@@ -112,6 +112,9 @@ import { OdataProductService } from '../../services/mock-odata/odata-product.ser
 import { ModalPostComponent } from './components/modal-post/modal-post.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ModalRenameAttachmentComponent } from './components/modal-rename-attachment/modal-rename-attachment.component';
+import { ChatomniMessageFacade } from '../../services/chatomni-facade/chatomni-message.facade';
+import { CrmMatchingV2Service } from '../../services/matching-v2-service/crm-matching-v2.service';
+import { CrmMatchingV2Facade } from '../../services/matching-v2-facade/crm-matching-v2.facade';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -149,7 +152,10 @@ const SERVICES = [
   AccountRegisterPaymentService,
   OdataSaleCouponProgramService,
   OdataProductService,
-  FacebookCommentService
+  FacebookCommentService,
+  ChatomniMessageFacade,
+  CrmMatchingV2Service,
+  CrmMatchingV2Facade
 ]
 
 @NgModule({
