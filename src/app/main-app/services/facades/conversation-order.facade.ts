@@ -283,7 +283,7 @@ export class ConversationOrderFacade extends BaseSevice  {
       });
   }
 
-  loadLastOrder(model: TabPartnerCvsRequestModel): any {debugger
+  loadLastOrder(model: TabPartnerCvsRequestModel): any {
     let x = {} as QuickSaleOnlineOrderModel;
     let order = model.LastOrder;
 

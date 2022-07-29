@@ -34,7 +34,7 @@
     <div class="w-1/4 h-full bg-white flex flex-col py-8 px-4 gap-8 overflow-hidden">
         <div class="flex w-full gap-x-2">
             <tpage-avatar-facebook [shape]="'circle'" [size]="48"
-                [psid]="data.from_id" [token]="team?.Facebook_PageToken">
+                [psid]="data.Data.from?.id" [token]="team.Facebook_PageToken">
             </tpage-avatar-facebook>
             <div class="flex flex-col justify-start text-left">
                 <label class="text-black text-title-1 font-semibold">{{name}}</label>
@@ -43,7 +43,7 @@
         </div>
         <div class="flex flex-wrap w-full overflow-hidden overflow-y-auto tds-custom-scroll">
             <div  *ngFor="let item of lstImage; let i = index" class="p-1 w-1/5">
-				<div class="w-full relative hover:opacity-75" 
+				<div class="w-full relative hover:opacity-75"
                     [ngClass]="i == this.imageClick?'':'opacity-50'"
                     [ngStyle]="{'padding-top.%': 100}">
 					<a class="absolute inset-0 w-full h-full flex" (click)="onChosseImage(i)">

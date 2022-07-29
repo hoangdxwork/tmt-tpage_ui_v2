@@ -28,6 +28,7 @@ import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/
 import { ConversationPartnerHandler } from './conversation-partner.handler';
 import { CreateOrUpdatePartnerModel } from 'src/app/main-app/dto/conversation-partner/create-update-partner.dto';
 import { QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
+import { CrmMatchingV2Detail } from 'src/app/main-app/dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
 
 @Component({
     selector: 'conversation-partner',
@@ -37,7 +38,7 @@ import { QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/
 
 export class ConversationPartnerComponent implements OnInit, OnChanges {
 
-  @Input() data!: ConversationMatchingItem; // dữ liệu nhận từ conversation-all
+  @Input() data!: CrmMatchingV2Detail; // dữ liệu nhận từ conversation-all
   @Input() team!: CRMTeamDTO;
   @Input() type!: string;
 
@@ -46,7 +47,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   _wards!: SuggestWardsDTO;
   _street!: string;
 
-  dataModel!: ConversationMatchingItem; // dùng gán lại this.data input
+  dataModel!: CrmMatchingV2Detail; // dùng gán lại this.data input
   objRevenue!: ResRevenueCustomerDTO;
   noteData: any = { items: [] };
   destroy$ = new Subject<void>();

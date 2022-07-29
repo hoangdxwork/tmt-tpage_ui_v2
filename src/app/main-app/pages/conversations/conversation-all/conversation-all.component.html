@@ -61,32 +61,32 @@
 
           <!-- List danh sách chat -->
           <div class="overflow-hidden flex flex-auto" >
-            <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstMatchingItem && lstMatchingItem.length > 0" >
+            <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstCrmMatching && lstCrmMatching.length > 0" >
 
               <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="myScroll" is-lock="true" observe-attributes
                   yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
 
-                  <div *ngFor="let item of lstMatchingItem | orderBy:'LastActivityTimeConverted':(isSort?'asc':'desc'); let i= index ; trackBy: trackByIndex">
-                    <div *ngIf="item && item.psid && currentConversationItem && currentTeam" @eventFadeState>
+                  <div *ngFor="let item of lstCrmMatching | orderBy:'LastActivityTimeConverted':(isSort?'asc':'desc'); let i= index ; trackBy: trackByIndex">
+                      <div *ngIf="item && item.psid && currentCrmMatching && currentTeam" @eventFadeState>
 
-                      <a (click)="changeCurrentCvsItem(item)"
-                          class="w-full {{isChanged ? 'cursor-wait' : 'cursor-pointer'}}">
-                          <current-conversation-item
-                              [item]="item" [psid]="item.psid" [type]="type"
-                              [currentConversationItem]="currentConversationItem"
-                              [state]="item.state"
-                              [team]="currentTeam" [isFastSend]="isFastSend"
-                              [isOpenCollapCheck]="isOpenCollapCheck"
-                              [checked]="setOfCheckedId.has(item.psid)"
-                              (checkedChange)="onItemChecked(item.psid, $event)">
-                          </current-conversation-item>
-                      </a>
-                    </div>
+                        <a (click)="changeCurrentCvsItem(item)" class="w-full">
+                          <!-- {{ (isChanged == true && currentCrmMatching) ? 'cursor-wait' : 'cursor-pointer'}} -->
+                            <current-conversation-item
+                                [item]="item" [psid]="item.psid" [type]="type"
+                                [currentConversationItem]="currentCrmMatching"
+                                [state]="item.state"
+                                [team]="currentTeam" [isFastSend]="isFastSend"
+                                [isOpenCollapCheck]="isOpenCollapCheck"
+                                [checked]="setOfCheckedId.has(item.psid)"
+                                (checkedChange)="onItemChecked(item.psid, $event)">
+                            </current-conversation-item>
+                        </a>
+                      </div>
                   </div>
 
                   <div class="absolute w-full flex justify-center z-10 bottom-10" *ngIf="isProcessing">
-                    <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
-                </div>
+                      <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
+                  </div>
               </div>
 
               <div class="flex-auto bg-white"></div>
@@ -97,13 +97,13 @@
   <!--Nội dung cuộc hội thoại-->
   <div class="flex 2xl:w-[48%] w-[45%]">
     <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
-        <div class="flex w-full flex-col h-full" *ngIf="currentConversationItem && currentTeam" @eventFadeState>
-            <shared-tds-conversations
+        <div class="flex w-full flex-col h-full" *ngIf="currentCrmMatching && currentTeam" @eventFadeState>
+            <shared-tds-conversations-v2
                 class="flex w-full h-full"
-                [state]="currentConversationItem.state"
-                [data]="currentConversationItem"
+                [state]="currentCrmMatching.state"
+                [data]="currentCrmMatching"
                 [type]="type" [team]="currentTeam">
-            </shared-tds-conversations>
+            </shared-tds-conversations-v2>
         </div>
     </div>
   </div>
@@ -128,12 +128,12 @@
                       </div>
                   </ng-template>
 
-                  <div *ngIf="currentConversationItem  && currentTeam">
-                      <conversation-partner [data]="currentConversationItem" [team]="currentTeam" [type]="type">
+                  <div *ngIf="currentCrmMatching  && currentTeam">
+                      <conversation-partner [data]="currentCrmMatching" [team]="currentTeam" [type]="type">
                       </conversation-partner>
                   </div>
 
-                  <div *ngIf="!currentConversationItem">
+                  <div *ngIf="!currentCrmMatching">
                     <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
                   </div>
               </tds-tab>
@@ -153,11 +153,11 @@
                       </div>
                   </ng-template>
 
-                  <div *ngIf="currentConversationItem && currentTeam ">
-                      <conversation-order [data]="currentConversationItem" [team]="currentTeam"></conversation-order>
+                  <div *ngIf="currentCrmMatching && currentTeam ">
+                      <conversation-order [data]="currentCrmMatching" [team]="currentTeam"></conversation-order>
                   </div>
 
-                  <div *ngIf="!currentConversationItem">
+                  <div *ngIf="!currentCrmMatching">
                       <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
                   </div>
               </tds-tab>

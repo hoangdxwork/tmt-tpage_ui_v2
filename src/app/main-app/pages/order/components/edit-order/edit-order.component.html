@@ -43,7 +43,7 @@
                       </div>
                       <div class="grid grid-cols-4 gap-x-4">
                         <div class="flex items-center">
-                          <tds-label>Điện thoại</tds-label>
+                          <tds-label>ĝiện thoại</tds-label>
                         </div>
                         <div class="col-span-3">
                           <tds-form-field>
@@ -63,7 +63,7 @@
                       </div>
                       <div class="grid grid-cols-4 gap-x-4">
                         <div class="flex items-start pt-1.5">
-                          <tds-label>Địa chỉ</tds-label>
+                          <tds-label>ĝịa chỉ</tds-label>
                         </div>
                         <div class="col-span-3">
                           <suggest-address [_isBtnExtend]="true" [_isExpanded]="false" [_cities]="_cities"
@@ -78,7 +78,7 @@
                         </div>
                         <div class="col-span-3">
                           <tds-form-field *ngIf="lstUser">
-                            <tds-select valueField="Id" textField="Name" placeholder='Chọn người bán' [valuePrimitive]="false"
+                            <tds-select valueField="Id" textField="Name" placeholder='Chờn người bán' [valuePrimitive]="false"
                               [allowClear]="true" [(ngModel)]="quickOrderModel.User" disabledField="isActive" [data]="lstUser"
                               [ngModelOptions]="{standalone: true}">
                             </tds-select>
@@ -87,7 +87,6 @@
                       </div>
                     </div>
 
-                    <!-- col 2 -->
                     <div>
                       <div class="grid grid-cols-4 gap-x-4">
                         <div class="flex items-center">
@@ -131,7 +130,18 @@
                 </div>
               </tds-tab>
 
-              <tds-tab title="Sản phẩm ({{ quickOrderModel.Details.length }})" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
+              <tds-tab [title]="titleProduct" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
+                <ng-template #titleProduct let-active="active">
+                  <div class="p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center"
+                    [ngClass]='{"border-primary-1":active, "border-transparent text-neutral-1-400  hover:border-primary-1":!active}'>
+                    <span class="mr-2">Sản phẩm</span>
+                    <div *ngIf="quickOrderModel.Details" class="text-caption-2 font-semibold py-0.5 px-1.5 rounded-full flex"
+                      [ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 bg-neutral-3-100 group-hover:text-white group-hover:bg-primary-1':!active}">
+                      {{quickOrderModel.Details.length}}
+                    </div>
+                  </div>
+                </ng-template>
+
                 <div class="w-full">
                   <div class="w-full flex gap-x-8">
                     <div class="relative flex-auto">
@@ -190,9 +200,9 @@
                           <th width="8%">STT</th>
                           <th width="26%">Sản phẩm</th>
                           <th width="13%">Số lượng</th>
-                          <th width="13%">Số tiền</th>
+                          <th width="13%">Số tiờn</th>
                           <th width="22%">Ghi chú</th>
-                          <th width="13%">Tổng tiền</th>
+                          <th width="13%">Tổng tiờn</th>
                           <th width="8%">Thao tác</th>
                         </tr>
                       </thead>
@@ -247,7 +257,7 @@
                         <tr>
                           <td colspan="7">
                             <div class="flex items-center gap-x-4 justify-end">
-                              <tds-label class="text-sm">Tổng tiền:</tds-label>
+                              <tds-label class="text-sm">Tổng tiờn:</tds-label>
                               <tds-label class="text-xl text-success-400"> {{ quickOrderModel.TotalAmount | numberCustom:'.'  }}
                               </tds-label>
                             </div>
@@ -266,11 +276,11 @@
                       <div>
                         <div class="grid grid-cols-3 gap-x-4 mt-4">
                           <div class="flex items-center">
-                            <tds-label>Đối tác giao hàng</tds-label>
+                            <tds-label>ĝối tác giao hàng</tds-label>
                           </div>
                           <div class="col-span-2" *ngIf="saleModel.Carrier && lstCarriers">
                             <tds-form-field>
-                              <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng'
+                              <tds-select valueField="Id" textField="Name" placeholder='Chờn đối tác giao hàng'
                                 [valuePrimitive]="false" [allowClear]="true" disabledField="isActive"
                                 [data]="(lstCarriers | async) || []" [(ngModel)]="saleModel.Carrier"
                                 [ngModelOptions]="{standalone: true}" [allowClear]="true"
@@ -282,7 +292,7 @@
                         <div *ngIf="saleModel.Carrier && !delivery_types.includes(saleModel.Carrier.DeliveryType)"
                           class="grid grid-cols-3 gap-x-4 mt-4">
                           <div class="flex items-center">
-                            <tds-label>Phí ship (Đối tác):</tds-label>
+                            <tds-label>Phí ship (ĝối tác):</tds-label>
                           </div>
                           <div class="col-span-2 flex gap-x-2 items-center">
                             <span class="text-primary-1 font-semibold mr-4">
@@ -320,7 +330,7 @@
                       <div>
                         <div class="grid grid-cols-3 gap-x-4 mt-4">
                           <div class="flex items-center">
-                            <tds-label>Giao hàng thu tiền</tds-label>
+                            <tds-label>Giao hàng thu tiờn</tds-label>
                           </div>
                           <div class="col-span-2">
                             <tds-form-field>
@@ -332,7 +342,7 @@
                         </div>
                         <div class="grid grid-cols-3 gap-x-4 mt-4">
                           <div class="flex items-center">
-                            <tds-label>Tiền cọc</tds-label>
+                            <tds-label>Tiờn cờc</tds-label>
                           </div>
                           <div class="col-span-2">
                             <tds-form-field>
@@ -413,11 +423,32 @@
                 </ng-template>
               </tds-tab>
 
-              <tds-tab title="Đơn hàng" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
+              <tds-tab [title]="titleOrder" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
+                <ng-template #titleOrder let-active="active">
+                  <div class="p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center"
+                    [ngClass]='{"border-primary-1":active, "border-transparent text-neutral-1-400  hover:border-primary-1":!active}'>
+                    <span class="mr-2">ĝơn hàng</span>
+                    <div *ngIf="quickOrderModel.Details" class="text-caption-2 font-semibold py-0.5 px-1.5 rounded-full flex"
+                      [ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 bg-neutral-3-100 group-hover:text-white group-hover:bg-primary-1':!active}">
+                      {{0}}
+                    </div>
+                  </div>
+                </ng-template>
+
                 <live-order-bypartner [partnerId]="quickOrderModel.PartnerId"></live-order-bypartner>
               </tds-tab>
+              <tds-tab [title]="titleBill" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
+                <ng-template #titleBill let-active="active">
+                  <div class="p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center"
+                    [ngClass]='{"border-primary-1":active, "border-transparent text-neutral-1-400  hover:border-primary-1":!active}'>
+                    <span class="mr-2">Phiếu bán hàng</span>
+                    <div *ngIf="quickOrderModel.Details" class="text-caption-2 font-semibold py-0.5 px-1.5 rounded-full flex"
+                      [ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 bg-neutral-3-100 group-hover:text-white group-hover:bg-primary-1':!active}">
+                      {{0}}
+                    </div>
+                  </div>
+                </ng-template>
 
-              <tds-tab title="Phiếu bán hàng" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
                 <overview-order-bypartner [partnerId]="quickOrderModel.PartnerId"></overview-order-bypartner>
               </tds-tab>
             </tds-tabset>
@@ -431,7 +462,7 @@
               </div>
 
               <div class="flex gap-x-4">
-                  <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+                  <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">ĝóng</button>
                   <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave('print')">
                       <span class="flex items-center">
                           <i class="tdsi-print-fill text-lg leading-none mr-2"></i>Lưu và in
