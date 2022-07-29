@@ -113,8 +113,10 @@ import { ModalPostComponent } from './components/modal-post/modal-post.component
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ModalRenameAttachmentComponent } from './components/modal-rename-attachment/modal-rename-attachment.component';
 import { ChatomniMessageFacade } from '../../services/chatomni-facade/chatomni-message.facade';
-import { CrmMatchingV2Service } from '../../services/matching-v2-service/crm-matching-v2.service';
 import { CrmMatchingV2Facade } from '../../services/matching-v2-facade/crm-matching-v2.facade';
+import { CrmMatchingV2Service } from '../../services/matching-v2-service/crm-matching-v2.service';
+import { ChatomniConversationService } from '../../services/chatomni-service/chatomni-conversation.service';
+import { ConversationAllV2Component } from './conversation-all/conversation-all-v2.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -155,7 +157,8 @@ const SERVICES = [
   FacebookCommentService,
   ChatomniMessageFacade,
   CrmMatchingV2Service,
-  CrmMatchingV2Facade
+  CrmMatchingV2Facade,
+  ChatomniConversationService
 ]
 
 @NgModule({
@@ -200,7 +203,8 @@ const SERVICES = [
     ProductPagefbComponent,
     ModalApplyPromotionComponent,
     ModalPostComponent,
-    ModalRenameAttachmentComponent
+    ModalRenameAttachmentComponent,
+    ConversationAllV2Component
   ],
 
   imports: [

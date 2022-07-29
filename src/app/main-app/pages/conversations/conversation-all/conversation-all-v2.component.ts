@@ -1,5 +1,5 @@
-import { FacebookRESTService } from './../../../services/facebook-rest.service';
-import { ModalSendMessageAllComponent } from './../components/modal-send-message-all/modal-send-message-all.component';
+import { FacebookRESTService } from '../../../services/facebook-rest.service';
+import { ModalSendMessageAllComponent } from '../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -22,18 +22,18 @@ import { SignalRConnectionService } from 'src/app/main-app/services/signalR/sign
 import { TDSNotificationService } from 'tds-ui/notification';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { CrmMatchingV2Service } from 'src/app/main-app/services/matching-v2-service/crm-matching-v2.service';
-import { CrmMatchingV2Detail, CrmMatchingV2DTO } from 'src/app/main-app/dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
 import { CrmMatchingV2Facade } from 'src/app/main-app/services/matching-v2-facade/crm-matching-v2.facade';
 import { ChatomniMessageService } from 'src/app/main-app/services/chatomni-service/chatomni-message.service';
 import { ChatomniConversationService } from 'src/app/main-app/services/chatomni-service/chatomni-conversation.service';
+import { ChatomniConversationDto, ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 
 @Component({
-  selector: 'app-conversation-all',
-  templateUrl: './conversation-all.component.html',
+  selector: 'app-conversation-all-v2',
+  templateUrl: './conversation-all-v2.component.html',
   animations: [eventFadeStateTrigger, eventCollapTrigger]
 })
 
-export class ConversationAllComponent extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ConversationAllV2Component extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
@@ -45,10 +45,10 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
 
   isLoading: boolean = false;
-  dataSource$!: Observable<CrmMatchingV2DTO> ;
-  lstCrmMatching: CrmMatchingV2Detail[] = [];
+  dataSource$!: Observable<ChatomniConversationDto> ;
+  lstCrmMatching: ChatomniConversationItemDto[] = [];
   psid!: string;
-  currentCrmMatching!: CrmMatchingV2Detail | undefined;
+  currentCrmMatching!: ChatomniConversationItemDto | undefined;
   isFastSend: boolean = false;
   checked: boolean = false;
   isOpenCollapCheck: boolean = false;
@@ -115,8 +115,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       this.type = params?.params?.type;
       this.setParamsUrl(params.params);
 
-      let exist = (TDSHelperString.isString(this.currentCrmMatching?.psid) != TDSHelperString.isString(this.paramsUrl?.psid))
-        || (!TDSHelperString.isString(this.currentCrmMatching?.psid) && !TDSHelperString.isString(this.paramsUrl?.psid));
+      let exist = (TDSHelperString.isString(this.currentCrmMatching?.ConversationId) != TDSHelperString.isString(this.paramsUrl?.psid))
+        || (!TDSHelperString.isString(this.currentCrmMatching?.ConversationId) && !TDSHelperString.isString(this.paramsUrl?.psid));
 
       if(exist){
           this.onChangeConversation(team);
@@ -147,7 +147,8 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.validateData();
     // Sử dụng ngZone chạy bất đồng bộ dữ liệu
     this.ngZone.run(() => {
-        this.dataSource$ = this.crmMatchingV2Service.makeDataSource(team.Facebook_PageId, this.type, queryObj);
+        // this.dataSource$ = this.crmMatchingV2Service.makeDataSource(team.Facebook_PageId, this.type, queryObj);
+        this.dataSource$ = this.chatomniConversationService.makeDataSource(team.Id, this.type, queryObj);
     })
 
     this.loadConversations(this.dataSource$);
@@ -159,21 +160,21 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.lstCrmMatching = [];
   }
 
-  loadConversations(dataSource$: Observable<any>) {
+  loadConversations(dataSource$: Observable<ChatomniConversationDto>) {
     if(this.isChanged || this.isProcessing){
       return;
     }
 
     this.isProcessing = true;
     dataSource$.pipe(takeUntil(this.destroy$), finalize(() => { this.isProcessing = false }))
-      .subscribe((res: CrmMatchingV2DTO) => {
+      .subscribe((res: ChatomniConversationDto) => {
 
         if (res && TDSHelperArray.hasListValue(res.Items)) {
             this.lstCrmMatching = [...res.Items];
             let psid = this.paramsUrl?.psid || null;
 
             //TODO: check psid khi load lần 2,3,4...
-            let exits = this.lstCrmMatching.filter(x => x.psid == psid)[0] ;
+            let exits = this.lstCrmMatching.filter(x => x.ConversationId == psid)[0] ;
             if (exits) {
               this.setCurrentConversationItem(exits);
             } else {
@@ -189,35 +190,32 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   //TODO: matching đang chọn active
-  setCurrentConversationItem(item: CrmMatchingV2Detail) {
+  setCurrentConversationItem(item: ChatomniConversationItemDto) {
     if (TDSHelperObject.hasValue(item)) {
 
       if (this.isFastSend == true) {
-          this.conversationDataFacade.checkSendMessage(item.page_id, this.type, item.psid);
+          this.conversationDataFacade.checkSendMessage(this.currentTeam.Facebook_PageId, this.type, item.ConversationId);
       }
 
       else {
         //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
         this.currentCrmMatching = {...item};
-        this.psid = item.psid;
+        this.psid = item.ConversationId;
 
         let uri = this.router.url.split("?")[0];
-        let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${item?.psid}`;
+        let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${item?.ConversationId}`;
         this.router.navigateByUrl(uriParams);
       }
     }
   }
 
-  changeCurrentCvsItem(item: any) {
+  changeCurrentCvsItem(item: ChatomniConversationItemDto) {
     if(this.isOpenCollapCheck){
-        this.updateCheckedSet(item.id,!this.setOfCheckedId.has(item.id))
+        this.updateCheckedSet(item.Id, !this.setOfCheckedId.has(item.Id))
         this.refreshCheckedStatus();
         return;
     }
 
-    if(item.psid == this.currentCrmMatching?.psid && item.page_id == this.currentCrmMatching?.page_id) {
-      return;
-    }
     // if (this.isChanged || this.isProcessing) {
     //   return;
     // }
@@ -241,10 +239,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
       this.isProcessing = true;
       this.ngZone.run(() => {
-          this.dataSource$ = this.crmMatchingV2Service.nextDataSource(this.currentTeam?.Facebook_PageId, this.queryFilter);
+          // this.dataSource$ = this.crmMatchingV2Service.nextDataSource(this.currentTeam?.Facebook_PageId, this.queryFilter);
+          this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam?.Id, this.queryFilter);
       })
 
-      this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: CrmMatchingV2DTO) => {
+      this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniConversationDto) => {
         if(res && res.Items.length > 0) {
             this.lstCrmMatching = [...res.Items];
         }
@@ -322,15 +321,15 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onAllChecked(value: TDSSafeAny): void {
-    this.lstCrmMatching.forEach(x => this.updateCheckedSet(x.id, value.checked));
+    this.lstCrmMatching.forEach(x => this.updateCheckedSet(x.Id, value.checked));
 
     this.refreshCheckedStatus();
     this.isCheckedAll = !this.isCheckedAll;
   }
 
   refreshCheckedStatus(): void {
-    this.checked = this.lstCrmMatching.every(x => this.setOfCheckedId.has(x.id));
-    this.indeterminate = this.lstCrmMatching.some(x => this.setOfCheckedId.has(x.id)) && !this.checked;
+    this.checked = this.lstCrmMatching.every(x => this.setOfCheckedId.has(x.Id));
+    this.indeterminate = this.lstCrmMatching.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
   }
 
   printData(){
@@ -406,7 +405,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     if (Object.keys(queryObj || {}).length <= 4) {
       this.isRefreshing = true;
 
-      this.dataSource$ = this.crmMatchingV2Service.makeDataSource(this.currentTeam.Facebook_PageId, this.type)
+      this.dataSource$ = this.chatomniConversationService.makeDataSource(this.currentTeam.Id, this.type)
           .pipe(takeUntil(this.destroy$), finalize(() => {
               setTimeout(() => {
                 this.isRefreshing = false;
@@ -415,11 +414,11 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     } else {
 
-      this.dataSource$ = this.crmMatchingV2Service.makeDataSource(this.currentTeam.Facebook_PageId, this.type, queryObj).pipe(map((res => {
+      this.dataSource$ = this.chatomniConversationService.makeDataSource(this.currentTeam.Id, this.type, queryObj).pipe(map((res => {
         if (res && res.Items) {
             this.total = res.Items.length;
         }
-        return res
+        return res;
       })))
     }
 
@@ -467,80 +466,80 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   hubEvents() {
-    this.sgRConnectionService._onChatbotEvent$.pipe(takeUntil(this.destroy$)).subscribe((hubs: OnChatBotSignalRModel) => {
-        if(hubs && hubs.data) {
-            // TODO: nếu dữ liệu ko phải là conversation hiện tại
-            let item = this.lstCrmMatching.filter(x => x.page_id == hubs.data.pageId && x.psid == hubs.data.psid)[0];
-            // TODO: dữ liệu là conversation hiện tại truyền cho shared-tds-conversations
-            let exits = this.currentCrmMatching?.page_id == hubs.data.pageId && this.currentCrmMatching?.psid == hubs.data.psid;
+    // this.sgRConnectionService._onChatbotEvent$.pipe(takeUntil(this.destroy$)).subscribe((hubs: OnChatBotSignalRModel) => {
+    //     if(hubs && hubs.data) {
+    //         // TODO: nếu dữ liệu ko phải là conversation hiện tại
+    //         let item = this.lstCrmMatching.filter(x => x.page_id == hubs.data.pageId && x.psid == hubs.data.psid)[0];
+    //         // TODO: dữ liệu là conversation hiện tại truyền cho shared-tds-conversations
+    //         let exits = this.currentCrmMatching?.page_id == hubs.data.pageId && this.currentCrmMatching?.psid == hubs.data.psid;
 
-            let data = {
-              team: {},
-              psid: hubs.data.psid,
-              message:  hubs.message,
-            }
+    //         let data = {
+    //           team: {},
+    //           psid: hubs.data.psid,
+    //           message:  hubs.message,
+    //         }
 
-            switch (hubs.type) {
-              case `${TypeOnChatBot.AdminTransferChatBot}`:
-                  if(item) {
-                    item.state = StateChatbot.Warning;
-                  }
-                  if(exits) {
-                      this.currentCrmMatching!.state = StateChatbot.Warning;
-                  }
-                  // TODO: Lấy teamId của page
-                  this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
-                    if(res){
-                       data.team = res[0];
-                    }
-                    this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
-                  }, err =>{
-                    this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
-                  })
-                  // this.notification.warning('Chatbot gặp vấn đề' , `${hubs.message}`, { placement: 'bottomLeft' });
-                break;
+    //         switch (hubs.type) {
+    //           case `${TypeOnChatBot.AdminTransferChatBot}`:
+    //               if(item) {
+    //                 item.state = StateChatbot.Warning;
+    //               }
+    //               if(exits) {
+    //                   this.currentCrmMatching!.state = StateChatbot.Warning;
+    //               }
+    //               // TODO: Lấy teamId của page
+    //               this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
+    //                 if(res){
+    //                    data.team = res[0];
+    //                 }
+    //                 this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
+    //               }, err =>{
+    //                 this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
+    //               })
+    //               // this.notification.warning('Chatbot gặp vấn đề' , `${hubs.message}`, { placement: 'bottomLeft' });
+    //             break;
 
-              case `${TypeOnChatBot.ChatbotTranserAdmin}`:
-                  if(item) {
-                    item.state = StateChatbot.Normal;
-                  }
+    //           case `${TypeOnChatBot.ChatbotTranserAdmin}`:
+    //               if(item) {
+    //                 item.state = StateChatbot.Normal;
+    //               }
 
-                  if(exits) {
-                      this.currentCrmMatching!.state = StateChatbot.Normal;
-                  }
+    //               if(exits) {
+    //                   this.currentCrmMatching!.state = StateChatbot.Normal;
+    //               }
 
-                  this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
-                    if(res){
-                      data.team = res[0];
-                    }
-                    this.notification.template(this.templateChatbotTranserAdmin, { data: data, placement: 'bottomLeft' });
-                  }, err =>{
-                    this.notification.template(this.templateChatbotTranserAdmin, { data: data, placement: 'bottomLeft' });
-                  })
-                break;
+    //               this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
+    //                 if(res){
+    //                   data.team = res[0];
+    //                 }
+    //                 this.notification.template(this.templateChatbotTranserAdmin, { data: data, placement: 'bottomLeft' });
+    //               }, err =>{
+    //                 this.notification.template(this.templateChatbotTranserAdmin, { data: data, placement: 'bottomLeft' });
+    //               })
+    //             break;
 
-              default:
-                break;
-            }
-       }
-    })
+    //           default:
+    //             break;
+    //         }
+    //    }
+    // })
   }
 
   getLink(team: TDSSafeAny, psid: string){
-    if(TDSHelperObject.hasValue(team)){
-      if(team.Id != this.currentTeam.Id){
-        this.crmService.changeTeamFromLayout$.emit(team);
-        this.onChangeConversation(team);
-      }
-      let data = this.lstCrmMatching.find(x => x.psid == psid)
-      if(data){
-        this.currentCrmMatching = data;
-      }
+    // if(TDSHelperObject.hasValue(team)){
+    //   if(team.Id != this.currentTeam.Id){
+    //     this.crmService.changeTeamFromLayout$.emit(team);
+    //     this.onChangeConversation(team);
+    //   }
+    //   let data = this.lstCrmMatching.find(x => x.psid == psid)
+    //   if(data){
+    //     this.currentCrmMatching = data;
+    //   }
 
-      let uri = 'conversation/all';
-      let uriParams = `${uri}?teamId=${team.Id}&type=all&psid=${psid}`;
-      this.router.navigateByUrl(uriParams)
-    }
+    //   let uri = 'conversation/all';
+    //   let uriParams = `${uri}?teamId=${team.Id}&type=all&psid=${psid}`;
+    //   this.router.navigateByUrl(uriParams)
+    // }
   }
 
   notificationMessNew(){

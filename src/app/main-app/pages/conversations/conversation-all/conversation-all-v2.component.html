@@ -1,0 +1,208 @@
+<div class="w-full h-full flex items-stretch bg-neutral-3-200 text-body-2 text-neutral-1-900">
+  <!-- conversation list -->
+  <div class="2xl:w-1/5 w-1/4 h-full ">
+      <div class="w-full flex flex-col gap-0.5 pl-1 h-full">
+          <div class="bg-white  flex flex-col gap-y-4 p-2.5 z-10">
+            <div class="block items-center">
+                  <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)" (isRefresh)="onRefresh($event)" [isRefreshing]="isRefreshing"></tpage-team-dropdown>
+            </div>
+            <!-- <div class="tdsi-reload-fill text-3xl text-neutral-1-200"></div> -->
+            <div class="flex items-center gap-x-1">
+              <tds-form-field class="w-full mr-1 !bg-neutral-3-50">
+                <input class="placeholder-neutral-1-400 truncate" #innerText  placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput (keyup.enter)="onSearch($event)"/>
+                <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
+              </tds-form-field>
+              <div class="flex gap-0.5">
+                <!-- button fillter -->
+                <conversation-all-filter
+                  (onFilter)="onSubmitFilter($event)"
+                  [totalCount]="total"
+                  [team]="currentTeam">
+                </conversation-all-filter>
+
+                <button (click)="setSort()" class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center bg-primary-3">
+                  <span class="flex items-center text-primary-1">
+                      <i [ngClass]="isSort?'tdsi-sort-arrow-up-fill':'tdsi-sort-arrow-down-fill'" class="text-xl leading-5"></i>
+                  </span>
+                </button>
+                <button class="w-[34px] h-[34px] rounded-md hover:bg-neutral-3-50 flex justify-center items-center"
+                  (click)="setCheck()"
+                  [ngClass]="isOpenCollapCheck?'bg-primary-3 text-primary-1':'bg-white text-neutral-1-500'">
+                    <span class="flex items-center ">
+                        <i class="tdsi-success-line text-xl leading-5"></i>
+                    </span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Xử lý click button checkbox -->
+          <div [@openCollapse]="!isOpenCollapCheck" [ngClass]="isOpenCollapCheck?'border-y-2 border-neutral-3-200':''" class="w-ful flex bg-white ">
+            <div class="w-full flex justify-between items-center py-2 px-3.5">
+              <div class="flex gap-x-2">
+                <button tds-button color="primary" (click)="showModalSendMessage()">
+                  <span class="flex items-center">
+                    <i class="tdsi-messenger-fill text-lg leading-none mr-2"></i>Gửi tin nhắn
+                  </span>
+                </button>
+                <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
+                  <button tds-button color="info" (click)="printData()">
+                    <span class="flex items-center">
+                      <i class="tdsi-print-fill text-lg leading-none mr-2"></i>In thông tin
+                    </span>
+                  </button>
+                </tds-spin>
+                <ng-template #indicatorTemplate>
+                  <tds-spinner [color]="'primary'" class="w-5 h-5"></tds-spinner>
+                </ng-template>
+              </div>
+              <tds-checkbox class="pr-2.5" (change)="onAllChecked($event)" [indeterminate]="indeterminate" [checked]="checked"></tds-checkbox>
+            </div>
+          </div>
+
+          <!-- List danh sách chat -->
+          <div class="overflow-hidden flex flex-auto" >
+            <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstCrmMatching && lstCrmMatching.length > 0" >
+
+              <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="myScroll" is-lock="true" observe-attributes
+                  yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
+
+                  <div *ngFor="let item of lstCrmMatching | orderBy:'LastActivityTimeConverted':(isSort?'asc':'desc'); let i= index ; trackBy: trackByIndex">
+                      <div *ngIf="item && item.psid && currentCrmMatching && currentTeam" @eventFadeState>
+
+                        <a (click)="changeCurrentCvsItem(item)" class="w-full">
+                          <!-- {{ (isChanged == true && currentCrmMatching) ? 'cursor-wait' : 'cursor-pointer'}} -->
+                            <!-- <current-conversation-item
+                                [item]="item" [psid]="item.psid" [type]="type"
+                                [currentConversationItem]="currentCrmMatching"
+                                [state]="item.state"
+                                [team]="currentTeam" [isFastSend]="isFastSend"
+                                [isOpenCollapCheck]="isOpenCollapCheck"
+                                [checked]="setOfCheckedId.has(item.psid)"
+                                (checkedChange)="onItemChecked(item.psid, $event)">
+                            </current-conversation-item> -->
+                        </a>
+                      </div>
+                  </div>
+
+                  <div class="absolute w-full flex justify-center z-10 bottom-10" *ngIf="isProcessing">
+                      <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
+                  </div>
+              </div>
+
+              <div class="flex-auto bg-white"></div>
+            </div>
+          </div>
+      </div>
+  </div>
+  <!--Nội dung cuộc hội thoại-->
+  <div class="flex 2xl:w-[48%] w-[45%]">
+    <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
+        <div class="flex w-full flex-col h-full" *ngIf="currentCrmMatching && currentTeam" @eventFadeState>
+            <!-- <shared-tds-conversations-v2
+                class="flex w-full h-full"
+                [state]="currentCrmMatching.state"
+                [data]="currentCrmMatching"
+                [type]="type" [team]="currentTeam">
+            </shared-tds-conversations-v2> -->
+        </div>
+    </div>
+  </div>
+  <!--Xử lí thông tin khách hàng & Đơn hàng-->
+  <!-- Dữ liệu load vào form partner trước từ funtion checkConversation(),sau đó lấy dữ liệu gán lại form order -->
+  <tds-spin class="flex 2xl:w-[32%] w-[30%] h-full" [spinning]="isLoading">
+      <div class="w-full h-full flex flex-col">
+          <tds-tabset class="bg-white border border-neutral-2-200 w-full" [clsTab]="'flex-1'" [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
+              <tds-tab [title]="conversationPartner" clsContent="border-t border-neutral-2-200 -mt-px h-full flex flex-col">
+
+                  <ng-template #conversationPartner let-active="active">
+
+                      <div class="flex items-center justify-center font-semibold cursor-pointer text-body-2 py-4 pr-4 relative  group"
+                          [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
+
+                          <span class="mr-2">Khách hàng</span>
+
+                          <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
+                              class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
+                          </div>
+
+                      </div>
+                  </ng-template>
+
+                  <div *ngIf="currentCrmMatching  && currentTeam">
+                      <!-- <conversation-partner [data]="currentCrmMatching" [team]="currentTeam" [type]="type">
+                      </conversation-partner> -->
+                  </div>
+
+                  <div *ngIf="!currentCrmMatching">
+                    <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
+                  </div>
+              </tds-tab>
+
+              <tds-tab [title]="conversationOrder" clsContent="border-t border-neutral-2-200 h-full -mt-px flex flex-col">
+                  <ng-template #conversationOrder let-active="active">
+                      <div class="flex items-center font-semibold justify-center text-body-2 p-4 relative group cursor-pointer"
+                        [ngClass]='{"text-neutral-1-900":active,"text-neutral-1-400 hover:text-neutral-1-900":!active}'>
+
+                          <span class="mr-2 flex items-center">  Đơn hàng
+                              <tds-tag status='primary' class="ml-3" *ngIf="orderCode"> #{{orderCode}} </tds-tag>
+                          </span>
+
+                          <div [ngClass]="{'block':active,'hidden group-hover:block':!active}"
+                            class="hidden border-b-3 border-primary-1 absolute left-0 right-0 bottom-0 bg-primary-1">
+                          </div>
+                      </div>
+                  </ng-template>
+
+                  <div *ngIf="currentCrmMatching && currentTeam ">
+                      <!-- <conversation-order [data]="currentCrmMatching" [team]="currentTeam"></conversation-order> -->
+                  </div>
+
+                  <div *ngIf="!currentCrmMatching">
+                      <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
+                  </div>
+              </tds-tab>
+          </tds-tabset>
+      </div>
+  </tds-spin>
+</div>
+
+<!-- Notification Admin Transfer ChatBot -->
+<ng-template #templateAdminTransferChatBot let-data="data" >
+  <div class="bg-white flex gap-x-4 text-body-2 text-neutral-1-900 py-1 cursor-pointer" (click)="getLink(data.team, data.psid)">
+    <span class="tdsi-warning-fill text-warning-400 text-heading-4"></span>
+    <div class="flex flex-col gap-y-2">
+      <span class="font-semibold text-body-1">
+        Chatbot gặp vấn đề
+        <span class="text-caption-2 font-regular">{{!data.teamId? '':'(không tìm thấy trang)'}}</span>
+      </span>
+      <span class="">{{data.message}}</span>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Notification ChatBot Transfer Admin -->
+<ng-template #templateChatbotTranserAdmin let-data="data">
+  <div class="bg-white flex gap-x-4 text-body-2 text-neutral-1-900 py-1 cursor-pointer" (click)="getLink(data.team, data.psid)">
+    <span class="tdsi-information-fill text-info-400 text-heading-4"></span>
+    <div class="flex flex-col gap-y-2">
+      <span class="font-semibold text-body-1">
+        Chatbot đã được xử lý
+        <span class="text-caption-2 font-regular">{{!data.teamId? '':'(không tìm thấy trang)'}}</span>
+      </span>
+      <span class="">{{data.message}}</span>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Notification Tin nhắn mới -->
+<ng-template #templateNotificationMessNew let-data="data">
+  <div class="bg-white flex gap-x-4 text-body-2 text-neutral-1-900 py-1 cursor-pointer" (click)="getLink(data.team, data.psid)">
+    <span class="{{data.teamId? 'tdsi-success-fill': 'tdsi-error-fill'}} text-success-400 text-heading-4"></span>
+    <div class="flex flex-col gap-y-2">
+      <span class="font-semibold text-body-1">
+        Tin nhắn mới
+      </span>
+      <span class="">{{data.message}}</span>
+    </div>
+  </div>
+</ng-template>
