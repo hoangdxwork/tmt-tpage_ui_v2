@@ -676,6 +676,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
     }
 
     this.calculateFeeAship(model).catch((e: any) => {
+      this.isCalcFee = false;
       let error = e.error.message || e.error.error_description;
       if (error)
           this.message.error(error);
@@ -1597,10 +1598,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
         this.cdRef.detectChanges();
 
       }, error => {
-
-          this.isCalcFee = false;
-          this.message.error(`${error.error_description}` || 'Tính phí đã xảy ra lỗi!');
-          this.cdRef.detectChanges();
+          reject(error)
       })
     })
 
