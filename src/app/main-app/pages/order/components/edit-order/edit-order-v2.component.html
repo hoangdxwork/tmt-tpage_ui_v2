@@ -279,37 +279,27 @@
                           </tds-form-field>
                         </div>
                       </div>
-                      <div *ngIf="saleModel.Carrier" class="grid grid-cols-3 gap-x-4 mt-4">
-                        <div class="flex items-center">
-                          <tds-label>Phí ship (Đối tác):</tds-label>
-                        </div>
-                        <div class="col-span-2 flex gap-x-2 items-center">
-                          <span class="text-primary-1 font-semibold mr-4">
-                            {{saleModel.CustomerDeliveryPrice? (saleModel.CustomerDeliveryPrice | numberCustom:'.') : 0 }}
-                          </span>
-                          <button tds-button-icon color="secondary" (click)="calcFee()"><i class="tdsi-reload-fill text-neutral-1-500"></i></button>
-                          <button tds-button-icon color="secondary"><i class="tdsi-three-dots-horizon-fill text-neutral-1-500"></i></button>
-                        </div>
-                      </div>
+
                       <div class="grid grid-cols-3 gap-x-4 mt-4">
                         <div class="flex items-center">
                           <tds-label>Phí giao hàng</tds-label>
                         </div>
                         <div class="col-span-2">
                           <tds-form-field>
-                            <tds-input-number [min]="0" [step]="1000" [ngModel]="saleModel.DeliveryPrice"
+                            <tds-input-number [min]="0" [step]="1000" [ngModel]="saleModel.DeliveryPrice"  (ngModelChange)="changeDeliveryPrice($event)"
                               [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
                             </tds-input-number>
                           </tds-form-field>
                         </div>
                       </div>
+
                       <div class="grid grid-cols-3 gap-x-4 mt-4">
                         <div class="flex items-center">
                           <tds-label>Khối lượng ship(g)</tds-label>
                         </div>
                         <div class="col-span-2">
                           <tds-form-field>
-                            <tds-input-number [min]="0" [step]="100" [ngModel]="saleModel.ShipWeight"
+                            <tds-input-number [min]="0" [step]="100" [ngModel]="saleModel.ShipWeight" (ngModelChange)="changeShipWeight($event)"
                               [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
                             </tds-input-number>
                           </tds-form-field>
@@ -335,7 +325,7 @@
                         </div>
                         <div class="col-span-2">
                           <tds-form-field>
-                            <tds-input-number [min]="0" [step]="1000" [ngModel]="saleModel.AmountDeposit"
+                            <tds-input-number [min]="0" [step]="1000" [ngModel]="saleModel.AmountDeposit"  (ngModelChange)="changeAmountDeposit($event)"
                               [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
                             </tds-input-number>
                           </tds-form-field>
@@ -374,7 +364,8 @@
                               <tds-form-field class="w-3/4">
                                 <tds-select valueField="ServiceId" textField="ServiceName"
                                     (ngModelChange)="onSelectShipServiceId($event)" placeholder='Chọn dịch vụ'
-                                    [valuePrimitive]="false" formControlName="Ship_ServiceId" disabledField="isActive"
+                                    disabledField="isActive" [valuePrimitive]="false"
+                                    [ngModel]="saleModel.Ship_ServiceId" [ngModelOptions]="{standalone: true}"
                                     [data]="shipServices" [allowClear]="true">
                                     <ng-template tds-label-tmp let-item="item">
                                       {{item.data.ServiceName}}

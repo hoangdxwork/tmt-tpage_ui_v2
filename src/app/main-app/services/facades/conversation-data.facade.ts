@@ -47,8 +47,8 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
       super(apiService);
 
       this.crmTeamService.onChangeListFaceBook().subscribe((res :any) => {
-        if(res && TDSHelperArray.isArray(res.Items)){
-            this.lstTeam = res.Items;
+        if(res && TDSHelperArray.isArray(res)){
+            this.lstTeam = res;
         }
       })
 

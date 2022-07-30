@@ -549,7 +549,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
             delete res['@odata.context'];
 
             const modal = this.modal.create({
-                content: EditOrderComponent,
+                content: EditOrderV2Component,
                 size: 'xl',
                 viewContainerRef: this.viewContainerRef,
                 componentParams: {

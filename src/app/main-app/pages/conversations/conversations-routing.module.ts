@@ -7,15 +7,15 @@ import { ConversationPostComponent } from './conversation-post/conversation-post
 const routes: Routes = [
   {
     path: 'all',
-    component: ConversationAllComponent
+    component: ConversationAllV2Component
   },
   {
     path: 'inbox',
-    component: ConversationAllComponent
+    component: ConversationAllV2Component
   },
   {
     path: 'comment',
-    component: ConversationAllComponent
+    component: ConversationAllV2Component
   },
   {
     path: 'post',

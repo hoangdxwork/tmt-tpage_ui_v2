@@ -83,7 +83,7 @@ export class PrepareModelFeeV2Handler {
     }
 
     public so_prepareModelFeeV2(shipExtraServices: ShipServiceExtra[], saleModel: FastSaleOrder_DefaultDTOV2, quickOrderModel: QuickSaleOnlineOrderModel, companyId: number, insuranceInfo: CalculateFeeInsuranceInfoResponseDto | null) {
-
+debugger
       saleModel.PartnerId = quickOrderModel.PartnerId || quickOrderModel.Partner?.Id;
       let model: any = {
           PartnerId: saleModel.PartnerId,
@@ -126,25 +126,23 @@ export class PrepareModelFeeV2Handler {
           }
       }
 
-      if (saleModel.Ship_Receiver) {
-          model.Ship_Receiver = {
-              Name: quickOrderModel.Name,
-              Street:  quickOrderModel.Address,
-              Phone: quickOrderModel.Telephone,
+      model.Ship_Receiver = {
+          Name: quickOrderModel.Name,
+          Street: quickOrderModel.Address,
+          Phone: quickOrderModel.Telephone,
 
-              City: quickOrderModel.CityCode ? {
-                  code: quickOrderModel.CityCode,
-                  name: quickOrderModel.CityName
-              } : null,
-              District: quickOrderModel.DistrictCode ? {
-                  code: quickOrderModel.DistrictCode,
-                  name: quickOrderModel.DistrictName
-              } : null,
-              Ward: quickOrderModel.WardCode ? {
-                  code: quickOrderModel.WardCode,
-                  name: quickOrderModel.WardName
-              } : null
-          }
+          City: quickOrderModel.CityCode ? {
+              code: quickOrderModel.CityCode,
+              name: quickOrderModel.CityName
+          } : null,
+          District: quickOrderModel.DistrictCode ? {
+              code: quickOrderModel.DistrictCode,
+              name: quickOrderModel.DistrictName
+          } : null,
+          Ward: quickOrderModel.WardCode ? {
+              code: quickOrderModel.WardCode,
+              name: quickOrderModel.WardName
+          } : null
       }
 
       return model;

@@ -21,6 +21,7 @@ import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-anim
 import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
 import { TDSModalService } from 'tds-ui/modal';
 import { ProductPagefbComponent } from '../product-pagefb/product-pagefb.component';
+import { ChildChatOmniChannelDto } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 
 @Component({
   selector: 'post-comment-all',
@@ -194,7 +195,7 @@ export class PostCommentAllComponent implements OnDestroy {
           model.parent_id = item.id;
           model.fbid = item.from?.id;
 
-          this.activityMatchingService.replyComment(this.team?.Id, model)
+          this.activityMatchingService.replyComment(this.team!.Id, model)
             .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
 
               this.message.success("Trả lời bình luận thành công.");

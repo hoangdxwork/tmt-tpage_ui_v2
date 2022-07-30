@@ -42,6 +42,7 @@ import { ChatomniMessageService } from '../../services/chatomni-service/chatomni
 import { ChatomniMessageDTO } from '../../dto/conversation-all/chatomni/chatomni-message.dto';
 import { CrmMatchingV2Detail } from '../../dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
 import { ChatomniMessageFacade } from '../../services/chatomni-facade/chatomni-message.facade';
+import { ChatomniConversationItemDto } from '../../dto/conversation-all/chatomni/chatomni-conversation';
 
 @Component({
   selector: 'shared-tds-conversations-v2',
@@ -58,11 +59,11 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   @HostBinding("@eventFadeState") eventAnimation = true;
 
   @Input() tdsHeader?: string | TemplateRef<void>;
-  @Input() data!: CrmMatchingV2Detail;
+  @Input() data!: ChatomniConversationItemDto;
   @Input() type!: string;
   @Input() team!: CRMTeamDTO;
   @Input() miniChat!: boolean;
-  @Input() state!: StateChatbot | null;
+  @Input() state!: number | undefined;
 
   destroy$ = new Subject<void>();
   isLoading: boolean = false;
@@ -97,6 +98,8 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
   isEnableChatbot: boolean = false;
 
+  pageId!: string;
+
   constructor(private modalService: TDSModalService,
     private chatomniMessageService: ChatomniMessageService,
     private omniMessageFacade: ChatomniMessageFacade,
@@ -119,10 +122,12 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       this.userLoggedId = this.sharedService.userLogged?.Id;
   }
 
-  ngOnInit() {debugger
+  ngOnInit() {
     this.validateData();
-    if (this.data && this.team && TDSHelperString.hasValueString(this.type)) {
-      this.loadData(this.data);
+
+    if (this.data && this.team && TDSHelperString.hasValueString(this.type)) {debugger
+        this.pageId = this.team.ChannelId;
+        this.loadData(this.data);
     }
 
     this.partnerService.onLoadOrderFromTabPartner$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
@@ -133,7 +138,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.onRetryMessage();
   }
 
-  loadData(data: CrmMatchingV2Detail) {
+  loadData(data: ChatomniConversationItemDto) {
     this.loadTags(data);
     this.loadUser();
 
@@ -143,11 +148,11 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   }
 
   //TODO: data.id = data.psid
-  loadMessages(data: CrmMatchingV2Detail): any {
+  loadMessages(data: ChatomniConversationItemDto): any {
     this.isLoading = true;
 
     this.ngZone.run(() => {
-      this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.psid, this.type);
+      this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type);
     })
 
     this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniMessageDTO) => {
@@ -190,16 +195,15 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
   private markSeen() {
     let assign_user_id = this.userLoggedId;
-    let page_id = this.team.Facebook_PageId;
 
     if(assign_user_id) {
-      this.crmMatchingService.markSeen(page_id, this.data!.psid, this.type, assign_user_id)
+      this.crmMatchingService.markSeen(this.pageId, this.data!.ConversationId, this.type, assign_user_id)
         .pipe(takeUntil(this.destroy$)).subscribe((x: any) => {
-          // Cập nhật count_unread
-          this.conversationEventFacade.updateMarkSeenBadge(this.data.page_id, this.type, this.data.psid);
-          this.cdRef.markForCheck();
+            // Cập nhật count_unread
+            this.conversationEventFacade.updateMarkSeenBadge(this.pageId, this.type, this.data.ConversationId);
+            this.cdRef.markForCheck();
         }, error => {
-          this.message.error(`markseen: ${error?.error?.message}`);
+            this.message.error(`markseen: ${error?.error?.message}`);
       })
     }
   }
@@ -218,7 +222,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
           let data = this.uploadedImages;
 
           result.forEach((x: string)=>{
-            data.push(x);
+              data.push(x);
           })
 
           this.uploadedImages = [...data];
@@ -248,8 +252,8 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   onProductSelected(event: any) {
     let that= this;
     let model = {
-      page_id: this.team.Facebook_PageId,
-      to_id: this.data.psid,
+      page_id: this.pageId,
+      to_id: this.data.ConversationId,
 
       product: {
         Id: event.Id,
@@ -259,7 +263,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       }
     };
 
-    this.activityMatchingService.addTemplateMessage(this.data.psid, model)
+    this.activityMatchingService.addTemplateMessage(this.data.ConversationId, model)
       .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         that.activityDataFacade.messageServer(res);
         that.conversationDataFacade.messageServer(res);
@@ -286,15 +290,15 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     });
   }
 
-  showModalListBill(data: CrmMatchingV2Detail) {
+  showModalListBill(data: ChatomniConversationItemDto) {
     this.modalService.create({
       title: 'Phiếu bán hàng',
       content: ModalListBillComponent,
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
       componentParams: {
-        page_id: data.page_id,
-        psid: data.psid,
+        page_id: this.pageId,
+        psid: data.ConversationId,
       }
     });
   }
@@ -346,7 +350,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.scrollToIndex?.nativeElement?.scrollTo(0, 1);
 
     this.isProcessing = true;
-    let id = `${this.team.Id}_${this.data.psid}`;
+    let id = `${this.team.Id}_${this.data.ConversationId}`;
 
     this.ngZone.run(() => {
         this.dataSource$ = this.chatomniMessageService.nextDataSource(id);
@@ -374,39 +378,39 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
       this.data = changes["data"].currentValue;
       let object = {
-          psid: this.data.psid,
+          psid: this.data.ConversationId,
           messages: this.messageModel,
           images: this.uploadedImages
       }
 
       this.draftMessageService.onUpdateDraftMessage$.emit(object);
-      let draftMessage = this.draftMessageService.getMessageByASIds(this.data.psid);
+      let draftMessage = this.draftMessageService.getMessageByASIds(this.data.ConversationId);
       this.messageModel = draftMessage?.message;
 
       if ((draftMessage.images as any[]).length > 0) {
-        this.uploadedImages = draftMessage.images;
-        this.currentImage = draftMessage.images[draftMessage.images.length - 1];
+          this.uploadedImages = draftMessage.images;
+          this.currentImage = draftMessage.images[draftMessage.images.length - 1];
       } else {
-        delete this.currentImage;
-        this.uploadedImages = [];
+          delete this.currentImage;
+          this.uploadedImages = [];
       }
 
       // TODO: Refetch data
-      if (!this.data.name && this.data.psid && this.data.psid != "null") {
-        this.refetch(changes["data"].currentValue.psid);
+      if (!this.data.Name && this.data.ConversationId && this.data.ConversationId != "null") {
+          this.refetch(changes["data"].currentValue.ConversationId);
       }
 
       this.loadData(this.data);
     }
 
     if(changes["state"] && !changes["state"].firstChange) {
-      this.state = changes["state"].currentValue;
-      this.data.state = this.state;
+        this.state = changes["state"].currentValue;
+        this.data.State = this.state;
     }
   }
 
-  loadTags(data: CrmMatchingV2Detail) {
-    if (data && data.keyTags) {
+  loadTags(data: ChatomniConversationItemDto) {
+    if (data && data.Tags) {
       if (!TDSHelperArray.hasListValue(this.tags)) {
         this.crmTagService.dataActive$.subscribe((res: any) => {
           this.tags = res;
@@ -432,12 +436,12 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
         if (!local[b.Id]) {
           local[b.Id] = { "point": 0 };
         }
-        if (this.data && this.data.keyTags) {
-          if ((this.data.keyTags as any)[a.Id] && !(this.data.keyTags as any)[b.Id]) {
+        if (this.data && this.data.Tags) {
+          if ((this.data.Tags as any)[a.Id] && !(this.data.Tags as any)[b.Id]) {
             return -1;
           }
         }
-        if ((local[a.Id].point > local[b.Id].point) && !(this.data.keyTags as any)[b.Id]) {
+        if ((local[a.Id].point > local[b.Id].point) && !(this.data.Tags as any)[b.Id]) {
           return -1;
         }
         return 0;
@@ -446,19 +450,20 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   }
 
   refetch(psid: string) {
-    this.crmMatchingService.refetch(psid, this.team.Facebook_PageId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
-        if (res?.conversation?.psid == this.data.id) {
-          if (res.conversation?.name) {
-            this.data.name = res.conversation.name;
-          }
-          if (res.conversation?.from) {
-            this.data.from = res.conversation.from;
-          }
+    this.crmMatchingService.refetch(psid, this.pageId)
+      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+
+        if (res?.conversation?.psid == this.data.Id) {
+            if (res.conversation?.name) {
+                this.data.Name = res.conversation.name;
+            }
+            if (res.conversation?.from) {
+              // this.data.from = res.conversation.from;
+            }
         }
+
       }, error => {
-        this.message.error(`${error?.Error?.Message}` ? `${error?.Error?.Message}` : 'Refetch đã xảy ra lỗi');
+          this.message.error(`${error?.Error?.Message}` ? `${error?.Error?.Message}` : 'Refetch đã xảy ra lỗi');
       });
   }
 
@@ -504,37 +509,37 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     }
 
     this.isLoadingSendMess = true;
-    let activityFinal = this.activityDataFacade.getMessageNearest(this.team.Facebook_PageId, this.data.psid, this.type ? this.type : 'all') as any;
+    let activityFinal = this.activityDataFacade.getMessageNearest(this.pageId, this.data.ConversationId, this.type ? this.type : 'all') as any;
 
     if (TDSHelperObject.hasValue(activityFinal) && activityFinal.type === 2) {
       if (this.type === 'all') {
-        this.sendPrivateReplies(activityFinal, message);
-      } else if (this.type === 'comment') {
-        this.replyComment(activityFinal, message);
-      }
+            this.sendPrivateReplies(activityFinal, message);
+        } else if (this.type === 'comment') {
+            this.replyComment(activityFinal, message);
+        }
     } else {
       this.sendMessage(message);
     }
   }
 
-  sendIconLike() {debugger
+  sendIconLike() {
     const message = "(y)";
     let model = this.prepareModel(message);
     model.attachment = {
       data: []
     }
 
-    this.crmMatchingService.addMessage(this.data.psid, model)
+    this.crmMatchingService.addMessage(this.data.ConversationId, model)
       .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-          this.messageResponse(res, model);
+            this.messageResponse(res, model);
       }, error => {
-        this.message.error(`${error.error.message}`? `${error.error.message}` : "Like thất bại");
-        });
+          this.message.error(`${error.error.message}`? `${error.error.message}` : "Like thất bại");
+      });
   }
 
   sendMessage(message: string) {
     const model = this.prepareModel(message);
-    this.crmMatchingService.addMessage(this.data.psid, model).pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false }))
+    this.crmMatchingService.addMessage(this.data.ConversationId, model).pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false }))
       .subscribe((res: any) => {
           this.messageResponse(res, model);
       }, error => {
@@ -548,6 +553,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       id: activityFinal?.from_id || activityFinal?.comment?.from?.id || null,
       name: activityFinal?.comment?.from?.name || null
     };
+
     model.comment_id = activityFinal?.comment?.id || activityFinal?.id || null;
 
     this.crmMatchingService.addQuickReplyComment(model)
@@ -666,18 +672,18 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     })
   }
 
-  prepareModel(message: string): any {debugger
+  prepareModel(message: string): any {
     const model = {} as SendMessageModelDTO;
     model.from = {
       id: this.team.Facebook_PageId,
       name: this.team.Facebook_PageName
     }
     model.to = {
-      id: this.data.psid,
-      name: this.data.name
+      id: this.data.ConversationId,
+      name: this.data.Name
     };
-    model.to_id = this.data.psid;
-    model.to_name = this.data.name;
+    model.to_id = this.data.ConversationId;
+    model.to_name = this.data.Name;
 
     model.message = message;
     model.created_time = (new Date()).toISOString();
@@ -703,10 +709,10 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       return
     }
     this.isLoadingSelectUser = true;
-    this.activityMatchingService.assignUserToConversation(this.data.id, item.Id, this.team.Facebook_PageId)
+    this.activityMatchingService.assignUserToConversation(this.data.Id, item.Id, this.team.Facebook_PageId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
-        this.data.assigned_to = res;
+        this.data.AssignedTo = res;
         this.message.success('Thao tác thành công');
         this.isLoadingSelectUser = false;
 
@@ -732,7 +738,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   }
 
   onSelectTag(item: any) {
-    let tags = { ...this.data.keyTags };
+    let tags = { ...this.data.Tags };
     if (tags[item.Id]) {
       this.removeIndexDbTag(item);
     } else {
@@ -747,7 +753,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
   assignIndexDbTag(item: any) {
     this.assignTagOnView(item);
-    this.activityMatchingService.assignTagToConversation(this.data.id, item.Id, this.team.Facebook_PageId)
+    this.activityMatchingService.assignTagToConversation(this.data.Id, item.Id, this.team.Facebook_PageId)
       .pipe(takeUntil(this.destroy$)).subscribe(() => {
           this.crmTagService.addTagLocalStorage(item.Id);
       }, error => {
@@ -756,7 +762,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   }
 
   removeIndexDbTag(item: any): void {
-    this.activityMatchingService.removeTagFromConversation(this.data.id, item.Id, this.team.Facebook_PageId)
+    this.activityMatchingService.removeTagFromConversation(this.data.Id, item.Id, this.team.Facebook_PageId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.removeTagOnView(item);
@@ -764,19 +770,18 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   }
 
   assignTagOnView(tag: any) {
-    this.data.tags = this.data.tags || [];
-    (this.data.tags as any[]).push({
+    this.data.Tags = this.data.Tags || [];
+    (this.data.Tags as any[]).push({
       id: tag.Id,
       name: tag.Name,
       color_class: tag.ColorClassName
     });
-    this.data.keyTags[tag.Id] = true;
   }
 
   removeTagOnView(tag: any) {
-    this.data.tags = this.data.tags || [];
-    this.data.tags = this.data.tags.filter(x => x.id != tag.Id);
-    delete this.data.keyTags[tag.Id];
+    this.data.Tags = this.data.Tags || [];
+    this.data.Tags = this.data.Tags.filter(x => x.Id != tag.Id);
+    delete this.data.Tags[tag.Id];
   }
 
   searchTag() {
@@ -918,15 +923,15 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   }
 
   onStartChatbot() {
-   if(this.data && this.data.state == 2) {
-      let pageId = this.data.page_id;
-      let psid = this.data.psid;
+   if(this.data && this.data.State == 2) {
+      let pageId = this.team.Facebook_PageId;
+      let psid = this.data.ConversationId;
 
       this.crmMatchingService.transferChatbot(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe((data) => {
 
           this.message.success('Bật chatbot thành công')
           this.isEnableChatbot = true;
-          this.data.state = StateChatbot.Normal;
+          this.data.State = StateChatbot.Normal;
 
           // TODO: bật chatbot thành công 5s rồi tắt
           setTimeout(() =>{

@@ -34,17 +34,20 @@ export class ChatbotComponent implements OnInit {
   loadChannelChatbot() {
     this.isLoading = true;
     this.crmTeamService.onChangeListFaceBook().subscribe(res => {
-      let childs = this.getChilds(res?.Items);
-      let pageIds = childs.map(x => x.Facebook_PageId);
 
-      if(TDSHelperArray.hasListValue(pageIds) && pageIds?.length) {
-        this.crmTeamService.getChannelChatbot(pageIds)
-          .pipe(finalize(() => this.isLoading = false))
-          .subscribe(res => {
-            this.lstChannelChatbot = res;
-          }, error => {
-            this.message.error(`${error?.error?.message}` || JSON.stringify(error));
-          });
+      if(res) {
+        let childs = this.getChilds(res);
+        let pageIds = childs.map(x => x.Facebook_PageId);
+
+        if(TDSHelperArray.hasListValue(pageIds) && pageIds?.length) {
+          this.crmTeamService.getChannelChatbot(pageIds)
+            .pipe(finalize(() => this.isLoading = false))
+            .subscribe(res => {
+              this.lstChannelChatbot = res;
+            }, error => {
+              this.message.error(`${error?.error?.message}` || JSON.stringify(error));
+            });
+        }
       }
     });
   }
@@ -54,7 +57,7 @@ export class ChatbotComponent implements OnInit {
 
     if(TDSHelperArray.hasListValue(teams) && teams?.length) {
       teams.forEach(team => {
-        let childActive = team?.Childs.filter(x => x.Active);
+        let childActive = team?.Childs!.filter(x => x.Active);
         if(TDSHelperArray.hasListValue(childActive) && childActive?.length) {
           childs = [...childs, ...childActive];
         }

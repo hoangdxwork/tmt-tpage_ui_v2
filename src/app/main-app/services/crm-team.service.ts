@@ -4,7 +4,6 @@ import { map } from 'rxjs/operators';
 import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { AutoHideCommentDTO, AutoReplyConfigDTO, ChannelAutoLabelConfigDTO, ChannelFacebookConfigDTO } from '../dto/configs/page-config.dto';
-import { PagedList2 } from '../dto/pagedlist2.dto';
 import { ODataAllFacebookChildTO } from '../dto/team/all-facebook-child.dto';
 import { CRMTeamDTO, InputCreateChatbotDTO, TPosAppMongoDBFacebookDTO, UpdateGrantPermissionDTO } from '../dto/team/team.dto';
 import { BaseSevice } from './base.service';
@@ -20,7 +19,7 @@ export class CRMTeamService extends BaseSevice {
   private readonly __keyCacheFacebook_PageId = 'nearestFacebookPageId';
   private readonly __keyCacheTeamId = 'nearestTeamId';
 
-  private readonly listFaceBook$ = new ReplaySubject<PagedList2<CRMTeamDTO> | null>(1);
+  private readonly listFaceBook$ = new ReplaySubject<Array<CRMTeamDTO> | null>(1);
   private readonly currentTeam$ = new ReplaySubject<CRMTeamDTO | null>(1);
   private _currentTeam!: CRMTeamDTO | null;
 
@@ -30,18 +29,18 @@ export class CRMTeamService extends BaseSevice {
     super(apiService);
   }
 
-  getAllFacebooks(): Observable<PagedList2<CRMTeamDTO>> {
+  getAllFacebooks(): Observable<Array<CRMTeamDTO>> {
     let api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/getallfacebooks`,
+      url: `${this._BASE_URL}/rest/v2.0/chatomni/channels`,
       method: TApiMethodType.get
     }
-    return this.apiService.getData<PagedList2<CRMTeamDTO>>(api, null);
+    return this.apiService.getData<Array<CRMTeamDTO>>(api, null);
   }
 
   getAllChannels(): Observable<Array<CRMTeamDTO>> {
     let api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/getallchannels`,
-      method: TApiMethodType.post
+      url: `${this._BASE_URL}/rest/v2.0/chatomni/channels`,
+      method: TApiMethodType.get
     }
     return this.apiService.getData<Array<CRMTeamDTO>>(api, null);
   }
@@ -58,7 +57,7 @@ export class CRMTeamService extends BaseSevice {
     return this.listFaceBook$.asObservable();
   }
 
-  onUpdateListFaceBook(data: PagedList2<CRMTeamDTO> | null) {
+  onUpdateListFaceBook(data: Array<CRMTeamDTO> | null) {
     this.listFaceBook$.next(data);
   }
 

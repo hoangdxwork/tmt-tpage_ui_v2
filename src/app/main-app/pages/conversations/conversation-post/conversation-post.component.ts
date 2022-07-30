@@ -19,6 +19,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { ChildChatOmniChannelDto } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 
 @Component({
   selector: 'app-conversation-post',
@@ -302,7 +303,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   onClickTeam(data: CRMTeamDTO): any {
+
     if (this.paramsUrl?.teamId) {
+
       let uri = this.router.url.split("?")[0];
       let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
       this.router.navigateByUrl(uriParams);

@@ -1,3 +1,5 @@
+import { StateChatbot } from "../conversation-all.dto";
+
 export interface  ChatomniConversationTagDto {
   Id: string;
   Name: string;
@@ -24,6 +26,9 @@ export interface ChatomniConversationItemDto {
   AssignedTo?: any;
   Tags: ChatomniConversationTagDto[];
   UpdatedTime: Date;
+
+  State?: StateChatbot | null;
+  HasOrder?: boolean | null;
 }
 
 export interface PagingTimestamp {
