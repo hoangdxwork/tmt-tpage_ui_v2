@@ -261,9 +261,6 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
   onClickTeam(data: any): any {
     if (this.paramsUrl?.teamId) {
-        //TODO: xóa dữ liệu _set
-        this.chatomniMessageFacade.chatomniDataSource = {};
-
         let uri = this.router.url.split("?")[0];
         let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
         this.router.navigateByUrl(uriParams);
