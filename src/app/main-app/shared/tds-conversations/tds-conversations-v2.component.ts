@@ -43,6 +43,7 @@ import { ChatomniMessageDTO } from '../../dto/conversation-all/chatomni/chatomni
 import { CrmMatchingV2Detail } from '../../dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
 import { ChatomniMessageFacade } from '../../services/chatomni-facade/chatomni-message.facade';
 import { ChatomniConversationItemDto } from '../../dto/conversation-all/chatomni/chatomni-conversation';
+import { Facebook_Graph_Post } from '../../dto/conversation-all/chatomni/chatomni-facebook-post.dto';
 
 @Component({
   selector: 'shared-tds-conversations-v2',
