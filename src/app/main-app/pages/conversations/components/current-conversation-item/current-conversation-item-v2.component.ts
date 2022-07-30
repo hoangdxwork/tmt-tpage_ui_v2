@@ -71,7 +71,6 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
 
   ngOnInit(): void {
     if(this.item) {
-
       this.eventData = this.conversationEventFacade.getEvent();
       let draftMessage = this.draftMessageService.getMessageByASIds(this.item.ConversationId) as any;
 

@@ -2,8 +2,8 @@
     <div class="w-full flex items-center justify-center" tds-dropdown [clickHide]="false" [(visible)]="visible"
         [tdsDropdownMenu]="dropdownTeam" trigger="click">
         <div>
-            <tpage-avatar-facebook [fbid]="currentTeam?.Facebook_PageId || currentTeam?.Facebook_ASUserId"
-                [token]="currentTeam?.Facebook_PageToken || currentTeam?.Facebook_UserToken">
+            <tpage-avatar-facebook [fbid]="currentTeam?.Facebook_PageId || currentTeam?.Facebook_ASUserId || currentTeam?.ChannelId"
+                [token]="currentTeam?.Facebook_PageToken || currentTeam?.Facebook_UserToken || currentTeam?.ChannelToken">
             </tpage-avatar-facebook>
         </div>
         <div class="px-2  flex-auto text-body-2 font-regular text-d-neutral-1-700 truncate">
@@ -19,8 +19,8 @@
         <div tds-dropdown [clickHide]="false" [(visible)]="visible" [tdsDropdownMenu]="dropdownTeam" trigger="click" class="flex-auto flex items-center">
            <div class="w-full flex items-center">
             <div>
-                <tpage-avatar-facebook [fbid]="currentTeam?.Facebook_PageId || currentTeam?.Facebook_ASUserId"
-                    [token]="currentTeam?.Facebook_PageToken || currentTeam?.Facebook_UserToken">
+                <tpage-avatar-facebook [fbid]="currentTeam?.Facebook_PageId || currentTeam?.Facebook_ASUserId || currentTeam?.ChannelId"
+                    [token]="currentTeam?.Facebook_PageToken || currentTeam?.Facebook_UserToken || currentTeam?.ChannelToken">
                 </tpage-avatar-facebook>
             </div>
             <div class="flex-auto flex pr-4">
@@ -57,8 +57,8 @@
                                     <div class="w-full flex items-center justify-center">
                                         <div>
                                             <tpage-avatar-facebook
-                                                [fbid]="item.Facebook_PageId || item.Facebook_ASUserId"
-                                                [token]="item.Facebook_PageToken || item.Facebook_UserToken">
+                                                [fbid]="item.Facebook_PageId || item.Facebook_ASUserId || item.ChannelId"
+                                                [token]="item.Facebook_PageToken || item.Facebook_UserToken || item.ChannelToken">
                                             </tpage-avatar-facebook>
                                         </div>
                                         <div class="flex-auto pl-4 text-body-2 font-semibold">
@@ -68,13 +68,11 @@
                                 </ng-template>
                                 <ng-template ngFor let-child [ngForOf]="item.Childs" let-i="index">
                                     <div class="w-full px-6 cursor-pointer" (click)="onClick($event, child)">
-                                        <div class="flex items-center justify-center p-2" [ngClass]="{
-                                            'bg-neutral-3-50 rounded-full': currentTeam?.Id == child.Id
-                                        }">
+                                        <div class="flex items-center justify-center p-2" [ngClass]="{'bg-neutral-3-50 rounded-full': currentTeam?.Id == child.Id}">
                                             <div>
                                                 <tpage-avatar-facebook size="sm"
-                                                    [fbid]="child.Facebook_PageId || child.Facebook_ASUserId"
-                                                    [token]="child.Facebook_PageToken || child.Facebook_UserToken">
+                                                    [fbid]="child.Facebook_PageId || child.Facebook_ASUserId || child.ChannelId"
+                                                    [token]="child.Facebook_PageToken || child.Facebook_UserToken || child.ChannelToken">
                                                 </tpage-avatar-facebook>
                                             </div>
                                             <div class="flex-auto pl-4 text-body-2 ">
@@ -87,8 +85,6 @@
                                         </div>
                                     </div>
                                 </ng-template>
-
-
 
                             </tds-collapse-panel>
                         </ng-template>
@@ -110,8 +106,8 @@
                         <ng-template #headerTpl>
                             <div class="w-full flex items-center justify-center ">
                                 <div>
-                                    <tpage-avatar-facebook [fbid]="item.Facebook_PageId || item.Facebook_ASUserId"
-                                        [token]="item.Facebook_PageToken || item.Facebook_UserToken">
+                                    <tpage-avatar-facebook [fbid]="item.Facebook_PageId || item.Facebook_ASUserId || item.ChannelId"
+                                        [token]="item.Facebook_PageToken || item.Facebook_UserToken || item.ChannelToken">
                                     </tpage-avatar-facebook>
                                 </div>
                                 <div class="flex-auto pl-4 text-body-2 font-semibold">
@@ -126,8 +122,8 @@
                                     <div>
                                         <tds-badge [count]="iconTemplate1">
                                             <tpage-avatar-facebook size="sm"
-                                                [fbid]="child.Facebook_PageId || child.Facebook_ASUserId"
-                                                [token]="child.Facebook_PageToken || child.Facebook_UserToken">
+                                                [fbid]="child.Facebook_PageId || child.Facebook_ASUserId || child.ChannelId"
+                                                [token]="child.Facebook_PageToken || child.Facebook_UserToken || child.ChannelToken">
                                             </tpage-avatar-facebook>
                                         </tds-badge>
                                         <ng-template #iconTemplate1>
