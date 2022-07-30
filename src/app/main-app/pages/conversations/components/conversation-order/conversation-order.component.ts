@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { InitSaleDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, Output, EventEmitter, ViewContainerRef } from '@angular/core';
 import { Subject, Observable, takeUntil, finalize, map } from 'rxjs';
@@ -45,9 +45,10 @@ import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { ODataProductDTOV2, ProductDTOV2 } from 'src/app/main-app/dto/product/odata-product.dto';
 import { FilterObjDTO, OdataProductService } from 'src/app/main-app/services/mock-odata/odata-product.service';
 import { ProductService } from 'src/app/main-app/services/product.service';
-import { ConversationOrderHandler } from './conversation-order.handler';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { CrmMatchingV2Detail } from 'src/app/main-app/dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
+import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
+import { CsOrder_SuggestionHandler } from 'src/app/main-app/handler-v2/chatomni-csorder/prepare-suggestions.handler';
+import { CsOrder_PrepareModelHandler } from 'src/app/main-app/handler-v2/chatomni-csorder/prepare-order.handler';
 
 @Component({
     selector: 'conversation-order',
@@ -56,7 +57,7 @@ import { CrmMatchingV2Detail } from 'src/app/main-app/dto/conversation-all/crm-m
 
 export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
-  @Input() data!: CrmMatchingV2Detail;
+  @Input() data!: ChatomniConversationItemDto;
   @Input() team!: CRMTeamDTO;
 
   isLoading: boolean = false;
@@ -127,6 +128,8 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     private notification: TDSNotificationService,
     private orderPrintService: OrderPrintService,
     private printerService: PrinterService,
+    private csOrder_SuggestionHandler: CsOrder_SuggestionHandler,
+    private csOrder_PrepareModelHandler: CsOrder_PrepareModelHandler,
     private viewContainerRef: ViewContainerRef) {
   }
 
@@ -557,7 +560,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
 
   onSave(type: string): any {
-      let model = ConversationOrderHandler.prepareInsertFromMessage(this.quickOrderModel);
+      let model = this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel)
 
       if(this.isEnableCreateOrder) {
         if (!TDSHelperArray.hasListValue(this.quickOrderModel.Details)) {
@@ -860,16 +863,6 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     }
   }
 
-  // onChangeQuantity(event: any, item: Detail_QuickSaleOnlineOrder, index: number) {
-  //   let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
-
-  //   if(exit) {
-  //       this.quickOrderModel.Details[index].Quantity = event;
-  //       this.computeAmountTotal();
-  //       this.updateCoDAmount();
-  //   }
-  // }
-
   onRemoveProduct(item: Detail_QuickSaleOnlineOrder, index: number) {
     let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
     if(exit) {
@@ -923,37 +916,17 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   }
 
   onLoadSuggestion(item: ResultCheckAddressDTO) {
-    ConversationOrderHandler.onLoadSuggestion(item, this.quickOrderModel);
+    let data = this.csOrder_SuggestionHandler.onLoadSuggestion(item, this.quickOrderModel);
+    this.quickOrderModel = data;
   }
 
   mappingAddress(data: QuickSaleOnlineOrderModel) {
-    if (data && data.CityCode) {
-      this._cities = {
-        code: data.CityCode,
-        name: data.CityName
-      }
-    }
-    if (data && data.DistrictCode) {
-      this._districts = {
-        cityCode: data.CityCode,
-        cityName: data.CityName,
-        code: data.DistrictCode,
-        name: data.DistrictName
-      }
-    }
-    if (data && data.WardCode) {
-      this._wards = {
-        cityCode: data.CityCode,
-        cityName: data.CityName,
-        districtCode: data.DistrictCode,
-        districtName: data.DistrictCode,
-        code: data.WardCode,
-        name: data.WardName
-      }
-    }
-    if (data && (data.Address)) {
-      this._street = data.Address;
-    }
+    let x = this.csOrder_SuggestionHandler.mappingAddress(data);
+
+    this._cities = x._cities;
+    this._districts = x._districts;
+    this._wards = x._wards;
+    this._street = x._street;
   }
 
   plus(item: Detail_QuickSaleOnlineOrder, index: number) {

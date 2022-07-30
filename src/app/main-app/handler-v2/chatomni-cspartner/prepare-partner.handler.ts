@@ -13,7 +13,7 @@ export class CsPartner_PrepareModelHandler {
 
   public prepareModel(partner: TabPartnerCvsRequestModel, dataModel: ChatomniConversationItemDto) {
     let  model = {
-        Id: partner?.Id,
+        Id: dataModel.PartnerId || partner?.Id,
         StatusText: partner?.StatusText,
         Name: partner?.Name,
         Phone: partner?.Phone,

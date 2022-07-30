@@ -133,36 +133,8 @@ export enum ChatomniMessageType {
   TShopMessage = 92
 }
 
-export interface Content_ExtrasObjectDto {
-  Text: string;
-  Tags?: any;
-}
-
-export interface MediaLive_ExtrasObjectDto {
-  Id: string;
-  ReadUrl: string;
-  WriteUrl: string;
-  RecordUrls?: any;
-  IsBroadcasting: boolean;
-}
-
-export interface Data_ExtrasObjectDto {
-  Id: number;
-  Kind: string;
-  KindValue: number;
-  Content: Content_ExtrasObjectDto;
-  Medias: any[];
-  MediaLive: MediaLive_ExtrasObjectDto;
-  ShopId: string;
-  CommentPinIds: any[];
-  CreatorId: string;
-  CreationTime: Date;
-  HiddenKind: string;
-  HiddenKindValue: number;
-}
-
 export interface ExtrasObjectDto {
-  Data: Data_ExtrasObjectDto;
+  Data: Object;// gán lại ChatomniDataTShopPost hoặc ChatomniDataFacebookPost
   Id: string;
   ObjectId: string;
   ObjectType: number;
@@ -174,12 +146,8 @@ export interface ExtrasObjectDto {
   Thumbnail?: any;
 }
 
-export interface ObjectDto {
-  [key: string]: ExtrasObjectDto
-}
-
 export interface Extras {
-  Objects: ObjectDto;
+  Objects: { [key: string]: ExtrasObjectDto };
 }
 
 export interface ChatomniMessageDTO {

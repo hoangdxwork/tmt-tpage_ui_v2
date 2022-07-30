@@ -1,28 +1,16 @@
 import { Injectable } from "@angular/core";
-import { ResultCheckAddressDTO } from "src/app/main-app/dto/address/address.dto";
-import { QuickSaleOnlineOrderModel } from "src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto";
+import { TDSHelperString } from "tds-ui/shared/utility";
+import { QuickSaleOnlineOrderModel } from "../../dto/saleonlineorder/quick-saleonline-order.dto";
 
 @Injectable({
   providedIn: 'root'
 })
 
-export abstract class ConversationOrderHandler {
+export class CsOrder_PrepareModelHandler {
 
-  static onLoadSuggestion(item: ResultCheckAddressDTO, quickOrderModel: QuickSaleOnlineOrderModel) {
-    quickOrderModel.Address = item.Address ? item.Address : quickOrderModel.Address;
+  public  prepareInsertFromMessage(model: QuickSaleOnlineOrderModel) {
 
-    quickOrderModel.CityCode = item.CityCode ? item.CityCode : quickOrderModel.CityCode;
-    quickOrderModel.CityName = item.CityName ? item.CityName : quickOrderModel.CityName;
-
-    quickOrderModel.DistrictCode = item.DistrictCode ? item.DistrictCode : quickOrderModel.DistrictCode;
-    quickOrderModel.DistrictName = item.DistrictName ? item.DistrictName : quickOrderModel.DistrictName;
-
-    quickOrderModel.WardCode = item.WardCode ? item.WardCode : quickOrderModel.WardCode;
-    quickOrderModel.WardName = item.WardName ? item.WardName : quickOrderModel.WardName;
-  }
-
-  static prepareInsertFromMessage(model: QuickSaleOnlineOrderModel) {
-    let x = {} as InsertFromMessageModel;
+    let x = {} as InsertFromMessageDto;
 
     x.Address = model.Address;
     x.CityCode = model.CityCode;
@@ -72,12 +60,13 @@ export abstract class ConversationOrderHandler {
 
     return x;
   }
+
 }
 
-export interface InsertFromMessageModel {
+export interface InsertFromMessageDto {
   Id?: string;
   Code?: any;
-  Details: Detail_InsertFromMessageModel[];
+  Details: Detail_InsertFromMessageDto[];
   Facebook_UserId: string;
   Facebook_ASUserId: string;
   Facebook_UserName: string;
@@ -101,7 +90,7 @@ export interface InsertFromMessageModel {
   CRMTeamId: number;
 }
 
-export interface Detail_InsertFromMessageModel {
+export interface Detail_InsertFromMessageDto {
   Price: number;
   ProductCode: string;
   ProductId: number;
@@ -117,4 +106,3 @@ export interface User_InsertFromMessage {
   Id: string;
   Name: string;
 }
-
