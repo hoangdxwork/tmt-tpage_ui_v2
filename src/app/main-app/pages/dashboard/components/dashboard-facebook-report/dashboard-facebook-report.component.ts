@@ -5,8 +5,8 @@ import { InputSummaryPostDTO, InputSummaryTimelineDTO, MDBSummaryByPostDTO, MDBT
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
 import { format } from 'date-fns';
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
-import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/services/handlers/common.handler';
 import { Subject, takeUntil } from 'rxjs';
+import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/handler-v2/common.handler';
 
 @Component({
   selector: 'app-dashboard-facebook-report',

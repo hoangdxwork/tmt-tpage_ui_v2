@@ -1,9 +1,9 @@
-import { ConfigAttributeLine } from './../../../../dto/configs/product/config-product-default.dto';
-import { ProductTemplateService } from './../../../../services/product-template.service';
+import { IRAttachmentDTO } from './../../../dto/attachment/attachment.dto';
+import { ProductTemplateService } from './../../../services/product-template.service';
+import { ConfigAttributeLine } from './../../../dto/configs/product/config-product-default.dto';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
-import { IRAttachmentDTO } from './../../../../dto/attachment/attachment.dto';
-import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperArray, TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { ProductService } from 'src/app/main-app/services/product.service';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
@@ -18,7 +18,7 @@ import { ProductCategoryService } from 'src/app/main-app/services/product-catego
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSUploadFile } from 'tds-ui/upload';
 import { Message } from 'src/app/lib/consts/message.const';
-import { AddVariantHandler } from './add-variant.handler';
+import { PrepareCreateVariantHandler } from 'src/app/main-app/handler-v2/product-variant/prepare-create-variant.handler';
 
 @Component({
   selector: 'create-product-variant',
@@ -53,7 +53,7 @@ export class CreateProductVariantComponent implements OnInit {
     private notification: TDSNotificationService,
     private CRMService: CRMTeamService,
     private productService: ProductService,
-    private addVariantHandler: AddVariantHandler,
+    private prepareCreateVariant: PrepareCreateVariantHandler,
     private productTemplateService: ProductTemplateService,
     private productUOMService: ProductUOMService,
     private productCategoryService: ProductCategoryService) {
@@ -257,16 +257,23 @@ export class CreateProductVariantComponent implements OnInit {
   }
 
   prepareModel() {
-    let model = this.addVariantHandler.prepareModel(this.modelDefault, this._form.value);
+    let model = this.prepareCreateVariant.prepareModel(this.modelDefault, this._form.value);
     return model;
   }
 
   onSave() {
     let model = this.prepareModel();
 
-    if (!model.Name) {
+    if (!TDSHelperString.hasValueString(model.Name)) {
       this.message.error('Vui lòng nhập tên sản phẩm');
+      return
     }
+
+    if(!TDSHelperArray.hasListValue(model.AttributeValues)){
+      this.message.error('Vui lòng chọn thuộc tính');
+      return
+    }
+
     this.productService.insertProduct(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if (this.addToFBPage) {
         this.addProductToPageFB(res.Id, model.Name);

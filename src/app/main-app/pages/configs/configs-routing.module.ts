@@ -1,5 +1,5 @@
 
-import { ConfigAddProductComponent } from './config-add-product/config-add-product.component';
+import { ConfigAddProductComponent } from './create-product/create-product.component';
 import { ConfigDecentralizePageComponent } from './config-users/config-decentralize-page/config-decentralize-page.component';
 import { ConfigUsersDivideTaskComponent } from './config-users/config-users-divide-task/config-users-divide-task.component';
 import { ConfigPrintBillsComponent } from './config-print-bills/config-print-bills.component';
@@ -9,7 +9,7 @@ import { ConfigPagesDivideTaskComponent } from './config-pages/config-pages-divi
 import { ConfigUsersOperationComponent } from './config-users/config-users-operation/config-users-operation.component';
 import { ConfigPromotionsComponent } from './config-promotions/config-promotions.component';
 import { ConfigActivitiesComponent } from './config-activities/config-activities.component';
-import { ConfigProductsComponent } from './products/config-products.component';
+import { ConfigProductComponent } from './product/product.component';
 import { ConfigSmsMessagesComponent } from './config-sms-messages/config-sms-messages.component';
 import { AutoQuickReplyComponent } from './auto-quick-reply/auto-quick-reply.component';
 import { SaleOrderComponent } from './sale-order/sale-order.component';
@@ -19,8 +19,8 @@ import { ConfigComponent } from './config/config.component';
 import { ConfigConversationTagsComponent } from './config-conversation-tags/config-conversation-tags.component';
 import { ConfigAddPromotionComponent } from './config-promotions/components/config-add-promotion/config-add-promotion.component';
 import { ConfigEditPromotionComponent } from './config-promotions/components/config-edit-promotion/config-edit-promotion.component';
-import { ListProductVariantComponent } from './product-variant/list-product-variant.component';
-import { CreateProductVariantComponent } from './product-variant/create/create-product-variant.component';
+import { ListProductVariantComponent } from './product-variant/product-variant.component';
+import { CreateProductVariantComponent } from './create-product-variant/create-product-variant.component';
 import { FacebookCartComponent } from './facebook-cart/facebook-cart.component';
 import { ListConfigDeliveryComponent } from './config-delivery/list-config-delivery.component';
 import { ConfigDeliveryConnectComponent } from './config-delivery/config-delivery-connect/config-delivery-connect.component';
@@ -66,7 +66,7 @@ const routes: Routes = [
       },
       {
         path:'products',
-        component: ConfigProductsComponent,
+        component: ConfigProductComponent,
       },
       {
         path:'products/create',

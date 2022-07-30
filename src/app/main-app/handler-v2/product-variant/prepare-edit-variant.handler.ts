@@ -5,7 +5,7 @@ import { Injectable } from "@angular/core";
 @Injectable({
     providedIn: 'root'
 })
-export  class EditVariantHandler {
+export  class PrepareEditVariantHandler {
 
     public prepareModel(dataModel:ProductDTO, formModel:TDSSafeAny, images?:TDSSafeAny[]) {
 

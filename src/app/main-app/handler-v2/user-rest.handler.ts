@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { AbstractControl, FormGroup, ValidationErrors } from "@angular/forms";
 import { Observable, timer } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
-import { ApplicationUserService } from "../application-user.service";
+import { ApplicationUserService } from "../services/application-user.service";
 
 @Injectable({
   providedIn: 'root'

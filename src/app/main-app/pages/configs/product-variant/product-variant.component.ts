@@ -1,7 +1,7 @@
-import { THelperCacheService } from '../../../../lib/utility/helper-cache';
+import { EditProductVariantComponent } from '../edit-product-variant/edit-product-variant.component';
 import { ExcelExportService } from '../../../services/excel-export.service';
 import { ProductService } from '../../../services/product.service';
-import { switchMap, finalize } from 'rxjs/operators';
+import { finalize } from 'rxjs/operators';
 import { OdataProductService } from '../../../services/mock-odata/odata-product.service';
 import { CRMTeamService } from '../../../services/crm-team.service';
 import { takeUntil } from 'rxjs/operators';
@@ -11,17 +11,14 @@ import { Router } from '@angular/router';
 import { Component, OnInit, ViewContainerRef, OnDestroy } from '@angular/core';
 import { ODataProductDTO } from 'src/app/main-app/dto/configs/product/config-odata-product.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { EditProductVariantComponent } from './edit/edit-product-variant.component';
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
-import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
-import { SortEnum } from 'src/app/lib';
 
 @Component({
-  selector: 'list-product-variant',
-  templateUrl: './list-product-variant.component.html'
+  selector: 'product-variant',
+  templateUrl: './product-variant.component.html'
 })
 
 export class ListProductVariantComponent implements OnInit, OnDestroy {
@@ -59,6 +56,20 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void { }
 
+  loadData(pageSize: number, pageIndex: number) {
+    this.lstOfData = [];
+
+    let filters = this.odataProductService.buildFilter(this.filterObj || null);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters || null);
+
+    this.getViewData(params).subscribe((res: any) => {
+      this.count = res['@odata.count'] as number;
+      this.lstOfData = [...res.value];
+    }, error => {
+      this.message.error(error?.error?.message || 'Tải dữ liệu khách hàng thất bại!');
+    });
+  }
+
   private getViewData(params: string): Observable<ODataProductDTO> {
     this.isLoading = true;
 
@@ -82,20 +93,6 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
       });
   }
 
-  loadData(pageSize: number, pageIndex: number) {
-    this.lstOfData = [];
-
-    let filters = this.odataProductService.buildFilter(this.filterObj || null);
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters || null);
-
-    this.getViewData(params).subscribe((res: any) => {
-      this.count = res['@odata.count'] as number;
-      this.lstOfData = [...res.value];
-    }, error => {
-      this.message.error(error?.error?.message || 'Tải dữ liệu khách hàng thất bại!');
-    });
-  }
-
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.pageSize = params.pageSize;
 
@@ -114,7 +111,7 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
     this.loadData(this.pageSize, this.pageIndex);
   }
 
-  onInputChange(ev: TDSSafeAny) {
+  onSearch(ev: TDSSafeAny) {
     this.pageIndex = 1;
     this.filterObj.searchText = ev.value;
 
@@ -191,7 +188,9 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
   }
 
   exportExcel() {
-    if (this.isProcessing) { return }
+    if (this.isProcessing) { 
+      return 
+    }
 
     let state = {
       skip: 0,
@@ -209,7 +208,7 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  addNewData() {
+  createVariant() {
     this.router.navigateByUrl('/configs/product-variant/create');
   }
 

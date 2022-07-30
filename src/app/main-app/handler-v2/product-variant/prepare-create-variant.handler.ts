@@ -4,7 +4,7 @@ import { Injectable } from "@angular/core";
 @Injectable({
     providedIn: 'root'
 })
-export class AddVariantHandler {
+export class PrepareCreateVariantHandler {
 
     public prepareModel(dataModel: ProductDTO, formModel: any) {
 

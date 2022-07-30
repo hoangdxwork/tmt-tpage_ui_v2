@@ -1,4 +1,4 @@
-<form [formGroup]="_form" autocomplete="off" (ngSubmit)="onSave()">
+<form [formGroup]="_form" autocomplete="off" *ngIf="_form">
     <div class="w-full pb-4 px-4">
         <div class="flex flex-col w-full bg-white rounded-xl">
             <div class="flex flex-row items-center justify-between px-4 py-3">
@@ -10,8 +10,7 @@
                     </button>
                     <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">THÊM MỚI BIẾN THỂ SẢN PHẨM</span>
                 </div>
-                <button tds-button color="primary" type="submit" class="w-[100px]"
-                  [disabled]="!_form?.valid">
+                <button tds-button color="primary" type="submit" class="w-[100px]" (click)="onSave()">
                     <span class="text-body-2 font-semibold">Lưu</span>
                 </button>
             </div>
@@ -85,12 +84,12 @@
                                   </tds-error>
                                 </tds-form-field>
 
-                                <tds-label>Thuộc tính:</tds-label>
+                                <tds-label>Thuộc tính<span class="text-error-400">*</span> :</tds-label>
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-select valueField="Id" textField="NameGet" placeholder='Chọn thuộc tính'
                                   disabledField="isActive" formControlName="AttributeValues"
                                   [data]="lstShowAttribute" [allowClear]="false" [valuePrimitive]="false" [mode]="'multiple'"
-                                  (selectChange)="onChangeAttribute($event)">
+                                  (selectChange)="onChangeAttribute($event)" [required]="true">
                                   </tds-select>
                                   <tds-error>
                                       Vui lòng chọn thuộc tính
@@ -115,7 +114,7 @@
                                   </tds-error>
                                 </tds-form-field>
 
-                                <tds-label>Đơn vị mặc định:</tds-label>
+                                <tds-label>Đơn vị mặc định<span class="text-error-400">*</span> :</tds-label>
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị'
                                   disabledField="isActive" formControlName="UOM"
@@ -126,7 +125,7 @@
                                   </tds-error>
                                 </tds-form-field>
 
-                                <tds-label>Đơn vị mua:</tds-label>
+                                <tds-label>Đơn vị mua<span class="text-error-400">*</span> :</tds-label>
                                 <tds-form-field class="w-full col-span-2">
                                   <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị'
                                   disabledField="isActive" formControlName="UOMPO"

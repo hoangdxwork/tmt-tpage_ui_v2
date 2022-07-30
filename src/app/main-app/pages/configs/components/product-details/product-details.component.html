@@ -182,8 +182,8 @@
                 (queryParams)="onQueryParamsStockMove($event)" (clickRefresh)="refreshStockMoveTable()">
                 <thead>
                     <tr>
-                        <th [width]="'164px'">Loại</th>
-                        <th [width]="'164px'">PickingName</th>
+                        <th [width]="'164px'" [tdsLeft]="true">Loại</th>
+                        <th [width]="'164px'" [tdsLeft]="true">PickingName</th>
                         <th [width]="'164px'">Tham chiếu</th>
                         <th [width]="'164px'">Nguồn</th>
                         <th [width]="'164px'">Đến</th>
@@ -195,8 +195,8 @@
                 <tbody>
                     <ng-template ngFor let-data [ngForOf]="lstStockMove">
                         <tr>
-                            <td>{{ data.Type }}</td>
-                            <td>{{ data.PickingName }}</td>
+                            <td [tdsLeft]="true">{{ data.Type }}</td>
+                            <td [tdsLeft]="true">{{ data.PickingName }}</td>
                             <td>{{ data.OrderName }}</td>
                             <td>{{ data.LocationNameGet }}</td>
                             <td>{{ data.LocationDestNameGet }}</td>

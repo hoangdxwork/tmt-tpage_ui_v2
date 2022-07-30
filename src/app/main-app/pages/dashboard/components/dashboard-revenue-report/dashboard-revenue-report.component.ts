@@ -2,7 +2,7 @@ import { Color } from 'echarts';
 import { TDSChartOptions, TDSBarChartComponent, TDSBarChartDataSeries } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/services/handlers/common.handler';
+import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/handler-v2/common.handler';
 
 @Component({
   selector: 'app-dashboard-revenue-report',

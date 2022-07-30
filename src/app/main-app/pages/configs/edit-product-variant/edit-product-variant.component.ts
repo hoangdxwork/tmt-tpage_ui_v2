@@ -1,9 +1,9 @@
-import { ProductCategoryService } from '../../../../services/product-category.service';
-import { ProductUOMService } from '../../../../services/product-uom.service';
-import { ProductCategoryDTO } from '../../../../dto/product/product-category.dto';
-import { ProductDTO, ProductUOMDTO } from '../../../../dto/product/product.dto';
+import { ProductUOMDTO, ProductDTO } from 'src/app/main-app/dto/product/product.dto';
+import { ProductCategoryDTO } from 'src/app/main-app/dto/product/product-category.dto';
+import { ProductUOMService } from 'src/app/main-app/services/product-uom.service';
+import { ProductCategoryService } from 'src/app/main-app/services/product-category.service';
+import { ProductService } from 'src/app/main-app/services/product.service';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
-import { ProductService } from '../../../../services/product.service';
 import { Subject } from 'rxjs';
 import { Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -14,7 +14,7 @@ import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from 'src/app/m
 import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { EditVariantHandler } from './edit-variant.handler';
+import { PrepareEditVariantHandler } from 'src/app/main-app/handler-v2/product-variant/prepare-edit-variant.handler';
 
 @Component({
   selector: 'edit-product-variant',
@@ -31,7 +31,6 @@ export class EditProductVariantComponent implements OnInit {
   lstProductCategory!: ProductCategoryDTO[];
   lstProductUOM!: ProductUOMDTO[];
   imageList: Array<TDSSafeAny> = [];
-  imageListUpLoad: Array<TDSSafeAny> = [];
   imageModel: Array<TDSSafeAny> = [];
   isLoading: boolean = false;
   numberWithCommas = (value: TDSSafeAny) => {
@@ -54,7 +53,7 @@ export class EditProductVariantComponent implements OnInit {
     private productIndexDBService: ProductIndexDBService,
     private cacheApi: THelperCacheService,
     private productService: ProductService,
-    private editVariantHandler: EditVariantHandler,
+    private prepareEditVariantHandler: PrepareEditVariantHandler,
     private message: TDSMessageService,
     private productUOMService: ProductUOMService,
     private productCategoryService: ProductCategoryService,
@@ -124,7 +123,6 @@ export class EditProductVariantComponent implements OnInit {
     if (TDSHelperArray.hasListValue(data.Images)) {
       data.Images.map((x: any) => {
         this.addImages(x);
-        this.imageListUpLoad.push(x.Url);
       })
     }
   }
@@ -186,11 +184,8 @@ export class EditProductVariantComponent implements OnInit {
     });
 
     if (event.isArray == true) {
-      this.imageListUpLoad = [];
-
       datas.forEach(x => {
         this.addImages(x);
-        this.imageListUpLoad.push(x.Url);
       });
     } else {
       this._form.controls['ImageUrl'].setValue(event.files[0].url);
@@ -198,7 +193,7 @@ export class EditProductVariantComponent implements OnInit {
   }
 
   prepareModel() {
-    let model = this.editVariantHandler.prepareModel(this.dataModel, this._form.value, this._form.controls['Images'].value) as ProductDTO;
+    let model = this.prepareEditVariantHandler.prepareModel(this.dataModel, this._form.value, this._form.controls['Images'].value) as ProductDTO;
 
     return model;
   }
