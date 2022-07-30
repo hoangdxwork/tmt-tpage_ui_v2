@@ -28,7 +28,7 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
   @Input() item!: ChatomniConversationItemDto;
   @Input() team!: CRMTeamDTO;
   @Input() type: any;
-  @Input() psid: any;
+  @Input() csid: any;
   @Input() omcs_Item!: ChatomniConversationItemDto;
   @Input() isOpenCollapCheck!: boolean;
   @Input() checked!: boolean;
@@ -79,11 +79,11 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
           this.isDraftMessage = true;
       }
 
-      this.draftMessageService.onIsDraftMessage$.subscribe((res: any) => {
-        if(this.psid == res.psid) {
-          this.isDraftMessage = res.isDraftMessage;
-        }
-      });
+      // this.draftMessageService.onIsDraftMessage$.subscribe((res: any) => {
+      //   if(this.csid == res.psid) {
+      //     this.isDraftMessage = res.isDraftMessage;
+      //   }
+      // });
 
       if(TDSHelperArray.hasListValue(this.item?.Tags)) {
           this.displayTag = this.item?.Tags?.length || 0;

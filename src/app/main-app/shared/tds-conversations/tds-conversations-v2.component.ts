@@ -97,7 +97,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   userLoggedId!: string;
 
   isEnableChatbot: boolean = false;
-
   pageId!: string;
 
   constructor(private modalService: TDSModalService,
@@ -152,12 +151,12 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.isLoading = true;
 
     this.ngZone.run(() => {
-      this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type);
+        this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type);
     })
 
     this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniMessageDTO) => {
         if(res) {
-          this.dataSource = {...res};
+            this.dataSource = res;
         }
 
         this.isLoading = false;

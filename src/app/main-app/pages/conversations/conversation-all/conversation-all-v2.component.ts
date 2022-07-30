@@ -47,7 +47,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   dataSource$!: Observable<ChatomniConversationDto> ;
   lstOmcs: ChatomniConversationItemDto[] = [];
 
-  psid!: string;
+  csid!: string;
   omcs_Item!: ChatomniConversationItemDto | undefined;
 
   isFastSend: boolean = false;
@@ -115,8 +115,8 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       this.type = params?.params?.type;
       this.setParamsUrl(params.params);
 
-      let exist = (TDSHelperString.isString(this.omcs_Item?.ConversationId) != TDSHelperString.isString(this.paramsUrl?.psid))
-        || (!TDSHelperString.isString(this.omcs_Item?.ConversationId) && !TDSHelperString.isString(this.paramsUrl?.psid));
+      let exist = (TDSHelperString.isString(this.omcs_Item?.ConversationId) != TDSHelperString.isString(this.paramsUrl?.csid))
+        || (!TDSHelperString.isString(this.omcs_Item?.ConversationId) && !TDSHelperString.isString(this.paramsUrl?.csid));
 
       if(exist){
           this.onChangeConversation(team);
@@ -174,10 +174,10 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
         if (res && TDSHelperArray.hasListValue(res.Items)) {
             this.lstOmcs = [...res.Items];
-            let psid = this.paramsUrl?.psid || null;
+            let csid = this.paramsUrl?.csid || null;
 
             //TODO: check psid khi load lần 2,3,4...
-            let exits = this.lstOmcs.filter(x => x.ConversationId == psid)[0] ;
+            let exits = this.lstOmcs.filter(x => x.ConversationId == csid)[0] ;
             if (exits) {
                 this.setCurrentConversationItem(exits);
             } else {
@@ -204,10 +204,10 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       else {
           //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
           this.omcs_Item = {...item};
-          this.psid = item.ConversationId;
+          this.csid = item.ConversationId;
 
           let uri = this.router.url.split("?")[0];
-          let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${item?.ConversationId}`;
+          let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&csid=${item?.ConversationId}`;
           this.router.navigateByUrl(uriParams);
       }
     }
@@ -232,7 +232,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   }
 
   trackByIndex(_: number, data: any): number {
-    return data.psid;
+    return data.Id;
   }
 
   nextData(event: any): any {

@@ -70,7 +70,7 @@
                         <a (click)="changeCurrentCvsItem(item)" class="w-full">
                           <!-- {{ (isChanged == true && currentCrmMatching) ? 'cursor-wait' : 'cursor-pointer'}} -->
                             <current-conversation-item-v2
-                                [item]="item" [psid]="item.ConversationId" [type]="type"
+                                [item]="item" [csid]="item.ConversationId" [type]="type"
                                 [omcs_Item]="omcs_Item"
                                 [state]="item.State"
                                 [team]="currentTeam" [isFastSend]="isFastSend"
