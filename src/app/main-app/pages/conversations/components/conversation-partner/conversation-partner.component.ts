@@ -25,10 +25,12 @@ import { ModalBlockPhoneComponent } from '../modal-block-phone/modal-block-phone
 import { ModalListBlockComponent } from '../modal-list-block/modal-list-block.component';
 import { ResultCheckAddressDTO } from 'src/app/main-app/dto/address/address.dto';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
-import { ConversationPartnerHandler } from './conversation-partner.handler';
 import { CreateOrUpdatePartnerModel } from 'src/app/main-app/dto/conversation-partner/create-update-partner.dto';
 import { QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { CrmMatchingV2Detail } from 'src/app/main-app/dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
+import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
+import { CsPartner_SuggestionHandler } from 'src/app/main-app/handler-v2/chatomni-cspartner/prepare-suggestion.handler';
+import { CsPartner_PrepareModelHandler } from 'src/app/main-app/handler-v2/chatomni-cspartner/prepare-partner.handler';
 
 @Component({
     selector: 'conversation-partner',
@@ -38,7 +40,7 @@ import { CrmMatchingV2Detail } from 'src/app/main-app/dto/conversation-all/crm-m
 
 export class ConversationPartnerComponent implements OnInit, OnChanges {
 
-  @Input() data!: CrmMatchingV2Detail; // dữ liệu nhận từ conversation-all
+  @Input() data!: ChatomniConversationItemDto; // dữ liệu nhận từ conversation-all
   @Input() team!: CRMTeamDTO;
   @Input() type!: string;
 
@@ -47,7 +49,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   _wards!: SuggestWardsDTO;
   _street!: string;
 
-  dataModel!: CrmMatchingV2Detail; // dùng gán lại this.data input
+  dataModel!: ChatomniConversationItemDto; // dùng gán lại this.data input
   objRevenue!: ResRevenueCustomerDTO;
   noteData: any = { items: [] };
   destroy$ = new Subject<void>();
@@ -75,6 +77,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     private crmMatchingService: CRMMatchingService,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private conversationDataFacade: ConversationDataFacade,
+    private csPartner_SuggestionHandler: CsPartner_SuggestionHandler,
+    private csPartner_PrepareModelHandler: CsPartner_PrepareModelHandler,
     private conversationOrderFacade: ConversationOrderFacade,
     private router: Router) {
   }
@@ -83,8 +87,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     if(this.data) {
       this.dataModel = this.data;
 
-      let psid = this.dataModel?.psid;
-      let pageId = this.dataModel?.page_id || this.team.Facebook_PageId;
+      let psid = this.dataModel?.ConversationId;
+      let pageId = this.team.ChannelId;
       this.loadData(pageId, psid);
     }
 
@@ -105,13 +109,13 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if(changes["data"] && !changes["data"].firstChange) {
-        let x = {...changes["data"].currentValue} as ConversationMatchingItem;
+        let x = {...changes["data"].currentValue} as ChatomniConversationItemDto;
 
         if(TDSHelperObject.hasValue(x)) {
 
             this.dataModel = x;
-            let psid = this.dataModel?.psid;
-            let pageId = this.dataModel?.page_id || this.team.Facebook_PageId;
+            let psid = this.dataModel?.ConversationId;
+            let pageId = this.team.ChannelId;
             this.loadData(pageId, psid);
         }
     }
@@ -123,7 +127,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.checkConversation(pageId, psid);
     this.loadNotes(pageId, psid);
 
-    let partnerId = this.dataModel?.partner_id || this.dataModel.partner?.id;
+    let partnerId = this.dataModel?.PartnerId;
     if(partnerId) {
         this.loadPartnerBill(partnerId);
         this.loadPartnerRevenue(partnerId);
@@ -147,10 +151,10 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
             if(res?.Data && res?.Success) {
                 let x = { ... res.Data} as TabPartnerCvsRequestModel;
 
-                x.Facebook_ASUserId = x.Facebook_ASUserId || this.dataModel?.id;
-                x.Name = x.Name || x.Facebook_UserName ||  this.dataModel?.name;
-                x.Phone = x.Phone || this.dataModel?.phone;
-                x.Street = x.Street || this.dataModel?.address;
+                x.Facebook_ASUserId = x.Facebook_ASUserId || this.dataModel?.Id;
+                x.Name = x.Name || x.Facebook_UserName ||  this.dataModel?.Name;
+                x.Phone = x.Phone || this.dataModel?.Phone;
+                x.Street = x.Street;
 
                 // TODO: 2 field gán thêm để mapping qua conversation-order, xem cmt dto
                 x.page_id = pageId;
@@ -172,7 +176,9 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.isLoading = true;
     this.partnerService.onLoadPartnerFromTabOrder$.pipe(takeUntil(this.destroy$), finalize(() => { this.isLoading = false }))
       .subscribe((res: QuickSaleOnlineOrderModel) => {
-          ConversationPartnerHandler.loadPartnerFromTabOrder(this.partner, res);
+
+          let partner = this.csPartner_PrepareModelHandler.loadPartnerFromTabOrder(this.partner, res);
+          this.partner = partner;
       });
   }
 
@@ -255,7 +261,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   onLoadSuggestion(item: ResultCheckAddressDTO) {
-    ConversationPartnerHandler.onLoadSuggestion(item, this.partner);
+    let partner = this.csPartner_SuggestionHandler.onLoadSuggestion(item, this.partner);
+    this.partner = partner;
   }
 
   addNote() {
@@ -266,8 +273,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
 
     let model = {} as MDBFacebookMappingNoteDTO;
     model.message = this.innerNote;
-    model.page_id = this.dataModel.page_id || this.team?.Facebook_PageId;
-    model.psid = this.dataModel.psid;
+    model.page_id = this.team?.ChannelId;
+    model.psid = this.dataModel.ConversationId;
 
     this.isLoading = true;
     this.crmMatchingService.addNote(model.psid, model).pipe(takeUntil(this.destroy$),
@@ -432,7 +439,8 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
             })
           }
 
-          ConversationPartnerHandler.mappingPartnerModel(this.partner, x);
+          let partner = this.csPartner_PrepareModelHandler.updatePartnerModel(this.partner, x);
+          this.partner = partner;
 
           // cập nhật dữ liệu khách hàng sang form conversation-order
           this.partnerService.onLoadOrderFromTabPartner$.emit(this.partner);
@@ -446,7 +454,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   prepareModel() {
-    let model = ConversationPartnerHandler.prepareModel(this.partner, this.dataModel) as any;
+    let model = this.csPartner_PrepareModelHandler.prepareModel(this.partner, this.dataModel);
     return model;
   }
 
@@ -487,33 +495,12 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
   }
 
   mappingAddress(partner: TabPartnerCvsRequestModel) {
-    if (partner && partner.City?.code) {
-      this._cities = {
-        code: partner.City.code,
-        name: partner.City.name
-      }
-    }
-    if (partner && partner.District?.code) {
-      this._districts = {
-        cityCode: partner.City?.code,
-        cityName: partner.City?.name,
-        code: partner.District.code,
-        name: partner.District.name
-      }
-    }
-    if (partner && partner.Ward?.code) {
-      this._wards = {
-        cityCode: partner.City?.code,
-        cityName: partner.City?.name,
-        districtCode: partner.District.code,
-        districtName: partner.District.name,
-        code: partner.Ward?.code,
-        name: partner.Ward?.name
-      }
-    }
-    if (partner && (partner.Street)) {
-      this._street = partner.Street;
-    }
+    let data = this.csPartner_SuggestionHandler.mappingAddress(partner);
+
+    this._cities = data._cities;
+    this._districts = data._districts;
+    this._wards = data._wards;
+    this._street = data._street;
   }
 
 }

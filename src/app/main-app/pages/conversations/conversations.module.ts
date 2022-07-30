@@ -118,6 +118,8 @@ import { CrmMatchingV2Service } from '../../services/matching-v2-service/crm-mat
 import { ChatomniConversationService } from '../../services/chatomni-service/chatomni-conversation.service';
 import { ConversationAllV2Component } from './conversation-all/conversation-all-v2.component';
 import { CurrentConversationItemV2Component } from './components/current-conversation-item/current-conversation-item-v2.component';
+import { CsPartner_SuggestionHandler } from '../../handler-v2/chatomni-cspartner/prepare-suggestion.handler';
+import { CsPartner_PrepareModelHandler } from '../../handler-v2/chatomni-cspartner/prepare-partner.handler';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -159,7 +161,9 @@ const SERVICES = [
   ChatomniMessageFacade,
   CrmMatchingV2Service,
   CrmMatchingV2Facade,
-  ChatomniConversationService
+  ChatomniConversationService,
+  CsPartner_SuggestionHandler,
+  CsPartner_PrepareModelHandler
 ]
 
 @NgModule({

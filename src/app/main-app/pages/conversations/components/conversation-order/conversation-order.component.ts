@@ -45,7 +45,6 @@ import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { ODataProductDTOV2, ProductDTOV2 } from 'src/app/main-app/dto/product/odata-product.dto';
 import { FilterObjDTO, OdataProductService } from 'src/app/main-app/services/mock-odata/odata-product.service';
 import { ProductService } from 'src/app/main-app/services/product.service';
-import { ConversationPartnerHandler } from '../conversation-partner/conversation-partner.handler';
 import { ConversationOrderHandler } from './conversation-order.handler';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { CrmMatchingV2Detail } from 'src/app/main-app/dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
