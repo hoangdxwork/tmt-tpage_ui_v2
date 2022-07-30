@@ -6,6 +6,9 @@
             <tds-select valueField="name" textField="name" [ngModel]="currentDateRanges" [border]="false"
                 [data]="tdsDateRanges" size="md" class="tds-dashboard-filter w-32 truncate ..." [valuePrimitive]="false"
                 (ngModelChange)="onChangeFilter($event)" classIcon="tdsi-arrow-down-fill">
+                <ng-template tds-label-tmp let-item="item">
+                    <span class="text-primary-1 font-semibold">{{item.data.name}}</span>
+                </ng-template>
             </tds-select>
         </div>
     </div>

@@ -71,13 +71,13 @@ import { OdataGetOrderPartnerIdService } from '../../services/mock-odata/odata-g
 import { LiveOrderByPartnerComponent } from './components/live-order-bypartner/live-order-bypartner.component';
 import { OverviewOrderBypartnerComponent } from './components/overview-order-bypartner/overview-order-bypartner.component';
 import { OdataFastSaleOrderPartnerIdService } from '../../services/mock-odata/odata-fastsaleorder-partnerid.service';
-import { PrepareModelFeeV2Handler } from '../../services/handlers/aship-v2/prepare-model-feev2.handler';
-import { SelectShipServiceV2Handler } from '../../services/handlers/aship-v2/select-shipservice-v2.handler';
-import { UpdateShipExtraHandler } from '../../services/handlers/aship-v2/update-shipextra.handler';
-import { UpdateShipServiceExtrasHandler } from '../../services/handlers/aship-v2/update-shipservice-extras.handler';
-import { UpdateShipmentDetailAshipHandler } from '../../services/handlers/aship-v2/shipment-detail-aship.handler';
-import { SO_ComputeCaclHandler } from '../../services/handlers/order-handler/compute-cacl.handler';
+import { PrepareModelFeeV2Handler } from '../../handler-v2/aship-v2/prepare-model-feev2.handler';
+import { SelectShipServiceV2Handler } from '../../handler-v2/aship-v2/select-shipservice-v2.handler';
+import { UpdateShipExtraHandler } from '../../handler-v2/aship-v2/update-shipextra.handler';
+import { UpdateShipServiceExtrasHandler } from '../../handler-v2/aship-v2/update-shipservice-extras.handler';
+import { UpdateShipmentDetailAshipHandler } from '../../handler-v2/aship-v2/shipment-detail-aship.handler';
 import { EditOrderV2Component } from './components/edit-order/edit-order-v2.component';
+import { SO_ComputeCaclHandler } from '../../handler-v2/order-handler/compute-cacl.handler';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,

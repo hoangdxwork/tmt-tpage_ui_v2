@@ -6,7 +6,7 @@ import { SortEnum, THelperCacheService } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { LiveCampaignModel, ODataLiveCampaignDTO } from 'src/app/main-app/dto/live-campaign/odata-live-campaign.dto';
-import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/services/handlers/common.handler';
+import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/handler-v2/common.handler';
 import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { FilterObjLiveCampaignDTO, ODataLiveCampaignService } from 'src/app/main-app/services/mock-odata/odata-live-campaign.service';
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';

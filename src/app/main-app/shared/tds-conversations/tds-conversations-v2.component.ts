@@ -43,6 +43,7 @@ import { ChatomniMessageDTO } from '../../dto/conversation-all/chatomni/chatomni
 import { CrmMatchingV2Detail } from '../../dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
 import { ChatomniMessageFacade } from '../../services/chatomni-facade/chatomni-message.facade';
 import { ChatomniConversationItemDto } from '../../dto/conversation-all/chatomni/chatomni-conversation';
+import { Facebook_Graph_Post } from '../../dto/conversation-all/chatomni/chatomni-facebook-post.dto';
 
 @Component({
   selector: 'shared-tds-conversations-v2',
@@ -124,7 +125,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   ngOnInit() {
     this.validateData();
 
-    if (this.data && this.team && TDSHelperString.hasValueString(this.type)) {debugger
+    if (this.data && this.team && TDSHelperString.hasValueString(this.type)) {
         this.pageId = this.team.ChannelId;
         this.loadData(this.data);
     }
@@ -156,7 +157,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
     this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniMessageDTO) => {
         if(res) {
-            this.dataSource = res;
+            this.dataSource = res;debugger
         }
 
         this.isLoading = false;
@@ -358,6 +359,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniMessageDTO) => {
         if(res) {
             this.dataSource.Extras = res.Extras;
+
             this.dataSource.Items = [...res.Items];
             this.dataSource.Paging = {...res.Paging};
         }

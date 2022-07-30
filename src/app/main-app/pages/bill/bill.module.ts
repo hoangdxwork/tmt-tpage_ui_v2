@@ -81,13 +81,13 @@ import { TDSTimelineModule } from 'tds-ui/timeline';
 import { ModalUpdateDeliveryFromExcelComponent } from './components/modal-update-delivery-from-excel/modal-update-delivery-from-excel.component';
 import { ModalManualUpdateDeliveryComponent } from './components/modal-manual-update-delivery/modal-manual-update-delivery.component';
 import { DirectivesModule } from '../../shared/directives/directives.module';
-import { AddBillHandler } from '../../services/handlers/bill-handler/add-bill.handler';
-import { UpdateShipExtraHandler } from '../../services/handlers/aship-v2/update-shipextra.handler';
-import { UpdateShipServiceExtrasHandler } from '../../services/handlers/aship-v2/update-shipservice-extras.handler';
-import { PrepareModelFeeV2Handler } from '../../services/handlers/aship-v2/prepare-model-feev2.handler';
-import { SelectShipServiceV2Handler } from '../../services/handlers/aship-v2/select-shipservice-v2.handler';
-import { UpdateShipmentDetailAshipHandler } from '../../services/handlers/aship-v2/shipment-detail-aship.handler';
-import { CreateFormBillHandler } from '../../services/handlers/bill-handler/create-form-bill.handler';
+import { UpdateShipExtraHandler } from '../../handler-v2/aship-v2/update-shipextra.handler';
+import { UpdateShipServiceExtrasHandler } from '../../handler-v2/aship-v2/update-shipservice-extras.handler';
+import { PrepareModelFeeV2Handler } from '../../handler-v2/aship-v2/prepare-model-feev2.handler';
+import { SelectShipServiceV2Handler } from '../../handler-v2/aship-v2/select-shipservice-v2.handler';
+import { UpdateShipmentDetailAshipHandler } from '../../handler-v2/aship-v2/shipment-detail-aship.handler';
+import { AddBillHandler } from '../../handler-v2/bill-handler/add-bill.handler';
+import { CreateFormBillHandler } from '../../handler-v2/bill-handler/create-form-bill.handler';
 
 const SERVICES = [
   FastSaleOrderService,

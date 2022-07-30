@@ -1,5 +1,5 @@
 <tds-spin [spinning]="isLoading" class="w-full h-full">
-    <tds-tabset class="border border-neutral-2-100 rounded-md h-full w-full" *ngIf="dataModel">
+    <tds-tabset class="border border-neutral-2-100 rounded-md h-full w-full" *ngIf="dataModel && _form">
         <tds-tab title="Thông tin chung">
             <form [formGroup]="_form" novalidate>
                 <div class="flex flex-col w-full">
@@ -54,13 +54,13 @@
         </tds-tab>
         <tds-tab title="Hình ảnh">
             <div class="w-full">
-                <upload-pictures-wall [isArray]="true" [data]="imageListUpLoad" (onLoadImage)="onLoadImage($event)"></upload-pictures-wall>
+                <upload-pictures-wall [isArray]="true" [data]="_form.controls.Images.value|convertListUrl" (onLoadImage)="onLoadImage($event)"></upload-pictures-wall>
             </div>
         </tds-tab>
     </tds-tabset>
 </tds-spin>
 
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-    <button tds-button class="mr-2" color="secondary" (click)="cancel()">Hủy bỏ</button>
-    <button tds-button type="submit" [disabled]="!_form?.valid" color="primary" (click)="onSave()">Lưu thay đổi</button>
+    <button tds-button type="button" class="mr-2" color="secondary" (click)="cancel()">Hủy bỏ</button>
+    <button tds-button type="submit" color="primary" (click)="onSave()">Lưu thay đổi</button>
 </div>

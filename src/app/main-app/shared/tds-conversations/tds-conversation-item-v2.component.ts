@@ -1,3 +1,4 @@
+import { Facebook } from './../../../lib/dto/facebook.dto';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
 import { Subject, takeUntil } from "rxjs";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
@@ -8,12 +9,14 @@ import { ConversationOrderFacade } from "../../services/facades/conversation-ord
 import { PhoneHelper } from "../helper/phone.helper";
 import { ReplaceHelper } from "../helper/replace.helper";
 import { eventReplyCommentTrigger } from "../helper/event-animations.helper";
-import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSModalService } from "tds-ui/modal";
 import { ProductPagefbComponent } from "../../pages/conversations/components/product-pagefb/product-pagefb.component";
 import { FormatIconLikePipe } from "../pipe/format-icon-like.pipe";
-import { ChatomniMessageDetail, Datum } from "../../dto/conversation-all/chatomni/chatomni-message.dto";
+import { ChatomniMessageDetail, ChatomniMessageType, Datum, ExtrasObjectDto } from "../../dto/conversation-all/chatomni/chatomni-message.dto";
+import { ca } from "date-fns/locale";
+import { CRMTeamType } from "../../dto/team/chatomni-channel.dto";
 
 @Component({
   selector: "tds-conversation-item-v2",
@@ -29,7 +32,7 @@ export class TDSConversationItemV2Component implements OnInit, OnDestroy {
   @Input() csid!: string;
   @Input() partner: any;
   @Input() team!: CRMTeamDTO;
-  @Input() children: any;
+  @Input() children!: any;
   @Input() type: any;
   @Input() name!: string;
 
@@ -66,6 +69,22 @@ export class TDSConversationItemV2Component implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // if(TDSHelperObject.hasValue(this.children) && this.dataItem) {
+    //     let type = this.team.Type;
+
+    //     switch(type) {
+    //       case CRMTeamType._Facebook:
+    //         break;
+    //       case CRMTeamType._TShop:
+    //         if(this.dataItem.Type == ChatomniMessageType.TShopComment) {
+    //             let tshopPost = this.children.Data 
+    //         }
+    //         break;
+
+    //       default: 
+    //         break;
+    //     }
+    // }
   }
 
   selectOrder(type: string): any {

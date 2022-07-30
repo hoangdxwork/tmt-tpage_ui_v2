@@ -1,5 +1,5 @@
 <tds-spin [spinning]="isLoading" class="w-full h-full">
-  <form [formGroup]="_form" autocomplete="off" *ngIf="dataModel">
+  <form [formGroup]="_form" autocomplete="off" *ngIf="dataModel && _form">
     <div class="w-full pb-4 px-4">
       <div class="flex flex-col w-full bg-white rounded-xl">
         <div class="flex flex-row items-center justify-between px-4 py-3">
@@ -18,13 +18,13 @@
         <div class="flex flex-col p-4">
           <div class="flex flex-row items-center justify-start w-2/3 pb-6">
             <upload-pictures-wall class="mr-12" [size]="112"
-              [data]="[_form.controls.ImageUrl.value || dataModel.ImageUrl]" (getResult)="getAvatar($event)">
+              [data]="[_form.controls.ImageUrl.value || dataModel.ImageUrl]" (getResult)="getAvatar($event)" (getBase64)="getBase64($event)">
             </upload-pictures-wall>
             <div class="flex flex-col w-full">
               <tds-form-field>
                 <tds-label>Tên sản phẩm</tds-label>
                 <input tdsInput formControlName="Name" placeholder="Nhập tên sản phẩm"
-                  class="text-neutral-1-900 text-body-2 font-regular" [required]='true' />
+                  class="text-neutral-1-900 text-body-2 font-regular" [required]="true" />
                 <tds-error>
                   Vui lòng nhập tên sản phẩm
                 </tds-error>
@@ -118,7 +118,7 @@
                     <tds-label>Đơn vị mặc định<span class="text-error-400">*</span> :</tds-label>
                     <tds-form-field class="w-full col-span-2">
                       <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị' disabledField="isActive"
-                        formControlName="UOMPO" [valuePrimitive]="false" [data]="UOMPOList" [allowClear]="false"
+                        formControlName="UOMPO" [valuePrimitive]="false" [data]="UOMPOList" [allowClear]="false" [required]="true"
                         [optionOverflowSize]="5">
                       </tds-select>
                       <tds-error>
@@ -129,7 +129,7 @@
                     <tds-label>Đơn vị mua<span class="text-error-400">*</span> :</tds-label>
                     <tds-form-field class="w-full col-span-2">
                       <tds-select valueField="Id" textField="Name" placeholder='Nhập đơn vị' disabledField="isActive"
-                        formControlName="UOM" [valuePrimitive]="false" [data]="UOMList" [allowClear]="false"
+                        formControlName="UOM" [valuePrimitive]="false" [data]="UOMList" [allowClear]="false" [required]="true"
                         [optionOverflowSize]="5">
                       </tds-select>
                       <tds-error>
@@ -177,7 +177,7 @@
                   </div>
                 </div>
               </tds-tab>
-              <tds-tab title="Bán hàng">
+              <tds-tab title="Bán hàng" *ngIf="_form.controls.SaleOK.value">
                 <div
                   class="grid grid-cols-2 gap-y-4 gap-x-8 items-center text-neutral-1-600 text-header-2 font-semibold">
                   <span>Điểm bán hàng</span>

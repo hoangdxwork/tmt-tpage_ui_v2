@@ -38,14 +38,14 @@ import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { CaculateFeeResponseDto, CalculateFeeInsuranceInfoResponseDto, CalculateFeeServiceResponseDto, DeliveryResponseDto } from 'src/app/main-app/dto/carrierV2/delivery-carrier-response.dto';
 import { CalculatorListFeeDTO } from 'src/app/main-app/dto/fastsaleorder/calculate-listFee.dto';
 import { AshipGetInfoConfigProviderDto } from 'src/app/main-app/dto/carrierV2/aship-info-config-provider-data.dto';
-import { PrepareModelFeeV2Handler } from 'src/app/main-app/services/handlers/aship-v2/prepare-model-feev2.handler';
-import { SelectShipServiceV2Handler } from 'src/app/main-app/services/handlers/aship-v2/select-shipservice-v2.handler';
+import { PrepareModelFeeV2Handler } from 'src/app/main-app/handler-v2/aship-v2/prepare-model-feev2.handler';
+import { SelectShipServiceV2Handler } from 'src/app/main-app/handler-v2/aship-v2/select-shipservice-v2.handler';
 import { SharedService } from 'src/app/main-app/services/shared.service';
 import { CompanyCurrentDTO } from 'src/app/main-app/dto/configs/company-current.dto';
-import { UpdateShipExtraHandler } from 'src/app/main-app/services/handlers/aship-v2/update-shipextra.handler';
-import { UpdateShipServiceExtrasHandler } from 'src/app/main-app/services/handlers/aship-v2/update-shipservice-extras.handler';
-import { UpdateShipmentDetailAshipHandler } from 'src/app/main-app/services/handlers/aship-v2/shipment-detail-aship.handler';
-import { SO_ComputeCaclHandler } from 'src/app/main-app/services/handlers/order-handler/compute-cacl.handler';
+import { UpdateShipExtraHandler } from 'src/app/main-app/handler-v2/aship-v2/update-shipextra.handler';
+import { UpdateShipServiceExtrasHandler } from 'src/app/main-app/handler-v2/aship-v2/update-shipservice-extras.handler';
+import { UpdateShipmentDetailAshipHandler } from 'src/app/main-app/handler-v2/aship-v2/shipment-detail-aship.handler';
+import { SO_ComputeCaclHandler } from 'src/app/main-app/handler-v2/order-handler/compute-cacl.handler';
 
 @Component({
   selector: 'edit-order-v2',
@@ -721,11 +721,11 @@ export class EditOrderV2Component implements OnInit {
       let promise = new Promise((resolve, reject): any => {
         this.fastSaleOrderService.calculateFeeAship(model).pipe(takeUntil(this.destroy$)).subscribe((res: DeliveryResponseDto<CaculateFeeResponseDto>) => {
 
-          if (res && res.Data?.Services) {debugger
+          if (res && res.Data?.Services) {
 
               let extras = event.ExtraProperties ? (JSON.parse(event.ExtraProperties) ?? []).filter((x: any) => !x.IsHidden) : [] as AshipGetInfoConfigProviderDto[];
 
-              if(TDSHelperArray.hasListValue(extras) && TDSHelperArray.hasListValue(this.configsProviderDataSource)) {debugger
+              if(TDSHelperArray.hasListValue(extras) && TDSHelperArray.hasListValue(this.configsProviderDataSource)) {
                   extras.map((x: AshipGetInfoConfigProviderDto) => {
                       let exits = this.configsProviderDataSource.filter(e => e.ConfigName === x.ConfigName && (x.ConfigsValue.find(t => t.Id == e.ConfigValue)))[0];
                       if(exits) {

@@ -7,8 +7,8 @@ import { Subject, finalize } from 'rxjs';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationSummaryByTagDTO } from 'src/app/main-app/dto/conversation/conversation.dto';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { CommonHandler } from 'src/app/main-app/services/handlers/common.handler';
 import { ChildChatOmniChannelDto } from 'src/app/main-app/dto/team/chatomni-channel.dto';
+import { CommonHandler } from 'src/app/main-app/handler-v2/common.handler';
 
 @Component({
   selector: 'app-dashboard-tag-report',

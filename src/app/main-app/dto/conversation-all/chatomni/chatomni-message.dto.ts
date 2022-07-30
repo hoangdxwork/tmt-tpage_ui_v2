@@ -1,3 +1,14 @@
+
+export interface ChatomniMessageDTO {
+  Items: ChatomniMessageDetail[];
+  Extras?: Extras;
+  Paging: PagingTimestamp;
+}
+
+export interface Extras {
+  Objects: { [key: string]: ExtrasObjectDto };
+}
+
 export interface Facebook_Graph_From {
   id: string;
   name: string;
@@ -134,7 +145,7 @@ export enum ChatomniMessageType {
 }
 
 export interface ExtrasObjectDto {
-  Data: Object;// gán lại ChatomniDataTShopPost hoặc ChatomniDataFacebookPost
+  Data: object;// gán lại ChatomniDataTShopPost hoặc ChatomniDataFacebookPost
   Id: string;
   ObjectId: string;
   ObjectType: number;
@@ -145,17 +156,6 @@ export interface ExtrasObjectDto {
   Description: string;
   Thumbnail?: any;
 }
-
-export interface Extras {
-  Objects: { [key: string]: ExtrasObjectDto };
-}
-
-export interface ChatomniMessageDTO {
-  Items: ChatomniMessageDetail[];
-  Extras?: Extras;
-  Paging: PagingTimestamp;
-}
-
 
 
 

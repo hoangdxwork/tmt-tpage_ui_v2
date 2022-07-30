@@ -35,7 +35,7 @@ import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
 import { TDSCardModule } from 'tds-ui/card';
 import { TDSTableModule } from 'tds-ui/table';
 import { TDSEmptyModule } from 'tds-ui/empty';
-import { CommonHandler } from '../../services/handlers/common.handler';
+import { CommonHandler } from '../../handler-v2/common.handler';
 
 const SERVICES = [
   ReportFacebookService,

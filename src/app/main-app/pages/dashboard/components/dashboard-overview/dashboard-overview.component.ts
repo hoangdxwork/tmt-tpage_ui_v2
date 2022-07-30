@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
 import { InputSummaryOverviewDTO, ReportSummaryOverviewResponseDTO,  } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
-import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/services/handlers/common.handler';
+import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/handler-v2/common.handler';
 
 @Component({
   selector: 'app-dashboard-overview',

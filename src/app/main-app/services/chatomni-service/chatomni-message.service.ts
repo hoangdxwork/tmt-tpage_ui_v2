@@ -84,6 +84,7 @@ export class ChatomniMessageService extends BaseSevice  {
               res.Items = res.Items.sort((a: ChatomniMessageDetail, b: ChatomniMessageDetail) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime));
           }
 
+        //   exist.Extras!.Objects = { ...exist.Extras?.Objects, ...res.Extras?.Objects};
           exist.Items = [ ...exist.Items, ...res.Items ];
           exist.Paging = { ...res.Paging };
 
