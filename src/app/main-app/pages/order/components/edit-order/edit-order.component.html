@@ -445,12 +445,12 @@
                     <span class="mr-2">Lịch sử hóa đơn</span>
                     <div *ngIf="quickOrderModel.Details" class="text-caption-2 font-semibold py-0.5 px-1.5 rounded-full flex"
                       [ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 bg-neutral-3-100 group-hover:text-white group-hover:bg-primary-1':!active}">
-                      {{45}}
+                      {{quickOrderModel.Details.length}}
                     </div>
                   </div>
                 </ng-template>
 
-                <overview-order-bypartner [partnerId]="quickOrderModel.PartnerId"></overview-order-bypartner>
+                <overview-order-bypartner *ngIf="selectedIndex == 4" [partnerId]="quickOrderModel.PartnerId"></overview-order-bypartner>
               </tds-tab>
             </tds-tabset>
 

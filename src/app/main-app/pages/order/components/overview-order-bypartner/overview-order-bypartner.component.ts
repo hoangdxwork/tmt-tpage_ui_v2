@@ -69,7 +69,7 @@ export class OverviewOrderBypartnerComponent implements OnInit, OnDestroy {
       let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
       this.odataFastSaleOrderPartnerIdService.getOrdersByPartnerId(this.partnerId, params).subscribe(res => {
-        this.count = res["@odata.count"];console.log(res.value)
+        this.count = res["@odata.count"];
         this.lstOrder = [...res.value];
       }, err => {
         this.message.error(err?.error?.message || Message.CanNotLoadData);
@@ -87,33 +87,23 @@ export class OverviewOrderBypartnerComponent implements OnInit, OnDestroy {
       this.lstStatus = res.value as any[];
 
       tabs = this.lstStatus.map((x: any, index: number) => {
-        return { Name: x.ShowState, Index: index + 1, Total: x.Count } as TabNavsDTO
+        return { Name: x.State, Index: index + 1, Total: x.Count } as TabNavsDTO
       });
-
-      // tabs.push({ Name: "Tất cả", Index: 1, Total: total });
-      tabs.sort((a, b) => a.Index - b.Index);
 
       this.tabNavs = [...tabs];
       this.lstOftabNavs = this.tabNavs;
     },
       err => {
-        this.message.error(err?.error?.message || 'Không tải được dữ liệu')
+        this.message.error(err?.error?.message || Message.CanNotLoadData)
       });
   }
 
   // filter status
   onSelectChange(index: number) {
-
     let item = this.tabNavs.find(f => f.Index == index);
     if(item){
       this.filterObj.state = item.Name;
     }
-
-    // if (item?.Name == 'Tất cả') {
-    //   this.filterObj.state = [];
-    // } else {
-    //   this.filterObj.state.push(item.Name);
-    // }
 
     this.pageIndex = 1;
     this.indClickTag = -1;

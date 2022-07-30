@@ -5,17 +5,17 @@
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
         </tds-form-field>
     </div>
-    <div>
-        <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)">
+    <div class="border rounded-md border-neutral-2-200 pb-2.5">
+        <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)" class="px-4">
             <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
-                <tds-filter-status-item [name]='item.Name' [count]='item.Total'
+                <tds-filter-status-item [name]='item.Name|getOrderStatus:lstStatus' [count]='item.Total'
                     [value]="item.Index">
                     <!-- |getOrderStatus:lstStatus -->
                 </tds-filter-status-item>
             </ng-template>
         </tds-filter-status>
         <div class="max-h-[450px] h-[450px]">
-            <tds-table class="w-full h-full" #productTable [bordered]="true" [listData]="lstOrder"
+            <tds-table class="w-full h-full" #productTable [listData]="lstOrder"
                 [pageIndex]="pageIndex" [pageSize]="pageSize" [total]="count" [loading]="isLoading"
                 (queryParams)="onQueryParamsChange($event)">
                 <thead class="rounded">

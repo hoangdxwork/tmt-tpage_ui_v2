@@ -61,8 +61,10 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
   enableInsuranceFee: boolean = false;
   isLoading: boolean = false;
   selectedIndex: number = 0;
+  tabIndex:number = 0;
   quickOrderModel!: QuickSaleOnlineOrderModel;
   saleModel!: FastSaleOrder_DefaultDTOV2;
+  showBillHistory = false;
 
   lstPartnerStatus: any[] = [];
   lstProductSearch: ProductDTOV2[] = [];
