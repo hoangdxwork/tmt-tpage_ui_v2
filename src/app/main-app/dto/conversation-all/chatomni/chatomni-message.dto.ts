@@ -1,3 +1,14 @@
+
+export interface ChatomniMessageDTO {
+  Items: ChatomniMessageDetail[];
+  Extras?: Extras;
+  Paging: PagingTimestamp;
+}
+
+export interface Extras {
+  Objects: { [key: string]: ExtrasObjectDto };
+}
+
 export interface Facebook_Graph_From {
   id: string;
   name: string;
@@ -145,17 +156,6 @@ export interface ExtrasObjectDto {
   Description: string;
   Thumbnail?: any;
 }
-
-export interface Extras {
-  Objects: { [key: string]: ExtrasObjectDto };
-}
-
-export interface ChatomniMessageDTO {
-  Items: ChatomniMessageDetail[];
-  Extras?: Extras;
-  Paging: PagingTimestamp;
-}
-
 
 
 
