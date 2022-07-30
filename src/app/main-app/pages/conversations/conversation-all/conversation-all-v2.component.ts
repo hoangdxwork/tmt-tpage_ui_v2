@@ -152,7 +152,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     this.validateData();
     // Sử dụng ngZone chạy bất đồng bộ dữ liệu
     this.ngZone.run(() => {
-        this.dataSource$ = this.chatomniConversationService.makeDataSource(team.Id, queryObj);
+        this.dataSource$ = this.chatomniConversationService.makeDataSource(team.Id, this.type, queryObj);
     })
 
     this.loadConversations(this.dataSource$);
@@ -243,7 +243,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
       this.isProcessing = true;
       this.ngZone.run(() => {
-          this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam?.Id, this.queryFilter);
+          this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam?.Id, this.type, this.queryFilter);
       })
 
       this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniConversationDto) => {
@@ -261,9 +261,6 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
   onClickTeam(data: any): any {
     if (this.paramsUrl?.teamId) {
-        //TODO: xóa dữ liệu _set
-        this.chatomniMessageFacade.chatomniDataSource = {};
-
         let uri = this.router.url.split("?")[0];
         let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
         this.router.navigateByUrl(uriParams);

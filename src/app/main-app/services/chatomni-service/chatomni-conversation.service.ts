@@ -23,7 +23,7 @@ export class ChatomniConversationService extends BaseSevice {
       super(apiService)
   }
 
-  get(teamId: number, queryObj?: any): Observable<ChatomniConversationDto> {
+  get(teamId: number, type: string, queryObj?: any): Observable<ChatomniConversationDto> {
 
     let queryString = null;
     if (queryObj) {
@@ -32,7 +32,7 @@ export class ChatomniConversationService extends BaseSevice {
       }).join('&');
     }
 
-    let url = `${this._BASE_URL}/${this.baseRestApi}/${teamId}/conversations`;
+    let url = `${this._BASE_URL}/${this.baseRestApi}/${teamId}/conversations?type=${type}`;
     if (TDSHelperString.hasValueString(queryString)) {
         url = `${url}&${queryString}`;
     }
@@ -64,14 +64,14 @@ export class ChatomniConversationService extends BaseSevice {
     return this.apiService.getData<ChatomniConversationDto>(api, null);
   }
 
-  makeDataSource(teamId: number, queryObj?: any): Observable<ChatomniConversationDto> {
+  makeDataSource(teamId: number, type: string, queryObj?: any): Observable<ChatomniConversationDto> {
 
     this.urlNext = '';
-    return this.get(teamId, queryObj).pipe(map((res: any) => {
+    return this.get(teamId, type, queryObj).pipe(map((res: any) => {
 
       // TODO: load dữ liệu lần đầu tiên
       if (TDSHelperObject.hasValue(res)) {
-        this.csFacade.setData(teamId, res);
+          this.csFacade.setData(teamId, res);
       }
 
       this.urlNext = res.Paging?.UrlNext;
@@ -83,7 +83,7 @@ export class ChatomniConversationService extends BaseSevice {
 
   }
 
-  nextDataSource(teamId: number, queryObj?: any): Observable<ChatomniConversationDto> {
+  nextDataSource(teamId: number, type: string, queryObj?: any): Observable<ChatomniConversationDto> {
 
     let exist = this.csFacade.getData(teamId);
 
