@@ -1,3 +1,4 @@
+import { EditProductVariantComponent } from './edit-product-variant/edit-product-variant.component';
 import { TDSNotificationModule } from 'tds-ui/notification';
 import { ExcelExportService } from './../../services/excel-export.service';
 import { TagProductTemplateService } from './../../services/tag-product-template.service';
@@ -19,7 +20,7 @@ import { AutoQuickReplyComponent } from './auto-quick-reply/auto-quick-reply.com
 import { ConfigConversationTagsComponent } from './config-conversation-tags/config-conversation-tags.component';
 import { ConfigSmsMessagesComponent } from './config-sms-messages/config-sms-messages.component';
 
-import { ConfigProductsComponent } from './products/config-products.component';
+import { ConfigProductComponent } from './product/product.component';
 import { ConfigActivitiesComponent } from './config-activities/config-activities.component';
 import { ConfigPromotionsComponent } from './config-promotions/config-promotions.component';
 import { ConfigUsersOperationComponent } from './config-users/config-users-operation/config-users-operation.component';
@@ -46,7 +47,7 @@ import { ModalUpdateShiftComponent } from './components/modal-update-shift/modal
 import { ConfigDecentralizePageComponent } from './config-users/config-decentralize-page/config-decentralize-page.component';
 import { ConfigAddUOMModalComponent } from './components/config-add-UOM-modal/config-add-UOM-modal.component';
 import { ConfigAddOriginCountryModalComponent } from './components/config-add-origin-country-modal/config-add-origin-country-modal.component';
-import { ConfigAddProductComponent } from './config-add-product/config-add-product.component';
+import { ConfigAddProductComponent } from './create-product/create-product.component';
 import { OdataTPosLoggingService } from '../../services/mock-odata/odata-tpos-logging.service';
 import { OdataSaleCouponProgramService } from '../../services/mock-odata/odata-sale-coupon-program.service';
 import { SaleCouponProgramService } from '../../services/sale-coupon-program.service';
@@ -59,7 +60,6 @@ import { ConfigConversationTagsCreateDataModalComponent } from './components/con
 import { FacebookService } from '../../services/facebook.service';
 import { ProductDetailsComponent } from './components/product-details/product-details.component';
 import { ApplicationRoleService } from '../../services/application-role.service';
-import { UserRestHandler } from '../../services/handlers/user-rest.handler';
 import { UploadImageModule } from '../../shared/upload-image/tpage-avatar-facebook/upload-image.module';
 import { ConfigAddAttributeProductModalComponent } from './components/config-attribute-modal/config-attribute-modal.component';
 import { CompanyService } from '../../services/company.service';
@@ -68,9 +68,8 @@ import { ConfigPromotionComboComponent } from './config-promotions/components/co
 import { ConfigPromotionAllComponent } from './config-promotions/components/config-promotion-all/config-promotion-all.component';
 import { ConfigEditPromotionComponent } from './config-promotions/components/config-edit-promotion/config-edit-promotion.component';
 import { ConfigAddPromotionComponent } from './config-promotions/components/config-add-promotion/config-add-promotion.component';
-import { ListProductVariantComponent } from './product-variant/list-product-variant.component';
-import { EditProductVariantComponent } from './product-variant/edit/edit-product-variant.component';
-import { CreateProductVariantComponent } from './product-variant/create/create-product-variant.component';
+import { ListProductVariantComponent } from './product-variant/product-variant.component';
+import { CreateProductVariantComponent } from './create-product-variant/create-product-variant.component';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { THelperCacheService } from 'src/app/lib';
 import { TDSModalModule, TDSModalService } from 'tds-ui/modal';
@@ -107,8 +106,7 @@ import { TDSEmptyModule } from 'tds-ui/empty';
 import { DeliveryCarrierV2Service } from '../../services/delivery-carrier-v2.service';
 import { ConfigDeliveryConnectComponent } from './config-delivery/config-delivery-connect/config-delivery-connect.component';
 import { ConfigDeliveryUpdateComponent } from './config-delivery/config-delivery-update/config-delivery-update.component';
-import { AddVariantHandler } from './product-variant/create/add-variant.handler';
-import { EditVariantHandler } from './product-variant/edit/edit-variant.handler';
+import { UserRestHandler } from '../../handler-v2/user-rest.handler';
 
 
 const SERVICES = [
@@ -134,9 +132,7 @@ const SERVICES = [
     CompanyService,
     ProductIndexDBService,
     THelperCacheService,
-    DeliveryCarrierV2Service,
-    AddVariantHandler,
-    EditVariantHandler
+    DeliveryCarrierV2Service
 ]
 
 @NgModule({
@@ -147,7 +143,7 @@ const SERVICES = [
     ConfigConversationTagsComponent,
     ConfigSmsMessagesComponent,
     ListProductVariantComponent,
-    ConfigProductsComponent,
+    ConfigProductComponent,
     ConfigActivitiesComponent,
     ConfigPromotionsComponent,
     ConfigUsersOperationComponent,

@@ -81,9 +81,9 @@ import { TDSSelectModule } from 'tds-ui/select';
 import { TDSCheckBoxModule } from 'tds-ui/tds-checkbox';
 import { TDSPopoverModule } from 'tds-ui/popover';
 import { TDSSwitchModule } from 'tds-ui/switch';
-import { CommonHandler } from '../../services/handlers/common.handler';
 import { ODataLiveCampaignService } from '../../services/mock-odata/odata-live-campaign.service';
 import { FilterOptionCampaignComponent } from './components/filter-option-campaign/filter-option-campaign.component';
+import { CommonHandler } from '../../handler-v2/common.handler';
 
 const cmp =[
   AddLiveCampaignComponent,
@@ -141,7 +141,7 @@ const SERVICES = [
   ConversationDataFacade,
   DraftMessageService,
   ConversationEventFacade,
-  ConversationOrderFacade,
+  ConversationOrderFacade
 ]
 
 @NgModule({

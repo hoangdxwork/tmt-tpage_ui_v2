@@ -1,8 +1,8 @@
-import { FilterProductTemplateObjDTO } from './../../../services/mock-odata/odata-product-template.service';
+import { FilterProductTemplateObjDTO } from '../../../services/mock-odata/odata-product-template.service';
 import { ProductTemplateDTO } from '../../../dto/product/product.dto';
 import { ColumnTableDTO } from '../../partner/components/config-column/config-column-partner.component';
 import { THelperCacheService } from '../../../../lib/utility/helper-cache';
-import { FilterDataRequestDTO, SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { finalize } from 'rxjs/operators';
 import { ProductTemplateService } from '../../../services/product-template.service';
 import { ExcelExportService } from '../../../services/excel-export.service';
@@ -24,11 +24,11 @@ import { TDSTableQueryParams } from 'tds-ui/table';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
-  selector: 'app-config-products',
-  templateUrl: './config-products.component.html'
+  selector: 'app-product',
+  templateUrl: './product.component.html'
 })
 
-export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ConfigProductComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('viewChildProductTable') parentElement!: ElementRef;
 
@@ -56,12 +56,13 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
   pageSize = 20;
   pageIndex = 1;
   filterObj: FilterProductTemplateObjDTO = {
-    searchText: ''
+    searchText: '',
+    active: true
   };
   sort: SortDataRequestDTO[] = [
     {
       field: 'DateCreated',
-      dir: SortEnum.desc
+      dir: SortEnum.desc // TODO: mặc định sắp xếp giảm dần theo ngày tạo
     }
   ];
   sortByName:string = '';
@@ -120,9 +121,7 @@ export class ConfigProductsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   loadData(pageSize: number, pageIndex: number) {
-    let filter = this.odataService.buildFilter(this.filterObj);
-    // TODO: mặc định sắp xếp giảm dần theo ngày tạo
-
+    let filter = this.odataService.buildFilter(this.filterObj || null);
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filter || null, this.sort || null);
 
     this.getViewData(params).subscribe((res: ODataProductTemplateDTO) => {

@@ -9,12 +9,8 @@ export class ConvertListUrlPipe implements PipeTransform {
   constructor(){}
 
   transform(listImages: any[]): string[] {
-    let result:string[] = [];
-
-    listImages.forEach(img => {
-        result.push(img.Url);
-    });
-
-    return result;
+    return listImages.map(img => {
+        return img.Url;
+    }) as string[];
   }
 }

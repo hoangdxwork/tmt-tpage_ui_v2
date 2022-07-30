@@ -41,17 +41,17 @@ import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { THelperCacheService } from 'src/app/lib';
 import { PartnerDetailDTO } from 'src/app/main-app/dto/partner/partner-detail.dto';
 import { ChangePartnerPriceListDTO } from 'src/app/main-app/dto/partner/change-partner-pricelist.dto';
-import { AddBillHandler } from '../../../services/handlers/bill-handler/add-bill.handler';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
 import { CaculateFeeResponseDto, CalculateFeeInsuranceInfoResponseDto, CalculateFeeServiceExtrasResponseDto, CalculateFeeServiceResponseDto, DeliveryResponseDto } from 'src/app/main-app/dto/carrierV2/delivery-carrier-response.dto';
 import { AshipGetInfoConfigProviderDto } from 'src/app/main-app/dto/carrierV2/aship-info-config-provider-data.dto';
-import { UpdateShipExtraHandler } from 'src/app/main-app/services/handlers/aship-v2/update-shipextra.handler';
-import { UpdateShipServiceExtrasHandler } from 'src/app/main-app/services/handlers/aship-v2/update-shipservice-extras.handler';
-import { PrepareModelFeeV2Handler } from 'src/app/main-app/services/handlers/aship-v2/prepare-model-feev2.handler';
-import { SelectShipServiceV2Handler } from 'src/app/main-app/services/handlers/aship-v2/select-shipservice-v2.handler';
-import { UpdateShipmentDetailAshipHandler } from 'src/app/main-app/services/handlers/aship-v2/shipment-detail-aship.handler';
-import { CreateFormBillHandler } from 'src/app/main-app/services/handlers/bill-handler/create-form-bill.handler';
+import { UpdateShipExtraHandler } from 'src/app/main-app/handler-v2/aship-v2/update-shipextra.handler';
+import { UpdateShipServiceExtrasHandler } from 'src/app/main-app/handler-v2/aship-v2/update-shipservice-extras.handler';
+import { PrepareModelFeeV2Handler } from 'src/app/main-app/handler-v2/aship-v2/prepare-model-feev2.handler';
+import { SelectShipServiceV2Handler } from 'src/app/main-app/handler-v2/aship-v2/select-shipservice-v2.handler';
+import { UpdateShipmentDetailAshipHandler } from 'src/app/main-app/handler-v2/aship-v2/shipment-detail-aship.handler';
 import { TDSI18nService } from 'tds-ui/i18n';
+import { AddBillHandler } from 'src/app/main-app/handler-v2/bill-handler/add-bill.handler';
+import { CreateFormBillHandler } from 'src/app/main-app/handler-v2/bill-handler/create-form-bill.handler';
 
 @Component({
   selector: 'app-add-bill',

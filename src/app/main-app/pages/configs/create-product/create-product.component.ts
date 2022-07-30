@@ -1,14 +1,14 @@
-import { TpageAddCategoryComponent } from './../../../shared/tpage-add-category/tpage-add-category.component';
-import { ProductCategoryService } from './../../../services/product-category.service';
-import { WallPicturesDTO } from './../../../dto/attachment/wall-pictures.dto';
-import { Message } from './../../../../lib/consts/message.const';
+import { TpageAddCategoryComponent } from '../../../shared/tpage-add-category/tpage-add-category.component';
+import { ProductCategoryService } from '../../../services/product-category.service';
+import { WallPicturesDTO } from '../../../dto/attachment/wall-pictures.dto';
+import { Message } from '../../../../lib/consts/message.const';
 import { CreateVariantsModalComponent } from '../components/create-variants-modal/create-variants-modal.component';
-import { ConfigCateg, ConfigUOMPO, ConfigUOM, ConfigAttributeLine, ConfigSuggestVariants } from './../../../dto/configs/product/config-product-default.dto';
-import { ConfigUOMTypeDTO, ConfigOriginCountryDTO } from './../../../dto/configs/product/config-UOM-type.dto';
+import { ConfigCateg, ConfigUOMPO, ConfigUOM, ConfigAttributeLine, ConfigSuggestVariants } from '../../../dto/configs/product/config-product-default.dto';
+import { ConfigUOMTypeDTO, ConfigOriginCountryDTO } from '../../../dto/configs/product/config-UOM-type.dto';
 import { ConfigProductVariant } from '../../../dto/configs/product/config-product-default.dto';
 import { ConfigAddAttributeProductModalComponent } from '../components/config-attribute-modal/config-attribute-modal.component';
-import { ProductTemplateOUMLineService } from './../../../services/product-template-uom-line.service';
-import { ProductTemplateService } from './../../../services/product-template.service';
+import { ProductTemplateOUMLineService } from '../../../services/product-template-uom-line.service';
+import { ProductTemplateService } from '../../../services/product-template.service';
 import { OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ConfigAddOriginCountryModalComponent } from '../components/config-add-origin-country-modal/config-add-origin-country-modal.component';
@@ -21,11 +21,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TDSHelperArray, TDSHelperObject, TDSSafeAny, TDSHelperString } from 'tds-ui/shared/utility';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
-import { AddProductHandler } from '../../../services/handlers/product-template/add-product.handler';
+import { CreateFormProductHandler } from 'src/app/main-app/handler-v2/product/create-form-product.handler';
+import { AddProductHandler } from 'src/app/main-app/handler-v2/product/prepare-create-product.handler';
 
 @Component({
-  selector: 'app-config-add-product',
-  templateUrl: './config-add-product.component.html'
+  selector: 'app-create-product',
+  templateUrl: './create-product.component.html'
 })
 export class ConfigAddProductComponent implements OnInit, OnDestroy {
   _form!: FormGroup;
@@ -70,6 +71,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
+    private createFormProductHandler : CreateFormProductHandler,
     private productCategoryService: ProductCategoryService,
     private productTemplateService: ProductTemplateService,
     private productTemplateOUMLine: ProductTemplateOUMLineService) {
@@ -77,40 +79,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   }
 
   createForm() {
-    this._form = this.fb.group({
-      Active: [true],
-      AvailableInPOS: [true],
-      Barcode: [null],
-      Categ: [null],
-      DefaultCode: [null],
-      Description: [null],
-      DescriptionSale: [null],
-      Distributor: [null],
-      Element: [null],
-      EnableAll: [false],
-      Images: this.fb.array([]),
-      ImageUrl: [null],
-      Importer: [null],
-      InfoWarning: [null],
-      IsCombo: [false],
-      ListPrice: [null],
-      Name: [null, Validators.required],
-      OriginCountry: [null],
-      POSCateg: [null],//TODO: nhóm pos
-      Producer: [null],
-      ProductVariants: this.fb.array([]),
-      PurchaseOK: [true],
-      SaleOK: [true],
-      Specifications: [null],
-      StandardPrice: [null],
-      Tracking: ['none'],
-      Type: ['product'],
-      UOM: [null, Validators.required],
-      UOMPO: [null, Validators.required],
-      Volume: [0],
-      Weight: [0],
-      YearOfManufacture: [null]
-    });
+    this._form = this.createFormProductHandler.createForm(this._form,this.fb);
   }
 
   ngOnInit(): void {
@@ -282,7 +251,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
       });
 
       modal.afterClose.subscribe((result: Array<ConfigAttributeLine>) => {
-        if (TDSHelperObject.hasValue(result)) {
+        if (TDSHelperArray.hasListValue(result)) {
           this.lstAttributes = result;
           let model = <ConfigSuggestVariants><unknown>this.prepareModel();
           model.AttributeLines = result;
@@ -475,7 +444,11 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   }
 
   getAvatar(url: string) {
-    this._form.controls.ImageUrl.setValue(url);
+    this._form.controls["ImageUrl"].setValue(url);
+  }
+
+  getBase64(base64: TDSSafeAny) {
+    this._form.controls["Image"].setValue(base64);
   }
 
   getImageList(images: any) {

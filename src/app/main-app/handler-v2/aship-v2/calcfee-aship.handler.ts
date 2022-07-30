@@ -6,7 +6,7 @@ import { CalculateFeeInsuranceInfoResponseDto } from "src/app/main-app/dto/carri
 import { DeliveryCarrierDTOV2 } from "src/app/main-app/dto/delivery-carrier.dto";
 import { FastSaleOrder_DefaultDTOV2, ShipServiceExtra } from "src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto";
 import { TDSMessageService } from "tds-ui/message";
-import { FastSaleOrderService } from "../../fast-sale-order.service";
+import { FastSaleOrderService } from "../../services/fast-sale-order.service";
 
 @Injectable({
   providedIn: 'root'

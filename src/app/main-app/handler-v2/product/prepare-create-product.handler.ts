@@ -1,6 +1,6 @@
-import { WallPicturesDTO } from '../../../dto/attachment/wall-pictures.dto';
-import { ConfigProductDefaultDTO, ConfigAttributeLine, ConfigProductVariant } from '../../../dto/configs/product/config-product-default.dto';
 import { Injectable } from "@angular/core";
+import { WallPicturesDTO } from "../../dto/attachment/wall-pictures.dto";
+import { ConfigAttributeLine, ConfigProductDefaultDTO, ConfigProductVariant } from "../../dto/configs/product/config-product-default.dto";
 
 @Injectable({
    providedIn: 'root'

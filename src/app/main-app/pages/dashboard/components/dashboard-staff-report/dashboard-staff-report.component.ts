@@ -5,7 +5,7 @@ import { Component, OnInit } from '@angular/core';
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
 import { SummaryActivityByStaffDTO } from 'src/app/main-app/dto/dashboard/summary-overview.dto';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/services/handlers/common.handler';
+import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/handler-v2/common.handler';
 
 @Component({
   selector: 'app-dashboard-staff-report',

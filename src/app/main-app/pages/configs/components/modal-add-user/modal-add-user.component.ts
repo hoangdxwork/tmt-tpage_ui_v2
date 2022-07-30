@@ -1,6 +1,5 @@
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { UserRestHandler } from 'src/app/main-app/services/handlers/user-rest.handler';
 import { ApplicationRoleService } from 'src/app/main-app/services/application-role.service';
 import { ApplicationRoleDTO } from 'src/app/main-app/dto/account/application-role.dto';
 import { AddApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
@@ -13,6 +12,7 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSUploadFile } from 'tds-ui/upload';
+import { UserRestHandler } from 'src/app/main-app/handler-v2/user-rest.handler';
 
 @Component({
   selector: 'app-modal-add-user',
