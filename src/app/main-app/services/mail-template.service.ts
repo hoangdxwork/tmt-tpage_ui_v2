@@ -21,7 +21,7 @@ export class MailTemplateService extends BaseSevice {
 
   get(): Observable<TDSSafeAny> {
     const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}?filter=Active%20eq%20true`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}?%24filter=(Active+eq+true)`,
       method: TApiMethodType.get
     }
 
