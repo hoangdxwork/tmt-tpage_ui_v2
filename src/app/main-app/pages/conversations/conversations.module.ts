@@ -120,6 +120,8 @@ import { ConversationAllV2Component } from './conversation-all/conversation-all-
 import { CurrentConversationItemV2Component } from './components/current-conversation-item/current-conversation-item-v2.component';
 import { CsPartner_SuggestionHandler } from '../../handler-v2/chatomni-cspartner/prepare-suggestion.handler';
 import { CsPartner_PrepareModelHandler } from '../../handler-v2/chatomni-cspartner/prepare-partner.handler';
+import { CsOrder_SuggestionHandler } from '../../handler-v2/chatomni-csorder/prepare-suggestions.handler';
+import { CsOrder_PrepareModelHandler } from '../../handler-v2/chatomni-csorder/prepare-order.handler';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -163,7 +165,9 @@ const SERVICES = [
   CrmMatchingV2Facade,
   ChatomniConversationService,
   CsPartner_SuggestionHandler,
-  CsPartner_PrepareModelHandler
+  CsPartner_PrepareModelHandler,
+  CsOrder_SuggestionHandler,
+  CsOrder_PrepareModelHandler
 ]
 
 @NgModule({
