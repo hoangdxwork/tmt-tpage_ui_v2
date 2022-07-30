@@ -111,10 +111,11 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     if(changes["data"] && !changes["data"].firstChange) {
         let x = {...changes["data"].currentValue} as ChatomniConversationItemDto;
 
-        if(TDSHelperObject.hasValue(x)) {
+        if(TDSHelperObject.hasValue(x) && x.Id) {
 
             this.dataModel = x;
-            let psid = this.dataModel?.ConversationId;
+
+            let psid = this.dataModel.ConversationId;
             let pageId = this.team.ChannelId;
             this.loadData(pageId, psid);
         }
@@ -187,7 +188,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
     this.conversationOrderFacade.loadPartnerByPostComment$.pipe(takeUntil(this.destroy$),
       finalize(() => { this.isLoading = false })).subscribe(res => {
         if(res) {
-            let pageId = this.team.Facebook_PageId;
+            let pageId = this.team.ChannelId;
             let psid = res.psid;
 
             this.checkConversation(pageId, psid);
@@ -434,6 +435,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
                 } else {
                     this.partner.PhoneReport = false;
                 }
+
             }, error => {
                 this.message.error(`${error?.error?.message}`);
             })
@@ -449,6 +451,7 @@ export class ConversationPartnerComponent implements OnInit, OnChanges {
           this.cdRef.markForCheck();
 
       }, error => {
+          this.isEditPartner = false;
           this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
       });
   }

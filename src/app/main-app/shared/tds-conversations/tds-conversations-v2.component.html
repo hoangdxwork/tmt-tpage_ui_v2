@@ -202,10 +202,10 @@
                       </div> -->
                       <ng-container *ngIf="item && (data.ConversationId) && type && team">
                           <tds-conversation-item-v2
-                              [team]="team" [psid]="data.ConversationId"
+                              [team]="team" [csid]="data.ConversationId"
                               [name]="data.Name" [dataItem]="item"
                               [type]="type" [partner]="partner"
-                              [children]="dataSource.Extras?.children[item?.id]">
+                              [children]="dataSource.Extras!.Objects[item?.ObjectId]">
                           </tds-conversation-item-v2>
                       </ng-container>
                   </div>

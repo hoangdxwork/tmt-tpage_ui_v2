@@ -357,7 +357,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
     this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniMessageDTO) => {
         if(res) {
-            this.dataSource.Extras = {...res.Extras};
+            this.dataSource.Extras = res.Extras;
             this.dataSource.Items = [...res.Items];
             this.dataSource.Paging = {...res.Paging};
         }

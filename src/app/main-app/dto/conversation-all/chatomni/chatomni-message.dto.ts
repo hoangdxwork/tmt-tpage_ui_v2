@@ -133,9 +133,66 @@ export enum ChatomniMessageType {
   TShopMessage = 92
 }
 
+export interface Content_ExtrasObjectDto {
+  Text: string;
+  Tags?: any;
+}
+
+export interface MediaLive_ExtrasObjectDto {
+  Id: string;
+  ReadUrl: string;
+  WriteUrl: string;
+  RecordUrls?: any;
+  IsBroadcasting: boolean;
+}
+
+export interface Data_ExtrasObjectDto {
+  Id: number;
+  Kind: string;
+  KindValue: number;
+  Content: Content_ExtrasObjectDto;
+  Medias: any[];
+  MediaLive: MediaLive_ExtrasObjectDto;
+  ShopId: string;
+  CommentPinIds: any[];
+  CreatorId: string;
+  CreationTime: Date;
+  HiddenKind: string;
+  HiddenKindValue: number;
+}
+
+export interface ExtrasObjectDto {
+  Data: Data_ExtrasObjectDto;
+  Id: string;
+  ObjectId: string;
+  ObjectType: number;
+  CreatedTime: Date;
+  ChannelCreatedTime: Date;
+  ChannelUpdatedTime?: any;
+  Title?: any;
+  Description: string;
+  Thumbnail?: any;
+}
+
+export interface ObjectDto {
+  [key: string]: ExtrasObjectDto
+}
+
+export interface Extras {
+  Objects: ObjectDto;
+}
+
 export interface ChatomniMessageDTO {
   Items: ChatomniMessageDetail[];
-  Extras?: any;
+  Extras?: Extras;
   Paging: PagingTimestamp;
 }
+
+
+
+
+
+
+
+
 
