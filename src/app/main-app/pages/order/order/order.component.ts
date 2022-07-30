@@ -345,7 +345,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
         this.cacheApi.setItem(key, res);
         // TODO: lưu filter cache trước khi load trang add bill
         this.storeFilterCache();
-        this.router.navigateByUrl(`bill/create`);
+        this.router.navigateByUrl(`bill/create-order-bill/${res.Id}`);
       },
         error => {
           this.message.error(error?.error?.message || 'Không thể tạo hóa đơn');

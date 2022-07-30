@@ -81,7 +81,7 @@ import { TDSTimelineModule } from 'tds-ui/timeline';
 import { ModalUpdateDeliveryFromExcelComponent } from './components/modal-update-delivery-from-excel/modal-update-delivery-from-excel.component';
 import { ModalManualUpdateDeliveryComponent } from './components/modal-manual-update-delivery/modal-manual-update-delivery.component';
 import { DirectivesModule } from '../../shared/directives/directives.module';
-import { AddBillHandler } from './add-bill/add-bill.handler';
+import { AddBillHandler } from '../../services/handlers/bill-handler/add-bill.handler';
 import { UpdateShipExtraHandler } from '../../services/handlers/aship-v2/update-shipextra.handler';
 import { UpdateShipServiceExtrasHandler } from '../../services/handlers/aship-v2/update-shipservice-extras.handler';
 import { PrepareModelFeeV2Handler } from '../../services/handlers/aship-v2/prepare-model-feev2.handler';

@@ -424,7 +424,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
     let keyCache = this.fastSaleOrderService._keyCacheCopyInvoice as string;
     this.cacheApi.setItem(keyCache, JSON.stringify(model));
-    this.onCreate();
+    this.onCopy();
   }
 
   onCreate(){
@@ -433,6 +433,10 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   onEdit(){
     this.router.navigateByUrl(`bill/edit/${this.id}`);
+  }
+
+  onCopy(){
+    this.router.navigateByUrl(`bill/copy/${this.id}`);
   }
 
   onBack(){

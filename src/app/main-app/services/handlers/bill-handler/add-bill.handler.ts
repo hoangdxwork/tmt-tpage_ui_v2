@@ -1,4 +1,4 @@
-import { FastSaleOrder_DefaultDTOV2, OrderLineV2 } from './../../../dto/fastsaleorder/fastsaleorder-default.dto';
+import { FastSaleOrder_DefaultDTOV2, OrderLineV2 } from '../../../dto/fastsaleorder/fastsaleorder-default.dto';
 import { Injectable } from "@angular/core";
 import { FormGroup } from '@angular/forms';
 
