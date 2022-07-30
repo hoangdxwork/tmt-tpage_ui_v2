@@ -29,6 +29,7 @@ export interface ChatomniConversationItemDto {
 
   State?: StateChatbot | null;
   HasOrder?: boolean | null;
+  Message?: string; // Không có trong dữ liệu trả về, dùng để hiện thị
 }
 
 export interface PagingTimestamp {

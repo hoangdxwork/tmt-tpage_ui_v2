@@ -124,7 +124,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   ngOnInit() {
     this.validateData();
 
-    if (this.data && this.team && TDSHelperString.hasValueString(this.type)) {debugger
+    if (this.data && this.team && TDSHelperString.hasValueString(this.type)) {
         this.pageId = this.team.ChannelId;
         this.loadData(this.data);
     }
@@ -156,7 +156,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
     this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniMessageDTO) => {
         if(res) {
-            this.dataSource = res;
+            this.dataSource = res;debugger
         }
 
         this.isLoading = false;
@@ -358,6 +358,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniMessageDTO) => {
         if(res) {
             this.dataSource.Extras = res.Extras;
+
             this.dataSource.Items = [...res.Items];
             this.dataSource.Paging = {...res.Paging};
         }
