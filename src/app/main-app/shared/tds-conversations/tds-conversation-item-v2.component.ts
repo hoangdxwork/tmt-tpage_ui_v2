@@ -26,7 +26,7 @@ import { ChatomniMessageDetail, Datum } from "../../dto/conversation-all/chatomn
 export class TDSConversationItemV2Component implements OnInit, OnDestroy {
 
   @Input() dataItem!: ChatomniMessageDetail;
-  @Input() psid!: string;
+  @Input() csid!: string;
   @Input() partner: any;
   @Input() team!: CRMTeamDTO;
   @Input() children: any;
@@ -298,7 +298,7 @@ export class TDSConversationItemV2Component implements OnInit, OnDestroy {
 
   open_gallery(att: any) {
     this.isShowItemImage = true;
-    this.activityDataFacade.getActivity(this.team.Facebook_PageId, this.psid, this.type)
+    this.activityDataFacade.getActivity(this.team.Facebook_PageId, this.csid, this.type)
     .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       // this.messages = res.items;
       this.gallery = res.items.filter((x: TDSSafeAny) => x.message && x.message.attachments != null);
