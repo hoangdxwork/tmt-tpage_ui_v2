@@ -721,11 +721,11 @@ export class EditOrderV2Component implements OnInit {
       let promise = new Promise((resolve, reject): any => {
         this.fastSaleOrderService.calculateFeeAship(model).pipe(takeUntil(this.destroy$)).subscribe((res: DeliveryResponseDto<CaculateFeeResponseDto>) => {
 
-          if (res && res.Data?.Services) {debugger
+          if (res && res.Data?.Services) {
 
               let extras = event.ExtraProperties ? (JSON.parse(event.ExtraProperties) ?? []).filter((x: any) => !x.IsHidden) : [] as AshipGetInfoConfigProviderDto[];
 
-              if(TDSHelperArray.hasListValue(extras) && TDSHelperArray.hasListValue(this.configsProviderDataSource)) {debugger
+              if(TDSHelperArray.hasListValue(extras) && TDSHelperArray.hasListValue(this.configsProviderDataSource)) {
                   extras.map((x: AshipGetInfoConfigProviderDto) => {
                       let exits = this.configsProviderDataSource.filter(e => e.ConfigName === x.ConfigName && (x.ConfigsValue.find(t => t.Id == e.ConfigValue)))[0];
                       if(exits) {
