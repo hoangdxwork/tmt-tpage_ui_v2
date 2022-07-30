@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from './lib';
+import { SocketService } from './services/socket.service';
 import { PageLoadingService } from './shared/services/page-loading.service';
 
 @Component({
@@ -19,15 +20,20 @@ export class AppComponent {
     public cache: THelperCacheService,
     public zone: NgZone,
     public router: Router,
-    private loader: PageLoadingService) {
-      this.loader.show();
+    private loader: PageLoadingService,
+    private socketService: SocketService) {
+    this.loader.show();
   }
 
   ngOnInit() {
     let that = this;
     that.init().subscribe(res => {
-        this.loader.hidden();
-        that.isLoaded = true;
+      this.loader.hidden();
+      that.isLoaded = true;
+    });
+
+    this.socketService.listenEvent("on-events").subscribe((res: any) => {
+      console.log(res);
     });
   }
 
