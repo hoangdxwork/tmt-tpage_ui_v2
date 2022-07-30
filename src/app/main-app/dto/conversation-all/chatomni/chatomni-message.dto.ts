@@ -41,9 +41,10 @@ export interface Attachments {
 export interface ChatomniDataFacebookMessage {
   id: string;
   message: string;
+  message_formatted: string;
   created_time: Date;
   from: Facebook_Graph_From;
-  to?: any;
+  to?: Facebook_Inner_UserSimple;
   attachments: Attachments;
   parent: Parent;
   is_hidden?: boolean;
@@ -56,19 +57,30 @@ export interface ChatomniDataFacebookMessage {
   object: Object;
   comments?: any;
   attachment?: any;
-  message_tags: any[];
+  message_tags: MessageTag[];
+  phone: string;
 
   // các dữ liệu bổ sung để check client
   has_admin_required: boolean;
-  is_show_avatar?: boolean;
-  is_show_break?: boolean;
-  is_error_attachment: boolean;
-
+  is_error_attachment: boolean;// ko có trong dữ liệu trả về
 }
 
 export interface ErrorMessageOmni {
   Code: string;
   Message: string;
+}
+
+export interface Facebook_Inner_UserSimple {
+  id: string;
+  name: string;
+}
+
+export interface MessageTag {
+  id: string;
+  name: string;
+  offset: number;
+  type: string;
+  length: number;
 }
 
 export interface ChatomniInnerUser {
@@ -94,7 +106,6 @@ export interface ChatomniMessageDetail {
   ChannelCreatedTime: Date;
   ChannelUpdatedTime?: any;
   IsOwner: boolean;
-
 }
 
 export interface PagingTimestamp {

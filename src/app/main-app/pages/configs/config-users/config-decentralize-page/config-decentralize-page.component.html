@@ -51,7 +51,7 @@
                                         </div>
                                     </td>
                                     <td class="!p-0 align-top">
-                                        <div [ngClass]="data.Childs.length <= 2?'border-b border-neutral-2-100':''"
+                                        <div [ngClass]="data.Childs!.length <= 2?'border-b border-neutral-2-100':''"
                                             class="flex w-full h-full justify-start flex-col divide-y divide-neutral-2-100">
                                             <div *ngFor="let child of data.Childs; let ind = index"
                                                 class="flex p-2 items-center">

@@ -4,7 +4,7 @@ import { PrinterService } from 'src/app/main-app/services/printer.service';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, NgZone, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, Observable, Subject } from 'rxjs';
-import { finalize, takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { finalize, takeUntil, map, debounceTime, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 import { StateChatbot } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -22,7 +22,6 @@ import { SignalRConnectionService } from 'src/app/main-app/services/signalR/sign
 import { TDSNotificationService } from 'tds-ui/notification';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { CrmMatchingV2Service } from 'src/app/main-app/services/matching-v2-service/crm-matching-v2.service';
-import { CrmMatchingV2Facade } from 'src/app/main-app/services/matching-v2-facade/crm-matching-v2.facade';
 import { ChatomniMessageService } from 'src/app/main-app/services/chatomni-service/chatomni-message.service';
 import { ChatomniConversationService } from 'src/app/main-app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationDto, ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
@@ -46,9 +45,11 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
   isLoading: boolean = false;
   dataSource$!: Observable<ChatomniConversationDto> ;
-  lstCrmMatching: ChatomniConversationItemDto[] = [];
-  psid!: string;
-  currentCrmMatching!: ChatomniConversationItemDto | undefined;
+  lstOmcs: ChatomniConversationItemDto[] = [];
+
+  csid!: string;
+  omcs_Item!: ChatomniConversationItemDto | undefined;
+
   isFastSend: boolean = false;
   checked: boolean = false;
   isOpenCollapCheck: boolean = false;
@@ -88,7 +89,6 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     private chatomniMessageFacade: ChatomniMessageFacade,
     private modalService: TDSModalService,
     private crmMatchingV2Service: CrmMatchingV2Service,
-    private crmMatchingV2Facade: CrmMatchingV2Facade,
     private viewContainerRef: ViewContainerRef,
     private sgRConnectionService: SignalRConnectionService,
     private facebookRESTService: FacebookRESTService) {
@@ -115,8 +115,8 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       this.type = params?.params?.type;
       this.setParamsUrl(params.params);
 
-      let exist = (TDSHelperString.isString(this.currentCrmMatching?.ConversationId) != TDSHelperString.isString(this.paramsUrl?.psid))
-        || (!TDSHelperString.isString(this.currentCrmMatching?.ConversationId) && !TDSHelperString.isString(this.paramsUrl?.psid));
+      let exist = (TDSHelperString.isString(this.omcs_Item?.ConversationId) != TDSHelperString.isString(this.paramsUrl?.csid))
+        || (!TDSHelperString.isString(this.omcs_Item?.ConversationId) && !TDSHelperString.isString(this.paramsUrl?.csid));
 
       if(exist){
           this.onChangeConversation(team);
@@ -129,8 +129,13 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     })
 
     this.hubEvents(); // các sự kiện realtime
-    this.spinLoading();
     this.notificationMessNew(); // thông báo tin nhắn mới
+    this.spinLoading();
+
+    this.eventEmitter();
+  }
+
+  eventEmitter() {
   }
 
   spinLoading() {
@@ -147,45 +152,45 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     this.validateData();
     // Sử dụng ngZone chạy bất đồng bộ dữ liệu
     this.ngZone.run(() => {
-        // this.dataSource$ = this.crmMatchingV2Service.makeDataSource(team.Facebook_PageId, this.type, queryObj);
-        this.dataSource$ = this.chatomniConversationService.makeDataSource(team.Id, this.type, queryObj);
+        this.dataSource$ = this.chatomniConversationService.makeDataSource(team.Id, queryObj);
     })
 
     this.loadConversations(this.dataSource$);
   }
 
   validateData(){
-    delete this.currentCrmMatching;
+    delete this.omcs_Item;
     (this.dataSource$ as any) = null;
-    this.lstCrmMatching = [];
+    this.lstOmcs = [];
   }
 
   loadConversations(dataSource$: Observable<ChatomniConversationDto>) {
     if(this.isChanged || this.isProcessing){
-      return;
+        return;
     }
 
     this.isProcessing = true;
-    dataSource$.pipe(takeUntil(this.destroy$), finalize(() => { this.isProcessing = false }))
-      .subscribe((res: ChatomniConversationDto) => {
+    dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniConversationDto) => {
 
         if (res && TDSHelperArray.hasListValue(res.Items)) {
-            this.lstCrmMatching = [...res.Items];
-            let psid = this.paramsUrl?.psid || null;
+            this.lstOmcs = [...res.Items];
+            let csid = this.paramsUrl?.csid || null;
 
             //TODO: check psid khi load lần 2,3,4...
-            let exits = this.lstCrmMatching.filter(x => x.ConversationId == psid)[0] ;
+            let exits = this.lstOmcs.filter(x => x.ConversationId == csid)[0] ;
             if (exits) {
-              this.setCurrentConversationItem(exits);
+                this.setCurrentConversationItem(exits);
             } else {
-              //TODO: load lần đầu tiên
-              this.setCurrentConversationItem(this.lstCrmMatching[0]);
+                //TODO: load lần đầu tiên
+                this.setCurrentConversationItem(this.lstOmcs[0]);
             }
 
         } else {
-          //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
-          this.validateData();
+            //TODO: trường hợp lọc hội thoại data rỗng res.items = 0
+            this.validateData();
         }
+
+        this.isProcessing = false;
       })
   }
 
@@ -196,15 +201,14 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       if (this.isFastSend == true) {
           this.conversationDataFacade.checkSendMessage(this.currentTeam.Facebook_PageId, this.type, item.ConversationId);
       }
-
       else {
-        //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
-        this.currentCrmMatching = {...item};
-        this.psid = item.ConversationId;
+          //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
+          this.omcs_Item = {...item};
+          this.csid = item.ConversationId;
 
-        let uri = this.router.url.split("?")[0];
-        let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&psid=${item?.ConversationId}`;
-        this.router.navigateByUrl(uriParams);
+          let uri = this.router.url.split("?")[0];
+          let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&csid=${item?.ConversationId}`;
+          this.router.navigateByUrl(uriParams);
       }
     }
   }
@@ -221,50 +225,48 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     // }
 
     // this.isChanged = true;
-    delete this.currentCrmMatching;
+    delete this.omcs_Item;
 
     this.setCurrentConversationItem(item);
     this.cdRef.detectChanges();
   }
 
   trackByIndex(_: number, data: any): number {
-    return data.psid;
+    return data.Id;
   }
 
   nextData(event: any): any {
     if(event) {
       if (this.isProcessing) {
-        return false;
+          return false;
       }
 
       this.isProcessing = true;
       this.ngZone.run(() => {
-          // this.dataSource$ = this.crmMatchingV2Service.nextDataSource(this.currentTeam?.Facebook_PageId, this.queryFilter);
           this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam?.Id, this.queryFilter);
       })
 
       this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniConversationDto) => {
-        if(res && res.Items.length > 0) {
-            this.lstCrmMatching = [...res.Items];
-        }
 
-        this.isProcessing = false;
+          if(TDSHelperArray.hasListValue(res?.Items)) {
+              this.lstOmcs = [...res.Items];
+          }
+
+          this.isProcessing = false;
       }, error => {
           this.isProcessing = false;
       })
     }
   }
 
-  onClickTeam(data: CRMTeamDTO): any {
-
+  onClickTeam(data: any): any {
     if (this.paramsUrl?.teamId) {
-      //TODO: xóa dữ liệu _set
-      this.chatomniMessageFacade.chatomniDataSource = {};
-      this.crmMatchingV2Facade.crmV2DataSource = {};
+        //TODO: xóa dữ liệu _set
+        this.chatomniMessageFacade.chatomniDataSource = {};
 
-      let uri = this.router.url.split("?")[0];
-      let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
-      this.router.navigateByUrl(uriParams);
+        let uri = this.router.url.split("?")[0];
+        let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
+        this.router.navigateByUrl(uriParams);
     }
 
     this.crmService.onUpdateTeam(data);
@@ -274,19 +276,19 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     this.clickReload += 1;
 
     if (this.clickReload >= 5) {
-      this.message.info("Đã kích hoạt cập nhật hội thoại.");
-      this.clickReload = 0;
+        this.message.info("Đã kích hoạt cập nhật hội thoại.");
+        this.clickReload = 0;
 
-      if (this.currentTeam) {
-        this.facebookRESTService.rescan(this.currentTeam.Facebook_PageId, 2)
-          .pipe(takeUntil(this.destroy$)).subscribe(res => {
-             console.log("Yêu cầu cập nhật thành công.");
-        }, error => {
-            console.log("Yêu cầu cập nhật thất bại.");
-        });
-      }
+        if (this.currentTeam) {
+          this.facebookRESTService.rescan(this.currentTeam.Facebook_PageId, 2)
+            .pipe(takeUntil(this.destroy$)).subscribe(res => {
+              console.log("Yêu cầu cập nhật thành công.");
+          }, error => {
+              console.log("Yêu cầu cập nhật thất bại.");
+          });
+        }
     } else {
-      this.onSubmitFilter({});
+        this.onSubmitFilter({});
     }
 
     setTimeout(() => {
@@ -295,8 +297,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   }
 
   fetchLiveConversations(team: CRMTeamDTO): void {
-    this.fbGraphService.api(`me/conversations?fields=id,link,participants,senders&access_token=${team.Facebook_PageToken}`)
-      .subscribe();
+    this.fbGraphService.api(`me/conversations?fields=id,link,participants,senders&access_token=${team.Facebook_PageToken}`).subscribe();
   }
 
   setCheck(){
@@ -321,65 +322,69 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   }
 
   onAllChecked(value: TDSSafeAny): void {
-    this.lstCrmMatching.forEach(x => this.updateCheckedSet(x.Id, value.checked));
+    this.lstOmcs.forEach(x => this.updateCheckedSet(x.Id, value.checked));
 
     this.refreshCheckedStatus();
     this.isCheckedAll = !this.isCheckedAll;
   }
 
   refreshCheckedStatus(): void {
-    this.checked = this.lstCrmMatching.every(x => this.setOfCheckedId.has(x.Id));
-    this.indeterminate = this.lstCrmMatching.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
+    this.checked = this.lstOmcs.every(x => this.setOfCheckedId.has(x.Id));
+    this.indeterminate = this.lstOmcs.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
   }
 
   printData(){
     let lstCheck = [...this.setOfCheckedId]
     let that = this;
+
     if (this.isProcessing) {
       return
     }
+
     if(lstCheck.length < 1){
       this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
       return;
     }
+
     this.isProcessing = true
     let userIds = "";
-    lstCheck.forEach((x,i)=>{
-      if(i == lstCheck.length - 1) {
-        userIds += x.toString();
-      }
-      else {
-        userIds += x.toString() + ",";
-      }
+
+    lstCheck.forEach((x,i) => {
+        if(i == lstCheck.length - 1) {
+            userIds += x.toString();
+        } else {
+            userIds += x.toString() + ",";
+        }
     })
     if(lstCheck.length > 0) {
-      this.printerService.printUrl(`/fastsaleorder/PrintCRMMatching?pageId=${this.currentTeam.Facebook_PageId}&psids=${userIds.toString()}`)
-      .pipe(takeUntil(this.destroy$), finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
-          that.printerService.printHtml(res);
+        this.printerService.printUrl(`/fastsaleorder/PrintCRMMatching?pageId=${this.currentTeam.Facebook_PageId}&psids=${userIds.toString()}`)
+        .pipe(takeUntil(this.destroy$), finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
+            that.printerService.printHtml(res);
     })}
   }
 
   showModalSendMessage(){
     if(this.setOfCheckedId.size < 1){
-      this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
-      return;
+        this.message.error('Vui lòng chọn tối thiểu 1 dòng!');
+        return;
     }
+
     let modal =  this.modalService.create({
-      title: 'Gửi tin nhắn nhanh',
-      content: ModalSendMessageAllComponent,
-      size: "md",
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-          setOfCheckedId: this.setOfCheckedId,
-          team: this.currentTeam,
-          type: this.type
-      }
+        title: 'Gửi tin nhắn nhanh',
+        content: ModalSendMessageAllComponent,
+        size: "md",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+            setOfCheckedId: this.setOfCheckedId,
+            team: this.currentTeam,
+            type: this.type
+        }
     });
 
     modal.afterClose.subscribe((res: any) => {
-      if(res) {
-          this.onSentSucceed();
-      }
+        if(res) {
+            this.onSentSucceed();
+        }
     })
   }
 
@@ -387,7 +392,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     this.conversationDataFacade.checkAllSendMessage(this.currentTeam.Facebook_PageId, this.type, this.isCheckedAll);
   }
 
-  onSubmitFilter(data: any) {debugger
+  onSubmitFilter(data: any) {
 
     if (Object.keys(data || {}).length > 0) {
       let queryObj = this.conversationDataFacade.setExtrasQuery(this.currentTeam.Facebook_PageId, this.type, data);
@@ -414,7 +419,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
     } else {
 
-      this.dataSource$ = this.chatomniConversationService.makeDataSource(this.currentTeam.Id, this.type, queryObj).pipe(map((res => {
+      this.dataSource$ = this.chatomniConversationService.makeDataSource(this.currentTeam.Id,  queryObj).pipe(map((res => {
         if (res && res.Items) {
             this.total = res.Items.length;
         }

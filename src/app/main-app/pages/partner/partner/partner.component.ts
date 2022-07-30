@@ -202,7 +202,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.commonService.getPartnerStatusReport().pipe(takeUntil(this.destroy$)).subscribe((res: PartnerStatusReport) => {
       if (res && TDSHelperArray.isArray(res.item)) {
         this.partnerStatusReport = [...res.item];
-        
+
         res.item.forEach(item => {
           this.lstStatus.push({
             Name: item.StatusText,
@@ -354,7 +354,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.filterObj.tags = event.tags;
     this.filterObj.status = event.status;
-    
+
     this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
   }
@@ -383,7 +383,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   setActive(type: string) {
-    debugger
+
     if (this.checkValueEmpty() == 1) {
       switch (type) {
         case "active":

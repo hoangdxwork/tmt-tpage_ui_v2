@@ -66,13 +66,15 @@ export class ConfigDecentralizePageComponent implements OnInit, OnDestroy {
 
   loadListTeam() {
     this.crmTeamService.onChangeListFaceBook().subscribe(res => {
-      this.data = res?.Items;
+      if(res) {
+          this.data = res;
+      }
     });
   }
 
   loadUser() {
     this.isLoading = true;
-    
+
     this.applicationUserService.get()
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
@@ -94,14 +96,18 @@ export class ConfigDecentralizePageComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     let result: UpdateGrantPermissionDTO[] = [];
     this.data?.forEach(element => {
+
       if(TDSHelperArray.hasListValue(element?.Childs)) {
-        element?.Childs.forEach(child => {
+
+        element?.Childs!.forEach(child => {
+
           if(TDSHelperArray.hasListValue(child?.Users)) {
             result.push({
               CRMTeamId: child.Id,
-              UserId: child?.Users.map(x => x.Id).toString()
+              UserId: child.Users!.map(x => x.Id).toString()
             });
           }
+
         })
       }
     });

@@ -85,15 +85,14 @@ export class ListConfigDeliveryComponent implements OnInit {
   }
 
   onDeleteDelivery(data: DeliveryCarrierDTO){
-    debugger
+
     this.isLoading1 = true;
-    this.deliveryCarrierV2Service.delete(data.Id)
-    .pipe(finalize(() => this.isLoading1 = false))
-    .subscribe(res => {
-      this.message.success("Thành công");
-      this.loadDeliveryCarriesByType(data.DeliveryType);
+    this.deliveryCarrierV2Service.delete(data.Id).pipe(finalize(() => this.isLoading1 = false))
+      .subscribe(res => {
+        this.message.success("Thành công");
+        this.loadDeliveryCarriesByType(data.DeliveryType);
     }, error => {
-      this.message.error(error?.error?.message || "Thao tác thất bại");
+        this.message.error(error?.error?.message || "Thao tác thất bại");
     });
   }
 }

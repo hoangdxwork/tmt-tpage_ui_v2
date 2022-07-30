@@ -4,9 +4,9 @@
             <div class="flex flex-row items-center">
                 <div class="avatar mr-2 relative">
                     <tpage-avatar-facebook [size]="48"
-                      [noSeenMessage]="(type == 'all' && data.count_unread_activities > 0) || (type == 'message' && data.count_unread_messages > 0) || (type == 'comment' && data.count_unread_comments > 0)"
-                      [shape]="'circle'" [psid]="data.psid"
-                      [token]="team.Facebook_PageToken">
+                        [noSeenMessage]="(type == 'all' && data.CountUnread > 0) || (type == 'message' && data.CountUnread > 0) || (type == 'comment' && data.CountUnread > 0)"
+                        [shape]="'circle'" [psid]="data.ConversationId"
+                        [token]="team.Facebook_PageToken">
                     </tpage-avatar-facebook>
                     <span *ngIf="(data | lastActivityMessage: type)?.type == 2" class="absolute" style="top: 31px;left: 31px;">
                         <svg width="20" height="21" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -38,13 +38,13 @@
                     </span>
                 </div>
                 <div class="user">
-                    <label class="text-black text-title-1 font-semibold">{{data.name || data.partner_name}}</label>
+                    <label class="text-black text-title-1 font-semibold">{{data.Name}}</label>
                     <div class="flex flex-row">
                         <button class="flex items-center"
                             color="primary"  trigger="click"  tds-dropdown
                             [tdsDropdownMenu]="menu2" [placement]="'bottomRight'">
-                            <span class="text-neutral-1-400 text-caption-1 font-regular pr-1">{{ data.assigned_to ? 'Đã gán cho' : 'Gán nhân viên' }}</span>
-                            <span class="text-primary-1 text-caption-1 font-semibold pr-1">{{data.assigned_to ? data.assigned_to.Name:''}}</span>
+                            <span class="text-neutral-1-400 text-caption-1 font-regular pr-1">{{ data.AssignedTo ? 'Đã gán cho' : 'Gán nhân viên' }}</span>
+                            <span class="text-primary-1 text-caption-1 font-semibold pr-1">{{data.AssignedTo ? data.AssignedTo.Name:''}}</span>
                             <i class="tdsi-arrow-down-line"></i>
                         </button>
                         <tds-dropdown-menu #menu2="tdsDropdownMenu">
@@ -62,7 +62,7 @@
                                     <tds-avatar size="sm" [tdsSrc]="item.Avatar"></tds-avatar>
                                     <span>{{item.Name}}</span>
                                 </div>
-                                <span class="tdsi-success-fill text-success-500" *ngIf="item.Id == data.assigned_to?.Id"></span>
+                                <span class="tdsi-success-fill text-success-500" *ngIf="item.Id == data.AssignedTo?.Id"></span>
                                 </div>
                             </div>
                             <div class="flex justify-center items-center text-caption-1 text-error-400 border-t border-neutral-2-100">
@@ -79,11 +79,11 @@
                 <!-- Chatbot đang gặp vấn đề -->
                 <div class="flex">
                     <!-- chatbot lỗi -->
-                    <span *ngIf="data.state == 2" class="mr-3 cursor-pointer" tds-tooltip tooltipTitle="Hệ thống chatbot đang gặp vấn đề">
+                    <span *ngIf="data.State == 2" class="mr-3 cursor-pointer" tds-tooltip tooltipTitle="Hệ thống chatbot đang gặp vấn đề">
                         <img src="../../../assets/imagesv2/chatbot-error.svg" width="38px" height="38px">
                     </span>
                     <!-- bật chatbot thành công sau 5s thì đóng -->
-                    <span *ngIf="data.state == 0 && isEnableChatbot" class="mr-3 cursor-pointer" tds-tooltip tooltipTitle="Bật chatbot thành công">
+                    <span *ngIf="data.State == 0 && isEnableChatbot" class="mr-3 cursor-pointer" tds-tooltip tooltipTitle="Bật chatbot thành công">
                         <img src="../../../assets/imagesv2/chatbot-enable.svg" width="38px" height="38px">
                     </span>
                 </div>
@@ -200,10 +200,10 @@
                               </div>
                           </div>
                       </div> -->
-                      <ng-container *ngIf="item && (data.psid) && type && team">
+                      <ng-container *ngIf="item && (data.ConversationId) && type && team">
                           <tds-conversation-item-v2
-                              [team]="team" [psid]="data.psid"
-                              [name]="data.name" [dataItem]="item"
+                              [team]="team" [psid]="data.ConversationId"
+                              [name]="data.Name" [dataItem]="item"
                               [type]="type" [partner]="partner"
                               [children]="dataSource.Extras?.children[item?.id]">
                           </tds-conversation-item-v2>
@@ -216,7 +216,7 @@
     </tds-spin>
 
     <!-- Thông báo Chatbot -->
-    <div *ngIf="data && data.state == 2" class="absolute top-[88px] left-[8px] right-[8px]" >
+    <div *ngIf="data && data.State == 2" class="absolute top-[88px] left-[8px] right-[8px]" >
         <tds-alert type="info" [message]="contentMessage" [closeable]="true" showIcon ></tds-alert>
     </div>
     <ng-template #contentMessage>
@@ -272,7 +272,7 @@
                         <div class="flex-auto flex flex-wrap gap-2.5 overflow-hidden overflow-y-auto tds-custom-scroll">
                             <span *ngFor="let item of lstOfTag" (click)="onSelectTag(item)"
                                 class="cursor-pointer px-2 py-0.5 rounded text-white text-caption-2 font-semibold flex items-center gap-x-2 hover:opacity-100"
-                                [ngClass]="data.keyTags && data.keyTags[item.Id]?'tdsi-tick-fill opacity-100':'opacity-40'"
+                                [ngClass]="data.Tags && data.Tags[item.Id]?'tdsi-tick-fill opacity-100':'opacity-40'"
                                 [ngStyle]="{'background-color': [item.ColorClassName]}" >
                                 <span class="font-sans">{{item.Name}}</span>
                             </span>
@@ -281,27 +281,27 @@
                 </ng-template>
             </div>
             <div class="flex-auto flex gap-2.5 ">
-                <div *ngFor="let item of data.tags | slice:0:4" (click)="onRemoveTag(item)" class="relative group text-caption-2 flex items-center max-w-[156px] truncate">
+                <div *ngFor="let item of data.Tags | slice:0:4" (click)="onRemoveTag(item)" class="relative group text-caption-2 flex items-center max-w-[156px] truncate">
                     <div class="cursor-pointer w-full px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
-                        [ngStyle]="{'background-color': [item.color_class]}">
-                        {{item.name}}
+                        [ngStyle]="{'background-color': [item.ColorClass]}">
+                        {{item.Name}}
                     </div>
                     <button
                         class="group-hover:text-accent-3 font-semibold absolute group-hover:flex w-full items-center justify-center hidden truncate">
                         Gỡ nhãn
                     </button>
                 </div>
-                <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded cursor-pointer" *ngIf="data.tags && data.tags.length - 4 > 0" tds-popover
+                <div class="px-1 py-0.5 text-info-500 bg-[#E5F2FF] text-caption-2 rounded cursor-pointer" *ngIf="data.Tags && data.Tags.length - 4 > 0" tds-popover
                     [popoverContent]="popoverContentTag"
                     popoverPlacement="topRight">
-                    +{{data.tags.length - 4}}
+                    +{{data.Tags.length - 4}}
                 </div>
                 <ng-template #popoverContentTag>
                     <div class="flex gap-1 flex-wrap items-center max-w-[336px]">
-                        <div *ngFor="let tag of data.tags |  slice:4:data.tags!.length" (click)="onRemoveTag(tag)" class="relative group flex items-center text-caption-2 font-regular text-neutral-1-900 rounded truncate">
+                        <div *ngFor="let tag of data.Tags |  slice:4:data.Tags!.length" (click)="onRemoveTag(tag)" class="relative group flex items-center text-caption-2 font-regular text-neutral-1-900 rounded truncate">
                             <div class="cursor-pointer w-full px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
-                            [ngStyle]="{'background-color': [tag.color_class]}">
-                            {{tag.name}}
+                            [ngStyle]="{'background-color': [tag.ColorClass]}">
+                            {{tag.Name}}
                         </div>
                         <button
                             class="group-hover:text-accent-3 font-semibold absolute group-hover:flex w-full items-center justify-center hidden truncate">

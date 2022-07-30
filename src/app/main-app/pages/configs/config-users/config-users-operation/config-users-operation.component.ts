@@ -35,7 +35,7 @@ export class ConfigUsersOperationComponent implements OnInit {
 
   lstUsers: ApplicationUserDTO[] = [];
   lstUserRole: ApplicationRoleDTO[] = [];
-  lstTeam: CRMTeamDTO[] | undefined;
+  lstTeam!: CRMTeamDTO[];
 
   isLoading: boolean = false;
   userManagerPage: TDSSafeAny = null;
@@ -63,7 +63,7 @@ export class ConfigUsersOperationComponent implements OnInit {
 
   loadUser() {
     this.isLoading = true;
-    
+
     this.applicationUserService.get()
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
@@ -80,7 +80,9 @@ export class ConfigUsersOperationComponent implements OnInit {
 
   loadListTeam() {
     this.crmTeamService.onChangeListFaceBook().subscribe(res => {
-      this.lstTeam = res?.Items;
+        if(res) {
+          this.lstTeam = res;
+        }
     });
   }
 

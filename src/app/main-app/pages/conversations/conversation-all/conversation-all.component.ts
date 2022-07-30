@@ -26,6 +26,7 @@ import { CrmMatchingV2Detail, CrmMatchingV2DTO } from 'src/app/main-app/dto/conv
 import { CrmMatchingV2Facade } from 'src/app/main-app/services/matching-v2-facade/crm-matching-v2.facade';
 import { ChatomniMessageService } from 'src/app/main-app/services/chatomni-service/chatomni-message.service';
 import { ChatomniConversationService } from 'src/app/main-app/services/chatomni-service/chatomni-conversation.service';
+import { ChildChatOmniChannelDto } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 
 @Component({
   selector: 'app-conversation-all',

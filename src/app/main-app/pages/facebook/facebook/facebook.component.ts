@@ -17,7 +17,6 @@ import { TDSMessageService } from 'tds-ui/message';
 import { debounceTime, distinctUntilChanged, map, takeUntil, finalize } from 'rxjs/operators';
 
 export interface PageNotConnectDTO {
-  // /rest/v1.0/product/getinventory
   [key: string]: Array<UserPageDTO>;
 }
 
@@ -395,7 +394,7 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
     else {
       for(let i = 0; i < this.data.length; i++) {
         if(TDSHelperArray.hasListValue(this.data[i]?.Childs)) {
-          let channel = this.data[i].Childs.find((x) => x.Id == id);
+          let channel = this.data[i].Childs!.find((x) => x.Id == id);
           if(channel) {
             channel.Active = !channel.Active;
             break;
@@ -408,7 +407,7 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadPageNotConnect(team: CRMTeamDTO) {
-    let pageIdConnected = team?.Childs.map((x) => x.Facebook_PageId);
+    let pageIdConnected = team?.Childs!.map((x) => x.Facebook_PageId);
 
     this.isLoading = true;
     this.facebookGraphService.getUserPages(team.Facebook_UserToken).pipe(takeUntil(this._destroy$)).subscribe((res) => {
@@ -485,7 +484,7 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    let childIds = channel?.Childs.map(x => x.Facebook_PageId) || [];
+    let childIds = channel?.Childs!.map(x => x.Facebook_PageId) || [];
 
     if (field == 1) {
       this.lstData[teamId] = this.lstData[teamId] || {};
@@ -493,11 +492,11 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
       this.lstData[teamId]['notConnected'] = this.lstPageNotConnect?.[teamId]?.filter(x => !childIds.includes(x.id)) || [];
     } else if (field == 2) {
       this.lstData[teamId] = this.lstData[teamId] || {};
-      this.lstData[teamId]['data'] = channel?.Childs.filter((x) => x.Active);
+      this.lstData[teamId]['data'] = channel?.Childs!.filter((x) => x.Active);
       this.lstData[teamId]['notConnected'] = [];
     } else if (field == 3) {
       this.lstData[teamId] = this.lstData[teamId] || {};
-      this.lstData[teamId]['data'] = channel?.Childs.filter((x) => !x.Active);
+      this.lstData[teamId]['data'] = channel?.Childs!.filter((x) => !x.Active);
       this.lstData[teamId]['notConnected'] = [];
     } else if (field == 4) {
       this.lstData[teamId] = this.lstData[teamId] || {};

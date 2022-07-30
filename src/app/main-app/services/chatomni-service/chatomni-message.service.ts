@@ -7,8 +7,6 @@ import { BaseSevice } from "../base.service";
 import { get as _get } from 'lodash';
 import { set as _set } from 'lodash';
 import { ChatomniMessageFacade } from "../chatomni-facade/chatomni-message.facade";
-import { ConversationDataFacade } from "../facades/conversation-data.facade";
-import { TDSMessageService } from "tds-ui/message/message.service";
 
 @Injectable({
   providedIn: 'root'

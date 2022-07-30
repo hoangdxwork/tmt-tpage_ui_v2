@@ -9,15 +9,13 @@
             <!-- <div class="tdsi-reload-fill text-3xl text-neutral-1-200"></div> -->
             <div class="flex items-center gap-x-1">
               <tds-form-field class="w-full mr-1 !bg-neutral-3-50">
-                <input class="placeholder-neutral-1-400 truncate" #innerText  placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput (keyup.enter)="onSearch($event)"/>
-                <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
+                  <input class="placeholder-neutral-1-400 truncate" #innerText  placeholder="Tìm kiếm theo họ tên, SĐT" tdsInput (keyup.enter)="onSearch($event)"/>
+                  <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill text-base"></i></span>
               </tds-form-field>
               <div class="flex gap-0.5">
                 <!-- button fillter -->
-                <conversation-all-filter
-                  (onFilter)="onSubmitFilter($event)"
-                  [totalCount]="total"
-                  [team]="currentTeam">
+                <conversation-all-filter (onFilter)="onSubmitFilter($event)"
+                    [totalCount]="total" [team]="currentTeam">
                 </conversation-all-filter>
 
                 <button (click)="setSort()" class="w-[34px] h-[34px] hover:bg-neutral-3-50 rounded-md flex justify-center items-center bg-primary-3">
@@ -61,25 +59,25 @@
 
           <!-- List danh sách chat -->
           <div class="overflow-hidden flex flex-auto" >
-            <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstCrmMatching && lstCrmMatching.length > 0" >
+            <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstOmcs && lstOmcs.length > 0" >
 
               <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="myScroll" is-lock="true" observe-attributes
                   yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
 
-                  <div *ngFor="let item of lstCrmMatching | orderBy:'LastActivityTimeConverted':(isSort?'asc':'desc'); let i= index ; trackBy: trackByIndex">
-                      <div *ngIf="item && item.psid && currentCrmMatching && currentTeam" @eventFadeState>
+                  <div *ngFor="let item of lstOmcs | orderBy:'LastActivityTimeConverted':(isSort?'asc':'desc'); let i= index ; trackBy: trackByIndex">
+                      <div *ngIf="item && item.ConversationId && omcs_Item && currentTeam" @eventFadeState>
 
                         <a (click)="changeCurrentCvsItem(item)" class="w-full">
                           <!-- {{ (isChanged == true && currentCrmMatching) ? 'cursor-wait' : 'cursor-pointer'}} -->
-                            <!-- <current-conversation-item
-                                [item]="item" [psid]="item.psid" [type]="type"
-                                [currentConversationItem]="currentCrmMatching"
-                                [state]="item.state"
+                            <current-conversation-item-v2
+                                [item]="item" [csid]="item.ConversationId" [type]="type"
+                                [omcs_Item]="omcs_Item"
+                                [state]="item.State"
                                 [team]="currentTeam" [isFastSend]="isFastSend"
                                 [isOpenCollapCheck]="isOpenCollapCheck"
-                                [checked]="setOfCheckedId.has(item.psid)"
-                                (checkedChange)="onItemChecked(item.psid, $event)">
-                            </current-conversation-item> -->
+                                [checked]="setOfCheckedId.has(item.ConversationId)"
+                                (checkedChange)="onItemChecked(item.ConversationId, $event)">
+                            </current-conversation-item-v2>
                         </a>
                       </div>
                   </div>
@@ -97,13 +95,14 @@
   <!--Nội dung cuộc hội thoại-->
   <div class="flex 2xl:w-[48%] w-[45%]">
     <div class="flex w-full flex-col main-conversation h-full overflow-hidden">
-        <div class="flex w-full flex-col h-full" *ngIf="currentCrmMatching && currentTeam" @eventFadeState>
-            <!-- <shared-tds-conversations-v2
+        <div class="flex w-full flex-col h-full" *ngIf="omcs_Item && currentTeam" @eventFadeState>
+            <shared-tds-conversations-v2
                 class="flex w-full h-full"
-                [state]="currentCrmMatching.state"
-                [data]="currentCrmMatching"
+                [data]="omcs_Item"
                 [type]="type" [team]="currentTeam">
-            </shared-tds-conversations-v2> -->
+            </shared-tds-conversations-v2>
+
+            <!-- [state]="currentCrmMatching.State" -->
         </div>
     </div>
   </div>
@@ -128,12 +127,12 @@
                       </div>
                   </ng-template>
 
-                  <div *ngIf="currentCrmMatching  && currentTeam">
+                  <div *ngIf="omcs_Item  && currentTeam">
                       <!-- <conversation-partner [data]="currentCrmMatching" [team]="currentTeam" [type]="type">
                       </conversation-partner> -->
                   </div>
 
-                  <div *ngIf="!currentCrmMatching">
+                  <div *ngIf="!omcs_Item">
                     <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
                   </div>
               </tds-tab>
@@ -153,11 +152,11 @@
                       </div>
                   </ng-template>
 
-                  <div *ngIf="currentCrmMatching && currentTeam ">
+                  <div *ngIf="omcs_Item && currentTeam ">
                       <!-- <conversation-order [data]="currentCrmMatching" [team]="currentTeam"></conversation-order> -->
                   </div>
 
-                  <div *ngIf="!currentCrmMatching">
+                  <div *ngIf="!omcs_Item">
                       <tds-empty notFoundContent="Hãy chọn một cuộc hội thoại"></tds-empty>
                   </div>
               </tds-tab>

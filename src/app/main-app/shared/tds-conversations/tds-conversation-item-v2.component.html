@@ -1,8 +1,9 @@
-<div *ngIf="dataItem && dataItem.Data && team" class="px-2">
+<div *ngIf="dataItem && team" class="px-2">
 	<!--Lọc theo Messages-->
-	<div *ngIf="dataItem.Type == 11" class="{{dataItem.IsOwner ? 'is_admin' : 'is_client'}}">
+	<div *ngIf="dataItem.Type == 11 || dataItem.Type == 92" class="{{dataItem.IsOwner ? 'is_admin' : 'is_client'}}">
       <div class="chat-body w-full">
           <div *ngIf="!dataItem.IsOwner" class="mr-2 flex flex-col justify-end">
+
               <tpage-avatar-facebook [shape]="'circle'" [size]="36"
                   [psid]="dataItem.Data.from.id" [token]="team.Facebook_PageToken">
               </tpage-avatar-facebook>
@@ -135,13 +136,13 @@
   </div>
 
   <!--Lọc theo comments-->
-  <div *ngIf="dataItem.Data.comments && dataItem.Type == 12" class="log-comment w-full mb-3 {{ dataItem.IsOwner ? 'is_admin' : 'is_client' }}">
+  <div *ngIf="dataItem.Type == 12 || dataItem.Type == 91" class="log-comment w-full mb-3 {{ dataItem.IsOwner ? 'is_admin' : 'is_client' }}">
       <div class="w-full flex flex-row">
 
           <!-- Avatar Facebook_PageId -->
           <div class="mr-2">
               <tpage-avatar-facebook [shape]="'circle'" [size]="36"
-                  [psid]="!dataItem.IsOwner ? dataItem.Data.from.id : team.Facebook_PageId" [token]="team.Facebook_PageToken">
+                  [psid]="!dataItem.IsOwner ? dataItem!.Data?.from?.id : team.Facebook_PageId" [token]="team.Facebook_PageToken">
               </tpage-avatar-facebook>
           </div>
 
@@ -169,7 +170,7 @@
                       <div class="flex flex-auto">
                           <!--Nội dung-->
                           <div *ngIf="dataItem.Message">
-                              <div class="name font-semibold pb-1">{{dataItem.Data.from.name}}</div>
+                              <div class="name font-semibold pb-1">{{dataItem.Data?.from?.name}}</div>
                               <div class="content-message font-regular" #contentMessage>{{dataItem.Message}}</div>
                           </div>
                       </div>
@@ -213,16 +214,16 @@
 
               <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 
-              <button class="link-act hover:underline" [disabled]="isLiking" [ngClass]="dataItem.Data.user_likes ? 'text-secondary-1' : ''"
-                  (click)="addLike(dataItem.Message ? dataItem.Data.can_like : null)">
-                  {{dataItem.Data.user_likes ? 'Đã thích' : 'Thích'}}
+              <button class="link-act hover:underline" [disabled]="isLiking" [ngClass]="dataItem.Data?.user_likes ? 'text-secondary-1' : ''"
+                  (click)="addLike(dataItem.Message ? dataItem.Data?.can_like : null)">
+                  {{dataItem.Data?.user_likes ? 'Đã thích' : 'Thích'}}
               </button>
 
               <tds-spinner *ngIf="isLiking" [color]="'primary'" class="ml-1 w-2 h-2"></tds-spinner>
               <div class="h-1 w-1 bg-neutral-1-300 rounded-full mx-2.5"></div>
 
-              <button class="link-act hover:underline" [disabled]="isHiding" (click)="hideComment(dataItem.Message ? dataItem.Data.can_hide: null)">
-                {{dataItem.Data.is_hidden ? 'Hiện' : 'Ẩn'}}
+              <button class="link-act hover:underline" [disabled]="isHiding" (click)="hideComment(dataItem.Message ? dataItem.Data?.can_hide: null)">
+                {{dataItem.Data?.is_hidden ? 'Hiện' : 'Ẩn'}}
               </button>
 
               <tds-spinner *ngIf="isHiding" [color]="'primary'" class="ml-1 w-2 h-2"></tds-spinner>
@@ -339,12 +340,13 @@
 	</div>
 
   <!--Lọc theo comments v2-->
-  <div *ngIf="!dataItem.Data.comments && dataItem.Type == 12" class="log-comment-v2 w-full mb-3 flex {{ dataItem.IsOwner ? 'is_admin' : 'is_client' }} ">
+  <div *ngIf="!dataItem.Data?.comments && (dataItem.Type == 12 || dataItem.Type == 91)"
+      class="log-comment-v2 w-full mb-3 flex {{ dataItem.IsOwner ? 'is_admin' : 'is_client' }} ">
       <div class="w-full flex flex-row">
           <!-- Avatar Facebook_PageId -->
           <div class="mr-2">
               <tpage-avatar-facebook [shape]="'circle'" [size]="36"
-                  [psid]="!dataItem.IsOwner ? dataItem.Data.from.id : team.Facebook_PageId" [token]="team.Facebook_PageToken">
+                  [psid]="!dataItem.IsOwner ? dataItem.Data?.from?.id : team.Facebook_PageId" [token]="team.Facebook_PageToken">
               </tpage-avatar-facebook>
           </div>
 

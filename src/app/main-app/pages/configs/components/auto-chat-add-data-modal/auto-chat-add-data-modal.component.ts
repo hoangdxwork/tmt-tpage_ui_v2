@@ -181,18 +181,20 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
 
   getAllFacebook() {
     this.isLoading = true
-    this.crmService.getAllFacebooks()
-      .pipe(takeUntil(this.destroy$)).subscribe(dataTeam => {
+    this.crmService.getAllFacebooks().pipe(takeUntil(this.destroy$)).subscribe(dataTeam => {
         if (TDSHelperObject.hasValue(dataTeam)) {
-          this.dataMeidaRes = dataTeam.Items
+
+          this.dataMeidaRes = dataTeam;
+
           this.dataMeidaRes.forEach(data => {
-            if (data.Childs.length == 0) {
-              data.Active = true
-              this.mediaChannelList.push(data)
-            }
-            else {
-              data.Active = false
-              data.Childs.forEach(dataChilds => {
+
+            if (data.Childs!.length == 0) {
+                data.Active = true;
+                this.mediaChannelList.push(data)
+            } else {
+              data.Active = false;
+
+              data.Childs!.forEach(dataChilds => {
                 dataChilds.Active = false
                 this.mediaChannelList.push(dataChilds)
               })

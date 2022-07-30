@@ -23,7 +23,7 @@ export class ChatomniConversationService extends BaseSevice {
       super(apiService)
   }
 
-  get(teamId: number, type: string, queryObj?: any): Observable<ChatomniConversationDto> {
+  get(teamId: number, queryObj?: any): Observable<ChatomniConversationDto> {
 
     let queryString = null;
     if (queryObj) {
@@ -32,7 +32,7 @@ export class ChatomniConversationService extends BaseSevice {
       }).join('&');
     }
 
-    let url = `${this._BASE_URL}/${this.baseRestApi}/${teamId}/conversations?type=${type}`;
+    let url = `${this._BASE_URL}/${this.baseRestApi}/${teamId}/conversations`;
     if (TDSHelperString.hasValueString(queryString)) {
         url = `${url}&${queryString}`;
     }
@@ -64,10 +64,10 @@ export class ChatomniConversationService extends BaseSevice {
     return this.apiService.getData<ChatomniConversationDto>(api, null);
   }
 
-  makeDataSource(teamId: number, type: string, queryObj?: any): Observable<ChatomniConversationDto> {
+  makeDataSource(teamId: number, queryObj?: any): Observable<ChatomniConversationDto> {
 
     this.urlNext = '';
-    return this.get(teamId, type, queryObj).pipe(map((res: any) => {
+    return this.get(teamId, queryObj).pipe(map((res: any) => {
 
       // TODO: load dữ liệu lần đầu tiên
       if (TDSHelperObject.hasValue(res)) {

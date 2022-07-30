@@ -14,6 +14,7 @@ import { CRMTeamService } from '../services/crm-team.service';
 import { TPageHelperService } from '../services/helper.service';
 import { SignalRConnectionService } from '../services/signalR/signalR-connection.service';
 import { NetworkHelper } from '../shared/helper/network.helper';
+import { ChildChatOmniChannelDto } from '../dto/team/chatomni-channel.dto';
 
 @Component({
   selector: 'app-layout',
@@ -33,6 +34,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   _connectionEstablished: boolean = false;
   withLayout!: number;
   withLaptop: number = 1600;
+
   @ViewChild('withLayout') ViewChildWithLayout!: ElementRef;
 
   constructor(private auth: TAuthService,
@@ -42,8 +44,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     private message: TDSMessageService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private resizeObserver: TDSResizeObserver
-    ) {
+    private resizeObserver: TDSResizeObserver ) {
 
     router.events.pipe(
       takeUntil(this.destroy$),
@@ -112,16 +113,17 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   onOpenChange(e: boolean) {
     this.inlineCollapsed = e;
   }
+
   //lay danh sách facebook
   getAllFacebook() {
-    this.crmService.getAllFacebooks()
-      .subscribe(dataTeam => {
+    this.crmService.getAllFacebooks().subscribe(dataTeam => {
         // console.log(f)
         if (TDSHelperObject.hasValue(dataTeam)) {
-          let team!: CRMTeamDTO;
           this.crmService.onUpdateListFaceBook(dataTeam);
+
           this.crmService.getCacheTeamId().subscribe((teamId: string | null) => {
-            const team = TPageHelperService.findTeamById(dataTeam.Items, teamId, true)
+            const team = TPageHelperService.findTeamById(dataTeam, teamId, true)
+
             this.crmService.onUpdateTeam(team);
           })
         } else {

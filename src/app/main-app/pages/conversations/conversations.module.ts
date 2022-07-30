@@ -117,6 +117,7 @@ import { CrmMatchingV2Facade } from '../../services/matching-v2-facade/crm-match
 import { CrmMatchingV2Service } from '../../services/matching-v2-service/crm-matching-v2.service';
 import { ChatomniConversationService } from '../../services/chatomni-service/chatomni-conversation.service';
 import { ConversationAllV2Component } from './conversation-all/conversation-all-v2.component';
+import { CurrentConversationItemV2Component } from './components/current-conversation-item/current-conversation-item-v2.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -204,7 +205,8 @@ const SERVICES = [
     ModalApplyPromotionComponent,
     ModalPostComponent,
     ModalRenameAttachmentComponent,
-    ConversationAllV2Component
+    ConversationAllV2Component,
+    CurrentConversationItemV2Component
   ],
 
   imports: [
