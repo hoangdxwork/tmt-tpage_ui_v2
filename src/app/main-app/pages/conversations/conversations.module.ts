@@ -122,6 +122,7 @@ import { CsPartner_SuggestionHandler } from '../../handler-v2/chatomni-cspartner
 import { CsPartner_PrepareModelHandler } from '../../handler-v2/chatomni-cspartner/prepare-partner.handler';
 import { CsOrder_SuggestionHandler } from '../../handler-v2/chatomni-csorder/prepare-suggestions.handler';
 import { CsOrder_PrepareModelHandler } from '../../handler-v2/chatomni-csorder/prepare-order.handler';
+import { ChatomniPostService } from '../../services/chatomni-service/chatomni-post.service';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -167,7 +168,8 @@ const SERVICES = [
   CsPartner_SuggestionHandler,
   CsPartner_PrepareModelHandler,
   CsOrder_SuggestionHandler,
-  CsOrder_PrepareModelHandler
+  CsOrder_PrepareModelHandler,
+  ChatomniPostService
 ]
 
 @NgModule({
