@@ -313,12 +313,12 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
           this.indClickTag = -1;
           this.modelTags = [];
-          this.message.success('Gán nhãn thành công!');
+          this.message.success(Message.Tag.UpdateSuccess);
         }
 
       }, error => {
         this.indClickTag = -1;
-        this.message.error('Gán nhãn thất bại!');
+        this.message.error(Message.Tag.UpdateFail);
       });
   }
 
