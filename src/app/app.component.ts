@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from './lib';
-import { SocketService } from './services/socket.service';
+import { SocketService } from './main-app/services/socket-io/socket.service';
 import { PageLoadingService } from './shared/services/page-loading.service';
 
 @Component({
