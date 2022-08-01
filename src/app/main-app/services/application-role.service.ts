@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable} from 'rxjs';
-import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { ApplicationRoleDTO } from '../dto/account/application-role.dto';
 import { ODataResponsesDTO } from '../dto/odata/odata.dto';
 import { BaseSevice } from './base.service';
@@ -19,9 +19,9 @@ export class ApplicationRoleService extends BaseSevice {
   }
 
   get(): Observable<ODataResponsesDTO<ApplicationRoleDTO>> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<ODataResponsesDTO<ApplicationRoleDTO>>(api,null);

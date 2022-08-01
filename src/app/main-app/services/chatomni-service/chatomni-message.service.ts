@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from "@angular/core";
 import { catchError, map, Observable, of, shareReplay } from "rxjs";
-import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { ChatomniMessageDetail, ChatomniMessageDTO } from "../../dto/conversation-all/chatomni/chatomni-message.dto";
 import { BaseSevice } from "../base.service";
@@ -26,17 +26,17 @@ export class ChatomniMessageService extends BaseSevice  {
 
   get(teamId: number, psid: any, type: string): Observable<ChatomniMessageDTO> {
 
-      let api: TAPIDTO = {
+      let api: CoreAPIDTO = {
           url: `${this._BASE_URL}/${this.baseRestApi}/${teamId}_${psid}/messages?type=${type}`,
-          method: TApiMethodType.get,
+          method: CoreApiMethodType.get,
       }
       return this.apiService.getData<ChatomniMessageDTO>(api, null);
   }
 
   getLink(url: string): Observable<any>  {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
           url: `${url}`,
-          method: TApiMethodType.get
+          method: CoreApiMethodType.get
       }
       return this.apiService.getData<any>(api, null);
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { BaseSevice } from './base.service';
 
@@ -21,9 +21,9 @@ export class TagProductTemplateService extends BaseSevice {
     }
 
     assignTag(data:TDSSafeAny): Observable<any>{
-        const api: TAPIDTO = {
+        const api: CoreAPIDTO = {
             url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.AssignTagProductTemplate`,
-            method: TApiMethodType.post,
+            method: CoreApiMethodType.post,
         }
 
         return this.apiService.getData<TDSSafeAny>(api,data);

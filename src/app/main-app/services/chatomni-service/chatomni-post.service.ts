@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { ChatomniPostFacade } from "../chatomni-facade/chatomni-post.facade";
 
@@ -23,17 +23,17 @@ export class ChatomniPostService extends BaseSevice  {
 
   get(teamId: number, objectId: any, type: string): Observable<any> {
 
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/${teamId}_${objectId}/comments?type=${type}`,
-        method: TApiMethodType.get,
+        method: CoreApiMethodType.get,
     }
     return this.apiService.getData<any>(api, null);
   }
 
   getLink(url: string): Observable<any>  {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
           url: `${url}`,
-          method: TApiMethodType.get
+          method: CoreApiMethodType.get
       }
       return this.apiService.getData<any>(api, null);
   }

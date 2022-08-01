@@ -1,7 +1,7 @@
 import { ODataProductTemplateDTO } from '../../dto/configs/product/config-odata-product.dto';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { OperatorEnum, CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { BaseSevice } from '../base.service';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -24,9 +24,9 @@ export class OdataProductTemplateService extends BaseSevice {
   }
 
   getView(params:string): Observable<TDSSafeAny>{
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?${params}&$count=true`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<ODataProductTemplateDTO>(api, null);
@@ -37,7 +37,7 @@ export class OdataProductTemplateService extends BaseSevice {
         logic: "and",
         filters: []
     }
-    
+
     if (filterObj.active || filterObj.active == false) {
       dataFilter.filters.push({
           filters: [

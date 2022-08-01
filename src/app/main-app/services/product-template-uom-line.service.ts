@@ -2,7 +2,7 @@ import { ODataProductDTO } from 'src/app/main-app/dto/configs/product/config-oda
 import { ODataProductInventoryDTO } from './../dto/configs/product/config-odata-product.dto';
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { ProductTemplateV2DTO } from "../dto/producttemplate/product-tempalte.dto";
 import { BaseSevice } from "./base.service";
 import { TDSSafeAny } from 'tds-ui/shared/utility';
@@ -22,9 +22,9 @@ export class ProductTemplateOUMLineService extends BaseSevice {
   }
 
   getOUMs(): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/ProductUOM`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
@@ -35,9 +35,9 @@ export class ProductTemplateOUMLineService extends BaseSevice {
     if (keyword) {
       filter = `&$filter=(contains(NameNoSign,'${keyword}')+or+contains(NameGet,'${keyword}')+or+contains(Barcode,'${keyword}'))`;
     }
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}?$skip=${skip}&$top=${top}&$orderby=Name asc${filter}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
   }
   return this.apiService.getData<ODataProductDTO>(api, null);
   }

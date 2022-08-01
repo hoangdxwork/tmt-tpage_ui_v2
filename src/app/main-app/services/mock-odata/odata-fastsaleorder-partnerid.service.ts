@@ -2,7 +2,7 @@ import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { isBuffer } from 'lodash';
 import { Observable } from 'rxjs';
-import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { OperatorEnum, CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { BaseSevice } from '../base.service';
@@ -29,17 +29,17 @@ export class OdataFastSaleOrderPartnerIdService extends BaseSevice {
   }
 
   getOrdersByPartnerId(partnerId: number, params: string): Observable<TDSSafeAny>{
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersByPartnerId?PartnerId=${partnerId}&${params}&$count=true`,
-        method: TApiMethodType.get,
+        method: CoreApiMethodType.get,
     }
     return this.apiService.getData<any>(api, null);
   }
 
   getOverviewOrdersByPartnerId(partnerId: number, DateFrom: string, DateTo: string): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOverviewOrdersByPartnerId?PartnerId=${partnerId}&DateFrom=${DateFrom}&DateTo=${DateTo}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);

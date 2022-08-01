@@ -13,6 +13,7 @@ export class THelperCacheService {
     private lstKeyAPI: Array<string> = [];
 
     constructor(protected localStorage: LocalStorage) { }
+
     //lấy danh sách các key API từ cache lên đưa vào bảng lstKeyAPI
     public init(): Observable<boolean> {
         return new Observable<boolean>(o => {
@@ -28,10 +29,12 @@ export class THelperCacheService {
             });
         });
     }
+
     //lấy danh sách các key API
     public apiGetKeys(): Array<string> {
         return this.lstKeyAPI;
     }
+
     //Thiết lập key api
     private apiKeySave(key: string) {
         if (this.lstKeyAPI.indexOf(key) < 0) {
@@ -39,6 +42,7 @@ export class THelperCacheService {
             this.localStorage.setItem(this.keyAPICache, this.lstKeyAPI).subscribe(() => { });
         }
     }
+
     //Xóa key api
     private apiKeyDel(key: string) {
         if (this.lstKeyAPI.indexOf(key) >= 0) {
@@ -46,6 +50,7 @@ export class THelperCacheService {
             this.localStorage.setItem(this.keyAPICache, this.lstKeyAPI).subscribe(() => { });
         }
     }
+
     //Lưu trữ giá trị 01 key trên cache
     public setItem(key:TDSSafeAny, value:TDSSafeAny) {
         let that = this;
@@ -55,33 +60,39 @@ export class THelperCacheService {
         };
         that.localStorage.setItem(key, { value: JSON.stringify(saveItem) }).toPromise();
     }
+
     //Lấy giá trị 01 key trên cache
     public getItem(key:string): Observable<any> {
         let that = this;
         return that.localStorage.getItem(key);
     }
+
     //Xóa giá trị 01 key trên cache
     public removeItem(key: string) {
         let that = this;
         that.localStorage.removeItem(key).subscribe(() => { console.log(key + ' is cleared!'); });
     }
+
     //lưu kết quả trả về của 01 api lên cache
     public apiSet(key: string, val: any): Observable<boolean> {
         let that = this;
         that.apiKeySave(key);
         return that.localStorage.setItem(that.keyAPI + key, val);
     }
+
     //trả kết quả trả về của 01 api gần nhất
     public apiGet(key: string): Observable<unknown> {
         let that = this;
         return that.localStorage.getItem(that.keyAPI + key);
     }
+
     //xóa kết quả trả về của 01 api gần nhất trên cache
     public apiRemove(key: string): Observable<boolean> {
         let that = this;
         that.apiKeyDel(key);
         return that.localStorage.removeItem(that.keyAPI + key);
     }
+
     //xóa toàn bộ cache
     public clear(): Observable<boolean> {
         return this.localStorage.clear();

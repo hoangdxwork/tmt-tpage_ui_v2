@@ -1,6 +1,6 @@
-import { TApiMethodType } from "../enum";
+import { CoreApiMethodType } from "../enum";
 
-export interface TAPIDTO{
+export interface CoreAPIDTO{
     url: string;
-    method: TApiMethodType;
+    method: CoreApiMethodType;
 }

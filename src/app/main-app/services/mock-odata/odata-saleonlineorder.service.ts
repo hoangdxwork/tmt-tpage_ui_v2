@@ -2,7 +2,7 @@ import { TDSHelperArray } from 'tds-ui/shared/utility';
 import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { OperatorEnum, CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { BaseSevice } from '../base.service';
@@ -37,27 +37,27 @@ export class OdataSaleOnline_OrderService extends BaseSevice {
   }
 
   getView(params: string, filterObj: FilterObjSOOrderModel): Observable<ODataSaleOnline_OrderDTOV2> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&${params}&$count=true`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<ODataSaleOnline_OrderDTOV2>(api, null);
   }
 
   getViewByPost(postId: string, params: string, filterObj: FilterObjSOOrderModel): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersByPostId?PostId=${postId}&TagIds=${filterObj.tags}&${params}&$count=true`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   removeIds(data: TDSSafeAny): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.RemoveIds`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
