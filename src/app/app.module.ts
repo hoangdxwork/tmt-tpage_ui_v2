@@ -12,7 +12,6 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { SharedModule } from './shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TDS_I18N, vi_VN } from 'tds-ui/i18n';
-import { LibModule } from '@core/lib.module';
 
 // Thiết lập tiếng Việt
 registerLocaleData(localeVi);
@@ -30,7 +29,6 @@ registerLocaleData(localeVi);
     ScrollingModule,
     HttpClientModule,
     SharedModule,
-    LibModule
   ],
   providers: [{ provide: TDS_I18N, useValue: vi_VN },
     TAuthGuardService, {

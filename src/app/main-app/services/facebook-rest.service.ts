@@ -1,6 +1,6 @@
-import { TApiMethodType } from './../../lib/enum/api.methodtype';
+import { CoreApiMethodType } from './../../lib/enum/api.methodtype';
 import { TCommonService } from './../../lib/services/common.service';
-import { TAPIDTO } from './../../lib/dto/api.dto';
+import { CoreAPIDTO } from './../../lib/dto/api.dto';
 import { Injectable } from '@angular/core';
 import { BaseSevice } from './base.service';
 import {
@@ -19,9 +19,9 @@ export class FacebookRESTService extends BaseSevice {
    }
 
   public rescan(pageId: string, minusDays: number){
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/rescan?pageId=${pageId}&days=${minusDays}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);

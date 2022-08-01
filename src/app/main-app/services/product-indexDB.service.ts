@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import { map, mergeMap } from "rxjs/operators";
-import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from "src/app/lib";
+import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from "src/app/lib";
 import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from "../dto/product-pouchDB/product-pouchDB.dto";
 import { BaseSevice } from "./base.service";
@@ -88,9 +88,9 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
   }
 
   getLastVersionV2(countIndex: number, version: number): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetLastVersionV2?$expand=Datas&countIndexDB=${countIndex}&Version=${version}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
     return this.apiService.getData<ProductPouchDBDTO>(api, null);
   }

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { map, Observable,  shareReplay } from "rxjs";
-import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
 import { get as _get } from 'lodash';
@@ -37,9 +37,9 @@ export class ChatomniConversationService extends BaseSevice {
         url = `${url}&${queryString}`;
     }
 
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${url}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
     return this.apiService.getData<ChatomniConversationDto>(api, null);
   }
@@ -57,9 +57,9 @@ export class ChatomniConversationService extends BaseSevice {
       url = `${url}&${queryString}`;
     }
 
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${url}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
     return this.apiService.getData<ChatomniConversationDto>(api, null);
   }

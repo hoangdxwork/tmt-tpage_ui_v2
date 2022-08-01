@@ -1,7 +1,7 @@
 import { state } from '@angular/animations';
 import { Injectable, OnInit } from "@angular/core";
 import { Observable, of } from "rxjs";
-import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { CRMMatchingDTO, CRMMatchingDTO_v2 } from "../../dto/conversation-all/crm-matching.dto";
 import { PagedList2 } from "../../dto/pagedlist2.dto";
 import { MDBFacebookMappingNoteDTO } from "../../dto/partner/partner.dto";
@@ -79,9 +79,9 @@ export class ConversationService extends BaseSevice {
   //         return key + '=' + queryObj[key]
   //     }).join('&');
 
-  //     let api: TAPIDTO = {
+  //     let api: CoreAPIDTO = {
   //         url: `${this._BASE_URL}/${this.baseRestApi}?${queryString}`,
-  //         method: TApiMethodType.get
+  //         method: CoreApiMethodType.get
   //     }
   //     return this.apiService.getData<CRMMatchingDTO>(api, null);
   //   }
@@ -96,18 +96,18 @@ export class ConversationService extends BaseSevice {
   //         return key + '=' + queryObj[key]
   //     }).join('&');
 
-  //     let api: TAPIDTO = {
+  //     let api: CoreAPIDTO = {
   //         url: `${this._BASE_URL}/${this.baseRestApi_v2}?${queryString}`,
-  //         method: TApiMethodType.get
+  //         method: CoreApiMethodType.get
   //     }
   //     return this.apiService.getData<CRMMatchingDTO_v2>(api, null);
   //   }
   // }
 
   // getLink(url: string): Observable<CRMMatchingDTO> {
-  //   let api: TAPIDTO = {
+  //   let api: CoreAPIDTO = {
   //       url: `${url}`,
-  //       method: TApiMethodType.get
+  //       method: CoreApiMethodType.get
   //   }
   //   return this.apiService.getData<CRMMatchingDTO>(api, null);
   // }
@@ -116,9 +116,9 @@ export class ConversationService extends BaseSevice {
   //   if(url != this.currentUrlNext) {
   //       this.currentUrlNext = url; // check phân trang bị trùng
 
-  //       let api: TAPIDTO = {
+  //       let api: CoreAPIDTO = {
   //           url: `${url}`,
-  //           method: TApiMethodType.get
+  //           method: CoreApiMethodType.get
   //       }
 
   //       return this.apiService.getData<CRMMatchingDTO_v2>(api, null);
@@ -164,18 +164,18 @@ export class ConversationService extends BaseSevice {
   // }
 
   getNotes(page_id: string, psid: string): Observable<PagedList2<MDBFacebookMappingNoteDTO>> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/notes?page_id=${page_id}`,
-        method: TApiMethodType.get,
+        method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<PagedList2<MDBFacebookMappingNoteDTO>>(api, null);
   }
 
   deleteNote(id: string): Observable<undefined> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/${id}/notes`,
-        method: TApiMethodType.delete,
+        method: CoreApiMethodType.delete,
     }
 
     return this.apiService.getData<undefined>(api, null);

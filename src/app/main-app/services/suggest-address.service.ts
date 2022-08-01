@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { BaseSevice } from './base.service';
 
@@ -23,9 +23,9 @@ export class SuggestAddressService extends BaseSevice {
   }
 
   getCities(): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getcities`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getCacheData<TDSSafeAny>(api, { provider: "Undefined" });
@@ -36,9 +36,9 @@ export class SuggestAddressService extends BaseSevice {
   }
 
   getDistricts(value: string): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getdistricts(${value})`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getCacheData<TDSSafeAny>(api, { provider: "Undefined" });
@@ -49,9 +49,9 @@ export class SuggestAddressService extends BaseSevice {
   }
 
   getWards(value: string): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getwards(${value})`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getCacheData<TDSSafeAny>(api, { provider: "Undefined" });
@@ -62,18 +62,18 @@ export class SuggestAddressService extends BaseSevice {
   }
 
   checkAddress(value: string): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/checkaddress?address=${value}`,
-        method: TApiMethodType.get
+        method: CoreApiMethodType.get
     }
 
     return this.apiService.getCacheData<TDSSafeAny>(api, null);
   }
 
   suggest(value: string): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/suggest?q=${value}`,
-        method: TApiMethodType.get
+        method: CoreApiMethodType.get
     }
 
     return this.apiService.getCacheData<TDSSafeAny>(api, null);

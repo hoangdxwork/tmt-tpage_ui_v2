@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable, OnDestroy, OnInit, Output } from '@angular/core';
 import {  Observable, ReplaySubject, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
-import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { RequestCommentByGroup } from '../dto/conversation/post/comment-group.dto';
 import { OdataCommentOrderPostDTO } from '../dto/conversation/post/comment-order-post.dto';
 import { RequestCommentByPost } from '../dto/conversation/post/comment-post.dto';
@@ -60,17 +60,17 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
   }
 
   fetchComments(teamId: number, postId: string): Observable<any>{
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebook/fetchcomments?teamId=${teamId}&postId=${postId}`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
     return this.apiService.getData<any>(api, null);
   }
 
   getCommentsByQuery(query: string, postId: string){
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
         url: `${query}`,
-        method: TApiMethodType.get
+        method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<RequestCommentByPost>(api, null)
@@ -81,9 +81,9 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
   }
 
   getCommentsOrderByPost(id: any): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/SaleOnline_Facebook_Post/ODataService.GetCommentOrders?$expand=orders&PostId=${id}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
     return this.apiService.getData<OdataCommentOrderPostDTO>(api, null);
   }
@@ -93,9 +93,9 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
         return key + '=' + this.queryObj[key]
     }).join('&');
 
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/comments?${queryString}`,
-        method: TApiMethodType.get
+        method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<RequestCommentByPost>(api, null)
@@ -111,9 +111,9 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
         return key + '=' + this.queryObj3[key]
     }).join('&');
 
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/filtercomments?${queryString}`,
-        method: TApiMethodType.get
+        method: CoreApiMethodType.get
     }
     return this.apiService.getData<any>(api, null);
   }
@@ -123,9 +123,9 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
         return key + '=' + this.queryObj[key]
     }).join('&');
 
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/groupcomments?${queryString}`,
-        method: TApiMethodType.get
+        method: CoreApiMethodType.get
     }
     return this.apiService.getData<RequestCommentByGroup>(api, null);
   }
@@ -134,9 +134,9 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
     let queryString = Object.keys(this.queryObj3).map(key => {
         return key + '=' + this.queryObj3[key]
     }).join('&');
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/comments?${queryString}`,
-        method: TApiMethodType.get
+        method: CoreApiMethodType.get
     }
     return this.apiService.getData<RequestCommentByPost>(api, null)
       .pipe(takeUntil(this.destroy$))
@@ -147,18 +147,18 @@ export class FacebookCommentService extends BaseSevice implements  OnDestroy {
   }
 
   getReportCommentByPost(postId: string): Observable<any>{
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost${postId}/getreport?id=${postId}`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<any>(api, null);
   }
 
   getCustomersByFacebookId(psid: string, postId: string, teamId: number): Observable<CheckFacebookIdDTO> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/api/facebook/checkfacebookid?asuid=${psid}&postid=${postId}&teamId=${teamId}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<CheckFacebookIdDTO>(api, null);

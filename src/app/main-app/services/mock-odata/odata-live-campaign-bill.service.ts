@@ -1,7 +1,7 @@
 import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
-import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { OperatorEnum, CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO, FilterItemDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
 import { FastSaleOrderModelDTO, ODataFastSaleOrderDTO } from '../../dto/fastsaleorder/fastsaleorder.dto';
@@ -25,9 +25,9 @@ export class ODataLiveCampaignBillService extends BaseSevice {
   getView(params: string, filterObj: any): Observable<ODataResponsesDTO<FastSaleOrderModelDTO>>{
     params += this.buildParams(filterObj);
 
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetViewCampaign?${params}&$count=true`,
-        method: TApiMethodType.get,
+        method: CoreApiMethodType.get,
     }
     return this.apiService.getData<ODataResponsesDTO<FastSaleOrderModelDTO>>(api, null);
   }

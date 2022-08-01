@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
-import { TAPICacheDTO, TAPIDTO, TIDictionary } from '../dto';
+import { TAPICacheDTO, CoreAPIDTO, TIDictionary } from '../dto';
 import { THelperCacheService } from '../utility';
-import { TApiMethodType } from '../enum';
+import { CoreApiMethodType } from '../enum';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Injectable({
@@ -38,7 +38,7 @@ export class TCommonService {
 
     //Kết nối server lấy dữ liệu
     public connect<T>(
-        pmethod: TApiMethodType,
+        pmethod: CoreApiMethodType,
         URL: string,
         data: unknown,
         headers?: HttpHeaders,
@@ -70,18 +70,18 @@ export class TCommonService {
 
         let result: Observable<T>;
         switch (pmethod) {
-            case TApiMethodType.get:
+            case CoreApiMethodType.get:
                 options.params = data;
                 result = that.http.get<T>(URL, options);
                 break;
-            case TApiMethodType.post:
+            case CoreApiMethodType.post:
                 options.params = null;
                 result = this.http.post<T>(URL, data, options)
                 break;
-            case TApiMethodType.put:
+            case CoreApiMethodType.put:
                 result = this.http.put<T>(URL, data, options)
                 break;
-            case TApiMethodType.delete:
+            case CoreApiMethodType.delete:
                 options.params = data;
                 options.body = body;
                 result = this.http.delete<T>(URL, options)
@@ -102,44 +102,44 @@ export class TCommonService {
     }
 
     //Lấy dữ liệu
-    public getData<T>(api: TAPIDTO, param: any): Observable<T> {
+    public getData<T>(api: CoreAPIDTO, param: any): Observable<T> {
         let that = this;
-        return that.connectWithCache<T>(api.method, api.url, param);
+        return that.connect<T>(api.method, api.url, param, that.getHeaderJSon());
     }
 
     //Tạo mới dữ liệu
-    public create<T>(api: TAPIDTO, param: any): Observable<T> {
+    public create<T>(api: CoreAPIDTO, param: any): Observable<T> {
         let that = this;
         return that.connect<T>(api.method, api.url, param, that.getHeaderJSon());
     }
 
     //Cập nhật dữ liệu
-    public updateData<T>(api: TAPIDTO, param: any): Observable<T> {
+    public updateData<T>(api: CoreAPIDTO, param: any): Observable<T> {
         let that = this;
         return that.connect<T>(api.method, api.url, param, that.getHeaderJSon());
     }
 
     //Xóa dữ liệu
-    public deleteData<T>(api: TAPIDTO, param: any, body: TDSSafeAny = null): Observable<T> {
+    public deleteData<T>(api: CoreAPIDTO, param: any, body: TDSSafeAny = null): Observable<T> {
         let that = this;
         return that.connect<T>(api.method, api.url, param, that.getHeaderJSon(), body);
     }
 
-    public getExFile<T>(api: TAPIDTO, param: any): Observable<T> {
+    public getExFile<T>(api: CoreAPIDTO, param: any): Observable<T> {
         let that = this;
         let options = that.getHeaderJSon();
 
         return that.connect<T>(api.method, api.url, param, options, null, true, 'body', 'text');
     }
 
-    public getFileUpload<T>(api: TAPIDTO, param: any): Observable<T> {
+    public getFileUpload<T>(api: CoreAPIDTO, param: any): Observable<T> {
         let that = this;
         let options = new HttpHeaders({ 'Access-Control-Allow-Origin': '*' });
 
         return that.connect<T>(api.method, api.url, param, options);
     }
 
-    public getCacheData<T>(api: TAPIDTO, param: any, strKey: string | undefined = undefined): Observable<T> {
+    public getCacheData<T>(api: CoreAPIDTO, param: any, strKey: string | undefined = undefined): Observable<T> {
         let that = this;
         return that.connectWithCache<T>(api.method, api.url, param, strKey);
     }
@@ -178,7 +178,7 @@ export class TCommonService {
 
     //lấy dữ liệu trên cache/server với việc truyền vào form để xác nhận phân quyền
     private connectWithCache<T>(
-        pmethod: TApiMethodType,
+        pmethod: CoreApiMethodType,
         URL: string,
         data: any,
         keyCache: string | undefined = undefined,

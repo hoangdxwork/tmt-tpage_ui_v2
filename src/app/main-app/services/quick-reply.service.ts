@@ -2,7 +2,7 @@ import { map } from 'rxjs/operators';
 import { CreateQuickReplyDTO, QuickReplyDTO } from './../dto/quick-reply.dto.ts/quick-reply.dto';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable} from 'rxjs';
-import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { BaseSevice } from './base.service';
 
 @Injectable()
@@ -42,81 +42,81 @@ export class QuickReplyService extends BaseSevice {
   }
 
   get(): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<any>(api, null);
   }
 
   getById(key: string): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<QuickReplyDTO>(api, null);
   }
 
   getOnlyActive(): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}?$filter=Active eq true`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<any>(api, null);
   }
 
   insert(data: CreateQuickReplyDTO): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<any>(api, data);
   }
 
   update(key :any, data: CreateQuickReplyDTO): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
-      method: TApiMethodType.put
+      method: CoreApiMethodType.put
     }
 
     return this.apiService.getData<any>(api, data);
   }
 
   updateStatus(key: any): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})/ODataService.UpdateStatus`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<any>(api, null);
   }
 
   updateDefaultForOrder(key: any): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})/ODataService.UpdateDefaultForOrder`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<any>(api, null);
   }
 
   updateDefaultForBill(key: any): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})/ODataService.UpdateDefaultForBill`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<any>(api, null);
   }
 
   delete(key: any): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
-      method: TApiMethodType.delete
+      method: CoreApiMethodType.delete
     }
 
     return this.apiService.getData<any>(api, null);

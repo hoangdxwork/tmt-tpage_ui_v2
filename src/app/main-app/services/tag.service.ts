@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { da } from 'date-fns/locale';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
-import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { DataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { PagedList2 } from '../dto/pagedlist2.dto';
 import { ODataTagsPartnerDTO } from '../dto/partner/partner-tags.dto';
@@ -24,25 +24,25 @@ export class TagService extends BaseSevice {
   }
 
   get(): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
-        method: TApiMethodType.get,
+        method: CoreApiMethodType.get,
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   getByType(type: string): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetByType?type=${type}`,
-        method: TApiMethodType.get
+        method: CoreApiMethodType.get
     }
     return this.apiService.getData<ODataTagsPartnerDTO>(api, null);
   }
 
   getProductTagList(): Observable<any>{
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
     url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetByType?type=producttemplate`,
-    method: TApiMethodType.get,
+    method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<ODataProductTagDTO>(api, null);

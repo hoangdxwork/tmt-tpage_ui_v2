@@ -6,7 +6,7 @@ import { catchError, map, mergeMap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TTokenDTO, UserInitDTO } from '../dto';
-import { TApiMethodType } from '../enum';
+import { CoreApiMethodType } from '../enum';
 import { THelperCacheService } from '../utility';
 import { TCommonService } from './common.service';
 
@@ -43,7 +43,7 @@ export class TAuthService {
         data.set("password", password);
         data.set("scope", "profile");
 
-        return that.apiService.connect<TTokenDTO>(TApiMethodType.post, `${this._BASE_URL}` + environment.apiAccount.signInPassword, data,
+        return that.apiService.connect<TTokenDTO>(CoreApiMethodType.post, `${this._BASE_URL}` + environment.apiAccount.signInPassword, data,
             this.apiService.getHeaderJSon(false, false), false)
             .pipe(
                 this.afterRequestToken()
@@ -54,7 +54,7 @@ export class TAuthService {
     //Thực thi việc lấy thông tin userInit
     getUserInit(): Observable<UserInitDTO | undefined> {
         let that = this;
-        return that.apiService.connect(TApiMethodType.get, `${this._BASE_URL}` + environment.apiAccount.userInit, null,
+        return that.apiService.connect(CoreApiMethodType.get, `${this._BASE_URL}` + environment.apiAccount.userInit, null,
             this.apiService.getHeaderJSon(true), false);
     }
 
@@ -67,7 +67,7 @@ export class TAuthService {
             }
         });
 
-        return that.apiService.connect(TApiMethodType.post,
+        return that.apiService.connect(CoreApiMethodType.post,
            `${this._BASE_URL}` + environment.apiAccount.refreshToken, formURL, this.apiService.getHeaderJSon(false, true), false)
             .pipe(
                 tap((data: TDSSafeAny) => {

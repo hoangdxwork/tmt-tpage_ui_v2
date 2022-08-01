@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable} from 'rxjs';
-import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { AccountTaxDTO } from '../dto/account/account.dto';
 import { ApplicationRoleDTO } from '../dto/account/application-role.dto';
 import { ODataResponsesDTO } from '../dto/odata/odata.dto';
@@ -18,9 +18,9 @@ export class AccountTaxService extends BaseSevice {
   }
 
   getTax(): Observable<ODataResponsesDTO<AccountTaxDTO>> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetWithCompany`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<ODataResponsesDTO<AccountTaxDTO>>(api, null);

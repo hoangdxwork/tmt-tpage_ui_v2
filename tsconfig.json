@@ -26,6 +26,12 @@
       ],
       "@core": [
         "src/app/lib",
+      ],
+      "@app/*": [
+        "src/app/main-app/*",
+      ],
+      "@app": [
+        "src/app/main-app",
       ]
     },
   },

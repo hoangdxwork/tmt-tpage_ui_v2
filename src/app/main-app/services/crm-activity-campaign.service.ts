@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tds-ui/shared/utility";
 import { BaseSevice } from "./base.service";
 
@@ -20,9 +20,9 @@ export class CRMActivityCampaignService extends BaseSevice {
 
   saveOrderCampaign(data: TDSSafeAny): Observable<TDSSafeAny> {
 
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/order-campaign`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
@@ -30,27 +30,27 @@ export class CRMActivityCampaignService extends BaseSevice {
 
   saveBillCampaign(data: TDSSafeAny): Observable<TDSSafeAny> {
 
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/bill-campaign`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   generateMessagePartners(data: TDSSafeAny): Observable<TDSSafeAny>{
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${this.table}/generatemessagepartners`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   insertOdata(data: TDSSafeAny): Observable<TDSSafeAny>{
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}?$expand=Details,GroupDetails($expand=CRMTeam,Details)`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
