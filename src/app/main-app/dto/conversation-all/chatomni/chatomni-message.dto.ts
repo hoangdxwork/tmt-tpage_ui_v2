@@ -154,7 +154,7 @@ export interface ExtrasObjectDto {
   ChannelUpdatedTime?: any;
   Title?: any;
   Description: string;
-  Thumbnail?: any;
+  Thumbnail?:  { Url: string; };
 }
 
 

@@ -78,6 +78,7 @@ import { UpdateShipServiceExtrasHandler } from '../../handler-v2/aship-v2/update
 import { UpdateShipmentDetailAshipHandler } from '../../handler-v2/aship-v2/shipment-detail-aship.handler';
 import { EditOrderV2Component } from './components/edit-order/edit-order-v2.component';
 import { SO_ComputeCaclHandler } from '../../handler-v2/order-handler/compute-cacl.handler';
+import { CalculateFeeAshipHandler } from '../../handler-v2/aship-v2/calcfee-aship.handler';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -108,7 +109,8 @@ const SERVICES = [
   UpdateShipExtraHandler,
   UpdateShipServiceExtrasHandler,
   UpdateShipmentDetailAshipHandler,
-  SO_ComputeCaclHandler
+  SO_ComputeCaclHandler,
+  CalculateFeeAshipHandler
 ]
 
 @NgModule({
