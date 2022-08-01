@@ -38,6 +38,7 @@ export class CalculateFeeAshipHandler {
                       })
                   }
 
+                  configsProviderDataSource = [];
                   configsProviderDataSource = [...extras];
 
                   let objAs = {
@@ -64,43 +65,5 @@ export class CalculateFeeAshipHandler {
           })
       })
   }
-
-
-  // cal() {
-  //   if(!this.saleModel.Carrier) {
-  //       return this.message.error('Vui lòng chọn  đối tác giao hàng');
-  //   }
-
-  //   if (!this.saleModel) {
-  //       return this.message.error('Vui lòng chọn nhập khối lượng');
-  //   }
-
-  //   let model = this.prepareModelFeeV2();
-  //   this.isCalcFee = true;
-
-  //   this.calculateFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).subscribe((res) => {
-  //       if(res) {debugger
-  //           this.configsProviderDataSource = [];
-  //           this.configsProviderDataSource = res.configs;
-
-  //           this.insuranceInfo = res.data?.InsuranceInfo ?? null;
-  //           this.shipServices = res.data?.Services ?? [];
-
-  //           if(TDSHelperArray.hasListValue(this.shipServices)) {
-
-  //               let svDetail = this.shipServices[0] as CalculateFeeServiceResponseDto;
-  //               this.selectShipServiceV2(svDetail);
-
-  //               this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(svDetail.TotalFee), 'en-US', '1.0-0')} đ`);
-  //           }
-  //       }
-
-  //       this.isCalcFee = false;
-  //   }, error => {
-  //       this.isCalcFee = false;
-  //       this.message.error(error.error?.message || error.error?.error_description);
-  //   })
-
-  // }
 
 }

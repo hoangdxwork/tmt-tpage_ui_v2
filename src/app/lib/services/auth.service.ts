@@ -32,7 +32,7 @@ export class TAuthService {
     }
 
     //Thực thi việc đăng nhập và lấy token
-    signInPassword(username: string, password: string): Observable<TDSSafeAny> {debugger
+    signInPassword(username: string, password: string): Observable<TDSSafeAny> {
 
         let that = this;
         let data = new URLSearchParams();
