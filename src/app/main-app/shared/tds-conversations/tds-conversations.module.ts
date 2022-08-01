@@ -43,6 +43,7 @@ import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import { FormatIconLikePipe } from '../pipe/format-icon-like.pipe';
 import { TDSConversationsV2Component } from './tds-conversations-v2.component';
 import { TDSConversationItemV2Component } from './tds-conversation-item-v2.component';
+import { ConversationInfopostItemComponent } from './component/conversation-infopost-item/conversation-infopost-item.component';
 
 const CMP =[
   TDSConversationsComponent,
@@ -51,7 +52,8 @@ const CMP =[
   TDSConversationItemV2Component,
   IconEmojiMartComponent,
   ShowAttachmentComponent,
-  ShowItemImageComponent
+  ShowItemImageComponent,
+  ConversationInfopostItemComponent
 ]
 
 @NgModule({

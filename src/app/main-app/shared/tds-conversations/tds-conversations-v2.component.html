@@ -120,159 +120,20 @@
             <div *ngIf="dataSource && dataSource?.Items">
                 <ng-container *ngFor="let item of dataSource!.Items | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex">
                   <div *ngIf="item" @eventFadeState>
-
-                      <div class="w-full relative">
-                          <div class="date-v3">
-                              <span class="text-neutral-1-400 text-[13px]" [innerHTML]="item.CreatedTime | yiDateTimeV3"></span>
-                              <span class="hr"></span>
-                          </div>
-                      </div>
-                      <!-- Thông tin bài post -->
-                      <!-- <div *ngIf="item.type == 2 && item.object_id && (dataSource$ | async)?.Extras!.Objects[item?.object_id] &&
-                          (i == 0 || !(i == 0 || (item.object_id == (dataOrderBy[i-1])?.object_id)))" class="px-2">
-                          <div class="post-block mb-3 bg-white flex flex-col">
-                              <div class="post-body flex flex-row justify-between p-4">
-                                  <div class="post-content flex flex-col">
-                                      <div class="post-type flex flex-row items-center mb-3">
-                                          <tds-avatar
-                                              [tdsSrc]="(dataSource$ | async)?.Extras!.Objects[item?.object_id].status_type=='added_video'?'../../../assets/imagesv2/conversation/live-circle.svg':'../../../assets/imagesv2/conversation/facebook-circle.svg'"
-                                              [size]="24"
-                                              [shape]="'circle'"
-                                              [isAvatar]="false"
-                                              class="mr-1">
-                                          </tds-avatar>
-                                          <tds-tag [status]="(dataSource$ | async)?.Extras!.Objects[item?.object_id].status_type=='added_video'?'error':'info'" type="outline" rounded="rounded-full">
-                                              <span class="flex items-center py-0.5">
-                                                  <span>{{(dataSource$ | async)?.Extras!.Objects[item?.object_id].created_time | date: "dd-MM-yyyy HH:mm"}}</span>
-                                              </span>
-                                          </tds-tag>
-                                      </div>
-                                      <div class="post-item">
-                                          <div class="w-full block">
-                                              <p class="story font-semibold" *ngIf="(dataSource$ | async)?.Extras!.Objects[item?.object_id]?.story">
-                                                  {{(dataSource$ | async)?.Extras!.Objects[item?.object_id].story}}
-                                              </p>
-                                              <div class="message font-regular" *ngIf="(dataSource$ | async)?.Extras!.Objects[item?.object_id]?.message">
-                                                  <div [innerHTML]="(dataSource$ | async)?.Extras!.Objects[item?.object_id].message | safeHtml"></div>
-                                              </div>
-                                              <p class="description" *ngIf="(dataSource$ | async)?.Extras!.Objects[item?.object_id]?.description">{{(dataSource$ | async)?.Extras!.posts[item?.object_id].description}}</p>
-                                          </div>
-                                      </div>
-                                  </div>
-                                  <div class="post-picture" *ngIf="(dataSource$ | async)?.Extras!.Objects[item?.object_id]?.picture && !checkPostPictureError(item)">
-                                      <img (error)="errorPostPicture(item)"
-                                          [src]="(dataSource$ | async)?.Extras!.Objects[item?.object_id].picture"
-                                          alt="{{(dataSource$ | async)?.Extras!.Objects[item?.object_id].story}}" class="rounded-xl"/>
-                                  </div>
-                              </div> -->
-
-                        <!-- Bài post TShop lấy dto từ ExtrasObjectDto với Data: ChatomniDataTShopPostDto-->
-                        <div *ngIf="item.Type == 91 && team.Type == 'TShop' && item.ObjectId && dataSource?.Extras!.Objects[item.ObjectId]" class="px-2">
-                          <div class="post-block mb-3 bg-white flex flex-col">
-                              <div class="post-body flex flex-row justify-between p-4">
-                                  <div class="post-content flex flex-col">
-                                      <div class="post-type flex flex-row items-center mb-3">                                        
-                                          <tds-tag [status]="'info'" type="outline" rounded="rounded-full">
-                                              <span class="flex items-center py-0.5">
-                                                  <span>{{dataSource.Extras!.Objects[item?.ObjectId].ChannelCreatedTime | date: "dd-MM-yyyy HH:mm"}}</span>
-                                              </span>
-                                          </tds-tag>
-                                      </div>
-                                      <div class="post-item">
-                                          <div class="w-full block">
-                                              <p class="story font-semibold" *ngIf="dataSource.Extras!.Objects[item?.ObjectId]?.Title">
-                                                  {{dataSource.Extras!.Objects[item?.ObjectId].Title}}
-                                              </p>
-                                              <div class="message font-regular" *ngIf="dataSource.Extras!.Objects[item?.ObjectId]?.Description">
-                                                  <div [innerHTML]="dataSource.Extras!.Objects[item?.ObjectId].Description | safeHtml"></div>
-                                              </div>
-                                              <p class="description" *ngIf="dataSource.Extras!.Objects[item?.ObjectId]?.Description">{{dataSource.Extras!.Objects[item?.object_id].Description}}</p>
-                                          </div>
-                                      </div>
-                                  </div>
-                                  <div class="post-picture" *ngIf="dataSource.Extras!.Objects[item?.ObjectId]?.Thumbnail && !checkPostPictureError(item)">
-                                      <img (error)="errorPostPicture(item)"
-                                          [src]="dataSource.Extras!.Objects[item?.ObjectId].Thumbnail"
-                                          alt="{{dataSource.Extras!.Objects[item?.ObjectId].Title}}" class="rounded-xl"/>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-
-                        <!-- Bài post Facebook lấy dto từ ExtrasObjectDto với Data: Facebook_Graph_Post-->
-
-                      <!-- <div *ngIf="item.Type == 12 && team.Type == 'Facebook' && item.ObjectId && dataSource?.Extras!.Objects[item.ObjectId]
-                        && dataSource.Extras!.Objects[item?.ObjectId]?.Data" class="px-2">
-                      <div class="post-block mb-3 bg-white flex flex-col">
-                          <div class="post-body flex flex-row justify-between p-4">
-                              <div class="post-content flex flex-col">
-                                  <div class="post-type flex flex-row items-center mb-3">
-                                      <tds-avatar
-                                          [tdsSrc]="dataSource.Extras!.Objects[item?.ObjectId]?.Data.status_type=='added_video'?'../../../assets/imagesv2/conversation/live-circle.svg':'../../../assets/imagesv2/conversation/facebook-circle.svg'"
-                                          [size]="24"
-                                          [shape]="'circle'"
-                                          [isAvatar]="false"
-                                          class="mr-1">
-                                      </tds-avatar>
-                                      <tds-tag [status]="dataSource.Extras!.Objects[item?.ObjectId]?.status_type=='added_video'?'error':'info'" type="outline" rounded="rounded-full">
-                                          <span class="flex items-center py-0.5">
-                                              <span>{{dataSource.Extras!.Objects[item?.ObjectId]?.created_time | date: "dd-MM-yyyy HH:mm"}}</span>
-                                          </span>
-                                      </tds-tag>
-                                  </div>
-                                  <div class="post-item">
-                                      <div class="w-full block">
-                                          <p class="story font-semibold" *ngIf="dataSource.Extras!.Objects[item?.ObjectId]?.story">
-                                              {{dataSource.Extras!.Objects[item?.ObjectId].story}}
-                                          </p>
-                                          <div class="message font-regular" *ngIf="dataSource.Extras!.Objects[item?.ObjectId]?.message">
-                                              <div [innerHTML]="dataSource.Extras!.Objects[item?.ObjectId].message | safeHtml"></div>
-                                          </div>
-                                          <p class="description" *ngIf="dataSource.Extras!.Objects[item?.ObjectId]?.description">{{dataSource.Extras!.Objects[item?.ObjectId].description}}</p>
-                                      </div>
-                                  </div>
-                              </div>
-                              <div class="post-picture" *ngIf="dataSource.Extras!.Objects[item?.ObjectId]?.picture && !checkPostPictureError(item)">
-                                  <img (error)="errorPostPicture(item)"
-                                      [src]="dataSource.Extras!.Objects[item?.ObjectId].picture"
-                                      alt="{{dataSource.Extras!.Objects[item?.ObjectId]?.story}}" class="rounded-xl"/>
-                              </div>
-                          </div>
-                          <div class="post-footer bg-neutral-3-50 text-neutral-1-600 font-regular flex flex-row items-center justify-between py-1 px-4">
-                              <div class="emotion-count flex flex-row items-center">
-                                  <div class="flex flex-row mr-1">
-                                      <img src="../../../assets/imagesv2/conversation/like-circle.svg" width="20px" height="20px"
-                                          class="rounded-full z-50">
-                                      <img src="../../../assets/imagesv2/conversation/love-circle.svg" width="20px" height="20px"
-                                          class="rounded-full z-40 -ml-2">
-                                  </div>
-                                  <span>
-                                      {{dataSource.Extras!.Objects[item?.ObjectId]?.count_reactions || 0}}
-                                  </span>
-                              </div>
-                              <div class="comment flex flex-row items-center">
-                                  <span class="comment-count  mr-4">
-                                      {{dataSource.Extras!.Objects[item?.ObjectId]?.count_comments || 0}} Bình luận
-                                  </span>
-                                  <div class="comment-button">
-                                      <button tds-button-flat-icon color="secondary" class="mr-4" tds-tooltip tooltipTitle="Bài viết tổng quan" tooltipPlacement="bottom"
-                                          (click)="openModalPost(item)">
-                                          <i class="tdsi-chart-pie-fill"></i>
-                                      </button>
-                                      <button tds-button-flat-icon color="secondary" class="mr-4" tds-tooltip tooltipTitle="Đi tới bình luận" tooltipPlacement="bottom"
-                                          (click)="openPost(item, 'post')">
-                                          <i class="tdsi-expand-line"></i>
-                                      </button>
-                                      <button tds-button-flat-icon color="secondary"  tds-tooltip tooltipTitle="Đi tới bài viết" tooltipPlacement="bottom">
-                                          <a href="https://www.facebook.com/{{item.id}}" target="_blank">
-                                              <i class="tdsi-search-line"></i>
-                                          </a>
-                                      </button>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div> -->
+                    <div class="w-full relative">
+                        <div class="date-v3">
+                            <span class="text-neutral-1-400 text-[13px]" [innerHTML]="item.CreatedTime | yiDateTimeV3"></span>
+                            <span class="hr"></span>
+                        </div>
+                    </div>                                
+                    <!-- Thông tin bài post -->
+                    <div *ngIf="item.ObjectId && dataSource?.Extras!.Objects[item.ObjectId]
+                        && dataSource.Extras!.Objects[item?.ObjectId].Data" class="px-2">
+                        <conversation-infopost-item 
+                            [team]="team" [typeNumber]="item.Type" [item]="item"
+                            [data]="dataSource.Extras!.Objects[item.ObjectId]">
+                        </conversation-infopost-item>
+                    </div>
                       <ng-container *ngIf="item && (data.ConversationId) && type && team">
                           <tds-conversation-item-v2
                               [team]="team" [csid]="data.ConversationId"
