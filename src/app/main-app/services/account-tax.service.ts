@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable} from 'rxjs';
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { AccountTaxDTO } from '../dto/account/account.dto';
-import { ApplicationRoleDTO } from '../dto/account/application-role.dto';
 import { ODataResponsesDTO } from '../dto/odata/odata.dto';
 import { BaseSevice } from './base.service';
 

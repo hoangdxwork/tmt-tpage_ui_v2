@@ -20,7 +20,7 @@ export interface CalculateFeeServiceResponseDto {
   ServiceName: string;
   TotalFee: number;
   InsuranceFee: number;
-  Extras: Array<CalculateFeeServiceExtrasResponseDto>
+  Extras: Array<CalculateFeeServiceExtrasResponseDto>;
 }
 
 export interface CalculateFeeInsuranceInfoResponseDto {

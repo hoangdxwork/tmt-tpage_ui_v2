@@ -44,7 +44,8 @@ export class UpdateShipmentDetailAshipHandler {
   }
 
   public so_updateShipmentDetailAship(configsProviderDataSource: AshipGetInfoConfigProviderDto[], insuranceInfo: CalculateFeeInsuranceInfoResponseDto | null,  saleModel: FastSaleOrder_DefaultDTOV2) {
-      saleModel.ShipmentDetailsAship.InsuranceInfo = insuranceInfo as any;
+
+      saleModel.ShipmentDetailsAship!.InsuranceInfo = insuranceInfo as any;
 
       configsProviderDataSource.map(x => {
 

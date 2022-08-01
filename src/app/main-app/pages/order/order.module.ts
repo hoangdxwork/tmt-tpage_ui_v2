@@ -110,7 +110,8 @@ const SERVICES = [
   UpdateShipServiceExtrasHandler,
   UpdateShipmentDetailAshipHandler,
   SO_ComputeCaclHandler,
-  CalculateFeeAshipHandler
+  CalculateFeeAshipHandler,
+
 ]
 
 @NgModule({

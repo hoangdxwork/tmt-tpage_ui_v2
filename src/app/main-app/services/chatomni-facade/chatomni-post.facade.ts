@@ -23,11 +23,6 @@ export class ChatomniPostFacade extends BaseSevice implements OnDestroy  {
   constructor(private apiService: TCommonService,
     private crmTeamService: CRMTeamService) {
     super(apiService)
-
-    this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
-        if(res)
-          this.postDataSource = {};
-    })
   }
 
   setData(id: string, value: any | null) {

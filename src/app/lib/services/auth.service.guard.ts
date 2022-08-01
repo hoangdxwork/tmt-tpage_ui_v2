@@ -87,7 +87,7 @@ export class TAuthGuardService implements CanActivate, CanActivateChild {
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
 
         return this.auth.getCacheToken().pipe(
-            switchMap((data) => {debugger
+            switchMap((data) => {
                 if (TDSHelperObject.hasValue(data) &&
                     TDSHelperString.hasValueString(data?.access_token)) {
                     return of(true);
@@ -103,7 +103,7 @@ export class TAuthGuardService implements CanActivate, CanActivateChild {
 
     canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         return this.auth.getCacheToken().pipe(
-            switchMap((data) => {debugger
+            switchMap((data) => {
                 if (TDSHelperObject.hasValue(data) &&
                     TDSHelperString.hasValueString(data?.access_token)) {
                     return of(true);

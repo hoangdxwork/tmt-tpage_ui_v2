@@ -632,7 +632,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     Ship_ServiceName?: any;
     Ship_ServiceExtrasText?: any;
     Ship_ExtrasText?: any;
-    Ship_InsuranceFee?: number | 0;
+    Ship_InsuranceFee: number;
     CurrencyName: string;
     TeamId: number;
     TeamOrderCode?: any;

@@ -46,6 +46,7 @@ import { UpdateShipExtraHandler } from 'src/app/main-app/handler-v2/aship-v2/upd
 import { UpdateShipServiceExtrasHandler } from 'src/app/main-app/handler-v2/aship-v2/update-shipservice-extras.handler';
 import { UpdateShipmentDetailAshipHandler } from 'src/app/main-app/handler-v2/aship-v2/shipment-detail-aship.handler';
 import { SO_ComputeCaclHandler } from 'src/app/main-app/handler-v2/order-handler/compute-cacl.handler';
+import { CalculateFeeAshipHandler } from '@app/handler-v2/aship-v2/calcfee-aship.handler';
 
 @Component({
   selector: 'edit-order-v2',
@@ -82,7 +83,6 @@ export class EditOrderV2Component implements OnInit {
   visiblePopoverTax: boolean = false;
   visibleDiscountLines: boolean = false;
   visibleShipExtraMoney: boolean = false;
-  isCalcFee: boolean = false;
 
   _cities!: SuggestCitiesDTO;
   _districts!: SuggestDistrictsDTO;
@@ -132,6 +132,7 @@ export class EditOrderV2Component implements OnInit {
     private updateShipServiceExtrasHandler: UpdateShipServiceExtrasHandler,
     private updateShipmentDetailAshipHandler: UpdateShipmentDetailAshipHandler,
     private computeCaclHandler: SO_ComputeCaclHandler,
+    private calcFeeAshipHandler: CalculateFeeAshipHandler,
     private partnerService: PartnerService,
     private sharedService: SharedService,
     private productTemplateOUMLineService: ProductTemplateOUMLineService) {
@@ -398,12 +399,7 @@ export class EditOrderV2Component implements OnInit {
     }
 
     let model = this.saleModel.Carrier as any;
-    this.calculateFeeAship(model).catch((e: any) => {
-      let error = e.error.message || e.error.error_description;
-
-      this.isCalcFee = false;
-      return this.message.error(error);
-    });
+    this.calculateFeeAship(model);
   }
 
   onSelectShipServiceId(event: any) {
@@ -417,7 +413,8 @@ export class EditOrderV2Component implements OnInit {
   }
 
   signAmountTotalToInsuranceFee(): any  {
-    this.saleModel.Ship_InsuranceFee = this.saleModel.AmountTotal;
+    this.updateInsuranceFeeEqualAmountTotal();
+
     if (this.saleModel.Carrier && this.saleModel.Carrier.DeliveryType == 'NinjaVan') {
         return false;
     }
@@ -707,62 +704,100 @@ export class EditOrderV2Component implements OnInit {
   }
 
   calculateFeeAship(event: DeliveryCarrierDTOV2): any {
-      if(!this.saleModel.Carrier) {
-          return this.message.error('Vui lòng chọn  đối tác giao hàng');
-      }
+    if(!this.saleModel.Carrier) {
+        return this.message.error('Vui lòng chọn  đối tác giao hàng');
+    }
 
-      if (!this.saleModel) {
-          return this.message.error('Vui lòng chọn nhập khối lượng');
-      }
+    if (!this.saleModel) {
+        return this.message.error('Vui lòng chọn nhập khối lượng');
+    }
 
-      let model = this.prepareModelFeeV2();
-      this.isCalcFee = true;
+    let model = this.prepareModelFeeV2();
+    this.isLoading = true;
 
-      let promise = new Promise((resolve, reject): any => {
-        this.fastSaleOrderService.calculateFeeAship(model).pipe(takeUntil(this.destroy$)).subscribe((res: DeliveryResponseDto<CaculateFeeResponseDto>) => {
+    this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
+          if(res) {
 
-          if (res && res.Data?.Services) {
+              this.configsProviderDataSource = [...res.configs];
 
-              let extras = event.ExtraProperties ? (JSON.parse(event.ExtraProperties) ?? []).filter((x: any) => !x.IsHidden) : [] as AshipGetInfoConfigProviderDto[];
-
-              if(TDSHelperArray.hasListValue(extras) && TDSHelperArray.hasListValue(this.configsProviderDataSource)) {
-                  extras.map((x: AshipGetInfoConfigProviderDto) => {
-                      let exits = this.configsProviderDataSource.filter(e => e.ConfigName === x.ConfigName && (x.ConfigsValue.find(t => t.Id == e.ConfigValue)))[0];
-                      if(exits) {
-                          x.ConfigValue = exits.ConfigValue;
-                      }
-                  })
-              }
-
-              // this.configsProviderDataSource = [];
-              this.configsProviderDataSource = [...extras];
-
-              this.insuranceInfo = res.Data?.InsuranceInfo ?? null;
-              this.shipServices = res.Data?.Services ?? [];
+              this.insuranceInfo = res.data?.InsuranceInfo ?? null;
+              this.shipServices = res.data?.Services ?? [];
 
               if(TDSHelperArray.hasListValue(this.shipServices)) {
-                  let serviceDetail = this.shipServices[0] as CalculateFeeServiceResponseDto;
-                  this.selectShipServiceV2(serviceDetail);
+                  let svDetail = this.shipServices[0] as CalculateFeeServiceResponseDto;
+                  this.selectShipServiceV2(svDetail);
 
-                  this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(serviceDetail.TotalFee), 'en-US', '1.0-0')} đ`);
+                  this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(svDetail.TotalFee), 'en-US', '1.0-0')} đ`);
               }
-            }
+          }
 
-            else {
-              if (res && res.Error) {
-                this.message.error(res.Error.Message);
-              }
-            }
+          this.isLoading = false;
 
-            this.isCalcFee = false;
-            resolve(res);
-        }, error => {
-            reject(error)
-        })
+      }, error => {
+          this.isLoading = false;
+          this.message.error(error.error.message || error.error.error_description);
       })
 
-      return promise;
   }
+
+  // calculateFeeAship(event: DeliveryCarrierDTOV2): any {
+  //     if(!this.saleModel.Carrier) {
+  //         return this.message.error('Vui lòng chọn  đối tác giao hàng');
+  //     }
+
+  //     if (!this.saleModel) {
+  //         return this.message.error('Vui lòng chọn nhập khối lượng');
+  //     }
+
+  //     let model = this.prepareModelFeeV2();
+  //     this.isCalcFee = true;
+
+  //     let promise = new Promise((resolve, reject): any => {
+  //       this.fastSaleOrderService.calculateFeeAship(model).pipe(takeUntil(this.destroy$)).subscribe((res: DeliveryResponseDto<CaculateFeeResponseDto>) => {
+
+  //         if (res && res.Data?.Services) {
+
+  //             let extras = event.ExtraProperties ? (JSON.parse(event.ExtraProperties) ?? []).filter((x: any) => !x.IsHidden) : [] as AshipGetInfoConfigProviderDto[];
+
+  //             if(TDSHelperArray.hasListValue(extras) && TDSHelperArray.hasListValue(this.configsProviderDataSource)) {
+  //                 extras.map((x: AshipGetInfoConfigProviderDto) => {
+  //                     let exits = this.configsProviderDataSource.filter(e => e.ConfigName === x.ConfigName && (x.ConfigsValue.find(t => t.Id == e.ConfigValue)))[0];
+  //                     if(exits) {
+  //                         x.ConfigValue = exits.ConfigValue;
+  //                     }
+  //                 })
+  //             }
+
+  //             // this.configsProviderDataSource = [];
+  //             this.configsProviderDataSource = [...extras];
+
+  //             this.insuranceInfo = res.Data?.InsuranceInfo ?? null;
+  //             this.shipServices = res.Data?.Services ?? [];
+
+  //             if(TDSHelperArray.hasListValue(this.shipServices)) {
+  //                 let serviceDetail = this.shipServices[0] as CalculateFeeServiceResponseDto;
+  //                 this.selectShipServiceV2(serviceDetail);
+
+  //                 this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(serviceDetail.TotalFee), 'en-US', '1.0-0')} đ`);
+  //             }
+  //           }
+
+  //           else {
+  //             if (res && res.Error) {
+  //               this.message.error(res.Error.Message);
+  //             }
+  //           }
+
+  //           this.isCalcFee = false;
+  //           resolve(res);
+  //       }, error => {
+  //           reject(error)
+  //       })
+  //     })
+
+  //     return promise;
+  // }
 
   selectShipServiceV2(x: CalculateFeeServiceResponseDto) {
     let data = this.selectShipServiceV2Handler.so_selectShipServiceV2(x, this.shipExtraServices, this.saleModel);
@@ -788,6 +823,10 @@ export class EditOrderV2Component implements OnInit {
     this.visibleShipExtraMoney = false;
   }
 
+  changeIsSelectedEx(event: any, i: number) {
+    this.shipExtraServices[i]!.IsSelected = event;
+  }
+
   changeAmountDeposit(value: number) {
     this.saleModel.AmountDeposit = value;
     this.coDAmount();
@@ -805,7 +844,6 @@ export class EditOrderV2Component implements OnInit {
 
   changeShip_InsuranceFee(value: number) {
     this.saleModel.Ship_InsuranceFee = value;
-    this.coDAmount();
   }
 
   changeShipExtraMoney(event: any) {

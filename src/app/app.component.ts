@@ -28,13 +28,15 @@ export class AppComponent {
   ngOnInit() {
     let that = this;
     that.init().subscribe(res => {
-      this.loader.hidden();
-      that.isLoaded = true;
+        this.loader.hidden();
+        that.isLoaded = true;
     });
 
-    this.socketService.listenEvent("on-events").subscribe((res: any) => {
-      var data = JSON.parse(res);
-      console.log(data);
+    this.socketService.listenEvent("on-events").subscribe((res: any) => {debugger
+        let data = JSON.parse(res);
+        console.log(data);
+    }, err => {
+      debugger
     });
   }
 
