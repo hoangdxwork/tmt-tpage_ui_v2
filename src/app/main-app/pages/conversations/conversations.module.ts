@@ -123,6 +123,13 @@ import { CsPartner_PrepareModelHandler } from '../../handler-v2/chatomni-cspartn
 import { CsOrder_SuggestionHandler } from '../../handler-v2/chatomni-csorder/prepare-suggestions.handler';
 import { CsOrder_PrepareModelHandler } from '../../handler-v2/chatomni-csorder/prepare-order.handler';
 import { ChatomniPostService } from '../../services/chatomni-service/chatomni-post.service';
+import { UpdateShipmentDetailAshipHandler } from '@app/handler-v2/aship-v2/shipment-detail-aship.handler';
+import { UpdateShipServiceExtrasHandler } from '@app/handler-v2/aship-v2/update-shipservice-extras.handler';
+import { UpdateShipExtraHandler } from '@app/handler-v2/aship-v2/update-shipextra.handler';
+import { SelectShipServiceV2Handler } from '@app/handler-v2/aship-v2/select-shipservice-v2.handler';
+import { PrepareModelFeeV2Handler } from '@app/handler-v2/aship-v2/prepare-model-feev2.handler';
+import { SO_ComputeCaclHandler } from '@app/handler-v2/order-handler/compute-cacl.handler';
+import { CalculateFeeAshipHandler } from '@app/handler-v2/aship-v2/calcfee-aship.handler';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -169,7 +176,14 @@ const SERVICES = [
   CsPartner_PrepareModelHandler,
   CsOrder_SuggestionHandler,
   CsOrder_PrepareModelHandler,
-  ChatomniPostService
+  ChatomniPostService,
+  UpdateShipmentDetailAshipHandler,
+  UpdateShipServiceExtrasHandler,
+  UpdateShipExtraHandler,
+  SelectShipServiceV2Handler,
+  PrepareModelFeeV2Handler,
+  SO_ComputeCaclHandler,
+  CalculateFeeAshipHandler
 ]
 
 @NgModule({
