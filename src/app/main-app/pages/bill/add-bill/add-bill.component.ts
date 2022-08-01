@@ -306,7 +306,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       if(path == 'copy/:id'){
         this.loadCacheCopy(this.dataModel);
       }
-      
+
       //Trường hợp Tạo hóa đơn F10 bên Đơn hàng
       if(path == 'create-order-bill/:id'){
         this.updateByOrder(this.dataModel);
@@ -421,7 +421,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
         this.addOrderLines(x);
       });
     }
-    
+
     this._form.patchValue(data);
     this.updateCoDAmount();
   }
