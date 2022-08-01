@@ -721,7 +721,7 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
         this.enableInsuranceFee = item.IsSelected;
 
         if (!this.saleModel.Ship_InsuranceFee) {
-            this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras.InsuranceFee || this.saleModel.AmountTotal;
+            this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras?.InsuranceFee || this.saleModel.AmountTotal;
         }
 
         this.calculateFeeRequest();
@@ -729,7 +729,7 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
         this.enableInsuranceFee = item.IsSelected;
 
         if (!this.saleModel.Ship_InsuranceFee) {
-            this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras.InsuranceFee || this.saleModel.AmountTotal;
+            this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras?.InsuranceFee || this.saleModel.AmountTotal;
         }
 
         this.calculateFeeRequest();
@@ -812,7 +812,7 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
 
                 //gán giá trị bảo hiểm"
                 if (!this.saleModel.Ship_InsuranceFee) {
-                  this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras.InsuranceFee || this.quickOrderModel.TotalAmount;
+                  this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras?.InsuranceFee || this.quickOrderModel.TotalAmount;
                 }
             }
 

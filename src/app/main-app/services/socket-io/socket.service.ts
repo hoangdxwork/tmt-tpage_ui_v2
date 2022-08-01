@@ -7,8 +7,10 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class SocketService {
+
   socket!: Socket;
   nsp: any;
+
   constructor() {
     this.initSocket();
   }
