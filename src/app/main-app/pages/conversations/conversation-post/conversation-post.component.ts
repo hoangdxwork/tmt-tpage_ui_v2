@@ -170,6 +170,10 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   loadData(){
+
+    this.chatomniPostService.get(this.currentTeam.Id, this.postId, this.type).subscribe((x: any) => { debugger})
+
+
     this.isLoading = true;
     this.validateData();
 
@@ -188,6 +192,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
               console.log([x]);
             }
           });
+
           if(TDSHelperArray.hasListValue(this.data)){
             let exits = this.data.filter((x: any) => x.fbid == this.postId)[0];
             if(TDSHelperObject.hasValue(exits)){
