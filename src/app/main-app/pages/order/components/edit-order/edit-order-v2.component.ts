@@ -47,6 +47,7 @@ import { UpdateShipServiceExtrasHandler } from 'src/app/main-app/handler-v2/ashi
 import { UpdateShipmentDetailAshipHandler } from 'src/app/main-app/handler-v2/aship-v2/shipment-detail-aship.handler';
 import { SO_ComputeCaclHandler } from 'src/app/main-app/handler-v2/order-handler/compute-cacl.handler';
 import { CalculateFeeAshipHandler } from '@app/handler-v2/aship-v2/calcfee-aship.handler';
+import { CsOrder_SuggestionHandler } from '@app/handler-v2/chatomni-csorder/prepare-suggestions.handler';
 
 @Component({
   selector: 'edit-order-v2',
@@ -133,6 +134,7 @@ export class EditOrderV2Component implements OnInit {
     private updateShipmentDetailAshipHandler: UpdateShipmentDetailAshipHandler,
     private computeCaclHandler: SO_ComputeCaclHandler,
     private calcFeeAshipHandler: CalculateFeeAshipHandler,
+    private csOrder_SuggestionHandler: CsOrder_SuggestionHandler,
     private partnerService: PartnerService,
     private sharedService: SharedService,
     private productTemplateOUMLineService: ProductTemplateOUMLineService) {
@@ -165,7 +167,9 @@ export class EditOrderV2Component implements OnInit {
   }
 
   loadSaleModel() {
+    this.isLoading = true;
     let model = { Type: 'invoice' };
+
     this.fastSaleOrderService.defaultGetV2({model: model}).pipe(takeUntil(this.destroy$)).subscribe(res => {
         delete res["@odata.context"];
 
@@ -183,6 +187,7 @@ export class EditOrderV2Component implements OnInit {
         this.coDAmount();
         this.loadConfigProvider(this.saleModel);
 
+        this.isLoading = false;
     }, error => {
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
     });
@@ -212,44 +217,18 @@ export class EditOrderV2Component implements OnInit {
     });
   }
 
-  mappingAddress(data: QuickSaleOnlineOrderModel) {
-    if (data && data.CityCode) {
-      this._cities = {
-        code: data.CityCode,
-        name: data.CityName
-      }
-    }
-    if (data && data.DistrictCode) {
-      this._districts = {
-        cityCode: data.CityCode,
-        cityName: data.CityName,
-        code: data.DistrictCode,
-        name: data.DistrictName
-      }
-    }
-    if (data && data.WardCode) {
-      this._wards = {
-        cityCode: data.CityCode,
-        cityName: data.CityName,
-        districtCode: data.DistrictCode,
-        districtName: data.DistrictName,
-        code: data.WardCode,
-        name: data.WardName
-      }
-    }
-    if (data && (data.Address)) {
-      this._street = data.Address;
-    }
+  onLoadSuggestion(item: ResultCheckAddressDTO) {
+    let data = this.csOrder_SuggestionHandler.onLoadSuggestion(item, this.quickOrderModel);
+    this.quickOrderModel = data;
   }
 
-  onLoadSuggestion(item: ResultCheckAddressDTO) {
-      this.quickOrderModel.Address = item.Address ? item.Address : this.quickOrderModel.Address;
-      this.quickOrderModel.CityCode = item.CityCode ? item.CityCode : this.quickOrderModel.CityCode;
-      this.quickOrderModel.CityName = item.CityName ? item.CityName : this.quickOrderModel.CityName;
-      this.quickOrderModel.DistrictCode = item.DistrictCode ? item.DistrictCode : this.quickOrderModel.DistrictCode;
-      this.quickOrderModel.DistrictName = item.DistrictName ? item.DistrictName : this.quickOrderModel.DistrictName;
-      this.quickOrderModel.WardCode = item.WardCode ? item.WardCode : this.quickOrderModel.WardCode;
-      this.quickOrderModel.WardName = item.WardName ? item.WardName : this.quickOrderModel.WardName;
+  mappingAddress(data: QuickSaleOnlineOrderModel) {
+    let x = this.csOrder_SuggestionHandler.mappingAddress(data);
+
+    this._cities = x._cities;
+    this._districts = x._districts;
+    this._wards = x._wards;
+    this._street = x._street;
   }
 
   loadCarrier() {

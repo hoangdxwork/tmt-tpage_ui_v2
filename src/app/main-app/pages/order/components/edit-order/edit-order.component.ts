@@ -50,7 +50,7 @@ import { PrepareSaleModelHandler } from 'src/app/main-app/commands/prepare-salem
   templateUrl: './edit-order.component.html',
 })
 
-export class EditOrderComponent implements OnInit, AfterViewInit {
+export class EditOrderComponent implements OnInit {
 
   @Input() dataItem!: QuickSaleOnlineOrderModel;
 
@@ -146,10 +146,6 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
     if(postId && teamId && asId) {
         this.commentsOfOrder(postId, teamId, asId);
     }
-  }
-
-  ngAfterViewInit() {
-    this.cdRef.detectChanges();
   }
 
   loadSaleModel() {
@@ -447,7 +443,7 @@ export class EditOrderComponent implements OnInit, AfterViewInit {
           }
     },
     err=>{
-      this.message.error(err?.error?.message || Message.ErrorOccurred);
+      this.message.error(err.error?.message || Message.ErrorOccurred);
     });
   }
 
