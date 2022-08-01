@@ -15,8 +15,6 @@ import { TDSModalService } from "tds-ui/modal";
 import { ProductPagefbComponent } from "../../pages/conversations/components/product-pagefb/product-pagefb.component";
 import { FormatIconLikePipe } from "../pipe/format-icon-like.pipe";
 import { ChatomniMessageDetail, ChatomniMessageType, Datum, ExtrasObjectDto } from "../../dto/conversation-all/chatomni/chatomni-message.dto";
-import { ca } from "date-fns/locale";
-import { CRMTeamType } from "../../dto/team/chatomni-channel.dto";
 
 @Component({
   selector: "tds-conversation-item-v2",

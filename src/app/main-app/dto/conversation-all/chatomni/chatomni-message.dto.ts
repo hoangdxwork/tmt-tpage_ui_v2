@@ -1,3 +1,5 @@
+import { Facebook_Graph_Post } from "./chatomni-facebook-post.dto";
+import { ChatomniDataTShopPostDto } from "./chatomni-tshop-post.dto";
 
 export interface ChatomniMessageDTO {
   Items: ChatomniMessageDetail[];
@@ -145,7 +147,7 @@ export enum ChatomniMessageType {
 }
 
 export interface ExtrasObjectDto {
-  Data: object;// gán lại ChatomniDataTShopPost hoặc ChatomniDataFacebookPost
+  Data:  Facebook_Graph_Post | ChatomniDataTShopPostDto;// gán lại ChatomniDataTShopPost hoặc ChatomniDataFacebookPost
   Id: string;
   ObjectId: string;
   ObjectType: number;
