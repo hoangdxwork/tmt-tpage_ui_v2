@@ -33,7 +33,8 @@ export class AppComponent {
     });
 
     this.socketService.listenEvent("on-events").subscribe((res: any) => {
-      console.log(res);
+      var data = JSON.parse(res);
+      console.log(data);
     });
   }
 

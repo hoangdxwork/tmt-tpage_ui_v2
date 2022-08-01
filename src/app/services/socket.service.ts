@@ -16,13 +16,9 @@ export class SocketService {
   initSocket(): void {
     this.socket = io(environment.socketUrl, {
       transports: ['websocket'], // Sủ dụng khi socketserver không dùng sticky session
-      query:{
-        room: 'test.tpos.dev'
+      query: {
+        room: 'test.tpos.dev' // Viết hàm parse url lấy theo domain của tên miền hiện tại nếu ở production
       }
-    });
-
-    this.socket.onAny((event, data) => {
-      debugger;
     });
 
     this.socket.on("connect_error", (err) => {
@@ -40,6 +36,7 @@ export class SocketService {
     return new Observable((subscriber) => {
       this.socket.on(eventName, (data: any) => {
         subscriber.next(data);
+        subscriber.complete();
       });
     });
   }
