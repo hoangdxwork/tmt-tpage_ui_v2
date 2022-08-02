@@ -2,7 +2,6 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
-import { ChatomniPostFacade } from "../chatomni-facade/chatomni-comment.facade";
 
 @Injectable()
 
@@ -14,8 +13,7 @@ export class ChatomniCommentService extends BaseSevice  {
 
   urlNext: string | undefined;
 
-  constructor(private apiService: TCommonService,
-    private omniFacade: ChatomniPostFacade) {
+  constructor(private apiService: TCommonService) {
       super(apiService)
   }
 

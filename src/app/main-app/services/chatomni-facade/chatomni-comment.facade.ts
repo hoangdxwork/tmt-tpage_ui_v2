@@ -8,7 +8,7 @@ import { set as _set } from 'lodash';
 
 @Injectable()
 
-export class ChatomniPostFacade extends BaseSevice implements OnDestroy  {
+export class ChatomniCommentFacade extends BaseSevice implements OnDestroy  {
 
   prefix: string = "odata";
   table: string = "";
