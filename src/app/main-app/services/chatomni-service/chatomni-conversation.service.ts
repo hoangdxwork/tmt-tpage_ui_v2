@@ -7,9 +7,7 @@ import { get as _get } from 'lodash';
 import { ChatomniConversationFacade } from "../chatomni-facade/chatomni-conversation.facade";
 import { ChatomniConversationDto } from "../../dto/conversation-all/chatomni/chatomni-conversation";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class ChatomniConversationService extends BaseSevice {
 

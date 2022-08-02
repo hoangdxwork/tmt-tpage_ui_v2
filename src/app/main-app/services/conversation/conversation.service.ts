@@ -55,9 +55,7 @@ export interface PagingTimestampLowcase {
   urlNext: string;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class ConversationService extends BaseSevice {
 

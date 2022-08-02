@@ -8,9 +8,7 @@ import { get as _get } from 'lodash';
 import { set as _set } from 'lodash';
 import { ChatomniMessageFacade } from "../chatomni-facade/chatomni-message.facade";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class ChatomniMessageService extends BaseSevice  {
 
@@ -35,10 +33,10 @@ export class ChatomniMessageService extends BaseSevice  {
 
   getLink(url: string): Observable<any>  {
     let api: CoreAPIDTO = {
-          url: `${url}`,
-          method: CoreApiMethodType.get
-      }
-      return this.apiService.getData<any>(api, null);
+        url: `${url}`,
+        method: CoreApiMethodType.get
+    }
+    return this.apiService.getData<any>(api, null);
   }
 
   makeDataSource(teamId: number, psid: any, type: string): Observable<ChatomniMessageDTO> {

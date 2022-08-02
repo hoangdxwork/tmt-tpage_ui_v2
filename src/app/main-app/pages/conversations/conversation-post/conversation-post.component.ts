@@ -20,7 +20,7 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { ChildChatOmniChannelDto } from 'src/app/main-app/dto/team/chatomni-channel.dto';
-import { ChatomniPostService } from 'src/app/main-app/services/chatomni-service/chatomni-post.service';
+import { ChatomniCommentService } from '@app/services/chatomni-service/chatomni-comment.service';
 
 @Component({
   selector: 'app-conversation-post',
@@ -82,7 +82,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private partnerService: PartnerService,
     private modal: TDSModalService,
     private viewContainerRef: ViewContainerRef,
-    private chatomniPostService: ChatomniPostService,
+    private chatomniCommentService: ChatomniCommentService,
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router,
     private cdRef : ChangeDetectorRef) {
@@ -171,8 +171,9 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
   loadData(){
 
-    this.chatomniPostService.get(this.currentTeam.Id, this.postId, this.type).subscribe((x: any) => { debugger})
-
+    this.chatomniCommentService.get(this.currentTeam.Id, this.postId, this.type).subscribe((x: any) => {
+      debugger
+    })
 
     this.isLoading = true;
     this.validateData();
