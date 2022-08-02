@@ -537,6 +537,7 @@ export class AddBillComponent implements OnInit, OnDestroy {
       this._form.controls['PartnerId'].setValue(partner.Id);
 
       let model = this.prepareModel();
+      delete model.ShipmentDetailsAship;
 
       return this.fastSaleOrderService.onChangePartnerPriceList({ model: model })
         .pipe(map((data: TDSSafeAny) => {
