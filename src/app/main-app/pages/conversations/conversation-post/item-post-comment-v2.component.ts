@@ -15,16 +15,17 @@ import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from 'src/ap
 import { RequestCommentByGroup } from 'src/app/main-app/dto/conversation/post/comment-group.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 
 @Component({
-  selector: 'item-post-comment',
-  templateUrl: './item-post-comment.component.html',
+  selector: 'item-post-comment-v2',
+  templateUrl: './item-post-comment-v2.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
+export class ItemPostCommentV2Component implements OnInit, OnChanges, OnDestroy {
 
-  @Input() post!: FacebookPostItem;
+  @Input() post!: ChatomniObjectsItemDto;
   @Input() sort: any;
   @Input() filter: any;
 
@@ -89,7 +90,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
             this.loadData();
           break;
         default:
-          this.facebookCommentService.fetchComments(this.team!.Id, this.post.fbid)
+          this.facebookCommentService.fetchComments(this.team!.Id, this.post.ObjectId)
             .subscribe((res: any) => {
               this.message.success('Tải lại dữ liệu thành công!');
               this.currentSort = { value: "DateCreated desc", text: "Mới nhất" };
@@ -118,8 +119,8 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
       if(res?.data?.last_activity?.comment_obj &&  res?.data?.last_activity?.type == 2) {
         let comment_obj = res.data?.last_activity?.comment_obj;
 
-        if (comment_obj?.object?.id == this.post?.fbid) {
-          if(comment_obj?.parent?.id != this.post.fbid) {
+        if (comment_obj?.object?.id == this.post?.ObjectId) {
+          if(comment_obj?.parent?.id != this.post.ObjectId) {
             this.childs[comment_obj.parent.id].unshift(comment_obj);
           } else {
             this.data.Items.unshift(comment_obj);
@@ -132,7 +133,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
       if(res.data) {
         let data = Object.assign({}, res.data);
         if(res.type == "update_scan_feed") {
-          if(data.comment?.object?.id == this.post?.fbid) {
+          if(data.comment?.object?.id == this.post?.ObjectId) {
             this.data.Items = [...[data.comment], ...this.data.Items];
           }
         }
@@ -175,7 +176,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
           let data = res.data;
           let userId = data.facebook_ASUserId;
 
-          if(data.facebook_PostId == this.post.fbid) {
+          if(data.facebook_PostId == this.post.ObjectId) {
             let dataAdd = {} as any;
             if(this.commentOrders[userId]) {
               this.commentOrders[userId] = this.commentOrders[userId].filter((x: any) => x.id && !data.id);
@@ -215,7 +216,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   loadData() {
     this.isLoading = true;
     this.validateData();
-    this.getCommentOrders(this.post.fbid);
+    this.getCommentOrders(this.post.ObjectId);
 
     switch(this.currentFilter.value){
       case 'group':
@@ -240,7 +241,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   loadGroupCommentsByPost() {
-    this.facebookCommentService.getGroupCommentsByPostId(this.post?.fbid)
+    this.facebookCommentService.getGroupCommentsByPostId(this.post?.ObjectId)
       .pipe(takeUntil(this.destroy$)).subscribe((res: RequestCommentByGroup) => {
 
         if(TDSHelperArray.hasListValue(res.Items)) {
@@ -262,7 +263,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   loadFilterCommentsByPost(){
-    this.facebookCommentService.getFilterCommentsByPostId(this.post?.fbid)
+    this.facebookCommentService.getFilterCommentsByPostId(this.post?.ObjectId)
       .pipe(takeUntil(this.destroy$)).subscribe((res: RequestCommentByGroup) => {
 
         if(TDSHelperArray.hasListValue(res.Items)) {
@@ -285,7 +286,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   loadManageCommentsByPost(){
-    this.facebookCommentService.getManageCommentsByLimit(this.post?.fbid)
+    this.facebookCommentService.getManageCommentsByLimit(this.post?.ObjectId)
       .pipe(takeUntil(this.destroy$)).subscribe((res: RequestCommentByPost) => {
 
         if(TDSHelperArray.hasListValue(res.Items)) {
@@ -307,7 +308,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   loadAllCommentsByPost() {
-    this.facebookCommentService.getCommentsByPostId(this.post?.fbid)
+    this.facebookCommentService.getCommentsByPostId(this.post?.ObjectId)
       .pipe(takeUntil(this.destroy$)).subscribe((res: RequestCommentByPost) => {
 
         // Xử lý nếu bình luận đó là bình luận của 1 post child
@@ -315,7 +316,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
         if(TDSHelperObject.hasValue(childIds)) {
             childIds.map((x: any) => {
             let splitParentId = x.split("_");
-            let splitPostId = this.post.fbid.split("_");
+            let splitPostId = this.post.ObjectId.split("_");
 
             if(splitParentId && splitParentId[0] == splitPostId[0]) {
               res.Items = [...res.Items, ...(res.Extras['childs'] as any)[x]];

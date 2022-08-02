@@ -4,38 +4,28 @@ import { BaseSevice } from "../base.service";
 import { get as _get } from 'lodash';
 import { ChatomniMessageDTO } from "../../dto/conversation-all/chatomni/chatomni-message.dto";
 import { set as _set } from 'lodash';
-import { CRMTeamService } from "../crm-team.service";
-import { Subject, takeUntil } from "rxjs";
 
 @Injectable()
 
-export class ChatomniMessageFacade extends BaseSevice implements OnDestroy  {
+export class ChatomniMessageFacade extends BaseSevice  {
 
   prefix: string = "odata";
   table: string = "";
   baseRestApi: string = "rest/v2.0/chatomni";
 
-  chatomniDataSource: { [id: string] : ChatomniMessageDTO } = {}; //this.chatomniDataSource[id]
+  dataSource: { [id: string] : ChatomniMessageDTO } = {}; //this.chatomniDataSource[id]
 
-  private destroy$ = new Subject<void>();
-
-  constructor(private apiService: TCommonService,
-    private crmTeamService: CRMTeamService) {
+  constructor(private apiService: TCommonService) {
     super(apiService)
   }
 
   setData(id: string, value: ChatomniMessageDTO | null) {
-    _set(this.chatomniDataSource, [id], value);
+      _set(this.dataSource, [id], value);
   }
 
   getData(id: string) {
-    let data = _get(this.chatomniDataSource, id) || undefined;
-    return data;
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+      let data = _get(this.dataSource, id) || undefined;
+      return data;
   }
 
 }

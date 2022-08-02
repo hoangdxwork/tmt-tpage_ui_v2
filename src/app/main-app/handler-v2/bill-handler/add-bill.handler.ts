@@ -2,9 +2,8 @@ import { FastSaleOrder_DefaultDTOV2, OrderLineV2 } from './../../dto/fastsaleord
 import { Injectable } from "@angular/core";
 import { FormGroup } from '@angular/forms';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
+
 export class AddBillHandler {
 
   prepareModel(data: FastSaleOrder_DefaultDTOV2, _form: FormGroup) {
@@ -12,38 +11,64 @@ export class AddBillHandler {
     const formModel = _form.value;
     data = Object.assign(data, formModel);
 
-    data.AccountId = data.Account?.Id || data.AccountId;
-    _form.controls['AccountId'].setValue(data.AccountId);
+    if(data.Id == 0 || data.Id == null) {
+        delete data.Id;
+    }
 
-    data.CarrierId = data.Carrier?.Id || data.CarrierId;
-    _form.controls['CarrierId'].setValue(data.CarrierId);
+    data.AccountId = Number(data.Account?.Id || data.AccountId);
+    if(data.AccountId && data.AccountId != 0) {
+      _form.controls['AccountId'].setValue(data.AccountId);
+    }
 
-    data.CompanyId = data.Company?.Id || data.CompanyId;
-    _form.controls['CompanyId'].setValue(data.CompanyId);
+    data.CarrierId = Number(data.Carrier?.Id || data.CarrierId);
+    if(data.CarrierId && data.CarrierId != 0) {
+      _form.controls['CarrierId'].setValue(data.CarrierId);
+    }
 
-    data.JournalId = data.Journal?.Id || data.JournalId;
-    _form.controls['JournalId'].setValue(data.JournalId);
+    data.CompanyId = Number(data.Company?.Id || data.CompanyId);
+    if(data.CompanyId && data.CompanyId != 0) {
+      _form.controls['CompanyId'].setValue(data.CompanyId);
+    }
 
-    data.PaymentJournalId = data.PaymentJournal?.Id || data.PaymentJournalId;
-    _form.controls['PaymentJournalId'].setValue(data.PaymentJournalId);
+    data.JournalId = Number(data.Journal?.Id || data.JournalId);
+    if(data.JournalId && data.JournalId != 0) {
+      _form.controls['JournalId'].setValue(data.JournalId);
+    }
 
-    data.PriceListId = data.PriceList?.Id || data.PriceListId;
-    _form.controls['PriceListId'].setValue(data.PriceListId);
+    data.PaymentJournalId = Number(data.PaymentJournal?.Id || data.PaymentJournalId);
+    if(data.PaymentJournalId && data.PaymentJournalId != 0) {
+      _form.controls['PaymentJournalId'].setValue(data.PaymentJournalId);
+    }
+
+    data.PriceListId = Number(data.PriceList?.Id || data.PriceListId);
+    if(data.PriceListId && data.PriceListId != 0) {
+      _form.controls['PriceListId'].setValue(data.PriceListId);
+    }
 
     data.TaxId = data.Tax?.Id || data.TaxId;
-    _form.controls['TaxId'].setValue(data.TaxId);
+    if(data.TaxId && data.TaxId != 0) {
+      _form.controls['TaxId'].setValue(data.TaxId);
+    }
 
     data.UserId = data.User?.Id || data.UserId;
-    _form.controls['UserId'].setValue(data.UserId);
+    if(data.UserId) {
+      _form.controls['UserId'].setValue(data.UserId);
+    }
 
-    data.TeamId = data.Team?.Id || data.TeamId;
-    _form.controls['TeamId'].setValue(data.TeamId);
+    data.TeamId = Number(data.Team?.Id || data.TeamId);
+    if(data.TeamId && data.TeamId != 0) {
+      _form.controls['TeamId'].setValue(data.TeamId);
+    }
 
-    data.PartnerId = data.Partner?.Id || data.PartnerId;
-    _form.controls['PartnerId'].setValue(data.PartnerId);
+    data.PartnerId = Number(data.Partner?.Id || data.PartnerId);
+    if(data.PartnerId && data.PartnerId != 0) {
+      _form.controls['PartnerId'].setValue(data.PartnerId);
+    }
 
-    data.WarehouseId = data.Warehouse?.Id || data.WarehouseId;
-    _form.controls['WarehouseId'].setValue(data.WarehouseId);
+    data.WarehouseId = Number(data.Warehouse?.Id || data.WarehouseId);
+    if(data.WarehouseId && data.WarehouseId != 0) {
+      _form.controls['WarehouseId'].setValue(data.WarehouseId);
+    }
 
     data.PaymentAmount = Number(data.PaymentAmount)
 
@@ -119,6 +144,13 @@ export class AddBillHandler {
       })
 
       data.OrderLines = [... details] as any;
+
+      if(!data.ShipmentDetailsAship) {
+          delete data.ShipmentDetailsAship;
+      }
+      if(!data.State && data.ShowState == 'Nháp') {
+          data.State = 'draft';
+      }
     }
 
     return data;

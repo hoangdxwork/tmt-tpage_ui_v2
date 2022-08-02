@@ -10,32 +10,25 @@ import { Subject, takeUntil } from "rxjs";
 
 @Injectable()
 
-export class ChatomniConversationFacade extends BaseSevice implements OnDestroy   {
+export class ChatomniConversationFacade extends BaseSevice  {
 
   prefix: string = "odata";
   table: string = "";
   baseRestApi: string = "rest/v2.0/chatomni";
 
-  csDataSource: { [id: string] : ChatomniConversationDto } = {}; //this.chatomniDataSource[id]
-  private destroy$ = new Subject<void>();
+  dataSource: { [id: string] : ChatomniConversationDto } = {}; //this.chatomniDataSource[id]
 
-  constructor(private apiService: TCommonService,
-    private crmTeamService: CRMTeamService) {
+  constructor(private apiService: TCommonService) {
     super(apiService)
   }
 
   setData(teamId: number, value: ChatomniConversationDto | null) {
-    _set(this.csDataSource, [teamId], value);
+      _set(this.dataSource, [teamId], value);
   }
 
   getData(teamId: number) {
-    let data = _get(this.csDataSource, teamId) || undefined;
-    return data;
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+      let data = _get(this.dataSource, teamId) || undefined;
+      return data;
   }
 
 }
