@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { addDays } from 'date-fns';
-import { Subject, takeUntil } from 'rxjs';
+import { map, mergeMap, Subject, takeUntil, finalize, Observable } from 'rxjs';
 import { SortEnum } from 'src/app/lib';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { OdataGetOrderPartnerIdModal } from 'src/app/main-app/dto/fastsaleorder/odata-getorderpartnerid.dto';
@@ -11,28 +11,27 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
-import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.service';
+import { QuickSaleOnlineOrderModel } from '@app/dto/saleonlineorder/quick-saleonline-order.dto';
+import { TDSDestroyService } from 'tds-ui/core/services';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'overview-order-bypartner',
   templateUrl: './overview-order-bypartner.component.html',
+  providers: [ TDSDestroyService ]
 })
-export class OverviewOrderBypartnerComponent implements OnInit, OnDestroy {
+export class OverviewOrderBypartnerComponent implements OnInit {
 
-  @Input() partnerId!: number;
+  @Input() quickOrderModel!: QuickSaleOnlineOrderModel;
 
-  pageSize: number = 1;
+  pageSize: number = 10;
   pageIndex: number = 1;
   indClickTag = -1;
   count: number = 0;
   isLoading: boolean = false;
   lstOrder!: Array<OdataGetOrderPartnerIdModal>;
-  destroy$ = new Subject<void>();
-  // filter status
   tabIndex: number = 1;
-  public tabNavs: Array<TabNavsDTO> = [];
-  public lstOftabNavs: Array<TabNavsDTO> = [];
-  lstStatus:TDSSafeAny[] = [];
+  public tabNavs: Array<any> = [];
 
   public filterObj: FilterObjFastSaleOrderModel = {
     state: '',
@@ -42,18 +41,18 @@ export class OverviewOrderBypartnerComponent implements OnInit, OnDestroy {
       endDate: new Date(),
     }
   }
+
   sort: Array<SortDataRequestDTO> = [{
     field: "DateInvoice",
     dir: SortEnum.desc,
   }];
 
-  constructor(
-    private odataFastSaleOrderPartnerIdService: OdataFastSaleOrderPartnerIdService,
-    private message: TDSMessageService,
-  ) { }
+  constructor(private message: TDSMessageService,
+    private destroy$: TDSDestroyService,
+    private router: Router,
+    private odataFastSaleOrderPartnerIdService: OdataFastSaleOrderPartnerIdService) { }
 
   ngOnInit(): void {
-    this.loadSummaryStatus();
   }
 
   onQueryParamsChange(params: TDSTableQueryParams) {
@@ -62,58 +61,95 @@ export class OverviewOrderBypartnerComponent implements OnInit, OnDestroy {
   }
 
   loadData(pageSize: number, pageIndex: number) {
-    if (this.partnerId) {
-      this.lstOrder = [];
 
-      let filters = this.odataFastSaleOrderPartnerIdService.buildFilter(this.filterObj);
-      let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
+    let startDate = new Date(this.filterObj?.dateRange?.startDate.setHours(0, 0, 0, 0)).toISOString();
+    let endDate = new Date(this.filterObj?.dateRange?.endDate).toISOString();
 
-      this.odataFastSaleOrderPartnerIdService.getOrdersByPartnerId(this.partnerId, params).subscribe(res => {
-        this.count = res["@odata.count"];
-        this.lstOrder = [...res.value];
-      }, err => {
-        this.message.error(err?.error?.message || Message.CanNotLoadData);
-      })
+    if (this.quickOrderModel?.PartnerId) {
+
+        this.tabNavs = [];
+        this.lstOrder = [];
+
+        this.odataFastSaleOrderPartnerIdService.getOverviewOrdersByPartnerId(this.quickOrderModel?.PartnerId, startDate, endDate)
+          .pipe(map((x): any => {
+
+              if(x && x.value) {
+                  x.value.map((x: any, index: number) => {
+                      let item = {
+                          Name: x.ShowState,
+                          State: x.State,
+                          Index: index + 1,
+                          Total: x.Count
+                      } as any;
+
+                      this.tabNavs.push(item);
+                  });
+
+                  return this.tabNavs;
+              }
+          }), mergeMap((tabNavs): any => {
+              if(tabNavs) {
+                  let state = null;
+
+                  let exist = this.tabNavs.filter(x => x.State === 'draft')[0];
+                  if(exist) {
+                      state = exist.State;
+                  } else {
+                      state = tabNavs[0].State;
+                  }
+
+                  this.filterObj.state = state;
+              }
+
+              return this.getView(pageSize, pageIndex);
+
+        })).subscribe((res: any) => {
+
+              this.count = res["@odata.count"];
+              this.lstOrder = [...res.value];
+
+              this.isLoading = false;
+        }, err => {
+            this.isLoading = false;
+            this.message.error(err?.error?.message || Message.CanNotLoadData);
+        })
     }
   }
 
-  loadSummaryStatus() {
+  getView(pageSize: number, pageIndex: number): Observable<any> {
+    let filters = this.odataFastSaleOrderPartnerIdService.buildFilter(this.filterObj);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters, this.sort);
 
-    let startDate = new Date(this.filterObj?.dateRange.startDate.setHours(0, 0, 0, 0)).toISOString();
-    let endDate = new Date(this.filterObj?.dateRange.endDate).toISOString();
-
-    this.odataFastSaleOrderPartnerIdService.getOverviewOrdersByPartnerId(this.partnerId, startDate, endDate).pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
-      let tabs: TabNavsDTO[] = [];
-      this.lstStatus = res.value as any[];
-
-      tabs = this.lstStatus.map((x: any, index: number) => {
-        return { Name: x.State, Index: index + 1, Total: x.Count } as TabNavsDTO
-      });
-
-      this.tabNavs = [...tabs];
-      this.lstOftabNavs = this.tabNavs;
-    },
-      err => {
-        this.message.error(err?.error?.message || Message.CanNotLoadData)
-      });
+    return this.odataFastSaleOrderPartnerIdService.getOrdersByPartnerId(this.quickOrderModel?.PartnerId, params).pipe(takeUntil(this.destroy$))
   }
 
   // filter status
   onSelectChange(index: number) {
     let item = this.tabNavs.find(f => f.Index == index);
     if(item){
-      this.filterObj.state = item.Name;
+      this.filterObj.state = item.State;
     }
 
     this.pageIndex = 1;
     this.indClickTag = -1;
 
-    this.loadData(this.pageSize, this.pageIndex);
+    this.isLoading = true;
+    this.getView(this.pageSize, this.pageIndex).pipe(takeUntil(this.destroy$)).subscribe((res) => {
+        this.count = res["@odata.count"];
+        this.lstOrder = [...res.value];
+
+        this.isLoading = false;
+      }, err => {
+        this.isLoading = false;
+        this.message.error(err?.error?.message || Message.CanNotLoadData);
+    })
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  onBillDetail(event: any, data: OdataGetOrderPartnerIdModal) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    return this.router.navigateByUrl(`bill/detail/${data.Id}`);
   }
 
 }

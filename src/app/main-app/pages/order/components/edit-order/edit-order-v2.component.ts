@@ -482,6 +482,7 @@ export class EditOrderV2Component implements OnInit {
 
     if(type === 'print') {
         model.FormAction = 'print';
+        this.saleModel.FormAction = 'print';
     }
 
     if(this.isEnableCreateOrder) {

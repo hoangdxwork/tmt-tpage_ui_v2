@@ -261,8 +261,6 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     if (this.paramsUrl?.teamId) {
       //TODO: xóa dữ liệu _set
-      this.chatomniMessageFacade.chatomniDataSource = {};
-      this.crmMatchingV2Facade.crmV2DataSource = {};
 
       let uri = this.router.url.split("?")[0];
       let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
@@ -355,7 +353,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       }
     })
     if(lstCheck.length > 0) {
-      this.printerService.printUrl(`/fastsaleorder/PrintCRMMatching?pageId=${this.currentTeam.Facebook_PageId}&psids=${userIds.toString()}`)
+      this.printerService.printUrl(`/fastsaleorder/PrintCRMMatching?pageId=${this.currentTeam!.ChannelId}&psids=${userIds.toString()}`)
       .pipe(takeUntil(this.destroy$), finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
           that.printerService.printHtml(res);
     })}
@@ -373,7 +371,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       viewContainerRef: this.viewContainerRef,
       componentParams: {
           setOfCheckedId: this.setOfCheckedId,
-          team: this.currentTeam,
+          team: this.currentTeam as any,
           type: this.type
       }
     });
@@ -386,13 +384,13 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
   }
 
   onSentSucceed() {
-    this.conversationDataFacade.checkAllSendMessage(this.currentTeam.Facebook_PageId, this.type, this.isCheckedAll);
+    this.conversationDataFacade.checkAllSendMessage(this.currentTeam!.ChannelId, this.type, this.isCheckedAll);
   }
 
   onSubmitFilter(data: any) {debugger
 
     if (Object.keys(data || {}).length > 0) {
-      let queryObj = this.conversationDataFacade.setExtrasQuery(this.currentTeam.Facebook_PageId, this.type, data);
+      let queryObj = this.conversationDataFacade.setExtrasQuery(this.currentTeam!.ChannelId, this.type, data);
       this.queryFilter = queryObj;
 
       this.makeDataSource(queryObj);
@@ -407,7 +405,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     if (Object.keys(queryObj || {}).length <= 4) {
       this.isRefreshing = true;
 
-      this.dataSource$ = this.crmMatchingV2Service.makeDataSource(this.currentTeam.Facebook_PageId, this.type)
+      this.dataSource$ = this.crmMatchingV2Service.makeDataSource(this.currentTeam!.ChannelId, this.type)
           .pipe(takeUntil(this.destroy$), finalize(() => {
               setTimeout(() => {
                 this.isRefreshing = false;
@@ -416,7 +414,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
     } else {
 
-      this.dataSource$ = this.crmMatchingV2Service.makeDataSource(this.currentTeam.Facebook_PageId, this.type, queryObj).pipe(map((res => {
+      this.dataSource$ = this.crmMatchingV2Service.makeDataSource(this.currentTeam!.ChannelId, this.type, queryObj).pipe(map((res => {
         if (res && res.Items) {
             this.total = res.Items.length;
         }
@@ -529,7 +527,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
   getLink(team: TDSSafeAny, psid: string){
     if(TDSHelperObject.hasValue(team)){
-      if(team.Id != this.currentTeam.Id){
+      if(team.Id != this.currentTeam!.Id){
         this.crmService.changeTeamFromLayout$.emit(team);
         this.onChangeConversation(team);
       }

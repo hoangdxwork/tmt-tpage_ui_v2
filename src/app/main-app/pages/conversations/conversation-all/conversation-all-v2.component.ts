@@ -44,7 +44,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
 
   isLoading: boolean = false;
-  dataSource$!: Observable<ChatomniConversationDto> ;
+  dataSource$?: Observable<ChatomniConversationDto> ;
   lstOmcs: ChatomniConversationItemDto[] = [];
 
   csid!: string;
@@ -70,8 +70,6 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   currentOrderTab: number = 0;
   letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
   private destroy$ = new Subject<void>();
-
-  urlNext!: string;
 
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
@@ -106,6 +104,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       if (!TDSHelperObject.hasValue(team)) {
           return this.onRedirect();
       }
+
       // TODO: change Team
       if(team.Id != this.currentTeam?.Id) {
           this.fetchLiveConversations(team);
@@ -155,13 +154,15 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         this.dataSource$ = this.chatomniConversationService.makeDataSource(team.Id, this.type, queryObj);
     })
 
-    this.loadConversations(this.dataSource$);
+    if(this.dataSource$) {
+        this.loadConversations(this.dataSource$);
+    }
   }
 
-  validateData(){
-    delete this.omcs_Item;
-    (this.dataSource$ as any) = null;
+  validateData() {
     this.lstOmcs = [];
+    delete this.omcs_Item;
+    delete this.dataSource$;
   }
 
   loadConversations(dataSource$: Observable<ChatomniConversationDto>) {
@@ -199,7 +200,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     if (TDSHelperObject.hasValue(item)) {
 
       if (this.isFastSend == true) {
-          this.conversationDataFacade.checkSendMessage(this.currentTeam.Facebook_PageId, this.type, item.ConversationId);
+          this.conversationDataFacade.checkSendMessage(this.currentTeam!.ChannelId, this.type, item.ConversationId);
       }
       else {
           //TODO: lần đầu tiên sẽ lấy items[0] từ danh sách matching và gán lại psid vào params
@@ -243,10 +244,10 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
       this.isProcessing = true;
       this.ngZone.run(() => {
-          this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam?.Id, this.type, this.queryFilter);
+          this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.queryFilter);
       })
 
-      this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniConversationDto) => {
+      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniConversationDto) => {
 
           if(TDSHelperArray.hasListValue(res?.Items)) {
               this.lstOmcs = [...res.Items];
@@ -354,7 +355,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         }
     })
     if(lstCheck.length > 0) {
-        this.printerService.printUrl(`/fastsaleorder/PrintCRMMatching?pageId=${this.currentTeam.Facebook_PageId}&psids=${userIds.toString()}`)
+        this.printerService.printUrl(`/fastsaleorder/PrintCRMMatching?pageId=${this.currentTeam!.ChannelId}&psids=${userIds.toString()}`)
         .pipe(takeUntil(this.destroy$), finalize(() => this.isProcessing = false)).subscribe((res: TDSSafeAny) => {
             that.printerService.printHtml(res);
     })}
@@ -373,7 +374,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         viewContainerRef: this.viewContainerRef,
         componentParams: {
             setOfCheckedId: this.setOfCheckedId,
-            team: this.currentTeam,
+            team: this.currentTeam as any,
             type: this.type
         }
     });
@@ -386,13 +387,13 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   }
 
   onSentSucceed() {
-    this.conversationDataFacade.checkAllSendMessage(this.currentTeam.Facebook_PageId, this.type, this.isCheckedAll);
+    this.conversationDataFacade.checkAllSendMessage(this.currentTeam!.ChannelId, this.type, this.isCheckedAll);
   }
 
   onSubmitFilter(data: any) {
 
     if (Object.keys(data || {}).length > 0) {
-      let queryObj = this.conversationDataFacade.setExtrasQuery(this.currentTeam.Facebook_PageId, this.type, data);
+      let queryObj = this.conversationDataFacade.setExtrasQuery(this.currentTeam!.ChannelId, this.type, data);
       this.queryFilter = queryObj;
 
       this.makeDataSource(queryObj);
@@ -407,7 +408,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     if (Object.keys(queryObj || {}).length <= 4) {
       this.isRefreshing = true;
 
-      this.dataSource$ = this.chatomniConversationService.makeDataSource(this.currentTeam.Id, this.type)
+      this.dataSource$ = this.chatomniConversationService.makeDataSource(this.currentTeam!.Id, this.type)
           .pipe(takeUntil(this.destroy$), finalize(() => {
               setTimeout(() => {
                 this.isRefreshing = false;
@@ -416,7 +417,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
     } else {
 
-      this.dataSource$ = this.chatomniConversationService.makeDataSource(this.currentTeam.Id,  queryObj).pipe(map((res => {
+      this.dataSource$ = this.chatomniConversationService.makeDataSource(this.currentTeam!.Id,  queryObj).pipe(map((res => {
         if (res && res.Items) {
             this.total = res.Items.length;
         }

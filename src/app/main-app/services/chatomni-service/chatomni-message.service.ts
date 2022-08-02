@@ -41,8 +41,11 @@ export class ChatomniMessageService extends BaseSevice  {
 
   makeDataSource(teamId: number, psid: any, type: string): Observable<ChatomniMessageDTO> {
 
-      let id = `${teamId}_${psid}`;
       this.urlNext = '';
+      this.omniFacade.dataSource = {};
+
+      let id = `${teamId}_${psid}`;
+
       return this.get(teamId, psid, type).pipe(map((res: ChatomniMessageDTO) => {
 
           // TODO: sort lại dữ liệu theo ngày tạo mới nhất

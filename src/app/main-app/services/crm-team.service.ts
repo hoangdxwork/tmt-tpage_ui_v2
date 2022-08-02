@@ -83,13 +83,16 @@ export class CRMTeamService extends BaseSevice {
   getActiveByPageIds$(pageIds: string[]): Observable<any> {
     return this.onChangeListFaceBook().pipe(map((res: any) => {
       let data: any[] = [];
-      res?.Items.map((t: any) => {
-          t.Childs.map((c: any) => {
-              if (pageIds.indexOf(c.Facebook_PageId) >= 0) {
-                  data.push(c);
-              }
-          })
-      });
+
+      if(res && res.length > 0) {
+          res.map((t: any) => {
+            t.Childs.map((c: any) => {
+                if (pageIds.indexOf(c.ChannelId) >= 0) {
+                    data.push(c);
+                }
+            })
+        });
+      }
 
       return data;
     }))
@@ -98,14 +101,18 @@ export class CRMTeamService extends BaseSevice {
   getTeamById(id: string): Observable<any> {
     return this.onChangeListFaceBook().pipe(map((res: any) => {
       let data: any[] = [];
-      res?.Items.map((t: any) => {
-          t.Childs.map((c: any) => {
-            if (c.Id === id) {
-                data.push(c);
-                return;
-            }
-          })
-      });
+
+      if(res && res.length > 0) {
+          res.map((t: any) => {
+
+            t.Childs.map((c: any) => {
+              if (c.Id === id) {
+                  data.push(c);
+                  return;
+              }
+            })
+        });
+      }
 
       return data[0];
     }))

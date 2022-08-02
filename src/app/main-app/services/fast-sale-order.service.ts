@@ -305,7 +305,7 @@ export class FastSaleOrderService extends BaseSevice {
 
   onChangePartnerPriceList(data: TDSSafeAny) : Observable<ChangePartnerPriceListDTO> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.onChangePartner_PriceList?$expand=PartnerShipping,PriceList,Account`,
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.OnChangePartner_PriceList?$expand=PartnerShipping,PriceList,Account`,
       method: CoreApiMethodType.post,
     }
     return this.apiService.getData<ChangePartnerPriceListDTO>(api, data);
