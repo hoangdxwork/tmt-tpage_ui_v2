@@ -541,7 +541,7 @@ export interface Carrier {
 }
 
 export interface FastSaleOrder_DefaultDTOV2 {
-    Id: number;
+    Id?: number;
     Name?: any;
     PrintShipCount: number;
     PrintDeliveryCount: number;
@@ -665,7 +665,16 @@ export interface FastSaleOrder_DefaultDTOV2 {
     OrderLines: OrderLineV2[];
     Ship_ServiceExtras: ShipServiceExtra[];
     Team: Team;
-    ShipmentDetailsAship: ShipmentDetailsAshipDTO;
+    ShipmentDetailsAship?: ShipmentDetailsAshipDTO;
+
+    MessageCount: number;
+    MoveId?: any;
+    Tags?: any;
+    IRAttachmentUrl?: any;
+    IsDeposited?: any;
+    Source?: any;
+    FormAction?: any;
+    Error?: any;
 }
 
 export interface OrderSendShipDTO {
