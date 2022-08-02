@@ -29,7 +29,7 @@ registerLocaleData(localeVi);
     AppRoutingModule,
     ScrollingModule,
     HttpClientModule,
-    SharedModule
+    SharedModule,
   ],
   providers: [{ provide: TDS_I18N, useValue: vi_VN },
     TAuthGuardService, {

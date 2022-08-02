@@ -319,15 +319,15 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   }
 
   onAllChecked(value: TDSSafeAny): void {
-    this.lstOmcs.forEach(x => this.updateCheckedSet(x.Id, value.checked));
+    this.lstOmcs.forEach(x => this.updateCheckedSet(x.ConversationId, value.checked));
 
     this.refreshCheckedStatus();
     this.isCheckedAll = !this.isCheckedAll;
   }
 
   refreshCheckedStatus(): void {
-    this.checked = this.lstOmcs.every(x => this.setOfCheckedId.has(x.Id));
-    this.indeterminate = this.lstOmcs.some(x => this.setOfCheckedId.has(x.Id)) && !this.checked;
+    this.checked = this.lstOmcs.every(x => this.setOfCheckedId.has(x.ConversationId));
+    this.indeterminate = this.lstOmcs.some(x => this.setOfCheckedId.has(x.ConversationId)) && !this.checked;
   }
 
   printData(){

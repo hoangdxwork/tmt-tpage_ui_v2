@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { AccountJournalDTO } from "../dto/account/account.dto";
 import { ODataResponsesDTO } from "../dto/odata/odata.dto";
 import { BaseSevice } from "./base.service";
@@ -17,9 +17,9 @@ export class AccountJournalService extends BaseSevice {
   }
 
   getWithCompanyPayment(): Observable<ODataResponsesDTO<AccountJournalDTO>> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetWithCompany?format=json&$filter=(Type eq 'bank') or (Type eq 'cash')`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<ODataResponsesDTO<AccountJournalDTO>>(api, null);

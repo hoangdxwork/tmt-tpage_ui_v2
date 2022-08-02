@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { AutoHideCommentDTO, AutoReplyConfigDTO, ChannelAutoLabelConfigDTO, ChannelFacebookConfigDTO } from '../dto/configs/page-config.dto';
 import { ODataAllFacebookChildTO } from '../dto/team/all-facebook-child.dto';
@@ -30,25 +30,25 @@ export class CRMTeamService extends BaseSevice {
   }
 
   getAllFacebooks(): Observable<Array<CRMTeamDTO>> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/rest/v2.0/chatomni/channels`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
     return this.apiService.getData<Array<CRMTeamDTO>>(api, null);
   }
 
   getAllChannels(): Observable<Array<CRMTeamDTO>> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/rest/v2.0/chatomni/channels`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
     return this.apiService.getData<Array<CRMTeamDTO>>(api, null);
   }
 
   insert(data: TDSSafeAny): Observable<Array<CRMTeamDTO>> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
     return this.apiService.getData<Array<CRMTeamDTO>>(api, data);
   }
@@ -125,9 +125,9 @@ export class CRMTeamService extends BaseSevice {
   }
 
   getLongLiveToken(data: TDSSafeAny): Observable<TDSSafeAny> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/facebook/getlonglivetoken`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
@@ -148,140 +148,140 @@ export class CRMTeamService extends BaseSevice {
   }
 
   updateActive(id: number): Observable<TDSSafeAny> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/active`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   refreshPageToken(id: number, data: any): Observable<TDSSafeAny> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/refreshpagetoken?`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   delete(key: any): Observable<TDSSafeAny> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
-      method: TApiMethodType.delete
+      method: CoreApiMethodType.delete
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   getAllFacebookChilds(): Observable<ODataAllFacebookChildTO> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetAllFacebook?$expand=Childs`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
     return this.apiService.getData<ODataAllFacebookChildTO>(api, null);
   }
 
   getChannelAutoReplyConfig(pageId: string): Observable<AutoReplyConfigDTO> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${pageId}/channelautoreplyconfig`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<AutoReplyConfigDTO>(api, null);
   }
 
   insertOrUpdateChannelAutoReplyConfig(pageId: string, data: AutoReplyConfigDTO): Observable<TDSSafeAny> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${pageId}/channelautoreplyconfig`,
-      method: TApiMethodType.put
+      method: CoreApiMethodType.put
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   getChannelAutoHiddenConfig(pageId: string): Observable<AutoHideCommentDTO> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${pageId}/channelautohiddenconfig`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<AutoHideCommentDTO>(api, null);
   }
 
   insertOrUpdateChannelAutoHiddenConfig(pageId: string, data: AutoHideCommentDTO): Observable<TDSSafeAny> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${pageId}/channelautohiddenconfig`,
-      method: TApiMethodType.put
+      method: CoreApiMethodType.put
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   getChannelConfig(pageId: string): Observable<ChannelFacebookConfigDTO> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getchannelconfig?pageId=${pageId}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<ChannelFacebookConfigDTO>(api, null);
   }
 
   getChannelAutoLabelConfig(pageId: string): Observable<ChannelAutoLabelConfigDTO> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${pageId}/channelautolabelconfig`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<ChannelAutoLabelConfigDTO>(api, null);
   }
 
   insertOrUpdateChannelAutoLabelConfig(pageId: string, data: TDSSafeAny): Observable<ChannelAutoLabelConfigDTO> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${pageId}/channelautolabelconfig`,
-      method: TApiMethodType.put
+      method: CoreApiMethodType.put
     }
 
     return this.apiService.getData<ChannelAutoLabelConfigDTO>(api, data);
   }
 
   updateGrantPermission(data: UpdateGrantPermissionDTO[]): Observable<TDSSafeAny> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/updategrantpermission`,
-      method: TApiMethodType.put
+      method: CoreApiMethodType.put
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   getChannelChatbot(ids: string[]): Observable<TPosAppMongoDBFacebookDTO[]> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getchannelchatbot`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<TPosAppMongoDBFacebookDTO[]>(api, ids);
   }
 
   onChatbot(pageId: string): Observable<undefined> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/onchatbot?pageId=${pageId}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<undefined>(api, null);
   }
 
   offChatbot(pageId: string): Observable<undefined> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/offchatbot?pageId=${pageId}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<undefined>(api, null);
   }
 
   connectChatbot(data: InputCreateChatbotDTO): Observable<undefined> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/connectchatbot`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<undefined>(api, data);

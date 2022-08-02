@@ -7,9 +7,7 @@ import { set as _set } from 'lodash';
 import { CRMTeamService } from "../crm-team.service";
 import { Subject, takeUntil } from "rxjs";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class ChatomniMessageFacade extends BaseSevice implements OnDestroy  {
 
@@ -24,11 +22,6 @@ export class ChatomniMessageFacade extends BaseSevice implements OnDestroy  {
   constructor(private apiService: TCommonService,
     private crmTeamService: CRMTeamService) {
     super(apiService)
-
-    this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {debugger
-        if(res)
-          this.chatomniDataSource = {};
-    })
   }
 
   setData(id: string, value: ChatomniMessageDTO | null) {

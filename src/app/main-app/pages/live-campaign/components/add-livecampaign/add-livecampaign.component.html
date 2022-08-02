@@ -142,7 +142,7 @@
               <div class="flex gap-x-4">
                 <tds-label class="w-1/4">Thời gian gửi tin tự động</tds-label>
                 <tds-form-field class="w-3/4">
-                  <tds-range-picker  [(ngModel)]="datePicker" [ngModelOptions]="{standalone: true}" (ngModelChange)="onChangeDate($event)"> </tds-range-picker>
+                  <tds-range-picker  [(ngModel)]="datePicker" showTime="{format: 'HH:mm'}" [ngModelOptions]="{standalone: true}" (ngModelChange)="onChangeDate($event)"> </tds-range-picker>
                 </tds-form-field>
               </div>
 

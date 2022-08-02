@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@microsoft/signalr";
 import { Observable } from "rxjs";
-import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { FacebookApiMethod, FacebookApiParams } from "src/app/lib/dto/facebook.dto";
 import { FBUserPageRequestDTO } from "../dto/team/user-page.dto";
 import { BaseSevice } from "./base.service";
@@ -30,9 +30,9 @@ export class FacebookGraphService extends BaseSevice {
   }
 
   getUserPages(accessToken: string): Observable<FBUserPageRequestDTO> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `https://graph.facebook.com/${this.version}/me/accounts?fields=id,name,picture,category,category_list,access_token,link&limit=50&access_token=${accessToken}`,
-        method: TApiMethodType.get,
+        method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<FBUserPageRequestDTO>(api,null);

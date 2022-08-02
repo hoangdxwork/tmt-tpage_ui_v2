@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
-import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { OperatorEnum, CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { MailTemplateUpdateDTO } from '../dto/mailtemplate/mail-template.dto';
 import { BaseSevice } from './base.service';
@@ -20,9 +20,9 @@ export class MailTemplateService extends BaseSevice {
   }
 
   get(): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}?%24filter=(Active+eq+true)`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
@@ -35,9 +35,9 @@ export class MailTemplateService extends BaseSevice {
       paramFilter = `?filter=${filter}${OperatorEnum.eq}true`;
     }
 
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}${paramFilter}`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);

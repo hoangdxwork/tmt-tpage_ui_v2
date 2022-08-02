@@ -9,6 +9,7 @@ export class THelperDataRequest {
     private static readonly _skipCount = "$skip";
     private static readonly _filter = "$filter";
     private static readonly _sorting = "$orderby";
+
     /**
      * convertDataRequestToString
      * {

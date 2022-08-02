@@ -110,9 +110,11 @@
                                 <tds-avatar [size]="84" [tdsSrc]="dataModel.Partner.ImageUrl"></tds-avatar>
                             </div>
                             <div class="flex flex-auto flex-col gap-y-2">
-                                <div class="flex items-center">
+                                <div class="flex">
                                     <span class="text-header-2 font-semibold mr-2">{{dataModel.Partner?.DisplayName || dataModel.PartnerNameNoSign}}</span>
-                                    <tds-tag status='primary' rounded="rounded-full">{{dataModel.Partner?.StatusText}}</tds-tag>
+                                    <div class="h-[28px] w-1/5 flex items-center">
+                                      <tds-tag status='primary' rounded="rounded-full">{{dataModel.Partner?.StatusText}}</tds-tag>
+                                    </div>
                                 </div>
                                 <span class="text-neutral-1-600">
                                     <i class="tdsi-call-fill mr-2"></i> {{dataModel.Ship_Receiver?.Phone}}

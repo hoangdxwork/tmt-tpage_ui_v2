@@ -104,6 +104,8 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
       this.loadDefault();
     }
     this.openlstPrice();
+    this.openStatus();
+    this.openCategory();
   }
 
   loadDefault() {
@@ -212,7 +214,7 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     this._form.patchValue(data);
   }
 
-  openCategory(event: any) {
+  openCategory() {
     this.partnerService.getPartnerCategory().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if (TDSHelperString.hasValueString(res.value)) {
         this.lstCategory = [...res.value];
@@ -222,8 +224,8 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
     })
   }
 
-  openStatus(event: any) {
-    this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+  openStatus() {
+    this.commonService.getPartnerStatus().pipe(takeUntil(this.destroy$)).subscribe((res) => {
       this.lstStatus = res.map((x: any) => x.text);
     }, error => {
       this.message.error(`${error?.error?.message}`)
@@ -525,7 +527,6 @@ export class ModalEditPartnerComponent implements OnInit, OnDestroy {
       this.data['PropertyProductPricelistId'] = this._form.controls['PropertyProductPricelist'].value.Id;
     }
     if (formModel.Discount != null && formModel.Discount) {
-      console.log(formModel.Discount)
       this.data['Discount'] = formModel.Discount;
     }
     if (formModel.AmountDiscount != null && formModel.Discount) {

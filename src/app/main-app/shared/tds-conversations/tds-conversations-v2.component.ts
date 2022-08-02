@@ -82,7 +82,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   displayDropZone: boolean = false;
   markSeenTimer: TDSSafeAny;
   messageModel: string | undefined;
-  postPictureError: any[] = [];
   isLoadingSendMess: boolean = false;
 
   lstUser!: TDSSafeAny[];
@@ -157,7 +156,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
     this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniMessageDTO) => {
         if(res) {
-            this.dataSource = res;debugger
+            this.dataSource = res;
         }
 
         this.isLoading = false;
@@ -466,14 +465,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       }, error => {
           this.message.error(`${error?.Error?.Message}` ? `${error?.Error?.Message}` : 'Refetch đã xảy ra lỗi');
       });
-  }
-
-  errorPostPicture(item: MakeActivityItemWebHook) {
-    this.postPictureError.push(item?.object_id);
-  }
-
-  checkPostPictureError(item: MakeActivityItemWebHook) {
-    return this.postPictureError.find(f => f == item?.object_id);
   }
 
   onClickSender() {
@@ -810,22 +801,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     }
   }
 
-  openModalPost(item: ExtrasPostItem) {
-    let data: TDSSafeAny;
-    // this.dataSource$!.subscribe((res: any) => {
-    //   data = res.extras.posts[item.object_id];
-    // });
-    this.modalService.create({
-      title: 'Bài viết tổng quan',
-      content: ModalPostComponent,
-      size: "xl",
-      bodyStyle: { padding : '0px'},
-      viewContainerRef: this.viewContainerRef,
-      componentParams:{
-        data: data
-      }
-    });
-  }
 
   refreshRead() {
     this.validateData();

@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TAuthGuardService, TAuthInterceptorService } from './services';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 @NgModule({
   declarations: [],
@@ -7,7 +9,9 @@ import { CommonModule } from '@angular/common';
     CommonModule
   ],
   providers:[
-
   ]
 })
-export class LibModule { }
+
+export class LibModule {
+
+}

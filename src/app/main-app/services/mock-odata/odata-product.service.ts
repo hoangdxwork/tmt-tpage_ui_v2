@@ -1,7 +1,7 @@
 import { ODataProductDTO } from './../../dto/configs/product/config-odata-product.dto';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { OperatorEnum, CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { BaseSevice } from '../base.service';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -23,17 +23,17 @@ export class OdataProductService extends BaseSevice {
   }
 
   getView(params: string): Observable<TDSSafeAny>{
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetView?${params}&$orderby=DateCreated%20desc&$count=true`,
-        method: TApiMethodType.get,
+        method: CoreApiMethodType.get,
     }
     return this.apiService.getData<ODataProductDTO>(api, null);
   }
 
   getProductOnFacebookPage(params: string, pageId: string): Observable<TDSSafeAny>{
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetProductOnFacebookPage?pageId=${pageId}&${params}&$count=true`,
-        method: TApiMethodType.get,
+        method: CoreApiMethodType.get,
     }
     return this.apiService.getData<ODataProductDTO>(api, null);
   }

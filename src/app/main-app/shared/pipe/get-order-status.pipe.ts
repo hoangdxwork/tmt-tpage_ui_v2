@@ -6,6 +6,6 @@ import { Pipe, PipeTransform } from "@angular/core";
 export class GetOrderStatusPipe implements PipeTransform {
 
   transform(state: string, lstStatus: any[]): string {
-    return lstStatus.find(f=>f.State == state)?.ShowStatus || 'Tất cả';
+    return lstStatus.find(f=>f.State == state)?.ShowState || 'Tất cả';
   }
 }

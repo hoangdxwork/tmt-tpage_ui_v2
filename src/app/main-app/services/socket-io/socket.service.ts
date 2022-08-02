@@ -1,28 +1,39 @@
 import { Injectable } from '@angular/core';
+import { TCommonService } from '@core/services';
 import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
+import { BaseSevice } from '../base.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SocketService {
+
+export class SocketService extends BaseSevice {
+
+  prefix: string = "";
+  table: string = "";
+  baseRestApi: string = "";
+
   socket!: Socket;
   nsp: any;
-  constructor() {
+
+  constructor(private apiService: TCommonService) {
+    super(apiService);
+
     this.initSocket();
   }
 
   initSocket(): void {
     this.socket = io(environment.socketUrl, {
-      transports: ['websocket'], // Sủ dụng khi socketserver không dùng sticky session
-      query: {
-        room: 'test.tpos.dev' // Viết hàm parse url lấy theo domain của tên miền hiện tại nếu ở production
-      }
+        transports: ['websocket'], // Sử dụng khi socketserver không dùng sticky session
+        query: {
+          room: `${this._BASE_URL}` // Viết hàm parse url lấy theo domain của tên miền hiện tại nếu ở production
+        }
     });
 
     this.socket.on("connect_error", (err) => {
-      console.log(`connect_error due to ${err.message}`);
+        console.log(`connect_error due to ${err.message}`);
     });
   }
 
@@ -35,8 +46,8 @@ export class SocketService {
   listenEvent(eventName: any): Observable<any> {
     return new Observable((subscriber) => {
       this.socket.on(eventName, (data: any) => {
-        subscriber.next(data);
-        subscriber.complete();
+          subscriber.next(data);
+          subscriber.complete();
       });
     });
   }

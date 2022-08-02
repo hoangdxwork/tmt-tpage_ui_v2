@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { TAuthService, TCommonService, TGlobalConfig, THelperCacheService } from './lib';
-import { SocketService } from './services/socket.service';
+import { SocketService } from './main-app/services/socket-io/socket.service';
 import { PageLoadingService } from './shared/services/page-loading.service';
 
 @Component({
@@ -28,13 +28,15 @@ export class AppComponent {
   ngOnInit() {
     let that = this;
     that.init().subscribe(res => {
-      this.loader.hidden();
-      that.isLoaded = true;
+        this.loader.hidden();
+        that.isLoaded = true;
     });
 
-    this.socketService.listenEvent("on-events").subscribe((res: any) => {
-      var data = JSON.parse(res);
-      console.log(data);
+    this.socketService.listenEvent("on-events").subscribe((res: any) => {debugger
+        let data = JSON.parse(res);
+        console.log(data);
+    }, err => {
+      debugger
     });
   }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable} from 'rxjs';
 import { map } from 'rxjs/operators';
-import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { CRMTagDTO, CRMTagModelDTO } from '../dto/crm-tag/odata-crmtag.dto';
 import { BaseSevice } from './base.service';
 
@@ -79,62 +79,62 @@ export class CRMTagService extends BaseSevice {
   }
 
   get(): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
     return this.apiService.getData<CRMTagDTO>(api, null);
   }
 
   getById(key: string): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<CRMTagDTO>(api, null);
   }
 
   getOnlyActive(): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}?$filter=IsDeleted eq false`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<CRMTagDTO>(api, null);
   }
 
   insert(data: CRMTagModelDTO): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<any>(api, data);
   }
 
   update(key: string, data: CRMTagModelDTO, isForce: boolean = false): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})?isForce=${isForce}`,
-      method: TApiMethodType.put
+      method: CoreApiMethodType.put
     }
 
     return this.apiService.getData<any>(api, data);
   }
 
   updateStatus(key: string): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})/ODataService.UpdateStatus`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<any>(api, null);
   }
 
   delete(key: string): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})`,
-      method: TApiMethodType.delete
+      method: CoreApiMethodType.delete
     }
 
     return this.apiService.getData<any>(api, null);

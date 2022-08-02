@@ -13,18 +13,19 @@ import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/util
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
+
   loginForm!: FormGroup;
   returnUrl!: string;
   isSubmit: boolean = false;
   isLoading: boolean = false;
   isShowPass: boolean = false;
+
   constructor(private formBuilder: FormBuilder,
     private router: Router,
     private authen: TAuthService,
     private route: ActivatedRoute,
     private loader: PageLoadingService,
     private message: TDSMessageService) {
-
   }
 
   ngOnInit(): void {
@@ -37,20 +38,22 @@ export class LoginComponent implements OnInit {
 
     // get return url from route parameters or default to '/'
     const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+
     if (TDSHelperString.hasValueString(returnUrl) && returnUrl != environment.urlLogin) {
-      this.returnUrl = returnUrl;
+        this.returnUrl = returnUrl;
     } else {
-      this.returnUrl = '/dashboard';
+        this.returnUrl = '/dashboard';
     }
-    this.loader.show()
-    this.authen.getCacheToken().subscribe(
-      data => {
-        if (TDSHelperObject.hasValue(data) &&
-          TDSHelperString.hasValueString(data.access_token)) {
+
+    this.loader.show();
+
+    this.authen.getCacheToken().subscribe( data => {
+
+        if (TDSHelperObject.hasValue(data) && TDSHelperString.hasValueString(data.access_token)) {
           that.router.navigate([that.returnUrl]);
           this.isSubmit = false;
-
         }
+
         this.loader.hidden();
       },
       error => {
@@ -67,28 +70,27 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.invalid || this.isSubmit) {
       return
     }
+
     this.isSubmit = true;
     this.isLoading = true;
     //this.loader.show()
     const { userName, password } = this.loginForm.value;
 
     this.authen.signInPassword(userName, password)
-      .subscribe(
-        data => {
+      .subscribe(data => {
+
           setTimeout(() => {
             this.isSubmit = false;
             this.isLoading = false;
             //this.loader.hidden();
           }, 100);
+
           that.router.navigate([that.returnUrl]);
 
-        },
-        (error: TDSSafeAny) => {
+        }, (error: TDSSafeAny) => {
           this.message.error("Tài khoản hoặc mật khẩu không đúng");
           this.isSubmit = false;
           this.isLoading = false;
-          console.log(this.loginForm)
-          //this.loader.hidden();
         }
       );
   }

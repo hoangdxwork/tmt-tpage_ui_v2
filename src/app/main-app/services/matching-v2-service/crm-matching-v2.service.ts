@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable, map, shareReplay } from "rxjs";
-import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
 import { CrmMatchingV2Detail, CrmMatchingV2DTO } from "../../dto/conversation-all/crm-matching-v2/crm-matching-v2.dot";
 import { BaseSevice } from "../base.service";
@@ -37,9 +37,9 @@ export class CrmMatchingV2Service extends BaseSevice  {
           url = `${url}&${queryString}`;
       }
 
-      let api: TAPIDTO = {
+      let api: CoreAPIDTO = {
           url: `${url}`,
-          method: TApiMethodType.get,
+          method: CoreApiMethodType.get,
       }
       return this.apiService.getData<CrmMatchingV2DTO>(api, null);
   }
@@ -57,9 +57,9 @@ export class CrmMatchingV2Service extends BaseSevice  {
         url = `${url}&${queryString}`;
     }
 
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
           url: `${url}`,
-          method: TApiMethodType.get
+          method: CoreApiMethodType.get
       }
       return this.apiService.getData<CrmMatchingV2DTO>(api, null);
   }

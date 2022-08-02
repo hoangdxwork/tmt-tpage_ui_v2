@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { OperatorEnum, CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { ODataCreditDebitDTO } from '../../dto/partner/partner-creditdebit.dto';
@@ -27,9 +27,9 @@ export class OdataPartnerService extends BaseSevice {
   }
 
   getView(params: string, filterObj: FilterObjPartnerModel): Observable<TDSSafeAny>{
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetView?TagIds=${filterObj.tags}&${params}&$count=true`,
-        method: TApiMethodType.get,
+        method: CoreApiMethodType.get,
     }
     return this.apiService.getData<ODataPartnerDTO>(api, null);
   }
@@ -75,18 +75,18 @@ export class OdataPartnerService extends BaseSevice {
   }
 
   getCreditDebitPartner(partnerId: any, params: any): Observable<TDSSafeAny> {
-      const api: TAPIDTO = {
+      const api: CoreAPIDTO = {
           url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.CreditDebitCustomerDetail?partnerId=${partnerId}&${params}&$count=true`,
-          method: TApiMethodType.get,
+          method: CoreApiMethodType.get,
       }
 
       return this.apiService.getData<ODataCreditDebitDTO>(api, null);
   }
 
   getInvoicePartner(partnerId: any, params: any): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/AccountInvoice/OdataService.GetInvoicePartner?partnerId=${partnerId}&${params}&$count=true`,
-        method: TApiMethodType.get,
+        method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<ODataPartnerInvoiceDTO>(api, null);
