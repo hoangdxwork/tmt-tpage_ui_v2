@@ -9,6 +9,24 @@ export interface  ChatomniConversationTagDto {
   CreatedTime: Date;
 }
 
+export enum ChatomniMessageContentType {
+  Normal = 0,
+  Image = 1,
+  Video = 2,
+  Audio = 3,
+  File = 4,
+  Order = 5, // Đơn hàng
+  Postback = 6, // Tương tác
+  Other = 10
+}
+
+export interface  ChatomniConversationMessageDto {
+  Id: string | null;
+  Message: string;
+  ContentType: ChatomniMessageContentType;
+  CreatedTime: Date | any;
+}
+
 export interface ChatomniConversationItemDto {
   Id: string;
   UserId: string;
@@ -26,6 +44,7 @@ export interface ChatomniConversationItemDto {
   AssignedTo?: any;
   Tags: ChatomniConversationTagDto[];
   UpdatedTime: Date;
+  LatestMessage?: ChatomniConversationMessageDto;
 
   State?: StateChatbot | null;
   HasOrder?: boolean | null;

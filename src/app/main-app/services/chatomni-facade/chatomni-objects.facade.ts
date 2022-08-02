@@ -14,7 +14,7 @@ export class ChatomniObjectsFacade extends BaseSevice implements OnDestroy  {
   table: string = "";
   baseRestApi: string = "rest/v2.0/chatomni";
 
-  postDataSource: { [id: string] : any } = {}; //this.postDataSource[id]
+  objectsDataSource: { [id: string] : any } = {}; //this.objectsDataSource[id]
 
   private destroy$ = new Subject<void>();
 
@@ -24,11 +24,11 @@ export class ChatomniObjectsFacade extends BaseSevice implements OnDestroy  {
   }
 
   setData(id: string, value: any | null) {
-    _set(this.postDataSource, [id], value);
+    _set(this.objectsDataSource, [id], value);
   }
 
   getData(id: string) {
-    let data = _get(this.postDataSource, id) || undefined;
+    let data = _get(this.objectsDataSource, id) || undefined;
     return data;
   }
 
