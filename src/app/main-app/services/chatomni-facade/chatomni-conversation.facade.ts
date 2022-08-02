@@ -8,9 +8,7 @@ import { ChatomniConversationDto } from "../../dto/conversation-all/chatomni/cha
 import { CRMTeamService } from "../crm-team.service";
 import { Subject, takeUntil } from "rxjs";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class ChatomniConversationFacade extends BaseSevice implements OnDestroy   {
 

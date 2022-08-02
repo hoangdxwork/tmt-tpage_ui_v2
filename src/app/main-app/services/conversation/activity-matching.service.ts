@@ -6,9 +6,7 @@ import { CRMMessagesRequest } from '../../dto/conversation/make-activity.dto';
 import { TDSSafeAny } from "tds-ui/shared/utility";
 import { PagingTimestampLowcase, QueryStateConversationDTO_v2 } from "./conversation.service";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class ActivityMatchingService extends BaseSevice  {
 
@@ -71,7 +69,6 @@ export class ActivityMatchingService extends BaseSevice  {
       totalPages: response.TotalPages
     } as any;
   }
-
 
   refreshAttachment(id: string, message_id: string, image_id: string): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {

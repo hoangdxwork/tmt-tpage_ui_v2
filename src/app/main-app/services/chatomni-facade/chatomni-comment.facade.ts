@@ -6,9 +6,7 @@ import { CRMTeamService } from "../crm-team.service";
 import { get as _get } from 'lodash';
 import { set as _set } from 'lodash';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class ChatomniPostFacade extends BaseSevice implements OnDestroy  {
 

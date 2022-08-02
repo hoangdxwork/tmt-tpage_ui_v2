@@ -2,13 +2,11 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
-import { ChatomniPostFacade } from "../chatomni-facade/chatomni-post.facade";
+import { ChatomniPostFacade } from "../chatomni-facade/chatomni-comment.facade";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
-export class ChatomniPostService extends BaseSevice  {
+export class ChatomniCommentService extends BaseSevice  {
 
   prefix: string = "odata";
   table: string = "";

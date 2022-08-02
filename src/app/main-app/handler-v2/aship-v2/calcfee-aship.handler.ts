@@ -11,9 +11,7 @@ import { TDSMessageService } from "tds-ui/message";
 import { TDSHelperArray } from "tds-ui/shared/utility";
 import { FastSaleOrderService } from "../../services/fast-sale-order.service";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class CalculateFeeAshipHandler {
 

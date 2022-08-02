@@ -43,12 +43,12 @@
                     class="rounded-full z-40 -ml-2">
             </div>
             <span>
-                {{dataFacebook.reactions.summary.total_count || 0}}
+                {{dataFacebook.reactions?.summary?.total_count || 0}}
             </span>
         </div>
         <div class="comment flex flex-row items-center">
             <span class="comment-count  mr-4">
-                {{dataFacebook.comments.summary.total_count || 0}} Bình luận
+                {{dataFacebook.comments?.summary?.total_count || 0}} Bình luận
             </span>
             <div class="comment-button">
                 <button tds-button-flat-icon color="secondary" class="mr-4" tds-tooltip tooltipTitle="Bài viết tổng quan" tooltipPlacement="bottom"
@@ -73,7 +73,7 @@
 <div *ngIf="dataTshop" class="post-block mb-3 bg-white flex flex-col">
     <div class="post-body flex flex-row justify-between p-4">
         <div class="post-content flex flex-col">
-            <div class="post-type flex flex-row items-center mb-3">                                        
+            <div class="post-type flex flex-row items-center mb-3">
                 <tds-tag [status]="'info'" type="outline" rounded="rounded-full">
                     <span class="flex items-center py-0.5">
                         <span>{{data.ChannelCreatedTime | date: "dd-MM-yyyy HH:mm"}}</span>
