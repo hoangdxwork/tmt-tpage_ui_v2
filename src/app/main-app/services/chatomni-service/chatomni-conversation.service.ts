@@ -65,6 +65,8 @@ export class ChatomniConversationService extends BaseSevice {
   makeDataSource(teamId: number, type: string, queryObj?: any): Observable<ChatomniConversationDto> {
 
     this.urlNext = '';
+    this.csFacade.dataSource = {};
+
     return this.get(teamId, type, queryObj).pipe(map((res: any) => {
 
       // TODO: load dữ liệu lần đầu tiên

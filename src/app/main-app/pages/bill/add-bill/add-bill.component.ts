@@ -537,7 +537,6 @@ export class AddBillComponent implements OnInit, OnDestroy {
       this._form.controls['PartnerId'].setValue(partner.Id);
 
       let model = this.prepareModel();
-      delete model.ShipmentDetailsAship;
 
       return this.fastSaleOrderService.onChangePartnerPriceList({ model: model })
         .pipe(map((data: TDSSafeAny) => {
@@ -1485,23 +1484,26 @@ export class AddBillComponent implements OnInit, OnDestroy {
 
       this.isLoading = true;
       this.fastSaleOrderService.update(this.id, model).pipe(takeUntil(this.destroy$), finalize(() => { this.isLoading = false })).subscribe((res: any) => {
-        this.message.success('Cập nhật phiếu bán hàng thành công!');
-        this.router.navigateByUrl(`bill/detail/${this.id}`);
+          this.message.success('Cập nhật phiếu bán hàng thành công!');
+          this.router.navigateByUrl(`bill/detail/${this.id}`);
       }, error => {
-        this.message.error(`${error.error.message}` || 'Cập nhật phiếu bán hàng thất bại!');
+          this.message.error(`${error.error.message}` || 'Cập nhật phiếu bán hàng thất bại!');
       })
 
     } else {
+
       this.isLoading = true;
       this.fastSaleOrderService.insert(model).pipe(takeUntil(this.destroy$), finalize(() => { this.isLoading = false })).subscribe((res: any) => {
-        this.message.success('Tạo mới phiếu bán hàng thành công!');
-        if (this.pageChange === 'order') {
-          this.onBack();
-        } else {
-          this.router.navigateByUrl(`bill/detail/${res.Id}`);
-        }
+          this.message.success('Tạo mới phiếu bán hàng thành công!');
+
+          if (this.pageChange === 'order') {
+            this.onBack();
+          } else {
+            this.router.navigateByUrl(`bill/detail/${res.Id}`);
+          }
+
       }, error => {
-        this.message.error(`${error.error.message}` || 'Tạo mới phiếu bán hàng thất bại!');
+          this.message.error(`${error.error.message}` || 'Tạo mới phiếu bán hàng thất bại!');
       });
     }
   }

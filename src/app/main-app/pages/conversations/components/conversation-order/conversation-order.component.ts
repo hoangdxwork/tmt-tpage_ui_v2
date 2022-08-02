@@ -403,6 +403,11 @@ export class ConversationOrderComponent implements OnInit {
   onSave(type: string): any {
       let model = this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel)
 
+      if(type === 'print') {
+          this.quickOrderModel.FormAction = 'print';
+          this.saleModel.FormAction = 'print';
+      }
+
       if(this.isEnableCreateOrder) {
         if (!TDSHelperArray.hasListValue(this.quickOrderModel.Details)) {
             this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');

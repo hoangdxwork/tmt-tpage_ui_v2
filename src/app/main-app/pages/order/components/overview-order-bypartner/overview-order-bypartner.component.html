@@ -1,3 +1,4 @@
+
 <div class="w-full flex flex-col gap-y-4">
     <div class="w-full">
         <tds-form-field class="w-full">
@@ -8,9 +9,7 @@
     <div class="border rounded-md border-neutral-2-200 pb-2.5">
         <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)" class="px-4">
             <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">
-                <tds-filter-status-item [name]='item.Name|getOrderStatus:lstStatus' [count]='item.Total'
-                    [value]="item.Index">
-                    <!-- |getOrderStatus:lstStatus -->
+                <tds-filter-status-item [name]='item.Name' [count]='item.Total' [value]="item.Index">
                 </tds-filter-status-item>
             </ng-template>
         </tds-filter-status>
@@ -40,7 +39,7 @@
                             <!-- Số HĐ -->
                             <td>
                                 <div class="w-full flex font-semibold text-center pb-2">
-                                    <span [ngClass]="data.Number ? 'text-info-400' : 'text-error-500'">{{ data.Number || 'N/A' }}</span>
+                                    <span [ngClass]="data.Number ? 'text-info-400' : 'text-error-500'" (click)="onBillDetail($event, data)">{{ data.Number || 'N/A' }}</span>
                                 </div>
                                 <!-- Nhãn -->
                             </td>

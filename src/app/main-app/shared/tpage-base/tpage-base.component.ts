@@ -51,11 +51,11 @@ export class TpageBaseComponent  {
     return this._params = data;
   }
 
-  get currentTeam(): any {
+  get currentTeam(): CRMTeamDTO | null {
     return this._currentTeam;
   }
 
-  setCurrentTeam(data: any): any {
+  setCurrentTeam(data: any): CRMTeamDTO | null {
     return this._currentTeam = data;
   }
 
