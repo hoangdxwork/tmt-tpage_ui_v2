@@ -6,7 +6,7 @@
                     <tpage-avatar-facebook [size]="48"
                         [noSeenMessage]="(type == 'all' && data.CountUnread > 0) || (type == 'message' && data.CountUnread > 0) || (type == 'comment' && data.CountUnread > 0)"
                         [shape]="'circle'" [psid]="data.ConversationId"
-                        [token]="team.Facebook_PageToken">
+                        [token]="team.ChannelToken">
                     </tpage-avatar-facebook>
                     <span *ngIf="(data | lastActivityMessage: type)?.type == 2" class="absolute" style="top: 31px;left: 31px;">
                         <svg width="20" height="21" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -120,28 +120,30 @@
             <div *ngIf="dataSource && dataSource?.Items">
                 <ng-container *ngFor="let item of dataSource!.Items | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex">
                   <div *ngIf="item" @eventFadeState>
-                    <div class="w-full relative">
-                        <div class="date-v3">
-                            <span class="text-neutral-1-400 text-[13px]" [innerHTML]="item.CreatedTime | yiDateTimeV3"></span>
-                            <span class="hr"></span>
+                    <div *ngIf="item.ObjectId != dataSource!.Items[i-1]?.ObjectId">
+                        <div class="w-full relative">
+                            <div class="date-v3">
+                                <span class="text-neutral-1-400 text-[13px]" [innerHTML]="item.CreatedTime | yiDateTimeV3"></span>
+                                <span class="hr"></span>
+                            </div>
+                        </div>                                
+                        <!-- Thông tin bài post -->
+                        <div *ngIf="item.ObjectId && dataSource?.Extras!.Objects[item.ObjectId]
+                            && dataSource.Extras!.Objects[item?.ObjectId].Data" class="px-2">
+                            <conversation-infopost-item 
+                                [team]="team" [typeNumber]="item.Type" [item]="item"
+                                [data]="dataSource.Extras!.Objects[item.ObjectId]">
+                            </conversation-infopost-item>
                         </div>
-                    </div>                                
-                    <!-- Thông tin bài post -->
-                    <div *ngIf="item.ObjectId && dataSource?.Extras!.Objects[item.ObjectId]
-                        && dataSource.Extras!.Objects[item?.ObjectId].Data" class="px-2">
-                        <conversation-infopost-item 
-                            [team]="team" [typeNumber]="item.Type" [item]="item"
-                            [data]="dataSource.Extras!.Objects[item.ObjectId]">
-                        </conversation-infopost-item>
                     </div>
-                      <ng-container *ngIf="item && (data.ConversationId) && type && team">
-                          <tds-conversation-item-v2
-                              [team]="team" [csid]="data.ConversationId"
-                              [name]="data.Name" [dataItem]="item"
-                              [type]="type" [partner]="partner"
-                              [children]="dataSource.Extras!.Objects[item?.ObjectId]">
-                          </tds-conversation-item-v2>
-                      </ng-container>
+                    <ng-container *ngIf="item && (data.ConversationId) && type && team">
+                        <tds-conversation-item-v2
+                            [team]="team" [csid]="data.ConversationId"
+                            [name]="data.Name" [dataItem]="item"
+                            [type]="type" [partner]="partner"
+                            [children]="dataSource.Extras!.Objects[item?.ObjectId]">
+                        </tds-conversation-item-v2>
+                    </ng-container>
                   </div>
                 </ng-container>
             </div>
@@ -275,7 +277,7 @@
                       (keydown.enter)="onEnter($event)" class="h-16 resize-none !p-0 !m-0 no-scrollbar">
                   </textarea>
                   <div>
-                      <button tds-button type="button" color="primary" class="!rounded-full ml-2" [size]="'lg'"(click)="onClickSender()">
+                      <button tds-button type="button" color="primary" class="!rounded-full ml-2" [size]="'lg'"(click)="onClickSender($event)">
                           <span class="flex items-center px-6">
                               <i class="tdsi-send-fill text-lg leading-none mr-2"></i> Gửi
                           </span>

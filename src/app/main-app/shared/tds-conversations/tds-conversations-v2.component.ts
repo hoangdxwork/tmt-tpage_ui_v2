@@ -44,13 +44,15 @@ import { CrmMatchingV2Detail } from '../../dto/conversation-all/crm-matching-v2/
 import { ChatomniMessageFacade } from '../../services/chatomni-facade/chatomni-message.facade';
 import { ChatomniConversationItemDto } from '../../dto/conversation-all/chatomni/chatomni-conversation';
 import { Facebook_Graph_Post } from '../../dto/conversation-all/chatomni/chatomni-facebook-post.dto';
+import { TdsDestroyService } from 'tds-ui/core/services';
 
 @Component({
   selector: 'shared-tds-conversations-v2',
   templateUrl: './tds-conversations-v2.component.html',
   styleUrls: ['./tds-conversations.component.sass'],
   animations: [eventFadeStateTrigger],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [ TdsDestroyService ]
 })
 
 export class TDSConversationsV2Component implements OnInit, OnChanges, AfterViewInit, OnDestroy {
@@ -66,7 +68,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   @Input() miniChat!: boolean;
   @Input() state!: number | undefined;
 
-  destroy$ = new Subject<void>();
   isLoading: boolean = false;
   isProcessing: boolean = false;
 
@@ -117,7 +118,8 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     private ngZone: NgZone,
     private cdRef: ChangeDetectorRef,
     private viewContainerRef: ViewContainerRef,
-    private partnerService: PartnerService) {
+    private partnerService: PartnerService,
+    private destroy$: TdsDestroyService) {
       this.userLoggedId = this.sharedService.userLogged?.Id;
   }
 
@@ -311,8 +313,8 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     });
     modal.afterClose.subscribe(result=>{
       if(result){
-        this.lstOfTag.push(result);
-        this.tags.push(result);
+        this.lstOfTag = [...this.lstOfTag, result];
+        this.tags = [...this.tags, result];
       }
     })
   }
@@ -467,7 +469,8 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       });
   }
 
-  onClickSender() {
+  onClickSender(event: TDSSafeAny) {
+    this.eventHandler = event;
     this.messageSendingToServer();
   }
 
@@ -503,7 +506,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.isLoadingSendMess = true;
     let activityFinal = this.activityDataFacade.getMessageNearest(this.pageId, this.data.ConversationId, this.type ? this.type : 'all') as any;
 
-    if (TDSHelperObject.hasValue(activityFinal) && activityFinal.type === 2) {
+    if (TDSHelperObject.hasValue(activityFinal) && activityFinal.type === 12) {
       if (this.type === 'all') {
             this.sendPrivateReplies(activityFinal, message);
         } else if (this.type === 'comment') {
@@ -667,7 +670,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   prepareModel(message: string): any {
     const model = {} as SendMessageModelDTO;
     model.from = {
-      id: this.team.Facebook_PageId,
+      id: this.team.ChannelId,
       name: this.team.Facebook_PageName
     }
     model.to = {
@@ -739,13 +742,12 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   }
 
   onRemoveTag(item: any) {
-    item.Id = item.id
     this.removeIndexDbTag(item);
   }
 
   assignIndexDbTag(item: any) {
     this.assignTagOnView(item);
-    this.activityMatchingService.assignTagToConversation(this.data.Id, item.Id, this.team.Facebook_PageId)
+    this.activityMatchingService.assignTagToConversation(this.data.ConversationId, item.Id, this.team.ChannelId)
       .pipe(takeUntil(this.destroy$)).subscribe(() => {
           this.crmTagService.addTagLocalStorage(item.Id);
       }, error => {
@@ -754,10 +756,12 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   }
 
   removeIndexDbTag(item: any): void {
-    this.activityMatchingService.removeTagFromConversation(this.data.Id, item.Id, this.team.Facebook_PageId)
+    this.activityMatchingService.removeTagFromConversation(this.data.ConversationId, item.Id, this.team.ChannelId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.removeTagOnView(item);
+      },err=>{
+        this.message.error(err.error? err.error.message : 'Đã có lỗi xảy ra');
       });
   }
 
@@ -984,8 +988,6 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
   ngOnDestroy(): void {
     this.destroyTimer();
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
 }
