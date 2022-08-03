@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
 import { TCommonService } from '@core/services';
 import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
@@ -18,17 +19,20 @@ export class SocketService extends BaseSevice {
   socket!: Socket;
   nsp: any;
 
-  constructor(private apiService: TCommonService) {
+  constructor(private apiService: TCommonService,
+    @Inject(DOCUMENT) private document: Document) {
     super(apiService);
 
     this.initSocket();
   }
 
   initSocket(): void {
+    let hostname = this.document.location.hostname;
+
     this.socket = io(environment.socketUrl, {
         transports: ['websocket'], // Sử dụng khi socketserver không dùng sticky session
         query: {
-          room: `${this._BASE_URL}` // Viết hàm parse url lấy theo domain của tên miền hiện tại nếu ở production
+          room: `${hostname}` // Viết hàm parse url lấy theo domain của tên miền hiện tại nếu ở production
         }
     });
 
