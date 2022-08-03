@@ -53,7 +53,7 @@ export class ConversationEventFacade extends BaseSevice implements OnDestroy {
           let currentTeam = this.crmService.getCurrentTeam();
 
           // Thông báo cho shop
-          if(data && data.message && data.data && currentTeam && data.data.facebook_PageId == currentTeam.Facebook_PageId) {
+          if(data && data.message && data.data && currentTeam && data.data.facebook_PageId == currentTeam.ChannelId) {
               let message = data.message;
 
               if(data.data && data.data.facebook_UserName) {

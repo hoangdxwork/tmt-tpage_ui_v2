@@ -597,7 +597,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
           let pageDic = {} as any;
 
           teams.map((x: any) => {
-            let exist = res.filter((r: any) => r.page_id == x.Facebook_PageId)[0];
+            let exist = res.filter((r: any) => r.page_id == x.ChannelId)[0];
 
             if (exist && !pageDic[exist.page_id]) {
 
@@ -612,7 +612,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
           if (this.mappingTeams.length > 0) {
             this.currentMappingTeam = this.mappingTeams[0];
-            this.loadMDBByPSId(this.currentMappingTeam.team?.Facebook_PageId, this.currentMappingTeam.psid);
+            this.loadMDBByPSId(this.currentMappingTeam.team?.ChannelId, this.currentMappingTeam.psid);
           }
         });
     }, error => {
@@ -649,7 +649,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   selectMappingTeam(item: any) {
     this.currentMappingTeam = item;
-    this.loadMDBByPSId(item.team?.Facebook_PageId, item.psid); // Tải lại hội thoại
+    this.loadMDBByPSId(item.team?.ChannelId, item.psid); // Tải lại hội thoại
   }
 
   closeDrawer() {

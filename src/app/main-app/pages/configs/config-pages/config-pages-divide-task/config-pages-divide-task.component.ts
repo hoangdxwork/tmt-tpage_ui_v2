@@ -67,9 +67,9 @@ export class ConfigPagesDivideTaskComponent implements OnInit, OnDestroy {
 
   changeTeam() {
     this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
-      if(res && res.Facebook_PageId) {
-        this.pageId = res.Facebook_PageId;
-        this.loadData(res.Facebook_PageId);
+      if(res && res.Facebook_PageId || res?.ChannelId) {
+        this.pageId = res.Facebook_PageId || res?.ChannelId;
+        this.loadData(res.Facebook_PageId || res?.ChannelId);
       }
     });
   }

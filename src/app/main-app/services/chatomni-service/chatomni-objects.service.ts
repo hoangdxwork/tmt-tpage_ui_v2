@@ -45,7 +45,7 @@ export class ChatomniObjectsService extends BaseSevice  {
     return this.apiService.getData<ChatomniObjectsDto>(api, null);
   }
 
-  getLink(url: string, queryObj?: any): Observable<ChatomniObjectsDto> {
+  getLink(url: string, queryObj?: any): Observable<ChatomniObjectsDto> {debugger
 
     let queryString = null;
     if (queryObj) {
@@ -86,7 +86,7 @@ export class ChatomniObjectsService extends BaseSevice  {
 
   }
 
-  nextDataSource(teamId: number, queryObj?: any): Observable<ChatomniObjectsDto> {
+  nextDataSource(teamId: number, queryObj?: any): Observable<ChatomniObjectsDto> {debugger
 
     let exist = this.objFacade.getData(teamId);
 
@@ -99,7 +99,7 @@ export class ChatomniObjectsService extends BaseSevice  {
 
     else {
       let url = this.urlNext as string;
-      return this.getLink(url, queryObj).pipe(map((res: ChatomniObjectsDto) => {
+      return this.getLink(url, queryObj).pipe(map((res: ChatomniObjectsDto) => {debugger
 
         // TODO nếu trùng urlNext thì xóa không cho load
         if (this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {

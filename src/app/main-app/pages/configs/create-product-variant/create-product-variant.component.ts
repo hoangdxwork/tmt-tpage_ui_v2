@@ -241,7 +241,7 @@ export class CreateProductVariantComponent implements OnInit {
   }
 
   addProductToPageFB(ids: TDSSafeAny, name: string) {
-    let facebook_PageId = this.CRMService.getCurrentTeam()?.Facebook_PageId;
+    let facebook_PageId = this.CRMService.getCurrentTeam()?.ChannelId;
 
     let data = {
       model: { PageId: facebook_PageId, ProductIds: [ids] }
