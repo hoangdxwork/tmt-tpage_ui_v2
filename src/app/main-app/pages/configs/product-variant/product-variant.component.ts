@@ -51,10 +51,11 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
     private crmTeamService: CRMTeamService,
     private productService: ProductService,
     private excelExportService: ExcelExportService) {
-    this.loadTeamData();
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.loadTeamData();
+  }
 
   loadData(pageSize: number, pageIndex: number) {
     this.lstOfData = [];
@@ -79,15 +80,14 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
         .pipe(finalize(() => { this.isLoading = false }));
     } else {
       return this.odataProductService
-        .getProductOnFacebookPage(params, this.team?.Facebook_PageId)
+        .getProductOnFacebookPage(params, this.team?.ChannelId)
         .pipe(takeUntil(this.destroy$))
         .pipe(finalize(() => { this.isLoading = false }));
     }
   }
 
   loadTeamData() {
-    this.crmTeamService.onChangeTeam()
-      .pipe(takeUntil(this.destroy$))
+    this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$))
       .subscribe((team) => {
         (this.team as any) = team;
       });
@@ -168,14 +168,14 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
 
   addProductToPageFB() {
     if (this.checkValueEmpty() == 1) {
-      let model = { PageId: this.team.Facebook_PageId, ProductIds: this.idsModel };
+      let model = { PageId: this.team.ChannelId, ProductIds: this.idsModel };
 
       this.productService.checkExitProductOnPageFB({ model: model }).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         if (!TDSHelperArray.hasListValue(res.value)) {
           this.message.error("Sản phẩm đã tồn tại trong page");
         } else {
           let data = {
-            model: { PageId: this.team.Facebook_PageId, ProductIds: res.value }
+            model: { PageId: this.team.ChannelId, ProductIds: res.value }
           }
           this.productService.addProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
             this.message.success("Thao tác thành công");
@@ -188,8 +188,8 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
   }
 
   exportExcel() {
-    if (this.isProcessing) { 
-      return 
+    if (this.isProcessing) {
+      return
     }
 
     let state = {

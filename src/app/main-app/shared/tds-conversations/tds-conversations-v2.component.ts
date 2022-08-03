@@ -44,7 +44,7 @@ import { CrmMatchingV2Detail } from '../../dto/conversation-all/crm-matching-v2/
 import { ChatomniMessageFacade } from '../../services/chatomni-facade/chatomni-message.facade';
 import { ChatomniConversationItemDto } from '../../dto/conversation-all/chatomni/chatomni-conversation';
 import { Facebook_Graph_Post } from '../../dto/conversation-all/chatomni/chatomni-facebook-post.dto';
-import { TdsDestroyService } from 'tds-ui/core/services';
+import { TDSDestroyService } from 'tds-ui/core/services';
 
 @Component({
   selector: 'shared-tds-conversations-v2',
@@ -52,7 +52,7 @@ import { TdsDestroyService } from 'tds-ui/core/services';
   styleUrls: ['./tds-conversations.component.sass'],
   animations: [eventFadeStateTrigger],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [ TdsDestroyService ]
+  providers: [ TDSDestroyService ]
 })
 
 export class TDSConversationsV2Component implements OnInit, OnChanges, AfterViewInit, OnDestroy {
@@ -119,7 +119,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     private cdRef: ChangeDetectorRef,
     private viewContainerRef: ViewContainerRef,
     private partnerService: PartnerService,
-    private destroy$: TdsDestroyService) {
+    private destroy$: TDSDestroyService) {
       this.userLoggedId = this.sharedService.userLogged?.Id;
   }
 

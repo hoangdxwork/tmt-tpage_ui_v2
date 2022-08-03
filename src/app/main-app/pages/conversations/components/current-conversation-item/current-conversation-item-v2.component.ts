@@ -11,7 +11,7 @@ import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { Subject, takeUntil } from 'rxjs';
 import { CrmMatchingV2Detail } from 'src/app/main-app/dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
 import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
-import { TdsDestroyService } from 'tds-ui/core/services';
+import { TDSDestroyService } from 'tds-ui/core/services';
 
 @Component({
     selector: 'current-conversation-item-v2',
@@ -21,7 +21,7 @@ import { TdsDestroyService } from 'tds-ui/core/services';
     host:{
       'class':'block w-full'
     },
-    providers: [ TdsDestroyService ]
+    providers: [ TDSDestroyService ]
 })
 
 export class CurrentConversationItemV2Component  implements OnInit, OnChanges, AfterViewInit {
@@ -62,7 +62,7 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
     public cdr:ChangeDetectorRef,
     public element : ElementRef,
     private resizeObserver: TDSResizeObserver,
-    private destroy$: TdsDestroyService) {
+    private destroy$: TDSDestroyService) {
   }
 
   ngOnInit(): void {
