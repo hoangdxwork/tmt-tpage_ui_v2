@@ -15,24 +15,26 @@ import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-aut
 import { eventFadeStateTrigger, eventCollapTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
-import { TDSModalService } from 'tds-ui/modal';
+import { TDSModalService, TDSModalRef } from 'tds-ui/modal';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { OnChatBotSignalRModel, TypeOnChatBot } from 'src/app/main-app/dto/event-signalR/on-chatbot-signalR.dto';
 import { SignalRConnectionService } from 'src/app/main-app/services/signalR/signalR-connection.service';
-import { TDSNotificationService } from 'tds-ui/notification';
+import { TDSNotificationRef, TDSNotificationService } from 'tds-ui/notification';
 import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { CrmMatchingV2Service } from 'src/app/main-app/services/matching-v2-service/crm-matching-v2.service';
 import { ChatomniMessageService } from 'src/app/main-app/services/chatomni-service/chatomni-message.service';
 import { ChatomniConversationService } from 'src/app/main-app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationDto, ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
+import { TdsDestroyService } from 'tds-ui/core/services';
 
 @Component({
   selector: 'app-conversation-all-v2',
   templateUrl: './conversation-all-v2.component.html',
-  animations: [eventFadeStateTrigger, eventCollapTrigger]
+  animations: [eventFadeStateTrigger, eventCollapTrigger],
+  providers: [ TdsDestroyService ]
 })
 
-export class ConversationAllV2Component extends TpageBaseComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ConversationAllV2Component extends TpageBaseComponent implements OnInit, AfterViewInit {
 
   @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
@@ -69,8 +71,13 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
   currentOrderTab: number = 0;
   letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-  private destroy$ = new Subject<void>();
 
+<<<<<<< HEAD
+  urlNext!: string;
+  private notificationRef!: TDSNotificationRef;
+
+=======
+>>>>>>> dev
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
     public crmService: CRMTeamService,
@@ -89,7 +96,8 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     private crmMatchingV2Service: CrmMatchingV2Service,
     private viewContainerRef: ViewContainerRef,
     private sgRConnectionService: SignalRConnectionService,
-    private facebookRESTService: FacebookRESTService) {
+    private facebookRESTService: FacebookRESTService,
+    private destroy$: TdsDestroyService) {
       super(crmService, activatedRoute, router);
   }
 
@@ -463,86 +471,82 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       // this.makeDataSource(this.queryFilter);
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   hubEvents() {
-    // this.sgRConnectionService._onChatbotEvent$.pipe(takeUntil(this.destroy$)).subscribe((hubs: OnChatBotSignalRModel) => {
-    //     if(hubs && hubs.data) {
-    //         // TODO: nếu dữ liệu ko phải là conversation hiện tại
-    //         let item = this.lstCrmMatching.filter(x => x.page_id == hubs.data.pageId && x.psid == hubs.data.psid)[0];
-    //         // TODO: dữ liệu là conversation hiện tại truyền cho shared-tds-conversations
-    //         let exits = this.currentCrmMatching?.page_id == hubs.data.pageId && this.currentCrmMatching?.psid == hubs.data.psid;
+    this.sgRConnectionService._onChatbotEvent$.pipe(takeUntil(this.destroy$)).subscribe((hubs: OnChatBotSignalRModel) => {
+        if(hubs && hubs.data) {
+            // TODO: nếu dữ liệu ko phải là conversation hiện tại
+            let item = this.lstOmcs.filter(x => x.Id == hubs.data.pageId && x.ConversationId == hubs.data.psid)[0]; // x.Id  này để tạm
+            // TODO: dữ liệu là conversation hiện tại truyền cho shared-tds-conversations
+            let exits = this.omcs_Item?.Id == hubs.data.pageId && this.omcs_Item?.ConversationId == hubs.data.psid;
 
-    //         let data = {
-    //           team: {},
-    //           psid: hubs.data.psid,
-    //           message:  hubs.message,
-    //         }
+            let data = {
+              team: {},
+              psid: hubs.data.psid,
+              message:  hubs.message,
+            }
 
-    //         switch (hubs.type) {
-    //           case `${TypeOnChatBot.AdminTransferChatBot}`:
-    //               if(item) {
-    //                 item.state = StateChatbot.Warning;
-    //               }
-    //               if(exits) {
-    //                   this.currentCrmMatching!.state = StateChatbot.Warning;
-    //               }
-    //               // TODO: Lấy teamId của page
-    //               this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
-    //                 if(res){
-    //                    data.team = res[0];
-    //                 }
-    //                 this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
-    //               }, err =>{
-    //                 this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
-    //               })
-    //               // this.notification.warning('Chatbot gặp vấn đề' , `${hubs.message}`, { placement: 'bottomLeft' });
-    //             break;
+            switch (hubs.type) {
+              case `${TypeOnChatBot.AdminTransferChatBot}`:
+                  if(item) {
+                    item.State = StateChatbot.Warning;
+                  }
+                  if(exits) {
+                      this.omcs_Item!.State = StateChatbot.Warning;
+                  }
+                  // TODO: Lấy teamId của page
+                  this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
+                    if(res){
+                       data.team = res[0];
+                    }
+                    this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
+                  }, err =>{
+                    this.notification.template(this.templateAdminTransferChatBot, { data: data, placement: 'bottomLeft' });
+                  })
+                  // this.notification.warning('Chatbot gặp vấn đề' , `${hubs.message}`, { placement: 'bottomLeft' });
+                break;
 
-    //           case `${TypeOnChatBot.ChatbotTranserAdmin}`:
-    //               if(item) {
-    //                 item.state = StateChatbot.Normal;
-    //               }
+              case `${TypeOnChatBot.ChatbotTranserAdmin}`:
+                  if(item) {
+                    item.State = StateChatbot.Normal;
+                  }
 
-    //               if(exits) {
-    //                   this.currentCrmMatching!.state = StateChatbot.Normal;
-    //               }
+                  if(exits) {
+                      this.omcs_Item!.State = StateChatbot.Normal;
+                  }
 
-    //               this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
-    //                 if(res){
-    //                   data.team = res[0];
-    //                 }
-    //                 this.notification.template(this.templateChatbotTranserAdmin, { data: data, placement: 'bottomLeft' });
-    //               }, err =>{
-    //                 this.notification.template(this.templateChatbotTranserAdmin, { data: data, placement: 'bottomLeft' });
-    //               })
-    //             break;
+                  this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
+                    if(res){
+                      data.team = res[0];
+                    }
+                    this.notificationRef = this.notification.template(this.templateChatbotTranserAdmin, { data: data, placement: 'bottomLeft' });
+                  }, err =>{
+                    this.notificationRef = this.notification.template(this.templateChatbotTranserAdmin, { data: data, placement: 'bottomLeft' });
+                  })
+                break;
 
-    //           default:
-    //             break;
-    //         }
-    //    }
-    // })
+              default:
+                break;
+            }
+       }
+    })
   }
 
-  getLink(team: TDSSafeAny, psid: string){
-    // if(TDSHelperObject.hasValue(team)){
-    //   if(team.Id != this.currentTeam.Id){
-    //     this.crmService.changeTeamFromLayout$.emit(team);
-    //     this.onChangeConversation(team);
-    //   }
-    //   let data = this.lstCrmMatching.find(x => x.psid == psid)
-    //   if(data){
-    //     this.currentCrmMatching = data;
-    //   }
+  getLink(team: TDSSafeAny, csid: string){
+    if(TDSHelperObject.hasValue(team)){
+      if(team.Id != this.currentTeam.Id){
+        this.crmService.changeTeamFromLayout$.emit(team);
+        this.onChangeConversation(team);
+      }
+      let data = this.lstOmcs.find(x => x.ConversationId == csid)
+      if(data){
+        this.omcs_Item = data;
+      }
 
-    //   let uri = 'conversation/all';
-    //   let uriParams = `${uri}?teamId=${team.Id}&type=all&psid=${psid}`;
-    //   this.router.navigateByUrl(uriParams)
-    // }
+      let uri = 'conversation/all';
+      let uriParams = `${uri}?teamId=${team.Id}&type=all&psid=${csid}`;
+      this.router.navigateByUrl(uriParams)
+      this.notification.remove(this.notificationRef.messageId);
+    }
   }
 
   notificationMessNew(){
