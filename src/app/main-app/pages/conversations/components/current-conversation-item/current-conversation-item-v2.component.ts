@@ -11,6 +11,7 @@ import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { Subject, takeUntil } from 'rxjs';
 import { CrmMatchingV2Detail } from 'src/app/main-app/dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
 import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
+import { TdsDestroyService } from 'tds-ui/core/services';
 
 @Component({
     selector: 'current-conversation-item-v2',
@@ -19,10 +20,11 @@ import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-a
     changeDetection: ChangeDetectionStrategy.OnPush,
     host:{
       'class':'block w-full'
-    }
+    },
+    providers: [ TdsDestroyService ]
 })
 
-export class CurrentConversationItemV2Component  implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+export class CurrentConversationItemV2Component  implements OnInit, OnChanges, AfterViewInit {
 
   @Input() isFastSend: boolean | undefined;
   @Input() item!: ChatomniConversationItemDto;
@@ -39,8 +41,6 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
   // @ViewChild
   @ViewChild('currentWidthTag') currentWidthTag!:  ElementRef<TDSSafeAny>;
   @ViewChildren('widthTag') widthTag!: QueryList<ElementRef>;
-
-  private destroy$ = new Subject<void>();
 
   eventData: any;
   isDraftMessage: boolean = false;
@@ -61,12 +61,8 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
     public router: Router,
     public cdr:ChangeDetectorRef,
     public element : ElementRef,
-    private resizeObserver: TDSResizeObserver) {
-  }
-
-  ngOnDestroy(): void {
-   this.destroy$.next();
-   this.destroy$.complete();
+    private resizeObserver: TDSResizeObserver,
+    private destroy$: TdsDestroyService) {
   }
 
   ngOnInit(): void {

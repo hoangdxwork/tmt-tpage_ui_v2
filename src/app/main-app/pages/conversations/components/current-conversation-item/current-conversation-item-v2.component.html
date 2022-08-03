@@ -77,8 +77,8 @@
                     </div>
                 </div>
             </div>
-            <div *ngIf="(item | lastActivityMessage: type)?.message">
-                <div [ngClass]="seenedMessage()?'text-neutral-1-900':'text-neutral-1-600'" class="text-body-2 font-regular font-sans " showMore [length]="100" [text]="(item | lastActivityMessage: type)?.message | formatIconLike"></div>
+            <div>
+                <div [ngClass]="seenedMessage()?'text-neutral-1-900':'text-neutral-1-600'" class="text-body-2 font-regular font-sans " showMore [length]="100" [text]="(item.LatestMessage?.Message| formatIconLike)"></div>
             </div>
         </div>
       </div>

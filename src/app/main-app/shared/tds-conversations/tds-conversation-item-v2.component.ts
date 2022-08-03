@@ -1,3 +1,4 @@
+import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
 import { Facebook } from './../../../lib/dto/facebook.dto';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
 import { Subject, takeUntil } from "rxjs";
@@ -9,22 +10,24 @@ import { ConversationOrderFacade } from "../../services/facades/conversation-ord
 import { PhoneHelper } from "../helper/phone.helper";
 import { ReplaceHelper } from "../helper/replace.helper";
 import { eventReplyCommentTrigger } from "../helper/event-animations.helper";
-import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSModalService } from "tds-ui/modal";
 import { ProductPagefbComponent } from "../../pages/conversations/components/product-pagefb/product-pagefb.component";
 import { FormatIconLikePipe } from "../pipe/format-icon-like.pipe";
-import { ChatomniMessageDetail, ChatomniMessageType, Datum, ExtrasObjectDto } from "../../dto/conversation-all/chatomni/chatomni-message.dto";
+import { ChatomniMessageDetail, ChatomniMessageType, Datum } from "../../dto/conversation-all/chatomni/chatomni-message.dto";
+import { TdsDestroyService } from 'tds-ui/core/services';
 
 @Component({
   selector: "tds-conversation-item-v2",
   templateUrl:'./tds-conversation-item-v2.component.html',
   styleUrls: ['./tds-conversations.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [eventReplyCommentTrigger]
+  animations: [eventReplyCommentTrigger],
+  providers: [ TdsDestroyService ]
 })
 
-export class TDSConversationItemV2Component implements OnInit, OnDestroy {
+export class TDSConversationItemV2Component implements OnInit {
 
   @Input() dataItem!: ChatomniMessageDetail;
   @Input() csid!: string;
@@ -38,7 +41,6 @@ export class TDSConversationItemV2Component implements OnInit, OnDestroy {
 
   messages: any = [];
   message: string = '';
-  destroy$ = new Subject<void>();
   isReply: boolean = false;
   isPrivateReply: boolean = false;
   messageModel: any
@@ -63,26 +65,27 @@ export class TDSConversationItemV2Component implements OnInit, OnDestroy {
     private activityDataFacade: ActivityDataFacade,
     private conversationDataFacade: ConversationDataFacade,
     private conversationOrderFacade: ConversationOrderFacade,
-    private activityMatchingService: ActivityMatchingService) {
+    private activityMatchingService: ActivityMatchingService,
+    private destroy$: TdsDestroyService) {
   }
 
   ngOnInit(): void {
-    // if(TDSHelperObject.hasValue(this.children) && this.dataItem) {
-    //     let type = this.team.Type;
+    if(TDSHelperObject.hasValue(this.children) && this.dataItem) {
+        let type = this.team.Type;
 
-    //     switch(type) {
-    //       case CRMTeamType._Facebook:
-    //         break;
-    //       case CRMTeamType._TShop:
-    //         if(this.dataItem.Type == ChatomniMessageType.TShopComment) {
-    //             let tshopPost = this.children.Data 
-    //         }
-    //         break;
+        switch(type) {
+          case CRMTeamType._Facebook:
+            break;
+          case CRMTeamType._TShop:
+            if(this.dataItem.Type == ChatomniMessageType.TShopComment) {
+                let tshopPost = this.children.Data 
+            }
+            break;
 
-    //       default: 
-    //         break;
-    //     }
-    // }
+          default: 
+            break;
+        }
+    }
   }
 
   selectOrder(type: string): any {
@@ -461,10 +464,5 @@ export class TDSConversationItemV2Component implements OnInit, OnDestroy {
         this.tdsMessage.info('Đã copy số điện thoại');
       }
     }
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }
