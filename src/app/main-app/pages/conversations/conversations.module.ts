@@ -136,6 +136,8 @@ import { ConversationPostV2Component } from './conversation-post/conversation-po
 import { ChatomniObjectsService } from '@app/services/chatomni-service/chatomni-objects.service';
 import { ItemPostCommentV2Component } from './conversation-post/item-post-comment-v2.component';
 import { ConversationPostViewV2Component } from './conversation-post/conversation-post-view-v2.component';
+import { ChatomniObjectsFacade } from '@app/services/chatomni-facade/chatomni-objects.facade';
+import { ConversationPostViewV3Component } from './conversation-post/conversation-post-view-v3.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -192,7 +194,8 @@ const SERVICES = [
   CalculateFeeAshipHandler,
   ChatomniMessageService,
   ChatomniConversationFacade,
-  ChatomniObjectsService
+  ChatomniObjectsService,
+  ChatomniObjectsFacade
 ]
 
 @NgModule({
@@ -242,7 +245,8 @@ const SERVICES = [
     CurrentConversationItemV2Component,
     ConversationPostV2Component,
     ItemPostCommentV2Component,
-    ConversationPostViewV2Component
+    ConversationPostViewV2Component,
+    ConversationPostViewV3Component
   ],
 
   imports: [
