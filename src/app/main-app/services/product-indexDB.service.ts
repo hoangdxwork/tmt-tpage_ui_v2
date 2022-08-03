@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from "@angular/core";
 import { Observable, Subject } from "rxjs";
-import { map, mergeMap } from "rxjs/operators";
+import { map, mergeMap, shareReplay } from "rxjs/operators";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from "src/app/lib";
 import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { DataPouchDBDTO, KeyCacheIndexDBDTO, ProductPouchDBDTO } from "../dto/product-pouchDB/product-pouchDB.dto";
@@ -84,7 +84,8 @@ export class ProductIndexDBService extends BaseSevice implements OnDestroy {
         let keyCache = this._keyCacheProductIndexDB;
         this.cacheApi.setItem(keyCache, JSON.stringify(items));
         return items;
-      }))
+
+      }, shareReplay({ bufferSize: 1, refCount: true })))
   }
 
   getLastVersionV2(countIndex: number, version: number): Observable<any> {

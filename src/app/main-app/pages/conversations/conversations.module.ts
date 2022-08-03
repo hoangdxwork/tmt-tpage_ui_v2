@@ -132,6 +132,11 @@ import { SO_ComputeCaclHandler } from '@app/handler-v2/order-handler/compute-cac
 import { CalculateFeeAshipHandler } from '@app/handler-v2/aship-v2/calcfee-aship.handler';
 import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-message.service';
 import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
+import { ConversationPostV2Component } from './conversation-post/conversation-post-v2.component';
+import { ChatomniObjectsService } from '@app/services/chatomni-service/chatomni-objects.service';
+import { ConversationPostViewV2Component } from './conversation-post/conversation-post-view-v2.component';
+import { ChatomniObjectsFacade } from '@app/services/chatomni-facade/chatomni-objects.facade';
+import { ConversationPostViewV3Component } from './conversation-post/conversation-post-view-v3.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -187,7 +192,9 @@ const SERVICES = [
   SO_ComputeCaclHandler,
   CalculateFeeAshipHandler,
   ChatomniMessageService,
-  ChatomniConversationFacade
+  ChatomniConversationFacade,
+  ChatomniObjectsService,
+  ChatomniObjectsFacade
 ]
 
 @NgModule({
@@ -234,7 +241,10 @@ const SERVICES = [
     ModalPostComponent,
     ModalRenameAttachmentComponent,
     ConversationAllV2Component,
-    CurrentConversationItemV2Component
+    CurrentConversationItemV2Component,
+    ConversationPostV2Component,
+    ConversationPostViewV2Component,
+    ConversationPostViewV3Component
   ],
 
   imports: [

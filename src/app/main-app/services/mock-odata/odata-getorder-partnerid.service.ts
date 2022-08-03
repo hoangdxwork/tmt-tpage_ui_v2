@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { OperatorEnum, CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from "src/app/lib";
 import { FilterDataRequestDTO } from "src/app/lib/dto/dataRequest.dto";
-import { TDSHelperArray, TDSHelperString } from "tds-ui/shared/utility";
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { OdataGetOrderPartnerIdDTO } from "../../dto/saleonlineorder/odata-getorderpartnerid.dto";
 import { BaseSevice } from "../base.service";
 
@@ -77,6 +77,15 @@ export class OdataGetOrderPartnerIdService extends BaseSevice {
     }
 
     return dataFilter;
+  }
+
+  assignSaleOnlineOrder(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/TagSaleOnlineOrder/ODataService.AssignTag`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
 }

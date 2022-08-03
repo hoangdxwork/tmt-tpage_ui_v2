@@ -1,9 +1,13 @@
 <div class="w-full flex flex-col gap-y-4">
-    <div class="w-full">
+    <div class="w-full flex gap-x-4">
         <tds-form-field class="w-full">
             <input tdsInput placeholder="Tìm kiếm đơn hàng" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" />
             <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
         </tds-form-field>
+
+        <div class="w-96">
+          <tds-range-picker [(ngModel)]="datePicker" (ngModelChange)="onChangeDate($event)"> </tds-range-picker>
+        </div>
     </div>
     <div class="max-h-[450px] h-[450px]">
         <tds-table class="w-full h-full tds-table-rounded" [scroll]="{ y:'auto' }" #productTable [bordered]="true"
@@ -22,7 +26,7 @@
                     <th [width]="'100px'">Tổng SL</th>
                     <th [width]="'150px'">Ngày tạo đơn</th>
                     <th [width]="'150px'">Trạng thái</th>
-                    <th [width]="'150px'">Nhân viên</th>
+                    <!-- <th [width]="'150px'">Nhân viên</th> -->
                 </tr>
             </thead>
             <tbody>
@@ -30,18 +34,21 @@
                     <tr>
                         <td>{{ data.Session }}</td>
                         <td>
+                          <!-- && data.Code == this.orderId ? 'bg-teal-700' : '' -->
                             <div class="w-full flex">
-                                <span [ngClass]="data.Code ? '' : 'text-error-500'">{{ data.Code || 'N/A' }}</span>
+                                <div [ngClass]="data.Code == this.orderId ? 'rounded px-2 bg-primary-1 text-white cursor-pointer' : '' " (click)="changeClick(data.Code)">
+                                  <span [ngClass]="data.Code ? '' : 'text-error-500' ">{{ data.Code || 'N/A' }}</span>
+                                </div>
                             </div>
                             <!-- Nhãn -->
                             <div class="flex w-full gap-x-1 items-center">
                                 <div *ngIf='data.Tags && data.Tags !== "[]"' class="flex w-full flex-wrap gap-1">
                                     <tds-tag *ngFor="let item of data.Tags | prettyjson" status='primary' tds-tooltip [tooltipTitle]="item.Name">
-                                        <div class="truncate max-w-[100px]">{{item.Name}}</div>
+                                        <div class="truncate max-w-[100px]" >{{item.Name}}</div>
                                     </tds-tag>
                                 </div>
 
-                                <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover tds-tooltip="Thêm nhãn" [popoverVisible]="indClickTag == data.Id"
+                                <!-- <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover tds-tooltip="Thêm nhãn" [popoverVisible]="indClickTag == data.Id"
                                     popoverTrigger="click" [popoverFooter]="footerAddTag" [popoverContent]="contentAddtag" [popoverBackdrop]="true" popoverPlacement="left"
                                     color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
                                     <div class="w-5 h-5 relative">
@@ -51,7 +58,7 @@
                                         </svg>
                                     </div>
                                 </button>
-                                <!-- Button thêm nhãn -->
+                                Button thêm nhãn
                                 <ng-template #contentAddtag>
                                     <div class="w-96">
                                         <tds-form-field>
@@ -68,13 +75,13 @@
                                                 <i class="tdsi-close-fill"></i>
                                             </span>
                                         </button>
-                                        <button tds-button-icon size="sm">
+                                        <button tds-button-icon size="sm" color="primary" (click)="assignTags(data.Id, modelTags)">
                                             <span class="flex items-center">
                                                 <i class="tdsi-tick-fill"></i>
                                             </span>
                                         </button>
                                     </div>
-                                </ng-template>
+                                </ng-template> -->
                             </div>
                         </td>
                         <td>
@@ -87,21 +94,13 @@
                         <td>{{data.TotalQuantity || 0 | numberCustom:'.' }}</td>
                         <td>{{ data.DateCreated | date: 'dd/MM/yyyy' }}</td>
                         <td>
-                            <tds-tag [status]="getColorStatusText(data.StatusText)" type="outline" class="cursor-pointer" tds-dropdown trigger="click"
-                                [tdsDropdownMenu]="menu1" placement="bottomRight" popoverTrigger="click">
+                            <tds-tag [status]="getColorStatusText(data.StatusText)" type="outline">
                                 <span class="flex items-center">
-                                    {{ data.StatusText }}<i class="tdsi-arrow-down-fill text-base leading-none ml-1"></i>
+                                    {{ data.StatusText }}
                                 </span>
                             </tds-tag>
-                            <tds-dropdown-menu #menu1="tdsDropdownMenu">
-                                <div class="w-full">
-                                    <div tds-dropdown-item *ngFor="let status of lstStatusTypeExt">
-                                        <a> {{ status.Text }} </a>
-                                    </div>
-                                </div>
-                            </tds-dropdown-menu>
                         </td>
-                        <td>{{ data.UserName }}</td>
+                        <!-- <td>{{ data.UserName }}</td> -->
                     </tr>
                 </ng-template>
             </tbody>

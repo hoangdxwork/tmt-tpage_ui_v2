@@ -6,7 +6,6 @@ import { CommonModule } from '@angular/common';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TDSEchartsModule } from 'tds-report';
-import { OverviewComponent } from './components/overview/overview.component';
 import { FacebookReportComponent } from './components/facebook-report/facebook-report.component';
 import { LabelReportComponent } from './components/label-report/label-report.component';
 import { RevenueReportComponent } from './components/revenue-report/revenue-report.component';
@@ -46,7 +45,6 @@ const SERVICES = [
 @NgModule({
   declarations: [
     DashboardComponent,
-    OverviewComponent,
     FacebookReportComponent,
     LabelReportComponent,
     RevenueReportComponent,

@@ -60,13 +60,15 @@ import { SelectShipServiceV2Handler } from '@app/handler-v2/aship-v2/select-ship
 import { UpdateShipExtraHandler } from '@app/handler-v2/aship-v2/update-shipextra.handler';
 import { UpdateShipServiceExtrasHandler } from '@app/handler-v2/aship-v2/update-shipservice-extras.handler';
 import { UpdateShipmentDetailAshipHandler } from '@app/handler-v2/aship-v2/shipment-detail-aship.handler';
+import { TDSDestroyService } from 'tds-ui/core/services';
 
 @Component({
     selector: 'conversation-order',
     templateUrl: './conversation-order.component.html',
+    providers: [ TDSDestroyService ]
 })
 
-export class ConversationOrderComponent  implements OnInit, OnDestroy {
+export class ConversationOrderComponent implements OnInit {
 
   @Input() data!: ChatomniConversationItemDto;
   @Input() team!: CRMTeamDTO;
@@ -123,7 +125,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   _wards!: SuggestWardsDTO;
   _street!: string;
 
-  private destroy$ = new Subject<void>();
+
   lstInventory!: GetInventoryDTO;
 
   constructor(private message: TDSMessageService,
@@ -151,7 +153,8 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     private updateShipExtraHandler: UpdateShipExtraHandler,
     private updateShipServiceExtrasHandler: UpdateShipServiceExtrasHandler,
     private updateShipmentDetailAshipHandler: UpdateShipmentDetailAshipHandler,
-    private viewContainerRef: ViewContainerRef) {
+    private viewContainerRef: ViewContainerRef,
+    private destroy$: TDSDestroyService) {
   }
 
   ngOnInit(): void {
@@ -399,6 +402,11 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
   onSave(type: string): any {
       let model = this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel)
+
+      if(type === 'print') {
+          this.quickOrderModel.FormAction = 'print';
+          this.saleModel.FormAction = 'print';
+      }
 
       if(this.isEnableCreateOrder) {
         if (!TDSHelperArray.hasListValue(this.quickOrderModel.Details)) {
@@ -711,10 +719,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
+
 
   closeSearchProduct(){
     this.textSearchProduct = '';

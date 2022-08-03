@@ -15,7 +15,6 @@ import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from 'src/ap
 import { RequestCommentByGroup } from 'src/app/main-app/dto/conversation/post/comment-group.dto';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
-import { ChildChatOmniChannelDto } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 
 @Component({
   selector: 'item-post-comment',
@@ -28,6 +27,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   @Input() post!: FacebookPostItem;
   @Input() sort: any;
   @Input() filter: any;
+
   @Input() isShowCheckboxComent: boolean = true;
   @Input() currentFilterComment: TDSSafeAny;
   @Input() textSearchFilterComment!: string;
