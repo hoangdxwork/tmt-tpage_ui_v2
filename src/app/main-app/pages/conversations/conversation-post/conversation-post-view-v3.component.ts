@@ -21,12 +21,12 @@ import { RequestCommentByGroup } from '@app/dto/conversation/post/comment-group.
 import { RequestCommentByPost } from '@app/dto/conversation/post/comment-post.dto';
 
 @Component({
-  selector: 'conversation-post-view-v2',
-  templateUrl: './conversation-post-view-v2.component.html',
+  selector: 'conversation-post-view-v3',
+  templateUrl: './conversation-post-view-v3.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class ConversationPostViewV2Component implements OnInit, OnChanges, OnDestroy {
+export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDestroy {
 
   @Input() data!: FacebookPostItem;
   @Input() team!: CRMTeamDTO;
