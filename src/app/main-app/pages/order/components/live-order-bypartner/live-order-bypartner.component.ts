@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { fromEvent, Subject, takeUntil } from 'rxjs';
 import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { OdataGetOrderPartnerIdModal } from 'src/app/main-app/dto/saleonlineorder/odata-getorderpartnerid.dto';
@@ -15,6 +15,7 @@ import { Message } from 'src/app/lib/consts/message.const';
 import { FilterDataRequestDTO, SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { SortEnum } from 'src/app/lib';
 import { addDays } from 'date-fns';
+import { SaleOnline_OrderService } from '@app/services/sale-online-order.service';
 
 @Component({
   selector: 'live-order-bypartner',
@@ -24,12 +25,15 @@ export class LiveOrderByPartnerComponent implements OnInit, OnDestroy {
 
   @ViewChild('innerText') innerText!: ElementRef;
   @Input() partnerId!: number;
-  lstOfData!: ODataSaleOnline_OrderModel[];
+  @Input() orderId! : string | undefined;
+  @Output() checkedClick = new EventEmitter<boolean>();
+  checked : boolean = false;
+  datePicker: any = [addDays(new Date(), -30), new Date()];
+  // lstOfData!: ODataSaleOnline_OrderModel[];
   pageSize: number = 20;
   pageIndex: number = 1;
   count: number = 0;
   isLoading: boolean = false;
-  isTabNavs: boolean = false;
   lstOrder!: Array<OdataGetOrderPartnerIdModal>;
   destroy$ = new Subject<void>();
   lstStatusTypeExt!: Array<any>;
@@ -54,7 +58,7 @@ export class LiveOrderByPartnerComponent implements OnInit, OnDestroy {
     private odataGetOrderPartnerIdService: OdataGetOrderPartnerIdService,
     private tagService: TagService,
     private commonService: CommonService,
-    private message: TDSMessageService
+    private message: TDSMessageService,
   ) { }
 
   ngOnInit(): void {
@@ -86,17 +90,49 @@ export class LiveOrderByPartnerComponent implements OnInit, OnDestroy {
     let type = "saleonline";
     this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
       this.lstDataTag = [...res.value];
+      console.log("tag", this.lstDataTag);
+
     });
   }
 
-  openTag(id: string, data: TDSSafeAny) {
-    this.modelTags = [];
-    this.indClickTag = id;
-    this.modelTags = JSON.parse(data);
-  }
+  // openTag(id: string, data: TDSSafeAny) {
+  //   this.modelTags = [];
+  //   this.indClickTag = id;
+  //   this.modelTags = JSON.parse(data);
+  // }
 
-  closeTag(): void {
-    this.indClickTag = "";
+  // assignTags(id: string, tags: TDSSafeAny) {
+  //   let model = { OrderId: id, Tags: tags };
+  //   this.odataGetOrderPartnerIdService.assignSaleOnlineOrder(model)
+  //     .subscribe((res: TDSSafeAny) => {
+  //       if (res && res.OrderId) {
+  //         let exits = this.lstOfData.filter(x => x.Id == id)[0] as TDSSafeAny;
+  //         if (exits) {
+  //           exits.Tags = JSON.stringify(tags)
+  //         }
+
+  //         this.indClickTag = "";
+  //         this.modelTags = [];
+  //         this.message.success(Message.Tag.InsertSuccess);
+  //       }
+  //     }, error => {
+  //       this.indClickTag = "";
+  //       this.message.error(`${error?.error?.message}` || Message.Tag.InsertFail);
+  //     });
+  // }
+
+  // closeTag(): void {
+  //   this.indClickTag = "";
+  // }
+
+  onChangeDate(event: any[]) {
+    this.datePicker = [];
+    if(event) {
+      event.forEach(x => {
+          this.datePicker.push(x);
+      })
+    }
+    this.onSearch(event);
   }
 
   loadStatusTypeExt() {
@@ -128,6 +164,10 @@ export class LiveOrderByPartnerComponent implements OnInit, OnDestroy {
   onSearch(data: TDSSafeAny) {
     this.pageIndex = 1;
 
+    this.filterObj.dateRange = {
+      startDate: this.datePicker[0],
+      endDate: this.datePicker[1]
+    }
     this.filterObj.searchText = data.value;
     this.loadData(this.pageSize,this.pageIndex);
   }
@@ -135,6 +175,12 @@ export class LiveOrderByPartnerComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  changeClick(ev: TDSSafeAny){
+    if(ev == this.orderId) {
+      this.checkedClick.emit(!this.checked);
+    }
   }
 
 }

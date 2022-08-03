@@ -38,8 +38,8 @@
 
                             <!-- Số HĐ -->
                             <td>
-                                <div class="w-full flex font-semibold text-center pb-2">
-                                    <span [ngClass]="data.Number ? 'text-info-400' : 'text-error-500'" (click)="onBillDetail($event, data)">{{ data.Number || 'N/A' }}</span>
+                                <div class="w-full flex font-semibold text-center pb-2 cursor-pointer" (click)="onBillDetail($event, data)">
+                                    <span [ngClass]="data.Number ? 'text-info-400' : 'text-error-500'" >{{ data.Number || 'N/A' }}</span>
                                 </div>
                                 <!-- Nhãn -->
                             </td>
