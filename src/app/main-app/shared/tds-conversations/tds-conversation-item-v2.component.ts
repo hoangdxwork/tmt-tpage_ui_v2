@@ -16,7 +16,7 @@ import { TDSModalService } from "tds-ui/modal";
 import { ProductPagefbComponent } from "../../pages/conversations/components/product-pagefb/product-pagefb.component";
 import { FormatIconLikePipe } from "../pipe/format-icon-like.pipe";
 import { ChatomniMessageDetail, ChatomniMessageType, Datum } from "../../dto/conversation-all/chatomni/chatomni-message.dto";
-import { TdsDestroyService } from 'tds-ui/core/services';
+import { TDSDestroyService } from 'tds-ui/core/services';
 
 @Component({
   selector: "tds-conversation-item-v2",
@@ -24,7 +24,7 @@ import { TdsDestroyService } from 'tds-ui/core/services';
   styleUrls: ['./tds-conversations.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [eventReplyCommentTrigger],
-  providers: [ TdsDestroyService ]
+  providers: [ TDSDestroyService ]
 })
 
 export class TDSConversationItemV2Component implements OnInit {
@@ -66,7 +66,7 @@ export class TDSConversationItemV2Component implements OnInit {
     private conversationDataFacade: ConversationDataFacade,
     private conversationOrderFacade: ConversationOrderFacade,
     private activityMatchingService: ActivityMatchingService,
-    private destroy$: TdsDestroyService) {
+    private destroy$: TDSDestroyService) {
   }
 
   ngOnInit(): void {
@@ -78,11 +78,11 @@ export class TDSConversationItemV2Component implements OnInit {
             break;
           case CRMTeamType._TShop:
             if(this.dataItem.Type == ChatomniMessageType.TShopComment) {
-                let tshopPost = this.children.Data 
+                let tshopPost = this.children.Data
             }
             break;
 
-          default: 
+          default:
             break;
         }
     }

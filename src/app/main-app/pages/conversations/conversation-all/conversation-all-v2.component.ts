@@ -25,13 +25,13 @@ import { CrmMatchingV2Service } from 'src/app/main-app/services/matching-v2-serv
 import { ChatomniMessageService } from 'src/app/main-app/services/chatomni-service/chatomni-message.service';
 import { ChatomniConversationService } from 'src/app/main-app/services/chatomni-service/chatomni-conversation.service';
 import { ChatomniConversationDto, ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
-import { TdsDestroyService } from 'tds-ui/core/services';
+import { TDSDestroyService } from 'tds-ui/core/services';
 
 @Component({
   selector: 'app-conversation-all-v2',
   templateUrl: './conversation-all-v2.component.html',
   animations: [eventFadeStateTrigger, eventCollapTrigger],
-  providers: [ TdsDestroyService ]
+  providers: [ TDSDestroyService ]
 })
 
 export class ConversationAllV2Component extends TpageBaseComponent implements OnInit, AfterViewInit {
@@ -72,12 +72,8 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   currentOrderTab: number = 0;
   letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
-<<<<<<< HEAD
-  urlNext!: string;
   private notificationRef!: TDSNotificationRef;
 
-=======
->>>>>>> dev
   constructor(private message: TDSMessageService,
     private conversationDataFacade: ConversationDataFacade,
     public crmService: CRMTeamService,
@@ -97,7 +93,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     private viewContainerRef: ViewContainerRef,
     private sgRConnectionService: SignalRConnectionService,
     private facebookRESTService: FacebookRESTService,
-    private destroy$: TdsDestroyService) {
+    private destroy$: TDSDestroyService) {
       super(crmService, activatedRoute, router);
   }
 
@@ -533,7 +529,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
   getLink(team: TDSSafeAny, csid: string){
     if(TDSHelperObject.hasValue(team)){
-      if(team.Id != this.currentTeam.Id){
+      if(team.Id != this.currentTeam!.Id){
         this.crmService.changeTeamFromLayout$.emit(team);
         this.onChangeConversation(team);
       }
