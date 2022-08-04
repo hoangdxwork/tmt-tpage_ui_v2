@@ -407,7 +407,7 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadPageNotConnect(team: CRMTeamDTO) {
-    let pageIdConnected = team?.Childs!.map((x) => x.Facebook_PageId);
+    let pageIdConnected = team?.Childs!.map((x) => x.ChannelId);
 
     this.isLoading = true;
     this.facebookGraphService.getUserPages(team.Facebook_UserToken).pipe(takeUntil(this._destroy$)).subscribe((res) => {
@@ -484,7 +484,7 @@ export class FacebookComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    let childIds = channel?.Childs!.map(x => x.Facebook_PageId) || [];
+    let childIds = channel?.Childs!.map(x => x.ChannelId) || [];
 
     if (field == 1) {
       this.lstData[teamId] = this.lstData[teamId] || {};

@@ -19,10 +19,10 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
-import { ChatomniCommentService } from '@app/services/chatomni-service/chatomni-comment.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniObjectsService } from '@app/services/chatomni-service/chatomni-objects.service';
-import { ChatomniObjectsDto, ChatomniObjectsItemDto, ObjectsFacebookPostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
+import { ChatomniObjectsDto, ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
+import { Facebook_Graph_Post } from '@app/dto/conversation-all/chatomni/chatomni-facebook-post.dto';
 
 @Component({
   selector: 'app-conversation-post-v2',
@@ -182,15 +182,17 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
         this.loadObjects(this.dataSource$);
     }
 
-    this.facebookGraphService.getFeed(this.currentTeam!.ChannelToken).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {debugger
+    // TODO: check lại trường hợp tshop
+    this.facebookGraphService.getFeed(this.currentTeam!.ChannelToken).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         if (TDSHelperArray.hasListValue(res?.data)) {
             res.data.forEach((x: any) => {
                 if (x.picture) {
-                  let exist = this.lstObjects.filter(d => d.Id == x.id)[0];
-                  // if (exist) {
-                  //     exist.picture = x.picture;
-                  //     exist.message = x.message;
-                  // }
+                    let exist = this.lstObjects.filter(d => d.Id == x.id)[0];
+
+                    if (exist && this.currentTeam?.Type == 'Facebook') {
+                        exist.Data.picture = x.picture;
+                        exist.Data.message = x.message;
+                    }
                 }
             })
         }
@@ -232,10 +234,10 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
         switch(this.currentTeam?.Type ){
             case CRMTeamType._Facebook:
 
-              let x: ObjectsFacebookPostDto = item.Data;
-              if(x.parent_id) {
+              let x = item.Data as Facebook_Graph_Post;
+              if(x.parent_id) {debugger
 
-                this.facebookPostService.getByPostParent(this.currentTeam!.Id, x.parent_id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+                this.facebookPostService.getByPostParent(this.currentTeam!.Id, x.parent_id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {debugger
                     if(res && TDSHelperArray.hasListValue(res.Items)) {
                         this.postChilds = [...res.Items];
                     }
@@ -258,7 +260,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     }
   }
 
-  nextData(event: any): any {
+  nextData(event: any): any {debugger
     if(event) {
 
       if (this.isProcessing) {

@@ -89,7 +89,7 @@ export class PostCommentAllComponent implements OnDestroy {
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
       componentParams: {
-        pageId: this.team?.Facebook_PageId,
+        pageId: this.team?.ChannelId,
       }
     });
 
@@ -102,7 +102,7 @@ export class PostCommentAllComponent implements OnDestroy {
 
   onProductSelected(event: any, item: CommentByPost) {
     let model = {
-      page_id: this.team?.Facebook_PageId,
+      page_id: this.team?.ChannelId,
       to_id: item.from.id,
       comment_id: item.id,
       message: `${ event.Name} - ${event.Price}`,
@@ -211,7 +211,7 @@ export class PostCommentAllComponent implements OnDestroy {
   prepareModel(item: CommentByPost, message: string): any {
     const model = {} as SendMessageModelDTO;
     model.from = {
-      id: this.team?.Facebook_PageId,
+      id: this.team?.ChannelId,
       name: this.team?.Facebook_PageName
     }
     model.to = {

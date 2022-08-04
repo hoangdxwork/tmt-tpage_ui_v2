@@ -282,7 +282,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         this.clickReload = 0;
 
         if (this.currentTeam) {
-          this.facebookRESTService.rescan(this.currentTeam.Facebook_PageId, 2)
+          this.facebookRESTService.rescan(this.currentTeam.ChannelId, 2)
             .pipe(takeUntil(this.destroy$)).subscribe(res => {
               console.log("Yêu cầu cập nhật thành công.");
           }, error => {

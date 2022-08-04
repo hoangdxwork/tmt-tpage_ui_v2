@@ -1,8 +1,9 @@
+import { Facebook_Graph_Post } from "./chatomni-facebook-post.dto";
 import { Attachments, Extras, Facebook_Graph_From, PagingTimestamp } from "./chatomni-message.dto";
 import { ChatomniDataTShopPostDto } from "./chatomni-tshop-post.dto";
 
 export interface ChatomniObjectsItemDto {
-  Data: any; //ObjectsFacebookPostDto | ChatomniDataTShopPostDto;
+  Data: Facebook_Graph_Post;//  | ChatomniDataTShopPostDto
   Id: string;
   ObjectId: string;
   ObjectType: ChatomniObjectTypeDto;
@@ -31,23 +32,4 @@ export enum ChatomniObjectTypeDto {
   TShopLiveVideo = 13,
   TShopPhoto = 14,
   TShopAlbum = 15,
-}
-
-export interface ObjectsFacebookPostDto {
-  from: Facebook_Graph_From ;
-  id: string;
-  parent_id: string;
-  updated_time: Date | any;
-  picture: string;
-  permalink_url: string;
-  object_id: string;
-  attachments: Attachments;
-  story: string;
-  caption: string;
-  created_time: Date | any;
-  description: string;
-  full_picture: string;
-  message: string;
-  type: string;
-  status_type: string;
 }

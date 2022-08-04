@@ -148,7 +148,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
     this.validateData();
     // Sử dụng ngZone chạy bất đồng bộ dữ liệu
     this.ngZone.run(() => {
-        this.dataSource$ = this.crmMatchingV2Service.makeDataSource(team.Facebook_PageId, this.type, queryObj);
+        this.dataSource$ = this.crmMatchingV2Service.makeDataSource(team.ChannelId, this.type, queryObj);
     })
 
     this.loadConversations(this.dataSource$);
@@ -242,7 +242,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
 
       this.isProcessing = true;
       this.ngZone.run(() => {
-          this.dataSource$ = this.crmMatchingV2Service.nextDataSource(this.currentTeam?.Facebook_PageId, this.queryFilter);
+          this.dataSource$ = this.crmMatchingV2Service.nextDataSource(this.currentTeam?.ChannelId, this.queryFilter);
       })
 
       this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: CrmMatchingV2DTO) => {
@@ -278,7 +278,7 @@ export class ConversationAllComponent extends TpageBaseComponent implements OnIn
       this.clickReload = 0;
 
       if (this.currentTeam) {
-        this.facebookRESTService.rescan(this.currentTeam.Facebook_PageId, 2)
+        this.facebookRESTService.rescan(this.currentTeam.ChannelId, 2)
           .pipe(takeUntil(this.destroy$)).subscribe(res => {
              console.log("Yêu cầu cập nhật thành công.");
         }, error => {
