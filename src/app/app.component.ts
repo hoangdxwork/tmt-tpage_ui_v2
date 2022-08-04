@@ -25,8 +25,8 @@ export class AppComponent {
 
   data!: SocketioOnMessageDto;
   url!: string;
-  titleMessage!: string;
   team!: CRMTeamDTO;
+  titleMessage!: string;
   @ViewChild('templateNotificationMessNew') templateNotificationMessNew!: TemplateRef<{}>;
 
   constructor(public libCommon: TCommonService,
@@ -49,11 +49,11 @@ export class AppComponent {
         that.isLoaded = true;
     });
 
-    this.socketService.listenEvent("on-events").subscribe((res: any) => {
+    this.socketService.listenEvent("on-events").pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         this.data = JSON.parse(res) as SocketioOnMessageDto;
         console.log(this.data);
 
-        if(this.data) {
+        if(this.data && this.crmTeamService.getCurrentTeam()?.Id) {
           this.crmTeamService.getActiveByPageIds$([this.data.Conversation.ChannelId]).pipe(takeUntil(this.destroy$)).subscribe((teams: CRMTeamDTO[]) => {
 
               this.team = teams[0];
@@ -62,15 +62,15 @@ export class AppComponent {
 
                     this.titleMessage = `Facebook: ${this.data.Conversation.Name} vừa nhắn tin`;
                     this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
-                    this.url = `/conversation/inbox?teamId=${teams[0].Id}&type=message&csid=${this.data.Conversation.UserId}`;
+                    this.url = `/conversation/inbox?teamId=${this.team.Id}&type=message&csid=${this.data.Conversation.UserId}`;
 
                     break;
 
                   case ChatomniMessageType.FacebookComment:
 
-                    this.titleMessage = `Facebook: ${this.data.Conversation.Name} vừa bình luận`;
+                    this.titleMessage = `Facebook:${this.data.Conversation.Name} vừa bình luận`;
                     this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
-                    this.url = `/conversation/comment?teamId=${teams[0].Id}&type=comment&csid=${this.data.Conversation.UserId}`;
+                    this.url = `/conversation/comment?teamId=${this.team.Id}&type=comment&csid=${this.data.Conversation.UserId}`;
 
                   break;
 
@@ -78,7 +78,7 @@ export class AppComponent {
 
                     this.titleMessage = `TShop: ${this.data.Conversation.Name} vừa nhắn tin`;
                     this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
-                    this.url = `/conversation/inbox?teamId=${teams[0].Id}&type=message&csid=${this.data.Conversation.UserId}`;
+                    this.url = `/conversation/inbox?teamId=${this.team.Id}&type=message&csid=${this.data.Conversation.UserId}`;
 
                   break;
 
@@ -86,7 +86,7 @@ export class AppComponent {
 
                     this.titleMessage = `TShop: ${this.data.Conversation.Name} vừa bình luận`;
                     this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
-                    this.url = `/conversation/comment?teamId=${teams[0].Id}&type=comment&csid=${this.data.Conversation.UserId}`;
+                    this.url = `/conversation/comment?teamId=${this.team.Id}&type=comment&csid=${this.data.Conversation.UserId}`;
 
                   break;
 
@@ -97,13 +97,15 @@ export class AppComponent {
         }
 
     }, err => {
-      console.log(err);
+        console.log(err);
     });
   }
 
   getLink() {
-    this.crmTeamService.onUpdateTeam(this.team);
     this.router.navigateByUrl(this.url);
+    if(this.crmTeamService.getCurrentTeam()?.Id != this.team.Id) {
+        this.crmTeamService.onUpdateTeam(this.team)
+    }
   }
 
   init(): Observable<boolean> {
