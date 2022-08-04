@@ -9,7 +9,7 @@ import { ChatomniObjectsDto } from "@app/dto/conversation-all/chatomni/chatomni-
 
 @Injectable()
 
-export class ChatomniObjectsFacade extends BaseSevice  {
+export class ChatomniObjectFacade extends BaseSevice  {
 
   prefix: string = "";
   table: string = "";

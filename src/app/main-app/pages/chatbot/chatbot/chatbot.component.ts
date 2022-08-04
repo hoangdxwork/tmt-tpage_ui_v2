@@ -37,7 +37,7 @@ export class ChatbotComponent implements OnInit {
 
       if(res) {
         let childs = this.getChilds(res);
-        let pageIds = childs.map(x => x.Facebook_PageId);
+        let pageIds = childs.map(x => x.ChannelId);
 
         if(TDSHelperArray.hasListValue(pageIds) && pageIds?.length) {
           this.crmTeamService.getChannelChatbot(pageIds)

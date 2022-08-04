@@ -30,7 +30,7 @@
 
   <div class="p-4 h-full">
     <div class="bg-white w-full h-full rounded-md border border-neutral-200 flex flex-col">
-      <div class="flex flex-row items-center justify-between w-full" [ngClass]="(setOfCheckedId.size > 0) || isTabNavs ? 'py-[10.5px]' : ''">
+      <div class="flex flex-row items-stretch justify-between w-full">
         <div class="flex flex-auto justify-between items-center pr-2" *ngIf="setOfCheckedId.size == 0">
 
           <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)" [disabled]="isTabNavs">
@@ -44,7 +44,7 @@
             (onRefreshData)="refreshDataCurrent()"></action-dropdown>
         </div>
 
-        <div class="flex justify-start" *ngIf="setOfCheckedId.size > 0">
+        <div class="flex justify-start p-[10.5px]" *ngIf="setOfCheckedId.size > 0">
           <div class="flex items-center gap-x-4 px-2">
             <div class="text-neutral-1-500 text-body-2">{{setOfCheckedId.size}} dòng được chọn</div>
             <div class="flex gap-1 items-center rounded-md bg-neutral-3-50 pl-1.5 pr-2.5 cursor-pointer">
@@ -256,7 +256,7 @@
                 <!-- Trạng thái -->
                 <!--   [popoverFooter]="footerShipStatus" [popoverContent]="contentShipStatus" -->
                 <td *ngIf="isHidden('StatusText')" class="border-r">
-                  <tds-tag [status]="getColorStatusText(data.StatusText)" type="outline" class="cursor-pointer"
+                  <tds-tag [status]="data.StatusText | tagStatusColor" type="outline" class="cursor-pointer"
                     tds-dropdown trigger="click" [tdsDropdownMenu]="menu1" placement="bottomRight"
                     popoverTrigger="click">
                     <span class="flex items-center">

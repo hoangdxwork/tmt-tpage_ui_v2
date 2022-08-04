@@ -639,7 +639,7 @@ export class ActivityDataFacade extends BaseSevice implements OnDestroy {
     let team = {};
     this.lstTeam.forEach((x: any) => {
       let items = x.Childs.filter((a: any) => {
-          if (a.Facebook_PageId == pageId) { return a }
+          if (a.ChannelId == pageId) { return a }
       });
       if (items.length > 0) {
         team = items[0];

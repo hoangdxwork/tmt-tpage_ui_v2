@@ -34,7 +34,7 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes?.eventOnSave?.currentValue) {
-      let currentPageId = this.currentTeam?.Facebook_PageId;
+      let currentPageId = this.currentTeam?.ChannelId;
 
       if(!currentPageId) {
         this.message.error(Message.PageNotExist);
@@ -56,8 +56,8 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges, OnDestroy {
     this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.currentTeam = res;
 
-      if(res && res.Facebook_PageId) {
-        let pageId = res.Facebook_PageId;
+      if(res && res.Facebook_PageId || res?.ChannelId) {
+        let pageId = res.Facebook_PageId || res?.ChannelId;
         this.updateAutoReplyConfig(pageId);
       }
 

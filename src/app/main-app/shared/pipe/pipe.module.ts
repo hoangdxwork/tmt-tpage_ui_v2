@@ -25,6 +25,7 @@ import { NumberCustomPipe } from './number-custom.pipe';
 import { CompareToday } from './compare-today.pipe';
 import { GetOrderStatusPipe } from './get-order-status.pipe';
 import { StringToStringArrayPipe } from './string-stringArray.pipe';
+import { TagStatusColorPipe } from './tag-status-color.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -49,7 +50,8 @@ const cmp =[
   CompareToday,
   GetStatusNamePipe,
   GetOrderStatusPipe,
-  StringToStringArrayPipe
+  StringToStringArrayPipe,
+  TagStatusColorPipe,
 ]
 
 @NgModule({

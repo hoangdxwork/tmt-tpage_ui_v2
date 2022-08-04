@@ -90,8 +90,6 @@ export class LiveOrderByPartnerComponent implements OnInit, OnDestroy {
     let type = "saleonline";
     this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
       this.lstDataTag = [...res.value];
-      console.log("tag", this.lstDataTag);
-
     });
   }
 

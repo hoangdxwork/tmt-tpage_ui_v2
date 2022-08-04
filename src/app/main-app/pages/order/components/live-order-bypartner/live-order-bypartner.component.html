@@ -94,7 +94,8 @@
                         <td>{{data.TotalQuantity || 0 | numberCustom:'.' }}</td>
                         <td>{{ data.DateCreated | date: 'dd/MM/yyyy' }}</td>
                         <td>
-                            <tds-tag [status]="getColorStatusText(data.StatusText)" type="outline">
+                          <!-- data.StatusText | getColorStatusText -->
+                            <tds-tag [status]="data.StatusText | tagStatusColor" type="outline">
                                 <span class="flex items-center">
                                     {{ data.StatusText }}
                                 </span>

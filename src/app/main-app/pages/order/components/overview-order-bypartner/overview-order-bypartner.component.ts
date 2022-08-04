@@ -32,6 +32,7 @@ export class OverviewOrderBypartnerComponent implements OnInit {
   isLoading: boolean = false;
   lstOrder!: Array<OdataGetOrderPartnerIdModal>;
   tabIndex: number = 1;
+  datePicker: any = [addDays(new Date(), -30), new Date()];
   public tabNavs: Array<any> = [];
 
   public filterObj: FilterObjFastSaleOrderModel = {
@@ -154,6 +155,27 @@ export class OverviewOrderBypartnerComponent implements OnInit {
     // this.routerEvent.emit(`bill/detail/${data.Id}`);
     this.modalRef.destroy(null);
     return this.router.navigateByUrl(`bill/detail/${data.Id}`);
+  }
+
+  onSearch(data: TDSSafeAny) {
+    this.pageIndex = 1;
+
+    this.filterObj.dateRange = {
+      startDate: this.datePicker[0],
+      endDate: this.datePicker[1]
+    }
+    this.filterObj.searchText = data.value;
+    this.loadData(this.pageSize,this.pageIndex);
+  }
+
+  onChangeDate(event: any[]) {
+    this.datePicker = [];
+    if(event) {
+      event.forEach(x => {
+          this.datePicker.push(x);
+      })
+    }
+    this.onSearch(event);
   }
 
 }

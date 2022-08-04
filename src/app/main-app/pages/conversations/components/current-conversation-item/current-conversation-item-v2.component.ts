@@ -34,7 +34,7 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
   @Input() omcs_Item!: ChatomniConversationItemDto;
   @Input() isOpenCollapCheck!: boolean;
   @Input() checked!: boolean;
-  @Input() state!: StateChatbot | null;
+  @Input() state!: any;
 
   @Output() checkedChange = new EventEmitter<boolean>();
 

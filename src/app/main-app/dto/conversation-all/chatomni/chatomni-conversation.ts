@@ -46,7 +46,7 @@ export interface ChatomniConversationItemDto {
   UpdatedTime: Date;
   LatestMessage?: ChatomniConversationMessageDto;
 
-  State?: StateChatbot | null;
+  State: StateChatbot | null;
   HasOrder?: boolean | null;
   Message?: string; // Không có trong dữ liệu trả về, dùng để hiện thị
 }

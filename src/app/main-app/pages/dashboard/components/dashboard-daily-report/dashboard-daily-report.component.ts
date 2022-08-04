@@ -67,8 +67,8 @@ export class DashboardDailyReportComponent implements OnInit {
   loadCurrentTeam() {
     this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.currentTeam = res;
-      this.loadSummaryCurrentDay(this.currentTeam?.Facebook_PageId);
-      this.loadSummaryOverviewCurrentDay(this.currentTeam?.Facebook_PageId);
+      this.loadSummaryCurrentDay(this.currentTeam?.ChannelId);
+      this.loadSummaryOverviewCurrentDay(this.currentTeam?.ChannelId);
     });
   }
 
@@ -246,7 +246,7 @@ export class DashboardDailyReportComponent implements OnInit {
   }
 
   refreshData() {
-    this.loadSummaryCurrentDay(this.currentTeam?.Facebook_PageId);
-    this.loadSummaryOverviewCurrentDay(this.currentTeam?.Facebook_PageId);
+    this.loadSummaryCurrentDay(this.currentTeam?.ChannelId);
+    this.loadSummaryOverviewCurrentDay(this.currentTeam?.ChannelId);
   }
 }

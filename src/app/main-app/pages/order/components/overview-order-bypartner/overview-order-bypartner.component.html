@@ -1,11 +1,15 @@
 
 <div class="w-full flex flex-col gap-y-4">
-    <div class="w-full">
-        <tds-form-field class="w-full">
-            <input tdsInput placeholder="Tìm kiếm đơn hàng" autocomplete="off" />
-            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-        </tds-form-field>
+  <div class="w-full flex gap-x-4">
+    <tds-form-field class="w-full">
+        <input tdsInput placeholder="Tìm kiếm đơn hàng" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" />
+        <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+    </tds-form-field>
+
+    <div class="w-96">
+      <tds-range-picker [(ngModel)]="datePicker" (ngModelChange)="onChangeDate($event)"> </tds-range-picker>
     </div>
+</div>
     <div class="border rounded-md border-neutral-2-200 pb-2.5">
         <tds-filter-status [ngModel]='tabIndex' (selectChange)="onSelectChange($event)" class="px-4">
             <ng-template ngFor let-item [ngForOf]="tabNavs" let-i="index">

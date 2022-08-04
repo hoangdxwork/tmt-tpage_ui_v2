@@ -70,7 +70,7 @@ export class AddBillHandler {
       _form.controls['WarehouseId'].setValue(data.WarehouseId);
     }
 
-    data.PaymentAmount = Number(data.PaymentAmount)
+    data.PaymentAmount = Number(data.PaymentAmount);
 
     data.Ship_ServiceExtrasText = data.Ship_ServiceExtras ? JSON.stringify(data.Ship_ServiceExtras) : data.Ship_ServiceExtrasText;
     data.Ship_ExtrasText = data.Ship_ExtrasText ? JSON.stringify(data.Ship_Extras) : data.Ship_ExtrasText;
@@ -102,7 +102,7 @@ export class AddBillHandler {
 
     // TODO: trường hợp edit
     if(data.Id && data.Id > 0) {
-      data.OrderLines.forEach((x: OrderLineV2) => {
+      data.OrderLines.map((x: OrderLineV2) => {
         if (x.Id <= 0) {
           x.Id = 0;
         }
@@ -140,17 +140,57 @@ export class AddBillHandler {
             WeightTotal: x.WeightTotal
         }
 
+        // let item = {
+        //   Account: data.Account,
+        //   AccountId: data.AccountId,
+        //   CompanyId: x.CompanyId || data.CompanyId,
+        //   Discount: x.Discount,
+        //   Discount_Fixed: x.Discount_Fixed,
+        //   Id: x.Id,
+        //   IsName: x.IsName,
+        //   LiveCampaign_DetailId: x.LiveCampaign_DetailId || data.LiveCampaignId,
+        //   LiveCampaignQtyChange: x.LiveCampaignQtyChange || 0,
+        //   Name: x.Name,
+        //   Note: x.Note,
+        //   OrderId: x.OrderId,
+        //   PartnerId: data.PartnerId || x.PartnerId,
+        //   PriceRecent: x.PriceRecent,
+        //   PriceTotal: x.PriceTotal,
+        //   PriceSubTotal: x.PriceSubTotal,
+        //   PriceSubTotalSigned: x.PriceSubTotalSigned,
+        //   PriceUnit: x.PriceUnit,
+        //   Product: x.Product,
+        //   ProductBarcode: x.ProductBarcode || x.Product?.Barcode,
+        //   ProductId: x.ProductId,
+        //   ProductName: x.ProductName || x.Product?.Name,
+        //   ProductNameGet: x.ProductNameGet || x.Product?.NameGet,
+        //   ProductUOM: x.ProductUOM,
+        //   ProductUOMId: x.ProductUOMId,
+        //   ProductUOMName: x.ProductUOMName || x.ProductUOM?.Name,
+        //   ProductUOMQty: x.ProductUOMQty,
+        //   PromotionProgramComboId: x.PromotionProgramComboId,
+        //   PromotionProgramId: x.PromotionProgramId,
+        //   SaleLine: x.SaleLine,
+        //   SaleLineId: x.SaleLineId,
+        //   SaleLineIds: x.SaleLineIds,
+        //   Type: x.Type || 'percent',
+        //   User: data.User,
+        //   UserId: data.User.Id || data.UserId,
+        //   Weight: x.Weight,
+        //   WeightTotal: x.WeightTotal
+        // }
+
         details.push(item);
       })
 
-      data.OrderLines = [... details] as any;
+      data.OrderLines = [...details] as any;
+    }
+    
+    //TODO: Xóa tạm thời
+    delete data.ShipmentDetailsAship;
 
-      if(!data.ShipmentDetailsAship) {
-          delete data.ShipmentDetailsAship;
-      }
-      if(!data.State && data.ShowState == 'Nháp') {
-          data.State = 'draft';
-      }
+    if(!data.State && data.ShowState == 'Nháp') {
+        data.State = 'draft';
     }
 
     return data;

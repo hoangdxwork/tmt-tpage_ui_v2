@@ -1,3 +1,10 @@
+import { OrderEvent } from './../../handler-v2/order-handler/order.event';
+import { PreparePartnerHandler } from './../../handler-v2/bill-handler/prepare-partner.handler';
+import { CalculateBillFeeHandler } from './../../handler-v2/bill-handler/calculate-bill-fee.handler';
+import { GetServiceHandler } from './../../handler-v2/bill-handler/get-services.handler';
+import { PrepareSuggestionsBillHandler } from './../../handler-v2/bill-handler/prepare-suggestions-bill.handler';
+import { UpdateOrderLinesHandler } from './../../handler-v2/bill-handler/update-order-lines.handler';
+import { UpdateFromCacheHandler } from './../../handler-v2/bill-handler/update-from-cache.handler';
 import { OdataProductService } from './../../services/mock-odata/odata-product.service';
 import { AttachmentState } from './../../services/facebook-state/attachment.state';
 import { AttachmentService } from '../../services/attachment.service';
@@ -88,6 +95,7 @@ import { SelectShipServiceV2Handler } from '../../handler-v2/aship-v2/select-shi
 import { UpdateShipmentDetailAshipHandler } from '../../handler-v2/aship-v2/shipment-detail-aship.handler';
 import { AddBillHandler } from '../../handler-v2/bill-handler/add-bill.handler';
 import { CreateFormBillHandler } from '../../handler-v2/bill-handler/create-form-bill.handler';
+import { PrepareCopyItemHandler } from '@app/handler-v2/bill-handler/prepare-copy-item.handler';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -122,7 +130,15 @@ const SERVICES = [
   PrepareModelFeeV2Handler,
   SelectShipServiceV2Handler,
   UpdateShipmentDetailAshipHandler,
-  CreateFormBillHandler
+  UpdateFromCacheHandler,
+  UpdateOrderLinesHandler,
+  PrepareSuggestionsBillHandler,
+  GetServiceHandler,
+  CreateFormBillHandler,
+  CalculateBillFeeHandler,
+  PreparePartnerHandler,
+  PrepareCopyItemHandler,
+  OrderEvent
 ]
 
 @NgModule({
