@@ -4,10 +4,14 @@
       <div class="flex flex-col gap-y-1">
         <tds-breadcrumb tds-page-header-breadcrumb>
           <tds-breadcrumb-item (click)="directPage('bill')">Phiếu bán hàng</tds-breadcrumb-item>
-          <tds-breadcrumb-item>{{ id ? 'Chỉnh sửa' : 'Thêm mới' }}</tds-breadcrumb-item>
+          <tds-breadcrumb-item *ngIf="path.includes('create')">Thêm mới</tds-breadcrumb-item>
+          <tds-breadcrumb-item *ngIf="path.includes('edit')">Chỉnh sửa</tds-breadcrumb-item>
+          <tds-breadcrumb-item *ngIf="path.includes('copy')">Sao chép</tds-breadcrumb-item>
         </tds-breadcrumb>
         <div class="pl-4 pb-2.5">
-          <span class="text-header-1 text-neutral-1-900 font-semibold">{{id ? 'Chỉnh sửa phiếu bán hàng' : 'Thêm mới phiếu bán hàng'}}</span>
+          <span class="text-header-1 text-neutral-1-900 font-semibold" *ngIf="path.includes('create')">Thêm mới phiếu bán hàng</span>
+          <span class="text-header-1 text-neutral-1-900 font-semibold" *ngIf="path.includes('edit')">Chỉnh sửa phiếu bán hàng</span>
+          <span class="text-header-1 text-neutral-1-900 font-semibold" *ngIf="path.includes('copy')">Sao chép phiếu bán hàng</span>
         </div>
       </div>
 

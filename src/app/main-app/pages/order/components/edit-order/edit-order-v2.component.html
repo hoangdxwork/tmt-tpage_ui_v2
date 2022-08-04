@@ -1,10 +1,6 @@
-<div *ngIf="quickOrderModel" class="text-body-2 text-neutral-1-900  flex flex-col max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll">
-  <tds-spin [spinning]="isLoading">
-      <div *tdsModalTitle>
-          <span class="font-semibold text-title-1 pr-2">Sửa đơn hàng</span>
-          <span class="text-primary-1 font-semibold text-title-1">{{quickOrderModel ? quickOrderModel.Code : ''}}</span>
-      </div>
-      <div class="flex flex-col">
+<tds-spin  [spinning]="isLoading">
+  <div class="text-body-2 text-neutral-1-900  flex flex-col max-h-[calc(65vh)] overflow-hidden overflow-y-auto tds-custom-scroll">
+        <div class="flex flex-col">
           <tds-tabset class="border border-neutral-2-200 rounded-md ">
             <tds-tab class="px-2" title="Thông tin liên hệ" clsContent="border-t border-neutral-2-200 w-full h-full">
               <div class="w-full p-4">
@@ -12,21 +8,21 @@
                   <div class="flex flex-col gap-y-4">
                     <div class="grid grid-cols-4 gap-x-4">
                       <div class="flex justify-center items-center text-centefa-rotate-180">
-                        <tds-avatar [size]="84" [tdsSrc]="quickOrderModel.Partner.ImageUrl || 'error-link'"></tds-avatar>
+                        <tds-avatar [size]="84" [tdsSrc]="quickOrderModel?.Partner?.ImageUrl"></tds-avatar>
                       </div>
                       <div class="col-span-3 flex flex-col gap-y-2">
                         <tds-label>Tên Khách hàng</tds-label>
                         <tds-form-field>
                           <input tdsInput autocomplete="off" placeholder="Nhập tên khách hàng" [required]='true'
-                            [ngModel]="quickOrderModel.Name" [ngModelOptions]="{standalone: true}" />
+                            [ngModel]="quickOrderModel?.Name" [ngModelOptions]="{standalone: true}" />
                           <tds-error>Vui lòng nhập tên khách hàng</tds-error>
                         </tds-form-field>
-                        <div *ngIf="quickOrderModel.Partner">
+                        <div *ngIf="quickOrderModel?.Partner">
                           <tds-button-group>
                             <div tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu"
-                              class="rounded-md px-2" [ngStyle]="getStatusColor(quickOrderModel.Partner.StatusText ) | buttonStatusColor: true">
+                              class="rounded-md px-2" [ngStyle]="getStatusColor(quickOrderModel?.Partner?.StatusText ) | buttonStatusColor: true">
                               <span class="flex items-center font-semibold font-sans cursor-pointer">
-                                {{ quickOrderModel.Partner.StatusText || 'Bình thường' }} <i
+                                {{ quickOrderModel?.Partner?.StatusText || 'Bình thường' }} <i
                                   class="tdsi-arrow-down-fill text-lg leading-none ml-1"></i>
                               </span>
                             </div>
@@ -47,7 +43,7 @@
                       </div>
                       <div class="col-span-3">
                         <tds-form-field>
-                          <input tdsInput placeholder="Nhập số điện thoại" [ngModel]="quickOrderModel.Telephone" [ngModelOptions]="{standalone: true}" />
+                          <input tdsInput placeholder="Nhập số điện thoại" [ngModel]="quickOrderModel?.Telephone" [ngModelOptions]="{standalone: true}" />
                         </tds-form-field>
                       </div>
                     </div>
@@ -57,7 +53,7 @@
                       </div>
                       <div class="col-span-3">
                         <tds-form-field>
-                          <input tdsInput placeholder="Nhập email" [ngModel]="quickOrderModel.Email"  [ngModelOptions]="{standalone: true}" />
+                          <input tdsInput placeholder="Nhập email" [ngModel]="quickOrderModel?.Email"  [ngModelOptions]="{standalone: true}" />
                         </tds-form-field>
                       </div>
                     </div>
@@ -79,7 +75,7 @@
                       <div class="col-span-3">
                         <tds-form-field *ngIf="lstUser">
                           <tds-select valueField="Id" textField="Name" placeholder='Chọn người bán' [valuePrimitive]="false"
-                            [allowClear]="true" [ngModel]="quickOrderModel.User" disabledField="isActive" [data]="lstUser"
+                            [allowClear]="true" [ngModel]="quickOrderModel?.User" disabledField="isActive" [data]="lstUser"
                             [ngModelOptions]="{standalone: true}">
                           </tds-select>
                         </tds-form-field>
@@ -95,7 +91,7 @@
                       </div>
                       <div class="col-span-3">
                         <tds-form-field>
-                          <textarea tdsInput placeholder="Nhập ghi chú" [ngModel]="quickOrderModel.Note"
+                          <textarea tdsInput placeholder="Nhập ghi chú" [ngModel]="quickOrderModel?.Note"
                               [ngModelOptions]="{standalone: true}" class="h-16 resize-none no-scrollbar">
                           </textarea>
                         </tds-form-field>
@@ -114,13 +110,13 @@
 
                           <div *ngIf="lstComment" style="margin:0;" class="overflow-auto tds-panel-scroll flex flex-col max-h-60 py-2">
                             <div *ngFor="let comment of lstComment; let index = index"
-                              [ngClass]="quickOrderModel.Note.includes(comment.message) ? 'bg-neutral-3-50':''"
+                              [ngClass]="quickOrderModel?.Note?.includes(comment.message) ? 'bg-neutral-3-50':''"
                               class="p-3 border-b border-neutral-2-200 flex justify-between w-full cursor-pointer hover:bg-neutral-3-50"
                               (click)="addComment(comment.message)">
                               <span>
                                 {{comment.message}}<span class="text-info-400 ml-2">{{ comment.created_time | date: "dd/MM/yyyy hh:mm:ss" }}</span>
                               </span>
-                              <span *ngIf="quickOrderModel.Note?.includes(comment.message)" class="tdsi-success-fill text-primary-1"></span>
+                              <span *ngIf="quickOrderModel?.Note?.includes(comment.message)" class="tdsi-success-fill text-primary-1"></span>
                             </div>
                           </div>
                         </tds-collapse-panel>
@@ -131,7 +127,7 @@
               </div>
             </tds-tab>
 
-            <tds-tab title="Sản phẩm ({{ quickOrderModel.Details.length }})" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
+            <tds-tab title="Sản phẩm ({{ quickOrderModel?.Details?.length }})" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
               <div class="w-full">
                 <div class="w-full flex gap-x-8">
                   <div class="relative flex-auto">
@@ -181,9 +177,9 @@
                 </div>
               </div>
 
-              <div class="w-full mt-4 rounded-md h-[300px]" *ngIf="quickOrderModel.Details">
+              <div class="w-full mt-4 rounded-md h-[300px]" *ngIf="quickOrderModel?.Details">
                 <div class="w-full h-full ">
-                  <tds-table class="tds-table-rounded" #productTable [bordered]="true" [listData]="quickOrderModel.Details"
+                  <tds-table class="tds-table-rounded" #productTable [bordered]="true" [listData]="quickOrderModel?.Details || []"
                     [showPagination]="false" [scroll]="{y:'auto'}">
                     <thead class="rounded">
                       <tr>
@@ -197,7 +193,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor=" let data of quickOrderModel.Details; let index = index">
+                      <tr *ngFor=" let data of quickOrderModel?.Details; let index = index">
                         <td> {{ index + 1 }} </td>
                         <td>
                           <p class="text-sm font-semibold">
@@ -248,7 +244,7 @@
                         <td colspan="7">
                           <div class="flex items-center gap-x-4 justify-end">
                             <tds-label class="text-sm">Tổng tiền:</tds-label>
-                            <tds-label class="text-xl text-success-400"> {{ quickOrderModel.TotalAmount | numberCustom:'.'  }}
+                            <tds-label class="text-xl text-success-400"> {{ quickOrderModel?.TotalAmount | numberCustom:'.'  }}
                             </tds-label>
                           </div>
                         </td>
@@ -538,11 +534,11 @@
             </tds-tab>
 
             <tds-tab title="Đơn hàng" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
-              <live-order-bypartner [partnerId]="quickOrderModel.PartnerId"></live-order-bypartner>
+              <live-order-bypartner [partnerId]="quickOrderModel?.PartnerId || 0"></live-order-bypartner>
             </tds-tab>
 
             <tds-tab title="Phiếu bán hàng" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
-              <overview-order-bypartner [partnerId]="quickOrderModel.PartnerId"></overview-order-bypartner>
+              <overview-order-bypartner [partnerId]="quickOrderModel?.PartnerId || 0"></overview-order-bypartner>
             </tds-tab>
           </tds-tabset>
 
@@ -570,5 +566,5 @@
             </div>
           </div>
       </div>
-  </tds-spin>
-</div>
+  </div>
+</tds-spin>
