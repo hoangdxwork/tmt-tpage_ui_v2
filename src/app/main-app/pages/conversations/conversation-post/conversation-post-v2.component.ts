@@ -20,8 +20,8 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChatomniObjectsService } from '@app/services/chatomni-service/chatomni-objects.service';
-import { ChatomniObjectsDto, ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
+import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
+import { ChatomniObjectsDto, ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { Facebook_Graph_Post } from '@app/dto/conversation-all/chatomni/chatomni-facebook-post.dto';
 
 @Component({
@@ -71,7 +71,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   isDisableTab: boolean = true;
 
   dataSource$?: Observable<ChatomniObjectsDto> ;
-  lstObjects: ChatomniObjectsItemDto[] = [];
+  lstObjects!: ChatomniObjectsItemDto[];
 
   constructor(private facebookPostService: FacebookPostService,
     private conversationPostFacade: ConversationPostFacade,
@@ -80,12 +80,12 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     private message: TDSMessageService,
     public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
-    private modal: TDSModalService,
+
     private ngZone: NgZone,
-    private viewContainerRef: ViewContainerRef,
+
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router,
-    private chatomniObjectsService: ChatomniObjectsService,
+    private chatomniObjectService: ChatomniObjectService,
     private destroy$: TDSDestroyService) {
       super(crmService, activatedRoute, router);
   }
@@ -175,7 +175,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     this.validateData();
 
     this.ngZone.run(() => {
-        this.dataSource$ = this.chatomniObjectsService.makeDataSource(this.currentTeam!.Id);
+        this.dataSource$ = this.chatomniObjectService.makeDataSource(this.currentTeam!.Id);
     })
 
     if(this.dataSource$) {
@@ -190,8 +190,8 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
                     let exist = this.lstObjects.filter(d => d.Id == x.id)[0];
 
                     if (exist && this.currentTeam?.Type == 'Facebook') {
-                        exist.Data.picture = x.picture;
-                        exist.Data.message = x.message;
+                        // exist.Data?.picture = x.picture;
+                        // exist.Data.message = x.message;
                     }
                 }
             })
@@ -205,6 +205,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniObjectsDto) => {
 
         if(res && res.Items) {
+
             this.lstObjects = [...res.Items];
 
             if(TDSHelperArray.hasListValue(res.Items)){
@@ -225,7 +226,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     })
   }
 
-  selectPost(item: ChatomniObjectsItemDto): any {
+  selectPost(item: ChatomniObjectsItemDto | any): any {
     if(TDSHelperObject.hasValue(item) && item.Data){
 
         this.currentPost = item;
@@ -234,8 +235,8 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
         switch(this.currentTeam?.Type ){
             case CRMTeamType._Facebook:
 
-              let x = item.Data as Facebook_Graph_Post;
-              if(x.parent_id) {debugger
+              let x = item.Data as any;
+              if(x.parent_id) {
 
                 this.facebookPostService.getByPostParent(this.currentTeam!.Id, x.parent_id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {debugger
                     if(res && TDSHelperArray.hasListValue(res.Items)) {
@@ -260,7 +261,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     }
   }
 
-  nextData(event: any): any {debugger
+  nextData(event: any): any {
     if(event) {
 
       if (this.isProcessing) {
@@ -269,7 +270,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
 
       this.isProcessing = true;
       this.ngZone.run(() => {
-          this.dataSource$ = this.chatomniObjectsService.nextDataSource(this.currentTeam!.Id);
+          this.dataSource$ = this.chatomniObjectService.nextDataSource(this.currentTeam!.Id);
       })
 
       this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniObjectsDto) => {
@@ -314,18 +315,6 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
 
   onTabOrder(event: boolean) {
     this.currentOrderTab = 2;
-  }
-
-  showModalLiveCampaign(item: FacebookPostItem) {
-    const modal = this.modal.create({
-      title: 'Chiến dịch',
-      content: ListLiveCampaignComponent,
-      size: "lg",
-      viewContainerRef: this.viewContainerRef,
-      componentParams:{
-        post: item
-      }
-    });
   }
 
   ngAfterViewInit() {

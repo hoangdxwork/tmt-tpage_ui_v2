@@ -82,7 +82,7 @@ export class ConversationOrderComponent implements OnInit {
   isLoadingProduct: boolean = false;
 
   lstUser!: Array<ApplicationUserDTO>;
-  lstCarriers!: Observable<DeliveryCarrierDTOV2[]>;
+  lstCarrier!: DeliveryCarrierDTOV2[];
 
   saleConfig!: InitSaleDTO;
 
@@ -163,7 +163,7 @@ export class ConversationOrderComponent implements OnInit {
     this.loadSaleConfig();
     this.loadUsers();
     this.loadUserLogged();
-    this.lstCarriers = this.loadCarrier();
+    this.loadCarrier();
     this.onSelectOrderFromMessage();
   }
 
@@ -290,7 +290,9 @@ export class ConversationOrderComponent implements OnInit {
   }
 
   loadCarrier() {
-    return this.deliveryCarrierService.get().pipe(map(res => res.value));
+    this.deliveryCarrierService.get().pipe(takeUntil(this.destroy$)).subscribe(res => {
+        this.lstCarrier = [...res.value];
+    })
   }
 
   onVisibleChange(){
