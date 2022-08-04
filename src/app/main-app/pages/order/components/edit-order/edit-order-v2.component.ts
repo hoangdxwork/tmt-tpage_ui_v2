@@ -48,6 +48,7 @@ import { UpdateShipmentDetailAshipHandler } from 'src/app/main-app/handler-v2/as
 import { SO_ComputeCaclHandler } from 'src/app/main-app/handler-v2/order-handler/compute-cacl.handler';
 import { CalculateFeeAshipHandler } from '@app/handler-v2/aship-v2/calcfee-aship.handler';
 import { CsOrder_SuggestionHandler } from '@app/handler-v2/chatomni-csorder/prepare-suggestions.handler';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'edit-order-v2',
@@ -89,6 +90,8 @@ export class EditOrderV2Component implements OnInit {
   _districts!: SuggestDistrictsDTO;
   _wards!: SuggestWardsDTO;
   _street!: string;
+
+  selectedIndex: number = 0;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null) {
@@ -137,7 +140,9 @@ export class EditOrderV2Component implements OnInit {
     private csOrder_SuggestionHandler: CsOrder_SuggestionHandler,
     private partnerService: PartnerService,
     private sharedService: SharedService,
-    private productTemplateOUMLineService: ProductTemplateOUMLineService) {
+    private productTemplateOUMLineService: ProductTemplateOUMLineService,
+    private router: Router,
+    ) {
   }
 
   ngOnInit(): void {
@@ -852,5 +857,17 @@ export class EditOrderV2Component implements OnInit {
       this.saleModel = this.updateShipmentDetailAshipHandler.so_updateShipmentDetailAship(this.configsProviderDataSource, this.insuranceInfo, this.saleModel);
     }
   }
+
+  onRouterEvent(url:string) {
+    this.modalRef.destroy(null);
+    this.router.navigateByUrl(url)
+  }
+
+  onChecked(checked: boolean) {
+    if(checked == true) {
+      this.selectedIndex = 0;
+    }
+  }
+
 
 }
