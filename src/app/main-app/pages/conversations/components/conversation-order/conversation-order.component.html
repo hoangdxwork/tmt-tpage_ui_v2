@@ -292,13 +292,31 @@
                     <span class="font-semibold">Tạo hoá đơn bán hàng</span>
                 </tds-checkbox>
             </div>
+
             <!-- Giao hàng -->
             <tds-collapse *ngIf="isEnableCreateOrder && saleModel">
               <tds-collapse-panel header="Dịch vụ của đối tác" [tdsClass]="'w-full rounded-b-xl bg-white p-4'"
                   [tdsHeaderClass]="'bg-neutral-3-50'" [active]="true" [expandedIcon]="'tdsi-arrow-right-line'">
-                  <div class="grid grid-cols-2 gap-x-8 items-start w-full" *ngIf="saleModel && saleModel.Carrier">
+                  <div class="grid items-start w-full" *ngIf="saleModel && saleModel.Carrier">
+
+                      <div class="w-full">
+                        <div class="flex items-center">
+                          <tds-label>Đối tác giao hàng</tds-label>
+                        </div>
+                        <div class="col-span-2" *ngIf="lstCarrier">
+                          <tds-form-field>
+                            <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng'
+                                [valuePrimitive]="false" [allowClear]="true" disabledField="isActive"
+                                [data]="lstCarrier" [ngModel]="saleModel.Carrier"
+                                [ngModelOptions]="{standalone: true}" [allowClear]="true"
+                                (ngModelChange)="onChangeCarrierV2($event)">
+                            </tds-select>
+                          </tds-form-field>
+                        </div>
+                      </div>
+
                       <!-- thông tin dịch vụ -->
-                      <div class="grid grid-col-4 gap-y-4">
+                      <div class="grid  gap-y-4">
 
                           <!-- không có dịch vụ -->
                           <div class="w-full" *ngIf="shipServices && shipServices.length == 0 && shipExtraServices && shipExtraServices.length == 0">
@@ -384,6 +402,7 @@
                           </tds-form-field>
                         </div> -->
                       </div>
+
                       <div class="grid grid-cols-3 gap-y-4 gap-x-6">
                         <!-- phí ship đối tác -->
                         <!-- && apiDeliveries.includes(_form.controls['Carrier'].value.DeliveryType) -->

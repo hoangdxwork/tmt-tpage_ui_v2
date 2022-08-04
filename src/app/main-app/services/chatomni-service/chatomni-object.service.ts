@@ -6,11 +6,11 @@ import { TCommonService } from "@core/services";
 import { map, Observable, shareReplay } from "rxjs";
 import { TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
-import { ChatomniObjectsFacade } from "../chatomni-facade/chatomni-objects.facade";
+import { ChatomniObjectFacade } from "../chatomni-facade/chatomni-object.facade";
 
 @Injectable()
 
-export class ChatomniObjectsService extends BaseSevice  {
+export class ChatomniObjectService extends BaseSevice  {
 
   prefix: string = "";
   table: string = "";
@@ -19,7 +19,7 @@ export class ChatomniObjectsService extends BaseSevice  {
   urlNext: string | undefined;
 
   constructor(private apiService: TCommonService,
-    private objFacade: ChatomniObjectsFacade) {
+    private objFacade: ChatomniObjectFacade) {
       super(apiService)
   }
 
@@ -86,7 +86,7 @@ export class ChatomniObjectsService extends BaseSevice  {
 
   }
 
-  nextDataSource(teamId: number, queryObj?: any): Observable<ChatomniObjectsDto> {debugger
+  nextDataSource(teamId: number, queryObj?: any): Observable<ChatomniObjectsDto> {
 
     let exist = this.objFacade.getData(teamId);
 
@@ -99,12 +99,13 @@ export class ChatomniObjectsService extends BaseSevice  {
 
     else {
       let url = this.urlNext as string;
-      return this.getLink(url, queryObj).pipe(map((res: ChatomniObjectsDto) => {debugger
+      return this.getLink(url, queryObj).pipe(map((res: ChatomniObjectsDto) => {
 
         // TODO nếu trùng urlNext thì xóa không cho load
         if (this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
             this.urlNext = res.Paging.UrlNext;
 
+            exist.Extras!.Objects = { ...exist.Extras?.Objects, ...res.Extras?.Objects};
             exist.Items = [...exist.Items, ...res.Items];
             exist.Paging = { ...res.Paging };
 

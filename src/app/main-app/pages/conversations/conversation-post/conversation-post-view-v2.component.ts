@@ -461,16 +461,16 @@ export class ConversationPostViewV2Component implements OnInit, OnChanges, OnDes
   }
 
   openConfigPost() {
-    let date = formatDate(this.data.created_time, 'dd/MM/yyyy HH:mm', 'en-US')
-    this.modalService.create({
-      title: `Cấu hình bài viết - ${date}` ,
-      content: ConfigPostOutletComponent,
-      size: "xl",
-      viewContainerRef: this.viewContainerRef,
-      componentParams: {
-        data:  this.data
-      }
-    });
+    // let date = formatDate(this.data.created_time, 'dd/MM/yyyy HH:mm', 'en-US')
+    // this.modalService.create({
+    //   title: `Cấu hình bài viết - ${date}` ,
+    //   content: ConfigPostOutletComponent,
+    //   size: "xl",
+    //   viewContainerRef: this.viewContainerRef,
+    //   componentParams: {
+    //     data:  this.data
+    //   }
+    // });
   }
 
   fillterAll(data: TDSSafeAny, index: number){
