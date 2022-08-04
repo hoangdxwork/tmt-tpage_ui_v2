@@ -59,7 +59,7 @@
                 <tds-form-field>
                   <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác' [allowClear]="false"
                     [valuePrimitive]="false" [(ngModel)]="data.CarrierId" [ngModelOptions]="{standalone: true}"
-                    [data]="lstCarriers" (onChange)="onChangeCarrier($event, data)">
+                    [data]="lstCarriers" (ngModelChange)="onChangeCarrier($event, data)">
                   </tds-select>
                 </tds-form-field>
               </td>

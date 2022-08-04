@@ -391,6 +391,13 @@ export interface ProductUOM {
 export interface Team {
   Id: number;
   Name: string;
+  // OwnerId?: any;
+  // OwnerToken?: any;
+  // OwnerAvatar?: any;
+  // OwnerUrl?: any;
+  // ChannelId?: any;
+  // ChannelToken?: any;
+  // ChannelAvatar?: any;
   ShopToken?: any;
   Active?: any;
   CompanyId?: any;
@@ -666,7 +673,6 @@ export interface FastSaleOrder_DefaultDTOV2 {
     Ship_ServiceExtras: ShipServiceExtra[];
     Team: Team;
     ShipmentDetailsAship?: ShipmentDetailsAshipDTO;
-
     MessageCount: number;
     MoveId?: any;
     Tags?: any;
@@ -675,6 +681,8 @@ export interface FastSaleOrder_DefaultDTOV2 {
     Source?: any;
     FormAction?: any;
     Error?: any;
+    HistoryDeliveryDetails?: any[];
+    OutstandingInfo?: any;
 }
 
 export interface OrderSendShipDTO {

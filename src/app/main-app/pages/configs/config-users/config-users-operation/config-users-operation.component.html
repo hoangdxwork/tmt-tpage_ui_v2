@@ -48,7 +48,7 @@
                                     tds-tooltip tooltipTitle="{{crmTeam?.Facebook_PageName}}"
                                     class="bg-white p-0.5 rounded-full" [ngClass]="index ? '-ml-5 relative' : ''">
                                       <tpage-avatar-facebook class="bg-white  text-white" [size]="44"
-                                        [fbid]="crmTeam?.Facebook_PageId" [token]="crmTeam?.Facebook_PageToken">
+                                        [fbid]="crmTeam?.ChannelId" [token]="crmTeam?.Facebook_PageToken">
                                       </tpage-avatar-facebook>
                                   </div>
 
@@ -63,7 +63,7 @@
                                           <div *ngFor="let crmTeam of userManagerPage[data.Id]?.pageHide; let index = index"
                                             class="flex gap-x-4 items-center">
                                               <tpage-avatar-facebook class="bg-white  text-white" [size]="44"
-                                                  [fbid]="crmTeam?.Facebook_PageId" [token]="crmTeam?.Facebook_PageToken">
+                                                  [fbid]="crmTeam?.ChannelId" [token]="crmTeam?.Facebook_PageToken">
                                               </tpage-avatar-facebook>
                                               <div>
                                                   <span>{{crmTeam.Facebook_PageName}}</span>

@@ -38,7 +38,7 @@ export class DashboardTagReportComponent implements OnInit, OnDestroy {
   loadCurrentTeam() {
     this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.currentTeam = res;
-      this.loadSummaryByTags(this.currentTeam?.Facebook_PageId);
+      this.loadSummaryByTags(this.currentTeam?.ChannelId);
     });
   }
 
@@ -104,7 +104,7 @@ export class DashboardTagReportComponent implements OnInit, OnDestroy {
   }
 
   onChangeFilter(data:any){
-    this.loadSummaryByTags(this.currentTeam?.Facebook_PageId);
+    this.loadSummaryByTags(this.currentTeam?.ChannelId);
   }
 
   ngOnDestroy(): void {

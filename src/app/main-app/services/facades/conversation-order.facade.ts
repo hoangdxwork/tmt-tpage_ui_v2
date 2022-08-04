@@ -112,8 +112,8 @@ export class ConversationOrderFacade extends BaseSevice  {
         if(res && (res.action == "create" || res.action == "updated")) {
 
           if(this.partner && this.currentTeam && this.partner.Id &&
-            (this.partner.Facebook_ASUserId == res.data.facebook_ASUserId && res.data.facebook_PageId == this.currentTeam.Facebook_PageId ||
-            this.partner.Facebook_ASUserId == res.data.facebook.psId && res.data.facebook.pageId == this.currentTeam.Facebook_PageId)) {
+            (this.partner.Facebook_ASUserId == res.data.facebook_ASUserId && res.data.facebook_PageId == this.currentTeam.ChannelId ||
+            this.partner.Facebook_ASUserId == res.data.facebook.psId && res.data.facebook.pageId == this.currentTeam.ChannelId)) {
 
                 this.partnerService.getLastOrder(this.partner.Id).subscribe((obs: any) => {
                     if(obs) {

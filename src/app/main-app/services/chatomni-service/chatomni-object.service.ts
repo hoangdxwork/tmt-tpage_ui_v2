@@ -6,11 +6,11 @@ import { TCommonService } from "@core/services";
 import { map, Observable, shareReplay } from "rxjs";
 import { TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
-import { ChatomniObjectsFacade } from "../chatomni-facade/chatomni-objects.facade";
+import { ChatomniObjectFacade } from "../chatomni-facade/chatomni-object.facade";
 
 @Injectable()
 
-export class ChatomniObjectsService extends BaseSevice  {
+export class ChatomniObjectService extends BaseSevice  {
 
   prefix: string = "";
   table: string = "";
@@ -19,7 +19,7 @@ export class ChatomniObjectsService extends BaseSevice  {
   urlNext: string | undefined;
 
   constructor(private apiService: TCommonService,
-    private objFacade: ChatomniObjectsFacade) {
+    private objFacade: ChatomniObjectFacade) {
       super(apiService)
   }
 
@@ -45,7 +45,7 @@ export class ChatomniObjectsService extends BaseSevice  {
     return this.apiService.getData<ChatomniObjectsDto>(api, null);
   }
 
-  getLink(url: string, queryObj?: any): Observable<ChatomniObjectsDto> {
+  getLink(url: string, queryObj?: any): Observable<ChatomniObjectsDto> {debugger
 
     let queryString = null;
     if (queryObj) {
@@ -105,6 +105,7 @@ export class ChatomniObjectsService extends BaseSevice  {
         if (this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
             this.urlNext = res.Paging.UrlNext;
 
+            exist.Extras!.Objects = { ...exist.Extras?.Objects, ...res.Extras?.Objects};
             exist.Items = [...exist.Items, ...res.Items];
             exist.Paging = { ...res.Paging };
 

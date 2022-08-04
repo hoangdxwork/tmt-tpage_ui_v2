@@ -239,7 +239,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
       componentParams: {
-        pageId: this.team.Facebook_PageId,
+        pageId: this.team.ChannelId,
       }
     });
 
@@ -407,7 +407,9 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
     if(changes["state"] && !changes["state"].firstChange) {
         this.state = changes["state"].currentValue;
-        this.data.State = this.state;
+        if(this.state) {
+          this.data.State = this.state;
+        }
     }
   }
 
@@ -906,7 +908,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
   onStartChatbot() {
    if(this.data && this.data.State == 2) {
-      let pageId = this.team.Facebook_PageId;
+      let pageId = this.team.ChannelId;
       let psid = this.data.ConversationId;
 
       this.crmMatchingService.transferChatbot(pageId, psid).pipe(takeUntil(this.destroy$)).subscribe((data) => {

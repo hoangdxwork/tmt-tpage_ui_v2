@@ -255,7 +255,7 @@
         <ng-template #titleMessage>
             <div class="flex gap-x-2 w-full items-center text-body-2 text-neutral-900">
                 <div *ngIf="mappingTeams.length > 0" class="flex gap-3 items-center">
-                    <tpage-avatar-facebook [fbid]="currentMappingTeam?.team?.Facebook_PageId || currentMappingTeam?.team?.Facebook_ASUserId"
+                    <tpage-avatar-facebook [fbid]="currentMappingTeam?.team?.ChannelId || currentMappingTeam?.team?.Facebook_ASUserId"
                         [token]="currentMappingTeam?.team?.Facebook_PageToken || currentMappingTeam?.team?.Facebook_UserToken">
                     </tpage-avatar-facebook>
                     <tds-button-group>

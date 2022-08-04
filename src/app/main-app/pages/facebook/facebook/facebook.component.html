@@ -103,7 +103,7 @@
                             <div class="flex justify-between items-center pb-4 border-b">
                               <div class="flex gap-4 items-center">
                                   <div class="relative">
-                                      <tpage-avatar-facebook [fbid]="child?.Facebook_PageId" [token]="child?.Facebook_PageToken" [size]="'lg'">
+                                      <tpage-avatar-facebook [fbid]="child?.ChannelId" [token]="child?.Facebook_PageToken" [size]="'lg'">
                                       </tpage-avatar-facebook>
                                       <div class="absolute bottom-0 right-0 rounded-full bg-white flex items-center justify-center">
                                         <span><img src="../../../assets/imagesv2/conversation/union.svg"></span>
@@ -119,7 +119,7 @@
 
                                           <div class="text-success-400 flex items-center gap-x-1 cursor-pointer"
                                               *ngIf="userFBLogin?.id && userFBLogin?.id == team?.Facebook_UserId && team.Active"
-                                              (click)="refreshPageToken(team.Id, child.Facebook_PageId)">
+                                              (click)="refreshPageToken(team.Id, child.ChannelId)">
 
                                               <span class="tdsi-undo-line flex text-sm"></span>
                                               <span class="flex text-xs">Cập nhật token</span>

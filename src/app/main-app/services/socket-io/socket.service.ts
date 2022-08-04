@@ -32,7 +32,7 @@ export class SocketService extends BaseSevice {
     this.socket = io(environment.socketUrl, {
         transports: ['websocket'], // Sử dụng khi socketserver không dùng sticky session
         query: {
-          room: `${hostname}` // Viết hàm parse url lấy theo domain của tên miền hiện tại nếu ở production
+          room: `test.tpos.dev` // Viết hàm parse url lấy theo domain của tên miền hiện tại nếu ở production
         }
     });
 

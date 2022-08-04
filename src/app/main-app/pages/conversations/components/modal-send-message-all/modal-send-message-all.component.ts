@@ -124,7 +124,7 @@ export class ModalSendMessageAllComponent implements OnInit {
     } else {
       let model = {
         from: {
-          id: this.team.Facebook_PageId,
+          id: this.team.ChannelId,
           name: this.team.Facebook_PageName,
         },
         user: this.lstUserCheck,
@@ -141,7 +141,7 @@ export class ModalSendMessageAllComponent implements OnInit {
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
       componentParams: {
-        pageId: this.team.Facebook_PageId,
+        pageId: this.team.ChannelId,
       }
     });
 
@@ -160,12 +160,12 @@ export class ModalSendMessageAllComponent implements OnInit {
     let lstCheck = [...this.setOfCheckedId]
 
     if (lstCheck.length > 0) {
-      this.lstUserCheck = this.lstUserCheck ? this.lstUserCheck : this.conversationDataFacade.getChecked(this.team.Facebook_PageId, this.type, lstCheck);
+      this.lstUserCheck = this.lstUserCheck ? this.lstUserCheck : this.conversationDataFacade.getChecked(this.team.ChannelId, this.type, lstCheck);
     }
 
     let listToId = this.lstUserCheck.map((x: TDSSafeAny) => x.to_id);
     let model = {
-      page_id: this.team.Facebook_PageId ,
+      page_id: this.team.ChannelId ,
       list_to_id: listToId,
       product: {
           Id: res.Id,
@@ -238,7 +238,7 @@ export class ModalSendMessageAllComponent implements OnInit {
         })
 
     } else {
-      this.activityMatchingService.addManyMessage(model, this.team.Facebook_PageId)
+      this.activityMatchingService.addManyMessage(model, this.team.ChannelId)
         .pipe(takeUntil(this.destroy$))
         .pipe(finalize(() => { this.isSending = false; }))
         .subscribe((data) => {

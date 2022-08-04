@@ -1,3 +1,4 @@
+import { OrderEvent } from './../../handler-v2/order-handler/order.event';
 import { TDSEmptyModule } from 'tds-ui/empty';
 import { DirectivesModule } from './../../shared/directives/directives.module';
 import { AttachmentState } from './../../services/facebook-state/attachment.state';
@@ -112,7 +113,8 @@ const SERVICES = [
   UpdateShipmentDetailAshipHandler,
   SO_ComputeCaclHandler,
   CalculateFeeAshipHandler,
-  CsOrder_SuggestionHandler
+  CsOrder_SuggestionHandler,
+  OrderEvent
 ]
 
 @NgModule({

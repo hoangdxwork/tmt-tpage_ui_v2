@@ -22,7 +22,7 @@ import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/util
 })
 export class ListLiveCampaignComponent implements OnInit {
 
-  @Input() post!: FacebookPostItem;
+  @Input() post!: any; //ChatomniObjectsItemDto
 
   filterObj: any = {
     status: '',

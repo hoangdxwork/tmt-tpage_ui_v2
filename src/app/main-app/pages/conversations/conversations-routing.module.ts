@@ -20,7 +20,7 @@ const routes: Routes = [
   },
   {
     path: 'post',
-    component: ConversationPostComponent
+    component: ConversationPostV2Component
   }
 ]
 

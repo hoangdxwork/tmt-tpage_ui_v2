@@ -7,6 +7,7 @@ import { PostOrderConfigComponent } from './order-config/post-order-config.compo
 import { TDSModalRef } from 'tds-ui/modal';
 import { Component, Input, ViewChild } from "@angular/core";
 import { FacebookPostItem } from "src/app/main-app/dto/facebook-post/facebook-post.dto";
+import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 
 @Component({
   selector: 'config-post-outlet',
@@ -14,6 +15,7 @@ import { FacebookPostItem } from "src/app/main-app/dto/facebook-post/facebook-po
 })
 
 export class ConfigPostOutletComponent  {
+
   @ViewChild(PostOrderConfigComponent ) postOrderConfig !: TDSSafeAny;
   @ViewChild(PostOrderInteractionConfigComponent ) postOrderInteractionConfig !: TDSSafeAny;
   @ViewChild(PostHiddenCommentConfigComponent ) postHiddenCommentConfig !: TDSSafeAny;
@@ -21,13 +23,10 @@ export class ConfigPostOutletComponent  {
   @ViewChild(AutoLabelConfigComponent ) autoLabelConfig !: TDSSafeAny;
 
   selectedIndex: number = 0;
+  @Input() data!: ChatomniObjectsItemDto;
 
-  constructor(
-    private modalRef: TDSModalRef
-  ){
+  constructor(private modalRef: TDSModalRef){
   }
-
-  @Input() data!: FacebookPostItem;
 
   onSave(){
     switch(this.selectedIndex){

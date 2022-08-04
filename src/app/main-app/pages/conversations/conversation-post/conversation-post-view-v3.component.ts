@@ -28,7 +28,7 @@ import { RequestCommentByPost } from '@app/dto/conversation/post/comment-post.dt
 
 export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDestroy {
 
-  @Input() data!: FacebookPostItem;
+  @Input() data!: TDSSafeAny;
   @Input() team!: CRMTeamDTO;
 
   indClickFilter = 0;
@@ -108,8 +108,8 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
       if(res?.data?.last_activity?.comment_obj &&  res?.data?.last_activity?.type == 2) {
         let comment_obj = res.data?.last_activity?.comment_obj;
 
-        if (comment_obj?.object?.id == this.data?.fbid) {
-          if(comment_obj?.parent?.id != this.data.fbid) {
+        if (comment_obj?.object?.id == this.data?.ObjectId) {
+          if(comment_obj?.parent?.id != this.data.ObjectId) {
             this.childs[comment_obj.parent.id].unshift(comment_obj);
           } else {
             this.objComment.Items.unshift(comment_obj);
@@ -123,7 +123,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
           let data = Object.assign({}, res.data);
 
           if(res.type == "update_scan_feed") {
-              if(data.comment?.object?.id == this.data?.fbid) {
+              if(data.comment?.object?.id == this.data?.ObjectId) {
                   this.objComment.Items = [...[data.comment], ...this.objComment.Items];
               }
           }
@@ -140,7 +140,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   loadData() {
     this.isLoading = true;
     this.validateData();
-    this.getCommentOrders(this.data.fbid);
+    this.getCommentOrders(this.data.ObjectId);
 
     switch(this.currentFilter.value){
       case 'all':
@@ -169,7 +169,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   }
 
   loadGroupCommentsByPost() {
-    this.facebookCommentService.getGroupCommentsByPostId(this.data?.fbid)
+    this.facebookCommentService.getGroupCommentsByPostId(this.data?.ObjectId)
       .pipe(takeUntil(this.destroy$)).subscribe((res: RequestCommentByGroup) => {
 
         if(TDSHelperArray.hasListValue(res.Items)) {
@@ -191,7 +191,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   }
 
   loadFilterCommentsByPost(){
-    this.facebookCommentService.getFilterCommentsByPostId(this.data?.fbid)
+    this.facebookCommentService.getFilterCommentsByPostId(this.data?.ObjectId)
       .pipe(takeUntil(this.destroy$)).subscribe((res: RequestCommentByGroup) => {
 
           if(TDSHelperArray.hasListValue(res.Items)) {
@@ -214,7 +214,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   }
 
   loadManageCommentsByPost(){
-    this.facebookCommentService.getManageCommentsByLimit(this.data?.fbid)
+    this.facebookCommentService.getManageCommentsByLimit(this.data?.ObjectId)
       .pipe(takeUntil(this.destroy$)).subscribe((res: RequestCommentByPost) => {
 
           if(TDSHelperArray.hasListValue(res.Items)) {
@@ -235,7 +235,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   }
 
   loadAllCommentsByPost() {
-    this.facebookCommentService.getCommentsByPostId(this.data?.fbid)
+    this.facebookCommentService.getCommentsByPostId(this.data?.ObjectId)
       .pipe(takeUntil(this.destroy$)).subscribe((res: RequestCommentByPost) => {
 
         // Xử lý nếu bình luận đó là bình luận của 1 post child
@@ -244,7 +244,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
         if(TDSHelperObject.hasValue(childIds)) {
             childIds.map((x: any) => {
                 let splitParentId = x.split("_");
-                let splitPostId = this.data.fbid.split("_");
+                let splitPostId = this.data.ObjectId.split("_");
 
                 if(splitParentId && splitParentId[0] == splitPostId[0]) {
                     res.Items = [...res.Items, ...(res.Extras['childs'] as any)[x]];
@@ -322,7 +322,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
           let data = res.data;
           let userId = data.facebook_ASUserId;
 
-          if(data.facebook_PostId == this.data.fbid) {
+          if(data.facebook_PostId == this.data.ObjectId) {
             let dataAdd = {} as any;
             if(this.commentOrders[userId]) {
                 this.commentOrders[userId] = this.commentOrders[userId].filter((x: any) => x.id && !data.id);
@@ -374,18 +374,18 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   onChangeExcel(event: any) {
     switch(event.value) {
         case "excel":
-          this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.fbid}`, null,`comments-${this.data.fbid}`)
+          this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.ObjectId}`, null,`comments-${this.data.ObjectId}`)
               .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$)).subscribe();
           break;
 
         case "excel_phone":
-          this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.fbid}&isPhone=true&isFilterPhone=true`, null, `comments-${this.data.fbid}-with-distinct-phone`)
+          this.excelExportService.exportPost(`/facebook/exportcommentstoexcelv2?postid=${this.data.ObjectId}&isPhone=true&isFilterPhone=true`, null, `comments-${this.data.ObjectId}-with-distinct-phone`)
             .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$)).subscribe();
           break;
 
         case "excel_phone_distinct":
           this.excelExportService.exportPost(
-            `/facebook/exportcommentstoexcelv2?postid=${this.data.fbid}&isPhone=true`, null,`comments-${this.data.fbid}-with-phone`)
+            `/facebook/exportcommentstoexcelv2?postid=${this.data.ObjectId}&isPhone=true`, null,`comments-${this.data.ObjectId}-with-phone`)
             .pipe(finalize(() => this.isProcessing = false), takeUntil(this.destroy$)).subscribe();
           break;
 
@@ -397,7 +397,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   onChangeFilter(event: any): any {
     if (this.isProcessing) { return }
 
-    if(!TDSHelperString.hasValueString(this.data.fbid)) {
+    if(!TDSHelperString.hasValueString(this.data.ObjectId)) {
       return this.message.error('Không tìm thấy bài post');
     }
 
@@ -412,7 +412,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
       size: "xl",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
-        postId: this.data.fbid
+        postId: this.data.ObjectId
       }
     });
   }
@@ -421,7 +421,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
     this.currentSort = this.sortOptions[0];
     this.currentFilter = this.filterOptions[0];
 
-    this.facebookCommentService.fetchComments(this.team!.Id, this.data.fbid).subscribe((res: any) => {
+    this.facebookCommentService.fetchComments(this.team!.Id, this.data.ObjectId).subscribe((res: any) => {
         this.facebookCommentService.setSort(this.currentSort.value);
         this.loadData();
       }, error => {
@@ -449,11 +449,11 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   }
 
   refetch() {
-    this.facebookPostService.refetch(this.data.fbid)
+    this.facebookPostService.refetch(this.data.ObjectId)
       .pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
-        if (res.id === this.data.fbid) {
-          this.data.count_comments = res.count_comments;
+        if (res.id === this.data.ObjectId) {
+          // this.data.Data.count_comments = res.count_comments;
         }
       }, error => {
         this.message.error('Refetch bài viết đã xảy ra lỗi');
@@ -461,7 +461,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   }
 
   openConfigPost() {
-    let date = formatDate(this.data.created_time, 'dd/MM/yyyy HH:mm', 'en-US')
+    let date = formatDate(this.data.Data.created_time, 'dd/MM/yyyy HH:mm', 'en-US')
     this.modalService.create({
       title: `Cấu hình bài viết - ${date}` ,
       content: ConfigPostOutletComponent,
