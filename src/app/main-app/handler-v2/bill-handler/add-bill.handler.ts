@@ -11,9 +11,9 @@ export class AddBillHandler {
     const formModel = _form.value;
     data = Object.assign(data, formModel);
 
-    if(data.Id == 0 || data.Id == null) {
-        delete data.Id;
-    }
+    // if(data.Id == 0 || data.Id == null) {
+    //     delete data.Id;
+    // }
 
     data.AccountId = Number(data.Account?.Id || data.AccountId);
     if(data.AccountId && data.AccountId != 0) {
@@ -102,7 +102,7 @@ export class AddBillHandler {
 
     // TODO: trường hợp edit
     if(data.Id && data.Id > 0) {
-      data.OrderLines.map((x: OrderLineV2) => {
+      data.OrderLines?.map((x: OrderLineV2) => {
         if (x.Id <= 0) {
           x.Id = 0;
         }
@@ -119,7 +119,7 @@ export class AddBillHandler {
     // TODO: trường hợp thêm mới
     else {
       let details: any = [];
-      data.OrderLines.forEach((x: OrderLineV2) => {
+      data.OrderLines?.forEach((x: OrderLineV2) => {
         let item = {
             Account: data.Account,
             AccountId: data.AccountId,
@@ -137,57 +137,14 @@ export class AddBillHandler {
             Type: x.Type || 'percent',
             User: data.User,
             Weight: x.Weight,
-            WeightTotal: x.WeightTotal
+            WeightTotal: x.WeightTotal,
         }
-
-        // let item = {
-        //   Account: data.Account,
-        //   AccountId: data.AccountId,
-        //   CompanyId: x.CompanyId || data.CompanyId,
-        //   Discount: x.Discount,
-        //   Discount_Fixed: x.Discount_Fixed,
-        //   Id: x.Id,
-        //   IsName: x.IsName,
-        //   LiveCampaign_DetailId: x.LiveCampaign_DetailId || data.LiveCampaignId,
-        //   LiveCampaignQtyChange: x.LiveCampaignQtyChange || 0,
-        //   Name: x.Name,
-        //   Note: x.Note,
-        //   OrderId: x.OrderId,
-        //   PartnerId: data.PartnerId || x.PartnerId,
-        //   PriceRecent: x.PriceRecent,
-        //   PriceTotal: x.PriceTotal,
-        //   PriceSubTotal: x.PriceSubTotal,
-        //   PriceSubTotalSigned: x.PriceSubTotalSigned,
-        //   PriceUnit: x.PriceUnit,
-        //   Product: x.Product,
-        //   ProductBarcode: x.ProductBarcode || x.Product?.Barcode,
-        //   ProductId: x.ProductId,
-        //   ProductName: x.ProductName || x.Product?.Name,
-        //   ProductNameGet: x.ProductNameGet || x.Product?.NameGet,
-        //   ProductUOM: x.ProductUOM,
-        //   ProductUOMId: x.ProductUOMId,
-        //   ProductUOMName: x.ProductUOMName || x.ProductUOM?.Name,
-        //   ProductUOMQty: x.ProductUOMQty,
-        //   PromotionProgramComboId: x.PromotionProgramComboId,
-        //   PromotionProgramId: x.PromotionProgramId,
-        //   SaleLine: x.SaleLine,
-        //   SaleLineId: x.SaleLineId,
-        //   SaleLineIds: x.SaleLineIds,
-        //   Type: x.Type || 'percent',
-        //   User: data.User,
-        //   UserId: data.User.Id || data.UserId,
-        //   Weight: x.Weight,
-        //   WeightTotal: x.WeightTotal
-        // }
 
         details.push(item);
       })
 
       data.OrderLines = [...details] as any;
     }
-    
-    //TODO: Xóa tạm thời
-    delete data.ShipmentDetailsAship;
 
     if(!data.State && data.ShowState == 'Nháp') {
         data.State = 'draft';
