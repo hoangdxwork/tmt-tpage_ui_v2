@@ -52,7 +52,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'edit-order-v2',
-  templateUrl: './edit-order-v2.component.html',
+  templateUrl: './edit-order-v2.component.html'
 })
 
 export class EditOrderV2Component implements OnInit {
@@ -148,7 +148,6 @@ export class EditOrderV2Component implements OnInit {
   ngOnInit(): void {
     if(this.dataItem) {
       this.loadData();
-
       this.loadUserInfo();
       this.loadUser();
       this.loadPartnerStatus();
@@ -703,7 +702,7 @@ export class EditOrderV2Component implements OnInit {
     this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
           if(res) {
-
+            if(!TDSHelperString.isString(res)){
               this.configsProviderDataSource = [...res.configs];
 
               this.insuranceInfo = res.data?.InsuranceInfo ?? null;
@@ -715,6 +714,9 @@ export class EditOrderV2Component implements OnInit {
 
                   this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(svDetail.TotalFee), 'en-US', '1.0-0')} đ`);
               }
+            }else{
+              this.message.error(res);
+            }
           }
 
           this.isLoading = false;
@@ -795,7 +797,7 @@ export class EditOrderV2Component implements OnInit {
   prepareModelFeeV2() {
       let companyId = this.saleConfig.configs.CompanyId;
 
-      let model = this.prepareModelFeeV2Handler.so_prepareModelFeeV2(this.shipExtraServices, this.saleModel, this.quickOrderModel,  companyId, this.insuranceInfo );debugger
+      let model = this.prepareModelFeeV2Handler.so_prepareModelFeeV2(this.shipExtraServices, this.saleModel, this.quickOrderModel, companyId, this.insuranceInfo);
       return model;
   }
 

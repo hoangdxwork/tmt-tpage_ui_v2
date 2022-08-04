@@ -1,3 +1,4 @@
+import { OrderEvent } from './../../../handler-v2/order-handler/order.event';
 import { ModalHistoryChatComponent } from './../components/modal-history-chat/modal-history-chat.component';
 import { ConversationMatchingItem } from './../../../dto/conversation-all/conversation-all.dto';
 import { MDBByPSIdDTO } from './../../../dto/crm-matching/mdb-by-psid.dto';
@@ -126,6 +127,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     private viewContainerRef: ViewContainerRef,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private odataSaleOnline_OrderService: OdataSaleOnline_OrderService,
+    private orderEvent: OrderEvent,
     private cacheApi: THelperCacheService,
     private excelExportService: ExcelExportService,
     private resizeObserver: TDSResizeObserver,
@@ -295,7 +297,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showModalCreateBillFast(ids: string[]) {
-    this.fastSaleOrderService.getListOrderIds({ ids: ids })
+    this.fastSaleOrderService.getListOrderIds({ids: ids})
       .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
         if (res) {
           this.modal.create({
@@ -343,7 +345,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
         this.cacheApi.setItem(key, res);
         // TODO: lưu filter cache trước khi load trang add bill
         this.storeFilterCache();
-        this.router.navigateByUrl(`bill/create-order-bill/${res.Id}`);
+        this.router.navigateByUrl(`bill/create`);
       },
         error => {
           this.message.error(error?.error?.message || 'Không thể tạo hóa đơn');
@@ -412,8 +414,6 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     modal.afterClose.subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
-      }
     })
   }
 
@@ -547,6 +547,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
             delete res['@odata.context'];
 
             const modal = this.modal.create({
+                title: `Sửa đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>`,
                 content: EditOrderV2Component,
                 size: 'xl',
                 viewContainerRef: this.viewContainerRef,
