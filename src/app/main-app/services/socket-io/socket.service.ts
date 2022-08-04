@@ -28,7 +28,8 @@ export class SocketService extends BaseSevice {
   }
 
   initSocket(): void {
-    let hostname = this.document.location.hostname;
+    let hostname =  this.document.location.hostname;
+    console.log(hostname);
 
     this.socket = io(environment.socketUrl, {
         transports: ['websocket'], // Sử dụng khi socketserver không dùng sticky session
