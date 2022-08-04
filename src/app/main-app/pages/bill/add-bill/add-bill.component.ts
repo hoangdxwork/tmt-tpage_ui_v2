@@ -239,7 +239,7 @@ export class AddBillComponent implements OnInit {
 
   loadBill(id: number) {
     this.isLoading = true;
-    
+
     this.fastSaleOrderService.getById(id).pipe(finalize(() => { this.isLoading = false })).subscribe((res: any) => {
       delete res['@odata.context'];
       let data = res as FastSaleOrder_DefaultDTOV2;
@@ -249,9 +249,9 @@ export class AddBillComponent implements OnInit {
         data.Id = 0;
 
         data.DateInvoice = new Date();
-        data.ReceiverDate = null;
-        data.DateOrderRed = null;
-      }else{
+        data.ReceiverDate = new Date();
+        data.DateOrderRed = new Date();
+      } else {
         data.DateInvoice = data.DateInvoice ? new Date(data.DateInvoice) : null;
         data.DateOrderRed = data.DateOrderRed ? new Date(data.DateOrderRed) : null;
         data.ReceiverDate = data.ReceiverDate ? new Date(data.ReceiverDate) : null;
@@ -312,23 +312,23 @@ export class AddBillComponent implements OnInit {
 
       // Trường hợp Tạo hóa đơn F10 bên Đơn hàng thì update thông tin từ cache
       this.updateFromCache.loadCacheOrder(this.dataModel).subscribe(res => {
-        //TODO: cập nhật thông tin khách hàng
-        if (res.PartnerId && res.Partner?.Id) {
-          this.changePartner(res.PartnerId);
-        }
-        //TODO: cập nhật danh sách order lines
-        this.updateOrderLinesHandler.updateOrderLines(this._form,data);
-            
-        //TODO: cập nhật form giá
-        let calData = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
-        this.totalQtyLines = calData.totalAmountLines;
-        this.totalAmountLines = calData.totalAmountLines;
+          //TODO: cập nhật thông tin khách hàng
+          if (res.PartnerId && res.Partner?.Id) {
+              this.changePartner(res.PartnerId);
+          }
+          //TODO: cập nhật danh sách order lines
+          this.updateOrderLinesHandler.updateOrderLines(this._form, data);
 
-        this._form.patchValue(data);
-      },
-      err=>{
-        this.message.error(err?.error?.message || 'Không thể tải dữ liệu từ cache');
+          //TODO: cập nhật form giá
+          let calData = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
+          this.totalQtyLines = calData.totalAmountLines;
+          this.totalAmountLines = calData.totalAmountLines;
+
+          this._form.patchValue(data);
+      },  err => {
+          this.message.error(err?.error?.message || 'Không thể tải dữ liệu từ cache');
       });
+
     }, error => {
       this.message.error(error?.error?.message || 'Load thông tin mặc định đã xảy ra lỗi!');
     });
@@ -430,7 +430,6 @@ export class AddBillComponent implements OnInit {
       this._form.controls['PartnerId'].setValue(partner.Id);
 
       let model = this.prepareModel();
-      delete model.ShipmentDetailsAship;
 
       return this.fastSaleOrderService.onChangePartnerPriceList({ model: model })
         .pipe(map((data: TDSSafeAny) => {
@@ -888,9 +887,7 @@ export class AddBillComponent implements OnInit {
         Note: null,
         PriceUnit: event.Price,
         PriceRecent: event.OldPrice,
-        Product: {
-          Id: event.Id
-        },
+        Product: event,
         ProductId: event.Id,
         ProductName: event.Name,
         ProductNameGet: event.NameGet,
@@ -913,7 +910,7 @@ export class AddBillComponent implements OnInit {
       .pipe(finalize(() => { this.isLoadingProduct = false })).subscribe((res: FSOrderLines) => {
         delete res['@odata.context'];
 
-        var item: OrderLineV2 = this.prepareCopyItemHandler.prepareModel(res, this.dataModel);
+        let item: OrderLineV2 = this.prepareCopyItemHandler.prepareModel(res, this.dataModel);
 
         if (item.Id <= 0) {
           item.Id = this.idPush - 1;
@@ -921,9 +918,10 @@ export class AddBillComponent implements OnInit {
         }
 
         let formArray = <FormArray> this._form.controls['OrderLines'];
-        formArray.push(this.updateOrderLinesHandler.initOrderLines(this.dataModel,item));
+        formArray.push(this.updateOrderLinesHandler.initOrderLines(this.dataModel, item));
+
         //TODO: cập nhật form giá
-        let calData = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
+        let calData = this.calculateBillFee.computeAmountTotal(this._form, this.roleConfigs);
         this.totalQtyLines = calData.totalAmountLines;
         this.totalAmountLines = calData.totalAmountLines;
 

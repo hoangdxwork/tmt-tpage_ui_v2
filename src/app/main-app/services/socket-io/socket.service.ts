@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
+import { SocketioOnMessageDto } from '@app/dto/socket-io/chatomni-on-message.dto';
 import { TCommonService } from '@core/services';
 import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
@@ -32,7 +33,7 @@ export class SocketService extends BaseSevice {
     this.socket = io(environment.socketUrl, {
         transports: ['websocket'], // Sử dụng khi socketserver không dùng sticky session
         query: {
-          room: `test.tpos.dev` // Viết hàm parse url lấy theo domain của tên miền hiện tại nếu ở production
+          room: `${hostname}` // Viết hàm parse url lấy theo domain của tên miền hiện tại nếu ở production
         }
     });
 

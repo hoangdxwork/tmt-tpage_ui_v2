@@ -14,7 +14,7 @@ export class UpdateOrderLinesHandler {
     if (TDSHelperArray.hasListValue(data.OrderLines)) {
       let formArray = <FormArray>_form.controls['OrderLines'];
 
-      data.OrderLines.forEach((item: OrderLineV2) => {
+      data.OrderLines?.forEach((item: OrderLineV2) => {
         formArray.push(this.initOrderLines(data,item));
       });
     }

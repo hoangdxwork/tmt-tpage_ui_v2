@@ -669,7 +669,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     Carrier: Carrier | null;
     Tax: any;
     SaleOrder?: any;
-    OrderLines: OrderLineV2[];
+    OrderLines?: OrderLineV2[];
     Ship_ServiceExtras: ShipServiceExtra[];
     Team: Team;
     ShipmentDetailsAship?: ShipmentDetailsAshipDTO;
@@ -681,8 +681,8 @@ export interface FastSaleOrder_DefaultDTOV2 {
     Source?: any;
     FormAction?: any;
     Error?: any;
-    HistoryDeliveryDetails?: any[];
-    OutstandingInfo?: any;
+    // HistoryDeliveryDetails?: any[];
+    // OutstandingInfo?: any;
 }
 
 export interface OrderSendShipDTO {
