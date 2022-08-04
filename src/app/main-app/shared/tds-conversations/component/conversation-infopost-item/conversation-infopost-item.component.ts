@@ -1,21 +1,21 @@
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSModalService } from 'tds-ui/modal';
 import { ModalPostComponent } from './../../../../pages/conversations/components/modal-post/modal-post.component';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { Router } from '@angular/router';
-import { ChatomniMessageDetail, ExtrasObjectDto, ChatomniMessageDTO } from './../../../../dto/conversation-all/chatomni/chatomni-message.dto';
+import { ChatomniMessageDetail, ExtrasObjectDto } from './../../../../dto/conversation-all/chatomni/chatomni-message.dto';
 import { CRMTeamType } from './../../../../dto/team/chatomni-channel.dto';
 import { ChatomniDataTShopPostDto } from './../../../../dto/conversation-all/chatomni/chatomni-tshop-post.dto';
 import { Facebook_Graph_Post } from './../../../../dto/conversation-all/chatomni/chatomni-facebook-post.dto';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { Component, OnInit, ChangeDetectionStrategy, Input, ViewContainerRef } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, OnInit, ChangeDetectionStrategy, Input, ViewContainerRef, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'conversation-infopost-item',
   templateUrl: './conversation-infopost-item.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [ TDSDestroyService ]
 })
-export class ConversationInfopostItemComponent implements OnInit {
+export class ConversationInfopostItemComponent implements OnInit, OnChanges {
 
   @Input() team!: CRMTeamDTO;
   @Input() typeNumber!: number;
@@ -25,16 +25,16 @@ export class ConversationInfopostItemComponent implements OnInit {
   dataFacebook!: Facebook_Graph_Post;
   dataTshop!: ChatomniDataTShopPostDto;
 
-  dataSource$!: Observable<ChatomniMessageDTO>;
   postPictureError: any[] = [];
 
   constructor(
     private router: Router,
     private viewContainerRef: ViewContainerRef,
-    private modalService: TDSModalService
+    private modalService: TDSModalService,
+    private destroy$: TDSDestroyService
   ) { }
-
-  ngOnInit(): void {
+  
+  ngOnChanges(changes: SimpleChanges): void {
     if(this.team.Type == CRMTeamType._Facebook && this.typeNumber == 12){
       this.dataFacebook = this.data.Data as Facebook_Graph_Post;
     }else if(this.team.Type == CRMTeamType._TShop && this.typeNumber == 91) {
@@ -42,11 +42,10 @@ export class ConversationInfopostItemComponent implements OnInit {
     }
   }
 
+  ngOnInit(): void {
+  }
+
   openModalPost(item: ChatomniMessageDetail) {
-    let data: TDSSafeAny;
-    this.dataSource$!.subscribe((res: any) => {
-      data = res.extras.posts[item.ObjectId];
-    });
     this.modalService.create({
       title: 'Bài viết tổng quan',
       content: ModalPostComponent,
@@ -54,7 +53,7 @@ export class ConversationInfopostItemComponent implements OnInit {
       bodyStyle: { padding : '0px'},
       viewContainerRef: this.viewContainerRef,
       componentParams:{
-        data: data
+        // data: this.data
       }
     });
   }

@@ -44,7 +44,7 @@
                             color="primary"  trigger="click"  tds-dropdown
                             [tdsDropdownMenu]="menu2" [placement]="'bottomRight'">
                             <span class="text-neutral-1-400 text-caption-1 font-regular pr-1">{{ data.AssignedTo ? 'Đã gán cho' : 'Gán nhân viên' }}</span>
-                            <span class="text-primary-1 text-caption-1 font-semibold pr-1">{{data.AssignedTo ? data.AssignedTo.Name:''}}</span>
+                            <span class="text-primary-1 text-caption-1 font-semibold pr-1">{{data.AssignedTo ? data.AssignedTo.UserName:''}}</span>
                             <i class="tdsi-arrow-down-line"></i>
                         </button>
                         <tds-dropdown-menu #menu2="tdsDropdownMenu">
@@ -217,12 +217,12 @@
                 </ng-template>
             </div>
             <div class="flex-auto flex gap-2.5 ">
-                <div *ngFor="let item of data.Tags | slice:0:4" (click)="onRemoveTag(item)" class="relative group text-caption-2 flex items-center max-w-[156px] truncate">
+                <div *ngFor="let item of data.Tags | slice:0:4" class="relative group text-caption-2 flex items-center max-w-[156px] truncate">
                     <div class="cursor-pointer w-full px-3 py-1 rounded-md font-semibold text-white text-center truncate group-hover:opacity-10"
                         [ngStyle]="{'background-color': [item.ColorClass]}">
                         {{item.Name}}
                     </div>
-                    <button
+                    <button (click)="onRemoveTag(item)"
                         class="group-hover:text-accent-3 font-semibold absolute group-hover:flex w-full items-center justify-center hidden truncate">
                         Gỡ nhãn
                     </button>
