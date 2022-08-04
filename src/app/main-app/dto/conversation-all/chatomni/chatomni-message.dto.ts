@@ -76,6 +76,7 @@ export interface ChatomniDataFacebookMessage {
   // các dữ liệu bổ sung để check client
   has_admin_required: boolean;
   is_error_attachment: boolean;// ko có trong dữ liệu trả về
+  errorShowAttachment: boolean;// ko có trong dữ liệu trả về
 }
 
 export interface ErrorMessageOmni {
@@ -101,6 +102,11 @@ export interface ChatomniInnerUser {
   Name: string;
 }
 
+export interface Thumbnail {
+  Width: number;
+  Height: number;
+  Url: string;
+}
 export interface ChatomniMessageDetail {
   Data: ChatomniDataFacebookMessage;
   Id: string;
@@ -156,13 +162,5 @@ export interface ExtrasObjectDto {
   ChannelUpdatedTime?: any;
   Title?: any;
   Description: string;
-  Thumbnail?:  { Url: string; };
+  Thumbnail?: Thumbnail
 }
-
-
-
-
-
-
-
-

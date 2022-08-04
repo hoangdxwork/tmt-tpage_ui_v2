@@ -111,12 +111,12 @@ export class ModalSendMessageAllComponent implements OnInit {
   prepareModel(message: string): any {
     let lstCheck = [...this.setOfCheckedId]
     if (lstCheck.length > 0) {
-      this.lstUserCheck = this.lstUserCheck ? this.lstUserCheck : this.conversationDataFacade.getChecked(this.team.Facebook_PageId, this.type, lstCheck);
+      this.lstUserCheck = this.lstUserCheck ? this.lstUserCheck : this.conversationDataFacade.getChecked(this.team.ChannelId, this.type, lstCheck);
     }
     if (this.sendMessageType == SendMessageType.QuickMessage) {
       let listToId = this.lstUserCheck.map((x: TDSSafeAny) => { return { to_id: x.to_id, to_name: x.to_name, partner_id: x.partner_id } });
       let model = {
-        PageId: this.team.Facebook_PageId,
+        PageId: this.team.ChannelId,
         ToUsers: listToId,
         Message: message
       }

@@ -671,7 +671,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     const model = {} as SendMessageModelDTO;
     model.from = {
       id: this.team.ChannelId,
-      name: this.team.Facebook_PageName
+      name: this.team.Name
     }
     model.to = {
       id: this.data.ConversationId,
@@ -704,9 +704,9 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       return
     }
     this.isLoadingSelectUser = true;
-    this.activityMatchingService.assignUserToConversation(this.data.Id, item.Id, this.team.Facebook_PageId)
+    this.activityMatchingService.assignUserToConversation(this.data.ConversationId, item.Id, this.team.ChannelId)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
+      .subscribe(res => { 
         this.data.AssignedTo = res;
         this.message.success('Thao tác thành công');
         this.isLoadingSelectUser = false;
@@ -776,8 +776,10 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
   removeTagOnView(tag: any) {
     this.data.Tags = this.data.Tags || [];
-    this.data.Tags = this.data.Tags.filter(x => x.Id != tag.Id);
-    delete this.data.Tags[tag.Id];
+    let data = this.data.Tags.filter(x => x.Id !== tag.Id)
+    this.data.Tags = [...data];
+
+    this.cdRef.detectChanges();
   }
 
   searchTag() {

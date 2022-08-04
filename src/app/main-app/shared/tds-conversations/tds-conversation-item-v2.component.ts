@@ -1,7 +1,7 @@
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
 import { Facebook } from './../../../lib/dto/facebook.dto';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
-import { Subject, takeUntil } from "rxjs";
+import { finalize, Subject, takeUntil } from "rxjs";
 import { CRMTeamDTO } from "../../dto/team/team.dto";
 import { ActivityMatchingService } from "../../services/conversation/activity-matching.service";
 import { ActivityDataFacade } from "../../services/facades/activity-data.facade";
@@ -10,13 +10,15 @@ import { ConversationOrderFacade } from "../../services/facades/conversation-ord
 import { PhoneHelper } from "../helper/phone.helper";
 import { ReplaceHelper } from "../helper/replace.helper";
 import { eventReplyCommentTrigger } from "../helper/event-animations.helper";
-import { TDSHelperObject, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
+import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSModalService } from "tds-ui/modal";
 import { ProductPagefbComponent } from "../../pages/conversations/components/product-pagefb/product-pagefb.component";
 import { FormatIconLikePipe } from "../pipe/format-icon-like.pipe";
 import { ChatomniMessageDetail, ChatomniMessageType, Datum } from "../../dto/conversation-all/chatomni/chatomni-message.dto";
 import { TDSDestroyService } from 'tds-ui/core/services';
+import { ActivityStatus } from '@core/enum/message/coversation-message';
+import { SendMessageModelDTO } from '@app/dto/conversation/send-message.dto';
 
 @Component({
   selector: "tds-conversation-item-v2",
@@ -52,6 +54,7 @@ export class TDSConversationItemV2Component implements OnInit {
   listAtts: TDSSafeAny[] = [];
   isShowItemImage: boolean = false;
   imageClick!: number;
+  enumActivityStatus = ActivityStatus;
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
   @ViewChild('contentMessage') contentMessage: any;
@@ -147,53 +150,51 @@ export class TDSConversationItemV2Component implements OnInit {
       return
     }
     this.isLiking = true;
+    let model = {
+      TeamId: this.team.Id,
+      CommentId:  this.dataItem.Data?.id,
+      Content: this.dataItem.Data?.user_likes ? 'hủy thích' : 'thích',
+      Message: this.dataItem.Data?.message,
+      UserName: this.dataItem.Data?.from?.name,
+      fbid: this.dataItem.Data?.from?.id
+    }
 
-    // let model = {
-    //   TeamId: this.team.Id,
-    //   CommentId: this.dataItem.Id,
-    //   Content: this.dataItem.comment?.user_likes ? 'hủy thích' : 'thích',
-    //   Message: this.dataItem.message_formatted || this.data.message,
-    //   UserName: this.dataItem.comment?.from?.name,
-    //   fbid: this.dataItem.comment?.from?.id
-    // }
+    this.activityMatchingService.addLikeComment(model)
+      .pipe(takeUntil(this.destroy$), finalize (()=>{this.isLiking = false}))
+      .subscribe((res: any) => {
+        this.tdsMessage.success('Thao tác thành công!');
+        this.dataItem.Data.user_likes = !this.dataItem.Data.user_likes;
 
-    // this.activityMatchingService.addLikeComment(model)
-    //   .pipe(takeUntil(this.destroy$))
-    //   .pipe(finalize (()=>{this.isLiking = false}))
-    //   .subscribe((res: any) => {
-    //     this.tdsMessage.success('Thao tác thành công!');
-    //     this.data.comment.user_likes = !this.data.comment.user_likes;
-
-    //     this.cdRef.markForCheck();
-    //   }, error => {
-    //   this.tdsMessage.error(error.error? error.error.message : 'đã xảy ra lỗi');
-    //   this.cdRef.markForCheck();
-    // });
+        this.cdRef.markForCheck();
+      }, error => {
+      this.tdsMessage.error(error.error? error.error.message : 'đã xảy ra lỗi');
+      this.cdRef.markForCheck();
+    });
   }
 
   hideComment(status: any) {
-    // if(this.isHiding){
-    //   return
-    // }
-    // this.isHiding = true;
-    // let model = {
-    //   TeamId: this.team.Id,
-    //   CommentId: this.data.id,
-    //   Content: this.data.comment?.is_hidden ? 'hiện' : 'ẩn',
-    //   Message: this.data.comment?.message,
-    //   UserName: this.data.comment?.from.name,
-    //   fbid: this.data.comment?.from?.id
-    // };
+    if(this.isHiding){
+      return
+    }
+    this.isHiding = true;
+    let model = {
+      TeamId: this.team.Id,
+      CommentId: this.dataItem.Data?.id,
+      Content: this.dataItem.Data?.is_hidden ? 'hiện' : 'ẩn',
+      Message: this.dataItem.Data?.message,
+      UserName: this.dataItem.Data?.from.name,
+      fbid: this.dataItem.Data?.from?.id
+    };
 
-    // this.activityMatchingService.hideComment(model).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{this.isHiding = false})).subscribe((res: any) => {
-    //     this.tdsMessage.success('Thao tác thành công!');
-    //     this.data.comment.is_hidden = !this.data.comment.is_hidden;
+    this.activityMatchingService.hideComment(model).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{this.isHiding = false})).subscribe((res: any) => {
+        this.tdsMessage.success('Thao tác thành công!');
+        this.dataItem.Data.is_hidden = !this.dataItem.Data?.is_hidden;
 
-    //     this.cdRef.markForCheck();
-    // }, error => {
-    //   this.tdsMessage.error(error.error? error.error.message :'đã xảy ra lỗi');
-    //   this.cdRef.markForCheck();
-    // });
+        this.cdRef.markForCheck();
+    }, error => {
+      this.tdsMessage.error(error.error? error.error.message :'đã xảy ra lỗi');
+      this.cdRef.markForCheck();
+    });
   }
 
   isErrorAttachment(att: Datum, dataItem: ChatomniMessageDetail){
@@ -202,23 +203,24 @@ export class TDSConversationItemV2Component implements OnInit {
     }
   }
 
+  //chưa test
   refreshAttachment(item: any) {
-    // if(this.reloadingImage){
-    //   return
-    // }
-    // this.reloadingImage = true;
-    // this.activityMatchingService.refreshAttachment(this.team.Facebook_PageId, this.data.fbid || this.data.id , item.id)
-    //   .pipe(takeUntil(this.destroy$))
-    //   .pipe(finalize(()=>{ this.reloadingImage = false})).subscribe((res: any) => {
+    if(this.reloadingImage){
+      return
+    }
+    this.reloadingImage = true;
+    this.activityMatchingService.refreshAttachment(this.team.Facebook_PageId, this.dataItem.Data.id || this.csid , item.id)
+      .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(()=>{ this.reloadingImage = false})).subscribe((res: any) => {
 
-    //     this.tdsMessage.success('Thao tác thành công');
-    //     this.activityDataFacade.refreshAttachment(res);
-    //     this.data["errorShowAttachment"] = false;
-    //     this.cdRef.markForCheck();
+        this.tdsMessage.success('Thao tác thành công');
+        this.activityDataFacade.refreshAttachment(res);
+        this.dataItem.Data["errorShowAttachment"] = false;
+        this.cdRef.markForCheck();
 
-    // }, error => {
-    //     this.tdsMessage.error('Không thành công');
-    // })
+    }, error => {
+        this.tdsMessage.error('Không thành công');
+    })
   }
 
   checkErrorMessage(message: string): boolean {
@@ -228,13 +230,14 @@ export class TDSConversationItemV2Component implements OnInit {
     return false;
   }
 
+  //chưa test
   retryMessage() {
-    // this.activityMatchingService.retryMessage(this.data.tpid || this.data.id, this.team.Facebook_PageId)
-    //   .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-    //       this.tdsMessage.success("Thao tác thành công");
-    //   }, error => {
-    //       this.tdsMessage.error('Không thành công');
-    //   })
+    this.activityMatchingService.retryMessage(this.dataItem.Id, this.team.Facebook_PageId )
+      .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+          this.tdsMessage.success("Thao tác thành công");
+      }, error => {
+          this.tdsMessage.error('Không thành công');
+      })
   }
 
   // has_admin_required: copy lại tn đẩy qua input tds-conversation để gửi lại
@@ -267,37 +270,38 @@ export class TDSConversationItemV2Component implements OnInit {
     })
   }
 
+  //chưa có dữ liệu chưa test lại
   onProductSelected(event :any) {
-    // if(event && event.Id){
-    //   let model = {
-    //     page_id: this.team.Facebook_PageId,
-    //     to_id: this.data.from_id,
-    //     comment_id: this.data.id,
-    //     message: this.message,
+    if(event && event.Id){
+      let model = {
+        page_id: this.team.Facebook_PageId,
+        to_id: this.dataItem.Data.from.id,
+        comment_id: this.dataItem.Data.id,
+        message: this.message,
 
-    //     product: {
-    //       Id: event.Id,
-    //       Name: event.Name,
-    //       Picture: event.Picture,
-    //       Price: event.Price
-    //     }
-    //   };
+        product: {
+          Id: event.Id,
+          Name: event.Name,
+          Picture: event.Picture,
+          Price: event.Price
+        }
+      };
 
-    //   this.activityMatchingService.addTemplateMessage(this.data.psid, model)
-    //     .pipe(takeUntil(this.destroy$))
-    //     .subscribe((res: any) => {
-    //       this.activityDataFacade.messageServer(res);
-    //       this.conversationDataFacade.messageServer(res);
+      this.activityMatchingService.addTemplateMessage(this.team.ChannelId, model)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((res: any) => {
+          this.activityDataFacade.messageServer(res);
+          this.conversationDataFacade.messageServer(res);
 
-    //       this.tdsMessage.success('Gửi thành công sản phẩm');
-    //       this.cdRef.markForCheck();
-    //   }, error => {
-    //     this.tdsMessage.error(`${error.error.message}` ? `${error.error.message}`  : 'Gửi sản phẩm thất bại');
-    //     this.cdRef.markForCheck();
-    //   });
+          this.tdsMessage.success('Gửi thành công sản phẩm');
+          this.cdRef.markForCheck();
+      }, error => {
+        this.tdsMessage.error(`${error.error.message}` ? `${error.error.message}`  : 'Gửi sản phẩm thất bại');
+        this.cdRef.markForCheck();
+      });
 
-    //   this.message += event.Name, + " - " + event.Price;
-    // }
+      this.message += event.Name, + " - " + event.Price;
+    }
   }
 
   onIconShowButtonSelected(event: any) {
@@ -357,93 +361,94 @@ export class TDSConversationItemV2Component implements OnInit {
   }
 
   replyComment(message: string, event: any) {
-    // if(this.isReplyingComment){
-    //   return;
-    // }
+    if(this.isReplyingComment){
+      return;
+    }
 
-    // this.isReplyingComment = true;
-    // if(this.isPrivateReply) {
-    //   this.addQuickReplyComment(message, event);
-    // } else {
-    //   const model = this.prepareModel(message);
-    //   model.post_id = this.data.object_id || this.data.comment?.object?.id || null;
-    //   model.parent_id = this.data.id || this.data?.comment?.id || null;
-    //   this.activityMatchingService.replyComment(this.team?.Id, model)
-    //     .pipe(takeUntil(this.destroy$))
-    //     .pipe(finalize(()=> {this.isReplyingComment = false;} )).subscribe((res: any) => {
-    //       this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });
-    //       this.conversationDataFacade.messageServer(res);
+    this.isReplyingComment = true;
+    if(this.isPrivateReply) {
+      this.addQuickReplyComment(message, event);
+    } else {
+      const model = this.prepareModel(message);
+      model.post_id = this.dataItem.ObjectId || this.dataItem.Data?.object?.id || null;
+      model.parent_id = this.dataItem.ParentId || this.dataItem?.Data?.id || null;
+      this.activityMatchingService.replyComment(this.team?.Id, model)
+        .pipe(takeUntil(this.destroy$))
+        .pipe(finalize(()=> {this.isReplyingComment = false;} )).subscribe((res: any) => {
+          this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });
+          this.conversationDataFacade.messageServer(res);
 
-    //       this.messageModel = null;
-    //       this.tdsMessage.success("Trả lời bình luận thành công");
+          this.messageModel = null;
+          this.tdsMessage.success("Trả lời bình luận thành công");
 
-    //       this.isReply = false;
-    //       event.preventDefault();
-    //       event.stopImmediatePropagation();
-    //       this.cdRef.markForCheck();
+          this.isReply = false;
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          this.cdRef.markForCheck();
 
-    //     }, error => {
-    //       this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
-    //       event.preventDefault();
-    //       event.stopImmediatePropagation();
-    //       this.cdRef.markForCheck();
+        }, error => {
+          this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          this.cdRef.markForCheck();
 
-    //     });
-    // }
+        });
+    }
   }
 
+  // hiện thông báo trả lời thanh công nhưng chưa add, chưa gửi vào fb
   addQuickReplyComment(message: string, event: any) {
-    // this.isReply = false;
-    // const model = this.prepareModel(message);
-    // model.comment_id = this.dataItem.Data.id;
+    this.isReply = false;
+    const model = this.prepareModel(message);
+    model.comment_id = this.dataItem.Data.id;
 
-    // this.activityMatchingService.addQuickReplyComment(model)
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe((res: any) => {
+    this.activityMatchingService.addQuickReplyComment(model)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
 
-    //     if(TDSHelperArray.hasListValue(res)){
-    //       res.forEach((item: any) => {
-    //         item["status"] = this.enumActivityStatus.sending;
-    //         this.activityDataFacade.messageServer({ ...item });
-    //       });
-    //     }
+        if(TDSHelperArray.hasListValue(res)){
+          res.forEach((item: any) => {
+            item["status"] = this.enumActivityStatus.sending;
+            this.activityDataFacade.messageServer({ ...item });
+          });
+        }
 
-    //     this.conversationDataFacade.messageServer(res.pop());
+        this.conversationDataFacade.messageServer(res.pop());
 
-    //     this.messageModel = null;
-    //     this.isReplyingComment = false;
-    //     this.tdsMessage.success('Gửi tin thành công');
+        this.messageModel = null;
+        this.isReplyingComment = false;
+        this.tdsMessage.success('Gửi tin thành công');
 
-    //     event.preventDefault();
-    //     event.stopImmediatePropagation();
-    //     this.cdRef.markForCheck();
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        this.cdRef.markForCheck();
 
-    // }, error => {
-    //   this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Gửi tin nhắn thất bại");
-    //   this.isReplyingComment = false;
+    }, error => {
+      this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Gửi tin nhắn thất bại");
+      this.isReplyingComment = false;
 
-    //   event.preventDefault();
-    //   event.stopImmediatePropagation();
-    //   this.cdRef.markForCheck();
-    // });
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      this.cdRef.markForCheck();
+    });
   }
 
   prepareModel(message: string): any {
-    // const model = {} as SendMessageModelDTO;
-    // model.from = {
-    //   id: this.team.Facebook_PageId,
-    //   name: this.team.Facebook_PageName
-    // }
-    // model.to = {
-    //   id: this.data.from_id,
-    //   name: this.name
-    // };
-    // model.to_id = this.data.from_id;
-    // model.to_name = this.name;
-    // model.message = message;
-    // model.created_time = (new Date()).toISOString();
+    const model = {} as SendMessageModelDTO;
+    model.from = {
+      id: this.team.ChannelId || this.team.Facebook_PageId,
+      name: this.team.Name
+    }
+    model.to = {
+      id: this.dataItem.Data.from.id,
+      name: this.name
+    };
+    model.to_id = this.dataItem.Data.from.id;
+    model.to_name = this.name;
+    model.message = message;
+    model.created_time = (new Date()).toISOString();
 
-    // return model
+    return model
   }
 
   @HostListener('click', ['$event']) onClick(e: TDSSafeAny) {
