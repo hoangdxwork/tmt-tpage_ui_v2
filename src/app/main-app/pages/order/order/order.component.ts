@@ -275,7 +275,6 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     let type = "saleonline";
     this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
       this.lstDataTag = [...res.value];
-      console.log("Tag", this.lstDataTag);
     });
   }
 

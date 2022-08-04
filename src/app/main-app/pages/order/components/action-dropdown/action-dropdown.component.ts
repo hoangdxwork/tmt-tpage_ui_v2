@@ -32,6 +32,7 @@ export class ActionDropdownComponent implements OnInit {
   constructor(
     private modal: TDSModalService,
     private message: TDSMessageService,
+    private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private odataSaleOnline_OrderService: OdataSaleOnline_OrderService
@@ -99,15 +100,24 @@ export class ActionDropdownComponent implements OnInit {
 
   checkDuplicateASIdPhoneUId() {
     if (this.checkValueEmpty() == 1) {
-      this.modal.create({
-        title: 'Danh sách khách hàng trùng',
-        content: DuplicateUserComponent,
-        size: 'xl',
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          // listData: listData
+      let ids = this.idsModel;
+
+      this.saleOnline_OrderService.getCheckDuplicatePhone({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe((res: any ) => {
+        if(res) {
+          delete res['@odata.context'];
+          this.modalService.create({
+            title: 'Danh sách khách hàng trùng',
+            content: DuplicateUserComponent,
+            size: 'xl',
+            viewContainerRef: this.viewContainerRef,
+            componentParams: {
+              duplicateUser: res.value
+            }
+          });
         }
-      });
+      }, err => {
+        this.message.error(err.error.message ?? 'Không tải được dữ liệu');
+      })
     }
   }
 

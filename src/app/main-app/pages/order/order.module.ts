@@ -80,6 +80,7 @@ import { EditOrderV2Component } from './components/edit-order/edit-order-v2.comp
 import { SO_ComputeCaclHandler } from '../../handler-v2/order-handler/compute-cacl.handler';
 import { CalculateFeeAshipHandler } from '../../handler-v2/aship-v2/calcfee-aship.handler';
 import { CsOrder_SuggestionHandler } from '@app/handler-v2/chatomni-csorder/prepare-suggestions.handler';
+import { ConvertCustomersComponent } from './components/convert-customers/convert-customers.component';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -134,7 +135,8 @@ const SERVICES = [
     ModalHistoryChatComponent,
     LiveOrderByPartnerComponent,
     OverviewOrderBypartnerComponent,
-    EditOrderV2Component
+    EditOrderV2Component,
+    ConvertCustomersComponent
   ],
   imports: [
     CommonModule,
