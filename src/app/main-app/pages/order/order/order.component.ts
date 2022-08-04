@@ -275,7 +275,6 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     let type = "saleonline";
     this.tagService.getByType(type).subscribe((res: TDSSafeAny) => {
       this.lstDataTag = [...res.value];
-      console.log("Tag", this.lstDataTag);
     });
   }
 
@@ -418,25 +417,25 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
-  getColorStatusText(status: string): TDSTagStatusType {
-    let value = this.lstStatusTypeExt?.filter(x => x.Text === status)[0]?.Text;
-    switch (value) {
-      case "Đơn hàng":
-        return "primary";
-      case "Nháp":
-        return "info";
-      case "Hủy":
-        return "warning";
-      case "Hủy bỏ":
-        return "secondary";
-      case "Bom hàng":
-        return "error";
-      case "Đã thanh toán":
-        return "success";
-      default:
-        return "secondary";
-    }
-  }
+  // getColorStatusText(status: string): TDSTagStatusType {
+  //   let value = this.lstStatusTypeExt?.filter(x => x.Text === status)[0]?.Text;
+  //   switch (value) {
+  //     case "Đơn hàng":
+  //       return "primary";
+  //     case "Nháp":
+  //       return "info";
+  //     case "Hủy":
+  //       return "warning";
+  //     case "Hủy bỏ":
+  //       return "secondary";
+  //     case "Bom hàng":
+  //       return "error";
+  //     case "Đã thanh toán":
+  //       return "success";
+  //     default:
+  //       return "secondary";
+  //   }
+  // }
 
   isHidden(columnName: string) {
     return this.hiddenColumns.find(x => x.value == columnName)?.isChecked;

@@ -256,7 +256,7 @@
                 <!-- Trạng thái -->
                 <!--   [popoverFooter]="footerShipStatus" [popoverContent]="contentShipStatus" -->
                 <td *ngIf="isHidden('StatusText')" class="border-r">
-                  <tds-tag [status]="getColorStatusText(data.StatusText)" type="outline" class="cursor-pointer"
+                  <tds-tag [status]="data.StatusText | tagStatusColor" type="outline" class="cursor-pointer"
                     tds-dropdown trigger="click" [tdsDropdownMenu]="menu1" placement="bottomRight"
                     popoverTrigger="click">
                     <span class="flex items-center">
