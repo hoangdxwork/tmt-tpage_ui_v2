@@ -3,8 +3,8 @@ export interface ChatomniDataTShopPostDto {
   Kind: string;
   KindValue: number;
   Content: TShopContentDto;
-  Medias: TShopMediaNormalDto[];
-  MediaLive: TShopMediaLiveDto;
+  Medias: TShopMediaNormalDto[];//Nội dung offstream
+  MediaLive: TShopMediaLiveDto;//Nội dung livestream
   ShopId: string;
   CommentPinIds: any[];
   CreatorId: string;
@@ -17,13 +17,17 @@ export interface TShopMediaLiveDto {
   Id: string;
   ReadUrl: string;
   WriteUrl: string;
-  RecordUrls?: any;
   IsBroadcasting: boolean;
+  RecordUrl?: any;
+  ThumbnailUrl: string;
 }
 
 export interface TShopMediaNormalDto {
   Id: string;
   Content: TShopContentDto;
+  FileSize: number;
+  Extention: string;
+  Url: string;
 }
 
 export interface TShopContentDto {

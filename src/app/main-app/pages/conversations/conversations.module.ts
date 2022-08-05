@@ -138,6 +138,7 @@ import { ConversationPostViewV2Component } from './conversation-post/conversatio
 import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
 import { ConversationPostViewV3Component } from './conversation-post/conversation-post-view-v3.component';
 import { ObjectFacebookPostComponent } from './conversation-post/objects/object-facebook-post.component';
+import { ObjectTshopPostComponent } from './conversation-post/objects/object-tshop-post.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -246,7 +247,8 @@ const SERVICES = [
     ConversationPostV2Component,
     ConversationPostViewV2Component,
     ConversationPostViewV3Component,
-    ObjectFacebookPostComponent
+    ObjectFacebookPostComponent,
+    ObjectTshopPostComponent
   ],
 
   imports: [

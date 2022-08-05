@@ -1,3 +1,5 @@
+import { tShopPostTypePipe } from './tshop-post-type.pipe';
+import { fbPostTypePipe } from './fb-post-type.pipe';
 import { GetStatusNamePipe } from './get-status-name.pipe';
 import { SelectMultipleValuePipe } from './select-multiple-value.pipe';
 import { ConvertListUrlPipe } from './convert-list-url.pipe';
@@ -52,6 +54,8 @@ const cmp =[
   GetOrderStatusPipe,
   StringToStringArrayPipe,
   TagStatusColorPipe,
+  fbPostTypePipe,
+  tShopPostTypePipe
 ]
 
 @NgModule({
