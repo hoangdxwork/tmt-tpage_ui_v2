@@ -95,12 +95,30 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
       this.state = changes["state"].currentValue;
       this.item.State = this.state;
     }
+    if(changes["item"] && !changes["item"].firstChange) {
+      this.item = changes["item"].currentValue;
+      this.totalWidthTag = this.currentWidthTag.nativeElement.clientWidth;
+      this.plusWidthTag = 0;
+      setTimeout(() => {
+        this.onSetWidthTag();
+      }, 150);
+    }
   }
 
   ngAfterViewInit(): void {
     this.resizeObserver.observe(this.element).pipe(takeUntil(this.destroy$)).subscribe(() => {
         this.totalWidthTag = this.currentWidthTag.nativeElement.clientWidth;
         this.onSetWidthTag();
+    });
+  }
+
+  setWithTag(widthItemPlush: number){
+    this.widthTag.forEach(x=> {
+      if(this.plusWidthTag >= this.totalWidthTag - widthItemPlush){
+        return
+      }
+      this.displayTag += 1;
+      this.plusWidthTag = this.plusWidthTag + x.nativeElement?.offsetWidth + this.gapTag;
     });
   }
 
@@ -115,13 +133,7 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
     this.displayTag = 0;
     this.plusWidthTag = 0;
 
-    this.widthTag.forEach(x=> {
-      if(this.plusWidthTag >= this.totalWidthTag - widthItemPlush){
-        return
-      }
-      this.displayTag += 1;
-      this.plusWidthTag = this.plusWidthTag + x.nativeElement?.offsetWidth + this.gapTag;
-    });
+    this.setWithTag(widthItemPlush)
 
     if(TDSHelperArray.hasListValue(this.item?.Tags)) {
       this.countHiddenTag = (this.item.Tags!.length - this.displayTag) || 0;

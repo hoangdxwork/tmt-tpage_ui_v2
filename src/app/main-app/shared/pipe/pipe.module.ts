@@ -26,6 +26,7 @@ import { CompareToday } from './compare-today.pipe';
 import { GetOrderStatusPipe } from './get-order-status.pipe';
 import { StringToStringArrayPipe } from './string-stringArray.pipe';
 import { TagStatusColorPipe } from './tag-status-color.pipe';
+import { CheckTagSelectedPipe } from './check-tag-selected.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -52,6 +53,7 @@ const cmp =[
   GetOrderStatusPipe,
   StringToStringArrayPipe,
   TagStatusColorPipe,
+  CheckTagSelectedPipe,
 ]
 
 @NgModule({

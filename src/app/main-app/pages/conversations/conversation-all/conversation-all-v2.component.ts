@@ -1,3 +1,5 @@
+import { ChatomniTagsEventEmitterDto } from './../../../dto/conversation-all/chatomni/chatomni-conversation';
+import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { FacebookRESTService } from '../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from '../components/modal-send-message-all/modal-send-message-all.component';
 import { PrinterService } from 'src/app/main-app/services/printer.service';
@@ -24,7 +26,7 @@ import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade
 import { CrmMatchingV2Service } from 'src/app/main-app/services/matching-v2-service/crm-matching-v2.service';
 import { ChatomniMessageService } from 'src/app/main-app/services/chatomni-service/chatomni-message.service';
 import { ChatomniConversationService } from 'src/app/main-app/services/chatomni-service/chatomni-conversation.service';
-import { ChatomniConversationDto, ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
+import { ChatomniConversationDto, ChatomniConversationItemDto, ChatomniConversationTagDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { TDSDestroyService } from 'tds-ui/core/services';
 
 @Component({
@@ -69,6 +71,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   cacheChatbot: OnChatBotSignalRModel[] = [];
   orderCode: any;
 
+  tagsChange!: ChatomniConversationTagDto[];
   currentOrderTab: number = 0;
   letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
@@ -93,7 +96,8 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     private viewContainerRef: ViewContainerRef,
     private sgRConnectionService: SignalRConnectionService,
     private facebookRESTService: FacebookRESTService,
-    private destroy$: TDSDestroyService) {
+    private destroy$: TDSDestroyService,
+    private chatomniEventEmiterService: ChatomniEventEmiterService) {
       super(crmService, activatedRoute, router);
   }
 
@@ -124,6 +128,14 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       if(exist){
           this.onChangeConversation(team);
       }
+
+      this.chatomniEventEmiterService.tagConversationEniter$.subscribe((res: ChatomniTagsEventEmitterDto)=>{
+        if(res){
+          let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId)
+          this.lstOmcs[index].Tags = [...res.Tags];
+          this.lstOmcs[index] = {...this.lstOmcs[index]}
+        }
+      })
     })
 
     // TODO: gán mã code load từ Tab Order
