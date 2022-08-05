@@ -9,12 +9,12 @@
             </div>
             <div class="inline-flex tds-header-toolbar-right items-center">
                 <!-- Không có kết nối singalr -->
-                <button class="mr-2" tds-button-icon color="primary" (click)="onSave()" tooltipPlacement="bottom"
+                <!-- <button class="mr-2" tds-button-icon color="primary" (click)="onSave()" tooltipPlacement="bottom"
                     *ngIf="!_connectionEstablished || !isNetwork" tds-tooltip tooltipTitle="Kết nối realtime thất bại.">
                     <span class="flex items-center justify-center">
                         <i class="tdsi-wifi-warning-fill text-xl leading-5"></i>
                     </span>
-                </button>
+                </button> -->
                 <div>
                     <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)"></tpage-team-dropdown>
                 </div>
