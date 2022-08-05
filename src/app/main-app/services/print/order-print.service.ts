@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from "@angular/core";
 import { Observable, Subject } from "rxjs";
-import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { TDSMessageService } from "tds-ui/message";
 import { TDSSafeAny } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
@@ -280,9 +280,9 @@ export class OrderPrintService extends BaseSevice implements OnDestroy {
   }
 
   printRequest(printerIp: string, printerPort: string, body: TDSSafeAny): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `http://${printerIp}:${printerPort}/print/html`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, body);

@@ -11,13 +11,15 @@ import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
 import { Subject } from 'rxjs';
+import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 
 @Component({
   selector: 'post-hidden-comment-config',
   templateUrl: './post-hidden-comment-config.component.html'
 })
 export class PostHiddenCommentConfigComponent implements OnInit, OnChanges {
-  @Input() data!: FacebookPostItem;
+
+  @Input() data!: ChatomniObjectsItemDto;
 
   formHiddenComment!: FormGroup;
   isLoading: boolean = false;
@@ -35,7 +37,7 @@ export class PostHiddenCommentConfigComponent implements OnInit, OnChanges {
     else this.resetForm();
 
     if(changes?.data?.currentValue) {
-      this.loadHiddenComment(this.data.fbid);
+      this.loadHiddenComment(this.data.ObjectId);
     }
   }
 
@@ -79,7 +81,7 @@ export class PostHiddenCommentConfigComponent implements OnInit, OnChanges {
 
   onSave() {
     let model = this.prepareModel();
-    let postId = this.data?.fbid;
+    let postId = this.data?.ObjectId;
 
     this.isLoading = true;
     this.facebookPostService.updateHiddenCommentConfigs(postId, model)

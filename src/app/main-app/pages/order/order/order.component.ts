@@ -1,3 +1,4 @@
+import { OrderEvent } from './../../../handler-v2/order-handler/order.event';
 import { ModalHistoryChatComponent } from './../components/modal-history-chat/modal-history-chat.component';
 import { ConversationMatchingItem } from './../../../dto/conversation-all/conversation-all.dto';
 import { MDBByPSIdDTO } from './../../../dto/crm-matching/mdb-by-psid.dto';
@@ -36,6 +37,8 @@ import { FastSaleOrderService } from 'src/app/main-app/services/fast-sale-order.
 import { GetListOrderIdsDTO } from 'src/app/main-app/dto/saleonlineorder/list-order-ids.dto';
 import { HostListener } from '@angular/core';
 import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/main-app/dto/saleonlineorder/odata-saleonline-order.dto';
+import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
+// import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 
 @Component({
   selector: 'app-order',
@@ -61,7 +64,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   psid: any;
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;
-  
+
   public filterObj: FilterObjSOOrderModel = {
     tags: [],
     status: [],
@@ -111,7 +114,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   widthCollapse: number = 0;
   isTabNavs: boolean = false;
   isProcessing: boolean = false;
-  
+
   private destroy$ = new Subject<void>();
 
   constructor(private cdRef: ChangeDetectorRef,
@@ -124,6 +127,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     private viewContainerRef: ViewContainerRef,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private odataSaleOnline_OrderService: OdataSaleOnline_OrderService,
+    private orderEvent: OrderEvent,
     private cacheApi: THelperCacheService,
     private excelExportService: ExcelExportService,
     private resizeObserver: TDSResizeObserver,
@@ -293,7 +297,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showModalCreateBillFast(ids: string[]) {
-    this.fastSaleOrderService.getListOrderIds({ ids: ids })
+    this.fastSaleOrderService.getListOrderIds({ids: ids})
       .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false)).subscribe(res => {
         if (res) {
           this.modal.create({
@@ -410,30 +414,28 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     modal.afterClose.subscribe(result => {
-      if (TDSHelperObject.hasValue(result)) {
-      }
     })
   }
 
-  getColorStatusText(status: string): TDSTagStatusType {
-    let value = this.lstStatusTypeExt?.filter(x => x.Text === status)[0]?.Text;
-    switch (value) {
-      case "Đơn hàng":
-        return "primary";
-      case "Nháp":
-        return "info";
-      case "Hủy":
-        return "warning";
-      case "Hủy bỏ":
-        return "secondary";
-      case "Bom hàng":
-        return "error";
-      case "Đã thanh toán":
-        return "success";
-      default:
-        return "secondary";
-    }
-  }
+  // getColorStatusText(status: string): TDSTagStatusType {
+  //   let value = this.lstStatusTypeExt?.filter(x => x.Text === status)[0]?.Text;
+  //   switch (value) {
+  //     case "Đơn hàng":
+  //       return "primary";
+  //     case "Nháp":
+  //       return "info";
+  //     case "Hủy":
+  //       return "warning";
+  //     case "Hủy bỏ":
+  //       return "secondary";
+  //     case "Bom hàng":
+  //       return "error";
+  //     case "Đã thanh toán":
+  //       return "success";
+  //     default:
+  //       return "secondary";
+  //   }
+  // }
 
   isHidden(columnName: string) {
     return this.hiddenColumns.find(x => x.value == columnName)?.isChecked;
@@ -494,7 +496,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   // Refresh nhưng không refresh lại Tab, Index
   refreshDataCurrent() {
     this.indClickTag = "";
-    
+
     this.checked = false;
     this.indeterminate = false;
     this.setOfCheckedId = new Set<string>();
@@ -519,7 +521,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
     }else{
       this.tabNavs = this.lstOftabNavs;
     }
-
+    this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -545,12 +547,17 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
             delete res['@odata.context'];
 
             const modal = this.modal.create({
-                content: EditOrderComponent,
+                title: `Sửa đơn hàng <span class="text-primary-1 font-semibold text-title-1 pl-2">${res.Code}</span>`,
+                content: EditOrderV2Component,
                 size: 'xl',
                 viewContainerRef: this.viewContainerRef,
+                bodyStyle:{
+                  'padding':'0'
+                },
                 componentParams: {
                   dataItem: { ...res }
-                }
+                },
+
             })
 
             modal.afterClose?.subscribe((obs: string) => {
@@ -722,7 +729,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
           let pageDic = {} as any;
 
           teams.map((x: any) => {
-            let exist = res.filter((r: any) => r.page_id == x.Facebook_PageId)[0];
+            let exist = res.filter((r: any) => r.page_id == x.ChannelId)[0];
 
             if (exist && !pageDic[exist.page_id]) {
 
@@ -737,7 +744,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
           if (this.mappingTeams.length > 0) {
             this.currentMappingTeam = this.mappingTeams[0];
-            this.loadMDBByPSId(this.currentMappingTeam.team.Facebook_PageId, this.currentMappingTeam.psid);
+            this.loadMDBByPSId(this.currentMappingTeam.team.ChannelId, this.currentMappingTeam.psid);
           }
         });
     }, error => {
@@ -774,15 +781,11 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   selectMappingTeam(item: any) {
     this.currentMappingTeam = item;
-    this.loadMDBByPSId(item.team?.Facebook_PageId, item.psid); // Tải lại hội thoại
+    this.loadMDBByPSId(item.team?.ChannelId, item.psid); // Tải lại hội thoại
   }
 
   closeDrawer() {
     this.isOpenDrawer = false;
-  }
-
-  get getCheckedRow() {
-    return [...this.setOfCheckedId].length;
   }
 
   removeCheckedRow(){

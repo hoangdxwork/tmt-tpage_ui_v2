@@ -33,12 +33,13 @@ export class TpageBaseComponent  {
     return that.activatedRoute.queryParamMap.pipe(
       tap((queryParamMap: TDSSafeAny) => { that._params = { ...queryParamMap?.params } }),
       mergeMap((params: TDSSafeAny) => {
+
         return that.crmService.onChangeListFaceBook()
-          .pipe(tap((listFb: TDSSafeAny) => {  that._listFaceBook = listFb?.Items || [] }),
-          map((listTeam) => {
-              const team = TPageHelperService.findTeamById(listTeam?.Items || [], that.paramsUrl?.teamId, false);
-              return [team, params];
-          })
+            .pipe(tap((listFb: TDSSafeAny) => {  that._listFaceBook = listFb || [] }),
+            map((listTeam) => {
+                const team = TPageHelperService.findTeamById(listTeam || [], that.paramsUrl?.teamId, false);
+                return [team, params];
+            })
         )}));
   }
 
@@ -50,11 +51,11 @@ export class TpageBaseComponent  {
     return this._params = data;
   }
 
-  get currentTeam(): any {
+  get currentTeam(): CRMTeamDTO | null {
     return this._currentTeam;
   }
 
-  setCurrentTeam(data: any): any {
+  setCurrentTeam(data: any): CRMTeamDTO | null {
     return this._currentTeam = data;
   }
 
@@ -63,6 +64,7 @@ export class TpageBaseComponent  {
     console.warn("không có queryparams và team")
     this.router.navigate(['/']);
   }
+
 }
 
 

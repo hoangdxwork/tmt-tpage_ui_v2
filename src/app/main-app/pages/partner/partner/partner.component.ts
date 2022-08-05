@@ -202,7 +202,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.commonService.getPartnerStatusReport().pipe(takeUntil(this.destroy$)).subscribe((res: PartnerStatusReport) => {
       if (res && TDSHelperArray.isArray(res.item)) {
         this.partnerStatusReport = [...res.item];
-        
+
         res.item.forEach(item => {
           this.lstStatus.push({
             Name: item.StatusText,
@@ -281,11 +281,11 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
         this.indClickTag = -1;
         this.modelTags = [];
 
-        this.message.success('Gán nhãn thành công!');
+        this.message.success(Message.Tag.UpdateSuccess);
       }
     }, error => {
       this.indClickTag = -1;
-      this.message.error('Gán nhãn thất bại!');
+      this.message.error(error?.error?.message || Message.Tag.UpdateFail);
     });
   }
 
@@ -344,10 +344,6 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  get getCheckedRow() {
-    return [...this.setOfCheckedId].length;
-  }
-
   removeCheckedRow() {
     this.setOfCheckedId = new Set<number>();
   }
@@ -359,6 +355,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.filterObj.tags = event.tags;
     this.filterObj.status = event.status;
 
+    this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -386,7 +383,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   setActive(type: string) {
-    debugger
+
     if (this.checkValueEmpty() == 1) {
       switch (type) {
         case "active":
@@ -600,7 +597,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
           let pageDic = {} as any;
 
           teams.map((x: any) => {
-            let exist = res.filter((r: any) => r.page_id == x.Facebook_PageId)[0];
+            let exist = res.filter((r: any) => r.page_id == x.ChannelId)[0];
 
             if (exist && !pageDic[exist.page_id]) {
 
@@ -615,7 +612,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
           if (this.mappingTeams.length > 0) {
             this.currentMappingTeam = this.mappingTeams[0];
-            this.loadMDBByPSId(this.currentMappingTeam.team?.Facebook_PageId, this.currentMappingTeam.psid);
+            this.loadMDBByPSId(this.currentMappingTeam.team?.ChannelId, this.currentMappingTeam.psid);
           }
         });
     }, error => {
@@ -652,7 +649,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   selectMappingTeam(item: any) {
     this.currentMappingTeam = item;
-    this.loadMDBByPSId(item.team?.Facebook_PageId, item.psid); // Tải lại hội thoại
+    this.loadMDBByPSId(item.team?.ChannelId, item.psid); // Tải lại hội thoại
   }
 
   closeDrawer() {

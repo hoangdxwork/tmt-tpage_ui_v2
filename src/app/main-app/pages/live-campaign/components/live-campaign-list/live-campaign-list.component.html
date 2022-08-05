@@ -7,34 +7,35 @@
         </tds-form-field>
     </div>
 
-    <filter-option-campaign (onLoadOption)="onLoadOption($event)" [filterObj]="filterObj" ></filter-option-campaign>
+    <filter-option-campaign (onLoadOption)="onLoadOption($event)" [currentDateRanges]="currentDateRanges" [filterObj]="filterObj" ></filter-option-campaign>
     <config-column [columns]="hiddenColumns" (columnsChange)="columnsChange($event)"></config-column>
   </div>
 
   <div #viewChildWidthTable class="h-full pb-2.5" >
     <tds-table #rowSelectionTable [showSizeChanger]="true" [frontPagination]="false"
         [listData]="lstOfData" [(pageSize)]="pageSize" [(pageIndex)]="pageIndex" [total]="count"
-        [scroll]="{y:'auto', x: 'auto'}" [loading]="isLoading" (clickRefresh)="refreshData()"
-        (queryParams)="onQueryParamsChange($event)">
+        [scroll]="{y:'auto', x: '1200px'}" [loading]="isLoading" (clickRefresh)="refreshData()"
+        (queryParams)="onQueryParamsChange($event)"
+        [widthConfig]="['32px','266px','100px','100px','100px','100px','100px','100px','300px','155px','155px','155px']">
         <thead>
             <tr>
-                <th width="50px" class="border-r" [tdsLeft]="true" rowspan="2"></th>
-                <th width="280px" [tdsLeft]="true" class="border-r" rowspan="2" *ngIf="isHidden('Name')">Tên chiến dịch</th>
-                <th class="text-center border-r" colspan="3" class="text-center" *ngIf="isHidden('Order')">Đơn hàng</th>
-                <th class="text-center border-r" colspan="3" class="text-center" *ngIf="isHidden('Product')">Sản phẩm</th>
-                <th width="300px" class="border-r" rowspan="2" *ngIf="isHidden('ResumeTime')">Thống kê gửi tin</th>
-                <th width="160px" class="border-r" rowspan="2"  *ngIf="isHidden('IsActive')">Hoạt động</th>
-                <th width="160px" class="border-r" rowspan="2" *ngIf="isHidden('DateCreated')">Ngày tạo</th>
-                <th width="160px" class="border-r" rowspan="2">Thao tác</th>
+                <th class="border-r" [tdsLeft]="true" rowspan="2"></th>
+                <th  [tdsLeft]="true" class="border-r" rowspan="2" *ngIf="isHidden('Name')">Tên chiến dịch</th>
+                <th  class="text-center border-r border-b" colspan="3"  *ngIf="isHidden('Order')">Đơn hàng</th>
+                <th  class="text-center border-r border-b" colspan="3"  *ngIf="isHidden('Product')">Sản phẩm</th>
+                <th  class="border-r" rowspan="2" *ngIf="isHidden('ResumeTime')">Thống kê gửi tin</th>
+                <th  class="border-r" rowspan="2" *ngIf="isHidden('IsActive')">Hoạt động</th>
+                <th  class="border-r" rowspan="2" *ngIf="isHidden('DateCreated')">Ngày tạo</th>
+                <th  class="border-r" [tdsRight]="true" rowspan="2">Thao tác</th>
             </tr>
             <tr>
-                <th class="border-r" width="100px" *ngIf="isHidden('Order')">Chờ chốt</th>
-                <th class="border-r" width="100px" *ngIf="isHidden('Order')">Đã chốt</th>
-                <th class="border-r" width="100px" *ngIf="isHidden('Order')">Đã hủy</th>
+                <th class="border-r"  *ngIf="isHidden('Order')">Chờ chốt</th>
+                <th class="border-r"  *ngIf="isHidden('Order')">Đã chốt</th>
+                <th class="border-r"  *ngIf="isHidden('Order')">Đã hủy</th>
 
-                <th class="border-r" width="100px" *ngIf="isHidden('Product')">Chờ chốt</th>
-                <th class="border-r" width="100px" *ngIf="isHidden('Product')">Đã chốt</th>
-                <th class="border-r" width="100px" *ngIf="isHidden('Product')">Đã hủy</th>
+                <th class="border-r"  *ngIf="isHidden('Product')">Chờ chốt</th>
+                <th class="border-r"  *ngIf="isHidden('Product')">Đã chốt</th>
+                <th class="border-r"  *ngIf="isHidden('Product')">Đã hủy</th>
             </tr>
         </thead>
         <tbody>
@@ -150,7 +151,7 @@
             <!-- expand  details -->
             <tr [expand]="expandSet.has(data.Id)"  class="border-b border-neutral-2-100 text-neutral-1-900 bg-light-50 w-full">
                 <div #viewChildDetailPartner [ngStyle]="{'max-width.px': widthTable, 'margin-left.px': marginLeftCollapse}"
-                    class="flex items-center justify-center k-grid-table-wrap-detail">
+                    class="flex items-center justify-center k-grid-table-wrap-detail bg-white">
                     <expand-live-campaign  class="w-full" *ngIf="expandSet.has(data.Id)" [liveCampaignId]="data.Id"></expand-live-campaign>
                 </div>
             </tr>

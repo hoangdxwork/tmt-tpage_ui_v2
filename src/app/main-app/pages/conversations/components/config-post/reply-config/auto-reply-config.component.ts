@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
+import { ChatomniObjectsItemDto } from "@app/dto/conversation-all/chatomni/chatomni-objects.dto";
 import { finalize } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
 import { AutoReplyConfigDTO } from "src/app/main-app/dto/configs/page-config.dto";
@@ -15,7 +16,8 @@ import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 })
 
 export class AutoReplyConfigComponent implements OnInit, OnChanges {
-  @Input() data!: FacebookPostItem;
+
+  @Input() data!: ChatomniObjectsItemDto;
 
   formReplyConfig!: FormGroup;
 
@@ -37,7 +39,7 @@ export class AutoReplyConfigComponent implements OnInit, OnChanges {
     else this.resetForm();
 
     if(changes?.data?.currentValue) {
-      this.loadAutoReplyConfigs(this.data.fbid);
+      this.loadAutoReplyConfigs(this.data.ObjectId);
     }
   }
 
@@ -104,7 +106,7 @@ export class AutoReplyConfigComponent implements OnInit, OnChanges {
 
   onSave(){
     let model = this.prepareModel();
-    let postId = this.data?.fbid;
+    let postId = this.data?.ObjectId;
 
     this.isLoading = true;
     this.facebookPostService.updateAutoReplyConfigs(postId, model)

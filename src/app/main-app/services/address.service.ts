@@ -2,7 +2,7 @@ import { District } from './../dto/partner/partner-register-payment.dto';
 import { Injectable } from '@angular/core';
 import { Observable} from 'rxjs';
 import { shareReplay, map } from 'rxjs/operators';
-import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { BaseSevice } from './base.service';
 import { CityDTO, DistrictDTO, WardDTO } from '../dto/address/address.dto';
 import { City, Ward } from '../dto/partner/partner-detail.dto';
@@ -22,18 +22,18 @@ export class AddressService extends BaseSevice {
   }
 
   getActive(): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}?$filter=Active eq true`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api,null);
   }
 
   getCities(): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getcities`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null)
@@ -51,9 +51,9 @@ export class AddressService extends BaseSevice {
   }
 
   getDistricts(cityCode: string | undefined): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getdistricts(${cityCode})`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null)
@@ -73,9 +73,9 @@ export class AddressService extends BaseSevice {
   }
 
   getWards(districtCode: string | undefined): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getwards(${districtCode})`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null)
@@ -97,9 +97,9 @@ export class AddressService extends BaseSevice {
   }
 
   checkAddress(street: string): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/checkaddress?address=${street}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);

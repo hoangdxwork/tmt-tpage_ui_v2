@@ -1,7 +1,28 @@
-export interface From {
+import { Facebook_Graph_Post } from "./chatomni-facebook-post.dto";
+import { ChatomniDataTShopPostDto } from "./chatomni-tshop-post.dto";
+
+export interface ChatomniMessageDTO {
+  Items: ChatomniMessageDetail[];
+  Extras?: Extras;
+  Paging: PagingTimestamp;
+}
+
+export interface Extras {
+  Objects: { [key: string]: ExtrasObjectDto };
+}
+
+export interface Facebook_Graph_From {
   id: string;
   name: string;
   uid?: any;
+}
+
+export interface Parent {
+  id: string;
+}
+
+export interface Object {
+  id: string;
 }
 
 export interface ImageData {
@@ -30,20 +51,13 @@ export interface Attachments {
   paging?: any;
 }
 
-export interface Parent {
-  id: string;
-}
-
-export interface Object {
-  id: string;
-}
-
 export interface ChatomniDataFacebookMessage {
   id: string;
   message: string;
+  message_formatted: string;
   created_time: Date;
-  from: From;
-  to?: any;
+  from: Facebook_Graph_From;
+  to?: Facebook_Inner_UserSimple;
   attachments: Attachments;
   parent: Parent;
   is_hidden?: boolean;
@@ -56,26 +70,61 @@ export interface ChatomniDataFacebookMessage {
   object: Object;
   comments?: any;
   attachment?: any;
-  message_tags: any[];
+  message_tags: MessageTag[];
+  phone: string;
+
+  // các dữ liệu bổ sung để check client
+  has_admin_required: boolean;
+  is_error_attachment: boolean;// ko có trong dữ liệu trả về
+  errorShowAttachment: boolean;// ko có trong dữ liệu trả về
 }
 
-export interface Item {
+export interface ErrorMessageOmni {
+  Code: string;
+  Message: string;
+}
+
+export interface Facebook_Inner_UserSimple {
+  id: string;
+  name: string;
+}
+
+export interface MessageTag {
+  id: string;
+  name: string;
+  offset: number;
+  type: string;
+  length: number;
+}
+
+export interface ChatomniInnerUser {
+  Id: string;
+  Name: string;
+}
+
+export interface Thumbnail {
+  Width: number;
+  Height: number;
+  Url: string;
+}
+export interface ChatomniMessageDetail {
   Data: ChatomniDataFacebookMessage;
   Id: string;
   ObjectId: string;
-  ParentId?: any;
+  ParentId?: string;
   Message: string;
   Source?: any;
-  Type: number;
+  Type: ChatomniMessageType;
   UserId: string;
-  Error?: any;
-  Status: number;
+  Error?: ErrorMessageOmni;
+  Status: ChatomniStatus;
   IsSystem: boolean;
-  CreatedById?: any;
-  CreatedBy?: any;
-  CreatedTime: Date;
+  CreatedById?: string;
+  CreatedBy?: ChatomniInnerUser;
+  CreatedTime: Date | any;
   ChannelCreatedTime: Date;
   ChannelUpdatedTime?: any;
+  IsOwner: boolean;
 }
 
 export interface PagingTimestamp {
@@ -84,12 +133,11 @@ export interface PagingTimestamp {
   UrlNext: string;
 }
 
-export interface ChatomniMessageDTO {
-  Items: Item[];
-  Extras?: any;
-  Paging: PagingTimestamp;
+export enum ChatomniStatus {
+  Pending = 0, // Chờ gửi
+  Done = 1, // Gửi thành công
+  Error = 2 // Gửi lỗi
 }
-
 
 export enum ChatomniMessageType {
   System = 0,
@@ -102,4 +150,17 @@ export enum ChatomniMessageType {
   ZaloMessage = 21,
   TShopComment = 91,
   TShopMessage = 92
+}
+
+export interface ExtrasObjectDto {
+  Data:  Facebook_Graph_Post | ChatomniDataTShopPostDto;// gán lại ChatomniDataTShopPost hoặc ChatomniDataFacebookPost
+  Id: string;
+  ObjectId: string;
+  ObjectType: number;
+  CreatedTime: Date;
+  ChannelCreatedTime: Date;
+  ChannelUpdatedTime?: any;
+  Title?: any;
+  Description: string;
+  Thumbnail?: Thumbnail
 }

@@ -1,4 +1,4 @@
-import { finalize } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { LiveCampaignService } from './../../../../services/live-campaign.service';
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { ModalLiveCampaignOrderComponent } from '../modal-live-campaign-order/modal-live-campaign-order.component';
@@ -6,6 +6,7 @@ import { ModalLiveCampaignBillComponent } from '../modal-live-campaign-bill/moda
 import { Message } from 'src/app/lib/consts/message.const';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'detail-report',
@@ -23,6 +24,7 @@ export class DetailReportComponent implements OnInit {
 
   lstDetails: any[] = [];
   dataLiveCampaign!: any;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private liveCampaignService: LiveCampaignService,
@@ -39,19 +41,23 @@ export class DetailReportComponent implements OnInit {
   loadReportLiveCampaign(id: string) {
     this.isLoading = true;
     this.liveCampaignService.getReport(id)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(res =>{
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
+      .subscribe(res => {
         this.data = res;
-        this.lstDetails = res?.Details;
+        this.lstDetails = [...res?.Details];
+      }, error => {
+        this.message.error(error.error ? error.error.message : 'Tải dữ liệu thất bại')
       })
   }
 
   loadLiveCampaign(id: string) {
     this.isLoading = true;
     this.liveCampaignService.getDetailById(id)
-      .pipe(finalize(() => this.isLoading = false))
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
       .subscribe(res => {
         this.dataLiveCampaign = res;
+      }, error => {
+        this.message.error(error.error ? error.error.message : 'Tải dữ liệu thất bại')
       });
   }
 
@@ -66,10 +72,10 @@ export class DetailReportComponent implements OnInit {
   }
 
   onSaveQuantity(data: any) {
-    if(this.currentChangeQuantity) {
+    if (this.currentChangeQuantity) {
       this.isLoading = true;
       this.liveCampaignService.updateProductQuantity(this.currentChangeQuantity.Id, this.currentChangeQuantity.Quantity, this.liveCampaignId)
-        .pipe(finalize(() => this.isLoading = false))
+        .pipe(takeUntil(this.destroy$), finalize(() => this.isLoading = false))
         .subscribe(res => {
           data.Quantity = this.currentChangeQuantity?.Quantity || 0;
           this.message.success(Message.UpdatedSuccess);
@@ -85,7 +91,7 @@ export class DetailReportComponent implements OnInit {
   showModalLiveCampaignOrder(lstData: any[]) {
     this.modal.create({
       title: 'Đơn hàng chờ chốt',
-      size:'xl',
+      size: 'xl',
       content: ModalLiveCampaignOrderComponent,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
@@ -97,7 +103,7 @@ export class DetailReportComponent implements OnInit {
   showModalLiveCampaignBill(lstData: any[]) {
     this.modal.create({
       title: 'Hóa đơn chờ chốt',
-      size:'xl',
+      size: 'xl',
       content: ModalLiveCampaignBillComponent,
       viewContainerRef: this.viewContainerRef,
       componentParams: {
@@ -106,5 +112,8 @@ export class DetailReportComponent implements OnInit {
     });
   }
 
-
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

@@ -2,7 +2,7 @@ import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
-import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { MessageDeliveryHistoryLiveCampaignParamsDTO, MessageDeliveryHistoryResultDTO, MessageHistoryFSOrderResultDTO, MessageHistorySaleOnlineResultDTO } from '../dto/common/table.dto';
 import { ODataPartnerCategoryDTO } from '../dto/partner/partner-category.dto';
@@ -17,7 +17,7 @@ export class CommonService extends BaseSevice {
   prefix: string = "odata";
   table: string = "";
   baseRestApi: string = "api/common";
-  
+
   // Dữ liệu bảng giá
   public shopPaymentProviders$ = new BehaviorSubject<any>({});
   public priceListItems$ = new BehaviorSubject<any>([]);
@@ -43,116 +43,116 @@ export class CommonService extends BaseSevice {
   }
 
   getPartnerStatusReport(): Observable<PartnerStatusReport> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getpartnerstatusreport`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
     return this.apiService.getData<PartnerStatusReport>(api, null);
   }
 
   getPartnerStatus(): Observable<ListItemStatusDTO[]> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/GetPartnerStatus`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<ListItemStatusDTO[]>(api, null);
   }
 
   getPriceListAvailable(date: any): Observable<ODataPartnerCategoryDTO> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/Product_PriceList/OdataService.GetPriceListAvailable?date=${date}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<ODataPartnerCategoryDTO>(api, null);
   }
 
   getInventoryByIds(warehouseId: number, ids: any): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/product/getinventorybyids?WarehouseId=${warehouseId}&ProductIds=${ids}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   getInventoryWarehouseId(warehouseId: number): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/product/getinventory?WarehouseId=${warehouseId}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   getPriceListItems(id: number): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getpricelistitems?id=${id}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   getShopPaymentProviders(): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/common/shop-payment-providers`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   getHistoryMessageSentSaleOnline(data: MessageDeliveryHistoryLiveCampaignParamsDTO): Observable<MessageHistorySaleOnlineResultDTO> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/gethistorymessagesentsaleonline`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<MessageHistorySaleOnlineResultDTO>(api, data);
   }
 
   getHistoryMessageSentFSOrder(data: MessageDeliveryHistoryLiveCampaignParamsDTO) {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/gethistorymessagesentfsorder`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<MessageHistoryFSOrderResultDTO>(api, data);
   }
 
   getHistoryMessageSentSO(liveCampaignId: string, orderId: string, skip: number, take: number): Observable<MessageDeliveryHistoryResultDTO> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/gethistorymessagesentsaleonlinedetail?liveCampaignId=${liveCampaignId}&orderId=${orderId}&skip=${skip}&take=${take}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<MessageDeliveryHistoryResultDTO>(api, null);
   }
 
   getStatusTypeExt(): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/common/statusTypeExt`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   checkAddressByPhone(phone: string): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/checkAddressByPhone?phone=${phone}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   getHistoryMessageSent(params?: any): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/gethistorymessagesentsaleonlinedetail`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, params);

@@ -6,7 +6,6 @@ import { CommonModule } from '@angular/common';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TDSEchartsModule } from 'tds-report';
-import { OverviewComponent } from './components/overview/overview.component';
 import { FacebookReportComponent } from './components/facebook-report/facebook-report.component';
 import { LabelReportComponent } from './components/label-report/label-report.component';
 import { RevenueReportComponent } from './components/revenue-report/revenue-report.component';
@@ -35,7 +34,7 @@ import { TDSSpinnerModule } from 'tds-ui/progress-spinner';
 import { TDSCardModule } from 'tds-ui/card';
 import { TDSTableModule } from 'tds-ui/table';
 import { TDSEmptyModule } from 'tds-ui/empty';
-import { CommonHandler } from '../../services/handlers/common.handler';
+import { CommonHandler } from '../../handler-v2/common.handler';
 
 const SERVICES = [
   ReportFacebookService,
@@ -46,7 +45,6 @@ const SERVICES = [
 @NgModule({
   declarations: [
     DashboardComponent,
-    OverviewComponent,
     FacebookReportComponent,
     LabelReportComponent,
     RevenueReportComponent,

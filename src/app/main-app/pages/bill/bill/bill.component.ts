@@ -227,12 +227,10 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  get getCheckedRow() {
-    return [...this.setOfCheckedId].length;
-  }
-
   removeCheckedRow() {
     this.setOfCheckedId = new Set<number>();
+    this.indeterminate = false;
+    this.checked = false;
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -315,12 +313,12 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
           this.indClickTag = -1;
           this.modelTags = [];
-          this.message.success('Gán nhãn thành công!');
+          this.message.success(Message.Tag.UpdateSuccess);
         }
 
       }, error => {
         this.indClickTag = -1;
-        this.message.error('Gán nhãn thất bại!');
+        this.message.error(Message.Tag.UpdateFail);
       });
   }
 
@@ -457,7 +455,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
     }else{
       this.tabNavs = this.lstOftabNavs;
     }
-
+    this.removeCheckedRow();
     this.loadData(this.pageSize, this.pageIndex);
   }
 
@@ -473,6 +471,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   onQueryParamsChange(params: TDSTableQueryParams) {
     this.pageSize = params.pageSize;
     this.loadData(params.pageSize, params.pageIndex);
+    this.checked = false;
+    this.indeterminate = false;
   }
 
   refreshData() {
@@ -550,8 +550,8 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
           this.mappingTeams = [];
           let pageDic = {} as any;
 
-          teams.map((x: any) => {
-            let exist = res.filter((r: any) => r.page_id == x.Facebook_PageId)[0];
+          teams.map((x: any) => {debugger
+            let exist = res.filter((r: any) => r.page_id == x.ChannelId)[0];
 
             if (exist && !pageDic[exist.page_id]) {
               pageDic[exist.page_id] = true; // Cờ này để không thêm trùng page vào
@@ -565,7 +565,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
           if (this.mappingTeams.length > 0) {
             this.currentMappingTeam = this.mappingTeams[0];
-            this.loadMDBByPSId(this.currentMappingTeam.team?.Facebook_PageId, this.currentMappingTeam.psid);
+            this.loadMDBByPSId(this.currentMappingTeam.team?.ChannelId, this.currentMappingTeam.psid);
           }
         })
     }, error => {
@@ -602,7 +602,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
 
   selectMappingTeam(item: any) {
     this.currentMappingTeam = item;
-    this.loadMDBByPSId(item.team?.Facebook_PageId, item.psid); // Tải lại hội thoại
+    this.loadMDBByPSId(item.team?.ChannelId, item.psid); // Tải lại hội thoại
   }
 
   closeDrawer() {

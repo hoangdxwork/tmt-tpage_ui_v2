@@ -4,11 +4,9 @@ import { CRMTeamService } from './../../../../services/crm-team.service';
 import { Observable, Subject } from 'rxjs';
 import { QuickReplyService } from './../../../../services/quick-reply.service';
 import { CreateQuickReplyDTO, QuickReplyDTO, AdvancedTemplateDTO, ButtonsDTO, PagesMediaDTO } from './../../../../dto/quick-reply.dto.ts/quick-reply.dto';
-import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
-import { Component, Input, OnInit, ViewEncapsulation, OnDestroy, AfterViewInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators, FormArray } from '@angular/forms';
-import { filter, map, takeUntil } from 'rxjs/operators';
-import { Model, number } from 'echarts';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { takeUntil } from 'rxjs/operators';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSUploadFile } from 'tds-ui/upload';
 import { TDSModalRef } from 'tds-ui/modal';
@@ -52,9 +50,8 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
   buttonFormList: Array<FormGroup> = [];
   subjectHtmlModel!: string;
 
-    constructor(private modal: TDSModalRef,
+  constructor(private modal: TDSModalRef,
     private formBuilder: FormBuilder,
-    private http: HttpClient,
     private message: TDSMessageService,
     private quickReplyService: QuickReplyService,
     private crmService: CRMTeamService,
@@ -70,7 +67,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
     this.formQuickReply = this.formBuilder.group({
       active: new FormControl(false),
       bodyHtml: new FormControl(''),
-      subjectHtml: new FormControl('',[Validators.required]),
+      subjectHtml: new FormControl('', [Validators.required]),
       advancedTemplateRadio: new FormControl(false),
       title: new FormControl(null),
       subTitle: new FormControl(null),
@@ -163,7 +160,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
 
   }
 
-  getById(){
+  getById() {
     if (this.valueEditId) {
       this.isLoading = true
       this.quickReplyService.getById(this.valueEditId).pipe(takeUntil(this.destroy$)).subscribe((res) => {
@@ -181,24 +178,26 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
 
   getAllFacebook() {
     this.isLoading = true
-    this.crmService.getAllFacebooks()
-      .pipe(takeUntil(this.destroy$)).subscribe(dataTeam => {
+    this.crmService.getAllFacebooks().pipe(takeUntil(this.destroy$)).subscribe(dataTeam => {
         if (TDSHelperObject.hasValue(dataTeam)) {
-          this.dataMeidaRes = dataTeam.Items
+
+          this.dataMeidaRes = dataTeam;
+
           this.dataMeidaRes.forEach(data => {
-            if (data.Childs.length == 0) {
-              data.Active = true
-              this.mediaChannelList.push(data)
-            }
-            else {
-              data.Active = false
-              data.Childs.forEach(dataChilds => {
+
+            if (data.Childs!.length == 0) {
+                data.Active = true;
+                this.mediaChannelList.push(data)
+            } else {
+              data.Active = false;
+
+              data.Childs!.forEach(dataChilds => {
                 dataChilds.Active = false
                 this.mediaChannelList.push(dataChilds)
               })
             }
           })
-           this.getById()
+          this.getById()
         }
         this.isLoading = false
       }, err => {
@@ -260,27 +259,6 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
   }
 
 
-  enableSubmit() {
-    switch (this.formQuickReply.value.advancedTemplateRadio) {
-      case false: {
-        return !this.formQuickReply?.valid
-      }
-      case true:
-        {
-          if (this.templateType == 'generic') {
-            return !this.formQuickReply.valid || !this.createMessageForm?.valid || !this.isValidButton(this.buttonFormList)
-          }
-          if (this.templateType == 'media') {
-            return !this.formQuickReply.valid || !this.isValidButton(this.buttonFormList)
-          }
-          if (this.templateType == 'button') {
-            return !this.formQuickReply.valid || !this.isValidButton(this.buttonFormList)
-          }
-        }
-    }
-    return false;
-  }
-
   onResetMessageFrom() {
     this.createMessageForm.controls.title.setValue('');
     this.createMessageForm.controls.subTitle.setValue('');
@@ -331,7 +309,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
     this.formQuickReply.controls.bodyHtml.setValue(this.formQuickReply.value.bodyHtml.concat(data))
   }
 
-  getUrl(ev: string){
+  getUrl(ev: string) {
     this.createImageForm.controls.image.setValue(ev)
   }
 
@@ -373,10 +351,6 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
     let model = this.prepareModel();
     if (!model)
       return
-    if (!TDSHelperString.hasValueString(model.SubjectHtml)) {
-      this.message.error('Vui lòng nhập tiêu đề');
-      return
-    }
 
     if (this.valueEditId) {
       this.isLoading = true;
@@ -386,7 +360,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
         this.modal.destroy(true);
       }, error => {
         this.isLoading = false;
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` :'Cập nhật trả lời nhanh thất bại!');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Cập nhật trả lời nhanh thất bại!');
         this.modal.destroy(null);
       })
     } else {
@@ -397,7 +371,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
         this.modal.destroy(true);
       }, error => {
         this.isLoading = false;
-        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` :'Thêm mới trả lời nhanh thất bại!');
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Thêm mới trả lời nhanh thất bại!');
       })
     }
   }
@@ -416,13 +390,21 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
     if (formModelQuickReply.subjectHtml != null) {
       this.data.SubjectHtml = formModelQuickReply.subjectHtml;
     }
+    if (!TDSHelperString.hasValueString(this.data.SubjectHtml)) {
+      this.message.error('Vui lòng nhập tiêu đề');
+      return
+    }
+    if (!TDSHelperString.hasValueString(this.data.BodyHtml) && !formModelQuickReply.advancedTemplateRadio) {
+      this.message.error('Vui lòng nội dung');
+      return
+    }
     if (formModelQuickReply.advancedTemplateRadio) {
       this.dataAdvancedTemplate.Url = formModelCreateImage.image
-      if (this.templateType == 'generic'){
+      if (this.templateType == 'generic') {
         this.dataAdvancedTemplate.Title = formModelCreateMessage.title
         this.dataAdvancedTemplate.SubTitle = formModelCreateMessage.subTitle
       }
-      if (this.templateType == 'button'){
+      if (this.templateType == 'button') {
         this.dataAdvancedTemplate.Title = formModelCreateMessage.title
         this.dataAdvancedTemplate.Text = formModelCreateMessage.text
       }
@@ -449,7 +431,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
             this.dataAdvancedTemplate.Pages?.push(model)
           }
         })
-      }
+      }     
       if (this.templateType == 'media' && this.dataAdvancedTemplate.Pages?.length == 0) {
         this.message.error('Vui lòng chọn ít nhất 1 kênh cho mẫu phương tiện');
         return
@@ -483,7 +465,7 @@ export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
       }
       this.data.AdvancedTemplate = JSON.stringify(this.dataAdvancedTemplate)
     }
-
+    
     return this.data;
   }
 

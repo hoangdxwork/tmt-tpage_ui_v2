@@ -58,7 +58,7 @@
                             class="w-1/4 !h-full flex items-center mx-2 px-3 py-2 rounded-xl !bg-neutral-3-50">
                             <div class="flex flex-col flex-auto items-start">
                                 <label class="text-neutral-1-400 font-regular text-body-2">Nhân viên</label>
-                                <span class="text-info-500 font-semibold text-body-2 max-w-[80px] truncate">{{quickOrderModel?.User?.Name || 'N/A' }}</span>
+                                <span class="text-info-500 font-semibold text-body-2 max-w-[80px] truncate">{{ quickOrderModel?.User?.Name || 'N/A' }}</span>
                             </div>
                             <i class="tdsi-arrow-down-line w-1/5"></i>
                             <tds-dropdown-menu #menuUser="tdsDropdownMenu">
@@ -77,7 +77,7 @@
                 <tds-collapse-panel [header]="headerProduct" [active]="true" [disabled]=false [expandedIcon]="'tdsi-arrow-up-line'" tdsClass="p-0">
                     <ng-template #headerProduct>
                         <span class="text-header-1 font-semibold text-neutral-1-900 font-sans mr-2">Sản phẩm</span>
-                        <tds-badge [standalone]="true" [count]="quickOrderModel.Details?.length" [tdsClass]="'bg-success-400 text-white'"></tds-badge>
+                        <tds-badge [standalone]="true" [count]="quickOrderModel.Details.length" [tdsClass]="'bg-success-400 text-white'"></tds-badge>
                     </ng-template>
                     <div class="flex gap-1.5 px-6 pt-6 pb-3">
                         <div class="w-full">
@@ -292,86 +292,211 @@
                     <span class="font-semibold">Tạo hoá đơn bán hàng</span>
                 </tds-checkbox>
             </div>
+
             <!-- Giao hàng -->
-            <tds-collapse *ngIf="isEnableCreateOrder && saleModel" [expandIconPosition]="'right'" class="bg-white collapse-content-bg-white mt-1">
-                <tds-collapse-panel header="Giao hàng" [active]="true" [disabled]=false tdsClass="p-0" [expandedIcon]="'tdsi-arrow-up-line'">
-                    <div *ngIf="saleModel && saleModel.Carrier" class="w-full p-6 flex flex-col gap-y-4">
-                        <tds-form-field>
-                            <tds-label>Đối tác giao hàng</tds-label>
-                            <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng' [valuePrimitive]="false" [allowClear]="true" disabledField="isActive"
-                                [data]="(lstCarriers | async) || []" [(ngModel)]="saleModel.Carrier" [ngModelOptions]="{standalone: true}" [allowClear]="true" (selectChange)="onChangeCarrier($event)">
+            <tds-collapse *ngIf="isEnableCreateOrder && saleModel">
+              <tds-collapse-panel header="Dịch vụ của đối tác" [tdsClass]="'w-full rounded-b-xl bg-white p-4'"
+                  [tdsHeaderClass]="'bg-neutral-3-50'" [active]="true" [expandedIcon]="'tdsi-arrow-right-line'">
+                  <div class="grid items-start w-full" *ngIf="saleModel && saleModel.Carrier">
+
+                      <div class="w-full">
+                        <div class="flex items-center">
+                          <tds-label>Đối tác giao hàng</tds-label>
+                        </div>
+                        <div class="col-span-2" *ngIf="lstCarrier">
+                          <tds-form-field>
+                            <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng'
+                                [valuePrimitive]="false" [allowClear]="true" disabledField="isActive"
+                                [data]="lstCarrier" [ngModel]="saleModel.Carrier"
+                                [ngModelOptions]="{standalone: true}" [allowClear]="true"
+                                (ngModelChange)="onChangeCarrierV2($event)">
                             </tds-select>
-                        </tds-form-field>
-                        <div *ngIf="shipServices.length > 0">
-                            <tds-form-field>
-                                <tds-label>Dịch vụ</tds-label>
-                                <tds-select valueField="ServiceId" textField="ServiceName" [valuePrimitive]="false" [allowClear]="true" disabledField="isActive" [data]="shipServices"
-                                    [(ngModel)]="saleModel.Ship_ServiceId" [ngModelOptions]="{standalone: true}" [allowClear]="true" (selectChange)="onSelectShipServiceId($event)">
+                          </tds-form-field>
+                        </div>
+                      </div>
+
+                      <!-- thông tin dịch vụ -->
+                      <div class="grid  gap-y-4">
+
+                          <!-- không có dịch vụ -->
+                          <div class="w-full" *ngIf="shipServices && shipServices.length == 0 && shipExtraServices && shipExtraServices.length == 0">
+                              <span class="text-body-2 italic">Chưa có dịch vụ nào</span>
+                          </div>
+
+                        <!-- danh sách dịch vụ -->
+                        <div class="col-span-3 flex flex-row items-center" *ngIf="shipServices && shipServices.length > 0">
+                            <tds-label class="w-1/4">Dịch vụ<span class="text-error-400">*</span></tds-label>
+
+                            <tds-form-field class="w-3/4">
+                                <tds-select valueField="ServiceId" textField="ServiceName"
+                                    (ngModelChange)="onSelectShipServiceId($event)" placeholder='Chọn dịch vụ'
+                                    disabledField="isActive" [valuePrimitive]="false"
+                                    [ngModel]="saleModel.Ship_ServiceId" [ngModelOptions]="{standalone: true}"
+                                    [data]="shipServices" [allowClear]="true">
+
+                                    <ng-template tds-label-tmp let-item="item">  {{item.data.ServiceName}}
+                                        <span *ngIf="item.data.TotalFee > 0">: {{item.data.TotalFee | number:'1.0-3'}}</span>
+                                    </ng-template>
+
                                 </tds-select>
                             </tds-form-field>
                         </div>
-                        <div class="flex flex-col gap-y-2">
-                            <div *ngIf="shipExtraServices && shipExtraServices.length > 0" class="flex flex-col gap-y-2">
-                                <div *ngFor="let item of shipExtraServices">
-                                    <tds-checkbox [(ngModel)]="item.IsSelected" (change)="onCheckExtraService(item)" [ngModelOptions]="{standalone: true}"><i></i>
-                                        {{item.ServiceName}}
+
+                        <div class="col-span-3 flex flex-row items-center" *ngIf="insuranceInfo">
+                            <tds-label class="w-1/4">Giá trị hàng hóa</tds-label>
+
+                            <div class="flex flex-row items-center gap-x-2 w-3/4">
+                              <tds-form-field class="flex flex-auto">
+                                  <tds-input-number [min]='0' [step]="1000" [formatter]="numberWithCommas" [parser]="parserComas"
+                                      placeholder="Nhập phí" (ngModelChange)="changeShip_InsuranceFee($event)"
+                                      [ngModel]="saleModel.Ship_InsuranceFee" [ngModelOptions]="{standalone: true}">
+                                  </tds-input-number>
+                              </tds-form-field>
+
+                              <button tds-button-icon tds-tooltip tooltipTitle="Gán bằng tổng giá trị hoá đơn" color="primary"
+                                  class="flex items-center justify-center" (click)="signAmountTotalToInsuranceFee()">
+                                  <i class="tdsi-in-out-fill text-xl"></i>
+                              </button>
+                            </div>
+                        </div>
+
+                        <ng-container *ngFor="let item of configsProviderDataSource">
+                            <div class="col-span-3 flex flex-row items-center" *ngIf="!item.IsHidden">
+                                <tds-label class="w-1/4">{{item.DisplayName}}<span class="text-error-400">*</span></tds-label>
+                                <tds-form-field class="w-3/4">
+                                    <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
+                                        [data]="item.ConfigsValue" [ngModel]="item.ConfigValue" [allowClear]="true"
+                                        [ngModelOptions]="{standalone: true}" [allowClear]="item.InputType == 'combo_box'">
+                                    </tds-select>
+                                </tds-form-field>
+                            </div>
+                        </ng-container>
+
+                        <!-- <div class="col-span-3 flex flex-row items-center" *ngIf="shipServices && shipServices.length > 0">
+                          <tds-label class="w-1/4">Phương thức thanh toán<span class="text-error-400">*</span></tds-label>
+                          <tds-form-field class="w-3/4">
+                            <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
+                              [valuePrimitive]="false" disabledField="isActive"
+                              [data]="[]" [allowClear]="false">
+                            </tds-select>
+                          </tds-form-field>
+                        </div>
+
+                        <div class="col-span-3 flex flex-row items-center" *ngIf="shipServices && shipServices.length > 0">
+                          <tds-label class="w-1/4">Phương thức lấy hàng<span class="text-error-400">*</span></tds-label>
+                          <tds-form-field class="w-3/4">
+                            <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
+                              [valuePrimitive]="false" disabledField="isActive"
+                              [data]="[]" [allowClear]="false">
+                            </tds-select>
+                          </tds-form-field>
+                        </div>
+
+                        <div class="col-span-3 flex flex-row items-center" *ngIf="shipServices && shipServices.length > 0">
+                          <tds-label class="w-1/4">Lưu ý giao hàng<span class="text-error-400">*</span></tds-label>
+                          <tds-form-field class="w-3/4">
+                            <tds-select valueField="Id" textField="Name" placeholder='Chọn option'
+                              [valuePrimitive]="false" disabledField="isActive"
+                              [data]="[]" [allowClear]="false">
+                            </tds-select>
+                          </tds-form-field>
+                        </div> -->
+                      </div>
+
+                      <div class="grid grid-cols-3 gap-y-4 gap-x-6">
+                        <!-- phí ship đối tác -->
+                        <!-- && apiDeliveries.includes(_form.controls['Carrier'].value.DeliveryType) -->
+                        <div class="col-span-3 w-full flex flex-row items-center" >
+                          <span class="pr-4">Phí ship (đối tác)</span>
+                          <div class="col-span-2 flex-auto flex items-center">
+                            <div class="px-4">
+                              <span class="border rounded-md py-1 px-2 text-primary-1">{{saleModel.CustomerDeliveryPrice || 0 | number}}đ</span>
+                            </div>
+
+                            <div class="px-4 border-l">
+                              <button *ngIf="!saleModel.TrackingRef" tds-button-icon color="info" size="sm"
+                                  (click)="calcFee()" title="Tính lại tiền ship" type="button">
+
+                                  <span class="flex items-center justify-center">
+                                      <i class=" tdsi-reload-fill"></i>
+                                  </span>
+                              </button>
+                            </div>
+
+                            <!-- <div class="px-4 border-l">
+                              <button tds-button-icon color="primary" title="Tính gợi ý ship đối tác" type="button" size="sm" (click)="calcFeeList()">
+                                <span class="flex items-center justify-center">
+                                  <i class="tdsi-expand-vertical-line"></i>
+                                </span>
+                              </button>
+                            </div> -->
+                          </div>
+                          <!-- <ul *ngIf="lstCalcFee" class="w-full">
+                            <li *ngFor="let x of lstCalcFee; let i=index">
+                              <a class="inline-block {{x.CarrierId === _form.controls['Carrier'].value.Id ? 'text-info-500' : ''}}"
+                                (click)="setCarrier(x)">
+                                <span class="tdsi-tag-2-fill mr-1"></span>
+                                <span class="text-body-4">{{x.CarrierName}}</span>
+                                <span class="text-body-4 ml-2">({{x.TotalFee || 0 | number : '1.0-3'}})</span>
+                              </a>
+                            </li>
+                          </ul> -->
+                        </div>
+                        <!-- ship extras service -->
+                        <div *ngIf="shipExtraServices && shipExtraServices.length > 0" class="col-span-3">
+                            <div class="grid grid-cols-3 gap-y-4 gap-x-6">
+                                <div *ngFor="let child of shipExtraServices; let i=index">
+                                    <tds-checkbox [ngModel]="child.IsSelected" [ngModelOptions]="{standalone: true}" (ngModelChange)="changeIsSelectedEx($event, i)">
+                                        <div class="flex flex-row items-center w-full">
+
+                                            <span class="mr-2">{{child.Name}}</span>
+                                            <div *ngIf="saleModel.Carrier!.DeliveryType === 'ViettelPost' && child.Id == 'XMG' && child.IsSelected == true">
+                                                <button type="button" style="border-bottom: dashed 2px #2395FF;" tds-popover
+                                                    popoverTrigger="click" (click)="openPopoverShipExtraMoney(child.ExtraMoney)"
+                                                    [(popoverVisible)]="visibleShipExtraMoney"
+                                                    [popoverContent]="popoverContentShip_ExtraMoney"
+                                                    [popoverFooter]="popoverFooterShip_ExtraMoney" [popoverAutoClose]="true"
+                                                    [popoverBackdrop]="true" popoverPlacement="right">
+                                                    {{(child.ExtraMoney | number) || 0}}đ
+                                                </button>
+
+                                                <!-- popover button Thuế -->
+                                                <ng-template #popoverContentShip_ExtraMoney>
+                                                    <div class="flex gap-x-2">
+                                                        <tds-form-field>
+                                                            <tds-input-number [min]='0' [step]="100" [ngModel]="extraMoney" [ngModelOptions]="{standalone: true}">
+                                                            </tds-input-number>
+                                                        </tds-form-field>
+                                                    </div>
+                                                </ng-template>
+
+                                                <ng-template #popoverFooterShip_ExtraMoney>
+                                                    <div class="flex justify-end gap-x-2 mt-2">
+                                                        <button tds-button-icon color="primary" type="button" (click)="changeShipExtraMoney($event)">
+                                                            <span class="flex items-center">
+                                                              <i class="tdsi-checkbox-check-fill"></i>
+                                                            </span>
+                                                        </button>
+                                                        <button tds-button-icon color="secondary" type="button" (click)="closePopoverShipExtraMoney()">
+                                                            <span class="flex items-center">
+                                                                <i class="tdsi-close-fill"></i>
+                                                            </span>
+                                                        </button>
+                                                    </div>
+                                                </ng-template>
+
+                                            </div>
+                                        </div>
                                     </tds-checkbox>
-                                    <p *ngIf="item.Fee && !saleModel.Ship_Extras.IsInsuranceEqualTotalAmount">(<strong>{{item.Fee | number:'1.0-3'}}</strong>)</p>
-                                    <div *ngIf="saleModel.Carrier?.DeliveryType == 'ViettelPost' && item.ServiceId == 'XMG' && item.IsSelected == true">
-                                        <tds-input-number [(ngModel)]="item.ExtraMoney" [ngModelOptions]="{standalone: true}" [min]="0" [step]="100"></tds-input-number>
-                                    </div>
-                                </div>
-                            </div>
-                            <div *ngIf="enableInsuranceFee">
-                                <div> Giá trị hàng hóa: [<span class="cursor-pointer" (click)="signAmountTotalToInsuranceFee()">= Tổng hóa đơn</span>]</div>
-                                <div class="flex gap-x-3 mt-2">
-                                    <tds-input-number [(ngModel)]="saleModel.Ship_InsuranceFee" [ngModelOptions]="{standalone: true}" [min]="0" [step]="100"></tds-input-number>
-                                    <button tds-button-icon color="secondary" (click)="onUpdateInsuranceFee()">
-                                        <i class="tdsi-tick-fill text-primary-1"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div *ngIf="saleModel && saleModel.Carrier && !delivery_types.includes(saleModel.Carrier.DeliveryType)">
-                                <div class="flex gap-x-3 items-center text-info-500">
-                                    <span>Phí ship (Đối tác):</span>
-                                    <span class="font-semibold">{{saleModel.CustomerDeliveryPrice? (saleModel.CustomerDeliveryPrice | number:'1.0-3'): 0 }}</span>
-                                    <button tds-button-icon color="info" size="sm" (click)="calcFee()"><i class="tdsi-reload-fill text-white"></i></button>
+
+                                    <span class="text-body-2 text-primary" *ngIf="child.Fee"> (child.Fee | number)</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="flex items-end gap-x-3">
-                            <tds-form-field class="w-full">
-                                <tds-label>Khối lượng(g)</tds-label>
-                                <tds-input-number [min]="0" [step]="100" [(ngModel)]="saleModel.ShipWeight" [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
-                                </tds-input-number>
-                            </tds-form-field>
-                            <button tds-button-icon color="primary" (click)="changeShipWeight()">
-                                <i class="tdsi-scale-fill"></i>
-                            </button>
-                        </div>
-                        <div class="flex gap-x-4">
-                            <tds-form-field class="w-full">
-                                <tds-label>Phí giao hàng</tds-label>
-                                <tds-input-number [min]="0" [step]="1000" [(ngModel)]="saleModel.DeliveryPrice" (ngModelChange)="changeDeliveryPrice($event)"
-                                    [formatter]="numberWithCommas" [parser]="parserComas" [ngModelOptions]="{standalone: true}">
-                                </tds-input-number>
-                            </tds-form-field>
-                            <tds-form-field class="w-full">
-                                <tds-label>Tiền thu hộ</tds-label>
-                                <tds-input-number [min]="1" [step]="1000" [(ngModel)]="saleModel.CashOnDelivery" [formatter]="numberWithCommas"
-                                    [parser]="parserComas" [ngModelOptions]="{standalone: true}">
-                                </tds-input-number>
-                            </tds-form-field>
-                        </div>
-                        <tds-form-field>
-                            <tds-label>Ghi chú giao hàng</tds-label>
-                            <textarea tdsInput placeholder="Nhập ghi chú giao hàng" [(ngModel)]="saleModel.DeliveryNote"
-                                [ngModelOptions]="{standalone: true}" class="h-16 resize-none no-scrollbar">
-                            </textarea>
-                        </tds-form-field>
-                    </div>
-                </tds-collapse-panel>
-            </tds-collapse>
+                      </div>
+                  </div>
+              </tds-collapse-panel>
+          </tds-collapse>
             <!-- Button Footer -->
             <div class="flex gap-x-3 py-3 px-6 bg-white mt-1">
                 <button tds-button class="min-w-[100px]" type="button" color="primary" (click)="onSave('null')">Lưu nháp</button>

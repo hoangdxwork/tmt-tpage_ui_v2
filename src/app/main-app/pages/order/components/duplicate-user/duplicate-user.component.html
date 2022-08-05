@@ -1,21 +1,30 @@
-<tds-tabset>
-  <tds-tab title="Trùng SĐT">
-      <div class="w-full">
-        Trùng SĐT
-      </div>
-  </tds-tab>
-  <tds-tab title="Trùng ASID">
-    <div class="w-full">
-      Trùng ASID
+<div class="flex flex-col gap-y-4">
+  <div class="w-full rounded-lg bg-neutral-3-50 flex items-center justify-between px-4 py-2">
+    <span class="text-header-2 font-semibold text-neutral-1-700">Trùng SDT</span>
+    <tds-checkbox>Chọn tất cả</tds-checkbox>
+  </div>
+
+  <div class="rounded-lg border border-neutral-2-200 h-40 flex flex-col">
+    <div class="border-b border-neutral-2-200 px-4 py-[18px] flex items-center justify-between">
+      <tds-tag status='primary'>
+        <span class="flex items-center py-0.5">
+          <i class="tdsi-call-fill text-lg leading-none mr-2"></i>2444666668
+        </span>
+      </tds-tag>
+      <tds-checkbox size="lg" class="mr-[5px]"></tds-checkbox>
     </div>
-  </tds-tab>
-  <tds-tab title="Trùng UID">
-    <div class="w-full">
-      Trùng UID
+    <div>
+
     </div>
-  </tds-tab>
-</tds-tabset>
+  </div>
+
+</div>
+
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
-  <button tds-button class="mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-  <button tds-button type="submit" color="primary" (click)="onSave()">Lưu</button>
+  <button tds-button class="min-w-[100px] mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>
+  <button tds-button class="min-w-[100px]" color="primary" (click)="onSave()">
+    <span class="flex items-center">
+      <i class="tdsi-in-out-fill text-lg leading-none mr-2"></i>Chuyển đổi
+    </span>
+  </button>
 </div>

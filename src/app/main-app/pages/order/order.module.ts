@@ -1,3 +1,4 @@
+import { OrderEvent } from './../../handler-v2/order-handler/order.event';
 import { TDSEmptyModule } from 'tds-ui/empty';
 import { DirectivesModule } from './../../shared/directives/directives.module';
 import { AttachmentState } from './../../services/facebook-state/attachment.state';
@@ -68,7 +69,18 @@ import { ExpandOrderDetailComponent } from './components/expand-order/expand-ord
 import { TDSNotificationModule } from "tds-ui/notification";
 import { ModalHistoryChatComponent } from './components/modal-history-chat/modal-history-chat.component';
 import { OdataGetOrderPartnerIdService } from '../../services/mock-odata/odata-getorder-partnerid.service';
-import { LiveOrderByPartnerComponent } from './components/live-order/live-order-bypartner.component';
+import { LiveOrderByPartnerComponent } from './components/live-order-bypartner/live-order-bypartner.component';
+import { OverviewOrderBypartnerComponent } from './components/overview-order-bypartner/overview-order-bypartner.component';
+import { OdataFastSaleOrderPartnerIdService } from '../../services/mock-odata/odata-fastsaleorder-partnerid.service';
+import { PrepareModelFeeV2Handler } from '../../handler-v2/aship-v2/prepare-model-feev2.handler';
+import { SelectShipServiceV2Handler } from '../../handler-v2/aship-v2/select-shipservice-v2.handler';
+import { UpdateShipExtraHandler } from '../../handler-v2/aship-v2/update-shipextra.handler';
+import { UpdateShipServiceExtrasHandler } from '../../handler-v2/aship-v2/update-shipservice-extras.handler';
+import { UpdateShipmentDetailAshipHandler } from '../../handler-v2/aship-v2/shipment-detail-aship.handler';
+import { EditOrderV2Component } from './components/edit-order/edit-order-v2.component';
+import { SO_ComputeCaclHandler } from '../../handler-v2/order-handler/compute-cacl.handler';
+import { CalculateFeeAshipHandler } from '../../handler-v2/aship-v2/calcfee-aship.handler';
+import { CsOrder_SuggestionHandler } from '@app/handler-v2/chatomni-csorder/prepare-suggestions.handler';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -93,6 +105,16 @@ const SERVICES = [
   AttachmentService,
   AttachmentState,
   OdataGetOrderPartnerIdService,
+  OdataFastSaleOrderPartnerIdService,
+  PrepareModelFeeV2Handler,
+  SelectShipServiceV2Handler,
+  UpdateShipExtraHandler,
+  UpdateShipServiceExtrasHandler,
+  UpdateShipmentDetailAshipHandler,
+  SO_ComputeCaclHandler,
+  CalculateFeeAshipHandler,
+  CsOrder_SuggestionHandler,
+  OrderEvent
 ]
 
 @NgModule({
@@ -113,6 +135,8 @@ const SERVICES = [
     UpdateInfoPartnerComponent,
     ModalHistoryChatComponent,
     LiveOrderByPartnerComponent,
+    OverviewOrderBypartnerComponent,
+    EditOrderV2Component
   ],
   imports: [
     CommonModule,

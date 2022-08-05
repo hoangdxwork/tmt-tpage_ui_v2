@@ -15,6 +15,7 @@ export class TAuthInterceptorService implements HttpInterceptor {
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<TDSSafeAny>> {
         let that = this;
+
         let lstUrlLogin = [
             environment.apiAccount.signInPassword,
             environment.apiAccount.signInFacebook,
@@ -24,15 +25,18 @@ export class TAuthInterceptorService implements HttpInterceptor {
 
         req = this.addAuthenticationToken(req)
         return next.handle(req).pipe(catchError(err => {
+
             //Lỗi do đăng nhập chưa xóa dữ liệu trên cache
             if (lstUrlLogin.indexOf(req.url) > -1) {
                 //console.log("checkLinkIDServer: true")
                 that.auth.clearToken("checkLinkIDServer");
+
                 let error = "";
                 if (TDSHelperObject.hasValue(err)) {
-                    if (TDSHelperObject.hasValue(err.error) &&
-                        TDSHelperObject.hasValue(err.error.Message)) {
+                    if (TDSHelperObject.hasValue(err.error) && TDSHelperObject.hasValue(err.error.Message)) {
+
                         error = err.error.Message;
+
                     } else {
                         if (TDSHelperObject.hasValue(err.statusText))
                             error = err.statusText;
@@ -43,6 +47,7 @@ export class TAuthInterceptorService implements HttpInterceptor {
                 }
                 return throwError(err);
             }
+
             //Lỗi khác lỗi 401
             else if (err.status !== 401) {
                 let error = "";
@@ -59,6 +64,7 @@ export class TAuthInterceptorService implements HttpInterceptor {
                 }
                 return throwError(error);
             }
+
             //Lỗi 401
             else {
 
@@ -66,10 +72,12 @@ export class TAuthInterceptorService implements HttpInterceptor {
 
                     TGlobalConfig.Authen.refreshTokenInProgress = true;
                     TGlobalConfig.Authen.refreshTokenSubject.next(null);
-                    that.auth.refreshToken(this.auth.getAccessToken())
-                    .subscribe((data) => {
+
+                    that.auth.refreshToken(this.auth.getAccessToken()).subscribe((data) => {
+
                         TGlobalConfig.Authen.refreshTokenInProgress = false;
                         TGlobalConfig.Authen.refreshTokenSubject.next(data);
+
                         return next.handle(that.auth.addAuthenticationToken(req));
                     },
                         error => {
@@ -78,6 +86,7 @@ export class TAuthInterceptorService implements HttpInterceptor {
                             return throwError(error);
                         });
                 }
+
                 return TGlobalConfig.Authen.refreshTokenSubject.pipe(
                     filter(token => token !== null),
                     take(1),
@@ -92,21 +101,21 @@ export class TAuthInterceptorService implements HttpInterceptor {
         let showt = req.url.indexOf("/print/html") > -1;
 
         if (!showt) {
-          if (!req.headers.has('Content-Type')) {
-            req = req.clone({
-              setHeaders:
-              {
-                  'Cache-Control': 'no-cache',
-                  Pragma: 'no-cache',
-                  Expires: 'Sat, 01 Jan 2000 00:00:00 GMT',
-                  TPOSAppVersion: '1.06.1.7'
-              }
-            });
-          }
+            if (!req.headers.has('Content-Type')) {
+                req = req.clone({
+                  setHeaders:
+                  {
+                      'Cache-Control': 'no-cache',
+                      Pragma: 'no-cache',
+                      Expires: 'Sat, 01 Jan 2000 00:00:00 GMT',
+                      TPOSAppVersion: '1.06.1.7'
+                  }
+                });
+            }
         } else {
-          req = req.clone({
-              headers: new HttpHeaders({})
-          });
+            req = req.clone({
+                headers: new HttpHeaders({})
+            });
         }
 
         let accessToken =this.auth.getAccessToken();

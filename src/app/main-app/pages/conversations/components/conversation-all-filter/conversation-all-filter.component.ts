@@ -17,7 +17,7 @@ export class ConversationAllFilterComponent implements OnInit, OnChanges {
 
   _form !: FormGroup;
 
-  @Input() team!: CRMTeamDTO;
+  @Input() team!: CRMTeamDTO | null;
   @Input() totalCount!: number;
   @Output() onFilter: EventEmitter<any> = new EventEmitter();
 

@@ -1,11 +1,11 @@
 <tds-spin [spinning]="isLoading">
-    <form [formGroup]="_form"
+    <form [formGroup]="_form" *ngIf="_form"
         class="flex flex-col gap-y-6">
         <div class="flex gap-x-8 w-full items-center">
             <div>
                 <tds-upload [beforeUpload]="beforeUpload" [showUploadList]="false">
-                  <tds-avatar [isAvatar]="false" class="bg-white text-white" [size]="108"
-                    tdsSrc="{{_form?.value?.Avatar}}">
+                  <tds-avatar [isAvatar]="true" class="bg-white text-white" [size]="108"
+                    [tdsSrc]="_form.value?.Avatar">
                   </tds-avatar>
                 </tds-upload>
             </div>
@@ -33,7 +33,7 @@
                 <tds-error>
                   <span *ngIf="_form.controls['Email'].errors?.emailExist; else emailEmpty">Email đã tồn tại</span>
                   <ng-template #emailEmpty>
-                    <span>Vui lòng email</span>
+                    <span>Vui lòng nhập email</span>
                   </ng-template>
                 </tds-error>
             </tds-form-field>
@@ -61,7 +61,7 @@
         </div>
         <div class="w-full flex justify-end p-4" *tdsModalFooter>
             <button tds-button class="mr-2" color="secondary" (click)="cancel()">Hủy bỏ</button>
-            <button tds-button type="submit" color="primary" (click)="onSave()" [disabled]="!_form?.valid">Lưu thay đổi</button>
+            <button tds-button type="submit" color="primary" (click)="onSave()" [disabled]="!_form.valid">Lưu thay đổi</button>
         </div>
     </form>
 </tds-spin>

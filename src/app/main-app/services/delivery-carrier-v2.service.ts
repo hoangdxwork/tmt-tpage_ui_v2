@@ -1,7 +1,7 @@
 import { ProductDTO } from '../dto/product/product.dto';
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { BaseSevice } from "./base.service";
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { DeliveryResponseDto } from '../dto/carrierV2/delivery-carrier-response.dto';
@@ -36,76 +36,76 @@ export class DeliveryCarrierV2Service extends BaseSevice {
   };
 
   getByDeliveryType(type: string): Observable<Array<DeliveryCarrierDTO>> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/get_by-delivery-type?type=${type}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   getProviderToAship(): Observable<DeliveryResponseDto<GetDeliveryResponseDto>> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/get_provider`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   getConfigProviderToAship(provider: string): Observable<TDSSafeAny> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/get_configs_provider?provider=${provider}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   getInfoConfigProviderToAship(configId: string): Observable<TDSSafeAny> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/get_configs_provider_info?configId=${configId}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   getDisplayInfoConfigProviderToAship(configId: string): Observable<TDSSafeAny> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/get-display-config-provider?configId=${configId}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   create(data: TDSSafeAny): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/create`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   update(data: TDSSafeAny): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/update`,
-      method: TApiMethodType.put,
+      method: CoreApiMethodType.put,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   delete(id: number): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/${id}`,
-        method: TApiMethodType.delete,
+        method: CoreApiMethodType.delete,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   getById(id: number): Observable<DeliveryCarrierDTO> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/${id}`,
-        method: TApiMethodType.get,
+        method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);

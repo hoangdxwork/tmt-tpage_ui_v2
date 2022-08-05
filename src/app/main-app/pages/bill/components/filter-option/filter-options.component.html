@@ -1,6 +1,6 @@
 
 <button tds-button-icon color="secondary" tds-dropdown trigger="click"
-    [tdsDropdownMenu]="menu"  [autoClose]="false"
+    [tdsDropdownMenu]="menu" [autoClose]="false" [clickHide]="false"
     size="md" class="relative" [(visible)]="isVisible" tds-tooltip tooltipTitle="Lọc dữ liệu">
   <span class="flex items-center">
       <i class="tdsi-filter-2-line text-lg leading-none text-neutral-1-500"></i>
@@ -12,7 +12,7 @@
       <div class="mb-4">
           <p class="mb-2 font-semibold text-[#5A6271] size-[14px]">TÌM THEO NGÀY</p>
           <div>
-             <tds-range-picker  [(ngModel)]="datePicker" (ngModelChange)="onChangeDate($event)"> </tds-range-picker>
+             <tds-range-picker [(ngModel)]="datePicker" (ngModelChange)="onChangeDate($event)"></tds-range-picker>
           </div>
       </div>
       <div class="w-full mb-4">

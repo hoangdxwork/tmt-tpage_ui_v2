@@ -8,6 +8,7 @@ import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { ChildChatOmniChannelDto } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 
 @Component({
   selector: 'app-dashboard-daily-report',
@@ -66,8 +67,8 @@ export class DashboardDailyReportComponent implements OnInit {
   loadCurrentTeam() {
     this.crmTeamService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.currentTeam = res;
-      this.loadSummaryCurrentDay(this.currentTeam?.Facebook_PageId);
-      this.loadSummaryOverviewCurrentDay(this.currentTeam?.Facebook_PageId);
+      this.loadSummaryCurrentDay(this.currentTeam?.ChannelId);
+      this.loadSummaryOverviewCurrentDay(this.currentTeam?.ChannelId);
     });
   }
 
@@ -245,7 +246,7 @@ export class DashboardDailyReportComponent implements OnInit {
   }
 
   refreshData() {
-    this.loadSummaryCurrentDay(this.currentTeam?.Facebook_PageId);
-    this.loadSummaryOverviewCurrentDay(this.currentTeam?.Facebook_PageId);
+    this.loadSummaryCurrentDay(this.currentTeam?.ChannelId);
+    this.loadSummaryOverviewCurrentDay(this.currentTeam?.ChannelId);
   }
 }

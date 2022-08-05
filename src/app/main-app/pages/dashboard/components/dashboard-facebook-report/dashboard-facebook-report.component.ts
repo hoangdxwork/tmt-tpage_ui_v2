@@ -1,4 +1,3 @@
-import { formatNumber } from '@angular/common';
 import { Color } from 'echarts';
 import { TDSChartOptions, TDSBarChartComponent, TDSBarChartDataSeries } from 'tds-report';
 import { Component, OnInit } from '@angular/core';
@@ -6,7 +5,8 @@ import { InputSummaryPostDTO, InputSummaryTimelineDTO, MDBSummaryByPostDTO, MDBT
 import { ReportFacebookService } from 'src/app/main-app/services/report-facebook.service';
 import { format } from 'date-fns';
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
-import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/services/handlers/common.handler';
+import { Subject, takeUntil } from 'rxjs';
+import { CommonHandler, TDSDateRangeDTO } from 'src/app/main-app/handler-v2/common.handler';
 
 @Component({
   selector: 'app-dashboard-facebook-report',
@@ -30,6 +30,7 @@ export class DashboardFacebookReportComponent implements OnInit {
 
   dataSummaryPost!: MDBSummaryByPostDTO;
   dataCommentAndMessage: MDBTotalCommentMessageFbDTO[] = [];
+  private destroy$ = new Subject<void>();
 
   constructor(private commonHandler: CommonHandler,
     private reportFacebookService: ReportFacebookService) {
@@ -48,7 +49,7 @@ export class DashboardFacebookReportComponent implements OnInit {
     model.DateStart = this.currentDateRanges.startDate;
     model.DateEnd = this.currentDateRanges.endDate;
 
-    this.reportFacebookService.getSummaryPost(model).subscribe(res => {
+    this.reportFacebookService.getSummaryPost(model).pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.dataSummaryPost = res;
     });
   }
@@ -60,7 +61,7 @@ export class DashboardFacebookReportComponent implements OnInit {
     model.DateStart = this.currentDateRanges.startDate;
     model.DateEnd = this.currentDateRanges.endDate;
 
-    this.reportFacebookService.getCommentAndMessage(model).subscribe(res => {
+    this.reportFacebookService.getCommentAndMessage(model).pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.dataCommentAndMessage = res;
 
       if(TDSHelperArray.hasListValue(res)) {
@@ -217,5 +218,10 @@ export class DashboardFacebookReportComponent implements OnInit {
 
     this.loadSummary();
     this.loadCommentAndMessage();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

@@ -1,7 +1,7 @@
 import { FilterObjDTO } from './../tag-product-template.service';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { OperatorEnum, CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { ODataCRMTagDTO } from '../../dto/crm-tag/odata-crmtag.dto';
 import { BaseSevice } from '../base.service';
@@ -21,9 +21,9 @@ export class OdataCRMTagService extends BaseSevice {
   }
 
   getView(params: string, filterObj?: FilterObjDTO): Observable<TDSSafeAny>{
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}?${params}&$count=true`,
-        method: TApiMethodType.get,
+        method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<ODataCRMTagDTO>(api, null);

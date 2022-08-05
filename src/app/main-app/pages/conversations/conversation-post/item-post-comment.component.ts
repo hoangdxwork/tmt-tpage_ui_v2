@@ -27,6 +27,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
   @Input() post!: FacebookPostItem;
   @Input() sort: any;
   @Input() filter: any;
+
   @Input() isShowCheckboxComent: boolean = true;
   @Input() currentFilterComment: TDSSafeAny;
   @Input() textSearchFilterComment!: string;
@@ -88,7 +89,7 @@ export class ItemPostCommentComponent implements OnInit, OnChanges, OnDestroy {
             this.loadData();
           break;
         default:
-          this.facebookCommentService.fetchComments(this.team?.Id, this.post.fbid)
+          this.facebookCommentService.fetchComments(this.team!.Id, this.post.fbid)
             .subscribe((res: any) => {
               this.message.success('Tải lại dữ liệu thành công!');
               this.currentSort = { value: "DateCreated desc", text: "Mới nhất" };

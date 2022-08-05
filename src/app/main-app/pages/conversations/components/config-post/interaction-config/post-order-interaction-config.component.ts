@@ -10,13 +10,15 @@ import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperString } from 'tds-ui/shared/utility';
 import { Subject } from 'rxjs';
+import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 
 @Component({
   selector: 'post-order-interaction-config',
   templateUrl: './post-order-interaction-config.component.html'
 })
 export class PostOrderInteractionConfigComponent implements OnInit, OnChanges {
-  @Input() data!: FacebookPostItem;
+
+  @Input() data!: ChatomniObjectsItemDto;
 
   isLoading: boolean = false;
   isEditSendMess: boolean = false;
@@ -36,7 +38,7 @@ export class PostOrderInteractionConfigComponent implements OnInit, OnChanges {
     else this.resetForm();
 
     if(changes?.data?.currentValue) {
-      this.loadInteractionConfig(this.data.fbid);
+      this.loadInteractionConfig(this.data.ObjectId);
     }
   }
 
@@ -84,7 +86,7 @@ export class PostOrderInteractionConfigComponent implements OnInit, OnChanges {
 
   onSave() {
     let model = this.prepareModel();
-    let postId = this.data?.fbid;
+    let postId = this.data?.ObjectId;
 
     this.isLoading = true;
     this.facebookPostService.updateInteractionConfig(postId, model)

@@ -1,7 +1,7 @@
 <div *ngIf="item" class="text-body-2 text-neutral-1-900 w-full">
   <div class="w-full relative overflow-hidden " style="white-space: pre-line; word-break: break-word;">
-    <div [ngClass]="currentConversationItem && (currentConversationItem?.id == item.id)?'absolute h-full w-1 left-0 bg-blue-500':''"></div>
-    <div [ngClass]="currentConversationItem && (currentConversationItem?.id == item.id)?'bg-secondary-3':'bg-white'"
+    <div [ngClass]="currentConversationItem && (currentConversationItem.id == item.id)?'absolute h-full w-1 left-0 bg-blue-500':''"></div>
+    <div [ngClass]="currentConversationItem && (currentConversationItem.id == item.id)?'bg-secondary-3':'bg-white'"
         class="p-3.5 flex flex-col gap-3 w-full hover:bg-neutral-3-50">
       <div class="flex gap-3">
         <div>
@@ -9,7 +9,7 @@
                 <tpage-avatar-facebook
                   [noSeenMessage]="seenedMessage()"
                   [shape]="'circle'" [size]="'lg'"
-                  [psid]="item.psid" [token]="team?.Facebook_PageToken">
+                  [psid]="item.psid" [token]="team.Facebook_PageToken">
                 </tpage-avatar-facebook>
                 <!-- icon comment -->
                 <span *ngIf="(item | lastActivityMessage: type)?.type == 2" class="absolute" style="top: 31px;left: 31px;">
@@ -109,7 +109,7 @@
                 </div>
                 <ng-template #popoverContentTag>
                     <div class="flex gap-1 flex-wrap items-center max-w-[336px]">
-                        <div *ngFor="let tag of item.tags |  slice:displayTag:item.tags.length" class="relative flex items-center text-caption-2 text-[11px] font-regular text-neutral-1-900 rounded truncate flex-none">
+                        <div *ngFor="let tag of item.tags |  slice:displayTag:item.tags!.length" class="relative flex items-center text-caption-2 text-[11px] font-regular text-neutral-1-900 rounded truncate flex-none">
                             <div [ngStyle]="{'background-color': [tag.color_class+'30'] }" class=" rounded-md py-0.5 px-1.5 flex justify-center items-center gap-x-1">
                                 <div class="flex items-center">
                                     <span [ngStyle]="{'background-color': [tag.color_class] }"
@@ -127,11 +127,11 @@
             </div>
         </div>
 
-        <div class="flex justify-end gap-1 items-center" *ngIf="eventData && eventData[team.Facebook_PageId] && eventData[team.Facebook_PageId][psid]">
+        <div class="flex justify-end gap-1 items-center" *ngIf="eventData && eventData[team.ChannelId] && eventData[team.ChannelId][psid]">
             <div class="tdsi-flash-on-fill text-accent-3"></div>
             <div class="text-accent-3 text-caption-1 font-regular font-sans">
-                <span class="mr-1">{{eventData[team.Facebook_PageId][psid].time | yiDateTimeFormat}}</span>
-                <span>{{eventData[team.Facebook_PageId][psid].message}}</span>
+                <span class="mr-1">{{eventData[team.ChannelId][psid].time | yiDateTimeFormat}}</span>
+                <span>{{eventData[team.ChannelId][psid].message}}</span>
             </div>
         </div>
       </div>

@@ -121,9 +121,21 @@ export class ModalPaymentComponent implements OnInit, OnDestroy {
   }
 
   onSave(type:string){
-    this.isLoading = true;
-    let x = this.prepareModel();
 
+    if (!TDSHelperString.hasValueString(this._form.controls["Journal"].value)) {
+      this.message.error('Phương thức không được để trống!');
+        return
+    }
+    if (!TDSHelperString.hasValueString(this._form.controls["Amount"].value)) {
+      this.message.error('Số tiền không được để trống!');
+        return
+    }
+    if (!TDSHelperString.hasValueString(this._form.controls["PaymentDate"].value)) {
+      this.message.error('Ngày thanh toán không được để trống!');
+        return
+    }
+    let x = this.prepareModel();
+    this.isLoading = true;
     this.accRegisterPayment.registerPayment(x).pipe(map((res) => res), mergeMap((res) => {
           let model =  {
             id: res.Id

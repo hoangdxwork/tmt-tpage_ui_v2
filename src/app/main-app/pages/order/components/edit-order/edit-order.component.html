@@ -5,14 +5,14 @@
             <span class="text-primary-1 font-semibold text-title-1">{{quickOrderModel ? quickOrderModel.Code : ''}}</span>
         </div>
         <div class="flex flex-col">
-            <tds-tabset class="border border-neutral-2-200 rounded-md ">
+            <tds-tabset [(selectedIndex)]="selectedIndex">
               <tds-tab class="px-2" title="Thông tin liên hệ" clsContent="border-t border-neutral-2-200 w-full h-full">
                 <div class="w-full p-4">
                   <div class="w-full h-full grid grid-cols-2 gap-x-8">
                     <div class="flex flex-col gap-y-4">
                       <div class="grid grid-cols-4 gap-x-4">
                         <div class="flex justify-center items-center text-centefa-rotate-180">
-                          <tds-avatar [size]="84" [tdsSrc]="quickOrderModel.Partner?.ImageUrl || 'error-link'"></tds-avatar>
+                          <tds-avatar [size]="84" [tdsSrc]="quickOrderModel.Partner.ImageUrl || 'error-link'"></tds-avatar>
                         </div>
                         <div class="col-span-3 flex flex-col gap-y-2">
                           <tds-label>Tên Khách hàng</tds-label>
@@ -62,7 +62,7 @@
                         </div>
                       </div>
                       <div class="grid grid-cols-4 gap-x-4">
-                        <div class="flex items-center">
+                        <div class="flex items-start pt-1.5">
                           <tds-label>Địa chỉ</tds-label>
                         </div>
                         <div class="col-span-3">
@@ -78,7 +78,7 @@
                         </div>
                         <div class="col-span-3">
                           <tds-form-field *ngIf="lstUser">
-                            <tds-select valueField="Id" textField="Name" placeholder='Chọn người bán' [valuePrimitive]="false"
+                            <tds-select valueField="Id" textField="Name" placeholder='Chờn người bán' [valuePrimitive]="false"
                               [allowClear]="true" [(ngModel)]="quickOrderModel.User" disabledField="isActive" [data]="lstUser"
                               [ngModelOptions]="{standalone: true}">
                             </tds-select>
@@ -87,10 +87,9 @@
                       </div>
                     </div>
 
-                    <!-- col 2 -->
                     <div>
                       <div class="grid grid-cols-4 gap-x-4">
-                        <div class="flex items-center">
+                        <div class="flex h-[34px] items-center">
                           <tds-label>Ghi chú</tds-label>
                         </div>
                         <div class="col-span-3">
@@ -113,8 +112,8 @@
                             </ng-template>
 
                             <div *ngIf="lstComment" style="margin:0;" class="overflow-auto tds-panel-scroll flex flex-col max-h-60 py-2">
-                              <div *ngFor="let comment of lstComment; let index = index" 
-                                [ngClass]="quickOrderModel.Note?.includes(comment.message) ? 'bg-neutral-3-50':''"
+                              <div *ngFor="let comment of lstComment; let index = index"
+                                [ngClass]="quickOrderModel.Note.includes(comment.message) ? 'bg-neutral-3-50':''"
                                 class="p-3 border-b border-neutral-2-200 flex justify-between w-full cursor-pointer hover:bg-neutral-3-50"
                                 (click)="addComment(comment.message)">
                                 <span>
@@ -131,7 +130,18 @@
                 </div>
               </tds-tab>
 
-              <tds-tab title="Sản phẩm ({{quickOrderModel?.Details?.length}})" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
+              <tds-tab [title]="titleProduct" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
+                <ng-template #titleProduct let-active="active">
+                  <div class="p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center"
+                    [ngClass]='{"border-primary-1":active, "border-transparent text-neutral-1-400  hover:border-primary-1":!active}'>
+                    <span class="mr-2">Sản phẩm</span>
+                    <div *ngIf="quickOrderModel.Details" class="text-caption-2 font-semibold py-0.5 px-1.5 rounded-full flex"
+                      [ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 bg-neutral-3-100 group-hover:text-white group-hover:bg-primary-1':!active}">
+                      {{quickOrderModel.Details.length}}
+                    </div>
+                  </div>
+                </ng-template>
+
                 <div class="w-full">
                   <div class="w-full flex gap-x-8">
                     <div class="relative flex-auto">
@@ -270,7 +280,7 @@
                           </div>
                           <div class="col-span-2" *ngIf="saleModel.Carrier && lstCarriers">
                             <tds-form-field>
-                              <tds-select valueField="Id" textField="Name" placeholder='Chọn đối tác giao hàng'
+                              <tds-select valueField="Id" textField="Name" placeholder='Chờn đối tác giao hàng'
                                 [valuePrimitive]="false" [allowClear]="true" disabledField="isActive"
                                 [data]="(lstCarriers | async) || []" [(ngModel)]="saleModel.Carrier"
                                 [ngModelOptions]="{standalone: true}" [allowClear]="true"
@@ -282,7 +292,7 @@
                         <div *ngIf="saleModel.Carrier && !delivery_types.includes(saleModel.Carrier.DeliveryType)"
                           class="grid grid-cols-3 gap-x-4 mt-4">
                           <div class="flex items-center">
-                            <tds-label>Phí ship (Đối tác):</tds-label>
+                            <tds-label>Phí ship (đối tác):</tds-label>
                           </div>
                           <div class="col-span-2 flex gap-x-2 items-center">
                             <span class="text-primary-1 font-semibold mr-4">
@@ -382,7 +392,7 @@
                                 <label>
                                   <tds-checkbox [(ngModel)]="item.IsSelected" (change)="onCheckExtraService(item)"
                                     [ngModelOptions]="{standalone: true}"><i></i> {{item.ServiceName}}</tds-checkbox>
-                                  <p *ngIf="item.Fee && !saleModel.Ship_Extras.IsInsuranceEqualTotalAmount">
+                                  <p *ngIf="item.Fee && !saleModel.Ship_Extras!.IsInsuranceEqualTotalAmount">
                                     (<strong>{{item.Fee | numberCustom:'.'}}</strong>)
                                   </p>
                                 </label>
@@ -413,46 +423,40 @@
                 </ng-template>
               </tds-tab>
 
-              <tds-tab title="Đơn hàng" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
+              <tds-tab [title]="titleOrder" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
+                <ng-template #titleOrder let-active="active">
+                  <div class="p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center"
+                    [ngClass]='{"border-primary-1":active, "border-transparent text-neutral-1-400  hover:border-primary-1":!active}'>
+                    <span class="mr-2">Đơn hàng</span>
+                    <div *ngIf="quickOrderModel.Details" class="text-caption-2 font-semibold py-0.5 px-1.5 rounded-full flex"
+                      [ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 bg-neutral-3-100 group-hover:text-white group-hover:bg-primary-1':!active}">
+                      {{0}}
+                    </div>
+                  </div>
+                </ng-template>
+
                 <live-order-bypartner [partnerId]="quickOrderModel.PartnerId"></live-order-bypartner>
               </tds-tab>
 
-              <tds-tab title="Phiếu bán hàng" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
-                <div class="w-full flex flex-col gap-y-4">
-                  <div class="w-full">
-                    <tds-form-field class="w-full">
-                      <input tdsInput placeholder="Tìm kiếm đơn hàng" autocomplete="off" />
-                      <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-                    </tds-form-field>
+              <tds-tab [title]="titleBill" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
+                <ng-template #titleBill let-active="active">
+                  <div class="p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center"
+                    [ngClass]='{"border-primary-1":active, "border-transparent text-neutral-1-400  hover:border-primary-1":!active}'>
+                    <span class="mr-2">Lịch sử hóa đơn</span>
+                    <div *ngIf="quickOrderModel.Details" class="text-caption-2 font-semibold py-0.5 px-1.5 rounded-full flex"
+                      [ngClass]="{'text-white bg-primary-1':active,'text-neutral-1-500 bg-neutral-3-100 group-hover:text-white group-hover:bg-primary-1':!active}">
+                      {{quickOrderModel.Details.length}}
+                    </div>
                   </div>
-                  <div class="w-full h-full">
-                    <tds-table class="tds-table-rounded" #productTable [bordered]="true" [listData]="quickOrderModel.Details"
-                      [showPagination]="false" [scroll]="{y:'auto'}">
-                      <thead class="rounded">
-                        <tr>
-                          <th >STT</th>
-                          <th >Sản phẩm</th>
-                          <th >Kênh kết nối</th>
-                          <th >Tổng tiền</th>
-                          <th >Tổng SL</th>
-                          <th >Ngày tạo đơn</th>
-                          <th >Trạng thái</th>
-                          <th >Nhân viên</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                        </tr>
-                      </tbody>
-                    </tds-table>
-                  </div>
-                </div>
+                </ng-template>
+
+                <!-- <overview-order-bypartner *ngIf="selectedIndex == 4" [partnerId]="quickOrderModel.PartnerId"></overview-order-bypartner> -->
               </tds-tab>
             </tds-tabset>
 
             <div class="w-full flex justify-between p-4 items-center" *tdsModalFooter>
               <div class="flex">
-                <tds-checkbox [(ngModel)]="isEnableCreateOrder" [ngModelOptions]="{standalone: true}"
+                <tds-checkbox [(ngModel)]="isEnableCreateOrder" [ngModelOptions]="{standalone: true}" [ngClass]="{ 'hidden': selectedIndex != 0 && selectedIndex != 1}"
                   (change)="onEnableCreateOrder($event)">
                   Tạo phiếu bán hàng
                 </tds-checkbox>

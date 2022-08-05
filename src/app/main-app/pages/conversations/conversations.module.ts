@@ -112,6 +112,33 @@ import { OdataProductService } from '../../services/mock-odata/odata-product.ser
 import { ModalPostComponent } from './components/modal-post/modal-post.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ModalRenameAttachmentComponent } from './components/modal-rename-attachment/modal-rename-attachment.component';
+import { ChatomniMessageFacade } from '../../services/chatomni-facade/chatomni-message.facade';
+import { CrmMatchingV2Facade } from '../../services/matching-v2-facade/crm-matching-v2.facade';
+import { CrmMatchingV2Service } from '../../services/matching-v2-service/crm-matching-v2.service';
+import { ChatomniConversationService } from '../../services/chatomni-service/chatomni-conversation.service';
+import { ConversationAllV2Component } from './conversation-all/conversation-all-v2.component';
+import { CurrentConversationItemV2Component } from './components/current-conversation-item/current-conversation-item-v2.component';
+import { CsPartner_SuggestionHandler } from '../../handler-v2/chatomni-cspartner/prepare-suggestion.handler';
+import { CsPartner_PrepareModelHandler } from '../../handler-v2/chatomni-cspartner/prepare-partner.handler';
+import { CsOrder_SuggestionHandler } from '../../handler-v2/chatomni-csorder/prepare-suggestions.handler';
+import { CsOrder_PrepareModelHandler } from '../../handler-v2/chatomni-csorder/prepare-order.handler';
+import { ChatomniCommentService } from '../../services/chatomni-service/chatomni-comment.service';
+import { UpdateShipmentDetailAshipHandler } from '@app/handler-v2/aship-v2/shipment-detail-aship.handler';
+import { UpdateShipServiceExtrasHandler } from '@app/handler-v2/aship-v2/update-shipservice-extras.handler';
+import { UpdateShipExtraHandler } from '@app/handler-v2/aship-v2/update-shipextra.handler';
+import { SelectShipServiceV2Handler } from '@app/handler-v2/aship-v2/select-shipservice-v2.handler';
+import { PrepareModelFeeV2Handler } from '@app/handler-v2/aship-v2/prepare-model-feev2.handler';
+import { SO_ComputeCaclHandler } from '@app/handler-v2/order-handler/compute-cacl.handler';
+import { CalculateFeeAshipHandler } from '@app/handler-v2/aship-v2/calcfee-aship.handler';
+import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-message.service';
+import { ChatomniConversationFacade } from '@app/services/chatomni-facade/chatomni-conversation.facade';
+import { ConversationPostV2Component } from './conversation-post/conversation-post-v2.component';
+import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
+import { ConversationPostViewV2Component } from './conversation-post/conversation-post-view-v2.component';
+import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-object.facade';
+import { ConversationPostViewV3Component } from './conversation-post/conversation-post-view-v3.component';
+import { ObjectFacebookPostComponent } from './conversation-post/objects/object-facebook-post.component';
+import { ObjectTshopPostComponent } from './conversation-post/objects/object-tshop-post.component';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -149,7 +176,27 @@ const SERVICES = [
   AccountRegisterPaymentService,
   OdataSaleCouponProgramService,
   OdataProductService,
-  FacebookCommentService
+  FacebookCommentService,
+  ChatomniMessageFacade,
+  CrmMatchingV2Service,
+  CrmMatchingV2Facade,
+  ChatomniConversationService,
+  CsPartner_SuggestionHandler,
+  CsPartner_PrepareModelHandler,
+  CsOrder_SuggestionHandler,
+  CsOrder_PrepareModelHandler,
+  ChatomniCommentService,
+  UpdateShipmentDetailAshipHandler,
+  UpdateShipServiceExtrasHandler,
+  UpdateShipExtraHandler,
+  SelectShipServiceV2Handler,
+  PrepareModelFeeV2Handler,
+  SO_ComputeCaclHandler,
+  CalculateFeeAshipHandler,
+  ChatomniMessageService,
+  ChatomniConversationFacade,
+  ChatomniObjectService,
+  ChatomniObjectFacade
 ]
 
 @NgModule({
@@ -194,7 +241,14 @@ const SERVICES = [
     ProductPagefbComponent,
     ModalApplyPromotionComponent,
     ModalPostComponent,
-    ModalRenameAttachmentComponent
+    ModalRenameAttachmentComponent,
+    ConversationAllV2Component,
+    CurrentConversationItemV2Component,
+    ConversationPostV2Component,
+    ConversationPostViewV2Component,
+    ConversationPostViewV3Component,
+    ObjectFacebookPostComponent,
+    ObjectTshopPostComponent
   ],
 
   imports: [

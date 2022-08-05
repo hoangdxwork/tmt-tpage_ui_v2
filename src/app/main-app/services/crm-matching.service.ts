@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { ConversationSummaryByTagDTO } from '../dto/conversation/conversation.dto';
 import { InputReasonCannelOrderDTO, MDBFacebookMappingNoteDTO, MDBPhoneReportDTO } from '../dto/partner/partner.dto';
@@ -34,9 +34,9 @@ export class CRMMatchingService extends BaseSevice {
           return key + '=' + this.queryObj[key]
       }).join('&');
 
-      const api: TAPIDTO = {
+      const api: CoreAPIDTO = {
           url: `${this._BASE_URL}/${this.baseRestApi}?${queryString}`,
-          method: TApiMethodType.get
+          method: CoreApiMethodType.get
       }
       return this.apiService.getData<TDSSafeAny>(api, null)
         .pipe(map((res: any) => {
@@ -47,9 +47,9 @@ export class CRMMatchingService extends BaseSevice {
   }
 
   getLink(url: string): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${url}`,
-        method: TApiMethodType.get
+        method: CoreApiMethodType.get
     }
     return this.apiService.getData<TDSSafeAny>(api, null)
       .pipe(map((res: any) => {
@@ -59,75 +59,75 @@ export class CRMMatchingService extends BaseSevice {
   }
 
   refetch(psid: string, pageId: string): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/refetch?page_id=${pageId}`,
-        method: TApiMethodType.get
+        method: CoreApiMethodType.get
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   markSeen(page_id: string, fbid: string, type: string, assign_user_id: string): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/${fbid}/markseen`,
-        method: TApiMethodType.post
+        method: CoreApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, { page_id: page_id, type: type, assign_user_id: assign_user_id });
   }
 
   addNote(psid: string, data: MDBFacebookMappingNoteDTO) {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${psid}/notes`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   addOrUpdatePhoneReport(data: InputReasonCannelOrderDTO): Observable<MDBPhoneReportDTO> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/addorupdatephonereport`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
     return this.apiService.getData<MDBPhoneReportDTO>(api, data);
   }
 
   getHistoryReportPhone(phone: string): Observable<MDBPhoneReportDTO> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/gethistoryreportphone?phone=${phone}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<MDBPhoneReportDTO>(api, null);
   }
 
   unReportPhone(phone: string): Observable<undefined> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/unreportphone?phone=${phone}`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getData<undefined>(api, null);
   }
 
   addMessage(psid: string, data: TDSSafeAny) {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/crmactivity/${psid}/addmessage`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   addQuickReplyComment(data: TDSSafeAny) {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/rest/v1.0/crmactivity/quickreplycomment`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
     return this.apiService.getData<TDSSafeAny>(api, data);
   }
 
   getSummaryByTags(pageId: string, start: string, end: string): Observable<ConversationSummaryByTagDTO[]> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/summarybytags?PageId=${pageId}&Start=${start}&End=${end}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<ConversationSummaryByTagDTO[]>(api, null);
@@ -150,25 +150,25 @@ export class CRMMatchingService extends BaseSevice {
   }
 
   getMDBByPSId(pageId: TDSSafeAny, psid: string) {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${pageId}_${psid}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   checkPhoneReport(phone: string): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/${phone}/checkphonereport`,
-        method: TApiMethodType.post
+        method: CoreApiMethodType.post
     }
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
   transferChatbot(pageId: string, psId: string) {
-    const api: TAPIDTO = {
-        url: `${this._BASE_URL}/${this.baseRestApi}/transferchatbot?page_id=${pageId}&psid=${psId}`,
-        method: TApiMethodType.get
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/${this.baseRestApi}/transferchatbot?page_id=${pageId}&sid=${psId}`,
+        method: CoreApiMethodType.get
     }
     return this.apiService.getData(api, null);
   }

@@ -13,6 +13,7 @@ import { TDSHelperArray, TDSHelperObject } from 'tds-ui/shared/utility';
 import { PartnerStatusDTO } from 'src/app/main-app/dto/partner/partner.dto';
 import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-animations.helper';
 import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
+import { ChildChatOmniChannelDto } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 
 @Component({
   selector: 'post-comment-filter',

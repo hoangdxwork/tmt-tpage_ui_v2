@@ -34,10 +34,12 @@ export class ListChannelConnectComponent implements OnInit {
   loadChannel() {
     this.crmTeamService.onChangeListFaceBook()
       .subscribe(res => {
-        let childs = this.getChilds(res?.Items);
+        if(res) {
+          let childs = this.getChilds(res);
 
-        childs = childs.filter(x => !this.idConnect.includes(x.Facebook_PageId));
-        this.lstChannel = childs;
+          childs = childs.filter(x => !this.idConnect.includes(x.Facebook_PageId));
+          this.lstChannel = childs;
+        }
       });
   }
 
@@ -46,7 +48,7 @@ export class ListChannelConnectComponent implements OnInit {
 
     if(TDSHelperArray.hasListValue(teams) && teams?.length) {
       teams.forEach(team => {
-        let childActive = team?.Childs.filter(x => x.Active);
+        let childActive = team?.Childs!.filter(x => x.Active);
         if(TDSHelperArray.hasListValue(childActive) && childActive?.length) {
           childs = [...childs, ...childActive];
         }

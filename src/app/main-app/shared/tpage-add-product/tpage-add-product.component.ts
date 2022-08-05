@@ -13,11 +13,15 @@ import { SharedService } from '../../services/shared.service';
 import { map, takeUntil, mergeMap } from 'rxjs/operators';
 import { ProductIndexDBService } from '../../services/product-indexDB.service';
 import { KeyCacheIndexDBDTO } from '../../dto/product-pouchDB/product-pouchDB.dto';
-import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSUploadChangeParam, TDSUploadFile } from 'tds-ui/upload';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSNotificationService } from 'tds-ui/notification';
+import { ConfigAddAttributeProductModalComponent } from '../../pages/configs/components/config-attribute-modal/config-attribute-modal.component';
+import { ConfigAttributeLine, ConfigProductVariant, ConfigSuggestVariants } from '../../dto/configs/product/config-product-default.dto';
+import { CreateVariantsModalComponent } from '../../pages/configs/components/create-variants-modal/create-variants-modal.component';
+import { TpageAddUOMComponent } from '../tpage-add-uom/tpage-add-uom.component';
 
 @Component({
   selector: 'tpage-add-product',
@@ -34,6 +38,23 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
 
   lstCategory!: Array<ProductCategoryDTO>;
   lstUOMCategory!: Array<ProductUOMDTO>;
+  lstAttributes: Array<ConfigAttributeLine> = [];
+  lstVariants: Array<ConfigProductVariant> = [];
+  productTypeList: Array<TDSSafeAny> = [];
+
+  minIndex = 0;
+  numberWithCommas = (value: TDSSafeAny) => {
+    if (value != null) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    return value
+  };
+  parserComas = (value: TDSSafeAny) => {
+    if (value != null) {
+      return TDSHelperString.replaceAll(value, ',', '');
+    }
+    return value
+  };
 
   isLoading: boolean = false;
   public readonly lstProductType = ProductType;
@@ -110,7 +131,8 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
       StandardPrice: [0],
       ImageUrl: [null],
       UOM: [null, Validators.required],
-      UOMPO: [null, Validators.required]
+      UOMPO: [null, Validators.required],
+      Tags: [null]
     });
   }
 
@@ -158,6 +180,7 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
     this.defaultGet["PurchasePrice"] = formModel.PurchasePrice;
     this.defaultGet["DiscountPurchase"] = formModel.DiscountPurchase;
     this.defaultGet["StandardPrice"] = formModel.StandardPrice;
+    // this.defaultGet["Tags"] =  formModel.Tags;
 
     if (formModel.UOM) {
       this.defaultGet["UOM"] = formModel.UOM;
@@ -276,6 +299,111 @@ export class TpageAddProductComponent implements OnInit, OnDestroy {
         this.cdRef.markForCheck();
     }, error => {
       this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
+    });
+  }
+
+  loadProductTypeList() {
+    this.productTypeList = [
+      { value: 'product', text: 'Có thể lưu trữ' },
+      { value: 'consu', text: 'Có thể tiêu thụ' },
+      { value: 'service', text: 'Dịch vụ' }
+    ];
+  }
+
+  showCreateAttributeModal() {
+    let productName = this._form.controls.Name.value;
+    if (productName) {
+      const modal = this.modal.create({
+        title: 'Quản lý thuộc tính',
+        content: ConfigAddAttributeProductModalComponent,
+        size: "lg",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          defaultModel: this.lstAttributes
+        }
+      });
+
+      modal.afterClose.subscribe((result: Array<ConfigAttributeLine>) => {
+        if (TDSHelperObject.hasValue(result)) {
+          this.lstAttributes = result;
+          let model = <ConfigSuggestVariants><unknown>this.prepareModel();
+          model.AttributeLines = result;
+          this.productTemplateService.suggestVariants({ model: model }).pipe(takeUntil(this.destroy$)).subscribe(
+            (res) => {
+              this.lstVariants = [...res.value];
+              console.log(this.lstVariants )
+              this.lstVariants.map(attr => {
+                if (attr.Id == 0) {
+                  this.minIndex -= 1;
+                  attr.Id = this.minIndex;
+                }
+              });
+            },
+            (err) => {
+              this.message.error(err?.error?.message || Message.CanNotLoadData);
+            }
+          )
+        }
+      });
+    } else {
+      this.message.error('Vui lòng nhập tên sản phẩm');
+    }
+  }
+
+  showEditVariantsModal(data: ConfigProductVariant) {
+    let name = this._form.controls["Name"].value;
+
+    if (name) {
+      let suggestModel = <ConfigSuggestVariants><unknown>this.prepareModel();
+
+      const modal = this.modal.create({
+        title: 'Sửa biến thể sản phẩm',
+        content: CreateVariantsModalComponent,
+        size: "lg",
+        viewContainerRef: this.viewContainerRef,
+        componentParams: {
+          listType: this.productTypeList,
+          attributeLines: this.lstAttributes,//TODO: danh sách thuộc tính-giá trị đã được chọn
+          suggestModel: suggestModel, //TODO: model param dùng để gọi API tạo biến thể
+          editModel: data //TODO: model variants được chọn để chỉnh sửa
+        }
+      });
+
+      modal.afterClose.subscribe((result: ConfigProductVariant) => {
+        if (TDSHelperObject.hasValue(result)) {
+          this.lstVariants.map((item) => {
+            if (item.Id == result.Id) {
+              item = result;
+            }
+          });
+        }
+      });
+    } else {
+      this.message.error('Vui lòng nhập tên sản phẩm');
+    }
+  }
+
+  removeVariants(data: ConfigProductVariant) {
+    if (this.lstVariants.length > 1) {
+      let variants = this.lstVariants.filter(f => f.NameGet != data.NameGet || f.Id != data.Id);
+      this.lstVariants = [...variants];
+    } else {
+      this.message.error('Sản phẩm phải tồn tại ít nhất một biến thể');
+    }
+  }
+
+  onAddUOM() {
+    const modal = this.modal.create({
+      title: 'Thêm đơn vị tính',
+      content: TpageAddUOMComponent,
+      size: 'md',
+      viewContainerRef: this.viewContainerRef
+    });
+
+    modal.afterClose.subscribe(result => {
+      if(TDSHelperObject.hasValue(result)) {
+        this.loadUOMCateg();
+      }
     });
   }
 

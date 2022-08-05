@@ -1,0 +1,110 @@
+<div class="w-full flex flex-col gap-y-4">
+    <div class="w-full flex gap-x-4">
+        <tds-form-field class="w-full">
+            <input tdsInput placeholder="Tìm kiếm đơn hàng" autocomplete="off" [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)" />
+            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+        </tds-form-field>
+
+        <div class="w-96">
+          <tds-range-picker [(ngModel)]="datePicker" (ngModelChange)="onChangeDate($event)"> </tds-range-picker>
+        </div>
+    </div>
+    <div class="max-h-[450px] h-[450px]">
+        <tds-table class="w-full h-full tds-table-rounded" [scroll]="{ y:'auto' }" #productTable [bordered]="true"
+            [listData]="lstOrder"
+            [pageIndex]="pageIndex"
+            [pageSize]="pageSize"
+            [total]="count"
+            [loading]="isLoading"
+            (queryParams)="onQueryParamsChange($event)">
+            <thead class="rounded">
+                <tr>
+                    <th [width]="'50px'">STT</th>
+                    <th [width]="'150px'">Sản phẩm</th>
+                    <th [width]="'150px'">Kênh kết nối</th>
+                    <th [width]="'150px'">Tổng tiền</th>
+                    <th [width]="'100px'">Tổng SL</th>
+                    <th [width]="'150px'">Ngày tạo đơn</th>
+                    <th [width]="'150px'">Trạng thái</th>
+                    <!-- <th [width]="'150px'">Nhân viên</th> -->
+                </tr>
+            </thead>
+            <tbody>
+                <ng-template ngFor let-data [ngForOf]="productTable.data">
+                    <tr>
+                        <td>{{ data.Session }}</td>
+                        <td>
+                          <!-- && data.Code == this.orderId ? 'bg-teal-700' : '' -->
+                            <div class="w-full flex">
+                                <div [ngClass]="data.Code == this.orderId ? 'rounded px-2 bg-primary-1 text-white cursor-pointer' : '' " (click)="changeClick(data.Code)">
+                                  <span [ngClass]="data.Code ? '' : 'text-error-500' ">{{ data.Code || 'N/A' }}</span>
+                                </div>
+                            </div>
+                            <!-- Nhãn -->
+                            <div class="flex w-full gap-x-1 items-center">
+                                <div *ngIf='data.Tags && data.Tags !== "[]"' class="flex w-full flex-wrap gap-1">
+                                    <tds-tag *ngFor="let item of data.Tags | prettyjson" status='primary' tds-tooltip [tooltipTitle]="item.Name">
+                                        <div class="truncate max-w-[100px]" >{{item.Name}}</div>
+                                    </tds-tag>
+                                </div>
+
+                                <!-- <button (click)="openTag(data.Id, data.Tags)" tds-button-icon tds-popover tds-tooltip="Thêm nhãn" [popoverVisible]="indClickTag == data.Id"
+                                    popoverTrigger="click" [popoverFooter]="footerAddTag" [popoverContent]="contentAddtag" [popoverBackdrop]="true" popoverPlacement="left"
+                                    color="custom" size="sm" class="bg-transparent border-0 focus:ring-transparent">
+                                    <div class="w-5 h-5 relative">
+                                        <i class="tdsi-tag-fill text-neutral-1-500 text-base leading-4 select-all absolute top-0 left-0"></i>
+                                        <svg class="border border-white bg-white rounded-full absolute bottom-0 right-0" width="12" height="12" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M6.00263 0.185353C5.78089 0.14704 5.55607 0.129611 5.3311 0.133295C3.96134 0.134421 2.64803 0.680863 1.67966 1.65259C0.711296 2.62431 0.167057 3.94186 0.166496 5.3158C0.162824 5.54146 0.180199 5.76697 0.218396 5.98938C0.342953 6.94846 0.732804 7.85338 1.34378 8.60162C1.95476 9.34986 2.76244 9.91151 3.67532 10.2229C4.5882 10.5344 5.56979 10.5831 6.50889 10.3637C7.44798 10.1443 8.30703 9.66541 8.98873 8.98138C9.67042 8.29736 10.1475 7.4355 10.3659 6.49346C10.5843 5.55142 10.5354 4.56685 10.2246 3.65129C9.91374 2.73574 9.3535 1.92579 8.60732 1.31322C7.86114 0.70065 6.95883 0.309939 6.00263 0.185353ZM8.09029 5.79283H5.80879V8.08342H4.85553V5.79283H2.57403V4.83665H4.85764V2.53756H5.81091V4.83878H8.09452L8.09029 5.79283Z" fill="#28A745" />
+                                        </svg>
+                                    </div>
+                                </button>
+                                Button thêm nhãn
+                                <ng-template #contentAddtag>
+                                    <div class="w-96">
+                                        <tds-form-field>
+                                            <tds-select valueField="Id" textField="Name" placeholder='Chọn các tag' [(ngModel)]="modelTags" [allowClear]="true" [valuePrimitive]="false"
+                                                [data]="lstDataTag" [autoClose]="true" mode="multiple">
+                                            </tds-select>
+                                        </tds-form-field>
+                                    </div>
+                                </ng-template>
+                                <ng-template #footerAddTag>
+                                    <div class="flex justify-end pt-2">
+                                        <button tds-button-icon color="secondary" class="mr-2" size="sm" (click)="closeTag()">
+                                            <span class="flex items-center">
+                                                <i class="tdsi-close-fill"></i>
+                                            </span>
+                                        </button>
+                                        <button tds-button-icon size="sm" color="primary" (click)="assignTags(data.Id, modelTags)">
+                                            <span class="flex items-center">
+                                                <i class="tdsi-tick-fill"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </ng-template> -->
+                            </div>
+                        </td>
+                        <td>
+                            <div class="w-full flex">
+                                <span class="text-[#0184FF] tdsi-facebook-1-fill text-[20px]"></span>
+                                <span class="ml-1">{{data.CRMTeamName}}</span>
+                            </div>
+                        </td>
+                        <td>{{data.TotalAmount || 0 | numberCustom :'.' }}</td>
+                        <td>{{data.TotalQuantity || 0 | numberCustom:'.' }}</td>
+                        <td>{{ data.DateCreated | date: 'dd/MM/yyyy' }}</td>
+                        <td>
+                          <!-- data.StatusText | getColorStatusText -->
+                            <tds-tag [status]="data.StatusText | tagStatusColor" type="outline">
+                                <span class="flex items-center">
+                                    {{ data.StatusText }}
+                                </span>
+                            </tds-tag>
+                        </td>
+                        <!-- <td>{{ data.UserName }}</td> -->
+                    </tr>
+                </ng-template>
+            </tbody>
+        </tds-table>
+    </div>
+</div>

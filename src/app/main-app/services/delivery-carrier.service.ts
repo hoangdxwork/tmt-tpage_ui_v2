@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { BaseSevice } from './base.service';
 import { groupBy as _groupBy } from 'lodash';
 import { ODataDeliveryCarrierDTOV2 } from '../dto/delivery-carrier.dto';
@@ -26,9 +26,9 @@ export class DeliveryCarrierService extends BaseSevice {
   }
 
   get(): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}?$orderby=Name asc&$filter=Active eq true`,
-        method: TApiMethodType.get,
+        method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<ODataDeliveryCarrierDTOV2>(api,null);

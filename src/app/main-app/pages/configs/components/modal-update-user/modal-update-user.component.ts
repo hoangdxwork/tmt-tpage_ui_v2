@@ -1,7 +1,6 @@
 import { ModalChangePasswordUserComponent } from './../modal-change-password-user/modal-change-password-user.component';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef, Input, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { UserRestHandler } from 'src/app/main-app/services/handlers/user-rest.handler';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
 import { ApplicationUserDTO, UpdateApplicationUserDTO } from 'src/app/main-app/dto/account/application-user.dto';
 import { ApplicationRoleService } from 'src/app/main-app/services/application-role.service';
@@ -15,6 +14,7 @@ import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSUploadFile } from 'tds-ui/upload';
+import { UserRestHandler } from 'src/app/main-app/handler-v2/user-rest.handler';
 
 @Component({
   selector: 'app-modal-update-user',
