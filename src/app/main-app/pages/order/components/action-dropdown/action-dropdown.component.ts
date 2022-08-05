@@ -11,6 +11,7 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { DuplicateUserComponent } from '../duplicate-user/duplicate-user.component';
 import { UpdateStatusOrderComponent } from '../update-status-order/update-status-order.component';
+import { CheckDuplicatePartnertDTO } from '@app/dto/partner/checked-partner.dto';
 
 @Component({
   selector: 'action-dropdown',
@@ -105,13 +106,14 @@ export class ActionDropdownComponent implements OnInit {
       this.saleOnline_OrderService.getCheckDuplicatePhone({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe((res: any ) => {
         if(res) {
           delete res['@odata.context'];
+
           this.modalService.create({
             title: 'Danh sách khách hàng trùng',
             content: DuplicateUserComponent,
             size: 'xl',
             viewContainerRef: this.viewContainerRef,
             componentParams: {
-              duplicateUser: res.value
+              duplicateUser: res.value as CheckDuplicatePartnertDTO[]
             }
           });
         }
