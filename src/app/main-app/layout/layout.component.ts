@@ -70,10 +70,10 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     //TODO: Khoi tao signalR
-    this.signalRConnectionService.initiateSignalRConnection();
-    this.signalRConnectionService._connectionEstablished$.subscribe((res: any) => {
-      this._connectionEstablished = res;
-    });
+    // this.signalRConnectionService.initiateSignalRConnection();
+    // this.signalRConnectionService._connectionEstablished$.subscribe((res: any) => {
+    //   this._connectionEstablished = res;
+    // });
 
     NetworkHelper.checkNetwork().subscribe(isNetwork => {
       this.isNetwork = isNetwork;
