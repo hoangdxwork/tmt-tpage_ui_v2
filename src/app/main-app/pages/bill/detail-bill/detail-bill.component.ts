@@ -346,14 +346,15 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
               if (TDSHelperObject.hasValue(obs)) {
                 obs.pipe(takeUntil(that.destroy$)).subscribe((res: TDSSafeAny) => {
-                  that.printerService.printHtml(res);
-                  that.isProcessing = false;
-                  this.isLoading = false;
+                    that.printerService.printHtml(res);
+                    that.isProcessing = false;
+                    this.isLoading = false;
                 })
-              }else{
+              } else{
                 this.isProcessing = false;
                 this.isLoading = false;
               }
+
               this.loadData();
               this.loadInventoryIds();
           }

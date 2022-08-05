@@ -15,11 +15,11 @@ export class UpdateFromCacheHandler {
     public loadCacheOrder(data: FastSaleOrder_DefaultDTOV2) {
         return new Observable<FastSaleOrder_DefaultDTOV2>((observer: any) => {
             const key = this.saleOnlineOrderService._keyCreateBillOrder;
-            
+
             this.cacheApi.getItem(key).subscribe((res) => {
                 if (TDSHelperObject.hasValue(res)) {
                     let model = JSON.parse(res?.value)?.value;
-                    
+
                     if (TDSHelperObject.hasValue(model)) {
                         data.SaleOnlineIds = model.ids;
                         data.Reference = model.Reference;
@@ -35,7 +35,7 @@ export class UpdateFromCacheHandler {
                         }
                         data.ReceiverName = model.partner.DisplayName;
                         let orderLines: any[] = [];
-    
+
                         for (var item of model.orderLines) {
                             orderLines.push({
                                 AccountId: item.AccountId,
@@ -59,7 +59,7 @@ export class UpdateFromCacheHandler {
                                 WeightTotal: 0
                             });
                         }
-    
+
                         data.OrderLines = [...orderLines];
 
                         //TODO: trường hợp lấy cache thành công (tạo mới hóa đơn bên đơn hàng)
@@ -67,7 +67,7 @@ export class UpdateFromCacheHandler {
                         observer.next(data);
                         observer.complete();
                     }
-                }else{
+                } else {
                     //TODO: trường hợp cache không được tạo (tạo mới hóa đơn bên phiếu bán hàng)
                     observer.next(data);
                     observer.complete();

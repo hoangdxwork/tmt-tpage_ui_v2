@@ -128,7 +128,7 @@ export class AddBillComponent implements OnInit {
     private fsOrderLineService: FastSaleOrderLineService,
     private fastSaleOrderService: FastSaleOrderService,
     private modalService: TDSModalService,
-    private cRMTeamService: CRMTeamService,
+    private crmTeamService: CRMTeamService,
     private cdRef: ChangeDetectorRef,
     private modal: TDSModalService,
     private addBillHandler: AddBillHandler,
@@ -237,10 +237,10 @@ export class AddBillComponent implements OnInit {
     }
   }
 
-  loadBill(id: number) {
+  loadBill(id: number) {debugger
     this.isLoading = true;
 
-    this.fastSaleOrderService.getById(id).pipe(finalize(() => { this.isLoading = false })).subscribe((res: any) => {
+    this.fastSaleOrderService.getById(id).pipe(finalize(() => { this.isLoading = false })).subscribe((res: any) => {debugger
       delete res['@odata.context'];
       let data = res as FastSaleOrder_DefaultDTOV2;
 
@@ -251,6 +251,7 @@ export class AddBillComponent implements OnInit {
         data.DateInvoice = new Date();
         data.ReceiverDate = new Date();
         data.DateOrderRed = new Date();
+
       } else {
         data.DateInvoice = data.DateInvoice ? new Date(data.DateInvoice) : null;
         data.DateOrderRed = data.DateOrderRed ? new Date(data.DateOrderRed) : null;
@@ -258,6 +259,7 @@ export class AddBillComponent implements OnInit {
       }
 
       this.dataModel = data;
+
       //TODO: tạm thời đóng tính năng
       // this.loadConfigProvider(this.dataModel);
 
@@ -277,9 +279,9 @@ export class AddBillComponent implements OnInit {
       //TODO: cập nhật price of product theo bảng giá
       if (data.PriceListId) {
         this.commonService.getPriceListItems(data.PriceListId).subscribe((res: any) => {
-          this.priceListItems = res;
+            this.priceListItems = res;
         }, error => {
-          this.message.error(error?.error?.message || 'Load bảng giá đã xảy ra lỗi!');
+            this.message.error(error?.error?.message || 'Load bảng giá đã xảy ra lỗi!');
         })
       }
 
@@ -287,12 +289,12 @@ export class AddBillComponent implements OnInit {
       this.mappingDataAddress(this.dataModel);
 
       //TODO: cập nhật danh sách sản phẩm
-      this.updateOrderLinesHandler.updateOrderLines(this._form,this.dataModel);
+      this.updateOrderLinesHandler.updateOrderLines(this._form, this.dataModel);
 
       //TODO: cập nhật form giá
-      let calData = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
-      this.totalQtyLines = calData.totalAmountLines;
-      this.totalAmountLines = calData.totalAmountLines;
+      let cacl = this.calculateBillFee.computeAmountTotal(this._form, this.roleConfigs);
+      this.totalQtyLines = cacl.totalAmountLines;
+      this.totalAmountLines = cacl.totalAmountLines;
 
       this._form.patchValue(this.dataModel);
     }, error => {
@@ -312,6 +314,7 @@ export class AddBillComponent implements OnInit {
 
       // Trường hợp Tạo hóa đơn F10 bên Đơn hàng thì update thông tin từ cache
       this.updateFromCache.loadCacheOrder(this.dataModel).subscribe(res => {
+
           //TODO: cập nhật thông tin khách hàng
           if (res.PartnerId && res.Partner?.Id) {
               this.changePartner(res.PartnerId);
@@ -320,9 +323,9 @@ export class AddBillComponent implements OnInit {
           this.updateOrderLinesHandler.updateOrderLines(this._form, data);
 
           //TODO: cập nhật form giá
-          let calData = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
-          this.totalQtyLines = calData.totalAmountLines;
-          this.totalAmountLines = calData.totalAmountLines;
+          let cacl = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
+          this.totalQtyLines = cacl.totalAmountLines;
+          this.totalAmountLines = cacl.totalAmountLines;
 
           this._form.patchValue(data);
       },  err => {
@@ -335,11 +338,10 @@ export class AddBillComponent implements OnInit {
   }
 
   loadTeamById(id: any) {
-    this.cRMTeamService.getTeamById(id).subscribe((team: any) => {
+    this.crmTeamService.getTeamById(id).subscribe((team: any) => {
       this.dataModel.Team.Name = team?.Name;
       this.dataModel.Team.Facebook_PageName = team?.Facebook_PageName;
-    },
-    err=>{
+    },  err=>{
       this.message.error(err?.error?.message)
     })
   }
@@ -369,7 +371,7 @@ export class AddBillComponent implements OnInit {
   }
 
   loadAllFacebookChilds() {
-    return this.cRMTeamService.getAllFacebookChilds().pipe(map(res => res.value));
+    return this.crmTeamService.getAllFacebookChilds().pipe(map(res => res.value));
   }
 
   loadUser() {
@@ -681,36 +683,41 @@ export class AddBillComponent implements OnInit {
   onChangeQuantity(event: any, item: any) {
     let datas = this._form.controls['OrderLines'].value;
     if (TDSHelperArray.hasListValue(datas)) {
+
       datas.map((x: any, i: number) => {
         if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && x.Id == item.Id) {
           x.ProductUOMQty = event;
         }
       });
+
       //TODO: cập nhật form giá
-      let calData = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
-      this.totalQtyLines = calData.totalAmountLines;
-      this.totalAmountLines = calData.totalAmountLines;
+      let cacl = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
+      this.totalQtyLines = cacl.totalAmountLines;
+      this.totalAmountLines = cacl.totalAmountLines;
     }
   }
 
   onChangePriceUnit(event: any, item: any) {
     let datas = this._form.controls['OrderLines'].value;
     if (TDSHelperArray.hasListValue(datas)) {
+
       datas.map((x: any) => {
         if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && x.Id == item.Id) {
           x.PriceUnit = event;
         }
       });
+
       //TODO: cập nhật form giá
-      let calData = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
-      this.totalQtyLines = calData.totalAmountLines;
-      this.totalAmountLines = calData.totalAmountLines;
+      let cacl = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
+      this.totalQtyLines = cacl.totalAmountLines;
+      this.totalAmountLines = cacl.totalAmountLines;
     }
   }
 
   onAddUserOrderLines(event: any, item: OrderLineV2, index: number): void {
     let datas = this._form.controls['OrderLines'].value;
     if (TDSHelperArray.hasListValue(datas)) {
+
       datas.map((x: OrderLineV2, i: number) => {
         if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
           x.User = event;
@@ -718,30 +725,34 @@ export class AddBillComponent implements OnInit {
         }
       });
     }
+
     //TODO: cập nhật form giá
-    let calData = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
-    this.totalQtyLines = calData.totalAmountLines;
-    this.totalAmountLines = calData.totalAmountLines;
+    let cacl = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
+    this.totalQtyLines = cacl.totalAmountLines;
+    this.totalAmountLines = cacl.totalAmountLines;
   }
 
   changeProductDiscountType(event: any, item: any, typeDiscount: string, i: number) {
     let datas = this._form.controls['OrderLines'].value;
     if (TDSHelperArray.hasListValue(datas)) {
+
       datas.map((x: any, index: number) => {
         if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
           x[`${typeDiscount}`] = event;
         }
       });
     }
+
     //TODO: cập nhật form giá
-    let calData = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
-    this.totalQtyLines = calData.totalAmountLines;
-    this.totalAmountLines = calData.totalAmountLines;
+    let cacl = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
+    this.totalQtyLines = cacl.totalAmountLines;
+    this.totalAmountLines = cacl.totalAmountLines;
   }
 
   selectProductType(item: any, type: string, i: number) {
     let datas = this._form.controls['OrderLines'].value;
     if (TDSHelperArray.hasListValue(datas)) {
+
       datas.map((x: any, index: number) => {
         if (x.ProductId == item.ProductId && x.ProductUOMId == item.ProductUOMId && i == index) {
           x.Type = type;
@@ -750,27 +761,28 @@ export class AddBillComponent implements OnInit {
         }
       });
     }
+
     //TODO: cập nhật form giá
-    let calData = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
-    this.totalQtyLines = calData.totalAmountLines;
-    this.totalAmountLines = calData.totalAmountLines;
+    let cacl = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
+    this.totalQtyLines = cacl.totalAmountLines;
+    this.totalAmountLines = cacl.totalAmountLines;
   }
 
   changeDiscount(event: any) {
     if (event) {
       //TODO: cập nhật form giá
-      let calData = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
-      this.totalQtyLines = calData.totalAmountLines;
-      this.totalAmountLines = calData.totalAmountLines;
+      let cacl = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
+      this.totalQtyLines = cacl.totalAmountLines;
+      this.totalAmountLines = cacl.totalAmountLines;
     }
   }
 
   changeDecreaseAmount(event: any) {
     if (event) {
       //TODO: cập nhật form giá
-      let calData = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
-      this.totalQtyLines = calData.totalAmountLines;
-      this.totalAmountLines = calData.totalAmountLines;
+      let cacl = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
+      this.totalQtyLines = cacl.totalAmountLines;
+      this.totalAmountLines = cacl.totalAmountLines;
     }
   }
 
@@ -1044,8 +1056,11 @@ export class AddBillComponent implements OnInit {
     let model = this.dataModel as FastSaleOrder_DefaultDTOV2;
     let x = this.addBillHandler.prepareModel(model, this._form);
 
-    delete x.ShipmentDetailsAship;// lỗi do tg vịnh
+    if(!TDSHelperString.hasValueString(x.FormAction)) {
+      x.FormAction = 'draft';
+    }
 
+    delete x.ShipmentDetailsAship;// lỗi do tg vịnh
     return x;
   }
 
