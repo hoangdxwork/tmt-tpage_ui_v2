@@ -60,7 +60,7 @@ export abstract class PrepareSaleModelHandler {
             Note: x.Note
         } as OrderLineV2;
 
-        saleModel.OrderLines.push(item);
+        saleModel.OrderLines?.push(item);
       })
 
       if (saleModel.Carrier && saleModel.Carrier.DeliveryType == 'NinjaVan') {

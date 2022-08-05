@@ -59,7 +59,6 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   @Input() data!: ConversationMatchingItem;
   @Input() type!: string;
   @Input() team!: CRMTeamDTO;
-  @Input() miniChat!: boolean;
   @Input() state!: StateChatbot | null;
 
   destroy$ = new Subject<void>();
@@ -128,12 +127,12 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   spinLoading() {
-    this.activityDataFacade.hasNextData$.pipe(takeUntil(this.destroy$)).subscribe((obs: any) => {
-      if(obs == false) {
-          this.isNextData = obs;
-          this.cdRef.detectChanges();
-      }
-    })
+    // this.activityDataFacade.hasNextData$.pipe(takeUntil(this.destroy$)).subscribe((obs: any) => {
+    //   if(obs == false) {
+    //       this.isNextData = obs;
+    //       this.cdRef.detectChanges();
+    //   }
+    // })
   }
 
   loadData(data: ConversationMatchingItem) {
@@ -158,23 +157,11 @@ export class TDSConversationsComponent implements OnInit, OnChanges, AfterViewIn
             this.isLoadMessage = false;
           }, 300);
 
-          this.conversationDataFacade.onLoadTdsConversation$.emit(false);
-          this.cdRef.markForCheck();
+          // this.conversationDataFacade.onLoadTdsConversation$.emit(false);
+          // this.cdRef.markForCheck();
         })).subscribe(() => {}, error => {
           this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
       });
-
-      // this.activityMatchingService.get_v3(this.team.Id, data.psid, this.type).subscribe((result) => {
-
-      //   result.Items.map((x: any)=> {
-
-      //     if(x && x.ObjectId) {
-      //       this.activityMatchingService.get_v2_comment(this.team.Id, x.ObjectId).subscribe((b) => {
-
-      //       })
-      //     }
-      //   })
-      // })
     })
 
     this.yiAutoScroll?.forceScrollDown();

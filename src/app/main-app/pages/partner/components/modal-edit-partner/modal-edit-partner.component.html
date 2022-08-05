@@ -49,8 +49,7 @@
                       <div class="col-span-2">
                         <tds-form-field>
                           <tds-select valueField="Id" textField="Name" placeholder='Chọn nhóm'
-                              formControlName="Categories" mode="multiple"
-                              (FocusChange)="openCategory($event)" [valuePrimitive]="false"
+                              formControlName="Categories" mode="multiple" [valuePrimitive]="false"
                               disabledField="isActive" [data]="lstCategory" [allowClear]="true">
                           </tds-select>
                         </tds-form-field>
@@ -61,8 +60,7 @@
                           <tds-label>Trạng thái</tds-label>
                       </div>
                       <div class="col-span-2">
-                          <tds-select valueField="Id" textField="Name" placeholder='Chọn trạng thái'
-                              (FocusChange)="openStatus($event)" [valuePrimitive]="false" [allowClear]="false"
+                          <tds-select valueField="Id" textField="Name" placeholder='Chọn trạng thái' [valuePrimitive]="false" [allowClear]="false"
                               formControlName="StatusText" disabledField="isActive" [data]="lstStatus">
                           </tds-select>
                       </div>
@@ -281,7 +279,7 @@
       </div>
       <div class="w-full flex justify-end p-4" *tdsModalFooter>
           <button tds-button class="mr-2 min-w-[100px]" type="button" color="secondary" (click)="onCancel()">Hủy</button>
-          <button tds-button type="button" class="min-w-[100px]" color="primary" (click)="onSave()" [disabled]="_form ? _form.invalid : false"> Áp dụng </button>
+          <button tds-button type="button" class="min-w-[100px]" color="primary" (click)="onSave()"> Áp dụng </button>
       </div>
   </form>
 </tds-spin>

@@ -55,6 +55,7 @@ export class ConfigPromotionsComponent implements OnInit {
   pageIndex = 1;
   count: number = 0;
   isLoading: boolean = false;
+  indClickTag = -1;
 
   constructor(
     private modalService: TDSModalService,
@@ -173,10 +174,11 @@ export class ConfigPromotionsComponent implements OnInit {
       })
   }
 
-  onSearch(event: TDSSafeAny) {
-    let text = event?.target.value;
+  onInputChange(ev: TDSSafeAny) {
+    this.pageIndex = 1;
+    this.indClickTag = -1;
 
-    this.filterObj.searchText = text;
+    this.filterObj.searchText = ev.value;
     this.loadData(this.pageSize, this.pageIndex);
   }
 

@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from "@angular/core";
 import { FormArray, FormBuilder, FormGroup } from "@angular/forms";
+import { ChatomniObjectsItemDto } from "@app/dto/conversation-all/chatomni/chatomni-objects.dto";
 import { Observable, Subject } from "rxjs";
 import { finalize, takeUntil } from "rxjs/operators";
 import { Message } from "src/app/lib/consts/message.const";
@@ -18,7 +19,8 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString } from "tds-ui/shared/
 })
 
 export class AutoLabelConfigComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() data!: FacebookPostItem;
+
+  @Input() data!: ChatomniObjectsItemDto;
 
   formLabelConfig!: FormGroup;
   isLoading: boolean = false;
@@ -44,7 +46,7 @@ export class AutoLabelConfigComponent implements OnInit, OnChanges, OnDestroy {
     else this.resetForm();
 
     if(changes?.data?.currentValue) {
-      this.loadAutoLabelConfigs(this.data.fbid);
+      this.loadAutoLabelConfigs(this.data.ObjectId);
     }
   }
 
@@ -120,7 +122,7 @@ export class AutoLabelConfigComponent implements OnInit, OnChanges, OnDestroy {
 
   onSave(): any {
     let model = this.prepareModel();
-    let postId = this.data?.fbid;
+    let postId = this.data?.ObjectId;
 
     if(this.isCheckValue() === 1) {
       this.isLoading = true;

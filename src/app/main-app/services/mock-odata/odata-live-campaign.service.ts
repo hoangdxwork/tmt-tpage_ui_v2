@@ -1,7 +1,7 @@
 import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { OperatorEnum, CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperArray, TDSHelperString } from 'tds-ui/shared/utility';
 import { ODataLiveCampaignDTO } from '../../dto/live-campaign/odata-live-campaign.dto';
@@ -31,9 +31,9 @@ export class ODataLiveCampaignService extends BaseSevice {
   }
 
   getView(params: string): Observable<ODataLiveCampaignDTO>{
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}?${params}&$count=true`,
-        method: TApiMethodType.get,
+        method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<ODataLiveCampaignDTO>(api, null);

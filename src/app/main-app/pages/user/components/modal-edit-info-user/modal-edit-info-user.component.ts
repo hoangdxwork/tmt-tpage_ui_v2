@@ -2,7 +2,6 @@ import { TDSModalRef } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { Message } from './../../../../../lib/consts/message.const';
 import { TAuthService } from './../../../../../lib/services/auth.service';
-import { UserRestHandler } from './../../../../services/handlers/user-rest.handler';
 import { ApplicationUserService } from './../../../../services/application-user.service';
 import { finalize } from 'rxjs';
 import { UpdateApplicationUserDTO } from './../../../../dto/account/application-user.dto';

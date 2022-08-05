@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { BaseSevice } from "./base.service";
 import { MDBAttachmentDTO, MDBCollectionDTO } from '../dto/attachment/attachment.dto';
 import { PagedList2 } from '../dto/pagedlist2.dto';
@@ -24,9 +24,9 @@ export class AttachmentService extends BaseSevice {
     let queryString = this.createQuery(0, this.limit);
     text && (queryString += `&keyword=${text}`);
 
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getall?${queryString}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<PagedList2<MDBAttachmentDTO>>(api, null);
@@ -35,18 +35,18 @@ export class AttachmentService extends BaseSevice {
   getNextPage(pageIndex: number, pageSize: number): Observable<PagedList2<MDBAttachmentDTO>> {
     let queryString = this.createQuery(pageIndex, pageSize);
 
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getall?${queryString}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<PagedList2<MDBAttachmentDTO>>(api, null);
   }
 
   getListCollection(): Observable<MDBCollectionDTO[]> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getlistcollection`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<MDBCollectionDTO[]>(api, null);
@@ -56,45 +56,45 @@ export class AttachmentService extends BaseSevice {
     let queryString = this.createQuery(0, this.limit);
     text && (queryString += `&keyword=${text}`);
 
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/getcollection?${queryString}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<PagedList2<MDBCollectionDTO>>(api, null);
   }
 
   getInner(id: string): Observable<MDBCollectionDTO> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/getinner`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<MDBCollectionDTO>(api, null);
   }
 
   removeAttachments(ids: Array<string>): Observable<undefined> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/deleteattachments`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getData<undefined>(api, ids);
   }
 
   removeCollection(id: string): Observable<undefined> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/removecollection?id=${id}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<undefined>(api, null);
   }
 
   add(files: Array<File>): Observable<MDBAttachmentDTO[]> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/add`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getFileUpload<MDBAttachmentDTO[]>(api, files);
@@ -111,72 +111,72 @@ export class AttachmentService extends BaseSevice {
       formData.append("attachment", JSON.stringify(att));
     }
 
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/createattachment?name=${name}`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getFileUpload<any>(api, formData);
   }
 
   addInnerByAttachment(id: string, ids: Array<string | undefined>): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/addinnerbyattachment?id=${id}`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getData<any>(api, ids);
   }
 
   addAttachment(id: string, formData: FormData): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/addattachment?id=${id}`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getFileUpload<any>(api, formData);
   }
 
   updateName(id: string, name: string): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/updatename?id=${id}&name=${name}`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getFileUpload<any>(api, null);
   }
 
   updateNameCollection(id: string, name: string): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/updatenamecollection?id=${id}&name=${name}`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getFileUpload<any>(api, null);
   }
 
   updateNameInner(id: string, innerId: string, name: string): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/updatenameinner?id=${id}&innerId=${innerId}&name=${name}`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getFileUpload<any>(api, null);
   }
 
   removeInners(id: string, idInners: Array<string>): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/removeinners?id=${id}`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getFileUpload<any>(api, idInners);
   }
 
   addInnerByCollection(id: string, collectionId: string, ids: Array<string | undefined>): Observable<any> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/addinnerbycollection?id=${id}&fromId=${collectionId}`,
-      method: TApiMethodType.post,
+      method: CoreApiMethodType.post,
     }
 
     return this.apiService.getFileUpload<any>(api, ids);

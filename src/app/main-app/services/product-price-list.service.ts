@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { TDSSafeAny } from "tds-ui/shared/utility";
 import { BaseSevice } from "./base.service";
 
@@ -16,9 +16,9 @@ export class ProductPriceListService extends BaseSevice {
   }
 
   getPriceListAvailable(date: TDSSafeAny): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetPriceListAvailable?date=${date}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TDSSafeAny>(api, null);

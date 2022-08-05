@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { TDSModalService } from 'tds-ui/modal';
+import { Component, OnInit, ViewContainerRef, ChangeDetectorRef } from '@angular/core';
+import { FormGroup, FormBuilder, FormArray, FormControl } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Message } from 'src/app/lib/consts/message.const';
 import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { FastSaleOrderLineService } from 'src/app/main-app/services/fast-sale-orderline.service';
@@ -15,6 +16,7 @@ import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.ser
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { LiveCampaignDetailDTO, ODataLiveCampaignDetailDTO } from 'src/app/main-app/dto/live-campaign/odata-livecampaign-detail.dto';
+import { ModalAddQuickReplyComponent } from '../../../conversations/components/modal-add-quick-reply/modal-add-quick-reply.component';
 
 @Component({
   selector: 'add-livecampaign',
@@ -34,11 +36,13 @@ export class AddLiveCampaignComponent implements OnInit {
   isLoading: boolean = false;
   isShowFormInfo: boolean = true;
   indClickTag: number = -1;
+  datePicker: Date[] = [];
+  tagsProduct: string[] = [];
 
   dataModel!: ODataLiveCampaignDetailDTO;
 
   lstUser$!: Observable<ApplicationUserDTO[]>;
-  lstQuickReplies$!: Observable<QuickReplyDTO[]>;
+  lstQuickReplies:  Array<QuickReplyDTO> = [];
   private destroy$ = new Subject<void>();
 
   constructor(private route: ActivatedRoute,
@@ -47,7 +51,10 @@ export class AddLiveCampaignComponent implements OnInit {
     private applicationUserService: ApplicationUserService,
     private quickReplyService: QuickReplyService,
     private liveCampaignService: LiveCampaignService,
-    private fastSaleOrderLineService: FastSaleOrderLineService ) {
+    private fastSaleOrderLineService: FastSaleOrderLineService,
+    private modalService: TDSModalService,
+    private viewContainerRef: ViewContainerRef,
+    private router: Router) {
       this.createForm();
   }
 
@@ -58,8 +65,6 @@ export class AddLiveCampaignComponent implements OnInit {
       Name: [null],
       Note: [null],
       ResumeTime: [0],
-      StartDate: [null],
-      EndDate: [null],
       Users: [null],
       Preliminary_Template: [null],
       ConfirmedOrder_Template: [null],
@@ -124,19 +129,35 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   loadQuickReply() {
-    this.lstQuickReplies$ = this.quickReplyService.dataActive$;
+    this.quickReplyService.dataActive$.pipe(takeUntil(this.destroy$)).pipe(finalize(() => { })).subscribe(res => {
+      if (res) {
+        let getArr = JSON.parse(localStorage.getItem('arrOBJQuickReply') || '{}');
+        this.lstQuickReplies = res.sort((a: TDSSafeAny, b: TDSSafeAny) => {
+          if (getArr != null) {
+            return (getArr[b.Id] || { TotalView: 0 }).TotalView - (getArr[a.Id] || { TotalView: 0 }).TotalView;
+          }else
+          return
+        });
+      }
+    },err => {
+        this.message.error(err?.error? err?.error.message: 'Load trả lời nhanh thất bại');
+    });
+  }
+
+  get detailsForm() {
+    return this._form.controls["Details"] as FormArray;
   }
 
   updateForm(data: ODataLiveCampaignDetailDTO) {
+    this._form.patchValue(data);
     if(data && data.Details) {
       data.Details.map((x: LiveCampaignDetailDTO) => this.addDetails(x))
     }
-    this._form.patchValue(data);
+    this.datePicker = [data.StartDate, data.EndDate]
   }
 
   addDetails(x: LiveCampaignDetailDTO) {
-    let control = <FormArray>this._form.controls['Details'];
-    control.push(this.initDetails(x));
+    this.detailsForm.push(this.initDetails(x));
   }
 
   initDetails(data: LiveCampaignDetailDTO | null) {
@@ -159,7 +180,7 @@ export class AddLiveCampaignComponent implements OnInit {
           UsedQuantity: [data.UsedQuantity],
           UOMId: [data.UOMId],
           UOMName: [data.UOMName],
-          Tags: [data.Tags]
+          Tags: [ data.Tags.split(",")],
       })
     } else {
       return this.fb.group({
@@ -206,6 +227,7 @@ export class AddLiveCampaignComponent implements OnInit {
       ProductName: [null],
       ProductNameGet: [null],
       ProductId: [null],
+      ImageUrl: [null],
       Price: [null],
       UOMId: [null],
       UOMName: [null],
@@ -222,6 +244,7 @@ export class AddLiveCampaignComponent implements OnInit {
       model.controls.Tags.setValue(generateTag);
       model.controls.ProductName.setValue(product.NameGet);
       model.controls.ProductNameGet.setValue(product.NameGet);
+      model.controls.ImageUrl.setValue(product.ImageUrl);
       model.controls.ProductId.setValue(product.Id);
       model.controls.Price.setValue(product.Price);
       model.controls.UOMId.setValue(product.UOMId);
@@ -300,19 +323,22 @@ export class AddLiveCampaignComponent implements OnInit {
   }
 
   onSave() {
-    if(this.isCheckValue() === 1) {
+    if(this.isCheckValue() === 1) {   
       let model = this.prepareModel();
-
-
+      if(model.Id && this.liveCampaignId == model.Id ) {
         this.update(model);
-
-
+      }
+      else {
         this.create(model);
-
+      }
     }
   }
 
   create(model: any) {
+    if(!model.Name) {
+      this.message.error('Vui lòng nhập tên chiến dịch');
+      return
+    }
     this.isLoading = true;
     this.liveCampaignService.create(model)
       .pipe(finalize(() => this.isLoading = false))
@@ -339,21 +365,24 @@ export class AddLiveCampaignComponent implements OnInit {
 
     let model = {} as any;
 
-    model.Id = (this.liveCampaignId) ? this.liveCampaignId : undefined;
+    model.Id = (formValue.Id) ? formValue.Id : undefined;
     model.Config = formValue.Config?.value;
     model.Name = formValue.Name;
     model.Users = formValue.Users || [];
     model.Note = formValue.Note;
     model.ResumeTime = formValue.ResumeTime;
-    model.StartDate = formValue.StartDate;
-    model.EndDate = formValue.EndDate;
+    if(this.datePicker){
+      model.StartDate = this.datePicker[0];
+      model.EndDate = this.datePicker[1];
+    }
     model.Preliminary_Template = formValue.Preliminary_Template;
     model.ConfirmedOrder_Template = formValue.ConfirmedOrder_Template;
     model.MinAmountDeposit = formValue.MinAmountDeposit;
     model.MaxAmountDepositRequired = formValue.MaxAmountDepositRequired;
     model.EnableQuantityHandling = formValue.EnableQuantityHandling;
     model.IsAssignToUserNotAllowed = formValue.IsAssignToUserNotAllowed;
-    // model.IsShift = formValue.IsShift;
+    model.IsShift = formValue.IsShift;
+    model.ImageUrl = formValue.ImageUrl;
 
     if (TDSHelperArray.hasListValue(formValue.Details)) {
       formValue.Details.forEach((detail: any, index: number) => {
@@ -387,4 +416,29 @@ export class AddLiveCampaignComponent implements OnInit {
     return Number.isInteger(value);
   }
 
+  onChangeDate(event: any[]) {
+    this.datePicker = [];
+    if(event) {
+      event.forEach(x => {
+          this.datePicker.push(x);
+      })
+    }
+  }
+
+  showModalAddQuickReply() {
+    let modal = this.modalService.create({
+      title: 'Thêm mới trả lời nhanh',
+      content: ModalAddQuickReplyComponent,
+      viewContainerRef: this.viewContainerRef,
+      size: 'md',
+      componentParams: {}
+    });
+    modal.afterClose.subscribe(res=>{
+      this.lstQuickReplies = this.lstQuickReplies.filter(d => d.Id !== 0);
+    })
+  }
+
+  directPage(route: string) {
+    this.router.navigateByUrl(route);
+  }
 }

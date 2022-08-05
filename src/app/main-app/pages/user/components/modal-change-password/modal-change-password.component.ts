@@ -1,9 +1,9 @@
 import { TDSModalRef } from 'tds-ui/modal';
 import { Message } from './../../../../../lib/consts/message.const';
 import { TDSMessageService } from 'tds-ui/message';
-import { UserRestHandler } from './../../../../services/handlers/user-rest.handler';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
+import { UserRestHandler } from 'src/app/main-app/handler-v2/user-rest.handler';
 
 @Component({
   selector: 'app-modal-change-password',

@@ -1,3 +1,4 @@
+import { OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { SaleOnline_OrderService } from './../../../../services/sale-online-order.service';
@@ -14,7 +15,7 @@ import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
   templateUrl: './filter-options.component.html',
 })
 
-export class FilterOptionsComponent implements OnInit {
+export class FilterOptionsComponent implements OnInit, OnDestroy {
 
   @Output() onLoadOption = new EventEmitter<TDSSafeAny>();
   @Input() tabNavs!: TabNavsDTO[];

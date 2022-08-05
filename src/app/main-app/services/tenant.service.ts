@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { TAPIDTO, TApiMethodType, TCommonService } from "src/app/lib";
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
 import { AppPackageDTO, AppTenantConfig_FeatureCacheDTO, TenantInfoDTO, TenantUsedDTO } from "../dto/tenant/tenant.dto";
 import { BaseSevice } from "./base.service";
 
@@ -16,27 +16,27 @@ export class TenantService extends BaseSevice {
   }
 
   getInfo(): Observable<TenantInfoDTO> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/info`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TenantInfoDTO>(api, null);
   }
 
   getUsed(): Observable<TenantUsedDTO> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/used`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<TenantUsedDTO>(api, null);
   }
 
   getPackages(): Observable<AppPackageDTO> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/packages`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<AppPackageDTO>(api, null);

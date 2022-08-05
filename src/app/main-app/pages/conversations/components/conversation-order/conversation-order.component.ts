@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { InitSaleDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, Output, EventEmitter, ViewContainerRef } from '@angular/core';
 import { Subject, Observable, takeUntil, finalize, map } from 'rxjs';
@@ -22,7 +22,7 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
-import { FastSaleOrder_DefaultDTOV2 } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
+import { FastSaleOrder_DefaultDTOV2, ShipServiceExtra } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
 import { Ship_ExtrasServiceModel } from 'src/app/main-app/commands/dto-handler/ship-extra-service.dto';
 import { InitOkieLaHandler } from 'src/app/main-app/commands/init-okila.handler';
 import { InitServiceHandler } from 'src/app/main-app/commands/init-service.handler';
@@ -45,18 +45,32 @@ import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 import { ODataProductDTOV2, ProductDTOV2 } from 'src/app/main-app/dto/product/odata-product.dto';
 import { FilterObjDTO, OdataProductService } from 'src/app/main-app/services/mock-odata/odata-product.service';
 import { ProductService } from 'src/app/main-app/services/product.service';
-import { ConversationPartnerHandler } from '../conversation-partner/conversation-partner.handler';
-import { ConversationOrderHandler } from './conversation-order.handler';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
+import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
+import { CsOrder_SuggestionHandler } from 'src/app/main-app/handler-v2/chatomni-csorder/prepare-suggestions.handler';
+import { CsOrder_PrepareModelHandler } from 'src/app/main-app/handler-v2/chatomni-csorder/prepare-order.handler';
+import { CalculateFeeInsuranceInfoResponseDto, CalculateFeeServiceResponseDto } from '@app/dto/carrierV2/delivery-carrier-response.dto';
+import { AshipGetInfoConfigProviderDto } from '@app/dto/carrierV2/aship-info-config-provider-data.dto';
+import { CalculatorListFeeDTO } from '@app/dto/fastsaleorder/calculate-listFee.dto';
+import { SO_ComputeCaclHandler } from '@app/handler-v2/order-handler/compute-cacl.handler';
+import { CompanyCurrentDTO } from '@app/dto/configs/company-current.dto';
+import { CalculateFeeAshipHandler } from '@app/handler-v2/aship-v2/calcfee-aship.handler';
+import { PrepareModelFeeV2Handler } from '@app/handler-v2/aship-v2/prepare-model-feev2.handler';
+import { SelectShipServiceV2Handler } from '@app/handler-v2/aship-v2/select-shipservice-v2.handler';
+import { UpdateShipExtraHandler } from '@app/handler-v2/aship-v2/update-shipextra.handler';
+import { UpdateShipServiceExtrasHandler } from '@app/handler-v2/aship-v2/update-shipservice-extras.handler';
+import { UpdateShipmentDetailAshipHandler } from '@app/handler-v2/aship-v2/shipment-detail-aship.handler';
+import { TDSDestroyService } from 'tds-ui/core/services';
 
 @Component({
     selector: 'conversation-order',
     templateUrl: './conversation-order.component.html',
+    providers: [ TDSDestroyService ]
 })
 
-export class ConversationOrderComponent  implements OnInit, OnDestroy {
+export class ConversationOrderComponent implements OnInit {
 
-  @Input() data!: ConversationMatchingItem;
+  @Input() data!: ChatomniConversationItemDto;
   @Input() team!: CRMTeamDTO;
 
   isLoading: boolean = false;
@@ -68,12 +82,9 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   isLoadingProduct: boolean = false;
 
   lstUser!: Array<ApplicationUserDTO>;
-  lstCarriers!: Observable<DeliveryCarrierDTOV2[]>;
+  lstCarrier!: DeliveryCarrierDTOV2[];
 
-  // saleModel!: FastSaleOrderRestDTO;
-  shipExtraServices: Ship_ExtrasServiceModel[] = [];
   saleConfig!: InitSaleDTO;
-  shipServices: any[] = [];
 
   visibleIndex: number = -1;
   keyFilterUser: string = '';
@@ -85,9 +96,15 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   userInit!: UserInitDTO;
   lstProductSearch: ProductDTOV2[] = [];
 
-  delivery_types = ["fixed", "base_on_rule", "VNPost"];
-  carrierTypeInsurance = ["MyVNPost", "GHN", "GHTK", "ViettelPost", "NinjaVan", "HolaShip"];
-  apiDeliveries = ['GHTK', 'ViettelPost', 'GHN', 'TinToc', 'SuperShip', 'FlashShip', 'OkieLa', 'MyVNPost', 'DHL', 'FulltimeShip', 'JNT', 'BEST', 'EMS', 'AhaMove', 'Snappy', 'NhatTin', 'HolaShip', 'ZTO', 'FastShip', 'Shopee', 'GHSV'];
+  //TODO: dữ liệu aship v2
+  shipExtraServices: ShipServiceExtra[] = [];
+  shipServices: CalculateFeeServiceResponseDto[] = [];
+  lstCalcFee!: CalculatorListFeeDTO[];
+  configsProviderDataSource: Array<AshipGetInfoConfigProviderDto> = [];
+  insuranceInfo!: CalculateFeeInsuranceInfoResponseDto | null;
+  extraMoney: number = 0;
+  companyCurrents!: CompanyCurrentDTO;
+  visibleShipExtraMoney: boolean = false;
 
   numberWithCommas =(value:TDSSafeAny) =>{
     if(value != null) {
@@ -108,7 +125,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   _wards!: SuggestWardsDTO;
   _street!: string;
 
-  private destroy$ = new Subject<void>();
+
   lstInventory!: GetInventoryDTO;
 
   constructor(private message: TDSMessageService,
@@ -127,7 +144,17 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     private notification: TDSNotificationService,
     private orderPrintService: OrderPrintService,
     private printerService: PrinterService,
-    private viewContainerRef: ViewContainerRef) {
+    private csOrder_SuggestionHandler: CsOrder_SuggestionHandler,
+    private csOrder_PrepareModelHandler: CsOrder_PrepareModelHandler,
+    private calcFeeAshipHandler: CalculateFeeAshipHandler,
+    private computeCaclHandler: SO_ComputeCaclHandler,
+    private prepareModelFeeV2Handler: PrepareModelFeeV2Handler,
+    private selectShipServiceV2Handler: SelectShipServiceV2Handler,
+    private updateShipExtraHandler: UpdateShipExtraHandler,
+    private updateShipServiceExtrasHandler: UpdateShipServiceExtrasHandler,
+    private updateShipmentDetailAshipHandler: UpdateShipmentDetailAshipHandler,
+    private viewContainerRef: ViewContainerRef,
+    private destroy$: TDSDestroyService) {
   }
 
   ngOnInit(): void {
@@ -136,7 +163,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     this.loadSaleConfig();
     this.loadUsers();
     this.loadUserLogged();
-    this.lstCarriers = this.loadCarrier();
+    this.loadCarrier();
     this.onSelectOrderFromMessage();
   }
 
@@ -169,70 +196,46 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   }
 
   loadSaleModel() {
-    let model = { Type: 'invoice' };
     this.isLoading = true;
+    let model = { Type: 'invoice' };
+
     this.fastSaleOrderService.defaultGetV2({model: model}).pipe(takeUntil(this.destroy$)).subscribe(res => {
-      delete res["@odata.context"];
+        delete res["@odata.context"];
 
-      this.saleModel = res;
-      if (res.DateInvoice) {
-        res.DateInvoice = new Date(res.DateInvoice);
-      }
-      if (res.DateOrderRed) {
-        res.DateOrderRed = new Date(res.DateOrderRed);
-      }
-      if (res.ReceiverDate) {
-        res.ReceiverDate = new Date(res.ReceiverDate);
-      }
+        res.DateInvoice = new Date();
+        this.saleModel = res;
 
-      // Khởi tạo saleModel mặc định
-      this.saleModel = Object.assign({
-          AmountTotal: 0,
-          CashOnDelivery: 0,
-          ShipWeight: 100,
-          DeliveryPrice: 0,
-      }, this.saleModel);
+        // Khởi tạo saleModel mặc định
+        this.saleModel = Object.assign({
+            AmountTotal: 0,
+            CashOnDelivery: 0,
+            ShipWeight: 100,
+            DeliveryPrice: 0
+        }, this.saleModel);
 
-      if (this.saleModel.Carrier && this.saleModel.Carrier.Extras) {
-          this.saleModel.Ship_Extras = this.saleModel.Carrier.Extras;
-          //gán giá trị bảo hiểm
-          if (this.saleModel.Ship_Extras)
-          this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras.IsInsurance ? this.saleModel.Ship_Extras.InsuranceFee ? this.saleModel.Ship_Extras.InsuranceFee : this.quickOrderModel.TotalAmount : 0;
-      }
+        this.coDAmount();
+        this.loadConfigProvider(this.saleModel);
 
-      if (this.saleModel.Ship_ServiceExtrasText) {
-        let shipExtra = JSON.parse(this.saleModel.Ship_ServiceExtrasText) as any[];
-
-        this.shipExtraServices = [];
-        shipExtra.map(item => {
-        this.shipExtraServices.push({
-              ServiceId: item.Id,
-              ServiceName: item.Name,
-              Fee: 0,
-              TotalFee: 0,
-              IsSelected: true,
-              Type: item.Type,
-              ExtraMoney: item.ExtraMoney,
-          });
-          if (item.Id === 'OrderAmountEvaluation' || item.Id === "16" || item.Id === "GBH" || item.Id === "NinjaVan" || item.Id === "BEST_Insurance" || item.Id === "Snappy_Insurance" || item.Id === "HolaShip_Insurance" || item.Id === "JNT_Insurance" || item.Id === "FastShip_Insurance" || item.Id === "Shopee_Insurance" || item.Id === "GHSV_Insurance" || item.Id === "SHIP60_Insurance") {
-            this.enableInsuranceFee = true;
-          }
-        });
-      }
-
-      InitOkieLaHandler.initOkieLa(this.saleModel, this.shipExtraServices);
-      InitServiceHandler.initService(this.saleModel, this.shipExtraServices, this.shipServices);
-      InitInfoOrderDeliveryHandler.initInfoOrderDelivery(this.saleModel, this.quickOrderModel, this.shipExtraServices, this.enableInsuranceFee);
-
-      this.computeAmountTotal();
-      this.updateCoDAmount();
-
-      this.saleModel.CompanyId = this.saleModel.CompanyId || this.quickOrderModel.CompanyId || this.saleConfig?.SaleSetting?.CompanyId;
-      this.isLoading = false;
+        this.isLoading = false;
     }, error => {
-      this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
-      this.isLoading = false;
+        this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
     });
+  }
+
+  //Load thông tin ship aship
+  loadConfigProvider(data: FastSaleOrder_DefaultDTOV2) {
+    if (data.CarrierId && data.Carrier) {
+      let _shipmentDetailsAship = (JSON.parse(data.Carrier.ExtraProperties) ?? [])?.filter((x: AshipGetInfoConfigProviderDto) => !x.IsHidden) as Array<AshipGetInfoConfigProviderDto>;
+
+      this.insuranceInfo = data.ShipmentDetailsAship?.InsuranceInfo || null;
+
+      this.configsProviderDataSource = _shipmentDetailsAship.map(x => {
+          let detailConfig = data.ShipmentDetailsAship?.ConfigsProvider.find(y => y.ConfigName == x.ConfigName);
+          x.ConfigValue = detailConfig ? detailConfig.ConfigValue : x.ConfigValue;
+
+          return x;
+      });
+    }
   }
 
   validateData(){
@@ -241,61 +244,26 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   }
 
   onEnableCreateOrder(event: TDSCheckboxChange) {
+    this.isEnableCreateOrder = event.checked;
+
     if(event.checked == true && !this.saleModel) {
         this.loadSaleModel();
     }
   }
 
-  updateCoDAmount() {
-    if (this.saleModel) {
-      let coDAmount = this.quickOrderModel.TotalAmount + this.saleModel.DeliveryPrice - this.saleModel.AmountDeposit;
-      this.saleModel.CashOnDelivery = coDAmount;
-    }
-  }
-
-  computeAmountTotal() {
-    let totalAmount = 0;
-    let totalQuantity = 0;
-
-    this.quickOrderModel.Details.map((item) => {
-        totalAmount += (item.Price * item.Quantity);
-        totalQuantity += (item.Quantity);
-    });
-
-    this.quickOrderModel.TotalAmount = totalAmount;
-    this.quickOrderModel.TotalQuantity = totalQuantity;
-
-    if(this.saleModel) {
-      let discountAmount = Math.round(totalAmount * (this.saleModel.Discount / 100));
-      this.saleModel.DiscountAmount = discountAmount;
-
-      totalAmount = totalAmount -this.saleModel.DiscountAmount - this.saleModel.DecreaseAmount;
-      this.saleModel.AmountUntaxed = totalAmount;
-
-      //TODO: Tính thuế để gán lại tổng tiền AmountTotal
-      this.calcTax();
-
-      if(!this.saleConfig?.SaleSetting?.GroupAmountPaid) {
-        //TODO: Gán lại số tiền trả PaymentAmount;
-        let amountDepositSale = this.saleModel.SaleOrder ? this.saleModel.SaleOrder?.AmountDeposit : 0;
-        let paymentAmount = amountDepositSale ? (this.saleModel.AmountTotal - amountDepositSale) : this.saleModel.AmountTotal;
-
-        this.saleModel.PaymentAmount = paymentAmount;
-      }
-
-      this.saleModel.TotalQuantity = totalQuantity;
-    }
+  coDAmount() {
+    this.saleModel = this.computeCaclHandler.so_coDAmount(this.saleModel, this.quickOrderModel);
   }
 
   calcTax() {
-    this.saleModel.AmountTax = 0;
-    if(this.saleModel.Tax) {
-      let amountTax = Math.round(this.saleModel.AmountUntaxed * ((this.saleModel.Tax?.Amount) / 100));
-      this.saleModel.AmountTax = amountTax;
-    }
+    this.saleModel = this.computeCaclHandler.so_calcTax(this.saleModel);
+  }
 
-    let amountTotal = Math.round(this.saleModel.AmountUntaxed + this.saleModel.AmountTax);
-    this.saleModel.AmountTotal = amountTotal;
+  calcTotal() {
+    let data = this.computeCaclHandler.so_calcTotal(this.saleModel, this.quickOrderModel, this.saleConfig);
+
+    this.saleModel = data.saleModel;
+    this.quickOrderModel = data.quickOrderModel;
   }
 
   loadUsers() {
@@ -322,147 +290,48 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   }
 
   loadCarrier() {
-    return this.deliveryCarrierService.get().pipe(map(res => res.value));
+    this.deliveryCarrierService.get().pipe(takeUntil(this.destroy$)).subscribe(res => {
+        this.lstCarrier = [...res.value];
+    })
   }
 
   onVisibleChange(){
     this.isOpenCarrier = true;
   }
 
-  onChangeCarrier(event: DeliveryCarrierDTOV2) {
-    if(event && event.Id === this.saleModel.CarrierId) {
-      return;
-    }
-
-    this.shipServices = [];
+  onChangeCarrierV2(event: DeliveryCarrierDTOV2) {
+    this.shipServices = []; // dịch vụ
     this.shipExtraServices = [];
+    this.insuranceInfo = null;
+    this.configsProviderDataSource = [];
 
-    this.enableInsuranceFee =false;
-    this.saleModel.Ship_InsuranceFee = null;
-    this.saleModel.Ship_ServiceId = '';
-    this.saleModel.Ship_ServiceName = '';
-    delete this.saleModel.CustomerDeliveryPrice;
+    this.saleModel.Ship_InsuranceFee = 0;
+    this.saleModel.Ship_ServiceId = null;
+    this.saleModel.Ship_ServiceName = null;
+    this.saleModel.Ship_Extras = null;
+    this.saleModel.CustomerDeliveryPrice = 0;
+
+    this.saleModel.DeliveryPrice = 0;
+    this.saleModel.Ship_ServiceExtras = [];
 
     this.saleModel.Carrier = event;
-    this.saleModel.CarrierId = event.Id;
+    this.saleModel.CarrierId = event?.Id;
 
-    let deliveryPrice = event.Config_DefaultFee ||  0;
-    if (this.saleModel.DeliveryPrice != deliveryPrice) {
+    //TODO: Cập nhật giá trị ship mặc định
+    let deliveryPrice = event?.Config_DefaultFee || this.companyCurrents?.ShipDefault || 0;
+    if(this.saleModel.DeliveryPrice != deliveryPrice) {
         this.saleModel.DeliveryPrice = deliveryPrice;
-        this.computeAmountTotal();
+        this.coDAmount();
     }
 
-    this.saleModel.ShipWeight = event.Config_DefaultWeight || 100;
-    if (event.ExtrasText) {
+    this.saleModel.ShipWeight = event?.Config_DefaultFee || this.companyCurrents?.WeightDefault || 100;
+
+    if (TDSHelperString.hasValueString(event?.ExtrasText)) {
         this.saleModel.Ship_Extras = JSON.parse(event.ExtrasText);
     }
 
-    //Check giá trị mặc định trước khi gửi
-    !this.shipExtraServices && (this.shipExtraServices = []);
-    CalcServiceDefaultHandler.calcServiceDefault(this.saleModel, this.shipExtraServices);
-
-    InitOkieLaHandler.initOkieLa(this.saleModel , this.shipExtraServices);
-    InitServiceHandler.initService(this.saleModel, this.shipExtraServices, this.shipServices);
-    InitInfoOrderDeliveryHandler.initInfoOrderDelivery(this.saleModel, this.quickOrderModel, this.shipExtraServices, this.enableInsuranceFee);
-
-    this.calculateFee(this.saleModel.Carrier).catch(e => {
-      console.log(e);
-    });
-  }
-
-  calculateFee(item: any) {
-    this.isLoading = true;
-    let promise = new Promise((resolve, reject) => {
-
-      if (this.apiDeliveries.includes(item.DeliveryType)) {
-          // check insuranceFee để hiện thị Giá trị hàng hóa = tổng hóa đơn
-          let exist = ValidateInsuranceFeeHandler.validateInsuranceFee(this.saleModel, this.shipExtraServices);
-          if (exist) {
-              this.enableInsuranceFee = true;
-
-              //gán giá trị bảo hiểm"
-              if (!this.saleModel.Ship_InsuranceFee) {
-                this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras.InsuranceFee || this.quickOrderModel.TotalAmount;
-              }
-          }
-
-          let model = PrepareCalculateFeeV2Handler.prepareCalculateFeeV2(this.saleModel, this.quickOrderModel, this.shipExtraServices, this.userInit, this.enableInsuranceFee);
-
-          this.fastSaleOrderService.calculateFeeV2(model).pipe(takeUntil(this.destroy$)).subscribe((response: any) => {
-
-            this.message.info(`Đối tác ${item.Name} có phí vận chuyển: ${formatNumber(Number(response.TotalFee), 'en-US', '1.0-0')} đ`);
-            // Cập nhật lại phí ship (đối tác)
-            this.saleModel.CustomerDeliveryPrice = response.TotalFee;
-
-            if (response.Services && response.Services.length > 0) {
-                this.shipServices = response.Services;
-                this.selectShipService(this.shipServices[0]);
-            }
-
-            this.isLoading = false;
-            resolve(response);
-
-          }, error => {
-              this.isLoading = false;
-              this.message.error(error.error_description || error.message || error.error?.message);
-          })
-      } else {
-          this.isLoading = false;
-      }
-    })
-
-    return promise;
-  }
-
-  selectShipService(item: any) {
-    this.saleModel.Ship_ServiceId = item.ServiceId;
-    this.saleModel.Ship_ServiceName = item.ServiceName;
-
-    this.saleModel.CustomerDeliveryPrice = item.TotalFee;
-    SelectShipServiceHandler.selectShipService(this.saleModel, this.shipExtraServices, item);
-  }
-
-  onSelectShipServiceId(event: any) {
-    this.selectShipService(event);
-    if (this.saleModel.Carrier?.DeliveryType === 'GHN') {
-        this.onUpdateInsuranceFee();
-    }
-  }
-
-  onUpdateInsuranceFee() {
-    this.calculateFeeRequest();
-  }
-
-  calcFee(): any {
-    if (!this.saleModel.Carrier || !this.saleModel.Carrier.Id) {
-      return this.message.error(Message.Carrier.EmptyCarrier);
-    }
-
-    this.calculateFee(this.saleModel.Carrier).catch(e => {
-      console.log(e);
-    });
-  }
-
-  calculateFeeRequest() {
-    if(this.saleModel.Carrier){
-        this.calculateFee(this.saleModel.Carrier)
-          .then((res: any) => {
-            if (res.Costs && res.Costs.length > 0) {
-                res.Costs.map((x: any) => {
-                    let exist = this.shipExtraServices.filter((s: any) => s.ServiceId === x.ServiceId)[0];
-                    if (exist) {
-                        exist.Fee = x.TotalFee;
-                    }
-                })
-            } else {
-                let exist = this.shipExtraServices.filter((s: any) => s.ServiceId === '16')[0];
-                if (exist) {
-                    exist.Fee = 0;
-                }
-            }
-      }).catch(e => {
-        console.log(e);
-      });
+    if(event) {
+        this.calcFee();
     }
   }
 
@@ -490,11 +359,32 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     }
   }
 
-  signAmountTotalToInsuranceFee() {
-    this.saleModel.Ship_InsuranceFee = this.quickOrderModel.TotalAmount;
-    if (this.saleModel.Carrier && this.saleModel.Carrier.DeliveryType == 'NinjaVan') {
-        return;
+  calcFee() {
+    if(!this.saleModel.Carrier) {
+      this.message.error('Vui lòng chọn đối tác giao hàng')
     }
+
+    let model = this.saleModel.Carrier as any;
+    this.calculateFeeAship(model);
+  }
+
+  onSelectShipServiceId(event: any) {
+    if(event) {
+        let exits = this.shipExtraServices.find(x => x.IsSelected);
+        // Tính lại phí bảo hiểm
+        if(this.insuranceInfo?.IsInsurance || exits) {
+            this.onUpdateInsuranceFee();
+        }
+    }
+  }
+
+  signAmountTotalToInsuranceFee(): any  {
+    this.updateInsuranceFeeEqualAmountTotal();
+
+    if (this.saleModel.Carrier && this.saleModel.Carrier.DeliveryType == 'NinjaVan') {
+        return false;
+    }
+
     this.onUpdateInsuranceFee();
   }
 
@@ -504,60 +394,21 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     }
   }
 
-  onCheckExtraService(item: any) {
-    this.updateInsuranceFeeEqualAmountTotal();
-    if (item.ServiceId === "16" || item.ServiceId === "GBH" || item.ServiceId === "Snappy_Insurance" || item.ServiceId === "JNT_Insurance") {
-        this.enableInsuranceFee = item.IsSelected;
-
-        if (!this.saleModel.Ship_InsuranceFee) {
-            this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras.InsuranceFee || this.saleModel.AmountTotal;
-        }
-
-        this.calculateFeeRequest();
-    } else if (this.saleModel.Carrier?.DeliveryType === "MyVNPost" && item.ServiceId === "OrderAmountEvaluation") {
-        this.enableInsuranceFee = item.IsSelected;
-
-        if (!this.saleModel.Ship_InsuranceFee) {
-            this.saleModel.Ship_InsuranceFee = this.saleModel.Ship_Extras.InsuranceFee || this.saleModel.AmountTotal;
-        }
-
-        this.calculateFeeRequest();
-
-    } else if (this.saleModel.Carrier?.DeliveryType === "NinjaVan" || this.saleModel.Carrier?.DeliveryType === "BEST" ||
-        this.saleModel.Carrier?.DeliveryType === "HolaShip" || this.saleModel.Carrier?.DeliveryType === "JNT" ||
-        this.saleModel.Carrier?.DeliveryType === "FastShip" || item.ServiceId === "Shopee_Insurance" ||
-        this.saleModel.Carrier?.DeliveryType === "GHSV" || this.saleModel.Carrier?.DeliveryType === "SHIP60") {
-
-          this.saleModel.Ship_InsuranceFee = InitInfoOrderDeliveryHandler.getInsuranceFee(this.saleModel, this.quickOrderModel);
-            this.enableInsuranceFee = item.IsSelected;
-            if (!item.IsSelected) {
-                this.saleModel.Ship_InsuranceFee = 0;
-            }
-    } else {
-        let service = this.shipServices.filter(x => x.ServiceId === this.saleModel.Ship_ServiceId)[0];
-        let totalFee = 0;
-        if (service) {
-            totalFee = service.TotalFee;
-
-            if (this.shipExtraServices) {
-                this.shipExtraServices.map(x => {
-                    if (x.IsSelected) {
-                        totalFee += (x.Fee || 0);
-                    }
-                });
-            }
-
-            this.saleModel.CustomerDeliveryPrice = totalFee;
-        }
-        if (item.ServiceId === "XMG" && this.saleModel.Carrier?.DeliveryType === "ViettelPost" && item.IsSelected == true) {
-            item.ExtraMoney = (this.saleModel.Ship_Extras && this.saleModel.Ship_Extras.IsCollectMoneyGoods && this.saleModel.Ship_Extras.CollectMoneyGoods) ? this.saleModel.Ship_Extras.CollectMoneyGoods : totalFee || this.saleModel.CustomerDeliveryPrice;
-        }
-    }
+  onUpdateWeight() {
+    this.calcFee();
   }
 
+  onUpdateInsuranceFee() {
+    this.calcFee();
+  }
 
   onSave(type: string): any {
-      let model = ConversationOrderHandler.prepareInsertFromMessage(this.quickOrderModel);
+      let model = this.csOrder_PrepareModelHandler.prepareInsertFromMessage(this.quickOrderModel)
+
+      if(type === 'print') {
+          this.quickOrderModel.FormAction = 'print';
+          this.saleModel.FormAction = 'print';
+      }
 
       if(this.isEnableCreateOrder) {
         if (!TDSHelperArray.hasListValue(this.quickOrderModel.Details)) {
@@ -578,12 +429,14 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
                 this.notification.warning( 'Không thể tạo hóa đơn', 'Vui lòng thêm tỉnh/ thành phố');
                 return false;
             }
-            if(this.saleModel.Carrier && (this.saleModel.Carrier.DeliveryType === "ViettelPost" || this.saleModel.Carrier.DeliveryType === "GHN" || this.saleModel.Carrier.DeliveryType === "TinToc" || this.saleModel.Carrier.DeliveryType === "FlashShip")){
-                this.confirmShipService(this.saleModel.Carrier);
-            }
+            // if(this.saleModel.Carrier && (this.saleModel.Carrier.DeliveryType === "ViettelPost" || this.saleModel.Carrier.DeliveryType === "GHN" || this.saleModel.Carrier.DeliveryType === "TinToc" || this.saleModel.Carrier.DeliveryType === "FlashShip")){
+            //     this.confirmShipService(this.saleModel.Carrier);
+            // }
         }
 
-        PrepareSaleModelHandler.prepareSaleModel(this.saleModel, this.quickOrderModel, this.shipExtraServices);
+        this.updateShipExtras();
+        this.updateShipServiceExtras();
+        this.updateShipmentDetailsAship();
       }
 
       this.saleOnline_OrderService.insertFromMessage({ model: model }).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
@@ -612,7 +465,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   }
 
   createFastSaleOrder(data: FastSaleOrder_DefaultDTOV2, type: string) {
-    this.fastSaleOrderService.saveV2(data, true).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.fastSaleOrderService.saveV2(data).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         if(res && res.Success == true) {
 
             this.shipServices = [];
@@ -664,16 +517,16 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
       });
   }
 
-  confirmShipService(carrier: TDSSafeAny) {
-    this.modal.info({
-      title: 'Cảnh báo',
-      content: 'Đối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
-      onOk: () => this.calculateFee(carrier).catch((err) => { console.log(err);}),
-      onCancel:()=>{},
-      okText: "Ok",
-      cancelText: "Cancel"
-    });
-  }
+  // confirmShipService(carrier: TDSSafeAny) {
+  //   this.modal.info({
+  //     title: 'Cảnh báo',
+  //     content: 'Đối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
+  //     onOk: () => this.calculateFee(carrier).catch((err) => { console.log(err);}),
+  //     onCancel:()=>{},
+  //     okText: "Ok",
+  //     cancelText: "Cancel"
+  //   });
+  // }
 
   showModalAddProduct() {
     const modal = this.modal.create({
@@ -708,8 +561,8 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
             this.quickOrderModel.Details.push(x);
 
-            this.computeAmountTotal();
-            this.updateCoDAmount();
+            this.coDAmount();
+            this.calcTotal();
         }
     })
   }
@@ -771,8 +624,8 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
       exist.Quantity = exist.Quantity + 1;
     }
 
-    this.computeAmountTotal();
-    this.updateCoDAmount();
+    this.coDAmount();
+    this.calcTotal();
   }
 
   showModalTax() {
@@ -790,7 +643,8 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
       if(res) {
           this.saleModel.Tax = res;
           this.saleModel.TaxId = res.Id;
-          this.computeAmountTotal();
+
+          this.calcTotal();
       }
     });
   }
@@ -803,50 +657,48 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     this.visibleIndex = -1;
   }
 
-  changeShipWeight() {
-      if(!this.saleModel.Carrier && !this.saleModel.CarrierId) {
-          this.message.error('Vui lòng chọn đối tác giao hàng');
-      }
-
-      let model = this.saleModel.Carrier;
-      this.calculateFee(model).then((res: any) => {
-        if (res?.Costs) {
-          res.Costs.map((x: any) => {
-            let exist = this.shipExtraServices.filter((x: any) => x.ServiceId === x.ServiceId)[0];
-            if (exist) {
-              exist.Fee = x.TotalFee;
-            }
-          });
-        }
-      }).catch((e: any) => {
-        console.log(e);
-      });
+  changeShipWeight(value: number) {
+    this.saleModel.ShipWeight = value;
+    this.calcFee();
   }
 
   changeDeliveryPrice(event: any) {
     if(event) {
       this.saleModel.DeliveryPrice = event;
-      this.updateCoDAmount();
+      this.coDAmount();
     }
   }
 
   changeDiscount(event: any) {
     if (event) {
-      this.computeAmountTotal();
+      this.calcTotal();
     }
   }
 
   changeDecreaseAmount(event: any) {
     if (event) {
-      this.computeAmountTotal();
+      this.calcTotal();
     }
   }
 
   changeAmountDeposit(event: any) {
     if(event) {
       this.saleModel.AmountDeposit = event;
-      this.updateCoDAmount();
+      this.coDAmount();
     }
+  }
+
+  changeIsSelectedEx(event: any, i: number) {
+    this.shipExtraServices[i]!.IsSelected = event;
+  }
+
+  openPopoverShipExtraMoney(value: number) {
+    this.extraMoney = value;
+    this.visibleShipExtraMoney = true;
+  }
+
+  closePopoverShipExtraMoney() {
+    this.visibleShipExtraMoney = false;
   }
 
   onChangePrice(event: any, item: Detail_QuickSaleOnlineOrder, index: number) {
@@ -855,34 +707,21 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
     if(exit) {
         this.quickOrderModel.Details[index].Price = event;
-        this.computeAmountTotal();
-        this.updateCoDAmount();
+        this.coDAmount();
+        this.calcTotal();
     }
   }
-
-  // onChangeQuantity(event: any, item: Detail_QuickSaleOnlineOrder, index: number) {
-  //   let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
-
-  //   if(exit) {
-  //       this.quickOrderModel.Details[index].Quantity = event;
-  //       this.computeAmountTotal();
-  //       this.updateCoDAmount();
-  //   }
-  // }
 
   onRemoveProduct(item: Detail_QuickSaleOnlineOrder, index: number) {
     let exit = this.quickOrderModel.Details[index]?.Id == item.Id;
     if(exit) {
         this.quickOrderModel.Details.splice(index,1);
-        this.computeAmountTotal();
-        this.updateCoDAmount();
+        this.coDAmount();
+        this.calcTotal();
     }
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
+
 
   closeSearchProduct(){
     this.textSearchProduct = '';
@@ -906,7 +745,7 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
     let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
 
     this.odataProductService.getView(params).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{ this.isLoadingProduct = false; }))
-    .subscribe((res: ODataProductDTOV2) => {
+      .subscribe((res: ODataProductDTOV2) => {
         this.lstProductSearch = [...res.value]
     },err=>{
         this.message.error(err.error? err.error.message: Message.CanNotLoadData);
@@ -923,37 +762,17 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
   }
 
   onLoadSuggestion(item: ResultCheckAddressDTO) {
-    ConversationOrderHandler.onLoadSuggestion(item, this.quickOrderModel);
+    let data = this.csOrder_SuggestionHandler.onLoadSuggestion(item, this.quickOrderModel);
+    this.quickOrderModel = data;
   }
 
   mappingAddress(data: QuickSaleOnlineOrderModel) {
-    if (data && data.CityCode) {
-      this._cities = {
-        code: data.CityCode,
-        name: data.CityName
-      }
-    }
-    if (data && data.DistrictCode) {
-      this._districts = {
-        cityCode: data.CityCode,
-        cityName: data.CityName,
-        code: data.DistrictCode,
-        name: data.DistrictName
-      }
-    }
-    if (data && data.WardCode) {
-      this._wards = {
-        cityCode: data.CityCode,
-        cityName: data.CityName,
-        districtCode: data.DistrictCode,
-        districtName: data.DistrictCode,
-        code: data.WardCode,
-        name: data.WardName
-      }
-    }
-    if (data && (data.Address)) {
-      this._street = data.Address;
-    }
+    let x = this.csOrder_SuggestionHandler.mappingAddress(data);
+
+    this._cities = x._cities;
+    this._districts = x._districts;
+    this._wards = x._wards;
+    this._street = x._street;
   }
 
   plus(item: Detail_QuickSaleOnlineOrder, index: number) {
@@ -961,8 +780,8 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
 
     if(exit) {
         this.quickOrderModel.Details[index].Quantity++;
-        this.computeAmountTotal();
-        this.updateCoDAmount();
+        this.coDAmount();
+        this.calcTotal();
     }
   }
 
@@ -974,8 +793,92 @@ export class ConversationOrderComponent  implements OnInit, OnDestroy {
         if(this.quickOrderModel.Details[index].Quantity < 1) {
           this.quickOrderModel.Details[index].Quantity == 1;
         }
-        this.computeAmountTotal();
-        this.updateCoDAmount();
+        this.coDAmount();
+        this.calcTotal();
+    }
+  }
+
+  changeShip_InsuranceFee(value: number) {
+    this.saleModel.Ship_InsuranceFee = value;
+  }
+
+  changeShipExtraMoney(event: any) {
+    let idx = this.shipExtraServices.findIndex((f: any) => f.ServiceId === 'XMG');
+    this.shipExtraServices[idx].ExtraMoney = this.extraMoney;
+    this.calcFee();
+
+    this.visibleShipExtraMoney = false;
+  }
+
+  prepareModelFeeV2() {
+      let companyId = this.saleConfig.configs.CompanyId;
+
+      let model = this.prepareModelFeeV2Handler.so_prepareModelFeeV2(this.shipExtraServices, this.saleModel, this.quickOrderModel,  companyId, this.insuranceInfo );debugger
+      return model;
+  }
+
+  calculateFeeAship(event: DeliveryCarrierDTOV2): any {
+    if(!this.saleModel.Carrier) {
+        return this.message.error('Vui lòng chọn  đối tác giao hàng');
+    }
+
+    if (!this.saleModel) {
+        return this.message.error('Vui lòng chọn nhập khối lượng');
+    }
+
+    let model = this.prepareModelFeeV2();
+    this.isLoading = true;
+
+    this.calcFeeAshipHandler.calculateFeeAship(model, event, this.configsProviderDataSource).pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
+          if(res) {
+
+              this.configsProviderDataSource = [...res.configs];
+
+              this.insuranceInfo = res.data?.InsuranceInfo ?? null;
+              this.shipServices = res.data?.Services ?? [];
+
+              if(TDSHelperArray.hasListValue(this.shipServices)) {
+                  let svDetail = this.shipServices[0] as CalculateFeeServiceResponseDto;
+                  this.selectShipServiceV2(svDetail);
+
+                  this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(svDetail.TotalFee), 'en-US', '1.0-0')} đ`);
+              }
+          }
+
+          this.isLoading = false;
+
+      }, error => {
+          this.isLoading = false;
+          this.message.error(error.error.message || error.error.error_description);
+      })
+
+  }
+
+  selectShipServiceV2(x: CalculateFeeServiceResponseDto) {
+    let data = this.selectShipServiceV2Handler.so_selectShipServiceV2(x, this.shipExtraServices, this.saleModel);
+
+    this.shipExtraServices = [];
+    this.saleModel = data.saleModel;
+    this.shipExtraServices = data.shipExtraServices;
+  }
+
+  // TODO: cập nhật giá xem hàng
+  updateShipExtras() {
+      this.saleModel = this.updateShipExtraHandler.so_updateShipExtraHandler(this.shipExtraServices, this.saleModel);
+  }
+
+  // TODO: cập nhật danh sách dịch vụ
+  updateShipServiceExtras() {
+    if (this.shipExtraServices) {
+      this.saleModel = this.updateShipServiceExtrasHandler.so_updateShipServiceExtras(this.shipExtraServices, this.saleModel);
+    }
+  }
+
+  // TODO: cập nhật danh sách cấu hình aship
+  updateShipmentDetailsAship() {
+    if (this.configsProviderDataSource) {
+      this.saleModel = this.updateShipmentDetailAshipHandler.so_updateShipmentDetailAship(this.configsProviderDataSource, this.insuranceInfo, this.saleModel);
     }
   }
 

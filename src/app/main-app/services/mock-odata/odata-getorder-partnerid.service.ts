@@ -1,9 +1,9 @@
 import { formatDate } from "@angular/common";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from "src/app/lib";
+import { OperatorEnum, CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from "src/app/lib";
 import { FilterDataRequestDTO } from "src/app/lib/dto/dataRequest.dto";
-import { TDSHelperArray, TDSHelperString } from "tds-ui/shared/utility";
+import { TDSHelperArray, TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { OdataGetOrderPartnerIdDTO } from "../../dto/saleonlineorder/odata-getorderpartnerid.dto";
 import { BaseSevice } from "../base.service";
 
@@ -29,15 +29,13 @@ export class OdataGetOrderPartnerIdService extends BaseSevice {
   }
 
   getOrdersByPartner(partnerId: number, params: string): Observable<OdataGetOrderPartnerIdDTO> {
-    const api: TAPIDTO = {
-      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersByPartnerId?$orderby=DateCreated%20desc&PartnerId=${partnerId}&$count=true&${params}`,
-      method: TApiMethodType.get,
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetOrdersByPartnerId?PartnerId=${partnerId}&$count=true&${params}`,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<OdataGetOrderPartnerIdDTO>(api, null);
   }
-
-
 
   public buildFilter(filterObj: FilterObjLiveOrderModel) {
     let dataFilter: FilterDataRequestDTO = {
@@ -81,6 +79,13 @@ export class OdataGetOrderPartnerIdService extends BaseSevice {
     return dataFilter;
   }
 
+  assignSaleOnlineOrder(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/TagSaleOnlineOrder/ODataService.AssignTag`,
+      method: CoreApiMethodType.post,
+    }
 
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
 
 }

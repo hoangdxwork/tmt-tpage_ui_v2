@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { FastSaleOrderLineDTO } from '../dto/fastsaleorder/fastsaleorder.dto';
 import { ODataResponsesDTO } from '../dto/odata/odata.dto';
@@ -19,27 +19,27 @@ export class FastSaleOrderLineService extends BaseSevice {
   }
 
   onChangeProduct(data: TDSSafeAny): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.OnChangeProduct?$expand=ProductUOM,Account`,
-        method: TApiMethodType.post,
+        method: CoreApiMethodType.post,
     }
 
     return this.apiService.getData<ODataRegisterPartnerDTO>(api, data);
   }
 
   onChangeUOMLine(data: TDSSafeAny): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.OnChangeUOMLine?$expand=ProductUOM`,
-        method: TApiMethodType.post,
+        method: CoreApiMethodType.post,
     }
 
     return this.apiService.getData<ODataRegisterPartnerDTO>(api, data);
   }
 
   getByLiveCampaignId(detailId: string, productId: string, productUOMId: string): Observable<ODataResponsesDTO<FastSaleOrderLineDTO>> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}/OdataService.GetByLiveCampaignId?key=${detailId}&productId=${productId}&productUOMId=${productUOMId}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<ODataResponsesDTO<FastSaleOrderLineDTO>>(api, null);

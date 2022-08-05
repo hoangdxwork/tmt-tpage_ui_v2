@@ -1,3 +1,6 @@
+import { AshipGetInfoConfigProviderDto } from "../carrierV2/aship-info-config-provider-data.dto";
+import { CalculateFeeInsuranceInfoResponseDto } from "../carrierV2/delivery-carrier-response.dto";
+
 export interface Warehouse {
   Id: number;
   Code: string;
@@ -276,8 +279,8 @@ export interface OrderLineV2 {
   PriceRecent?: any;
   Name?: any;
   IsName: boolean;
-  LiveCampaign_DetailId: any | null;
-  LiveCampaignQtyChange: any | null;
+  LiveCampaign_DetailId?: any;
+  LiveCampaignQtyChange?: any ;
   OrderId: any | null;
   ProductName: string;
   ProductUOMName: string;
@@ -292,7 +295,7 @@ export interface OrderLineV2 {
   PartnerId?: any;
   PriceSubTotalSigned: number;
   PromotionProgramComboId?: any;
-  Product?: Product | null;
+  Product?: any;
   ProductUOM?: ProductUOM;
   Account: Account;
   SaleLine?: any;
@@ -388,6 +391,13 @@ export interface ProductUOM {
 export interface Team {
   Id: number;
   Name: string;
+  // OwnerId?: any;
+  // OwnerToken?: any;
+  // OwnerAvatar?: any;
+  // OwnerUrl?: any;
+  // ChannelId?: any;
+  // ChannelToken?: any;
+  // ChannelAvatar?: any;
   ShopToken?: any;
   Active?: any;
   CompanyId?: any;
@@ -426,6 +436,9 @@ export interface ShipServiceExtra {
   Type?: any;
   ExtraMoney?: any;
   OrderTime?: any;
+  Pickup_Time?: number | undefined;
+  Pickup_Time_Range_Id?: number | undefined;
+  IsSelected?: boolean | undefined;
 }
 
 export interface ShipExtras {
@@ -451,7 +464,13 @@ export interface ShipExtras {
   PartialDelivery?: any;
   IsRefund?: any;
   IsInsuranceEqualTotalAmount?: any;
-  ServiceCustoms: any[];
+  ServiceCustoms: ServiceCustoms[];
+}
+
+export interface ServiceCustoms {
+  ServiceId: string;
+  Name: string;
+  IsDefault: boolean;
 }
 
 export interface Carrier {
@@ -525,10 +544,11 @@ export interface Carrier {
   Config_DefaultWeight?: any;
   ExtrasText?: any;
   Extras?: any;
+  ExtraProperties: string;
 }
 
 export interface FastSaleOrder_DefaultDTOV2 {
-    Id: number;
+    Id?: number;
     Name?: any;
     PrintShipCount: number;
     PrintDeliveryCount: number;
@@ -597,8 +617,8 @@ export interface FastSaleOrder_DefaultDTOV2 {
     FacebookName: string;
     FacebookNameNosign: string;
     FacebookId: string;
-    LiveCampaignId: string | null; // bổ sung 14/07/2022
-    LiveCampaignName: string | null; // bổ sung 14/07/2022
+    LiveCampaignId?: string ; // bổ sung 14/07/2022
+    LiveCampaignName?: string ; // bổ sung 14/07/2022
     DisplayFacebookName: string;
     Deliver: string;
     ShipWeight: number ;
@@ -619,7 +639,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     Ship_ServiceName?: any;
     Ship_ServiceExtrasText?: any;
     Ship_ExtrasText?: any;
-    Ship_InsuranceFee?: any;
+    Ship_InsuranceFee: number;
     CurrencyName: string;
     TeamId: number;
     TeamOrderCode?: any;
@@ -634,7 +654,7 @@ export interface FastSaleOrder_DefaultDTOV2 {
     TimeLock?: any;
     PageName: string;
     Ship_Receiver: ShipReceiver;
-    Ship_Extras: ShipExtras;
+    Ship_Extras: ShipExtras | null;
     PaymentInfo: any[];
     Search?: any;
     Partner: Partner;
@@ -649,9 +669,20 @@ export interface FastSaleOrder_DefaultDTOV2 {
     Carrier: Carrier | null;
     Tax: any;
     SaleOrder?: any;
-    OrderLines: OrderLineV2[];
+    OrderLines?: OrderLineV2[];
     Ship_ServiceExtras: ShipServiceExtra[];
     Team: Team;
+    ShipmentDetailsAship?: ShipmentDetailsAshipDTO;
+    MessageCount: number;
+    MoveId?: any;
+    Tags?: any;
+    IRAttachmentUrl?: any;
+    IsDeposited?: any;
+    Source?: any;
+    FormAction?: any;
+    Error?: any;
+    // HistoryDeliveryDetails?: any[];
+    // OutstandingInfo?: any;
 }
 
 export interface OrderSendShipDTO {
@@ -663,4 +694,9 @@ export interface OrderSendShipDTO {
   CashOnDelivery: number;
   TotalAmount: number;
   Partner: Partner;
+}
+
+export interface ShipmentDetailsAshipDTO{
+  ConfigsProvider: AshipGetInfoConfigProviderDto[];
+  InsuranceInfo: CalculateFeeInsuranceInfoResponseDto
 }

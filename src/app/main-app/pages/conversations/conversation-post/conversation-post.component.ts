@@ -19,6 +19,8 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { ChildChatOmniChannelDto } from 'src/app/main-app/dto/team/chatomni-channel.dto';
+import { ChatomniCommentService } from '@app/services/chatomni-service/chatomni-comment.service';
 
 @Component({
   selector: 'app-conversation-post',
@@ -80,6 +82,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
     private partnerService: PartnerService,
     private modal: TDSModalService,
     private viewContainerRef: ViewContainerRef,
+    private chatomniCommentService: ChatomniCommentService,
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router,
     private cdRef : ChangeDetectorRef) {
@@ -167,6 +170,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   loadData(){
+
     this.isLoading = true;
     this.validateData();
 
@@ -185,6 +189,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
               console.log([x]);
             }
           });
+
           if(TDSHelperArray.hasListValue(this.data)){
             let exits = this.data.filter((x: any) => x.fbid == this.postId)[0];
             if(TDSHelperObject.hasValue(exits)){
@@ -235,7 +240,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
 
       //load danh sách bài viết con từ bài viết chính
       if(TDSHelperString.hasValueString(item.parent_id)) {
-        this.facebookPostService.getByPostParent(this.currentTeam.Id, item.parent_id)
+        this.facebookPostService.getByPostParent(this.currentTeam!.Id, item.parent_id)
           .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
 
             if(res && TDSHelperArray.hasListValue(res.Items)) {
@@ -255,7 +260,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
        if (!this.postChilds || this.postChilds.length < 1 || (!item.parent_id && this.postChilds.length > 0 && this.postChilds[0].parent_id != item.fbid)) {
         this.postChilds = [];
 
-        this.facebookPostService.getByPostParent(this.currentTeam?.Id, item.parent_id || item.fbid).subscribe(res => {
+        this.facebookPostService.getByPostParent(this.currentTeam!.Id, item.parent_id || item.fbid).subscribe(res => {
           this.postChilds = res.Items;
           item.count_post_child = res.Items && res.Items.length;
         });
@@ -264,7 +269,7 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   getData(nextUrl?: string, type?: string, keyFilter?: string): Observable<any> {
-    return this.facebookPostService.getPostsByTeamId(this.currentTeam.Id, nextUrl, type, this.eventType, keyFilter)
+    return this.facebookPostService.getPostsByTeamId(this.currentTeam!.Id, nextUrl, type, this.eventType, keyFilter)
       .pipe(tap((arr: FacebookPostDTO) => { (arr.HasNextPage ? null : (this.hasNextPage = true)) }),
           map((arr: FacebookPostDTO) => {
 
@@ -302,11 +307,14 @@ export class ConversationPostComponent extends TpageBaseComponent implements OnI
   }
 
   onClickTeam(data: CRMTeamDTO): any {
+
     if (this.paramsUrl?.teamId) {
       let uri = this.router.url.split("?")[0];
       let uriParams = `${uri}?teamId=${data.Id}&type=${this.type}`;
+
       this.router.navigateByUrl(uriParams);
     }
+
     this.crmService.onUpdateTeam(data);
   }
 

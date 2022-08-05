@@ -1,11 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
-import { Message } from 'src/app/lib/consts/message.const';
-import { finalize } from 'rxjs/operators';
-import { TDSMessageService } from 'tds-ui/message';
 import { ODataLiveCampaignService } from 'src/app/main-app/services/mock-odata/odata-live-campaign.service';
+import { Subject, takeUntil, finalize, Observable } from 'rxjs';
+import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
+import { Component, Input, OnInit } from '@angular/core';
+import { TDSMessageService } from 'tds-ui/message';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSTableQueryParams } from 'tds-ui/table';
+import { THelperDataRequest } from 'src/app/lib/services/helper-data.service';
 
 @Component({
   selector: 'detail-product',
@@ -18,61 +18,11 @@ export class DetailProductComponent implements OnInit {
 
   expandSet = new Set<number | undefined>();
 
-  listOfData = [
-    {
-      id: 1,
-      name: 'John Brown',
-      age: 32,
-      expand: false,
-      address: 'New York No. 1 Lake Park',
-      description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.'
-    },
-    {
-      id: 2,
-      name: 'Jim Green',
-      age: 42,
-      expand: false,
-      address: 'London No. 1 Lake Park',
-      description: 'My name is Jim Green, I am 42 years old, living in London No. 1 Lake Park.'
-    },
-    {
-      id: 3,
-      name: 'Joe Black',
-      age: 32,
-      expand: false,
-      address: 'Sidney No. 1 Lake Park',
-      description: 'My name is Joe Black, I am 32 years old, living in Sidney No. 1 Lake Park.'
-    },
-    {
-      id: 4,
-      name: 'Joe Black',
-      age: 32,
-      expand: false,
-      address: 'Sidney No. 1 Lake Park',
-      description: 'My name is Joe Black, I am 32 years old, living in Sidney No. 1 Lake Park.'
-    },
-    {
-      id: 5,
-      name: 'Joe Black',
-      age: 32,
-      expand: false,
-      address: 'Sidney No. 1 Lake Park',
-      description: 'My name is Joe Black, I am 32 years old, living in Sidney No. 1 Lake Park.'
-    },
-    {
-      id: 6,
-      name: 'Joe Black',
-      age: 32,
-      expand: false,
-      address: 'Sidney No. 1 Lake Park',
-      description: 'My name is Joe Black, I am 32 years old, living in Sidney No. 1 Lake Park.'
-    },
-  ];
-
   filterObj: any = {
     searchText: ''
   };
 
+  private destroy$ = new Subject<void>();
   pageIndex = 1;
   pageSize = 20;
   count: number = 0;
@@ -82,6 +32,7 @@ export class DetailProductComponent implements OnInit {
 
   constructor(
     private message: TDSMessageService,
+    private liveCampaignService: LiveCampaignService,
     private oDataLiveCampaignService: ODataLiveCampaignService
   ) { }
 
@@ -90,9 +41,21 @@ export class DetailProductComponent implements OnInit {
   }
 
   loadData(pageSize: number, pageIndex: number) {
+    this.lstOfData = [];
+    let filters = this.oDataLiveCampaignService.buildFilter(this.filterObj);
+    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
+    this.getViewData(params).subscribe(res=>{
+      this.count = res['@odata.count'] as number;
+      this.lstOfData = [...res.value];
+    }, error => {
+      this.message.error(error.error ? error.error.message : 'Tải dữ liệu thất bại')
+    })
   }
 
-  getViewData(params: string) {
+  getViewData(params: string): Observable<TDSSafeAny> {
+    this.isLoading = true;
+    return this.liveCampaignService.getProduct(this.liveCampaignId, params)
+      .pipe(takeUntil(this.destroy$), finalize(()=>{ this.isLoading = false }))
   }
 
   onExpandChange(id: number | undefined, checked: boolean): void {
@@ -124,4 +87,8 @@ export class DetailProductComponent implements OnInit {
     this.loadData(this.pageSize, this.pageIndex);
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

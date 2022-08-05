@@ -21,6 +21,7 @@ import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.ser
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
+import { ChatomniObjectsItemDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 
 @Component({
   selector: 'post-order-config',
@@ -28,7 +29,8 @@ import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/
 })
 
 export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() data!: FacebookPostItem;
+
+  @Input() data!: ChatomniObjectsItemDto;
 
   formOrderConfig!: FormGroup;
   tags: any[] = [];
@@ -71,7 +73,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
     else this.resetForm();
 
     if(changes?.data?.currentValue) {
-      this.loadOrderConfig(this.data.fbid);
+      this.loadOrderConfig(this.data.ObjectId);
     }
   }
 
@@ -90,9 +92,9 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
 
   loadLiveCampaignById(liveCampaignId: string | undefined) {
     if(liveCampaignId) {
-      this.liveCampaignService.getById(this.data.live_campaign_id)
+      this.liveCampaignService.getById(liveCampaignId)
         .pipe(takeUntil(this.destroy$)).subscribe(res => {
-        this.currentLiveCampaign = res;
+            this.currentLiveCampaign = res;
       });
     }
     else {
@@ -129,12 +131,12 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
 
   loadOrderConfig(postId: string) {
     this.isLoading = true;
+
     this.facebookPostService.getOrderConfig(postId)
-      .pipe(takeUntil(this.destroy$))
-      .pipe(finalize(() => this.isLoading = false))
+      .pipe(takeUntil(this.destroy$)).pipe(finalize(() => this.isLoading = false))
       .subscribe(res => {
-        this.updateForm(res);
-        this.loadLiveCampaignById(res?.LiveCampaignId);
+          this.updateForm(res);
+          this.loadLiveCampaignById(res?.LiveCampaignId);
       });
   }
 
@@ -517,7 +519,7 @@ export class PostOrderConfigComponent implements OnInit, OnChanges, OnDestroy {
 
     this.isLoading = true;
     if(this.isCheckValue(model) === 1) {
-      this.facebookPostService.updateOrderConfig(this.data.fbid, this.isImmediateApply, model)
+      this.facebookPostService.updateOrderConfig(this.data.ObjectId, this.isImmediateApply, model)
         .pipe(takeUntil(this.destroy$))
         .pipe(finalize(() => this.isLoading = false))
         .subscribe(res => {

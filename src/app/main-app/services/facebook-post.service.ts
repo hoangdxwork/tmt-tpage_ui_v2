@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable, OnDestroy, OnInit } from '@angular/core';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
-import { TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { TDSHelperArray } from 'tds-ui/shared/utility';
 import { AutoReplyConfigDTO } from '../dto/configs/page-config.dto';
 import { AutoHiddenConfigDTO, AutoLabelConfigDTO, AutoOrderConfigDTO, MDBFacebookMappingPostAutoConfigDTO, TBotRequestCallbackFailedDTO } from '../dto/configs/post/order-config.dto';
@@ -39,35 +39,35 @@ export class FacebookPostService extends BaseSevice implements OnDestroy {
   }
 
   getByIds(data: any): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/get_by_ids`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<any>(api, data);
   }
 
   fetchPosts(teamId: any): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebook/fetchposts?teamId=${teamId}`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
     return this.apiService.getData<any>(api, null);
   }
 
   refetch(id: any): Observable<any> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${id}/refetch`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
     return this.apiService.getData<any>(api, null);
   }
 
 
   getPostByPageId(pageId: string, postId: string): Observable<any>{
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/crmteam/facebookpost?pageId=${pageId}&postId=${postId}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<FacebookPostDTO>(api, null)
@@ -91,18 +91,18 @@ export class FacebookPostService extends BaseSevice implements OnDestroy {
       return key + '=' + this.queryObj[key]
     }).join('&');
 
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/crmteam/${teamId}/getbypostparent?postId=${postId}&${queryString}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
     return this.apiService.getData<any>(api, null);
   }
 
   getPostsByTeamId(teamId: number, link?: string, type?: string, eventType?: string, text?: string): Observable<any> {
     if(link) {
-      let api: TAPIDTO = {
+      let api: CoreAPIDTO = {
         url: `${link}`,
-        method: TApiMethodType.get
+        method: CoreApiMethodType.get
       }
 
       return this.apiService.getData<any>(api, null)
@@ -126,9 +126,9 @@ export class FacebookPostService extends BaseSevice implements OnDestroy {
         queryString = queryString + '&q=' + text;
       }
 
-      let api: TAPIDTO = {
+      let api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.baseRestApi}/crmteam/${teamId}/facebookposts?${queryString}`,
-        method: TApiMethodType.get
+        method: CoreApiMethodType.get
       }
 
       return this.apiService.getData<any>(api, null)
@@ -162,86 +162,86 @@ export class FacebookPostService extends BaseSevice implements OnDestroy {
   }
 
   getAutoReplyConfigs(postId: string): Observable<AutoReplyConfigDTO> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoreplyconfigs`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
     return this.apiService.getData<AutoReplyConfigDTO>(api, null);
   }
 
   updateAutoReplyConfigs(postId: string, data: AutoReplyConfigDTO): Observable<MDBFacebookMappingPostAutoConfigDTO> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoreplyconfigs`,
-      method: TApiMethodType.put
+      method: CoreApiMethodType.put
     }
     return this.apiService.getData<MDBFacebookMappingPostAutoConfigDTO>(api, data);
   }
 
   getAutoLabelConfigs(pageId: string): Observable<AutoLabelConfigDTO> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${pageId}/autolabelconfigs`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
     return this.apiService.getData<AutoLabelConfigDTO>(api, null);
   }
 
   updateAutoLabelConfigs(pageId: string, data: AutoLabelConfigDTO): Observable<MDBFacebookMappingPostAutoConfigDTO> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${pageId}/autolabelconfigs`,
-      method: TApiMethodType.put
+      method: CoreApiMethodType.put
     }
     return this.apiService.getData<MDBFacebookMappingPostAutoConfigDTO>(api, data);
   }
 
   getOrderConfig(postId: string): Observable<AutoOrderConfigDTO> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoorderconfigs`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<AutoOrderConfigDTO>(api, null);
   }
 
   updateOrderConfig(postId: string, isImmediateApply: boolean, data: AutoOrderConfigDTO): Observable<undefined> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoorderconfigs?immediateApply=${isImmediateApply}`,
-      method: TApiMethodType.put
+      method: CoreApiMethodType.put
     }
 
     return this.apiService.getData<undefined>(api, data);
   }
 
   updateInteractionConfig(postId: string, data: AutoOrderConfigDTO): Observable<undefined> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/autoorderreplyconfigs`,
-      method: TApiMethodType.put
+      method: CoreApiMethodType.put
     }
 
     return this.apiService.getData<undefined>(api, data);
   }
 
   getHiddenCommentConfigs(postId: string): Observable<AutoHiddenConfigDTO> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/AutoHiddenConfigs`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<AutoHiddenConfigDTO>(api, null);
   }
 
   updateHiddenCommentConfigs(postId: string, data: AutoHiddenConfigDTO): Observable<MDBFacebookMappingPostAutoConfigDTO> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/AutoHiddenConfigs`,
-      method: TApiMethodType.put
+      method: CoreApiMethodType.put
     }
 
     return this.apiService.getData<MDBFacebookMappingPostAutoConfigDTO>(api, data);
   }
 
   getReport(postId: string): Observable<TBotRequestCallbackFailedDTO[]> {
-    let api: TAPIDTO = {
+    let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/facebookpost/${postId}/getreport?id=${postId}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
 
     return this.apiService.getData<TBotRequestCallbackFailedDTO[]>(api, null);

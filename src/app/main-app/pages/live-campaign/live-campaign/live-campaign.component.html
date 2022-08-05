@@ -1,20 +1,25 @@
-<div class="w-full h-full flex flex-col text-body-2">
-  <tds-page-header title="Chiến dịch live" class="bg-white pt-4">
+<div class="w-full h-full flex flex-col text-body-2 text-neutral-1-900">
+  <tds-page-header title="Chiến dịch live" class="bg-white">
       <tds-page-header-extra class="flex space-x-8 items-center">
-          <button type="button" tds-button color="primary" (click)="onCreate()">
-              <span class="flex items-center">
-                  <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
-              </span>
-          </button>
-          <div class="flex flex-row items-center justify-between py-4">
-              <div class="flex flex-row items-center">
-                  <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị tổng quan:</span>
-                  <tds-select valueField="name" textField="name" [ngModel]="currentDateRanges" [border]="false"
-                      [data]="tdsDateRanges" size="md" class="tds-dashboard-filter w-32 truncate ..." [valuePrimitive]="false"
-                      (ngModelChange)="onChangeFilter($event)" classIcon="tdsi-arrow-down-fill">
-                  </tds-select>
-              </div>
-          </div>
+            <div class="pt-4 pb-1.5">
+                <button type="button" tds-button color="primary" (click)="onCreate()">
+                    <span class="flex items-center">
+                        <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm mới
+                    </span>
+                </button>
+            </div>
+            <div class="flex flex-row items-center justify-between pt-4 pb-1.5">
+                <div class="flex flex-row items-center">
+                    <span class="text-neutral-1-400 text-body-2 font-regular font-sans">Hiển thị tổng quan:</span>
+                    <tds-select valueField="name" textField="name" [ngModel]="currentDateRanges" [border]="false"
+                        [data]="tdsDateRanges" size="md" class="tds-dashboard-filter w-32 truncate ..." [valuePrimitive]="false"
+                        (ngModelChange)="onChangeFilter($event)" classIcon="tdsi-arrow-down-fill">
+                        <ng-template tds-label-tmp let-item="item">
+                            <span class="text-primary-1 font-semibold">{{item.data.name}}</span>
+                        </ng-template>
+                    </tds-select>
+                </div>
+            </div>
       </tds-page-header-extra>
   </tds-page-header>
   <div class="h-full w-full flex flex-col space-y-4 p-4" *ngIf="dataReports">

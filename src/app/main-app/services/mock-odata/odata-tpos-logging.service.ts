@@ -1,7 +1,7 @@
 import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { OperatorEnum, TAPIDTO, TApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
+import { OperatorEnum, CoreAPIDTO, CoreApiMethodType, TCommonService, THelperCacheService } from 'src/app/lib';
 import { FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { BaseSevice } from '../base.service';
@@ -20,9 +20,9 @@ export class OdataTPosLoggingService extends BaseSevice {
   }
 
   getView(params: string): Observable<TDSSafeAny>{
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/GetView?${params}&$count=true&$expand=User`,
-        method: TApiMethodType.get,
+        method: CoreApiMethodType.get,
     }
 
     return this.apiService.getData<any>(api, null);

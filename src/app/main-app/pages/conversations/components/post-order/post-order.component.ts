@@ -13,6 +13,7 @@ import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pou
 import { SaleOnline_OrderDTO } from 'src/app/main-app/dto/saleonlineorder/sale-online-order.dto';
 import { FastSaleOrderRestDTO } from 'src/app/main-app/dto/saleonlineorder/saleonline-order-red.dto';
 import { SaleSettingsDTO } from 'src/app/main-app/dto/setting/setting-sale-online.dto';
+import { ChildChatOmniChannelDto } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ApplicationUserDTO } from 'src/app/main-app/dto/user/application-user.dto';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';

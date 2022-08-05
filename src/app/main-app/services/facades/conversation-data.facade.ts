@@ -35,11 +35,9 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   isProcessing: boolean = false;
 
   public onUpdateInfoByConversation$ = new EventEmitter<any>();
-  public onLoadTdsConversation$ = new EventEmitter<any>();
   public notificationMessNew$ = new EventEmitter<any>();
 
-  constructor(private message: TDSMessageService,
-    private cvsFbState: ConversationFacebookState,
+  constructor(private cvsFbState: ConversationFacebookState,
     private service: ConversationService,
     private crmTeamService: CRMTeamService,
     private notification: TDSNotificationService,
@@ -49,8 +47,8 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
       super(apiService);
 
       this.crmTeamService.onChangeListFaceBook().subscribe((res :any) => {
-        if(res && TDSHelperArray.isArray(res.Items)){
-            this.lstTeam = res.Items;
+        if(res && TDSHelperArray.isArray(res)){
+            this.lstTeam = res;
         }
       })
 
@@ -114,7 +112,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     let team = {};
     this.lstTeam.forEach((x: any) => {
       let items = x.Childs.filter((a: any) => {
-          if (a.Facebook_PageId == pageId) { return a }
+          if (a.ChannelId == pageId) { return a }
       });
       if (items.length > 0) {
         team = items[0];
@@ -132,7 +130,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
       return
     };
 
-    let exist = this.currentUrl?.startsWith('/conversation') && (this.currentTeam?.Facebook_PageId == pageId);
+    let exist = this.currentUrl?.startsWith('/conversation') && (this.currentTeam?.ChannelId == pageId);
     if (!exist) {
 
       let splitMessage = StringHelperV2.getSliceAfterSpaceByLength(value.message, 60, "...");
@@ -219,71 +217,52 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     return result;
   }
 
-  makeDataSource(pageId: any, type: string): Observable<any> {
-    this.cvsFbState.createEventData(pageId);
-    return this.getConversation(pageId, type);
-  }
+  // makeDataSource(pageId: any, type: string): Observable<any> {
+  //   this.cvsFbState.createEventData(pageId);
+  //   return this.getConversation(pageId, type);
+  // }
 
-  makeDataSource_v2(pageId: any, type: string): Observable<any> {
-    this.cvsFbState.createEventData(pageId);
-    return this.getConversation_v2(pageId, type);
-  }
+  // makeDataSource_v2(pageId: any, type: string): Observable<any> {
+  //   this.cvsFbState.createEventData(pageId);
+  //   return this.getConversation_v2(pageId, type);
+  // }
 
-  getConversation(pageId: any, type: string): Observable<any> {
-    let exist = this.cvsFbState.get(pageId, type);
-    if (exist) {
-        this.dataSource$ = Observable.create((obs :any) => {
-            obs.next(exist);
-            obs.complete();
-        });
-    } else {
-      let query = this.service.createQuery(pageId, type);
-      this.dataSource$ = this.service.get(query).pipe(map((res: CRMMatchingDTO) => {
-        let create = this.createConversation(res, query, type);
-        if(create) {
-          return this.cvsFbState.setConversation(pageId, type, create);
-        }
-      }), shareReplay({ bufferSize: 1, refCount: true }));
-    }
-    return this.dataSource$;
-  }
+  // getConversation(pageId: any, type: string): Observable<any> {
+  //   let exist = this.cvsFbState.get(pageId, type);
+  //   if (exist) {
+  //       this.dataSource$ = Observable.create((obs :any) => {
+  //           obs.next(exist);
+  //           obs.complete();
+  //       });
+  //   } else {
+  //     let query = this.service.createQuery(pageId, type);
+  //     this.dataSource$ = this.service.get(query).pipe(map((res: CRMMatchingDTO) => {
+  //       let create = this.createConversation(res, query, type);
+  //       if(create) {
+  //         return this.cvsFbState.setConversation(pageId, type, create);
+  //       }
+  //     }), shareReplay({ bufferSize: 1, refCount: true }));
+  //   }
+  //   return this.dataSource$;
+  // }
 
-  getConversation_v2(pageId: any, type: string): Observable<any> {
-    let exist = this.cvsFbState.get(pageId, type);
-    if (exist) {
-        this.dataSource$ = Observable.create((obs :any) => {
-            obs.next(exist);
-            obs.complete();
-        });
-    } else {
-      let query = this.service.createQuery_v2(pageId, type);
-      this.dataSource$ = this.service.get_v2(query).pipe(map((res: CRMMatchingDTO_v2) => {
 
-          let data = this.createConversation_v2(res, query, type);
-          if(data) {
-              return this.cvsFbState.setConversation(pageId, type, data);
-          }
 
-      }), shareReplay({ bufferSize: 1, refCount: true }));
-    }
-    return this.dataSource$;
-  }
+  // createConversation(data: any, query: any, type: string) {
+  //   return {
+  //       items: [...this.prepareData(data.Items)],
+  //       query: query,
+  //       response: this.service.createResponse(data)
+  //   } as CRMMatchingMappingDTO;
+  // }
 
-  createConversation(data: any, query: any, type: string) {
-    return {
-        items: [...this.prepareData(data.Items)],
-        query: query,
-        response: this.service.createResponse(data)
-    } as CRMMatchingMappingDTO;
-  }
-
-  createConversation_v2(data: CRMMatchingDTO_v2, query: QueryStateConversationDTO_v2, type: string) {
-    return {
-        items: [...this.prepareData(data.Items)],
-        query: query,
-        response: this.service.createResponse_v2(data)
-    } as CRMMatchingMappingDTO_v2;
-  }
+  // createConversation_v2(data: CRMMatchingDTO_v2, query: QueryStateConversationDTO_v2, type: string) {
+  //   return {
+  //       items: [...this.prepareData(data.Items)],
+  //       query: query,
+  //       response: this.service.createResponse_v2(data)
+  //   } as CRMMatchingMappingDTO_v2;
+  // }
 
   checkSendMessage(pageId: any, type: any, psid: any) {
     let exist = this.cvsFbState.getByPsid(pageId, type, psid);
@@ -383,7 +362,7 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
   }
 
   updateAssignUser(value: any) {
-    this.message.success(value.message);
+    // this.message.success(value.message);
     let data = Object.assign({}, value.data);
 
     let pageId = data.page_id;
@@ -544,145 +523,84 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     return Object.keys(obj).length === 0;
   }
 
-  nextData(pageId: any, type: any): Observable<any> {
-    const data = this.cvsFbState.get(pageId, type)
-    let exist = data && data.response?.hasNextPage || data && data.response?.nextPageUrl != this.nextPageUrlCurrent;
+  // nextData(pageId: any, type: any): Observable<any> {
+  //   const data = this.cvsFbState.get(pageId, type)
+  //   let exist = data && data.response?.hasNextPage || data && data.response?.nextPageUrl != this.nextPageUrlCurrent;
 
-    return new Observable(observer => {
-      if(this.isProcessing) {
-          observer.next(false);
-          observer.complete();
-          return;
-      }
+  //   return new Observable(observer => {
+  //     if(this.isProcessing) {
+  //         observer.next(false);
+  //         observer.complete();
+  //         return;
+  //     }
 
-      if(!exist) {
-        observer.next();
-        observer.complete();
-      } else {
-        this.nextPageUrlCurrent = data.response.nextPageUrl;
-        this.service.getLink(this.nextPageUrlCurrent).subscribe((res: any) => {
+  //     if(!exist) {
+  //       observer.next();
+  //       observer.complete();
+  //     } else {
+  //       this.nextPageUrlCurrent = data.response.nextPageUrl;
+  //       this.service.getLink(this.nextPageUrlCurrent).subscribe((res: any) => {
 
-          if(TDSHelperArray.hasListValue(res.Items)) {
-            data.items = [...data.items, ...this.prepareData(res.Items)];
-            data.response = this.service.createResponse(res);
+  //         if(TDSHelperArray.hasListValue(res.Items)) {
+  //           data.items = [...data.items, ...this.prepareData(res.Items)];
+  //           data.response = this.service.createResponse(res);
 
-            observer.next(data);
-            observer.complete();
-          } else {
-            this.isProcessing = true;
-            observer.next();
-            observer.complete();
-          }
-        }, error => {
-          (this.nextPageUrlCurrent as any) = null;
-          observer.next();
-          observer.complete();
-        });
-      }
-    });
-  }
+  //           observer.next(data);
+  //           observer.complete();
+  //         } else {
+  //           this.isProcessing = true;
+  //           observer.next();
+  //           observer.complete();
+  //         }
+  //       }, error => {
+  //         (this.nextPageUrlCurrent as any) = null;
+  //         observer.next();
+  //         observer.complete();
+  //       });
+  //     }
+  //   });
+  // }
 
-  nextData_v2(pageId: any, type: any): Observable<any> {
-    let data = this.cvsFbState.get(pageId, type) as CRMMatchingMappingDTO_v2;
+  // createQuery(pageId: string, type: any) {
+  //   return this.service.createQuery(pageId, type);
+  // }
 
-    return new Observable(obs => {
+  // nextDataWithQuery(pageId: string, type: string, queryObj: any): Observable<any> {
 
-      this.nextPageUrlCurrent = data.response.urlNext;
-      this.service.getLink_v2(this.nextPageUrlCurrent).subscribe((res: CRMMatchingDTO_v2) => {
+  //   let query = Object.keys(queryObj).map(key => {
+  //     return key + '=' + queryObj[key]
+  //   }).join('&');
 
-        if(res && TDSHelperArray.hasListValue(res.Items)) {
+  //   const data = this.cvsFbState.getByQuery(query);
+  //   let exist = data && data.response?.hasNextPage || data && data.response?.nextPageUrl != this.nextPageUrlCurrent;
 
-          data.items = [...data.items, ...this.prepareData(res.Items)] as ConversationMatchingItem[];
-          data.response = this.service.createResponse_v2(res) as PagingTimestampLowcase;
+  //   return new Observable(observer => {
+  //     if(!exist) {
+  //       observer.next(false);
+  //       observer.complete();
+  //     } else {
+  //       this.nextPageUrlCurrent = data.response.nextPageUrl;
+  //       this.service.getLink(this.nextPageUrlCurrent).subscribe((res: any) => {
 
-          obs.next(data);
-          obs.complete();
-        }
-        // TODO: trường hợp phân trang bị trùng hoặc đã hết page
-        else {
-          obs.next();
-          obs.complete();
-        }
-      }, error => {
-          (this.nextPageUrlCurrent as any) = null;
-          obs.next();
-          obs.complete();
-      });
-    });
-  }
+  //         if(TDSHelperArray.hasListValue(res.Items)) {
+  //           data.items = [...data.items, ...this.prepareData(res.Items)];
+  //           data.response = this.service.createResponse(res);
 
-  createQuery(pageId: string, type: any) {
-    return this.service.createQuery(pageId, type);
-  }
+  //           observer.next(data);
+  //           observer.complete();
+  //         } else {
+  //           observer.next(false);
+  //           observer.complete();
+  //         }
+  //       }, error => {
+  //           (this.nextPageUrlCurrent as any) = null;
+  //           observer.next(false);
+  //           observer.complete();
+  //       });
+  //     }
+  //   })
+  // }
 
-  nextDataWithQuery(pageId: string, type: string, queryObj: any): Observable<any> {
-
-    let query = Object.keys(queryObj).map(key => {
-      return key + '=' + queryObj[key]
-    }).join('&');
-
-    const data = this.cvsFbState.getByQuery(query);
-    let exist = data && data.response?.hasNextPage || data && data.response?.nextPageUrl != this.nextPageUrlCurrent;
-
-    return new Observable(observer => {
-      if(!exist) {
-        observer.next(false);
-        observer.complete();
-      } else {
-        this.nextPageUrlCurrent = data.response.nextPageUrl;
-        this.service.getLink(this.nextPageUrlCurrent).subscribe((res: any) => {
-
-          if(TDSHelperArray.hasListValue(res.Items)) {
-            data.items = [...data.items, ...this.prepareData(res.Items)];
-            data.response = this.service.createResponse(res);
-
-            observer.next(data);
-            observer.complete();
-          } else {
-            observer.next(false);
-            observer.complete();
-          }
-        }, error => {
-            (this.nextPageUrlCurrent as any) = null;
-            observer.next(false);
-            observer.complete();
-        });
-      }
-    })
-  }
-
-  nextDataWithQuery_v2(pageId: string, type: string, queryObj: any): Observable<any> {
-
-    let query = Object.keys(queryObj).map(key => {
-      return key + '=' + queryObj[key]
-    }).join('&');
-
-    let data = this.cvsFbState.getByQuery(query) as CRMMatchingMappingDTO_v2;
-    return new Observable(obs => {
-
-        this.nextPageUrlCurrent = data.response.urlNext;
-        this.service.getLink(this.nextPageUrlCurrent).subscribe((res: any) => {
-
-          if(TDSHelperArray.hasListValue(res.Items)) {
-
-            data.items = [...data.items, ...this.prepareData(res.Items)] as ConversationMatchingItem[];
-            data.response = this.service.createResponse_v2(res) as PagingTimestampLowcase;
-
-            obs.next(data);
-            obs.complete();
-          }
-          // TODO: trường hợp phân trang bị trùng hoặc đã hết page
-          else {
-            obs.next();
-            obs.complete();
-          }
-        }, error => {
-            (this.nextPageUrlCurrent as any) = null;
-            obs.next();
-            obs.complete();
-        })
-    })
-  }
 
   prepareData(datas: Array<any>) {
     datas.forEach((item: any) => {
@@ -707,31 +625,31 @@ export class ConversationDataFacade extends BaseSevice implements OnDestroy {
     return datas;
   }
 
-  makeDataSourceWithQuery(pageId: any, type: any, query: any): Observable<any> {
-    this.dataSource$ = this.getConversationWithQuery(pageId, type, query);
-    return this.dataSource$;
-  }
+  // makeDataSourceWithQuery(pageId: any, type: any, query: any): Observable<any> {
+  //   this.dataSource$ = this.getConversationWithQuery(pageId, type, query);
+  //   return this.dataSource$;
+  // }
 
-  getConversationWithQuery(pageId: string, type: string, queryObj: any): Observable<any> {
-    let query = Object.keys(queryObj).map(key => {
-      return key + '=' + queryObj[key]
-    }).join('&');
+  // getConversationWithQuery(pageId: string, type: string, queryObj: any): Observable<any> {
+  //   let query = Object.keys(queryObj).map(key => {
+  //     return key + '=' + queryObj[key]
+  //   }).join('&');
 
-    let exist = this.cvsFbState.getByQuery(query);
+  //   let exist = this.cvsFbState.getByQuery(query);
 
-    if (exist) {
-      return Observable.create((observer: any) => {
-        observer.next(exist);
-        observer.complete();
-      })
-    } else {
-      return this.service.get(queryObj).pipe(map((res: any) => {
-        let create = this.createConversation(res, queryObj, type);
-        let result = this.cvsFbState.setConversationQuery(query, create);
-        return result;
-      }), shareReplay({ bufferSize: 1, refCount: true }), takeUntil(this.destroy$));
-    }
-  }
+  //   if (exist) {
+  //     return Observable.create((observer: any) => {
+  //       observer.next(exist);
+  //       observer.complete();
+  //     })
+  //   } else {
+  //     return this.service.get(queryObj).pipe(map((res: any) => {
+  //       let create = this.createConversation(res, queryObj, type);
+  //       let result = this.cvsFbState.setConversationQuery(query, create);
+  //       return result;
+  //     }), shareReplay({ bufferSize: 1, refCount: true }), takeUntil(this.destroy$));
+  //   }
+  // }
 
   setExtrasQuery(pageId: any, type: any, data: any) {
     return this.service.setExtrasQuery(pageId, type, data);

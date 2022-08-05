@@ -15,6 +15,7 @@ import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { THelperCacheService } from 'src/app/lib';
 import { PaymentJsonBillComponent } from '../components/payment-json/payment-json-bill.component';
+import { TDSNotificationService } from 'tds-ui/notification';
 
 @Component({
   selector: 'app-detail-bill',
@@ -46,6 +47,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   constructor(private route: ActivatedRoute,
     private router: Router,
+    private notificationService: TDSNotificationService,
     private cacheApi: THelperCacheService,
     private cRMTeamService: CRMTeamService,
     private commonService: CommonService,
@@ -344,14 +346,15 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
               if (TDSHelperObject.hasValue(obs)) {
                 obs.pipe(takeUntil(that.destroy$)).subscribe((res: TDSSafeAny) => {
-                  that.printerService.printHtml(res);
-                  that.isProcessing = false;
-                  this.isLoading = false;
+                    that.printerService.printHtml(res);
+                    that.isProcessing = false;
+                    this.isLoading = false;
                 })
-              }else{
+              } else{
                 this.isProcessing = false;
                 this.isLoading = false;
               }
+
               this.loadData();
               this.loadInventoryIds();
           }
@@ -380,9 +383,9 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
     let warehouseId = this.dataModel.WarehouseId;
     this.commonService.getInventoryByIds(warehouseId, ids).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      this.message.success('Cập nhật tồn kho thành công!');
+        this.notificationService.success('Tồn kho', 'Cập nhật tồn kho thành công!');
     }, error => {
-      this.message.error(`${error.error.message || 'Cập nhật tồn kho thất bại'}`);
+        this.notificationService.warning('Tồn kho', 'Cập nhật tồn kho thất bại!');
     })
   }
 
@@ -422,7 +425,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
     let keyCache = this.fastSaleOrderService._keyCacheCopyInvoice as string;
     this.cacheApi.setItem(keyCache, JSON.stringify(model));
-    this.onCreate();
+    this.onCopy();
   }
 
   onCreate(){
@@ -431,6 +434,10 @@ export class DetailBillComponent implements OnInit, OnDestroy{
 
   onEdit(){
     this.router.navigateByUrl(`bill/edit/${this.id}`);
+  }
+
+  onCopy(){
+    this.router.navigateByUrl(`bill/copy/${this.id}`);
   }
 
   onBack(){

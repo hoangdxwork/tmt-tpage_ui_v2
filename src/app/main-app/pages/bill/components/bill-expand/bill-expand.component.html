@@ -1,5 +1,6 @@
 <div class="bg-white rounded-lg h-full w-full relative" *ngIf="dataItem">
-  <div class="inline-flex items-center absolute z-10 top-2 right-4">
+  <!-- *ngIf="tabSelected == 'detail'" -->
+  <div class="inline-flex items-center absolute z-10 top-2 right-4" *ngIf="tabSelected == 'detail'">
     <tds-button-group *ngIf="dataItem.State != 'cancel'">
       <tds-spin [spinning]="isProcessing" [indicator]="indicatorTemplate">
         <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="expandDropdown"
@@ -49,10 +50,10 @@
     <tds-tab title="Chi tiết" (tabSelect)="onLoadTab('detail')">
       <ng-template tds-tab>
         <div class="flex flex-col items-end w-full h-full">
-          <tds-table #basicTable 
-            [listData]="lstOfData" 
-            [loading]="isLoading" 
-            [showPagination]="false" 
+          <tds-table #basicTable
+            [listData]="lstOfData"
+            [loading]="isLoading"
+            [showPagination]="false"
             [frontPagination]="false"
             [noResult]="noResult">
             <thead>
@@ -104,7 +105,7 @@
         </div>
       </ng-template>
     </tds-tab>
-    <tds-tab title="Thông tin">
+    <tds-tab title="Thông tin" (tabSelect)="onLoadTab('information')">
       <ng-template tds-tab>
         <div class="grid grid-cols-3 gap-8 text-body-2">
           <div class="grid grid-cols-3 gap-4">
@@ -148,7 +149,7 @@
     </tds-tab>
     <tds-tab title="Lịch sử" (tabSelect)="onLoadTab('histories')">
       <ng-template tds-tab>
-        <div class="px-4">
+        <div class="px-4 max-h-[200px] overflow-auto tds-panel-scroll">
           <!-- *ngFor="let item of logOrder" -->
           <tds-timeline>
             <tds-timeline-item *ngFor="let item of logOrder" [tdsDot]="dotTemplate">

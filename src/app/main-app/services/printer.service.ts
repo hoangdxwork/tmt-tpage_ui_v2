@@ -1,6 +1,6 @@
 import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TAPIDTO, TApiMethodType, TCommonService } from 'src/app/lib';
+import { CoreAPIDTO, CoreApiMethodType, TCommonService } from 'src/app/lib';
 import { PageLoadingService } from 'src/app/shared/services/page-loading.service';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { BaseSevice } from './base.service';
@@ -40,9 +40,9 @@ export class PrinterService extends BaseSevice {
   }
 
   printUrl(url: string) {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${url}`,
-      method: TApiMethodType.get
+      method: CoreApiMethodType.get
     }
     return this.apiService.getExFile<TDSSafeAny>(api, null)
     // .subscribe((res: TDSSafeAny) => {
@@ -54,9 +54,9 @@ export class PrinterService extends BaseSevice {
   printUrlAsync(url: string): Observable<any> {
     // return new Observable((observer: any) => {
 
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${url}`,
-      method: TApiMethodType.get,
+      method: CoreApiMethodType.get,
     }
     return this.apiService.getExFile<TDSSafeAny>(api, null)
     //   .subscribe((res: TDSSafeAny) => {
@@ -73,9 +73,9 @@ export class PrinterService extends BaseSevice {
   }
 
   printIP(url: string, value: any): Observable<TDSSafeAny> {
-    const api: TAPIDTO = {
+    const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${url}`,
-      method: TApiMethodType.post
+      method: CoreApiMethodType.post
     }
 
     return this.apiService.getData<TDSSafeAny>(api, value);

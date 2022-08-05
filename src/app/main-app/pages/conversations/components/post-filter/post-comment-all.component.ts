@@ -21,6 +21,7 @@ import { eventFadeStateTrigger } from 'src/app/main-app/shared/helper/event-anim
 import { YiAutoScrollDirective } from 'src/app/main-app/shared/directives/yi-auto-scroll.directive';
 import { TDSModalService } from 'tds-ui/modal';
 import { ProductPagefbComponent } from '../product-pagefb/product-pagefb.component';
+import { ChildChatOmniChannelDto } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 
 @Component({
   selector: 'post-comment-all',
@@ -88,7 +89,7 @@ export class PostCommentAllComponent implements OnDestroy {
       viewContainerRef: this.viewContainerRef,
       size: 'xl',
       componentParams: {
-        pageId: this.team?.Facebook_PageId,
+        pageId: this.team?.ChannelId,
       }
     });
 
@@ -101,7 +102,7 @@ export class PostCommentAllComponent implements OnDestroy {
 
   onProductSelected(event: any, item: CommentByPost) {
     let model = {
-      page_id: this.team?.Facebook_PageId,
+      page_id: this.team?.ChannelId,
       to_id: item.from.id,
       comment_id: item.id,
       message: `${ event.Name} - ${event.Price}`,
@@ -194,7 +195,7 @@ export class PostCommentAllComponent implements OnDestroy {
           model.parent_id = item.id;
           model.fbid = item.from?.id;
 
-          this.activityMatchingService.replyComment(this.team?.Id, model)
+          this.activityMatchingService.replyComment(this.team!.Id, model)
             .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
 
               this.message.success("Trả lời bình luận thành công.");
@@ -210,7 +211,7 @@ export class PostCommentAllComponent implements OnDestroy {
   prepareModel(item: CommentByPost, message: string): any {
     const model = {} as SendMessageModelDTO;
     model.from = {
-      id: this.team?.Facebook_PageId,
+      id: this.team?.ChannelId,
       name: this.team?.Facebook_PageName
     }
     model.to = {

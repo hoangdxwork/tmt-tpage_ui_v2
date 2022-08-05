@@ -1,5 +1,3 @@
-import { TDSSafeAny } from "tds-ui/shared/utility";
-import { StringHelperV2 } from "../../shared/helper/string.helper";
 
 export interface DeliveryResponseDto<T> {
   Data?: T;
@@ -22,7 +20,7 @@ export interface CalculateFeeServiceResponseDto {
   ServiceName: string;
   TotalFee: number;
   InsuranceFee: number;
-  Extras: Array<CalculateFeeServiceExtrasResponseDto>
+  Extras: Array<CalculateFeeServiceExtrasResponseDto>;
 }
 
 export interface CalculateFeeInsuranceInfoResponseDto {

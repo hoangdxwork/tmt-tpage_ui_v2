@@ -15,8 +15,8 @@ export class ScrollConversationPipe implements PipeTransform {
 
         if(yBottom < Number(lockYOffset)) {
           setTimeout(() => {
-            element.scrollTo({ top: element.scrollHeight, behavior: 'smooth' });
-            this.cdRef.markForCheck();
+              element.scrollTo({ top: element.scrollHeight, behavior: 'smooth' });
+              this.cdRef.markForCheck();
           }, 750)
         }
       }

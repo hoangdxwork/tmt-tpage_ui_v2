@@ -1,3 +1,5 @@
+import { tShopPostTypePipe } from './tshop-post-type.pipe';
+import { fbPostTypePipe } from './fb-post-type.pipe';
 import { GetStatusNamePipe } from './get-status-name.pipe';
 import { SelectMultipleValuePipe } from './select-multiple-value.pipe';
 import { ConvertListUrlPipe } from './convert-list-url.pipe';
@@ -23,6 +25,10 @@ import { ShowAttributeValuePipe } from './show-attribute-value.pipe';
 import { NameNetWorkPipe } from './name-network.pipe';
 import { NumberCustomPipe } from './number-custom.pipe';
 import { CompareToday } from './compare-today.pipe';
+import { GetOrderStatusPipe } from './get-order-status.pipe';
+import { StringToStringArrayPipe } from './string-stringArray.pipe';
+import { TagStatusColorPipe } from './tag-status-color.pipe';
+import { CheckTagSelectedPipe } from './check-tag-selected.pipe';
 
 const cmp =[
   PrettyjsonPipe,
@@ -45,7 +51,13 @@ const cmp =[
   NameNetWorkPipe,
   NumberCustomPipe,
   CompareToday,
-  GetStatusNamePipe
+  GetStatusNamePipe,
+  GetOrderStatusPipe,
+  StringToStringArrayPipe,
+  TagStatusColorPipe,
+  CheckTagSelectedPipe,
+  fbPostTypePipe,
+  tShopPostTypePipe
 ]
 
 @NgModule({
