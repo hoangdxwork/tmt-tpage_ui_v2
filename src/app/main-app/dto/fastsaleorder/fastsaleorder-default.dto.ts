@@ -279,8 +279,8 @@ export interface OrderLineV2 {
   PriceRecent?: any;
   Name?: any;
   IsName: boolean;
-  LiveCampaign_DetailId: any | null;
-  LiveCampaignQtyChange: any | null;
+  LiveCampaign_DetailId?: any;
+  LiveCampaignQtyChange?: any ;
   OrderId: any | null;
   ProductName: string;
   ProductUOMName: string;
@@ -295,7 +295,7 @@ export interface OrderLineV2 {
   PartnerId?: any;
   PriceSubTotalSigned: number;
   PromotionProgramComboId?: any;
-  Product?: Product | null;
+  Product?: any;
   ProductUOM?: ProductUOM;
   Account: Account;
   SaleLine?: any;
@@ -617,8 +617,8 @@ export interface FastSaleOrder_DefaultDTOV2 {
     FacebookName: string;
     FacebookNameNosign: string;
     FacebookId: string;
-    LiveCampaignId: string | null; // bổ sung 14/07/2022
-    LiveCampaignName: string | null; // bổ sung 14/07/2022
+    LiveCampaignId?: string ; // bổ sung 14/07/2022
+    LiveCampaignName?: string ; // bổ sung 14/07/2022
     DisplayFacebookName: string;
     Deliver: string;
     ShipWeight: number ;
