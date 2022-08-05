@@ -62,3 +62,9 @@ export interface ChatomniConversationDto {
   Items: ChatomniConversationItemDto[];
   Paging: PagingTimestamp;
 }
+
+export interface ChatomniTagsEventEmitterDto{
+  ConversationId: string,
+  Tags: ChatomniConversationTagDto[]
+
+}

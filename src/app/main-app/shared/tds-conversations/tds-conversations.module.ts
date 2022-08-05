@@ -1,3 +1,4 @@
+import { ChatomniEventEmiterService } from './../../app-constants/chatomni-event/chatomni-event-emiter.service';
 import { ShowItemImageComponent } from './../show-item-image/show-item-image.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CRMTagService } from './../../services/crm-tag.service';
@@ -103,7 +104,8 @@ const CMP =[
     QuickReplyService,
     CRMTagService,
     ActivityFacebookState,
-    FormatIconLikePipe
+    FormatIconLikePipe,
+    ChatomniEventEmiterService
   ]
 })
 
