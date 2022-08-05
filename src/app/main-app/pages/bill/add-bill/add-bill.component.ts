@@ -820,8 +820,8 @@ export class AddBillComponent implements OnInit {
     });
   }
 
-  copyOrderLine(item: OrderLineV2, index: number) {
-    var item = this.prepareCopyItemHandler.prepareModel(item,this.dataModel);
+  copyOrderLine(x: OrderLineV2, index: number) {
+    let item = this.prepareCopyItemHandler.prepareCopyModel(x, this.dataModel);
 
     if (item.Id <= 0) {
       item.Id = this.idPush + 1;
@@ -843,8 +843,10 @@ export class AddBillComponent implements OnInit {
     if (datas) {
       this._form.setControl('OrderLines', this.fb.array(datas));
     }
+
     //TODO: cập nhật form giá
-    let calData = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
+    let calData = this.calculateBillFee.computeAmountTotal(this._form, this.roleConfigs);
+
     this.totalQtyLines = calData.totalAmountLines;
     this.totalAmountLines = calData.totalAmountLines;
   }
@@ -854,6 +856,7 @@ export class AddBillComponent implements OnInit {
 
     this.totalQtyLines = Number(this.totalQtyLines - item.ProductUOMQty);
     this.totalAmountLines = Number(this.totalAmountLines - item.PriceTotal);
+
     //TODO: cập nhật form giá
     let calData = this.calculateBillFee.computeAmountTotal(this._form,this.roleConfigs);
     this.totalQtyLines = calData.totalAmountLines;
@@ -868,41 +871,44 @@ export class AddBillComponent implements OnInit {
     this.totalAmountLines = calData.totalAmountLines;
   }
 
-  onLoadProductToOrderLines(event: DataPouchDBDTO) {
+  onLoadProductToOrderLines(event: DataPouchDBDTO): any {
+
+    if (!this._form.controls['Partner'].value) {
+      return this.message.error('Vui lòng chọn khách hàng!');
+    }
+
     let datas = this._form.controls['OrderLines'].value as Array<OrderLineV2>;
     let exist = datas.filter((x: any) => x.ProductId == event.Id && x.ProductUOMId == event.UOMId && (x.Id != null || x.Id != 0))[0];
 
     if (exist) {
-      this.onChangeQuantity(Number(exist.ProductUOMQty + 1), exist);
+        this.onChangeQuantity(Number(exist.ProductUOMQty + 1), exist);
     } else {
-      this.pushProductToOrderlines(event);
+        this.pushProductToOrderlines(event);
     }
   }
 
+  // TODO: trường hợp thêm mới
   pushProductToOrderlines(event: DataPouchDBDTO): any {
     let data = {
       model: {
-        Discount: event.DiscountSale,
-        Discount_Fixed: 0,
-        Note: null,
-        PriceUnit: event.Price,
-        PriceRecent: event.OldPrice,
-        Product: event,
-        ProductId: event.Id,
-        ProductName: event.Name,
-        ProductNameGet: event.NameGet,
-        ProductUOMId: event.UOMId,
-        ProductUOMName: event.UOMName,
-        ProductUOMQty: 1,
-        Type: 'percent',
-        User: this.dataModel.User,
-        Weight: event.Weight
+          Discount: event.DiscountSale,
+          Discount_Fixed: 0,
+          Note: null,
+          PriceUnit: event.Price,
+          PriceRecent: event.OldPrice,
+          Product: event,
+          ProductId: event.Id,
+          ProductName: event.Name,
+          ProductNameGet: event.NameGet,
+          ProductUOMId: event.UOMId,
+          ProductUOMName: event.UOMName,
+          ProductUOMQty: 1,
+          Type: 'percent',
+          User: this.dataModel.User,
+          Weight: event.Weight
       },
-      order: this.dataModel
-    }
 
-    if (!this._form.controls['Partner'].value) {
-      return this.message.error('Vui lòng chọn khách hàng!');
+      order: this.dataModel
     }
 
     this.isLoadingProduct = true;
@@ -910,7 +916,7 @@ export class AddBillComponent implements OnInit {
       .pipe(finalize(() => { this.isLoadingProduct = false })).subscribe((res: FSOrderLines) => {
         delete res['@odata.context'];
 
-        let item: OrderLineV2 = this.prepareCopyItemHandler.prepareModel(res, this.dataModel);
+        let item: OrderLineV2 = this.prepareCopyItemHandler.prepareOnChangeProductModel(res, this.dataModel, event);
 
         if (item.Id <= 0) {
           item.Id = this.idPush - 1;
@@ -921,9 +927,9 @@ export class AddBillComponent implements OnInit {
         formArray.push(this.updateOrderLinesHandler.initOrderLines(this.dataModel, item));
 
         //TODO: cập nhật form giá
-        let calData = this.calculateBillFee.computeAmountTotal(this._form, this.roleConfigs);
-        this.totalQtyLines = calData.totalAmountLines;
-        this.totalAmountLines = calData.totalAmountLines;
+        let cacl = this.calculateBillFee.computeAmountTotal(this._form, this.roleConfigs);
+        this.totalQtyLines = cacl.totalAmountLines;
+        this.totalAmountLines = cacl.totalAmountLines;
 
         this.cdRef.detectChanges();
       }, error => {
@@ -1038,6 +1044,8 @@ export class AddBillComponent implements OnInit {
     let model = this.dataModel as FastSaleOrder_DefaultDTOV2;
     let x = this.addBillHandler.prepareModel(model, this._form);
 
+    delete x.ShipmentDetailsAship;// lỗi do tg vịnh
+
     return x;
   }
 
@@ -1046,7 +1054,7 @@ export class AddBillComponent implements OnInit {
       title: 'Cảnh báo',
       content: 'Đối tác chưa có dịch vụ bạn hãy bấm [Ok] để tìm dịch vụ.\nHoặc [Cancel] để tiếp tục.\nSau khi tìm dịch vụ bạn hãy xác nhận lại."',
       onOk: () => this.calcFee(),
-      onCancel:()=>{},
+      onCancel:() => {},
       okText: "OK",
       cancelText: "Cancel"
     });
