@@ -28,7 +28,7 @@ export class SocketService extends BaseSevice {
   }
 
   initSocket(): void {
-    let hostname =  this.document.location.hostname;
+    let hostname = this.document.location.hostname; // 'test.tpos.dev';//
     console.log(hostname);
 
     this.socket = io(environment.socketUrl, {
