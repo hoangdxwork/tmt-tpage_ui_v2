@@ -334,7 +334,7 @@ export class FastSaleOrderService extends BaseSevice {
 
   saveV2(data: any): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
-      url: `${this._BASE_URL}/${this.baseRestApi}/create`,
+      url: `${this._BASE_URL}/rest/v2.0/fastsaleorder/create`,
       method: CoreApiMethodType.post,
     }
 
