@@ -1,4 +1,4 @@
-import { ChatomniTagsEventEmitterDto } from './../../../dto/conversation-all/chatomni/chatomni-conversation';
+import { ChatomniTagsEventEmitterDto, ChatomniLastMessageEventEmitterDto, ChatomniConversationMessageDto } from './../../../dto/conversation-all/chatomni/chatomni-conversation';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 import { FacebookRESTService } from '../../../services/facebook-rest.service';
 import { ModalSendMessageAllComponent } from '../components/modal-send-message-all/modal-send-message-all.component';
@@ -151,6 +151,15 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         this.lstOmcs[index] = {...this.lstOmcs[index]}
       }
     })
+
+    this.chatomniEventEmiterService.last_Message_ConversationEmiter$.subscribe((res: ChatomniLastMessageEventEmitterDto)=>{
+      if(res){
+        let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId)
+        this.lstOmcs[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
+        this.lstOmcs[index] = {...this.lstOmcs[index]}
+        
+      }
+    })
   }
 
   spinLoading() {
@@ -296,9 +305,9 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         if (this.currentTeam) {
           this.facebookRESTService.rescan(this.currentTeam.ChannelId, 2)
             .pipe(takeUntil(this.destroy$)).subscribe(res => {
-              console.log("Yêu cầu cập nhật thành công.");
+              //TODO: "Yêu cầu cập nhật thành công.
           }, error => {
-              console.log("Yêu cầu cập nhật thất bại.");
+              //TODO: Yêu cầu cập nhật thất bại.
           });
         }
     } else {

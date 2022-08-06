@@ -53,7 +53,8 @@ export class ConversationInfopostItemComponent implements OnInit, OnChanges {
       bodyStyle: { padding : '0px'},
       viewContainerRef: this.viewContainerRef,
       componentParams:{
-        // data: this.data
+        data: this.dataFacebook,
+        objectId: this.data.ObjectId
       }
     });
   }

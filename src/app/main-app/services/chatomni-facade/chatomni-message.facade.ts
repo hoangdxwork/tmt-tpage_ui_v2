@@ -1,10 +1,11 @@
+import { ChatomniLastMessageEventEmitterDto, ChatomniConversationItemDto, ChatomniTagsEventEmitterDto, ChatomniConversationTagDto } from './../../dto/conversation-all/chatomni/chatomni-conversation';
 import { ChatomniFacebookDataDto, ChatomniDataItemDto, ChatomniDataDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { Injectable, OnDestroy } from "@angular/core";
 import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { get as _get } from 'lodash';
 import { set as _set } from 'lodash';
-import { TDSHelperString } from "tds-ui/shared/utility";
+import { TDSHelperString, TDSSafeAny } from "tds-ui/shared/utility";
 import { MakeActivityItemWebHook } from "@app/dto/conversation/make-activity.dto";
 
 @Injectable()
@@ -66,10 +67,37 @@ export class ChatomniMessageFacade extends BaseSevice  {
     return model;
   }
 
-  mappinglLastMessageEmiter(){
-    // let model = {
-    //   ConversationId: this.data.ConversationId,
-    //   LatestMessage: this.data.LatestMessage
-    // } as ChatomniLastMessageEventEmitterDto
+
+  mappingModelTag(tag:TDSSafeAny){
+    let model = {
+      Id: tag.Id,
+      Name: tag.Name,
+      Icon: tag.Icon,
+      ColorClass: tag.ColorClassName,
+      CreatedTime: tag.DateCreated
+    } as ChatomniConversationTagDto
+
+    return model;
+  }
+
+  mappinglTagsEmiter(data: ChatomniConversationItemDto){
+    let model = {
+      ConversationId: data.ConversationId,
+      Tags: data.Tags
+    } as ChatomniTagsEventEmitterDto
+
+    return model;
+  }
+
+  mappinglLastMessageEmiter(ConversationId: string, data: ChatomniDataItemDto){
+    let model = {
+      ConversationId: ConversationId,
+      LatestMessage: {
+        Message: data.Message,
+        CreatedTime: data.CreatedTime
+      }
+    } as ChatomniLastMessageEventEmitterDto
+
+    return model
   }
 }

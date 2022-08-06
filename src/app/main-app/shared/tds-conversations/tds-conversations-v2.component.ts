@@ -1,6 +1,6 @@
 import { ChatomniStatus, ChatomniDataDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { MakeActivityItemWebHook } from './../../dto/conversation/make-activity.dto';
-import { ChatomniConversationTagDto, ChatomniLastMessageEventEmitterDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
+import { ChatomniConversationTagDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { ReplaceHelper } from '../helper/replace.helper';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -564,19 +564,25 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
             x["status"] = ChatomniStatus.Pending;
             x.type = 11;
 
-            if (!x.message_formatted && TDSHelperArray.hasListValue(this.uploadedImages)) {
+            if (!x.message_formatted && TDSHelperArray.hasListValue(model.attachments)) {
               x["attachments"] = this.omniMessageFacade.createDataAttachments(this.uploadedImages[i]);
             }
 
-            let model = this.omniMessageFacade.mappingChatomniDataItemDto(x);
-            this.dataSource.Items = [...this.dataSource.Items, model]
+            let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
+            this.dataSource.Items = [...this.dataSource.Items, data];
+
+            //TODO: Đẩy qua conversation-all-v2 
+            if(i == res.length - 1){
+              let itemLast = {...data}
+              if (TDSHelperArray.hasListValue(model.attachments)) {
+                itemLast.Message = x.message_formatted ||  `Đã gửi ${this.uploadedImages.length} ảnh.`;
+              }
+              let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
+              this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
+            }
           });
         }
-        
-        // let model = this.omniMessageFacade.mappinglLastMessageEmiter(this.dataSource.Items);
-        console.log(this.data)
-        console.log(this.dataSource.Items)
-debugger
+
         this.currentImage = null;
         this.uploadedImages = [];
         delete this.messageModel;
@@ -632,17 +638,21 @@ debugger
         x.type = 11;
 
         if (TDSHelperArray.hasListValue(model.attachments) && !x.message_formatted) {
-            x["attachments"] = this.omniMessageFacade.createDataAttachments(this.uploadedImages[i]);
+          x["attachments"] = this.omniMessageFacade.createDataAttachments(this.uploadedImages[i]);
         }
         let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
-        this.dataSource.Items = [...this.dataSource.Items, data]
+        this.dataSource.Items = [...this.dataSource.Items, data];
+
+        //TODO: Đẩy qua conversation-all-v2 
+        if(i == res.length - 1){
+          let itemLast = {...data}
+          if (TDSHelperArray.hasListValue(model.attachments)) {
+            itemLast.Message = x.message_formatted ||  `Đã gửi ${this.uploadedImages.length} ảnh.`;
+          }
+          let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
+          this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
+        }
       });
-    }
-
-    let items = res.pop();
-
-    if (TDSHelperArray.hasListValue(this.uploadedImages) && TDSHelperArray.hasListValue(model?.attachments?.data)) {
-      items["message_formatted"] = items["message_formatted"] || `Đã gửi ${model?.attachments?.data.length} ảnh.`;
     }
 
     // TODO: Gửi tín hiệu phản hồi
@@ -742,13 +752,7 @@ debugger
     let tags = [...this.data.Tags];
 
     if (tags.findIndex(x=> x.Id == item.Id) > 0) {
-      let modelTag = {
-        Id: item.Id,
-        Name: item.Name,
-        Icon: item.Icon,
-        ColorClass: item.ColorClassName,
-        CreatedTime: item.DateCreated
-      } as ChatomniConversationTagDto
+      let modelTag = this.omniMessageFacade.mappingModelTag(item);
       this.removeIndexDbTag(modelTag);
     } else {
       this.assignIndexDbTag(item);
@@ -781,19 +785,10 @@ debugger
 
   assignTagOnView(tag: any) {
     this.data.Tags = this.data.Tags || [];
-    let modelTag = {
-      Id: tag.Id,
-      Name: tag.Name,
-      Icon: tag.Icon,
-      ColorClass: tag.ColorClassName,
-      CreatedTime: tag.DateCreated
-    } as ChatomniConversationTagDto
+    let modelTag = this.omniMessageFacade.mappingModelTag(tag);
     this.data.Tags = [...this.data.Tags, modelTag];
 
-    let model = {
-      ConversationId: this.data.ConversationId,
-      Tags: this.data.Tags
-    } as ChatomniTagsEventEmitterDto
+    let model = this.omniMessageFacade.mappinglTagsEmiter(this.data);
 
     //TODO: đẩy qua conversation-all-v2
     this.chatomniEventEmiter.tag_ConversationEmiter$.emit(model);
@@ -805,10 +800,7 @@ debugger
     let data = this.data.Tags.filter(x => x.Id !== tag.Id)
     this.data.Tags = [...data];
 
-    let model = {
-      ConversationId: this.data.ConversationId,
-      Tags: this.data.Tags
-    } as ChatomniTagsEventEmitterDto
+    let model = this.omniMessageFacade.mappinglTagsEmiter(this.data);
 
     //TODO: đẩy qua conversation-all-v2
     this.chatomniEventEmiter.tag_ConversationEmiter$.emit(model);
