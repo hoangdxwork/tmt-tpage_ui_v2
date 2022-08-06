@@ -1,3 +1,5 @@
+import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign.dto';
+import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { ChatomniDataTShopPostDto } from '@app/dto/conversation-all/chatomni/chatomni-tshop-post.dto';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
@@ -62,6 +64,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   postId: any;
   postChilds: TDSSafeAny[] = [];
   listBadge: any = {};
+  lstOfLiveCampaign: LiveCampaignModel[] = [];
 
   keyFilter: string = '';
   currentPost?: ChatomniObjectsItemDto;
@@ -78,6 +81,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     private conversationPostFacade: ConversationPostFacade,
     private facebookGraphService: FacebookGraphService,
     private activityMatchingService: ActivityMatchingService,
+    private liveCampaignService: LiveCampaignService,
     private message: TDSMessageService,
     public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
@@ -92,6 +96,9 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   }
 
   ngOnInit(): void {
+    //TODO: load danh sách chiến dịch
+    this.loadAvailableCampaign();
+
     // TODO: change team tds header
     this.crmService.changeTeamFromLayout$.pipe(takeUntil(this.destroy$)).subscribe((team) => {
         this.onClickTeam(team);
@@ -126,6 +133,15 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     });
 
     this.onChangeTabEvent();
+  }
+
+  loadAvailableCampaign(){
+    this.liveCampaignService.getAvailables().pipe(takeUntil(this.destroy$)).subscribe(res => {
+      this.lstOfLiveCampaign = res.value;
+    },
+    err=>{
+      this.message.error(err?.error?.message || 'Không thể tải dữ liệu chiến dịch');
+    })
   }
 
   //TODO: khi có comment mới vào bài viết

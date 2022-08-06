@@ -46,6 +46,15 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, null);
   }
 
+  getAvailables(){
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetAvailables?$orderby=DateCreated%20desc&$top=30`,
+      method: CoreApiMethodType.get,
+    }
+
+    return this.apiService.getData<ODataLiveCampaignDTO>(api, null);
+  }
+
   getDetailAndAttributes(id: any): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.baseRestApi}/${id}/getwithdetailandattributes`,
@@ -73,13 +82,13 @@ export class LiveCampaignService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
-  updateLiveCampaignPost(id: string | undefined, data: any): Observable<boolean> {
+  updateLiveCampaignPost(id: string | undefined, data: any): Observable<any> {
     const api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${id})/ODataService.UpdateFacebook`,
       method: CoreApiMethodType.post,
     }
 
-    return this.apiService.getData<boolean>(api, data);
+    return this.apiService.getData<any>(api, data);
   }
 
   getReportLiveCampaignOverview(data: any): Observable<any>{

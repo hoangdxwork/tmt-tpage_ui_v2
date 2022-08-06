@@ -1,3 +1,4 @@
+import { From_Post } from './chatomni-objects.dto';
 import { Facebook_Graph_Post } from "./chatomni-facebook-post.dto";
 import { ChatomniDataTShopPostDto } from "./chatomni-tshop-post.dto";
 
@@ -15,6 +16,7 @@ export interface Facebook_Graph_From {
   id: string;
   name: string;
   uid?: any;
+  picture: From_Post
 }
 
 export interface Parent {
@@ -36,6 +38,22 @@ export interface ImageData {
   render_as_sticker: boolean;
 }
 
+export interface Image {
+  height: number;
+  src: string;
+  width: number;
+}
+
+export interface Media {
+  image: Image;
+  source: string;
+}
+
+export interface Target {
+  id: string;
+  url: string;
+}
+
 export interface Datum {
   id?: any;
   mime_type: string;
@@ -44,6 +62,15 @@ export interface Datum {
   file_url?: any;
   image_data: ImageData;
   video_data?: any;
+}
+//DatumV2 thay thế sau khi xóa conversation-post-view-2
+export interface DatumV2{
+  media: Media;
+  subattachments?: any;
+  target: Target;
+  title: string;
+  type: string;
+  url: string;
 }
 
 export interface Attachments {

@@ -58,25 +58,32 @@
     </div>
 </div>
 <div class="flex-auto flex flex-col overflow-hidden gap-y-2">
-    <span class="w-full font-semibold truncate" *ngIf="mdbFbPost.description">
-        {{mdbFbPost.description}}
+    <span class="w-full font-semibold truncate" *ngIf="item.Title">
+        {{item.Title}}
     </span>
-    <span *ngIf="!mdbFbPost.description">
+
+    <span *ngIf="!item.Title">
         (Chưa có tiêu đề)
     </span>
+
+    <!-- <tds-label *ngIf="mdbFbPost.attachments?.data?.[0]?.title" class="text-info-500">
+        {{mdbFbPost.attachments.data.[0].title}}
+    </tds-label> -->
+
     <span *ngIf="mdbFbPost.message" class=" text-neutral-1-400">{{mdbFbPost.message | slice: 0: 50}}
         <span *ngIf="mdbFbPost.message.length > 50">...</span>
     </span>
+
     <span *ngIf="mdbFbPost.created_time | compareToday" class="text-neutral-1-400">
         {{mdbFbPost.created_time | yiDateTimeFormat}}
     </span>
+
     <span *ngIf="!(mdbFbPost.created_time | compareToday)" class="text-neutral-1-400">
         {{mdbFbPost.created_time | date:'dd/MM/yyyy HH:mm'}}
     </span>
     <div class="w-full flex justify-between items-center flex-wrap gap-y-2">
         <div *ngIf="mdbFbPost.live_campaign">
-            <tds-tag size="sm"
-                status="{{ currentPost?.ObjectId == item.ObjectId ? 'bg-base-orange-50 text-base-orange-500' : 'bg-neutral-3-100 text-neutral-1-600'}}"
+            <tds-tag size="sm" status="{{ currentPost?.ObjectId == item.ObjectId ? 'bg-base-orange-50 text-base-orange-500' : 'bg-neutral-3-100 text-neutral-1-600'}}"
                 (click)="showModalLiveCampaign(item)">
                 <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]" tds-tooltip
                     [tooltipTitle]="mdbFbPost.live_campaign.name">
@@ -86,13 +93,42 @@
             </tds-tag>
         </div>
         <div *ngIf="!mdbFbPost.live_campaign">
-            <tds-tag size="sm"
+            <tds-tag size="sm" tds-popover tds-tooltip="Thêm nhãn chiến dịch"
+                (click)="openTag(item.Id)"
+                [popoverVisible]="indClickTag == item.Id" popoverTrigger="click" [popoverFooter]="footerAddTag"
+                [popoverAutoClose]="false" [popoverContent]="contentAddtag" [popoverBackdrop]="true"
+                popoverPlacement="left"
                 status="{{ currentPost?.ObjectId == item.ObjectId ? 'bg-neutral-3-100 text-neutral-1-600': 'bg-neutral-3-50 text-neutral-1-600'}}">
                 <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
                     <span class="flex-auto truncate">Chọn chiến dịch</span>
                     <i class="tdsi-arrow-right-line text-lg leading-none ml-1"></i>
                 </span>
             </tds-tag>
+            <ng-template #contentAddtag>
+                <div class="w-[304px]">
+                  <tds-form-field>
+                    <tds-select valueField="Id" textField="Name" placeholder='Chọn chiến dịch'
+                        [(ngModel)]="currentLiveCampaign"
+                        [allowClear]="true" [valuePrimitive]="false" [data]="availableCampaigns"
+                        [autoClose]="true">
+                    </tds-select>
+                  </tds-form-field>
+                </div>
+              </ng-template>
+              <ng-template #footerAddTag>
+                <div class="flex justify-end pt-2">
+                  <button tds-button-icon type="button" color="secondary" class="mr-2" size="sm" (click)="closeTag()">
+                    <span class="flex items-center">
+                      <i class="tdsi-close-fill"></i>
+                    </span>
+                  </button>
+                  <button tds-button-icon type="button" size="sm" color="primary" (click)="addNewCampaign()">
+                    <span class="flex items-center">
+                      <i class="tdsi-tick-fill"></i>
+                    </span>
+                  </button>
+                </div>
+              </ng-template>
         </div>
         <div *ngIf="mdbFbPost.live_campaign" class="flex">
             <div class="w-5 h-5 rounded-full bg-accent-9 flex items-center justify-center"
@@ -108,6 +144,7 @@
       <ng-container *ngIf="postChild.parent_id && postChild.parent_id == item!.ObjectId">
           <div class="pl-2.5 pr-[14px] py-[14px] flex gap-x-4 {{ currentPost?.ObjectId == postChild.fbid ? 'bg-secondary-3 border-l-4 border-blue-500' : 'bg-white border-l-4 border-transparent'}}"
               (click)="selectPost(postChild)">
+
               <div class="flex flex-col gap-y-3">
                   <div class="relative w-[120px] h-[88px]">
                       <div *ngIf="postChild.picture; else noPicture" class="relative">
@@ -125,6 +162,7 @@
                           </ng-template>
                       </ng-template>
                   </div>
+
                   <div class="flex items-center w-full">
                       <div class="flex items-center gap-x-2 text-neutral-1-400">
                           <i class="tdsi-like-line"></i>
@@ -140,20 +178,24 @@
                   <span class="w-full font-semibold truncate" *ngIf="postChild.description">
                       {{postChild.description}}
                   </span>
+
                   <span *ngIf="!postChild.description">
-                      (Chưa có tiêu đề)
+                      (Chưa có mô tả)
                   </span>
-                  <span *ngIf="postChild.message" class=" text-neutral-1-400">{{postChild.message
-                      | slice: 0: 50}}
+
+                  <span *ngIf="postChild.message" class=" text-neutral-1-400">{{postChild.message | slice: 0: 50}}
                       <span *ngIf="postChild.message.length > 50">...</span>
                   </span>
+
                   <span *ngIf="postChild.created_time | compareToday" class="text-neutral-1-400">
                       {{postChild.created_time | yiDateTimeFormat}}
                   </span>
+
                   <span *ngIf="!(postChild.created_time | compareToday)"
                       class="text-neutral-1-400">
                       {{postChild.created_time | date:'dd/MM/yyyy HH:mm'}}
                   </span>
+
                   <div class="w-full flex justify-between items-center">
                       <div *ngIf="postChild.live_campaign">
                           <tds-tag size="sm"
@@ -167,6 +209,7 @@
                               </span>
                           </tds-tag>
                       </div>
+
                       <div *ngIf="!postChild.live_campaign">
                           <tds-tag size="sm"
                               status="{{ currentPost?.ObjectId == postChild.fbid ? 'bg-neutral-3-100 text-neutral-1-600': 'bg-neutral-3-50 text-neutral-1-600'}}">
@@ -176,6 +219,7 @@
                               </span>
                           </tds-tag>
                       </div>
+
                       <div *ngIf="postChild.live_campaign"
                           class="flex items-center justify-center">
                           <div class="w-5 h-5 rounded-full bg-accent-9 flex items-center justify-center"
