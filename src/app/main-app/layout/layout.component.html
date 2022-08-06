@@ -9,12 +9,10 @@
             </div>
             <div class="inline-flex tds-header-toolbar-right items-center">
                 <!-- Không có kết nối singalr -->
-                <!-- <button class="mr-2" tds-button-icon color="primary" (click)="onSave()" tooltipPlacement="bottom"
-                    *ngIf="!_connectionEstablished || !isNetwork" tds-tooltip tooltipTitle="Kết nối realtime thất bại.">
-                    <span class="flex items-center justify-center">
-                        <i class="tdsi-wifi-warning-fill text-xl leading-5"></i>
-                    </span>
-                </button> -->
+                <button class="mr-4"  tds-button-icon color="primary" rounded="!rounded-full" tooltipPlacement="bottom"
+                    *ngIf="establishedConnected == false" tds-tooltip tooltipTitle="Kết nối socket-io thất bại" (click)="reconnectSocket()">
+                        <i class="tdsi-flash-off-fill"></i>
+                </button>
                 <div>
                     <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)"></tpage-team-dropdown>
                 </div>
@@ -22,8 +20,7 @@
                     <tpage-notification-dropdown></tpage-notification-dropdown>
                 </div>
                 <div class="inline-flex pl-4">
-                    <tds-avatar class="cursor-pointer" tds-dropdown [tdsDropdownMenu]="dropdownAvatar" trigger="click"
-                        [tdsSrc]="userInit ? userInit.Avatar :''">
+                    <tds-avatar class="cursor-pointer" tds-dropdown [tdsDropdownMenu]="dropdownAvatar" trigger="click" [tdsSrc]="userInit ? userInit.Avatar :''">
                     </tds-avatar>
                     <tds-dropdown-menu #dropdownAvatar="tdsDropdownMenu">
                         <div class="w-56">
