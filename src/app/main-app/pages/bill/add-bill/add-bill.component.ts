@@ -25,7 +25,7 @@ import { AccountJournalPaymentDTO } from 'src/app/main-app/dto/register-payment/
 import { CustomerDTO } from 'src/app/main-app/dto/partner/customer.dto';
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { finalize, map, mergeMap } from 'rxjs/operators';
+import { finalize, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { StockWarehouseDTO } from 'src/app/main-app/dto/product/warehouse.dto';
 import { AllFacebookChildTO } from 'src/app/main-app/dto/team/all-facebook-child.dto';
@@ -56,6 +56,7 @@ import { SelectShipServiceV2Handler } from 'src/app/main-app/handler-v2/aship-v2
 import { UpdateShipmentDetailAshipHandler } from 'src/app/main-app/handler-v2/aship-v2/shipment-detail-aship.handler';
 import { AddBillHandler } from 'src/app/main-app/handler-v2/bill-handler/add-bill.handler';
 import { CreateFormBillHandler } from 'src/app/main-app/handler-v2/bill-handler/create-form-bill.handler';
+import { PrinterService } from '@app/services/printer.service';
 
 @Component({
   selector: 'app-add-bill',
@@ -147,8 +148,10 @@ export class AddBillComponent implements OnInit {
     private createFormBillHandler: CreateFormBillHandler,
     private applicationUserService: ApplicationUserService,
     private registerPaymentService: AccountRegisterPaymentService,
+    private printerService: PrinterService,
     private accountTaxService: AccountTaxService,
-    private viewContainerRef: ViewContainerRef) {
+    private viewContainerRef: ViewContainerRef,
+    private destroy$: TDSDestroyService) {
     this.createForm();
   }
 
@@ -1075,60 +1078,111 @@ export class AddBillComponent implements OnInit {
     });
   }
 
-  onSave(): any {
+  onSave(type?: string, print?: string): any {
+
     this.updateShipExtras();
     this.updateShipServiceExtras();
     this.updateShipmentDetailsAship();
 
     let model = this.prepareModel();
 
+    if(TDSHelperString.hasValueString(type)) {
+        model.FormAction = type;
+    }
+
     if (!TDSHelperObject.hasValue(this._form.controls['Partner'].value) && !this._form.controls['PartnerId'].value) {
-      return this.message.error('Vui lòng chọn khách hàng!');
+        return this.message.error('Vui lòng chọn khách hàng!');
     }
     if (!TDSHelperArray.hasListValue(this._form.controls['OrderLines'].value)) {
-      return this.message.error('Vui lòng chọn ít nhất 1 sản phẩm!');
+        return this.message.error('Vui lòng chọn ít nhất 1 sản phẩm!');
     }
 
     //TODO ràng buộc COD
     let COD = model.AmountTotal + model.DeliveryPrice - model.AmountDeposit;
-
     let exist = this.roleConfigs?.GroupFastSaleDeliveryCarrier && model.Type == "invoice" && model.CashOnDelivery != COD && !model.TrackingRef;
+
     if (exist) {
       this.modal.warning({
           title: 'Cảnh báo',
           content: `COD hiện tại ${formatNumber(model.CashOnDelivery, 'en-US', '1.0-3')} không bằng tổng COD phần mềm tính ${formatNumber(COD, 'en-US', '1.0-3')} bạn có muốn gán lại COD của phần mềm [${formatNumber(COD, 'en-US', '1.0-3')}]`,
-          onOk: () => { model.CashOnDelivery = COD; this.saveRequest(model) },
-          onCancel: () => { this.saveRequest(model) },
+          onOk: () => { model.CashOnDelivery = COD; this.saveRequest(model, print) },
+          onCancel: () => { this.saveRequest(model, print) },
           okText: "Đồng ý",
           cancelText: "Hủy bỏ",
           confirmViewType: "compact",
       });
+
     } else {
-      this.saveRequest(model);
+      this.saveRequest(model, print);
     }
   }
 
-  saveRequest(model: any) {
+  saveRequest(model: any, print?: string) {
     if (this.id) {
-
       this.isLoading = true;
-      this.fastSaleOrderService.update(this.id, model).pipe(finalize(() => { this.isLoading = false })).subscribe((res: any) => {
-        this.message.success('Cập nhật phiếu bán hàng thành công!');
-        this.onBack();
+
+      this.fastSaleOrderService.update(this.id, model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+          this.message.success('Cập nhật phiếu bán hàng thành công!');
+
+          if(print) {
+              this.printInvoices(print, this.id);
+          } else {
+              this.isLoading = false;
+              this.onBack();
+          }
+
       }, error => {
-        this.message.error(`${error.error.message}` || 'Cập nhật phiếu bán hàng thất bại!');
+          this.isLoading = false;
+          this.message.error(`${error.error.message}` || 'Cập nhật phiếu bán hàng thất bại!');
       })
 
     } else {
-      this.isLoading = true;
+        this.isLoading = true;
 
-      this.fastSaleOrderService.insert(model).pipe(finalize(() => { this.isLoading = false })).subscribe((res: any) => {
-        this.message.success('Tạo mới phiếu bán hàng thành công!');
-        this.onBack();
-      }, error => {
-        this.message.error(`${error.error.message}` || 'Tạo mới phiếu bán hàng thất bại!');
-      });
+        this.fastSaleOrderService.insert(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+            this.message.success('Tạo mới phiếu bán hàng thành công!');
+
+            if(print) {
+                this.printInvoices(print, res.Id);
+            } else {
+                this.isLoading = false;
+                this.onBack();
+            }
+        }, error => {
+            this.isLoading = false;
+            this.message.error(`${error.error.message}` || 'Tạo mới phiếu bán hàng thất bại!');
+        });
     }
+  }
+
+  printInvoices(type: string, id: number) {
+
+    let obs: TDSSafeAny;
+    switch (type) {
+        case "print":
+            obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${id}`);
+            break;
+
+        case "printship":
+          if(this.dataModel.Carrier) {
+              obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=` + `${id}` + "&carrierid=" + `${this.dataModel.Carrier.Id}`);
+          } else {
+              obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${id}`);
+          }
+          break;
+        default: break;
+    }
+
+    obs.pipe(takeUntil(this.destroy$)).subscribe((res: TDSSafeAny) => {
+      this.printerService.printHtml(res);
+          this.isLoading = false;
+
+      }, (error: TDSSafeAny) => {
+        this.isLoading = false;
+        if(error?.error?.message) {
+          this.message.error(error?.error?.message);
+        }
+    });
   }
 
   onChangeCarrierV2(event: DeliveryCarrierDTOV2) {

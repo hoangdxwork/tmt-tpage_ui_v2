@@ -323,6 +323,7 @@ export class DetailBillComponent implements OnInit, OnDestroy{
       onOk: () => {
         let model = { ids: [parseInt(that.id)] };
         this.isLoading = true;
+
         that.fastSaleOrderService.actionInvoiceOpen(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
           if(res && res.Success) {
 

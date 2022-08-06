@@ -1,8 +1,7 @@
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { filter, finalize, map, mergeMap,take, takeUntil } from 'rxjs/operators';
+import { filter, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { environment } from 'src/environments/environment';
 import { TDSMenuDTO } from 'tds-ui/menu';
@@ -51,7 +50,6 @@ export class LayoutComponent implements OnInit, AfterViewInit {
             while (route.firstChild) {
                 route = route.firstChild;
             }
-
             return route;
         }),
         filter(route => route.outlet === 'primary'),

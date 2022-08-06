@@ -480,13 +480,13 @@ export class EditOrderV2Component implements OnInit {
     this.saleModel = this.computeCaclHandler.so_coDAmount(this.saleModel, this.quickOrderModel);
   }
 
-  onSave(type: string): any {
+  onSave(type?: string): any {
     let model = this.quickOrderModel;
     let id = this.quickOrderModel.Id as string;
 
-    if(type === 'print') {
-        model.FormAction = 'print';
-        this.saleModel.FormAction = 'print';
+    if(TDSHelperString.hasValueString(type)) {
+        this.saleModel.FormAction = type;
+        this.quickOrderModel.FormAction = type;
     }
 
     if(this.isEnableCreateOrder) {
@@ -540,7 +540,7 @@ export class EditOrderV2Component implements OnInit {
     });
   }
 
-  createFastSaleOrder(data: FastSaleOrder_DefaultDTOV2, type: string) {
+  createFastSaleOrder(data: FastSaleOrder_DefaultDTOV2, type?: string) {
     this.fastSaleOrderService.createFastSaleOrder(data).pipe(takeUntil(this.destroy$)).subscribe((res: CreateFastSaleOrderDTO) => {
           if(res && res.Success == true) {
 
@@ -563,7 +563,7 @@ export class EditOrderV2Component implements OnInit {
                 obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${res.Data.Id}`);
               }
 
-              if(type == 'print_ship') {
+              if(type == 'printShip') {
                 if (this.saleModel.Carrier && this.saleModel.Carrier?.IsPrintCustom && printTemplateDefault.includes(this.saleModel.Carrier?.DeliveryType)) {
                     obs = this.printerService.printIP(`odata/fastsaleorder/OdataService.PrintShip`, { ids: [res.Data.Id]})
                 } else {
