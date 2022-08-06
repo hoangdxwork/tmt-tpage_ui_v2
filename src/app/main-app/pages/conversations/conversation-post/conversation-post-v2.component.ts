@@ -1,3 +1,4 @@
+import { ChatomniDataTShopPostDto } from '@app/dto/conversation-all/chatomni/chatomni-tshop-post.dto';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -177,7 +178,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     this.ngZone.run(() => {
         this.dataSource$ = this.chatomniObjectService.makeDataSource(this.currentTeam!.Id);
     })
-
+    
     if(this.dataSource$) {
         this.loadObjects(this.dataSource$);
     }
@@ -203,11 +204,11 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
 
   loadObjects(dataSource$: Observable<ChatomniObjectsDto>) {
     dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniObjectsDto) => {
-
+      
         if(res && res.Items) {
 
             this.lstObjects = [...res.Items];
-
+          
             if(TDSHelperArray.hasListValue(res.Items)){
                 let exits = res.Items.filter((x: ChatomniObjectsItemDto) => x.ObjectId == this.postId)[0];
 
@@ -235,7 +236,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
         switch(this.currentTeam?.Type ){
             case CRMTeamType._Facebook:
 
-              let x = item.Data as any;
+              let x = item.Data as MDB_Facebook_Mapping_PostDto;
               if(x.parent_id) {
 
                 this.facebookPostService.getByPostParent(this.currentTeam!.Id, x.parent_id).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {debugger
@@ -247,6 +248,9 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
             break;
 
             case CRMTeamType._TShop:
+
+              let selectItem = item.Data as ChatomniDataTShopPostDto;
+              
             break;
 
             default: break;

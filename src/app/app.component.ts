@@ -68,7 +68,7 @@ export class AppComponent {
 
                   case ChatomniMessageType.FacebookComment:
 
-                    this.titleMessage = `Facebook:${this.data.Conversation.Name} vừa bình luận`;
+                    this.titleMessage = `Facebook: ${this.data.Conversation.Name} vừa bình luận`;
                     this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
                     this.url = `/conversation/comment?teamId=${this.team.Id}&type=comment&csid=${this.data.Conversation.UserId}`;
 
@@ -89,36 +89,30 @@ export class AppComponent {
                     this.url = `/conversation/comment?teamId=${this.team.Id}&type=comment&csid=${this.data.Conversation.UserId}`;
 
                   break;
-
               }
           }, error => {
              console.log('Thông báo đến từ kênh chưa được kết nối', this.data)
           })
         }
 
-    }, err => {
-        console.log(err);
     });
   }
 
   getLink() {
     this.router.navigateByUrl(this.url);
-    if(this.crmTeamService.getCurrentTeam()?.Id != this.team.Id) {
-        this.crmTeamService.onUpdateTeam(this.team)
-    }
+    this.crmTeamService.onUpdateTeam(this.team)
   }
 
   init(): Observable<boolean> {
     let that = this;
     return new Observable(obs => {
-      that.zone.runOutsideAngular(() => {
-        that.setGlobalConfig();
-        that.libCommon.init().subscribe((s: TDSSafeAny) => {
-          obs.next(true);
-          obs.complete();
+        that.zone.runOutsideAngular(() => {
+            that.setGlobalConfig();
+            that.libCommon.init().subscribe((s: TDSSafeAny) => {
+                obs.next(true);
+                obs.complete();
+            });
         });
-
-      });
     })
   }
 

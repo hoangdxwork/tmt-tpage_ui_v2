@@ -172,4 +172,13 @@ export class SaleOnline_OrderService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api, null);
   }
 
+  getCheckDuplicatePhone(data: any) {
+    const api: CoreAPIDTO = {
+      url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.GetCheckDuplicatePhone?$expand=Values`,
+      method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api, data);
+  }
+
 }

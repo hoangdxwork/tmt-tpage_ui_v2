@@ -9,6 +9,7 @@ import { Injectable } from "@angular/core";
 export class CalculateBillFeeHandler {
 
   public computeAmountTotal(_form:FormGroup, roleConfigs: SaleSettingsDTO) {
+
     let totalQty = 0;
     let totalPrice = 0;
 
@@ -73,7 +74,7 @@ export class CalculateBillFeeHandler {
       _form.controls['PaymentAmount'].setValue(paymentAmount);
     }
 
-    return total
+    return total;
   }
 
   public calcTax(_form:FormGroup) {
@@ -95,15 +96,17 @@ export class CalculateBillFeeHandler {
         total += x.ProductUOMQty;
       }
     });
+
     _form.controls['TotalQuantity'].setValue(total);
   }
 
   public updateCoDAmount(_form:FormGroup) {
     let formModel = _form.value;
     let coDAmount = (formModel.AmountTotal + formModel.DeliveryPrice) - formModel.AmountDeposit;
+
     if (coDAmount > 0) {
       _form.controls['CashOnDelivery'].setValue(coDAmount);
-    }else{
+    } else{
       _form.controls['CashOnDelivery'].setValue(0);
     }
   }

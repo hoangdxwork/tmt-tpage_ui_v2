@@ -465,7 +465,7 @@ export class ConversationOrderComponent implements OnInit {
   }
 
   createFastSaleOrder(data: FastSaleOrder_DefaultDTOV2, type: string) {
-    this.fastSaleOrderService.saveV2(data, true).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.fastSaleOrderService.saveV2(data).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
         if(res && res.Success == true) {
 
             this.shipServices = [];

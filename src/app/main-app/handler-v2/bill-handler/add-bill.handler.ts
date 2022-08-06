@@ -11,9 +11,9 @@ export class AddBillHandler {
     const formModel = _form.value;
     data = Object.assign(data, formModel);
 
-    // if(data.Id == 0 || data.Id == null) {
-    //     delete data.Id;
-    // }
+    if(data.Id == 0 || data.Id == null) {
+        delete data.Id;
+    }
 
     data.AccountId = Number(data.Account?.Id || data.AccountId);
     if(data.AccountId && data.AccountId != 0) {
@@ -55,7 +55,7 @@ export class AddBillHandler {
       _form.controls['UserId'].setValue(data.UserId);
     }
 
-    data.TeamId = Number(data.Team?.Id || data.TeamId);
+    data.TeamId = data.Team?.Id || data.TeamId; // teamId gán null, = 0 lỗi
     if(data.TeamId && data.TeamId != 0) {
       _form.controls['TeamId'].setValue(data.TeamId);
     }
@@ -106,8 +106,6 @@ export class AddBillHandler {
         if (x.Id <= 0) {
           x.Id = 0;
         }
-        x.Account = x.Account || data.Account;
-        x.AccountId = data.AccountId;
         x.OrderId = data.Id;
         x.PartnerId = data.PartnerId;
         x.CompanyId = data.CompanyId;
@@ -121,8 +119,8 @@ export class AddBillHandler {
       let details: any = [];
       data.OrderLines?.forEach((x: OrderLineV2) => {
         let item = {
-            Account: data.Account,
-            AccountId: data.AccountId,
+            Account: x.Account || data.Account,
+            AccountId: x.Account?.Id || data.AccountId,
             Discount: x.Discount,
             Discount_Fixed: x.Discount_Fixed,
             Note: x.Note,

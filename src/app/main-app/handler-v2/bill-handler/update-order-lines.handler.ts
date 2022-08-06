@@ -9,13 +9,13 @@ import { Injectable } from "@angular/core";
 export class UpdateOrderLinesHandler {
   constructor(private fb: FormBuilder){}
 
-  public updateOrderLines(_form: FormGroup, data: FastSaleOrder_DefaultDTOV2) {
+  public updateOrderLines(_form: FormGroup, data: FastSaleOrder_DefaultDTOV2) {debugger
 
     if (TDSHelperArray.hasListValue(data.OrderLines)) {
       let formArray = <FormArray>_form.controls['OrderLines'];
 
       data.OrderLines?.forEach((item: OrderLineV2) => {
-        formArray.push(this.initOrderLines(data,item));
+          formArray.push(this.initOrderLines(data, item));
       });
     }
   }

@@ -17,7 +17,7 @@ export interface ChatomniObjectsItemDto {
   ChannelUpdatedTime?: any;
   Title?: any;
   Description: string;
-  Thumbnail?: { Url: string; };
+  Thumbnail?: Thumbnail;
 }
 
 
@@ -112,4 +112,10 @@ export interface Data_Picture {
   is_silhouette: boolean;
   url: string;
   width: number;
+}
+
+export interface Thumbnail {
+  Width: number;
+  Height: number;
+  Url: string;
 }

@@ -69,15 +69,15 @@ export class ChatomniConversationService extends BaseSevice {
 
     return this.get(teamId, type, queryObj).pipe(map((res: any) => {
 
-      // TODO: load dữ liệu lần đầu tiên
-      if (TDSHelperObject.hasValue(res)) {
-          this.csFacade.setData(teamId, res);
-      }
+        // TODO: load dữ liệu lần đầu tiên
+        if (TDSHelperObject.hasValue(res)) {
+            this.csFacade.setData(teamId, res);
+        }
 
-      this.urlNext = res.Paging?.UrlNext;
+        this.urlNext = res.Paging?.UrlNext;
 
-      let result = this.csFacade.getData(teamId);
-      return result;
+        let result = this.csFacade.getData(teamId);
+        return result;
 
     }), shareReplay({ bufferSize: 1, refCount: true }));
 
@@ -88,10 +88,10 @@ export class ChatomniConversationService extends BaseSevice {
     let exist = this.csFacade.getData(teamId);
 
     if (exist && !TDSHelperString.hasValueString(this.urlNext)) {
-      return Observable.create((obs: any) => {
-        obs.next();
-        obs.complete();
-      })
+        return Observable.create((obs: any) => {
+            obs.next();
+            obs.complete();
+        })
     }
     else {
       let url = this.urlNext as string;
@@ -99,14 +99,14 @@ export class ChatomniConversationService extends BaseSevice {
 
         // TODO nếu trùng urlNext thì xóa không cho load
         if (this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
-          this.urlNext = res.Paging.UrlNext;
+            this.urlNext = res.Paging.UrlNext;
 
-          exist.Extras!.Objects = { ...exist.Extras?.Objects, ...res.Extras?.Objects};
-          exist.Items = [...exist.Items, ...res.Items];
-          exist.Paging = { ...res.Paging };
+            exist.Extras!.Objects = { ...exist.Extras?.Objects, ...res.Extras?.Objects};
+            exist.Items = [...exist.Items, ...res.Items];
+            exist.Paging = { ...res.Paging };
 
         } else {
-          delete this.urlNext;
+            delete this.urlNext;
         }
 
         this.csFacade.setData(teamId, exist);
