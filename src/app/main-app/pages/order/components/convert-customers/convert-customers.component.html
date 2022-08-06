@@ -1,0 +1,28 @@
+<div class="flex flex-col items-center justify-center">
+  <div class="text-header-2 font-semibold">Chuyển đổi khách hàng</div>
+  <div class="mt-2 w-2/3 text-center">Bạn có muốn chuyển dữ liệu khách hàng, sau khi chuyển đổi chúng tôi sẽ xóa <span class="text-error-400 font-semibold">{{ resItem.DisplayName }} {{ resItem.Name }}</span> và không thể hoàn tác!</div>
+  <div class="mt-4 flex gap-x-2">
+    <div class="flex gap-x-1 items-center">
+      <div class="font-semibold">{{ resItem.DisplayName }} {{ resItem.Name }}</div>
+      <div class="bg-neutral-3-100 rounded flex justify-between items-center px-2 py-0.5 h-5">
+        <div class="text-caption-2 font-semibold text-neutral-1-700">ID: {{ resItem.Id }}</div>
+      </div>
+    </div>
+    <div class="w-[36px] h-[28px] rounded bg-primary-3 text-primary-1 flex items-center justify-center text-2xl leading-none"><i class="tdsi-in-out-fill"></i></div>
+    <div class="flex gap-x-1 items-center">
+      <div class="font-semibold">{{ desItem.DisplayName }} {{ desItem.Name }}</div>
+      <div class="bg-neutral-3-100 rounded flex justify-between items-center px-2 py-0.5 h-5">
+        <div class="text-caption-2 font-semibold text-neutral-1-700">ID: {{ desItem.Id }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="w-full flex justify-end p-4" *tdsModalFooter>
+  <button tds-button class="mr-2 min-w-[100px]" color="secondary" (click)="cancel()">
+    Đóng
+  </button>
+  <button tds-button type="submit" class=" mr-2 min-w-[100px]" color="primary" (click)="save()">
+    Xác nhận
+  </button>
+</div>
