@@ -1,8 +1,8 @@
+import { ChatomniMessageType } from './main-app/dto/conversation-all/chatomni/chatomni-data.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { Component, NgZone, TemplateRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { ChatomniMessageType } from '@app/dto/conversation-all/chatomni/chatomni-message.dto';
 import { SocketioOnMessageDto } from '@app/dto/socket-io/chatomni-on-message.dto';
 import { CRMTeamService } from '@app/services/crm-team.service';
 import { BehaviorSubject, Observable , takeUntil} from 'rxjs';

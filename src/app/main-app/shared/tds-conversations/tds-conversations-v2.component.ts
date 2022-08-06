@@ -1,4 +1,6 @@
-import { ChatomniConversationTagDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
+import { ChatomniStatus, ChatomniDataDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
+import { MakeActivityItemWebHook } from './../../dto/conversation/make-activity.dto';
+import { ChatomniConversationTagDto, ChatomniLastMessageEventEmitterDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { ReplaceHelper } from '../helper/replace.helper';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
@@ -23,7 +25,6 @@ import { Router } from '@angular/router';
 import { SharedService } from '../../services/shared.service';
 import { CRMMatchingService } from '../../services/crm-matching.service';
 import { ConversationEventFacade } from '../../services/facades/conversation-event.facade';
-import { ActivityStatus } from 'src/app/lib/enum/message/coversation-message';
 import { SignalRConnectionService } from '../../services/signalR/signalR-connection.service';
 import { SendMessageModelDTO } from '../../dto/conversation/send-message.dto';
 import { DraftMessageService } from '../../services/conversation/draft-message.service';
@@ -39,7 +40,6 @@ import { TDSUploadChangeParam } from 'tds-ui/upload';
 import { ProductPagefbComponent } from '../../pages/conversations/components/product-pagefb/product-pagefb.component';
 import { ModalPostComponent } from '../../pages/conversations/components/modal-post/modal-post.component';
 import { ChatomniMessageService } from '../../services/chatomni-service/chatomni-message.service';
-import { ChatomniMessageDTO } from '../../dto/conversation-all/chatomni/chatomni-message.dto';
 import { CrmMatchingV2Detail } from '../../dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
 import { ChatomniMessageFacade } from '../../services/chatomni-facade/chatomni-message.facade';
 import { ChatomniConversationItemDto, ChatomniTagsEventEmitterDto } from '../../dto/conversation-all/chatomni/chatomni-conversation';
@@ -72,8 +72,8 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   isLoading: boolean = false;
   isProcessing: boolean = false;
 
-  dataSource$!: Observable<ChatomniMessageDTO>;
-  dataSource!: ChatomniMessageDTO;
+  dataSource$!: Observable<ChatomniDataDto>;
+  dataSource!: ChatomniDataDto;
 
   partner: TDSSafeAny;
 
@@ -158,7 +158,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
         this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type);
     })
 
-    this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniMessageDTO) => {
+    this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
         if(res) {
             this.dataSource = res;
         }
@@ -359,7 +359,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
         this.dataSource$ = this.chatomniMessageService.nextDataSource(id);
     })
 
-    this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniMessageDTO) => {
+    this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
         if(res) {
             this.dataSource.Extras = res.Extras;
 
@@ -508,9 +508,10 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     }
 
     this.isLoadingSendMess = true;
-    let activityFinal = this.activityDataFacade.getMessageNearest(this.pageId, this.data.ConversationId, this.type ? this.type : 'all') as any;
 
-    if (TDSHelperObject.hasValue(activityFinal) && activityFinal.type === 12) {
+    let activityFinal = this.dataSource.Items? this.dataSource.Items[this.dataSource.Items!.length-1]: null
+
+    if (TDSHelperObject.hasValue(activityFinal) && (activityFinal?.Type === 12 || activityFinal?.Type === 91)) {
       if (this.type === 'all') {
             this.sendPrivateReplies(activityFinal, message);
         } else if (this.type === 'comment') {
@@ -549,30 +550,33 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   sendPrivateReplies(activityFinal: any, message: string) {
     const model = this.prepareModel(message);
     model.to = {
-      id: activityFinal?.from_id || activityFinal?.comment?.from?.id || null,
-      name: activityFinal?.comment?.from?.name || null
+      id:  activityFinal?.Data?.from?.id || activityFinal?.UserId || null,
+      name: activityFinal?.Data?.from?.name || null
     };
 
-    model.comment_id = activityFinal?.comment?.id || activityFinal?.id || null;
+    model.comment_id = activityFinal?.Data?.id || null;
 
     this.crmMatchingService.addQuickReplyComment(model)
       .pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false })).subscribe((res: any) => {
 
-        let countImageAdd = 0;
         if (TDSHelperArray.hasListValue(res)) {
-          res.forEach((x: any) => {
-            x["status"] = ActivityStatus.sending;
+          res.forEach((x: TDSSafeAny, i: number) => {
+            x["status"] = ChatomniStatus.Pending;
+            x.type = 11;
 
-            if (!x.message_formatted) {
-              x["message"] = this.activityDataFacade.createDataAttachments(this.uploadedImages[countImageAdd]);
-              countImageAdd += 1;
+            if (!x.message_formatted && TDSHelperArray.hasListValue(this.uploadedImages)) {
+              x["attachments"] = this.omniMessageFacade.createDataAttachments(this.uploadedImages[i]);
             }
-            this.activityDataFacade.messageServer(x);
+
+            let model = this.omniMessageFacade.mappingChatomniDataItemDto(x);
+            this.dataSource.Items = [...this.dataSource.Items, model]
           });
         }
-        let items = res.pop();
-        this.conversationDataFacade.messageServer(items);
-
+        
+        // let model = this.omniMessageFacade.mappinglLastMessageEmiter(this.dataSource.Items);
+        console.log(this.data)
+        console.log(this.dataSource.Items)
+debugger
         this.currentImage = null;
         this.uploadedImages = [];
         delete this.messageModel;
@@ -592,16 +596,14 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   replyComment(activityFinal: any, message: string) {
     const model = this.prepareModel(message);
 
-    model.post_id = activityFinal?.comment?.object?.id || null;
-    model.parent_id = activityFinal?.comment?.id || null;
-    model.to_id = activityFinal.from_id || activityFinal?.comment?.from?.id || null;
-    model.to_name = activityFinal?.comment?.from?.name || null;
+    model.post_id = activityFinal?.ObjectId || null;
+    model.parent_id = activityFinal?.Data?.id || null;
+    model.to_id = activityFinal?.Data?.from?.id || activityFinal?.UserId || null;
+    model.to_name = activityFinal?.Data?.from?.name || null;
 
     this.activityMatchingService.replyComment(this.team?.Id, model)
       .pipe(takeUntil(this.destroy$), finalize(() => { this.isLoadingSendMess = false; })).subscribe((res: any) => {
-
-        this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });
-        this.conversationDataFacade.messageServer(res);
+        // add vào dataSource tại đây
 
         this.currentImage = null;
         this.uploadedImages = [];
@@ -625,18 +627,19 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
   messageResponse(res: any, model: SendMessageModelDTO) {
     if (TDSHelperArray.hasListValue(res)) {
-      res.map((x: any, i: number) => {
-        x["status"] = ActivityStatus.sending;
-        this.activityDataFacade.messageServer(x);
+      res.map((x: TDSSafeAny, i: number) => {
+        x["status"] = ChatomniStatus.Pending;
+        x.type = 11;
 
-        if (TDSHelperArray.hasListValue(this.uploadedImages)) {
-          x["message"] = this.activityDataFacade.createDataAttachments(this.uploadedImages[i]);
+        if (TDSHelperArray.hasListValue(model.attachments) && !x.message_formatted) {
+            x["attachments"] = this.omniMessageFacade.createDataAttachments(this.uploadedImages[i]);
         }
+        let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
+        this.dataSource.Items = [...this.dataSource.Items, data]
       });
     }
 
     let items = res.pop();
-    this.conversationDataFacade.messageServer(items);
 
     if (TDSHelperArray.hasListValue(this.uploadedImages) && TDSHelperArray.hasListValue(model?.attachments?.data)) {
       items["message_formatted"] = items["message_formatted"] || `Đã gửi ${model?.attachments?.data.length} ảnh.`;
@@ -791,8 +794,9 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       ConversationId: this.data.ConversationId,
       Tags: this.data.Tags
     } as ChatomniTagsEventEmitterDto
-    this.chatomniEventEmiter.tagConversationEniter$.emit(model);
 
+    //TODO: đẩy qua conversation-all-v2
+    this.chatomniEventEmiter.tag_ConversationEmiter$.emit(model);
     this.cdRef.detectChanges();
   }
 
@@ -805,7 +809,9 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
       ConversationId: this.data.ConversationId,
       Tags: this.data.Tags
     } as ChatomniTagsEventEmitterDto
-    this.chatomniEventEmiter.tagConversationEniter$.emit(model);
+
+    //TODO: đẩy qua conversation-all-v2
+    this.chatomniEventEmiter.tag_ConversationEmiter$.emit(model);
     this.cdRef.detectChanges();
   }
 

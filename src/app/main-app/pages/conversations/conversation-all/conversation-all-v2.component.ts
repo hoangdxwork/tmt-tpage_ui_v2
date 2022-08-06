@@ -128,14 +128,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       if(exist){
           this.onChangeConversation(team);
       }
-
-      this.chatomniEventEmiterService.tagConversationEniter$.subscribe((res: ChatomniTagsEventEmitterDto)=>{
-        if(res){
-          let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId)
-          this.lstOmcs[index].Tags = [...res.Tags];
-          this.lstOmcs[index] = {...this.lstOmcs[index]}
-        }
-      })
+  
     })
 
     // TODO: gán mã code load từ Tab Order
@@ -151,6 +144,13 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   }
 
   eventEmitter() {
+    this.chatomniEventEmiterService.tag_ConversationEmiter$.subscribe((res: ChatomniTagsEventEmitterDto)=>{
+      if(res){
+        let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId)
+        this.lstOmcs[index].Tags = [...res.Tags];
+        this.lstOmcs[index] = {...this.lstOmcs[index]}
+      }
+    })
   }
 
   spinLoading() {

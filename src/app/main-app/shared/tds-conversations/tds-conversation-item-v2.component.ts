@@ -1,3 +1,4 @@
+import { ChatomniDataItemDto, ChatomniMessageType, Datum } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
 import { Facebook } from './../../../lib/dto/facebook.dto';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
@@ -15,7 +16,6 @@ import { TDSMessageService } from "tds-ui/message";
 import { TDSModalService } from "tds-ui/modal";
 import { ProductPagefbComponent } from "../../pages/conversations/components/product-pagefb/product-pagefb.component";
 import { FormatIconLikePipe } from "../pipe/format-icon-like.pipe";
-import { ChatomniMessageDetail, ChatomniMessageType, Datum } from "../../dto/conversation-all/chatomni/chatomni-message.dto";
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ActivityStatus } from '@core/enum/message/coversation-message';
 import { SendMessageModelDTO } from '@app/dto/conversation/send-message.dto';
@@ -31,7 +31,7 @@ import { SendMessageModelDTO } from '@app/dto/conversation/send-message.dto';
 
 export class TDSConversationItemV2Component implements OnInit {
 
-  @Input() dataItem!: ChatomniMessageDetail;
+  @Input() dataItem!: ChatomniDataItemDto;
   @Input() csid!: string;
   @Input() partner: any;
   @Input() team!: CRMTeamDTO;
@@ -197,7 +197,7 @@ export class TDSConversationItemV2Component implements OnInit {
     });
   }
 
-  isErrorAttachment(att: Datum, dataItem: ChatomniMessageDetail){
+  isErrorAttachment(att: Datum, dataItem: ChatomniDataItemDto){
     if(dataItem && (dataItem.Status != 2 || dataItem.Error?.Message)) {
         this.dataItem.Data['is_error_attachment'] = true;
     }
