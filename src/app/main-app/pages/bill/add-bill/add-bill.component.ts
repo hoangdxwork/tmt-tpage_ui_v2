@@ -545,7 +545,7 @@ export class AddBillComponent implements OnInit {
         this.message.error(`${error.error_description}` ? `${error.error_description}` : 'Gợi ý tính phí đã xảy ra lỗi!');
       });
     } else {
-      this.message.info('Tính nắng chưa khả dụng')
+      this.message.info('Tính năng chưa khả dụng')
     }
   }
 
