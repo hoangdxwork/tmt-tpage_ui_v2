@@ -1,8 +1,9 @@
+import { FacebookPostItem } from './../../../../dto/facebook-post/facebook-post.dto';
+import { Facebook_Graph_Post } from './../../../../dto/conversation-all/chatomni/chatomni-facebook-post.dto';
 import { FacebookCommentService } from 'src/app/main-app/services/facebook-comment.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { Component, Input, OnInit } from '@angular/core';
 import { TDSModalRef } from 'tds-ui/modal';
-import { FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
 import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
@@ -11,8 +12,10 @@ import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 })
 export class ModalPostComponent implements OnInit {
 
-  @Input() data!: FacebookPostItem;
+  @Input() data!: Facebook_Graph_Post;
+  @Input() objectId!: string;
 
+  dataPost!: FacebookPostItem;
   isShowCheckbox: boolean = false;
   selectedIndex: number = 0;
   constructor(
@@ -44,10 +47,23 @@ export class ModalPostComponent implements OnInit {
   textSearchFilterComment: string = '';
 
   ngOnInit(): void {
+    this.dataPost = this.mappingFacebookPostItemDto();
+  }
+
+  mappingFacebookPostItemDto(){
+    let model = {} as FacebookPostItem;
+
+    model.DateCreated = this.data.created_time;
+    model.LastUpdated = this.data.updated_time;
+    model.account_id = this.data.from?.id;
+    model.object_id = this.objectId;
+    model.fbid = this.objectId;
+
+    return model
   }
 
   onChangeFilter(event: any): any {
-    if(!TDSHelperString.hasValueString(this.data.fbid)) {
+    if(!TDSHelperString.hasValueString(this.objectId)) {
       return this.message.error('Không tìm thấy bài post');
     }
 
@@ -57,7 +73,7 @@ export class ModalPostComponent implements OnInit {
   }
 
   onChangeSort(event: any): any {
-    if(!TDSHelperString.hasValueString(this.data.fbid)) {
+    if(!TDSHelperString.hasValueString(this.objectId)) {
       return this.message.error('Không tìm thấy bài post');
     }
 

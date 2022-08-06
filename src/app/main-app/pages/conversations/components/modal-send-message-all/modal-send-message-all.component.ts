@@ -1,3 +1,5 @@
+import { ChatomniEventEmiterService } from './../../../../app-constants/chatomni-event/chatomni-event-emiter.service';
+import { ChatomniMessageFacade } from 'src/app/main-app/services/chatomni-facade/chatomni-message.facade';
 import { QuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-reply.dto';
 import { ActivityDataFacade } from 'src/app/main-app/services/facades/activity-data.facade';
 import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
@@ -13,6 +15,7 @@ import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { ProductPagefbComponent } from '../product-pagefb/product-pagefb.component';
+import { ChatomniStatus } from '@app/dto/conversation-all/chatomni/chatomni-data.dto';
 
 @Component({
   selector: 'app-modal-send-message-all',
@@ -45,7 +48,9 @@ export class ModalSendMessageAllComponent implements OnInit {
     private modal: TDSModalRef,
     private conversationDataFacade: ConversationDataFacade,
     private activityMatchingService: ActivityMatchingService,
-    private activityDataFacade: ActivityDataFacade) { }
+    private activityDataFacade: ActivityDataFacade,
+    private omniMessageFacade: ChatomniMessageFacade,
+    private chatomniEventEmiter: ChatomniEventEmiterService) { }
 
   ngOnInit(): void {
     this.sendMessageType = SendMessageType.Message;
@@ -221,9 +226,16 @@ export class ModalSendMessageAllComponent implements OnInit {
         .subscribe(res => {
 
           res.forEach((x: TDSSafeAny) => {
-              x["status"] = this.enumActivityStatus.sending;
-              this.activityDataFacade.messageServer(x);
-              this.conversationDataFacade.messageServer(x);
+            x["status"] = ChatomniStatus.Pending;
+            x.type = 11;
+   
+            let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
+            // this.dataSource.Items = [...this.dataSource.Items, data];
+
+            //TODO: Đẩy qua conversation-all-v2 
+            // let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(this.data.ConversationId ,itemLast);
+            // this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
+            
           });
 
           this.messageModel = '';
