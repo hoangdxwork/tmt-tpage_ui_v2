@@ -1,3 +1,4 @@
+import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Host, Input, OnChanges, OnDestroy, OnInit, Optional, SimpleChanges, SkipSelf, ViewContainerRef } from '@angular/core';
 import { Observable, Subject, Subscription } from 'rxjs';
@@ -20,6 +21,7 @@ import { SaleOnline_OrderService } from '@app/services/sale-online-order.service
 import { CommentOrder, CommentOrderPost, OdataCommentOrderPostDTO } from '@app/dto/conversation/post/comment-order-post.dto';
 import { RequestCommentByGroup } from '@app/dto/conversation/post/comment-group.dto';
 import { RequestCommentByPost } from '@app/dto/conversation/post/comment-post.dto';
+import { LiveCampaignModel } from '@app/dto/live-campaign/odata-live-campaign.dto';
 
 @Component({
   selector: 'conversation-post-view-v3',
@@ -91,7 +93,8 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
     private sgRConnectionService: SignalRConnectionService,
     private conversationPostFacade: ConversationPostFacade,
     private facebookCommentService: FacebookCommentService,
-    private message: TDSMessageService) {
+    private message: TDSMessageService,
+    private destroy$: TDSDestroyService) {
   }
 
   ngOnInit() {
@@ -99,7 +102,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
       this.initialize();
       this.onSetCommentOrders();
     }
-
+    
     this.loadData();
   }
 
@@ -172,7 +175,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
 
   loadGroupCommentsByPost() {
     if (this.team!.Type == 'Facebook') {
-      this.facebookCommentService.getGroupCommentsByPostId(this.data?.ObjectId)
+      this.facebookCommentService.getGroupCommentsByPostId(this.data?.ObjectId).pipe(takeUntil(this.destroy$))
         .subscribe((res: RequestCommentByGroup) => {
 
           if (TDSHelperArray.hasListValue(res.Items)) {
@@ -196,7 +199,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
 
   loadFilterCommentsByPost() {
     if (this.team!.Type == 'Facebook') {
-      this.facebookCommentService.getFilterCommentsByPostId(this.data?.ObjectId)
+      this.facebookCommentService.getFilterCommentsByPostId(this.data?.ObjectId).pipe(takeUntil(this.destroy$))
         .subscribe((res: RequestCommentByGroup) => {
 
           if (TDSHelperArray.hasListValue(res.Items)) {
@@ -221,7 +224,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
 
   loadManageCommentsByPost() {
     if (this.team!.Type == 'Facebook') {
-      this.facebookCommentService.getManageCommentsByLimit(this.data?.ObjectId)
+      this.facebookCommentService.getManageCommentsByLimit(this.data?.ObjectId).pipe(takeUntil(this.destroy$))
         .subscribe((res: RequestCommentByPost) => {
 
           if (TDSHelperArray.hasListValue(res.Items)) {
@@ -245,7 +248,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
   loadAllCommentsByPost() {
     if (this.team!.Type == 'Facebook') {
 
-      this.facebookCommentService.getCommentsByPostId(this.data?.ObjectId)
+      this.facebookCommentService.getCommentsByPostId(this.data?.ObjectId).pipe(takeUntil(this.destroy$))
         .subscribe((res: RequestCommentByPost) => {
 
           // Xử lý nếu bình luận đó là bình luận của 1 post child
@@ -278,7 +281,7 @@ export class ConversationPostViewV3Component implements OnInit, OnChanges, OnDes
 
   getCommentOrders(posId: string) {
     if (this.team!.Type == 'Facebook') {
-      this.facebookCommentService.getCommentsOrderByPost(posId)
+      this.facebookCommentService.getCommentsOrderByPost(posId).pipe(takeUntil(this.destroy$))
         .subscribe((res: OdataCommentOrderPostDTO) => {
 
           res?.value.map((x: CommentOrderPost) => {
