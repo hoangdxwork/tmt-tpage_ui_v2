@@ -141,7 +141,9 @@
                             [team]="team" [csid]="data.ConversationId"
                             [name]="data.Name" [dataItem]="item"
                             [type]="type" [partner]="partner"
-                            [children]="dataSource.Extras!.Objects[item?.ObjectId]">
+                            [dataSource]="dataSource">
+                            
+                            <!-- [children]="dataSource.Extras!.children[item?.ObjectId]" --> chưa có
                         </tds-conversation-item-v2>
                     </ng-container>
                   </div>
@@ -208,7 +210,7 @@
                         <div class="flex-auto flex flex-wrap gap-2.5 overflow-hidden overflow-y-auto tds-custom-scroll">
                             <span *ngFor="let item of lstOfTag" (click)="onSelectTag(item)"
                                 class="cursor-pointer px-2 py-0.5 rounded text-white text-caption-2 font-semibold flex items-center gap-x-2 hover:opacity-100"
-                                [ngClass]="data.Tags && data.Tags[item.Id]?'tdsi-tick-fill opacity-100':'opacity-40'"
+                                [ngClass]="data.Tags && (item.Id | checkTagSelected : data.Tags)?'tdsi-tick-fill opacity-100':'opacity-40'"
                                 [ngStyle]="{'background-color': [item.ColorClassName]}" >
                                 <span class="font-sans">{{item.Name}}</span>
                             </span>

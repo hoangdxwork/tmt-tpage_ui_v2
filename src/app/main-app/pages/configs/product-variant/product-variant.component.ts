@@ -187,6 +187,25 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
     }
   }
 
+  deleteProductToPageFB() {
+    if (this.checkValueEmpty() == 1) {
+      let data = { 
+        model:{
+          PageId: this.team.ChannelId, 
+          ProductIds: this.idsModel
+        }
+      };
+      
+      this.productService.deleteProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe(res => {
+        this.message.success('Đã xóa sản phẩm khỏi page')
+        this.onSelectChange(this.selected);
+        return
+      }, err => {
+        this.message.error(err.error.message || 'Xóa thất bại đã có lỗi xảy ra!')
+      })
+    }
+  }
+
   exportExcel() {
     if (this.isProcessing) {
       return
@@ -248,25 +267,56 @@ export class ListProductVariantComponent implements OnInit, OnDestroy {
   }
 
   showRemoveModal(key: number) {
-    const modal = this.modalService.error({
-      title: 'Xác nhận xóa biến thể sản phẩm',
-      content: 'Bạn có chắc muốn xóa biến thể sản phẩm này không?',
-      iconType: 'tdsi-trash-fill',
-      okText: "Xác nhận",
-      cancelText: "Hủy bỏ",
-      onOk: () => {
-        this.productService.deleteProduct(key).pipe(takeUntil(this.destroy$)).subscribe(res => {
-          this.message.success('Xóa sản phẩm thành công!')
-          this.onSelectChange(this.selected);
-          return
-        }, err => {
-          this.message.error(err.error.message || 'Xóa thất bại đã có lỗi xảy ra!')
-        })
-      },
-      onCancel: () => {
-        modal.close();
-      },
-    })
+    if(this.selected == 0){
+      const modal = this.modalService.error({
+        title: 'Xác nhận xóa biến thể sản phẩm',
+        content: 'Bạn có chắc muốn xóa biến thể sản phẩm này không?',
+        iconType: 'tdsi-trash-fill',
+        okText: "Xác nhận",
+        cancelText: "Hủy bỏ",
+        onOk: () => {
+          this.productService.deleteProduct(key).pipe(takeUntil(this.destroy$)).subscribe(res => {
+            this.message.success('Xóa sản phẩm thành công!')
+            this.onSelectChange(this.selected);
+            return
+          }, err => {
+            this.message.error(err.error.message || 'Xóa thất bại đã có lỗi xảy ra!')
+          })
+        },
+        onCancel: () => {
+          modal.close();
+        },
+      })
+    }
+
+    if(this.selected == 1){
+      const modal = this.modalService.error({
+        title: 'Xác nhận xóa biến thể sản phẩm khỏi page',
+        content: `Bạn có chắc muốn xóa biến thể sản phẩm này khỏi page ${this.team.Name} không?`,
+        iconType: 'tdsi-trash-fill',
+        okText: "Xác nhận",
+        cancelText: "Hủy bỏ",
+        onOk: () => {
+          let data = { 
+            model:{
+              PageId: this.team.ChannelId, 
+              ProductIds: [key]
+            }
+          };
+          
+          this.productService.deleteProductToFacebookPage(data).pipe(takeUntil(this.destroy$)).subscribe(res => {
+            this.message.success('Đã xóa sản phẩm khỏi page')
+            this.onSelectChange(this.selected);
+            return
+          }, err => {
+            this.message.error(err.error.message || 'Xóa thất bại đã có lỗi xảy ra!')
+          })
+        },
+        onCancel: () => {
+          modal.close();
+        },
+      })
+    }
   }
 
   onItemChecked(id: number, checked: boolean): void {

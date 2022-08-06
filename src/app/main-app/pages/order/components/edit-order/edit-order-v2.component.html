@@ -551,18 +551,18 @@
             </div>
 
             <div class="flex gap-x-4">
-                <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">ĝóng</button>
+                <button tds-button class="w-[100px]" type="button" color="secondary" (click)="onCancel()">Đóng</button>
                 <button tds-button class="w-[126px]" type="button" color="info" (click)="onSave('print')">
                     <span class="flex items-center">
                         <i class="tdsi-print-fill text-lg leading-none mr-2"></i>Lưu và in
                     </span>
                 </button>
-                <button *ngIf="isEnableCreateOrder" tds-button class="w-[170px]" type="button" color="info" (click)="onSave('print_ship')">
+                <button *ngIf="isEnableCreateOrder" tds-button class="w-[170px]" type="button" color="info" (click)="onSave('printShip')">
                     <span class="flex items-center">
                         <i class="tdsi-print-fill text-lg leading-none mr-2"></i>Lưu và in phiếu ship
                     </span>
                 </button>
-                <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave('null')">Lưu</button>
+                <button tds-button class="w-[100px]" type="button" color="primary" (click)="onSave()">Lưu</button>
             </div>
           </div>
       </div>

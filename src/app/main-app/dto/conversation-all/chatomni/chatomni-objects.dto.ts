@@ -1,5 +1,6 @@
+import { Extras, PagingTimestamp } from './chatomni-data.dto';
+import { Attachments } from './../../facebook-post/facebook-post.dto';
 import { Facebook_Graph_Post } from "./chatomni-facebook-post.dto";
-import { Attachments, Extras, Facebook_Graph_From, PagingTimestamp } from "./chatomni-message.dto";
 import { ChatomniDataTShopPostDto } from "./chatomni-tshop-post.dto";
 
 
@@ -16,7 +17,7 @@ export interface ChatomniObjectsItemDto {
   ChannelUpdatedTime?: any;
   Title?: any;
   Description: string;
-  Thumbnail?: { Url: string; };
+  Thumbnail?: Thumbnail;
 }
 
 
@@ -111,4 +112,10 @@ export interface Data_Picture {
   is_silhouette: boolean;
   url: string;
   width: number;
+}
+
+export interface Thumbnail {
+  Width: number;
+  Height: number;
+  Url: string;
 }

@@ -92,4 +92,13 @@ export class OdataPartnerService extends BaseSevice {
     return this.apiService.getData<ODataPartnerInvoiceDTO>(api, null);
   }
 
+  transferPartner(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.TransferPartner`,
+        method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<ODataCreditDebitDTO>(api, data);
+  }
+
 }

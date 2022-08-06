@@ -1,132 +1,137 @@
 <tds-spin [spinning]="isLoading">
-  <div class="w-full h-full flex items-stretch bg-neutral-3-200 overflow-hidden text-body-2 text-neutral-1-900">
-      <div class="2xl:w-1/5 w-1/4 h-full flex flex-col text-body-2 text-neutral-1-900 overflow-hidden">
-          <div class="w-full flex flex-col gap-1 px-1">
-              <div class="bg-white p-2.5 flex flex-col gap-y-4">
-                  <div class="w-full">
-                      <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)"></tpage-team-dropdown>
-                  </div>
-                  <div class="flex">
-                      <tds-form-field class="w-full mr-2">
-                          <input tdsInput placeholder="Tìm kiếm theo họ tên, SĐT" autocomplete="off" #innerText />
-                          <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
-                      </tds-form-field>
-                      <button tds-flat-button-icon tds-dropdown trigger="click" placement="bottomRight"
-                          [tdsDropdownMenu]="btnFilter">
-                          <span class="flex text-neutral-1-500 relative w-[34px] h-[34px]">
-                              <i class="tdsi-filter-2-line text-xl leading-5 h-full w-full flex items-center justify-center"></i>
-                              <div *ngIf="isLoadFrist && eventType == 'TYPE'" class="overflow-hidden h-3 w-3 bg-primary-1 text-white rounded-full absolute top-2 right-2 flex justify-center items-center"
-                                  style="transform: translate(30%, -30%); transform-origin: 100% 0px;">
-                                  <span class="text-[7px] leading-[5px] tdsi-tick-fill">
-                                  </span>
-                              </div>
-                          </span>
-                      </button>
-                      <!-- droupdown filter -->
-                      <tds-dropdown-menu #btnFilter="tdsDropdownMenu">
-                          <div class="w-[225px] py-2">
-                              <div tds-dropdown-item *ngFor="let item of lstType" (click)="setType(item, 'TYPE')"
-                                  class="w-full flex justify-between items-center">
-                                  {{item.text}}
-                                  <span class="tdsi-success-fill text-success-500"
-                                      *ngIf="item?.text == currentType?.text && isLoadFrist"></span>
-                              </div>
-                          </div>
-                      </tds-dropdown-menu>
-                      <button tds-flat-button-icon tds-dropdown trigger="click" placement="bottomRight"
-                          [tdsDropdownMenu]="btnUpDown">
-                          <span class="flex text-neutral-1-500 w-[34px] h-[34px] relative">
-                              <i class="tdsi-sort-up-down-fill text-xl leading-5 h-full w-full flex items-center justify-center"></i>
-                              <div *ngIf="eventType == 'SORT'" class="overflow-hidden h-3 w-3 bg-primary-1 text-white rounded-full absolute top-2 right-2 flex justify-center items-center"
-                                  style="transform: translate(30%, -30%); transform-origin: 100% 0px;">
-                                  <span class="text-[7px] leading-[5px] tdsi-tick-fill">
-                              </span>
-                          </div>
-                          </span>
-                      </button>
-                      <!-- droupdown up down -->
-                      <tds-dropdown-menu #btnUpDown="tdsDropdownMenu">
-                          <div class="w-[225px] py-2">
-                              <div tds-dropdown-item *ngFor="let item of lstTime" (click)="setType(item, 'SORT')"
-                                  class="w-full flex justify-between items-center">
-                                  {{item.text}}
-                                  <span class="tdsi-success-fill text-success-500"
-                                      *ngIf="item?.text == currentType?.text"></span>
-                              </div>
-                          </div>
-                      </tds-dropdown-menu>
-                  </div>
-              </div>
-          </div>
-          <div class="h-full flex flex-col gap-y-1 overflow-y-auto no-scrollbar p-1" *ngIf="lstObjects">
-            <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="myScroll" is-lock="true" observe-attributes
-              yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
-
-              <div *ngFor="let item of lstObjects; let i=index; trackBy: trackByIndex">
-
-                  <div *ngIf="item && currentTeam!.Type == 'Facebook'">
-                      <object-facebook-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)"></object-facebook-post>
-                  </div>
-
-                  <div *ngIf="item && currentTeam!.Type == 'TShop'" (click)="selectPost(item)" >
-                  </div>
-              </div>
-
-              <div class="bg-white flex-auto"></div>
+    <div class="w-full h-full flex items-stretch bg-neutral-3-200 overflow-hidden text-body-2 text-neutral-1-900">
+        <div class="2xl:w-1/5 w-1/4 h-full flex flex-col text-body-2 text-neutral-1-900 overflow-hidden">
+            <div class="w-full flex flex-col gap-1 px-1">
+                <div class="bg-white p-2.5 flex flex-col gap-y-4">
+                    <div class="w-full">
+                        <tpage-team-dropdown (tdsClickItem)="onClickTeam($event)"></tpage-team-dropdown>
+                    </div>
+                    <div class="flex">
+                        <tds-form-field class="w-full mr-2">
+                            <input tdsInput placeholder="Tìm kiếm theo họ tên, SĐT" autocomplete="off" #innerText />
+                            <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
+                        </tds-form-field>
+                        <button tds-flat-button-icon tds-dropdown trigger="click" placement="bottomRight"
+                            [tdsDropdownMenu]="btnFilter">
+                            <span class="flex text-neutral-1-500 relative w-[34px] h-[34px]">
+                                <i class="tdsi-filter-2-line text-xl leading-5 h-full w-full flex items-center justify-center"></i>
+                                <div *ngIf="isLoadFrist && eventType == 'TYPE'"
+                                    class="overflow-hidden h-3 w-3 bg-primary-1 text-white rounded-full absolute top-2 right-2 flex justify-center items-center"
+                                    style="transform: translate(30%, -30%); transform-origin: 100% 0px;">
+                                    <span class="text-[7px] leading-[5px] tdsi-tick-fill">
+                                    </span>
+                                </div>
+                            </span>
+                        </button>
+                        <!-- droupdown filter -->
+                        <tds-dropdown-menu #btnFilter="tdsDropdownMenu">
+                            <div class="w-[225px] py-2">
+                                <div tds-dropdown-item *ngFor="let item of lstType" (click)="setType(item, 'TYPE')"
+                                    class="w-full flex justify-between items-center">
+                                    {{item.text}}
+                                    <span class="tdsi-success-fill text-success-500" *ngIf="item?.text == currentType?.text && isLoadFrist"></span>
+                                </div>
+                            </div>
+                        </tds-dropdown-menu>
+                        <button tds-flat-button-icon tds-dropdown trigger="click" placement="bottomRight"
+                            [tdsDropdownMenu]="btnUpDown">
+                            <span class="flex text-neutral-1-500 w-[34px] h-[34px] relative">
+                                <i class="tdsi-sort-up-down-fill text-xl leading-5 h-full w-full flex items-center justify-center"></i>
+                                <div *ngIf="eventType == 'SORT'"
+                                    class="overflow-hidden h-3 w-3 bg-primary-1 text-white rounded-full absolute top-2 right-2 flex justify-center items-center"
+                                    style="transform: translate(30%, -30%); transform-origin: 100% 0px;">
+                                    <span class="text-[7px] leading-[5px] tdsi-tick-fill">
+                                    </span>
+                                </div>
+                            </span>
+                        </button>
+                        <!-- droupdown up down -->
+                        <tds-dropdown-menu #btnUpDown="tdsDropdownMenu">
+                            <div class="w-[225px] py-2">
+                                <div tds-dropdown-item *ngFor="let item of lstTime" (click)="setType(item, 'SORT')"
+                                    class="w-full flex justify-between items-center">
+                                    {{item.text}}
+                                    <span class="tdsi-success-fill text-success-500" *ngIf="item?.text == currentType?.text"></span>
+                                </div>
+                            </div>
+                        </tds-dropdown-menu>
+                    </div>
+                </div>
             </div>
-          </div>
-      </div>
-      <!--Chọn bài viết để hiển thị chi tiết-->
-      <div class="w-[50%] flex flex-col h-full overflow-hidden">
-          <div *ngIf="currentPost && currentTeam" class="h-full w-full">
-              <conversation-post-view-v3 [data]="currentPost" [team]="currentTeam"></conversation-post-view-v3>
-          </div>
-          <div *ngIf="!currentPost" class="h-full w-full">
-              Hãy chọn một bài viết.
-          </div>
-      </div>
-      <!-- Danh sách khách hàng, đơn hàng -->
-      <div class="w-[30%] h-full flex flex-col">
-          <tds-tabset class="w-full h-full flex " [clsTab]="'flex-1'" [(selectedIndex)]="currentOrderTab"
-              [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
-              <!-- tab Danh sách -->
-              <tds-tab [title]="titleList" clsContent=" -mt-px h-full flex flex-col">
-                  <ng-template #titleList let-active="active">
-                      <div class=" p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center justify-center"
-                          [ngClass]='{"border-primary-1 bg-white":active,"border-transparent text-neutral-1-400 bg-neutral-3-50 hover:border-primary-1":!active}'>
-                          <span class="mr-2">Danh sách</span>
-                      </div>
-                  </ng-template>
-                  <div class="flex pt-1 w-full h-[calc(100vh-109px)]">
-                      <conversation-order-list class="w-full"></conversation-order-list>
-                  </div>
-              </tds-tab>
-              <!-- tab Khách hàng -->
-              <tds-tab [title]="titlePartner" clsContent="-mt-px h-full flex flex-col" [disabled]="isDisableTab">
-                  <ng-template #titlePartner let-active="active">
-                      <div class=" p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center justify-center"
-                          [ngClass]='{"border-primary-1 bg-white":active,"border-transparent text-neutral-1-400 bg-neutral-3-50 hover:border-primary-1":!active}'>
-                          <span class="mr-2">Khách hàng</span>
-                      </div>
-                  </ng-template>
-                  <div>
-                      <!-- <conversation-partner [team]="currentTeam" [type]="type">
+            <div class="h-full flex flex-col gap-y-1 overflow-y-auto no-scrollbar p-1" *ngIf="lstObjects">
+                <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="myScroll" is-lock="true"
+                    observe-attributes yiAutoScroll lock-y-offset="10" scroll-end="true"
+                    (on-change-bottom)="nextData($event)">
+
+                    <div *ngFor="let item of lstObjects; let i=index; trackBy: trackByIndex">
+
+                        <div *ngIf="item && currentTeam!.Type == 'Facebook'">
+                            <object-facebook-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" [availableCampaigns]="lstOfLiveCampaign" 
+                                (selectPostItemEvent)="selectPost($event)">
+                            </object-facebook-post>
+                        </div>
+
+                        <div *ngIf="item && currentTeam!.Type == 'TShop'">
+                            <object-tshop-post [item]="item" [currentPost]="currentPost" [postChilds]="postChilds" (selectPostItemEvent)="selectPost($event)">
+                            </object-tshop-post>
+                        </div>
+                    </div>
+
+                    <div class="bg-white flex-auto"></div>
+                </div>
+            </div>
+        </div>
+        <!--Chọn bài viết để hiển thị chi tiết-->
+        <div class="w-[50%] flex flex-col h-full overflow-hidden">
+            <div *ngIf="currentPost && currentTeam" class="h-full w-full">
+                <conversation-post-view-v3 [data]="currentPost" [team]="currentTeam"></conversation-post-view-v3>
+            </div>
+            <div *ngIf="!currentPost" class="h-full w-full">
+                Hãy chọn một bài viết.
+            </div>
+        </div>
+        <!-- Danh sách khách hàng, đơn hàng -->
+        <div class="w-[30%] h-full flex flex-col">
+            <tds-tabset class="w-full h-full flex " [clsTab]="'flex-1'" [(selectedIndex)]="currentOrderTab"
+                [tabBarStyle]="{'padding-right':'0px','padding-left':'0px'}">
+                <!-- tab Danh sách -->
+                <tds-tab [title]="titleList" clsContent=" -mt-px h-full flex flex-col">
+                    <ng-template #titleList let-active="active">
+                        <div class=" p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center justify-center"
+                            [ngClass]='{"border-primary-1 bg-white":active,"border-transparent text-neutral-1-400 bg-neutral-3-50 hover:border-primary-1":!active}'>
+                            <span class="mr-2">Danh sách</span>
+                        </div>
+                    </ng-template>
+                    <div class="flex pt-1 w-full h-[calc(100vh-109px)]">
+                        <conversation-order-list class="w-full"></conversation-order-list>
+                    </div>
+                </tds-tab>
+                <!-- tab Khách hàng -->
+                <tds-tab [title]="titlePartner" clsContent="-mt-px h-full flex flex-col" [disabled]="isDisableTab">
+                    <ng-template #titlePartner let-active="active">
+                        <div class=" p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center justify-center"
+                            [ngClass]='{"border-primary-1 bg-white":active,"border-transparent text-neutral-1-400 bg-neutral-3-50 hover:border-primary-1":!active}'>
+                            <span class="mr-2">Khách hàng</span>
+                        </div>
+                    </ng-template>
+                    <div>
+                        <!-- <conversation-partner [team]="currentTeam" [type]="type">
                       </conversation-partner> -->
-                  </div>
-              </tds-tab>
-              <!-- tab đơn hàng -->
-              <tds-tab [title]="titleOrder" clsContent="-mt-px h-full flex flex-col" [disabled]="isDisableTab">
-                  <ng-template #titleOrder let-active="active">
-                      <div class="p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center justify-center"
-                          [ngClass]='{"border-primary-1 bg-white":active,"border-transparent text-neutral-1-400 bg-neutral-3-50 hover:border-primary-1":!active}'>
-                          <span class="mr-2">Đơn hàng</span>
-                      </div>
-                  </ng-template>
-                  <div>
-                      <!-- <post-order [team]="currentTeam"></post-order> -->
-                  </div>
-              </tds-tab>
-          </tds-tabset>
-      </div>
-  </div>
+                    </div>
+                </tds-tab>
+                <!-- tab đơn hàng -->
+                <tds-tab [title]="titleOrder" clsContent="-mt-px h-full flex flex-col" [disabled]="isDisableTab">
+                    <ng-template #titleOrder let-active="active">
+                        <div class="p-4 font-semibold text-body-2 border-b-3 cursor-pointer group flex items-center justify-center"
+                            [ngClass]='{"border-primary-1 bg-white":active,"border-transparent text-neutral-1-400 bg-neutral-3-50 hover:border-primary-1":!active}'>
+                            <span class="mr-2">Đơn hàng</span>
+                        </div>
+                    </ng-template>
+                    <div>
+                        <!-- <post-order [team]="currentTeam"></post-order> -->
+                    </div>
+                </tds-tab>
+            </tds-tabset>
+        </div>
+    </div>
 </tds-spin>

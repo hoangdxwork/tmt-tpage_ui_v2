@@ -1,3 +1,4 @@
+import { ChatomniDataItemDto, ChatomniMessageType, ChatomniStatus, Datum, ChatomniDataDto } from './../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { CRMTeamType } from './../../dto/team/chatomni-channel.dto';
 import { Facebook } from './../../../lib/dto/facebook.dto';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
@@ -15,7 +16,6 @@ import { TDSMessageService } from "tds-ui/message";
 import { TDSModalService } from "tds-ui/modal";
 import { ProductPagefbComponent } from "../../pages/conversations/components/product-pagefb/product-pagefb.component";
 import { FormatIconLikePipe } from "../pipe/format-icon-like.pipe";
-import { ChatomniMessageDetail, ChatomniMessageType, Datum } from "../../dto/conversation-all/chatomni/chatomni-message.dto";
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ActivityStatus } from '@core/enum/message/coversation-message';
 import { SendMessageModelDTO } from '@app/dto/conversation/send-message.dto';
@@ -31,13 +31,14 @@ import { SendMessageModelDTO } from '@app/dto/conversation/send-message.dto';
 
 export class TDSConversationItemV2Component implements OnInit {
 
-  @Input() dataItem!: ChatomniMessageDetail;
+  @Input() dataItem!: ChatomniDataItemDto;
   @Input() csid!: string;
   @Input() partner: any;
   @Input() team!: CRMTeamDTO;
   @Input() children!: any;
   @Input() type: any;
   @Input() name!: string;
+  @Input() dataSource!: ChatomniDataDto;
 
   @HostBinding("@eventReplyComment") eventAnimation = true;
 
@@ -50,11 +51,10 @@ export class TDSConversationItemV2Component implements OnInit {
   isHiding: boolean = false;
   isReplyingComment: boolean = false;
   reloadingImage: boolean = false;
-  gallery: TDSSafeAny[] = [];
+  gallery: ChatomniDataItemDto[] = [];
   listAtts: TDSSafeAny[] = [];
   isShowItemImage: boolean = false;
   imageClick!: number;
-  enumActivityStatus = ActivityStatus;
 
   @ViewChild('contentReply') contentReply!: ElementRef<any>;
   @ViewChild('contentMessage') contentMessage: any;
@@ -197,7 +197,7 @@ export class TDSConversationItemV2Component implements OnInit {
     });
   }
 
-  isErrorAttachment(att: Datum, dataItem: ChatomniMessageDetail){
+  isErrorAttachment(att: Datum, dataItem: ChatomniDataItemDto){
     if(dataItem && (dataItem.Status != 2 || dataItem.Error?.Message)) {
         this.dataItem.Data['is_error_attachment'] = true;
     }
@@ -322,30 +322,29 @@ export class TDSConversationItemV2Component implements OnInit {
 
   open_gallery(att: any) {
     this.isShowItemImage = true;
-    this.activityDataFacade.getActivity(this.team.Facebook_PageId, this.csid, this.type)
-    .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      // this.messages = res.items;
-      this.gallery = res.items.filter((x: TDSSafeAny) => x.message && x.message.attachments != null);
-      let result:TDSSafeAny[]= [];
+    let result:TDSSafeAny[]= [];
+    this.gallery = this.dataSource.Items.filter((x: ChatomniDataItemDto) => x.Data && x.Data.attachments != null);
 
-      this.gallery.map((obj: any) => {
-        obj.message.attachments.data.map((data: any) => {
-          if(data.mime_type != 'audio/mpeg') {
-            result.push({
-              date_time: obj.DateCreated,
-              id: obj.from_id,
-              url: data.image_data ? data.image_data.url : data.video_data.url,
-              type: data.mime_type ? data.mime_type : null
-            });
-          }
-        })
-      });
+    if(this.gallery){
+      this.gallery.map(item=>{
+        if(item.Data?.attachments){
+          item.Data?.attachments.data.map(attachment=>{
+            if(attachment.mime_type != 'audio/mpeg'){
+              result.push({
+                date_time: item.CreatedTime,
+                id: item.Data?.from?.id || item.UserId,
+                url: attachment.image_data.url ? attachment.image_data.url : attachment.video_data.url,
+                type: attachment.mime_type ? attachment.mime_type : null
+              });
+            }
+          })
+        }
+      })
 
-      this.listAtts = result;
-    });
-
+    this.listAtts = [...result];
     if(att.image_data && att.image_data.url) this.imageClick = this.listAtts.findIndex(x => x.url == att.image_data.url);
     if(att.video_data && att.video_data.url) this.imageClick = this.listAtts.findIndex(x => x.url == att.video_data.url);
+    }
   }
 
   onCloseShowItemImage(ev: boolean){
@@ -408,7 +407,7 @@ export class TDSConversationItemV2Component implements OnInit {
 
         if(TDSHelperArray.hasListValue(res)){
           res.forEach((item: any) => {
-            item["status"] = this.enumActivityStatus.sending;
+            item["status"] = ChatomniStatus.Pending;
             this.activityDataFacade.messageServer({ ...item });
           });
         }
