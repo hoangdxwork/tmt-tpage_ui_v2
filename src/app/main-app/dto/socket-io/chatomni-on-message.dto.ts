@@ -1,4 +1,4 @@
-import { ChatomniMessageType } from "../conversation-all/chatomni/chatomni-message.dto";
+import { ChatomniMessageType } from './../conversation-all/chatomni/chatomni-data.dto';
 
 export interface ConversationSocketioDto {
   Id: string;

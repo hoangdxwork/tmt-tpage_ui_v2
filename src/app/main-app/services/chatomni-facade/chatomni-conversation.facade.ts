@@ -2,7 +2,6 @@ import { Injectable, OnDestroy } from "@angular/core";
 import { TCommonService } from "src/app/lib";
 import { BaseSevice } from "../base.service";
 import { get as _get, maxBy as _maxBy } from 'lodash';
-import { ChatomniMessageDTO } from "../../dto/conversation-all/chatomni/chatomni-message.dto";
 import { set as _set } from 'lodash';
 import { ChatomniConversationDto } from "../../dto/conversation-all/chatomni/chatomni-conversation";
 import { CRMTeamService } from "../crm-team.service";
