@@ -42,14 +42,8 @@ export class ChatomniConversationService extends BaseSevice {
     return this.apiService.getData<ChatomniConversationDto>(api, null);
   }
 
-  getLink(url: string, queryObj?: any): Observable<ChatomniConversationDto> {
-
+  getLink(url: string): Observable<ChatomniConversationDto> {
     let queryString = null;
-    if (queryObj) {
-      queryString = Object.keys(queryObj).map(key => {
-        return key + '=' + queryObj[key]
-      }).join('&');
-    }
 
     if (TDSHelperString.hasValueString(queryString)) {
       url = `${url}&${queryString}`;
@@ -95,13 +89,16 @@ export class ChatomniConversationService extends BaseSevice {
     }
     else {
       let url = this.urlNext as string;
-      return this.getLink(url, queryObj).pipe(map((res: ChatomniConversationDto) => {
+
+      return this.getLink(url).pipe(map((res: ChatomniConversationDto) => {
 
         // TODO nếu trùng urlNext thì xóa không cho load
         if (this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
             this.urlNext = res.Paging.UrlNext;
 
-            exist.Extras!.Objects = { ...exist.Extras?.Objects, ...res.Extras?.Objects};
+            if(exist.Extras){
+              exist.Extras.Objects = { ...exist.Extras?.Objects, ...res.Extras?.Objects};
+            }
             exist.Items = [...exist.Items, ...res.Items];
             exist.Paging = { ...res.Paging };
 
