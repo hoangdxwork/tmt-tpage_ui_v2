@@ -149,6 +149,8 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId)
         this.lstOmcs[index].Tags = [...res.Tags];
         this.lstOmcs[index] = {...this.lstOmcs[index]}
+
+        this.cdRef.detectChanges();
       }
     })
 
@@ -157,7 +159,8 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId)
         this.lstOmcs[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
         this.lstOmcs[index] = {...this.lstOmcs[index]}
-        
+
+        this.cdRef.detectChanges();
       }
     })
   }
@@ -186,7 +189,6 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
   validateData() {
     this.lstOmcs = [];
-    delete this.omcs_Item;
     delete this.dataSource$;
   }
 
@@ -400,7 +402,8 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         componentParams: {
             setOfCheckedId: this.setOfCheckedId,
             team: this.currentTeam as any,
-            type: this.type
+            type: this.type,
+            lstOmcs: this.lstOmcs
         }
     });
 
@@ -430,19 +433,18 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   }
 
   makeDataSource(queryObj: any) {
-    if (Object.keys(queryObj || {}).length <= 4) {
+    console.log(Object.keys(queryObj || {}).length)
+    if (Object.keys(queryObj || {}).length < 3) {
       this.isRefreshing = true;
 
       this.dataSource$ = this.chatomniConversationService.makeDataSource(this.currentTeam!.Id, this.type)
-          .pipe(takeUntil(this.destroy$), finalize(() => {
-              setTimeout(() => {
-                this.isRefreshing = false;
-              }, 500 )}
-          ));
-
+        .pipe(takeUntil(this.destroy$), finalize(() => {
+            setTimeout(() => {
+              this.isRefreshing = false;
+            }, 500 )}
+        ));
     } else {
-
-      this.dataSource$ = this.chatomniConversationService.makeDataSource(this.currentTeam!.Id,  queryObj).pipe(map((res => {
+      this.dataSource$ = this.chatomniConversationService.makeDataSource(this.currentTeam!.Id, this.type, queryObj).pipe(map((res => {
         if (res && res.Items) {
             this.total = res.Items.length;
         }

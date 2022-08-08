@@ -139,6 +139,17 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
     // TODO: has_admin_required nhận từ tds-conversation-item để gửi lại tn
     this.onRetryMessage();
+    this.eventEmitter();
+  }
+
+  eventEmitter(){
+    this.chatomniEventEmiter.Quick_Reply_DataSourceEmiter$.subscribe(res=>{
+      if(res.UserId == this.data.ConversationId){
+        this.dataSource.Items = [...this.dataSource.Items, res]
+
+        this.cdRef.detectChanges();
+      }
+    })
   }
 
   loadData(data: ChatomniConversationItemDto) {
