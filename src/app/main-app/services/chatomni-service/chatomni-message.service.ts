@@ -80,26 +80,26 @@ export class ChatomniMessageService extends BaseSevice  {
       let url = this.urlNext  as string;
       return this.getLink(url).pipe(map((res: ChatomniDataDto) => {
 
-        exist.Extras!.Objects = { ...exist.Extras?.Objects, ...res.Extras?.Objects};
-        exist.Items = [ ...exist.Items, ...res.Items ];
-        exist.Paging = { ...res.Paging };
+          // exist.Extras!.Objects = { ...exist.Extras?.Objects, ...res.Extras?.Objects};
+          exist.Items = [ ...exist.Items, ...res.Items ];
+          exist.Paging = { ...res.Paging };
 
-        // TODO: sort lại dữ liệu theo ngày tạo mới nhất
-        if(exist && TDSHelperArray.isArray(exist.Items)) {
-          exist.Items = exist.Items.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime));
-        }
+          // TODO: sort lại dữ liệu theo ngày tạo mới nhất
+          if(exist && TDSHelperArray.isArray(exist.Items)) {
+            exist.Items = exist.Items.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime));
+          }
 
-        // TODO nếu trùng urlNext thì xóa không cho load
-        if(this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
-            this.urlNext = res.Paging.UrlNext;
-        } else {
-            delete this.urlNext;
-        }
+          // TODO nếu trùng urlNext thì xóa không cho load
+          if(this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
+              this.urlNext = res.Paging.UrlNext;
+          } else {
+              delete this.urlNext;
+          }
 
-        this.omniFacade.setData(id, exist);
+          this.omniFacade.setData(id, exist);
 
-        let result = this.omniFacade.getData(id);
-        return result; //tương đương this.chatomniDataSource[id]]
+          let result = this.omniFacade.getData(id);
+          return result; //tương đương this.chatomniDataSource[id]]
 
       }), shareReplay({ bufferSize: 1, refCount: true }));
     }
