@@ -84,10 +84,10 @@ export class ChatomniMessageService extends BaseSevice  {
         exist.Items = [ ...exist.Items, ...res.Items ];
         exist.Paging = { ...res.Paging };
 
-		// TODO: sort lại dữ liệu theo ngày tạo mới nhất
-		if(exist && TDSHelperArray.isArray(exist.Items)) {
-			exist.Items = exist.Items.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime));
-		}
+        // TODO: sort lại dữ liệu theo ngày tạo mới nhất
+        if(exist && TDSHelperArray.isArray(exist.Items)) {
+          exist.Items = exist.Items.sort((a: ChatomniDataItemDto, b: ChatomniDataItemDto) => Date.parse(a.CreatedTime) - Date.parse(b.CreatedTime));
+        }
 
         // TODO nếu trùng urlNext thì xóa không cho load
         if(this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {

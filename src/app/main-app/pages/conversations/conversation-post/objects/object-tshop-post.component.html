@@ -4,7 +4,7 @@
     <div class="flex flex-col gap-y-3" *ngIf="mdbTshopPost">
         <div class="relative w-[120px] h-[88px]">
             <div *ngIf="item.Thumbnail; else mediaPicture" class="relative">
-                <img [src]="item.Thumbnail.Url" 
+                <img [src]="item.Thumbnail.Url"
                     [width]="item.Thumbnail.Width || 120"
                     [height]="item.Thumbnail.Height || 88"
                     class="max-w-[120px] max-h-[88px] w-[120px] h-[88px] rounded-md object-cover">
@@ -12,7 +12,7 @@
             <ng-template #mediaPicture>
                 <!-- trường hợp đang livestream -->
                 <div *ngIf="mdbTshopPost.MediaLive" class="relative">
-                    <img [src]="mdbTshopPost.MediaLive.ThumbnailUrl" alt="" class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md object-cover">
+                    <img [src]="mdbTshopPost.MediaLive?.ThumbnailUrl" alt="" class="max-w-[120px] w-[120px] max-h-[88px] h-[88px] rounded-md object-cover">
                 </div>
                 <!-- trường hợp offstream -->
                 <div *ngIf="mdbTshopPost.Medias && !mdbTshopPost.MediaLive" class="relative">
@@ -48,17 +48,17 @@
             <span>{{item.Description | slice: 0: 50}}</span>
             <span *ngIf="item.Description.length > 50">...</span>
         </span>
-        
+
         <span *ngIf="item.ChannelCreatedTime | compareToday" class="text-neutral-1-400">
             {{ item.ChannelCreatedTime | yiDateTimeFormat }}
         </span>
         <span *ngIf="!(item.ChannelCreatedTime | compareToday)" class="text-neutral-1-400">
             {{ item.ChannelCreatedTime | date:'dd/MM/yyyy HH:mm' }}
         </span>
-        
+
         <!-- <div class="w-full flex justify-between items-center flex-wrap gap-y-2">
             <div *ngIf="mdbTshopPost.Content.Tags">
-                <tds-tag *ngFor="let tag of mdbTshopPost.Content.Tags" 
+                <tds-tag *ngFor="let tag of mdbTshopPost.Content.Tags"
                     status="{{ currentPost?.ObjectId == item.ObjectId ? 'bg-base-orange-50 text-base-orange-500' : 'bg-neutral-3-100 text-neutral-1-600'}}" size="sm">
                     <span class="flex items-center py-0.5 cursor-pointer max-w-[150px]">
                         <span class="flex-auto truncate">{{tag.ObjectKind}}</span>

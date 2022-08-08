@@ -57,6 +57,7 @@ export class AppComponent {
           this.crmTeamService.getActiveByPageIds$([this.data.Conversation.ChannelId]).pipe(takeUntil(this.destroy$)).subscribe((teams: CRMTeamDTO[]) => {
 
               this.team = teams[0];
+
               switch(this.data.Message.MessageType) {
                   case ChatomniMessageType.FacebookMessage:
 
@@ -89,6 +90,15 @@ export class AppComponent {
                     this.url = `/conversation/comment?teamId=${this.team.Id}&type=comment&csid=${this.data.Conversation.UserId}`;
 
                   break;
+
+                  default:
+
+                    this.titleMessage = `${this.data.Conversation.Name} vừa phản hồi`;
+                    this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
+                    this.url = `/conversation/all?teamId=${this.team.Id}&type=all&csid=${this.data.Conversation.UserId}`;
+
+                  break;
+
               }
           }, error => {
              console.log('Thông báo đến từ kênh chưa được kết nối', this.data)

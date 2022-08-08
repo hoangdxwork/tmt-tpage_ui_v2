@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
+import { ChatomniDataDto, ChatomniDataItemDto } from "@app/dto/conversation-all/chatomni/chatomni-data.dto";
 import { map, Observable, shareReplay } from "rxjs";
 import { CoreAPIDTO, CoreApiMethodType, TCommonService } from "src/app/lib";
-import { TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
+import { TDSHelperArray, TDSHelperObject, TDSHelperString } from "tds-ui/shared/utility";
 import { BaseSevice } from "../base.service";
 import { ChatomniCommentFacade } from "../chatomni-facade/chatomni-comment.facade";
 
@@ -20,7 +21,7 @@ export class ChatomniCommentService extends BaseSevice  {
       super(apiService)
   }
 
-  get(id: any, queryObj?: any): Observable<any> {
+  get(id: any, queryObj?: any): Observable<ChatomniDataDto> {
 
     let queryString = null;
     if (queryObj) {
@@ -38,10 +39,10 @@ export class ChatomniCommentService extends BaseSevice  {
         url: `${url}`,
         method: CoreApiMethodType.get,
     }
-    return this.apiService.getData<any>(api, null);
+    return this.apiService.getData<ChatomniDataDto>(api, null);
   }
 
-  getLink(url: string, queryObj?: any): Observable<any>  {
+  getLink(url: string, queryObj?: any): Observable<ChatomniDataDto>  {
     let queryString = null;
     if (queryObj) {
         queryString = Object.keys(queryObj).map(key => {
@@ -58,16 +59,16 @@ export class ChatomniCommentService extends BaseSevice  {
         method: CoreApiMethodType.get
     }
 
-    return this.apiService.getData<any>(api, null);
+    return this.apiService.getData<ChatomniDataDto>(api, null);
   }
 
-  makeDataSource(teamId: number, objectId: any, queryObj?: any): Observable<any> {
+  makeDataSource(teamId: number, objectId: any, queryObj?: any): Observable<ChatomniDataDto> {
 
     this.urlNext = '';
     this.commentFacade.dataSource = {};
     let id = `${teamId}_${objectId}`;
 
-    return this.get(id, queryObj).pipe(map((res: any) => {
+    return this.get(id, queryObj).pipe(map((res: ChatomniDataDto) => {
 
       // TODO: load dữ liệu lần đầu tiên
       this.commentFacade.setData(id, res);
@@ -80,7 +81,7 @@ export class ChatomniCommentService extends BaseSevice  {
 
   }
 
-  nextDataSource(id: string): Observable<any> {
+  nextDataSource(id: string): Observable<ChatomniDataDto> {
 
     let exist = this.commentFacade.getData(id);
     if(exist && !TDSHelperString.hasValueString(this.urlNext)) {
@@ -92,7 +93,7 @@ export class ChatomniCommentService extends BaseSevice  {
     }
     else {
         let url = this.urlNext  as string;
-        return this.getLink(url).pipe(map((res: any) => {
+        return this.getLink(url).pipe(map((res: ChatomniDataDto) => {
 
         exist.Extras!.Objects = { ...exist.Extras?.Objects, ...res.Extras?.Objects};
         exist.Items = [ ...exist.Items, ...res.Items ];

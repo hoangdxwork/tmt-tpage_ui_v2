@@ -3,14 +3,23 @@ import { MDB_Facebook_Mapping_PostDto } from '../../dto/conversation-all/chatomn
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'fbPostType'
+  name: 'facebookType'
 })
 
-export class fbPostTypePipe implements PipeTransform {
+export class ChatomniFacebookType implements PipeTransform {
 
-  constructor(){}
+  transform(data: MDB_Facebook_Mapping_PostDto | ChatomniDataTShopPostDto): MDB_Facebook_Mapping_PostDto {
+      return data as MDB_Facebook_Mapping_PostDto;
+  }
+}
 
-  transform(data: MDB_Facebook_Mapping_PostDto | ChatomniDataTShopPostDto):MDB_Facebook_Mapping_PostDto {
-    return data as MDB_Facebook_Mapping_PostDto;
+@Pipe({
+  name: 'tshopType'
+})
+
+export class ChatomniTShopType implements PipeTransform {
+
+  transform(data: MDB_Facebook_Mapping_PostDto | ChatomniDataTShopPostDto): ChatomniDataTShopPostDto {
+      return data as ChatomniDataTShopPostDto;
   }
 }
