@@ -1,7 +1,7 @@
 import { switchMap } from 'rxjs/operators';
 import { SortEnum } from './../../../../lib/enum/sort.enum';
 import { SortDataRequestDTO, FilterDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
-import { ConfigConversationTagsCreateDataModalComponent } from './../components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
+import { CreateTagModalComponent } from '../components/create-tag-modal/create-tag-modal.component';
 import { CRMTagService } from './../../../services/crm-tag.service';
 import { CRMTagDTO, ODataCRMTagDTO } from './../../../dto/crm-tag/odata-crmtag.dto';
 import { Subject, Observable, fromEvent } from 'rxjs';
@@ -82,8 +82,6 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
         this.getViewData(params).subscribe((res: ODataCRMTagDTO) => {
             this.count = res['@odata.count'] as number;
             this.lstOfData = res.value;
-            console.log(res);
-
         }, err => {
             this.message.error('Tải dữ liệu thất bại!');
         });
@@ -110,10 +108,10 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
     showEditModal(data: CRMTagDTO): void {
         const modal = this.modalService.create({
             title: 'Chỉnh sửa thẻ hội thoại',
-            content: ConfigConversationTagsCreateDataModalComponent,
+            content: CreateTagModalComponent,
             viewContainerRef: this.viewContainerRef,
             componentParams: {
-                isEdit: data.Id
+                Id: data.Id
             }
         });
 
@@ -180,7 +178,7 @@ export class ConfigConversationTagsComponent implements OnInit, AfterViewInit, O
     showCreateModal() {
         const modal = this.modalService.create({
             title: 'Thêm mới thẻ hội thoại',
-            content: ConfigConversationTagsCreateDataModalComponent,
+            content: CreateTagModalComponent,
             viewContainerRef: this.viewContainerRef,
         });
 

@@ -4,7 +4,7 @@ import { ChatomniConversationTagDto, ChatomniLastMessageEventEmitterDto } from '
 import { ReplaceHelper } from '../helper/replace.helper';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { ConfigConversationTagsCreateDataModalComponent } from '../../pages/configs/components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
+import { CreateTagModalComponent } from '../../pages/configs/components/create-tag-modal/create-tag-modal.component';
 import { ModalListBillComponent } from '../../pages/conversations/components/modal-list-bill/modal-list-bill.component';
 import { ModalListProductComponent } from '../../pages/conversations/components/modal-list-product/modal-list-product.component';
 import { ModalImageStoreComponent } from '../../pages/conversations/components/modal-image-store/modal-image-store.component';
@@ -310,7 +310,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.isVisbleTag = false
     let modal = this.modalService.create({
       title: 'Thêm thẻ hội thoại',
-      content: ConfigConversationTagsCreateDataModalComponent,
+      content: CreateTagModalComponent,
       viewContainerRef: this.viewContainerRef,
     });
     modal.afterClose.subscribe(result=>{

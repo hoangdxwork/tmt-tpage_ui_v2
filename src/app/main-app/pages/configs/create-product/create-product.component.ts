@@ -11,8 +11,8 @@ import { ProductTemplateOUMLineService } from '../../../services/product-templat
 import { ProductTemplateService } from '../../../services/product-template.service';
 import { OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { ConfigAddOriginCountryModalComponent } from '../components/config-add-origin-country-modal/config-add-origin-country-modal.component';
-import { ConfigAddUOMModalComponent } from '../components/config-add-UOM-modal/config-add-UOM-modal.component';
+import { CreateCountryModalComponent } from '../components/create-country-modal/create-country-modal.component';
+import { CreateUOMModalComponent } from '../components/create-UOM-modal/create-UOM-modal.component';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder, FormArray } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
@@ -385,7 +385,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   addProducer() {
     const modal = this.modalService.create({
       title: 'Thêm nhà sản xuất',
-      content: ConfigAddUOMModalComponent,
+      content: CreateUOMModalComponent,
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
@@ -401,7 +401,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   addImporter() {
     const modal = this.modalService.create({
       title: 'Thêm nhà nhập khẩu',
-      content: ConfigAddUOMModalComponent,
+      content: CreateUOMModalComponent,
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
@@ -417,7 +417,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   addDistributor() {
     const modal = this.modalService.create({
       title: 'Thêm nhà phân phối',
-      content: ConfigAddUOMModalComponent,
+      content: CreateUOMModalComponent,
       size: "lg",
       viewContainerRef: this.viewContainerRef,
       componentParams: {
@@ -433,7 +433,7 @@ export class ConfigAddProductComponent implements OnInit, OnDestroy {
   addOriginCountry() {
     const modal = this.modalService.create({
       title: 'Thêm xuất xứ',
-      content: ConfigAddOriginCountryModalComponent,
+      content: CreateCountryModalComponent,
       size: "lg",
       viewContainerRef: this.viewContainerRef
     });

@@ -90,7 +90,6 @@ export class ConfigAutoReplyComponent implements OnInit, OnChanges, OnDestroy {
     let formControls = this.formConfigAutoReply.controls;
 
     this.crmTeamService.getChannelAutoReplyConfig(pageId).subscribe(res => {
-      console.log(res);
       formControls["IsEnableAutoReplyComment"].setValue(res.IsEnableAutoReplyComment);
       formControls["IsEnableAutoReplyMultiple"].setValue(res.IsEnableAutoReplyMultiple);
       formControls["MaxForAutoReplyMultiple"].setValue(res.MaxForAutoReplyMultiple);

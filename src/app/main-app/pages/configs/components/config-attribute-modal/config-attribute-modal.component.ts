@@ -70,7 +70,7 @@ export class ConfigAddAttributeProductModalComponent implements OnInit, OnDestro
         });
 
         this.dataModel = [...this.defaultModel];
-
+        
         //TODO: lấy danh sách select value cho các dòng attribute
         this.dataModel.forEach((data) => {
           let lstValues = this.valuesList.filter(f => f.AttributeId == data.AttributeId);
