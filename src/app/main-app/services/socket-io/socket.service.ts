@@ -65,7 +65,6 @@ export class SocketService  {
     return new Observable((subscriber) => {
         this.socket.on(eventName, (data: any) => {
             subscriber.next(data);
-            subscriber.complete();
         });
     });
   }
