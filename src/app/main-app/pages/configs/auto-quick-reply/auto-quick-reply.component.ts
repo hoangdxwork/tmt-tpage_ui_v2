@@ -5,7 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { THelperDataRequest } from '../../../../lib/services/helper-data.service';
 import { Subject, Observable, fromEvent } from 'rxjs';
 import { OdataQuickReplyService } from '../../../services/mock-odata/odata-quick-reply.service';
-import { AutoChatAddDataModalComponent } from '../components/auto-chat-add-data-modal/auto-chat-add-data-modal.component';
+import { CreateQuickReplyModalComponent } from '../components/create-quick-repy-modal/create-quick-reply-modal.component';
 import { Component, OnInit, ViewContainerRef, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { ODataQuickReplyDTO } from 'src/app/main-app/dto/quick-reply.dto.ts/quick-reply.dto';
 import { TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
@@ -143,7 +143,7 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
   onAddNewData(data: TDSSafeAny) {
     const modal = this.modalService.create({
       title: 'Thêm mới trả lời nhanh',
-      content: AutoChatAddDataModalComponent,
+      content: CreateQuickReplyModalComponent,
       viewContainerRef: this.viewContainerRef,
       size: 'lg',
       componentParams: {
@@ -169,7 +169,7 @@ export class AutoQuickReplyComponent implements OnInit, AfterViewInit {
   onEditRow(ev: TDSSafeAny, id: number) {
     const modal = this.modalService.create({
       title: 'Cập nhật trả lời nhanh',
-      content: AutoChatAddDataModalComponent,
+      content: CreateQuickReplyModalComponent,
       viewContainerRef: this.viewContainerRef,
       size: 'lg',
       componentParams: {

@@ -113,7 +113,7 @@ export class CRMTagService extends BaseSevice {
     return this.apiService.getData<any>(api, data);
   }
 
-  update(key: string, data: CRMTagModelDTO, isForce: boolean = false): Observable<any> {
+  update(key: string, data: CRMTagModelDTO, isForce: boolean): Observable<any> {
     let api: CoreAPIDTO = {
       url: `${this._BASE_URL}/${this.prefix}/${this.table}(${key})?isForce=${isForce}`,
       method: CoreApiMethodType.put

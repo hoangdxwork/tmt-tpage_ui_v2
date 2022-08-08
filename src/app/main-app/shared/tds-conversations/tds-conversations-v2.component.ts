@@ -4,7 +4,7 @@ import { ChatomniConversationTagDto } from 'src/app/main-app/dto/conversation-al
 import { ReplaceHelper } from '../helper/replace.helper';
 import { QuickReplyDTO } from '../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { PartnerService } from 'src/app/main-app/services/partner.service';
-import { ConfigConversationTagsCreateDataModalComponent } from '../../pages/configs/components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
+import { CreateTagModalComponent } from '../../pages/configs/components/create-tag-modal/create-tag-modal.component';
 import { ModalListBillComponent } from '../../pages/conversations/components/modal-list-bill/modal-list-bill.component';
 import { ModalListProductComponent } from '../../pages/conversations/components/modal-list-product/modal-list-product.component';
 import { ModalImageStoreComponent } from '../../pages/conversations/components/modal-image-store/modal-image-store.component';
@@ -139,6 +139,17 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
     // TODO: has_admin_required nhận từ tds-conversation-item để gửi lại tn
     this.onRetryMessage();
+    this.eventEmitter();
+  }
+
+  eventEmitter(){
+    this.chatomniEventEmiter.Quick_Reply_DataSourceEmiter$.subscribe(res=>{
+      if(res.UserId == this.data.ConversationId){
+        this.dataSource.Items = [...this.dataSource.Items, res]
+
+        this.cdRef.detectChanges();
+      }
+    })
   }
 
   loadData(data: ChatomniConversationItemDto) {
@@ -310,7 +321,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.isVisbleTag = false
     let modal = this.modalService.create({
       title: 'Thêm thẻ hội thoại',
-      content: ConfigConversationTagsCreateDataModalComponent,
+      content: CreateTagModalComponent,
       viewContainerRef: this.viewContainerRef,
     });
     modal.afterClose.subscribe(result=>{

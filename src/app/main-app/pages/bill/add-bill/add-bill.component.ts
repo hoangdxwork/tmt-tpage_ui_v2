@@ -240,10 +240,10 @@ export class AddBillComponent implements OnInit {
     }
   }
 
-  loadBill(id: number) {debugger
+  loadBill(id: number) {
     this.isLoading = true;
 
-    this.fastSaleOrderService.getById(id).pipe(finalize(() => { this.isLoading = false })).subscribe((res: any) => {debugger
+    this.fastSaleOrderService.getById(id).pipe(finalize(() => { this.isLoading = false })).subscribe((res: any) => {
       delete res['@odata.context'];
       let data = res as FastSaleOrder_DefaultDTOV2;
 
@@ -352,12 +352,10 @@ export class AddBillComponent implements OnInit {
   mappingDataAddress(data:TDSSafeAny){
     let result = this.prepareSuggestionsBill.mappingAddress(data);
 
-    if(TDSHelperObject.hasValue(result)){
-      this._cities = result._cities || this._cities;
-      this._districts = result._districts || this._districts;
-      this._wards = result._wards || this._wards;
-      this._street = result._street || this._street;
-    }
+    this._cities = result?._cities || { code:'', name:'' };
+    this._districts = result?._districts || this._districts;
+    this._wards = result?._wards || this._wards;
+    this._street = result?._street || this._street;
   }
 
   onLoadSuggestion(item: ResultCheckAddressDTO) {
@@ -1133,7 +1131,7 @@ export class AddBillComponent implements OnInit {
 
       }, error => {
           this.isLoading = false;
-          this.message.error(`${error.error.message}` || 'Cập nhật phiếu bán hàng thất bại!');
+          this.message.error(`${error?.error?.message}` || 'Cập nhật phiếu bán hàng thất bại!');
       })
 
     } else {
@@ -1150,7 +1148,7 @@ export class AddBillComponent implements OnInit {
             }
         }, error => {
             this.isLoading = false;
-            this.message.error(`${error.error.message}` || 'Tạo mới phiếu bán hàng thất bại!');
+            this.message.error(`${error?.error?.message}` || 'Tạo mới phiếu bán hàng thất bại!');
         });
     }
   }

@@ -1,4 +1,4 @@
-import { ProductTemplateService } from './../../../../services/product-template.service';
+import { ProductTemplateService } from '../../../../services/product-template.service';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
@@ -9,10 +9,11 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
-  selector: 'app-config-add-origin-country-modal',
-  templateUrl: './config-add-origin-country-modal.component.html'
+  selector: 'create-country-modal',
+  templateUrl: './create-country-modal.component.html'
 })
-export class ConfigAddOriginCountryModalComponent implements OnInit, OnDestroy {
+
+export class CreateCountryModalComponent implements OnInit, OnDestroy {
   originCountyForm!:FormGroup;
   private destroy$ = new Subject<void>();
 

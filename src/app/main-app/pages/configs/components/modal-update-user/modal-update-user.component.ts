@@ -1,4 +1,4 @@
-import { ModalChangePasswordUserComponent } from './../modal-change-password-user/modal-change-password-user.component';
+import { ModalChangePasswordComponent } from '../modal-change-password/modal-change-password.component';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit, ViewContainerRef, Input, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -167,7 +167,7 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
   showModalChangePassword(){
     const modal = this.modalService.create({
       title: 'Thay đổi mật khẩu',
-      content: ModalChangePasswordUserComponent,
+      content: ModalChangePasswordComponent,
       size: "md",
       viewContainerRef: this.viewContainerRef,
     });

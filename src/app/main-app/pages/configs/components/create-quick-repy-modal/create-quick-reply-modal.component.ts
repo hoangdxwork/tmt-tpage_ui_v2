@@ -1,9 +1,9 @@
 import { Router } from '@angular/router';
-import { CRMTeamDTO } from './../../../../dto/team/team.dto';
-import { CRMTeamService } from './../../../../services/crm-team.service';
+import { CRMTeamDTO } from '../../../../dto/team/team.dto';
+import { CRMTeamService } from '../../../../services/crm-team.service';
 import { Observable, Subject } from 'rxjs';
-import { QuickReplyService } from './../../../../services/quick-reply.service';
-import { CreateQuickReplyDTO, QuickReplyDTO, AdvancedTemplateDTO, ButtonsDTO, PagesMediaDTO } from './../../../../dto/quick-reply.dto.ts/quick-reply.dto';
+import { QuickReplyService } from '../../../../services/quick-reply.service';
+import { CreateQuickReplyDTO, QuickReplyDTO, AdvancedTemplateDTO, ButtonsDTO, PagesMediaDTO } from '../../../../dto/quick-reply.dto.ts/quick-reply.dto';
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { takeUntil } from 'rxjs/operators';
@@ -14,11 +14,11 @@ import { TDSMessageService } from 'tds-ui/message';
 
 
 @Component({
-  selector: 'app-auto-chat-add-data-modal',
-  templateUrl: './auto-chat-add-data-modal.component.html'
+  selector: 'create-quick-reply-modal',
+  templateUrl: './create-quick-reply-modal.component.html'
 })
 
-export class AutoChatAddDataModalComponent implements OnInit, OnDestroy {
+export class CreateQuickReplyModalComponent implements OnInit, OnDestroy {
   @Input() valueEditId!: TDSSafeAny;
   private destroy$ = new Subject<void>();
 

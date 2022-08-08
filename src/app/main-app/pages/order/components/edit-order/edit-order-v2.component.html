@@ -39,7 +39,7 @@
                     </div>
                     <div class="grid grid-cols-4 gap-x-4">
                       <div class="flex items-center">
-                        <tds-label>ĝiện thoại</tds-label>
+                        <tds-label>Điện thoại</tds-label>
                       </div>
                       <div class="col-span-3">
                         <tds-form-field>
@@ -59,7 +59,7 @@
                     </div>
                     <div class="grid grid-cols-4 gap-x-4">
                       <div class="flex items-start pt-1.5">
-                        <tds-label>ĝịa chỉ</tds-label>
+                        <tds-label>Địa chỉ</tds-label>
                       </div>
                       <div class="col-span-3">
                         <suggest-address [_isBtnExtend]="true" [_isExpanded]="false" [_cities]="_cities"
@@ -186,9 +186,9 @@
                         <th width="8%">STT</th>
                         <th width="26%">Sản phẩm</th>
                         <th width="13%">Số lượng</th>
-                        <th width="13%">Số tiờn</th>
+                        <th width="13%">Số tiền</th>
                         <th width="22%">Ghi chú</th>
-                        <th width="13%">Tổng tiờn</th>
+                        <th width="13%">Tổng tiền</th>
                         <th width="8%">Thao tác</th>
                       </tr>
                     </thead>
@@ -243,7 +243,7 @@
                       <tr>
                         <td colspan="7">
                           <div class="flex items-center gap-x-4 justify-end">
-                            <tds-label class="text-sm">Tổng tiờn:</tds-label>
+                            <tds-label class="text-sm">Tổng tiền:</tds-label>
                             <tds-label class="text-xl text-success-400"> {{ quickOrderModel?.TotalAmount | numberCustom:'.'  }}
                             </tds-label>
                           </div>
@@ -262,7 +262,7 @@
                     <div>
                       <div class="grid grid-cols-3 gap-x-4 mt-4">
                         <div class="flex items-center">
-                          <tds-label>ĝối tác giao hàng</tds-label>
+                          <tds-label>Đối tác giao hàng</tds-label>
                         </div>
                         <div class="col-span-2" *ngIf="lstCarrier">
                           <tds-form-field>
@@ -305,7 +305,7 @@
                     <div>
                       <div class="grid grid-cols-3 gap-x-4 mt-4">
                         <div class="flex items-center">
-                          <tds-label>Giao hàng thu tiờn</tds-label>
+                          <tds-label>Giao hàng thu tiền</tds-label>
                         </div>
                         <div class="col-span-2">
                           <tds-form-field>
@@ -317,7 +317,7 @@
                       </div>
                       <div class="grid grid-cols-3 gap-x-4 mt-4">
                         <div class="flex items-center">
-                          <tds-label>Tiờn cờc</tds-label>
+                          <tds-label>Tiền cước</tds-label>
                         </div>
                         <div class="col-span-2">
                           <tds-form-field>
@@ -521,7 +521,7 @@
                                                   </div>
                                               </tds-checkbox>
 
-                                              <span class="text-body-2 text-primary" *ngIf="child.Fee"> (child.Fee | number)</span>
+                                              <span class="text-body-2 text-primary" *ngIf="child.Fee"> {{ child.Fee | number }}</span>
                                           </div>
                                       </div>
                                   </div>
@@ -533,7 +533,7 @@
               </ng-template>
             </tds-tab>
 
-            <tds-tab title="ĝơn hàng" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
+            <tds-tab title="Đơn hàng" clsContent="border-t border-neutral-2-200 w-full h-full p-4 -mt-px">
               <live-order-bypartner *ngIf="selectedIndex == 3" (checkedClick)="onChecked($event)" [orderId]="quickOrderModel.Code" [partnerId]="quickOrderModel.PartnerId"></live-order-bypartner>
             </tds-tab>
 

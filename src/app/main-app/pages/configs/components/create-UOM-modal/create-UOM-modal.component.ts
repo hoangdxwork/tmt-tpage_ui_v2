@@ -1,6 +1,6 @@
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { ProductTemplateService } from './../../../../services/product-template.service';
+import { ProductTemplateService } from '../../../../services/product-template.service';
 import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
@@ -9,10 +9,10 @@ import { TDSModalRef } from 'tds-ui/modal';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 
 @Component({
-    selector: 'app-config-add-uom-modal',
-    templateUrl: './config-add-uom-modal.component.html'
+    selector: 'create-uom-modal',
+    templateUrl: './create-uom-modal.component.html'
 })
-export class ConfigAddUOMModalComponent implements OnInit, OnDestroy {
+export class CreateUOMModalComponent implements OnInit, OnDestroy {
     @Input() type!: string;
 
     addUOMForm!: FormGroup;

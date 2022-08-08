@@ -10,9 +10,9 @@ import { FastSaleOrder_DefaultDTOV2 } from "src/app/main-app/dto/fastsaleorder/f
 
 export class UpdateShipmentDetailAshipHandler {
 
-  public updateShipmentDetailAship(configsProviderDataSource: AshipGetInfoConfigProviderDto[], insuranceInfo: CalculateFeeInsuranceInfoResponseDto | null,  _form: FormGroup, fb: FormBuilder) {
+  public updateShipmentDetailAship(configsProviderDataSource: AshipGetInfoConfigProviderDto[], insuranceInfo: CalculateFeeInsuranceInfoResponseDto | null, _form: FormGroup, fb: FormBuilder) {
 
-    let _ashipForm =  _form.controls['ShipmentDetailsAship'] as FormGroup;
+    let _ashipForm = _form.controls['ShipmentDetailsAship'] as FormGroup;
     let _configForm = _ashipForm.controls["ConfigsProvider"] as FormArray;
 
     _ashipForm.controls['InsuranceInfo'].setValue(insuranceInfo);
@@ -22,34 +22,37 @@ export class UpdateShipmentDetailAshipHandler {
 
       _configForm.push(fb.group({
 
-          ConfigName: config.ConfigName,
-          Type: config.Type,
-          InputType: config.InputType,
-          IsRequried: config.IsRequried,
-          IsHidden: config.IsHidden,
-          Description: config.Description,
-          DisplayName: config.DisplayName,
-          ConfigValue: config.ConfigValue,
+        ConfigName: config.ConfigName,
+        Type: config.Type,
+        InputType: config.InputType,
+        IsRequried: config.IsRequried,
+        IsHidden: config.IsHidden,
+        Description: config.Description,
+        DisplayName: config.DisplayName,
+        ConfigValue: config.ConfigValue,
 
-          ConfigsValue: config.ConfigsValue ?
+        ConfigsValue: config.ConfigsValue ?
           fb.array(config.ConfigsValue.map((item: any) => {
-              return fb.group({
-                  Id: item.Id,
-                  Name: item.Name
-              })
+            return fb.group({
+              Id: item.Id,
+              Name: item.Name
+            })
           }))
           : fb.array([])
       }))
     })
   }
 
-  public so_updateShipmentDetailAship(configsProviderDataSource: AshipGetInfoConfigProviderDto[], insuranceInfo: CalculateFeeInsuranceInfoResponseDto | null,  saleModel: FastSaleOrder_DefaultDTOV2) {
+  public so_updateShipmentDetailAship(configsProviderDataSource: AshipGetInfoConfigProviderDto[], insuranceInfo: CalculateFeeInsuranceInfoResponseDto | null, saleModel: FastSaleOrder_DefaultDTOV2) {
 
-      saleModel.ShipmentDetailsAship!.InsuranceInfo = insuranceInfo as any;
+    if (saleModel.ShipmentDetailsAship) {
+      saleModel.ShipmentDetailsAship.InsuranceInfo = insuranceInfo as any;
+    }
 
+    if (saleModel.ShipmentDetailsAship) {
       configsProviderDataSource.map(x => {
 
-        let item  = {
+        let item = {
           ConfigName: x.ConfigName,
           Type: x.Type,
           InputType: x.InputType,
@@ -61,16 +64,18 @@ export class UpdateShipmentDetailAshipHandler {
 
           ConfigsValue: x.ConfigsValue ?
             x.ConfigsValue.map(t => {
-                return {
-                    Id: t.Id,
-                    Name: t.Name,
-                }
+              return {
+                Id: t.Id,
+                Name: t.Name,
+              }
             }) : []
         }
 
-        saleModel.ShipmentDetailsAship!.ConfigsProvider.push(item);
+          saleModel.ShipmentDetailsAship?.ConfigsProvider.push(item);
+        
       })
-
-      return saleModel;
+    }
+    
+    return saleModel;
   }
 }

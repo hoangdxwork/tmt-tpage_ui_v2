@@ -5,10 +5,10 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
 
 @Component({
-  selector: 'app-modal-change-password-user',
-  templateUrl: './modal-change-password-user.component.html'
+  selector: 'app-modal-change-password',
+  templateUrl: './modal-change-password.component.html'
 })
-export class ModalChangePasswordUserComponent implements OnInit {
+export class ModalChangePasswordComponent implements OnInit {
 
   formChangePassword!: FormGroup
   constructor(

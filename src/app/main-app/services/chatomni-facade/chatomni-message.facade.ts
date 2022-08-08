@@ -62,6 +62,7 @@ export class ChatomniMessageFacade extends BaseSevice  {
       Status: data.status as number,
       Error: undefined,
       CreatedBy: data.CreatedBy,
+      UserId: data.to_id
     } as ChatomniDataItemDto
 
     return model;
