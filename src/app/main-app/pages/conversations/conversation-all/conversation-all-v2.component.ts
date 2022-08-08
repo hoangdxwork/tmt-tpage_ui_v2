@@ -128,7 +128,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       if(exist){
           this.onChangeConversation(team);
       }
-  
+
     })
 
     // TODO: gán mã code load từ Tab Order
@@ -157,7 +157,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         let index = this.lstOmcs.findIndex(x=> x.ConversationId == res.ConversationId)
         this.lstOmcs[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
         this.lstOmcs[index] = {...this.lstOmcs[index]}
-        
+
       }
     })
   }
