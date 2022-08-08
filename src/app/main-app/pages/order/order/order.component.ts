@@ -58,8 +58,8 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   idsModel: any = [];
   indClickStatus = -1;
   lstStatusTypeExt!: Array<any>;
-  public mappingTeams: any[] = [];
-  public currentMappingTeam: any;
+  mappingTeams: any[] = [];
+  currentMappingTeam: any;
   currentConversation!: ConversationMatchingItem;
   psid: any;
   isOpenDrawer: boolean = false;

@@ -29,9 +29,8 @@ import { ConfigUsersShiftComponent } from './config-users/config-users-shift/con
 import { ConfigPagesBasicComponent } from './config-pages/config-pages-basic/config-pages-basic.component';
 import { ConfigPagesDivideTaskComponent } from './config-pages/config-pages-divide-task/config-pages-divide-task.component';
 import { ConfigPrintBillsComponent } from './config-print-bills/config-print-bills.component';
-import { ConfigConversationTagsEditDataModalComponent } from './components/config-conversation-tags-edit-data-modal/config-conversation-tags-edit-data-modal.component';
-import { AutoChatAddDataModalComponent } from './components/auto-chat-add-data-modal/auto-chat-add-data-modal.component';
-import { SMSMessagesAddServiceModalComponent } from './components/sms-messages-add-service-modal/sms-messages-add-service-modal.component';
+import { CreateQuickReplyModalComponent } from './components/create-quick-repy-modal/create-quick-reply-modal.component';
+import { SMSServiceModalComponent } from './components/sms-service-modal/sms-service-modal.component';
 import { OdataCRMTagService } from '../../services/mock-odata/odata-crmtag.service';
 import { QuickReplyService } from '../../services/quick-reply.service';
 import { OdataQuickReplyService } from '../../services/mock-odata/odata-quick-reply.service';
@@ -39,14 +38,14 @@ import { RestSMSService } from '../../services/sms.service';
 import { ProductService } from '../../services/product.service';
 import { OdataProductService } from '../../services/mock-odata/odata-product.service';
 import { ModalUpdateUserComponent } from './components/modal-update-user/modal-update-user.component';
-import { ModalChangePasswordUserComponent } from './components/modal-change-password-user/modal-change-password-user.component';
+import { ModalChangePasswordComponent } from './components/modal-change-password/modal-change-password.component';
 import { ModalAddUserComponent } from './components/modal-add-user/modal-add-user.component';
 import { ModalListShiftComponent } from './components/modal-list-shift/modal-list-shift.component';
 import { ModalAddShiftComponent } from './components/modal-add-shift/modal-add-shift.component';
 import { ModalUpdateShiftComponent } from './components/modal-update-shift/modal-update-shift.component';
 import { ConfigDecentralizePageComponent } from './config-users/config-decentralize-page/config-decentralize-page.component';
-import { ConfigAddUOMModalComponent } from './components/config-add-UOM-modal/config-add-UOM-modal.component';
-import { ConfigAddOriginCountryModalComponent } from './components/config-add-origin-country-modal/config-add-origin-country-modal.component';
+import { CreateUOMModalComponent } from './components/create-UOM-modal/create-UOM-modal.component';
+import { CreateCountryModalComponent } from './components/create-country-modal/create-country-modal.component';
 import { ConfigAddProductComponent } from './create-product/create-product.component';
 import { OdataTPosLoggingService } from '../../services/mock-odata/odata-tpos-logging.service';
 import { OdataSaleCouponProgramService } from '../../services/mock-odata/odata-sale-coupon-program.service';
@@ -56,7 +55,7 @@ import { ConfigAutoHideCommentComponent } from './config-pages/config-pages-basi
 import { ConfigInteractiveMenusComponent } from './config-pages/config-pages-basic/config-interactive-menus/config-interactive-menus.component';
 import { ConfigQuickQuestionComponent } from './config-pages/config-pages-basic/config-quick-question/config-quick-question.component';
 import { ConfigGreetingComponent } from './config-pages/config-pages-basic/config-greeting/config-greeting.component';
-import { ConfigConversationTagsCreateDataModalComponent } from './components/config-conversation-tags-create-data-modal/config-conversation-tags-create-data-modal.component';
+import { CreateTagModalComponent } from './components/create-tag-modal/create-tag-modal.component';
 import { FacebookService } from '../../services/facebook.service';
 import { ProductDetailsComponent } from './components/product-details/product-details.component';
 import { ApplicationRoleService } from '../../services/application-role.service';
@@ -152,18 +151,17 @@ const SERVICES = [
     ConfigPagesBasicComponent,
     ConfigPagesDivideTaskComponent,
     ConfigPrintBillsComponent,
-    ConfigConversationTagsEditDataModalComponent,
-    AutoChatAddDataModalComponent,
-    SMSMessagesAddServiceModalComponent,
+    CreateQuickReplyModalComponent,
+    SMSServiceModalComponent,
     EditProductVariantComponent,
     ModalUpdateUserComponent,
-    ModalChangePasswordUserComponent,
+    ModalChangePasswordComponent,
     ModalAddUserComponent,
     ModalListShiftComponent,
     ModalAddShiftComponent,
     ModalUpdateShiftComponent,
-    ConfigAddUOMModalComponent,
-    ConfigAddOriginCountryModalComponent,
+    CreateUOMModalComponent,
+    CreateCountryModalComponent,
     CreateProductVariantComponent,
     ConfigAddProductComponent,
     ConfigDecentralizePageComponent,
@@ -172,7 +170,7 @@ const SERVICES = [
     ConfigInteractiveMenusComponent,
     ConfigQuickQuestionComponent,
     ConfigGreetingComponent,
-    ConfigConversationTagsCreateDataModalComponent,
+    CreateTagModalComponent,
     ProductDetailsComponent,
     ConfigAddAttributeProductModalComponent,
     ConfigAddPromotionComponent,
