@@ -299,7 +299,7 @@ export class CreateBillFastComponent implements OnInit, OnDestroy {
       model: this.lstData
     };
     
-    this.fastSaleOrderService.insertListOrderModel(model).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{ this.isLoading = false; }))
+    this.fastSaleOrderService.insertListOrderModel(model).pipe(takeUntil(this.destroy$)).pipe(finalize(() => { this.isLoading = false }))
     .subscribe(res => {
       if (!res.Error) {
         this.message.success(Message.Bill.InsertSuccess);
