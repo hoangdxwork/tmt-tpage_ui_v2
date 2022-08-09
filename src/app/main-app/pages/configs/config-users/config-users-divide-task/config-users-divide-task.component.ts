@@ -10,10 +10,9 @@ import { TDSMessageService } from 'tds-ui/message';
 export class ConfigUsersDivideTaskComponent implements OnInit {
 
   public contactOptionsTask = [
-    { id: 1, name: 'Chọn thời gian' },
-    { id: 2, name: '5 phút' },
-    { id: 3, name: '10 phút' },
-    { id: 4, name: 'Khác' },
+    { id: 1, name: '5 phút' },
+    { id: 2, name: '10 phút' },
+    { id: 3, name: 'Khác' },
   ]
   persondisplayWith!: FormControl;
 

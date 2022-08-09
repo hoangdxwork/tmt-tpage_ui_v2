@@ -11,8 +11,9 @@
         class="rounded-xl bg-neutral-3-50 flex flex-col px-4 divide-y divide-neutral-2-200">
         <div *ngFor="let item of lstQuickQuestion; let index = index" class="flex flex-col gap-y-2 py-5">
             <!-- header -->
-            <div class="flex gap-x-2 items-center justify-between ">
+            <div class="flex gap-x-2 items-center justify-between">
                 <div class="flex gap-x-2 items-center">
+                    <tds-switch size="md"></tds-switch>
                     <span class="mr-2">#{{index + 1}}</span>
                     <span class="">{{lstData[index].question}}</span>
                 </div>
@@ -20,12 +21,12 @@
                 <div *ngIf="!item.tabSelected" class="flex gap-x-2 items-center">
                     <button tds-button-icon color="secondary" size="sm" (click)="onOpenTab(item, index)">
                         <span class="flex items-center">
-                            <i class="tdsi-edit-fill text-lg leading-none"></i>
+                            <i class="tdsi-edit-fill text-lg leading-none text-neutral-1-500"></i>
                         </span>
                     </button>
                     <button tds-button-icon color="secondary" size="sm" (click)="onRemoveInteract(index)">
                         <span class="flex items-center">
-                            <i class="tdsi-trash-fill text-lg leading-none"></i>
+                            <i class="tdsi-trash-fill text-lg leading-none text-neutral-1-500"></i>
                         </span>
                     </button>
                 </div>
@@ -44,8 +45,8 @@
                 </div>
             </div>
             <!-- content -->
-            <div *ngIf="item.tabSelected" class="flex flex-col gap-y-2.5">
-                <div class="flex flex-col gap-y-2.5">
+            <div *ngIf="item.tabSelected" class="flex flex-col gap-y-2.5 rounded-xl bg-white p-4">
+                <div class="flex flex-col gap-y-2.5 ">
                     <tds-form-field>
                         <tds-label>Câu hỏi</tds-label>
                         <input tdsInput autocomplete="off" placeholder="Nhập câu hỏi" [(ngModel)]="item.question" required="true" />

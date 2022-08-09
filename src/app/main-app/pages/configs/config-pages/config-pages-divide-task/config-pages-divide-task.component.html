@@ -9,7 +9,7 @@
                     <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">CẤU HÌNH NHÃN HỘI THOẠI</span>
                 </div>
                 <div class="flex gap-x-2">
-                    <button tds-button color="primary" (click)="onSave()" [disabled]="!formAutoLabelConfig.valid">
+                    <button tds-button color="primary" (click)="onSave()">
                         <span class="flex items-center">
                             Lưu thay đổi
                         </span>
@@ -94,7 +94,7 @@
                           <button *ngIf="formAutoLabelConfig?.value?.AssignOnPattern" tds-button color="secondary" size="md"
                             (click)="addCRMKeyTag(null)" class="w-min">
                             <span class="flex items-center">
-                              <i class="tdsi-plus-circle-fill text-lg leading-none mr-2"></i>Thêm nhãn
+                              <i class="tdsi-plus-circle-fill text-lg leading-none text-neutral-1-500 mr-2"></i>Thêm nhãn
                             </span>
                           </button>
                       </div>

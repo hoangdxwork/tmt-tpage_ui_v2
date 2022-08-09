@@ -2,10 +2,13 @@
     <form [formGroup]="_form" *ngIf="_form"
         class="flex flex-col gap-y-6">
         <div class="flex gap-x-8 w-full items-center">
-            <div>
-                <tds-upload [beforeUpload]="beforeUpload" [showUploadList]="false">
+            <div class="w-[108px] h-[108px]">
+                <tds-upload [beforeUpload]="beforeUpload" [showUploadList]="false" class="absolute">
                   <tds-avatar [isAvatar]="true" class="bg-white text-white" [size]="108"
                     [tdsSrc]="_form.value?.Avatar">
+                    <div class="w-[108px] h-[108px] justify-center items-center rounded-full bg-black/20 flex hover:hidden">
+                      <i class="tdsi-edit-fill text-xl leading-none text-neutral-1-500 hover:text-3xl"></i>
+                    </div>
                   </tds-avatar>
                 </tds-upload>
             </div>
