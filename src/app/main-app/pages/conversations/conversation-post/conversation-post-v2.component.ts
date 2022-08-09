@@ -314,15 +314,13 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
 
       this.isProcessing = true;
       this.ngZone.run(() => {
-          this.dataSource$ = this.chatomniObjectService.nextDataSource(this.currentTeam!.Id);debugger
+          this.dataSource$ = this.chatomniObjectService.nextDataSource(this.currentTeam!.Id);
       })
 
-      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniObjectsDto) => {debugger
+      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniObjectsDto) => {
 
-          if(TDSHelperArray.hasListValue(res?.Items)) {debugger
+          if(TDSHelperArray.hasListValue(res?.Items)) {
               this.lstObjects = [...res.Items];
-
-              console.log(this.lstObjects.map(x => { x.Id, x.ChannelCreatedTime }))
           }
 
           this.isProcessing = false;

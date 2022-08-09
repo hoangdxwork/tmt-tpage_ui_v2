@@ -18,14 +18,14 @@
                         <tds-form-field  class="w-full">
                           <tds-select valueField="id" textField="name" placeholder='select item'
                               disabledField="isActive" [(ngModel)]="currentType" [required]='true'
-                              [data]="lstType" [allowClear]="true" (ngModelChange)="onchangeType($event)">
+                              [data]="lstType" (ngModelChange)="onchangeType($event)">
                           </tds-select>
                         </tds-form-field>
 
                         <tds-form-field  class="w-full">
                           <tds-select valueField="id" textField="name" placeholder='select item'
                               disabledField="isActive" [(ngModel)]="currentSort" [required]='true'
-                              [data]="lstSort" [allowClear]="true" (ngModelChange)="onChangeSort($event)">
+                              [data]="lstSort" (ngModelChange)="onChangeSort($event)">
                           </tds-select>
                         </tds-form-field>
 

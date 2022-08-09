@@ -15,6 +15,8 @@ export class ChatomniConversationService extends BaseSevice {
   table: string = "";
   baseRestApi: string = "rest/v2.0/chatomni";
   urlNext: string | undefined;
+  
+  _keyCheckCsidRouter = 'check_Csid_Router';
 
   constructor(private apiService: TCommonService,
       private csFacade: ChatomniConversationFacade) {
@@ -91,6 +93,8 @@ export class ChatomniConversationService extends BaseSevice {
       let url = this.urlNext as string;
 
       return this.getLink(url).pipe(map((res: ChatomniConversationDto) => {
+
+        exist.Extras!.Objects = { ...res.Extras?.Objects};
 
         // TODO nếu trùng urlNext thì xóa không cho load
         if (this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {

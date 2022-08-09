@@ -8,7 +8,7 @@ import { EventEmitter, Injectable } from "@angular/core";
 export class ChatomniEventEmiterService {
     tag_ConversationEmiter$ = new EventEmitter<ChatomniTagsEventEmitterDto>();
     last_Message_ConversationEmiter$ = new EventEmitter<ChatomniLastMessageEventEmitterDto>();
-    Quick_Reply_DataSourceEmiter$ = new EventEmitter<ChatomniDataItemDto>();
+    quick_Reply_DataSourceEmiter$ = new EventEmitter<ChatomniDataItemDto>();
     constructor() {
     }
 }

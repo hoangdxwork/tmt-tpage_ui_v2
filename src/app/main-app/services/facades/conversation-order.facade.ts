@@ -1,3 +1,4 @@
+import { DataPouchDBDTO } from 'src/app/main-app/dto/product-pouchDB/product-pouchDB.dto';
 import { ActivityByGroup } from './../../dto/conversation/post/comment-group.dto';
 import { EventEmitter, Injectable, OnDestroy, OnInit } from "@angular/core";
 import { Observable, Subject } from "rxjs";
@@ -50,6 +51,9 @@ export class ConversationOrderFacade extends BaseSevice  {
 
   // TODO: Chọn làm địa chỉ, số điện thoại, ghi chú  selectOrder(type: string)
   public onSelectOrderFromMessage$: EventEmitter<any> = new EventEmitter<any>();
+
+  // TODO: chọn sản phẩm từ tds-conversation sang tab đơn hàng
+  public onAddProductOrder$:EventEmitter<DataPouchDBDTO> = new EventEmitter<DataPouchDBDTO>();
 
   public loadPartnerByPostComment$ = new EventEmitter<any>();
   public onOrderCheckPost$: EventEmitter<ConversationOrderForm> = new EventEmitter<ConversationOrderForm>();

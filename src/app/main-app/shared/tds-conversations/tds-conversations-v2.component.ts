@@ -143,7 +143,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   }
 
   eventEmitter(){
-    this.chatomniEventEmiter.Quick_Reply_DataSourceEmiter$.subscribe(res=>{
+    this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.subscribe(res=>{
       if(res.UserId == this.data.ConversationId){
         this.dataSource.Items = [...this.dataSource.Items, res]
 
@@ -582,7 +582,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
             let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
             this.dataSource.Items = [...this.dataSource.Items, data];
 
-            //TODO: Đẩy qua conversation-all-v2 
+            //TODO: Đẩy qua conversation-all-v2
             if(i == res.length - 1){
               let itemLast = {...data}
               if (TDSHelperArray.hasListValue(model.attachments)) {
@@ -654,7 +654,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
         let data = this.omniMessageFacade.mappingChatomniDataItemDto(x);
         this.dataSource.Items = [...this.dataSource.Items, data];
 
-        //TODO: Đẩy qua conversation-all-v2 
+        //TODO: Đẩy qua conversation-all-v2
         if(i == res.length - 1){
           let itemLast = {...data}
           if (TDSHelperArray.hasListValue(model.attachments)) {
@@ -733,7 +733,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.isLoadingSelectUser = true;
     this.activityMatchingService.assignUserToConversation(this.data.ConversationId, item.Id, this.team.ChannelId)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(res => { 
+      .subscribe(res => {
         this.data.AssignedTo = res;
         this.message.success('Thao tác thành công');
         this.isLoadingSelectUser = false;
