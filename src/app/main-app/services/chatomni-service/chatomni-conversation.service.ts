@@ -96,9 +96,6 @@ export class ChatomniConversationService extends BaseSevice {
         if (this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
             this.urlNext = res.Paging.UrlNext;
 
-            if(exist.Extras){
-              exist.Extras.Objects = { ...exist.Extras?.Objects, ...res.Extras?.Objects};
-            }
             exist.Items = [...exist.Items, ...res.Items];
             exist.Paging = { ...res.Paging };
 

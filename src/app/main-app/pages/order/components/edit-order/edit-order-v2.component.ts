@@ -86,9 +86,9 @@ export class EditOrderV2Component implements OnInit {
   visibleDiscountLines: boolean = false;
   visibleShipExtraMoney: boolean = false;
 
-  _cities!: SuggestCitiesDTO;
-  _districts!: SuggestDistrictsDTO;
-  _wards!: SuggestWardsDTO;
+  _cities!: SuggestCitiesDTO | null;
+  _districts!: SuggestDistrictsDTO | null;
+  _wards!: SuggestWardsDTO | null;
   _street!: string;
 
   selectedIndex: number = 0;
@@ -228,10 +228,10 @@ export class EditOrderV2Component implements OnInit {
 
   mappingAddress(data: QuickSaleOnlineOrderModel) {
     let x = this.csOrder_SuggestionHandler.mappingAddress(data);
-
-    this._cities = x._cities;
-    this._districts = x._districts;
-    this._wards = x._wards;
+    
+    this._cities = x._cities || null;
+    this._districts = x._districts || null;
+    this._wards = x._wards || null;
     this._street = x._street;
   }
 
@@ -453,13 +453,18 @@ export class EditOrderV2Component implements OnInit {
   }
 
   onRemoveProduct(product: Detail_QuickSaleOnlineOrder, index: number) {
-    this.modal.error({
+    const modal = this.modal.error({
       title: 'Xóa sản phẩm',
       content: 'Bạn có muốn xóa sản phẩm khỏi danh sách',
       onOk: () => {
+        modal.close();
         this.quickOrderModel.Details.splice(index,1);
         this.calcTotal();
         this.coDAmount();
+        
+      },
+      onCancel:() => {
+        modal.close();
       },
       okText:"Xóa",
       cancelText:"Đóng"
@@ -483,7 +488,7 @@ export class EditOrderV2Component implements OnInit {
   onSave(type?: string): any {
     let model = this.quickOrderModel;
     let id = this.quickOrderModel.Id as string;
-
+    
     if(TDSHelperString.hasValueString(type)) {
         this.saleModel.FormAction = type;
         this.quickOrderModel.FormAction = type;
@@ -521,18 +526,19 @@ export class EditOrderV2Component implements OnInit {
     }
 
     this.isLoading = true;
+    
     this.saleOnline_OrderService.update(id, model).pipe(takeUntil(this.destroy$)).subscribe((res: any): any => {
 
         if(this.isEnableCreateOrder) {
             // call api tạo hóa đơn
             this.createFastSaleOrder(this.saleModel, type);
-
         } else {
             this.orderPrintService.printId(id, this.quickOrderModel);
-            this.modalRef.destroy(null);
             this.isLoading = false;
             this.message.success('Cập nhật đơn hàng thành công');
         }
+
+        this.modalRef.destroy(null);
 
     }, error => {
         this.isLoading = false;
@@ -705,8 +711,8 @@ export class EditOrderV2Component implements OnInit {
             if(!TDSHelperString.isString(res)){
               this.configsProviderDataSource = [...res.configs];
 
-              this.insuranceInfo = res.data?.InsuranceInfo ?? null;
-              this.shipServices = res.data?.Services ?? [];
+              this.insuranceInfo = res.data?.InsuranceInfo || null;
+              this.shipServices = res.data?.Services || [];
 
               if(TDSHelperArray.hasListValue(this.shipServices)) {
                   let svDetail = this.shipServices[0] as CalculateFeeServiceResponseDto;
@@ -870,6 +876,4 @@ export class EditOrderV2Component implements OnInit {
       this.selectedIndex = 0;
     }
   }
-
-
 }

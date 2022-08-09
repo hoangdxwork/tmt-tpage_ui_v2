@@ -130,7 +130,7 @@ export interface ChatomniDataItemDto {
 }
 
 export interface PagingTimestamp {
-  Next: string;
+  Next: number;
   HasNext: boolean;
   UrlNext: string;
 }

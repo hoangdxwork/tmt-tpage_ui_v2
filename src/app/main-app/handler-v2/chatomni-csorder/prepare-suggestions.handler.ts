@@ -15,16 +15,16 @@ export class CsOrder_SuggestionHandler {
   _street!: string;
 
   public onLoadSuggestion(item: ResultCheckAddressDTO, quickOrderModel: QuickSaleOnlineOrderModel) {
-    quickOrderModel.Address = item.Address ? item.Address : quickOrderModel.Address;
+    quickOrderModel.Address = item.Address;
 
-    quickOrderModel.CityCode = item.CityCode ? item.CityCode : quickOrderModel.CityCode;
-    quickOrderModel.CityName = item.CityName ? item.CityName : quickOrderModel.CityName;
+    quickOrderModel.CityCode = item.CityCode;
+    quickOrderModel.CityName = item.CityName;
 
-    quickOrderModel.DistrictCode = item.DistrictCode ? item.DistrictCode : quickOrderModel.DistrictCode;
-    quickOrderModel.DistrictName = item.DistrictName ? item.DistrictName : quickOrderModel.DistrictName;
+    quickOrderModel.DistrictCode = item.DistrictCode;
+    quickOrderModel.DistrictName = item.DistrictName;
 
-    quickOrderModel.WardCode = item.WardCode ? item.WardCode : quickOrderModel.WardCode;
-    quickOrderModel.WardName = item.WardName ? item.WardName : quickOrderModel.WardName;
+    quickOrderModel.WardCode = item.WardCode;
+    quickOrderModel.WardName = item.WardName;
 
     return quickOrderModel;
   }

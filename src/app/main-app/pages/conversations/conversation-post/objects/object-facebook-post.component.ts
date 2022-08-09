@@ -99,7 +99,7 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
   addNewCampaign() {
     if(this.currentLiveCampaign){
       let model = this.prepareLiveCampaignModel(this.currentLiveCampaign, <MDB_Facebook_Mapping_PostDto>this.item?.Data);
-      
+
       this.liveCampaignService.updateLiveCampaignPost(this.currentLiveCampaign.Id, model).pipe(takeUntil(this.destroy$)).subscribe(res => {
           if(res.value){
             (<MDB_Facebook_Mapping_PostDto>this.item?.Data).live_campaign_id = this.currentLiveCampaign.Id;

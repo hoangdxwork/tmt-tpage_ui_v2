@@ -210,7 +210,7 @@ export class CreateBillDefaultComponent implements OnInit {
 
     modal.afterClose.subscribe(result => {
       this.printSave(type, result, carrierId);
-      this.onCancel();
+      this.modalRef.destroy(null);
     });
   }
 
@@ -262,6 +262,7 @@ export class CreateBillDefaultComponent implements OnInit {
         if (!res.Error) {
           this.message.success(Message.Bill.InsertSuccess);
           this.printSave(type, res, model?.CarrierId.toString());
+          this.modalRef.destroy(null);
         }
         else {
           this.onModalError(res.DataErrorDefault, type, model?.CarrierId.toString());
@@ -269,7 +270,7 @@ export class CreateBillDefaultComponent implements OnInit {
       },
         err => {
           this.message.error(err?.error?.message || 'Tạo đơn hàng thất bại');
-        });
+      });
   }
 
   printSave(type: TDSSafeAny, data: TDSSafeAny, carrierId: string) {

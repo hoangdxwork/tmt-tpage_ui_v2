@@ -161,7 +161,6 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         this.lstOmcs[index].LatestMessage = {...res.LatestMessage} as ChatomniConversationMessageDto;
         this.lstOmcs[index] = {...this.lstOmcs[index]}
 
-        this.cdRef.detectChanges();
       }
     })
   }

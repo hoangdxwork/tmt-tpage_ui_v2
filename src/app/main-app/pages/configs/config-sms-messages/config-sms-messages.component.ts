@@ -1,7 +1,7 @@
 import { takeUntil } from 'rxjs/operators';
 import { RestSMSDTO } from './../../../dto/sms/sms.dto';
 import { RestSMSService } from './../../../services/sms.service';
-import { SMSMessagesAddServiceModalComponent } from '../components/sms-messages-add-service-modal/sms-messages-add-service-modal.component';
+import { SMSServiceModalComponent } from '../components/sms-service-modal/sms-service-modal.component';
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { TDSModalService } from 'tds-ui/modal';
@@ -57,7 +57,7 @@ export class ConfigSmsMessagesComponent implements OnInit {
   onAddNewData(data: TDSSafeAny) {
     const modal = this.modalService.create({
       title: 'Thêm mới dịch vụ SMS',
-      content: SMSMessagesAddServiceModalComponent,
+      content: SMSServiceModalComponent,
       viewContainerRef: this.viewContainerRef,
       size: 'md'
     });
@@ -66,7 +66,7 @@ export class ConfigSmsMessagesComponent implements OnInit {
   showEditModal(id: TDSSafeAny) {
     const modal = this.modalService.create({
       title: 'Sửa dịch vụ SMS',
-      content: SMSMessagesAddServiceModalComponent,
+      content: SMSServiceModalComponent,
       viewContainerRef: this.viewContainerRef,
       size: 'md',
       componentParams: {

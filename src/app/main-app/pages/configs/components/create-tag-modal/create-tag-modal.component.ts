@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs';
+import { TDSDestroyService } from 'tds-ui/core/services';
 import { takeUntil } from 'rxjs';
 import { TDSModalService } from 'tds-ui/modal';
 import { CRMTagService } from '../../../../services/crm-tag.service';
@@ -9,38 +9,36 @@ import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSMessageService } from 'tds-ui/message';
 
 @Component({
-    selector: 'app-config-conversation-tags-create-data-modal',
-    templateUrl: './config-conversation-tags-create-data-modal.component.html'
+    selector: 'create-tag-modal',
+    templateUrl: './create-tag-modal.component.html',
+    providers: [TDSDestroyService]
 })
-export class ConfigConversationTagsCreateDataModalComponent implements OnInit {
-    @Input() isEdit!: string;
-    public _form!: FormGroup;
+export class CreateTagModalComponent implements OnInit {
+    @Input() Id!: string;
+
+    _form!: FormGroup;
     palette: Array<string> = [];
     isForce!: boolean;
-    private destroy$ = new Subject<void>();
 
-    constructor(
-        private modal: TDSModalRef,
+    constructor(private modal: TDSModalRef,
         private formBuilder: FormBuilder,
         private message: TDSMessageService,
         private crmService: CRMTagService,
         private modalService: TDSModalService,
-    ) {
-        this._form = this.formBuilder.group({
-            name: new FormControl('', [Validators.required, Validators.maxLength(50)]),
-            color: new FormControl('', [Validators.required]),
-            status: new FormControl(true),
-        });
+        private destroy$: TDSDestroyService) {
+        this.createForm();
     }
 
     ngOnInit(): void {
         this.loadData();
     }
-    change() {
-        console.log(this._form)
-    }
-    public hasError = (controlName: string, errorName: string) => {
-        return this._form.controls[controlName].hasError(errorName);
+
+    createForm(){
+        this._form = this.formBuilder.group({
+            name: new FormControl('', [Validators.required, Validators.maxLength(50)]),
+            color: new FormControl('', [Validators.required]),
+            status: new FormControl(true),
+        });
     }
 
     updateForm(data: TDSSafeAny) {
@@ -71,13 +69,18 @@ export class ConfigConversationTagsCreateDataModalComponent implements OnInit {
             '#A1ACB8',
             '#CDD3DB',
             '#D2D8E0',
-            '#DDE2E9',
+            '#DDE2E9'
         ];
-        this.crmService.getById(this.isEdit).pipe(takeUntil(this.destroy$))
+
+        this.crmService.getById(this.Id).pipe(takeUntil(this.destroy$))
             .subscribe(res => {
                 delete res['@odata.context'];
                 this.updateForm(res)
             })
+    }
+
+    public hasError = (controlName: string, errorName: string) => {
+        return this._form.controls[controlName].hasError(errorName);
     }
 
     onChangeColor(value: string) {
@@ -94,29 +97,31 @@ export class ConfigConversationTagsCreateDataModalComponent implements OnInit {
 
     onSubmit() {
         let model = this.prepareModel();
+
         if (this._form.invalid) {
             return
         }
-        if (this.isEdit) {
-            this.crmService.update(this.isEdit, model, this.isForce).subscribe(
+
+        if (this.Id) {
+            this.crmService.update(this.Id, model, this.isForce).pipe(takeUntil(this.destroy$)).subscribe(
                 (res) => {
                     this.message.success('Cập nhật thành công');
                     delete res['@odata.context']
                     this.modal.destroy(res);
                 },
                 (err) => {
-                    this.confirmForceUpdate(model, err.error.message);
+                    this.confirmForceUpdate(model, err?.error?.message);
                 }
             );
         } else {
-            this.crmService.insert(model).subscribe(
+            this.crmService.insert(model).pipe(takeUntil(this.destroy$)).subscribe(
                 (res) => {
                     this.message.success('Thêm thành công');
                     delete res['@odata.context']
                     this.modal.destroy(res)
                 },
                 (err) => {
-                    this.message.error(err.error ? err.error.message : 'Thêm thất bại');
+                    this.message.error(err?.error?.message || 'Thêm thất bại');
                 }
             );
         }
@@ -124,6 +129,7 @@ export class ConfigConversationTagsCreateDataModalComponent implements OnInit {
 
     prepareModel() {
         let formModel = this._form.value;
+
         let modelDefault = {
             Name: formModel.name ? formModel.name : '' as string,
             ColorClassName: formModel.color ? formModel.color : '' as string,
@@ -139,13 +145,13 @@ export class ConfigConversationTagsCreateDataModalComponent implements OnInit {
             size: 'sm',
             onOk: () => {
                 this.isForce = true;
-                this.crmService.update(this.isEdit, model, this.isForce).subscribe(
+                this.crmService.update(this.Id, model, this.isForce).pipe(takeUntil(this.destroy$)).subscribe(
                     (res) => {
                         this.message.success('Cập nhật thành công');
                         this.modal.destroy(model);
                     },
                     (err) => {
-                        this.message.error(err.error ? err.error.message : 'Cập nhật thất bại');
+                        this.message.error(err?.error?.message || 'Cập nhật thất bại');
                         this.modal.destroy(null);
                     }
                 );
