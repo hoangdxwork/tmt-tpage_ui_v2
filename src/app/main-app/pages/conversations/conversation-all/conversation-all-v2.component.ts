@@ -129,7 +129,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       if(exist){
           this.onChangeConversation(team);
       }
-      this.checkCsidRouter = localStorage.getItem('checkCsidRouter') || '';
+      this.checkCsidRouter = localStorage.getItem(this.chatomniConversationService._keyCheckCsidRouter) || '';
     })
 
     // TODO: gán mã code load từ Tab Order
@@ -241,7 +241,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
           this.router.navigateByUrl(uriParams);
       }
       // this.checkCsidRouter = this.route.snapshot.queryParams.csid;
-      localStorage.setItem('checkCsidRouter',item?.ConversationId);
+      localStorage.setItem(this.chatomniConversationService._keyCheckCsidRouter, item?.ConversationId);
     }
   }
 
