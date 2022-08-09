@@ -65,9 +65,7 @@ export class ChatomniObjectService extends BaseSevice  {
       if (TDSHelperObject.hasValue(res)) {
           this.objFacade.setData(teamId, res);
       }
-
-      // this.urlNext = res.Paging?.UrlNext;
-      this.urlNext = `${this._BASE_URL}/${this.baseRestApi}/${teamId}/objects?next=${res.Paging.Next}`;
+      this.urlNext = res.Paging?.UrlNext;
 
       let result = this.objFacade.getData(teamId);
       return result;
@@ -91,11 +89,12 @@ export class ChatomniObjectService extends BaseSevice  {
       let url = this.urlNext as string;
       return this.getLink(url).pipe(map((res: ChatomniObjectsDto) => {
 
+        exist.Extras!.Objects = { ...res.Extras?.Objects};
+
         // TODO nếu trùng urlNext thì xóa không cho load
         if (this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
-            this.urlNext = `${this._BASE_URL}/${this.baseRestApi}/${teamId}/objects?next=${res.Paging.Next}`;
+            this.urlNext = res.Paging?.UrlNext;
 
-            // exist.Extras!.Objects = { ...exist.Extras?.Objects, ...res.Extras?.Objects};
             exist.Items = [...exist.Items, ...res.Items];
             exist.Paging = { ...res.Paging };
 

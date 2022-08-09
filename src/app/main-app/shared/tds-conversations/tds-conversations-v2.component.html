@@ -126,11 +126,11 @@
                                 <span class="text-neutral-1-400 text-[13px]" [innerHTML]="item.CreatedTime | yiDateTimeV3"></span>
                                 <span class="hr"></span>
                             </div>
-                        </div>                                
+                        </div>
                         <!-- Thông tin bài post -->
                         <div *ngIf="item.ObjectId && dataSource?.Extras!.Objects[item.ObjectId]
                             && dataSource.Extras!.Objects[item?.ObjectId].Data" class="px-2">
-                            <conversation-infopost-item 
+                            <conversation-infopost-item
                                 [team]="team" [typeNumber]="item.Type" [item]="item"
                                 [data]="dataSource.Extras!.Objects[item.ObjectId]">
                             </conversation-infopost-item>
@@ -142,7 +142,7 @@
                             [name]="data.Name" [dataItem]="item"
                             [type]="type" [partner]="partner"
                             [dataSource]="dataSource">
-                            
+
                             <!-- [children]="dataSource.Extras!.children[item?.ObjectId]" --> chưa có
                         </tds-conversation-item-v2>
                     </ng-container>

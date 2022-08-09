@@ -510,10 +510,10 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
             switch (hubs.type) {
               case `${TypeOnChatBot.AdminTransferChatBot}`:
                   if(item) {
-                    item.State = StateChatbot.Warning;
+                    item.State = StateChatbot.SystemError;
                   }
                   if(exits) {
-                      this.omcs_Item!.State = StateChatbot.Warning;
+                      this.omcs_Item!.State = StateChatbot.SystemError;
                   }
                   // TODO: Lấy teamId của page
                   this.crmService.getActiveByPageIds$([hubs.data.pageId]).pipe(takeUntil(this.destroy$)).subscribe(res=>{
