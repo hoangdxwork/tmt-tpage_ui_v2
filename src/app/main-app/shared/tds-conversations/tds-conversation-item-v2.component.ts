@@ -232,11 +232,11 @@ export class TDSConversationItemV2Component implements OnInit {
 
   //chưa test
   retryMessage() {
-    this.activityMatchingService.retryMessage(this.dataItem.Id, this.team.Facebook_PageId )
+    this.activityMatchingService.retryMessage(this.dataItem.Id, this.team.ChannelId )
       .pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
           this.tdsMessage.success("Thao tác thành công");
       }, error => {
-          this.tdsMessage.error('Không thành công');
+          this.tdsMessage.error(`${error?.Message}` || 'Không thành công');
       })
   }
 

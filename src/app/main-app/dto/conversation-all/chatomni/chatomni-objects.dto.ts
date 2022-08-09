@@ -12,9 +12,9 @@ export interface ChatomniObjectsItemDto {
   Id: string;
   ObjectId: string;
   ObjectType: ChatomniObjectTypeDto;
-  CreatedTime: Date;
-  ChannelCreatedTime: Date;
-  ChannelUpdatedTime?: any;
+  CreatedTime: Date | any;
+  ChannelCreatedTime: Date | any;
+  ChannelUpdatedTime?: Date | any;
   Title?: any;
   Description: string;
   Thumbnail?: Thumbnail;
