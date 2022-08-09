@@ -70,6 +70,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   isCheckedAll: boolean = false;
   cacheChatbot: OnChatBotSignalRModel[] = [];
   orderCode: any;
+  checkCsidRouter = '';
 
   tagsChange!: ChatomniConversationTagDto[];
   currentOrderTab: number = 0;
@@ -100,7 +101,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     private chatomniEventEmiterService: ChatomniEventEmiterService) {
       super(crmService, activatedRoute, router);
   }
-
+ 
   ngOnInit(): void {
     // TODO: change team tds header
     this.crmService.changeTeamFromLayout$.pipe(takeUntil(this.destroy$)).subscribe((team) => {
@@ -128,7 +129,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       if(exist){
           this.onChangeConversation(team);
       }
-
+      this.checkCsidRouter = localStorage.getItem(this.chatomniConversationService._keyCheckCsidRouter) || '';
     })
 
     // TODO: gán mã code load từ Tab Order
@@ -205,10 +206,12 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
             //TODO: check psid khi load lần 2,3,4...
             let exits = this.lstOmcs.filter(x => x.ConversationId == csid)[0] ;
-            if (exits) {
-                this.setCurrentConversationItem(exits);
+            //TODO: kiểm tra khi chọn menu tin nhắn và bình luận, giữ item đang chọn
+            let exitsTab = this.lstOmcs.filter(x => x.ConversationId == this.checkCsidRouter)[0] ;
+            if (exits || exitsTab) {
+                this.setCurrentConversationItem(exits || exitsTab);
             } else {
-                //TODO: load lần đầu tiên
+                //TODO: load lần đầu tiên'
                 this.setCurrentConversationItem(this.lstOmcs[0]);
             }
 
@@ -237,6 +240,8 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
           let uriParams = `${uri}?teamId=${this.currentTeam?.Id}&type=${this.type}&csid=${item?.ConversationId}`;
           this.router.navigateByUrl(uriParams);
       }
+      // this.checkCsidRouter = this.route.snapshot.queryParams.csid;
+      localStorage.setItem(this.chatomniConversationService._keyCheckCsidRouter, item?.ConversationId);
     }
   }
 
@@ -432,7 +437,6 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   }
 
   makeDataSource(queryObj: any) {
-    console.log(Object.keys(queryObj || {}).length)
     if (Object.keys(queryObj || {}).length < 3) {
       this.isRefreshing = true;
 

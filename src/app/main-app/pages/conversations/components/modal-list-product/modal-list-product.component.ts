@@ -1,3 +1,4 @@
+import { ConversationOrderFacade } from './../../../../services/facades/conversation-order.facade';
 import { AfterViewInit, ChangeDetectorRef, ElementRef, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { BehaviorSubject, fromEvent, Subject } from 'rxjs';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
@@ -51,7 +52,8 @@ export class ModalListProductComponent implements OnInit, OnDestroy, AfterViewIn
     private sharedService: SharedService,
     private viewContainerRef: ViewContainerRef,
     private productIndexDBService: ProductIndexDBService,
-    private commonService: CommonService,) {
+    private commonService: CommonService,
+    private conversationOrderFacade: ConversationOrderFacade) {
   }
 
   ngOnInit(): void {
@@ -94,8 +96,8 @@ export class ModalListProductComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   addItem(item: DataPouchDBDTO) {
-    // this.selectProduct.emit(item);
-    this.modal.destroy(item);
+    this.conversationOrderFacade.onAddProductOrder$.emit(item)
+    // this.modal.destroy(item);
   }
 
   cancel(){

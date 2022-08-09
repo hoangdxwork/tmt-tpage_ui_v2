@@ -15,6 +15,8 @@ export class ChatomniConversationService extends BaseSevice {
   table: string = "";
   baseRestApi: string = "rest/v2.0/chatomni";
   urlNext: string | undefined;
+  
+  _keyCheckCsidRouter = 'check_Csid_Router';
 
   constructor(private apiService: TCommonService,
       private csFacade: ChatomniConversationFacade) {

@@ -143,7 +143,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
   }
 
   eventEmitter(){
-    this.chatomniEventEmiter.Quick_Reply_DataSourceEmiter$.subscribe(res=>{
+    this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.subscribe(res=>{
       if(res.UserId == this.data.ConversationId){
         this.dataSource.Items = [...this.dataSource.Items, res]
 

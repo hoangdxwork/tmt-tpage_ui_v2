@@ -253,7 +253,7 @@ export class ModalSendMessageAllComponent implements OnInit {
             let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(x.to_id, data);
 
             // TODO: Đẩy qua tds-conversation-v2 
-            this.chatomniEventEmiter.Quick_Reply_DataSourceEmiter$.emit(data);
+            this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.emit(data);
             // TODO: Đẩy qua conversation-all-v2 
             this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
             
@@ -284,7 +284,7 @@ export class ModalSendMessageAllComponent implements OnInit {
             let modelLastMessage = this.omniMessageFacade.mappinglLastMessageEmiter(x.to_id, data);
 
             // TODO: Đẩy qua tds-conversation-v2 
-            this.chatomniEventEmiter.Quick_Reply_DataSourceEmiter$.emit(data);
+            this.chatomniEventEmiter.quick_Reply_DataSourceEmiter$.emit(data);
             // TODO: Đẩy qua conversation-all-v2 
             this.chatomniEventEmiter.last_Message_ConversationEmiter$.emit(modelLastMessage);
           });
