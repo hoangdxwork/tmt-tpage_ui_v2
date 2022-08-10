@@ -264,7 +264,7 @@ export class AddBillComponent implements OnInit {
       this.dataModel = data;
 
       //TODO: tạm thời đóng tính năng
-      // this.loadConfigProvider(this.dataModel);
+      this.loadConfigProvider(this.dataModel);
 
       //TODO: cập nhật danh sách dịch vụ
       let services = this.getServiceHandler.getShipService(this.dataModel);

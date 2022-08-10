@@ -7,6 +7,7 @@ export interface GetDeliveryResponseDto {
 export interface DeliveryDataResponseDto {
   IsActive: boolean,
   Name: string,
+  Description: string,
   Type: string,
   UrlLogo: string,
   Values: Array<TDSSafeAny>

@@ -1,7 +1,6 @@
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { Component, Input, OnChanges, OnInit, Output, SimpleChanges, EventEmitter, ChangeDetectionStrategy, AfterViewInit, ViewChildren, QueryList, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, DoCheck } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConversationMatchingItem, StateChatbot } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { DraftMessageService } from 'src/app/main-app/services/conversation/draft-message.service';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
@@ -9,7 +8,6 @@ import { ConversationEventFacade } from 'src/app/main-app/services/facades/conve
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSHelperArray, TDSSafeAny } from 'tds-ui/shared/utility';
 import { Subject, takeUntil } from 'rxjs';
-import { CrmMatchingV2Detail } from 'src/app/main-app/dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
 import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
