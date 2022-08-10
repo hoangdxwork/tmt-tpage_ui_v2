@@ -77,7 +77,7 @@ export class YiAutoScrollDirective implements  OnDestroy, AfterViewInit  {
      * @param duration: duration in milliseconds, default is 750.
      * @param container the container html native element (or its id), window will be used if not set
      */
-    scrollToElement(elementID: string, duration: number = 750, container: any): void {
+    scrollToElement(elementID: string, duration: number = 750, container?: any): void {debugger
 
         const item = document.getElementById(elementID); // the element
         if (item) {
@@ -103,7 +103,7 @@ export class YiAutoScrollDirective implements  OnDestroy, AfterViewInit  {
      * @param to is the location to scroll to.
      * @param duration is the length of the animation.
      */
-    private scrollTo(element: any, to: number, duration :any, isContainer: boolean = false) {
+    public scrollTo(element: any, to: number, duration: any, isContainer: boolean = false): any {
         const increment = 20,
             that = this;
             let start: number,
@@ -179,9 +179,9 @@ export class YiAutoScrollDirective implements  OnDestroy, AfterViewInit  {
             this.onScrollToTop.emit();
         }
 
-        // if (this.nativeElement.scrollTop == this.nativeElement.scrollHeight) {
-        //     this.onScrollToBottom.emit();
-        // }
+        if (this.nativeElement.scrollTop == this.nativeElement.scrollHeight) {
+            this.onScrollToBottom.emit();
+        }
 
         if (yBottom <= Number(this.lockYOffset) && this.scrollEnd) {
             this.onchangeBottom.emit(yBottom);

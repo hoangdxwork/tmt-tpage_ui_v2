@@ -73,22 +73,6 @@ export class TDSConversationItemV2Component implements OnInit {
   }
 
   ngOnInit(): void {
-    if(TDSHelperObject.hasValue(this.children) && this.dataItem) {
-        let type = this.team.Type;
-
-        switch(type) {
-          case CRMTeamType._Facebook:
-            break;
-          case CRMTeamType._TShop:
-            if(this.dataItem.Type == ChatomniMessageType.TShopComment) {
-                let tshopPost = this.children.Data
-            }
-            break;
-
-          default:
-            break;
-        }
-    }
   }
 
   selectOrder(type: string): any {
@@ -139,6 +123,7 @@ export class TDSConversationItemV2Component implements OnInit {
 
   clickReply(event: any) {
     this.isReply = !this.isReply;
+
     setTimeout(() => {
       if(this.contentReply)
         this.contentReply.nativeElement.focus();
@@ -300,7 +285,6 @@ export class TDSConversationItemV2Component implements OnInit {
         this.cdRef.markForCheck();
       });
 
-      this.message += event.Name, + " - " + event.Price;
     }
   }
 
@@ -352,28 +336,43 @@ export class TDSConversationItemV2Component implements OnInit {
   }
 
   onEnter(event: any): any{
-    let message = this.messageModel;
-    if (!TDSHelperString.hasValueString(message)) {
-      return this.tdsMessage.error('Hãy nhập nội dung cần gửi');
-    }
-    this.replyComment(message, event);
+
+    this.replyComment();
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
   }
 
-  replyComment(message: string, event: any) {
+  clickSendMessage(): any {
+    this.replyComment();
+  }
+
+  replyComment() {
     if(this.isReplyingComment){
-      return;
+        return;
+    }
+
+    let message = this.messageModel;
+
+    if (!TDSHelperString.hasValueString(message)) {
+        this.tdsMessage.error('Hãy nhập nội dung cần gửi');
+        return
     }
 
     this.isReplyingComment = true;
+
     if(this.isPrivateReply) {
-      this.addQuickReplyComment(message, event);
-    } else {
+      this.addQuickReplyComment(message);
+    }
+    else {
       const model = this.prepareModel(message);
       model.post_id = this.dataItem.ObjectId || this.dataItem.Data?.object?.id || null;
       model.parent_id = this.dataItem.ParentId || this.dataItem?.Data?.id || null;
+
       this.activityMatchingService.replyComment(this.team?.Id, model)
         .pipe(takeUntil(this.destroy$))
         .pipe(finalize(()=> {this.isReplyingComment = false;} )).subscribe((res: any) => {
+
           this.activityDataFacade.messageReplyCommentServer({ ...res, ...model });
           this.conversationDataFacade.messageServer(res);
 
@@ -381,22 +380,17 @@ export class TDSConversationItemV2Component implements OnInit {
           this.tdsMessage.success("Trả lời bình luận thành công");
 
           this.isReply = false;
-          event.preventDefault();
-          event.stopImmediatePropagation();
           this.cdRef.markForCheck();
 
         }, error => {
           this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Trả lời bình luận thất bại");
-          event.preventDefault();
-          event.stopImmediatePropagation();
           this.cdRef.markForCheck();
-
         });
     }
   }
 
   // hiện thông báo trả lời thanh công nhưng chưa add, chưa gửi vào fb
-  addQuickReplyComment(message: string, event: any) {
+  addQuickReplyComment(message: string) {
     this.isReply = false;
     const model = this.prepareModel(message);
     model.comment_id = this.dataItem.Data.id;
@@ -418,16 +412,11 @@ export class TDSConversationItemV2Component implements OnInit {
         this.isReplyingComment = false;
         this.tdsMessage.success('Gửi tin thành công');
 
-        event.preventDefault();
-        event.stopImmediatePropagation();
         this.cdRef.markForCheck();
 
     }, error => {
-      this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Gửi tin nhắn thất bại");
       this.isReplyingComment = false;
-
-      event.preventDefault();
-      event.stopImmediatePropagation();
+      this.tdsMessage.error(`${error?.error?.message}` ? `${error?.error?.message}` : "Gửi tin nhắn thất bại");
       this.cdRef.markForCheck();
     });
   }

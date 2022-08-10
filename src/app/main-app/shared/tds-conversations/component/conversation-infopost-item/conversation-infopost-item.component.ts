@@ -33,7 +33,7 @@ export class ConversationInfopostItemComponent implements OnInit, OnChanges {
     private modalService: TDSModalService,
     private destroy$: TDSDestroyService
   ) { }
-  
+
   ngOnChanges(changes: SimpleChanges): void {
     if(this.team.Type == CRMTeamType._Facebook && this.typeNumber == 12){
       this.dataFacebook = this.data.Data as Facebook_Graph_Post;

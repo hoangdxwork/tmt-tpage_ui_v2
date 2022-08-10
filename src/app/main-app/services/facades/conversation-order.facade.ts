@@ -98,7 +98,7 @@ export class ConversationOrderFacade extends BaseSevice  {
           }
           // TODO: Không có đơn hàng gần nhất thì sử dụng đơn hàng nháp gần nhất
           else {
-              this.loadLastOrderDraft(obs).subscribe((res: any) => {
+              this.loadLastOrderDraft(obs).subscribe((res: any) => {debugger
                   if(res) {
                       this.onLastOrderCheckedConversation$.emit(res);
                   }
@@ -369,6 +369,7 @@ export class ConversationOrderFacade extends BaseSevice  {
         x.Details = [];
     }
 
+
     return new Observable(obs => {
 
       if(TDSHelperString.hasValueString(model.page_id) && TDSHelperString.hasValueString(model.psid)) {
@@ -378,7 +379,7 @@ export class ConversationOrderFacade extends BaseSevice  {
             PageId: model.psid
         };
 
-        this.partnerService.checkInfo(data).subscribe((res: any) => {
+        this.partnerService.checkInfo(data).subscribe((res: any) => {debugger
             if(res?.Success && res?.Data?.Id) {
 
                   if(TDSHelperString.hasValueString(res.Data.Name)) {

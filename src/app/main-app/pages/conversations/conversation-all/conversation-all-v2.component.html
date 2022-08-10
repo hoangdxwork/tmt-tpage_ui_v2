@@ -58,43 +58,43 @@
           </div>
 
           <!-- List danh sách chat -->
-          <div class="overflow-hidden flex flex-auto" >
-            <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstOmcs && lstOmcs.length > 0; else noOmcs" >
+          <tds-spin class="overflow-hidden flex flex-auto" [spinning]="isLoading">
+              <div class="overflow-hidden flex flex-col relative flex-auto" *ngIf="lstOmcs && lstOmcs.length > 0; else noOmcs" >
 
-              <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="myScroll" is-lock="true" observe-attributes
-                  yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
+                <div class="overflow-y-auto tds-custom-scroll flex flex-col gap-y-1" id="scrollConversation" is-lock="true" observe-attributes
+                    yiAutoScroll lock-y-offset="10" scroll-end="true" (on-change-bottom)="nextData($event)">
 
-                  <div *ngFor="let item of lstOmcs ; let i= index ; trackBy: trackByIndex">
-                      <div *ngIf="item && item.ConversationId && omcs_Item && currentTeam" @eventFadeState>
+                    <div *ngFor="let item of lstOmcs; let i= index ; trackBy: trackByIndex">
+                        <div *ngIf="item && item.ConversationId && omcs_Item && currentTeam" @eventFadeState>
 
-                        <a (click)="changeCurrentCvsItem(item)" class="w-full">
-                          <!-- {{ (isChanged == true && currentCrmMatching) ? 'cursor-wait' : 'cursor-pointer'}} -->
-                            <current-conversation-item-v2
-                                [item]="item" [csid]="item.ConversationId" [type]="type"
-                                [omcs_Item]="omcs_Item"
-                                [state]="item.State"
-                                [team]="currentTeam" [isFastSend]="isFastSend"
-                                [isOpenCollapCheck]="isOpenCollapCheck"
-                                [checked]="setOfCheckedId.has(item.ConversationId)"
-                                (checkedChange)="onItemChecked(item.ConversationId, $event)">
-                            </current-conversation-item-v2>
-                        </a>
-                      </div>
-                  </div>
+                          <a (click)="changeCurrentCvsItem(item)" >
+                            <!-- class="w-full {{ (isChanged && omcs_Item) ? 'cursor-wait' : 'cursor-pointer'}}" -->
+                              <current-conversation-item-v2
+                                  [item]="item" [csid]="item.ConversationId" [type]="type"
+                                  [omcs_Item]="omcs_Item"
+                                  [state]="item.State"
+                                  [team]="currentTeam" [isFastSend]="isFastSend"
+                                  [isOpenCollapCheck]="isOpenCollapCheck"
+                                  [checked]="setOfCheckedId.has(item.ConversationId)"
+                                  (checkedChange)="onItemChecked(item.ConversationId, $event)">
+                              </current-conversation-item-v2>
+                          </a>
+                        </div>
+                    </div>
 
-                  <div class="absolute w-full flex justify-center z-10 bottom-10" *ngIf="isProcessing">
-                      <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
-                  </div>
+                    <div class="absolute w-full flex justify-center z-10 bottom-10" *ngIf="isProcessing">
+                        <tds-spinner [color]="'secondary'" class="mr-1 w-6 h-6"></tds-spinner>
+                    </div>
+                </div>
+
+                <div class="flex-auto bg-white"></div>
               </div>
-
-              <div class="flex-auto bg-white"></div>
-            </div>
-            <ng-template #noOmcs>
-              <div class="flex-auto flex items-center justify-center bg-white">
-                <tds-empty></tds-empty>
-              </div>
-            </ng-template>
-          </div>
+              <ng-template #noOmcs>
+                <div class="flex-auto flex items-center justify-center bg-white">
+                  <tds-empty></tds-empty>
+                </div>
+              </ng-template>
+          </tds-spin>
       </div>
   </div>
   <!--Nội dung cuộc hội thoại-->
