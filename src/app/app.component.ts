@@ -79,7 +79,7 @@ export class AppComponent {
 
                     this.titleMessage = `TShop: ${this.data.Conversation.Name} vừa nhắn tin`;
                     this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
-                    this.url = `/conversation/inbox?teamId=${this.team.Id}&type=message&csid=${this.data.Conversation.UserId}`;
+                    this.url = `/conversation/all?teamId=${this.team.Id}&type=all&csid=${this.data.Conversation.UserId}`;
 
                   break;
 
@@ -87,7 +87,7 @@ export class AppComponent {
 
                     this.titleMessage = `TShop: ${this.data.Conversation.Name} vừa bình luận`;
                     this.notification.template(this.templateNotificationMessNew, { data: this.data, placement: 'bottomLeft' });
-                    this.url = `/conversation/comment?teamId=${this.team.Id}&type=comment&csid=${this.data.Conversation.UserId}`;
+                    this.url = `/conversation/all?teamId=${this.team.Id}&type=all&csid=${this.data.Conversation.UserId}`;
 
                   break;
 
