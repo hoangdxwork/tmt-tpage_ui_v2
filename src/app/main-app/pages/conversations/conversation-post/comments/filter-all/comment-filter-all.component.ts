@@ -66,7 +66,8 @@ export class CommentFilterAllComponent implements OnInit, OnDestroy {
     private conversationPostFacade: ConversationPostFacade,
     private chatomniCommentService: ChatomniCommentService,
     public crmService: CRMTeamService,
-    private destroy$: TDSDestroyService) {
+    private destroy$: TDSDestroyService,
+    private conversationOrderFacade: ConversationOrderFacade) {
   }
 
   ngOnInit() {
@@ -87,11 +88,13 @@ export class CommentFilterAllComponent implements OnInit, OnDestroy {
             this.dataSource = res;
         }
         this.isLoading = false;
+        
         this.cdRef.markForCheck();
-
     }, error => {
         this.isLoading = false;
         this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+
+        this.cdRef.markForCheck();
     })
   }
 
@@ -292,11 +295,11 @@ export class CommentFilterAllComponent implements OnInit, OnDestroy {
   }
 
   onInformation(item: any) {
-    // this.conversationOrderFacade.commentFormPost(item, false);
+    this.conversationOrderFacade.commentFormPost(item, false);
   }
 
   onCreateOrder(item: any) {
-    // this.conversationOrderFacade.commentFormPost(item, true);
+    this.conversationOrderFacade.commentFormPost(item, true);
   }
 
   nextData(event: any) {

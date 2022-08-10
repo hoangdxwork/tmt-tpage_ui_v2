@@ -23,7 +23,7 @@ export class ChatomniObjectService extends BaseSevice  {
       super(apiService)
   }
 
-  get(teamId: number, queryObj?: any): Observable<ChatomniObjectsDto> {debugger
+  get(teamId: number, queryObj?: any): Observable<ChatomniObjectsDto> {
 
     let queryString = null;
     if (queryObj) {
