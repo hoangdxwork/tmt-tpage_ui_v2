@@ -139,6 +139,7 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
       this.countHiddenTag = (this.item.Tags!.length - this.displayTag) || 0;
     }
 
+    this.cdr.markForCheck();
     if(this.countNgafterview > 1){
       this.cdr.detectChanges();
     }
