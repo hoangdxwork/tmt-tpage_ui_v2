@@ -32,8 +32,8 @@
                           <div class="text-title-1 font-sans font-semibold"> {{item.Name}} </div>
                         </div>
                         <div class="font-regular font-sans text-xs flex gap-x-2">
-                          <p class="text-success-400 font-semibold">
-                            J&T Express tự hào đã & đang mở rộng mạng lưới quốc tế để mang đến trải nghiệm tốt nhất
+                          <p class="text-success-400 font-semibold" *ngIf="item.Description">
+                            {{item.Description}}
                           </p>
                         </div>
                       </div>

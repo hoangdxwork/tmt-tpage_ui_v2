@@ -260,7 +260,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
     modal.componentInstance?.onSendProduct.subscribe(res=>{
       if(res){
-        this.onProductSelected(res);
+          this.onProductSelected(res);
       }
     })
   }
@@ -377,6 +377,8 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
               this.dataSource.Items = [...res.Items];
               this.dataSource.Paging = {...res.Paging};
+
+              this.srcollBehavior();
           }
 
           this.isProcessing = false;
@@ -388,6 +390,21 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
           this.cdRef.markForCheck();
       })
     })
+  }
+
+
+  srcollBehavior() {
+    setTimeout(() => {
+      let element = this.document.getElementById('dataSourceScroll') as any;
+
+      if(element) {
+        const top = (element.scrollHeight / element.offsetHeight) * 100;
+        element?.scroll({
+            top: top,
+            behavior: 'smooth',
+        })
+      }
+    }, 500)
   }
 
   ngOnChanges(changes: SimpleChanges) {

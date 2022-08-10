@@ -10,7 +10,6 @@ export class ScrollConversationPipe implements PipeTransform {
       let data = [...value];
       let lockYOffset = 40;
 
-      if(element && value?.length > 0) {
         const yBottom = (element.scrollHeight - element.scrollTop - element.clientHeight ) as number;
 
         if(yBottom < Number(lockYOffset)) {
@@ -19,7 +18,6 @@ export class ScrollConversationPipe implements PipeTransform {
               this.cdRef.markForCheck();
           }, 750)
         }
-      }
       return data;
     }
 }

@@ -106,7 +106,7 @@
     <!-- main -->
     <tds-spin class="flex-auto h-full w-full flex overflow-hidden" [color]="'secondary'" tip="Loading..." [spinning]="isLoading" >
         <div class="h-full w-full overflow-y-auto tds-custom-scroll flex flex-col relative delay-100"
-            #scrollToIndex  id="dataSourceScroll" (onScrollToTop)="nextData()"
+            #scrollToIndex  (onScrollToTop)="nextData()" id="dataSourceScroll"
             yiAutoScroll observe-attributes is-lock="true" lock-y-offset="40">
 
             <div class="absolute w-full flex justify-center z-10" *ngIf="isProcessing">
@@ -117,8 +117,8 @@
                 <tds-empty notFoundContent="Không có nội dung"></tds-empty>
             </div>
 
-            <div *ngIf="dataSource && dataSource?.Items">
-                <div *ngFor="let item of dataSource!.Items | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex">
+            <div *ngIf="dataSource && dataSource?.Items" >
+                <div *ngFor="let item of dataSource!.Items | scrollConversation: scrollToIndex as dataOrderBy; let i = index; trackBy: trackByIndex" >
                   <div *ngIf="item" @eventFadeState>
                     <div *ngIf="item.ObjectId != dataSource!.Items[i-1]?.ObjectId">
                         <div class="w-full relative">
