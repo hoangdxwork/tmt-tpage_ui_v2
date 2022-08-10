@@ -550,7 +550,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
           this.mappingTeams = [];
           let pageDic = {} as any;
 
-          teams.map((x: any) => {debugger
+          teams.map((x: any) => {
             let exist = res.filter((r: any) => r.page_id == x.ChannelId)[0];
 
             if (exist && !pageDic[exist.page_id]) {

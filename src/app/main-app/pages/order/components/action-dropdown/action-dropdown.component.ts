@@ -11,6 +11,7 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { DuplicateUserComponent } from '../duplicate-user/duplicate-user.component';
 import { UpdateStatusOrderComponent } from '../update-status-order/update-status-order.component';
+import { CheckDuplicatePartnertDTO } from '@app/dto/partner/checked-partner.dto';
 
 @Component({
   selector: 'action-dropdown',
@@ -32,6 +33,7 @@ export class ActionDropdownComponent implements OnInit {
   constructor(
     private modal: TDSModalService,
     private message: TDSMessageService,
+    private modalService: TDSModalService,
     private viewContainerRef: ViewContainerRef,
     private saleOnline_OrderService: SaleOnline_OrderService,
     private odataSaleOnline_OrderService: OdataSaleOnline_OrderService
@@ -99,15 +101,25 @@ export class ActionDropdownComponent implements OnInit {
 
   checkDuplicateASIdPhoneUId() {
     if (this.checkValueEmpty() == 1) {
-      this.modal.create({
-        title: 'Danh sách khách hàng trùng',
-        content: DuplicateUserComponent,
-        size: 'xl',
-        viewContainerRef: this.viewContainerRef,
-        componentParams: {
-          // listData: listData
+      let ids = this.idsModel;
+
+      this.saleOnline_OrderService.getCheckDuplicatePhone({ids: ids}).pipe(takeUntil(this.destroy$)).subscribe((res: any ) => {
+        if(res) {
+          delete res['@odata.context'];
+
+          this.modalService.create({
+            title: 'Danh sách khách hàng trùng',
+            content: DuplicateUserComponent,
+            size: 'xl',
+            viewContainerRef: this.viewContainerRef,
+            componentParams: {
+              duplicateUser: res.value as CheckDuplicatePartnertDTO[]
+            }
+          });
         }
-      });
+      }, err => {
+        this.message.error(err.error.message ?? 'Không tải được dữ liệu');
+      })
     }
   }
 

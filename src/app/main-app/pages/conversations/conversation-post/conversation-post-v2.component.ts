@@ -1,3 +1,5 @@
+import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign.dto';
+import { LiveCampaignService } from 'src/app/main-app/services/live-campaign.service';
 import { ChatomniDataTShopPostDto } from '@app/dto/conversation-all/chatomni/chatomni-tshop-post.dto';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
@@ -24,6 +26,7 @@ import { TDSDestroyService } from 'tds-ui/core/services';
 import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
 import { ChatomniObjectsDto, ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 import { Facebook_Graph_Post } from '@app/dto/conversation-all/chatomni/chatomni-facebook-post.dto';
+import { YiAutoScrollDirective } from '@app/shared/directives/yi-auto-scroll.directive';
 
 @Component({
   selector: 'app-conversation-post-v2',
@@ -35,33 +38,32 @@ import { Facebook_Graph_Post } from '@app/dto/conversation-all/chatomni/chatomni
 export class ConversationPostV2Component extends TpageBaseComponent implements OnInit, AfterViewInit {
 
   @ViewChild('innerText') innerText!: ElementRef;
-
-  @ViewChild(CdkVirtualScrollViewport)
-  viewport!: CdkVirtualScrollViewport;
+  @ViewChild(YiAutoScrollDirective) yiAutoScroll!: YiAutoScrollDirective;
 
   public lstType: any[] = [
-    { type: '', text: 'Tất cả bài viết' },
-    { type: 'added_video', text: 'Video' },
-    { type: 'added_photos', text: 'Hình ảnh' },
-    { type: 'mobile_status_update', text: 'Status' },
-    { type: 'published_story', text: 'Story đã đăng' },
-    { type: 'shared_story', text: 'Story đã chia sẻ' }
+    { id: 'all', name: 'Tất cả bài viết' },
+    { id: 'added_video', name: 'Video' },
+    { id: 'added_photos', name: 'Hình ảnh' },
+    { id: 'mobile_status_update', name: 'Status' },
+    { id: 'published_story', name: 'Story đã đăng' },
+    { id: 'shared_story', name: 'Story đã chia sẻ' }
   ];
 
-  lstTime: any[] = [
-    { type: 'created_time desc', text: 'Ngày tạo mới nhất' },
-    { type: 'created_time asc', text: 'Ngày tạo cũ nhất' },
-    { type: 'updated_time desc', text: 'Ngày update mới nhất' },
-    { type: 'updated_time asc', text: 'Ngày update cũ nhất' }
+  lstSort: any[] = [
+    { id: 'ChannelCreatedTime desc', name: 'Ngày tạo mới nhất' },
+    { id: 'ChannelCreatedTime asc', name: 'Ngày tạo cũ nhất' },
+    { id: 'ChannelUpdatedTime desc', name: 'Ngày update mới nhất' },
+    { id: 'ChannelUpdatedTime asc', name: 'Ngày update cũ nhất' }
   ];
 
-  type = 'All';
-  eventType: string = 'TYPE';
-  isLoadFrist = false;
-  currentType: any = this.lstType[0];
+  isLoadingFilter = false;
+  currentType: any =  { id: 'all', name: 'Tất cả bài viết' };
+  currentSort: any =  { id: 'ChannelCreatedTime desc', name: 'Ngày tạo mới nhất' };
+
   postId: any;
   postChilds: TDSSafeAny[] = [];
   listBadge: any = {};
+  lstOfLiveCampaign: LiveCampaignModel[] = [];
 
   keyFilter: string = '';
   currentPost?: ChatomniObjectsItemDto;
@@ -74,16 +76,17 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   dataSource$?: Observable<ChatomniObjectsDto> ;
   lstObjects!: ChatomniObjectsItemDto[];
 
+  queryObj?: any = { type!: "", sort!: "", q!: "" };
+
   constructor(private facebookPostService: FacebookPostService,
     private conversationPostFacade: ConversationPostFacade,
     private facebookGraphService: FacebookGraphService,
     private activityMatchingService: ActivityMatchingService,
+    private liveCampaignService: LiveCampaignService,
     private message: TDSMessageService,
     public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
-
     private ngZone: NgZone,
-
     private conversationOrderFacade: ConversationOrderFacade,
     public router: Router,
     private chatomniObjectService: ChatomniObjectService,
@@ -92,6 +95,9 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   }
 
   ngOnInit(): void {
+    //TODO: load danh sách chiến dịch
+    this.loadAvailableCampaign();
+
     // TODO: change team tds header
     this.crmService.changeTeamFromLayout$.pipe(takeUntil(this.destroy$)).subscribe((team) => {
         this.onClickTeam(team);
@@ -128,6 +134,15 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     this.onChangeTabEvent();
   }
 
+  loadAvailableCampaign(){
+    this.liveCampaignService.getAvailables().pipe(takeUntil(this.destroy$)).subscribe(res => {
+      this.lstOfLiveCampaign = res.value;
+    },
+    err=>{
+      this.message.error(err?.error?.message || 'Không thể tải dữ liệu chiến dịch');
+    })
+  }
+
   //TODO: khi có comment mới vào bài viết
   loadBadgeComments() {
     this.activityMatchingService.onGetComment$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
@@ -157,28 +172,53 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     this.isDisableTab = isDisable;
   }
 
-  setType(item: any, eventType: string) {
-    this.isLoadFrist = true;
-    this.eventType = eventType;
+  onchangeType(event: any) {
+    this.currentType = this.lstType.find(x => x.id === event);
+    this.queryObj = this.onSetFilterObject();
+    this.loadData(this.queryObj);
+  }
 
-    if (this.currentType.type != item.type) {
-        this.currentType = item;
-        this.loadData();
+  onChangeSort(event: any) {
+    this.currentSort = this.lstSort.find(x => x.id === event);
+    this.queryObj = this.onSetFilterObject();
+    this.loadData(this.queryObj);
+  }
+
+  onSetFilterObject() {
+    this.queryObj = {} as any;
+
+    if(TDSHelperString.hasValueString(this.currentType?.id) && this.currentType?.id != 'all') {
+        this.queryObj.type = this.currentType.id;
+    } else {
+        delete this.queryObj.type;
     }
+    if(TDSHelperString.hasValueString(this.currentSort?.id)) {
+        this.queryObj.sort = this.currentSort.id;
+    } else {
+        delete this.queryObj.sort;
+    }
+
+    if(TDSHelperString.hasValueString(this.keyFilter)) {
+        this.queryObj.q = this.keyFilter;
+    } else {
+        delete this.queryObj.q;
+    }
+
+    return this.queryObj;
   }
 
   fetchPosts(team: any) {
     this.facebookPostService.fetchPosts(team?.Id).pipe(takeUntil(this.destroy$)).subscribe();
   }
 
-  loadData(){
+  loadData(queryObj?: any){
     this.isLoading = true;
     this.validateData();
 
     this.ngZone.run(() => {
-        this.dataSource$ = this.chatomniObjectService.makeDataSource(this.currentTeam!.Id);
+        this.dataSource$ = this.chatomniObjectService.makeDataSource(this.currentTeam!.Id, queryObj);
     })
-    
+
     if(this.dataSource$) {
         this.loadObjects(this.dataSource$);
     }
@@ -204,11 +244,11 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
 
   loadObjects(dataSource$: Observable<ChatomniObjectsDto>) {
     dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniObjectsDto) => {
-      
+
         if(res && res.Items) {
 
-            this.lstObjects = [...res.Items];
-          
+            this.lstObjects = [...res.Items];debugger
+
             if(TDSHelperArray.hasListValue(res.Items)){
                 let exits = res.Items.filter((x: ChatomniObjectsItemDto) => x.ObjectId == this.postId)[0];
 
@@ -250,7 +290,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
             case CRMTeamType._TShop:
 
               let selectItem = item.Data as ChatomniDataTShopPostDto;
-              
+
             break;
 
             default: break;
@@ -290,8 +330,8 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
     }
   }
 
-  trackByIndex(i: any) {
-    return i;
+  trackByIndex(_: number, data: any): number {
+    return data.Id;
   }
 
   onClickTeam(data: CRMTeamDTO): any {
@@ -324,11 +364,12 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
   ngAfterViewInit() {
     fromEvent(this.innerText?.nativeElement, 'keyup').pipe(
       map((event: any) => { return event.target.value }),
-      debounceTime(750),
-      distinctUntilChanged())
+      debounceTime(750),distinctUntilChanged())
         .subscribe((text: string) => {
           this.keyFilter = text;
-          this.loadData();
+
+          this.queryObj = this.onSetFilterObject();
+          this.loadData(this.queryObj);
       });
   }
 

@@ -1,29 +1,12 @@
-import { TDSSafeAny } from 'tds-ui/shared/utility';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, fromEvent, Observable, Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, finalize, map, mergeMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
-import { ChangeTabConversationEnum } from 'src/app/main-app/dto/conversation/conversation.dto';
-import { FacebookPostDTO, FacebookPostItem } from 'src/app/main-app/dto/facebook-post/facebook-post.dto';
-import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
-import { ActivityMatchingService } from 'src/app/main-app/services/conversation/activity-matching.service';
-import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
-import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
-import { ConversationPostFacade } from 'src/app/main-app/services/facades/conversation-post.facade';
-import { FacebookGraphService } from 'src/app/main-app/services/facebook-graph.service';
-import { FacebookPostService } from 'src/app/main-app/services/facebook-post.service';
-import { TpageBaseComponent } from 'src/app/main-app/shared/tpage-base/tpage-base.component';
+import { LiveCampaignModel } from 'src/app/main-app/dto/live-campaign/odata-live-campaign.dto';
+import { LiveCampaignService } from './../../../../services/live-campaign.service';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewContainerRef } from '@angular/core';
+import { takeUntil } from 'rxjs/operators';
 import { ListLiveCampaignComponent } from 'src/app/main-app/shared/list-live-campaign/list-live-campaign.component';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
-import { TDSHelperArray, TDSHelperObject, TDSHelperString } from 'tds-ui/shared/utility';
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { CRMTeamType } from 'src/app/main-app/dto/team/chatomni-channel.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
-import { ChatomniObjectService } from '@app/services/chatomni-service/chatomni-object.service';
-import { ChatomniObjectsDto, ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
-import { Facebook_Graph_Post } from '@app/dto/conversation-all/chatomni/chatomni-facebook-post.dto';
-import { ChatomniDataTShopPostDto } from '@app/dto/conversation-all/chatomni/chatomni-tshop-post.dto';
+import { ChatomniObjectsItemDto, MDB_Facebook_Mapping_PostDto } from '@app/dto/conversation-all/chatomni/chatomni-objects.dto';
 
 @Component({
   selector: 'object-facebook-post',
@@ -37,13 +20,20 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
   @Input() item?: ChatomniObjectsItemDto;
   @Input() currentPost?: ChatomniObjectsItemDto;
   @Input() postChilds!: any[];
+  @Input() availableCampaigns!: LiveCampaignModel[];
 
   @Output() selectPostItemEvent: EventEmitter<any> = new EventEmitter<any>();
 
-  mdbFbPost!: MDB_Facebook_Mapping_PostDto
+  mdbFbPost!: MDB_Facebook_Mapping_PostDto;
+  currentLiveCampaign!: LiveCampaignModel;
+  indClickTag: string = '';
 
-  constructor( private modal: TDSModalService,
-    private viewContainerRef: ViewContainerRef) {
+  constructor(private liveCampaignService: LiveCampaignService,
+    private modal: TDSModalService,
+    private message: TDSMessageService,
+    private viewContainerRef: ViewContainerRef,
+    private cdr: ChangeDetectorRef,
+    private destroy$: TDSDestroyService) {
   }
 
   ngOnInit() {
@@ -66,6 +56,67 @@ export class ObjectFacebookPostComponent  implements OnInit, OnChanges {
 
   selectPost(item: ChatomniObjectsItemDto) {
       this.selectPostItemEvent.emit(item);
+  }
+
+  openTag(id: string) {
+    this.indClickTag = id;
+  }
+
+  closeTag(): void {
+    this.indClickTag = '';
+  }
+
+  prepareLiveCampaignModel(liveCampaignModel: LiveCampaignModel, fbPostModel:MDB_Facebook_Mapping_PostDto, isDelete?:boolean){
+    return {
+      action: isDelete ? "cancel" : "update",
+      model: {
+        Id: liveCampaignModel.Id,
+        IsActive: liveCampaignModel.IsActive,
+        Name: liveCampaignModel.Name,
+        Note: liveCampaignModel.Note,
+        DateCreated: new Date().toISOString(),
+        Facebook_LiveId: liveCampaignModel.Facebook_LiveId,
+        Facebook_UserId: liveCampaignModel.Facebook_UserId,
+        Facebook_UserName: liveCampaignModel.Facebook_UserName,
+        Facebook_UserAvatar: liveCampaignModel.Facebook_UserAvatar || "",
+        Facebook_Post: {
+          created_time: new Date(liveCampaignModel.DateCreated).toISOString(),
+          facebook_id: liveCampaignModel.Facebook_LiveId,
+          from:{
+            id: liveCampaignModel.Facebook_UserId,
+            name: liveCampaignModel.Facebook_UserName,
+            picture: liveCampaignModel.Facebook_UserAvatar || "",
+          },
+          full_picture: "",
+          message: fbPostModel.message,
+          picture: liveCampaignModel.Facebook_UserAvatar || "",
+          source: "",
+        }
+      }
+    }
+  }
+
+  addNewCampaign() {
+    if(this.currentLiveCampaign){
+      let model = this.prepareLiveCampaignModel(this.currentLiveCampaign, <MDB_Facebook_Mapping_PostDto>this.item?.Data);
+
+      this.liveCampaignService.updateLiveCampaignPost(this.currentLiveCampaign.Id, model).pipe(takeUntil(this.destroy$)).subscribe(res => {
+          if(res.value){
+            (<MDB_Facebook_Mapping_PostDto>this.item?.Data).live_campaign_id = this.currentLiveCampaign.Id;
+            (<MDB_Facebook_Mapping_PostDto>this.item?.Data).live_campaign = {
+              name: this.currentLiveCampaign.Name,
+              note: this.currentLiveCampaign.Note
+            }
+            this.cdr.markForCheck();
+            this.message.success('Cập nhật chiến dịch thành công');
+          }
+      },
+      err=>{
+        this.message.error(err?.error?.message || 'Cập nhật chiến dịch thất bại');
+      })
+
+      this.indClickTag = '';
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {

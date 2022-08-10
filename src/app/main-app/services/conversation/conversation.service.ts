@@ -181,7 +181,7 @@ export class ConversationService extends BaseSevice {
 
   setExtrasQuery(pageId: any, type: any, data: any) {
     // let query = this.createQuery(pageId, type);
-    let query: any = {};
+    let query: any = {pageId: pageId};
 
     if (data.tag_ids) {
       query["tag_ids"] = data.tag_ids.join(',');

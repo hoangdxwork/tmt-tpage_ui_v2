@@ -166,8 +166,7 @@
                                         </div>
                                     </ng-template>
                                 </td>
-                                <td *ngIf="!isHiddenColumn('DateCreated')" [width]="'192px'">{{ data.DateCreated |
-                                    date:'dd/MM/yyyy hh:mm' }}</td>
+                                <td *ngIf="!isHiddenColumn('DateCreated')" [width]="'192px'">{{ data.DateCreated | date:'dd/MM/yyyy hh:mm' }}</td>
                                 <td *ngIf="!isHiddenColumn('Active')" [width]="'192px'">
                                     <span class="flex items-center">
                                         <i class="{{ data.Active ? 'tdsi-success-fill text-success-400':'tdsi-error-fill text-error-400' }} text-xl"></i>
@@ -188,7 +187,7 @@
                                 </td>
                             </tr>
                             <tr [expand]="expandSet.has(data.Id)" class="border-b border-neutral-2-100 text-neutral-1-900 bg-neutral-3-50 w-full">
-                                <div #viewChildDetailPartner [ngStyle]="{ 'max-width.px': tableWidth, 'margin-left.px': marginLeftCollapse}" class="bg-white rounded-xl flex items-center justify-center k-grid-table-wrap-detail">
+                                <div #viewChildDetailPartner [ngStyle]="{ 'max-width.px': tableWidth, 'margin-left.px': marginLeftCollapse }" class="bg-white rounded-xl flex items-center justify-center k-grid-table-wrap-detail">
                                     <product-details class="w-full" [productTemplate]="data" *ngIf="expandSet.has(data.Id)"></product-details>
                                 </div>
                             </tr>

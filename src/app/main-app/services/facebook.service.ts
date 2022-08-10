@@ -52,6 +52,4 @@ export class FacebookService extends BaseSevice {
 
     return this.apiService.getData<ChannelFacebookConfigDTO>(api, greetings);
   }
-
-
 }

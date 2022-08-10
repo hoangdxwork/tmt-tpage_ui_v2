@@ -1,9 +1,9 @@
+import { ChatomniDataItemDto, ExtrasObjectDto } from './../../../../dto/conversation-all/chatomni/chatomni-data.dto';
 import { TDSDestroyService } from 'tds-ui/core/services';
 import { TDSModalService } from 'tds-ui/modal';
 import { ModalPostComponent } from './../../../../pages/conversations/components/modal-post/modal-post.component';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { Router } from '@angular/router';
-import { ChatomniMessageDetail, ExtrasObjectDto } from './../../../../dto/conversation-all/chatomni/chatomni-message.dto';
 import { CRMTeamType } from './../../../../dto/team/chatomni-channel.dto';
 import { ChatomniDataTShopPostDto } from './../../../../dto/conversation-all/chatomni/chatomni-tshop-post.dto';
 import { Facebook_Graph_Post } from './../../../../dto/conversation-all/chatomni/chatomni-facebook-post.dto';
@@ -20,7 +20,7 @@ export class ConversationInfopostItemComponent implements OnInit, OnChanges {
   @Input() team!: CRMTeamDTO;
   @Input() typeNumber!: number;
   @Input() data! : ExtrasObjectDto;
-  @Input() item!: ChatomniMessageDetail;
+  @Input() item!: ChatomniDataItemDto;
 
   dataFacebook!: Facebook_Graph_Post;
   dataTshop!: ChatomniDataTShopPostDto;
@@ -45,7 +45,7 @@ export class ConversationInfopostItemComponent implements OnInit, OnChanges {
   ngOnInit(): void {
   }
 
-  openModalPost(item: ChatomniMessageDetail) {
+  openModalPost(item: ChatomniDataItemDto) {
     this.modalService.create({
       title: 'Bài viết tổng quan',
       content: ModalPostComponent,
@@ -53,23 +53,24 @@ export class ConversationInfopostItemComponent implements OnInit, OnChanges {
       bodyStyle: { padding : '0px'},
       viewContainerRef: this.viewContainerRef,
       componentParams:{
-        // data: this.data
+        data: this.dataFacebook,
+        objectId: this.data.ObjectId
       }
     });
   }
 
-  openPost(item: ChatomniMessageDetail, type: any) {
+  openPost(item: ChatomniDataItemDto, type: any) {
     if (type === 'post' && item.ObjectId) {
       this.router.navigateByUrl(`/conversation/post?teamId=${this.team.Id}&type=post&post_id=${item.ObjectId}`);
     }
   }
 
 
-  errorPostPicture(item: ChatomniMessageDetail) {
+  errorPostPicture(item: ChatomniDataItemDto) {
     this.postPictureError.push(item?.ObjectId);
   }
 
-  checkPostPictureError(item: ChatomniMessageDetail) {
+  checkPostPictureError(item: ChatomniDataItemDto) {
     return this.postPictureError.find(f => f == item?.ObjectId);
   }
 }

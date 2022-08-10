@@ -165,6 +165,15 @@ export class ConversationOrderComponent implements OnInit {
     this.loadUserLogged();
     this.loadCarrier();
     this.onSelectOrderFromMessage();
+    this.eventEmitter();
+  }
+
+  eventEmitter(){
+    this.conversationOrderFacade.onAddProductOrder$.subscribe(res=>{
+      this.selectProduct(res);
+
+      this.cdRef.detectChanges();
+    })
   }
 
   loadData() {
@@ -574,6 +583,8 @@ export class ConversationOrderComponent implements OnInit {
     //   size: "lg",
     //   viewContainerRef: this.viewContainerRef
     // });
+
+    this.message.info('Tính năng chưa khả dụng');
   }
 
   showModalConfigProduct() {

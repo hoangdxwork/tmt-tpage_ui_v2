@@ -95,8 +95,8 @@ export interface ConversationMatchingItem {
 
 export enum StateChatbot {
   Normal = 0, // trạng thái bình thường
-  Transfer = 1, // đang chuyển cho admin xử lý
-  Warning = 2 , // hệ thống đang gặp vấn đề
+  TransferAdmin = 1, // đang chuyển cho admin xử lý
+  SystemError = 2 , // hệ thống đang gặp vấn đề
 }
 
 export interface Query {

@@ -1,8 +1,8 @@
 import { Facebook_Graph_Post } from "./chatomni-facebook-post.dto";
 import { ChatomniDataTShopPostDto } from "./chatomni-tshop-post.dto";
 
-export interface ChatomniMessageDTO {
-  Items: ChatomniMessageDetail[];
+export interface ChatomniDataDto {
+  Items: ChatomniDataItemDto[];
   Extras?: Extras;
   Paging: PagingTimestamp;
 }
@@ -51,7 +51,7 @@ export interface Attachments {
   paging?: any;
 }
 
-export interface ChatomniDataFacebookMessage {
+export interface ChatomniFacebookDataDto {
   id: string;
   message: string;
   message_formatted: string;
@@ -74,9 +74,11 @@ export interface ChatomniDataFacebookMessage {
   phone: string;
 
   // các dữ liệu bổ sung để check client
-  has_admin_required: boolean;
-  is_error_attachment: boolean;// ko có trong dữ liệu trả về
-  errorShowAttachment: boolean;// ko có trong dữ liệu trả về
+  has_admin_required?: boolean;
+  is_error_attachment?: boolean;// ko có trong dữ liệu trả về
+  errorShowAttachment?: boolean;// ko có trong dữ liệu trả về
+  is_reply?: boolean;// ko có trong dữ liệu trả về
+  is_private_reply: boolean;// ko có trong dữ liệu trả về
 }
 
 export interface ErrorMessageOmni {
@@ -107,8 +109,8 @@ export interface Thumbnail {
   Height: number;
   Url: string;
 }
-export interface ChatomniMessageDetail {
-  Data: ChatomniDataFacebookMessage;
+export interface ChatomniDataItemDto {
+  Data: ChatomniFacebookDataDto;
   Id: string;
   ObjectId: string;
   ParentId?: string;
@@ -118,7 +120,7 @@ export interface ChatomniMessageDetail {
   UserId: string;
   Error?: ErrorMessageOmni;
   Status: ChatomniStatus;
-  IsSystem: boolean;
+  IsSystem: boolean; // System = 0, Hoạt động phát sinh từ phần mềm (do người dùng)
   CreatedById?: string;
   CreatedBy?: ChatomniInnerUser;
   CreatedTime: Date | any;
@@ -128,7 +130,7 @@ export interface ChatomniMessageDetail {
 }
 
 export interface PagingTimestamp {
-  Next: string;
+  Next: number;
   HasNext: boolean;
   UrlNext: string;
 }

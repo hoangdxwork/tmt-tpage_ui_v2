@@ -1,4 +1,4 @@
-import { Attachments } from "./chatomni-message.dto";
+import { Attachments } from './chatomni-data.dto';
 
 export interface Facebook_Graph_Post {
   id: string;

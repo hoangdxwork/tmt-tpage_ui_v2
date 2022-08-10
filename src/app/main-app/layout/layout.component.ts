@@ -1,24 +1,22 @@
 import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { filter, finalize, map, mergeMap,take, takeUntil } from 'rxjs/operators';
+import { filter, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { environment } from 'src/environments/environment';
 import { TDSMenuDTO } from 'tds-ui/menu';
-import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperObject, TDSSafeAny } from 'tds-ui/shared/utility';
 import { CRMTeamDTO } from '../dto/team/team.dto';
 import { CRMTeamService } from '../services/crm-team.service';
 import { TPageHelperService } from '../services/helper.service';
-import { SignalRConnectionService } from '../services/signalR/signalR-connection.service';
-import { NetworkHelper } from '../shared/helper/network.helper';
-import { ChildChatOmniChannelDto } from '../dto/team/chatomni-channel.dto';
+import { SocketService } from '@app/services/socket-io/socket.service';
+import { TDSDestroyService } from 'tds-ui/core/services';
 
 @Component({
   selector: 'app-layout',
-  templateUrl: './layout.component.html'
+  templateUrl: './layout.component.html',
+  providers: [ TDSDestroyService ]
 })
 
 export class LayoutComponent implements OnInit, AfterViewInit {
@@ -28,82 +26,73 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   lstMenu!: TDSSafeAny;
   inlineCollapsed = false;
   params!: TDSSafeAny;
-  private destroy$ = new Subject<void>();
-  isNetwork: boolean = false;
-  disabledSignalRConnect = false;
-  _connectionEstablished: boolean = false;
   withLayout!: number;
   withLaptop: number = 1600;
+  establishedConnected?: boolean = true;
 
   @ViewChild('withLayout') ViewChildWithLayout!: ElementRef;
 
   constructor(private auth: TAuthService,
-    private signalRConnectionService: SignalRConnectionService,
     public crmService: CRMTeamService,
     private modalService: TDSModalService,
-    private message: TDSMessageService,
+    private socketService: SocketService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private resizeObserver: TDSResizeObserver ) {
+    private cdRef: ChangeDetectorRef,
+    private resizeObserver: TDSResizeObserver,
+    private destroy$: TDSDestroyService ) {
 
     router.events.pipe(
-      takeUntil(this.destroy$),
-      filter(event => event instanceof NavigationEnd), // Only get the event of NavigationEnd
-      map(() => activatedRoute), // Listen to activateRoute
-      map(route => {
-        while (route.firstChild) {
-          route = route.firstChild;
-        }
-        return route;
-      }),
-      filter(route => route.outlet === 'primary'),
-      mergeMap(route => route.data) ,
-      // get the data
+        takeUntil(this.destroy$),filter(event => event instanceof NavigationEnd), // Only get the event of NavigationEnd
+        map(() => activatedRoute), // Listen to activateRoute
+        map(route => {
+
+            while (route.firstChild) {
+                route = route.firstChild;
+            }
+            return route;
+        }),
+        filter(route => route.outlet === 'primary'),
+        mergeMap(route => route.data) ,
+        // get the data
     ).subscribe(res => {
-      if(this.withLayout < this.withLaptop){
-        this.inlineCollapsed = true;
-      }else{
-        this.inlineCollapsed = res.collapse;
-      }
+        if(this.withLayout < this.withLaptop){
+            this.inlineCollapsed = true;
+        } else {
+            this.inlineCollapsed = res.collapse;
+        }
     })
   }
 
   ngOnInit(): void {
-    //TODO: Khoi tao signalR
-    this.signalRConnectionService.initiateSignalRConnection();
-    this.signalRConnectionService._connectionEstablished$.subscribe((res: any) => {
-      this._connectionEstablished = res;
-    });
-
-    NetworkHelper.checkNetwork().subscribe(isNetwork => {
-      this.isNetwork = isNetwork;
-    });
-
-    this.crmService.onChangeTeam().subscribe(res => {
-      this.lstMenu = this.setMenu(res);
-      this.currentTeam = res;
+    this.crmService.onChangeTeam().pipe(takeUntil(this.destroy$)).subscribe(res => {
+        this.lstMenu = this.setMenu(res);
+        this.currentTeam = res;
     })
 
     this.getAllFacebook();
     this.loadUserInfo();
-    this.activatedRoute.queryParams.subscribe(res => {
-      this.params = res;
+
+    this.activatedRoute.queryParams.pipe(takeUntil(this.destroy$)).subscribe(res => {
+        this.params = res;
     });
+
+    // TODO: check trạng thái connnect socket-io
+    this.establishedConnected = this.socketService.establishedConnected;
   }
 
   ngAfterViewInit(): void {
-    this.withLayout = this.ViewChildWithLayout?.nativeElement?.offsetWidth
-    this.resizeObserver
-      .observe(this.ViewChildWithLayout)
+    this.withLayout = this.ViewChildWithLayout?.nativeElement?.offsetWidth;
+
+    this.resizeObserver.observe(this.ViewChildWithLayout)
       .subscribe(() => {
+
         this.withLayout = this.ViewChildWithLayout?.nativeElement?.offsetWidth;
+
         if(this.withLayout < this.withLaptop){
-          this.inlineCollapsed = true;
+             this.inlineCollapsed = true;
         }
       });
-  }
-
-  onSelectShopChange(event: TDSSafeAny) {
   }
 
   onLogout() {
@@ -116,19 +105,20 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   //lay danh sách facebook
   getAllFacebook() {
-    this.crmService.getAllFacebooks().subscribe(dataTeam => {
+    this.crmService.getAllFacebooks().pipe(takeUntil(this.destroy$)).subscribe(dataTeam => {
         // console.log(f)
         if (TDSHelperObject.hasValue(dataTeam)) {
-          this.crmService.onUpdateListFaceBook(dataTeam);
+            this.crmService.onUpdateListFaceBook(dataTeam);
 
-          this.crmService.getCacheTeamId().subscribe((teamId: string | null) => {
-            const team = TPageHelperService.findTeamById(dataTeam, teamId, true)
+            this.crmService.getCacheTeamId().subscribe((teamId: string | null) => {
+                const team = TPageHelperService.findTeamById(dataTeam, teamId, true)
+                this.crmService.onUpdateTeam(team);
+            })
+        }
 
-            this.crmService.onUpdateTeam(team);
-          })
-        } else {
-          this.crmService.onUpdateListFaceBook(null);
-          this.crmService.onUpdateTeam(null);
+        else {
+            this.crmService.onUpdateListFaceBook(null);
+            this.crmService.onUpdateTeam(null);
         }
       }, err => {
 
@@ -240,52 +230,37 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   //load thông tin user
   loadUserInfo() {
     this.auth.getUserInit().subscribe(res => {
-        if(res) {
+      if(res) {
           this.userInit = res || {};
-        }
+      }
     })
   }
 
   onClickTeam(data: CRMTeamDTO): any{
     let uri = this.router.url;
+
     if(uri && uri.startsWith("/conversation")){
-      this.crmService.changeTeamFromLayout$.emit(data);
+        this.crmService.changeTeamFromLayout$.emit(data);
     } else {
-      this.crmService.onUpdateTeam(data);
+        this.crmService.onUpdateTeam(data);
     }
   }
 
-  onSave() {
+  reconnectSocket() {
     this.modalService.info({
-      title: 'Kết nối realtime',
-      content: 'Thử kết nối lại',
-      onOk: () => { this.onConnectSginalR() },
-      onCancel: () => { },
-      okText: "Kết nối",
-      cancelText: "Hủy",
-      confirmViewType: "compact",
-    });
+        title: 'Kết nối socket-io',
+        content: 'Thử kết nối lại',
+        onOk: () => { this.onConnectSocket() },
+        onCancel: () => { },
+        okText: "Kết nối",
+        cancelText: "Hủy",
+        confirmViewType: "compact",
+  });
   }
 
-  onConnectSginalR(): any {
-    if (!this.isNetwork) {
-      return this.message.error("Không có kết nối mạng");
-    }
-
-    this.disabledSignalRConnect = true;
-    this.signalRConnectionService.refreshConnected();
-
-    this.signalRConnectionService._connectionEstablished$.pipe(take(1))
-      .pipe(finalize(() => { this.disabledSignalRConnect = false }))
-      .subscribe((res: any) => {
-        if (res == true) {
-          this.message.success("Kết nối thành công");
-        } else {
-          this.message.error("Kết nối thất bại");
-        }
-      }, error => {
-        this.message.error("Lỗi server");
-      });
+  onConnectSocket() {
+    this.socketService.reconnecting();
+    this.establishedConnected = this.socketService.establishedConnected;
   }
 
   onProfile() {
@@ -295,5 +270,38 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   onPackOfData() {
     this.router.navigateByUrl(`user/pack-of-data/info`);
   }
+
+  // onSave() {
+  //   this.modalService.info({
+  //     title: 'Kết nối realtime',
+  //     content: 'Thử kết nối lại',
+  //     onOk: () => { this.onConnectSginalR() },
+  //     onCancel: () => { },
+  //     okText: "Kết nối",
+  //     cancelText: "Hủy",
+  //     confirmViewType: "compact",
+  //   });
+  // }
+
+  // onConnectSginalR(): any {
+  //   if (!this.isNetwork) {
+  //     return this.message.error("Không có kết nối mạng");
+  //   }
+
+  //   this.disabledSignalRConnect = true;
+  //   this.signalRConnectionService.refreshConnected();
+
+  //   this.signalRConnectionService._connectionEstablished$.pipe(take(1))
+  //     .pipe(finalize(() => { this.disabledSignalRConnect = false }))
+  //     .subscribe((res: any) => {
+  //       if (res == true) {
+  //         this.message.success("Kết nối thành công");
+  //       } else {
+  //         this.message.error("Kết nối thất bại");
+  //       }
+  //     }, error => {
+  //       this.message.error("Lỗi server");
+  //     });
+  // }
 
 }

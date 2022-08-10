@@ -4,7 +4,7 @@
       <div class="flex flex-col gap-6">
         <div class="w-full flex gap-x-6">
           <div class="w-4/5 flex flex-col gap-y-2">
-            <span class="text-neutral-1-500">Đã đăng: {{data.DateCreated | yiDateTimeV3}}</span>
+            <span class="text-neutral-1-500">Đã đăng: {{data.created_time | yiDateTimeV3}}</span>
             <span>{{data.message}}</span>
           </div>
           <div class="w-1/5 max-h-[150px] flex justify-end">
@@ -19,7 +19,7 @@
             <div class="flex flex-col gap-y-1.5">
               <span class="font-semibold">Bình luận</span>
               <div>
-                <span class="px-3 bg-primary-3 text-primary-1 font-semibold rounded-full">{{data.count_comments || 0}}</span>
+                <span class="px-3 bg-primary-3 text-primary-1 font-semibold rounded-full">{{data.comments?.summary?.total_count || 0}}</span>
               </div>
             </div>
           </div>
@@ -30,7 +30,7 @@
             <div class="flex flex-col gap-y-1.5">
               <span class="font-semibold">Chia sẻ</span>
               <div>
-                <span class="px-3 bg-primary-3 text-primary-1 font-semibold rounded-full">{{data.count_shares || 0}}</span>
+                <span class="px-3 bg-primary-3 text-primary-1 font-semibold rounded-full">{{data.reactions?.summary?.total_count || 0}}</span>
               </div>
             </div>
           </div>
@@ -87,7 +87,7 @@
               </span>
           </tds-form-field>
         </div>
-        <item-post-comment [post]="data" 
+        <item-post-comment [post]="dataPost" 
         [sort]="currentSort" 
         [filter]="currentFilter"
         [isShowCheckboxComent]="isShowCheckbox"

@@ -1,5 +1,6 @@
+import { Extras, PagingTimestamp } from './chatomni-data.dto';
+import { Attachments } from './../../facebook-post/facebook-post.dto';
 import { Facebook_Graph_Post } from "./chatomni-facebook-post.dto";
-import { Attachments, Extras, Facebook_Graph_From, PagingTimestamp } from "./chatomni-message.dto";
 import { ChatomniDataTShopPostDto } from "./chatomni-tshop-post.dto";
 
 
@@ -11,9 +12,9 @@ export interface ChatomniObjectsItemDto {
   Id: string;
   ObjectId: string;
   ObjectType: ChatomniObjectTypeDto;
-  CreatedTime: Date;
-  ChannelCreatedTime: Date;
-  ChannelUpdatedTime?: any;
+  CreatedTime: Date | any;
+  ChannelCreatedTime: Date | any;
+  ChannelUpdatedTime?: Date | any;
   Title?: any;
   Description: string;
   Thumbnail?: Thumbnail;

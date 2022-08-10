@@ -42,8 +42,9 @@ export interface QuickQuestionDTO {
 }
 
 export interface GreetingDTO {
+  connected?:boolean;
   locale: string;
-  text: string;
+  text: string | null;
   isActive?: boolean;
 }
 

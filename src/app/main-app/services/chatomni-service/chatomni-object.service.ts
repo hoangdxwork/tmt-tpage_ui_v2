@@ -23,18 +23,18 @@ export class ChatomniObjectService extends BaseSevice  {
       super(apiService)
   }
 
-  get(teamId: number, queryObj?: any): Observable<ChatomniObjectsDto> {
+  get(teamId: number, queryObj?: any): Observable<ChatomniObjectsDto> {debugger
 
     let queryString = null;
     if (queryObj) {
-        queryString = Object.keys(queryObj).map(key => {
+        queryString = Object.keys(queryObj).map((key: any): any => {
             return key + '=' + queryObj[key]
         }).join('&');
     }
 
     let url = `${this._BASE_URL}/${this.baseRestApi}/${teamId}/objects`;
     if (TDSHelperString.hasValueString(queryString)) {
-        url = `${url}&${queryString}`;
+        url = `${url}?${queryString}`;
     }
 
     let api: CoreAPIDTO = {
@@ -45,18 +45,7 @@ export class ChatomniObjectService extends BaseSevice  {
     return this.apiService.getData<ChatomniObjectsDto>(api, null);
   }
 
-  getLink(url: string, queryObj?: any): Observable<ChatomniObjectsDto> {debugger
-
-    let queryString = null;
-    if (queryObj) {
-        queryString = Object.keys(queryObj).map(key => {
-            return key + '=' + queryObj[key]
-        }).join('&');
-    }
-
-    if (TDSHelperString.hasValueString(queryString)) {
-      url = `${url}&${queryString}`;
-    }
+  getLink(url: string): Observable<ChatomniObjectsDto> {
 
     let api: CoreAPIDTO = {
         url: `${url}`,
@@ -76,7 +65,6 @@ export class ChatomniObjectService extends BaseSevice  {
       if (TDSHelperObject.hasValue(res)) {
           this.objFacade.setData(teamId, res);
       }
-
       this.urlNext = res.Paging?.UrlNext;
 
       let result = this.objFacade.getData(teamId);
@@ -86,7 +74,7 @@ export class ChatomniObjectService extends BaseSevice  {
 
   }
 
-  nextDataSource(teamId: number, queryObj?: any): Observable<ChatomniObjectsDto> {
+  nextDataSource(teamId: number): Observable<ChatomniObjectsDto> {
 
     let exist = this.objFacade.getData(teamId);
 
@@ -99,13 +87,14 @@ export class ChatomniObjectService extends BaseSevice  {
 
     else {
       let url = this.urlNext as string;
-      return this.getLink(url, queryObj).pipe(map((res: ChatomniObjectsDto) => {
+      return this.getLink(url).pipe(map((res: ChatomniObjectsDto) => {
+
+        exist.Extras!.Objects = { ...res.Extras?.Objects};
 
         // TODO nếu trùng urlNext thì xóa không cho load
         if (this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
-            this.urlNext = res.Paging.UrlNext;
+            this.urlNext = res.Paging?.UrlNext;
 
-            exist.Extras!.Objects = { ...exist.Extras?.Objects, ...res.Extras?.Objects};
             exist.Items = [...exist.Items, ...res.Items];
             exist.Paging = { ...res.Paging };
 

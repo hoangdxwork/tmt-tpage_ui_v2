@@ -1,7 +1,7 @@
 import { takeUntil } from 'rxjs/operators';
 import { Subject, pipe } from 'rxjs';
-import { CategorySMSDTO, customPropertiesSMSDTO } from './../../../../dto/sms/sms.dto';
-import { RestSMSService } from './../../../../services/sms.service';
+import { CategorySMSDTO, customPropertiesSMSDTO } from '../../../../dto/sms/sms.dto';
+import { RestSMSService } from '../../../../services/sms.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ListSMSDTO, RestSMSDTO } from 'src/app/main-app/dto/sms/sms.dto';
@@ -10,10 +10,10 @@ import { TDSMessageService } from 'tds-ui/message';
 import { TDSModalRef } from 'tds-ui/modal';
 
 @Component({
-    selector: 'app-sms-messages-add-service-modal',
-    templateUrl: './sms-messages-add-service-modal.component.html'
+    selector: 'sms-service-modal',
+    templateUrl: './sms-service-modal.component.html'
 })
-export class SMSMessagesAddServiceModalComponent implements OnInit {
+export class SMSServiceModalComponent implements OnInit {
     @Input() dataId!: number;
 
     isLoading: boolean = false;

@@ -73,6 +73,7 @@ export class ConfigGreetingComponent implements OnInit, OnChanges, OnDestroy  {
   updateQuickAnswerConfig(pageId: string) {
     this.isLoading = true;
     this.isSelect = false;
+
     this.facebookService.getChannelConfig(pageId).subscribe(res => {
       this.initGreeting(res.greeting);
       this.getStarted = res.get_started || '';
@@ -85,6 +86,7 @@ export class ConfigGreetingComponent implements OnInit, OnChanges, OnDestroy  {
     }, error => {
       this.isLoading = false;
       this.onSaveSuccess.emit(false);
+
       if(error?.error?.message) this.message.error(error?.error?.message);
       else this.message.error(Message.ErrorOccurred);
     });
@@ -98,7 +100,7 @@ export class ConfigGreetingComponent implements OnInit, OnChanges, OnDestroy  {
       let add: GreetingDTO = {
         locale: "default",
         text: "Nhập giới thiệu",
-        isActive: true,
+        isActive: true
       };
       this.lstGreeting.length = 0;
       this.lstGreeting.push(add);
@@ -112,8 +114,14 @@ export class ConfigGreetingComponent implements OnInit, OnChanges, OnDestroy  {
   }
 
   onSave(pageId: string) {
-    this.isLoading = true;
+    if(!this.getStarted){
+      this.message.error('Vui lòng nhập nút bắt đầu');
+      this.onSaveSuccess.emit(false);
+      return
+    }
+
     let check = this.checkValue();
+    this.isLoading = true;
 
     if(check != null) {
       this.facebookService.updateGreeting(pageId, this.getStarted, check).subscribe(res => {
@@ -122,16 +130,17 @@ export class ConfigGreetingComponent implements OnInit, OnChanges, OnDestroy  {
 
         this.message.success(Message.UpdatedSuccess);
         this.isLoading = false;
-        this.onSaveSuccess.emit(true)
+
+        this.onSaveSuccess.emit(true);
       }, error => {
         this.isLoading = false;
         this.onSaveSuccess.emit(false);
+        
         if(error?.Message) this.message.error(error?.Message);
         else if(error?.error?.message) this.message.error(error?.error?.message);
         else this.message.error(Message.ErrorOccurred);
       });
-    }
-    else {
+    } else {
       this.isLoading = false;
       this.onSaveSuccess.emit(false);
     }
@@ -139,9 +148,9 @@ export class ConfigGreetingComponent implements OnInit, OnChanges, OnDestroy  {
 
   checkValue(): GreetingDTO[] | null{
     let data = this.lstGreeting.map(x => {
-      let item = {
+      let item:GreetingDTO = {
         locale: "default",
-        text: x.text
+        text: x.text || null
       }
       return item;
     });

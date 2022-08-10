@@ -139,6 +139,8 @@ import { ChatomniObjectFacade } from '@app/services/chatomni-facade/chatomni-obj
 import { ConversationPostViewV3Component } from './conversation-post/conversation-post-view-v3.component';
 import { ObjectFacebookPostComponent } from './conversation-post/objects/object-facebook-post.component';
 import { ObjectTshopPostComponent } from './conversation-post/objects/object-tshop-post.component';
+import { CommentFilterAllComponent } from './conversation-post/comments/filter-all/comment-filter-all.component';
+import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -196,7 +198,8 @@ const SERVICES = [
   ChatomniMessageService,
   ChatomniConversationFacade,
   ChatomniObjectService,
-  ChatomniObjectFacade
+  ChatomniObjectFacade,
+  ChatomniCommentFacade,
 ]
 
 @NgModule({
@@ -248,7 +251,8 @@ const SERVICES = [
     ConversationPostViewV2Component,
     ConversationPostViewV3Component,
     ObjectFacebookPostComponent,
-    ObjectTshopPostComponent
+    ObjectTshopPostComponent,
+    CommentFilterAllComponent
   ],
 
   imports: [

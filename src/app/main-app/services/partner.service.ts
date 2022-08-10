@@ -118,6 +118,15 @@ export class PartnerService extends BaseSevice {
     return this.apiService.getData<TDSSafeAny>(api,data);
   }
 
+  transferPartnerMultiple(data: TDSSafeAny): Observable<TDSSafeAny> {
+    const api: CoreAPIDTO = {
+        url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.TransferPartnerMultiple`,
+        method: CoreApiMethodType.post,
+    }
+
+    return this.apiService.getData<TDSSafeAny>(api,data);
+  }
+
   setActive(data: TDSSafeAny): Observable<TDSSafeAny> {
     const api: CoreAPIDTO = {
         url: `${this._BASE_URL}/${this.prefix}/${this.table}/ODataService.SetActive`,

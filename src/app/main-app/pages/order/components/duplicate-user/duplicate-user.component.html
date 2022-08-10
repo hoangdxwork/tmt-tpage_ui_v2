@@ -1,28 +1,51 @@
-<div class="flex flex-col gap-y-4">
-  <div class="w-full rounded-lg bg-neutral-3-50 flex items-center justify-between px-4 py-2">
+<tds-spin [spinning]="isloading" class="flex flex-col text-body-2">
+  <div class="rounded-lg bg-neutral-3-50 flex items-center justify-between px-4 py-2">
     <span class="text-header-2 font-semibold text-neutral-1-700">Trùng SDT</span>
-    <tds-checkbox>Chọn tất cả</tds-checkbox>
+    <tds-checkbox [checked]="checked" [indeterminate]="indeterminate" (change)="onAllChecked($event)">Chọn tất cả</tds-checkbox>
   </div>
 
-  <div class="rounded-lg border border-neutral-2-200 h-40 flex flex-col">
-    <div class="border-b border-neutral-2-200 px-4 py-[18px] flex items-center justify-between">
-      <tds-tag status='primary'>
-        <span class="flex items-center py-0.5">
-          <i class="tdsi-call-fill text-lg leading-none mr-2"></i>2444666668
-        </span>
-      </tds-tag>
-      <tds-checkbox size="lg" class="mr-[5px]"></tds-checkbox>
-    </div>
-    <div>
-
+  <div class="flex flex-col gap-y-4 mt-4 h-[500px] max-h-[650px] overflow-hidden overflow-y-auto tds-panel-scroll" *ngIf="duplicateUser && duplicateUser.length > 0" >
+    <div class="rounded-lg border flex flex-col" *ngFor="let item of lstOfData" [ngClass]="setOfCheckedId.has(item.Id) == false ? 'border-neutral-2-200' : 'border-primary-1'">
+      <div class="border-b border-neutral-2-200 px-4 py-[18px] flex items-center justify-between">
+        <tds-tag status='primary'>
+          <span class="flex items-center py-0.5">
+            <i class="tdsi-call-fill text-lg leading-none mr-2"></i> {{ item.Key }}
+          </span>
+        </tds-tag>
+        <tds-checkbox size="lg" class="mr-[5px]" [checked]="setOfCheckedId.has(item.Id)" (change)="onItemChecked(item.Id, $event)"></tds-checkbox>
+      </div>
+      <div class="p-3 flex flex-col gap-y-2" *ngFor="let user of item.Values"
+        [ngClass]="user.Id  == item.Id ? 'bg-neutral-3-50' : ''">
+        <div class="flex items-center justify-between w-full">
+          <div class="gap-x-2 flex items-center font-semibold">
+            <div class="text-primary-1" *ngIf="user.Id  == item.Id">{{ user.DisplayName }}</div>
+            <button *ngIf="user.Id != item.Id" tds-button size="sm" color="custom" class="text-success-400 border-primary-3 bg-primary-3
+            hover:text-success-500 hover:border-success-100 hover:bg-success-100
+            focus:bg-success-100 focus:border-success-300" (click)="convertCustomers(item, user)">
+              <span class="flex items-center">
+                <i class="tdsi-in-out-fill text-lg leading-none mr-2"></i>{{ user.DisplayName }}
+              </span>
+            </button>
+            <div>{{ user.Name }}</div>
+            <div>
+              <tds-tag rounded="rounded-full">{{ user.StatusText  }}</tds-tag>
+            </div>
+          </div>
+          <p class="text-caption-2 text-neutral-1-700">Ngày tạo: {{ user.DateCreated | date:'HH:mm dd/MM/yyyy'}}</p>
+        </div>
+        <div class="flex items-center w-full gap-x-2">
+          <div>ĐT: <span class="font-semibold">{{ user.Phone }}</span></div>
+          <div class="h-1 w-1 rounded-full bg-neutral-1-700"></div>
+          <div>Địa chỉ: <span class="font-semibold" [ngClass]="user.Street ? '' : 'text-neutral-1-600 font-normal italic'">{{ user.Street || '(Chưa có địa chỉ)' }}</span></div>
+        </div>
+      </div>
     </div>
   </div>
-
-</div>
+</tds-spin>
 
 <div class="w-full flex justify-end p-4" *tdsModalFooter>
   <button tds-button class="min-w-[100px] mr-2" type="button" color="secondary" (click)="onCancel()">Đóng</button>
-  <button tds-button class="min-w-[100px]" color="primary" (click)="onSave()">
+  <button tds-button class="min-w-[100px]" color="primary" (click)="Confirm()">
     <span class="flex items-center">
       <i class="tdsi-in-out-fill text-lg leading-none mr-2"></i>Chuyển đổi
     </span>

@@ -23,7 +23,14 @@
           </div>
 
           <div class="flex gap-x-2">
+            <button tds-button color="info"  type="button" (click)="onSave('SaveAndPrint', 'print')">Xác nhận và in (F9)</button>
+
+            <button tds-button color="info" type="button" (click)="onSave('SaveAndPrint', 'printShip')">Xác nhận và in ship</button>
+
+            <button tds-button color="info" type="button" (click)="onSave('SaveAndOpen')">Xác nhận và xem (F8)</button>
+
               <button tds-button color="primary" type="button" (click)="onSave()">Lưu lại</button>
+
               <button tds-button color="secondary" type="button" class="mr-4" (click)="onBack()">Quay lại</button>
           </div>
         </div>
