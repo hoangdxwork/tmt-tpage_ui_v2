@@ -25,7 +25,7 @@
             <tds-form-field class="w-full">
                 <tds-label>Số điện thoại</tds-label>
                 <input formControlName="PhoneNumber" tdsInput autocomplete="off" [required]="true"
-                    placeholder="Nhập tên nhân viên" />
+                    placeholder="Nhập số điện thoại" />
                 <tds-error>Vui lòng nhập số điện thoại</tds-error>
             </tds-form-field>
             <tds-form-field class="w-full">
@@ -68,14 +68,14 @@
             </tds-form-field>
             <tds-form-field class="col-span-2">
                 <tds-label> Phân quyền </tds-label>
-                <tds-select [ngModel]="listSelectedRole" valueField="Id" textField="Name" [required]="true" [ngModelOptions]="{standalone: true}"
+                <tds-select [ngModel]="listSelectedRole" valueField="Id" textField="Name" [required]="true" [ngModelOptions]="{standalone: true}" [allowClear]="true"
                     placeholder='Chọn' (ngModelChange)="onChangeRole($event)" [data]="lstUserRole" mode="multiple">
                 </tds-select>
             </tds-form-field>
         </div>
         <div class="w-full flex justify-end p-4" *tdsModalFooter>
             <button tds-button class="mr-2" color="secondary" (click)="cancel()">Hủy bỏ</button>
-            <button tds-button type="submit" color="primary" [disabled]="!_form?.valid" (click)="onSave()">Lưu</button>
+            <button tds-button type="submit" class="w-[87px]" color="primary" [disabled]="!_form?.valid" (click)="onSave()">Áp dụng</button>
         </div>
     </form>
 </tds-spin>

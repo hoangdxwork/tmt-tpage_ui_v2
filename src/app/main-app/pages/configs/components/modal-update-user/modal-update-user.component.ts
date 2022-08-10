@@ -15,7 +15,13 @@ import { TDSModalRef, TDSModalService } from 'tds-ui/modal';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSUploadFile } from 'tds-ui/upload';
 import { UserRestHandler } from 'src/app/main-app/handler-v2/user-rest.handler';
-
+const getBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
 @Component({
   selector: 'app-modal-update-user',
   templateUrl: './modal-update-user.component.html'
@@ -31,6 +37,8 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
   listSelectedRole: ApplicationRoleDTO[] = [];
   lstUserRole: ApplicationRoleDTO[] = [];
   fileList: TDSSafeAny[] = [];
+  previewImage: string | undefined = '';
+  previewVisible = false;
   private destroy$ = new Subject<void>();
 
   constructor(private cdRef : ChangeDetectorRef,
@@ -151,6 +159,14 @@ export class ModalUpdateUserComponent implements OnInit, OnDestroy {
     }, error => {
       this.message.error(error.Message ? error.Message : 'Upload xảy ra lỗi');
     });
+  }
+
+  getAvatar(url: string) {
+    this._form.controls["ImageUrl"].setValue(url);
+  }
+
+  getBase64(base64: TDSSafeAny) {
+    this._form.controls["Image"].setValue(base64);
   }
 
   onChangeRole(e: Array<TDSSafeAny>){
