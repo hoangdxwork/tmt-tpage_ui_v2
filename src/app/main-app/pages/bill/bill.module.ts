@@ -96,6 +96,7 @@ import { UpdateShipmentDetailAshipHandler } from '../../handler-v2/aship-v2/ship
 import { AddBillHandler } from '../../handler-v2/bill-handler/add-bill.handler';
 import { CreateFormBillHandler } from '../../handler-v2/bill-handler/create-form-bill.handler';
 import { PrepareCopyItemHandler } from '@app/handler-v2/bill-handler/prepare-copy-item.handler';
+import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-message.service';
 
 const SERVICES = [
   FastSaleOrderService,
@@ -138,7 +139,8 @@ const SERVICES = [
   CalculateBillFeeHandler,
   PreparePartnerHandler,
   PrepareCopyItemHandler,
-  OrderEvent
+  OrderEvent,
+  ChatomniMessageService
 ]
 
 @NgModule({

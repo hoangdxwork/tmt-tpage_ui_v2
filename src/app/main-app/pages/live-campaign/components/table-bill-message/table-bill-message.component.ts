@@ -11,6 +11,7 @@ import { PartnerService } from 'src/app/main-app/services/partner.service';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSSafeAny } from 'tds-ui/shared/utility';
 import { TDSTableQueryParams } from 'tds-ui/table';
+import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 
 @Component({
   selector: 'table-bill-message',
@@ -29,7 +30,7 @@ export class TableBillMessageComponent implements OnInit {
   lstData: MessageHistoryFSOrderDTO[] = [];
   mappingTeams: any[] = [];
   currentMappingTeam: any;
-  currentConversation!: ConversationMatchingItem;
+  currentConversation!: ChatomniConversationItemDto;
   psid: any;
   isOpenDrawer: boolean = false;
 

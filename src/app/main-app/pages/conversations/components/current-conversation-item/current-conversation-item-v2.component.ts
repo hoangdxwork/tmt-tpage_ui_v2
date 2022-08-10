@@ -12,6 +12,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { CrmMatchingV2Detail } from 'src/app/main-app/dto/conversation-all/crm-matching-v2/crm-matching-v2.dot';
 import { ChatomniConversationItemDto } from 'src/app/main-app/dto/conversation-all/chatomni/chatomni-conversation';
 import { TDSDestroyService } from 'tds-ui/core/services';
+import { ChatomniEventEmiterService } from '@app/app-constants/chatomni-event/chatomni-event-emiter.service';
 
 @Component({
     selector: 'current-conversation-item-v2',
@@ -59,9 +60,10 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
     public crmService: CRMTeamService,
     public activatedRoute: ActivatedRoute,
     public router: Router,
-    public cdr:ChangeDetectorRef,
+    public cdRef:ChangeDetectorRef,
     public element : ElementRef,
     private resizeObserver: TDSResizeObserver,
+    private chatomniEventEmiterService: ChatomniEventEmiterService,
     private destroy$: TDSDestroyService) {
   }
 
@@ -74,16 +76,28 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
           this.isDraftMessage = true;
       }
 
-      // this.draftMessageService.onIsDraftMessage$.subscribe((res: any) => {
-      //   if(this.csid == res.psid) {
-      //     this.isDraftMessage = res.isDraftMessage;
-      //   }
-      // });
-
       if(TDSHelperArray.hasListValue(this.item?.Tags)) {
           this.displayTag = this.item?.Tags?.length || 0;
       }
     }
+
+    this.eventEmitter();
+  }
+
+  eventEmitter(): void {
+    // TODO: Cập nhật tin tin nhắn chưa đọc
+    this.chatomniEventEmiterService.updateMarkSeenBadge$.pipe(takeUntil(this.destroy$)).subscribe(res => {
+      if(res){
+
+          let exits = this.item.ConversationId == res.csid && this.team?.ChannelId == res.pageId && this.type == res.type;
+          if(exits) {
+            this.item.CountUnread = 0;
+          }
+
+          this.cdRef.detectChanges();
+          this.destroy$.complete();
+      }
+    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -95,6 +109,7 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
       this.state = changes["state"].currentValue;
       this.item.State = this.state;
     }
+
     if(changes["item"] && !changes["item"].firstChange) {
       this.item = changes["item"].currentValue;
       this.totalWidthTag = this.currentWidthTag.nativeElement.clientWidth;
@@ -139,10 +154,7 @@ export class CurrentConversationItemV2Component  implements OnInit, OnChanges, A
       this.countHiddenTag = (this.item.Tags!.length - this.displayTag) || 0;
     }
 
-    this.cdr.markForCheck();
-    if(this.countNgafterview > 1){
-      this.cdr.detectChanges();
-    }
+    this.cdRef.detectChanges();
   }
 
   changeCheck(ev: TDSSafeAny){

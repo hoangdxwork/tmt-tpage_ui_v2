@@ -1060,8 +1060,6 @@ export class AddBillComponent implements OnInit {
     if(!TDSHelperString.hasValueString(x.FormAction)) {
       x.FormAction = 'draft';
     }
-
-    delete x.ShipmentDetailsAship;// lỗi do tg vịnh
     return x;
   }
 
