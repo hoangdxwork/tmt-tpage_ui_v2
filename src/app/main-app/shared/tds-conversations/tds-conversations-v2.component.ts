@@ -136,6 +136,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     // TODO: has_admin_required nhận từ tds-conversation-item để gửi lại tn
     this.onRetryMessage();
     this.eventEmitter();
+
     this.yiAutoScroll?.forceScrollDown();
   }
 
@@ -158,24 +159,24 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     this.initiateTimer();
   }
 
-  //TODO: data.id = data.psid
   loadMessages(data: ChatomniConversationItemDto): any {
     this.isLoading = true;
 
     this.ngZone.run(() => {
         this.dataSource$ = this.chatomniMessageService.makeDataSource(this.team.Id, data.ConversationId, this.type);
-    })
 
-    this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
-        if(res) {
-            this.dataSource = { ...res };
-        }
+        this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
+            if(res) {
+                this.dataSource = { ...res };
+            }
 
-        this.isLoading = false;
-
-    }, error => {
-        this.isLoading = false;
-        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi')
+            this.isLoading = false;
+            this.cdRef.markForCheck();
+        }, error => {
+            this.isLoading = false;
+            this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+            this.cdRef.markForCheck();
+        })
     })
   }
 
@@ -363,28 +364,29 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
     if (this.isLoading || this.isProcessing) {
       return;
     }
+
     this.isProcessing = true;
     let id = `${this.team.Id}_${this.data.ConversationId}`;
 
     this.ngZone.run(() => {
-        this.dataSource$ = this.chatomniMessageService.nextDataSource(id);
-    })
+      this.dataSource$ = this.chatomniMessageService.nextDataSource(id);
 
-    this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
-        if(res) {
-            this.dataSource.Extras = res.Extras;
+      this.dataSource$.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniDataDto) => {
+          if(res) {
+              this.dataSource.Extras = res.Extras;
 
-            this.dataSource.Items = [...res.Items];
-            this.dataSource.Paging = {...res.Paging};
-        }
+              this.dataSource.Items = [...res.Items];
+              this.dataSource.Paging = {...res.Paging};
+          }
 
-        this.isProcessing = false;
-        this.yiAutoScroll.scrollToElement('dataSourceScroll', 750);
-        this.cdRef.markForCheck();
+          this.isProcessing = false;
+          this.cdRef.markForCheck();
 
-    }, error => {
-        this.isProcessing = false;
-        this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+      }, error => {
+          this.isProcessing = false;
+          this.message.error(`${error?.error?.message}` || 'Đã xảy ra lỗi');
+          this.cdRef.markForCheck();
+      })
     })
   }
 
@@ -821,6 +823,7 @@ export class TDSConversationsV2Component implements OnInit, OnChanges, AfterView
 
   refreshRead() {
     this.validateData();
+    (this.data as any) = null;
     this.loadMessages(this.data);
   }
 

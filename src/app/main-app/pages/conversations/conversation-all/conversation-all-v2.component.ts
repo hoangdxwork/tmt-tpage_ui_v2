@@ -157,19 +157,6 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       }
     })
 
-    // TODO: Cập nhật tin tin nhắn chưa đọc
-    this.chatomniEventEmiterService.updateMarkSeenBadge$.subscribe(res => {
-      if(res){
-          let data = this.lstOmcs.filter(x => x.ConversationId == res.csid)[0];
-          let exits = data && this.currentTeam?.ChannelId == res.pageId && this.type == res.type;
-
-          if(exits) {
-              data.CountUnread = 0;
-          }
-          this.cdRef.detectChanges();
-      }
-    })
-
     // TODO: gán mã code load từ Tab Order
     this.conversationOrderFacade.onPushLastOrderCode$.subscribe((code: any) => {
       this.orderCode = code;
@@ -177,13 +164,6 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
   }
 
   spinLoading() {
-    // loading moused khi change, đợi phản hồi từ loadMessages trong shared-tds-conversations
-    // this.chatomniMessageService.spinningLoadMessage$.pipe(takeUntil(this.destroy$)).subscribe((obs: boolean) => {
-    //   if(obs) {
-    //       this.isChanged = obs;
-    //       this.cdRef.markForCheck();
-    //   }
-    // })
   }
 
   onChangeConversation(team: any, queryObj?: any) {
@@ -192,11 +172,10 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     // Sử dụng ngZone chạy bất đồng bộ dữ liệu
     this.ngZone.run(() => {
         this.dataSource$ = this.chatomniConversationService.makeDataSource(team.Id, this.type, queryObj);
+        if(this.dataSource$) {
+            this.loadConversations(this.dataSource$);
+        }
     })
-
-    if(this.dataSource$) {
-        this.loadConversations(this.dataSource$);
-    }
   }
 
   validateData() {
@@ -270,7 +249,6 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
     }
 
     delete this.omcs_Item;
-
     this.setCurrentConversationItem(item);
   }
 
@@ -280,6 +258,7 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
 
   nextData(event: any): any {
     if(event) {
+
       if (this.isProcessing) {
           return false;
       }
@@ -287,20 +266,20 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
       this.isProcessing = true;
       this.ngZone.run(() => {
           this.dataSource$ = this.chatomniConversationService.nextDataSource(this.currentTeam!.Id, this.type, this.queryFilter);
-      })
 
-      this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniConversationDto) => {
+          this.dataSource$?.pipe(takeUntil(this.destroy$)).subscribe((res: ChatomniConversationDto) => {
 
-          if(TDSHelperArray.hasListValue(res?.Items)) {
-              this.lstOmcs = [...res.Items];
-          }
+              if(TDSHelperArray.hasListValue(res?.Items)) {
+                  this.lstOmcs = [...res.Items];
+              }
 
-          this.isProcessing = false;
+              this.isProcessing = false;
 
-          this.yiAutoScroll.scrollToElement('scrollConversation', 750);debugger
-          this.cdRef.markForCheck();
-      }, error => {
-          this.isProcessing = false;
+              this.yiAutoScroll.scrollToElement('scrollConversation', 750);
+              this.cdRef.markForCheck();
+          }, error => {
+              this.isProcessing = false;
+          })
       })
     }
   }
@@ -323,12 +302,11 @@ export class ConversationAllV2Component extends TpageBaseComponent implements On
         this.clickReload = 0;
 
         if (this.currentTeam) {
-          this.facebookRESTService.rescan(this.currentTeam.ChannelId, 2)
-            .pipe(takeUntil(this.destroy$)).subscribe(res => {
-              //TODO: "Yêu cầu cập nhật thành công.
-          }, error => {
-              //TODO: Yêu cầu cập nhật thất bại.
-          });
+            this.facebookRESTService.rescan(this.currentTeam.ChannelId, 2).pipe(takeUntil(this.destroy$)).subscribe(res => {
+                  this.message.success('Yêu cầu cập nhật thành công');
+            }, error => {
+                  this.message.success('Yêu cầu cập nhật thất bại');
+            });
         }
     } else {
         this.onSubmitFilter({});

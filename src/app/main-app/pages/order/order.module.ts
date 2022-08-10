@@ -82,6 +82,7 @@ import { SO_ComputeCaclHandler } from '../../handler-v2/order-handler/compute-ca
 import { CalculateFeeAshipHandler } from '../../handler-v2/aship-v2/calcfee-aship.handler';
 import { CsOrder_SuggestionHandler } from '@app/handler-v2/chatomni-csorder/prepare-suggestions.handler';
 import { ConvertCustomersComponent } from './components/convert-customers/convert-customers.component';
+import { ChatomniMessageService } from '@app/services/chatomni-service/chatomni-message.service';
 
 const SERVICES = [
   OdataSaleOnline_OrderService,
@@ -115,7 +116,8 @@ const SERVICES = [
   SO_ComputeCaclHandler,
   CalculateFeeAshipHandler,
   CsOrder_SuggestionHandler,
-  OrderEvent
+  OrderEvent,
+  ChatomniMessageService
 ]
 
 @NgModule({

@@ -1,4 +1,5 @@
 import { StateChatbot } from "../conversation-all.dto";
+import { ChatomniMessageType } from "./chatomni-data.dto";
 
 export interface  ChatomniConversationTagDto {
   Id: string;
@@ -23,7 +24,7 @@ export enum ChatomniMessageContentType {
 export interface  ChatomniConversationMessageDto {
   Id: string | null;
   Message: string;
-  ContentType: ChatomniMessageContentType;
+  MessageType: ChatomniMessageType;
   CreatedTime: Date | any;
 }
 
@@ -46,7 +47,7 @@ export interface ChatomniConversationItemDto {
   UpdatedTime: Date;
   LatestMessage?: ChatomniConversationMessageDto;
 
-  State: StateChatbot | null;
+  State?: StateChatbot;
   HasOrder?: boolean | null;
   Message?: string; // Không có trong dữ liệu trả về, dùng để hiện thị
 }

@@ -38,6 +38,7 @@ import { GetListOrderIdsDTO } from 'src/app/main-app/dto/saleonlineorder/list-or
 import { HostListener } from '@angular/core';
 import { ODataSaleOnline_OrderDTOV2, ODataSaleOnline_OrderModel } from 'src/app/main-app/dto/saleonlineorder/odata-saleonline-order.dto';
 import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
+import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 // import { EditOrderV2Component } from '../components/edit-order/edit-order-v2.component';
 
 @Component({
@@ -60,7 +61,7 @@ export class OrderComponent implements OnInit, AfterViewInit, OnDestroy {
   lstStatusTypeExt!: Array<any>;
   mappingTeams: any[] = [];
   currentMappingTeam: any;
-  currentConversation!: ConversationMatchingItem;
+  currentConversation!: ChatomniConversationItemDto;
   psid: any;
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;

@@ -21,6 +21,7 @@ import { TDSTagStatusType } from 'tds-ui/tag';
 import { TDSTableQueryParams } from 'tds-ui/table';
 import { TDSModalService } from 'tds-ui/modal';
 import { Subject } from 'rxjs';
+import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 
 @Component({
   selector: 'detail-order',
@@ -53,7 +54,7 @@ export class DetailOrderComponent implements OnInit {
   tabIndex: number = 1;
   public mappingTeams: any[] = [];
   public currentMappingTeam: any;
-  currentConversation!: ConversationMatchingItem;
+  currentConversation!: ChatomniConversationItemDto;
   psid: any;
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;

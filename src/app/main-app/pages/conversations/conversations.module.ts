@@ -3,7 +3,6 @@ import { AccountRegisterPaymentService } from './../../services/account-register
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ConversationsRoutingModule } from './conversations-routing.module';
-import { ConversationAllComponent } from './conversation-all/conversation-all.component';
 import { ConversationPostComponent } from './conversation-post/conversation-post.component';
 import { MainSharedModule } from '../../shared/shared.module';
 import { TDSConversationsModule } from '../../shared/tds-conversations/tds-conversations.module';
@@ -204,7 +203,6 @@ const SERVICES = [
 
 @NgModule({
   declarations: [
-    ConversationAllComponent,
     ConversationPostComponent,
     ModalImageStoreComponent,
     CurrentConversationItemComponent,

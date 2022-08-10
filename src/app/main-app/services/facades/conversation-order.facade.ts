@@ -98,7 +98,7 @@ export class ConversationOrderFacade extends BaseSevice  {
           }
           // TODO: Không có đơn hàng gần nhất thì sử dụng đơn hàng nháp gần nhất
           else {
-              this.loadLastOrderDraft(obs).subscribe((res: any) => {debugger
+              this.loadLastOrderDraft(obs).subscribe((res: any) => {
                   if(res) {
                       this.onLastOrderCheckedConversation$.emit(res);
                   }
@@ -379,7 +379,7 @@ export class ConversationOrderFacade extends BaseSevice  {
             PageId: model.psid
         };
 
-        this.partnerService.checkInfo(data).subscribe((res: any) => {debugger
+        this.partnerService.checkInfo(data).subscribe((res: any) => {
             if(res?.Success && res?.Data?.Id) {
 
                   if(TDSHelperString.hasValueString(res.Data.Name)) {

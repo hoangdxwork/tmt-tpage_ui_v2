@@ -30,6 +30,7 @@ import { DeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto'
 import { DeliveryCarrierService } from 'src/app/main-app/services/delivery-carrier.service';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { TabNavsDTO } from 'src/app/main-app/services/mock-odata/odata-saleonlineorder.service';
+import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 
 @Component({
   selector: 'app-bill',
@@ -52,7 +53,7 @@ export class BillComponent implements OnInit, OnDestroy, AfterViewInit {
   marginLeftCollapse: number = 0;
   mappingTeams: any[] = [];
   currentMappingTeam: any;
-  currentConversation!: ConversationMatchingItem;
+  currentConversation!: ChatomniConversationItemDto;
   psid: any;
   isOpenDrawer: boolean = false;
   orderMessage: TDSSafeAny;

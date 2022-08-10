@@ -26,12 +26,12 @@ import { TDSResizeObserver } from 'tds-ui/core/resize-observers';
 import { TDSConfigService } from 'tds-ui/core/config';
 import { TDSMessageService } from 'tds-ui/message';
 import { TDSTableQueryParams } from 'tds-ui/table';
-import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMMatchingService } from 'src/app/main-app/services/crm-matching.service';
 import { MDBByPSIdDTO } from 'src/app/main-app/dto/crm-matching/mdb-by-psid.dto';
 import { CRMTeamService } from 'src/app/main-app/services/crm-team.service';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { SortDataRequestDTO } from 'src/app/lib/dto/dataRequest.dto';
+import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
 
 @Component({
   selector: 'app-partner',
@@ -68,7 +68,7 @@ export class PartnerComponent implements OnInit, OnDestroy, AfterViewInit {
   public lstBirtdays: Array<PartnerBirthdayDTO> = [];
   public lstStatus: Array<TDSSafeAny> = [];//TODO: dùng để filter
 
-  currentConversation!: ConversationMatchingItem;
+  currentConversation!: ChatomniConversationItemDto;
   psid: any;
   team!: CRMTeamDTO;
   public mappingTeams: any[] = [];
