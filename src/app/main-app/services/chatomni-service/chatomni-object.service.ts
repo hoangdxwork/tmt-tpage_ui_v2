@@ -89,7 +89,11 @@ export class ChatomniObjectService extends BaseSevice  {
       let url = this.urlNext as string;
       return this.getLink(url).pipe(map((res: ChatomniObjectsDto) => {
 
-        exist.Extras!.Objects = Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects);
+        if(res.Extras?.Objects) {
+          exist.Extras = {
+              Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects)
+          }
+        }
 
         // TODO nếu trùng urlNext thì xóa không cho load
         if (this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
@@ -110,8 +114,5 @@ export class ChatomniObjectService extends BaseSevice  {
       }), shareReplay({ bufferSize: 1, refCount: true }));
     }
   }
-
-
-
 
 }

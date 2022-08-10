@@ -94,7 +94,11 @@ export class ChatomniConversationService extends BaseSevice {
 
       return this.getLink(url).pipe(map((res: ChatomniConversationDto) => {
 
-        exist.Extras!.Objects = Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects);
+        if(res.Extras?.Objects) {
+          exist.Extras = {
+              Objects: Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects)
+          }
+        }
 
         // TODO nếu trùng urlNext thì xóa không cho load
         if (this.urlNext != res.Paging?.UrlNext && res.Paging.HasNext) {
