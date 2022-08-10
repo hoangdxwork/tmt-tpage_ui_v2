@@ -80,7 +80,7 @@ export class ChatomniMessageService extends BaseSevice  {
       let url = this.urlNext  as string;
       return this.getLink(url).pipe(map((res: ChatomniDataDto) => {
 
-          exist.Extras = res.Extras;
+          exist.Extras!.Objects = Object.assign({}, exist.Extras?.Objects, res.Extras?.Objects);
           exist.Items = [ ...exist.Items, ...res.Items ];
           exist.Paging = { ...res.Paging };
 
