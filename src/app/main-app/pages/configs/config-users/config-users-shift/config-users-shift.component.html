@@ -88,15 +88,18 @@
                                                 </div>
                                             </div> -->
                                             <div *ngFor="let userShifts of user?.UserShifts">
-                                                <div class="flex flex-col gap-y-2 mb-1" *ngIf="formatDate(userShifts.WorkingDay) == item.date">
-                                                    <div *ngFor="let shift of userShifts.Shifts" class="flex flex-col w-full justify-center items-center rounded px-5 py-1 font-semibold text-caption-2"
-                                                        [ngClass]="shift.Name.toLowerCase()=='ca sáng'?'bg-blue-200 text-blue-500':(shift.Name.toLowerCase()=='ca chiều'?
-                                                        'bg-green-200 text-green-500':(shift.Name.toLowerCase()=='tăng ca'?
-                                                        'bg-orange-200 text-orange-500':'bg-indigo-200 text-indigo-500'))">
-                                                        <div>{{shift.Name}}</div>
-                                                        <div>({{ shift.FromHour }}-{{ shift.ToHour }})</div>
-                                                    </div>
-                                                </div>
+                                              <div class="flex flex-col gap-y-2 mb-1" *ngIf="formatDate(userShifts.WorkingDay) == item.date">
+                                                  <div *ngFor="let shift of userShifts.Shifts" class="flex flex-col w-full justify-center items-center rounded px-5 py-1 font-semibold text-caption-2 relative group cursor-pointer"
+                                                      [ngClass]="shift.Name.toLowerCase()=='ca sáng'?'bg-blue-200 text-blue-500':(shift.Name.toLowerCase()=='ca chiều'?
+                                                      'bg-green-200 text-green-500':(shift.Name.toLowerCase()=='tăng ca'?
+                                                      'bg-orange-200 text-orange-500':'bg-indigo-200 text-indigo-500'))">
+                                                      <div class="group-hover:opacity-10">{{shift.Name}}</div>
+                                                      <div class="group-hover:opacity-10">({{ shift.FromHour }}-{{ shift.ToHour }})</div>
+                                                      <button class="group-hover:text-accent-3 font-semibold absolute group-hover:flex w-full items-center justify-center hidden truncate">
+                                                          Xóa
+                                                      </button>
+                                                  </div>
+                                              </div>
                                             </div>
                                             <div class="flex justify-center">
                                               <button (click)="openTag(user.Id, item.week, item.id)" tds-popover
