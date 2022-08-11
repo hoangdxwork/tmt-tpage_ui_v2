@@ -109,7 +109,7 @@ export class DuplicateUserComponent implements OnInit {
       }
     })
 
-    this.partnerService.transferPartnerMultiple({ model }).subscribe(res => {
+    this.partnerService.transferPartnerMultiple({model}).subscribe(res => {
       this.message.success('Chuyển đổi khách hàng thành công!');
       this.isloading = false;
     },

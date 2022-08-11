@@ -17,31 +17,31 @@
           <div class="w-full p-4">
               <tds-tabset class="bg-white border border-neutral-2-200 rounded-xl" (selectedIndexChange)="selectedIndexChange($event)">
                   <!-- tabs Phản hồi bình luận -->
-                  <tds-tab title="Phản hồi bình luận">
+                  <tds-tab title="Phản hồi bình luận" clsContent="border-t p-4">
                       <ng-template tds-tab>
                           <config-auto-reply [eventOnSave]="onSaveAutoReply" (onSaveSuccess)="onSaveAutoReplySuccess($event)"></config-auto-reply>
                       </ng-template>
                   </tds-tab>
                   <!-- tabs Ẩn bình luận -->
-                  <tds-tab title="Ẩn bình luận">
+                  <tds-tab title="Ẩn bình luận" clsContent="border-t p-4">
                       <ng-template tds-tab>
                           <config-auto-hide-comment [eventOnSave]="onSaveAutoHideComment" (onSaveSuccess)="onSaveAutoHideCommentSuccess($event)"></config-auto-hide-comment>
                       </ng-template>
                   </tds-tab>
                   <!-- tabs menu tương tác -->
-                  <tds-tab tds-tab title="Menu tương tác">
+                  <tds-tab tds-tab title="Menu tương tác" clsContent="border-t p-4">
                       <ng-template tds-tab>
                           <config-interactive-menus [eventOnSave]="onSaveInteractiveMenus" (onSaveSuccess)="onSaveInteractiveMenusSuccess($event)"></config-interactive-menus>
                       </ng-template>
                   </tds-tab>
                   <!-- tab các câu hỏi nhanh -->
-                  <tds-tab tds-tab title="Các câu hỏi nhanh">
+                  <tds-tab tds-tab title="Các câu hỏi nhanh" clsContent="border-t p-4">
                       <ng-template tds-tab>
                         <config-quick-question [eventOnSave]="onSaveQuickQuestion" (onSaveSuccess)="onSaveQuickQuestionSuccess($event)"></config-quick-question>
                       </ng-template>
                   </tds-tab>
                   <!-- tabs lời chào -->
-                  <tds-tab tds-tab title="Lời chào">
+                  <tds-tab tds-tab title="Lời chào" clsContent="border-t p-4">
                     <ng-template tds-tab>
                       <config-greeting [eventOnSave]="onSaveGreeting" (onSaveSuccess)="onSaveGreetingSuccess($event)"></config-greeting>
                     </ng-template>

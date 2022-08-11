@@ -6,7 +6,7 @@
                 <span class="text-neutral-1-900 text-header-1 font-semibold pl-2.5">NHẬT KÝ HOẠT ĐỘNG</span>
             </div>
             <div class="flex flex-row items-center justify-end w-1/2">
-                <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" [placement]="'bottomRight'" class="w-1/4 mr-2">
+                <button tds-button color="secondary" tds-dropdown trigger="click" [tdsDropdownMenu]="menu" [placement]="'bottomRight'" class="w-[240px] mr-2">
                     <span class="flex flex-row items-center justify-between text-neutral-1-500 w-full">
                         <div class="flex flex-row items-center">
                             <i class="tdsi-calendar-fill mr-2"></i>
@@ -92,7 +92,7 @@
                                 </span>
                             </button>
                             <div class="flex flex-row items-center">
-                                <button tds-button color="secondary" class="mr-2" tds-dropdown-item>
+                                <button tds-button color="secondary" class="mr-2 w-[80px]" tds-dropdown-item>
                                     <span class="text-neutral-1-900 text-body-2 font-semibold text-center">Hủy</span>
                                 </button>
                                 <button tds-button color="primary"
@@ -104,8 +104,8 @@
                     </div>
                 </tds-dropdown-menu>
                 <tds-form-field size='md' class="w-1/2">
-                    <input tdsInput class="text-neutral-1-900" placeholder="Tìm thẻ hội thoại" autocomplete="off"
-                        (keyup.enter)="doFilter($event)"/>
+                    <input tdsInput class="text-neutral-1-900" placeholder="Tìm kiếm nhanh theo người thao tác" autocomplete="off" [(ngModel)]="filterObj.searchText"
+                    [tdsInputDebounce]="750" (inputKeyup)="onSearch($event)"/>
                     <span tdsPrefix><i class="text-neutral-1-500 tdsi-search-fill"></i></span>
                 </tds-form-field>
             </div>
@@ -129,12 +129,12 @@
                 <tbody>
                     <ng-template ngFor let-data [ngForOf]="sortTable.data">
                         <tr class="text-neutral-1-900 text-body-2 font-regular">
-                            <td class="flex flex-row items-center">
-                                <tds-avatar [tdsSrc]="data?.User?.Avatar" width="44px" height="44px" class="rounded-full mr-4"></tds-avatar>
+                            <td>
+                                <tds-avatar [tdsSrc]="data?.User?.Avatar" width="44px" class="rounded-full mr-4"></tds-avatar>
                                 <span>{{ data?.User?.Name }}</span>
                             </td>
                             <td>
-                              <div [innerHTML] ="data.Content"></div>
+                              <span class="configs-activities" [innerHTML]="data.Content"></span>
                             </td>
                             <td>{{ data.DateCreated | date:'dd/MM/yyyy HH:mm a' }}</td>
                             <td>

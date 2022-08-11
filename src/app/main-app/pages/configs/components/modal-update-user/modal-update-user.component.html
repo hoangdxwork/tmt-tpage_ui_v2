@@ -2,12 +2,15 @@
     <form [formGroup]="_form" *ngIf="_form"
         class="flex flex-col gap-y-6">
         <div class="flex gap-x-8 w-full items-center">
-            <div>
-                <tds-upload [beforeUpload]="beforeUpload" [showUploadList]="false">
-                  <tds-avatar [isAvatar]="true" class="bg-white text-white" [size]="108"
-                    [tdsSrc]="_form.value?.Avatar">
-                  </tds-avatar>
-                </tds-upload>
+            <div class="relative group text-caption-2 flex items-center w-[108px] h-[108px]">
+              <div class="cursor-pointer w-full rounded-full font-semibold text-center">
+                <tds-avatar [isAvatar]="true" class="text-white" [size]="108" [tdsSrc]="_form.value?.Avatar">
+                </tds-avatar>
+              </div>
+              <tds-upload [beforeUpload]="beforeUpload" [showUploadList]="false"
+                  class="w-[108px] h-[108px] justify-center items-center rounded-full bg-black/20 absolute group-hover:flex hidden">
+                  <i class="tdsi-edit-fill text-2xl leading-none text-white"></i>
+              </tds-upload>
             </div>
             <div class="flex flex-col w-full gap-y-4">
                 <tds-form-field class="w-full">
@@ -24,7 +27,7 @@
         <div class="w-full grid grid-cols-2 gap-x-12 gap-y-4">
             <tds-form-field class="w-full">
                 <tds-label>Số điện thoại</tds-label>
-                <input formControlName="PhoneNumber" tdsInput autocomplete="off" [required]="true" placeholder="Nhập tên nhân viên" />
+                <input formControlName="PhoneNumber" tdsInput autocomplete="off" [required]="true" placeholder="Nhập số điện thoại" />
                 <tds-error>Vui lòng nhập số điện thoại</tds-error>
             </tds-form-field>
             <tds-form-field class="w-full">
@@ -55,13 +58,13 @@
             <tds-form-field class="col-span-2">
                 <tds-label> Phân quyền </tds-label>
                 <tds-select [ngModel]="listSelectedRole" [ngModelOptions]="{standalone: true}" valueField="Id" textField="Name" [required]="true"
-                    placeholder='Chọn' (ngModelChange)="onChangeRole($event)" [data]="lstUserRole" mode="multiple">
+                    placeholder='Chọn' (ngModelChange)="onChangeRole($event)" [data]="lstUserRole" mode="multiple" [allowClear]="true">
                 </tds-select>
             </tds-form-field>
         </div>
         <div class="w-full flex justify-end p-4" *tdsModalFooter>
             <button tds-button class="mr-2" color="secondary" (click)="cancel()">Hủy bỏ</button>
-            <button tds-button type="submit" color="primary" (click)="onSave()" [disabled]="!_form.valid">Lưu thay đổi</button>
+            <button tds-button type="submit" color="primary" (click)="onSave()">Lưu thay đổi</button>
         </div>
     </form>
 </tds-spin>
