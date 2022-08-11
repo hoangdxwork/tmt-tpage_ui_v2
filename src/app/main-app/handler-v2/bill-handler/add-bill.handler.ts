@@ -118,6 +118,7 @@ export class AddBillHandler {
     else {
       let details: any = [];
       data.OrderLines?.forEach((x: OrderLineV2) => {
+
         let item = {
             Account: x.Account || data.Account,
             AccountId: x.Account?.Id || data.AccountId,
@@ -136,6 +137,18 @@ export class AddBillHandler {
             User: data.User,
             Weight: x.Weight,
             WeightTotal: x.WeightTotal,
+        } as any;
+
+        if(x.LiveCampaign_DetailId) {
+          item.LiveCampaign_DetailId = x.LiveCampaign_DetailId;
+        }
+
+        if(x.LiveCampaignQtyChange) {
+          item.LiveCampaignQtyChange = x.LiveCampaignQtyChange;
+        }
+
+        if(x.OrderId) {
+          item.OrderId = x.OrderId;
         }
 
         details.push(item);

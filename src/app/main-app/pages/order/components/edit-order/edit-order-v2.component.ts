@@ -384,15 +384,11 @@ export class EditOrderV2Component implements OnInit {
   }
 
   calcFee() {
-    if(!this.saleModel.Carrier) {
-      this.message.error('Vui lòng chọn đối tác giao hàng')
-    }
-
     let model = this.saleModel.Carrier as any;
     this.calculateFeeAship(model);
   }
 
-  onSelectShipServiceId(event: any) {debugger
+  onSelectShipServiceId(event: any) {
     this.selectShipServiceV2(event)
   }
 
@@ -481,7 +477,8 @@ export class EditOrderV2Component implements OnInit {
   }
 
   coDAmount() {
-    this.saleModel.CashOnDelivery = this.computeCaclHandler.so_coDAmount(this.saleModel, this.quickOrderModel);
+    let cashOnDelivery = this.computeCaclHandler.so_coDAmount(this.saleModel, this.quickOrderModel);
+    this.saleModel.CashOnDelivery = cashOnDelivery;
   }
 
   onSave(type?: string): any {
@@ -494,23 +491,18 @@ export class EditOrderV2Component implements OnInit {
     }
 
     if(this.isEnableCreateOrder) {
-        if (!TDSHelperArray.hasListValue(this.quickOrderModel.Details)) {
+        if (!TDSHelperArray.hasListValue(this.saleModel.OrderLines)) {
             this.notification.warning( 'Không thể tạo hóa đơn', 'Đơn hàng chưa có chi tiết');
             return false;
         }
 
-        if (!this.quickOrderModel.Telephone) {
+        if (!this.saleModel.Phone) {
             this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm điện thoại');
             return false;
         }
 
-        if (!this.quickOrderModel.Address) {
+        if (!this.saleModel.Address) {
             this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm địa chỉ');
-            return false;
-        }
-
-        if (!this.quickOrderModel.CityCode) {
-            this.notification.warning('Không thể tạo hóa đơn', 'Vui lòng thêm tỉnh/ thành phố');
             return false;
         }
 
@@ -535,10 +527,10 @@ export class EditOrderV2Component implements OnInit {
         if(this.isEnableCreateOrder) {
             // call api tạo hóa đơn
             this.createFastSaleOrder(this.saleModel, type);
+        } else {
+          this.isLoading = false;
+          this.modalRef.destroy(null);
         }
-
-        this.isLoading = false;
-        this.modalRef.destroy(null);
 
     }, error => {
         this.isLoading = false;
@@ -580,9 +572,12 @@ export class EditOrderV2Component implements OnInit {
 
         if(type) {
             this.printOrder(type, res);
+        } else {
+            this.modalRef.destroy(null);
         }
 
-        this.modalRef.destroy(null);
+        this.isLoading = false;
+
     }, error => {
         this.isLoading = false;
         this.notification.error('Tạo hóa đơn thất bại', error.error?.message);
@@ -612,6 +607,7 @@ export class EditOrderV2Component implements OnInit {
           if(error?.error?.message) {
               this.notification.error( 'Lỗi in phiếu', error?.error?.message);
           }
+          this.onCancel();
       });
     }
   }
@@ -743,7 +739,8 @@ export class EditOrderV2Component implements OnInit {
 
                   this.message.success(`Đối tác ${event.Name} có phí vận chuyển: ${formatNumber(Number(x.TotalFee), 'en-US', '1.0-0')} đ`);
               }
-            }else{
+
+            } else {
               this.message.error(res);
             }
           }
@@ -755,10 +752,9 @@ export class EditOrderV2Component implements OnInit {
           this.message.error(error.error.message || error.error.error_description);
           this.cdRef.markForCheck();
       })
-
   }
 
-  selectShipServiceV2(x: CalculateFeeServiceResponseDto) {debugger
+  selectShipServiceV2(x: CalculateFeeServiceResponseDto) {
     let data = this.selectShipServiceV2Handler.so_selectShipServiceV2(x, this.shipExtraServices, this.saleModel);
 
     this.saleModel = data.saleModel;
