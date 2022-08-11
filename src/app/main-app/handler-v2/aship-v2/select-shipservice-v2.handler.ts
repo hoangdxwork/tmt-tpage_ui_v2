@@ -69,28 +69,27 @@ export class SelectShipServiceV2Handler {
     if(TDSHelperArray.hasListValue(data.Extras)) {
 
         shipExtraServices = [];
-        data.Extras.map((x: CalculateFeeServiceExtrasResponseDto) => {
+        data.Extras.forEach((x: CalculateFeeServiceExtrasResponseDto) => {
 
             // TODO: nếu là dịch vụ cũ thì isselect dữ liệu
-            let exist = temps?.filter(t => t.Id == x.ServiceId)[0] as ShipServiceExtra;
+            const exist = temps?.filter(t => t.Id == x.ServiceId)[0] as ShipServiceExtra;
 
             if(exist && exist.Id == 'XMG' && saleModel.Carrier?.DeliveryType == 'ViettelPost' && exist.IsSelected) {
                 exist.ExtraMoney = (saleModel.Ship_Extras && saleModel.Ship_Extras.IsCollectMoneyGoods && saleModel.Ship_Extras.CollectMoneyGoods) ? saleModel.Ship_Extras.CollectMoneyGoods : saleModel.CustomerDeliveryPrice || null;
             }
 
             let item: ShipServiceExtra = {
-                Id: x.ServiceId,
-                Name: x.ServiceName,
-                Fee: x.Fee || 0,
-                Type: exist ? exist.Type : null,
-                ExtraMoney: exist ? exist.ExtraMoney : null,
-                OrderTime: exist ? exist.OrderTime : null,
-                IsSelected: exist ? exist.IsSelected : false
+              Id: exist?.Id || x.ServiceId,
+              Name: exist?.Name ||  x.ServiceName,
+              Fee: exist?.Fee || x.Fee || 0,
+              Type: exist?.Type || null,
+              ExtraMoney: exist?.ExtraMoney || null,
+              OrderTime: exist?.OrderTime || null,
+              IsSelected: exist?.IsSelected || false
             }
 
             shipExtraServices.push(item);
-      })
-
+        })
     }
 
     return { saleModel, shipExtraServices };
