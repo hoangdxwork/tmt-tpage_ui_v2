@@ -2,7 +2,6 @@ import { ChangeDetectorRef, OnChanges, OnDestroy, SimpleChanges } from '@angular
 import { InitSaleDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, Output, EventEmitter, ViewContainerRef } from '@angular/core';
 import { Subject, Observable, takeUntil, finalize, map } from 'rxjs';
-import { ConversationMatchingItem } from 'src/app/main-app/dto/conversation-all/conversation-all.dto';
 import { CRMTeamDTO } from 'src/app/main-app/dto/team/team.dto';
 import { ConversationOrderFacade } from 'src/app/main-app/services/facades/conversation-order.facade';
 import { ApplicationUserService } from 'src/app/main-app/services/application-user.service';
@@ -23,20 +22,11 @@ import { TDSModalService } from 'tds-ui/modal';
 import { TDSHelperArray, TDSHelperObject, TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
 import { FastSaleOrder_DefaultDTOV2, ShipServiceExtra } from 'src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto';
-import { Ship_ExtrasServiceModel } from 'src/app/main-app/commands/dto-handler/ship-extra-service.dto';
-import { InitOkieLaHandler } from 'src/app/main-app/commands/init-okila.handler';
-import { InitServiceHandler } from 'src/app/main-app/commands/init-service.handler';
-import { InitInfoOrderDeliveryHandler } from 'src/app/main-app/commands/init-inforder-delivery.handler';
 import { DeliveryCarrierDTOV2 } from 'src/app/main-app/dto/delivery-carrier.dto';
-import { CalcServiceDefaultHandler } from 'src/app/main-app/commands/calc-service-default.handler';
-import { PrepareCalculateFeeV2Handler } from 'src/app/main-app/commands/prepare-calculateFeeV2-model.handler';
-import { ValidateInsuranceFeeHandler } from 'src/app/main-app/commands/validate-insurance-fee.dto';
 import { formatNumber } from '@angular/common';
-import { SelectShipServiceHandler } from 'src/app/main-app/commands/select-ship-service.handler';
 import { TAuthService, UserInitDTO } from 'src/app/lib';
 import { TDSCheckboxChange } from 'tds-ui/tds-checkbox';
 import { SaleOnline_OrderService } from 'src/app/main-app/services/sale-online-order.service';
-import { PrepareSaleModelHandler } from 'src/app/main-app/commands/prepare-salemodel.handler';
 import { TDSNotificationService } from 'tds-ui/notification';
 import { GetInventoryDTO, ProductTemplateDTO } from 'src/app/main-app/dto/product/product.dto';
 import { SuggestCitiesDTO, SuggestDistrictsDTO, SuggestWardsDTO } from 'src/app/main-app/dto/suggest-address/suggest-address.dto';
@@ -61,11 +51,12 @@ import { UpdateShipExtraHandler } from '@app/handler-v2/aship-v2/update-shipextr
 import { UpdateShipServiceExtrasHandler } from '@app/handler-v2/aship-v2/update-shipservice-extras.handler';
 import { UpdateShipmentDetailAshipHandler } from '@app/handler-v2/aship-v2/shipment-detail-aship.handler';
 import { TDSDestroyService } from 'tds-ui/core/services';
+import { SharedService } from '@app/services/shared.service';
 
 @Component({
-    selector: 'conversation-order',
-    templateUrl: './conversation-order.component.html',
-    providers: [ TDSDestroyService ]
+  selector: 'conversation-order',
+  templateUrl: './conversation-order.component.html',
+  providers: [ TDSDestroyService ]
 })
 
 export class ConversationOrderComponent implements OnInit {
@@ -125,7 +116,6 @@ export class ConversationOrderComponent implements OnInit {
   _wards!: SuggestWardsDTO;
   _street!: string;
 
-
   lstInventory!: GetInventoryDTO;
 
   constructor(private message: TDSMessageService,
@@ -144,6 +134,7 @@ export class ConversationOrderComponent implements OnInit {
     private notification: TDSNotificationService,
     private orderPrintService: OrderPrintService,
     private printerService: PrinterService,
+    private sharedService: SharedService,
     private csOrder_SuggestionHandler: CsOrder_SuggestionHandler,
     private csOrder_PrepareModelHandler: CsOrder_PrepareModelHandler,
     private calcFeeAshipHandler: CalculateFeeAshipHandler,
@@ -165,6 +156,7 @@ export class ConversationOrderComponent implements OnInit {
     this.loadUserLogged();
     this.loadCarrier();
     this.onSelectOrderFromMessage();
+    this.loadCurrentCompany();
     this.eventEmitter();
   }
 
@@ -231,6 +223,14 @@ export class ConversationOrderComponent implements OnInit {
     });
   }
 
+  loadCurrentCompany() {
+    this.sharedService.getCurrentCompany().pipe(takeUntil(this.destroy$)).subscribe((res: CompanyCurrentDTO) => {
+      this.companyCurrents = res;
+    }, error => {
+      this.message.error(error?.error?.message || 'Load thông tin công ty mặc định đã xảy ra lỗi!');
+    });
+  }
+
   //Load thông tin ship aship
   loadConfigProvider(data: FastSaleOrder_DefaultDTOV2) {
     if (data.CarrierId && data.Carrier) {
@@ -261,11 +261,13 @@ export class ConversationOrderComponent implements OnInit {
   }
 
   coDAmount() {
-    this.saleModel = this.computeCaclHandler.so_coDAmount(this.saleModel, this.quickOrderModel);
+    this.saleModel.CashOnDelivery = this.computeCaclHandler.so_coDAmount(this.saleModel, this.quickOrderModel);
   }
 
   calcTax() {
-    this.saleModel = this.computeCaclHandler.so_calcTax(this.saleModel);
+    let tax = this.computeCaclHandler.so_calcTax(this.saleModel);
+    this.saleModel.AmountTax = tax.AmountTax;
+    this.saleModel.AmountTotal = tax.AmountTotal;
   }
 
   calcTotal() {

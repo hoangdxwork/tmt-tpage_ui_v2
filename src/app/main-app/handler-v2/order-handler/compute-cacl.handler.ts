@@ -3,9 +3,7 @@ import { FastSaleOrder_DefaultDTOV2 } from "src/app/main-app/dto/fastsaleorder/f
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from "src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto";
 import { InitSaleDTO } from "src/app/main-app/dto/setting/setting-sale-online.dto";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class SO_ComputeCaclHandler {
 
@@ -13,11 +11,13 @@ export class SO_ComputeCaclHandler {
     let coDAmount = quickOrderModel.TotalAmount + saleModel.DeliveryPrice - saleModel.AmountDeposit;
     saleModel.CashOnDelivery = coDAmount;
 
-    return saleModel;
+    return saleModel.CashOnDelivery;
   }
 
   public so_calcTax(saleModel: FastSaleOrder_DefaultDTOV2){
+
     saleModel.AmountTax = 0;
+
     if(saleModel.Tax) {
         let amountTax = Math.round(saleModel.AmountUntaxed * ((saleModel.Tax?.Amount) / 100));
         saleModel.AmountTax = amountTax;
@@ -26,7 +26,10 @@ export class SO_ComputeCaclHandler {
     let amountTotal = Math.round(saleModel.AmountUntaxed + saleModel.AmountTax);
     saleModel.AmountTotal = amountTotal;
 
-    return saleModel;
+    return {
+      AmountTax: saleModel.AmountTax,
+      AmountTotal: saleModel.AmountTotal
+    };
   }
 
   public so_calcTotal(saleModel: FastSaleOrder_DefaultDTOV2, quickOrderModel: QuickSaleOnlineOrderModel, saleConfig: InitSaleDTO) {
@@ -49,7 +52,9 @@ export class SO_ComputeCaclHandler {
         saleModel.AmountUntaxed = totalAmount;
 
         //TODO: Tính thuế để gán lại tổng tiền AmountTotal
-        this.so_calcTax(saleModel);
+        let tax = this.so_calcTax(saleModel);
+        saleModel.AmountTax = tax.AmountTax;
+        saleModel.AmountTotal = tax.AmountTotal;
 
         if(!saleConfig?.SaleSetting?.GroupAmountPaid) {
             //TODO: Gán lại số tiền trả PaymentAmount;

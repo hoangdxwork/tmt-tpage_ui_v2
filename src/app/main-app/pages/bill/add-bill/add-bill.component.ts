@@ -71,8 +71,6 @@ export class AddBillComponent implements OnInit {
   path: any;
   isLoading: boolean = false;
   isLoadingProduct: boolean = false;
-  isCalcFee: boolean = false;
-
   dataModel!: FastSaleOrder_DefaultDTOV2;
   roleConfigs!: SaleSettingsDTO;
   companyCurrents!: CompanyCurrentDTO;
@@ -117,6 +115,7 @@ export class AddBillComponent implements OnInit {
   showShipService!: boolean;
   selectedIndex = 0;
   configsProviderDataSource: Array<AshipGetInfoConfigProviderDto> = [];
+  tipLoading: string = 'Loading...';
 
   constructor(private fb: FormBuilder,
     private router: Router,
@@ -254,6 +253,8 @@ export class AddBillComponent implements OnInit {
         data.DateInvoice = new Date();
         data.ReceiverDate = new Date();
         data.DateOrderRed = new Date();
+
+        data.State = 'draft';
 
       } else {
         data.DateInvoice = data.DateInvoice ? new Date(data.DateInvoice) : null;
@@ -520,7 +521,7 @@ export class AddBillComponent implements OnInit {
     }
 
     this.calculateFeeAship(model).catch((e: any) => {
-      this.isCalcFee = false;
+      this.isLoading = false;
       let error = e.error.message || e.error.error_description;
       if (error)
           this.message.error(error);
@@ -530,7 +531,9 @@ export class AddBillComponent implements OnInit {
   calcFeeList(type: boolean) {
     if(type) {
       let model = this.prepareModel();
-      this.isCalcFee = true;
+
+      this.tipLoading = 'Đang tính phí, vui lòng chờ trong giây lát!'
+      this.isLoading = true;
 
       this.fastSaleOrderService.calculateListFee({ model: model }).subscribe((res: any) => {
 
@@ -539,10 +542,10 @@ export class AddBillComponent implements OnInit {
         if (exits) {
           this.setCarrier(exits);
         }
-        this.isCalcFee = false;
+        this.isLoading = false;
 
       }, error => {
-        this.isCalcFee = false;
+        this.isLoading = false;
         this.message.error(`${error.error_description}` ? `${error.error_description}` : 'Gợi ý tính phí đã xảy ra lỗi!');
       });
     } else {
@@ -951,10 +954,12 @@ export class AddBillComponent implements OnInit {
   }
 
   signAmountTotalToInsuranceFee(): any {
+
     this._form.controls['Ship_InsuranceFee'].setValue(this._form.controls['AmountTotal'].value);
     if (this._form.controls['Carrier'].value && this._form.controls['Carrier'].value.DeliveryType == 'NinjaVan') {
       return false;
     }
+
     this.onUpdateInsuranceFee();
   }
 
@@ -1117,7 +1122,7 @@ export class AddBillComponent implements OnInit {
     if (this.id) {
       this.isLoading = true;
 
-      this.fastSaleOrderService.update(this.id, model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.fastSaleOrderService.update(this.id, model).subscribe((res: any) => {
           this.message.success('Cập nhật phiếu bán hàng thành công!');
 
           if(print) {
@@ -1135,7 +1140,7 @@ export class AddBillComponent implements OnInit {
     } else {
         this.isLoading = true;
 
-        this.fastSaleOrderService.insert(model).pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+        this.fastSaleOrderService.insert(model).subscribe((res: any) => {
             this.message.success('Tạo mới phiếu bán hàng thành công!');
 
             if(print) {
@@ -1156,12 +1161,12 @@ export class AddBillComponent implements OnInit {
     let obs: TDSSafeAny;
     switch (type) {
         case "print":
-            obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${id}`);
+            obs = this.printerService.printUrl(`/fastsaleorder/print?ids=${[id]}`);
             break;
 
-        case "printship":
+        case "printShip":
           if(this.dataModel.Carrier) {
-              obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=` + `${id}` + "&carrierid=" + `${this.dataModel.Carrier.Id}`);
+              obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=` + `${id}` + "&carrierid=" + `${this.dataModel.CarrierId}`);
           } else {
               obs = this.printerService.printUrl(`/fastsaleorder/PrintShipThuan?ids=${id}`);
           }
@@ -1173,12 +1178,20 @@ export class AddBillComponent implements OnInit {
       this.printerService.printHtml(res);
           this.isLoading = false;
 
+          this.onBack();
+
       }, (error: TDSSafeAny) => {
         this.isLoading = false;
         if(error?.error?.message) {
           this.message.error(error?.error?.message);
         }
+
+        this.onBack();
     });
+
+    if(!obs) {
+      this.isLoading = false;
+    }
   }
 
   onChangeCarrierV2(event: DeliveryCarrierDTOV2) {
@@ -1229,7 +1242,7 @@ export class AddBillComponent implements OnInit {
 
     let promise = new Promise((resolve, reject): any => {
 
-      this.isCalcFee = true;
+      this.isLoading = true;
       this.fastSaleOrderService.calculateFeeAship(model).subscribe((res: DeliveryResponseDto<CaculateFeeResponseDto>) => {
 
         if (res && res.Data?.Services) {
@@ -1265,7 +1278,7 @@ export class AddBillComponent implements OnInit {
           }
         }
 
-        this.isCalcFee = false;
+        this.isLoading = false;
         resolve(res);
         this.cdRef.detectChanges();
 

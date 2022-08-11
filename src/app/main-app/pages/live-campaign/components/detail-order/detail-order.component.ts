@@ -4,7 +4,6 @@ import { CRMTeamService } from './../../../../services/crm-team.service';
 import { PartnerService } from './../../../../services/partner.service';
 import { ConversationMatchingItem } from './../../../../dto/conversation-all/conversation-all.dto';
 import { QuickSaleOnlineOrderModel } from 'src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto';
-import { EditOrderComponent } from './../../../order/components/edit-order/edit-order.component';
 
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
 import { addDays } from 'date-fns';
@@ -22,6 +21,7 @@ import { TDSTableQueryParams } from 'tds-ui/table';
 import { TDSModalService } from 'tds-ui/modal';
 import { Subject } from 'rxjs';
 import { ChatomniConversationItemDto } from '@app/dto/conversation-all/chatomni/chatomni-conversation';
+import { EditOrderV2Component } from '@app/pages/order/components/edit-order/edit-order-v2.component';
 
 @Component({
   selector: 'detail-order',
@@ -139,7 +139,7 @@ export class DetailOrderComponent implements OnInit {
             delete res['@odata.context'];
 
             const modal = this.modal.create({
-                content: EditOrderComponent,
+                content: EditOrderV2Component,
                 size: 'xl',
                 viewContainerRef: this.viewContainerRef,
                 componentParams: {

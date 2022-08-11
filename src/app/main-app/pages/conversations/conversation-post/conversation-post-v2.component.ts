@@ -324,6 +324,7 @@ export class ConversationPostV2Component extends TpageBaseComponent implements O
               this.lstObjects = [...res.Items];
           }
 
+          this.yiAutoScroll.scrollToElement('scrollObjects', 750);
           this.isProcessing = false;
       }, error => {
           this.isProcessing = false;
