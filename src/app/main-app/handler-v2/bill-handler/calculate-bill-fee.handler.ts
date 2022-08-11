@@ -8,14 +8,16 @@ import { Injectable } from "@angular/core";
 
 export class CalculateBillFeeHandler {
 
-  public computeAmountTotal(_form:FormGroup, roleConfigs: SaleSettingsDTO) {
+  public fs_calcTotal(_form: FormGroup, roleConfigs: SaleSettingsDTO) {
 
     let totalQty = 0;
     let totalPrice = 0;
 
     let datas = _form.controls['OrderLines'].value as Array<OrderLineV2>;
+
     datas.forEach((x: OrderLineV2) => {
       x.Discount = x.Discount ? x.Discount : 0;
+
       x.PriceTotal = (x.PriceUnit * (1 - (x.Discount || 0) / 100) - (x.Discount_Fixed || 0)) * x.ProductUOMQty;
       x.WeightTotal = Math.round(x.ProductUOMQty * x.Weight * 1000) / 1000;
 
@@ -28,7 +30,7 @@ export class CalculateBillFeeHandler {
     this.updateTotalSummary(_form,datas,totalPrice,roleConfigs);
     this.updateQuantitySummary(_form,datas);
     //TODO: update lại Giao hàng thu tiền
-    this.updateCoDAmount(_form);
+    this.fs_coDAmount(_form);
 
     //TODO: tổng số lượng và tổng tiền tạm tính
     return {
@@ -100,14 +102,10 @@ export class CalculateBillFeeHandler {
     _form.controls['TotalQuantity'].setValue(total);
   }
 
-  public updateCoDAmount(_form:FormGroup) {
+  public fs_coDAmount(_form: FormGroup) {
     let formModel = _form.value;
     let coDAmount = (formModel.AmountTotal + formModel.DeliveryPrice) - formModel.AmountDeposit;
 
-    if (coDAmount > 0) {
-      _form.controls['CashOnDelivery'].setValue(coDAmount);
-    } else{
-      _form.controls['CashOnDelivery'].setValue(0);
-    }
+    _form.controls['CashOnDelivery'].setValue(coDAmount);
   }
 }

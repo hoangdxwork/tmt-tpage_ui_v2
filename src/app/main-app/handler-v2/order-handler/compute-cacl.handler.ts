@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { FormGroup } from "@angular/forms";
 import { FastSaleOrder_DefaultDTOV2 } from "src/app/main-app/dto/fastsaleorder/fastsaleorder-default.dto";
 import { Detail_QuickSaleOnlineOrder, QuickSaleOnlineOrderModel } from "src/app/main-app/dto/saleonlineorder/quick-saleonline-order.dto";
 import { InitSaleDTO } from "src/app/main-app/dto/setting/setting-sale-online.dto";
@@ -7,6 +8,7 @@ import { InitSaleDTO } from "src/app/main-app/dto/setting/setting-sale-online.dt
 
 export class SO_ComputeCaclHandler {
 
+  // TODO: Dùng cho đơn hàng
   public so_coDAmount(saleModel: FastSaleOrder_DefaultDTOV2, quickOrderModel: QuickSaleOnlineOrderModel): any {
     let coDAmount = quickOrderModel.TotalAmount + saleModel.DeliveryPrice - saleModel.AmountDeposit;
     saleModel.CashOnDelivery = coDAmount;
