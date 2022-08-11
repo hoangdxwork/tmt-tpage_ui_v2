@@ -1,8 +1,8 @@
 
 import { Router } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { DeliveryCarrierV2Service } from 'src/app/main-app/services/delivery-carrier-v2.service';
-import { TDSSafeAny } from 'tds-ui/shared/utility';
+import { TDSHelperString, TDSSafeAny } from 'tds-ui/shared/utility';
 import { DeliveryDataResponseDto, GetDeliveryResponseDto } from 'src/app/main-app/dto/carrierV2/get-delivery.dto';
 import { DeliveryResponseDto } from 'src/app/main-app/dto/carrierV2/delivery-carrier-response.dto';
 import { TDSMessageService } from 'tds-ui/message';
@@ -18,10 +18,12 @@ import { isBuffer } from 'lodash';
 export class ListConfigDeliveryComponent implements OnInit {
   isLoading: boolean = false;
   isLoading1: boolean = false;
-
+  keyFilter: string = '';
   providerDataSource: Array<DeliveryDataResponseDto> = [];
   deliveryDataSource: Array<DeliveryCarrierDTO> = [];
   public expandSet = new Set<number>();
+
+  @ViewChild('innerText') innerText!: ElementRef;
 
   constructor(private router: Router,
     private deliveryCarrierV2Service: DeliveryCarrierV2Service,
@@ -40,10 +42,23 @@ export class ListConfigDeliveryComponent implements OnInit {
       .subscribe((res: DeliveryResponseDto<GetDeliveryResponseDto>) => {
         if (res.Success && res.Data) {
           this.providerDataSource = res.Data.Providers;
+          this.loadSearchData();
         } else {
           this.message.error(res.Error?.Message);
         }
       });
+  }
+
+  loadSearchData() {
+    let data = this.providerDataSource;
+    if(TDSHelperString.hasValueString(this.innerText)) {
+      this.keyFilter = TDSHelperString.stripSpecialChars(this.keyFilter.trim());
+    }
+    data = data.filter((x: DeliveryDataResponseDto) =>
+    (x.Name && TDSHelperString.stripSpecialChars(x.Name.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1) ||
+    (x.Type && TDSHelperString.stripSpecialChars(x.Type.toLowerCase()).indexOf(TDSHelperString.stripSpecialChars(this.keyFilter.toLowerCase())) !== -1))
+
+    return this.providerDataSource = data;
   }
 
   loadDeliveryCarriesByType(providerType: string) {
@@ -94,5 +109,12 @@ export class ListConfigDeliveryComponent implements OnInit {
     }, error => {
         this.message.error(error?.error?.message || "Thao tác thất bại");
     });
+  }
+
+  onInputKeyup(ev:TDSSafeAny){
+    this.isLoading = true;
+    this.keyFilter = ev.value;
+    this.loadData();
+    this.isLoading = false;
   }
 }
