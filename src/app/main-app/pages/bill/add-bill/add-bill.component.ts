@@ -257,6 +257,7 @@ export class AddBillComponent implements OnInit {
             obs.DateOrderRed = new Date();
 
             obs.State = 'draft';
+            obs.TrackingRef = null;
 
         } else {
             obs.DateInvoice = obs.DateInvoice ? new Date(obs.DateInvoice) : null;
@@ -935,7 +936,7 @@ export class AddBillComponent implements OnInit {
     });
   }
 
-  onSave(type?: string, print?: string): any {
+  onSave(formAction?: string, print?: string): any {
 
     this.updateShipExtras();
     this.updateShipServiceExtras();
@@ -943,8 +944,8 @@ export class AddBillComponent implements OnInit {
 
     let model = this.prepareModel();
 
-    if(TDSHelperString.hasValueString(type)) {
-        model.FormAction = type;
+    if(TDSHelperString.hasValueString(formAction)) {
+        model.FormAction = formAction;
     }
 
     if (!TDSHelperObject.hasValue(this._form.controls['Partner'].value) && !this._form.controls['PartnerId'].value) {

@@ -140,6 +140,7 @@ import { ObjectFacebookPostComponent } from './conversation-post/objects/object-
 import { ObjectTshopPostComponent } from './conversation-post/objects/object-tshop-post.component';
 import { CommentFilterAllComponent } from './conversation-post/comments/filter-all/comment-filter-all.component';
 import { ChatomniCommentFacade } from '@app/services/chatomni-facade/chatomni-comment.facade';
+import { SO_PrepareFaseSaleOrderHandler } from '@app/handler-v2/order-handler/prepare-fastsaleorder.handler';
 
 const SERVICES = [
   ConversationDataFacade,
@@ -199,6 +200,7 @@ const SERVICES = [
   ChatomniObjectService,
   ChatomniObjectFacade,
   ChatomniCommentFacade,
+  SO_PrepareFaseSaleOrderHandler
 ]
 
 @NgModule({

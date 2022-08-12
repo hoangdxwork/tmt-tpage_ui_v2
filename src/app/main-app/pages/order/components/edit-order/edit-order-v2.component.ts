@@ -196,9 +196,9 @@ export class EditOrderV2Component implements OnInit {
         this.calcTotal();
 
         this.loadConfigProvider(this.saleModel);
-
         this.isLoading = false;
     }, error => {
+        this.isLoading = false;
         this.message.error(`${error?.error?.message}` ? `${error?.error?.message}` : 'Đã xảy ra lỗi');
     });
   }
@@ -465,29 +465,36 @@ export class EditOrderV2Component implements OnInit {
   }
 
   calcTotal() {
-    let data = this.computeCaclHandler.so_calcTotal(this.saleModel, this.quickOrderModel, this.saleConfig);
-    this.saleModel = data.saleModel;
+    let data = this.computeCaclHandler.so_calcTotal((this.saleModel || null), this.quickOrderModel, this.saleConfig);
+
     this.quickOrderModel = data.quickOrderModel;
+    if(this.saleModel) {
+       this.saleModel = data.saleModel as FastSaleOrder_DefaultDTOV2;
+    }
   }
 
   calcTax() {
-    let tax = this.computeCaclHandler.so_calcTax(this.saleModel);
-    this.saleModel.AmountTax = tax.AmountTax;
-    this.saleModel.AmountTotal = tax.AmountTotal;
+    if(this.saleModel) {
+        let tax = this.computeCaclHandler.so_calcTax(this.saleModel);
+        this.saleModel.AmountTax = tax.AmountTax;
+        this.saleModel.AmountTotal = tax.AmountTotal;
+    }
   }
 
   coDAmount() {
-    let cashOnDelivery = this.computeCaclHandler.so_coDAmount(this.saleModel, this.quickOrderModel);
-    this.saleModel.CashOnDelivery = cashOnDelivery;
+    if(this.saleModel) {
+        let cashOnDelivery = this.computeCaclHandler.so_coDAmount(this.saleModel, this.quickOrderModel);
+        this.saleModel.CashOnDelivery = cashOnDelivery;
+    }
   }
 
-  onSave(type?: string): any {
+  onSave(formAction?: string, type?: string): any {
     let model = this.quickOrderModel;
     let id = this.quickOrderModel.Id as string;
 
-    if(TDSHelperString.hasValueString(type)) {
-        this.saleModel.FormAction = type;
-        this.quickOrderModel.FormAction = type;
+    if(TDSHelperString.hasValueString(formAction)) {
+        model.FormAction = formAction;
+        this.saleModel.FormAction = formAction;
     }
 
     if(this.isEnableCreateOrder) {
@@ -518,8 +525,6 @@ export class EditOrderV2Component implements OnInit {
     this.isLoading = true;
     this.saleOnline_OrderService.update(id, model).subscribe((res: any): any => {
 
-        this.message.success('Cập nhật đơn hàng thành công');
-
         if(!this.isEnableCreateOrder && type) {
             this.orderPrintService.printId(id, this.quickOrderModel);
         }
@@ -529,6 +534,7 @@ export class EditOrderV2Component implements OnInit {
             this.createFastSaleOrder(this.saleModel, type);
         } else {
           this.isLoading = false;
+          this.message.success('Cập nhật đơn hàng thành công');
           this.modalRef.destroy(null);
         }
 
@@ -543,10 +549,9 @@ export class EditOrderV2Component implements OnInit {
   }
 
   createFastSaleOrder(data: FastSaleOrder_DefaultDTOV2, type?: string) {
-
     let model = this.so_PrepareFaseSaleOrderHandler.so_prepareFaseSaleOrder(data, this.quickOrderModel);
 
-    this.fastSaleOrderService.createFastSaleOrder(model).subscribe((res: CreateFastSaleOrderDTO) => {
+    this.fastSaleOrderService.saveV2(model).subscribe((res: CreateFastSaleOrderDTO) => {
 
         // TODO: Tạo hóa đơn thành công
         if(res?.Success) {
@@ -570,7 +575,7 @@ export class EditOrderV2Component implements OnInit {
           this.notification.success('Tạo hóa đơn thành công', `Hóa đơn của bạn là ${res.Data.Number}`);
         }
 
-        if(type) {
+        if(type && res) {
             this.printOrder(type, res);
         } else {
             this.modalRef.destroy(null);

@@ -375,8 +375,8 @@ export class ConversationOrderFacade extends BaseSevice  {
       if(TDSHelperString.hasValueString(model.page_id) && TDSHelperString.hasValueString(model.psid)) {
 
         let data = {
-            UserId: model.page_id,
-            PageId: model.psid
+            UserId: model.psid,
+            PageId: model.page_id
         };
 
         this.partnerService.checkInfo(data).subscribe((res: any) => {
