@@ -1,3 +1,4 @@
+import { ProductTemplateOUMLineService } from './../../../../services/product-template-uom-line.service';
 import { ChangeDetectorRef, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { InitSaleDTO } from './../../../../dto/setting/setting-sale-online.dto';
 import { Component, Input, OnInit, Output, EventEmitter, ViewContainerRef } from '@angular/core';
@@ -148,7 +149,8 @@ export class ConversationOrderComponent implements OnInit {
     private so_PrepareFaseSaleOrderHandler: SO_PrepareFaseSaleOrderHandler,
     private csOrder_PrepareModelHandler: CsOrder_PrepareModelHandler,
     private viewContainerRef: ViewContainerRef,
-    private destroy$: TDSDestroyService) {
+    private destroy$: TDSDestroyService,
+    private productTemplateOUMLineService: ProductTemplateOUMLineService) {
   }
 
   ngOnInit(): void {
@@ -512,6 +514,8 @@ export class ConversationOrderComponent implements OnInit {
         }
 
         this.isLoading = false;
+        this.isEnableCreateOrder = false;
+        this.saleModel = {} as any;
       }, error => {
 
         this.isLoading = false;
@@ -570,29 +574,35 @@ export class ConversationOrderComponent implements OnInit {
     modal.afterClose.pipe(takeUntil(this.destroy$)).subscribe(result => {
         if(TDSHelperObject.hasValue(result)) {
 
-            let data = result[0] as ProductTemplateDTO;
-            let x: Detail_QuickSaleOnlineOrder = {
-              Quantity: 1,
-              Price: data.ListPrice,
-              ProductId: data.Id,
-              ProductName: data.Name,
-              ProductNameGet: data.NameGet,
-              ProductCode: data.DefaultCode,
-              UOMId: data.UOMId,
-              UOMName: data.UOMName,
-              Note: null,
-              Factor: 1,
-              OrderId: this.quickOrderModel.Id,
-              ImageUrl: data.ImageUrl,
-              Priority: 0,
-            } as Detail_QuickSaleOnlineOrder;
+            let data = result[0] as ProductDTOV2;
+            let x: Detail_QuickSaleOnlineOrder = this.mappingDetailQuickSaleOnlineOrder(data)
 
-            this.quickOrderModel.Details.push(x);
+            this.quickOrderModel.Details = [...this.quickOrderModel.Details, x];
 
             this.coDAmount();
             this.calcTotal();
         }
     })
+  }
+
+  mappingDetailQuickSaleOnlineOrder(data: ProductDTOV2){
+    let model : Detail_QuickSaleOnlineOrder = {
+      Quantity: 1,
+      Price: data.ListPrice,
+      ProductId: data.Id,
+      ProductName: data.Name,
+      ProductNameGet: data.NameGet,
+      ProductCode: data.DefaultCode,
+      UOMId: data.UOMId,
+      UOMName: data.UOMName,
+      Note: null,
+      Factor: 1,
+      OrderId: this.quickOrderModel.Id,
+      ImageUrl: data.ImageUrl,
+      Priority: 0,
+    } as Detail_QuickSaleOnlineOrder;
+
+    return {...model};
   }
 
   showModalAddPromotion(){
@@ -751,8 +761,6 @@ export class ConversationOrderComponent implements OnInit {
     }
   }
 
-
-
   closeSearchProduct(){
     this.textSearchProduct = '';
   }
@@ -768,16 +776,14 @@ export class ConversationOrderComponent implements OnInit {
     let filterObj: FilterObjDTO = {
       searchText: textSearch,
     }
-    let pageSize = 20;
-    let pageIndex = 1;
+    let top = 20;
+    let skip = 0;
 
-    let filters = this.odataProductService.buildFilter(filterObj);
-    let params = THelperDataRequest.convertDataRequestToString(pageSize, pageIndex, filters);
-
-    this.odataProductService.getView(params).pipe(takeUntil(this.destroy$)).pipe(finalize(()=>{ this.isLoadingProduct = false; }))
+    this.productTemplateOUMLineService.getProductUOMLine(skip, top, textSearch)
+      .pipe(takeUntil(this.destroy$)).pipe(finalize(()=> this.isLoadingProduct = false ))
       .subscribe((res: ODataProductDTOV2) => {
-        this.lstProductSearch = [...res.value]
-    },err=>{
+           this.lstProductSearch = [...res.value]
+      },err =>{
         this.message.error(err.error? err.error.message: Message.CanNotLoadData);
     });
   }
@@ -788,7 +794,19 @@ export class ConversationOrderComponent implements OnInit {
     });
   }
 
-  pushItemProduct(item: any) {
+  pushItemProduct(data: ProductDTOV2) {
+    let index = this.quickOrderModel.Details.findIndex(x => x.ProductId === data.Id && x.UOMId === data.UOMPOId);
+    if (index < 0){
+        let item = this.mappingDetailQuickSaleOnlineOrder(data);
+
+        this.quickOrderModel.Details = [...this.quickOrderModel.Details, item];
+    } else{
+        this.quickOrderModel.Details[index].Quantity += 1;
+    }
+
+    this.closeSearchProduct();
+    this.calcTotal();
+    this.coDAmount();
   }
 
   onLoadSuggestion(item: ResultCheckAddressDTO) {
